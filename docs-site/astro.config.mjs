@@ -153,14 +153,7 @@ export default defineConfig({
                 },
                 {
                   label: "AI",
-                  items: [
-                    { label: "Overview", link: "/dotnet/ai/" },
-                    {
-                      label: "Capabilities",
-                      autogenerate: { directory: "dotnet/ai" },
-                      collapsed: false,
-                    },
-                  ],
+                  autogenerate: { directory: "dotnet/ai" },
                 },
                 {
                   label: "Architecture",
