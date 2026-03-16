@@ -1,0 +1,147 @@
+---
+title: API Documentation
+description: OpenAPI document generation and Scalar interactive UI. Supports JWT Bearer and OAuth2 Authorization Code with PKCE. One document per API major version.
+sidebar:
+  order: 14
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Granit.ApiDocumentation generates OpenAPI documents and serves the
+[Scalar](https://scalar.com) interactive UI. One OpenAPI document is generated per
+declared API major version. Supports JWT Bearer and OAuth2 Authorization Code with
+PKCE for interactive authentication.
+
+## Setup
+
+<Tabs>
+<TabItem label="JWT Bearer (default)">
+
+```csharp
+[DependsOn(typeof(GranitApiDocumentationModule))]
+public class AppModule : GranitModule { }
+```
+
+```json
+{
+  "ApiDocumentation": {
+    "Title": "Clinic API",
+    "MajorVersions": [1, 2],
+    "Description": "Patient and appointment management API"
+  }
+}
+```
+
+</TabItem>
+<TabItem label="OAuth2 / Keycloak">
+
+```json
+{
+  "ApiDocumentation": {
+    "Title": "Clinic API",
+    "MajorVersions": [1],
+    "OAuth2": {
+      "AuthorizationUrl": "https://keycloak.example.com/realms/clinic/protocol/openid-connect/auth",
+      "TokenUrl": "https://keycloak.example.com/realms/clinic/protocol/openid-connect/token",
+      "ClientId": "clinic-scalar",
+      "EnablePkce": true,
+      "Scopes": ["openid", "profile"]
+    }
+  }
+}
+```
+
+When `OAuth2` is fully configured, the Bearer scheme is replaced with an OAuth2
+Authorization Code flow in the OpenAPI document, and Scalar enables interactive
+PKCE-based authentication.
+
+</TabItem>
+</Tabs>
+
+In `Program.cs`:
+
+```csharp
+app.UseGranitApiDocumentation(); // Maps /openapi/v1.json, /openapi/v2.json, /scalar
+```
+
+## Schema examples
+
+Provide realistic example values for request DTOs without coupling to OpenAPI:
+
+```csharp
+public class AppointmentSchemaExamples : ISchemaExampleProvider
+{
+    public IReadOnlyDictionary<Type, JsonNode> GetExamples() => new Dictionary<Type, JsonNode>
+    {
+        [typeof(CreateAppointmentRequest)] = new JsonObject
+        {
+            ["patientId"] = "d4e5f6a7-1234-5678-9abc-def012345678",
+            ["doctorId"] = "a1b2c3d4-5678-9abc-def0-123456789abc",
+            ["scheduledAt"] = "2026-04-15T09:30:00Z",
+            ["durationMinutes"] = 30
+        }
+    };
+}
+```
+
+Implementations of `ISchemaExampleProvider` are auto-discovered at startup.
+
+## Internal API exclusion
+
+Exclude inter-service endpoints from public documentation:
+
+```csharp
+app.MapPost("/webhooks/keycloak", HandleKeycloakWebhook)
+    .WithMetadata(new InternalApiAttribute());
+```
+
+## Document transformers
+
+The module registers these OpenAPI transformers automatically:
+
+| Transformer | Purpose |
+| ----------- | ------- |
+| `JwtBearerSecuritySchemeTransformer` | Adds Bearer security scheme when JWT is configured |
+| `OAuth2SecuritySchemeTransformer` | Replaces Bearer with OAuth2 Authorization Code when configured |
+| `SecurityRequirementOperationTransformer` | Anonymous endpoints override global security |
+| `ProblemDetailsSchemaDocumentTransformer` | Adds RFC 7807 ProblemDetails schema |
+| `ProblemDetailsResponseOperationTransformer` | Documents 4xx/5xx Problem Details responses |
+| `TenantHeaderOperationTransformer` | Documents `X-Tenant-Id` header when enabled |
+| `InternalApiDocumentTransformer` | Removes `[InternalApi]` endpoints |
+| `WolverineOpenApiOperationTransformer` | Enhances Wolverine HTTP endpoint documentation |
+| `SchemaExampleSchemaTransformer` | Applies `ISchemaExampleProvider` examples |
+
+## Configuration reference
+
+| Property | Default | Description |
+| -------- | ------- | ----------- |
+| `Title` | `"API"` | OpenAPI document and Scalar UI title |
+| `MajorVersions` | `[1]` | Major version numbers to document |
+| `Description` | `null` | OpenAPI description (Markdown supported) |
+| `ContactEmail` | `null` | Contact email in OpenAPI info |
+| `LogoUrl` | `null` | Logo URL for Scalar sidebar |
+| `FaviconUrl` | `null` | Favicon for Scalar page |
+| `EnableInProduction` | `false` | Expose docs in Production |
+| `EnableTenantHeader` | `false` | Document required tenant header |
+| `TenantHeaderName` | `"X-Tenant-Id"` | Tenant header name |
+| `AuthorizationPolicy` | `null` | Policy for doc endpoints (`null` = inherit, `""` = anonymous) |
+| `OAuth2.AuthorizationUrl` | `null` | OAuth2 authorization endpoint |
+| `OAuth2.TokenUrl` | `null` | OAuth2 token endpoint |
+| `OAuth2.ClientId` | `null` | Public OAuth2 client ID (PKCE-capable) |
+| `OAuth2.EnablePkce` | `true` | Enable PKCE with S256 |
+| `OAuth2.Scopes` | `["openid"]` | OAuth2 scopes to request |
+
+## Public API summary
+
+| Category | Key types | Package |
+| -------- | --------- | ------- |
+| Module | `GranitApiDocumentationModule` | -- |
+| Options | `ApiDocumentationOptions`, `OAuth2Options` | `Granit.ApiDocumentation` |
+| Extension points | `ISchemaExampleProvider`, `InternalApiAttribute` | `Granit.ApiDocumentation` |
+| Extensions | `AddGranitApiDocumentation()`, `UseGranitApiDocumentation()` | `Granit.ApiDocumentation` |
+
+## See also
+
+- [API Versioning](/dotnet/api/api-versioning/) -- URL versioning, RFC 8594 deprecation
+- [Authentication module](/dotnet/security/authentication/) -- JWT Bearer, Keycloak
+- [API & Http overview](/dotnet/api/) -- All HTTP infrastructure packages

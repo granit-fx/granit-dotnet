@@ -1,0 +1,81 @@
+---
+title: API Versioning
+description: URL-based API versioning using Asp.Versioning with RFC 8594 deprecation headers (Deprecation, Sunset, Link).
+sidebar:
+  order: 13
+---
+
+Granit.ApiVersioning configures URL-based API versioning using
+[Asp.Versioning](https://github.com/dotnet/aspnet-api-versioning).
+Primary reader: URL segment (`/api/v{version:apiVersion}/resource`).
+Fallback reader: query string (`?api-version=1.0`).
+
+## Setup
+
+```csharp
+[DependsOn(typeof(GranitApiVersioningModule))]
+public class AppModule : GranitModule { }
+```
+
+```json
+{
+  "ApiVersioning": {
+    "DefaultMajorVersion": 1,
+    "ReportApiVersions": true
+  }
+}
+```
+
+## Usage
+
+```csharp
+var v1 = app.NewVersionedApi("Appointments").MapGroup("/api/v{version:apiVersion}");
+
+var v1Group = v1.MapGroup("/appointments").HasApiVersion(1);
+v1Group.MapGet("/", GetAppointments);
+v1Group.MapPost("/", CreateAppointment);
+
+var v2Group = v1.MapGroup("/appointments").HasApiVersion(2);
+v2Group.MapGet("/", GetAppointmentsV2);
+```
+
+## Deprecation headers (RFC 8594)
+
+Mark endpoints as deprecated with automatic `Deprecation`, `Sunset`, and `Link`
+response headers:
+
+```csharp
+v1Group.MapGet("/legacy-patients", GetLegacyPatients)
+    .Deprecated(sunsetDate: "2026-06-01", link: "https://docs.example.com/migration/v2");
+```
+
+**Response headers:**
+
+```http
+Deprecation: true
+Sunset: Sun, 01 Jun 2026 00:00:00 GMT
+Link: <https://docs.example.com/migration/v2>; rel="deprecation"
+```
+
+Each call to a deprecated endpoint is logged at Warning level.
+
+## Configuration reference
+
+| Property | Default | Description |
+| -------- | ------- | ----------- |
+| `DefaultMajorVersion` | `1` | Default API version when client does not specify one |
+| `ReportApiVersions` | `true` | Include `api-supported-versions` and `api-deprecated-versions` headers |
+
+## Public API summary
+
+| Category | Key types | Package |
+| -------- | --------- | ------- |
+| Module | `GranitApiVersioningModule` | -- |
+| Options | `GranitApiVersioningOptions` | `Granit.ApiVersioning` |
+| Attributes | `DeprecatedAttribute` | `Granit.ApiVersioning` |
+| Extensions | `AddGranitApiVersioning()`, `.Deprecated()` | `Granit.ApiVersioning` |
+
+## See also
+
+- [API Documentation](/dotnet/api/api-documentation/) -- Scalar OpenAPI, multi-version docs
+- [API & Http overview](/dotnet/api/) -- All HTTP infrastructure packages

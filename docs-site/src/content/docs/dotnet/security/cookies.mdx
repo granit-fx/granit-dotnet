@@ -1,0 +1,170 @@
+---
+title: Cookies
+description: Strict cookie registry with GDPR category enforcement and Klaro CMP integration. Every cookie must be declared at startup; undeclared writes throw UnregisteredCookieException.
+sidebar:
+  order: 6
+---
+
+Granit.Cookies enforces a strict cookie registry: every cookie must be declared at
+startup with a GDPR category. Writing an undeclared cookie throws
+`UnregisteredCookieException`. Consent is resolved per-category via a pluggable
+`IConsentResolver`. `Granit.Cookies.Klaro` integrates with the EU-sovereign
+[Klaro](https://klaro.org/) consent management platform.
+
+## Package structure
+
+| Package | Role | Depends on |
+| ------- | ---- | ---------- |
+| `Granit.Cookies` | Cookie registry, consent enforcement | `Granit.Timing` |
+| `Granit.Cookies.Klaro` | Klaro CMP consent resolver | `Granit.Cookies` |
+
+## Setup
+
+```csharp
+[DependsOn(typeof(GranitCookiesModule))]
+public class AppModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.AddGranitCookies(cookies =>
+        {
+            cookies.RegisterCookie(new CookieDefinition(
+                Name: "session_id",
+                Category: CookieCategory.StrictlyNecessary,
+                RetentionDays: 1,
+                IsHttpOnly: true,
+                Purpose: "Session identification"));
+
+            cookies.RegisterCookie(new CookieDefinition(
+                Name: "analytics_consent",
+                Category: CookieCategory.Analytics,
+                RetentionDays: 365,
+                IsHttpOnly: false,
+                Purpose: "Analytics tracking preference"));
+
+            cookies.UseConsentResolver<KlaroConsentResolver>();
+        });
+    }
+}
+```
+
+## Cookie categories (GDPR)
+
+| Category | Consent required | Description |
+| -------- | ---------------- | ----------- |
+| `StrictlyNecessary` | No | Session, CSRF, authentication |
+| `Functionality` | Yes | Preferences, language |
+| `Analytics` | Yes | Usage tracking |
+| `Marketing` | Yes | Advertising, retargeting |
+| `Other` | Yes | Uncategorized |
+
+## Managed cookie operations
+
+Always use `IGranitCookieManager` instead of `IResponseCookies`:
+
+```csharp
+public class SessionService(IGranitCookieManager cookieManager)
+{
+    public async Task SetSessionCookieAsync(
+        HttpContext httpContext, string sessionId)
+    {
+        // Checks registry, verifies consent, applies security defaults
+        await cookieManager.SetCookieAsync(
+            httpContext, "session_id", sessionId)
+            .ConfigureAwait(false);
+    }
+
+    public async Task RevokeAnalyticsAsync(HttpContext httpContext)
+    {
+        // Deletes all cookies in the Analytics category
+        await cookieManager.RevokeCategoryAsync(
+            httpContext, CookieCategory.Analytics)
+            .ConfigureAwait(false);
+    }
+}
+```
+
+**Security defaults applied automatically:**
+
+- `Secure = true` (HTTPS only)
+- `SameSite = Lax` (CSRF protection)
+- `Expires` calculated via `IClock.Now + RetentionDays`
+- `HttpOnly` per cookie definition
+
+## IConsentResolver
+
+The consent resolver determines if a user has consented to a cookie category:
+
+```csharp
+public interface IConsentResolver
+{
+    Task<bool> ResolveAsync(HttpContext httpContext, CookieCategory category);
+}
+```
+
+`StrictlyNecessary` cookies always return `true` — no consent check needed.
+
+## Klaro CMP
+
+[Klaro](https://klaro.org/) is a self-hosted, EU-sovereign consent management platform.
+
+```csharp
+[DependsOn(typeof(GranitCookiesKlaroModule))]
+public class AppModule : GranitModule { }
+```
+
+```json
+{
+  "Klaro": {
+    "CookieName": "klaro"
+  }
+}
+```
+
+`KlaroConsentResolver` reads the Klaro consent cookie and maps service consent
+to Granit cookie categories.
+
+## Configuration reference
+
+```json
+{
+  "Cookies": {
+    "ThrowOnUnregistered": true,
+    "DefaultRetentionDays": 365,
+    "ThirdPartyServices": [
+      {
+        "Name": "Google Analytics",
+        "Category": "Analytics",
+        "CookiePatterns": ["_ga*", "_gid"]
+      }
+    ]
+  }
+}
+```
+
+| Property | Default | Description |
+| -------- | ------- | ----------- |
+| `ThrowOnUnregistered` | `true` | Throw when writing an undeclared cookie |
+| `DefaultRetentionDays` | `365` | Default cookie lifetime |
+| `ThirdPartyServices` | `[]` | Third-party service declarations |
+
+:::caution
+Setting `ThrowOnUnregistered: false` in production weakens GDPR compliance.
+Undeclared cookies bypass consent checks and category enforcement.
+:::
+
+## Public API summary
+
+| Category | Key types | Package |
+| -------- | --------- | ------- |
+| Modules | `GranitCookiesModule`, `GranitCookiesKlaroModule` | -- |
+| Registry | `ICookieRegistry`, `CookieDefinition`, `CookieCategory`, `GranitCookiesBuilder` | `Granit.Cookies` |
+| Manager | `IGranitCookieManager`, `IConsentResolver` | `Granit.Cookies` |
+| Klaro | `KlaroConsentResolver`, `KlaroOptions` | `Granit.Cookies.Klaro` |
+| Extensions | `AddGranitCookies()`, `AddGranitCookiesKlaro()` | -- |
+
+## See also
+
+- [Privacy module](/dotnet/security/privacy/) -- GDPR data export, erasure, legal agreements
+- [Authentication module](/dotnet/security/authentication/) -- Session-based authentication
+- [Timing module](/dotnet/core/timing/) -- `IClock` used for cookie expiry calculation

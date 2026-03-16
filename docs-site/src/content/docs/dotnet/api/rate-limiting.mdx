@@ -1,0 +1,162 @@
+---
+title: Rate Limiting
+description: Per-tenant rate limiting with four algorithms (SlidingWindow, FixedWindow, TokenBucket, Concurrency), Redis-backed counters, Wolverine support, and Granit.Features dynamic quotas.
+sidebar:
+  order: 17
+---
+
+Granit.RateLimiting provides per-tenant rate limiting with four algorithms,
+configurable policies, Redis-backed counters (with in-memory fallback), and Wolverine
+message handler support. Integrates with `Granit.Features` for plan-based dynamic
+quotas.
+
+## Setup
+
+```csharp
+[DependsOn(typeof(GranitRateLimitingModule))]
+public class AppModule : GranitModule { }
+```
+
+```json
+{
+  "RateLimiting": {
+    "Enabled": true,
+    "KeyPrefix": "rl",
+    "BypassRoles": ["admin"],
+    "FallbackOnCounterStoreFailure": "Allow",
+    "Policies": {
+      "api-default": {
+        "Algorithm": "SlidingWindow",
+        "PermitLimit": 1000,
+        "Window": "00:01:00",
+        "SegmentsPerWindow": 6
+      },
+      "api-sensitive": {
+        "Algorithm": "TokenBucket",
+        "TokenLimit": 50,
+        "TokensPerPeriod": 10,
+        "ReplenishmentPeriod": "00:00:10"
+      }
+    }
+  }
+}
+```
+
+## Applying to endpoints
+
+```csharp
+app.MapGet("/api/v1/appointments", GetAppointments)
+    .RequireGranitRateLimiting("api-default");
+
+app.MapPost("/api/v1/payments", ProcessPayment)
+    .RequireGranitRateLimiting("api-sensitive");
+```
+
+## Wolverine message handler support
+
+Decorate message types with `[RateLimited]` and register the Wolverine middleware:
+
+```csharp
+[RateLimited("api-default")]
+public record SyncPatientCommand(Guid PatientId);
+```
+
+```csharp
+// In Wolverine configuration
+opts.Policies.AddMiddleware<RateLimitMiddleware>(
+    chain => chain.MessageType.GetCustomAttributes(typeof(RateLimitedAttribute), true).Length > 0);
+```
+
+When the rate limit is exceeded, `RateLimitExceededException` is thrown and handled
+by Wolverine's retry policy.
+
+## Algorithms
+
+| Algorithm | Use case | Key parameters |
+| --------- | -------- | -------------- |
+| `SlidingWindow` | General API rate limiting (default) | `PermitLimit`, `Window`, `SegmentsPerWindow` |
+| `FixedWindow` | Simple counter, lowest memory | `PermitLimit`, `Window` |
+| `TokenBucket` | Controlled burst allowance | `TokenLimit`, `TokensPerPeriod`, `ReplenishmentPeriod` |
+| `Concurrency` | Limit simultaneous in-flight requests | `PermitLimit` |
+
+## Tenant partitioning
+
+Rate limit counters are partitioned by tenant. The Redis key uses hash tags to
+ensure all keys for a tenant hash to the same Redis Cluster slot:
+
+```
+{prefix}:{{tenantId|global}}:{policyName}
+```
+
+## Failure behavior
+
+When Redis is unavailable, the `FallbackOnCounterStoreFailure` setting controls behavior:
+
+| Value | Behavior | Use case |
+| ----- | -------- | -------- |
+| `Allow` | Let the request through, log warning | Prefer availability over quota enforcement |
+| `Deny` | Reject with 429 | Conservative — prefer safety over availability |
+
+## 429 response format
+
+```json
+{
+  "status": 429,
+  "title": "Too Many Requests",
+  "detail": "Rate limit exceeded for policy 'api-default'. Retry after 10s.",
+  "policy": "api-default",
+  "limit": 1000,
+  "remaining": 0,
+  "retryAfter": 10
+}
+```
+
+The `Retry-After` header is also set on the response.
+
+## Dynamic quotas with Granit.Features
+
+When `UseFeatureBasedQuotas` is enabled, the permit limit is resolved dynamically
+from `Granit.Features` (e.g., per-plan quotas). The convention-based feature name
+is `RateLimit.{PolicyName}`, overridable via `RateLimitPolicyOptions.FeatureName`.
+
+## Configuration reference
+
+| Property | Default | Description |
+| -------- | ------- | ----------- |
+| `Enabled` | `true` | Enable/disable rate limiting globally |
+| `KeyPrefix` | `"rl"` | Redis key prefix |
+| `FallbackOnCounterStoreFailure` | `Allow` | Behavior when Redis is down |
+| `BypassRoles` | `[]` | Roles that skip rate limiting |
+| `UseFeatureBasedQuotas` | `false` | Use `Granit.Features` for dynamic quotas |
+| `Policies.*` | -- | Named rate limiting policies (see below) |
+
+**Policy options:**
+
+| Property | Default | Description |
+| -------- | ------- | ----------- |
+| `Algorithm` | `SlidingWindow` | Rate limiting algorithm |
+| `PermitLimit` | `1000` | Max permits per window |
+| `Window` | `00:01:00` | Window duration |
+| `SegmentsPerWindow` | `6` | Sliding window segments (accuracy vs. memory) |
+| `TokenLimit` | `50` | Max tokens (TokenBucket only) |
+| `TokensPerPeriod` | `10` | Tokens added per replenishment (TokenBucket only) |
+| `ReplenishmentPeriod` | `00:00:10` | Replenishment interval (TokenBucket only) |
+| `FeatureName` | `null` | Override feature name for dynamic quotas |
+
+## Public API summary
+
+| Category | Key types | Package |
+| -------- | --------- | ------- |
+| Module | `GranitRateLimitingModule` | -- |
+| Store | `IRateLimitCounterStore`, `IRateLimitQuotaProvider`, `RateLimitResult` | `Granit.RateLimiting` |
+| Attributes | `RateLimitedAttribute` | `Granit.RateLimiting` |
+| Exceptions | `RateLimitExceededException` | `Granit.RateLimiting` |
+| Options | `GranitRateLimitingOptions`, `RateLimitPolicyOptions` | `Granit.RateLimiting` |
+| Extensions | `AddGranitRateLimiting()`, `.RequireGranitRateLimiting()` | `Granit.RateLimiting` |
+
+## See also
+
+- [Exception Handling](/dotnet/api/exception-handling/) -- Problem Details format
+- [Wolverine module](/dotnet/infrastructure/wolverine/) -- Message bus, retry policies
+- [Features module](/dotnet/infrastructure/features/) -- Feature flags, dynamic quotas
+- [API & Http overview](/dotnet/api/) -- All HTTP infrastructure packages

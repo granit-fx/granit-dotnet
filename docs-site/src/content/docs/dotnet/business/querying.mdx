@@ -1,0 +1,32 @@
+---
+title: Querying
+description: Declarative search engine with filters, sorting, pagination, and column definitions. Strongly-typed QueryDefinition drives both the API and the frontend data grid.
+sidebar:
+  order: 16
+---
+
+import { FileTree } from "@astrojs/starlight/components";
+
+Granit.Querying provides a declarative search engine: a strongly-typed
+`QueryDefinition<T>` describes columns, filter groups, quick filters, and sort
+options. The same definition drives the API query engine and the frontend data
+grid — no duplication.
+
+## Package structure
+
+<FileTree>
+- Granit.Querying/ QueryDefinition, IQueryEngine, QueryRequest/Response abstractions
+  - Granit.Querying.EntityFrameworkCore EF Core IQueryEngine implementation
+  - Granit.Querying.Endpoints Generic search endpoint
+</FileTree>
+
+| Package | Role | Depends on |
+| ------- | ---- | ---------- |
+| `Granit.Querying` | `IQueryEngine<T>`, `QueryDefinition<T>`, `QueryRequest`, `PagedResult<T>` | `Granit.Core` |
+| `Granit.Querying.EntityFrameworkCore` | EF Core query executor | `Granit.Querying`, `Granit.Persistence` |
+| `Granit.Querying.Endpoints` | `MapQueryEndpoint<T>()` generic search endpoint | `Granit.Querying` |
+
+## See also
+
+- [Persistence module](/dotnet/data/persistence/) -- EF Core interceptors, query filters
+- [API & Http overview](/dotnet/api/) -- HTTP infrastructure

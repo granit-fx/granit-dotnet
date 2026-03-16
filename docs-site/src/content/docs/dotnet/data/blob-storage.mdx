@@ -1,11 +1,11 @@
 ---
-title: Storage & Imaging
-description: Multi-provider blob storage (S3, Azure, Google Cloud Storage, FileSystem, Database) with presigned URLs, proxy endpoints, validation pipeline, tenant isolation, image processing (WebP/AVIF, EXIF stripping)
+title: Blob Storage
+description: Multi-provider blob storage (S3, Azure, Google Cloud Storage, FileSystem, Database) with presigned URLs, proxy endpoints, validation pipeline, and tenant isolation.
 sidebar:
   order: 16
 ---
 
-import { Tabs, TabItem, FileTree, Badge } from "@astrojs/starlight/components";
+import { Tabs, TabItem, FileTree } from "@astrojs/starlight/components";
 
 Granit.BlobStorage provides a multi-provider blob storage layer with a unified
 `IBlobStorage` API. Cloud providers (S3, Azure Blob, Google Cloud Storage) use native presigned URLs for
@@ -13,8 +13,6 @@ Direct-to-Cloud uploads where the application server never touches file bytes.
 Server-side providers (FileSystem, Database) use `Granit.BlobStorage.Proxy` to expose
 token-based upload/download endpoints with identical client-side flow. A post-upload
 validation pipeline (magic bytes, size) ensures integrity before marking blobs as valid.
-Granit.Imaging adds a fluent image processing pipeline (resize, crop, compress, format
-conversion, EXIF stripping) powered by Magick.NET.
 
 ## Why Direct-to-Cloud?
 
@@ -22,7 +20,7 @@ Traditional file upload architectures stream bytes through the application serve
 which creates several problems at scale:
 
 | Problem | Traditional upload | Granit Direct-to-Cloud |
-|---------|--------------------|------------------------|
+| ------- | ------------------ | ---------------------- |
 | **Server memory** | Entire file buffered in RAM | Server handles only metadata (< 1 KB) |
 | **Bandwidth costs** | Bytes transit through your servers twice (in + out) | Client uploads directly to storage; server bandwidth near zero |
 | **Horizontal scaling** | Upload throughput limited by server capacity | Unlimited -- storage provider handles all I/O |
@@ -45,12 +43,10 @@ consistent while minimizing server resource usage.
   - Granit.BlobStorage.Database EF Core database storage (small files)
   - Granit.BlobStorage.Proxy Token-based proxy endpoints for server-side providers
   - Granit.BlobStorage.EntityFrameworkCore Isolated DbContext, EF persistence (metadata)
-- Granit.Imaging/ Image processing abstractions, fluent pipeline API
-  - Granit.Imaging.MagickNet Magick.NET implementation (JPEG/PNG/WebP/AVIF/GIF/BMP/TIFF)
 </FileTree>
 
 | Package | Role | Depends on |
-|---------|------|------------|
+| ------- | ---- | ---------- |
 | `Granit.BlobStorage` | `IBlobStorage`, `IBlobValidator`, `BlobDescriptor` domain | `Granit.Core` |
 | `Granit.BlobStorage.S3` | S3 native presigned URLs, `PrefixBlobKeyStrategy` | `Granit.BlobStorage` |
 | `Granit.BlobStorage.AzureBlob` | Azure Blob SAS tokens, Managed Identity support | `Granit.BlobStorage` |
@@ -59,13 +55,11 @@ consistent while minimizing server resource usage.
 | `Granit.BlobStorage.Database` | EF Core database storage (small files, 10 MB default) | `Granit.BlobStorage`, `Granit.Persistence` |
 | `Granit.BlobStorage.Proxy` | Token-based proxy endpoints for FileSystem/Database | `Granit.BlobStorage` |
 | `Granit.BlobStorage.EntityFrameworkCore` | `BlobStorageDbContext`, `EfBlobDescriptorStore` | `Granit.BlobStorage`, `Granit.Persistence` |
-| `Granit.Imaging` | `IImageProcessor`, `IImagePipeline` fluent API | `Granit.Core` |
-| `Granit.Imaging.MagickNet` | `MagickNetImageProcessor` (singleton) | `Granit.Imaging` |
 
 ## Provider comparison
 
 | Provider | Presigned URLs | Max file size | Use case |
-|----------|---------------|---------------|----------|
+| -------- | -------------- | ------------- | -------- |
 | **S3** | Native (AWS SigV4) | Unlimited | Production cloud storage |
 | **Azure Blob** | Native (SAS tokens) | Unlimited | Azure-hosted deployments |
 | **Google Cloud** | Native (V4 signed URLs) | Unlimited | GCP-hosted deployments |
@@ -92,8 +86,6 @@ graph TD
     PX[Granit.BlobStorage.Proxy] --> BS
     EF[Granit.BlobStorage.EntityFrameworkCore] --> BS
     EF --> P
-    IM[Granit.Imaging] --> CO
-    MN[Granit.Imaging.MagickNet] --> IM
 ```
 
 ## Setup
@@ -104,7 +96,7 @@ graph TD
 ```csharp
 [DependsOn(
     typeof(GranitBlobStorageEntityFrameworkCoreModule),
-    typeof(GranitImagingMagickNetModule))]
+    typeof(GranitBlobStorageS3Module))]
 public class AppModule : GranitModule { }
 ```
 
@@ -173,9 +165,8 @@ For Managed Identity (recommended in production), omit `ConnectionString` and se
 
 ```csharp
 [DependsOn(
-    typeof(GranitBlobStorageGoogleCloudModule),
     typeof(GranitBlobStorageEntityFrameworkCoreModule),
-    typeof(GranitImagingMagickNetModule))]
+    typeof(GranitBlobStorageGoogleCloudModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -204,9 +195,9 @@ For Workload Identity (recommended in GKE), omit `CredentialFilePath` — Applic
 
 ```csharp
 [DependsOn(
+    typeof(GranitBlobStorageEntityFrameworkCoreModule),
     typeof(GranitBlobStorageFileSystemModule),
-    typeof(GranitBlobStorageProxyModule),
-    typeof(GranitBlobStorageEntityFrameworkCoreModule))]
+    typeof(GranitBlobStorageProxyModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -238,8 +229,8 @@ app.MapGranitBlobProxyEndpoints();
 ```csharp
 [DependsOn(
     typeof(GranitBlobStorageDatabaseModule),
-    typeof(GranitBlobStorageProxyModule),
-    typeof(GranitBlobStorageEntityFrameworkCoreModule))]
+    typeof(GranitBlobStorageEntityFrameworkCoreModule),
+    typeof(GranitBlobStorageProxyModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -272,7 +263,7 @@ app.MapGranitBlobProxyEndpoints();
 ```csharp
 [DependsOn(
     typeof(GranitBlobStorageEntityFrameworkCoreModule),
-    typeof(GranitImagingMagickNetModule))]
+    typeof(GranitBlobStorageS3Module))]
 public class AppModule : GranitModule { }
 ```
 
@@ -418,7 +409,7 @@ public class PatientPhotoService(IBlobStorage blobStorage)
 The returned `PresignedUploadTicket` contains everything the frontend needs:
 
 | Property | Description |
-|----------|-------------|
+| -------- | ----------- |
 | `BlobId` | Stable identifier for polling status and requesting downloads |
 | `UploadUrl` | Presigned URL (S3/Azure) or proxy token URL (FileSystem/Database) |
 | `HttpMethod` | Always `"PUT"` |
@@ -469,7 +460,7 @@ stateDiagram-v2
 ```
 
 | Status | Storage object | DB record | Description |
-|--------|---------------|-----------|-------------|
+| ------ | -------------- | --------- | ----------- |
 | `Pending` | Not yet uploaded | Exists | Upload ticket issued, waiting for client |
 | `Uploading` | Uploaded | Exists | Validation pipeline running |
 | `Valid` | Present | Exists | Ready for download |
@@ -492,7 +483,7 @@ public class BlobCommandHandler(IBlobDescriptorWriter writer) { }
 `IBlobDescriptorReader` also provides specialized queries for background jobs:
 
 | Method | Purpose |
-|--------|---------|
+| ------ | ------- |
 | `FindAsync(blobId)` | Single descriptor by ID |
 | `FindOrphanedAsync(cutoff, batchSize)` | Uploads stuck in `Pending`/`Uploading` (orphan cleanup) |
 | `FindByContainerBeforeAsync(container, cutoff, batchSize)` | GDPR retention cleanup |
@@ -506,7 +497,7 @@ full file in the application server.
 ### Built-in validators
 
 | Validator | Order | Check |
-|-----------|-------|-------|
+| --------- | ----- | ----- |
 | `MagicBytesValidator` | 10 | Reads first 261 bytes via range read; compares magic-byte signature against declared `Content-Type`. Detects PDF, JPEG, PNG, GIF, TIFF, DICOM, ZIP. |
 | `MaxSizeValidator` | 20 | Compares actual size against `MaxAllowedBytes` declared at upload time. |
 
@@ -552,7 +543,7 @@ The date components distribute keys across a wider key-space prefix, reducing
 hot-spot partitions on large buckets.
 
 | Strategy | Key format | Isolation level | Provider support |
-|----------|-----------|-----------------|-----------------|
+| -------- | ---------- | --------------- | ---------------- |
 | `Prefix` (default) | `{tenantId}/{container}/{yyyy}/{MM}/{blobId}` | Key-prefix | All providers |
 | `Container` | `{container}/{yyyy}/{MM}/{blobId}` | One container/bucket per tenant | S3, Azure only |
 
@@ -562,7 +553,7 @@ Single-tenant deployments (no `ICurrentTenant`) omit the tenant prefix:
 ### Per-provider isolation details
 
 | Provider | Isolation mechanism |
-|----------|-------------------|
+| -------- | ------------------- |
 | **S3** | Tenant prefix in S3 object key. `Bucket` strategy uses one S3 bucket per tenant. |
 | **Azure Blob** | Tenant prefix in blob name. `Container` strategy uses one Azure container per tenant. |
 | **Google Cloud** | Tenant prefix in GCS object name. `Bucket` strategy uses one GCS bucket per tenant. |
@@ -574,122 +565,13 @@ Single-tenant deployments (no `ICurrentTenant`) omit the tenant prefix:
 `BlobDescriptor` publishes domain events on state transitions:
 
 | Event | Trigger |
-|-------|---------|
+| ----- | ------- |
 | `BlobValidated(BlobId, ContainerName, VerifiedContentType, SizeBytes)` | Blob passes all validators |
 | `BlobRejected(BlobId, ContainerName, RejectionReason)` | Validation fails |
 | `BlobDeleted(BlobId, ContainerName, DeletionReason)` | GDPR crypto-shredding |
 
 Subscribe via Wolverine handlers to react to blob lifecycle changes (e.g. trigger
 image processing after validation, notify the user on rejection).
-
-## Image processing (Granit.Imaging)
-
-`IImageProcessor` provides a fluent pipeline for image transformations. The pipeline
-holds native resources and must be disposed after use.
-
-```csharp
-public class PatientPhotoProcessor(IImageProcessor imageProcessor)
-{
-    public async Task<ImageResult> CreateThumbnailAsync(
-        Stream sourceImage,
-        CancellationToken cancellationToken)
-    {
-        await using IImagePipeline pipeline = imageProcessor.Load(sourceImage);
-
-        return await pipeline
-            .Resize(200, 200, ResizeMode.Crop)
-            .StripMetadata()
-            .Compress(quality: 80)
-            .ConvertTo(ImageFormat.WebP)
-            .ToResultAsync(cancellationToken);
-    }
-}
-```
-
-### Pipeline operations
-
-| Method | Description |
-|--------|-------------|
-| `Resize(width, height, mode)` | Resize with configurable strategy |
-| `Crop(rectangle)` | Crop to rectangular region |
-| `Compress(quality)` | Set output quality (0-100) |
-| `ConvertTo(format)` | Change output format |
-| `Watermark(data, position, opacity)` | Composite watermark overlay |
-| `StripMetadata()` | Remove EXIF, IPTC, XMP metadata (GDPR) |
-| `ToResultAsync()` | Terminal: encode and return `ImageResult` |
-| `SaveToStreamAsync(stream)` | Terminal: encode and write to stream |
-
-### Resize modes
-
-| Mode | Behavior |
-|------|----------|
-| `Max` | Fit within bounds, preserving aspect ratio (may be smaller than target) |
-| `Pad` | Fit within bounds with transparent padding to exact dimensions |
-| `Crop` | Fill exact dimensions by resizing and center-cropping overflow |
-| `Stretch` | Stretch to exact dimensions (distorts aspect ratio) |
-| `Min` | Resize to minimum bounds covering target dimensions entirely |
-
-### Convenience methods
-
-```csharp
-await pipeline.SaveAsWebPAsync(cancellationToken);  // ConvertTo(WebP) + ToResultAsync
-await pipeline.SaveAsAvifAsync(cancellationToken);   // ConvertTo(AVIF) + ToResultAsync
-await pipeline.SaveAsJpegAsync(cancellationToken);   // ConvertTo(JPEG) + ToResultAsync
-await pipeline.SaveAsPngAsync(cancellationToken);    // ConvertTo(PNG) + ToResultAsync
-```
-
-### Supported formats
-
-| Format | Read | Write | Notes |
-|--------|------|-------|-------|
-| JPEG | Yes | Yes | Lossy, no transparency |
-| PNG | Yes | Yes | Lossless, transparency |
-| WebP | Yes | Yes | Modern lossy/lossless, smaller than JPEG |
-| AVIF | Yes | Yes | Next-gen, best compression ratio |
-| GIF | Yes | Yes | 256 colors, animation support |
-| BMP | Yes | Yes | Uncompressed bitmap |
-| TIFF | Yes | Yes | Lossless, medical imaging |
-
-### GDPR: metadata stripping
-
-`StripMetadata()` removes all EXIF, IPTC, and XMP metadata from images. This is
-critical for GDPR compliance: uploaded photos often contain GPS coordinates, camera
-serial numbers, timestamps, and other personally identifiable information.
-
-```csharp
-await using IImagePipeline pipeline = imageProcessor.Load(uploadedPhoto);
-ImageResult sanitized = await pipeline
-    .StripMetadata()
-    .SaveAsWebPAsync(cancellationToken);
-```
-
-### Combining with blob storage
-
-A typical pattern: subscribe to `BlobValidated` events to post-process images
-after upload validation:
-
-```csharp
-public static class BlobValidatedHandler
-{
-    public static async Task HandleAsync(
-        BlobValidated @event,
-        IBlobStorage blobStorage,
-        IImageProcessor imageProcessor,
-        CancellationToken cancellationToken)
-    {
-        if (@event.ContainerName != "patient-photos")
-            return;
-
-        // Download, process, re-upload as thumbnail
-        PresignedDownloadUrl download = await blobStorage
-            .CreateDownloadUrlAsync("patient-photos", @event.BlobId,
-                cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-
-        // ... fetch image from download.Url, process with imageProcessor
-    }
-}
-```
 
 ## Health check
 
@@ -735,7 +617,7 @@ Verifies GCS connectivity by listing one object in the default bucket. Tagged
 ```
 
 | Property | Default | Description |
-|----------|---------|-------------|
+| -------- | ------- | ----------- |
 | `ServiceUrl` | -- | S3-compatible endpoint URL (required) |
 | `AccessKey` | -- | S3 access key (required, inject from Vault) |
 | `SecretKey` | -- | S3 secret key (required, inject from Vault) |
@@ -758,7 +640,7 @@ Verifies GCS connectivity by listing one object in the default bucket. Tagged
 ```
 
 | Property | Default | Description |
-|----------|---------|-------------|
+| -------- | ------- | ----------- |
 | `ConnectionString` | -- | Azure Storage connection string (from Vault) |
 | `DefaultContainer` | -- | Default blob container name (required) |
 | `UseManagedIdentity` | `false` | Use Azure Managed Identity instead of connection string |
@@ -780,7 +662,7 @@ Verifies GCS connectivity by listing one object in the default bucket. Tagged
 ```
 
 | Property | Default | Description |
-|----------|---------|-------------|
+| -------- | ------- | ----------- |
 | `ProjectId` | -- | GCP project ID (required) |
 | `DefaultBucket` | -- | Default GCS bucket name (required) |
 | `CredentialFilePath` | `null` | Service account key JSON; ADC when null (Workload Identity) |
@@ -798,7 +680,7 @@ Verifies GCS connectivity by listing one object in the default bucket. Tagged
 ```
 
 | Property | Default | Description |
-|----------|---------|-------------|
+| -------- | ------- | ----------- |
 | `BasePath` | -- | Root directory for blob storage (required) |
 
 </TabItem>
@@ -813,7 +695,7 @@ Verifies GCS connectivity by listing one object in the default bucket. Tagged
 ```
 
 | Property | Default | Description |
-|----------|---------|-------------|
+| -------- | ------- | ----------- |
 | `MaxBlobSizeBytes` | `10485760` (10 MB) | Maximum blob size accepted by the provider |
 
 </TabItem>
@@ -832,7 +714,7 @@ Verifies GCS connectivity by listing one object in the default bucket. Tagged
 ```
 
 | Property | Default | Description |
-|----------|---------|-------------|
+| -------- | ------- | ----------- |
 | `BaseUrl` | -- | Public URL of the API server (required) |
 | `RoutePrefix` | `"/api/blobs"` | Route prefix for proxy endpoints |
 | `MaxUploadBytes` | `104857600` (100 MB) | Maximum upload size through proxy |
@@ -843,14 +725,14 @@ Verifies GCS connectivity by listing one object in the default bucket. Tagged
 ### Common options (all providers)
 
 | Property | Default | Description |
-|----------|---------|-------------|
+| -------- | ------- | ----------- |
 | `UploadUrlExpiry` | `00:15:00` | Presigned upload URL / proxy token TTL |
 | `DownloadUrlExpiry` | `00:05:00` | Presigned download URL / proxy token TTL |
 
 ## Public API summary
 
 | Category | Key types | Package |
-|----------|-----------|---------|
+| -------- | --------- | ------- |
 | Module | `GranitBlobStorageModule`, `GranitBlobStorageS3Module`, `GranitBlobStorageAzureBlobModule`, `GranitBlobStorageGoogleCloudModule`, `GranitBlobStorageFileSystemModule`, `GranitBlobStorageDatabaseModule`, `GranitBlobStorageProxyModule`, `GranitBlobStorageEntityFrameworkCoreModule` | -- |
 | Storage | `IBlobStorage`, `IBlobKeyStrategy` | `Granit.BlobStorage` |
 | Persistence (CQRS) | `IBlobDescriptorReader`, `IBlobDescriptorWriter`, `IBlobDescriptorStore` | `Granit.BlobStorage` |
@@ -864,15 +746,13 @@ Verifies GCS connectivity by listing one object in the default bucket. Tagged
 | FileSystem options | `FileSystemBlobOptions` | `Granit.BlobStorage.FileSystem` |
 | Database options | `DatabaseBlobOptions` | `Granit.BlobStorage.Database` |
 | Proxy options | `ProxyBlobOptions` | `Granit.BlobStorage.Proxy` |
-| Imaging | `IImageProcessor`, `IImagePipeline`, `ImageResult`, `ImageFormat`, `ImageSize` | `Granit.Imaging` |
-| Imaging types | `ResizeMode`, `CropRectangle`, `WatermarkPosition` | `Granit.Imaging` |
-| Extensions | `AddGranitBlobStorageS3()`, `AddGranitBlobStorageAzureBlob()`, `AddGranitBlobStorageGoogleCloud()`, `AddGranitBlobStorageFileSystem()`, `AddGranitBlobStorageDatabase()`, `AddGranitBlobStorageProxy()`, `AddGranitBlobStorageEntityFrameworkCore()`, `AddGranitImagingMagickNet()`, `MapGranitBlobProxyEndpoints()` | -- |
+| Extensions | `AddGranitBlobStorageS3()`, `AddGranitBlobStorageAzureBlob()`, `AddGranitBlobStorageGoogleCloud()`, `AddGranitBlobStorageFileSystem()`, `AddGranitBlobStorageDatabase()`, `AddGranitBlobStorageProxy()`, `AddGranitBlobStorageEntityFrameworkCore()`, `MapGranitBlobProxyEndpoints()` | -- |
 
 ## See also
 
 - [Configure blob storage](/dotnet/guides/configure-blob-storage/) -- Step-by-step guide
 - [Pre-signed URL pattern](/dotnet/architecture/patterns/pre-signed-url/) -- Architectural pattern
+- [Imaging module](/dotnet/data/imaging/) -- Image processing pipeline, WebP/AVIF, EXIF stripping
 - [Persistence module](/dotnet/data/persistence/) -- EF Core interceptors, query filters
-- [Security module](./authentication/) -- Authorization, tenant isolation
 - [Privacy module](/dotnet/security/privacy/) -- GDPR compliance patterns
-- [Background Jobs module](./background-jobs/) -- Orphan cleanup, retention jobs
+- [Background Jobs module](/dotnet/infrastructure/background-jobs/) -- Orphan cleanup, retention jobs

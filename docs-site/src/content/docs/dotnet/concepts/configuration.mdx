@@ -121,11 +121,16 @@ value wins:
 | 500 | Default | Code | Hardcoded fallback in `SettingDefinition` |
 
 ```mermaid
-graph LR
-    U["User (100)"] -->|null?| T["Tenant (200)"]
-    T -->|null?| G["Global (300)"]
-    G -->|null?| C["Configuration (400)"]
-    C -->|null?| D["Default (500)"]
+flowchart TD
+    U["👤 User (100)\nPersonal preference"] -->|"null → fall through"| T["🏢 Tenant (200)\nTenant-wide default"]
+    T -->|"null → fall through"| G["🌐 Global (300)\nAdmin-defined default"]
+    G -->|"null → fall through"| C["⚙️ Configuration (400)\nappsettings.json"]
+    C -->|"null → fall through"| D["🔧 Default (500)\nCode fallback"]
+    U -->|"value found"| R["✅ Resolved"]
+    T -->|"value found"| R
+    G -->|"value found"| R
+    C -->|"value found"| R
+    D --> R
 ```
 
 When `IsInherited = false` on a `SettingDefinition`, each scope is independent and the
@@ -300,5 +305,5 @@ flowchart TD
 
 - [Dependency Injection](./dependency-injection/) -- Options pattern details, `ValidateOnStart`, `PostConfigure`
 - [Settings, Features & Reference Data](../dotnet/infrastructure/settings/) -- full API reference for `ISettingProvider`, `ISettingManager`, and endpoints
-- [Vault & Encryption](../dotnet/security/vault-encryption/) -- secret management for Options-level configuration
+- [Vault](../security/vault-encryption/) -- secret management for Options-level configuration
 - [Caching](../dotnet/data/caching/) -- cache layer used by Settings for value resolution

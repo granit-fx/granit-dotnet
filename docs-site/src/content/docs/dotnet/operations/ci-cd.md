@@ -7,161 +7,207 @@ sidebar:
 
 This guide covers the CI/CD pipeline for the Granit framework: compilation,
 quality gates, security scanning, static analysis, NuGet packaging, and
-publication to GitHub Packages and nuget.org.
+publication to GitHub Packages, nuget.org, and Cloudflare Pages.
 
-## Pipeline overview
+## Triggers
 
-The pipeline runs on every pull request, push to `develop`/`main`, and
-release tag (`vX.Y.Z`). Concurrent runs on the same ref are cancelled
-automatically.
+The pipeline runs on:
 
-| Phase | Jobs | Blocking |
-| --- | --- | --- |
-| 1. build | `build` | Yes |
-| 2. quality | `format`, `test`, `architecture-test`, `integration-test` | `format`, `test`, `architecture-test`: yes. `integration-test`: no |
-| 3. security | `secret-detection`, `trivy`, `codeql` | `secret-detection` and `trivy`: yes |
-| 4. analysis | `sonarcloud`, `audit` | No (advisory) |
-| 5. pack | `pack` | Yes (develop/main/tags only) |
-| 6. publish | `publish-github`, `publish-nuget` | Yes |
-| 7. docs | `docs` | No (main only) |
+- Every pull request targeting `develop` or `main`
+- Every push to `develop` or `main`
+- Every version tag matching `v[0-9]+.[0-9]+.[0-9]+`
 
-## Build commands
+Concurrent runs on the same ref are cancelled automatically (`cancel-in-progress: true`).
 
-These are the core commands used in CI and available for local development:
+## Job graph
 
-```bash
-# Compile the solution
-dotnet build
+```mermaid
+flowchart TD
+    BAT[build-and-test] --> SC[sonarcloud]
+    BAT --> PACK[pack]
+    PACK --> PGH[publish-github]
+    PACK --> PNO[publish-nuget]
 
-# Run all unit tests with coverage
-dotnet test --collect:"XPlat Code Coverage"
-
-# Verify code formatting (fails if changes needed)
-dotnet format --verify-no-changes
-
-# Create NuGet packages
-dotnet pack -c Release -o ./nupkgs
+    IT[integration-test]
+    SD[secret-detection]
+    TR[trivy]
+    CQL[codeql]
+    AUD[audit]
+    DOCS[docs]
 ```
+
+Most jobs run in parallel. The only sequential chain is:
+`build-and-test → sonarcloud` and `build-and-test → pack → publish`.
 
 ## Job details
 
-### build
+### build-and-test
 
-Compiles the full solution on `ubuntu-latest` with .NET 10. Integration tests
-are excluded from compilation at this stage (`-p:SkipIntegrationTests=true`) to
-avoid requiring Docker. Build artifacts (`bin/` and `obj/`) are uploaded for
-downstream jobs.
+Single job combining compile, format check, unit tests, and architecture tests.
+Avoids the 750 MB upload/download overhead of sharing `bin/`/`obj/` artifacts.
 
-### format
+| Step | Command | Blocking |
+| ---- | ------- | -------- |
+| Build | `dotnet build -c Release -m:4 -p:SkipIntegrationTests=true` | Yes |
+| Format | `dotnet format --verify-no-changes --no-restore` | Yes |
+| Unit tests | `dotnet test` with OpenCover + Cobertura coverage | Yes |
+| Architecture tests | `dotnet test tests/Granit.ArchitectureTests/...` | Yes |
 
-Runs `dotnet format --verify-no-changes` against the build output. This is a
-hard gate: pull requests with formatting violations are blocked.
+Coverage reports (`coverage.opencover.xml`) and test results (`*.trx`) are
+uploaded as artifacts for 7 days. The `sonarcloud` job downloads the coverage
+artifact from here.
 
-### test
-
-Runs unit tests with OpenCover and Cobertura coverage output. Architecture
-tests and integration tests are excluded (`-p:SkipArchitectureTests=true
--p:SkipIntegrationTests=true`). Coverage reports are uploaded as artifacts for
-SonarCloud consumption. The job has a 15-minute timeout.
-
-### architecture-test
-
-Runs the `Granit.ArchitectureTests` project separately to validate cross-cutting
-architecture rules (NetArchTest). The job has a 10-minute timeout.
+Timeout: **15 minutes**.
 
 ### integration-test
 
-Uses a PostgreSQL 18 service container to validate tenant isolation (ISO 27001
-requirement). Each `*.Tests.Integration` project is run sequentially. Marked
-`continue-on-error` because it depends on service container availability.
+Runs in parallel with `build-and-test` (no dependency). Spins up a PostgreSQL 18
+service container and runs each `*.Tests.Integration` project sequentially.
+Marked `continue-on-error: true` — service container availability is not
+guaranteed in all runner environments.
 
-### security
+Service container:
 
-Three security jobs run in parallel, independently of the build:
+```yaml
+image: postgres:18
+env:
+  POSTGRES_DB: granit_test
+  POSTGRES_USER: granit_test
+  POSTGRES_PASSWORD: test_password
+```
 
-| Job | Tool | Purpose |
-| --- | --- | --- |
-| `secret-detection` | [Gitleaks](https://github.com/gitleaks/gitleaks) | Detects committed secrets (API keys, passwords) |
-| `trivy` | [Trivy](https://github.com/aquasecurity/trivy) | Filesystem vulnerability scan (HIGH/CRITICAL) |
-| `codeql` | [CodeQL](https://codeql.github.com/) | Semantic code analysis for security vulnerabilities |
+Environment variables exposed to tests: `POSTGRES_HOST`, `POSTGRES_PORT`,
+`POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`.
 
-Gitleaks and Trivy are blocking. CodeQL results appear in the repository
-**Security** tab under code scanning alerts.
+### Security jobs
+
+Three security jobs run in parallel, independent of all other jobs:
+
+| Job | Tool | Blocking |
+| --- | ---- | -------- |
+| `secret-detection` | Gitleaks 8.30.0 — detects committed secrets | Yes |
+| `trivy` | Aqua Trivy — filesystem scan for HIGH/CRITICAL CVEs | Yes |
+| `codeql` | GitHub CodeQL — semantic C# analysis | No (results in Security tab) |
+
+Gitleaks performs a full history scan (`--log-opts="--all"`).
+Trivy uses a pinned action digest for supply-chain security.
+CodeQL results appear in the repository **Security › Code scanning alerts** tab.
 
 ### sonarcloud
 
-Static analysis with code coverage integration. Receives OpenCover reports from
-the `test` job. Requires `SONAR_TOKEN`. Runs only when the pull request
-originates from the same repository (not from forks). Marked `continue-on-error`
-so pipeline completion is not blocked by SonarCloud availability.
+Static analysis with coverage integration. Needs `build-and-test` (downloads
+the `coverage` artifact). Excluded paths: `.nuget/**`, `docs-site/**`. Coverage
+exclusions: test projects, `*Module.cs`, `*HostApplicationBuilderExtensions.cs`.
+
+Requires **Java 17** (Temurin) for the SonarScanner CLI.
+`sonar.qualitygate.wait=true` — the job waits for the quality gate result.
+Marked `continue-on-error: true` — pipeline is not blocked by SonarCloud availability.
+
+Timeout: **30 minutes**.
+
+Skipped on pull requests from forks (no access to `SONAR_TOKEN`).
 
 ### audit
 
-Runs `dotnet list package --vulnerable --include-transitive` and fails if any
-vulnerable package is found. The vulnerability report is saved as a job artifact.
-Marked `continue-on-error` (advisory).
+Runs `dotnet list package --vulnerable --include-transitive`. Fails if any
+vulnerable package is found. The vulnerability report is saved as an artifact
+for 7 days. Marked `continue-on-error: true` (advisory).
 
 ### pack
 
-Creates NuGet packages with automatic versioning. Runs only on `develop`,
-`main`, or version tags:
+Needs `build-and-test`. Runs only on `develop`, `main`, or version tags.
+Rebuilds the solution from the NuGet cache (no artifact sharing).
 
 | Context | Version format |
-| --- | --- |
-| Release tag `vX.Y.Z` | `X.Y.Z` (stable release) |
-| Branch `develop`/`main` | `0.1.0-dev.<run_number>` (prerelease) |
+| ------- | -------------- |
+| Tag `vX.Y.Z` | `X.Y.Z` (stable release) |
+| Branch `develop` or `main` | `0.1.0-dev.<run_number>` (prerelease) |
 
-Packed `.nupkg` files are uploaded as the `nupkgs` artifact.
+Packed `.nupkg` files are uploaded as the `nupkgs` artifact for 7 days.
 
 ### publish-github
 
-Pushes `.nupkg` files to **GitHub Packages** on pushes to `develop` or `main`.
-Authentication uses the automatic `GITHUB_TOKEN` with `packages: write`
-permission. No additional secrets are required.
+Needs `pack`. Runs only on `develop` and `main` (not on tags).
+Pushes `.nupkg` files to **GitHub Packages** using the automatic `GITHUB_TOKEN`
+(`packages: write` permission declared on the job). Uses `--skip-duplicate` so
+re-running the pipeline is safe.
 
 ### publish-nuget
 
-Pushes `.nupkg` files to **nuget.org** on version tags (`vX.Y.Z`). Requires the
-`NUGET_API_KEY` secret and uses the `nuget-publish` environment for deployment
-protection rules.
+Needs `pack`. Runs only on version tags (`refs/tags/v*`).
+Pushes `.nupkg` files to **nuget.org** using the `NUGET_API_KEY` secret and
+the `nuget-publish` deployment environment (protection rules apply).
 
 ### docs
 
-Builds the Astro Starlight documentation site and deploys it to **GitHub Pages**
-on pushes to `main`. Uses pnpm with Node.js 22. The deployed URL is available
-in the `github-pages` environment.
+Independent job — no dependency on `build-and-test`. Runs on `develop` and `main`.
+Builds the Astro Starlight site with **pnpm 10** and **Node.js 22**, then deploys
+to **Cloudflare Pages**:
 
-## NuGet cache strategy
+```
+project-name: granit-docs
+branch:       ${{ github.ref_name }}   (develop or main)
+```
 
-Each job uses the `actions/cache` action to share the NuGet package cache,
-keyed by `runner.os` and a hash of `**/*.csproj` + `Directory.Packages.props`.
-Restore completes in 5-10 seconds with a warm cache. Build artifacts are shared
-via `actions/upload-artifact` / `actions/download-artifact` to avoid redundant
-compilation in downstream jobs.
+Preview deployments on `develop`, production on `main`.
 
-## CI variables
+## Cache strategy
 
-### Required secrets
+Every job uses `actions/cache` keyed by `runner.os` and a hash of
+`**/*.csproj` + `Directory.Packages.props`. With a warm cache, NuGet restore
+completes in 5–10 seconds.
+
+Each job that compiles rebuilds independently — no `bin/`/`obj/` artifacts are
+shared. This avoids the ~750 MB upload/download per run.
+
+## Build commands
+
+Core commands available locally and in CI:
+
+```bash
+# Compile (skip integration tests — no Docker needed locally)
+dotnet build -p:SkipIntegrationTests=true
+
+# Run unit tests with coverage
+dotnet test -p:SkipIntegrationTests=true -p:SkipArchitectureTests=true \
+  --collect:"XPlat Code Coverage"
+
+# Run architecture tests only
+dotnet test tests/Granit.ArchitectureTests/Granit.ArchitectureTests.csproj
+
+# Verify formatting
+dotnet format --verify-no-changes
+
+# Pack for local feed
+dotnet pack -c Release -o ./nupkgs
+```
+
+## CI secrets
+
+### Required
 
 | Secret | Description | Used by |
-| --- | --- | --- |
+| ------ | ----------- | ------- |
 | `NUGET_API_KEY` | nuget.org API key | `publish-nuget` (tag builds only) |
+| `CLOUDFLARE_API_TOKEN` | Cloudflare API token | `docs` |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID | `docs` |
 
-### Optional secrets
+### Optional
 
 | Secret | Description | Used by |
-| --- | --- | --- |
+| ------ | ----------- | ------- |
 | `SONAR_TOKEN` | SonarCloud authentication token | `sonarcloud` |
 
-### Automatic tokens
+### Automatic
 
 `GITHUB_TOKEN` is provided automatically by GitHub Actions and is used for
-Gitleaks scanning, GitHub Packages publishing, and GitHub Pages deployment. No
-manual configuration is required.
+Gitleaks scanning, GitHub Packages publishing (`packages: write`), and
+CodeQL results upload (`security-events: write`).
 
 ## Consuming Granit packages
 
-Applications that depend on Granit add GitHub Packages as a NuGet source:
+Applications that depend on Granit prerelease packages add GitHub Packages as
+a NuGet source:
 
 ```xml
 <!-- nuget.config -->
@@ -176,8 +222,8 @@ Applications that depend on Granit add GitHub Packages as a NuGet source:
 </packageSourceMapping>
 ```
 
-Authentication uses `GITHUB_TOKEN` in CI environments. For local development,
-add credentials in `packageSourceCredentials`:
+Authentication uses `GITHUB_TOKEN` in CI. For local development, add credentials
+in `packageSourceCredentials`:
 
 ```xml
 <packageSourceCredentials>
@@ -195,7 +241,7 @@ The personal access token needs the `read:packages` scope.
 Before any pull request is approved, the following gates must pass:
 
 - [ ] `dotnet build` succeeds
-- [ ] `dotnet test` passes with adequate coverage
+- [ ] `dotnet test` passes
 - [ ] `dotnet format --verify-no-changes` passes
 - [ ] Architecture tests pass
 - [ ] No HIGH/CRITICAL vulnerabilities (Trivy)
@@ -210,50 +256,44 @@ Do not merge without satisfying all gates. See the full
 
 ## Troubleshooting
 
-### Test job times out
+### build-and-test times out
 
-The `test` job has a 15-minute timeout. If tests are slow, check for
-non-parallelized test collections. You can adjust the max CPU count in the
-workflow:
-
-```yaml
--- RunConfiguration.MaxCpuCount=4
-```
+The job has a 15-minute limit. If tests are slow, check for non-parallelized
+test collections or missing `[assembly: CollectionBehavior(MaxParallelThreads = 4)]`.
+Adjust `MaxCpuCount` in the test step if needed.
 
 ### SonarCloud shows 0% coverage
 
 Verify that:
 
-1. The `test` job produces `**/coverage.opencover.xml` artifacts.
-2. The `sonarcloud` job downloads the `coverage` artifact.
+1. The `build-and-test` job produced `**/coverage.opencover.xml` artifacts.
+2. The `sonarcloud` job successfully downloaded the `coverage` artifact.
 3. `sonar.cs.opencover.reportsPaths` points to `**/coverage.opencover.xml`.
 
 ### audit job fails
 
 A NuGet dependency has a known vulnerability. Check the `vulnerability-report`
-artifact for details. Update the affected package or, if a fix is not available,
-document the risk assessment and mark the advisory as accepted.
+artifact. Update the affected package or, if no fix is available, document the
+risk assessment in the PR description.
 
 ### Integration tests fail with connection errors
 
 Verify that:
 
-1. The PostgreSQL service container is healthy (check the job logs for health
-   check output).
+1. The PostgreSQL 18 service container passed its health check (check job logs).
 2. Environment variables `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`,
-   `POSTGRES_USER`, and `POSTGRES_PASSWORD` match the service definition.
-3. The test fixture connection string uses `localhost:5432` (service containers
-   are mapped to the runner's localhost).
-
-### CodeQL analysis is slow
-
-CodeQL performs a full build for semantic analysis. If the job exceeds the
-default timeout, ensure `SkipIntegrationTests=true` is set to reduce build
-scope. CodeQL results appear in the repository **Security > Code scanning
-alerts** tab.
+   `POSTGRES_USER`, `POSTGRES_PASSWORD` match the service definition.
+3. The test fixture uses `localhost:5432` — service containers map to the
+   runner's `localhost`.
 
 ### publish-github fails with 403
 
-Ensure the workflow has `packages: write` permission. This is declared in the
-`publish-github` job definition. For organization repositories, verify that
-GitHub Actions has permission to create packages in the organization settings.
+Ensure the `publish-github` job declares `permissions: packages: write`.
+For organization repositories, verify that GitHub Actions is allowed to create
+packages in the organization settings (**Settings › Actions › General**).
+
+### docs deploy fails
+
+Verify that `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are set in the
+repository secrets. The token needs the **Cloudflare Pages: Edit** permission
+scoped to the `granit-docs` project.

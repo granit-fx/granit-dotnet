@@ -86,6 +86,17 @@ Add a `JwtBearer` section to `appsettings.Development.json`:
     }
     ```
   </TabItem>
+  <TabItem label="Google Cloud">
+    ```json
+    {
+      "JwtBearer": {
+        "Authority": "https://securetoken.google.com/{project-id}",
+        "Audience": "{project-id}",
+        "RequireHttpsMetadata": true
+      }
+    }
+    ```
+  </TabItem>
 </Tabs>
 
 :::tip[Pro tip]
@@ -180,7 +191,7 @@ dotnet add package Granit.Observability
 
 Add `[DependsOn(typeof(GranitObservabilityModule))]` to your module and configure the OTLP endpoint in `appsettings.json`. Authentication events, database queries, and HTTP requests are traced automatically.
 
-See the [Observability reference](/dotnet/observability/observability-otlp/) for the full configuration guide.
+See the [Observability reference](/dotnet/core/observability/) for the full configuration guide.
 
 ## Next step
 

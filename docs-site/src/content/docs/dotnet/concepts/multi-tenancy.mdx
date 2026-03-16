@@ -149,7 +149,53 @@ public class Tenant
 ```
 
 The `TenantConnectionStringResolver` reads the strategy and returns the
-appropriate connection string (or schema) at runtime.
+appropriate connection string (or schema) at runtime:
+
+```csharp
+internal sealed class TenantConnectionStringResolver(
+    ITenantStore tenantStore) : ITenantConnectionStringResolver
+{
+    public async Task<TenantConnectionInfo?> ResolveAsync(
+        Guid tenantId, CancellationToken cancellationToken)
+    {
+        Tenant? tenant = await tenantStore
+            .FindByIdAsync(tenantId, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (tenant is null)
+            return null;
+
+        return tenant.Strategy switch
+        {
+            TenantIsolationStrategy.DatabasePerTenant =>
+                new TenantConnectionInfo(
+                    Strategy: TenantIsolationStrategy.DatabasePerTenant,
+                    ConnectionString: tenant.ConnectionString!),
+
+            TenantIsolationStrategy.SchemaPerTenant =>
+                new TenantConnectionInfo(
+                    Strategy: TenantIsolationStrategy.SchemaPerTenant,
+                    Schema: tenant.Schema!),
+
+            _ => new TenantConnectionInfo(
+                    Strategy: TenantIsolationStrategy.SharedDatabase,
+                    ConnectionString: null) // Uses the default connection
+        };
+    }
+}
+```
+
+Register it in your module:
+
+```csharp
+services.AddSingleton<ITenantConnectionStringResolver, TenantConnectionStringResolver>();
+```
+
+:::note[Good to know]
+The resolver is called once per request scope and its result is cached for the duration
+of the scope. For `SchemaPerTenant`, `ApplyGranitConventions` prepends the schema name to
+all table references via a `ModelCreatingContext`. No raw SQL schema-switching required.
+:::
 
 ## Transparent query filters
 

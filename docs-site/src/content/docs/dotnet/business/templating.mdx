@@ -1,6 +1,6 @@
 ---
-title: Templating & Document Generation
-description: Template rendering pipeline (Scriban), document generation (HTML→PDF, Excel), template store with lifecycle, workflow integration
+title: Templating
+description: Multi-stage template rendering pipeline (Scriban, sandboxed), template store with ISO 27001 lifecycle (Draft/PendingReview/Published/Archived), and workflow integration.
 sidebar:
   order: 13
 ---
@@ -8,10 +8,10 @@ sidebar:
 import { Tabs, TabItem, FileTree, Badge } from "@astrojs/starlight/components";
 
 Granit.Templating provides a multi-stage rendering pipeline for text-based output
-(email, SMS, push notifications) while Granit.DocumentGeneration extends it with
-binary document generation (PDF via headless Chromium, Excel via ClosedXML). Templates
-are strongly typed, support culture fallback, and follow a full lifecycle with
-ISO 27001 audit trail (Draft, PendingReview, Published, Archived).
+(email, SMS, push notifications). Templates are strongly typed, support culture
+fallback, and follow a full lifecycle with ISO 27001 audit trail (Draft,
+PendingReview, Published, Archived). For binary document output (PDF, Excel), see
+[Document Generation](/dotnet/business/document-generation/).
 
 ## Package structure
 
@@ -21,21 +21,15 @@ ISO 27001 audit trail (Draft, PendingReview, Published, Archived).
   - Granit.Templating.EntityFrameworkCore EF Core persistence (TemplatingDbContext), HybridCache-backed store, StoreTemplateResolver
   - Granit.Templating.Endpoints 16 admin endpoints (CRUD, preview, publish, categories, history, variables)
   - Granit.Templating.Workflow Bridge to Granit.Workflow: FSM validation, approval routing, unified audit trail
-- Granit.DocumentGeneration/ IDocumentGenerator facade, 2-stage pipeline (text render + binary conversion)
-  - Granit.DocumentGeneration.Pdf PuppeteerSharp headless Chromium, PdfRenderOptions, PDF/A-3b conversion
-  - Granit.DocumentGeneration.Excel ClosedXML engine, Base64-encoded XLSX templates, direct binary output
 </FileTree>
 
 | Package | Role | Depends on |
-|---------|------|------------|
+| ------- | ---- | ---------- |
 | `Granit.Templating` | Core pipeline: rendering, resolution, enrichment, store interfaces | -- |
 | `Granit.Templating.Scriban` | Scriban template engine (sandboxed), `now.*` and `context.*` globals | `Granit.Templating` |
 | `Granit.Templating.EntityFrameworkCore` | EF Core store, `StoreTemplateResolver` (Priority=100), HybridCache | `Granit.Templating`, `Granit.Persistence` |
 | `Granit.Templating.Endpoints` | 16 admin Minimal API endpoints, `Templates.Manage` permission | `Granit.Templating`, `Granit.Authorization` |
 | `Granit.Templating.Workflow` | Workflow bridge: FSM validation, `IWorkflowTransitionRecorder` | `Granit.Templating`, `Granit.Workflow` |
-| `Granit.DocumentGeneration` | `IDocumentGenerator` facade, `IDocumentRenderer` abstraction | `Granit.Templating` |
-| `Granit.DocumentGeneration.Pdf` | PuppeteerSharp PDF renderer, `IPdfAConverter` | `Granit.DocumentGeneration` |
-| `Granit.DocumentGeneration.Excel` | ClosedXML `ITemplateEngine` (direct binary output) | `Granit.Templating` |
 
 ## Dependency graph
 
@@ -61,11 +55,9 @@ graph TD
 
 ```csharp
 [DependsOn(
-    typeof(GranitTemplatingScribanModule),
-    typeof(GranitTemplatingEntityFrameworkCoreModule),
     typeof(GranitTemplatingEndpointsModule),
-    typeof(GranitDocumentGenerationPdfModule),
-    typeof(GranitDocumentGenerationExcelModule))]
+    typeof(GranitTemplatingEntityFrameworkCoreModule),
+    typeof(GranitTemplatingScribanModule))]
 public class AppModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -297,113 +289,6 @@ The Scriban engine runs in strict sandboxed mode:
 - **Template caching** -- parsed `Template` objects are cached by `RevisionId` (thread-safe)
 - **CancellationToken propagation** -- long-running templates can be cancelled
 
-## Document generation pipeline
-
-`IDocumentGenerator` extends the text pipeline with a binary conversion step:
-
-```mermaid
-flowchart LR
-    subgraph "Text Pipeline"
-        DATA[TData] --> ENRICH[Enrichers]
-        ENRICH --> RESOLVE[Resolver Chain]
-        RESOLVE --> ENGINE[ITemplateEngine]
-    end
-    ENGINE -->|TextRenderedContent| RENDERER["IDocumentRenderer<br/>(PuppeteerSharp)"]
-    ENGINE -->|BinaryRenderedContent| RESULT
-    RENDERER --> RESULT[DocumentResult]
-```
-
-Two paths through the pipeline:
-
-| Path | Engine output | Next step | Example |
-|------|---------------|-----------|---------|
-| HTML-based | `TextRenderedContent` | `IDocumentRenderer` converts HTML to binary | Invoice PDF (Scriban HTML → Chromium PDF) |
-| Native binary | `BinaryRenderedContent` | Direct output, no renderer needed | Excel report (ClosedXML XLSX) |
-
-### Declaring a document template type
-
-```csharp
-public sealed class InvoiceTemplateType
-    : DocumentTemplateType<InvoiceDocumentData>
-{
-    public override string Name => "Billing.Invoice";
-    public override DocumentFormat DefaultFormat => DocumentFormat.Pdf;
-}
-
-public sealed record InvoiceDocumentData(
-    string InvoiceNumber,
-    DateTimeOffset InvoiceDate,
-    string CustomerName,
-    string CustomerAddress,
-    IReadOnlyList<InvoiceLineItem> Lines,
-    decimal TotalExclVat,
-    decimal VatAmount,
-    decimal TotalInclVat,
-    string PaymentUrl,
-    string? PaymentQrCodeSvg = null);
-```
-
-### Generating a PDF document
-
-```csharp
-public sealed class InvoiceService(IDocumentGenerator generator)
-{
-    public async Task<DocumentResult> GenerateInvoicePdfAsync(
-        InvoiceDocumentData data,
-        CancellationToken cancellationToken)
-    {
-        DocumentResult result = await generator
-            .GenerateAsync(new InvoiceTemplateType(), data, cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-
-        // result.Content contains PDF bytes
-        // result.Format == DocumentFormat.Pdf
-        return result;
-    }
-}
-```
-
-### Generating an Excel document
-
-Excel templates use Base64-encoded XLSX workbooks stored as template content.
-Placeholders (`{{model.property}}`) in string cells are replaced with data values.
-Nested objects use dot notation (`{{model.address.city}}`), arrays use bracket notation
-(`{{model.lines[0].amount}}`).
-
-```csharp
-public sealed class MonthlyReportTemplateType
-    : DocumentTemplateType<MonthlyReportData>
-{
-    public override string Name => "Reporting.MonthlyReport";
-    public override DocumentFormat DefaultFormat => DocumentFormat.Excel;
-}
-```
-
-The `ClosedXmlTemplateEngine` returns `BinaryRenderedContent` directly -- no
-`IDocumentRenderer` is needed for Excel output.
-
-### PDF/A-3b conversion
-
-For long-term archival and electronic invoicing (Factur-X / ZUGFeRD EN 16931),
-use `IPdfAConverter` to convert standard PDFs to PDF/A-3b:
-
-```csharp
-public async Task<DocumentResult> GenerateArchivalInvoiceAsync(
-    InvoiceDocumentData data,
-    IPdfAConverter pdfAConverter,
-    IDocumentGenerator generator,
-    CancellationToken cancellationToken)
-{
-    DocumentResult pdf = await generator
-        .GenerateAsync(new InvoiceTemplateType(), data, cancellationToken: cancellationToken)
-        .ConfigureAwait(false);
-
-    return await pdfAConverter
-        .ConvertToPdfAAsync(pdf, new PdfAConversionOptions(), cancellationToken)
-        .ConfigureAwait(false);
-}
-```
-
 ## Template lifecycle
 
 Templates stored in the EF Core store follow a strict lifecycle:
@@ -518,41 +403,6 @@ If `IDocumentTemplateStoreReader`/`IDocumentTemplateStoreWriter` is not register
 
 ## Configuration reference
 
-### PDF renderer
-
-Bound from configuration section `DocumentGeneration:Pdf`:
-
-```json
-{
-  "DocumentGeneration": {
-    "Pdf": {
-      "PaperFormat": "A4",
-      "Landscape": false,
-      "MarginTop": "10mm",
-      "MarginBottom": "10mm",
-      "MarginLeft": "10mm",
-      "MarginRight": "10mm",
-      "HeaderTemplate": null,
-      "FooterTemplate": "<div style='font-size:9px;text-align:center;width:100%'><span class='pageNumber'></span>/<span class='totalPages'></span></div>",
-      "PrintBackground": true,
-      "ChromiumExecutablePath": null,
-      "MaxConcurrentPages": 4
-    }
-  }
-}
-```
-
-| Property | Default | Description |
-|----------|---------|-------------|
-| `PaperFormat` | `"A4"` | Paper size (`"A4"`, `"A5"`, `"Letter"`) |
-| `Landscape` | `false` | Landscape orientation |
-| `MarginTop` / `Bottom` / `Left` / `Right` | `"10mm"` | Margins in CSS units |
-| `HeaderTemplate` | `null` | HTML header (supports `pageNumber`, `totalPages` classes) |
-| `FooterTemplate` | `null` | HTML footer (same classes as header) |
-| `PrintBackground` | `true` | Print background graphics |
-| `ChromiumExecutablePath` | `null` | Custom Chromium path (auto-download if null) |
-| `MaxConcurrentPages` | `4` | Max parallel Chromium tabs (1--32) |
-
 ### Endpoints
 
 ```csharp
@@ -591,30 +441,23 @@ A discharge letter template stored in the EF Core store or as an embedded resour
 ## Public API summary
 
 | Category | Key types | Package |
-|----------|-----------|---------|
+| -------- | --------- | ------- |
 | Module | `GranitTemplatingModule`, `GranitTemplatingScribanModule`, `GranitTemplatingEntityFrameworkCoreModule`, `GranitTemplatingEndpointsModule`, `GranitTemplatingWorkflowModule` | -- |
-| Module | `GranitDocumentGenerationModule`, `GranitDocumentGenerationPdfModule`, `GranitDocumentGenerationExcelModule` | -- |
 | Pipeline | `ITextTemplateRenderer`, `ITemplateResolver`, `ITemplateEngine` | `Granit.Templating` |
 | Pipeline | `TemplateDescriptor`, `RenderedContent`, `TextRenderedContent`, `BinaryRenderedContent`, `RenderedTextResult` | `Granit.Templating` |
 | Keys | `TemplateType<TData>`, `TextTemplateType<TData>`, `TemplateKey`, `DocumentFormat` | `Granit.Templating` |
-| Keys | `DocumentTemplateType<TData>` | `Granit.DocumentGeneration` |
 | Enrichment | `ITemplateDataEnricher<TData>` | `Granit.Templating` |
 | Global context | `ITemplateGlobalContext` | `Granit.Templating` |
 | Store (read) | `IDocumentTemplateStoreReader`, `ITemplateCategoryStoreReader` | `Granit.Templating` |
 | Store (write) | `IDocumentTemplateStoreWriter`, `ITemplateCategoryStoreWriter` | `Granit.Templating` |
 | Lifecycle | `TemplateLifecycleStatus`, `ITemplateTransitionHook`, `TemplateRevision` | `Granit.Templating` |
-| Document gen | `IDocumentGenerator`, `IDocumentRenderer`, `DocumentResult` | `Granit.DocumentGeneration` |
-| PDF | `PdfRenderOptions`, `IPdfAConverter`, `PdfAConversionOptions` | `Granit.DocumentGeneration.Pdf` |
 | Permissions | `TemplatingPermissions.Manage` (`"Templates.Manage"`) | `Granit.Templating.Endpoints` |
 | Extensions | `AddGranitTemplating()`, `AddGranitTemplatingWithScriban()`, `AddEmbeddedTemplates()` | -- |
-| Extensions | `AddGranitDocumentGeneration()`, `AddGranitDocumentGenerationPdf()`, `AddGranitDocumentGenerationExcel()` | -- |
 | Extensions | `MapGranitTemplatingAdmin()` | `Granit.Templating.Endpoints` |
 
 ## See also
 
-- [Core module](../core/module-system/) -- Module system, domain base types
-- [Persistence module](./persistence/) -- `AuditedEntityInterceptor`, `ApplyGranitConventions`
-- [Wolverine module](./wolverine/) -- Durable messaging for async document generation
-- [Notifications module](./notifications/) -- Email, SMS, push channels that consume rendered templates
-- [Background Jobs module](./background-jobs/) -- Schedule document generation as background jobs
-- [API Reference](/api/Granit.Templating.html) (auto-generated from XML docs)
+- [Document Generation module](/dotnet/business/document-generation/) -- HTML→PDF (Chromium), Excel (ClosedXML), PDF/A-3b
+- [Core module](/dotnet/core/module-system/) -- Module system, domain base types
+- [Persistence module](/dotnet/data/persistence/) -- `AuditedEntityInterceptor`, `ApplyGranitConventions`
+- [Notifications module](/dotnet/infrastructure/notifications/) -- Email, SMS, push channels that consume rendered templates

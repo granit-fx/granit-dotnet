@@ -1,0 +1,168 @@
+---
+title: Imaging
+description: Fluent image processing pipeline (resize, crop, compress, format conversion, EXIF stripping) powered by Magick.NET. Supports JPEG, PNG, WebP, AVIF, GIF, BMP, TIFF.
+sidebar:
+  order: 17
+---
+
+import { FileTree } from "@astrojs/starlight/components";
+
+Granit.Imaging provides a fluent image processing pipeline for transformations such as
+resize, crop, compress, format conversion, and watermarking. The pipeline strips EXIF
+metadata by default to prevent GPS coordinates and camera details leaking via uploaded
+photos (GDPR). The Magick.NET implementation supports JPEG, PNG, WebP, AVIF, GIF, BMP,
+and TIFF.
+
+## Package structure
+
+<FileTree>
+- Granit.Imaging/ Image processing abstractions, fluent pipeline API
+  - Granit.Imaging.MagickNet Magick.NET implementation (JPEG/PNG/WebP/AVIF/GIF/BMP/TIFF)
+</FileTree>
+
+| Package | Role | Depends on |
+| ------- | ---- | ---------- |
+| `Granit.Imaging` | `IImageProcessor`, `IImagePipeline` fluent API | `Granit.Core` |
+| `Granit.Imaging.MagickNet` | `MagickNetImageProcessor` (singleton) | `Granit.Imaging` |
+
+## Setup
+
+```csharp
+[DependsOn(typeof(GranitImagingMagickNetModule))]
+public class AppModule : GranitModule { }
+```
+
+```csharp
+builder.AddGranitImagingMagickNet();
+```
+
+`MagickNetImageProcessor` is registered as a singleton — Magick.NET is thread-safe and
+initializes its native codec once per process.
+
+## IImageProcessor
+
+`IImageProcessor.Load()` opens an image and returns an `IImagePipeline`. The pipeline
+holds native resources and **must be disposed** after use:
+
+```csharp
+public class PatientPhotoProcessor(IImageProcessor imageProcessor)
+{
+    public async Task<ImageResult> CreateThumbnailAsync(
+        Stream sourceImage,
+        CancellationToken cancellationToken)
+    {
+        await using IImagePipeline pipeline = imageProcessor.Load(sourceImage);
+
+        return await pipeline
+            .Resize(200, 200, ResizeMode.Crop)
+            .StripMetadata()
+            .Compress(quality: 80)
+            .ConvertTo(ImageFormat.WebP)
+            .ToResultAsync(cancellationToken);
+    }
+}
+```
+
+## Pipeline operations
+
+| Method | Description |
+| ------ | ----------- |
+| `Resize(width, height, mode)` | Resize with configurable strategy |
+| `Crop(rectangle)` | Crop to rectangular region |
+| `Compress(quality)` | Set output quality (0-100) |
+| `ConvertTo(format)` | Change output format |
+| `Watermark(data, position, opacity)` | Composite watermark overlay |
+| `StripMetadata()` | Remove EXIF, IPTC, XMP metadata (GDPR) |
+| `ToResultAsync()` | Terminal: encode and return `ImageResult` |
+| `SaveToStreamAsync(stream)` | Terminal: encode and write to stream |
+
+## Resize modes
+
+| Mode | Behavior |
+| ---- | -------- |
+| `Max` | Fit within bounds, preserving aspect ratio (may be smaller than target) |
+| `Pad` | Fit within bounds with transparent padding to exact dimensions |
+| `Crop` | Fill exact dimensions by resizing and center-cropping overflow |
+| `Stretch` | Stretch to exact dimensions (distorts aspect ratio) |
+| `Min` | Resize to minimum bounds covering target dimensions entirely |
+
+## Convenience methods
+
+```csharp
+await pipeline.SaveAsWebPAsync(cancellationToken);  // ConvertTo(WebP) + ToResultAsync
+await pipeline.SaveAsAvifAsync(cancellationToken);   // ConvertTo(AVIF) + ToResultAsync
+await pipeline.SaveAsJpegAsync(cancellationToken);   // ConvertTo(JPEG) + ToResultAsync
+await pipeline.SaveAsPngAsync(cancellationToken);    // ConvertTo(PNG) + ToResultAsync
+```
+
+## Supported formats
+
+| Format | Read | Write | Notes |
+| ------ | ---- | ----- | ----- |
+| JPEG | Yes | Yes | Lossy, no transparency |
+| PNG | Yes | Yes | Lossless, transparency |
+| WebP | Yes | Yes | Modern lossy/lossless, smaller than JPEG |
+| AVIF | Yes | Yes | Next-gen, best compression ratio |
+| GIF | Yes | Yes | 256 colors, animation support |
+| BMP | Yes | Yes | Uncompressed bitmap |
+| TIFF | Yes | Yes | Lossless, medical imaging |
+
+## GDPR: metadata stripping
+
+`StripMetadata()` removes all EXIF, IPTC, and XMP metadata from images. This is
+critical for GDPR compliance: uploaded photos often contain GPS coordinates, camera
+serial numbers, timestamps, and other personally identifiable information.
+
+```csharp
+await using IImagePipeline pipeline = imageProcessor.Load(uploadedPhoto);
+ImageResult sanitized = await pipeline
+    .StripMetadata()
+    .SaveAsWebPAsync(cancellationToken);
+```
+
+## Combining with blob storage
+
+A typical pattern: subscribe to `BlobValidated` events to post-process images
+asynchronously after upload validation. The Wolverine handler downloads the validated
+blob, applies the image pipeline, and re-uploads the result:
+
+```csharp
+public static class BlobValidatedHandler
+{
+    public static async Task HandleAsync(
+        BlobValidated @event,
+        IBlobStorage blobStorage,
+        IImageProcessor imageProcessor,
+        CancellationToken cancellationToken)
+    {
+        if (@event.ContainerName != "patient-photos")
+            return;
+
+        PresignedDownloadUrl download = await blobStorage
+            .CreateDownloadUrlAsync("patient-photos", @event.BlobId,
+                cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+
+        // fetch image from download.Url, process with imageProcessor,
+        // re-upload thumbnail to "patient-photos-thumbs" container
+    }
+}
+```
+
+This keeps the upload path fast (202 Accepted) while image processing runs in the background.
+See [Blob Storage domain events](/dotnet/data/blob-storage/#domain-events) for the full event list.
+
+## Public API summary
+
+| Category | Key types | Package |
+| -------- | --------- | ------- |
+| Module | `GranitImagingModule`, `GranitImagingMagickNetModule` | -- |
+| Processor | `IImageProcessor`, `IImagePipeline`, `ImageResult` | `Granit.Imaging` |
+| Formats | `ImageFormat`, `ImageSize` | `Granit.Imaging` |
+| Modes | `ResizeMode`, `CropRectangle`, `WatermarkPosition` | `Granit.Imaging` |
+| Extensions | `AddGranitImagingMagickNet()` | `Granit.Imaging.MagickNet` |
+
+## See also
+
+- [Blob Storage module](/dotnet/data/blob-storage/) -- Multi-provider storage, presigned URLs, validation
+- [Privacy module](/dotnet/security/privacy/) -- GDPR compliance patterns

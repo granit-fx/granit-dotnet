@@ -1,0 +1,138 @@
+---
+title: Exception Handling
+description: Centralized exception-to-HTTP pipeline implementing RFC 7807 Problem Details. Chain of responsibility mapper, structured logging, and safe error serialization.
+sidebar:
+  order: 15
+---
+
+Granit.ExceptionHandling provides a centralized exception-to-HTTP-response pipeline
+implementing RFC 7807 Problem Details. All exceptions are caught, mapped to status
+codes via a chain of responsibility, logged at the appropriate level, and serialized
+as `application/problem+json`.
+
+## Setup
+
+```csharp
+[DependsOn(typeof(GranitExceptionHandlingModule))]
+public class AppModule : GranitModule { }
+```
+
+In `Program.cs` (**must be the first middleware**):
+
+```csharp
+app.UseGranitExceptionHandling(); // Before routing, authentication, authorization
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+```
+
+## Exception handling pipeline
+
+```mermaid
+flowchart TD
+    A[Exception thrown] --> B{OperationCanceledException?}
+    B -->|yes| C[Log Info, return true]
+    B -->|no| D[IExceptionStatusCodeMapper chain]
+    D --> E{5xx?}
+    E -->|yes| F[Log Error]
+    E -->|no| G{499?}
+    G -->|yes| H[Log Info]
+    G -->|no| I[Log Warning]
+    F --> J[Build ProblemDetails]
+    H --> J
+    I --> J
+    J --> K{IUserFriendlyException?}
+    K -->|yes| L[Title = exception.Message]
+    K -->|no| M{ExposeInternalErrorDetails?}
+    M -->|yes| N[Title = message, Detail = stack trace]
+    M -->|no| O["Title = 'An unexpected error occurred.'"]
+    L --> P[Write RFC 7807 response]
+    N --> P
+    O --> P
+```
+
+## IExceptionStatusCodeMapper
+
+Chain of responsibility pattern. Mappers are evaluated in registration order;
+the first non-null result wins. The `DefaultExceptionStatusCodeMapper` is registered
+last as a catch-all.
+
+**Default mappings:**
+
+| Exception | Status code |
+| --------- | ----------- |
+| `EntityNotFoundException` | 404 |
+| `NotFoundException` | 404 |
+| `ForbiddenException` | 403 |
+| `UnauthorizedAccessException` | 403 |
+| `ValidationException` | 422 |
+| `IHasValidationErrors` | 422 |
+| `ConflictException` | 409 |
+| `BusinessRuleViolationException` | 422 |
+| `BusinessException` | 400 |
+| `IHasErrorCode` | 400 |
+| `NotImplementedException` | 501 |
+| `OperationCanceledException` | 499 |
+| `TimeoutException` | 408 |
+| *(any other)* | 500 |
+
+## Custom mapper
+
+Other Granit modules register their own mappers to extend the chain:
+
+```csharp
+internal sealed class InvoiceConcurrencyMapper : IExceptionStatusCodeMapper
+{
+    public int? TryGetStatusCode(Exception exception) => exception switch
+    {
+        InvoiceLockedException => StatusCodes.Status423Locked,
+        _ => null
+    };
+}
+
+// In module ConfigureServices:
+services.AddSingleton<IExceptionStatusCodeMapper, InvoiceConcurrencyMapper>();
+```
+
+## ProblemDetails extensions
+
+The response body includes standard RFC 7807 fields plus Granit-specific extensions:
+
+```json
+{
+  "status": 422,
+  "title": "Invoice amount must be positive.",
+  "detail": null,
+  "traceId": "abcd1234ef567890",
+  "errorCode": "Invoices:InvalidAmount",
+  "errors": {
+    "Amount": ["Granit:Validation:GreaterThanValidator"]
+  }
+}
+```
+
+| Extension | Source | Present when |
+| --------- | ------ | ------------ |
+| `traceId` | `Activity.Current?.TraceId` or `HttpContext.TraceIdentifier` | Always |
+| `errorCode` | `IHasErrorCode.ErrorCode` | Exception implements `IHasErrorCode` |
+| `errors` | `IHasValidationErrors.ValidationErrors` | Exception implements `IHasValidationErrors` |
+
+:::danger
+Never set `ExposeInternalErrorDetails: true` in production. Internal error messages
+may contain PHI, SQL fragments, or internal paths (ISO 27001 violation).
+:::
+
+## Public API summary
+
+| Category | Key types | Package |
+| -------- | --------- | ------- |
+| Module | `GranitExceptionHandlingModule` | -- |
+| Pipeline | `IExceptionStatusCodeMapper`, `GranitExceptionHandler` | `Granit.ExceptionHandling` |
+| Options | `ExceptionHandlingOptions` | `Granit.ExceptionHandling` |
+| Extensions | `AddGranitExceptionHandling()`, `UseGranitExceptionHandling()` | `Granit.ExceptionHandling` |
+
+## See also
+
+- [Core module](/dotnet/core/module-system/) -- Exception hierarchy (`BusinessException`, `IHasErrorCode`)
+- [Rate Limiting](/dotnet/api/rate-limiting/) -- 429 response uses same Problem Details format
+- [API & Http overview](/dotnet/api/) -- All HTTP infrastructure packages

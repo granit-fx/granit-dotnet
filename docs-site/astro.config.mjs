@@ -93,8 +93,73 @@ export default defineConfig({
                 },
                 {
                   label: "Guides",
-                  autogenerate: { directory: "dotnet/guides" },
                   collapsed: true,
+                  items: [
+                    { label: "Overview", link: "/dotnet/guides/" },
+                    {
+                      label: "Modules & Endpoints",
+                      collapsed: true,
+                      items: [
+                        { label: "Create a Module", link: "/dotnet/guides/create-a-module/" },
+                        { label: "Add an Endpoint", link: "/dotnet/guides/add-an-endpoint/" },
+                        { label: "Configure Multi-Tenancy", link: "/dotnet/guides/configure-multi-tenancy/" },
+                      ],
+                    },
+                    {
+                      label: "Messaging & Events",
+                      collapsed: true,
+                      items: [
+                        { label: "Set Up Notifications", link: "/dotnet/guides/set-up-notifications/" },
+                        { label: "Implement Data Import", link: "/dotnet/guides/implement-data-import/" },
+                        { label: "Add Background Jobs", link: "/dotnet/guides/add-background-jobs/" },
+                        { label: "Configure Blob Storage", link: "/dotnet/guides/configure-blob-storage/" },
+                        { label: "Implement Webhooks", link: "/dotnet/guides/implement-webhooks/" },
+                      ],
+                    },
+                    {
+                      label: "Features & Settings",
+                      collapsed: true,
+                      items: [
+                        { label: "Add Feature Flags", link: "/dotnet/guides/add-feature-flags/" },
+                        { label: "Set Up Localization", link: "/dotnet/guides/set-up-localization/" },
+                        { label: "Use Reference Data", link: "/dotnet/guides/use-reference-data/" },
+                        { label: "Manage Application Settings", link: "/dotnet/guides/manage-application-settings/" },
+                      ],
+                    },
+                    {
+                      label: "Documents & Workflow",
+                      collapsed: true,
+                      items: [
+                        { label: "Create Document Templates", link: "/dotnet/guides/create-document-templates/" },
+                        { label: "Implement Workflow", link: "/dotnet/guides/implement-workflow/" },
+                        { label: "Implement Audit Timeline", link: "/dotnet/guides/implement-audit-timeline/" },
+                      ],
+                    },
+                    {
+                      label: "API & Caching",
+                      collapsed: true,
+                      items: [
+                        { label: "Configure Caching", link: "/dotnet/guides/configure-caching/" },
+                        { label: "Add API Versioning", link: "/dotnet/guides/add-api-versioning/" },
+                        { label: "Configure Idempotency", link: "/dotnet/guides/configure-idempotency/" },
+                      ],
+                    },
+                    {
+                      label: "Security & Observability",
+                      collapsed: true,
+                      items: [
+                        { label: "Encrypt Sensitive Data", link: "/dotnet/guides/encrypt-sensitive-data/" },
+                        { label: "End-to-End Tracing", link: "/dotnet/guides/end-to-end-tracing/" },
+                      ],
+                    },
+                    {
+                      label: "AI",
+                      collapsed: true,
+                      items: [
+                        { label: "Use with AI Assistants", link: "/dotnet/guides/use-with-ai-assistants/" },
+                      ],
+                    },
+                  ],
                 },
                 {
                   label: "Operations",
@@ -116,17 +181,13 @@ export default defineConfig({
                   collapsed: true,
                 },
                 {
-                  label: "API",
+                  label: "API & Http",
                   autogenerate: { directory: "dotnet/api" },
                 },
                 {
                   label: "Infrastructure",
                   autogenerate: { directory: "dotnet/infrastructure" },
                   collapsed: true,
-                },
-                {
-                  label: "Observability",
-                  autogenerate: { directory: "dotnet/observability" },
                 },
                 {
                   label: "Business Features",

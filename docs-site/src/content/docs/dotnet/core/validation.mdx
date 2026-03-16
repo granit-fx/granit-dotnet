@@ -1,0 +1,224 @@
+---
+title: Validation
+description: FluentValidation integration with structured error codes, international validators (IBAN, BIC, E.164, ISO 3166), and EU regulatory validators (France, Belgium).
+sidebar:
+  order: 6
+---
+
+import { FileTree } from "@astrojs/starlight/components";
+
+Granit.Validation wraps FluentValidation with structured error codes and international
+validators (IBAN, BIC, E.164, ISO 3166). `Granit.Validation.Europe` adds France and
+Belgium-specific regulatory validators (NISS, NIR, SIREN, VAT, INAMI).
+
+## Package structure
+
+<FileTree>
+- Granit.Validation/ GranitValidator, international validators, endpoint filter
+  - Granit.Validation.Europe France/Belgium regulatory validators
+</FileTree>
+
+| Package | Role | Depends on |
+| ------- | ---- | ---------- |
+| `Granit.Validation` | `GranitValidator<T>`, international validators, endpoint filter | `Granit.ExceptionHandling`, `Granit.Localization` |
+| `Granit.Validation.Europe` | France/Belgium-specific validators (NISS, NIR, SIREN, VAT) | `Granit.Validation`, `Granit.Localization` |
+
+## Setup
+
+```csharp
+[DependsOn(typeof(GranitValidationModule))]
+public class AppModule : GranitModule { }
+```
+
+The module auto-discovers all `IValidator<T>` implementations from loaded module
+assemblies. Manual registration is only needed for modules without the Wolverine
+handler attribute:
+
+```csharp
+services.AddGranitValidatorsFromAssemblyContaining<CreatePatientRequestValidator>();
+```
+
+## Writing validators
+
+```csharp
+public record CreatePatientRequest(
+    string FirstName,
+    string LastName,
+    string Email,
+    string Phone,
+    string CountryCode,
+    string Iban);
+
+public class CreatePatientRequestValidator : GranitValidator<CreatePatientRequest>
+{
+    public CreatePatientRequestValidator()
+    {
+        RuleFor(x => x.FirstName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.LastName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.Email).Email();
+        RuleFor(x => x.Phone).E164Phone();
+        RuleFor(x => x.CountryCode).Iso3166Alpha2CountryCode();
+        RuleFor(x => x.Iban).Iban();
+    }
+}
+```
+
+## Minimal API endpoint filter
+
+Apply validation to Minimal API endpoints with `.ValidateBody<T>()`:
+
+```csharp
+app.MapPost("/api/v1/patients", CreatePatient)
+    .ValidateBody<CreatePatientRequest>();
+```
+
+When validation fails, the filter returns `422 Unprocessable Entity` with a
+`HttpValidationProblemDetails` body:
+
+```json
+{
+  "status": 422,
+  "errors": {
+    "Email": ["Granit:Validation:InvalidEmail"],
+    "Phone": ["Granit:Validation:InvalidE164Phone"],
+    "Iban": ["Granit:Validation:InvalidIban"]
+  }
+}
+```
+
+:::tip
+If no `IValidator<T>` is registered, the filter passes through silently. This
+allows gradual adoption: add validators incrementally without breaking endpoints.
+:::
+
+## International validators
+
+Extension methods on `IRuleBuilder<T, string?>` for common international formats:
+
+| Category | Validator | Format | Error code |
+| -------- | --------- | ------ | ---------- |
+| Contact | `.Email()` | RFC 5321 practical subset | `InvalidEmail` |
+| Contact | `.E164Phone()` | `+` followed by 7-15 digits | `InvalidE164Phone` |
+| Payment | `.Iban()` | ISO 13616 (MOD-97 check) | `InvalidIban` |
+| Payment | `.BicSwift()` | ISO 9362 (8 or 11 chars) | `InvalidBicSwift` |
+| Payment | `.SepaCreditorIdentifier()` | EPC262-08 (MOD 97-10) | `InvalidSepaCreditorIdentifier` |
+| Locale | `.Iso3166Alpha2CountryCode()` | 2 uppercase letters | `InvalidIso3166Alpha2` |
+| Locale | `.Bcp47LanguageTag()` | `fr`, `fr-BE`, `zh-Hans-CN` | `InvalidBcp47LanguageTag` |
+
+All error codes are prefixed with `Granit:Validation:` (omitted in the table for brevity).
+
+## Custom error codes
+
+Use `.WithErrorCodeAndMessage()` to set both error code and message to the same value,
+preventing them from silently diverging:
+
+```csharp
+RuleFor(x => x.AppointmentDate)
+    .GreaterThan(DateTimeOffset.UtcNow)
+    .WithErrorCodeAndMessage("Appointments:DateMustBeFuture");
+```
+
+## Granit.Validation.Europe
+
+EU-specific regulatory validators for France and Belgium. Separate package to avoid
+pulling regulatory dependencies into applications that do not need them.
+
+### Setup
+
+```csharp
+[DependsOn(typeof(GranitValidationEuropeModule))]
+public class AppModule : GranitModule { }
+```
+
+### Usage
+
+```csharp
+public class RegisterDoctorRequestValidator : GranitValidator<RegisterDoctorRequest>
+{
+    public RegisterDoctorRequestValidator()
+    {
+        RuleFor(x => x.Niss).BelgianNiss();
+        RuleFor(x => x.InamiNumber).BelgianInami();
+        RuleFor(x => x.Vat).EuropeanVat();
+        RuleFor(x => x.PostalCode).BelgianPostalCode();
+    }
+}
+
+public class RegisterClinicRequestValidator : GranitValidator<RegisterClinicRequest>
+{
+    public RegisterClinicRequestValidator()
+    {
+        RuleFor(x => x.Siret).FrenchSiret();
+        RuleFor(x => x.Vat).FrenchVat();
+        RuleFor(x => x.Finess).FrenchFiness();
+        RuleFor(x => x.PostalCode).FrenchPostalCode();
+    }
+}
+```
+
+### Validator reference
+
+**Personal identifiers:**
+
+| Validator | Country | Format | Check algorithm |
+| --------- | ------- | ------ | --------------- |
+| `.BelgianNiss()` | BE | 11 digits (NISS/INSZ/SSIN) | MOD 97 (pre-2000 and post-2000) |
+| `.FrenchNir()` | FR | 15 chars (NIR / Securite Sociale) | MOD 97, Corse support (2A/2B) |
+| `.BelgianEid()` | BE | 12 digits (eID card number) | MOD 97 check pair |
+
+**Company identifiers:**
+
+| Validator | Country | Format | Check algorithm |
+| --------- | ------- | ------ | --------------- |
+| `.FrenchSiren()` | FR | 9 digits | Luhn |
+| `.FrenchSiret()` | FR | 14 digits (SIREN + NIC) | Luhn over all 14 digits |
+| `.BelgianBce()` | BE | 10 digits (BCE/KBO) | MOD 97 check pair |
+| `.FrenchNafCode()` | FR | 4 digits + 1 letter (NAF/APE) | Format only |
+
+**Tax identifiers:**
+
+| Validator | Country | Format | Check algorithm |
+| --------- | ------- | ------ | --------------- |
+| `.BelgianVat()` | BE | `BE` + 10 digits | BCE algorithm |
+| `.FrenchVat()` | FR | `FR` + 2-digit key + 9-digit SIREN | Key = `(12 + 3 * (SIREN % 97)) % 97` |
+| `.EuropeanVat()` | EU | Country prefix + national format | Dispatches per country (algorithmic for FR/BE, format for others) |
+
+**Payment identifiers:**
+
+| Validator | Country | Format | Check algorithm |
+| --------- | ------- | ------ | --------------- |
+| `.FrenchRib()` | FR | 23 chars (bank + branch + account + key) | `97 - (89*bank + 15*branch + 3*account) % 97` |
+| `.BelgianAccountNumber()` | BE | `NNN-NNNNNNN-NN` (legacy pre-IBAN) | `first 10 digits % 97` |
+
+**Professional registries (healthcare):**
+
+| Validator | Country | Format | Check algorithm |
+| --------- | ------- | ------ | --------------- |
+| `.FrenchRpps()` | FR | 11 digits (RPPS) | Luhn |
+| `.FrenchAdeli()` | FR | 9 digits (ADELI) | Format + length |
+| `.FrenchFiness()` | FR | 9 digits (FINESS) | Luhn |
+| `.BelgianInami()` | BE | 11 digits (INAMI/RIZIV) | MOD 97 check pair |
+
+**Postal addresses:**
+
+| Validator | Country | Format | Notes |
+| --------- | ------- | ------ | ----- |
+| `.FrenchPostalCode()` | FR | 5 digits (01000-99999) | Includes Corse (20xxx) and DOM-TOM (97xxx, 98xxx) |
+| `.BelgianPostalCode()` | BE | 4 digits (1000-9999) | -- |
+| `.FrenchInseeCode()` | FR | 5 chars (dept + commune) | Supports 2A/2B (Corse), DOM 971-976 |
+
+## Public API summary
+
+| Category | Key types | Package |
+| -------- | --------- | ------- |
+| Modules | `GranitValidationModule`, `GranitValidationEuropeModule` | -- |
+| Validation | `GranitValidator<T>`, `FluentValidationEndpointFilter<T>`, `.ValidateBody<T>()`, `.WithErrorCodeAndMessage()` | `Granit.Validation` |
+| International validators | `.Email()`, `.E164Phone()`, `.Iban()`, `.BicSwift()`, `.SepaCreditorIdentifier()`, `.Iso3166Alpha2CountryCode()`, `.Bcp47LanguageTag()` | `Granit.Validation` |
+| European validators | `.BelgianNiss()`, `.FrenchNir()`, `.BelgianEid()`, `.FrenchSiren()`, `.FrenchSiret()`, `.BelgianBce()`, `.FrenchNafCode()`, `.BelgianVat()`, `.FrenchVat()`, `.EuropeanVat()`, `.FrenchRib()`, `.BelgianAccountNumber()`, `.FrenchRpps()`, `.FrenchAdeli()`, `.FrenchFiness()`, `.BelgianInami()`, `.FrenchPostalCode()`, `.BelgianPostalCode()`, `.FrenchInseeCode()` | `Granit.Validation.Europe` |
+| Extensions | `AddGranitValidation()`, `AddGranitValidatorsFromAssemblyContaining<T>()` | -- |
+
+## See also
+
+- [Exception Handling](/dotnet/api/exception-handling/) -- `IExceptionStatusCodeMapper` for validation exceptions
+- [Core module](/dotnet/core/module-system/) -- Exception hierarchy, `IHasValidationErrors`
+- [Persistence module](/dotnet/data/persistence/) -- `AuditedEntityInterceptor` uses `IClock` for timestamps

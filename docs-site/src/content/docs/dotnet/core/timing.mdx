@@ -1,0 +1,156 @@
+---
+title: Timing
+description: Testable time abstractions (IClock, ICurrentTimezoneProvider) with per-request timezone support via AsyncLocal and FakeTimeProvider for deterministic tests.
+sidebar:
+  order: 7
+---
+
+Granit.Timing provides testable time abstractions for the entire framework. Replaces
+all calls to `DateTime.Now` / `DateTime.UtcNow` with injectable services. Uses
+`AsyncLocal` for per-request timezone propagation.
+
+## Package
+
+| Package | Role | Depends on |
+| ------- | ---- | ---------- |
+| `Granit.Timing` | `IClock`, `ICurrentTimezoneProvider`, `TimeProvider` | `Granit.Core` |
+
+## Setup
+
+```csharp
+[DependsOn(typeof(GranitTimingModule))]
+public class AppModule : GranitModule { }
+```
+
+## IClock
+
+The primary abstraction for accessing the current time and performing timezone
+conversions:
+
+```csharp
+public interface IClock
+{
+    DateTimeOffset Now { get; }
+    bool SupportsMultipleTimezone { get; }
+    DateTimeOffset Normalize(DateTimeOffset dateTime);
+    DateTimeOffset ConvertToUserTime(DateTimeOffset utcDateTime);
+    DateTimeOffset ConvertToUtc(DateTimeOffset dateTime);
+}
+```
+
+**Usage in a service:**
+
+```csharp
+public class AppointmentService(IClock clock, AppDbContext db)
+{
+    public async Task<bool> IsAvailableAsync(
+        Guid doctorId, DateTimeOffset requestedTime, CancellationToken cancellationToken)
+    {
+        DateTimeOffset utcTime = clock.Normalize(requestedTime);
+
+        return !await db.Appointments
+            .AnyAsync(a => a.DoctorId == doctorId
+                && a.ScheduledAt <= utcTime
+                && a.EndAt > utcTime,
+                cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    public Appointment CreateAppointment(Guid doctorId, DateTimeOffset scheduledAt)
+    {
+        return new Appointment
+        {
+            DoctorId = doctorId,
+            ScheduledAt = clock.Normalize(scheduledAt),
+            CreatedAt = clock.Now, // Always UTC
+        };
+    }
+}
+```
+
+## ICurrentTimezoneProvider
+
+Per-request timezone context backed by `AsyncLocal<string?>`. Set it early in the
+request pipeline (e.g., from a header, claim, or user preference):
+
+```csharp
+app.Use(async (context, next) =>
+{
+    var timezoneProvider = context.RequestServices.GetRequiredService<ICurrentTimezoneProvider>();
+    timezoneProvider.Timezone = context.Request.Headers["X-Timezone"].FirstOrDefault()
+                                ?? "Europe/Brussels";
+    await next(context).ConfigureAwait(false);
+});
+```
+
+Then `IClock.ConvertToUserTime()` converts UTC dates to the user's local time:
+
+```csharp
+public class AppointmentResponse
+{
+    public required DateTimeOffset ScheduledAtUtc { get; init; }
+    public required DateTimeOffset ScheduledAtLocal { get; init; }
+}
+
+// In the handler:
+var response = new AppointmentResponse
+{
+    ScheduledAtUtc = appointment.ScheduledAt,
+    ScheduledAtLocal = clock.ConvertToUserTime(appointment.ScheduledAt),
+};
+```
+
+## DisableDateTimeNormalizationAttribute
+
+Opt out of automatic UTC normalization for properties that store user-local times
+(e.g., birth dates where timezone is irrelevant):
+
+```csharp
+public class Patient
+{
+    [DisableDateTimeNormalization]
+    public DateTimeOffset DateOfBirth { get; set; }
+}
+```
+
+## Testing
+
+Replace `TimeProvider` in tests to control time:
+
+```csharp
+var fakeTime = new FakeTimeProvider(new DateTimeOffset(2026, 3, 15, 10, 0, 0, TimeSpan.Zero));
+services.AddSingleton<TimeProvider>(fakeTime);
+
+// IClock.Now will return 2026-03-15T10:00:00Z
+// Advance: fakeTime.Advance(TimeSpan.FromMinutes(30));
+```
+
+## Service lifetimes
+
+| Service | Lifetime | Rationale |
+| ------- | -------- | --------- |
+| `TimeProvider` | Singleton | `TimeProvider.System` is stateless and thread-safe |
+| `ICurrentTimezoneProvider` | Singleton | Backed by `AsyncLocal` — value is per-async-context |
+| `IClock` | Singleton | Stateless — delegates to `TimeProvider` and `ICurrentTimezoneProvider` |
+
+## Configuration reference
+
+| Property | Default | Description |
+| -------- | ------- | ----------- |
+| `DefaultTimezone` | `null` | Fallback timezone when none is set per-request (IANA or Windows ID) |
+
+## Public API summary
+
+| Category | Key types | Package |
+| -------- | --------- | ------- |
+| Module | `GranitTimingModule` | -- |
+| Services | `IClock`, `ICurrentTimezoneProvider`, `CurrentTimezoneProvider`, `Clock` | `Granit.Timing` |
+| Attributes | `DisableDateTimeNormalizationAttribute` | `Granit.Timing` |
+| Options | `ClockOptions` | `Granit.Timing` |
+| Extensions | `AddGranitTiming()` | `Granit.Timing` |
+
+## See also
+
+- [GUIDs module](/dotnet/core/guids/) -- Sequential GUIDs using `IClock` for timestamp
+- [Persistence module](/dotnet/data/persistence/) -- `AuditedEntityInterceptor` uses `IClock` for timestamps
+- [Multi-Tenancy module](/dotnet/infrastructure/multi-tenancy/) -- Timezone per tenant

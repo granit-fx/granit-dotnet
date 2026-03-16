@@ -1,0 +1,22 @@
+---
+title: Encryption
+description: AES-256-GCM field-level encryption for sensitive entity properties. Transparent EF Core value converter, key versioning, and GDPR crypto-shredding support.
+sidebar:
+  order: 8
+---
+
+Granit.Vault.Encryption provides AES-256-GCM field-level encryption for sensitive
+entity properties. Encryption keys are sourced from Granit.Vault (HashiCorp Vault,
+AWS KMS, Azure Key Vault) and versioned for seamless rotation. GDPR crypto-shredding
+deletes the encryption key to make data irreversibly unreadable without touching the
+encrypted ciphertext.
+
+:::note[Coming soon]
+This module is planned for a future release. The page documents the intended API.
+:::
+
+## See also
+
+- [Vault module](/dotnet/security/vault-encryption/) -- Secret management, key lifecycle
+- [Privacy module](/dotnet/security/privacy/) -- GDPR erasure patterns
+- [Blob Storage](/dotnet/data/blob-storage/) -- GDPR crypto-shredding for uploaded files

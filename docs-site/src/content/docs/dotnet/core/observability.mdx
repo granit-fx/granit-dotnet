@@ -1,0 +1,140 @@
+---
+title: Observability
+description: Serilog structured logging + OpenTelemetry (traces, metrics, logs) with OTLP export to Loki, Tempo, and Mimir via a Grafana collector pipeline.
+sidebar:
+  order: 4
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Granit.Observability wires Serilog structured logging and OpenTelemetry (traces + metrics)
+into a single `AddGranitObservability()` call. Logs ship to Loki, traces to Tempo, and
+metrics to Mimir — all via an OTLP collector.
+
+## Package
+
+| Package | Role | Depends on |
+| ------- | ---- | ---------- |
+| `Granit.Observability` | Serilog + OpenTelemetry (traces, metrics, logs) | `Granit.Core` |
+
+## OTLP pipeline
+
+```mermaid
+graph LR
+    App[ASP.NET Core App] --> Serilog
+    App --> OTel[OpenTelemetry SDK]
+
+    Serilog -->|WriteTo.OpenTelemetry| Collector[OTLP Collector :4317]
+    OTel -->|OTLP gRPC| Collector
+
+    Collector --> Loki[Loki — Logs]
+    Collector --> Tempo[Tempo — Traces]
+    Collector --> Mimir[Mimir — Metrics]
+
+    Loki --> Grafana
+    Tempo --> Grafana
+    Mimir --> Grafana
+```
+
+## Setup
+
+```csharp
+[DependsOn(typeof(GranitObservabilityModule))]
+public class AppModule : GranitModule { }
+```
+
+```json
+{
+  "Observability": {
+    "ServiceName": "my-backend",
+    "ServiceVersion": "1.2.0",
+    "OtlpEndpoint": "http://otel-collector:4317",
+    "ServiceNamespace": "my-company",
+    "Environment": "production"
+  }
+}
+```
+
+## Serilog configuration
+
+`AddGranitObservability()` configures two Serilog sinks:
+
+| Sink | Purpose |
+| ---- | ------- |
+| `Console` | Local development, `[HH:mm:ss LEV] SourceContext Message` |
+| `OpenTelemetry` | OTLP export to Loki via the collector |
+
+Every log entry is enriched with `ServiceName`, `ServiceVersion`, and `Environment`
+properties, matching the OpenTelemetry resource attributes for correlation.
+
+Additional Serilog settings (minimum level, overrides, extra sinks) can be added via
+standard `Serilog` configuration in `appsettings.json` — `ReadFrom.Configuration` is
+called before the Granit enrichers.
+
+## OpenTelemetry instrumentation
+
+Three built-in instrumentations are registered automatically:
+
+| Instrumentation | What it captures |
+| --------------- | ---------------- |
+| ASP.NET Core | Inbound HTTP requests (method, route, status code) |
+| HttpClient | Outbound HTTP calls (dependency tracking) |
+| EF Core | Database queries (command text, duration) |
+
+Health check endpoints (`/health/*`) are filtered out of traces to avoid noise.
+
+## Activity source auto-registration
+
+Granit modules register their own `ActivitySource` names via `GranitActivitySourceRegistry.Register()`
+during host configuration. `AddGranitObservability()` reads the registry and calls
+`AddSource()` for each — no manual wiring needed.
+
+```csharp
+// Inside a module's AddGranit*() extension method
+GranitActivitySourceRegistry.Register("Granit.Workflow");
+```
+
+### Registered activity sources
+
+| ActivitySource | Span names |
+| -------------- | ---------- |
+| `Granit.Vault` | `vault.encrypt`, `vault.decrypt`, `vault.get-secret`, `vault.check-rotation` |
+| `Granit.Vault.Azure` | `akv.encrypt`, `akv.decrypt`, `akv.get-secret`, `akv.check-rotation` |
+| `Granit.Wolverine` | `wolverine.send`, `wolverine.handle` |
+| `Granit.Notifications` | `notification.dispatch`, `notification.deliver` |
+| `Granit.Notifications.Email.Smtp` | `smtp.send` |
+| `Granit.Notifications.Email.AwsSes` | `ses.send` |
+| `Granit.Notifications.Email.AzureCommunicationServices` | `acs-email.send` |
+| `Granit.Notifications.Sms.AzureCommunicationServices` | `acs-sms.send` |
+| `Granit.Notifications.MobilePush.AzureNotificationHubs` | `anh.send` |
+| `Granit.Notifications.Brevo` | `brevo.send` |
+| `Granit.Notifications.Zulip` | `zulip.send` |
+| `Granit.Workflow` | `workflow.transition` |
+| `Granit.BlobStorage` | `blob.upload`, `blob.download`, `blob.delete` |
+| `Granit.DataExchange` | `import.execute`, `export.execute` |
+
+## Configuration reference
+
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| `ServiceName` | `string` | `"unknown-service"` | Service name for OTEL resource |
+| `ServiceVersion` | `string` | `"0.0.0"` | Service version |
+| `OtlpEndpoint` | `string` | `"http://localhost:4317"` | OTLP gRPC endpoint |
+| `ServiceNamespace` | `string` | `"my-company"` | Service namespace |
+| `Environment` | `string` | `"development"` | Deployment environment |
+| `EnableTracing` | `bool` | `true` | Enable trace export via OTLP |
+| `EnableMetrics` | `bool` | `true` | Enable metrics export via OTLP |
+
+## Public API summary
+
+| Category | Key types | Package |
+| -------- | --------- | ------- |
+| Module | `GranitObservabilityModule` | -- |
+| Options | `ObservabilityOptions` | `Granit.Observability` |
+| Registry | `GranitActivitySourceRegistry` | `Granit.Core` |
+| Extensions | `AddGranitObservability()` | `Granit.Observability` |
+
+## See also
+
+- [Diagnostics module](/dotnet/core/diagnostics/) -- Kubernetes health probes
+- [Core module](/dotnet/core/module-system/) -- `GranitActivitySourceRegistry` lives in `Granit.Core.Diagnostics`

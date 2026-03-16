@@ -222,3 +222,9 @@ you are likely fighting the module system. Depend on the module instead — let
 | Cross-module overrides | `PostConfigure` — never mutate another module's options in `Configure` |
 | Abstractions | Same package as implementation — no `*.Abstractions` split |
 | Extension method parameters | None (configuration comes from `appsettings.json`) |
+
+## See also
+
+- [Module System](./module-system/) — how `[DependsOn]` and the two-phase lifecycle work
+- [Configuration](./configuration/) — Options vs Settings vs Module Config decision tree
+- [Security Model](./security-model/) — PostConfigure pattern in action (Keycloak overriding JwtBearer)

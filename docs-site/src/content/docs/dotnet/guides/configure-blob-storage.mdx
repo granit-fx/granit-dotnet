@@ -13,7 +13,7 @@ URLs where the server never handles file bytes. Server-side providers (FileSyste
 Database) use `Granit.BlobStorage.Proxy` for token-based upload/download endpoints.
 
 This guide covers the S3 provider setup. For other providers, see the
-[BlobStorage reference](/dotnet/data/storage/).
+[BlobStorage reference](/dotnet/data/blob-storage/).
 
 ## Prerequisites
 
@@ -287,5 +287,5 @@ builder.Services.AddScoped<IBlobValidator, AntivirusValidator>();
   error messages (`BlobStorage:NotFound`, `BlobStorage:NotValid`)
 - [Set up end-to-end tracing](/dotnet/guides/end-to-end-tracing/) to trace blob
   operations in Grafana Tempo
-- [Blob storage reference](/dotnet/data/storage/) for the complete
+- [Blob storage reference](/dotnet/data/blob-storage/) for the complete
   API surface

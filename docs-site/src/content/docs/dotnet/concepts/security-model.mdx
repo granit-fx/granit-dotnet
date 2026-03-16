@@ -28,6 +28,7 @@ graph TD
     KC["Granit.Authentication.Keycloak<br/>Keycloak claims transformation"] --> JWT
     EID["Granit.Authentication.EntraId<br/>Entra ID roles parsing"] --> JWT
     CG["Granit.Authentication.Cognito<br/>Cognito groups → roles"] --> JWT
+    GC["Granit.Authentication.GoogleCloud<br/>Identity Platform claims"] --> JWT
 ```
 
 ### Granit.Security -- the foundation
@@ -91,6 +92,10 @@ For Azure-based deployments, the Entra ID module parses roles from both the v1.0
 
 For AWS-based deployments, the Cognito module extracts groups from the `cognito:groups` claim and maps them to standard `ClaimTypes.Role`. Cognito has no native "roles" concept -- groups serve as roles.
 
+### Granit.Authentication.GoogleCloud -- Google Cloud Identity Platform
+
+For Google Cloud deployments using Firebase Auth / Identity Platform, the module validates JWTs issued by `https://securetoken.google.com/{project-id}` and extracts custom claims from the `claims` object into standard `ClaimTypes.Role`.
+
 <Tabs>
   <TabItem label="Keycloak">
     ```csharp
@@ -109,6 +114,13 @@ For AWS-based deployments, the Cognito module extracts groups from the `cognito:
   <TabItem label="AWS Cognito">
     ```csharp
     [DependsOn(typeof(GranitAuthenticationCognitoModule))]
+    [DependsOn(typeof(GranitAuthorizationModule))]
+    public class AppModule : GranitModule { }
+    ```
+  </TabItem>
+  <TabItem label="Google Cloud">
+    ```csharp
+    [DependsOn(typeof(GranitAuthenticationGoogleCloudModule))]
     [DependsOn(typeof(GranitAuthorizationModule))]
     public class AppModule : GranitModule { }
     ```

@@ -25,6 +25,39 @@ Granit ships %%PACKAGE_COUNT%% packages. That level of granularity is great for 
 
 Each bundle is a NuGet meta-package with no code of its own. It only declares dependencies on the modules it groups.
 
+## Bundle contents at a glance
+
+| Package | Essentials | Api | Notifications | Documents | SaaS |
+|---------|:----------:|:---:|:-------------:|:---------:|:----:|
+| `Granit.Core` | ✓ | ✓ | ✓ | | ✓ |
+| `Granit.Timing` | ✓ | ✓ | ✓ | | ✓ |
+| `Granit.Guids` | ✓ | ✓ | ✓ | | ✓ |
+| `Granit.Validation` | ✓ | ✓ | ✓ | | ✓ |
+| `Granit.ExceptionHandling` | ✓ | ✓ | ✓ | | ✓ |
+| `Granit.Observability` | ✓ | ✓ | ✓ | | ✓ |
+| `Granit.ApiVersioning` | | ✓ | | | ✓ |
+| `Granit.ApiDocumentation` | | ✓ | | | ✓ |
+| `Granit.Cors` | | ✓ | | | ✓ |
+| `Granit.Idempotency` | | ✓ | | | ✓ |
+| `Granit.Cookies` | | ✓ | | | ✓ |
+| `Granit.Notifications` | | | ✓ | | ✓ |
+| `Granit.Notifications.Email.Smtp` | | | ✓ | | |
+| `Granit.Notifications.Sms` | | | ✓ | | |
+| `Granit.Notifications.Push` | | | ✓ | | |
+| `Granit.Notifications.SignalR` | | | ✓ | | |
+| `Granit.Templating.Scriban` | | | | ✓ | |
+| `Granit.DocumentGeneration.Pdf` | | | | ✓ | |
+| `Granit.DocumentGeneration.Excel` | | | | ✓ | |
+| `Granit.MultiTenancy` | | | | | ✓ |
+| `Granit.Settings` | | | | | ✓ |
+| `Granit.Features` | | | | | ✓ |
+| `Granit.Localization` | | | | | ✓ |
+| `Granit.BackgroundJobs` | | | | | ✓ |
+| `Granit.Caching.Hybrid` | | | | | ✓ |
+
+SaaS inherits everything in Api, which inherits everything in Essentials.
+The `Notifications` and `Documents` bundles are standalone — add them on top of any base.
+
 ## Usage
 
 Reference the bundle package and call the corresponding method on the Granit builder:

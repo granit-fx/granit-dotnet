@@ -84,6 +84,65 @@ The Channel fallback handles roughly 10,000 messages per second in-process. You 
 Messages in the `Channel<T>` pipeline live in process memory. If the application crashes or restarts, in-flight messages are lost. There is no retry, no dead-letter queue, no persistence. For anything that must not be lost, use the Wolverine package.
 :::
 
+## Error behavior
+
+The failure modes are fundamentally different — this is the main reason to upgrade
+from Channel to Wolverine in production.
+
+<Tabs>
+<TabItem label="Channel mode (no durability)">
+
+```csharp
+// Handler throws — what happens next?
+public static async Task Handle(SendInvoiceNotificationCommand command)
+{
+    throw new SmtpException("Mail server unreachable");
+    // ↑ The Channel worker catches the exception and logs it.
+    //   The message is gone. No retry. No dead letter. No record.
+}
+```
+
+Timeline:
+1. Exception is thrown
+2. `BackgroundJobWorker` logs the error
+3. Message is discarded — **permanently lost**
+4. Application continues processing the next message
+
+</TabItem>
+<TabItem label="Wolverine mode (durable)">
+
+```csharp
+// Same handler, same exception — completely different outcome
+public static async Task Handle(SendInvoiceNotificationCommand command)
+{
+    throw new SmtpException("Mail server unreachable");
+    // ↑ Wolverine catches the exception.
+    //   Retry 1 after 5s → Retry 2 after 30s → Retry 3 after 5min
+    //   If all retries fail → moved to dead-letter queue
+    //   Dead-letter queue is inspectable via admin endpoints
+}
+```
+
+Timeline:
+1. Exception is thrown
+2. Wolverine marks the envelope as failed, schedules retry 1 (5s delay)
+3. Retry 1 fails → retry 2 (30s delay)
+4. Retry 2 fails → retry 3 (5 min delay)
+5. Retry 3 fails → message moved to dead-letter queue (PostgreSQL `wolverine_dead_letters`)
+6. Admin can inspect, replay, or discard dead-letter messages
+
+</TabItem>
+</Tabs>
+
+:::caution[Channel dispatch is not durable — summary]
+| | Channel | Wolverine |
+|-|---------|-----------|
+| Handler throws | Message lost | Retry × N, then dead-letter |
+| App crashes mid-processing | Message lost | Redelivered after restart |
+| Multiple instances | In-process only, no coordination | PostgreSQL transport coordinates |
+| Observability | Log only | Dead-letter queue + admin UI |
+:::
+
 ## Adding Wolverine later
 
 The migration path is deliberately simple. No handler code changes, no interface changes -- just add packages and update `[DependsOn]`.
@@ -128,13 +187,15 @@ That is the entire migration. Your handlers, your cron expressions, your notific
 
 ```mermaid
 graph TD
-    subgraph "Without Wolverine"
+    subgraph top["Without Wolverine"]
         H1[Handler] --> CD[Channel Dispatcher]
         CD --> CW[Channel Worker]
         CW --> H2[Handler execution]
     end
 
-    subgraph "With Wolverine"
+    H2 ~~~ H3
+
+    subgraph bot["With Wolverine"]
         H3[Handler] --> WD[Wolverine Dispatcher]
         WD --> OB[Outbox - same TX]
         OB --> TR[PostgreSQL Transport]
