@@ -127,6 +127,7 @@
     <ProjectReference Include="..\..\src\Granit.Notifications.Twilio\Granit.Notifications.Twilio.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.WhatsApp\Granit.Notifications.WhatsApp.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.Zulip\Granit.Notifications.Zulip.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Notifications.AI\Granit.Notifications.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.Wolverine\Granit.Notifications.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Observability\Granit.Observability.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence\Granit.Persistence.csproj" />
@@ -155,6 +156,7 @@
     <ProjectReference Include="..\..\src\Granit.Timeline\Granit.Timeline.csproj" />
     <ProjectReference Include="..\..\src\Granit.Timeline.Endpoints\Granit.Timeline.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Timeline.EntityFrameworkCore\Granit.Timeline.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Timeline.AI\Granit.Timeline.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Timeline.Notifications\Granit.Timeline.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.Timing\Granit.Timing.csproj" />
     <ProjectReference Include="..\..\src\Granit.Validation\Granit.Validation.csproj" />
@@ -176,6 +178,7 @@
     <ProjectReference Include="..\..\src\Granit.Workflow\Granit.Workflow.csproj" />
     <ProjectReference Include="..\..\src\Granit.Workflow.Endpoints\Granit.Workflow.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Workflow.EntityFrameworkCore\Granit.Workflow.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Workflow.AI\Granit.Workflow.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Workflow.Notifications\Granit.Workflow.Notifications.csproj" />
   </ItemGroup>
 

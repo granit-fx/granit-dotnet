@@ -1,0 +1,167 @@
+using System.Text;
+using Granit.AI;
+using Granit.Querying;
+using Granit.Timeline.Abstractions;
+using Granit.Timeline.AI.Options;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+namespace Granit.Timeline.AI.Internal;
+
+/// <summary>
+/// LLM-based implementation of <see cref="ITimelineSummarizer"/>.
+/// Fetches timeline entries via <see cref="ITimelineReader"/> and asks the LLM to produce
+/// a concise natural language summary.
+/// </summary>
+internal sealed partial class LlmTimelineSummarizer(
+    IAIChatClientFactory chatClientFactory,
+    ITimelineReader timelineReader,
+    IOptions<TimelineAIOptions> options,
+    ILogger<LlmTimelineSummarizer> logger) : ITimelineSummarizer
+{
+    private static readonly TimelineSummary EmptySummary = new(
+        Text: "No timeline entries found.",
+        EntryCount: 0,
+        OldestEntry: null,
+        NewestEntry: null);
+
+    /// <inheritdoc/>
+    public async Task<TimelineSummary> SummarizeAsync(
+        string entityType,
+        Guid entityId,
+        DateTimeOffset? since = null,
+        CancellationToken ct = default)
+    {
+        ArgumentNullException.ThrowIfNull(entityType);
+
+        TimelineAIOptions config = options.Value;
+
+        List<TimelineStreamEntry> entries = await FetchEntriesAsync(
+            entityType, entityId, config.MaxEntriesToAnalyze, since, ct).ConfigureAwait(false);
+
+        if (entries.Count == 0)
+        {
+            return EmptySummary;
+        }
+
+        try
+        {
+            IChatClient chatClient = await chatClientFactory
+                .CreateAsync(config.WorkspaceName, ct)
+                .ConfigureAwait(false);
+
+            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(config.TimeoutSeconds));
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCts.Token);
+
+            string prompt = BuildSummarizationPrompt(entityType, entityId, entries);
+
+            ChatResponse response = await chatClient.GetResponseAsync(
+                prompt, cancellationToken: linkedCts.Token).ConfigureAwait(false);
+
+            string text = response.Text ?? "Unable to generate summary.";
+
+            // Entries are sorted newest-first by ITimelineReader
+            DateTimeOffset newest = entries[0].OccurredAt;
+            DateTimeOffset oldest = entries[^1].OccurredAt;
+
+            return new TimelineSummary(text, entries.Count, oldest, newest);
+        }
+        catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+        {
+            LogSummarizationTimeout(logger, entityType, entityId, config.TimeoutSeconds);
+            return new TimelineSummary(
+                "Summary generation timed out.",
+                entries.Count,
+                entries[^1].OccurredAt,
+                entries[0].OccurredAt);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            LogSummarizationFailure(logger, entityType, entityId, ex);
+            return new TimelineSummary(
+                "Summary generation failed.",
+                entries.Count,
+                entries[^1].OccurredAt,
+                entries[0].OccurredAt);
+        }
+    }
+
+    private async Task<List<TimelineStreamEntry>> FetchEntriesAsync(
+        string entityType,
+        Guid entityId,
+        int maxEntries,
+        DateTimeOffset? since,
+        CancellationToken ct)
+    {
+        var allEntries = new List<TimelineStreamEntry>();
+        int page = 1;
+        const int pageSize = 50;
+
+        while (allEntries.Count < maxEntries)
+        {
+            PagedResult<TimelineStreamEntry> result = await timelineReader
+                .GetStreamAsync(entityType, entityId.ToString(), page, pageSize, ct)
+                .ConfigureAwait(false);
+
+            if (result.Items.Count == 0)
+            {
+                break;
+            }
+
+            foreach (TimelineStreamEntry entry in result.Items)
+            {
+                if (since.HasValue && entry.OccurredAt < since.Value)
+                {
+                    return allEntries;
+                }
+
+                allEntries.Add(entry);
+
+                if (allEntries.Count >= maxEntries)
+                {
+                    return allEntries;
+                }
+            }
+
+            if (!result.HasMore)
+            {
+                break;
+            }
+
+            page++;
+        }
+
+        return allEntries;
+    }
+
+    internal static string BuildSummarizationPrompt(
+        string entityType,
+        Guid entityId,
+        List<TimelineStreamEntry> entries)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($"Summarize the following activity timeline for {entityType} '{entityId}' in 2-4 concise sentences.");
+        sb.AppendLine("Focus on key events, who did what, and the overall progression. Be factual and concise.");
+        sb.AppendLine();
+        sb.AppendLine("Timeline entries (newest first):");
+
+        foreach (TimelineStreamEntry entry in entries)
+        {
+            string author = entry.AuthorName ?? entry.AuthorId ?? "System";
+            sb.AppendLine($"- [{entry.OccurredAt:u}] ({entry.EntryType}) {author}: {entry.Body}");
+        }
+
+        return sb.ToString();
+    }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Timeline summarization timed out after {TimeoutSeconds}s for {EntityType} '{EntityId}'")]
+    private static partial void LogSummarizationTimeout(ILogger logger, string entityType, Guid entityId, int timeoutSeconds);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Timeline summarization failed for {EntityType} '{EntityId}'")]
+    private static partial void LogSummarizationFailure(ILogger logger, string entityType, Guid entityId, Exception exception);
+}

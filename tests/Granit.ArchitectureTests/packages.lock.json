@@ -1756,6 +1756,14 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.notifications.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Notifications": "[0.1.0-dev, )",
+          "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
+        }
+      },
       "granit.notifications.brevo": {
         "type": "Project",
         "dependencies": {
@@ -2137,6 +2145,14 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.timeline.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Timeline": "[0.1.0-dev, )",
+          "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
+        }
+      },
       "granit.timeline.endpoints": {
         "type": "Project",
         "dependencies": {
@@ -2302,6 +2318,13 @@
         "dependencies": {
           "Granit.Querying": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
+      "granit.workflow.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Workflow": "[0.1.0-dev, )"
         }
       },
       "granit.workflow.endpoints": {

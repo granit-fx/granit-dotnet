@@ -1,0 +1,176 @@
+using System.Text.Json;
+using Granit.AI;
+using Granit.Workflow.AI.Options;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+namespace Granit.Workflow.AI.Internal;
+
+/// <summary>
+/// LLM-based implementation of <see cref="IAITransitionAdvisor"/> that uses
+/// <see cref="IAIChatClientFactory"/> to recommend workflow transitions.
+/// </summary>
+internal sealed partial class LlmTransitionAdvisor(
+    IAIChatClientFactory chatClientFactory,
+    IOptions<WorkflowAIOptions> options,
+    ILogger<LlmTransitionAdvisor> logger) : IAITransitionAdvisor
+{
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
+
+    /// <inheritdoc />
+    public async Task<TransitionRecommendation?> RecommendAsync(
+        string entityType,
+        string currentState,
+        string entityContext,
+        IReadOnlyList<string> allowedTransitions,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(entityType);
+        ArgumentNullException.ThrowIfNull(currentState);
+        ArgumentNullException.ThrowIfNull(entityContext);
+        ArgumentNullException.ThrowIfNull(allowedTransitions);
+
+        if (allowedTransitions.Count == 0)
+        {
+            LogNoAllowedTransitions(entityType, currentState);
+            return null;
+        }
+
+        WorkflowAIOptions workflowOptions = options.Value;
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(workflowOptions.TimeoutSeconds));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
+
+        try
+        {
+            IChatClient chatClient = await chatClientFactory
+                .CreateAsync(workflowOptions.WorkspaceName, linkedCts.Token)
+                .ConfigureAwait(false);
+
+            string prompt = BuildPrompt(entityType, currentState, entityContext, allowedTransitions);
+
+            var messages = new List<ChatMessage>
+            {
+                new(ChatRole.User, prompt),
+            };
+
+            ChatResponse response = await chatClient
+                .GetResponseAsync(messages, cancellationToken: linkedCts.Token)
+                .ConfigureAwait(false);
+
+            string responseText = response.Text ?? string.Empty;
+            responseText = StripMarkdownCodeFences(responseText);
+
+            LlmRecommendationResponse? result = JsonSerializer.Deserialize<LlmRecommendationResponse>(responseText, SerializerOptions);
+
+            if (result is null || string.IsNullOrWhiteSpace(result.RecommendedTransition))
+            {
+                LogDeserializationFailed(entityType);
+                return null;
+            }
+
+            double confidence = Math.Clamp(result.Confidence, 0.0, 1.0);
+
+            LogRecommendationSucceeded(entityType, currentState, result.RecommendedTransition, confidence);
+
+            return new TransitionRecommendation(
+                result.RecommendedTransition,
+                result.Reasoning ?? string.Empty,
+                confidence);
+        }
+        catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
+        {
+            LogTimeout(entityType, workflowOptions.TimeoutSeconds);
+            return null;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (JsonException ex)
+        {
+            LogJsonError(entityType, ex.Message);
+            return null;
+        }
+        catch (Exception ex)
+        {
+            LogError(entityType, ex.Message);
+            return null;
+        }
+    }
+
+    private static string BuildPrompt(
+        string entityType,
+        string currentState,
+        string entityContext,
+        IReadOnlyList<string> allowedTransitions) =>
+        $"""
+         You are a workflow advisor. Given the following entity context, recommend the best next
+         workflow transition.
+
+         Entity type: {entityType}
+         Current state: {currentState}
+         Allowed transitions: {string.Join(", ", allowedTransitions)}
+
+         Entity context:
+         ---
+         {entityContext}
+         ---
+
+         Respond with a JSON object containing:
+         - "recommendedTransition": one of the allowed transitions listed above
+         - "reasoning": a brief explanation of why this transition is recommended
+         - "confidence": a number between 0.0 and 1.0 indicating your confidence
+
+         Return ONLY valid JSON, no markdown, no explanation.
+         """;
+
+    private static string StripMarkdownCodeFences(string text)
+    {
+        ReadOnlySpan<char> span = text.AsSpan().Trim();
+
+        if (span.StartsWith("```json", StringComparison.OrdinalIgnoreCase))
+        {
+            span = span["```json".Length..];
+        }
+        else if (span.StartsWith("```", StringComparison.Ordinal))
+        {
+            span = span["```".Length..];
+        }
+
+        if (span.EndsWith("```", StringComparison.Ordinal))
+        {
+            span = span[..^"```".Length];
+        }
+
+        return span.Trim().ToString();
+    }
+
+    private sealed record LlmRecommendationResponse(
+        string? RecommendedTransition,
+        string? Reasoning,
+        double Confidence);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Transition recommendation succeeded for {EntityType} in state {CurrentState}: {RecommendedTransition} (confidence: {Confidence:F2})")]
+    private partial void LogRecommendationSucceeded(string entityType, string currentState, string recommendedTransition, double confidence);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "No allowed transitions for {EntityType} in state {CurrentState}")]
+    private partial void LogNoAllowedTransitions(string entityType, string currentState);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to deserialize LLM recommendation response for {EntityType}")]
+    private partial void LogDeserializationFailed(string entityType);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Transition recommendation timed out for {EntityType} after {TimeoutSeconds}s")]
+    private partial void LogTimeout(string entityType, int timeoutSeconds);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to parse LLM recommendation JSON for {EntityType}: {ErrorMessage}")]
+    private partial void LogJsonError(string entityType, string errorMessage);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Transition recommendation failed for {EntityType}: {ErrorMessage}")]
+    private partial void LogError(string entityType, string errorMessage);
+}
