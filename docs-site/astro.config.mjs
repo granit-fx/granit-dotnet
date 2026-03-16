@@ -74,167 +74,211 @@ export default defineConfig({
             words: "rounded",
           },
         }),
-        starlightSidebarTopics([
-          {
-            label: "Start",
-            link: "/getting-started/",
-            icon: "rocket",
-            items: [
-              {
-                label: "Getting Started",
-                autogenerate: { directory: "getting-started" },
-              },
-              {
-                label: "Concepts",
-                autogenerate: { directory: "concepts" },
-                collapsed: true,
-              },
-              {
-                label: "Guides",
-                autogenerate: { directory: "guides" },
-                collapsed: true,
-              },
-              {
-                label: "Operations",
-                autogenerate: { directory: "operations" },
-                collapsed: true,
-              },
-              {
-                label: "Contributing",
-                autogenerate: { directory: "contributing" },
-                collapsed: true,
-              },
-              {
-                label: "Migration",
-                autogenerate: { directory: "migration" },
-                collapsed: true,
-              },
-              {
-                label: "Troubleshooting",
-                autogenerate: { directory: "troubleshooting" },
-                collapsed: true,
-              },
-            ],
-          },
-          {
-            label: "Backend (.NET)",
-            link: "/reference/",
-            icon: "laptop",
-            id: "backend",
-            items: [
-              {
-                label: "Reference",
-                items: [
-                  { label: "Overview", link: "/reference/" },
-                  {
-                    label: "Modules",
-                    autogenerate: { directory: "reference/modules" },
-                    collapsed: true,
-                  },
-                  {
-                    label: "Cross-cutting",
-                    items: [
-                      {
-                        label: "Configuration Keys",
-                        link: "/reference/configuration-keys/",
-                      },
-                      {
-                        label: "HTTP Conventions",
-                        link: "/reference/http-conventions/",
-                      },
-                      {
-                        label: "Dependency Graph",
-                        link: "/reference/dependency-graph/",
-                      },
-                      {
-                        label: "Cloud Providers",
-                        link: "/reference/cloud-providers/",
-                      },
-                      {
-                        label: "Provider Compatibility",
-                        link: "/reference/provider-compatibility/",
-                      },
-                      {
-                        label: "Tech Stack",
-                        link: "/reference/tech-stack/",
-                      },
-                    ],
-                    collapsed: true,
-                  },
-                ],
-              },
-              {
-                label: "AI",
-                items: [
-                  { label: "Overview", link: "/ai/" },
-                  {
-                    label: "Capabilities",
-                    autogenerate: { directory: "ai" },
-                    collapsed: false,
-                  },
-                ],
-              },
-              {
-                label: "Architecture",
-                items: [
-                  { label: "Overview", link: "/architecture/" },
-                  {
-                    label: "Patterns",
-                    autogenerate: { directory: "architecture/patterns" },
-                    collapsed: true,
-                  },
-                  {
-                    label: "ADRs",
-                    autogenerate: { directory: "architecture/adr" },
-                    collapsed: true,
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            label: "Frontend (TS/React)",
-            link: "/reference/frontend/",
-            icon: "puzzle",
-            id: "frontend",
-            items: [
-              {
-                label: "Reference",
-                items: [
-                  { label: "Overview", link: "/reference/frontend/" },
-                  {
-                    label: "Packages",
-                    autogenerate: { directory: "reference/frontend" },
-                    collapsed: true,
-                  },
-                ],
-              },
-              {
-                label: "Architecture",
-                items: [
-                  {
-                    label: "Overview",
-                    link: "/architecture/frontend-overview/",
-                  },
-                  {
-                    label: "Patterns",
-                    autogenerate: {
-                      directory: "architecture/patterns-frontend",
+        starlightSidebarTopics(
+          [
+            {
+              label: "Backend (.NET)",
+              link: "/dotnet/",
+              icon: "laptop",
+              id: "backend",
+              items: [
+                {
+                  label: "Getting Started",
+                  autogenerate: { directory: "dotnet/getting-started" },
+                },
+                {
+                  label: "Concepts",
+                  autogenerate: { directory: "dotnet/concepts" },
+                  collapsed: true,
+                },
+                {
+                  label: "Guides",
+                  autogenerate: { directory: "dotnet/guides" },
+                  collapsed: true,
+                },
+                {
+                  label: "Operations",
+                  autogenerate: { directory: "dotnet/operations" },
+                  collapsed: true,
+                },
+                {
+                  label: "Core",
+                  autogenerate: { directory: "dotnet/core" },
+                },
+                {
+                  label: "Data",
+                  autogenerate: { directory: "dotnet/data" },
+                  collapsed: true,
+                },
+                {
+                  label: "Security & Compliance",
+                  autogenerate: { directory: "dotnet/security" },
+                  collapsed: true,
+                },
+                {
+                  label: "API",
+                  autogenerate: { directory: "dotnet/api" },
+                },
+                {
+                  label: "Infrastructure",
+                  autogenerate: { directory: "dotnet/infrastructure" },
+                  collapsed: true,
+                },
+                {
+                  label: "Observability",
+                  autogenerate: { directory: "dotnet/observability" },
+                },
+                {
+                  label: "Business Features",
+                  autogenerate: { directory: "dotnet/business" },
+                  collapsed: true,
+                },
+                {
+                  label: "Reference",
+                  items: [
+                    {
+                      label: "Configuration Keys",
+                      link: "/dotnet/configuration-keys/",
                     },
-                    collapsed: true,
-                  },
-                  {
-                    label: "ADRs",
-                    autogenerate: {
-                      directory: "architecture/adr-frontend",
+                    {
+                      label: "Cloud Providers",
+                      link: "/dotnet/cloud-providers/",
                     },
-                    collapsed: true,
-                  },
-                ],
-              },
-            ],
-          },
-        ],
+                    {
+                      label: "Provider Compatibility",
+                      link: "/dotnet/provider-compatibility/",
+                    },
+                  ],
+                  collapsed: true,
+                },
+                {
+                  label: "AI",
+                  items: [
+                    { label: "Overview", link: "/dotnet/ai/" },
+                    {
+                      label: "Capabilities",
+                      autogenerate: { directory: "dotnet/ai" },
+                      collapsed: false,
+                    },
+                  ],
+                },
+                {
+                  label: "Architecture",
+                  items: [
+                    { label: "Overview", link: "/dotnet/architecture/" },
+                    {
+                      label: "Patterns",
+                      autogenerate: {
+                        directory: "dotnet/architecture/patterns",
+                      },
+                      collapsed: true,
+                    },
+                    {
+                      label: "ADRs",
+                      autogenerate: { directory: "dotnet/architecture/adr" },
+                      collapsed: true,
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              label: "Frontend (TS/React)",
+              link: "/frontend/",
+              icon: "puzzle",
+              id: "frontend",
+              items: [
+                {
+                  label: "Getting Started",
+                  autogenerate: { directory: "frontend/getting-started" },
+                },
+                {
+                  label: "Guides",
+                  autogenerate: { directory: "frontend/guides" },
+                  collapsed: true,
+                },
+                {
+                  label: "Operations",
+                  autogenerate: { directory: "frontend/operations" },
+                  collapsed: true,
+                },
+                {
+                  label: "Core",
+                  autogenerate: { directory: "frontend/core" },
+                },
+                {
+                  label: "Data",
+                  autogenerate: { directory: "frontend/data" },
+                  collapsed: true,
+                },
+                {
+                  label: "Security & Compliance",
+                  autogenerate: { directory: "frontend/security" },
+                  collapsed: true,
+                },
+                {
+                  label: "API",
+                  autogenerate: { directory: "frontend/api" },
+                },
+                {
+                  label: "Infrastructure",
+                  autogenerate: { directory: "frontend/infrastructure" },
+                  collapsed: true,
+                },
+                {
+                  label: "Observability",
+                  autogenerate: { directory: "frontend/observability" },
+                  collapsed: true,
+                },
+                {
+                  label: "Business Features",
+                  autogenerate: { directory: "frontend/business" },
+                  collapsed: true,
+                },
+                {
+                  label: "Architecture",
+                  items: [
+                    { label: "Overview", link: "/frontend/architecture/" },
+                    {
+                      label: "Patterns",
+                      autogenerate: {
+                        directory: "frontend/architecture/patterns",
+                      },
+                      collapsed: true,
+                    },
+                    {
+                      label: "ADRs",
+                      autogenerate: {
+                        directory: "frontend/architecture/adr",
+                      },
+                      collapsed: true,
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              label: "Community",
+              link: "/contributing/",
+              icon: "heart",
+              items: [
+                {
+                  label: "Contributing",
+                  autogenerate: { directory: "contributing" },
+                },
+                {
+                  label: "Migration",
+                  autogenerate: { directory: "migration" },
+                  collapsed: true,
+                },
+                {
+                  label: "Troubleshooting",
+                  autogenerate: { directory: "troubleshooting" },
+                  collapsed: true,
+                },
+              ],
+            },
+          ],
           {
             exclude: ["/blog", "/blog/**/*"],
           },
