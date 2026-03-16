@@ -111,7 +111,7 @@ See [templates.md](templates.md) for structure per issue type.
 Two persona registries:
 
 - **Infrastructure & governance (15 personas)**: `governance-compliance/docs/03-organization/ORG-05-PERSONAS.md`
-- **Application-level (5 personas)**: `granit-dotnet/docs/guide/personas-applicatifs.md`
+- **Application-level (5 personas)**: [personas-applicatifs.md](personas-applicatifs.md) — read this file before writing any user story with an application persona
 
 NEVER invent a new persona.
 
@@ -130,4 +130,4 @@ Context (on-call, audit) goes in the story body, not in the persona.
 - Detailed workflows (create, link, close): [workflows.md](workflows.md)
 - Description templates per type: [templates.md](templates.md)
 - gh command reference: [reference.md](reference.md)
-- Persona registry: `governance-compliance/docs/03-organization/ORG-05-PERSONAS.md`
+- Persona registries: `governance-compliance/docs/03-organization/ORG-05-PERSONAS.md` (infra/governance) · [personas-applicatifs.md](personas-applicatifs.md) (application)
