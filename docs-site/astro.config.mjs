@@ -167,6 +167,18 @@ export default defineConfig({
                   items: [
                     { label: "Overview", link: "/dotnet/architecture/" },
                     {
+                      label: "HTTP Conventions",
+                      link: "/dotnet/architecture/http-conventions/",
+                    },
+                    {
+                      label: "Dependency Graph",
+                      link: "/dotnet/architecture/dependency-graph/",
+                    },
+                    {
+                      label: "Tech Stack",
+                      link: "/dotnet/architecture/tech-stack/",
+                    },
+                    {
                       label: "Patterns",
                       autogenerate: {
                         directory: "dotnet/architecture/patterns",
