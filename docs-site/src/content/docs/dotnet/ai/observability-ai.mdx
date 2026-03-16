@@ -1,0 +1,209 @@
+---
+title: Log Analysis
+description: AI-powered log analysis for Granit.Observability — send a batch of structured log entries to the LLM and get back a human-readable summary with categorized insights.
+sidebar:
+  order: 14
+  badge:
+    text: New
+    variant: tip
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+A spike in error logs tells you something is wrong. It does not tell you *what* is wrong
+or where to look first. `Granit.Observability.AI` adds `IAILogAnalyzer`: send a
+batch of log entries, get back a concise summary and a list of categorized insights.
+
+This is batch analysis — run it as a scheduled job, not per request.
+
+## Setup
+
+<Tabs>
+<TabItem label="Module">
+```csharp
+[DependsOn(
+    typeof(GranitObservabilityAIModule),
+    typeof(GranitAIOpenAIModule))]
+public class AppModule : GranitModule { }
+```
+</TabItem>
+<TabItem label="Program.cs">
+```csharp
+builder.AddGranitAI();
+builder.AddGranitAIOpenAI();
+builder.AddGranitObservabilityAI();
+```
+</TabItem>
+<TabItem label="appsettings.json">
+```json
+{
+  "AI": {
+    "Observability": {
+      "WorkspaceName": "default",
+      "TimeoutSeconds": 60,
+      "MaxLogEntries": 500
+    }
+  }
+}
+```
+</TabItem>
+</Tabs>
+
+`TimeoutSeconds` is intentionally high (60s default) — log analysis batches can be large.
+This service is never called in the request path.
+
+## Analyzing logs
+
+```csharp
+public class LogAnalysisService(IAILogAnalyzer analyzer)
+{
+    public async Task<LogAnalysisReport> AnalyzeRecentErrorsAsync(
+        IReadOnlyList<LogEntry> recentLogs,
+        CancellationToken ct)
+    {
+        return await analyzer.AnalyzeAsync(recentLogs, ct).ConfigureAwait(false);
+    }
+}
+```
+
+### Input: `LogEntry`
+
+```csharp
+public sealed record LogEntry(
+    DateTimeOffset Timestamp,
+    string Level,       // "Error", "Warning", "Information", "Debug"
+    string Message,
+    string? Exception); // Full exception string when available
+```
+
+Build log entries from your Serilog sink or OpenTelemetry exporter:
+
+```csharp
+IReadOnlyList<LogEntry> entries = serilogEvents
+    .Where(e => e.Level >= LogEventLevel.Warning)
+    .Select(e => new LogEntry(
+        e.Timestamp,
+        e.Level.ToString(),
+        e.RenderMessage(),
+        e.Exception?.ToString()))
+    .ToList();
+```
+
+### Output: `LogAnalysisReport`
+
+```csharp
+public sealed record LogAnalysisReport(
+    string Summary,                        // "3 distinct errors, 2 related to database connectivity"
+    IReadOnlyList<LogInsight> Insights,    // Categorized findings
+    int TotalEntries);                     // Entries analyzed
+
+public sealed record LogInsight(
+    string Description,   // "NpgsqlException: connection refused — 47 occurrences"
+    string Severity,      // "Critical" | "High" | "Medium" | "Low"
+    string Category);     // "Database" | "Authentication" | "Performance" | "Integration" | "Application"
+```
+
+### Example report
+
+Given 200 log entries from a 1-hour window:
+
+```
+Summary: 200 entries analyzed. 3 critical error clusters:
+  (1) Database connectivity failures — NpgsqlException recurring every ~30s
+      since 14:22 UTC (47 occurrences)
+  (2) JWT validation errors — 12 occurrences for user agent "curl/7.x",
+      suggesting automated probing
+  (3) Slow query warnings — avg 3.2s on /api/invoices/search
+
+Insights:
+  [Critical/Database]        NpgsqlException: connection refused — 47 occurrences since 14:22 UTC
+  [High/Authentication]      JWT validation failures from single IP — possible credential stuffing
+  [Medium/Performance]       P95 latency > 3s on invoice search endpoint
+  [Low/Application]          Null reference in InvoiceMapper.ToDto — 2 occurrences
+```
+
+## Scheduled analysis (Wolverine)
+
+Log analysis is never interactive — use a cron job:
+
+```csharp
+// Register with Granit.BackgroundJobs
+builder.AddGranitBackgroundJob<HourlyLogAnalysisJob>(
+    cron: "0 * * * *");  // Every hour
+
+// Wolverine handler
+public static async Task Handle(
+    HourlyLogAnalysisJob job,
+    ILogStore logStore,
+    IAILogAnalyzer analyzer,
+    INotificationPublisher notifier,
+    ITimelineWriter timeline,
+    CancellationToken ct)
+{
+    DateTimeOffset since = DateTimeOffset.UtcNow.AddHours(-1);
+
+    IReadOnlyList<LogEntry> entries = await logStore
+        .GetEntriesAsync(since, minLevel: "Warning", ct)
+        .ConfigureAwait(false);
+
+    if (entries.Count == 0) return;
+
+    LogAnalysisReport report = await analyzer.AnalyzeAsync(entries, ct)
+        .ConfigureAwait(false);
+
+    // Only alert if critical insights found
+    bool hasCritical = report.Insights.Any(i => i.Severity is "Critical" or "High");
+
+    if (hasCritical)
+    {
+        await notifier.PublishAsync(
+            LogAlertNotification.Type,
+            new LogAlertData(report),
+            recipients: ["on-call"],
+            ct).ConfigureAwait(false);
+    }
+
+    // Always post summary to timeline for audit trail
+    await timeline.PostEntryAsync(
+        entityType: "System",
+        entityId: "log-analysis",
+        entryType: TimelineEntryType.SystemLog,
+        body: $"[AI Log Analysis] {report.Summary}",
+        parentEntryId: null,
+        ct).ConfigureAwait(false);
+}
+```
+
+## Token budget
+
+Large log batches can be expensive. Use `MaxLogEntries` to cap the context window,
+and pre-filter before sending:
+
+```csharp
+IReadOnlyList<LogEntry> filtered = allEntries
+    // Only warnings and above
+    .Where(e => e.Level is "Warning" or "Error" or "Critical")
+    // Deduplicate — LLM doesn't need 500 identical connection errors
+    .DistinctBy(e => e.Message[..Math.Min(100, e.Message.Length)])
+    // Cap at configured max
+    .Take(options.Value.MaxLogEntries)
+    .ToList();
+```
+
+Deduplication before the LLM call significantly reduces token cost while
+preserving analytical quality.
+
+## Configuration reference
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `WorkspaceName` | `string?` | `null` (default) | AI workspace for log analysis |
+| `TimeoutSeconds` | `int` | `60` | LLM timeout — batch analysis needs more time |
+| `MaxLogEntries` | `int` | `500` | Maximum entries per analysis call |
+
+## See also
+
+- [Granit.AI setup](/dotnet/ai/setup/) — providers, workspaces
+- [Observability](/dotnet/observability/observability-otlp/) — the observability module
+- [AI: Timeline](/dotnet/ai/timeline-ai/) — audit trail summarization
+- [AI: Authorization](/dotnet/ai/authorization-ai/) — access anomaly detection

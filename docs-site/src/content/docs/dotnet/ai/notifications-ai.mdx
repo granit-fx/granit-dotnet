@@ -1,0 +1,208 @@
+---
+title: Notification Intelligence
+description: AI-generated notification content and intelligent channel routing — the LLM writes the subject and body, then selects the optimal delivery channel for each recipient.
+sidebar:
+  order: 8
+  badge:
+    text: New
+    variant: tip
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+`Granit.Notifications.AI` enriches the notification pipeline with two capabilities:
+content generation (the LLM writes the message from structured event data) and
+channel selection (the LLM routes to the right channel for each context).
+
+Both run asynchronously via Wolverine — notifications are never delayed waiting for the LLM.
+
+## Two services
+
+| Service | What it does |
+|---------|-------------|
+| `IAINotificationContentGenerator` | Generates `Subject` + `Body` from a `NotificationDeliveryContext` |
+| `IAIChannelSelector` | Picks the best channel(s) from the available list for a given context |
+
+## Setup
+
+<Tabs>
+<TabItem label="Module">
+```csharp
+[DependsOn(
+    typeof(GranitNotificationsAIModule),
+    typeof(GranitAIOpenAIModule))]
+public class AppModule : GranitModule { }
+```
+</TabItem>
+<TabItem label="Program.cs">
+```csharp
+builder.AddGranitAI();
+builder.AddGranitAIOpenAI();
+builder.AddGranitNotificationsAI();
+```
+</TabItem>
+<TabItem label="appsettings.json">
+```json
+{
+  "AI": {
+    "Notifications": {
+      "WorkspaceName": "default",
+      "TimeoutSeconds": 10
+    }
+  }
+}
+```
+</TabItem>
+</Tabs>
+
+## Content generation
+
+`IAINotificationContentGenerator` takes a `NotificationDeliveryContext` and returns
+a `NotificationContent` (subject + body), or `null` if generation fails.
+
+The context contains everything the LLM needs: notification type name, severity,
+event data as JSON, related entity reference, recipient, tenant, and culture:
+
+```csharp
+public class NotificationDeliveryPipeline(
+    IAINotificationContentGenerator contentGenerator,
+    INotificationChannelRegistry channelRegistry)
+{
+    public async Task<NotificationContent> BuildContentAsync(
+        NotificationDeliveryContext context,
+        CancellationToken ct)
+    {
+        // Try AI generation first
+        NotificationContent? aiContent = await contentGenerator
+            .GenerateAsync(context, ct)
+            .ConfigureAwait(false);
+
+        if (aiContent is not null)
+            return aiContent;
+
+        // Fallback to template-based content
+        return BuildFallbackContent(context);
+    }
+}
+```
+
+### What the LLM produces
+
+```csharp
+public sealed record NotificationContent(string Subject, string Body);
+```
+
+The LLM uses `NotificationDeliveryContext.Culture` to write in the correct language.
+With 17 supported cultures, this means your notifications are automatically localized
+based on the recipient's culture preference — no template per culture required.
+
+### Example output
+
+Given a context for an invoice approval notification with `Culture = "fr"`:
+
+```
+Subject: Facture #INV-2026-042 approuvée
+Body:    Votre facture de 4 850,00 € soumise le 14 mars a été approuvée
+         par Marie Dupont. Le paiement sera traité sous 48 heures.
+```
+
+The LLM uses `context.Data` (a `JsonElement` with the event payload) to extract
+relevant details like amounts, names, and dates.
+
+## Channel selection
+
+`IAIChannelSelector` picks the optimal subset of channels from those available.
+This avoids notification fatigue — a low-severity info event doesn't need SMS
+and email and push all at once:
+
+```csharp
+public class SmartNotificationDispatcher(
+    IAIChannelSelector channelSelector,
+    INotificationPublisher publisher)
+{
+    public async Task DispatchAsync(
+        NotificationDeliveryContext context,
+        IReadOnlyList<string> configuredChannels,  // ["email", "push", "sms"]
+        CancellationToken ct)
+    {
+        IReadOnlyList<string> selectedChannels = await channelSelector
+            .SelectChannelsAsync(context, configuredChannels, ct)
+            .ConfigureAwait(false);
+
+        // selectedChannels might be ["push"] for low-severity,
+        // or ["email", "sms"] for Fatal severity
+        foreach (string channel in selectedChannels)
+        {
+            await publisher.PublishAsync(context, channel, ct).ConfigureAwait(false);
+        }
+    }
+}
+```
+
+### Selection logic
+
+The LLM evaluates:
+
+| Factor | Example |
+|--------|---------|
+| `Severity` | `Fatal` → email + SMS; `Info` → push only |
+| `OccurredAt` | Outside business hours → email (not push) |
+| `NotificationTypeName` | `SecurityAlert` → all channels; `WeeklyReport` → email only |
+| `RelatedEntity` | Entity type gives context on urgency |
+
+The selector can return fewer channels than configured (always a subset).
+If the LLM times out, all configured channels are used as fallback.
+
+## Async pattern — the only correct approach
+
+AI content generation must run **after** the notification is queued, not in the
+delivery path. Use Wolverine:
+
+```csharp
+// Wolverine handler triggered after notification is persisted
+public static async Task Handle(
+    NotificationQueuedEvent evt,
+    INotificationRepository repo,
+    IAINotificationContentGenerator generator,
+    IChannelDispatcher dispatcher,
+    CancellationToken ct)
+{
+    NotificationDeliveryContext context = await repo.GetDeliveryContextAsync(evt.Id, ct)
+        .ConfigureAwait(false);
+
+    NotificationContent? content = await generator.GenerateAsync(context, ct)
+        .ConfigureAwait(false);
+
+    await dispatcher.DispatchAsync(
+        context,
+        content ?? BuildFallbackContent(context),
+        ct).ConfigureAwait(false);
+}
+```
+
+This pattern gives you:
+- Instant 202 response to the publishing call
+- LLM generation in the background with Wolverine retry on failure
+- SignalR/SSE push to the recipient when delivery completes
+
+## GDPR note
+
+`NotificationDeliveryContext.Data` contains the event payload — this may include
+business data (invoice amounts, names, etc.) sent to the LLM. Ensure your AI workspace
+uses a provider with a DPA, or Ollama for sensitive data.
+
+The `RecipientUserId` is available in the context but not sent to the LLM by the
+default implementation — only `Data`, `NotificationTypeName`, `Severity`, and `Culture`.
+
+## Configuration reference
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `WorkspaceName` | `string?` | `null` (default) | AI workspace for content generation |
+| `TimeoutSeconds` | `int` | `10` | LLM call timeout — returns `null` on timeout |
+
+## See also
+
+- [Granit.AI setup](/dotnet/ai/setup/) — providers, workspaces
+- [Notifications](/dotnet/infrastructure/notifications/) — the notifications module
+- [AI: Workflow](/dotnet/ai/workflow-ai/) — workflow decision support

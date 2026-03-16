@@ -1,0 +1,190 @@
+---
+title: Access Anomaly Detection
+description: AI-powered behavioral analysis of permission checks — detects suspicious access patterns (off-hours access, mass data reads, privilege escalation) in real time.
+sidebar:
+  order: 13
+  badge:
+    text: New
+    variant: tip
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Traditional authorization checks are binary: allowed or denied. They cannot detect
+that a user who is *allowed* to read invoices is reading 800 of them in 5 minutes
+at 2am — which is suspicious even if each individual check passes.
+
+`Granit.Authorization.AI` adds `IAIAccessAnomalyDetector`: an optional decorator on
+the permission check pipeline that scores behavioral risk without blocking access.
+
+## How it works
+
+The detector is called **after** the permission check succeeds. It analyzes three signals:
+
+| Signal | What's passed to the LLM |
+|--------|--------------------------|
+| `userId` | The user performing the access |
+| `permission` | The permission being checked (e.g. `invoices.read`) |
+| `context` | Optional JSON: resource type, count, time, previous access patterns |
+
+It returns an `AccessRiskScore` that your code can act on — log, alert, or
+throttle — without blocking the operation:
+
+```csharp
+public sealed record AccessRiskScore(
+    double Score,                         // 0.0 (normal) – 1.0 (high risk)
+    string Reasoning,                     // "800 reads in 5 minutes at 2am"
+    IReadOnlyList<string> RiskFactors);   // ["unusual time", "high volume", "bulk export"]
+```
+
+## Setup
+
+<Tabs>
+<TabItem label="Module">
+```csharp
+[DependsOn(
+    typeof(GranitAuthorizationAIModule),
+    typeof(GranitAIOpenAIModule))]
+public class AppModule : GranitModule { }
+```
+</TabItem>
+<TabItem label="Program.cs">
+```csharp
+builder.AddGranitAI();
+builder.AddGranitAIOpenAI();
+builder.AddGranitAuthorizationAI();
+```
+</TabItem>
+<TabItem label="appsettings.json">
+```json
+{
+  "AI": {
+    "Authorization": {
+      "WorkspaceName": "default",
+      "TimeoutSeconds": 2
+    }
+  }
+}
+```
+</TabItem>
+</Tabs>
+
+Note the **2-second timeout**: access evaluation is in the request path.
+Fail-open design: timeout returns `Score = 0.0` and access proceeds normally.
+
+## Using the detector
+
+Inject `IAIAccessAnomalyDetector` alongside your permission checks. The recommended
+pattern is a decorator on your data access layer:
+
+```csharp
+public class AnomalyAwareInvoiceRepository(
+    IInvoiceRepository inner,
+    IAIAccessAnomalyDetector detector,
+    ICurrentUserService currentUser,
+    ISecurityAlerter alerter) : IInvoiceRepository
+{
+    public async Task<PagedResult<Invoice>> SearchAsync(
+        InvoiceQuery query,
+        CancellationToken ct)
+    {
+        PagedResult<Invoice> result = await inner.SearchAsync(query, ct)
+            .ConfigureAwait(false);
+
+        // Evaluate after the query — never blocks the response
+        AccessRiskScore risk = await detector.EvaluateAccessAsync(
+            userId: currentUser.UserId,
+            permission: "invoices.read",
+            context: JsonSerializer.Serialize(new
+            {
+                ResultCount = result.TotalCount,
+                HasExport = query.ExportRequested,
+                Hour = DateTimeOffset.UtcNow.Hour,
+            }),
+            ct).ConfigureAwait(false);
+
+        if (risk.Score > 0.7)
+        {
+            await alerter.RaiseAlertAsync(currentUser.UserId, risk, ct)
+                .ConfigureAwait(false);
+        }
+
+        return result;
+    }
+}
+```
+
+### Risk thresholds
+
+| Score range | Suggested action |
+|-------------|-----------------|
+| `0.0 – 0.3` | Normal — no action |
+| `0.3 – 0.6` | Log and monitor |
+| `0.6 – 0.8` | Alert security team |
+| `0.8 – 1.0` | Alert + throttle or require re-authentication |
+
+These are starting points — tune to your application's access patterns.
+
+## What the LLM evaluates
+
+The LLM is not aware of what's "normal" for your application by default.
+Use the `context` parameter to provide relevant behavioral signals:
+
+```csharp
+// Good context — gives the LLM useful signals
+var context = JsonSerializer.Serialize(new
+{
+    ResourceType = "Invoice",
+    Count = 847,          // How many records accessed
+    IsExport = true,      // Bulk export flag
+    LocalHour = 2,        // Hour of day (local time)
+    DayOfWeek = "Sunday",
+    IsFirstAccess = false,
+    TenantPlan = "starter", // Expected volume for this plan
+});
+```
+
+The more context you provide, the more accurate the scoring.
+
+## Timeline integration
+
+Flagged access events can be posted to the Timeline for audit trail compliance:
+
+```csharp
+if (risk.Score > 0.6)
+{
+    await timelineWriter.PostEntryAsync(
+        entityType: "User",
+        entityId: currentUser.UserId,
+        entryType: TimelineEntryType.SystemLog,
+        body: $"[Security] Suspicious access detected: {risk.Reasoning} " +
+              $"(score: {risk.Score:F2}, factors: {string.Join(", ", risk.RiskFactors)})",
+        parentEntryId: null,
+        ct).ConfigureAwait(false);
+}
+```
+
+## Fail-open design
+
+Authorization must never be blocked by an AI timeout. When the LLM is unavailable:
+
+- `Score` = `0.0` (no risk assumed)
+- `Reasoning` = `"Evaluation unavailable"`
+- `RiskFactors` = `[]`
+
+Access proceeds normally. A warning is logged. The AI decorator never
+becomes a denial-of-service vector for your authorization layer.
+
+## Configuration reference
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `WorkspaceName` | `string` | `"default"` | AI workspace for access evaluation |
+| `TimeoutSeconds` | `int` | `2` | Timeout — keep low, access evaluation is in the request path |
+
+## See also
+
+- [Granit.AI setup](/dotnet/ai/setup/) — providers, workspaces
+- [Authorization](/dotnet/security/authorization/) — the authorization module
+- [AI: Timeline](/dotnet/ai/timeline-ai/) — timeline anomaly detection
+- [AI: PII Detection](/dotnet/ai/privacy-ai/) — personal data in text

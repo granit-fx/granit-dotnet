@@ -1,0 +1,254 @@
+---
+title: Workflow Decision Support
+description: AI-powered transition advisor and risk-based auto-approval for Granit.Workflow — the LLM recommends the next step and evaluates risk, but humans remain in control.
+sidebar:
+  order: 7
+  badge:
+    text: New
+    variant: tip
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Approval workflows slow teams down when every transition — even obviously low-risk ones
+— waits for a human to click. `Granit.Workflow.AI` adds two complementary services:
+an advisor that recommends the next step, and an evaluator that scores risk so
+low-risk transitions can auto-approve.
+
+The LLM never executes a transition. It recommends and scores. The engine decides.
+
+## Two services, one principle
+
+```
+IAITransitionAdvisor   →  "Given the current state, I recommend moving to Approved (0.87 confidence)"
+IAIApprovalEvaluator   →  "This transition scores 0.12 risk — below threshold, auto-approve"
+```
+
+Both operate on **serialized entity context** (JSON snapshot), not database queries.
+The LLM sees what you give it, nothing more.
+
+## Setup
+
+<Tabs>
+<TabItem label="Module">
+```csharp
+[DependsOn(
+    typeof(GranitWorkflowAIModule),
+    typeof(GranitAIOpenAIModule))]
+public class AppModule : GranitModule { }
+```
+</TabItem>
+<TabItem label="Program.cs">
+```csharp
+builder.AddGranitAI();
+builder.AddGranitAIOpenAI();
+builder.AddGranitWorkflowAI();
+```
+</TabItem>
+<TabItem label="appsettings.json">
+```json
+{
+  "AI": {
+    "Workflow": {
+      "WorkspaceName": "default",
+      "TimeoutSeconds": 10,
+      "AutoApprovalThreshold": 0.3
+    }
+  }
+}
+```
+</TabItem>
+</Tabs>
+
+`AutoApprovalThreshold` is the maximum risk score for automatic approval.
+`0.3` means: if `RiskScore < 0.3`, the transition can proceed without human review.
+Set to `0.0` to disable auto-approval entirely.
+
+## Transition advisor
+
+`IAITransitionAdvisor.RecommendAsync` suggests the most appropriate next transition
+given the current entity state and recent history:
+
+```csharp
+public class InvoiceApprovalService(
+    IWorkflowManager<InvoiceState> workflow,
+    IAITransitionAdvisor advisor)
+{
+    public async Task<TransitionRecommendation?> GetRecommendationAsync(
+        Invoice invoice,
+        CancellationToken ct)
+    {
+        // Get transitions that are currently allowed
+        IReadOnlyList<WorkflowTransition<InvoiceState>> allowed =
+            await workflow.GetAllowedTransitionsAsync(invoice.State, ct)
+                .ConfigureAwait(false);
+
+        string entityJson = JsonSerializer.Serialize(new
+        {
+            invoice.Id,
+            invoice.Amount,
+            invoice.DueDate,
+            invoice.SupplierName,
+            invoice.LineItemCount,
+        });
+
+        IReadOnlyList<string> recentTransitions =
+        [
+            "Draft → PendingReview",
+            "PendingReview → Approved",
+        ];
+
+        return await advisor.RecommendAsync(
+            entityType: "Invoice",
+            currentState: invoice.State.ToString(),
+            entityJson: entityJson,
+            recentTransitions: recentTransitions,
+            ct).ConfigureAwait(false);
+    }
+}
+```
+
+### Recommendation result
+
+```csharp
+public sealed record TransitionRecommendation(
+    string RecommendedTransition,  // "Approve"
+    string Reasoning,              // "Amount is within normal range, supplier is known, no anomalies"
+    double Confidence);            // 0.0 – 1.0
+```
+
+Use `Confidence` to decide whether to surface the recommendation in the UI:
+show it only above a threshold (e.g., 0.7) so low-confidence suggestions
+don't mislead users.
+
+## Risk-based auto-approval
+
+`IAIApprovalEvaluator.EvaluateRiskAsync` scores how risky a transition is.
+Combined with `AutoApprovalThreshold`, it enables automated approval for
+routine, low-risk operations:
+
+```csharp
+public class WorkflowApprovalHandler(
+    IWorkflowManager<InvoiceState> workflow,
+    IAIApprovalEvaluator evaluator)
+{
+    public async Task HandleAsync(ApprovalRequestedEvent evt, CancellationToken ct)
+    {
+        string entityJson = JsonSerializer.Serialize(evt.InvoiceSnapshot);
+
+        RiskAssessment risk = await evaluator.EvaluateRiskAsync(
+            entityType: "Invoice",
+            transition: $"{evt.FromState} → {evt.ToState}",
+            entityJson: entityJson,
+            ct).ConfigureAwait(false);
+
+        if (risk.RiskScore < options.Value.AutoApprovalThreshold)
+        {
+            // Auto-approve: LLM evaluated this as low risk
+            await workflow.TransitionAsync(
+                evt.FromState, evt.ToState,
+                new TransitionContext { Comment = $"Auto-approved (AI risk score: {risk.RiskScore:F2})" },
+                ct).ConfigureAwait(false);
+        }
+        else
+        {
+            // High risk: route to human reviewer with AI context
+            await notifier.NotifyReviewerAsync(evt, risk, ct).ConfigureAwait(false);
+        }
+    }
+}
+```
+
+### Risk assessment result
+
+```csharp
+public sealed record RiskAssessment(
+    double RiskScore,                        // 0.0 (safe) – 1.0 (high risk)
+    string Reasoning,                        // "Amount exceeds monthly average by 3×"
+    IReadOnlyList<string> RiskFactors);      // ["unusually high amount", "new supplier"]
+```
+
+Surface `RiskFactors` to reviewers so they understand why the AI flagged a transition.
+
+## What the LLM sees
+
+The entity context is a **JSON snapshot you control** — include only what's
+relevant for the decision, nothing sensitive:
+
+```csharp
+// Good: business-relevant fields
+var context = new
+{
+    invoice.Amount,
+    invoice.Currency,
+    invoice.SupplierName,
+    invoice.IsFirstInvoiceFromSupplier,
+    invoice.DueDate,
+};
+
+// Avoid: PII, internal IDs, unrelated fields
+// × invoice.RecipientEmail
+// × invoice.InternalNotes
+// × invoice.CreatedByUserId
+```
+
+The LLM never has access to your database — only what you serialize.
+
+## Guard-rails
+
+| Guarantee | How it's enforced |
+|-----------|-------------------|
+| LLM never executes transitions | `IAITransitionAdvisor` returns a recommendation string; `IWorkflowManager.TransitionAsync` is called separately by your code |
+| Auto-approval requires explicit threshold | Default is `0.0` — no auto-approval unless you configure a positive threshold |
+| Timeout never blocks workflow | Both services return `null` / neutral results on timeout |
+| Human can always override | Recommendations are suggestions; the UI shows them as such |
+
+## Async pattern (Wolverine)
+
+Auto-approval logic belongs in a Wolverine handler, not in the HTTP path:
+
+```csharp
+// HTTP endpoint — publishes event, returns immediately
+app.MapPost("/invoices/{id}/submit", async (Guid id, IMessageBus bus, CancellationToken ct) =>
+{
+    await bus.PublishAsync(new InvoiceSubmittedEvent(id));
+    return TypedResults.Accepted();
+});
+
+// Wolverine handler — runs in background
+public static async Task Handle(
+    InvoiceSubmittedEvent evt,
+    IInvoiceRepository repo,
+    IWorkflowManager<InvoiceState> workflow,
+    IAIApprovalEvaluator evaluator,
+    CancellationToken ct)
+{
+    Invoice invoice = await repo.GetAsync(evt.InvoiceId, ct).ConfigureAwait(false);
+    string entityJson = JsonSerializer.Serialize(invoice.ToApprovalContext());
+
+    RiskAssessment risk = await evaluator.EvaluateRiskAsync(
+        "Invoice", "PendingReview → Approved", entityJson, ct).ConfigureAwait(false);
+
+    if (risk.RiskScore < 0.3)
+    {
+        await workflow.TransitionAsync(
+            InvoiceState.PendingReview, InvoiceState.Approved,
+            new TransitionContext { Comment = $"Auto-approved (risk: {risk.RiskScore:F2})" },
+            ct).ConfigureAwait(false);
+    }
+}
+```
+
+## Configuration reference
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `WorkspaceName` | `string` | `"default"` | AI workspace for workflow decisions |
+| `TimeoutSeconds` | `int` | `10` | LLM call timeout |
+| `AutoApprovalThreshold` | `double` | `0.0` | Max risk score for auto-approval (0 = disabled) |
+
+## See also
+
+- [Granit.AI setup](/dotnet/ai/setup/) — providers, workspaces
+- [Workflow](/dotnet/business/workflow/) — the workflow module
+- [AI: Timeline](/dotnet/ai/timeline-ai/) — audit trail summarization

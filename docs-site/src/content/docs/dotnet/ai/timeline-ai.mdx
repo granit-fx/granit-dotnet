@@ -1,0 +1,224 @@
+---
+title: Timeline Intelligence
+description: AI-powered audit trail summarization and anomaly detection — turn hundreds of timeline entries into a human-readable summary, and surface unusual activity patterns automatically.
+sidebar:
+  order: 9
+  badge:
+    text: New
+    variant: tip
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+An audit trail with 300 entries tells you everything that happened — but not what
+matters. `Granit.Timeline.AI` adds two services: a summarizer that distills activity
+into a paragraph, and an anomaly detector that flags patterns that look unusual.
+
+Both services read from the timeline. Neither writes to it: summaries posted back
+are `SystemLog` entries (ISO 27001 immutable), never replacements for the original entries.
+
+## Setup
+
+<Tabs>
+<TabItem label="Module">
+```csharp
+[DependsOn(
+    typeof(GranitTimelineAIModule),
+    typeof(GranitAIOpenAIModule))]
+public class AppModule : GranitModule { }
+```
+</TabItem>
+<TabItem label="Program.cs">
+```csharp
+builder.AddGranitAI();
+builder.AddGranitAIOpenAI();
+builder.AddGranitTimelineAI();
+```
+</TabItem>
+<TabItem label="appsettings.json">
+```json
+{
+  "AI": {
+    "Timeline": {
+      "WorkspaceName": "default",
+      "TimeoutSeconds": 30,
+      "MaxEntriesToAnalyze": 200
+    }
+  }
+}
+```
+</TabItem>
+</Tabs>
+
+## Summarization
+
+`ITimelineSummarizer.SummarizeAsync` fetches the timeline entries for an entity
+(up to `MaxEntriesToAnalyze`), sends them to the LLM, and returns a natural language
+summary:
+
+```csharp
+public class InvoiceDashboardService(ITimelineSummarizer summarizer)
+{
+    public async Task<TimelineSummary> GetActivitySummaryAsync(
+        Guid invoiceId,
+        CancellationToken ct)
+    {
+        // Summarize all activity, or only the last 30 days
+        DateTimeOffset since = DateTimeOffset.UtcNow.AddDays(-30);
+
+        return await summarizer
+            .SummarizeAsync("Invoice", invoiceId, since, ct)
+            .ConfigureAwait(false);
+    }
+}
+```
+
+### Summary result
+
+```csharp
+public sealed record TimelineSummary(
+    string Text,                  // Human-readable summary paragraph
+    int EntryCount,               // Number of entries analyzed
+    DateTimeOffset? OldestEntry,  // Span start
+    DateTimeOffset? NewestEntry); // Span end
+```
+
+Example output for an invoice with 47 entries over 3 days:
+
+```
+In the past 3 days, invoice INV-2026-042 was modified 47 times by 3 users.
+Key events: submitted for approval on March 12 by Alice, two rounds of
+comments from the finance team on March 13–14, and approved by Bob on
+March 14 at 16:32. No rejections. Amount was revised once (3 800 € → 4 850 €).
+```
+
+### Posting summaries back to the timeline
+
+Summaries are informational additions — they don't replace raw entries:
+
+```csharp
+public static async Task Handle(
+    GenerateSummaryCommand cmd,
+    ITimelineSummarizer summarizer,
+    ITimelineWriter writer,
+    CancellationToken ct)
+{
+    TimelineSummary summary = await summarizer
+        .SummarizeAsync(cmd.EntityType, cmd.EntityId, cmd.Since, ct)
+        .ConfigureAwait(false);
+
+    // Post as SystemLog — immutable, ISO 27001 compliant
+    await writer.PostEntryAsync(
+        entityType: cmd.EntityType,
+        entityId: cmd.EntityId.ToString(),
+        entryType: TimelineEntryType.SystemLog,
+        body: $"[AI Summary] {summary.Text}",
+        parentEntryId: null,
+        ct).ConfigureAwait(false);
+}
+```
+
+## Anomaly detection
+
+`ITimelineAnomalyDetector.DetectAnomaliesAsync` analyzes the activity pattern
+for an entity and returns a report of suspicious behaviors:
+
+```csharp
+AnomalyReport report = await anomalyDetector
+    .DetectAnomaliesAsync("Invoice", invoiceId, ct)
+    .ConfigureAwait(false);
+
+if (report.HasAnomalies)
+{
+    foreach (TimelineAnomaly anomaly in report.Anomalies)
+    {
+        // anomaly.Description → "Invoice modified 23 times in 4 minutes"
+        // anomaly.Severity    → "High"
+        await securityNotifier.AlertAsync(anomaly, ct).ConfigureAwait(false);
+    }
+}
+```
+
+### Anomaly result
+
+```csharp
+public sealed record AnomalyReport(
+    bool HasAnomalies,
+    IReadOnlyList<TimelineAnomaly> Anomalies);
+
+public sealed record TimelineAnomaly(
+    string Description,  // "Mass export: 15 CSV downloads in 10 minutes"
+    string Severity);    // "Low" | "Medium" | "High" | "Critical"
+```
+
+### What the detector looks for
+
+| Pattern | Example |
+|---------|---------|
+| Unusually high activity | 47 edits in 2 minutes |
+| Off-hours access | Modifications at 3am |
+| Rapid state cycling | Approved → Rejected → Approved in seconds |
+| Mass bulk operations | 200 records deleted in one action |
+| Privilege-sensitive actions | Role escalation in audit log |
+
+The detector uses `MaxEntriesToAnalyze` to cap the context window for the LLM.
+For very long timelines, only the most recent entries are analyzed.
+
+## Scheduled analysis (recommended)
+
+Anomaly detection is batch work — run it on a schedule, not per request:
+
+```csharp
+// Wolverine recurring job — runs nightly
+[WolverineHandler]
+public static class NightlyAnomalyDetectionHandler
+{
+    public static async Task Handle(
+        NightlyAnomalyDetectionJob job,
+        ITimelineAnomalyDetector detector,
+        IActiveEntityRepository entities,
+        INotificationPublisher notifier,
+        CancellationToken ct)
+    {
+        await foreach (EntityRef entity in entities.GetActiveAsync(ct))
+        {
+            AnomalyReport report = await detector
+                .DetectAnomaliesAsync(entity.Type, entity.Id, ct)
+                .ConfigureAwait(false);
+
+            if (report.HasAnomalies)
+            {
+                await notifier.PublishAsync(
+                    SecurityAlertNotification.Type,
+                    new SecurityAlertData(entity, report.Anomalies),
+                    recipients: ["security-team"],
+                    ct).ConfigureAwait(false);
+            }
+        }
+    }
+}
+```
+
+## ISO 27001 compliance
+
+| Principle | Implementation |
+|-----------|---------------|
+| **Raw logs immutable** | `ITimelineAnomalyDetector` and `ITimelineSummarizer` are read-only — they call `ITimelineReader`, never `ITimelineWriter` |
+| **Summaries additive** | When posted back, summaries use `TimelineEntryType.SystemLog` — a separate, non-deletable entry type |
+| **No PII leakage** | The timeline entry `Body` field is passed to the LLM — ensure sensitive data in comments is handled per your GDPR policies |
+| **Audit of AI actions** | All LLM calls are tracked in `Granit.AI.EntityFrameworkCore` usage records |
+
+## Configuration reference
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `WorkspaceName` | `string?` | `null` (default) | AI workspace for timeline analysis |
+| `TimeoutSeconds` | `int` | `30` | LLM call timeout — summaries are long |
+| `MaxEntriesToAnalyze` | `int` | `200` | Max entries sent to LLM per call |
+
+## See also
+
+- [Granit.AI setup](/dotnet/ai/setup/) — providers, workspaces
+- [Timeline](/dotnet/business/timeline/) — the audit trail module
+- [AI: Workflow](/dotnet/ai/workflow-ai/) — workflow decision support
+- [AI: Authorization](/dotnet/ai/authorization-ai/) — access anomaly detection
