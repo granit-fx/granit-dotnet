@@ -41,6 +41,10 @@ OpenAI or Anthropic. Swapping providers is a one-line configuration change.
   - Granit.AI.Anthropic Anthropic Claude (Opus, Sonnet, Haiku)
   - Granit.AI.Ollama Local models via OllamaSharp (dev, on-premise, GDPR)
   - Granit.AI.EntityFrameworkCore Isolated DbContext for workspaces and usage tracking
+  - Granit.AI.Extraction Structured document extraction (PDF → typed C# object)
+  - Granit.AI.VectorData Multi-tenant vector storage for semantic search (RAG)
+- Granit.DataExchange.AI/ AI-powered column mapping for CSV/Excel import
+- Granit.Querying.AI/ Natural Language Query — phrases to structured filters
 
 </FileTree>
 
@@ -52,6 +56,10 @@ OpenAI or Anthropic. Swapping providers is a one-line configuration change.
 | `Granit.AI.Anthropic` | Claude models via official Anthropic SDK | `Granit.AI` |
 | `Granit.AI.Ollama` | Local models, health check, zero API key | `Granit.AI` |
 | `Granit.AI.EntityFrameworkCore` | `AIDbContext`, `EfAIWorkspaceStore`, `EfAIUsageStore` | `Granit.AI`, `Granit.Persistence` |
+| `Granit.AI.Extraction` | `IDocumentExtractor<T>`, structured output from documents | `Granit.AI` |
+| `Granit.AI.VectorData` | `IVectorCollection<T>`, `ISemanticSearchService` for RAG | `Granit.AI` |
+| `Granit.DataExchange.AI` | AI-powered `ISemanticMappingService` for import mapping | `Granit.AI`, `Granit.DataExchange` |
+| `Granit.Querying.AI` | `INaturalLanguageQueryTranslator` (NLQ → `QueryRequest`) | `Granit.AI`, `Granit.Querying` |
 
 ## Provider comparison
 
@@ -73,6 +81,12 @@ graph TD
     OL[Granit.AI.Ollama] --> AI
     EF[Granit.AI.EntityFrameworkCore] --> AI
     EF --> P[Granit.Persistence]
+    EX[Granit.AI.Extraction] --> AI
+    VD[Granit.AI.VectorData] --> AI
+    DEX[Granit.DataExchange.AI] --> AI
+    DEX --> DE[Granit.DataExchange]
+    QAI[Granit.Querying.AI] --> AI
+    QAI --> Q[Granit.Querying]
 ```
 
 ## Setup
@@ -338,6 +352,35 @@ is `true` (default). The `AIUsageRecord` captures:
 Records are persisted by `Granit.AI.EntityFrameworkCore` and can be queried for billing
 dashboards, cost alerts, and rate limiting.
 
+## AI-powered modules
+
+Each AI integration has a dedicated documentation page with detailed examples,
+architecture diagrams, risks analysis, and GDPR considerations:
+
+| Module | What it does | Dedicated page |
+|--------|-------------|----------------|
+| **DataExchange.AI** | AI column mapping for CSV/Excel import — handles cryptic columns like `Nom_Clt_V2_Final` | [AI: Import Mapping](/ai/import-mapping/) |
+| **AI.Extraction** | Extract typed C# objects from documents (invoice PDF → `InvoiceData` record) | [AI: Document Extraction](/ai/document-extraction/) |
+| **Querying.AI** | Natural language → structured filters ("unpaid invoices from last week") | [AI: Natural Language Query](/ai/natural-language-query/) |
+| **AI.VectorData** | Semantic search / RAG — find documents by meaning, build knowledge bases | [AI: Semantic Search & RAG](/ai/semantic-search/) |
+
+### Soft dependency pattern
+
+Every AI integration follows the same pattern — the existing module defines an interface
+with a null-object default. The AI package replaces it via DI:
+
+```
+Granit.{Module}              → defines IService + NullService (no-op default)
+                                no reference to AI
+
+Granit.{Module}.AI           → implements AIService
+  references Granit.{Module}    replaces via DI
+  references Granit.AI
+```
+
+Without the AI package: the feature is silently skipped.
+With it: the feature activates. No `if` statements, no feature flags — just DI composition.
+
 ## Configuration reference
 
 ### `GranitAIOptions` (section: `AI`)
@@ -380,6 +423,38 @@ dashboards, cost alerts, and rate limiting.
 | `Endpoint` | `string` | `"http://localhost:11434"` | Ollama server URL |
 | `DefaultModel` | `string` | `"llama3.1"` | Fallback model (8B server variant) |
 
+### `DataExchangeAIOptions` (section: `AI:DataExchange`)
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `WorkspaceName` | `string` | `"default"` | AI workspace for mapping suggestions |
+| `TimeoutSeconds` | `int` | `10` | LLM call timeout |
+| `MinConfidenceScore` | `double` | `0.6` | Minimum score to accept a suggestion |
+| `IncludePreviewRows` | `bool` | `false` | Include sample data rows in prompt (GDPR opt-in) |
+| `PreviewRowCount` | `int` | `5` | Number of preview rows when enabled |
+
+### `ExtractionOptions` (section: `AI:Extraction`)
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `WorkspaceName` | `string` | `"default"` | AI workspace for extraction |
+| `ReviewThreshold` | `double` | `0.7` | Below this confidence → `NeedsReview` status |
+| `TimeoutSeconds` | `int` | `30` | Extraction timeout (OCR + LLM) |
+
+### `QueryingAIOptions` (section: `AI:Querying`)
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `WorkspaceName` | `string` | `"default"` | AI workspace for NLQ translation |
+| `TimeoutSeconds` | `int` | `5` | NLQ should be fast — short timeout |
+
+### `VectorDataOptions` (section: `AI:VectorData`)
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `EmbeddingWorkspace` | `string` | `"default"` | Workspace for embedding generation |
+| `DefaultSearchLimit` | `int` | `10` | Default number of results |
+
 ## Compliance
 
 ### GDPR
@@ -412,6 +487,8 @@ Key indexes:
 
 ## See also
 
+- [Data Exchange](/reference/modules/data-exchange/) — import/export module where AI mapping plugs in
+- [Querying](/reference/modules/utilities/) — query engine where NLQ translates natural language
 - [Persistence](/reference/modules/persistence/) — isolated DbContext pattern, `ApplyGranitConventions`
 - [Vault & Encryption](/reference/modules/vault-encryption/) — secure API key storage with rotation
 - [Observability](/reference/modules/observability/) — OpenTelemetry integration for AI call tracing

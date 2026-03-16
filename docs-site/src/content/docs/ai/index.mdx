@@ -1,0 +1,120 @@
+---
+title: Artificial Intelligence
+description: AI capabilities in Granit — provider-agnostic LLM integration, document extraction, natural language queries, and semantic search. Built on Microsoft.Extensions.AI.
+sidebar:
+  order: 1
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Granit integrates AI as an **optional, provider-agnostic layer** that enriches
+existing modules without modifying them. Every AI feature follows the same principle:
+existing modules define extension points with null-object defaults; AI packages
+provide smart implementations that activate via DI composition.
+
+## What you can do with Granit.AI
+
+| Capability | Module | What it does |
+|------------|--------|-------------|
+| **Chat & generation** | [Granit.AI](/reference/modules/ai/) | Workspace-managed access to `IChatClient` (OpenAI, Azure, Claude, Ollama) |
+| **Import mapping** | [DataExchange.AI](/ai/import-mapping/) | Automatically map messy CSV/Excel columns to your entity properties |
+| **Document extraction** | [AI.Extraction](/ai/document-extraction/) | Turn a PDF invoice into a typed `InvoiceData` C# record |
+| **Natural language query** | [Querying.AI](/ai/natural-language-query/) | Users type "unpaid invoices from last week" → structured filters |
+| **Semantic search** | [AI.VectorData](/ai/semantic-search/) | Find documents by meaning, build RAG knowledge bases |
+
+## Core design principles
+
+### 1. Provider-agnostic
+
+Your application code depends on `IChatClient` (from Microsoft.Extensions.AI), not on
+OpenAI or Anthropic. Swap providers per environment:
+
+| Environment | Provider | Why |
+|-------------|----------|-----|
+| Development | Ollama | Free, local, no API key |
+| Staging | OpenAI | Fast iteration, latest models |
+| Production | Azure OpenAI | EU data residency, Managed Identity, DPA |
+
+### 2. Soft dependency — zero coupling
+
+AI packages reference existing modules, never the reverse:
+
+```mermaid
+graph LR
+    DE[Granit.DataExchange] -.->|defines ISemanticMappingService| NULL[NullService]
+    DEAI[Granit.DataExchange.AI] -->|implements| DE
+    DEAI --> AI[Granit.AI]
+    AI --> MEAI[Microsoft.Extensions.AI]
+
+    style NULL fill:#ffebee
+    style DEAI fill:#e8f5e9
+```
+
+Without the AI package installed, the module works normally. With it, AI activates.
+
+### 3. GDPR & ISO 27001 by design
+
+| Principle | How Granit.AI implements it |
+|-----------|---------------------------|
+| **Data minimization** | AI modules send only metadata to the LLM (column names, schema), never business data |
+| **Audit trail** | Every AI interaction is logged (tenant, user, workspace, model, tokens, timestamp) |
+| **Right to erasure** | Workspace and usage records support soft delete; vector embeddings are deletable |
+| **Data residency** | Azure OpenAI for EU-only; Ollama for on-premise (data never leaves your server) |
+| **Opt-in for sensitive data** | Preview rows in import mapping require explicit `IncludePreviewRows: true` |
+
+### 4. Async-first (Wolverine)
+
+AI calls are slow (200ms to 15s). Granit uses Wolverine for async execution:
+
+| Use case | Execution | Why |
+|----------|-----------|-----|
+| Natural language query | Synchronous (~200ms) | User is waiting for search results |
+| Import mapping | Synchronous (5-10s) | User is in the wizard, waiting for suggestions |
+| Document extraction | **Async** (Wolverine handler) | 5-15s, client gets 202 Accepted + push notification |
+| Vector indexing | **Async** (Wolverine handler) | Batch operation, no user waiting |
+
+## Quick start
+
+The minimal setup to get AI working in your Granit application:
+
+```csharp
+// Program.cs
+builder.AddGranitAI();
+builder.AddGranitAIOllama();  // zero config for local dev
+```
+
+```bash
+# Terminal: start Ollama
+ollama pull llama3.1
+ollama serve
+```
+
+Then inject `IAIChatClientFactory` in any service:
+
+```csharp
+public class MyService(IAIChatClientFactory chatFactory)
+{
+    public async Task<string> AskAsync(string question, CancellationToken ct)
+    {
+        IChatClient client = await chatFactory
+            .CreateAsync(cancellationToken: ct)
+            .ConfigureAwait(false);
+
+        ChatResponse response = await client
+            .GetResponseAsync(question, cancellationToken: ct)
+            .ConfigureAwait(false);
+
+        return response.Text;
+    }
+}
+```
+
+## Pages in this section
+
+- [Import Mapping](/ai/import-mapping/) — AI-powered column mapping for CSV/Excel imports
+- [Document Extraction](/ai/document-extraction/) — structured data extraction from PDFs
+- [Natural Language Query](/ai/natural-language-query/) — search with plain language
+- [Semantic Search & RAG](/ai/semantic-search/) — vector-based similarity search and knowledge bases
+
+For the core module reference (providers, workspaces, configuration), see
+[Granit.AI module reference](/reference/modules/ai/).

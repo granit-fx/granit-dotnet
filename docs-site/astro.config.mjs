@@ -164,6 +164,17 @@ export default defineConfig({
                 ],
               },
               {
+                label: "AI",
+                items: [
+                  { label: "Overview", link: "/ai/" },
+                  {
+                    label: "Capabilities",
+                    autogenerate: { directory: "ai" },
+                    collapsed: false,
+                  },
+                ],
+              },
+              {
                 label: "Architecture",
                 items: [
                   { label: "Overview", link: "/architecture/" },
