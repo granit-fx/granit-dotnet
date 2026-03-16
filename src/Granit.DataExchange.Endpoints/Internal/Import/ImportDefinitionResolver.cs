@@ -32,7 +32,9 @@ internal static class ImportDefinitionResolver
         CancellationToken cancellationToken)
     {
         System.Reflection.MethodInfo method = typeof(IMappingSuggestionService)
-            .GetMethod(nameof(IMappingSuggestionService.SuggestMappingsAsync))!
+            .GetMethods()
+            .First(m => m.Name == nameof(IMappingSuggestionService.SuggestMappingsAsync)
+                         && m.GetParameters().Length == 2)
             .MakeGenericMethod(entityType);
 
         var task =

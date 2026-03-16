@@ -149,6 +149,7 @@ public sealed class MappingSuggestionServiceTests
         _semanticService.SuggestSemanticMappingsAsync(
                 Arg.Any<IReadOnlyList<string>>(),
                 Arg.Any<IReadOnlyList<ImportFieldMetadata>>(),
+                Arg.Any<IReadOnlyList<string[]>?>(),
                 Arg.Any<CancellationToken>())
             .Returns<IReadOnlyList<SemanticMappingSuggestion>>(
             [
