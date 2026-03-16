@@ -106,8 +106,7 @@ internal static class QueryableGroupByExtensions
             .MakeGenericMethod(resultType);
 
         dynamic task = toListAsync.Invoke(null, [projected, cancellationToken])!;
-        await task.ConfigureAwait(false);
-        var materialized = (System.Collections.IList)task.Result;
+        var materialized = (System.Collections.IList)await task.ConfigureAwait(false);
 
         List<GroupEntry<T>> entries = [];
         PropertyInfo keyProp = resultType.GetProperty("Key")!;

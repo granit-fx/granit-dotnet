@@ -18,36 +18,33 @@ namespace Granit.Caching;
 /// The AES key must be provided exclusively via Vault or secure configuration.
 /// Never store the key in plaintext in code or committed configuration files.
 /// </remarks>
-public sealed class AesCacheValueEncryptor : ICacheValueEncryptor
+public sealed class AesCacheValueEncryptor(IOptions<CacheEncryptionOptions> options) : ICacheValueEncryptor
 {
     private const int IvSizeBytes = 16;
     private const int KeySizeBits = 256;
     private const int KeySizeBytes = KeySizeBits / 8;
 
-    private readonly byte[] _key;
+    private readonly byte[] _key = ParseAndValidateKey(options.Value.Key);
 
-    /// <param name="options">Encryption options containing the AES key in base64.</param>
-    /// <exception cref="InvalidOperationException">Thrown when the key is missing from configuration.</exception>
-    /// <exception cref="ArgumentException">Thrown when the key is not 256 bits (32 bytes).</exception>
-    public AesCacheValueEncryptor(IOptions<CacheEncryptionOptions> options)
+    private static byte[] ParseAndValidateKey(string? base64Key)
     {
-        string? base64Key = options.Value.Key;
-
         if (string.IsNullOrWhiteSpace(base64Key))
         {
             throw new InvalidOperationException(
-                "La clé AES (Cache:Encryption:Key) est requise pour le chiffrement du cache. " +
-                "Fournissez-la via Vault ou les variables d'environnement.");
+                "AES key (Cache:Encryption:Key) is required for cache encryption. " +
+                "Provide it via Vault or environment variables.");
         }
 
-        _key = Convert.FromBase64String(base64Key);
+        byte[] key = Convert.FromBase64String(base64Key);
 
-        if (_key.Length != KeySizeBytes)
+        if (key.Length != KeySizeBytes)
         {
             throw new ArgumentException(
-                $"La clé AES doit être de {KeySizeBits} bits ({KeySizeBytes} bytes). " +
-                $"Longueur reçue : {_key.Length * 8} bits ({_key.Length} bytes).");
+                $"AES key must be {KeySizeBits} bits ({KeySizeBytes} bytes). " +
+                $"Received: {key.Length * 8} bits ({key.Length} bytes).");
         }
+
+        return key;
     }
 
     /// <summary>
@@ -87,8 +84,8 @@ public sealed class AesCacheValueEncryptor : ICacheValueEncryptor
         if (ciphertext.Length < IvSizeBytes)
         {
             throw new ArgumentException(
-                $"Le ciphertext est invalide : minimum {IvSizeBytes} bytes requis (IV), " +
-                $"reçu {ciphertext.Length} bytes.");
+                $"Invalid ciphertext: minimum {IvSizeBytes} bytes required (IV), " +
+                $"received {ciphertext.Length} bytes.");
         }
 
         byte[] iv = new byte[IvSizeBytes];
