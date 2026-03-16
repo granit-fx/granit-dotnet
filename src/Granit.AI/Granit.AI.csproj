@@ -16,6 +16,8 @@
     <InternalsVisibleTo Include="Granit.AI.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="Granit.AI.Extraction" />
     <InternalsVisibleTo Include="Granit.AI.Extraction.Tests" />
+    <InternalsVisibleTo Include="Granit.Imaging.AI" />
+    <InternalsVisibleTo Include="Granit.Imaging.AI.Tests" />
     <InternalsVisibleTo Include="Granit.AI.Ollama" />
     <InternalsVisibleTo Include="Granit.AI.Ollama.Tests" />
     <InternalsVisibleTo Include="Granit.AI.OpenAI" />
