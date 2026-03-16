@@ -5,18 +5,18 @@ using Microsoft.Extensions.Options;
 namespace Granit.Caching;
 
 /// <summary>
-/// Implémentation AES-256-CBC de <see cref="ICacheValueEncryptor"/> pour la conformité ISO 27001.
+/// AES-256-CBC implementation of <see cref="ICacheValueEncryptor"/> for ISO 27001 compliance.
 /// </summary>
 /// <remarks>
-/// Caractéristiques de sécurité :
+/// Security characteristics:
 /// <list type="bullet">
-///   <item>Algorithme : AES-256-CBC via <see cref="Aes.Create()"/></item>
-///   <item>IV : 16 bytes générés aléatoirement par <see cref="RandomNumberGenerator.Fill"/> pour chaque opération <see cref="Encrypt"/></item>
-///   <item>Format ciphertext : <c>[16 bytes IV][N bytes CipherText]</c></item>
-///   <item>Clé : 256 bits (32 bytes) fournie en base64 via <c>Cache:Encryption:Key</c></item>
+///   <item>Algorithm: AES-256-CBC via <see cref="Aes.Create()"/></item>
+///   <item>IV: 16 bytes generated randomly by <see cref="RandomNumberGenerator.Fill"/> for each <see cref="Encrypt"/> call</item>
+///   <item>Ciphertext format: <c>[16 bytes IV][N bytes CipherText]</c></item>
+///   <item>Key: 256 bits (32 bytes) provided as base64 via <c>Cache:Encryption:Key</c></item>
 /// </list>
-/// La clé AES doit être fournie exclusivement via Vault / configuration sécurisée.
-/// Ne jamais stocker la clé en clair dans le code ou les fichiers de configuration commités.
+/// The AES key must be provided exclusively via Vault or secure configuration.
+/// Never store the key in plaintext in code or committed configuration files.
 /// </remarks>
 public sealed class AesCacheValueEncryptor : ICacheValueEncryptor
 {
@@ -26,9 +26,9 @@ public sealed class AesCacheValueEncryptor : ICacheValueEncryptor
 
     private readonly byte[] _key;
 
-    /// <param name="options">Options de chiffrement contenant la clé AES en base64.</param>
-    /// <exception cref="InvalidOperationException">Si la clé est absente de la configuration.</exception>
-    /// <exception cref="ArgumentException">Si la clé n'est pas de 256 bits (32 bytes).</exception>
+    /// <param name="options">Encryption options containing the AES key in base64.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the key is missing from configuration.</exception>
+    /// <exception cref="ArgumentException">Thrown when the key is not 256 bits (32 bytes).</exception>
     public AesCacheValueEncryptor(IOptions<CacheEncryptionOptions> options)
     {
         string? base64Key = options.Value.Key;
@@ -51,10 +51,10 @@ public sealed class AesCacheValueEncryptor : ICacheValueEncryptor
     }
 
     /// <summary>
-    /// Chiffre les données en AES-256-CBC avec un IV aléatoire.
+    /// Encrypts the provided data using AES-256-CBC with a random IV.
     /// </summary>
-    /// <param name="plaintext">Données en clair.</param>
-    /// <returns>Format <c>[16 bytes IV][N bytes CipherText]</c>.</returns>
+    /// <param name="plaintext">The plaintext data.</param>
+    /// <returns>Data in the format <c>[16 bytes IV][N bytes CipherText]</c>.</returns>
     public byte[] Encrypt(byte[] plaintext)
     {
         byte[] iv = new byte[IvSizeBytes];
@@ -77,11 +77,11 @@ public sealed class AesCacheValueEncryptor : ICacheValueEncryptor
     }
 
     /// <summary>
-    /// Déchiffre les données au format <c>[16 bytes IV][N bytes CipherText]</c>.
+    /// Decrypts data in the format <c>[16 bytes IV][N bytes CipherText]</c>.
     /// </summary>
-    /// <param name="ciphertext">Données chiffrées.</param>
-    /// <returns>Données déchiffrées.</returns>
-    /// <exception cref="ArgumentException">Si le ciphertext est trop court (moins de 16 bytes).</exception>
+    /// <param name="ciphertext">The encrypted data.</param>
+    /// <returns>The decrypted data.</returns>
+    /// <exception cref="ArgumentException">Thrown when the ciphertext is too short (fewer than 16 bytes).</exception>
     public byte[] Decrypt(byte[] ciphertext)
     {
         if (ciphertext.Length < IvSizeBytes)

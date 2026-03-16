@@ -11,24 +11,24 @@ using Microsoft.Extensions.Options;
 namespace Granit.Caching;
 
 /// <summary>
-/// Implémentation de <see cref="ICacheService{TCacheItem}"/> au-dessus de <see cref="IDistributedCache"/>.
+/// Implementation of <see cref="ICacheService{TCacheItem}"/> backed by <see cref="IDistributedCache"/>.
 /// </summary>
 /// <remarks>
-/// Fonctionnalités :
+/// Features:
 /// <list type="bullet">
-///   <item>Sérialisation/désérialisation JSON automatique via <c>System.Text.Json</c></item>
-///   <item>Clé composite : <c>{KeyPrefix}:{CacheName}:{userKey}</c></item>
-///   <item>Protection stampede : double-check locking + <see cref="SemaphoreSlim"/> dans <see cref="IMemoryCache"/> dédié (TTL 30 s)</item>
-///   <item>Chiffrement AES-256-CBC opt-in via <see cref="CacheEncryptedAttribute"/> ou <see cref="CachingOptions.EncryptValues"/></item>
+///   <item>Automatic JSON serialization/deserialization via <c>System.Text.Json</c></item>
+///   <item>Composite key: <c>{KeyPrefix}:{CacheName}:{userKey}</c></item>
+///   <item>Stampede protection: double-check locking + <see cref="SemaphoreSlim"/> in a dedicated <see cref="IMemoryCache"/> (TTL 30 s)</item>
+///   <item>Opt-in AES-256-CBC encryption via <see cref="CacheEncryptedAttribute"/> or <see cref="CachingOptions.EncryptValues"/></item>
 /// </list>
-/// Le <see cref="IMemoryCache"/> injecté est dédié aux verrous stampede (clé DI : <c>Granit.Caching.Locks</c>)
-/// et est séparé du cache mémoire applicatif pour éviter les interférences.
+/// The injected <see cref="IMemoryCache"/> is dedicated to stampede locks (DI key: <c>Granit.Caching.Locks</c>)
+/// and is separate from the application memory cache to avoid interference.
 /// </remarks>
-/// <param name="cache">Le fournisseur de cache distribué (Memory ou Redis).</param>
-/// <param name="lockCache">Cache mémoire dédié aux verrous stampede.</param>
-/// <param name="encryptor">Chiffreur AES (no-op en dev, AES-256 en prod).</param>
-/// <param name="options">Options globales du cache.</param>
-/// <param name="logger">Logger pour le diagnostic.</param>
+/// <param name="cache">The distributed cache provider (Memory or Redis).</param>
+/// <param name="lockCache">Memory cache dedicated to stampede locks.</param>
+/// <param name="encryptor">AES encryptor (no-op in dev, AES-256 in prod).</param>
+/// <param name="options">Global cache options.</param>
+/// <param name="logger">Logger for diagnostics.</param>
 public partial class DistributedCacheService<TCacheItem>(
     IDistributedCache cache,
     [FromKeyedServices(DistributedCacheService<TCacheItem>.LockCacheKey)] IMemoryCache lockCache,

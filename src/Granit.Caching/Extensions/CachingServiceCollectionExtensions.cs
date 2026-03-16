@@ -8,27 +8,27 @@ using Microsoft.Extensions.Options;
 namespace Granit.Caching.Extensions;
 
 /// <summary>
-/// Extensions d'enregistrement DI pour <c>Granit.Caching</c>.
+/// DI registration extensions for <c>Granit.Caching</c>.
 /// </summary>
 public static class CachingServiceCollectionExtensions
 {
     /// <summary>
-    /// Enregistre le système de cache Granit avec le fournisseur <c>MemoryDistributedCache</c> par défaut.
+    /// Registers the Granit cache system with the default <c>MemoryDistributedCache</c> provider.
     /// </summary>
     /// <remarks>
-    /// Services enregistrés :
+    /// Registered services:
     /// <list type="bullet">
-    ///   <item><see cref="Microsoft.Extensions.Caching.Distributed.IDistributedCache"/> → <c>MemoryDistributedCache</c> (remplacé par les fournisseurs Redis/Hybrid si chargés)</item>
-    ///   <item><see cref="IMemoryCache"/> dédié (clé <c>Granit.Caching.Locks</c>) pour la protection stampede</item>
-    ///   <item><see cref="ICacheValueEncryptor"/> → <see cref="NullCacheValueEncryptor"/> (no-op par défaut)</item>
+    ///   <item><see cref="Microsoft.Extensions.Caching.Distributed.IDistributedCache"/> → <c>MemoryDistributedCache</c> (replaced by Redis/Hybrid providers if loaded)</item>
+    ///   <item>Dedicated <see cref="IMemoryCache"/> (key <c>Granit.Caching.Locks</c>) for stampede protection</item>
+    ///   <item><see cref="ICacheValueEncryptor"/> → <see cref="NullCacheValueEncryptor"/> (no-op by default)</item>
     ///   <item><see cref="ICacheService{TCacheItem}"/> → <see cref="DistributedCacheService{TCacheItem}"/></item>
     ///   <item><see cref="ICacheService{TCacheItem, TKey}"/> → <see cref="TypedKeyCacheServiceAdapter{TCacheItem, TKey}"/></item>
     /// </list>
-    /// Pour activer le chiffrement AES, enregistrez <see cref="AesCacheValueEncryptor"/> après cet appel
-    /// et configurez <c>Cache:Encryption:Key</c>.
+    /// To enable AES encryption, register <see cref="AesCacheValueEncryptor"/> after this call
+    /// and configure <c>Cache:Encryption:Key</c>.
     /// </remarks>
-    /// <param name="services">Collection de services.</param>
-    /// <returns>La collection de services pour le chaînage.</returns>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddGranitCaching(
         this IServiceCollection services)
     {

@@ -11,41 +11,41 @@ using Microsoft.Extensions.Options;
 namespace Granit.Caching.Hybrid;
 
 /// <summary>
-/// Implémentation de <see cref="ICacheService{TCacheItem}"/> via <see cref="HybridCache"/> (.NET 9).
-/// Fournit un cache à deux niveaux : L1 (mémoire locale par pod) + L2 (<c>IDistributedCache</c>, Redis).
+/// Implementation of <see cref="ICacheService{TCacheItem}"/> backed by <see cref="HybridCache"/> (.NET 9).
+/// Provides a two-level cache: L1 (per-pod local memory) + L2 (<c>IDistributedCache</c>, Redis).
 /// </summary>
 /// <remarks>
 /// <para>
-/// Comportement L1+L2 sur Kubernetes multi-pods :
+/// L1+L2 behaviour on multi-pod Kubernetes clusters:
 /// <list type="bullet">
-///   <item>Lecture L1 &lt; 1 ms (mémoire locale du pod)</item>
-///   <item>Lecture L2 ~2 ms (Redis partagé entre pods)</item>
-///   <item>Cache miss complet : appel de la factory, écriture sur L1+L2</item>
+///   <item>L1 read &lt; 1 ms (pod-local memory)</item>
+///   <item>L2 read ~2 ms (Redis shared across pods)</item>
+///   <item>Full cache miss: factory is invoked and the result is written to both L1 and L2</item>
 /// </list>
 /// </para>
 /// <para>
-/// Invalidation : <see cref="RemoveAsync(string, CancellationToken)"/> efface L2 (Redis) et le L1
-/// du pod appelant. Les L1 des autres pods expirent au maximum après
-/// <see cref="HybridCachingOptions.LocalCacheExpiration"/> (30 s par défaut).
+/// Invalidation: <see cref="RemoveAsync(string, CancellationToken)"/> clears L2 (Redis) and the L1
+/// cache of the calling pod. L1 caches on other pods expire after at most
+/// <see cref="HybridCachingOptions.LocalCacheExpiration"/> (30 s by default).
 /// </para>
 /// <para>
-/// Protection stampede : native dans <c>HybridCache</c>, aucune <c>SemaphoreSlim</c> nécessaire.
+/// Stampede protection: built into <c>HybridCache</c>; no <c>SemaphoreSlim</c> is needed.
 /// </para>
 /// <para>
-/// Chiffrement ISO 27001 : non supporté par ce fournisseur. <c>HybridCache</c> gère la sérialisation
-/// vers L2 en interne — il n'est pas possible d'y intercaler un chiffrement <c>byte[]</c>.
-/// Pour les données sensibles nécessitant un chiffrement au repos, utiliser
-/// <c>GranitCachingRedisModule</c> (fournisseur Redis pur avec <see cref="ICacheValueEncryptor"/>).
+/// ISO 27001 encryption: not supported by this provider. <c>HybridCache</c> manages L2 serialization
+/// internally — there is no hook to intercept <c>byte[]</c> encryption.
+/// For sensitive data requiring encryption at rest, use
+/// <c>GranitCachingRedisModule</c> (pure Redis provider with <see cref="ICacheValueEncryptor"/>).
 /// </para>
 /// </remarks>
-/// <typeparam name="TCacheItem">Type de l'élément mis en cache. Doit être une classe.</typeparam>
+/// <typeparam name="TCacheItem">The type of the cached item. Must be a class.</typeparam>
 /// <remarks>
-/// Initialise une nouvelle instance de <see cref="HybridCacheService{TCacheItem}"/>.
+/// Initializes a new instance of <see cref="HybridCacheService{TCacheItem}"/>.
 /// </remarks>
-/// <param name="hybridCache">Cache hybride L1+L2 fourni par le runtime .NET 9.</param>
-/// <param name="options">Options globales du cache.</param>
-/// <param name="logger">Logger structuré.</param>
-/// <param name="clock">Horloge UTC pour le calcul des expirations absolues.</param>
+/// <param name="hybridCache">The L1+L2 hybrid cache provided by the .NET 9 runtime.</param>
+/// <param name="options">Global cache options.</param>
+/// <param name="logger">Structured logger.</param>
+/// <param name="clock">UTC clock used to compute absolute expirations.</param>
 public partial class HybridCacheService<TCacheItem>(
     HybridCache hybridCache,
     IOptions<CachingOptions> options,

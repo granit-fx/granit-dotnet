@@ -4,16 +4,16 @@ using Granit.Core.Modularity;
 namespace Granit.Caching;
 
 /// <summary>
-/// Module Granit pour le cache distribué avec fournisseur Memory par défaut.
+/// Granit module for the distributed cache with a default Memory provider.
 /// </summary>
 /// <remarks>
-/// Ce module configure l'abstraction de cache <see cref="ICacheService{TCacheItem}"/> avec
-/// <c>MemoryDistributedCache</c> comme fournisseur. Idéal pour le développement et les tests.
+/// This module configures the <see cref="ICacheService{TCacheItem}"/> cache abstraction with
+/// <c>MemoryDistributedCache</c> as the provider. Ideal for development and testing.
 /// <para>
-/// Pour la production, remplacez par :
+/// For production, replace with:
 /// <list type="bullet">
-///   <item><c>GranitCachingRedisModule</c> — Redis (cohérence inter-pods)</item>
-///   <item><c>GranitCachingHybridModule</c> — L1+L2 (performance Kubernetes)</item>
+///   <item><c>GranitCachingRedisModule</c> — Redis (cross-pod consistency)</item>
+///   <item><c>GranitCachingHybridModule</c> — L1+L2 (Kubernetes performance)</item>
 /// </list>
 /// </para>
 /// </remarks>

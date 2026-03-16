@@ -3,27 +3,27 @@ using Microsoft.Extensions.Caching.Distributed;
 namespace Granit.Caching;
 
 /// <summary>
-/// Service de cache typé avec clé de type <typeparamref name="TKey"/>.
-/// La clé est automatiquement convertie en <see cref="string"/> via <c>key.ToString()</c>.
-/// Hérite de <see cref="ICacheService{TCacheItem}"/> pour la compatibilité avec les clés string.
+/// Typed cache service with a key of type <typeparamref name="TKey"/>.
+/// The key is automatically converted to <see cref="string"/> via <c>key.ToString()</c>.
+/// Extends <see cref="ICacheService{TCacheItem}"/> for compatibility with string keys.
 /// </summary>
-/// <typeparam name="TCacheItem">Le type de l'objet mis en cache.</typeparam>
-/// <typeparam name="TKey">Le type de la clé. Doit implémenter <c>ToString()</c> de manière significative.</typeparam>
+/// <typeparam name="TCacheItem">The type of the cached object.</typeparam>
+/// <typeparam name="TKey">The key type. Must implement <c>ToString()</c> meaningfully.</typeparam>
 /// <example>
-/// Injection : <c>ICacheService&lt;UserCacheItem, Guid&gt; cache</c>
-/// Usage : <c>await cache.GetOrAddAsync(userId, async cancellationToken =&gt; await repo.GetAsync(userId, cancellationToken));</c>
+/// Injection: <c>ICacheService&lt;UserCacheItem, Guid&gt; cache</c>
+/// Usage: <c>await cache.GetOrAddAsync(userId, async cancellationToken =&gt; await repo.GetAsync(userId, cancellationToken));</c>
 /// </example>
 public interface ICacheService<TCacheItem, TKey> : ICacheService<TCacheItem>
     where TCacheItem : class
     where TKey : notnull
 {
     /// <summary>
-    /// Retourne l'élément du cache, ou <c>null</c> si absent. La clé est convertie via <c>key.ToString()</c>.
+    /// Returns the cached item, or <c>null</c> if absent. The key is converted via <c>key.ToString()</c>.
     /// </summary>
     Task<TCacheItem?> GetAsync(TKey key, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Pattern "remember" avec clé typée. La clé est convertie via <c>key.ToString()</c>.
+    /// "Remember" pattern with a typed key. The key is converted via <c>key.ToString()</c>.
     /// </summary>
     Task<TCacheItem> GetOrAddAsync(
         TKey key,
@@ -32,7 +32,7 @@ public interface ICacheService<TCacheItem, TKey> : ICacheService<TCacheItem>
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Stocke un élément avec une clé typée. La clé est convertie via <c>key.ToString()</c>.
+    /// Stores an item with a typed key. The key is converted via <c>key.ToString()</c>.
     /// </summary>
     Task SetAsync(
         TKey key,
@@ -41,7 +41,7 @@ public interface ICacheService<TCacheItem, TKey> : ICacheService<TCacheItem>
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Supprime l'entrée identifiée par la clé typée.
+    /// Removes the entry identified by the typed key.
     /// </summary>
     Task RemoveAsync(TKey key, CancellationToken cancellationToken = default);
 }

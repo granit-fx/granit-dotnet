@@ -4,8 +4,8 @@ using Granit.Observability.Extensions;
 namespace Granit.Observability;
 
 /// <summary>
-/// Module Granit pour Serilog + OpenTelemetry.
-/// Utilise context.Builder car Serilog necessite IHostApplicationBuilder.
+/// Granit module for Serilog + OpenTelemetry.
+/// Uses context.Builder because Serilog requires IHostApplicationBuilder.
 /// </summary>
 public sealed class GranitObservabilityModule : GranitModule
 {

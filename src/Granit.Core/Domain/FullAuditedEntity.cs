@@ -1,17 +1,17 @@
 namespace Granit.Core.Domain;
 
 /// <summary>
-/// Entité avec audit trail complet incluant la suppression logique (RGPD).
-/// Hérite de <see cref="AuditedEntity"/> et implémente <see cref="ISoftDeletable"/>.
+/// Entity with a full audit trail including soft deletion (GDPR).
+/// Inherits from <see cref="AuditedEntity"/> and implements <see cref="ISoftDeletable"/>.
 /// </summary>
 public abstract class FullAuditedEntity : AuditedEntity, ISoftDeletable
 {
-    /// <summary>Indique si l'entité est supprimée logiquement.</summary>
+    /// <summary>Indicates whether the entity is soft-deleted.</summary>
     public virtual bool IsDeleted { get; set; }
 
-    /// <summary>Date de suppression logique (UTC).</summary>
+    /// <summary>Soft deletion timestamp (UTC).</summary>
     public virtual DateTimeOffset? DeletedAt { get; set; }
 
-    /// <summary>Identifiant de l'utilisateur ayant supprimé l'entité.</summary>
+    /// <summary>Identifier of the user who deleted the entity.</summary>
     public virtual string? DeletedBy { get; set; }
 }

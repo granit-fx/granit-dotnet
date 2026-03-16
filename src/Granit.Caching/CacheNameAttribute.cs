@@ -1,21 +1,21 @@
 namespace Granit.Caching;
 
 /// <summary>
-/// Surcharge le nom de cache calculé par convention pour ce type.
-/// Par convention, <c>UserCacheItem</c> → <c>"User"</c> (suffixe "CacheItem" retiré).
-/// Utilisez cet attribut pour personnaliser le nom et donc la partie centrale de la clé composite.
+/// Overrides the cache name computed by convention for this type.
+/// By convention, <c>UserCacheItem</c> → <c>"User"</c> (the "CacheItem" suffix is stripped).
+/// Use this attribute to customise the name and therefore the middle segment of the composite key.
 /// </summary>
 /// <example>
 /// <code>
 /// [CacheName("Patient")]
 /// public sealed class PatientSummaryCacheItem { }
-/// // Clé générée : dd:Patient:{userKey}
+/// // Generated key: dd:Patient:{userKey}
 /// </code>
 /// </example>
-/// <param name="name">Nom à utiliser comme segment central de la clé composite.</param>
+/// <param name="name">Name to use as the middle segment of the composite key.</param>
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class CacheNameAttribute(string name) : Attribute
 {
-    /// <summary>Nom de cache personnalisé.</summary>
+    /// <summary>Custom cache name.</summary>
     public string Name { get; } = name;
 }

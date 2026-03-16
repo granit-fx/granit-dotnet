@@ -1,25 +1,25 @@
 namespace Granit.Guids;
 
 /// <summary>
-/// Decrit le type de GUID sequentiel selon le moteur de base de donnees.
+/// Describes the sequential GUID type according to the target database engine.
 /// </summary>
 public enum SequentialGuidType
 {
     /// <summary>
-    /// Le GUID est sequentiel dans sa representation string (<see cref="Guid.ToString()"/>).
-    /// Utilise par PostgreSQL et MySQL.
+    /// The GUID is sequential in its string representation (<see cref="Guid.ToString()"/>).
+    /// Used by PostgreSQL and MySQL.
     /// </summary>
     SequentialAsString,
 
     /// <summary>
-    /// Le GUID est sequentiel dans sa representation binaire (<see cref="Guid.ToByteArray()"/>).
-    /// Utilise par Oracle.
+    /// The GUID is sequential in its binary representation (<see cref="Guid.ToByteArray()"/>).
+    /// Used by Oracle.
     /// </summary>
     SequentialAsBinary,
 
     /// <summary>
-    /// La portion sequentielle est placee a la fin du bloc Data4.
-    /// Utilise par SQL Server.
+    /// The sequential portion is placed at the end of the Data4 block.
+    /// Used by SQL Server.
     /// </summary>
     SequentialAtEnd
 }

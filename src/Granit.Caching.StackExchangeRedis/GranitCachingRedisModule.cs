@@ -6,14 +6,14 @@ using Microsoft.Extensions.Configuration;
 namespace Granit.Caching.StackExchangeRedis;
 
 /// <summary>
-/// Module Granit pour le fournisseur Redis du cache distribué.
-/// Remplace le fournisseur Memory enregistré par <c>GranitCachingModule</c>.
+/// Granit module for the Redis distributed cache provider.
+/// Replaces the Memory provider registered by <c>GranitCachingModule</c>.
 /// </summary>
 /// <remarks>
-/// Ce module dépend de <c>GranitCachingModule</c> qui enregistre l'abstraction
-/// <see cref="Granit.Caching.ICacheService{TCacheItem}"/> et les options.
+/// This module depends on <c>GranitCachingModule</c>, which registers the
+/// <see cref="Granit.Caching.ICacheService{TCacheItem}"/> abstraction and options.
 /// <para>
-/// Activation du chiffrement AES-256 :
+/// Enabling AES-256 encryption:
 /// <code>
 /// // appsettings.json
 /// {

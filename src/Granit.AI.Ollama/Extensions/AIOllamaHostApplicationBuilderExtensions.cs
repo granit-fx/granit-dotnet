@@ -4,6 +4,7 @@ using Granit.AI.Ollama.HealthChecks;
 using Granit.AI.Ollama.Internal;
 using Granit.AI.Ollama.Options;
 using Granit.Core.Diagnostics;
+using Granit.HttpResilience.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
@@ -41,7 +42,7 @@ public static class AIOllamaHostApplicationBuilderExtensions
 
         builder.Services.AddSingleton<IAIProviderFactory, OllamaProviderFactory>();
 
-        builder.Services.AddHttpClient("GranitAIOllamaHealthCheck");
+        builder.Services.AddGranitHttpClient("GranitAIOllamaHealthCheck");
 
         return builder;
     }

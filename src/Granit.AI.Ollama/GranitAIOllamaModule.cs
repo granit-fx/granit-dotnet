@@ -1,4 +1,5 @@
 using Granit.Core.Modularity;
+using Granit.HttpResilience;
 
 namespace Granit.AI.Ollama;
 
@@ -11,5 +12,7 @@ namespace Granit.AI.Ollama;
 /// is called. Supports local model inference via Ollama for development,
 /// on-premise deployments, and GDPR-compliant data processing.
 /// </remarks>
-[DependsOn(typeof(GranitAIModule))]
+[DependsOn(
+    typeof(GranitAIModule),
+    typeof(GranitHttpResilienceModule))]
 public sealed class GranitAIOllamaModule : GranitModule;

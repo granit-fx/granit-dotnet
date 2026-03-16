@@ -3,16 +3,16 @@ using Microsoft.Extensions.Caching.Distributed;
 namespace Granit.Caching;
 
 /// <summary>
-/// Adaptateur qui implémente <see cref="ICacheService{TCacheItem, TKey}"/> en déléguant
-/// à un <see cref="ICacheService{TCacheItem}"/> sous-jacent.
-/// La clé <typeparamref name="TKey"/> est convertie en <see cref="string"/> via <c>key.ToString()</c>.
+/// Adapter that implements <see cref="ICacheService{TCacheItem, TKey}"/> by delegating
+/// to an underlying <see cref="ICacheService{TCacheItem}"/>.
+/// The <typeparamref name="TKey"/> key is converted to <see cref="string"/> via <c>key.ToString()</c>.
 /// </summary>
 /// <remarks>
-/// Cet adaptateur est automatiquement compatible avec tous les fournisseurs
-/// (Memory, Redis, Hybrid) sans modification.
-/// Il est enregistré en DI pour tous les <c>ICacheService&lt;T, TKey&gt;</c>.
+/// This adapter is automatically compatible with all providers
+/// (Memory, Redis, Hybrid) without modification.
+/// It is registered in DI for all <c>ICacheService&lt;T, TKey&gt;</c>.
 /// </remarks>
-/// <param name="inner">Service de cache sous-jacent (clé string).</param>
+/// <param name="inner">The underlying string-keyed cache service.</param>
 public sealed class TypedKeyCacheServiceAdapter<TCacheItem, TKey>(ICacheService<TCacheItem> inner) : ICacheService<TCacheItem, TKey>
     where TCacheItem : class
     where TKey : notnull

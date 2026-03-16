@@ -2,37 +2,37 @@ using Granit.Caching.Options;
 namespace Granit.Caching;
 
 /// <summary>
-/// Contrôle finement le chiffrement AES-256 des valeurs pour ce type de cache.
-/// Prioritaire sur le flag global <see cref="CachingOptions.EncryptValues"/>.
+/// Fine-grained control over AES-256 encryption for a specific cache item type.
+/// Takes precedence over the global <see cref="CachingOptions.EncryptValues"/> flag.
 /// </summary>
 /// <remarks>
-/// Logique de priorité :
+/// Priority logic:
 /// <list type="table">
-///   <listheader><term>Attribut</term><term>EncryptValues global</term><term>Résultat</term></listheader>
-///   <item><term><c>[CacheEncrypted]</c></term><term>peu importe</term><term>Chiffrement ACTIVÉ</term></item>
-///   <item><term><c>[CacheEncrypted(false)]</c></term><term>peu importe</term><term>Chiffrement DÉSACTIVÉ</term></item>
-///   <item><term>Pas d'attribut</term><term><c>true</c></term><term>Chiffrement ACTIVÉ</term></item>
-///   <item><term>Pas d'attribut</term><term><c>false</c></term><term>Chiffrement DÉSACTIVÉ</term></item>
+///   <listheader><term>Attribute</term><term>Global EncryptValues</term><term>Result</term></listheader>
+///   <item><term><c>[CacheEncrypted]</c></term><term>any</term><term>Encryption ENABLED</term></item>
+///   <item><term><c>[CacheEncrypted(false)]</c></term><term>any</term><term>Encryption DISABLED</term></item>
+///   <item><term>No attribute</term><term><c>true</c></term><term>Encryption ENABLED</term></item>
+///   <item><term>No attribute</term><term><c>false</c></term><term>Encryption DISABLED</term></item>
 /// </list>
 /// </remarks>
 /// <example>
 /// <code>
-/// // Toujours chiffré — données sensibles ISO 27001
+/// // Always encrypted — ISO 27001 sensitive data
 /// [CacheEncrypted]
 /// public sealed class PatientCacheItem { ... }
 ///
-/// // Jamais chiffré — opt-out explicite (données de configuration publiques)
+/// // Never encrypted — explicit opt-out (public configuration data)
 /// [CacheEncrypted(false)]
 /// public sealed class AppConfigCacheItem { ... }
 ///
-/// // Suit le flag global CachingOptions.EncryptValues
+/// // Follows the global CachingOptions.EncryptValues flag
 /// public sealed class UserPreferencesCacheItem { ... }
 /// </code>
 /// </example>
-/// <param name="encrypt"><c>true</c> (défaut) pour forcer le chiffrement, <c>false</c> pour l'interdire.</param>
+/// <param name="encrypt"><c>true</c> (default) to force encryption, <c>false</c> to disable it.</param>
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class CacheEncryptedAttribute(bool encrypt = true) : Attribute
 {
-    /// <summary><c>true</c> pour forcer le chiffrement, <c>false</c> pour le désactiver.</summary>
+    /// <summary><c>true</c> to force encryption, <c>false</c> to disable it.</summary>
     public bool Encrypt { get; } = encrypt;
 }

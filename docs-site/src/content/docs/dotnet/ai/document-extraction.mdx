@@ -14,9 +14,11 @@ Every B2B application eventually needs to parse documents: invoices from supplie
 candidates, contracts from partners, identity documents for compliance. Traditional parsers
 (regex, iText, rule-based) are fragile — they break on every layout variation.
 
-`Granit.AI.Extraction` takes a different approach: send the document text to an LLM with a
-JSON schema describing the expected output, and get back a strongly-typed C# object. The LLM
-handles layout variations, multilingual content, and messy formatting — you get clean data.
+`Granit.AI.Extraction` takes a different approach: send the document text to an LLM using
+`ChatResponseFormat.ForJsonSchema<T>()` (MEAI native structured output), and get back a
+strongly-typed C# object. The schema is derived automatically from the C# type — no manual
+prompt engineering. The LLM handles layout variations, multilingual content, and messy
+formatting — you get clean data.
 
 ## The problem
 
@@ -165,7 +167,7 @@ even if the data looks valid.
 
 | Risk | Impact | Mitigation |
 |------|--------|-----------|
-| **Hallucination** | LLM invents data not in the document | Structured JSON output constrains the response; FluentValidation catches inconsistencies |
+| **Hallucination** | LLM invents data not in the document | `ChatResponseFormat.ForJsonSchema<T>()` constrains the response to the schema; FluentValidation catches semantic inconsistencies |
 | **PII in documents** | Documents contain personal data | Use Azure OpenAI with DPA or Ollama (local). Never send medical/legal docs to public APIs without a DPA |
 | **Cost** | Each extraction costs tokens | Batch processing, cache similar documents, use smaller models (GPT-4o-mini) for simple docs |
 | **Latency** | 5-15s per extraction | Always async (Wolverine handler), never in HTTP request path |

@@ -10,21 +10,21 @@ using StackExchange.Redis;
 namespace Granit.Caching.StackExchangeRedis.Extensions;
 
 /// <summary>
-/// Extensions d'enregistrement DI pour le fournisseur Redis.
+/// DI registration extensions for the Redis cache provider.
 /// </summary>
 public static class RedisCachingServiceCollectionExtensions
 {
     /// <summary>
-    /// Remplace le fournisseur Memory par Redis comme <c>IDistributedCache</c>.
-    /// Active le chiffrement AES-256 (<see cref="AesCacheValueEncryptor"/>) si
+    /// Replaces the Memory provider with Redis as the <c>IDistributedCache</c>.
+    /// Enables AES-256 encryption (<see cref="AesCacheValueEncryptor"/>) when
     /// <c>CachingOptions.EncryptValues = true</c>.
     /// </summary>
     /// <remarks>
     /// The <c>IsEnabled</c> check is handled by the module (<c>GranitCachingRedisModule</c>).
     /// Calling this method always registers the Redis provider.
     /// </remarks>
-    /// <param name="services">Collection de services.</param>
-    /// <returns>La collection de services pour le chaînage.</returns>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddGranitCachingRedis(
         this IServiceCollection services)
     {

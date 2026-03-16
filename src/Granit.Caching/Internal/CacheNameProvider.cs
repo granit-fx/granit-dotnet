@@ -4,13 +4,13 @@ using System.Reflection;
 namespace Granit.Caching.Internal;
 
 /// <summary>
-/// Fournit le nom de cache d'un type selon la convention ou l'attribut <see cref="CacheNameAttribute"/>.
-/// Les noms résolus sont mis en cache en mémoire pour éviter la réflexion répétée.
+/// Provides the cache name for a type based on convention or the <see cref="CacheNameAttribute"/> attribute.
+/// Resolved names are cached in memory to avoid repeated reflection.
 /// </summary>
 /// <remarks>
-/// Convention : le suffixe <c>"CacheItem"</c> est retiré du nom du type.
-/// Exemples : <c>UserCacheItem</c> → <c>"User"</c>, <c>PatientRecord</c> → <c>"PatientRecord"</c>
-/// Surcharge via <c>[CacheName("nom")]</c> sur la classe.
+/// Convention: the <c>"CacheItem"</c> suffix is stripped from the type name.
+/// Examples: <c>UserCacheItem</c> → <c>"User"</c>, <c>PatientRecord</c> → <c>"PatientRecord"</c>
+/// Override with <c>[CacheName("name")]</c> on the class.
 /// </remarks>
 internal static class CacheNameProvider
 {
@@ -18,7 +18,7 @@ internal static class CacheNameProvider
     private const string CacheItemSuffix = "CacheItem";
 
     /// <summary>
-    /// Retourne le nom de cache pour le type spécifié.
+    /// Returns the cache name for the specified type.
     /// </summary>
     internal static string GetCacheName(Type type) =>
         _cache.GetOrAdd(type, ResolveNameFromType);

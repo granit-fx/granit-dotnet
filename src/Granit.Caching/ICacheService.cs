@@ -4,33 +4,33 @@ using Microsoft.Extensions.Caching.Distributed;
 namespace Granit.Caching;
 
 /// <summary>
-/// Service de cache typé au-dessus de <see cref="IDistributedCache"/>.
-/// Gère automatiquement la sérialisation JSON, la génération de clés préfixées
-/// (<c>{KeyPrefix}:{CacheName}:{userKey}</c>) et la protection stampede via double-check locking.
+/// Typed cache service built on top of <see cref="IDistributedCache"/>.
+/// Handles JSON serialization automatically, generates prefixed keys
+/// (<c>{KeyPrefix}:{CacheName}:{userKey}</c>), and provides stampede protection via double-check locking.
 /// </summary>
-/// <typeparam name="TCacheItem">Le type de l'objet mis en cache. Doit être une classe.</typeparam>
+/// <typeparam name="TCacheItem">The type of the cached object. Must be a class.</typeparam>
 /// <example>
-/// Injection : <c>ICacheService&lt;UserCacheItem&gt; cache</c>
-/// Usage : <c>await cache.GetOrAddAsync(userId.ToString(), async cancellationToken =&gt; await repo.GetAsync(userId, cancellationToken));</c>
+/// Injection: <c>ICacheService&lt;UserCacheItem&gt; cache</c>
+/// Usage: <c>await cache.GetOrAddAsync(userId.ToString(), async cancellationToken =&gt; await repo.GetAsync(userId, cancellationToken));</c>
 /// </example>
 public interface ICacheService<TCacheItem> where TCacheItem : class
 {
     /// <summary>
-    /// Retourne l'élément du cache, ou <c>null</c> s'il n'existe pas ou a expiré.
+    /// Returns the cached item, or <c>null</c> if it does not exist or has expired.
     /// </summary>
-    /// <param name="key">Clé utilisateur (sans préfixe).</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
+    /// <param name="key">User key (without prefix).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task<TCacheItem?> GetAsync(string key, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Retourne l'élément du cache ou exécute <paramref name="factory"/> exactement une seule fois
-    /// sous concurrence (protection stampede via double-check locking).
-    /// Inspiré du pattern <c>remember()</c> de Laravel.
+    /// Returns the cached item or executes <paramref name="factory"/> exactly once under concurrency
+    /// (stampede protection via double-check locking).
+    /// Inspired by Laravel's <c>remember()</c> pattern.
     /// </summary>
-    /// <param name="key">Clé utilisateur.</param>
-    /// <param name="factory">Fabrique exécutée si l'élément est absent du cache.</param>
-    /// <param name="options">Options TTL pour cette entrée. Si <c>null</c>, utilise les options par défaut de <see cref="CachingOptions"/>.</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
+    /// <param name="key">User key.</param>
+    /// <param name="factory">Factory executed when the item is absent from the cache.</param>
+    /// <param name="options">TTL options for this entry. When <c>null</c>, uses the defaults from <see cref="CachingOptions"/>.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task<TCacheItem> GetOrAddAsync(
         string key,
         Func<CancellationToken, Task<TCacheItem>> factory,
@@ -38,12 +38,12 @@ public interface ICacheService<TCacheItem> where TCacheItem : class
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Stocke un élément dans le cache avec les options spécifiées.
+    /// Stores an item in the cache with the specified options.
     /// </summary>
-    /// <param name="key">Clé utilisateur.</param>
-    /// <param name="value">Valeur à stocker.</param>
-    /// <param name="options">Options TTL. Si <c>null</c>, utilise les options par défaut.</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
+    /// <param name="key">User key.</param>
+    /// <param name="value">Value to store.</param>
+    /// <param name="options">TTL options. When <c>null</c>, uses the defaults.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task SetAsync(
         string key,
         TCacheItem value,
@@ -51,16 +51,16 @@ public interface ICacheService<TCacheItem> where TCacheItem : class
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Supprime l'entrée du cache identifiée par la clé.
+    /// Removes the cache entry identified by the given key.
     /// </summary>
-    /// <param name="key">Clé utilisateur.</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
+    /// <param name="key">User key.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task RemoveAsync(string key, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Rafraîchit la durée de vie glissante d'une entrée sans modifier sa valeur.
+    /// Refreshes the sliding expiration of an entry without changing its value.
     /// </summary>
-    /// <param name="key">Clé utilisateur.</param>
-    /// <param name="cancellationToken">Token d'annulation.</param>
+    /// <param name="key">User key.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task RefreshAsync(string key, CancellationToken cancellationToken = default);
 }

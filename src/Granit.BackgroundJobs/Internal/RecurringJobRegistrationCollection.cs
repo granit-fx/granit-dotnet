@@ -10,7 +10,7 @@ namespace Granit.BackgroundJobs.Internal;
 internal sealed class RecurringJobRegistrationCollection
 {
     private readonly List<RecurringJobRegistration> _registrations = [];
-    private readonly object _lock = new();
+    private readonly Lock _lock = new();
 
     internal void AddRange(IEnumerable<RecurringJobRegistration> registrations)
     {

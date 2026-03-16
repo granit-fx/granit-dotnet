@@ -150,32 +150,29 @@ public sealed class DefaultDocumentExtractorTests
     }
 
     [Fact]
-    public async Task ExtractAsync_MarkdownCodeFences_StripsAndParses()
+    public async Task ExtractAsync_PassesJsonSchemaResponseFormat()
     {
         // Arrange
-        const string jsonWithFences = """
-            ```json
-            {"supplier":"Fenced Corp","amount":200,"currency":"GBP"}
-            ```
-            """;
+        const string jsonResponse = """{"supplier":"Acme Corp","amount":100,"currency":"EUR"}""";
 
+        ChatOptions? capturedOptions = null;
         _chatClient
             .GetResponseAsync(
                 Arg.Any<IEnumerable<ChatMessage>>(),
-                Arg.Any<ChatOptions?>(),
+                Arg.Do<ChatOptions?>(o => capturedOptions = o),
                 Arg.Any<CancellationToken>())
-            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonWithFences))
+            .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, jsonResponse))
             {
                 FinishReason = ChatFinishReason.Stop,
             });
 
         // Act
-        ExtractionResult<InvoiceData> result = await _sut.ExtractAsync("Document with fenced response", TestContext.Current.CancellationToken);
+        await _sut.ExtractAsync("Some document", TestContext.Current.CancellationToken);
 
         // Assert
-        result.Status.ShouldBe(ExtractionStatus.Succeeded);
-        result.Data.ShouldNotBeNull();
-        result.Data.Supplier.ShouldBe("Fenced Corp");
+        capturedOptions.ShouldNotBeNull();
+        capturedOptions.ResponseFormat.ShouldNotBeNull();
+        capturedOptions.ResponseFormat.ShouldBeOfType<ChatResponseFormatJson>();
     }
 
     [Fact]

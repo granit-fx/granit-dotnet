@@ -9,21 +9,21 @@ using Microsoft.Extensions.Options;
 namespace Granit.Caching.Hybrid.Extensions;
 
 /// <summary>
-/// Extensions d'enregistrement DI pour le fournisseur HybridCache.
+/// DI registration extensions for the HybridCache provider.
 /// </summary>
 public static class HybridCachingServiceCollectionExtensions
 {
     /// <summary>
-    /// Enregistre le fournisseur HybridCache (L1 mémoire locale + L2 IDistributedCache/Redis).
-    /// Surcharge <see cref="ICacheService{TCacheItem}"/> par <see cref="HybridCacheService{TCacheItem}"/>.
+    /// Registers the HybridCache provider (L1 local memory + L2 IDistributedCache/Redis).
+    /// Overrides <see cref="ICacheService{TCacheItem}"/> with <see cref="HybridCacheService{TCacheItem}"/>.
     /// </summary>
     /// <remarks>
-    /// Prérequis : <c>AddGranitCaching()</c> et <c>AddGranitCachingRedis()</c> doivent être appelés
-    /// avant cette méthode (via <c>GranitCachingModule</c> et <c>GranitCachingRedisModule</c>
-    /// grâce aux attributs <c>[DependsOn]</c>).
+    /// Prerequisites: <c>AddGranitCaching()</c> and <c>AddGranitCachingRedis()</c> must be called
+    /// before this method (via <c>GranitCachingModule</c> and <c>GranitCachingRedisModule</c>
+    /// through the <c>[DependsOn]</c> attributes).
     /// </remarks>
-    /// <param name="services">Collection de services.</param>
-    /// <returns>La collection de services pour le chaînage.</returns>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddGranitCachingHybrid(
         this IServiceCollection services)
     {

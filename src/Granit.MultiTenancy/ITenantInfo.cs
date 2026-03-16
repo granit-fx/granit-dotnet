@@ -1,13 +1,13 @@
 namespace Granit.MultiTenancy;
 
 /// <summary>
-/// Informations sur un tenant.
+/// Tenant information.
 /// </summary>
 public interface ITenantInfo
 {
-    /// <summary>Identifiant unique du tenant.</summary>
+    /// <summary>Unique tenant identifier.</summary>
     Guid? Id { get; }
 
-    /// <summary>Nom du tenant.</summary>
+    /// <summary>Tenant name.</summary>
     string? Name { get; }
 }

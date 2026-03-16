@@ -1,9 +1,9 @@
 namespace Granit.Caching;
 
 /// <summary>
-/// Implémentation no-op de <see cref="ICacheValueEncryptor"/>.
-/// Retourne les données en entrée sans modification.
-/// Utilisée par défaut avec le fournisseur Memory (développement, tests).
+/// No-op implementation of <see cref="ICacheValueEncryptor"/>.
+/// Returns the input data unchanged.
+/// Used by default with the Memory provider (development and tests).
 /// </summary>
 public sealed class NullCacheValueEncryptor : ICacheValueEncryptor
 {

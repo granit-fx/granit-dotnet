@@ -6,21 +6,21 @@ using Granit.Timing;
 namespace Granit.Caching.Hybrid;
 
 /// <summary>
-/// Module Granit pour le fournisseur HybridCache (L1+L2, Kubernetes).
-/// Combine un cache L1 en mémoire locale (par pod) et un cache L2 Redis partagé.
+/// Granit module for the HybridCache provider (L1+L2, Kubernetes).
+/// Combines a per-pod L1 in-memory cache and a shared L2 Redis cache.
 /// </summary>
 /// <remarks>
-/// Ce module dépend de <c>GranitCachingRedisModule</c> (qui dépend lui-même de
-/// <c>GranitCachingModule</c>). L'ordre d'initialisation est garanti par
-/// le système de modules Granit.
+/// This module depends on <c>GranitCachingRedisModule</c> (which itself depends on
+/// <c>GranitCachingModule</c>). Initialization order is guaranteed by
+/// the Granit module system.
 /// <para>
-/// Comportement d'invalidation inter-pods :
-/// <see cref="Microsoft.Extensions.Caching.Hybrid.HybridCache"/> n'invalide pas les L1 distants.
-/// Configurez <c>Cache:Hybrid:LocalCacheExpiration</c> à ≤ 60 s (défaut : 30 s)
-/// pour borner la fenêtre de données obsolètes entre pods.
+/// Cross-pod invalidation behaviour:
+/// <see cref="Microsoft.Extensions.Caching.Hybrid.HybridCache"/> does not invalidate remote L1 caches.
+/// Set <c>Cache:Hybrid:LocalCacheExpiration</c> to ≤ 60 s (default: 30 s)
+/// to bound the stale-data window between pods.
 /// </para>
 /// <para>
-/// Configuration <c>appsettings.json</c> :
+/// <c>appsettings.json</c> configuration:
 /// <code>
 /// {
 ///   "Cache": {
