@@ -5,7 +5,7 @@ using Granit.Timing;
 namespace Granit.Guids;
 
 /// <summary>
-/// Module Granit pour IGuidGenerator (GUID sequentiels).
+/// Granit module for <see cref="IGuidGenerator"/>.
 /// </summary>
 [DependsOn(typeof(GranitTimingModule))]
 public sealed class GranitGuidsModule : GranitModule

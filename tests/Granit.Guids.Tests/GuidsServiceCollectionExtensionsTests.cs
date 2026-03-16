@@ -1,9 +1,3 @@
-// =============================================================================
-// Tests - GuidsServiceCollectionExtensions
-// =============================================================================
-// Vérifie que AddGranitGuids enregistre les services attendus.
-// =============================================================================
-
 using Granit.Guids.Extensions;
 using Granit.Guids.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,37 +9,54 @@ namespace Granit.Guids.Tests;
 public sealed class GuidsServiceCollectionExtensionsTests
 {
     [Fact]
-    public void AddGranitGuids_RegistersGuidGenerator()
+    public void AddGranitGuids_DefaultStrategy_RegistersUuidV7Generator()
     {
-        // Arrange
         ServiceCollection services = new();
         services.AddOptions();
 
-        // Act
         services.AddGranitGuids();
 
         using ServiceProvider sp = services.BuildServiceProvider();
+        IGuidGenerator generator = sp.GetRequiredService<IGuidGenerator>();
+        generator.ShouldBeOfType<UuidV7GuidGenerator>();
+    }
 
-        // Assert
-        IGuidGenerator? generator = sp.GetService<IGuidGenerator>();
-        generator.ShouldNotBeNull();
+    [Fact]
+    public void AddGranitGuids_SequentialStrategy_RegistersSequentialGenerator()
+    {
+        ServiceCollection services = new();
+        services.AddOptions();
+
+        services.AddGranitGuids(opts => opts.Strategy = GuidStrategy.Sequential);
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+        IGuidGenerator generator = sp.GetRequiredService<IGuidGenerator>();
         generator.ShouldBeOfType<SequentialGuidGenerator>();
+    }
+
+    [Fact]
+    public void AddGranitGuids_RandomStrategy_RegistersSimpleGenerator()
+    {
+        ServiceCollection services = new();
+        services.AddOptions();
+
+        services.AddGranitGuids(opts => opts.Strategy = GuidStrategy.Random);
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+        IGuidGenerator generator = sp.GetRequiredService<IGuidGenerator>();
+        generator.ShouldBeOfType<SimpleGuidGenerator>();
     }
 
     [Fact]
     public void AddGranitGuids_TryAddSingleton_DoesNotOverrideExisting()
     {
-        // Arrange
         ServiceCollection services = new();
         IGuidGenerator customGenerator = NSubstitute.Substitute.For<IGuidGenerator>();
         services.AddSingleton(customGenerator);
 
-        // Act
         services.AddGranitGuids();
 
         using ServiceProvider sp = services.BuildServiceProvider();
-
-        // Assert
         IGuidGenerator resolved = sp.GetRequiredService<IGuidGenerator>();
         resolved.ShouldBeSameAs(customGenerator);
     }
@@ -53,19 +64,17 @@ public sealed class GuidsServiceCollectionExtensionsTests
     [Fact]
     public void AddGranitGuids_WithConfigure_AppliesOptions()
     {
-        // Arrange
         ServiceCollection services = new();
 
-        // Act
         services.AddGranitGuids(opts =>
         {
+            opts.Strategy = GuidStrategy.Sequential;
             opts.DefaultSequentialGuidType = SequentialGuidType.SequentialAsBinary;
         });
 
         using ServiceProvider sp = services.BuildServiceProvider();
-
-        // Assert
         GuidGeneratorOptions options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<GuidGeneratorOptions>>().Value;
+        options.Strategy.ShouldBe(GuidStrategy.Sequential);
         options.DefaultSequentialGuidType.ShouldBe(SequentialGuidType.SequentialAsBinary);
     }
 }

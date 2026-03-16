@@ -1,7 +1,7 @@
 // =============================================================================
 // Tests - GranitGuidsModule
 // =============================================================================
-// Vérifie que le module enregistre les services Guids via ConfigureServices.
+// Verifies that the module registers Guids services via ConfigureServices.
 // =============================================================================
 
 using Granit.Core.Modularity;
@@ -15,7 +15,7 @@ namespace Granit.Guids.Tests;
 public sealed class GranitGuidsModuleTests
 {
     [Fact]
-    public void ConfigureServices_RegistersGuidGenerator()
+    public void ConfigureServices_RegistersUuidV7GuidGeneratorByDefault()
     {
         // Arrange
         GranitGuidsModule module = new();
@@ -33,6 +33,6 @@ public sealed class GranitGuidsModuleTests
         // Assert
         IGuidGenerator? generator = sp.GetService<IGuidGenerator>();
         generator.ShouldNotBeNull();
-        generator.ShouldBeOfType<SequentialGuidGenerator>();
+        generator.ShouldBeOfType<UuidV7GuidGenerator>();
     }
 }

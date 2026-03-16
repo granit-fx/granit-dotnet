@@ -1,13 +1,13 @@
 namespace Granit.Guids;
 
 /// <summary>
-/// Implementation de <see cref="IGuidGenerator"/> basee sur <see cref="Guid.NewGuid()"/>.
-/// Disponible via <see cref="Instance"/> pour les contextes sans DI.
+/// <see cref="IGuidGenerator"/> implementation backed by <see cref="Guid.NewGuid()"/>.
+/// Available via <see cref="Instance"/> for contexts without DI.
 /// </summary>
 public sealed class SimpleGuidGenerator : IGuidGenerator
 {
     /// <summary>
-    /// Instance statique pour les contextes sans injection de dependances.
+    /// Static instance for use outside of a dependency injection container.
     /// </summary>
     public static SimpleGuidGenerator Instance { get; } = new();
 

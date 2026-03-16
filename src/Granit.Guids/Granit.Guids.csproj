@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Guids</PackageId>
-    <Description>IGuidGenerator abstraction with sequential GUID support optimized for clustered indexes. Default: SequentialAsString (PostgreSQL).</Description>
+    <Description>IGuidGenerator abstraction with UUIDv7, sequential, and random strategies. Default: UuidV7 (Guid.CreateVersion7) — optimal for PostgreSQL, MySQL, and SQL Server 2019+.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
