@@ -178,12 +178,9 @@ internal sealed partial class IdempotencyMiddleware(
             originalAborted, timeoutCts.Token);
         context.RequestAborted = linkedCts.Token;
 
-        bool executedSuccessfully = false;
-
         try
         {
             await next(context).ConfigureAwait(false);
-            executedSuccessfully = true;
         }
         catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested && !originalAborted.IsCancellationRequested)
         {
@@ -198,7 +195,7 @@ internal sealed partial class IdempotencyMiddleware(
             await WriteProblemAsync(context, StatusCodes.Status503ServiceUnavailable,
                 "Execution Timeout",
                 $"The request handler exceeded the maximum allowed execution time of {(int)_opts.ExecutionTimeout.TotalSeconds}s. Please retry.").ConfigureAwait(false);
-            return; // executedSuccessfully = false; finally block is a no-op
+            return; // finally restores context body; pipeline does not continue
         }
         catch (OperationCanceledException) when (originalAborted.IsCancellationRequested)
         {
@@ -216,11 +213,6 @@ internal sealed partial class IdempotencyMiddleware(
         {
             context.Response.Body = originalBody;
             context.RequestAborted = originalAborted;
-        }
-
-        if (!executedSuccessfully)
-        {
-            return;
         }
 
         // Copy captured bytes to the actual response body

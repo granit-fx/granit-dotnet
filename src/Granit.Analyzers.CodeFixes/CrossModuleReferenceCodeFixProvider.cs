@@ -141,7 +141,7 @@ public sealed class CrossModuleReferenceCodeFixProvider : CodeFixProvider
         if (root is CompilationUnitSyntax compilationUnit)
         {
             // Find the using directive that imports the internal namespace.
-            string? internalNamespace = GetUsingForNode(compilationUnit, node);
+            string? internalNamespace = GetUsingForNode(compilationUnit);
 
             if (internalNamespace is not null)
             {
@@ -173,7 +173,7 @@ public sealed class CrossModuleReferenceCodeFixProvider : CodeFixProvider
         return document.WithSyntaxRoot(root!);
     }
 
-    private static string? GetUsingForNode(CompilationUnitSyntax compilationUnit, SyntaxNode _)
+    private static string? GetUsingForNode(CompilationUnitSyntax compilationUnit)
     {
         // Try to find which using directive brought the type into scope.
         // Heuristic: look for a using that contains ".Modules." but not ".Contracts".

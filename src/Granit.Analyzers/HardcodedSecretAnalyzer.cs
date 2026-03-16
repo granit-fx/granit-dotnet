@@ -123,7 +123,7 @@ public sealed class HardcodedSecretAnalyzer : DiagnosticAnalyzer
         // Walk up through parenthesized expressions.
         while (parent is ParenthesizedExpressionSyntax)
         {
-            parent = parent?.Parent;
+            parent = parent.Parent;
         }
 
         // Case 1: string password = "literal"; / field initializer

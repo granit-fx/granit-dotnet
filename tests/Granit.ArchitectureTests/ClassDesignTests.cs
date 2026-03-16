@@ -1,4 +1,5 @@
 using Granit.ArchitectureTests.Abstractions.Rules;
+using Shouldly;
 using Xunit;
 
 namespace Granit.ArchitectureTests;
@@ -21,7 +22,7 @@ public sealed class ClassDesignTests
 
     [Fact]
     public void No_MVC_controllers_allowed() =>
-        ClassDesignRules.NoMvcControllersAllowed(Architecture, "Granit.");
+        Should.NotThrow(() => ClassDesignRules.NoMvcControllersAllowed(Architecture, "Granit."));
 
     [Fact]
     public void Options_classes_should_be_sealed() =>
