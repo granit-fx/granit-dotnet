@@ -17,11 +17,14 @@ provide smart implementations that activate via DI composition.
 
 | Capability | Module | What it does |
 |------------|--------|-------------|
-| **Chat & generation** | [Granit.AI](/dotnet/ai/module/) | Workspace-managed access to `IChatClient` (OpenAI, Azure, Claude, Ollama) |
+| **Chat & generation** | [Granit.AI](/dotnet/ai/setup/) | Workspace-managed access to `IChatClient` (OpenAI, Azure, Claude, Ollama) |
 | **Import mapping** | [DataExchange.AI](/dotnet/ai/import-mapping/) | Automatically map messy CSV/Excel columns to your entity properties |
 | **Document extraction** | [AI.Extraction](/dotnet/ai/document-extraction/) | Turn a PDF invoice into a typed `InvoiceData` C# record |
 | **Natural language query** | [Querying.AI](/dotnet/ai/natural-language-query/) | Users type "unpaid invoices from last week" → structured filters |
 | **Semantic search** | [AI.VectorData](/dotnet/ai/semantic-search/) | Find documents by meaning, build RAG knowledge bases |
+| **Blob classification** | [BlobStorage.AI](/dotnet/ai/blob-storage-ai/) | Tag uploaded files by category, detect PII in filenames |
+| **PII detection** | [Privacy.AI](/dotnet/ai/privacy-ai/) | Scan free-text fields for personal data (GDPR compliance) |
+| **Content moderation** | [Validation.AI](/dotnet/ai/validation-ai/) | Detect toxic content, harassment, prompt injection in user input |
 
 ## Core design principles
 
@@ -71,7 +74,10 @@ AI calls are slow (200ms to 15s). Granit uses Wolverine for async execution:
 |----------|-----------|-----|
 | Natural language query | Synchronous (~200ms) | User is waiting for search results |
 | Import mapping | Synchronous (5-10s) | User is in the wizard, waiting for suggestions |
+| Content moderation | Synchronous (2s, fail-open) | Must validate before persistence; timeout never blocks |
 | Document extraction | **Async** (Wolverine handler) | 5-15s, client gets 202 Accepted + push notification |
+| Blob classification | **Async** (Wolverine handler) | Upload should not wait for classification |
+| PII detection (batch) | **Async** (Wolverine handler) | Scanning existing records at scale |
 | Vector indexing | **Async** (Wolverine handler) | Batch operation, no user waiting |
 
 ## Quick start
@@ -112,10 +118,13 @@ public class MyService(IAIChatClientFactory chatFactory)
 
 ## Pages in this section
 
-- [Import Mapping](/dotnet/ai/import-mapping/) — AI-powered column mapping for CSV/Excel imports
-- [Document Extraction](/dotnet/ai/document-extraction/) — structured data extraction from PDFs
 - [Natural Language Query](/dotnet/ai/natural-language-query/) — search with plain language
 - [Semantic Search & RAG](/dotnet/ai/semantic-search/) — vector-based similarity search and knowledge bases
+- [PII Detection](/dotnet/ai/privacy-ai/) — scan text for personal data
+- [Import Mapping](/dotnet/ai/import-mapping/) — AI-powered column mapping for CSV/Excel imports
+- [Document Extraction](/dotnet/ai/document-extraction/) — structured data extraction from PDFs
+- [Blob Storage Intelligence](/dotnet/ai/blob-storage-ai/) — automatic file classification and PII detection in filenames
+- [Content Moderation](/dotnet/ai/validation-ai/) — detect toxic content and prompt injection
 
 For the core module reference (providers, workspaces, configuration), see
-[Granit.AI module reference](/dotnet/ai/module/).
+[Granit.AI module reference](/dotnet/ai/setup/).
