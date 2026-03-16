@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Observability.AI</PackageId>
+    <Description>AI-powered log analysis and anomaly detection for Granit. Uses Microsoft.Extensions.AI to analyze log batches and detect patterns, anomalies, and recurring issues.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Observability.AI.Tests" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal types in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.AI.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI\Granit.AI.csproj" />
+    <ProjectReference Include="..\Granit.Observability\Granit.Observability.csproj" />
+  </ItemGroup>
+
+</Project>

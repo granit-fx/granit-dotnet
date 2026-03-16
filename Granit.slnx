@@ -25,6 +25,7 @@
     <Project Path="src/Granit.Authentication.GoogleCloud/Granit.Authentication.GoogleCloud.csproj" />
     <Project Path="src/Granit.Authentication.JwtBearer/Granit.Authentication.JwtBearer.csproj" />
     <Project Path="src/Granit.Authentication.Keycloak/Granit.Authentication.Keycloak.csproj" />
+    <Project Path="src/Granit.Authorization.AI/Granit.Authorization.AI.csproj" />
     <Project Path="src/Granit.Authorization.Endpoints/Granit.Authorization.Endpoints.csproj" />
     <Project Path="src/Granit.Authorization.EntityFrameworkCore/Granit.Authorization.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Authorization/Granit.Authorization.csproj" />
@@ -74,6 +75,7 @@
     <Project Path="src/Granit.Identity.EntraId/Granit.Identity.EntraId.csproj" />
     <Project Path="src/Granit.Identity.Keycloak/Granit.Identity.Keycloak.csproj" />
     <Project Path="src/Granit.Identity/Granit.Identity.csproj" />
+    <Project Path="src/Granit.Imaging.AI/Granit.Imaging.AI.csproj" />
     <Project Path="src/Granit.Imaging.MagickNet/Granit.Imaging.MagickNet.csproj" />
     <Project Path="src/Granit.Imaging/Granit.Imaging.csproj" />
     <Project Path="src/Granit.Localization.Endpoints/Granit.Localization.Endpoints.csproj" />
@@ -108,6 +110,7 @@
     <Project Path="src/Granit.Notifications.Zulip/Granit.Notifications.Zulip.csproj" />
     <Project Path="src/Granit.Notifications/Granit.Notifications.csproj" />
     <Project Path="src/Granit.Observability/Granit.Observability.csproj" />
+    <Project Path="src/Granit.Observability.AI/Granit.Observability.AI.csproj" />
     <Project Path="src/Granit.Persistence.Migrations.Wolverine/Granit.Persistence.Migrations.Wolverine.csproj" />
     <Project Path="src/Granit.Persistence.Migrations/Granit.Persistence.Migrations.csproj" />
     <Project Path="src/Granit.Persistence/Granit.Persistence.csproj" />
@@ -190,6 +193,7 @@
     <Project Path="tests/Granit.Authentication.JwtBearer.Tests/Granit.Authentication.JwtBearer.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.Keycloak.Tests/Granit.Authentication.Keycloak.Tests.csproj" />
     <Project Path="tests/Granit.Authorization.Endpoints.Tests/Granit.Authorization.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.Authorization.AI.Tests/Granit.Authorization.AI.Tests.csproj" />
     <Project Path="tests/Granit.Authorization.EntityFrameworkCore.Tests/Granit.Authorization.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Authorization.Tests/Granit.Authorization.Tests.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.Endpoints.Tests/Granit.BackgroundJobs.Endpoints.Tests.csproj" />
@@ -240,6 +244,7 @@
     <Project Path="tests/Granit.Identity.EntraId.Tests/Granit.Identity.EntraId.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Keycloak.Tests/Granit.Identity.Keycloak.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Tests/Granit.Identity.Tests.csproj" />
+    <Project Path="tests/Granit.Imaging.AI.Tests/Granit.Imaging.AI.Tests.csproj" />
     <Project Path="tests/Granit.Imaging.MagickNet.Tests/Granit.Imaging.MagickNet.Tests.csproj" />
     <Project Path="tests/Granit.Imaging.Tests/Granit.Imaging.Tests.csproj" />
     <Project Path="tests/Granit.Localization.Endpoints.Tests/Granit.Localization.Endpoints.Tests.csproj" />
@@ -273,6 +278,7 @@
     <Project Path="tests/Granit.Notifications.AI.Tests/Granit.Notifications.AI.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Wolverine.Tests/Granit.Notifications.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Zulip.Tests/Granit.Notifications.Zulip.Tests.csproj" />
+    <Project Path="tests/Granit.Observability.AI.Tests/Granit.Observability.AI.Tests.csproj" />
     <Project Path="tests/Granit.Observability.Tests/Granit.Observability.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Migrations.Tests/Granit.Persistence.Migrations.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Migrations.Wolverine.Tests/Granit.Persistence.Migrations.Wolverine.Tests.csproj" />

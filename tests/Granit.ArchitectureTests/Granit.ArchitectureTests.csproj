@@ -49,6 +49,7 @@
     <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer\Granit.Authentication.JwtBearer.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.Keycloak\Granit.Authentication.Keycloak.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authorization\Granit.Authorization.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Authorization.AI\Granit.Authorization.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authorization.Endpoints\Granit.Authorization.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authorization.EntityFrameworkCore\Granit.Authorization.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
@@ -98,6 +99,7 @@
     <ProjectReference Include="..\..\src\Granit.Identity.EntraId\Granit.Identity.EntraId.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Keycloak\Granit.Identity.Keycloak.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging\Granit.Imaging.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Imaging.AI\Granit.Imaging.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging.MagickNet\Granit.Imaging.MagickNet.csproj" />
     <ProjectReference Include="..\..\src\Granit.Localization\Granit.Localization.csproj" />
     <ProjectReference Include="..\..\src\Granit.Localization.AI\Granit.Localization.AI.csproj" />
@@ -130,6 +132,7 @@
     <ProjectReference Include="..\..\src\Granit.Notifications.AI\Granit.Notifications.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.Wolverine\Granit.Notifications.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Observability\Granit.Observability.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Observability.AI\Granit.Observability.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence\Granit.Persistence.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.Migrations\Granit.Persistence.Migrations.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.Migrations.Wolverine\Granit.Persistence.Migrations.Wolverine.csproj" />

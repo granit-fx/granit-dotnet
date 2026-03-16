@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Authorization.AI</PackageId>
+    <Description>AI-powered access anomaly detection for Granit authorization. Provides IAIAccessAnomalyDetector for evaluating access patterns and detecting suspicious behavior via LLM analysis. Fail-open design ensures authorization never blocks requests when the AI service is unavailable.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Authorization.AI.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.AI.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI\Granit.AI.csproj" />
+    <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
+  </ItemGroup>
+
+</Project>

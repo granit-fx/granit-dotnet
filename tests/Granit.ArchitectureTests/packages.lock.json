@@ -1343,6 +1343,14 @@
           "Granit.Security": "[0.1.0-dev, )"
         }
       },
+      "granit.authorization.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
+        }
+      },
       "granit.authorization.endpoints": {
         "type": "Project",
         "dependencies": {
@@ -1704,6 +1712,14 @@
           "Granit.Core": "[0.1.0-dev, )"
         }
       },
+      "granit.imaging.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Imaging": "[0.1.0-dev, )",
+          "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
+        }
+      },
       "granit.imaging.magicknet": {
         "type": "Project",
         "dependencies": {
@@ -1945,6 +1961,14 @@
           "OpenTelemetry.Instrumentation.Http": "[1.15.*, )",
           "Serilog.AspNetCore": "[10.*, )",
           "Serilog.Sinks.OpenTelemetry": "[4.*, )"
+        }
+      },
+      "granit.observability.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Observability": "[0.1.0-dev, )",
+          "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
         }
       },
       "granit.persistence": {
