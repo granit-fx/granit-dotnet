@@ -444,6 +444,16 @@
       "granit.core": {
         "type": "Project"
       },
+      "granit.httpresilience": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Http": "[10.*, )",
+          "Microsoft.Extensions.Http.Resilience": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+        }
+      },
       "granit.identity": {
         "type": "Project",
         "dependencies": {
@@ -454,11 +464,11 @@
       "granit.identity.entraid": {
         "type": "Project",
         "dependencies": {
+          "Granit.HttpResilience": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Diagnostics.HealthChecks": "[10.*, )",
           "Microsoft.Extensions.Http": "[10.*, )",
-          "Microsoft.Extensions.Http.Resilience": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
         }
       },

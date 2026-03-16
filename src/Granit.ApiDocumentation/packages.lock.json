@@ -20,8 +20,8 @@
       "Scalar.AspNetCore": {
         "type": "Direct",
         "requested": "[2.*, )",
-        "resolved": "2.13.8",
-        "contentHash": "Sp75IcOIZFMVawlpSiiHiyeWYJJVvbXKt1PcB9CcmjzJumofETWzOCMwfhKumbfBPLg/89sOBQUEfzKpXhAw6g=="
+        "resolved": "2.13.9",
+        "contentHash": "BeQpbWJbvnrM8mUCmMgB6ApbSQ4C+4PmiNvE2bfSsxfgmbfAUX4zIe2xFKlGwpOG5dCgqx/8RQwh53VJZRSypQ=="
       },
       "Asp.Versioning.Abstractions": {
         "type": "Transitive",

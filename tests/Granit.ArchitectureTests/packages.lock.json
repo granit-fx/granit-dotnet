@@ -375,8 +375,8 @@
       },
       "Magick.NET.Core": {
         "type": "Transitive",
-        "resolved": "14.10.4",
-        "contentHash": "2OvmKkpHoe3f8LlhngRSrRb2f4uB2AAc5MNT0aDW97SMdpkpWYnKG1zaeCaU0dmBp4FaZ0/FawhcalaOOlgbng=="
+        "resolved": "14.11.0",
+        "contentHash": "MdNdyZJ7CjTV0zc4G1dGz8RIis5ZizYOMRrQ4+WghHYq5Hn151VNPPFpRsZ3fw61klegTFbzYRyMQjfl/sYW3w=="
       },
       "MessagePack": {
         "type": "Transitive",
@@ -1194,13 +1194,6 @@
           "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
         }
       },
-      "granit.ai.anthropic": {
-        "type": "Project",
-        "dependencies": {
-          "Anthropic": "[12.*, )",
-          "Granit.AI": "[0.1.0-dev, )"
-        }
-      },
       "granit.ai.azureopenai": {
         "type": "Project",
         "dependencies": {
@@ -1228,6 +1221,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.AI": "[0.1.0-dev, )",
+          "Granit.HttpResilience": "[0.1.0-dev, )",
           "OllamaSharp": "[5.*, )"
         }
       },
@@ -1641,6 +1635,13 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.httpresilience": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Http.Resilience": "[10.*, )"
+        }
+      },
       "granit.idempotency": {
         "type": "Project",
         "dependencies": {
@@ -1686,9 +1687,9 @@
       "granit.identity.entraid": {
         "type": "Project",
         "dependencies": {
+          "Granit.HttpResilience": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Http.Resilience": "[10.*, )"
+          "Granit.Timing": "[0.1.0-dev, )"
         }
       },
       "granit.identity.googlecloud": {
@@ -1701,9 +1702,9 @@
       "granit.identity.keycloak": {
         "type": "Project",
         "dependencies": {
+          "Granit.HttpResilience": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Http.Resilience": "[10.*, )"
+          "Granit.Timing": "[0.1.0-dev, )"
         }
       },
       "granit.imaging": {
@@ -1783,10 +1784,10 @@
       "granit.notifications.brevo": {
         "type": "Project",
         "dependencies": {
+          "Granit.HttpResilience": "[0.1.0-dev, )",
           "Granit.Notifications.Email": "[0.1.0-dev, )",
           "Granit.Notifications.Sms": "[0.1.0-dev, )",
-          "Granit.Notifications.WhatsApp": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Http.Resilience": "[10.*, )"
+          "Granit.Notifications.WhatsApp": "[0.1.0-dev, )"
         }
       },
       "granit.notifications.email": {
@@ -1813,15 +1814,15 @@
       "granit.notifications.email.scaleway": {
         "type": "Project",
         "dependencies": {
-          "Granit.Notifications.Email": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Http.Resilience": "[10.*, )"
+          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Notifications.Email": "[0.1.0-dev, )"
         }
       },
       "granit.notifications.email.sendgrid": {
         "type": "Project",
         "dependencies": {
-          "Granit.Notifications.Email": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Http.Resilience": "[10.*, )"
+          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Notifications.Email": "[0.1.0-dev, )"
         }
       },
       "granit.notifications.email.smtp": {
@@ -1874,8 +1875,8 @@
       "granit.notifications.mobilepush.googlefcm": {
         "type": "Project",
         "dependencies": {
-          "Granit.Notifications.MobilePush": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Http.Resilience": "[10.*, )"
+          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Notifications.MobilePush": "[0.1.0-dev, )"
         }
       },
       "granit.notifications.signalr": {
@@ -1915,9 +1916,9 @@
       "granit.notifications.twilio": {
         "type": "Project",
         "dependencies": {
+          "Granit.HttpResilience": "[0.1.0-dev, )",
           "Granit.Notifications.Sms": "[0.1.0-dev, )",
-          "Granit.Notifications.WhatsApp": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Http.Resilience": "[10.*, )"
+          "Granit.Notifications.WhatsApp": "[0.1.0-dev, )"
         }
       },
       "granit.notifications.webpush": {
@@ -1944,8 +1945,8 @@
       "granit.notifications.zulip": {
         "type": "Project",
         "dependencies": {
-          "Granit.Notifications": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Http.Resilience": "[10.*, )"
+          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Notifications": "[0.1.0-dev, )"
         }
       },
       "granit.observability": {
@@ -2289,6 +2290,7 @@
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.HttpResilience": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
@@ -2374,15 +2376,6 @@
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.Notifications": "[0.1.0-dev, )",
           "Granit.Workflow": "[0.1.0-dev, )"
-        }
-      },
-      "Anthropic": {
-        "type": "CentralTransitive",
-        "requested": "[12.*, )",
-        "resolved": "12.8.0",
-        "contentHash": "ruR9/PYqmhxY053VqwQCHuy7CMmY3t2Vh/xAyp9pdC8D0tsj6rn+asM+zrlmr5O9CUStpxP55QVvCNQnOVxggg==",
-        "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.2.0"
         }
       },
       "Asp.Versioning.Mvc": {
@@ -2613,10 +2606,10 @@
       "Magick.NET-Q8-AnyCPU": {
         "type": "CentralTransitive",
         "requested": "[14.*, )",
-        "resolved": "14.10.4",
-        "contentHash": "CHUcm/MLCHr/gSYjhfroNU6344aYQICLD3u7wTb4Uii0eCQ/NMEV/XB28DO/hULcLWqOcdk69NDgta61vjhmqw==",
+        "resolved": "14.11.0",
+        "contentHash": "bjMWlNW0Fhpm8WteSotie74j3A1NdF7iQONUcR1P4QVb50RpxHcClxr0qEEULkfO+hC2naIE2vDxFpq4iN/zwQ==",
         "dependencies": {
-          "Magick.NET.Core": "14.10.4"
+          "Magick.NET.Core": "14.11.0"
         }
       },
       "MailKit": {
@@ -2897,8 +2890,8 @@
       "Scriban": {
         "type": "CentralTransitive",
         "requested": "[6.*, )",
-        "resolved": "6.5.7",
-        "contentHash": "jrFpfBrlynBbfJkdWKNfFNS/etNQJ0iuRE47e7FtyCgJuYBL5J42U01tBXsxmqJtW0uRzhzZ1RolZC8RsNxzwQ=="
+        "resolved": "6.5.8",
+        "contentHash": "PxLtQCQpUfIGklfiWE1q5xYjIrk4Z2xO/0yu0wTsdK/6EujonWvllDaK+fLK+a5leVqKzQ91oX6wJm83Wb9cmw=="
       },
       "Sep": {
         "type": "CentralTransitive",
