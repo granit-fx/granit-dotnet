@@ -31,9 +31,17 @@ internal sealed partial class AISemanticMappingService(
     public bool IsAvailable => true;
 
     /// <inheritdoc/>
+    public Task<IReadOnlyList<SemanticMappingSuggestion>> SuggestSemanticMappingsAsync(
+        IReadOnlyList<string> headers,
+        IReadOnlyList<ImportFieldMetadata> targetFields,
+        CancellationToken cancellationToken = default)
+        => SuggestSemanticMappingsAsync(headers, targetFields, previewRows: null, cancellationToken);
+
+    /// <inheritdoc/>
     public async Task<IReadOnlyList<SemanticMappingSuggestion>> SuggestSemanticMappingsAsync(
         IReadOnlyList<string> headers,
         IReadOnlyList<ImportFieldMetadata> targetFields,
+        IReadOnlyList<string[]>? previewRows,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(headers);
@@ -46,6 +54,9 @@ internal sealed partial class AISemanticMappingService(
 
         DataExchangeAIOptions opts = options.Value;
 
+        // Only include preview rows if the option is explicitly enabled (GDPR opt-in)
+        IReadOnlyList<string[]>? effectivePreview = opts.IncludePreviewRows ? previewRows : null;
+
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(opts.TimeoutSeconds));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
 
@@ -55,7 +66,7 @@ internal sealed partial class AISemanticMappingService(
                 .CreateAsync(opts.WorkspaceName, linkedCts.Token)
                 .ConfigureAwait(false);
 
-            string prompt = BuildPrompt(headers, targetFields, opts.MinConfidenceScore);
+            string prompt = BuildPrompt(headers, targetFields, opts.MinConfidenceScore, effectivePreview);
 
             ChatResponse response = await chatClient
                 .GetResponseAsync(prompt, cancellationToken: linkedCts.Token)
@@ -86,7 +97,8 @@ internal sealed partial class AISemanticMappingService(
     internal static string BuildPrompt(
         IReadOnlyList<string> headers,
         IReadOnlyList<ImportFieldMetadata> targetFields,
-        double minConfidenceScore)
+        double minConfidenceScore,
+        IReadOnlyList<string[]>? previewRows = null)
     {
         var sb = new StringBuilder();
 
@@ -95,6 +107,28 @@ internal sealed partial class AISemanticMappingService(
         sb.Append("Source columns: ");
         sb.AppendJoin(", ", headers);
         sb.AppendLine();
+
+        // Include preview rows when provided (opt-in, caller is responsible for GDPR compliance)
+        if (previewRows is { Count: > 0 })
+        {
+            sb.AppendLine();
+            sb.AppendLine("Sample data (first rows):");
+            sb.AppendLine("| " + string.Join(" | ", headers) + " |");
+            sb.AppendLine("| " + string.Join(" | ", headers.Select(_ => "---")) + " |");
+
+            foreach (string[] row in previewRows)
+            {
+                sb.Append("| ");
+                for (int i = 0; i < headers.Count; i++)
+                {
+                    sb.Append(i < row.Length ? row[i] : "-");
+                    sb.Append(i < headers.Count - 1 ? " | " : " |");
+                }
+
+                sb.AppendLine();
+            }
+        }
+
         sb.AppendLine();
         sb.AppendLine("Target properties:");
         sb.AppendLine("| Property | Type | Display Name | Description | Required |");

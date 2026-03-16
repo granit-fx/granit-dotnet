@@ -188,6 +188,78 @@ public sealed class AISemanticMappingServiceTests
     }
 
     [Fact]
+    public void BuildPrompt_WithPreviewRows_IncludesSampleData()
+    {
+        IReadOnlyList<string[]> previewRows =
+        [
+            ["john@example.com", "John Doe", "+32 123 456"],
+            ["jane@example.com", "Jane Smith", "+32 789 012"],
+        ];
+
+        string prompt = AISemanticMappingService.BuildPrompt(_headers, _targetFields, 0.6, previewRows);
+
+        prompt.ShouldContain("Sample data (first rows):");
+        prompt.ShouldContain("john@example.com");
+        prompt.ShouldContain("Jane Smith");
+    }
+
+    [Fact]
+    public void BuildPrompt_WithoutPreviewRows_DoesNotContainSampleData()
+    {
+        string prompt = AISemanticMappingService.BuildPrompt(_headers, _targetFields, 0.6, previewRows: null);
+
+        prompt.ShouldNotContain("Sample data");
+    }
+
+    [Fact]
+    public async Task SuggestSemanticMappingsAsync_WithPreviewRows_IgnoredWhenOptionDisabled()
+    {
+        _options.IncludePreviewRows = false;
+
+        const string jsonResponse = """[{"source": "COL1", "target": "Email", "score": 0.9}]""";
+        SetupChatClient(jsonResponse);
+
+        AISemanticMappingService service = CreateService();
+        IReadOnlyList<string[]> previewRows = [["john@example.com"]];
+
+        IReadOnlyList<SemanticMappingSuggestion> result = await service
+            .SuggestSemanticMappingsAsync(["COL1"], _targetFields, previewRows, TestContext.Current.CancellationToken);
+
+        result.Count.ShouldBe(1);
+
+        // Verify the prompt does NOT contain sample data (option is disabled)
+        await _chatClient.Received(1).GetResponseAsync(
+            Arg.Is<IEnumerable<ChatMessage>>(msgs =>
+                !string.Join("", msgs.Select(m => m.Text)).Contains("Sample data")),
+            Arg.Any<ChatOptions?>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SuggestSemanticMappingsAsync_WithPreviewRows_IncludedWhenOptionEnabled()
+    {
+        _options.IncludePreviewRows = true;
+
+        const string jsonResponse = """[{"source": "COL1", "target": "Email", "score": 0.9}]""";
+        SetupChatClient(jsonResponse);
+
+        AISemanticMappingService service = CreateService();
+        IReadOnlyList<string[]> previewRows = [["john@example.com"]];
+
+        IReadOnlyList<SemanticMappingSuggestion> result = await service
+            .SuggestSemanticMappingsAsync(["COL1"], _targetFields, previewRows, TestContext.Current.CancellationToken);
+
+        result.Count.ShouldBe(1);
+
+        // Verify the prompt DOES contain sample data
+        await _chatClient.Received(1).GetResponseAsync(
+            Arg.Is<IEnumerable<ChatMessage>>(msgs =>
+                string.Join("", msgs.Select(m => m.Text)).Contains("Sample data")),
+            Arg.Any<ChatOptions?>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public void ParseSuggestions_WithInvalidJson_ReturnsEmptyList()
     {
         IReadOnlyList<SemanticMappingSuggestion> result =

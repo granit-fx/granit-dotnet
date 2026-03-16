@@ -32,4 +32,24 @@ public interface ISemanticMappingService
         IReadOnlyList<string> headers,
         IReadOnlyList<ImportFieldMetadata> targetFields,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Suggests column-to-property mappings using semantic analysis of headers, field metadata,
+    /// and optionally a preview of the first data rows.
+    /// </summary>
+    /// <param name="headers">Column headers from the imported file.</param>
+    /// <param name="targetFields">Schema metadata for the target entity.</param>
+    /// <param name="previewRows">
+    /// Optional preview of the first data rows. Each element is one row as an array of cell values.
+    /// <b>GDPR warning</b>: preview rows may contain PII. Only provide when the data is non-sensitive,
+    /// the AI provider has a DPA, or a local model (Ollama) is used.
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A list of semantic mapping suggestions ordered by confidence score.</returns>
+    Task<IReadOnlyList<SemanticMappingSuggestion>> SuggestSemanticMappingsAsync(
+        IReadOnlyList<string> headers,
+        IReadOnlyList<ImportFieldMetadata> targetFields,
+        IReadOnlyList<string[]>? previewRows,
+        CancellationToken cancellationToken = default)
+        => SuggestSemanticMappingsAsync(headers, targetFields, cancellationToken);
 }

@@ -23,4 +23,21 @@ public interface IMappingSuggestionService
     Task<IReadOnlyList<ImportColumnMapping>> SuggestMappingsAsync<TEntity>(
         IReadOnlyList<string> headers,
         CancellationToken cancellationToken = default) where TEntity : class;
+
+    /// <summary>
+    /// Suggests column-to-property mappings with optional preview rows for the AI tier.
+    /// </summary>
+    /// <typeparam name="TEntity">The target entity type.</typeparam>
+    /// <param name="headers">Column headers extracted from the file.</param>
+    /// <param name="previewRows">
+    /// Optional preview of the first data rows for AI-assisted mapping.
+    /// Each element is one row as an array of cell values, aligned with <paramref name="headers"/>.
+    /// <b>GDPR warning</b>: may contain PII. Only provide when safe (see <c>DataExchangeAIOptions.IncludePreviewRows</c>).
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<IReadOnlyList<ImportColumnMapping>> SuggestMappingsAsync<TEntity>(
+        IReadOnlyList<string> headers,
+        IReadOnlyList<string[]>? previewRows,
+        CancellationToken cancellationToken = default) where TEntity : class
+        => SuggestMappingsAsync<TEntity>(headers, cancellationToken);
 }

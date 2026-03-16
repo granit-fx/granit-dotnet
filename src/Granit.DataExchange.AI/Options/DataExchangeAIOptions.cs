@@ -34,4 +34,24 @@ public sealed class DataExchangeAIOptions
     /// Suggestions with a score below this threshold are discarded.
     /// </remarks>
     public double MinConfidenceScore { get; set; } = 0.6;
+
+    /// <summary>
+    /// When <c>true</c>, the AI mapping service includes a preview of the first data rows
+    /// in the prompt to improve mapping accuracy for headerless files or cryptic column names.
+    /// </summary>
+    /// <remarks>
+    /// <b>GDPR warning</b>: preview rows may contain PII. Only enable when:
+    /// <list type="bullet">
+    ///   <item>The data is known to be non-sensitive, OR</item>
+    ///   <item>The AI provider has a Data Processing Agreement (e.g. Azure OpenAI), OR</item>
+    ///   <item>A local model is used (Ollama)</item>
+    /// </list>
+    /// Default: <c>false</c> (headers-only mode, GDPR-safe).
+    /// </remarks>
+    public bool IncludePreviewRows { get; set; }
+
+    /// <summary>
+    /// Number of preview rows to include when <see cref="IncludePreviewRows"/> is <c>true</c>.
+    /// </summary>
+    public int PreviewRowCount { get; set; } = 5;
 }
