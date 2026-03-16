@@ -79,6 +79,7 @@
     <Project Path="src/Granit.Localization.EntityFrameworkCore/Granit.Localization.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Localization.SourceGenerator/Granit.Localization.SourceGenerator.csproj" />
     <Project Path="src/Granit.Localization/Granit.Localization.csproj" />
+    <Project Path="src/Granit.Localization.AI/Granit.Localization.AI.csproj" />
     <Project Path="src/Granit.MultiTenancy/Granit.MultiTenancy.csproj" />
     <Project Path="src/Granit.Notifications.Brevo/Granit.Notifications.Brevo.csproj" />
     <Project Path="src/Granit.Notifications.Email.AzureCommunicationServices/Granit.Notifications.Email.AzureCommunicationServices.csproj" />
@@ -123,6 +124,7 @@
     <Project Path="src/Granit.Settings/Granit.Settings.csproj" />
     <Project Path="src/Granit.Templating.Endpoints/Granit.Templating.Endpoints.csproj" />
     <Project Path="src/Granit.Templating.EntityFrameworkCore/Granit.Templating.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Templating.AI/Granit.Templating.AI.csproj" />
     <Project Path="src/Granit.Templating.Scriban/Granit.Templating.Scriban.csproj" />
     <Project Path="src/Granit.Templating.Workflow/Granit.Templating.Workflow.csproj" />
     <Project Path="src/Granit.Templating/Granit.Templating.csproj" />
@@ -234,6 +236,7 @@
     <Project Path="tests/Granit.Imaging.MagickNet.Tests/Granit.Imaging.MagickNet.Tests.csproj" />
     <Project Path="tests/Granit.Imaging.Tests/Granit.Imaging.Tests.csproj" />
     <Project Path="tests/Granit.Localization.Endpoints.Tests/Granit.Localization.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.Localization.AI.Tests/Granit.Localization.AI.Tests.csproj" />
     <Project Path="tests/Granit.Localization.EntityFrameworkCore.Tests/Granit.Localization.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Localization.SourceGenerator.Tests/Granit.Localization.SourceGenerator.Tests.csproj" />
     <Project Path="tests/Granit.Localization.Tests/Granit.Localization.Tests.csproj" />
@@ -282,6 +285,7 @@
     <Project Path="tests/Granit.Settings.Tests/Granit.Settings.Tests.csproj" />
     <Project Path="tests/Granit.Templating.Endpoints.Tests/Granit.Templating.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Templating.EntityFrameworkCore.Tests/Granit.Templating.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Templating.AI.Tests/Granit.Templating.AI.Tests.csproj" />
     <Project Path="tests/Granit.Templating.Scriban.Tests/Granit.Templating.Scriban.Tests.csproj" />
     <Project Path="tests/Granit.Templating.Tests/Granit.Templating.Tests.csproj" />
     <Project Path="tests/Granit.Templating.Workflow.Tests/Granit.Templating.Workflow.Tests.csproj" />

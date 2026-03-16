@@ -1710,6 +1710,13 @@
           "SmartFormat": "[3.*, )"
         }
       },
+      "granit.localization.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )"
+        }
+      },
       "granit.localization.endpoints": {
         "type": "Project",
         "dependencies": {
@@ -2061,6 +2068,13 @@
         "type": "Project",
         "dependencies": {
           "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
+      "granit.templating.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Templating": "[0.1.0-dev, )"
         }
       },
       "granit.templating.endpoints": {
