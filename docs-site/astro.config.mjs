@@ -153,7 +153,48 @@ export default defineConfig({
                 },
                 {
                   label: "AI",
-                  autogenerate: { directory: "dotnet/ai" },
+                  items: [
+                    { label: "Overview", link: "/dotnet/ai/" },
+                    { label: "Setup & Configuration", link: "/dotnet/ai/setup/" },
+                    {
+                      label: "User Experience",
+                      items: [
+                        { label: "Natural Language Query", link: "/dotnet/ai/natural-language-query/" },
+                        { label: "Semantic Search & RAG", link: "/dotnet/ai/semantic-search/" },
+                      ],
+                    },
+                    {
+                      label: "Data Ingestion",
+                      items: [
+                        { label: "Import Mapping", link: "/dotnet/ai/import-mapping/" },
+                        { label: "Document Extraction", link: "/dotnet/ai/document-extraction/" },
+                      ],
+                    },
+                    {
+                      label: "Business Intelligence",
+                      items: [
+                        { label: "Workflow Decision Support", link: "/dotnet/ai/workflow-ai/" },
+                        { label: "Notification Intelligence", link: "/dotnet/ai/notifications-ai/" },
+                        { label: "Timeline Intelligence", link: "/dotnet/ai/timeline-ai/" },
+                      ],
+                    },
+                    {
+                      label: "Security & Compliance",
+                      items: [
+                        { label: "PII Detection", link: "/dotnet/ai/privacy-ai/" },
+                        { label: "Content Moderation", link: "/dotnet/ai/validation-ai/" },
+                        { label: "Blob Storage Intelligence", link: "/dotnet/ai/blob-storage-ai/" },
+                        { label: "Access Anomaly Detection", link: "/dotnet/ai/authorization-ai/" },
+                      ],
+                    },
+                    {
+                      label: "Operations",
+                      items: [
+                        { label: "Log Analysis", link: "/dotnet/ai/observability-ai/" },
+                        { label: "Image Analysis", link: "/dotnet/ai/imaging-ai/" },
+                      ],
+                    },
+                  ],
                 },
                 {
                   label: "Architecture",
