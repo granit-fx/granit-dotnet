@@ -20,18 +20,19 @@ public static class ModelBuilderExtensions
     /// <summary>
     /// Applies Granit conventions to all entity types in the model:
     /// <list type="bullet">
-    ///   <item><b>Query filters</b>:
-    ///     <see cref="ISoftDeletable"/>, <see cref="IActive"/>,
-    ///     <see cref="IProcessingRestrictable"/>, <see cref="IMultiTenant"/>,
-    ///     <see cref="IPublishable"/>
+    ///   <item><b>Named query filters</b> (EF Core 10):
+    ///     <see cref="ISoftDeletable"/> (<see cref="GranitFilterNames.SoftDelete"/>),
+    ///     <see cref="IActive"/> (<see cref="GranitFilterNames.Active"/>),
+    ///     <see cref="IProcessingRestrictable"/> (<see cref="GranitFilterNames.ProcessingRestrictable"/>),
+    ///     <see cref="IMultiTenant"/> (<see cref="GranitFilterNames.MultiTenant"/>),
+    ///     <see cref="IPublishable"/> (<see cref="GranitFilterNames.Publishable"/>).
+    ///     Each interface registers its own independent named filter — bypass one without affecting others:
+    ///     <c>query.IgnoreQueryFilters([GranitFilterNames.SoftDelete])</c>.
     ///   </item>
     ///   <item><b>Translation conventions</b>:
-    ///     <see cref="ITranslation{TParent}"/> → FK, cascade delete, unique index (ParentId, Culture)
+    ///     <see cref="ITranslation{TParent}"/> → FK, cascade delete, unique index (ParentId, Culture).
     ///   </item>
     /// </list>
-    /// Entities implementing multiple filter interfaces receive a single combined
-    /// <c>HasQueryFilter</c> (conditions joined with <c>AndAlso</c>), which fixes
-    /// the silent filter-overwrite bug in EF Core when multiple calls are made.
     /// </summary>
     /// <param name="modelBuilder">The EF Core ModelBuilder.</param>
     /// <param name="currentTenant">
@@ -40,10 +41,10 @@ public static class ModelBuilderExtensions
     /// (re-evaluated on each query via AsyncLocal).
     /// </param>
     /// <param name="dataFilter">
-    /// Data filter service. If <c>null</c>, all filters are always applied
-    /// (backward-compatible behavior identical to before this parameter was added).
-    /// When provided, each filter can be individually bypassed at runtime via
-    /// <c>IDataFilter.Disable&lt;TFilter&gt;()</c>.
+    /// Data filter service for service-level bypass (all queries in the current async flow).
+    /// If <c>null</c>, all filters are always applied.
+    /// When provided, each filter can be individually bypassed via <c>IDataFilter.Disable&lt;TFilter&gt;()</c>.
+    /// For single-query bypass, use <c>query.IgnoreQueryFilters([GranitFilterNames.SoftDelete])</c> instead.
     /// </param>
     public static ModelBuilder ApplyGranitConventions(
         this ModelBuilder modelBuilder,
@@ -128,9 +129,14 @@ public static class ModelBuilderExtensions
             .IsUnique();
     }
 
-    // Builds and registers a single combined HasQueryFilter for TEntity.
-    // Each applicable filter interface contributes one condition: bypass || realCondition.
-    // All conditions are combined with AndAlso — one HasQueryFilter call per entity type.
+    // Registers one named HasQueryFilter per applicable filter interface for TEntity (EF Core 10).
+    // Each filter is independent: bypass one per query via IgnoreQueryFilters([GranitFilterNames.X])
+    // or bypass all queries in the current async flow via IDataFilter.Disable<TFilter>().
+    //
+    // Pattern per filter:
+    //   bypass = !proxy.XEnabled  (re-evaluated as a query parameter via ConstantExpression)
+    //   real   = <interface condition>
+    //   filter = bypass || real
     private static void SetEntityFilter<TEntity>(
         ModelBuilder modelBuilder,
         ICurrentTenant? currentTenant,
@@ -138,69 +144,56 @@ public static class ModelBuilderExtensions
         where TEntity : class
     {
         ParameterExpression param = Expression.Parameter(typeof(TEntity), "e");
-        List<Expression> conditions = [];
+        Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TEntity> builder = modelBuilder.Entity<TEntity>();
 
         if (typeof(ISoftDeletable).IsAssignableFrom(typeof(TEntity)))
         {
-            // bypass = !proxy.SoftDeleteEnabled (re-evaluated by EF Core as a query parameter)
-            // real   = !e.IsDeleted
             Expression bypass = Expression.Not(
                 Expression.Property(Expression.Constant(proxy), nameof(FilterProxy.SoftDeleteEnabled)));
             Expression notDeleted = Expression.Not(
                 Expression.Property(param, nameof(ISoftDeletable.IsDeleted)));
-            conditions.Add(Expression.OrElse(bypass, notDeleted));
+            builder.HasQueryFilter(GranitFilterNames.SoftDelete,
+                Expression.Lambda<Func<TEntity, bool>>(Expression.OrElse(bypass, notDeleted), param));
         }
 
         if (typeof(IActive).IsAssignableFrom(typeof(TEntity)))
         {
-            // bypass = !proxy.ActiveEnabled
-            // real   = e.IsActive
             Expression bypass = Expression.Not(
                 Expression.Property(Expression.Constant(proxy), nameof(FilterProxy.ActiveEnabled)));
             Expression isActive = Expression.Property(param, nameof(IActive.IsActive));
-            conditions.Add(Expression.OrElse(bypass, isActive));
+            builder.HasQueryFilter(GranitFilterNames.Active,
+                Expression.Lambda<Func<TEntity, bool>>(Expression.OrElse(bypass, isActive), param));
         }
 
         if (typeof(IProcessingRestrictable).IsAssignableFrom(typeof(TEntity)))
         {
-            // bypass = !proxy.ProcessingRestrictableEnabled
-            // real   = !e.IsProcessingRestricted
             Expression bypass = Expression.Not(
                 Expression.Property(Expression.Constant(proxy), nameof(FilterProxy.ProcessingRestrictableEnabled)));
             Expression notRestricted = Expression.Not(
                 Expression.Property(param, nameof(IProcessingRestrictable.IsProcessingRestricted)));
-            conditions.Add(Expression.OrElse(bypass, notRestricted));
+            builder.HasQueryFilter(GranitFilterNames.ProcessingRestrictable,
+                Expression.Lambda<Func<TEntity, bool>>(Expression.OrElse(bypass, notRestricted), param));
         }
 
         if (typeof(IMultiTenant).IsAssignableFrom(typeof(TEntity)) && currentTenant is not null)
         {
-            // bypass = !proxy.MultiTenantEnabled
-            // real   = e.TenantId == currentTenant.Id (closure re-evaluated via AsyncLocal)
             Expression bypass = Expression.Not(
                 Expression.Property(Expression.Constant(proxy), nameof(FilterProxy.MultiTenantEnabled)));
             Expression tenantMatch = Expression.Equal(
                 Expression.Property(param, nameof(IMultiTenant.TenantId)),
                 Expression.Property(Expression.Constant(currentTenant), nameof(ICurrentTenant.Id)));
-            conditions.Add(Expression.OrElse(bypass, tenantMatch));
+            builder.HasQueryFilter(GranitFilterNames.MultiTenant,
+                Expression.Lambda<Func<TEntity, bool>>(Expression.OrElse(bypass, tenantMatch), param));
         }
 
         if (typeof(IPublishable).IsAssignableFrom(typeof(TEntity)))
         {
-            // bypass = !proxy.PublishableEnabled
-            // real   = e.IsPublished
             Expression bypass = Expression.Not(
                 Expression.Property(Expression.Constant(proxy), nameof(FilterProxy.PublishableEnabled)));
             Expression isPublished = Expression.Property(param, nameof(IPublishable.IsPublished));
-            conditions.Add(Expression.OrElse(bypass, isPublished));
+            builder.HasQueryFilter(GranitFilterNames.Publishable,
+                Expression.Lambda<Func<TEntity, bool>>(Expression.OrElse(bypass, isPublished), param));
         }
-
-        if (conditions.Count == 0)
-        {
-            return;
-        }
-
-        Expression combined = conditions.Aggregate(Expression.AndAlso);
-        modelBuilder.Entity<TEntity>().HasQueryFilter(Expression.Lambda<Func<TEntity, bool>>(combined, param));
     }
 
     // Internal wrapper: EF Core evaluates simple property access on a ConstantExpression

@@ -1,12 +1,15 @@
 // =============================================================================
 // Tests - ModelBuilderExtensions
 // =============================================================================
-// Verifies that ApplyGranitConventions applies:
-//   - ISoftDeletable global query filter (WHERE IsDeleted = false)
-//   - IMultiTenant global query filter (WHERE TenantId = currentTenant.Id)
-//   - IActive global query filter (WHERE IsActive = true)
-//   - A single HasQueryFilter per entity (fixes the combination bug)
-//   - Selective bypass via IDataFilter
+// Verifies that ApplyGranitConventions applies EF Core 10 named query filters:
+//   - ISoftDeletable  → GranitFilterNames.SoftDelete
+//   - IMultiTenant    → GranitFilterNames.MultiTenant
+//   - IActive         → GranitFilterNames.Active
+//   - IProcessingRestrictable → GranitFilterNames.ProcessingRestrictable
+//   - IPublishable    → GranitFilterNames.Publishable
+//   - One named filter per interface (independent, can be bypassed individually)
+//   - Service-level bypass via IDataFilter
+//   - Query-level bypass via IgnoreQueryFilters([GranitFilterNames.X])
 //   - Backward compatibility (dataFilter = null)
 //
 // Note on EF Core model caching:
@@ -111,46 +114,45 @@ public sealed class ModelBuilderExtensionsTests
     [Fact]
     public void ApplyGranitConventions_MultiTenant_QueryFilterIsRegisteredOnModel()
     {
-        // Arrange
         using TestMultiTenantDbContext context = CreateMultiTenantContext();
 
-        // Act
         IEntityType? entityType = context.Model.FindEntityType(typeof(TestTenantEntity));
 
-        // Assert
         entityType.ShouldNotBeNull();
-        entityType!.GetDeclaredQueryFilters().FirstOrDefault().ShouldNotBeNull("an IMultiTenant filter must be registered");
+        entityType!.GetDeclaredQueryFilters()
+            .Any(f => f.Key == GranitFilterNames.MultiTenant)
+            .ShouldBeTrue("a named MultiTenant filter must be registered");
     }
 
     [Fact]
     public void ApplyGranitConventions_WithoutCurrentTenant_NoMultiTenantFilter()
     {
-        // Arrange
         using TestMultiTenantDbContextWithoutFilter context = CreateContextWithoutFilter();
 
-        // Act
         IEntityType? entityType = context.Model.FindEntityType(typeof(TestTenantEntity));
 
-        // Assert — no multi-tenant filter registered when currentTenant is not provided
-        entityType!.GetDeclaredQueryFilters().FirstOrDefault().ShouldBeNull("no multi-tenant filter must be registered without ICurrentTenant");
+        entityType!.GetDeclaredQueryFilters()
+            .Any(f => f.Key == GranitFilterNames.MultiTenant)
+            .ShouldBeFalse("no MultiTenant filter must be registered without ICurrentTenant");
     }
 
     [Fact]
     public void ApplyGranitConventions_MultiTenant_FilterExpression_MatchesCurrentTenant()
     {
-        // Arrange — filter compiled and invoked directly, without the EF Core InMemory pipeline
+        // Filter compiled and invoked directly, without the EF Core InMemory pipeline
         // (EF Core's partial evaluator may capture the value at query compilation time;
         // direct compilation via Compile() guarantees the closure is dynamic)
         var tenantA = Guid.NewGuid();
         SharedTenant.Id = tenantA;
 
         using TestMultiTenantDbContext context = CreateMultiTenantContext();
-        LambdaExpression? filter = context.Model.FindEntityType(typeof(TestTenantEntity))?.GetDeclaredQueryFilters().FirstOrDefault()?.Expression;
+        LambdaExpression? filter = context.Model.FindEntityType(typeof(TestTenantEntity))
+            ?.GetDeclaredQueryFilters()
+            .FirstOrDefault(f => f.Key == GranitFilterNames.MultiTenant)?.Expression;
         filter.ShouldNotBeNull();
 
         var compiled = (Func<TestTenantEntity, bool>)filter!.Compile();
 
-        // Assert — entity matching current tenant: passes the filter
         compiled(new TestTenantEntity { TenantId = tenantA }).ShouldBeTrue("entity of current tenant must pass");
         compiled(new TestTenantEntity { TenantId = Guid.NewGuid() }).ShouldBeFalse("entity of another tenant must be filtered");
         compiled(new TestTenantEntity { TenantId = null }).ShouldBeFalse("entity without tenant must be filtered");
@@ -161,23 +163,22 @@ public sealed class ModelBuilderExtensionsTests
     [Fact]
     public void ApplyGranitConventions_MultiTenant_FilterExpression_EvaluatesDynamically()
     {
-        // Arrange — verifies that the closure dynamically re-evaluates currentTenant.Id
+        // Verifies that the closure dynamically re-evaluates currentTenant.Id
         // (same behavior as production with AsyncLocal ICurrentTenant)
         var tenantA = Guid.NewGuid();
         SharedTenant.Id = tenantA;
 
         using TestMultiTenantDbContext context = CreateMultiTenantContext();
-        LambdaExpression? filter = context.Model.FindEntityType(typeof(TestTenantEntity))?.GetDeclaredQueryFilters().FirstOrDefault()?.Expression;
+        LambdaExpression? filter = context.Model.FindEntityType(typeof(TestTenantEntity))
+            ?.GetDeclaredQueryFilters()
+            .FirstOrDefault(f => f.Key == GranitFilterNames.MultiTenant)?.Expression;
         var compiled = (Func<TestTenantEntity, bool>)filter!.Compile();
 
-        // First active tenant
         compiled(new TestTenantEntity { TenantId = tenantA }).ShouldBeTrue();
 
-        // Change tenant (simulates an AsyncLocal context switch)
         var tenantB = Guid.NewGuid();
         SharedTenant.Id = tenantB;
 
-        // Assert — filter adapts dynamically
         compiled(new TestTenantEntity { TenantId = tenantB }).ShouldBeTrue("filter must re-evaluate after tenant change");
         compiled(new TestTenantEntity { TenantId = tenantA }).ShouldBeFalse("previous tenant must be filtered");
 
@@ -235,13 +236,13 @@ public sealed class ModelBuilderExtensionsTests
     [Fact]
     public void ApplyGranitConventions_SoftDelete_DataFilter_Bypass_EvaluatesDynamically()
     {
-        // Arrange — SharedDataFilter is the instance captured in the cached model expression.
         SharedDataFilter.SetEnabled<ISoftDeletable>(true);
 
         using TestDbContextWithDataFilter context = CreateContextWithDataFilter();
         LambdaExpression? filter = context.Model
             .FindEntityType(typeof(TestSoftDeleteWithFilter))
-            ?.GetDeclaredQueryFilters().FirstOrDefault()?.Expression;
+            ?.GetDeclaredQueryFilters()
+            .FirstOrDefault(f => f.Key == GranitFilterNames.SoftDelete)?.Expression;
         filter.ShouldNotBeNull();
 
         var compiled = (Func<TestSoftDeleteWithFilter, bool>)filter!.Compile();
@@ -268,7 +269,8 @@ public sealed class ModelBuilderExtensionsTests
         using TestDbContextWithDataFilter context = CreateContextWithDataFilter();
         LambdaExpression? filter = context.Model
             .FindEntityType(typeof(TestActiveWithFilter))
-            ?.GetDeclaredQueryFilters().FirstOrDefault()?.Expression;
+            ?.GetDeclaredQueryFilters()
+            .FirstOrDefault(f => f.Key == GranitFilterNames.Active)?.Expression;
         filter.ShouldNotBeNull();
 
         var compiled = (Func<TestActiveWithFilter, bool>)filter!.Compile();
@@ -339,7 +341,8 @@ public sealed class ModelBuilderExtensionsTests
         using TestDbContextWithProcessingRestrictableDataFilter context = CreateContextWithProcessingRestrictableDataFilter();
         LambdaExpression? filter = context.Model
             .FindEntityType(typeof(TestProcessingRestrictableWithFilter))
-            ?.GetDeclaredQueryFilters().FirstOrDefault()?.Expression;
+            ?.GetDeclaredQueryFilters()
+            .FirstOrDefault(f => f.Key == GranitFilterNames.ProcessingRestrictable)?.Expression;
         filter.ShouldNotBeNull();
 
         var compiled =
@@ -359,15 +362,17 @@ public sealed class ModelBuilderExtensionsTests
     }
 
     [Fact]
-    public void ApplyGranitConventions_CombinedSoftDeleteAndProcessingRestrictable_HasSingleQueryFilter()
+    public void ApplyGranitConventions_CombinedSoftDeleteAndProcessingRestrictable_HasTwoNamedFilters()
     {
         using TestDbContextWithCombinedSdPr context = CreateContextWithCombinedSdPr();
 
         IEntityType? entityType = context.Model.FindEntityType(typeof(TestCombinedSdPrEntity));
 
         entityType.ShouldNotBeNull();
-        entityType!.GetDeclaredQueryFilters().Count.ShouldBe(1,
-            "exactly one HasQueryFilter must be registered for ISoftDeletable + IProcessingRestrictable");
+        IReadOnlyCollection<IQueryFilter> filters = entityType!.GetDeclaredQueryFilters();
+        filters.Count.ShouldBe(2, "one named filter per interface: SoftDelete + ProcessingRestrictable");
+        filters.Any(f => f.Key == GranitFilterNames.SoftDelete).ShouldBeTrue();
+        filters.Any(f => f.Key == GranitFilterNames.ProcessingRestrictable).ShouldBeTrue();
     }
 
     [Fact]
@@ -377,22 +382,27 @@ public sealed class ModelBuilderExtensionsTests
         SharedDataFilter.SetEnabled<IProcessingRestrictable>(true);
 
         using TestDbContextWithCombinedSdPr context = CreateContextWithCombinedSdPr();
-        LambdaExpression? filter = context.Model
-            .FindEntityType(typeof(TestCombinedSdPrEntity))
-            ?.GetDeclaredQueryFilters().FirstOrDefault()?.Expression;
-        var compiled = (Func<TestCombinedSdPrEntity, bool>)filter!.Compile();
+        IReadOnlyCollection<IQueryFilter> filters = context.Model
+            .FindEntityType(typeof(TestCombinedSdPrEntity))!.GetDeclaredQueryFilters();
 
-        // Not deleted, not restricted — passes
-        compiled(new TestCombinedSdPrEntity { IsDeleted = false, IsProcessingRestricted = false }).ShouldBeTrue();
+        var compiledSd = (Func<TestCombinedSdPrEntity, bool>)filters.First(f => f.Key == GranitFilterNames.SoftDelete).Expression!.Compile();
+        var compiledPr = (Func<TestCombinedSdPrEntity, bool>)filters.First(f => f.Key == GranitFilterNames.ProcessingRestrictable).Expression!.Compile();
 
-        // Deleted — excluded by soft delete
-        compiled(new TestCombinedSdPrEntity { IsDeleted = true, IsProcessingRestricted = false }).ShouldBeFalse("deleted must be filtered");
+        // Combined = both must pass (EF Core ANDs named filters at query time)
+        // We test each individually and verify the expected behavior
+        bool passes(TestCombinedSdPrEntity e) => compiledSd(e) && compiledPr(e);
 
-        // Restricted — excluded by processing restriction
-        compiled(new TestCombinedSdPrEntity { IsDeleted = false, IsProcessingRestricted = true }).ShouldBeFalse("restricted must be filtered");
+        // Not deleted, not restricted — passes both
+        passes(new TestCombinedSdPrEntity { IsDeleted = false, IsProcessingRestricted = false }).ShouldBeTrue();
+
+        // Deleted — excluded by soft delete filter
+        passes(new TestCombinedSdPrEntity { IsDeleted = true, IsProcessingRestricted = false }).ShouldBeFalse("deleted must be filtered");
+
+        // Restricted — excluded by processing restriction filter
+        passes(new TestCombinedSdPrEntity { IsDeleted = false, IsProcessingRestricted = true }).ShouldBeFalse("restricted must be filtered");
 
         // Both — excluded
-        compiled(new TestCombinedSdPrEntity { IsDeleted = true, IsProcessingRestricted = true }).ShouldBeFalse("both must be filtered");
+        passes(new TestCombinedSdPrEntity { IsDeleted = true, IsProcessingRestricted = true }).ShouldBeFalse("both must be filtered");
     }
 
     [Fact]
@@ -402,18 +412,18 @@ public sealed class ModelBuilderExtensionsTests
         SharedDataFilter.SetEnabled<IProcessingRestrictable>(false); // processing restriction bypassed
 
         using TestDbContextWithCombinedSdPr context = CreateContextWithCombinedSdPr();
-        LambdaExpression? filter = context.Model
-            .FindEntityType(typeof(TestCombinedSdPrEntity))
-            ?.GetDeclaredQueryFilters().FirstOrDefault()?.Expression;
-        var compiled = (Func<TestCombinedSdPrEntity, bool>)filter!.Compile();
+        IReadOnlyCollection<IQueryFilter> filters = context.Model
+            .FindEntityType(typeof(TestCombinedSdPrEntity))!.GetDeclaredQueryFilters();
 
-        // Processing restriction bypassed — restricted entity from non-deleted passes
-        compiled(new TestCombinedSdPrEntity { IsDeleted = false, IsProcessingRestricted = true }).ShouldBeTrue("restriction bypassed");
+        var compiledSd = (Func<TestCombinedSdPrEntity, bool>)filters.First(f => f.Key == GranitFilterNames.SoftDelete).Expression!.Compile();
+        var compiledPr = (Func<TestCombinedSdPrEntity, bool>)filters.First(f => f.Key == GranitFilterNames.ProcessingRestrictable).Expression!.Compile();
 
-        // Soft delete still active — deleted entity filtered
-        compiled(new TestCombinedSdPrEntity { IsDeleted = true, IsProcessingRestricted = false }).ShouldBeFalse("soft delete still active");
+        // Processing restriction bypassed — compiledPr passes everything
+        compiledPr(new TestCombinedSdPrEntity { IsProcessingRestricted = true }).ShouldBeTrue("restriction bypassed");
 
-        // Reset
+        // Soft delete still active — deleted entity excluded by compiledSd
+        compiledSd(new TestCombinedSdPrEntity { IsDeleted = true }).ShouldBeFalse("soft delete still active");
+
         SharedDataFilter.SetEnabled<IProcessingRestrictable>(true);
     }
 
@@ -422,44 +432,45 @@ public sealed class ModelBuilderExtensionsTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void ApplyGranitConventions_CombinedEntity_HasSingleQueryFilter()
+    public void ApplyGranitConventions_CombinedEntity_HasTwoNamedFilters()
     {
-        // Arrange — SharedTenant is non-null so both ISoftDeletable and IMultiTenant conditions
-        // are registered for TestCombinedEntity, combined into a single HasQueryFilter.
+        // SharedTenant is non-null so both ISoftDeletable and IMultiTenant filters are registered
         using TestDbContextWithCombined context = CreateContextWithCombined();
 
-        // Act
         IEntityType? entityType = context.Model.FindEntityType(typeof(TestCombinedEntity));
 
-        // Assert — single HasQueryFilter (no duplication / silent overwrite)
         entityType.ShouldNotBeNull();
-        entityType!.GetDeclaredQueryFilters().Count.ShouldBe(1,
-            "exactly one HasQueryFilter must be registered, even for multi-interface entities");
+        IReadOnlyCollection<IQueryFilter> filters = entityType!.GetDeclaredQueryFilters();
+        filters.Count.ShouldBe(2, "one named filter per interface: SoftDelete + MultiTenant");
+        filters.Any(f => f.Key == GranitFilterNames.SoftDelete).ShouldBeTrue();
+        filters.Any(f => f.Key == GranitFilterNames.MultiTenant).ShouldBeTrue();
     }
 
     [Fact]
     public void ApplyGranitConventions_CombinedEntity_BothFiltersActive()
     {
-        // Arrange — set state on shared instances captured in the cached model expression
         var tenantA = Guid.NewGuid();
         SharedTenant.Id = tenantA;
         SharedDataFilter.SetEnabled<ISoftDeletable>(true);
         SharedDataFilter.SetEnabled<IMultiTenant>(true);
 
         using TestDbContextWithCombined context = CreateContextWithCombined();
-        LambdaExpression? filter = context.Model
-            .FindEntityType(typeof(TestCombinedEntity))
-            ?.GetDeclaredQueryFilters().FirstOrDefault()?.Expression;
-        var compiled = (Func<TestCombinedEntity, bool>)filter!.Compile();
+        IReadOnlyCollection<IQueryFilter> filters = context.Model
+            .FindEntityType(typeof(TestCombinedEntity))!.GetDeclaredQueryFilters();
 
-        // Correct tenant, not deleted — passes
-        compiled(new TestCombinedEntity { TenantId = tenantA, IsDeleted = false }).ShouldBeTrue("correct tenant + not deleted");
+        var compiledSd = (Func<TestCombinedEntity, bool>)filters.First(f => f.Key == GranitFilterNames.SoftDelete).Expression!.Compile();
+        var compiledMt = (Func<TestCombinedEntity, bool>)filters.First(f => f.Key == GranitFilterNames.MultiTenant).Expression!.Compile();
+
+        bool passes(TestCombinedEntity e) => compiledSd(e) && compiledMt(e);
+
+        // Correct tenant, not deleted — passes both
+        passes(new TestCombinedEntity { TenantId = tenantA, IsDeleted = false }).ShouldBeTrue("correct tenant + not deleted");
 
         // Correct tenant but deleted — excluded by soft delete
-        compiled(new TestCombinedEntity { TenantId = tenantA, IsDeleted = true }).ShouldBeFalse("correct tenant but deleted");
+        passes(new TestCombinedEntity { TenantId = tenantA, IsDeleted = true }).ShouldBeFalse("correct tenant but deleted");
 
         // Different tenant, not deleted — excluded by multi-tenant
-        compiled(new TestCombinedEntity { TenantId = Guid.NewGuid(), IsDeleted = false }).ShouldBeFalse("wrong tenant");
+        passes(new TestCombinedEntity { TenantId = Guid.NewGuid(), IsDeleted = false }).ShouldBeFalse("wrong tenant");
 
         SharedTenant.Id = null;
     }
@@ -473,18 +484,18 @@ public sealed class ModelBuilderExtensionsTests
         SharedDataFilter.SetEnabled<IMultiTenant>(true);    // multi-tenant active
 
         using TestDbContextWithCombined context = CreateContextWithCombined();
-        LambdaExpression? filter = context.Model
-            .FindEntityType(typeof(TestCombinedEntity))
-            ?.GetDeclaredQueryFilters().FirstOrDefault()?.Expression;
-        var compiled = (Func<TestCombinedEntity, bool>)filter!.Compile();
+        IReadOnlyCollection<IQueryFilter> filters = context.Model
+            .FindEntityType(typeof(TestCombinedEntity))!.GetDeclaredQueryFilters();
 
-        // Soft delete bypassed — deleted entity from correct tenant passes
-        compiled(new TestCombinedEntity { TenantId = tenantA, IsDeleted = true }).ShouldBeTrue("soft delete bypassed");
+        var compiledSd = (Func<TestCombinedEntity, bool>)filters.First(f => f.Key == GranitFilterNames.SoftDelete).Expression!.Compile();
+        var compiledMt = (Func<TestCombinedEntity, bool>)filters.First(f => f.Key == GranitFilterNames.MultiTenant).Expression!.Compile();
 
-        // Multi-tenant still active — wrong tenant still filtered
-        compiled(new TestCombinedEntity { TenantId = Guid.NewGuid(), IsDeleted = true }).ShouldBeFalse("multi-tenant still active");
+        // Soft delete bypassed — deleted entity from correct tenant passes compiledSd
+        compiledSd(new TestCombinedEntity { TenantId = tenantA, IsDeleted = true }).ShouldBeTrue("soft delete bypassed");
 
-        // Reset
+        // Multi-tenant still active — wrong tenant filtered by compiledMt
+        compiledMt(new TestCombinedEntity { TenantId = Guid.NewGuid(), IsDeleted = true }).ShouldBeFalse("multi-tenant still active");
+
         SharedTenant.Id = null;
         SharedDataFilter.SetEnabled<ISoftDeletable>(true);
     }
@@ -496,11 +507,11 @@ public sealed class ModelBuilderExtensionsTests
     [Fact]
     public void ApplyGranitConventions_NullDataFilter_FiltersAlwaysApply()
     {
-        // Arrange — DbContext without IDataFilter (legacy behavior)
         using TestDbContext context = CreateContext();
         LambdaExpression? filter = context.Model
             .FindEntityType(typeof(TestProduct))
-            ?.GetDeclaredQueryFilters().FirstOrDefault()?.Expression;
+            ?.GetDeclaredQueryFilters()
+            .FirstOrDefault(f => f.Key == GranitFilterNames.SoftDelete)?.Expression;
         filter.ShouldNotBeNull("soft delete filter must be registered even without IDataFilter");
 
         var compiled = (Func<TestProduct, bool>)filter!.Compile();
@@ -508,6 +519,29 @@ public sealed class ModelBuilderExtensionsTests
         // Assert — filter always active
         compiled(new TestProduct { IsDeleted = true }).ShouldBeFalse("deleted must be filtered");
         compiled(new TestProduct { IsDeleted = false }).ShouldBeTrue("non-deleted must pass");
+    }
+
+    // -------------------------------------------------------------------------
+    // Per-query named filter bypass (EF Core 10)
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task ApplyGranitConventions_IgnoreQueryFilter_ByName_ReturnsDeleted()
+    {
+        // IgnoreQueryFilters([name]) bypasses only the named filter, leaving others active
+        await using TestDbContext context = CreateContext();
+        await context.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
+
+        context.Products.Add(new TestProduct { Name = "Active", IsDeleted = false });
+        context.Products.Add(new TestProduct { Name = "Deleted", IsDeleted = true, DeletedAt = DateTimeOffset.UtcNow, DeletedBy = "test" });
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Bypass only the SoftDelete filter — equivalent to IgnoreQueryFilters() but scoped
+        List<TestProduct> results = await context.Products
+            .IgnoreQueryFilters([GranitFilterNames.SoftDelete])
+            .ToListAsync(TestContext.Current.CancellationToken);
+
+        results.Count.ShouldBe(2, "SoftDelete filter bypassed per-query — both records returned");
     }
 
     // -------------------------------------------------------------------------

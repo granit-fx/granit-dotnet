@@ -10,6 +10,14 @@ namespace Granit.Persistence.Interceptors;
 /// EF Core interceptor that converts physical deletions
 /// to soft deletions for <see cref="ISoftDeletable"/> entities.
 /// </summary>
+/// <remarks>
+/// <para>
+/// <b>⚠ ExecuteDelete bypass:</b> <c>ExecuteDelete()</c> and <c>ExecuteDeleteAsync()</c>
+/// run directly as SQL <c>DELETE</c> statements and do NOT go through this interceptor.
+/// Use <c>ExecuteUpdate()</c> with <c>IsDeleted = true</c> / <c>DeletedAt</c> / <c>DeletedBy</c>
+/// instead, or load the entity and call <c>DbContext.Remove()</c>.
+/// </para>
+/// </remarks>
 public sealed class SoftDeleteInterceptor(ICurrentUserService currentUserService, IClock clock) : SaveChangesInterceptor
 {
 

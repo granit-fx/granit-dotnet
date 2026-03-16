@@ -14,6 +14,15 @@ namespace Granit.Persistence.Interceptors;
 /// on entities inheriting from <see cref="CreationAuditedEntity"/>,
 /// and the <see cref="IMultiTenant.TenantId"/> on multi-tenant entities.
 /// </summary>
+/// <remarks>
+/// <para>
+/// <b>⚠ ExecuteUpdate bypass:</b> <c>ExecuteUpdate()</c> and <c>ExecuteUpdateAsync()</c>
+/// run directly as SQL <c>UPDATE</c> statements and do NOT go through this interceptor.
+/// Audit fields (<c>ModifiedAt</c>, <c>ModifiedBy</c>) and <c>TenantId</c> will NOT be
+/// automatically set. Set them explicitly in the <c>setPropertyCalls</c> expression,
+/// or load the entity and modify it via the change tracker.
+/// </para>
+/// </remarks>
 public sealed class AuditedEntityInterceptor(
     ICurrentUserService currentUserService,
     IClock clock,
