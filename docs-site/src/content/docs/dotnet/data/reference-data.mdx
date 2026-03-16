@@ -1,0 +1,173 @@
+---
+title: Reference Data
+description: i18n lookup tables (countries, currencies, statuses) with 14-language labels, automatic culture resolution, seeding, and generic CRUD endpoints
+sidebar:
+  order: 5
+---
+
+import { FileTree } from "@astrojs/starlight/components";
+
+`ReferenceDataEntity` is an abstract base class for i18n lookup tables (countries,
+currencies, document types). Each entity has a unique `Code`, 14 language labels, and
+automatic label resolution based on `CurrentUICulture`.
+
+## Package structure
+
+<FileTree>
+
+- Granit.ReferenceData/ i18n reference data entity and store abstractions
+  - Granit.ReferenceData.EntityFrameworkCore EF Core store + seeding
+  - Granit.ReferenceData.Endpoints Generic CRUD endpoints
+
+</FileTree>
+
+| Package | Role | Depends on |
+|---------|------|------------|
+| `Granit.ReferenceData` | `IReferenceDataStoreReader/Writer<T>`, `ReferenceDataEntity` | `Granit.Core` |
+| `Granit.ReferenceData.EntityFrameworkCore` + `Endpoints` | EF Core store, seeding, generic CRUD endpoints | `Granit.ReferenceData`, `Granit.Persistence` |
+
+## Entity structure
+
+```csharp
+public abstract class ReferenceDataEntity : AuditedEntity, IActive
+{
+    public string Code { get; set; }
+
+    // 14 language labels
+    public string LabelEn { get; set; }
+    public string LabelFr { get; set; }
+    public string LabelNl { get; set; }
+    public string LabelDe { get; set; }
+    public string LabelEs { get; set; }
+    public string LabelIt { get; set; }
+    public string LabelPt { get; set; }
+    public string LabelZh { get; set; }
+    public string LabelJa { get; set; }
+    public string LabelPl { get; set; }
+    public string LabelTr { get; set; }
+    public string LabelKo { get; set; }
+    public string LabelSv { get; set; }
+    public string LabelCs { get; set; }
+
+    // Resolved at runtime via CurrentUICulture (not mapped to DB)
+    public virtual string Label { get; }
+
+    public bool IsActive { get; set; }
+    public int SortOrder { get; set; }
+    public DateTimeOffset? ValidFrom { get; set; }
+    public DateTimeOffset? ValidTo { get; set; }
+}
+```
+
+The `Label` property resolves the appropriate label based on
+`CultureInfo.CurrentUICulture.TwoLetterISOLanguageName`, falling back to `LabelEn` when
+the translation is empty. Regional variants use the base language fallback
+(fr-CA uses `LabelFr`, en-GB uses `LabelEn`, pt-BR uses `LabelPt`).
+
+## Defining a reference data entity
+
+```csharp
+public sealed class Country : ReferenceDataEntity { }
+```
+
+## Store abstractions
+
+```csharp
+public interface IReferenceDataStoreReader<TEntity>
+    where TEntity : ReferenceDataEntity
+{
+    Task<PagedResult<TEntity>> GetAllAsync(
+        ReferenceDataQuery? query = null,
+        CancellationToken cancellationToken = default);
+
+    Task<TEntity?> GetByCodeAsync(
+        string code,
+        CancellationToken cancellationToken = default);
+}
+
+public interface IReferenceDataStoreWriter<in TEntity>
+    where TEntity : ReferenceDataEntity
+{
+    Task CreateAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task SetActiveAsync(string code, bool isActive, CancellationToken cancellationToken = default);
+}
+```
+
+## Registration
+
+Reference data stores use **manual registration** per entity type, binding to the host
+application's `DbContext`:
+
+```csharp
+// Program.cs or module ConfigureServices
+services.AddReferenceDataStore<Country, AppDbContext>();
+services.AddReferenceDataStore<Currency, AppDbContext>();
+```
+
+This registers `IReferenceDataStoreReader<Country>`, `IReferenceDataStoreWriter<Country>`,
+and a `IDataSeedContributor` bridge for seeding.
+
+## Mapping endpoints
+
+```csharp
+// Program.cs
+app.MapReferenceDataEndpoints<Country>();
+app.MapReferenceDataEndpoints<Currency>(opts =>
+    opts.AdminPolicyName = "Custom.Policy");
+```
+
+The entity type name is converted to a kebab-case route segment:
+
+| Method | Route | Access |
+|--------|-------|--------|
+| `GET` | `/reference-data/country` | Authenticated |
+| `GET` | `/reference-data/country/{code}` | Authenticated |
+| `POST` | `/reference-data/country` | Admin policy |
+| `PUT` | `/reference-data/country/{code}` | Admin policy |
+| `DELETE` | `/reference-data/country/{code}` | Admin policy |
+
+## Seeding reference data
+
+Implement `IReferenceDataSeeder<TEntity>` and register it. The `IDataSeedContributor`
+bridge invokes seeders during application startup.
+
+```csharp
+public sealed class CountrySeeder : IReferenceDataSeeder<Country>
+{
+    public IEnumerable<Country> GetSeedData()
+    {
+        yield return new Country
+        {
+            Code = "BE",
+            LabelEn = "Belgium",
+            LabelFr = "Belgique",
+            LabelNl = "Belgie",
+            LabelDe = "Belgien",
+            SortOrder = 1
+        };
+
+        yield return new Country
+        {
+            Code = "FR",
+            LabelEn = "France",
+            LabelFr = "France",
+            LabelNl = "Frankrijk",
+            LabelDe = "Frankreich",
+            SortOrder = 2
+        };
+    }
+}
+```
+
+## Public API summary
+
+| Category | Key types | Package |
+|----------|-----------|---------|
+| Abstractions | `ReferenceDataEntity`, `IReferenceDataStoreReader<T>`, `IReferenceDataStoreWriter<T>` | `Granit.ReferenceData` |
+| Registration | `AddReferenceDataStore<TEntity, TDbContext>()`, `MapReferenceDataEndpoints<TEntity>()` | `Granit.ReferenceData.EntityFrameworkCore`, `Granit.ReferenceData.Endpoints` |
+
+## See also
+
+- [Localization](/dotnet/infrastructure/localization/) -- i18n for UI strings and error messages
+- [Persistence](/dotnet/data/persistence/) -- isolated DbContext pattern for all EF Core stores

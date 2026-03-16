@@ -1,0 +1,237 @@
+---
+title: Authentication
+description: JWT Bearer authentication with Keycloak, Entra ID, and AWS Cognito claims transformation, back-channel logout
+sidebar:
+  order: 1
+---
+
+import { Tabs, TabItem, FileTree } from "@astrojs/starlight/components";
+
+JWT Bearer validation, claims transformation for Keycloak, Entra ID, and AWS Cognito,
+and OIDC back-channel logout — all wired through the module system.
+
+## Package structure
+
+<FileTree>
+
+- Granit.Authentication.JwtBearer/ Generic JWT Bearer, back-channel logout
+  - Granit.Authentication.Keycloak Keycloak claims transformation
+  - Granit.Authentication.EntraId Entra ID roles parsing
+  - Granit.Authentication.Cognito Cognito groups → roles
+
+</FileTree>
+
+| Package | Role | Depends on |
+|---------|------|------------|
+| `Granit.Authentication.JwtBearer` | JWT Bearer middleware, back-channel logout | `Granit.Security` |
+| `Granit.Authentication.Keycloak` | Keycloak claims transformation | `Granit.Authentication.JwtBearer` |
+| `Granit.Authentication.EntraId` | Entra ID roles parsing | `Granit.Authentication.JwtBearer` |
+| `Granit.Authentication.Cognito` | Cognito groups → roles | `Granit.Authentication.JwtBearer` |
+
+## Setup
+
+<Tabs>
+<TabItem label="Keycloak (recommended)">
+
+```csharp
+[DependsOn(typeof(GranitAuthenticationKeycloakModule))]
+public class AppModule : GranitModule { }
+```
+
+```json
+{
+  "Authentication": {
+    "Authority": "https://keycloak.example.com/realms/my-realm",
+    "Audience": "my-client"
+  },
+  "Keycloak": {
+    "ClientId": "my-client",
+    "AdminRole": "admin",
+    "RoleClaimsSource": "realm_access"
+  }
+}
+```
+
+</TabItem>
+<TabItem label="Entra ID">
+
+```csharp
+[DependsOn(typeof(GranitAuthenticationEntraIdModule))]
+public class AppModule : GranitModule { }
+```
+
+```json
+{
+  "Authentication": {
+    "Authority": "https://login.microsoftonline.com/{tenant-id}/v2.0",
+    "Audience": "api://{client-id}"
+  }
+}
+```
+
+</TabItem>
+<TabItem label="AWS Cognito">
+
+```csharp
+[DependsOn(typeof(GranitAuthenticationCognitoModule))]
+public class AppModule : GranitModule { }
+```
+
+```json
+{
+  "Authentication": {
+    "Authority": "https://cognito-idp.{region}.amazonaws.com/{userPoolId}",
+    "Audience": "{clientId}"
+  },
+  "Cognito": {
+    "UserPoolId": "eu-west-1_XXXXXXXXX",
+    "ClientId": "my-client-id",
+    "Region": "eu-west-1"
+  }
+}
+```
+
+</TabItem>
+<TabItem label="Generic JWT Bearer">
+
+```csharp
+[DependsOn(typeof(GranitJwtBearerModule))]
+public class AppModule : GranitModule { }
+```
+
+```json
+{
+  "Authentication": {
+    "Authority": "https://idp.example.com",
+    "Audience": "my-api",
+    "RequireHttpsMetadata": true,
+    "NameClaimType": "sub"
+  }
+}
+```
+
+</TabItem>
+</Tabs>
+
+## JWT Bearer
+
+`GranitJwtBearerModule` registers:
+
+- ASP.NET Core JWT Bearer authentication
+- `CurrentUserService` — `ICurrentUserService` implementation extracting claims from `HttpContext`
+- `IRevokedSessionStore` — distributed cache-backed session revocation
+
+### Configuration
+
+```json
+{
+  "Authentication": {
+    "Authority": "https://idp.example.com/realms/my-realm",
+    "Audience": "my-client",
+    "RequireHttpsMetadata": true,
+    "NameClaimType": "sub",
+    "BackChannelLogout": {
+      "Enabled": true,
+      "EndpointPath": "/auth/back-channel-logout",
+      "SessionRevocationTtl": "01:00:00"
+    }
+  }
+}
+```
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `Authority` | — | OIDC issuer URL (required) |
+| `Audience` | — | Expected `aud` claim (required) |
+| `RequireHttpsMetadata` | `true` | Enforce HTTPS for metadata endpoint |
+| `NameClaimType` | `"sub"` | Claim used as user identifier |
+| `BackChannelLogout.Enabled` | `false` | Enable OIDC back-channel logout |
+| `BackChannelLogout.EndpointPath` | `"/auth/back-channel-logout"` | Endpoint path |
+| `BackChannelLogout.SessionRevocationTtl` | `"01:00:00"` | How long revoked sessions are remembered |
+
+## Back-channel logout
+
+Provider-agnostic implementation of the [OIDC Back-Channel Logout](https://openid.net/specs/openid-connect-backchannel-1_0.html)
+specification. When the IdP sends a logout token, the session is revoked in distributed cache.
+
+```csharp
+// In OnApplicationInitialization
+app.MapBackChannelLogout(); // POST /auth/back-channel-logout (anonymous)
+```
+
+The endpoint validates the logout token signature against the IdP's JWKS, extracts the `sid`
+claim, and stores it in `IDistributedCache` with key `granit:revoked-session:{sid}`.
+
+Subsequent requests with a revoked `sid` are rejected by the JWT Bearer events handler.
+
+:::caution
+The back-channel logout endpoint must be **anonymous** (no auth required) — the IdP
+calls it directly. It is excluded from OpenAPI documentation by default.
+:::
+
+## Keycloak claims transformation
+
+`GranitAuthenticationKeycloakModule` post-configures JWT Bearer with Keycloak-specific behavior:
+
+- Extracts roles from `realm_access.roles` or `resource_access.{clientId}.roles`
+- Maps them to standard `ClaimTypes.Role` claims
+- Registers an `"Admin"` authorization policy
+
+```csharp
+// Keycloak JWT payload (simplified)
+{
+  "realm_access": {
+    "roles": ["admin", "doctor"]
+  },
+  "resource_access": {
+    "my-client": {
+      "roles": ["manage-patients"]
+    }
+  }
+}
+// After transformation → ClaimTypes.Role: "admin", "doctor", "manage-patients"
+```
+
+## Entra ID claims transformation
+
+`GranitAuthenticationEntraIdModule` post-configures JWT Bearer with Entra ID-specific behavior:
+
+- Extracts roles from the v1.0 `roles` claim and the v2.0 `wids` claim
+- Maps them to standard `ClaimTypes.Role` claims
+
+## Cognito claims transformation
+
+`GranitAuthenticationCognitoModule` post-configures JWT Bearer with Cognito-specific behavior:
+
+- Extracts groups from the `cognito:groups` claim (multiple claims with same type)
+- Maps them to standard `ClaimTypes.Role` claims
+
+```csharp
+// Cognito JWT payload — groups appear as repeated claims
+// "cognito:groups": "admin"
+// "cognito:groups": "doctors"
+// After transformation → ClaimTypes.Role: "admin", "doctors"
+```
+
+:::note
+Cognito has no native "roles" concept. **Groups serve as roles** — a user's group memberships
+become their role claims after transformation.
+:::
+
+## Public API summary
+
+| Category | Key types | Package |
+|----------|-----------|---------|
+| Modules | `GranitJwtBearerModule`, `GranitAuthenticationKeycloakModule`, `GranitAuthenticationEntraIdModule`, `GranitAuthenticationCognitoModule` | — |
+| Abstractions | `CurrentUserService`, `IRevokedSessionStore`, `BackChannelLogoutTokenValidator` | `Granit.Authentication.JwtBearer` |
+| Claims | `KeycloakClaimsTransformation` | `Granit.Authentication.Keycloak` |
+| Claims | `EntraIdClaimsTransformation` | `Granit.Authentication.EntraId` |
+| Claims | `CognitoClaimsTransformation` | `Granit.Authentication.Cognito` |
+| Options | `JwtBearerAuthOptions`, `KeycloakOptions`, `CognitoOptions` | — |
+| Extensions | `AddGranitJwtBearer()`, `AddGranitKeycloak()`, `AddGranitCognito()`, `MapBackChannelLogout()` | — |
+
+## See also
+
+- [Authorization](/dotnet/security/authorization/) -- RBAC permissions, dynamic policy provider
+- [Security](/dotnet/security/security/) -- core abstractions (ICurrentUserService, ActorKind)
+- [Identity](/dotnet/security/identity/) -- user management, Keycloak Admin API, user cache

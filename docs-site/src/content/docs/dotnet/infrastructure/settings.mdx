@@ -1,0 +1,242 @@
+---
+title: Settings
+description: Cascading application settings (User, Tenant, Global, Configuration, Default) with encrypted storage and cache
+sidebar:
+  order: 5
+---
+
+import { Tabs, TabItem, FileTree } from "@astrojs/starlight/components";
+
+Cascading key-value settings engine with user/tenant/global scopes, encrypted storage,
+and distributed cache. Each scope is resolved through a provider chain — the first
+non-null value wins.
+
+## Package structure
+
+<FileTree>
+
+- Granit.Settings/ Cascading settings engine (User, Tenant, Global, Configuration, Default)
+  - Granit.Settings.EntityFrameworkCore Isolated SettingsDbContext
+  - Granit.Settings.Endpoints User, Global, and Tenant setting HTTP endpoints
+
+</FileTree>
+
+| Package | Role | Depends on |
+|---------|------|------------|
+| `Granit.Settings` | `ISettingProvider`, `ISettingManager`, cascading resolution | `Granit.Caching`, `Granit.Encryption`, `Granit.Security` |
+| `Granit.Settings.EntityFrameworkCore` | `SettingsDbContext` (isolated, multi-tenant + soft-delete) | `Granit.Settings`, `Granit.Persistence` |
+| `Granit.Settings.Endpoints` | User/Global/Tenant HTTP endpoints, `SettingsCultureMiddleware` | `Granit.Settings`, `Granit.Authorization` |
+
+## Dependency graph
+
+```mermaid
+graph TD
+    S[Granit.Settings] --> CA[Granit.Caching]
+    S --> EN[Granit.Encryption]
+    S --> SE[Granit.Security]
+    SEF[Granit.Settings.EntityFrameworkCore] --> S
+    SEF --> P[Granit.Persistence]
+    SEP[Granit.Settings.Endpoints] --> S
+    SEP --> A[Granit.Authorization]
+```
+
+## Setup
+
+<Tabs>
+<TabItem label="Core + EF Core">
+
+```csharp
+[DependsOn(
+    typeof(GranitSettingsModule),
+    typeof(GranitSettingsEntityFrameworkCoreModule))]
+public class AppModule : GranitModule { }
+```
+
+```csharp
+// Program.cs
+builder.AddGranitSettingsEntityFrameworkCore(opt =>
+    opt.UseNpgsql(connectionString));
+```
+
+</TabItem>
+<TabItem label="With endpoints">
+
+```csharp
+[DependsOn(
+    typeof(GranitSettingsModule),
+    typeof(GranitSettingsEntityFrameworkCoreModule),
+    typeof(GranitSettingsEndpointsModule))]
+public class AppModule : GranitModule { }
+```
+
+```csharp
+// Program.cs — map endpoints
+app.MapGranitUserSettings();    // GET/PUT/DELETE /settings/user/{name}
+app.MapGranitGlobalSettings();  // GET/PUT /settings/global/{name}
+app.MapGranitTenantSettings();  // GET/PUT /settings/tenant/{name}
+```
+
+</TabItem>
+</Tabs>
+
+## Defining settings
+
+Implement `ISettingDefinitionProvider` in any module. Providers are auto-discovered at startup.
+
+```csharp
+public sealed class AcmeSettingDefinitionProvider : ISettingDefinitionProvider
+{
+    public void Define(ISettingDefinitionContext context)
+    {
+        context.Add(new SettingDefinition("Acme.DefaultPageSize")
+        {
+            DefaultValue = "25",
+            IsVisibleToClients = true,
+            IsInherited = true,
+            Description = "Default number of items per page"
+        });
+
+        context.Add(new SettingDefinition("Acme.SmtpPassword")
+        {
+            DefaultValue = null,
+            IsEncrypted = true,
+            IsVisibleToClients = false,
+            Providers = { "G" }  // Global scope only
+        });
+    }
+}
+```
+
+### SettingDefinition properties
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `Name` | _(required)_ | Unique setting key |
+| `DefaultValue` | `null` | Fallback when no provider supplies a value |
+| `IsEncrypted` | `false` | Encrypt at rest via `IStringEncryptionService` |
+| `IsVisibleToClients` | `false` | Expose via user-scoped API endpoints |
+| `IsInherited` | `true` | Lower-priority scopes inherit from higher-priority ones |
+| `Providers` | `[]` (all) | Allow-list of provider names (`"U"`, `"T"`, `"G"`) |
+
+## Value cascade
+
+Settings are resolved through a provider chain. The first provider that returns a
+non-null value wins:
+
+```
+User (U) → Tenant (T) → Global (G) → Configuration (appsettings.json) → Default (code)
+```
+
+When `IsInherited = false`, each scope is independent and does not fall through.
+
+```mermaid
+graph LR
+    U[User] -->|null?| T[Tenant]
+    T -->|null?| G[Global]
+    G -->|null?| C[Configuration]
+    C -->|null?| D[Default]
+    style U fill:#4CAF50,color:white
+    style D fill:#9E9E9E,color:white
+```
+
+## Reading settings
+
+```csharp
+public class ReportService(ISettingProvider settings)
+{
+    public async Task<int> GetPageSizeAsync(CancellationToken ct)
+    {
+        string? value = await settings
+            .GetOrNullAsync("Acme.DefaultPageSize", ct)
+            .ConfigureAwait(false);
+
+        return int.TryParse(value, out int size) ? size : 25;
+    }
+}
+```
+
+## Writing settings
+
+```csharp
+public class AdminService(ISettingManager settingManager)
+{
+    public async Task SetGlobalPageSizeAsync(int size, CancellationToken ct)
+    {
+        await settingManager
+            .SetGlobalAsync("Acme.DefaultPageSize", size.ToString(), ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task SetTenantThemeAsync(Guid tenantId, string theme, CancellationToken ct)
+    {
+        await settingManager
+            .SetForTenantAsync(tenantId, "Acme.Theme", theme, ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task SetUserLocaleAsync(string userId, string locale, CancellationToken ct)
+    {
+        await settingManager
+            .SetForUserAsync(userId, "Granit.PreferredCulture", locale, ct)
+            .ConfigureAwait(false);
+    }
+}
+```
+
+## Endpoints
+
+| Scope | Method | Route | Permission |
+|-------|--------|-------|------------|
+| User | `GET` | `/settings/user` | Authenticated |
+| User | `GET` | `/settings/user/{name}` | Authenticated |
+| User | `PUT` | `/settings/user/{name}` | Authenticated |
+| User | `DELETE` | `/settings/user/{name}` | Authenticated |
+| Global | `GET` | `/settings/global` | `Settings.Global.Read` |
+| Global | `PUT` | `/settings/global/{name}` | `Settings.Global.Manage` |
+| Tenant | `GET` | `/settings/tenant` | `Settings.Tenant.Read` |
+| Tenant | `PUT` | `/settings/tenant/{name}` | `Settings.Tenant.Manage` |
+
+## SettingsCultureMiddleware
+
+Hydrates `CultureInfo.CurrentUICulture` and `ICurrentTimezoneProvider` from the
+authenticated user's `Granit.PreferredCulture` and `Granit.PreferredTimezone` settings.
+Runs after authentication, before endpoint handlers. No-op for anonymous requests.
+
+```csharp
+// Program.cs
+app.UseAuthentication();
+app.UseMiddleware<SettingsCultureMiddleware>();
+app.UseAuthorization();
+```
+
+## Configuration
+
+```json
+{
+  "Settings": {
+    "CacheExpiration": "00:30:00"
+  }
+}
+```
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `CacheExpiration` | `00:30:00` | Cache entry TTL for resolved setting values |
+
+## Public API summary
+
+| Category | Key types | Package |
+|----------|-----------|---------|
+| Modules | `GranitSettingsModule`, `GranitSettingsEntityFrameworkCoreModule`, `GranitSettingsEndpointsModule` | -- |
+| Abstractions | `ISettingProvider` (`GetOrNullAsync`, `GetAllAsync`), `ISettingManager` (`SetGlobalAsync`, `SetForTenantAsync`, `SetForUserAsync`) | `Granit.Settings` |
+| Definitions | `SettingDefinition`, `ISettingDefinitionProvider`, `SettingDefinitionManager` | `Granit.Settings` |
+| Options | `SettingsOptions` (section `"Settings"`, `CacheExpiration`) | `Granit.Settings` |
+| Endpoints | `MapGranitUserSettings()`, `MapGranitGlobalSettings()`, `MapGranitTenantSettings()`, `SettingsCultureMiddleware` | `Granit.Settings.Endpoints` |
+
+## See also
+
+- [Features](/dotnet/infrastructure/features/) -- SaaS feature flags with plan-based activation
+- [Reference Data](/dotnet/data/reference-data/) -- i18n lookup tables
+- [Caching](/dotnet/data/caching/) -- used by Settings for value caching
+- [Persistence](/dotnet/data/persistence/) -- isolated DbContext pattern
+- [Security](/dotnet/security/security/) -- permission-based access for admin endpoints
