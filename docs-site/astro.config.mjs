@@ -158,6 +158,7 @@ export default defineConfig({
                     { label: "Setup & Configuration", link: "/dotnet/ai/setup/" },
                     {
                       label: "User Experience",
+                      collapsed: true,
                       items: [
                         { label: "Natural Language Query", link: "/dotnet/ai/natural-language-query/" },
                         { label: "Semantic Search & RAG", link: "/dotnet/ai/semantic-search/" },
@@ -165,6 +166,7 @@ export default defineConfig({
                     },
                     {
                       label: "Data Ingestion",
+                      collapsed: true,
                       items: [
                         { label: "Import Mapping", link: "/dotnet/ai/import-mapping/" },
                         { label: "Document Extraction", link: "/dotnet/ai/document-extraction/" },
@@ -172,6 +174,7 @@ export default defineConfig({
                     },
                     {
                       label: "Business Intelligence",
+                      collapsed: true,
                       items: [
                         { label: "Workflow Decision Support", link: "/dotnet/ai/workflow-ai/" },
                         { label: "Notification Intelligence", link: "/dotnet/ai/notifications-ai/" },
@@ -180,6 +183,7 @@ export default defineConfig({
                     },
                     {
                       label: "Security & Compliance",
+                      collapsed: true,
                       items: [
                         { label: "PII Detection", link: "/dotnet/ai/privacy-ai/" },
                         { label: "Content Moderation", link: "/dotnet/ai/validation-ai/" },
@@ -189,6 +193,7 @@ export default defineConfig({
                     },
                     {
                       label: "Operations",
+                      collapsed: true,
                       items: [
                         { label: "Log Analysis", link: "/dotnet/ai/observability-ai/" },
                         { label: "Image Analysis", link: "/dotnet/ai/imaging-ai/" },
