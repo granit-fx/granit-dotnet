@@ -57,7 +57,7 @@ public sealed class LocalizationResourceInfo(Type resourceType, string defaultCu
     /// </summary>
     /// <param name="types">Types of the parent resources.</param>
     /// <returns>This instance for fluent chaining.</returns>
-    public LocalizationResourceInfo AddBaseTypes(params Type[] types)
+    public LocalizationResourceInfo AddBaseTypes(params ReadOnlySpan<Type> types)
     {
         BaseTypes.AddRange(types);
         return this;

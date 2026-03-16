@@ -10,11 +10,11 @@
 
 ## Stack & versions
 
-.NET 10 | C# 14 | EF Core 10 | VaultSharp 1.17+ | Serilog 9+ | OpenTelemetry 1.11+
+.NET 10 (LTS) | C# 14 | EF Core 10 | VaultSharp 1.17+ | Serilog 9+ | OpenTelemetry 1.15+
 
 ## Architecture
 
-```
+```text
 src/
   Granit.Core/                             # Module system, shared domain types
   Granit.{Module}/                         # Abstractions + DI registration (e.g. Granit.BlobStorage)
@@ -81,9 +81,47 @@ cd docs-site && npx astro build   # must produce 0 errors
 
 ## Code quality
 
-Modern C# 14 with idiomatic .NET 10. Prefer the latest language features: primary constructors,
-collection expressions, `field` keyword, pattern matching, file-scoped namespaces. Write code
-that a senior .NET developer would recognize as current and clean.
+Modern C# 14 with idiomatic .NET 10. Write code that a senior .NET developer would recognize
+as current and clean. Actively use the latest language and runtime features listed below.
+
+### C# 14 features — use by default
+
+- **Primary constructors**: for all DI service classes. Keep `private readonly T _x = x;`
+  fields when the parameter is used in multiple methods.
+- **Collection expressions**: `[x, y]` instead of `new[] { x, y }`, `[]` instead of
+  `Array.Empty<T>()` or `new List<T>()`. Exception: `new[]` inside anonymous types
+  (JSON payloads) where the compiler cannot infer the target type.
+- **`field` keyword** (semi-auto properties): use `set => field = value;` in properties
+  with custom setter logic instead of declaring a manual backing field.
+- **Extension members** (`extension` blocks): prefer over static extension classes when
+  adding multiple related members to the same type (especially FluentValidation
+  `IRuleBuilder<T,P>` extensions).
+- **`nameof` on unbound generics**: `nameof(List<>)` returns `"List"` — use for concrete
+  generic types. NEVER use `nameof(T)` on a type parameter (returns the param name
+  `"T"`, not the runtime type name — use `typeof(T).Name` instead).
+- **Pattern matching**: prefer `is`, `switch` expressions, list patterns, property patterns.
+- **File-scoped namespaces**: always (one `namespace X;` per file, no braces).
+
+### C# 13 features — use by default
+
+- **`System.Threading.Lock`**: ALWAYS use `private readonly Lock _lock = new();` for
+  synchronization. NEVER lock on `object`, collections, or `this`.
+- **`params ReadOnlySpan<T>`**: prefer over `params T[]` for non-attribute methods to
+  reduce allocations. Attributes must keep `params T[]` (compile-time constraint).
+- **`\e` escape**: use `\e` instead of `\u001b` or `\x1b` for ESCAPE characters.
+
+### .NET 10 / EF Core 10 features — use by default
+
+- **Named Query Filters** (EF Core 10): use `HasQueryFilter(name, expr)` for individually
+  toggleable filters. See `GranitFilterNames` constants. Never use unnamed
+  `HasQueryFilter(expr)`.
+- **Native OpenAPI 3.1**: use `Microsoft.AspNetCore.OpenApi` + `AddOpenApi()` /
+  `MapOpenApi()`. NEVER use Swashbuckle or NSwag. Scalar UI for documentation.
+- **`IMeterFactory`**: use for metrics creation. NEVER use `new Meter(...)` directly.
+- **`ActivitySource`**: native .NET diagnostics, one per module
+  (`{Module}ActivitySource.cs`). Register via `GranitActivitySourceRegistry`.
+- **`string.Split(char, count)`**: prefer `"a:b".Split(':', 2)` over `Split(new[]{':'}, 2)`
+  (except in `netstandard2.0` source generators).
 
 ## Code conventions
 
@@ -93,11 +131,13 @@ Full standards: [`docs/guide/conventions/`](docs/guide/conventions/index.md)
 
 - **`var`**: when type is apparent; explicit type otherwise (IDE0008)
 - **Expression body** (`=>`): for single-statement methods (IDE0022)
+- **String interpolation**: prefer `$"..."` over `string.Concat(...)` or `string.Format(...)`
 - **`[GeneratedRegex]`**: ALWAYS — never `new Regex(..., Compiled)`. Timeout on user input.
 - **`[LoggerMessage]`**: ALWAYS — never string interpolation in log calls
 - **`TimeProvider` / `IClock`**: NEVER `DateTime.Now`/`UtcNow`
 - **`ConfigureAwait(false)`**: in library code. `CancellationToken` as last param.
 - **`ArgumentNullException.ThrowIfNull()`**: over manual null checks
+- **`ArgumentException.ThrowIfNullOrEmpty()`** / `ThrowIfNullOrWhiteSpace()`: for strings
 - **`AddAuthorizationBuilder()`**: not `AddAuthorization(Action<>)` (ASP0025)
 
 ### DTOs & API responses
@@ -166,6 +206,15 @@ All `.md` must pass `npx markdownlint-cli2 "file.md"` before committing.
 - Bare `catch (Exception)` → catch specific types
 - `*Dto` suffix → use `*Request` / `*Response`
 - `TypedResults.BadRequest<string>()` → `TypedResults.Problem()` (RFC 7807)
+- `lock (object)` / `lock (collection)` → `lock (Lock)` with `System.Threading.Lock`
+- `new Meter(...)` → inject `IMeterFactory` and call `meterFactory.Create(...)`
+- `Array.Empty<T>()` / `new List<T>()` / `new T[] {}` → `[]` (collection expression)
+- `string.Concat(a, b, c)` → `$"{a}{b}{c}"` (string interpolation)
+- `params T[]` in non-attribute methods → `params ReadOnlySpan<T>`
+- `nameof(T)` on type parameter → `typeof(T).Name` (nameof returns `"T"`, not the type name)
+- Traditional constructors with only field assignments → primary constructors
+- Unnamed `HasQueryFilter(expr)` → named `HasQueryFilter(name, expr)` (EF Core 10)
+- Swashbuckle / NSwag → `Microsoft.AspNetCore.OpenApi` + Scalar UI
 
 ### Architecture
 

@@ -61,7 +61,7 @@ internal sealed partial class PostgresqlTenantSchemaActivator : ITenantSchemaAct
     /// parameters. Safety relies on <see cref="ValidateSchemaName"/> plus double-quoting.
     /// </remarks>
     private static string BuildSetSearchPathCommand(string schema) =>
-        string.Concat("SET search_path TO \"", ValidateSchemaName(schema), "\", public");
+        $"SET search_path TO \"{ValidateSchemaName(schema)}\", public";
 
     /// <summary>
     /// Validates that <paramref name="schema"/> is a safe PostgreSQL identifier before

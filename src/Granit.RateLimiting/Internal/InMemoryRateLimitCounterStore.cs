@@ -8,17 +8,12 @@ namespace Granit.RateLimiting.Internal;
 /// In-memory rate limit counter store for development and testing.
 /// Not suitable for production multi-instance deployments — counters are not shared.
 /// </summary>
-internal sealed class InMemoryRateLimitCounterStore : IRateLimitCounterStore
+internal sealed class InMemoryRateLimitCounterStore(TimeProvider timeProvider) : IRateLimitCounterStore
 {
     private readonly ConcurrentDictionary<string, SlidingWindowState> _slidingWindows = new();
     private readonly ConcurrentDictionary<string, FixedWindowState> _fixedWindows = new();
     private readonly ConcurrentDictionary<string, TokenBucketState> _tokenBuckets = new();
-    private readonly TimeProvider _timeProvider;
-
-    public InMemoryRateLimitCounterStore(TimeProvider timeProvider)
-    {
-        _timeProvider = timeProvider;
-    }
+    private readonly TimeProvider _timeProvider = timeProvider;
 
     /// <inheritdoc/>
     public Task<RateLimitResult> CheckAndIncrementAsync(

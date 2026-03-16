@@ -35,7 +35,7 @@ public sealed class PropertyMappingBuilder
     /// Adds alternative names that should match this property.
     /// Used for exact and fuzzy matching (e.g. <c>"Courriel"</c>, <c>"Mail"</c> → <c>Email</c>).
     /// </summary>
-    public PropertyMappingBuilder Aliases(params string[] aliases)
+    public PropertyMappingBuilder Aliases(params ReadOnlySpan<string> aliases)
     {
         AliasValues.AddRange(aliases);
         return this;

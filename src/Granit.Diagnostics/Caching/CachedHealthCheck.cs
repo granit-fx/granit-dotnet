@@ -12,27 +12,14 @@ namespace Granit.Diagnostics.Caching;
 /// on the database. This decorator reduces that to 1 req per <paramref name="cacheDuration"/>
 /// per pod, regardless of concurrent probe requests.
 /// </remarks>
-public sealed class CachedHealthCheck : IHealthCheck, IDisposable
+public sealed class CachedHealthCheck(IHealthCheck inner, TimeSpan cacheDuration, IClock clock) : IHealthCheck, IDisposable
 {
-    private readonly IHealthCheck _inner;
-    private readonly TimeSpan _cacheDuration;
-    private readonly IClock _clock;
+    private readonly IHealthCheck _inner = inner;
+    private readonly TimeSpan _cacheDuration = cacheDuration;
+    private readonly IClock _clock = clock;
     private readonly SemaphoreSlim _lock = new(1, 1);
     private HealthCheckResult? _cached;
     private DateTimeOffset _expiresAt = DateTimeOffset.MinValue;
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="CachedHealthCheck"/>.
-    /// </summary>
-    /// <param name="inner">The health check whose result is cached.</param>
-    /// <param name="cacheDuration">How long to cache the result.</param>
-    /// <param name="clock">UTC clock used to evaluate cache expiration.</param>
-    public CachedHealthCheck(IHealthCheck inner, TimeSpan cacheDuration, IClock clock)
-    {
-        _inner = inner;
-        _cacheDuration = cacheDuration;
-        _clock = clock;
-    }
 
     /// <inheritdoc/>
     public async Task<HealthCheckResult> CheckHealthAsync(

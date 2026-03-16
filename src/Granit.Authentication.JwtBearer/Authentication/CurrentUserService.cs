@@ -33,11 +33,11 @@ public sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor)
     {
         if (User is not { } user)
         {
-            return Array.Empty<string>();
+            return [];
         }
 
         List<string> roles = [.. user.FindAll(ClaimTypes.Role).Select(c => c.Value)];
-        return roles.Count == 0 ? Array.Empty<string>() : roles;
+        return roles.Count == 0 ? [] : roles;
     }
 
     public bool IsInRole(string role) => User?.IsInRole(role) ?? false;

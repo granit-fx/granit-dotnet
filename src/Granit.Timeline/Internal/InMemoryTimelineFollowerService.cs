@@ -9,6 +9,7 @@ namespace Granit.Timeline.Internal;
 /// </summary>
 internal sealed class InMemoryTimelineFollowerService : ITimelineFollowerService
 {
+    private readonly Lock _lock = new();
     private readonly ConcurrentDictionary<string, HashSet<string>> _followers = new();
 
     /// <inheritdoc/>
@@ -17,7 +18,7 @@ internal sealed class InMemoryTimelineFollowerService : ITimelineFollowerService
         string key = BuildKey(entityType, entityId);
         HashSet<string> followers = _followers.GetOrAdd(key, _ => []);
 
-        lock (followers)
+        lock (_lock)
         {
             followers.Add(userId);
         }
@@ -32,7 +33,7 @@ internal sealed class InMemoryTimelineFollowerService : ITimelineFollowerService
 
         if (_followers.TryGetValue(key, out HashSet<string>? followers))
         {
-            lock (followers)
+            lock (_lock)
             {
                 followers.Remove(userId);
             }
@@ -48,7 +49,7 @@ internal sealed class InMemoryTimelineFollowerService : ITimelineFollowerService
 
         if (_followers.TryGetValue(key, out HashSet<string>? followers))
         {
-            lock (followers)
+            lock (_lock)
             {
                 return Task.FromResult<IReadOnlyList<string>>([.. followers]);
             }
@@ -64,7 +65,7 @@ internal sealed class InMemoryTimelineFollowerService : ITimelineFollowerService
 
         if (_followers.TryGetValue(key, out HashSet<string>? followers))
         {
-            lock (followers)
+            lock (_lock)
             {
                 return Task.FromResult(followers.Contains(userId));
             }

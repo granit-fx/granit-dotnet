@@ -54,7 +54,7 @@ internal sealed partial class MySqlTenantSchemaActivator : ITenantSchemaActivato
     /// Builds the <c>USE</c> command text with a validated and backtick-quoted MySQL identifier.
     /// </summary>
     private static string BuildUseCommand(string schema) =>
-        string.Concat("USE `", ValidateSchemaName(schema), "`");
+        $"USE `{ValidateSchemaName(schema)}`";
 
     /// <summary>
     /// Validates that <paramref name="schema"/> is a safe MySQL identifier before

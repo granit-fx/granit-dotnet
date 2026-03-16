@@ -16,11 +16,9 @@ namespace Granit.Settings.Endpoints.Middleware;
 /// Must run <strong>after</strong> authentication middleware and <strong>before</strong> endpoint handlers.
 /// For anonymous requests, this middleware is a no-op.
 /// </remarks>
-public sealed class SettingsCultureMiddleware
+public sealed class SettingsCultureMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public SettingsCultureMiddleware(RequestDelegate next) => _next = next;
+    private readonly RequestDelegate _next = next;
 
     public async Task InvokeAsync(HttpContext context)
     {

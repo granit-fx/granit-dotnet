@@ -16,6 +16,7 @@ namespace Granit.Core.Diagnostics;
 /// </remarks>
 public static class GranitActivitySourceRegistry
 {
+    private static readonly Lock SyncLock = new();
     private static readonly HashSet<string> Sources = new(StringComparer.Ordinal);
 
     /// <summary>
@@ -28,7 +29,7 @@ public static class GranitActivitySourceRegistry
     public static void Register(string sourceName)
     {
         ArgumentNullException.ThrowIfNull(sourceName);
-        lock (Sources) { Sources.Add(sourceName); }
+        lock (SyncLock) { Sources.Add(sourceName); }
     }
 
     /// <summary>
@@ -36,6 +37,6 @@ public static class GranitActivitySourceRegistry
     /// </summary>
     public static IReadOnlyCollection<string> GetRegisteredSources()
     {
-        lock (Sources) { return [.. Sources]; }
+        lock (SyncLock) { return [.. Sources]; }
     }
 }

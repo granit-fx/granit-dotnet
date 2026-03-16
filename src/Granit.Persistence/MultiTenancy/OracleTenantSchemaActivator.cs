@@ -57,7 +57,7 @@ internal sealed partial class OracleTenantSchemaActivator : ITenantSchemaActivat
     /// and double-quoted Oracle identifier.
     /// </summary>
     private static string BuildAlterSessionCommand(string schema) =>
-        string.Concat("ALTER SESSION SET CURRENT_SCHEMA = \"", ValidateSchemaName(schema), "\"");
+        $"ALTER SESSION SET CURRENT_SCHEMA = \"{ValidateSchemaName(schema)}\"";
 
     /// <summary>
     /// Validates that <paramref name="schema"/> is a safe Oracle identifier before
