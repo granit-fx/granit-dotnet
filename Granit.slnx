@@ -11,6 +11,7 @@
     <Project Path="src/Granit.AI.Anthropic/Granit.AI.Anthropic.csproj" />
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
     <Project Path="src/Granit.AI.EntityFrameworkCore/Granit.AI.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.AI.Extraction/Granit.AI.Extraction.csproj" />
     <Project Path="src/Granit.AI.Ollama/Granit.AI.Ollama.csproj" />
     <Project Path="src/Granit.AI.OpenAI/Granit.AI.OpenAI.csproj" />
     <Project Path="src/Granit.ApiDocumentation/Granit.ApiDocumentation.csproj" />
@@ -47,6 +48,7 @@
     <Project Path="src/Granit.Cookies/Granit.Cookies.csproj" />
     <Project Path="src/Granit.Core/Granit.Core.csproj" />
     <Project Path="src/Granit.Cors/Granit.Cors.csproj" />
+    <Project Path="src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj" />
     <Project Path="src/Granit.DataExchange.Csv/Granit.DataExchange.Csv.csproj" />
     <Project Path="src/Granit.DataExchange.Endpoints/Granit.DataExchange.Endpoints.csproj" />
     <Project Path="src/Granit.DataExchange.EntityFrameworkCore/Granit.DataExchange.EntityFrameworkCore.csproj" />
@@ -165,6 +167,7 @@
     <Project Path="tests/Granit.AI.Anthropic.Tests/Granit.AI.Anthropic.Tests.csproj" />
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />
     <Project Path="tests/Granit.AI.EntityFrameworkCore.Tests/Granit.AI.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.AI.Extraction.Tests/Granit.AI.Extraction.Tests.csproj" />
     <Project Path="tests/Granit.AI.Ollama.Tests/Granit.AI.Ollama.Tests.csproj" />
     <Project Path="tests/Granit.AI.OpenAI.Tests/Granit.AI.OpenAI.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.ApiKeys.Endpoints.Tests/Granit.Authentication.ApiKeys.Endpoints.Tests.csproj" />
@@ -201,6 +204,7 @@
     <Project Path="tests/Granit.Cookies.Tests/Granit.Cookies.Tests.csproj" />
     <Project Path="tests/Granit.Core.Tests/Granit.Core.Tests.csproj" />
     <Project Path="tests/Granit.Cors.Tests/Granit.Cors.Tests.csproj" />
+    <Project Path="tests/Granit.DataExchange.AI.Tests/Granit.DataExchange.AI.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Csv.Tests/Granit.DataExchange.Csv.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Endpoints.Tests/Granit.DataExchange.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.EntityFrameworkCore.Tests/Granit.DataExchange.EntityFrameworkCore.Tests.csproj" />

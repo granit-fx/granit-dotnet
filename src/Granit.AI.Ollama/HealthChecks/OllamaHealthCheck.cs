@@ -48,7 +48,7 @@ internal sealed class OllamaHealthCheck(
         {
             return HealthCheckResult.Unhealthy("Ollama server unreachable");
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is TimeoutException or IOException or InvalidOperationException)
         {
             // Sanitize: never expose endpoint URLs or internal details in the message
             return HealthCheckResult.Unhealthy($"Ollama health check failed: {ex.GetType().Name}");

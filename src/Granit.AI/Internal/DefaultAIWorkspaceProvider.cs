@@ -39,14 +39,7 @@ internal sealed class DefaultAIWorkspaceProvider(
         var systemNames = _systemWorkspaces.Value.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         List<AIWorkspace> merged = new(_systemWorkspaces.Value.Values);
-
-        foreach (AIWorkspace workspace in dynamicWorkspaces)
-        {
-            if (!systemNames.Contains(workspace.Name))
-            {
-                merged.Add(workspace);
-            }
-        }
+        merged.AddRange(dynamicWorkspaces.Where(w => !systemNames.Contains(w.Name)));
 
         return merged;
     }

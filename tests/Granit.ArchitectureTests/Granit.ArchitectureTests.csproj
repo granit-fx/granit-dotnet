@@ -34,6 +34,7 @@
     <ProjectReference Include="..\..\src\Granit.AI.Anthropic\Granit.AI.Anthropic.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.AzureOpenAI\Granit.AI.AzureOpenAI.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.EntityFrameworkCore\Granit.AI.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.AI.Extraction\Granit.AI.Extraction.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.Ollama\Granit.AI.Ollama.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.OpenAI\Granit.AI.OpenAI.csproj" />
     <ProjectReference Include="..\..\src\Granit.ApiDocumentation\Granit.ApiDocumentation.csproj" />
@@ -70,6 +71,7 @@
     <ProjectReference Include="..\..\src\Granit.Core\Granit.Core.csproj" />
     <ProjectReference Include="..\..\src\Granit.Cors\Granit.Cors.csproj" />
     <ProjectReference Include="..\..\src\Granit.DataExchange\Granit.DataExchange.csproj" />
+    <ProjectReference Include="..\..\src\Granit.DataExchange.AI\Granit.DataExchange.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.DataExchange.Csv\Granit.DataExchange.Csv.csproj" />
     <ProjectReference Include="..\..\src\Granit.DataExchange.Endpoints\Granit.DataExchange.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.DataExchange.EntityFrameworkCore\Granit.DataExchange.EntityFrameworkCore.csproj" />

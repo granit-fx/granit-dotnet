@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.DataExchange.AI</PackageId>
+    <Description>AI-powered column mapping for Granit.DataExchange. Uses LLM (via Microsoft.Extensions.AI) to semantically match imported file columns to entity properties when exact and fuzzy matching fail.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.DataExchange.AI.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI\Granit.AI.csproj" />
+    <ProjectReference Include="..\Granit.DataExchange\Granit.DataExchange.csproj" />
+  </ItemGroup>
+
+</Project>

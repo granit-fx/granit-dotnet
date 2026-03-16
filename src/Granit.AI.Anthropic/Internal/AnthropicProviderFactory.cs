@@ -12,24 +12,29 @@ namespace Granit.AI.Anthropic.Internal;
 /// <remarks>
 /// Creates <see cref="IChatClient"/> instances backed by the Anthropic SDK.
 /// Embedding generation is not supported by Anthropic and always returns <c>null</c>.
+/// The underlying <see cref="AnthropicClient"/> is created once and reused for the
+/// lifetime of the factory. It is disposed when the factory is disposed.
 /// </remarks>
-internal sealed class AnthropicProviderFactory(IOptions<AnthropicProviderOptions> options) : IAIProviderFactory
+internal sealed class AnthropicProviderFactory(IOptions<AnthropicProviderOptions> options)
+    : IAIProviderFactory, IDisposable
 {
+    private readonly AnthropicClient _client = new() { ApiKey = options.Value.ApiKey };
+
     /// <inheritdoc />
     public string ProviderName => "Anthropic";
 
     /// <inheritdoc />
     public IChatClient CreateChatClient(AIWorkspace workspace)
     {
-        AnthropicProviderOptions opts = options.Value;
-        AnthropicClient client = new() { ApiKey = opts.ApiKey };
-        string model = workspace.Model ?? opts.DefaultModel;
-
-        return client.AsIChatClient(model);
+        string model = workspace.Model ?? options.Value.DefaultModel;
+        return _client.AsIChatClient(model);
     }
 
     /// <inheritdoc />
     /// <returns>Always <c>null</c>. Anthropic does not support embedding generation.</returns>
     public IEmbeddingGenerator<string, Embedding<float>>? CreateEmbeddingGenerator(AIWorkspace workspace) =>
         null;
+
+    /// <inheritdoc />
+    public void Dispose() => _client.Dispose();
 }
