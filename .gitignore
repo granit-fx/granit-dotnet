@@ -6,6 +6,7 @@
 bin/
 obj/
 out/
+.vs/
 *.user
 *.suo
 *.DotSettings.user
