@@ -1,41 +1,44 @@
 ---
-title: Reference
-description: Complete reference documentation for all 97 Granit packages
+title: Backend (.NET)
+description: Granit .NET framework — modular, production-ready modules for authentication, persistence, messaging, AI, and GDPR/ISO 27001 compliance.
 sidebar:
+  label: Overview
   order: 0
 ---
 
-This section provides detailed reference documentation for every Granit module.
+Granit is a modular .NET 10 framework providing production-ready building blocks
+for enterprise applications. Each module follows the same layered anatomy
+(abstractions, EF Core, endpoints, providers) and wires into the
+dependency injection system via `[DependsOn]`.
 
-Each module page documents the full package family (abstractions, providers,
-EF Core integration, endpoints), configuration options, public API surface,
-and provider comparison.
+## Module groups
 
-## Module categories
+| Group | Modules | Purpose |
+|-------|---------|---------|
+| [Core](/dotnet/core/module-system/) | Module System, Utilities, Analyzers | Foundation types, module lifecycle, Roslyn analyzers |
+| [Data](/dotnet/data/persistence/) | Persistence, Caching, Storage, Querying, Reference Data | EF Core interceptors, HybridCache, multi-provider storage |
+| [Security & Compliance](/dotnet/security/authentication/) | Authentication, Authorization, Security, Identity, Privacy, Vault & Encryption | JWT Bearer, RBAC, GDPR, key management |
+| [API](/dotnet/api/api/) | API & Web, Webhooks | Versioning, OpenAPI, idempotency, HMAC-signed webhooks |
+| [Infrastructure](/dotnet/infrastructure/wolverine/) | Wolverine, Notifications, Background Jobs, Localization, Settings, Multi-Tenancy, Features | Message bus, 6-channel notifications, i18n (17 cultures), time zones, SaaS enablement |
+| [Observability](/dotnet/observability/observability-otlp/) | Observability & Diagnostics | Serilog, OpenTelemetry, health checks |
+| [Business Features](/dotnet/business/workflow/) | Workflow, Data Exchange, Templating, Timeline | FSM engine, import/export, PDF generation, activity stream |
 
-| Category | Modules | Description |
-|----------|---------|-------------|
-| Core & Utilities | [Core & Utilities](./modules/core/) | Foundation types, module system, Timing, Guids, Validation |
-| Security | [Security & Identity](./modules/security/), [Privacy](./modules/privacy/), [Vault & Encryption](./modules/vault-encryption/) | Authentication, authorization, encryption, GDPR |
-| Identity | [Identity](./modules/identity/) | Keycloak/EntraID/Cognito integration, user cache |
-| Data & Persistence | [Persistence](./modules/persistence/), [Caching](./modules/caching/), [Multi-Tenancy](./modules/multi-tenancy/) | EF Core interceptors, HybridCache, tenant isolation |
-| Settings & Features | [Settings & Features](./modules/settings-features/) | Application settings, feature flags, reference data |
-| API & Web | [API & Web](./modules/api-web/) | Versioning, OpenAPI docs, idempotency, CORS, cookies |
-| Messaging | [Wolverine](./modules/wolverine/), [Webhooks](./modules/webhooks/), [Notifications](./modules/notifications/) | Message bus, outbox, webhooks, 6-channel notifications |
-| Audit | [Timeline](./modules/timeline/) | Entity activity stream (chatter), follow/notify |
-| Documents | [Templating & DocumentGeneration](./modules/templating/) | Scriban templates, HTML-to-PDF, Excel generation |
-| Data Exchange | [DataExchange](./modules/data-exchange/) | Import pipeline (CSV, Excel), export presets |
-| Workflow | [Workflow](./modules/workflow/) | FSM engine, publication lifecycle |
-| Diagnostics | [Observability & Diagnostics](./modules/observability/) | Serilog, OpenTelemetry, health checks |
-| Storage | [BlobStorage & Imaging](./modules/blob-storage/) | Multi-provider storage (S3, Azure, FileSystem, Database), image processing |
-| Scheduling | [BackgroundJobs](./modules/background-jobs/) | Recurring and delayed jobs (Wolverine + Cronos) |
-| Localization | [Localization](./modules/localization/) | i18n (17 cultures), source-generated keys |
+## AI
 
-## Cross-cutting references
+Granit.AI adds provider-agnostic LLM capabilities (OpenAI, Azure, Anthropic, Ollama)
+via Microsoft.Extensions.AI. See the [AI section](/dotnet/ai/) for setup, NLQ,
+semantic search, document extraction, and more.
 
-- [Configuration Keys](./configuration-keys/) -- all appsettings sections and Options classes
-- [HTTP Conventions](./http-conventions/) -- status codes, Problem Details, DTO naming
-- [Dependency Graph](./dependency-graph/) -- package relationships and module dependencies
-- [Cloud Providers](./cloud-providers/) -- packages by cloud provider (AWS, Azure, Google Cloud)
-- [Provider Compatibility](./provider-compatibility/) -- database, cache, storage support matrix
-- [Tech Stack](./tech-stack/) -- third-party libraries, licenses, and ADR links
+## Architecture
+
+- [HTTP Conventions](/dotnet/architecture/http-conventions/) — status codes, Problem Details, DTO naming
+- [Dependency Graph](/dotnet/architecture/dependency-graph/) — package relationships
+- [Tech Stack](/dotnet/architecture/tech-stack/) — third-party libraries and licenses
+- [Design Patterns](/dotnet/architecture/patterns/) — 43 patterns documented
+- [ADRs](/dotnet/architecture/adr/) — architecture decision records
+
+## Reference
+
+- [Configuration Keys](/dotnet/configuration-keys/) — all appsettings sections and Options classes
+- [Cloud Providers](/dotnet/cloud-providers/) — packages by cloud provider (AWS, Azure, Google Cloud)
+- [Provider Compatibility](/dotnet/provider-compatibility/) — database, cache, storage support matrix
