@@ -14,7 +14,7 @@ dependency injection system via `[DependsOn]`.
 ## Module groups
 
 | Group | Modules | Purpose |
-|-------|---------|---------|
+| ----- | ------- | ------- |
 | [Core](/dotnet/core/module-system/) | Module System, Utilities, Analyzers | Foundation types, module lifecycle, Roslyn analyzers |
 | [Data](/dotnet/data/persistence/) | Persistence, Caching, Storage, Querying, Reference Data | EF Core interceptors, HybridCache, multi-provider storage |
 | [Security & Compliance](/dotnet/security/authentication/) | Authentication, Authorization, Security, Identity, Privacy, Vault & Encryption | JWT Bearer, RBAC, GDPR, key management |
