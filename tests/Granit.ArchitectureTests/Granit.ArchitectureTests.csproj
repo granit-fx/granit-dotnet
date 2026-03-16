@@ -55,6 +55,7 @@
     <ProjectReference Include="..\..\src\Granit.BackgroundJobs.Endpoints\Granit.BackgroundJobs.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.BackgroundJobs.EntityFrameworkCore\Granit.BackgroundJobs.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage\Granit.BlobStorage.csproj" />
+    <ProjectReference Include="..\..\src\Granit.BlobStorage.AI\Granit.BlobStorage.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.AzureBlob\Granit.BlobStorage.AzureBlob.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.Database\Granit.BlobStorage.Database.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.EntityFrameworkCore\Granit.BlobStorage.EntityFrameworkCore.csproj" />
@@ -132,6 +133,7 @@
     <ProjectReference Include="..\..\src\Granit.Persistence.Migrations\Granit.Persistence.Migrations.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.Migrations.Wolverine\Granit.Persistence.Migrations.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy\Granit.Privacy.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Privacy.AI\Granit.Privacy.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Querying\Granit.Querying.csproj" />
     <ProjectReference Include="..\..\src\Granit.RateLimiting\Granit.RateLimiting.csproj" />
     <ProjectReference Include="..\..\src\Granit.Querying.AI\Granit.Querying.AI.csproj" />
@@ -156,6 +158,7 @@
     <ProjectReference Include="..\..\src\Granit.Timeline.Notifications\Granit.Timeline.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.Timing\Granit.Timing.csproj" />
     <ProjectReference Include="..\..\src\Granit.Validation\Granit.Validation.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Validation.AI\Granit.Validation.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Validation.Europe\Granit.Validation.Europe.csproj" />
     <ProjectReference Include="..\..\src\Granit.Validation.NorthAmerica\Granit.Validation.NorthAmerica.csproj" />
     <ProjectReference Include="..\..\src\Granit.Validation.UnitedKingdom\Granit.Validation.UnitedKingdom.csproj" />

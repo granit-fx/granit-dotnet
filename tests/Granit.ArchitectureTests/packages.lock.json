@@ -1399,6 +1399,14 @@
           "Granit.Guids": "[0.1.0-dev, )"
         }
       },
+      "granit.blobstorage.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
+        }
+      },
       "granit.blobstorage.azureblob": {
         "type": "Project",
         "dependencies": {
@@ -1966,6 +1974,13 @@
           "WolverineFx": "[5.19.*, )"
         }
       },
+      "granit.privacy.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Privacy": "[0.1.0-dev, )"
+        }
+      },
       "granit.querying": {
         "type": "Project",
         "dependencies": {
@@ -2157,6 +2172,14 @@
           "FluentValidation.DependencyInjectionExtensions": "[12.*, )",
           "Granit.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )"
+        }
+      },
+      "granit.validation.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
         }
       },
       "granit.validation.europe": {

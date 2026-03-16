@@ -32,6 +32,7 @@
     <Project Path="src/Granit.BackgroundJobs.EntityFrameworkCore/Granit.BackgroundJobs.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.BackgroundJobs.Wolverine/Granit.BackgroundJobs.Wolverine.csproj" />
     <Project Path="src/Granit.BackgroundJobs/Granit.BackgroundJobs.csproj" />
+    <Project Path="src/Granit.BlobStorage.AI/Granit.BlobStorage.AI.csproj" />
     <Project Path="src/Granit.BlobStorage.AzureBlob/Granit.BlobStorage.AzureBlob.csproj" />
     <Project Path="src/Granit.BlobStorage.Database/Granit.BlobStorage.Database.csproj" />
     <Project Path="src/Granit.BlobStorage.EntityFrameworkCore/Granit.BlobStorage.EntityFrameworkCore.csproj" />
@@ -110,6 +111,7 @@
     <Project Path="src/Granit.Persistence.Migrations/Granit.Persistence.Migrations.csproj" />
     <Project Path="src/Granit.Persistence/Granit.Persistence.csproj" />
     <Project Path="src/Granit.Privacy/Granit.Privacy.csproj" />
+    <Project Path="src/Granit.Privacy.AI/Granit.Privacy.AI.csproj" />
     <Project Path="src/Granit.Querying.Endpoints/Granit.Querying.Endpoints.csproj" />
     <Project Path="src/Granit.Querying.EntityFrameworkCore/Granit.Querying.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Querying/Granit.Querying.csproj" />
@@ -133,6 +135,7 @@
     <Project Path="src/Granit.Timeline.Notifications/Granit.Timeline.Notifications.csproj" />
     <Project Path="src/Granit.Timeline/Granit.Timeline.csproj" />
     <Project Path="src/Granit.Timing/Granit.Timing.csproj" />
+    <Project Path="src/Granit.Validation.AI/Granit.Validation.AI.csproj" />
     <Project Path="src/Granit.Validation.Europe/Granit.Validation.Europe.csproj" />
     <Project Path="src/Granit.Validation.NorthAmerica/Granit.Validation.NorthAmerica.csproj" />
     <Project Path="src/Granit.Validation.UnitedKingdom/Granit.Validation.UnitedKingdom.csproj" />
@@ -191,6 +194,7 @@
     <Project Path="tests/Granit.BackgroundJobs.Tests.Integration/Granit.BackgroundJobs.Tests.Integration.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.Tests/Granit.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.Wolverine.Tests/Granit.BackgroundJobs.Wolverine.Tests.csproj" />
+    <Project Path="tests/Granit.BlobStorage.AI.Tests/Granit.BlobStorage.AI.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.AzureBlob.Tests/Granit.BlobStorage.AzureBlob.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.Database.Tests/Granit.BlobStorage.Database.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.EntityFrameworkCore.Tests/Granit.BlobStorage.EntityFrameworkCore.Tests.csproj" />
@@ -270,6 +274,7 @@
     <Project Path="tests/Granit.Persistence.Migrations.Wolverine.Tests/Granit.Persistence.Migrations.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Tests/Granit.Persistence.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Tests/Granit.Privacy.Tests.csproj" />
+    <Project Path="tests/Granit.Privacy.AI.Tests/Granit.Privacy.AI.Tests.csproj" />
     <Project Path="tests/Granit.Querying.Endpoints.Tests.Integration/Granit.Querying.Endpoints.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Querying.Endpoints.Tests/Granit.Querying.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Querying.AI.Tests/Granit.Querying.AI.Tests.csproj" />
@@ -294,6 +299,7 @@
     <Project Path="tests/Granit.Timeline.Notifications.Tests/Granit.Timeline.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Timeline.Tests/Granit.Timeline.Tests.csproj" />
     <Project Path="tests/Granit.Timing.Tests/Granit.Timing.Tests.csproj" />
+    <Project Path="tests/Granit.Validation.AI.Tests/Granit.Validation.AI.Tests.csproj" />
     <Project Path="tests/Granit.Validation.Europe.Tests/Granit.Validation.Europe.Tests.csproj" />
     <Project Path="tests/Granit.Validation.NorthAmerica.Tests/Granit.Validation.NorthAmerica.Tests.csproj" />
     <Project Path="tests/Granit.Validation.UnitedKingdom.Tests/Granit.Validation.UnitedKingdom.Tests.csproj" />
