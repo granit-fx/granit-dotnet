@@ -79,7 +79,7 @@ internal sealed class ProductDbContext(
 Three things to note:
 
 - **`ICurrentTenant?` and `IDataFilter?`** are injected as optional parameters. If multi-tenancy is not installed, a `NullTenantContext` is used and the tenant filter is simply skipped.
-- **`ApplyGranitConventions`** registers query filters for `ISoftDeletable`, `IMultiTenant`, `IActive`, `IProcessingRestrictable`, and `IPublishable`. You never write a manual `HasQueryFilter` -- Granit combines all applicable filters into a single expression per entity type.
+- **`ApplyGranitConventions`** registers one named query filter per applicable interface (`ISoftDeletable`, `IMultiTenant`, `IActive`, `IProcessingRestrictable`, `IPublishable`). You never write a manual `HasQueryFilter` — each filter is independent and bypassable per query via `IgnoreQueryFilters([GranitFilterNames.SoftDelete])`.
 - **`ApplyConfigurationsFromAssembly`** picks up any `IEntityTypeConfiguration<T>` in the same assembly. Add one if you need column constraints, indexes, or value conversions.
 
 To register the context with Granit's interceptor wiring, use `AddGranitDbContext`:

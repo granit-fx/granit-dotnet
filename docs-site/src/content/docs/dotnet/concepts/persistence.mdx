@@ -109,30 +109,38 @@ This gives you an immutable version history without a separate history table.
 
 ## Automatic query filters
 
-`ApplyGranitConventions` scans all entity types in the model and registers
-a single `HasQueryFilter` per entity. The filter combines all applicable
-interfaces with AND logic:
+`ApplyGranitConventions` scans all entity types and registers one **named**
+`HasQueryFilter` per applicable interface (EF Core 10). Each filter is
+independent and individually bypassable:
 
-| Interface | Filter |
-|-----------|--------|
-| `ISoftDeletable` | `WHERE IsDeleted = false` |
-| `IActive` | `WHERE IsActive = true` |
-| `IMultiTenant` | `WHERE TenantId = @currentTenantId` |
-| `IProcessingRestrictable` | `WHERE IsProcessingRestricted = false` |
-| `IPublishable` | `WHERE PublicationStatus = Published` |
+| Interface | Filter key | SQL condition |
+|-----------|------------|---------------|
+| `ISoftDeletable` | `SoftDelete` | `WHERE IsDeleted = false` |
+| `IActive` | `Active` | `WHERE IsActive = true` |
+| `IMultiTenant` | `MultiTenant` | `WHERE TenantId = @currentTenantId` |
+| `IProcessingRestrictable` | `ProcessingRestrictable` | `WHERE IsProcessingRestricted = false` |
+| `IPublishable` | `Publishable` | `WHERE IsPublished = true` |
 
-An entity implementing both `ISoftDeletable` and `IMultiTenant` gets:
+An entity implementing both `ISoftDeletable` and `IMultiTenant` gets two named
+filters, both applied by EF Core as AND conditions:
 
 ```sql
 WHERE "e"."IsDeleted" = FALSE AND "e"."TenantId" = @__tenantId
 ```
 
+Bypass a single filter for one query without touching the others:
+
+```csharp
+// Only soft delete bypassed — multi-tenant still applies
+var rows = await db.Patients
+    .IgnoreQueryFilters([GranitFilterNames.SoftDelete])
+    .ToListAsync(ct);
+```
+
 :::caution[Warning]
 Never add manual `HasQueryFilter` calls in your entity configurations.
-EF Core supports only one `HasQueryFilter` per entity — the last registration
-wins. Manual filters silently override the framework's combined filter,
-breaking tenant isolation or soft delete. Let `ApplyGranitConventions`
-own all query filters.
+`ApplyGranitConventions` owns all standard filters. Manual filters conflict
+with the named filter keys, breaking tenant isolation or soft delete.
 :::
 
 ## Isolated DbContext checklist
@@ -210,7 +218,8 @@ public class InvoiceEntityFrameworkCoreModule : GranitModule
 ### 6. No manual HasQueryFilter
 
 Already covered above. `ApplyGranitConventions` handles all standard
-filters. Manual filters cause duplicates or silent overrides.
+filters. Manual filters conflict with the named filter keys registered
+by the framework.
 
 ### 7. TenantId type
 

@@ -157,6 +157,27 @@ Resolves audit data from DI:
 | `Added` | Sets `CreatedAt`, `CreatedBy`. Auto-generates `Id` if `Guid.Empty`. Injects `TenantId` if `IMultiTenant` and null. |
 | `Modified` | Protects `CreatedAt`/`CreatedBy` from overwrite. Sets `ModifiedAt`, `ModifiedBy`. |
 
+:::caution[ExecuteUpdate bypasses this interceptor]
+`ExecuteUpdate()` and `ExecuteUpdateAsync()` emit a raw SQL `UPDATE` and never
+reach `AuditedEntityInterceptor`. Set `ModifiedAt`, `ModifiedBy`, and `TenantId`
+explicitly in the `setPropertyCalls` expression, or use the change tracker.
+
+```csharp
+// ❌ Bypasses interceptor — audit fields not set
+await db.Patients
+    .Where(p => p.TenantId == tenantId)
+    .ExecuteUpdateAsync(s => s.SetProperty(p => p.Status, status), ct);
+
+// ✅ Correct — include audit fields explicitly
+await db.Patients
+    .Where(p => p.TenantId == tenantId)
+    .ExecuteUpdateAsync(s => s
+        .SetProperty(p => p.Status, status)
+        .SetProperty(p => p.ModifiedAt, clock.Now)
+        .SetProperty(p => p.ModifiedBy, currentUser.UserId), ct);
+```
+:::
+
 ### SoftDeleteInterceptor
 
 Converts physical DELETE to soft delete:
@@ -168,6 +189,31 @@ UPDATE Patients SET IsDeleted = true, DeletedAt = @now, DeletedBy = @userId WHER
 ```
 
 Only applies to entities implementing `ISoftDeletable`.
+
+:::caution[ExecuteDelete bypasses this interceptor]
+`ExecuteDelete()` and `ExecuteDeleteAsync()` emit a raw SQL `DELETE` and never
+reach `SoftDeleteInterceptor`. Use `ExecuteUpdate()` with explicit `IsDeleted`,
+`DeletedAt`, and `DeletedBy` assignments instead, or load the entity and call
+`DbContext.Remove()`.
+
+```csharp
+// ❌ Bypasses interceptor — performs a physical DELETE
+await db.Patients.Where(p => p.Id == id).ExecuteDeleteAsync(ct);
+
+// ✅ Correct — soft delete via interceptor
+var patient = await db.Patients.FindAsync(id, ct);
+db.Remove(patient!);
+await db.SaveChangesAsync(ct);
+
+// ✅ Also correct — explicit soft delete via ExecuteUpdate
+await db.Patients
+    .Where(p => p.Id == id)
+    .ExecuteUpdateAsync(s => s
+        .SetProperty(p => p.IsDeleted, true)
+        .SetProperty(p => p.DeletedAt, clock.Now)
+        .SetProperty(p => p.DeletedBy, currentUser.UserId), ct);
+```
+:::
 
 ### DomainEventDispatcherInterceptor
 
@@ -192,23 +238,24 @@ For `IVersioned` entities on `EntityState.Added`:
 
 ## Query filters
 
-`ApplyGranitConventions` builds a **single combined** `HasQueryFilter` per entity
-using expression trees. Five filter types, joined with `AND`:
+`ApplyGranitConventions` registers one **named** `HasQueryFilter` per applicable
+interface on each entity type (EF Core 10). Filters are independent — bypass one
+without affecting the others.
 
-| Interface | Filter expression | Default |
-|-----------|------------------|---------|
-| `ISoftDeletable` | `!e.IsDeleted` | Enabled |
-| `IActive` | `e.IsActive` | Enabled |
-| `IProcessingRestrictable` | `!e.IsProcessingRestricted` | Enabled |
-| `IMultiTenant` | `e.TenantId == currentTenant.Id` | Enabled |
-| `IPublishable` | `e.IsPublished` | Enabled |
+| Interface | Filter key (`GranitFilterNames`) | Filter expression | Default |
+|-----------|----------------------------------|------------------|---------|
+| `ISoftDeletable` | `SoftDelete` | `!e.IsDeleted` | Enabled |
+| `IActive` | `Active` | `e.IsActive` | Enabled |
+| `IProcessingRestrictable` | `ProcessingRestrictable` | `!e.IsProcessingRestricted` | Enabled |
+| `IMultiTenant` | `MultiTenant` | `e.TenantId == currentTenant.Id` | Enabled |
+| `IPublishable` | `Publishable` | `e.IsPublished` | Enabled |
 
 Filters are re-evaluated per query via `DataFilter`'s `AsyncLocal` state — EF Core
 extracts `FilterProxy` boolean properties as parameterized expressions.
 
-### Runtime filter control
+### Runtime filter control — service scope
 
-Use `IDataFilter` to selectively bypass filters:
+Use `IDataFilter` to bypass a filter for all queries in the current async flow:
 
 ```csharp
 public class PatientAdminService(IDataFilter dataFilter, AppDbContext db)
@@ -229,6 +276,28 @@ public class PatientAdminService(IDataFilter dataFilter, AppDbContext db)
 
 Scopes nest correctly — inner `Enable`/`Disable` calls restore the outer state
 on disposal.
+
+### Per-query bypass (EF Core 10)
+
+Use `IgnoreQueryFilters` with one or more filter keys to bypass specific filters
+for a single query, without affecting other queries in the same flow:
+
+```csharp
+// Bypass only soft delete — multi-tenant and other filters still apply
+var deletedPatients = await db.Patients
+    .IgnoreQueryFilters([GranitFilterNames.SoftDelete])
+    .Where(p => p.IsDeleted)
+    .ToListAsync(cancellationToken)
+    .ConfigureAwait(false);
+
+// Bypass all named filters (equivalent to IgnoreQueryFilters() without args)
+var allPatients = await db.Patients
+    .IgnoreQueryFilters([
+        GranitFilterNames.SoftDelete,
+        GranitFilterNames.MultiTenant])
+    .ToListAsync(cancellationToken)
+    .ConfigureAwait(false);
+```
 
 ### Translation conventions
 

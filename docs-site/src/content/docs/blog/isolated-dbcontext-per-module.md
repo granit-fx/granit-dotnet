@@ -69,11 +69,24 @@ The call to `modelBuilder.ApplyGranitConventions(currentTenant, dataFilter)` at 
 - **`IMultiTenant`** — scopes queries to `currentTenant.Id`
 - **`IPublishable`** — filters out unpublished records
 
-The implementation combines all applicable filters into a **single `HasQueryFilter` call per entity type**, joining conditions with `AndAlso`. This is not cosmetic — EF Core silently overwrites previous `HasQueryFilter` calls on the same entity. Calling it twice means only the second filter survives. `ApplyGranitConventions` avoids this bug by design.
+Since EF Core 10, the implementation registers one **named** `HasQueryFilter` per
+applicable interface per entity — each filter is independent and individually
+bypassable per query via `IgnoreQueryFilters([GranitFilterNames.SoftDelete])`.
+Before EF Core 10, `HasQueryFilter()` silently overwrote the previous filter,
+requiring a combined `AndAlso` expression. Named filters are the idiomatic
+EF Core 10 solution — `ApplyGranitConventions` uses them internally.
 
-Each filter follows the pattern `bypass || realCondition`, where `bypass` reads a property on a `FilterProxy` object captured as a constant expression. EF Core evaluates this property on every query execution (it treats simple property access on a `ConstantExpression` as a parameterized value), so toggling `IDataFilter.Disable<T>()` at runtime takes effect immediately without rebuilding the model.
+Each filter follows the pattern `bypass || realCondition`, where `bypass` reads a
+property on a `FilterProxy` object captured as a constant expression. EF Core
+evaluates this property on every query execution (it treats simple property access
+on a `ConstantExpression` as a parameterized value), so toggling
+`IDataFilter.Disable<T>()` at runtime takes effect immediately without rebuilding
+the model.
 
-**You must never write manual `HasQueryFilter` calls in your entity configurations.** If you do, you will overwrite the filters that `ApplyGranitConventions` already applied. This rule is documented, tested, and enforced by code review.
+**You must never write manual `HasQueryFilter` calls in your entity configurations.**
+They conflict with the named filter keys registered by `ApplyGranitConventions`,
+breaking tenant isolation or soft delete. This rule is documented, tested, and
+enforced by code review.
 
 ### 3. Registration through AddGranitDbContext
 

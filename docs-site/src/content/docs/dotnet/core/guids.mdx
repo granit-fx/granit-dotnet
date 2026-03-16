@@ -1,20 +1,20 @@
 ---
 title: GUIDs
-description: Sequential GUID generator optimized for clustered database indexes. Timestamp at the front (PostgreSQL/MySQL/Oracle) or end (SQL Server) to eliminate B-tree page splits.
+description: Time-ordered GUID generation with UUIDv7 (default), legacy sequential, and random strategies. Optimal for clustered database indexes — no B-tree page splits.
 sidebar:
   order: 8
 ---
 
-Granit.Guids generates sequential GUIDs optimized for clustered database indexes.
-Random GUIDs fragment B-tree indexes because inserts land at random pages. Sequential
-GUIDs place the timestamp at the front (or end, for SQL Server) so new rows are always
-appended to the last page, eliminating page splits.
+Granit.Guids provides `IGuidGenerator` with three strategies for generating identifiers
+optimized for database performance. The default — **UUIDv7** — uses `Guid.CreateVersion7()`
+from .NET 9: a standard time-ordered format that appends rows to the last index page
+and eliminates B-tree page splits on PostgreSQL, MySQL, and SQL Server 2019+.
 
 ## Package
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.Guids` | `IGuidGenerator`, sequential GUIDs for clustered indexes | `Granit.Timing` |
+| `Granit.Guids` | `IGuidGenerator`, UUIDv7 / sequential / random strategies | `Granit.Timing` |
 
 ## Setup
 
@@ -32,13 +32,90 @@ public class PatientService(IGuidGenerator guidGenerator, AppDbContext db)
     {
         return new Patient
         {
-            Id = guidGenerator.Create(), // Sequential GUID
+            Id = guidGenerator.Create(), // UUIDv7 by default
             FirstName = firstName,
             LastName = lastName,
         };
     }
 }
 ```
+
+## Strategies
+
+Three strategies are available via `GuidStrategy`:
+
+| Strategy | Implementation | When to use |
+| -------- | -------------- | ----------- |
+| **`UuidV7`** *(default)* | `Guid.CreateVersion7(DateTimeOffset)` | PostgreSQL, MySQL, SQL Server 2019+, any modern DB |
+| `Sequential` | `SequentialGuidGenerator` (custom byte layout) | Oracle, pre-2019 SQL Server |
+| `Random` | `Guid.NewGuid()` | Public-facing IDs where enumeration must be prevented |
+
+### UUIDv7 layout (RFC 9562)
+
+```mermaid
+block-beta
+    columns 16
+    block:v7["UUIDv7 (default)"]
+        columns 16
+        t1["T"] t2["T"] t3["T"] t4["T"] t5["T"] t6["T"]
+        v["ver"] r1["R"] r2["R"] r3["R"] r4["R"] r5["R"] r6["R"] r7["R"] r8["R"] r9["R"]
+    end
+
+    style t1 fill:#4a9eff
+    style t2 fill:#4a9eff
+    style t3 fill:#4a9eff
+    style t4 fill:#4a9eff
+    style t5 fill:#4a9eff
+    style t6 fill:#4a9eff
+    style v fill:#f0a500
+```
+
+**T** = 48-bit Unix timestamp (milliseconds), **ver** = version nibble (7), **R** = random.
+
+### Legacy sequential types (`Strategy = Sequential`)
+
+Used when `Strategy = GuidStrategy.Sequential`. The byte layout is tuned per database engine:
+
+| `SequentialGuidType` | Timestamp position | Database |
+| -------------------- | ------------------ | -------- |
+| `SequentialAsString` | Front (sorted by string representation) | PostgreSQL, MySQL |
+| `SequentialAsBinary` | Front (sorted by byte array) | Oracle |
+| `SequentialAtEnd` | End (Data4 block) | SQL Server pre-2019 |
+
+## Configuration
+
+```csharp
+// Default — UUIDv7, recommended for modern databases
+services.AddGranitGuids();
+
+// SQL Server 2019+ — still use UUIDv7
+services.AddGranitGuids();
+
+// Oracle — legacy sequential
+services.AddGranitGuids(options =>
+{
+    options.Strategy = GuidStrategy.Sequential;
+    options.DefaultSequentialGuidType = SequentialGuidType.SequentialAsBinary;
+});
+
+// Pre-2019 SQL Server — legacy sequential
+services.AddGranitGuids(options =>
+{
+    options.Strategy = GuidStrategy.Sequential;
+    options.DefaultSequentialGuidType = SequentialGuidType.SequentialAtEnd;
+});
+
+// Public-facing IDs — random
+services.AddGranitGuids(options =>
+{
+    options.Strategy = GuidStrategy.Random;
+});
+```
+
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| `Strategy` | `GuidStrategy` | `UuidV7` | Generator strategy |
+| `DefaultSequentialGuidType` | `SequentialGuidType?` | `SequentialAsString` | Byte layout for `Sequential` strategy |
 
 ## IGuidGenerator
 
@@ -49,79 +126,23 @@ public interface IGuidGenerator
 }
 ```
 
-Two implementations:
+All three implementations are singletons. `TryAddSingleton` is used — register a custom
+`IGuidGenerator` before calling `AddGranitGuids()` to override the default.
 
-| Implementation | Strategy | DI registration |
-| -------------- | -------- | --------------- |
-| `SequentialGuidGenerator` | Timestamp (6 bytes from `IClock`) + 10 cryptographic random bytes | Default (singleton) |
-| `SimpleGuidGenerator` | Delegates to `Guid.NewGuid()` | Available via `SimpleGuidGenerator.Instance` for non-DI contexts |
-
-## Sequential GUID types
-
-The byte layout depends on the database engine:
-
-| Type | Timestamp position | Database |
-| ---- | ------------------ | -------- |
-| `SequentialAsString` | Front (sorted by `Guid.ToString()`) | **PostgreSQL**, MySQL |
-| `SequentialAsBinary` | Front (sorted by `Guid.ToByteArray()`) | Oracle |
-| `SequentialAtEnd` | End (Data4 block) | SQL Server |
-
-**Default:** `SequentialAsString` (optimized for PostgreSQL).
-
-```mermaid
-block-beta
-    columns 16
-    block:asstring["SequentialAsString (PostgreSQL)"]
-        columns 16
-        t1["T"] t2["T"] t3["T"] t4["T"] t5["T"] t6["T"]
-        r1["R"] r2["R"] r3["R"] r4["R"] r5["R"] r6["R"] r7["R"] r8["R"] r9["R"] r10["R"]
-    end
-
-    block:atend["SequentialAtEnd (SQL Server)"]
-        columns 16
-        s1["R"] s2["R"] s3["R"] s4["R"] s5["R"] s6["R"] s7["R"] s8["R"] s9["R"] s10["R"]
-        s11["T"] s12["T"] s13["T"] s14["T"] s15["T"] s16["T"]
-    end
-
-    style t1 fill:#4a9eff
-    style t2 fill:#4a9eff
-    style t3 fill:#4a9eff
-    style t4 fill:#4a9eff
-    style t5 fill:#4a9eff
-    style t6 fill:#4a9eff
-    style s11 fill:#4a9eff
-    style s12 fill:#4a9eff
-    style s13 fill:#4a9eff
-    style s14 fill:#4a9eff
-    style s15 fill:#4a9eff
-    style s16 fill:#4a9eff
-```
-
-**T** = timestamp bytes (6 bytes, millisecond precision from `IClock`), **R** = cryptographically random bytes (10 bytes).
-
-## Configuration
-
-```csharp
-services.AddGranitGuids(options =>
-{
-    options.DefaultSequentialGuidType = SequentialGuidType.SequentialAtEnd; // SQL Server
-});
-```
-
-| Property | Default | Description |
-| -------- | ------- | ----------- |
-| `DefaultSequentialGuidType` | `SequentialAsString` | Sequential GUID byte layout |
+`SimpleGuidGenerator.Instance` is also available as a static instance for
+non-DI contexts (domain events, value objects).
 
 ## Public API summary
 
 | Category | Key types | Package |
 | -------- | --------- | ------- |
 | Module | `GranitGuidsModule` | -- |
-| Generator | `IGuidGenerator`, `SequentialGuidGenerator`, `SimpleGuidGenerator` | `Granit.Guids` |
-| Options | `SequentialGuidType`, `GuidGeneratorOptions` | `Granit.Guids` |
+| Strategies | `GuidStrategy` | `Granit.Guids` |
+| Generators | `IGuidGenerator`, `UuidV7GuidGenerator`, `SequentialGuidGenerator`, `SimpleGuidGenerator` | `Granit.Guids` |
+| Options | `GuidGeneratorOptions`, `SequentialGuidType` | `Granit.Guids` |
 | Extensions | `AddGranitGuids()` | `Granit.Guids` |
 
 ## See also
 
-- [Timing module](/dotnet/core/timing/) -- `IClock` used for timestamp generation
-- [Persistence module](/dotnet/data/persistence/) -- Sequential GUIDs for EF Core primary keys
+- [Timing module](/dotnet/core/timing/) — `TimeProvider` used by `UuidV7GuidGenerator`
+- [Persistence module](/dotnet/data/persistence/) — GUIDs as EF Core primary keys

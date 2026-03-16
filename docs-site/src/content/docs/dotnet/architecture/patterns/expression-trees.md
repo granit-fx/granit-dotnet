@@ -58,11 +58,13 @@ internal sealed class FilterProxy(IDataFilter? dataFilter, ICurrentTenant? tenan
 }
 ```
 
-### Why a single HasQueryFilter?
+### Why named HasQueryFilter calls?
 
-EF Core (versions before 10) overwrites previous query filters if
-`HasQueryFilter()` is called multiple times on the same entity. The combined
-expression via `AndAlso` solves this problem in a single call.
+EF Core 10 introduced named query filters: one `HasQueryFilter(name, expr)` call
+per interface per entity. Each filter is independent and bypassable individually
+via `IgnoreQueryFilters([filterKey])`. Before EF Core 10, `HasQueryFilter` silently
+overwrote the previous filter — requiring a combined `AndAlso` expression as a
+workaround. Named filters are the idiomatic EF Core 10 solution.
 
 ## Rationale
 
@@ -80,12 +82,17 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
     // -> Dynamically builds query filters for all entities
 }
 
-// The filter is automatic and transparent
+// The filters are automatic and transparent
 List<Patient> patients = await db.Patients.ToListAsync(ct);
-// Generated SQL:
+// Generated SQL (both named filters applied as AND):
 // SELECT * FROM Patients
 // WHERE (@SoftDeleteEnabled = 0 OR IsDeleted = 0)
 //   AND (@MultiTenantEnabled = 0 OR TenantId = @CurrentTenantId)
+
+// Bypass only soft delete for a single query (EF Core 10):
+List<Patient> all = await db.Patients
+    .IgnoreQueryFilters([GranitFilterNames.SoftDelete])
+    .ToListAsync(ct);
 ```
 
 ## Further reading

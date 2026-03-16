@@ -8,17 +8,17 @@ namespace Granit.Validation.Europe.Internal.Luxembourg;
 /// <remarks>
 /// Format: a single letter prefix (A–J or S) followed by 1 to 6 digits.
 /// <list type="bullet">
-///   <item>A: société anonyme</item>
-///   <item>B: société à responsabilité limitée</item>
-///   <item>C: société en commandite par actions</item>
-///   <item>D: société en commandite simple</item>
-///   <item>E: société en nom collectif</item>
-///   <item>F: société civile</item>
-///   <item>G: groupement d'intérêt économique</item>
-///   <item>H: société européenne</item>
-///   <item>I: association sans but lucratif</item>
-///   <item>J: société coopérative</item>
-///   <item>S: succursale d'une société étrangère</item>
+///   <item>A: public limited company (société anonyme)</item>
+///   <item>B: private limited company (société à responsabilité limitée)</item>
+///   <item>C: partnership limited by shares (société en commandite par actions)</item>
+///   <item>D: limited partnership (société en commandite simple)</item>
+///   <item>E: general partnership (société en nom collectif)</item>
+///   <item>F: civil company (société civile)</item>
+///   <item>G: economic interest grouping (groupement d'intérêt économique)</item>
+///   <item>H: European company (société européenne)</item>
+///   <item>I: non-profit association (association sans but lucratif)</item>
+///   <item>J: cooperative company (société coopérative)</item>
+///   <item>S: branch of a foreign company (succursale d'une société étrangère)</item>
 /// </list>
 /// Spaces are stripped and input is uppercased before validation.
 /// </remarks>

@@ -150,14 +150,16 @@ A single user with two clients cannot replay another client's request.
 
 **Classic pattern**: Static EF Core query filters.
 
-**Granit variant**: `ApplyGranitConventions()` dynamically builds a combined
-expression via `Expression.AndAlso()` for each entity.
+**Granit variant**: `ApplyGranitConventions()` dynamically registers one **named**
+`HasQueryFilter` per applicable interface per entity (EF Core 10).
 
 ```text
 src/Granit.Persistence/Extensions/ModelBuilderExtensions.cs
 ```
 
-This solves the EF Core problem where multiple calls to `HasQueryFilter()`
-overwrite previous filters. The single combined expression handles
+Each filter is independent — bypass one per query with
+`IgnoreQueryFilters([GranitFilterNames.SoftDelete])` without affecting the others.
+Before EF Core 10, `HasQueryFilter()` silently overwrote the previous filter,
+requiring a combined `AndAlso` expression as a workaround. Named filters handle
 `ISoftDeletable` + `IActive` + `IMultiTenant` + `IProcessingRestrictable` +
-`IPublishable` together.
+`IPublishable` independently.
