@@ -14,6 +14,7 @@
     <Project Path="src/Granit.AI.Extraction/Granit.AI.Extraction.csproj" />
     <Project Path="src/Granit.AI.Ollama/Granit.AI.Ollama.csproj" />
     <Project Path="src/Granit.AI.OpenAI/Granit.AI.OpenAI.csproj" />
+    <Project Path="src/Granit.AI.VectorData/Granit.AI.VectorData.csproj" />
     <Project Path="src/Granit.ApiDocumentation/Granit.ApiDocumentation.csproj" />
     <Project Path="src/Granit.ApiVersioning/Granit.ApiVersioning.csproj" />
     <Project Path="src/Granit.Authentication.ApiKeys.Endpoints/Granit.Authentication.ApiKeys.Endpoints.csproj" />
@@ -111,6 +112,7 @@
     <Project Path="src/Granit.Querying.Endpoints/Granit.Querying.Endpoints.csproj" />
     <Project Path="src/Granit.Querying.EntityFrameworkCore/Granit.Querying.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Querying/Granit.Querying.csproj" />
+    <Project Path="src/Granit.Querying.AI/Granit.Querying.AI.csproj" />
     <Project Path="src/Granit.RateLimiting/Granit.RateLimiting.csproj" />
     <Project Path="src/Granit.ReferenceData.Endpoints/Granit.ReferenceData.Endpoints.csproj" />
     <Project Path="src/Granit.ReferenceData.EntityFrameworkCore/Granit.ReferenceData.EntityFrameworkCore.csproj" />
@@ -169,6 +171,7 @@
     <Project Path="tests/Granit.AI.EntityFrameworkCore.Tests/Granit.AI.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.AI.Extraction.Tests/Granit.AI.Extraction.Tests.csproj" />
     <Project Path="tests/Granit.AI.Ollama.Tests/Granit.AI.Ollama.Tests.csproj" />
+    <Project Path="tests/Granit.AI.VectorData.Tests/Granit.AI.VectorData.Tests.csproj" />
     <Project Path="tests/Granit.AI.OpenAI.Tests/Granit.AI.OpenAI.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.ApiKeys.Endpoints.Tests/Granit.Authentication.ApiKeys.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests/Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests.csproj" />
@@ -266,6 +269,7 @@
     <Project Path="tests/Granit.Privacy.Tests/Granit.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Querying.Endpoints.Tests.Integration/Granit.Querying.Endpoints.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Querying.Endpoints.Tests/Granit.Querying.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.Querying.AI.Tests/Granit.Querying.AI.Tests.csproj" />
     <Project Path="tests/Granit.Querying.EntityFrameworkCore.Tests/Granit.Querying.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Querying.Tests/Granit.Querying.Tests.csproj" />
     <Project Path="tests/Granit.RateLimiting.Tests/Granit.RateLimiting.Tests.csproj" />

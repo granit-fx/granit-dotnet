@@ -22,7 +22,7 @@ internal static class ImportDefinitionResolver
     }
 
     /// <summary>
-    /// Invokes <see cref="IMappingSuggestionService.SuggestMappingsAsync{TEntity}"/> via reflection,
+    /// Invokes <c>IMappingSuggestionService.SuggestMappingsAsync</c> via reflection,
     /// using the entity type discovered at runtime from the definition descriptor.
     /// </summary>
     internal static async Task<IReadOnlyList<ImportColumnMapping>> SuggestMappingsAsync(

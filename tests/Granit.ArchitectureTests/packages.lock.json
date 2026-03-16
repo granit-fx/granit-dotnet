@@ -1238,6 +1238,13 @@
           "Microsoft.Extensions.AI.OpenAI": "[10.*, )"
         }
       },
+      "granit.ai.vectordata": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Microsoft.Extensions.VectorData.Abstractions": "[10.*, )"
+        }
+      },
       "granit.apidocumentation": {
         "type": "Project",
         "dependencies": {
@@ -1958,6 +1965,14 @@
           "Granit.Core": "[0.1.0-dev, )"
         }
       },
+      "granit.querying.ai": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Querying": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
       "granit.querying.endpoints": {
         "type": "Project",
         "dependencies": {
@@ -2673,6 +2688,15 @@
         "dependencies": {
           "Microsoft.Extensions.Http.Diagnostics": "10.4.0",
           "Microsoft.Extensions.Resilience": "10.4.0"
+        }
+      },
+      "Microsoft.Extensions.VectorData.Abstractions": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.1",
+        "contentHash": "1vsHJaRET/Q8aldtGiaAP4BKXBrVA9Y1brgYbpWyQQsr6HN7fN5+Qw74sC8g+JSHiZONJ4134pPQd1mk7fGlQw==",
+        "dependencies": {
+          "Microsoft.Extensions.AI.Abstractions": "10.3.0"
         }
       },
       "Microsoft.IO.RecyclableMemoryStream": {

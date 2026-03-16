@@ -36,6 +36,7 @@
     <ProjectReference Include="..\..\src\Granit.AI.EntityFrameworkCore\Granit.AI.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.Extraction\Granit.AI.Extraction.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.Ollama\Granit.AI.Ollama.csproj" />
+    <ProjectReference Include="..\..\src\Granit.AI.VectorData\Granit.AI.VectorData.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.OpenAI\Granit.AI.OpenAI.csproj" />
     <ProjectReference Include="..\..\src\Granit.ApiDocumentation\Granit.ApiDocumentation.csproj" />
     <ProjectReference Include="..\..\src\Granit.ApiVersioning\Granit.ApiVersioning.csproj" />
@@ -132,6 +133,7 @@
     <ProjectReference Include="..\..\src\Granit.Privacy\Granit.Privacy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Querying\Granit.Querying.csproj" />
     <ProjectReference Include="..\..\src\Granit.RateLimiting\Granit.RateLimiting.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Querying.AI\Granit.Querying.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Querying.Endpoints\Granit.Querying.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Querying.EntityFrameworkCore\Granit.Querying.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.ReferenceData\Granit.ReferenceData.csproj" />

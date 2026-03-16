@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.AI.VectorData</PackageId>
+    <Description>Multi-tenant vector storage abstractions for Granit.AI. Enables semantic search (RAG), similarity matching, and recommendation via provider-agnostic vector collections. Built on Microsoft.Extensions.VectorData when available.</Description>
+    <IsPackable>true</IsPackable>
+    <!-- CA1711: IVectorCollection is a domain concept, not a BCL collection -->
+    <NoWarn>$(NoWarn);CA1711</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.AI.VectorData.Tests" />
+    <InternalsVisibleTo Include="Granit.AI.VectorData.PgVector" />
+    <InternalsVisibleTo Include="Granit.AI.VectorData.PgVector.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Microsoft.Extensions.VectorData.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI\Granit.AI.csproj" />
+  </ItemGroup>
+
+</Project>

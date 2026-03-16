@@ -21,6 +21,7 @@
     <PackageVersion Include="Azure.AI.OpenAI" Version="2.*" />
     <PackageVersion Include="Microsoft.Extensions.AI.Abstractions" Version="10.*" />
     <PackageVersion Include="Microsoft.Extensions.AI.OpenAI" Version="10.*" />
+    <PackageVersion Include="Microsoft.Extensions.VectorData.Abstractions" Version="10.*" />
     <PackageVersion Include="OllamaSharp" Version="5.*" />
   </ItemGroup>
   <ItemGroup Label="ASP.NET Core">
