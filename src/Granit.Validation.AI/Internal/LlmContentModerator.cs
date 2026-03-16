@@ -138,16 +138,7 @@ internal sealed partial class LlmContentModerator(
         Message = "AI content moderation failed — content accepted (fail-open), flagged for manual review")]
     private partial void LogModerationFailed(Exception exception);
 
-    private sealed record LlmModerationResponse
-    {
-        public bool IsAcceptable { get; init; }
-        public List<LlmModerationFlag>? Flags { get; init; }
-    }
+    private sealed record LlmModerationResponse(bool IsAcceptable, List<LlmModerationFlag>? Flags);
 
-    private sealed record LlmModerationFlag
-    {
-        public string? Category { get; init; }
-        public string? Description { get; init; }
-        public double Severity { get; init; }
-    }
+    private sealed record LlmModerationFlag(string? Category, string? Description, double Severity);
 }

@@ -98,7 +98,7 @@ public sealed class DefaultSemanticSearchServiceTests
 
         _vectorCollection
             .SearchAsync(Arg.Any<ReadOnlyMemory<float>>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new List<VectorSearchResult<TextVectorRecord>>());
+            .Returns([]);
 
         await _sut.SearchAsync("test-collection", "query", limit: 0, TestContext.Current.CancellationToken);
 

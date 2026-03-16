@@ -15,8 +15,6 @@ public sealed class ImagingAIOptionsTests
     }
 
     [Fact]
-    public void SectionName_IsCorrect()
-    {
+    public void SectionName_IsCorrect() =>
         ImagingAIOptions.SectionName.ShouldBe("AI:Imaging");
-    }
 }

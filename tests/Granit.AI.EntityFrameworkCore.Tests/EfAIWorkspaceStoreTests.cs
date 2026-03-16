@@ -93,10 +93,8 @@ public sealed class EfAIWorkspaceStoreTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task DeleteAsync_NonExistent_IsNoOp()
-    {
-        await _store.DeleteAsync("missing", TestContext.Current.CancellationToken);
-    }
+    public async Task DeleteAsync_NonExistent_IsNoOp() =>
+        await Should.NotThrowAsync(() => _store.DeleteAsync("missing", TestContext.Current.CancellationToken));
 
     /// <summary>
     /// Simple factory wrapping InMemory options for testing.

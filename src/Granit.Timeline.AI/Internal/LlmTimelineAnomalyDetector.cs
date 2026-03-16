@@ -203,17 +203,10 @@ internal sealed partial class LlmTimelineAnomalyDetector(
     /// <summary>
     /// Internal DTO for deserializing the LLM JSON response.
     /// </summary>
-    private sealed class AnomalyResponseJson
-    {
-        public List<AnomalyItemJson>? Anomalies { get; set; }
-    }
+    private sealed record AnomalyResponseJson(List<AnomalyItemJson>? Anomalies);
 
     /// <summary>
     /// Internal DTO for a single anomaly in the LLM JSON response.
     /// </summary>
-    private sealed class AnomalyItemJson
-    {
-        public string? Description { get; set; }
-        public string? Severity { get; set; }
-    }
+    private sealed record AnomalyItemJson(string? Description, string? Severity);
 }

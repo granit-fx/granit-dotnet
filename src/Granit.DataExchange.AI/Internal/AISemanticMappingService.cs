@@ -111,22 +111,7 @@ internal sealed partial class AISemanticMappingService(
         // Include preview rows when provided (opt-in, caller is responsible for GDPR compliance)
         if (previewRows is { Count: > 0 })
         {
-            sb.AppendLine();
-            sb.AppendLine("Sample data (first rows):");
-            sb.AppendLine("| " + string.Join(" | ", headers) + " |");
-            sb.AppendLine("| " + string.Join(" | ", headers.Select(_ => "---")) + " |");
-
-            foreach (string[] row in previewRows)
-            {
-                sb.Append("| ");
-                for (int i = 0; i < headers.Count; i++)
-                {
-                    sb.Append(i < row.Length ? row[i] : "-");
-                    sb.Append(i < headers.Count - 1 ? " | " : " |");
-                }
-
-                sb.AppendLine();
-            }
+            AppendPreviewTable(sb, headers, previewRows);
         }
 
         sb.AppendLine();
@@ -160,6 +145,26 @@ internal sealed partial class AISemanticMappingService(
         sb.AppendLine("Return ONLY the JSON array, no markdown fences or extra text.");
 
         return sb.ToString();
+    }
+
+    private static void AppendPreviewTable(StringBuilder sb, IReadOnlyList<string> headers, IReadOnlyList<string[]> previewRows)
+    {
+        sb.AppendLine();
+        sb.AppendLine("Sample data (first rows):");
+        sb.AppendLine("| " + string.Join(" | ", headers) + " |");
+        sb.AppendLine("| " + string.Join(" | ", headers.Select(_ => "---")) + " |");
+
+        foreach (string[] row in previewRows)
+        {
+            sb.Append("| ");
+            for (int i = 0; i < headers.Count; i++)
+            {
+                sb.Append(i < row.Length ? row[i] : "-");
+                sb.Append(i < headers.Count - 1 ? " | " : " |");
+            }
+
+            sb.AppendLine();
+        }
     }
 
     internal static IReadOnlyList<SemanticMappingSuggestion> ParseSuggestions(string responseText)

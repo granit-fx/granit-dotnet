@@ -165,11 +165,9 @@ internal sealed partial class AIBlobClassifierService(
     /// <summary>
     /// Internal DTO for deserializing the LLM JSON response.
     /// </summary>
-    private sealed class ClassificationJson
-    {
-        public string? Category { get; set; }
-        public double Confidence { get; set; }
-        public List<string>? Tags { get; set; }
-        public bool ContainsPiiInFileName { get; set; }
-    }
+    private sealed record ClassificationJson(
+        string? Category,
+        double Confidence,
+        List<string>? Tags,
+        bool ContainsPiiInFileName);
 }

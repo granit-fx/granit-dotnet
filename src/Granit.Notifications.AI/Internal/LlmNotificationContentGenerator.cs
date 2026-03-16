@@ -121,9 +121,5 @@ internal sealed partial class LlmNotificationContentGenerator(
     /// <summary>
     /// Internal DTO for deserializing the LLM JSON response.
     /// </summary>
-    private sealed class ContentJson
-    {
-        public string? Subject { get; set; }
-        public string? Body { get; set; }
-    }
+    private sealed record ContentJson(string? Subject, string? Body);
 }

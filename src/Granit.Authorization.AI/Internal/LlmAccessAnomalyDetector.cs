@@ -131,10 +131,5 @@ internal sealed partial class LlmAccessAnomalyDetector(
         Message = "AI access anomaly evaluation failed — access allowed (fail-open), flagged for manual review")]
     private partial void LogEvaluationFailed(Exception exception);
 
-    private sealed record LlmRiskResponse
-    {
-        public double Score { get; init; }
-        public string? Reasoning { get; init; }
-        public List<string>? RiskFactors { get; init; }
-    }
+    private sealed record LlmRiskResponse(double Score, string? Reasoning, List<string>? RiskFactors);
 }

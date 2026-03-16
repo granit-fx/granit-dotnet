@@ -179,9 +179,6 @@ public sealed class DefaultDocumentExtractorTests
     }
 
     [Fact]
-    public async Task ExtractAsync_NullContent_ThrowsArgumentNullException()
-    {
-        // Act & Assert
+    public async Task ExtractAsync_NullContent_ThrowsArgumentNullException() =>
         await Should.ThrowAsync<ArgumentNullException>(() => _sut.ExtractAsync(null!, TestContext.Current.CancellationToken));
-    }
 }

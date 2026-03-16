@@ -163,18 +163,10 @@ internal sealed partial class LlmPiiDetector(
     /// <summary>
     /// Internal DTO for deserializing LLM JSON response.
     /// </summary>
-    private sealed record LlmPiiResponse
-    {
-        public bool ContainsPii { get; init; }
-        public List<LlmPiiItem>? Items { get; init; }
-    }
+    private sealed record LlmPiiResponse(bool ContainsPii, List<LlmPiiItem>? Items);
 
     /// <summary>
     /// Internal DTO for a single PII item from the LLM response.
     /// </summary>
-    private sealed record LlmPiiItem
-    {
-        public string? Type { get; init; }
-        public string? Description { get; init; }
-    }
+    private sealed record LlmPiiItem(string? Type, string? Description);
 }
