@@ -1,10 +1,13 @@
 using Granit.Core.Modularity;
+using Granit.HttpResilience;
 using Granit.Notifications.Email.SendGrid.Extensions;
 
 namespace Granit.Notifications.Email.SendGrid;
 
 /// <summary>Module for SendGrid email provider.</summary>
-[DependsOn(typeof(GranitNotificationsEmailModule))]
+[DependsOn(
+    typeof(GranitHttpResilienceModule),
+    typeof(GranitNotificationsEmailModule))]
 public sealed class GranitNotificationsEmailSendGridModule : GranitModule
 {
     /// <inheritdoc />

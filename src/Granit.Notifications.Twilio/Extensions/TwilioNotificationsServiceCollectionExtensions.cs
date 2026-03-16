@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using System.Text;
+using Granit.HttpResilience.Extensions;
 using Granit.Notifications.Sms;
 using Granit.Notifications.Twilio.HealthChecks;
 using Granit.Notifications.Twilio.Internal;
@@ -7,7 +8,6 @@ using Granit.Notifications.Twilio.Options;
 using Granit.Notifications.WhatsApp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Http.Resilience;
 
 namespace Granit.Notifications.Twilio.Extensions;
 
@@ -33,16 +33,15 @@ public static class TwilioNotificationsServiceCollectionExtensions
             services.Configure(configure);
         }
 
-        services.AddHttpClient(ProviderKey, (sp, client) =>
-            {
-                TwilioOptions opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<TwilioOptions>>().Value;
-                client.BaseAddress = new Uri(string.Concat(opts.BaseUrl.TrimEnd('/'), "/"));
-                string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{opts.AccountSid}:{opts.AuthToken}"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
-                client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
-            })
-            .AddStandardResilienceHandler();
+        services.AddGranitHttpClient(ProviderKey, (sp, client) =>
+        {
+            TwilioOptions opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<TwilioOptions>>().Value;
+            client.BaseAddress = new Uri(string.Concat(opts.BaseUrl.TrimEnd('/'), "/"));
+            string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{opts.AccountSid}:{opts.AuthToken}"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
+        });
 
         services.AddSingleton<TwilioNotificationProvider>();
         services.AddKeyedSingleton<ISmsSender>(

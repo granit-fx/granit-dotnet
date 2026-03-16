@@ -1,4 +1,5 @@
 using Granit.Core.Modularity;
+using Granit.HttpResilience;
 
 namespace Granit.Notifications.Zulip;
 
@@ -9,5 +10,7 @@ namespace Granit.Notifications.Zulip;
 /// Registration is done via <c>AddGranitNotificationsZulip()</c>.
 /// Includes its own <c>ZulipBotSender</c> implementation.
 /// </remarks>
-[DependsOn(typeof(GranitNotificationsModule))]
+[DependsOn(
+    typeof(GranitHttpResilienceModule),
+    typeof(GranitNotificationsModule))]
 public sealed class GranitNotificationsZulipModule : GranitModule;

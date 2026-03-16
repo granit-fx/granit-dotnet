@@ -1,4 +1,5 @@
 using Granit.Core.Diagnostics;
+using Granit.HttpResilience.Extensions;
 using Granit.Identity.EntraId.HealthChecks;
 using Granit.Identity.EntraId.Internal;
 using Granit.Identity.EntraId.Options;
@@ -6,7 +7,6 @@ using Granit.Identity.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Identity.EntraId.Extensions;
@@ -47,13 +47,12 @@ public static class IdentityEntraIdServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        services.AddHttpClient("MicrosoftGraph", (sp, client) =>
-            {
-                EntraIdAdminOptions opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<EntraIdAdminOptions>>().Value;
-                client.BaseAddress = new Uri(opts.GraphBaseUrl);
-                client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
-            })
-            .AddStandardResilienceHandler();
+        services.AddGranitHttpClient("MicrosoftGraph", (sp, client) =>
+        {
+            EntraIdAdminOptions opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<EntraIdAdminOptions>>().Value;
+            client.BaseAddress = new Uri(opts.GraphBaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
+        });
 
         services.TryAddSingleton<EntraIdAdminTokenService>();
         services.TryAddScoped<IPasswordResetNotifier, NullPasswordResetNotifier>();
