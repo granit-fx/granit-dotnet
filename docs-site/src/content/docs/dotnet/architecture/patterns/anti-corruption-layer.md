@@ -159,4 +159,4 @@ private static async Task<Results<Ok<IdentityUser>, NotFound>> GetUserAsync(
 
 ## Further reading
 
-- [Anti-Corruption Layer -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/anti-corruption-layer)
+- [Anti-Corruption Layer -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/dotnet/architecture/patterns/anti-corruption-layer)

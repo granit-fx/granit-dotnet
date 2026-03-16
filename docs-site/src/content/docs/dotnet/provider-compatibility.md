@@ -214,7 +214,7 @@ Azure Communication Services provides email and SMS through two dedicated packag
 Azure Notification Hubs provides multi-platform mobile push.
 Amazon SNS provides SMS and mobile push through two dedicated packages.
 
-See also: [Cloud Providers](/reference/cloud-providers/) for all packages organized
+See also: [Cloud Providers](/dotnet/cloud-providers/) for all packages organized
 by cloud provider.
 
 ## Observability backends

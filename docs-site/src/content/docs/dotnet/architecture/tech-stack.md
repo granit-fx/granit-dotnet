@@ -9,7 +9,7 @@ Granit builds on battle-tested open-source libraries. This page lists every dire
 production dependency, organized by functional domain. Each library was selected
 through an Architecture Decision Record (ADR) when multiple alternatives existed.
 
-For test-only dependencies, see [Testing stack (ADR-003)](/architecture/adr/003-testing-stack/).
+For test-only dependencies, see [Testing stack (ADR-003)](/dotnet/architecture/adr/003-testing-stack/).
 
 ## Runtime and language
 
@@ -25,15 +25,15 @@ For test-only dependencies, see [Testing stack (ADR-003)](/architecture/adr/003-
 |---------|---------|------|-----|
 | [Entity Framework Core](https://learn.microsoft.com/en-us/ef/core/) | MIT | ORM, migrations, interceptors (audit, soft delete) | — |
 | [Npgsql.EntityFrameworkCore.PostgreSQL](https://www.npgsql.org/) | PostgreSQL | PostgreSQL provider for EF Core | — |
-| [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) | MIT | Redis client for distributed caching | [ADR-002](/architecture/adr/002-redis/) |
-| [Microsoft.Extensions.Caching.Hybrid](https://learn.microsoft.com/en-us/aspnet/core/performance/caching/hybrid) | MIT | L1/L2 HybridCache (.NET 9+) | [ADR-002](/architecture/adr/002-redis/) |
+| [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) | MIT | Redis client for distributed caching | [ADR-002](/dotnet/architecture/adr/002-redis/) |
+| [Microsoft.Extensions.Caching.Hybrid](https://learn.microsoft.com/en-us/aspnet/core/performance/caching/hybrid) | MIT | L1/L2 HybridCache (.NET 9+) | [ADR-002](/dotnet/architecture/adr/002-redis/) |
 
 ## Messaging and scheduling
 
 | Library | License | Role | ADR |
 |---------|---------|------|-----|
-| [Wolverine](https://wolverinefx.net/) | MIT | Message bus, transactional outbox, handler pipeline | [ADR-005](/architecture/adr/005-wolverine-cronos/) |
-| [Cronos](https://github.com/HangfireIO/Cronos) | MIT | CRON expression parsing for recurring jobs | [ADR-005](/architecture/adr/005-wolverine-cronos/) |
+| [Wolverine](https://wolverinefx.net/) | MIT | Message bus, transactional outbox, handler pipeline | [ADR-005](/dotnet/architecture/adr/005-wolverine-cronos/) |
+| [Cronos](https://github.com/HangfireIO/Cronos) | MIT | CRON expression parsing for recurring jobs | [ADR-005](/dotnet/architecture/adr/005-wolverine-cronos/) |
 
 ## Security and identity
 
@@ -49,44 +49,44 @@ For test-only dependencies, see [Testing stack (ADR-003)](/architecture/adr/003-
 
 | Library | License | Role | ADR |
 |---------|---------|------|-----|
-| [FluentValidation](https://docs.fluentvalidation.net/) | Apache-2.0 | Declarative validation rules | [ADR-006](/architecture/adr/006-fluentvalidation/) |
-| [SmartFormat](https://github.com/axuno/SmartFormat) | MIT | Pluralization in validation messages | [ADR-008](/architecture/adr/008-smartformat-pluralization/) |
+| [FluentValidation](https://docs.fluentvalidation.net/) | Apache-2.0 | Declarative validation rules | [ADR-006](/dotnet/architecture/adr/006-fluentvalidation/) |
+| [SmartFormat](https://github.com/axuno/SmartFormat) | MIT | Pluralization in validation messages | [ADR-008](/dotnet/architecture/adr/008-smartformat-pluralization/) |
 
 ## API and web
 
 | Library | License | Role | ADR |
 |---------|---------|------|-----|
-| [Asp.Versioning](https://github.com/dotnet/aspnet-api-versioning) | MIT | API versioning (URL segment, header, query) | [ADR-004](/architecture/adr/004-asp-versioning/) |
-| [Scalar](https://github.com/scalar/scalar) | MIT | Interactive OpenAPI documentation UI | [ADR-009](/architecture/adr/009-scalar-api-documentation/) |
+| [Asp.Versioning](https://github.com/dotnet/aspnet-api-versioning) | MIT | API versioning (URL segment, header, query) | [ADR-004](/dotnet/architecture/adr/004-asp-versioning/) |
+| [Scalar](https://github.com/scalar/scalar) | MIT | Interactive OpenAPI documentation UI | [ADR-009](/dotnet/architecture/adr/009-scalar-api-documentation/) |
 
 ## Observability
 
 | Library | License | Role | ADR |
 |---------|---------|------|-----|
-| [Serilog](https://serilog.net/) | Apache-2.0 | Structured logging (OTLP sink) | [ADR-001](/architecture/adr/001-observability/) |
-| [OpenTelemetry .NET](https://opentelemetry.io/) | Apache-2.0 | Distributed tracing, metrics (OTLP export) | [ADR-001](/architecture/adr/001-observability/) |
+| [Serilog](https://serilog.net/) | Apache-2.0 | Structured logging (OTLP sink) | [ADR-001](/dotnet/architecture/adr/001-observability/) |
+| [OpenTelemetry .NET](https://opentelemetry.io/) | Apache-2.0 | Distributed tracing, metrics (OTLP export) | [ADR-001](/dotnet/architecture/adr/001-observability/) |
 
 ## Templating and document generation
 
 | Library | License | Role | ADR |
 |---------|---------|------|-----|
-| [Scriban](https://github.com/scriban/scriban) | BSD-2-Clause | Template engine (Liquid-compatible, sandboxed) | [ADR-010](/architecture/adr/010-scriban-template-engine/) |
-| [PuppeteerSharp](https://www.puppeteersharp.com/) | MIT | HTML-to-PDF rendering via headless Chromium | [ADR-012](/architecture/adr/012-puppeteersharp-pdf-rendering/) |
-| [ClosedXML](https://github.com/ClosedXML/ClosedXML) | MIT | Excel (.xlsx) generation | [ADR-011](/architecture/adr/011-closedxml-excel-generation/) |
+| [Scriban](https://github.com/scriban/scriban) | BSD-2-Clause | Template engine (Liquid-compatible, sandboxed) | [ADR-010](/dotnet/architecture/adr/010-scriban-template-engine/) |
+| [PuppeteerSharp](https://www.puppeteersharp.com/) | MIT | HTML-to-PDF rendering via headless Chromium | [ADR-012](/dotnet/architecture/adr/012-puppeteersharp-pdf-rendering/) |
+| [ClosedXML](https://github.com/ClosedXML/ClosedXML) | MIT | Excel (.xlsx) generation | [ADR-011](/dotnet/architecture/adr/011-closedxml-excel-generation/) |
 
 ## Data exchange (import/export)
 
 | Library | License | Role | ADR |
 |---------|---------|------|-----|
-| [Sep](https://github.com/nietras/Sep) | MIT | High-performance CSV parsing | [ADR-015](/architecture/adr/015-sep-csv-parsing/) |
-| [Sylvan.Data.Excel](https://github.com/MarkPflworkaround/Sylvan) | MIT | Excel (.xlsx/.xls) parsing | [ADR-016](/architecture/adr/016-sylvan-data-excel-parsing/) |
+| [Sep](https://github.com/nietras/Sep) | MIT | High-performance CSV parsing | [ADR-015](/dotnet/architecture/adr/015-sep-csv-parsing/) |
+| [Sylvan.Data.Excel](https://github.com/MarkPflworkaround/Sylvan) | MIT | Excel (.xlsx/.xls) parsing | [ADR-016](/dotnet/architecture/adr/016-sylvan-data-excel-parsing/) |
 
 ## Storage and imaging
 
 | Library | License | Role | ADR |
 |---------|---------|------|-----|
 | [AWSSDK.S3](https://aws.amazon.com/sdk-for-net/) | Apache-2.0 | S3-compatible object storage (MinIO, Ceph, etc.) | — |
-| [Magick.NET](https://github.com/dlemstra/Magick.NET) | Apache-2.0 | Image processing (resize, WebP/AVIF, EXIF stripping) | [ADR-013](/architecture/adr/013-magicknet-image-processing/) |
+| [Magick.NET](https://github.com/dlemstra/Magick.NET) | Apache-2.0 | Image processing (resize, WebP/AVIF, EXIF stripping) | [ADR-013](/dotnet/architecture/adr/013-magicknet-image-processing/) |
 
 ## Notifications
 
@@ -111,11 +111,11 @@ These libraries are used exclusively in `*.Tests` projects and are not shipped i
 
 | Library | License | Role | ADR |
 |---------|---------|------|-----|
-| [xUnit v3](https://xunit.net/) | Apache-2.0 | Test framework | [ADR-003](/architecture/adr/003-testing-stack/) |
-| [Shouldly](https://docs.shouldly.org/) | BSD-3-Clause | Assertion library | [ADR-003](/architecture/adr/003-testing-stack/), [ADR-014](/architecture/adr/014-migration-shouldly/) |
-| [NSubstitute](https://nsubstitute.github.io/) | BSD-3-Clause | Mocking framework | [ADR-003](/architecture/adr/003-testing-stack/) |
-| [Bogus](https://github.com/bchavez/Bogus) | MIT | Test data generation | [ADR-003](/architecture/adr/003-testing-stack/) |
-| [Testcontainers](https://dotnet.testcontainers.org/) | MIT | Docker-based integration tests | [ADR-007](/architecture/adr/007-testcontainers/) |
+| [xUnit v3](https://xunit.net/) | Apache-2.0 | Test framework | [ADR-003](/dotnet/architecture/adr/003-testing-stack/) |
+| [Shouldly](https://docs.shouldly.org/) | BSD-3-Clause | Assertion library | [ADR-003](/dotnet/architecture/adr/003-testing-stack/), [ADR-014](/dotnet/architecture/adr/014-migration-shouldly/) |
+| [NSubstitute](https://nsubstitute.github.io/) | BSD-3-Clause | Mocking framework | [ADR-003](/dotnet/architecture/adr/003-testing-stack/) |
+| [Bogus](https://github.com/bchavez/Bogus) | MIT | Test data generation | [ADR-003](/dotnet/architecture/adr/003-testing-stack/) |
+| [Testcontainers](https://dotnet.testcontainers.org/) | MIT | Docker-based integration tests | [ADR-007](/dotnet/architecture/adr/007-testcontainers/) |
 
 ## License summary
 

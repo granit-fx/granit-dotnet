@@ -217,7 +217,7 @@ builder.AddGranitAIEntityFrameworkCore(options =>
 
 :::caution
 Never store API keys in `appsettings.json` for production. Inject credentials from
-[Granit.Vault](/reference/modules/vault-encryption/) with dynamic rotation.
+[Granit.Vault](/dotnet/security/vault-encryption/) with dynamic rotation.
 :::
 
 ## Workspace architecture
@@ -359,10 +359,10 @@ architecture diagrams, risks analysis, and GDPR considerations:
 
 | Module | What it does | Dedicated page |
 |--------|-------------|----------------|
-| **DataExchange.AI** | AI column mapping for CSV/Excel import — handles cryptic columns like `Nom_Clt_V2_Final` | [AI: Import Mapping](/ai/import-mapping/) |
-| **AI.Extraction** | Extract typed C# objects from documents (invoice PDF → `InvoiceData` record) | [AI: Document Extraction](/ai/document-extraction/) |
-| **Querying.AI** | Natural language → structured filters ("unpaid invoices from last week") | [AI: Natural Language Query](/ai/natural-language-query/) |
-| **AI.VectorData** | Semantic search / RAG — find documents by meaning, build knowledge bases | [AI: Semantic Search & RAG](/ai/semantic-search/) |
+| **DataExchange.AI** | AI column mapping for CSV/Excel import — handles cryptic columns like `Nom_Clt_V2_Final` | [AI: Import Mapping](/dotnet/ai/import-mapping/) |
+| **AI.Extraction** | Extract typed C# objects from documents (invoice PDF → `InvoiceData` record) | [AI: Document Extraction](/dotnet/ai/document-extraction/) |
+| **Querying.AI** | Natural language → structured filters ("unpaid invoices from last week") | [AI: Natural Language Query](/dotnet/ai/natural-language-query/) |
+| **AI.VectorData** | Semantic search / RAG — find documents by meaning, build knowledge bases | [AI: Semantic Search & RAG](/dotnet/ai/semantic-search/) |
 
 ### Soft dependency pattern
 
@@ -487,9 +487,9 @@ Key indexes:
 
 ## See also
 
-- [Data Exchange](/reference/modules/data-exchange/) — import/export module where AI mapping plugs in
-- [Querying](/reference/modules/utilities/) — query engine where NLQ translates natural language
-- [Persistence](/reference/modules/persistence/) — isolated DbContext pattern, `ApplyGranitConventions`
-- [Vault & Encryption](/reference/modules/vault-encryption/) — secure API key storage with rotation
-- [Observability](/reference/modules/observability/) — OpenTelemetry integration for AI call tracing
-- [Multi-tenancy](/reference/modules/multi-tenancy/) — tenant-scoped workspace isolation
+- [Data Exchange](/dotnet/business/data-exchange/) — import/export module where AI mapping plugs in
+- [Querying](/dotnet/core/utilities/) — query engine where NLQ translates natural language
+- [Persistence](/dotnet/data/persistence/) — isolated DbContext pattern, `ApplyGranitConventions`
+- [Vault & Encryption](/dotnet/security/vault-encryption/) — secure API key storage with rotation
+- [Observability](/dotnet/observability/observability-otlp/) — OpenTelemetry integration for AI call tracing
+- [Multi-tenancy](/dotnet/infrastructure/multi-tenancy/) — tenant-scoped workspace isolation

@@ -23,5 +23,5 @@ patterns to avoid, and answers to frequently asked questions.
 If your issue is not covered here:
 
 1. Search existing [GitHub issues](https://github.com/granit-fx/granit-dotnet/issues)
-2. Check the [Reference documentation](/reference/) for the specific module
+2. Check the [Reference documentation](/dotnet/) for the specific module
 3. Open a new issue using the **Bug** template with reproduction steps

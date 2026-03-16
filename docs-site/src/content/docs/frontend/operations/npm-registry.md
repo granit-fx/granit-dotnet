@@ -192,5 +192,5 @@ Or check in GitHub: **granit-fx/granit-front > Packages**.
 
 ## See also
 
-- [Frontend CI/CD](/operations/frontend-ci-cd/) — pipeline and release workflow
-- [Frontend Quick Start](/guides/frontend-quick-start/) — local setup
+- [Frontend CI/CD](/frontend/operations/ci-cd/) — pipeline and release workflow
+- [Frontend Quick Start](/frontend/getting-started/quick-start/) — local setup

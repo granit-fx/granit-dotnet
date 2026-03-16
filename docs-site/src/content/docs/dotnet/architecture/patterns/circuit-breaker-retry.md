@@ -166,5 +166,5 @@ public sealed class GeoService(HttpClient httpClient)
 
 ## Further reading
 
-- [Circuit Breaker pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker)
-- [Retry pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry)
+- [Circuit Breaker pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/dotnet/architecture/patterns/circuit-breaker)
+- [Retry pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/dotnet/architecture/patterns/retry)

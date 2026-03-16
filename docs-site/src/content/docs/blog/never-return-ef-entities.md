@@ -123,5 +123,5 @@ Granit enforces strict naming rules for endpoint DTOs to prevent OpenAPI schema 
 
 ## Further reading
 
-- [CQRS pattern](/architecture/patterns/cqrs/) — why Granit separates Reader and Writer interfaces
-- [Layered architecture](/architecture/patterns/layered-architecture/) — where entities and response records live
+- [CQRS pattern](/dotnet/architecture/patterns/cqrs/) — why Granit separates Reader and Writer interfaces
+- [Layered architecture](/dotnet/architecture/patterns/layered-architecture/) — where entities and response records live

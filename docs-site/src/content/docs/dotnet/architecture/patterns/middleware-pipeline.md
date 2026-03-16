@@ -128,4 +128,4 @@ public static class SendInvoiceHandler
 
 ## Further reading
 
-- [Sidecar pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/sidecar)
+- [Sidecar pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/dotnet/architecture/patterns/sidecar)

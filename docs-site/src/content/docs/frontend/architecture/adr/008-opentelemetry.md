@@ -20,7 +20,7 @@ The platform requires distributed tracing to:
 - Feed an observability backend (Grafana Tempo)
 
 The .NET backend already uses OpenTelemetry (see
-[ADR-001](/architecture/adr/001-observability/)). The frontend tracing
+[ADR-001](/dotnet/architecture/adr/001-observability/)). The frontend tracing
 must use the same standard for seamless correlation.
 
 ## Decision
@@ -134,4 +134,4 @@ This decision should be re-evaluated if:
 
 - OpenTelemetry JS: <https://opentelemetry.io/docs/languages/js/>
 - OpenTelemetry Web SDK: <https://opentelemetry.io/docs/languages/js/getting-started/browser/>
-- ADR-001 (.NET Observability): [ADR-001](/architecture/adr/001-observability/)
+- ADR-001 (.NET Observability): [ADR-001](/dotnet/architecture/adr/001-observability/)

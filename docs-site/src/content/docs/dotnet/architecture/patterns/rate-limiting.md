@@ -182,5 +182,5 @@ app.MapPost("/api/v1/auth/login", LoginAsync)
 
 ## Further reading
 
-- [Rate Limiting pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/rate-limiting-pattern)
-- [Throttling pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/throttling)
+- [Rate Limiting pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/dotnet/architecture/patterns/rate-limiting-pattern)
+- [Throttling pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/dotnet/architecture/patterns/throttling)

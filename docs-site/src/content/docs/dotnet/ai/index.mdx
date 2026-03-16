@@ -16,11 +16,11 @@ provide smart implementations that activate via DI composition.
 
 | Capability | Module | What it does |
 |------------|--------|-------------|
-| **Chat & generation** | [Granit.AI](/reference/modules/ai/) | Workspace-managed access to `IChatClient` (OpenAI, Azure, Claude, Ollama) |
-| **Import mapping** | [DataExchange.AI](/ai/import-mapping/) | Automatically map messy CSV/Excel columns to your entity properties |
-| **Document extraction** | [AI.Extraction](/ai/document-extraction/) | Turn a PDF invoice into a typed `InvoiceData` C# record |
-| **Natural language query** | [Querying.AI](/ai/natural-language-query/) | Users type "unpaid invoices from last week" → structured filters |
-| **Semantic search** | [AI.VectorData](/ai/semantic-search/) | Find documents by meaning, build RAG knowledge bases |
+| **Chat & generation** | [Granit.AI](/dotnet/ai/module/) | Workspace-managed access to `IChatClient` (OpenAI, Azure, Claude, Ollama) |
+| **Import mapping** | [DataExchange.AI](/dotnet/ai/import-mapping/) | Automatically map messy CSV/Excel columns to your entity properties |
+| **Document extraction** | [AI.Extraction](/dotnet/ai/document-extraction/) | Turn a PDF invoice into a typed `InvoiceData` C# record |
+| **Natural language query** | [Querying.AI](/dotnet/ai/natural-language-query/) | Users type "unpaid invoices from last week" → structured filters |
+| **Semantic search** | [AI.VectorData](/dotnet/ai/semantic-search/) | Find documents by meaning, build RAG knowledge bases |
 
 ## Core design principles
 
@@ -111,10 +111,10 @@ public class MyService(IAIChatClientFactory chatFactory)
 
 ## Pages in this section
 
-- [Import Mapping](/ai/import-mapping/) — AI-powered column mapping for CSV/Excel imports
-- [Document Extraction](/ai/document-extraction/) — structured data extraction from PDFs
-- [Natural Language Query](/ai/natural-language-query/) — search with plain language
-- [Semantic Search & RAG](/ai/semantic-search/) — vector-based similarity search and knowledge bases
+- [Import Mapping](/dotnet/ai/import-mapping/) — AI-powered column mapping for CSV/Excel imports
+- [Document Extraction](/dotnet/ai/document-extraction/) — structured data extraction from PDFs
+- [Natural Language Query](/dotnet/ai/natural-language-query/) — search with plain language
+- [Semantic Search & RAG](/dotnet/ai/semantic-search/) — vector-based similarity search and knowledge bases
 
 For the core module reference (providers, workspaces, configuration), see
-[Granit.AI module reference](/reference/modules/ai/).
+[Granit.AI module reference](/dotnet/ai/module/).

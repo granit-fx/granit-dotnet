@@ -135,4 +135,4 @@ await blobStorage.DeleteAsync(
 
 ## Further reading
 
-- [Valet Key pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/valet-key)
+- [Valet Key pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/dotnet/architecture/patterns/valet-key)

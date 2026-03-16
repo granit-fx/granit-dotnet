@@ -417,8 +417,8 @@ Stop and count what Granit handled without a single line of infrastructure code 
 
 ## Further reading
 
-- [Getting started](/getting-started/) -- installation, prerequisites, first project setup.
-- [Persistence module reference](/reference/modules/persistence/) -- interceptors, migrations, query filters, data filtering.
-- [Core module reference](/reference/modules/core/) -- module system, entity hierarchy, IGuidGenerator, IClock.
-- [Isolated DbContext pattern](/architecture/patterns/layered-architecture/) -- why each module owns its context.
-- [FluentValidation (ADR-006)](/architecture/adr/006-fluentvalidation/) -- decision record for the validation stack.
+- [Getting started](/dotnet/getting-started/) -- installation, prerequisites, first project setup.
+- [Persistence module reference](/dotnet/data/persistence/) -- interceptors, migrations, query filters, data filtering.
+- [Core module reference](/dotnet/core/module-system/) -- module system, entity hierarchy, IGuidGenerator, IClock.
+- [Isolated DbContext pattern](/dotnet/architecture/patterns/layered-architecture/) -- why each module owns its context.
+- [FluentValidation (ADR-006)](/dotnet/architecture/adr/006-fluentvalidation/) -- decision record for the validation stack.

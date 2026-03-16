@@ -184,4 +184,4 @@ app.MapGet("/api/v1/patients", GetPatientsAsync)
 
 ## Further reading
 
-- [Bulkhead pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/bulkhead)
+- [Bulkhead pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/dotnet/architecture/patterns/bulkhead)

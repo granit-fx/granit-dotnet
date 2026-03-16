@@ -119,4 +119,4 @@ public static class DischargePatientHandler
 
 ## Further reading
 
-- [Federated Identity pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/federated-identity)
+- [Federated Identity pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/dotnet/architecture/patterns/federated-identity)

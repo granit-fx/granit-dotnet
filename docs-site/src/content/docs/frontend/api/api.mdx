@@ -133,7 +133,7 @@ the tenant getter. `@granit/idempotency` wires the key generator.
 ## Error classes
 
 All error classes are structured for programmatic handling. They pair with the
-[RFC 7807 Problem Details](/reference/modules/core/#exception-hierarchy) returned by
+[RFC 7807 Problem Details](/dotnet/core/module-system/#exception-hierarchy) returned by
 the Granit .NET backend.
 
 ### `HttpError`
@@ -250,7 +250,7 @@ vi.mocked(client.get).mockResolvedValue(axiosResponse({ items: [], total: 0 }));
 
 ## See also
 
-- [Granit.Core module](/reference/modules/core/) — .NET foundation (exception hierarchy, batch operations)
-- [Granit.Idempotency module](/reference/modules/api-web/) — .NET idempotency middleware
+- [Granit.Core module](/dotnet/core/module-system/) — .NET foundation (exception hierarchy, batch operations)
+- [Granit.Idempotency module](/dotnet/api/api/) — .NET idempotency middleware
 - [Authentication](./authentication/) — `setTokenGetter` is wired automatically by `@granit/react-authentication`
 - [Multi-tenancy](./multi-tenancy/) — `setTenantGetter` is wired automatically by `@granit/react-multi-tenancy`

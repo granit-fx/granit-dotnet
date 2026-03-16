@@ -167,5 +167,5 @@ public static async Task Handle(
 
 ## Further reading
 
-- [CQRS pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/cqrs)
+- [CQRS pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/dotnet/architecture/patterns/cqrs)
 - [CQRS -- Martin Fowler](https://martinfowler.com/bliki/CQRS.html)

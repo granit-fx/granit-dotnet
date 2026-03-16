@@ -78,8 +78,8 @@ Data flows from types to API functions to hooks to providers:
 | [`@granit/react-authentication-api-keys`](./authentication/) | React hooks for API key CRUD |
 | [`@granit/authorization`](./authorization/) | Permission and role types |
 | [`@granit/react-authorization`](./authorization/) | Permission checking hooks |
-| [`@granit/identity`](./identity/) | Identity provider capabilities |
-| [`@granit/react-identity`](./identity/) | Identity provider and hooks |
+| [`@granit/identity`](../security/identity/) | Identity provider capabilities |
+| [`@granit/react-identity`](../security/identity/) | Identity provider and hooks |
 | [`@granit/multi-tenancy`](./multi-tenancy/) | Tenant resolver abstraction |
 | [`@granit/react-multi-tenancy`](./multi-tenancy/) | Tenant provider and hooks |
 
@@ -87,14 +87,14 @@ Data flows from types to API functions to hooks to providers:
 
 | Package | Role |
 |---------|------|
-| [`@granit/notifications`](./notifications/) | Transport-agnostic notification types and API |
-| [`@granit/react-notifications`](./notifications/) | Notification provider and hooks |
-| [`@granit/notifications-signalr`](./notifications/) | SignalR real-time transport |
-| [`@granit/notifications-sse`](./notifications/) | Server-Sent Events transport |
-| [`@granit/notifications-web-push`](./notifications/) | Web Push VAPID subscription API |
-| [`@granit/react-notifications-web-push`](./notifications/) | Web Push React hook |
-| [`@granit/notifications-mobile-push`](./notifications/) | Mobile push token registration API |
-| [`@granit/react-notifications-mobile-push`](./notifications/) | Mobile push React hook |
+| [`@granit/notifications`](../infrastructure/notifications/) | Transport-agnostic notification types and API |
+| [`@granit/react-notifications`](../infrastructure/notifications/) | Notification provider and hooks |
+| [`@granit/notifications-signalr`](../infrastructure/notifications/) | SignalR real-time transport |
+| [`@granit/notifications-sse`](../infrastructure/notifications/) | Server-Sent Events transport |
+| [`@granit/notifications-web-push`](../infrastructure/notifications/) | Web Push VAPID subscription API |
+| [`@granit/react-notifications-web-push`](../infrastructure/notifications/) | Web Push React hook |
+| [`@granit/notifications-mobile-push`](../infrastructure/notifications/) | Mobile push token registration API |
+| [`@granit/react-notifications-mobile-push`](../infrastructure/notifications/) | Mobile push React hook |
 | [`@granit/querying`](./querying/) | Headless data grid types, filter system, saved views |
 | [`@granit/react-querying`](./querying/) | Query provider, pagination, smart filter hooks |
 | [`@granit/data-exchange`](./data-exchange/) | Import/export pipeline types and API |
@@ -104,8 +104,8 @@ Data flows from types to API functions to hooks to providers:
 
 | Package | Role |
 |---------|------|
-| [`@granit/workflow`](./workflow/) | FSM lifecycle types and API |
-| [`@granit/react-workflow`](./workflow/) | Workflow provider, status and transition hooks |
+| [`@granit/workflow`](../business/workflow/) | FSM lifecycle types and API |
+| [`@granit/react-workflow`](../business/workflow/) | Workflow provider, status and transition hooks |
 | [`@granit/timeline`](./timeline/) | Activity stream types and API |
 | [`@granit/react-timeline`](./timeline/) | Timeline provider, stream and follower hooks |
 | [`@granit/templating`](./templating/) | Template editing, preview, lifecycle (unified package) |
@@ -120,8 +120,8 @@ Data flows from types to API functions to hooks to providers:
 | [`@granit/react-settings`](./settings/) | Settings provider and hooks |
 | [`@granit/reference-data`](./reference-data/) | i18n reference data types |
 | [`@granit/react-reference-data`](./reference-data/) | Reference data CRUD hooks |
-| [`@granit/localization`](./localization/) | i18next integration, locale resolution |
-| [`@granit/react-localization`](./localization/) | React localization bindings |
+| [`@granit/localization`](../infrastructure/localization/) | i18next integration, locale resolution |
+| [`@granit/react-localization`](../infrastructure/localization/) | React localization bindings |
 | [`@granit/cookies`](./cookies/) | Cookie consent abstraction |
 | [`@granit/react-cookies`](./cookies/) | Cookie consent provider and hook |
 | [`@granit/cookies-klaro`](./cookies/) | Klaro CMP adapter |

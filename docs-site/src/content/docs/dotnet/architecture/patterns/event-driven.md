@@ -140,4 +140,4 @@ public static class DischargePatientHandler
 ## Further reading
 
 - [Event-Driven Architecture Style -- Microsoft Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven)
-- [Publisher-Subscriber -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/publisher-subscriber)
+- [Publisher-Subscriber -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/dotnet/architecture/patterns/publisher-subscriber)

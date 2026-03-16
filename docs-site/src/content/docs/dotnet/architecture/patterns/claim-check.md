@@ -190,5 +190,5 @@ builder.Services.AddSingleton<IClaimCheckStore, S3ClaimCheckStore>();
 
 ## Further reading
 
-- [Claim-Check pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/claim-check)
+- [Claim-Check pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/dotnet/architecture/patterns/claim-check)
 - [Enterprise Integration Patterns -- Claim Check](https://www.enterpriseintegrationpatterns.com/patterns/messaging/StoreInLibrary.html)

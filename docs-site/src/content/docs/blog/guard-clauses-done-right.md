@@ -91,7 +91,7 @@ The compiler rewrites it at compile time to pass `"connection"` as the parameter
 | `ArgumentOutOfRangeException.ThrowIfNotEqual(value, other)` | `ArgumentOutOfRangeException` | Value does not equal expected |
 | `ObjectDisposedException.ThrowIf(condition, instance)` | `ObjectDisposedException` | Object already disposed |
 
-These cover the vast majority of parameter validation. For domain-specific preconditions (entity not found, invalid state transitions), Granit uses **semantic exceptions** like `NotFoundException` and `BusinessException` instead — see the [Guard Clause pattern page](/architecture/patterns/guard-clause/).
+These cover the vast majority of parameter validation. For domain-specific preconditions (entity not found, invalid state transitions), Granit uses **semantic exceptions** like `NotFoundException` and `BusinessException` instead — see the [Guard Clause pattern page](/dotnet/architecture/patterns/guard-clause/).
 
 ## A real-world example from Granit
 
@@ -130,5 +130,5 @@ This is not just about saving keystrokes. The consistency has real benefits:
 
 ## Further reading
 
-- [Core & Utilities reference](/reference/modules/core/) — Module system, shared domain types, guard patterns
-- [Guard Clause pattern](/architecture/patterns/guard-clause/) — Semantic exceptions and RFC 7807 ProblemDetails
+- [Core & Utilities reference](/dotnet/core/module-system/) — Module system, shared domain types, guard patterns
+- [Guard Clause pattern](/dotnet/architecture/patterns/guard-clause/) — Semantic exceptions and RFC 7807 ProblemDetails

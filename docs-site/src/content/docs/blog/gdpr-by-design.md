@@ -249,7 +249,7 @@ GDPR compliance is not achieved by training developers to remember the rules. It
 
 ## Further reading
 
-- [Granit.Privacy module reference](/reference/modules/privacy/) -- data export saga, deletion orchestration, legal agreements
-- [Granit.Vault & Encryption reference](/reference/modules/vault-encryption/) -- Transit encryption, dynamic credentials, provider switching
-- [Granit.Persistence reference](/reference/modules/persistence/) -- interceptors, soft delete, query filters, audit trail
-- [Security model](/concepts/security-model/) -- authentication, authorization, and compliance architecture
+- [Granit.Privacy module reference](/dotnet/security/privacy/) -- data export saga, deletion orchestration, legal agreements
+- [Granit.Vault & Encryption reference](/dotnet/security/vault-encryption/) -- Transit encryption, dynamic credentials, provider switching
+- [Granit.Persistence reference](/dotnet/data/persistence/) -- interceptors, soft delete, query filters, audit trail
+- [Security model](/dotnet/concepts/security-model/) -- authentication, authorization, and compliance architecture

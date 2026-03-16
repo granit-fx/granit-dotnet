@@ -98,5 +98,5 @@ Granit enforces a **100ms timeout on every regex that processes user input**. Th
 
 ## Further reading
 
-- [Core & Utilities reference](/reference/modules/core/) — validation extensions, regex conventions
-- [FluentValidation (ADR-006)](/architecture/adr/006-fluentvalidation/) — how Granit integrates FluentValidation with generated regex
+- [Core & Utilities reference](/dotnet/core/module-system/) — validation extensions, regex conventions
+- [FluentValidation (ADR-006)](/dotnet/architecture/adr/006-fluentvalidation/) — how Granit integrates FluentValidation with generated regex

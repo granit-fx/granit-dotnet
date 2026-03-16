@@ -152,6 +152,6 @@ Releases follow semantic versioning (`vMAJOR.MINOR.PATCH`):
 
 ## See also
 
-- [Frontend npm Registry](/operations/frontend-npm-registry/) — package publication
-- [Frontend Testing](/guides/frontend-testing/) — test conventions
-- [Backend CI/CD](/operations/ci-cd/) — .NET pipeline
+- [Frontend npm Registry](/frontend/operations/npm-registry/) — package publication
+- [Frontend Testing](/frontend/guides/testing/) — test conventions
+- [Backend CI/CD](/dotnet/operations/ci-cd/) — .NET pipeline

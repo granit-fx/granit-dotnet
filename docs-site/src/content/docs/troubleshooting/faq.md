@@ -15,7 +15,7 @@ that would otherwise use messaging (e.g., notifications, background jobs). You
 lose transactional outbox and durable message handling, but the core
 functionality remains available.
 
-See [Wolverine Optionality](/concepts/wolverine-optionality/) for the full
+See [Wolverine Optionality](/dotnet/concepts/wolverine-optionality/) for the full
 details on what changes with and without Wolverine.
 
 ## Which database is supported?
@@ -45,7 +45,7 @@ To extract a module into a standalone service:
 3. Configure the module's `DbContext` to point at a separate database
 4. Use Wolverine messaging (or HTTP) for inter-service communication
 
-See [Modular Monolith vs Microservices](/concepts/modular-monolith-vs-microservices/)
+See [Modular Monolith vs Microservices](/dotnet/concepts/modular-monolith-vs-microservices/)
 for architecture guidance.
 
 ## What is the minimum .NET version?
@@ -135,5 +135,5 @@ built into its architecture:
 - **ISO 27001**: Audit trails (`AuditedEntityInterceptor`, `Granit.Timeline`),
   encryption in transit and at rest, secret management via HashiCorp Vault
 
-See [Compliance](/concepts/compliance/) for detailed mapping of Granit features
+See [Compliance](/dotnet/concepts/compliance/) for detailed mapping of Granit features
 to compliance requirements.

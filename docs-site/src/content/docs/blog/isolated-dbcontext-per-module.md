@@ -187,5 +187,5 @@ Skip any of these and you will get silent filter bugs, missing audit trails, or 
 
 ## Further reading
 
-- [Persistence module reference](/reference/modules/persistence/) — full API documentation for `AddGranitDbContext`, `UseGranitInterceptors`, and `ApplyGranitConventions`
-- [Layered architecture pattern](/architecture/patterns/layered-architecture/) — how modules are structured and why the EF Core layer is always an internal implementation detail
+- [Persistence module reference](/dotnet/data/persistence/) — full API documentation for `AddGranitDbContext`, `UseGranitInterceptors`, and `ApplyGranitConventions`
+- [Layered architecture pattern](/dotnet/architecture/patterns/layered-architecture/) — how modules are structured and why the EF Core layer is always an internal implementation detail
