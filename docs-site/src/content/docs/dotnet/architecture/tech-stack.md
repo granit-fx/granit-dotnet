@@ -52,12 +52,24 @@ For test-only dependencies, see [Testing stack (ADR-003)](/dotnet/architecture/a
 | [FluentValidation](https://docs.fluentvalidation.net/) | Apache-2.0 | Declarative validation rules | [ADR-006](/dotnet/architecture/adr/006-fluentvalidation/) |
 | [SmartFormat](https://github.com/axuno/SmartFormat) | MIT | Pluralization in validation messages | [ADR-008](/dotnet/architecture/adr/008-smartformat-pluralization/) |
 
+## AI
+
+| Library | License | Role | ADR |
+|---------|---------|------|-----|
+| [Microsoft.Extensions.AI](https://learn.microsoft.com/en-us/dotnet/ai/ai-extensions) | MIT | Provider-agnostic `IChatClient` / `IEmbeddingGenerator` abstractions — used by `Granit.AI` | — |
+| [Microsoft.Extensions.AI.OpenAI](https://www.nuget.org/packages/Microsoft.Extensions.AI.OpenAI) | MIT | OpenAI integration (GPT-4o, o3/o4-mini, embeddings) for `Granit.AI.OpenAI` and `Granit.AI.AzureOpenAI` | — |
+| [Azure.AI.OpenAI](https://learn.microsoft.com/en-us/dotnet/api/overview/azure/ai.openai-readme) | MIT | Azure OpenAI Service client with `DefaultAzureCredential` support — used by `Granit.AI.AzureOpenAI` | — |
+| [Anthropic](https://www.nuget.org/packages/Anthropic) | MIT | Anthropic SDK for Claude models (Opus, Sonnet, Haiku) — used by `Granit.AI.Anthropic` | — |
+| [OllamaSharp](https://github.com/awaescher/OllamaSharp) | MIT | Ollama client for local model execution — used by `Granit.AI.Ollama` | — |
+| [Microsoft.Extensions.VectorData.Abstractions](https://www.nuget.org/packages/Microsoft.Extensions.VectorData.Abstractions) | MIT | Provider-agnostic vector store interface — used by `Granit.AI.VectorData` | — |
+
 ## API and web
 
 | Library | License | Role | ADR |
 |---------|---------|------|-----|
 | [Asp.Versioning](https://github.com/dotnet/aspnet-api-versioning) | MIT | API versioning (URL segment, header, query) | [ADR-004](/dotnet/architecture/adr/004-asp-versioning/) |
 | [Scalar](https://github.com/scalar/scalar) | MIT | Interactive OpenAPI documentation UI | [ADR-009](/dotnet/architecture/adr/009-scalar-api-documentation/) |
+| [Microsoft.Extensions.Http.Resilience](https://learn.microsoft.com/en-us/dotnet/core/resilience/) | MIT | Polly v8 resilience pipeline for outbound HTTP (retry, circuit breaker, timeout) — used by HTTP-based notification providers | — |
 
 ## Observability
 
@@ -86,6 +98,8 @@ For test-only dependencies, see [Testing stack (ADR-003)](/dotnet/architecture/a
 | Library | License | Role | ADR |
 |---------|---------|------|-----|
 | [AWSSDK.S3](https://aws.amazon.com/sdk-for-net/) | Apache-2.0 | S3-compatible object storage (MinIO, Ceph, etc.) | — |
+| [Azure.Storage.Blobs](https://learn.microsoft.com/en-us/dotnet/api/overview/azure/storage.blobs-readme) | MIT | Azure Blob Storage client — used by `Granit.BlobStorage.AzureBlob` | — |
+| [Google.Cloud.Storage.V1](https://cloud.google.com/dotnet/docs/reference/Google.Cloud.Storage.V1/latest) | Apache-2.0 | Google Cloud Storage client — used by `Granit.BlobStorage.GoogleCloud` | — |
 | [Magick.NET](https://github.com/dlemstra/Magick.NET) | Apache-2.0 | Image processing (resize, WebP/AVIF, EXIF stripping) | [ADR-013](/dotnet/architecture/adr/013-magicknet-image-processing/) |
 
 ## Notifications
@@ -95,9 +109,16 @@ For test-only dependencies, see [Testing stack (ADR-003)](/dotnet/architecture/a
 | [MailKit](https://github.com/jstedfast/MailKit) | MIT | SMTP email delivery | — |
 | [Azure.Communication.Email](https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/email/send-email) | MIT | Azure Communication Services email sending | — |
 | [Azure.Communication.Sms](https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/sms/send) | MIT | Azure Communication Services SMS sending | — |
+| [AWSSDK.SimpleEmailV2](https://aws.amazon.com/sdk-for-net/) | Apache-2.0 | Amazon SES v2 email delivery — used by `Granit.Notifications.Email.AwsSes` | — |
+| [AWSSDK.SimpleNotificationService](https://aws.amazon.com/sdk-for-net/) | Apache-2.0 | Amazon SNS SMS delivery — used by `Granit.Notifications.Sms.AwsSns` | — |
 | [Microsoft.Azure.NotificationHubs](https://learn.microsoft.com/en-us/azure/notification-hubs/) | MIT | Azure Notification Hubs push notifications | — |
 | [Microsoft.AspNetCore.SignalR](https://learn.microsoft.com/en-us/aspnet/core/signalr/) | MIT | Real-time WebSocket notifications | — |
 | [Lib.Net.Http.WebPush](https://github.com/nicoriff/Lib.Net.Http.WebPush) | MIT | Web Push notifications (VAPID) | — |
+
+Twilio, SendGrid, and Scaleway providers (`Granit.Notifications.Twilio`,
+`Granit.Notifications.Email.SendGrid`, `Granit.Notifications.Email.Scaleway`) use the
+vendors' REST APIs directly via `Microsoft.Extensions.Http.Resilience` — no vendor SDK
+is required.
 
 ## Miscellaneous
 
@@ -121,8 +142,8 @@ These libraries are used exclusively in `*.Tests` projects and are not shipped i
 
 | License | Count | Examples |
 |---------|-------|----------|
-| MIT | 49 | EF Core, Wolverine, ClosedXML, StackExchange.Redis |
-| Apache-2.0 | 15 | OpenTelemetry, Serilog, FluentValidation, Magick.NET |
+| MIT | 58 | EF Core, Wolverine, ClosedXML, StackExchange.Redis, Microsoft.Extensions.AI |
+| Apache-2.0 | 18 | OpenTelemetry, Serilog, FluentValidation, Magick.NET, Google.Cloud.Storage.V1, AWSSDK.* |
 | BSD-3-Clause | 2 | NSubstitute, Shouldly |
 | BSD-2-Clause | 1 | Scriban |
 | PostgreSQL | 1 | Npgsql |

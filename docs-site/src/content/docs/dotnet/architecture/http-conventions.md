@@ -31,23 +31,23 @@ like `POST /notifications/mark-read`.
 
 ### Client errors (4xx)
 
-| Code | Name | When to use |
-|------|------|-------------|
-| 400 | Bad Request | Syntactically invalid request (malformed JSON, wrong type) |
-| 401 | Unauthorized | Token absent or expired |
-| 403 | Forbidden | Authenticated but not authorized |
-| 404 | Not Found | Resource not found (routes with `{id}` parameter) |
-| 409 | Conflict | Concurrency conflict (stale version, duplicate) |
-| 422 | Unprocessable Entity | Business validation failed (FluentValidation rules) |
-| 429 | Too Many Requests | Rate limiting triggered |
+| Code | Name | When to use | Module |
+|------|------|-------------|--------|
+| 400 | Bad Request | Syntactically invalid request (malformed JSON, wrong type) | — |
+| 401 | Unauthorized | Token absent or expired | [Authentication](/dotnet/security/authentication/) |
+| 403 | Forbidden | Authenticated but not authorized | [Authorization](/dotnet/security/authorization/) |
+| 404 | Not Found | Resource not found (routes with `{id}` parameter) | — |
+| 409 | Conflict | Concurrency conflict (stale version, duplicate); also concurrent idempotent request | [Idempotency](/dotnet/api/idempotency/) |
+| 422 | Unprocessable Entity | Business validation failed (FluentValidation rules) | [ExceptionHandling](/dotnet/api/exception-handling/) |
+| 429 | Too Many Requests | Rate limiting triggered | [RateLimiting](/dotnet/api/rate-limiting/) |
 
 ### Server errors (5xx)
 
-| Code | Name | When to use |
-|------|------|-------------|
-| 500 | Internal Server Error | Unexpected server-side error |
-| 502 | Bad Gateway | Upstream service unavailable (Keycloak, Vault, S3) |
-| 503 | Service Unavailable | Application in maintenance or overloaded |
+| Code | Name | When to use | Module |
+|------|------|-------------|--------|
+| 500 | Internal Server Error | Unexpected server-side error | [ExceptionHandling](/dotnet/api/exception-handling/) |
+| 502 | Bad Gateway | Upstream service unavailable (Keycloak, Vault, S3) | — |
+| 503 | Service Unavailable | Bulkhead full — tenant has too many concurrent operations in flight | [Bulkhead](/dotnet/api/bulkhead/) |
 
 ## RFC 7807 Problem Details
 

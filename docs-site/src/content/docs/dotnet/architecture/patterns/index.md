@@ -1,10 +1,10 @@
 ---
 title: Pattern Library
-description: 51 design patterns and their implementation in Granit
+description: 55 design patterns and their implementation in Granit
 sidebar:
   order: 0
   badge:
-    text: "51"
+    text: "55"
     variant: note
 ---
 
@@ -107,6 +107,15 @@ and references to the actual source files where the pattern is applied.
 | ------- | ----------- |
 | [Claims-Based Identity](./claims-based-identity/) | JWT Keycloak + dynamic RBAC |
 | [Guard Clause](./guard-clause/) | Systematic fail-fast, semantic exceptions |
+
+## AI patterns
+
+| Pattern | Description |
+| ------- | ----------- |
+| [Retrieval-Augmented Generation](./rag/) | Vector retrieval + LLM grounding (`AI.VectorData`) |
+| [AI Workspace](./ai-workspace/) | Named, per-tenant provider configuration (`IAIChatClientFactory`) |
+| [Graceful AI Fallback](./ai-fallback/) | Timeout + deterministic baseline (`Querying.AI`, `DataExchange.AI`) |
+| [Structured Output](./structured-output/) | Type-safe LLM response via JSON schema (`CompleteAsync<T>`) |
 
 ## Granit-specific variants
 
