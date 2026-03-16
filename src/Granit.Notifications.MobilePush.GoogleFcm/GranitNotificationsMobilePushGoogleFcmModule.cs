@@ -1,4 +1,5 @@
 using Granit.Core.Modularity;
+using Granit.HttpResilience;
 using Granit.Notifications.MobilePush;
 
 namespace Granit.Notifications.MobilePush.GoogleFcm;
@@ -10,5 +11,7 @@ namespace Granit.Notifications.MobilePush.GoogleFcm;
 /// Registration is done via <c>AddGranitNotificationsMobilePushGoogleFcm()</c>.
 /// Registers <c>GoogleFcmMobilePushSender</c> as a keyed <c>IMobilePushSender</c> implementation.
 /// </remarks>
-[DependsOn(typeof(GranitNotificationsMobilePushModule))]
+[DependsOn(
+    typeof(GranitHttpResilienceModule),
+    typeof(GranitNotificationsMobilePushModule))]
 public sealed class GranitNotificationsMobilePushGoogleFcmModule : GranitModule;

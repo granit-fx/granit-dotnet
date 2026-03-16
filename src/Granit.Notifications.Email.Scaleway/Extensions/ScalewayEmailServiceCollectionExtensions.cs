@@ -1,10 +1,10 @@
+using Granit.HttpResilience.Extensions;
 using Granit.Notifications.Email.Scaleway.Diagnostics;
 using Granit.Notifications.Email.Scaleway.HealthChecks;
 using Granit.Notifications.Email.Scaleway.Internal;
 using Granit.Notifications.Email.Scaleway.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Http.Resilience;
 
 namespace Granit.Notifications.Email.Scaleway.Extensions;
 
@@ -28,17 +28,16 @@ public static class ScalewayEmailServiceCollectionExtensions
             services.Configure(configure);
         }
 
-        services.AddHttpClient(ProviderKey, (sp, client) =>
-            {
-                ScalewayEmailOptions opts = sp
-                    .GetRequiredService<Microsoft.Extensions.Options.IOptions<ScalewayEmailOptions>>().Value;
-                client.BaseAddress = new Uri(string.Concat(
-                    opts.BaseUrl.TrimEnd('/'), "/regions/", opts.Region.TrimEnd('/'), "/"));
-                client.DefaultRequestHeaders.Add("X-Auth-Token", opts.SecretKey);
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
-                client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
-            })
-            .AddStandardResilienceHandler();
+        services.AddGranitHttpClient(ProviderKey, (sp, client) =>
+        {
+            ScalewayEmailOptions opts = sp
+                .GetRequiredService<Microsoft.Extensions.Options.IOptions<ScalewayEmailOptions>>().Value;
+            client.BaseAddress = new Uri(string.Concat(
+                opts.BaseUrl.TrimEnd('/'), "/regions/", opts.Region.TrimEnd('/'), "/"));
+            client.DefaultRequestHeaders.Add("X-Auth-Token", opts.SecretKey);
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
+        });
 
         services.AddSingleton<ScalewayEmailSender>();
         services.AddKeyedSingleton<IEmailSender>(

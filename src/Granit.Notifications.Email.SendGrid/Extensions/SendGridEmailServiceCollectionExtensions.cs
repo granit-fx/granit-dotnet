@@ -1,10 +1,10 @@
+using Granit.HttpResilience.Extensions;
 using Granit.Notifications.Email.SendGrid.Diagnostics;
 using Granit.Notifications.Email.SendGrid.HealthChecks;
 using Granit.Notifications.Email.SendGrid.Internal;
 using Granit.Notifications.Email.SendGrid.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Http.Resilience;
 
 namespace Granit.Notifications.Email.SendGrid.Extensions;
 
@@ -28,16 +28,15 @@ public static class SendGridEmailServiceCollectionExtensions
             services.Configure(configure);
         }
 
-        services.AddHttpClient(ProviderKey, (sp, client) =>
-            {
-                SendGridEmailOptions opts = sp
-                    .GetRequiredService<Microsoft.Extensions.Options.IOptions<SendGridEmailOptions>>().Value;
-                client.BaseAddress = new Uri(string.Concat(opts.BaseUrl.TrimEnd('/'), "/"));
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {opts.ApiKey}");
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
-                client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
-            })
-            .AddStandardResilienceHandler();
+        services.AddGranitHttpClient(ProviderKey, (sp, client) =>
+        {
+            SendGridEmailOptions opts = sp
+                .GetRequiredService<Microsoft.Extensions.Options.IOptions<SendGridEmailOptions>>().Value;
+            client.BaseAddress = new Uri(string.Concat(opts.BaseUrl.TrimEnd('/'), "/"));
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {opts.ApiKey}");
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
+        });
 
         services.AddSingleton<SendGridEmailSender>();
         services.AddKeyedSingleton<IEmailSender>(

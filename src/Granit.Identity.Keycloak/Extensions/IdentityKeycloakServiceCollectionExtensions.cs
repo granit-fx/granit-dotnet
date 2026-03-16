@@ -1,4 +1,5 @@
 using Granit.Core.Diagnostics;
+using Granit.HttpResilience.Extensions;
 using Granit.Identity.Extensions;
 using Granit.Identity.Keycloak.HealthChecks;
 using Granit.Identity.Keycloak.Internal;
@@ -6,7 +7,6 @@ using Granit.Identity.Keycloak.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Http.Resilience;
 
 namespace Granit.Identity.Keycloak.Extensions;
 
@@ -44,12 +44,11 @@ public static class IdentityKeycloakServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        services.AddHttpClient("KeycloakAdmin", (sp, client) =>
-            {
-                KeycloakAdminOptions opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<KeycloakAdminOptions>>().Value;
-                client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
-            })
-            .AddStandardResilienceHandler();
+        services.AddGranitHttpClient("KeycloakAdmin", (sp, client) =>
+        {
+            KeycloakAdminOptions opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<KeycloakAdminOptions>>().Value;
+            client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
+        });
 
         services.TryAddSingleton<KeycloakAdminTokenService>();
         services.TryAddTransient<KeycloakUserTokenExchangeService>();

@@ -1,4 +1,5 @@
 using Granit.Core.Modularity;
+using Granit.HttpResilience;
 using Granit.Timing;
 using Granit.Webhooks.Extensions;
 
@@ -13,7 +14,9 @@ namespace Granit.Webhooks;
 /// <c>Granit.Webhooks.Wolverine</c> for durable outbox dispatch and call
 /// <c>AddGranitWebhooksEntityFrameworkCore()</c> for persistent stores.
 /// </remarks>
-[DependsOn(typeof(GranitTimingModule))]
+[DependsOn(
+    typeof(GranitHttpResilienceModule),
+    typeof(GranitTimingModule))]
 public sealed class GranitWebhooksModule : GranitModule
 {
     /// <inheritdoc/>

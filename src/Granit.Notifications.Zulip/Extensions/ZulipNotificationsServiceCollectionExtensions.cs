@@ -1,3 +1,4 @@
+using Granit.HttpResilience.Extensions;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Zulip.HealthChecks;
 using Granit.Notifications.Zulip.Internal;
@@ -36,13 +37,12 @@ public static class ZulipNotificationsServiceCollectionExtensions
             services.Configure(configureBot);
         }
 
-        services.AddHttpClient(ZulipBotSender.HttpClientName, (sp, client) =>
-            {
-                ZulipBotOptions opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ZulipBotOptions>>().Value;
-                client.BaseAddress = new Uri(string.Concat(opts.BaseUrl.TrimEnd('/'), "/"));
-                client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
-            })
-            .AddStandardResilienceHandler();
+        services.AddGranitHttpClient(ZulipBotSender.HttpClientName, (sp, client) =>
+        {
+            ZulipBotOptions opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ZulipBotOptions>>().Value;
+            client.BaseAddress = new Uri(string.Concat(opts.BaseUrl.TrimEnd('/'), "/"));
+            client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
+        });
 
         services.AddSingleton<IZulipSender, ZulipBotSender>();
         services.AddScoped<INotificationChannel, ZulipNotificationChannel>();

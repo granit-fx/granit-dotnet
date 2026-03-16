@@ -1,5 +1,6 @@
 using System.Threading.Channels;
 using Granit.Core.Diagnostics;
+using Granit.HttpResilience.Extensions;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Endpoints;
 using Granit.Webhooks.Handlers;
@@ -46,8 +47,8 @@ public static class WebhooksHostApplicationBuilderExtensions
             .Bind(options);
         configure?.Invoke(options);
 
-        // Named HttpClient for webhook delivery — strict timeout to avoid blocking workers.
-        builder.Services.AddHttpClient(WebhooksConstants.HttpClientName, client =>
+        // Named HttpClient for webhook delivery — resilience pipeline + strict timeout.
+        builder.Services.AddGranitHttpClient(WebhooksConstants.HttpClientName, client =>
         {
             client.Timeout = TimeSpan.FromSeconds(options.HttpTimeoutSeconds);
             client.DefaultRequestHeaders.Add(

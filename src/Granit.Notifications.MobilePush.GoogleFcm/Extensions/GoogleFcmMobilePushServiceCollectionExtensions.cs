@@ -1,3 +1,4 @@
+using Granit.HttpResilience.Extensions;
 using Granit.Notifications.MobilePush.GoogleFcm.Internal;
 using Granit.Notifications.MobilePush.GoogleFcm.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,13 +26,12 @@ public static class GoogleFcmMobilePushServiceCollectionExtensions
             services.Configure(configure);
         }
 
-        services.AddHttpClient(HttpClientName, (sp, client) =>
-            {
-                GoogleFcmOptions opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<GoogleFcmOptions>>().Value;
-                client.BaseAddress = new Uri(opts.BaseAddress);
-                client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
-            })
-            .AddStandardResilienceHandler();
+        services.AddGranitHttpClient(HttpClientName, (sp, client) =>
+        {
+            GoogleFcmOptions opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<GoogleFcmOptions>>().Value;
+            client.BaseAddress = new Uri(opts.BaseAddress);
+            client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
+        });
 
         services.AddKeyedSingleton<IMobilePushSender, GoogleFcmMobilePushSender>(ProviderKey);
         return services;

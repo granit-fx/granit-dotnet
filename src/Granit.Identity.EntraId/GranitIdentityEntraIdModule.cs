@@ -1,4 +1,5 @@
 using Granit.Core.Modularity;
+using Granit.HttpResilience;
 using Granit.Identity.EntraId.Extensions;
 using Granit.Timing;
 
@@ -9,6 +10,7 @@ namespace Granit.Identity.EntraId;
 /// <see cref="IIdentityProvider"/> implementation.
 /// </summary>
 [DependsOn(
+    typeof(GranitHttpResilienceModule),
     typeof(GranitIdentityModule),
     typeof(GranitTimingModule))]
 public sealed class GranitIdentityEntraIdModule : GranitModule
