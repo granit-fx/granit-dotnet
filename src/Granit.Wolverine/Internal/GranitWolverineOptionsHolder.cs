@@ -14,7 +14,7 @@ namespace Granit.Wolverine.Internal;
 /// This holder is registered as an <c>ImplementationInstance</c> singleton — safe to
 /// read via <see cref="ServiceDescriptor.ImplementationInstance"/> at any time.
 /// </remarks>
-public sealed class GranitWolverineOptionsHolder(WolverineOptions options)
+internal sealed class GranitWolverineOptionsHolder(WolverineOptions options)
 {
-    public WolverineOptions Options { get; } = options;
+    internal WolverineOptions Options { get; } = options;
 }
