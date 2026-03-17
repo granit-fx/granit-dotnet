@@ -51,39 +51,7 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddGranitWolverineWithPostgresql(
         this IHostApplicationBuilder builder,
         Action<WolverineOptions>? configure = null)
-    {
-        // Bind and validate options at startup via DI.
-        builder.Services
-            .AddOptions<WolverinePostgresqlOptions>()
-            .BindConfiguration(WolverinePostgresqlOptions.SectionName)
-            .ValidateOnStart();
-        builder.Services.AddSingleton<IValidateOptions<WolverinePostgresqlOptions>,
-            WolverinePostgresqlOptionsValidator>();
-
-        // Read options directly from IConfiguration: the DI container is not yet
-        // built at this point, so IOptions<> is not resolvable inside UseWolverine().
-        WolverinePostgresqlOptions options = new();
-        builder.Configuration
-            .GetSection(WolverinePostgresqlOptions.SectionName)
-            .Bind(options);
-
-        string connectionString = ResolveConnectionString(builder.Configuration, options);
-
-        // UseWolverine runs eagerly before the DI container is built.
-        // ConfigureWolverine must NOT be used here: it registers a late-bound IWolverineExtension
-        // in DI that runs after the container is locked, and PersistMessagesWithPostgresql
-        // tries to add singletons to the read-only service collection (Wolverine 3.0+ breaking change).
-        builder.UseWolverine(opts =>
-        {
-            opts.PersistMessagesWithPostgresql(connectionString);
-            opts.UseEntityFrameworkCoreTransactions(options.TransactionMode);
-            opts.Policies.AutoApplyTransactions();
-
-            configure?.Invoke(opts);
-        });
-
-        return builder;
-    }
+        => AddGranitWolverineWithPostgresqlCore(builder, configure);
 
     /// <summary>
     /// Adds per-tenant database support for Wolverine: each tenant has its own isolated
@@ -121,6 +89,21 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
         Action<WolverineOptions>? configure = null)
         where TContext : DbContext
     {
+        // Register the per-tenant factory and DbContext as Scoped via Granit.Persistence.
+        // TryAdd semantics preserve any existing registration (e.g., overrides from integration tests).
+        builder.Services.AddTenantPerDatabaseDbContext<TContext>(
+            static (opts, connectionString) => opts.UseNpgsql(connectionString));
+
+        return AddGranitWolverineWithPostgresqlCore(builder, configure);
+    }
+
+    /// <summary>
+    /// Shared core setup: options binding, connection string resolution, and <c>UseWolverine</c>.
+    /// </summary>
+    private static IHostApplicationBuilder AddGranitWolverineWithPostgresqlCore(
+        IHostApplicationBuilder builder,
+        Action<WolverineOptions>? configure)
+    {
         // Bind and validate options at startup via DI.
         builder.Services
             .AddOptions<WolverinePostgresqlOptions>()
@@ -138,23 +121,39 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
 
         string connectionString = ResolveConnectionString(builder.Configuration, options);
 
-        // Register the per-tenant factory and DbContext as Scoped via Granit.Persistence.
-        // TryAdd semantics preserve any existing registration (e.g., overrides from integration tests).
-        builder.Services.AddTenantPerDatabaseDbContext<TContext>(
-            static (opts, connectionString) => opts.UseNpgsql(connectionString));
+        // Two paths, both ensure PersistMessagesWithPostgresql runs before the DI container is built:
+        //
+        // Path A — AddGranitWolverine() was called first (production via [DependsOn] module ordering):
+        //   UseWolverine() can only be called once; calling it again throws.
+        //   WolverineOptions is registered as a singleton instance — retrieve it from the service
+        //   descriptors and extend it directly. The container is not yet built so
+        //   options.Services.AddSingleton() inside PersistMessagesWithPostgresql is still valid.
+        //
+        // Path B — called standalone without AddGranitWolverine() (integration tests, manual wiring):
+        //   UseWolverine() hasn't been called yet — it is safe to call it once here.
+        WolverineOptions? existing = builder.Services
+            .Where(sd => sd.ServiceType == typeof(WolverineOptions))
+            .Select(sd => sd.ImplementationInstance)
+            .OfType<WolverineOptions>()
+            .FirstOrDefault();
 
-        // UseWolverine runs eagerly before the DI container is built.
-        // ConfigureWolverine must NOT be used here: it registers a late-bound IWolverineExtension
-        // in DI that runs after the container is locked, and PersistMessagesWithPostgresql
-        // tries to add singletons to the read-only service collection (Wolverine 3.0+ breaking change).
-        builder.UseWolverine(opts =>
+        if (existing is not null)
         {
-            opts.PersistMessagesWithPostgresql(connectionString);
-            opts.UseEntityFrameworkCoreTransactions(options.TransactionMode);
-            opts.Policies.AutoApplyTransactions();
-
-            configure?.Invoke(opts);
-        });
+            existing.PersistMessagesWithPostgresql(connectionString);
+            existing.UseEntityFrameworkCoreTransactions(options.TransactionMode);
+            existing.Policies.AutoApplyTransactions();
+            configure?.Invoke(existing);
+        }
+        else
+        {
+            builder.UseWolverine(opts =>
+            {
+                opts.PersistMessagesWithPostgresql(connectionString);
+                opts.UseEntityFrameworkCoreTransactions(options.TransactionMode);
+                opts.Policies.AutoApplyTransactions();
+                configure?.Invoke(opts);
+            });
+        }
 
         return builder;
     }
