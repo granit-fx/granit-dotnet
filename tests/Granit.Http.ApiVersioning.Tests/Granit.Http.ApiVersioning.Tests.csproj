@@ -15,6 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.ApiVersioning\Granit.ApiVersioning.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.ApiVersioning\Granit.Http.ApiVersioning.csproj" />
   </ItemGroup>
 </Project>

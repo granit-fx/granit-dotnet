@@ -12,7 +12,7 @@ dotnet add package Granit.Http.ApiDocumentation
 
 ## Dependencies
 
-- `Granit.ApiVersioning`
+- `Granit.Http.ApiVersioning`
 - `Granit.Security`
 
 ## Documentation

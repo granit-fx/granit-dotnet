@@ -2,7 +2,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Granit.ApiVersioning.Deprecation;
+namespace Granit.Http.ApiVersioning.Deprecation;
 
 /// <summary>
 /// Endpoint filter that emits <c>Deprecation</c>, <c>Sunset</c>, and <c>Link</c>

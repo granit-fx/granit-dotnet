@@ -7,15 +7,15 @@
 
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
-using Granit.ApiVersioning.Extensions;
-using Granit.ApiVersioning.Options;
+using Granit.Http.ApiVersioning.Extensions;
+using Granit.Http.ApiVersioning.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
-namespace Granit.ApiVersioning.Tests;
+namespace Granit.Http.ApiVersioning.Tests;
 
 public sealed class ApiVersioningServiceCollectionExtensionsTests
 {

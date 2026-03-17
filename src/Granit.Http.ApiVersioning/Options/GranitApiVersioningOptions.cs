@@ -1,4 +1,4 @@
-namespace Granit.ApiVersioning.Options;
+namespace Granit.Http.ApiVersioning.Options;
 
 /// <summary>Configuration options for Granit API versioning.</summary>
 public sealed class GranitApiVersioningOptions

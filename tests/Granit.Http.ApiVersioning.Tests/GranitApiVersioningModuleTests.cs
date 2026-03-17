@@ -1,5 +1,5 @@
 // =============================================================================
-// Tests - GranitApiVersioningModule
+// Tests - GranitHttpApiVersioningModule
 // =============================================================================
 // Vérifie que ConfigureServices déclenche l'enregistrement des services
 // de versioning via AddGranitApiVersioning.
@@ -12,15 +12,15 @@ using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
-namespace Granit.ApiVersioning.Tests;
+namespace Granit.Http.ApiVersioning.Tests;
 
-public sealed class GranitApiVersioningModuleTests
+public sealed class GranitHttpApiVersioningModuleTests
 {
     [Fact]
     public void ConfigureServices_RegistersApiVersioningServices()
     {
         // Arrange
-        GranitApiVersioningModule module = new();
+        GranitHttpApiVersioningModule module = new();
         HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
         ServiceConfigurationContext context = new(
             builder.Services,

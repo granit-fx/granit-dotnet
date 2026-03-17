@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Bundle.Essentials\Granit.Bundle.Essentials.csproj" />
-    <ProjectReference Include="..\..\Granit.ApiVersioning\Granit.ApiVersioning.csproj" />
+    <ProjectReference Include="..\..\Granit.Http.ApiVersioning\Granit.Http.ApiVersioning.csproj" />
     <ProjectReference Include="..\..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\..\Granit.Http.Cors\Granit.Http.Cors.csproj" />
     <ProjectReference Include="..\..\Granit.Idempotency\Granit.Idempotency.csproj" />

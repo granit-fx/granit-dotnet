@@ -16,7 +16,7 @@
     <Project Path="src/Granit.AI.OpenAI/Granit.AI.OpenAI.csproj" />
     <Project Path="src/Granit.AI.VectorData/Granit.AI.VectorData.csproj" />
     <Project Path="src/Granit.Http.ApiDocumentation/Granit.Http.ApiDocumentation.csproj" />
-    <Project Path="src/Granit.ApiVersioning/Granit.ApiVersioning.csproj" />
+    <Project Path="src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj" />
     <Project Path="src/Granit.Authentication.ApiKeys.Endpoints/Granit.Authentication.ApiKeys.Endpoints.csproj" />
     <Project Path="src/Granit.Authentication.ApiKeys.EntityFrameworkCore/Granit.Authentication.ApiKeys.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Authentication.ApiKeys/Granit.Authentication.ApiKeys.csproj" />
@@ -182,7 +182,7 @@
     <Project Path="tests/Granit.Analyzers.CodeFixes.Tests/Granit.Analyzers.CodeFixes.Tests.csproj" />
     <Project Path="tests/Granit.Analyzers.Tests/Granit.Analyzers.Tests.csproj" />
     <Project Path="tests/Granit.Http.ApiDocumentation.Tests/Granit.Http.ApiDocumentation.Tests.csproj" />
-    <Project Path="tests/Granit.ApiVersioning.Tests/Granit.ApiVersioning.Tests.csproj" />
+    <Project Path="tests/Granit.Http.ApiVersioning.Tests/Granit.Http.ApiVersioning.Tests.csproj" />
     <Project Path="tests/Granit.ArchitectureTests.Abstractions/Granit.ArchitectureTests.Abstractions.csproj" />
     <Project Path="tests/Granit.ArchitectureTests/Granit.ArchitectureTests.csproj" />
     <Project Path="tests/Granit.AI.Tests/Granit.AI.Tests.csproj" />

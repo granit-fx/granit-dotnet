@@ -293,7 +293,7 @@ flowchart TD
 
 | Package | Depends on |
 |---------|------------|
-| `Granit.ApiVersioning` | `Core` |
+| `Granit.Http.ApiVersioning` | `Core` |
 | `Granit.Http.ApiDocumentation` | `ApiVersioning`, `Security` |
 | `Granit.Cookies` | `Timing` |
 | `Granit.Cookies.Klaro` | `Cookies` |
@@ -579,7 +579,7 @@ Complete REST API. Includes everything in `Bundle.Essentials` plus:
 
 | Included package |
 |------------------|
-| `Granit.ApiVersioning` |
+| `Granit.Http.ApiVersioning` |
 | `Granit.Http.ApiDocumentation` |
 | `Granit.Http.Cors` |
 | `Granit.Idempotency` |

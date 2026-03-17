@@ -1,4 +1,4 @@
-namespace Granit.ApiVersioning.Deprecation;
+namespace Granit.Http.ApiVersioning.Deprecation;
 
 /// <summary>
 /// Marks an endpoint as deprecated and triggers <c>Deprecation</c> and <c>Sunset</c>

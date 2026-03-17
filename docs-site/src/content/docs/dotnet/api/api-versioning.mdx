@@ -13,17 +13,17 @@ the API forever or coordinate simultaneous upgrades across all clients.
 
 URL-based versioning (`/api/v1/`, `/api/v2/`) makes the contract explicit and
 allows old and new versions to coexist. Consumers migrate on their own schedule.
-Granit.ApiVersioning adds RFC 8594 deprecation headers (`Sunset`, `Deprecation`, `Link`)
+Granit.Http.ApiVersioning adds RFC 8594 deprecation headers (`Sunset`, `Deprecation`, `Link`)
 so clients receive advance notice of upcoming removals — no more surprise breakages.
 
-Granit.ApiVersioning configures [Asp.Versioning](https://github.com/dotnet/aspnet-api-versioning)
+Granit.Http.ApiVersioning configures [Asp.Versioning](https://github.com/dotnet/aspnet-api-versioning)
 with a URL segment primary reader (`/api/v{version:apiVersion}/resource`) and a query
 string fallback (`?api-version=1.0`).
 
 ## Setup
 
 ```csharp
-[DependsOn(typeof(GranitApiVersioningModule))]
+[DependsOn(typeof(GranitHttpApiVersioningModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -80,10 +80,10 @@ Each call to a deprecated endpoint is logged at Warning level.
 
 | Category | Key types | Package |
 | -------- | --------- | ------- |
-| Module | `GranitApiVersioningModule` | -- |
-| Options | `GranitApiVersioningOptions` | `Granit.ApiVersioning` |
-| Attributes | `DeprecatedAttribute` | `Granit.ApiVersioning` |
-| Extensions | `AddGranitApiVersioning()`, `.Deprecated()` | `Granit.ApiVersioning` |
+| Module | `GranitHttpApiVersioningModule` | -- |
+| Options | `GranitApiVersioningOptions` | `Granit.Http.ApiVersioning` |
+| Attributes | `DeprecatedAttribute` | `Granit.Http.ApiVersioning` |
+| Extensions | `AddGranitApiVersioning()`, `.Deprecated()` | `Granit.Http.ApiVersioning` |
 
 ## See also
 

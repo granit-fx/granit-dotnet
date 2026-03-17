@@ -4,11 +4,11 @@
 // Vérifie les valeurs par défaut et la constante SectionName.
 // =============================================================================
 
-using Granit.ApiVersioning.Options;
+using Granit.Http.ApiVersioning.Options;
 using Shouldly;
 using Xunit;
 
-namespace Granit.ApiVersioning.Tests;
+namespace Granit.Http.ApiVersioning.Tests;
 
 public sealed class GranitApiVersioningOptionsTests
 {

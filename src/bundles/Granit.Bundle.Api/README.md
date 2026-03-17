@@ -11,7 +11,7 @@ Everything in `Granit.Bundle.Essentials`, plus:
 
 | Package | Role |
 | --- | --- |
-| `Granit.ApiVersioning` | Asp.Versioning integration |
+| `Granit.Http.ApiVersioning` | Asp.Versioning integration |
 | `Granit.Http.ApiDocumentation` | Scalar OpenAPI documentation |
 | `Granit.Http.Cors` | CORS policy configuration |
 | `Granit.Idempotency` | Idempotency-Key middleware |

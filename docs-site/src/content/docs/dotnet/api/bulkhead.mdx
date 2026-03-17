@@ -54,7 +54,7 @@ runs and releases it in a `finally` block — the lease is always released, even
 unhandled exceptions.
 
 When the bulkhead is full, `BulkheadRejectedException` is thrown and mapped to
-**503 Service Unavailable** by `Granit.ExceptionHandling`.
+**503 Service Unavailable** by `Granit.Http.ExceptionHandling`.
 
 ## Applying to Wolverine messages
 

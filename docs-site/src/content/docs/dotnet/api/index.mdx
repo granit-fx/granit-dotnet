@@ -49,7 +49,7 @@ traffic and integration patterns demand.
 ```mermaid
 graph TD
     CORS[Granit.Http.Cors] --> CO[Granit.Core]
-    AV[Granit.ApiVersioning] --> CO
+    AV[Granit.Http.ApiVersioning] --> CO
     AD[Granit.Http.ApiDocumentation] --> AV
     AD --> SEC[Granit.Security]
     RC[Granit.ResponseCompression] --> CO

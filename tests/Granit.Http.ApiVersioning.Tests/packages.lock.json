@@ -501,16 +501,16 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
-      "granit.apiversioning": {
+      "granit.core": {
+        "type": "Project"
+      },
+      "granit.http.apiversioning": {
         "type": "Project",
         "dependencies": {
           "Asp.Versioning.Mvc": "[10.0.0-preview.*, )",
           "Asp.Versioning.Mvc.ApiExplorer": "[10.0.0-preview.*, )",
           "Granit.Core": "[0.1.0-dev, )"
         }
-      },
-      "granit.core": {
-        "type": "Project"
       },
       "Asp.Versioning.Mvc": {
         "type": "CentralTransitive",

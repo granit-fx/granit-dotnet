@@ -46,7 +46,7 @@ flowchart TD
 | `FeatureNotEnabledException` | `src/Granit.Features/Exceptions/FeatureNotEnabledException.cs` | 403 | `Features:NotEnabled` |
 
 All exceptions are intercepted by `GranitExceptionHandler`
-(`src/Granit.ExceptionHandling/GranitExceptionHandler.cs`) and converted to
+(`src/Granit.Http.ExceptionHandling/GranitExceptionHandler.cs`) and converted to
 RFC 7807 `ProblemDetails`.
 
 ### ISO 27001 rule

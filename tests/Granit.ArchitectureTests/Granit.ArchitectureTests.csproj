@@ -38,7 +38,7 @@
     <ProjectReference Include="..\..\src\Granit.AI.VectorData\Granit.AI.VectorData.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.OpenAI\Granit.AI.OpenAI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
-    <ProjectReference Include="..\..\src\Granit.ApiVersioning\Granit.ApiVersioning.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.ApiVersioning\Granit.Http.ApiVersioning.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys\Granit.Authentication.ApiKeys.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys.Endpoints\Granit.Authentication.ApiKeys.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys.EntityFrameworkCore\Granit.Authentication.ApiKeys.EntityFrameworkCore.csproj" />

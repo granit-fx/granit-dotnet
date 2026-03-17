@@ -423,7 +423,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `ApiVersioning` | |
-| **Package** | -- | `Granit.ApiVersioning` | |
+| **Package** | -- | `Granit.Http.ApiVersioning` | |
 | `DefaultMajorVersion` | `int` | `1` | Default API version when client omits it. |
 | `ReportApiVersions` | `bool` | `true` | Include version headers in responses. |
 

@@ -8,7 +8,7 @@ sidebar:
 
 > **Date:** 2026-02-22
 > **Authors:** Jean-Francois Meyers
-> **Scope:** granit-dotnet (Granit.ApiVersioning)
+> **Scope:** granit-dotnet (Granit.Http.ApiVersioning)
 
 ## Context
 
@@ -71,4 +71,4 @@ Versioning must be:
 ### Negative
 
 - Preview version (10.0.0-preview.1) for .NET 10 — to monitor
-- Initial configuration required (default convention in `GranitApiVersioningModule`)
+- Initial configuration required (default convention in `GranitHttpApiVersioningModule`)

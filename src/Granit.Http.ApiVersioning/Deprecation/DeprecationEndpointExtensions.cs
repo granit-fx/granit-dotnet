@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-namespace Granit.ApiVersioning.Deprecation;
+namespace Granit.Http.ApiVersioning.Deprecation;
 
 /// <summary>
 /// Extension methods for marking endpoints as deprecated.

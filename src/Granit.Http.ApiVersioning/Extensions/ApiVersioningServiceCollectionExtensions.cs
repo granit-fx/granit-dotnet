@@ -1,9 +1,9 @@
 using Asp.Versioning;
-using Granit.ApiVersioning.Options;
+using Granit.Http.ApiVersioning.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Granit.ApiVersioning.Extensions;
+namespace Granit.Http.ApiVersioning.Extensions;
 
 /// <summary>
 /// Extensions for registering Granit API versioning services.
