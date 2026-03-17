@@ -230,6 +230,22 @@ await permissionManager.SetAsync(
 Manual triggers via `TriggerNowAsync` inject an `X-Triggered-By` header with the
 operator's user ID. This is recorded in the job store for ISO 27001 traceability.
 
+## Verify
+
+Start the application and confirm your recurring job is scheduled:
+
+```bash
+# Check registered jobs via the admin endpoint
+curl -s http://localhost:5000/background-jobs | jq '.[].name'
+# → "ExpiredRecordCleanup"
+
+# Trigger a job manually
+curl -s -X POST http://localhost:5000/background-jobs/ExpiredRecordCleanup/trigger
+
+# Check the logs for execution output
+dotnet run 2>&1 | grep "ExpiredRecordCleanup"
+```
+
 ## Next steps
 
 - [Set up notifications](/dotnet/guides/set-up-notifications/) to alert users when jobs complete

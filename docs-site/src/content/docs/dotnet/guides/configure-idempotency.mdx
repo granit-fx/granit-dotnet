@@ -197,6 +197,26 @@ change on every request, making the hash non-deterministic.
 - **No side-channel**: The idempotency key is hashed before storage, preventing
   Redis key enumeration attacks.
 
+## Verify
+
+Test idempotency by sending the same request twice with the same key:
+
+```bash
+# First request — creates the resource
+curl -s -X POST http://localhost:5000/api/v1/orders \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: order-abc-123" \
+  -d '{"product": "Widget", "quantity": 1}' | jq .id
+# → "d4e5f6a7-..."
+
+# Second request with SAME key — returns cached response, no duplicate
+curl -s -X POST http://localhost:5000/api/v1/orders \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: order-abc-123" \
+  -d '{"product": "Widget", "quantity": 1}' | jq .id
+# → "d4e5f6a7-..." (same ID)
+```
+
 ## Next steps
 
 - [Granit.Caching concept](/dotnet/concepts/configuration/) for distributed cache and encryption setup

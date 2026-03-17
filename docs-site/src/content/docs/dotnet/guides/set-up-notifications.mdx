@@ -341,6 +341,18 @@ After 5 attempts, the message moves to the Wolverine Dead Letter Queue.
 | `POST` | `/notifications/subscriptions/{typeName}` | Subscribe to a type |
 | `DELETE` | `/notifications/subscriptions/{typeName}` | Unsubscribe |
 
+## Verify
+
+Publish a test notification and check delivery:
+
+```bash
+# Check InApp notifications for the user
+curl -s http://localhost:5000/api/v1/notifications?userId=user-123 | jq '.[0]'
+
+# If email is configured, check the SMTP logs or Mailpit UI
+# (development: http://localhost:8025)
+```
+
 ## Next steps
 
 - [Implement webhooks](/dotnet/guides/implement-webhooks/) for outbound system-to-system event delivery

@@ -7,6 +7,13 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
+:::note[What you'll learn — ~20 minutes]
+- How to add an **isolated DbContext** with Granit.Persistence
+- How **audit fields** (`CreatedAt`, `ModifiedBy`) are set automatically
+- How **soft delete** works transparently via interceptors
+- How **sequential GUIDs** (UUIDv7) avoid index fragmentation
+:::
+
 In [Your First API](/dotnet/getting-started/your-first-api/), you created a module with an in-memory list.
 That works for a demo, but real applications need a database. In this tutorial you
 will wire up EF Core with PostgreSQL and let Granit handle audit fields, soft delete,

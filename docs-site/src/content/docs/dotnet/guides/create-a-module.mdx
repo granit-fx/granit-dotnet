@@ -255,6 +255,22 @@ public sealed class MyAppHostModule : GranitModule
 | `ModuleAssemblies` | `IReadOnlyList<Assembly>` | All loaded module assemblies in topological order |
 | `Items` | `IDictionary<string, object?>` | Shared state for inter-module communication |
 
+## Verify
+
+Confirm your module is loaded by checking the startup logs:
+
+```bash
+dotnet run 2>&1 | grep "Module loaded"
+# → Module loaded: GranitInventoryModule
+```
+
+You can also verify programmatically by resolving a service registered by your module:
+
+```csharp
+app.MapGet("/health/inventory", (IInventoryService svc) =>
+    TypedResults.Ok(new { Module = "Inventory", Status = "Loaded" }));
+```
+
 ## Next steps
 
 - [Add an endpoint](/dotnet/guides/add-an-endpoint/) -- expose your module via Minimal API

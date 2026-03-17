@@ -333,6 +333,22 @@ factory.WithWebHostBuilder(builder =>
 });
 ```
 
+## Verify
+
+Confirm tenant isolation is working by sending requests with different tenant headers:
+
+```bash
+# Request as tenant A
+curl -s http://localhost:5000/api/v1/products \
+  -H "X-Tenant-Id: tenant-a" | jq 'length'
+# → 3 (only tenant A products)
+
+# Request as tenant B
+curl -s http://localhost:5000/api/v1/products \
+  -H "X-Tenant-Id: tenant-b" | jq 'length'
+# → 1 (only tenant B products)
+```
+
 ## Next steps
 
 - [Configure caching](/dotnet/guides/configure-caching/) -- set up distributed caching with tenant-aware keys

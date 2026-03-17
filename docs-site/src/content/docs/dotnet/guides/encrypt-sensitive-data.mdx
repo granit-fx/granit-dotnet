@@ -274,6 +274,25 @@ public sealed class AppSettingDefinitionProvider : ISettingDefinitionProvider
 | Cache | `[CacheEncrypted]` | Entire cached object | Local AES-256 key |
 | Settings | `IsEncrypted = true` | Setting values in database | `IStringEncryptionService` |
 
+## Verify
+
+Confirm encryption is working by inspecting the raw database value:
+
+```bash
+# Create a patient with a NISS (sensitive field)
+curl -s -X POST http://localhost:5000/api/v1/patients \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Jane Doe", "niss": "85073000123"}'
+
+# Read via API — decrypted transparently
+curl -s http://localhost:5000/api/v1/patients/1 | jq .niss
+# → "85073000123"
+
+# Read raw database value — should be ciphertext
+psql -c "SELECT \"Niss\" FROM \"Patients\" LIMIT 1;" "$CONNECTION_STRING"
+# → "vault:v1:base64ciphertext..."
+```
+
 ## Next steps
 
 - [Manage application settings](/dotnet/guides/manage-application-settings/) -- encrypted settings with cascading resolution

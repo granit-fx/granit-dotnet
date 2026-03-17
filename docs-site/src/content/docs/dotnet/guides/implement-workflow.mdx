@@ -304,6 +304,29 @@ The `Granit.Workflow.Endpoints` package exposes a single endpoint:
 | --- | --- | --- |
 | `GET` | `/workflow/{entityType}/{entityId}/history` | Audit trail of all transitions |
 
+## Verify
+
+Test the workflow transitions via the API:
+
+```bash
+# Create an invoice (starts in Draft)
+INVOICE_ID=$(curl -s -X POST http://localhost:5000/api/v1/invoices \
+  -H "Content-Type: application/json" \
+  -d '{"number": "INV-001", "amount": 1500}' | jq -r .id)
+
+# Transition to PendingApproval
+curl -s -X POST "http://localhost:5000/api/v1/invoices/$INVOICE_ID/transition" \
+  -H "Content-Type: application/json" \
+  -d '{"targetState": "PendingApproval"}' | jq .outcome
+# → "Completed"
+
+# Verify invalid transition is rejected
+curl -s -X POST "http://localhost:5000/api/v1/invoices/$INVOICE_ID/transition" \
+  -H "Content-Type: application/json" \
+  -d '{"targetState": "Paid"}' | jq .outcome
+# → "Denied"
+```
+
 ## Next steps
 
 - [Create document templates](/dotnet/guides/create-document-templates/) to use

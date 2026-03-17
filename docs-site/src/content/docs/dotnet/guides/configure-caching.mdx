@@ -285,6 +285,23 @@ concurrency (10+ simultaneous requests for the same missing key):
 With HybridCache, stampede protection is built into the .NET runtime -- no
 additional `SemaphoreSlim` needed.
 
+## Verify
+
+Confirm caching is working by checking the response time:
+
+```bash
+# First call — cache miss (hits database)
+time curl -s http://localhost:5000/api/v1/products/1 > /dev/null
+# → real 0.120s
+
+# Second call — cache hit (significantly faster)
+time curl -s http://localhost:5000/api/v1/products/1 > /dev/null
+# → real 0.008s
+
+# If using Redis, inspect the cached key
+redis-cli KEYS "dd:*"
+```
+
 ## Next steps
 
 - [Configure multi-tenancy](/dotnet/guides/configure-multi-tenancy/) -- tenant-aware cache keys
