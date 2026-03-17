@@ -61,8 +61,9 @@ public sealed class GoogleFcmMobilePushSenderTests
         HttpClient client = new(handler) { BaseAddress = new Uri("https://fcm.googleapis.com/") };
         factory.CreateClient("GoogleFcmPush").Returns(client);
 
-        IOptions<GoogleFcmOptions> options = Microsoft.Extensions.Options.Options.Create(new GoogleFcmOptions { ProjectId = "test-project", ServiceAccountJson = "{}" });
-        return new GoogleFcmMobilePushSender(factory, options, eventPublisher ?? Substitute.For<IMobilePushEventPublisher>(), NullLogger<GoogleFcmMobilePushSender>.Instance);
+        IOptionsMonitor<GoogleFcmOptions> monitor = Substitute.For<IOptionsMonitor<GoogleFcmOptions>>();
+        monitor.CurrentValue.Returns(new GoogleFcmOptions { ProjectId = "test-project", ServiceAccountJson = "{}" });
+        return new GoogleFcmMobilePushSender(factory, monitor, eventPublisher ?? Substitute.For<IMobilePushEventPublisher>(), NullLogger<GoogleFcmMobilePushSender>.Instance);
     }
 
     private static MobilePushMessage BuildMessage(params string[] tokens) => new()

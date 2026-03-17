@@ -16,6 +16,13 @@ public sealed class AwsSesEmailSenderTests
     // Helpers
     // -------------------------------------------------------------------------
 
+    private static IOptionsMonitor<AwsSesOptions> CreateOptionsMonitor(AwsSesOptions opts)
+    {
+        IOptionsMonitor<AwsSesOptions> monitor = Substitute.For<IOptionsMonitor<AwsSesOptions>>();
+        monitor.CurrentValue.Returns(opts);
+        return monitor;
+    }
+
     private static (AwsSesEmailSender Sender, IAwsSesTransport Transport) CreateSender(AwsSesOptions? options = null)
     {
         AwsSesOptions opts = options ?? new AwsSesOptions
@@ -29,7 +36,7 @@ public sealed class AwsSesEmailSenderTests
             .Returns(new SendEmailResponse { MessageId = "test-message-id" });
 
         AwsSesEmailSender sender = new(
-            Microsoft.Extensions.Options.Options.Create(opts),
+            CreateOptionsMonitor(opts),
             NullLogger<AwsSesEmailSender>.Instance,
             () => transport);
 
@@ -267,7 +274,7 @@ public sealed class AwsSesEmailSenderTests
         loggerSub.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
         AwsSesEmailSender sender = new(
-            Microsoft.Extensions.Options.Options.Create(opts),
+            CreateOptionsMonitor(opts),
             loggerSub,
             () => transport);
 
@@ -292,7 +299,7 @@ public sealed class AwsSesEmailSenderTests
 
         Should.Throw<ArgumentNullException>(() =>
             new AwsSesEmailSender(
-                Microsoft.Extensions.Options.Options.Create(opts),
+                CreateOptionsMonitor(opts),
                 NullLogger<AwsSesEmailSender>.Instance,
                 transportFactory: null));
     }

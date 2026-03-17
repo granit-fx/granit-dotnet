@@ -17,7 +17,7 @@ namespace Granit.Notifications.MobilePush.GoogleFcm.Internal;
 /// </remarks>
 internal sealed partial class GoogleFcmMobilePushSender(
     IHttpClientFactory httpClientFactory,
-    IOptions<GoogleFcmOptions> options,
+    IOptionsMonitor<GoogleFcmOptions> options,
     IMobilePushEventPublisher eventPublisher,
     ILogger<GoogleFcmMobilePushSender> logger) : IMobilePushSender
 {
@@ -61,7 +61,7 @@ internal sealed partial class GoogleFcmMobilePushSender(
 
     private async Task SendToTokenAsync(HttpClient client, string token, MobilePushMessage message, CancellationToken cancellationToken)
     {
-        string projectId = options.Value.ProjectId;
+        string projectId = options.CurrentValue.ProjectId;
 
         var payload = new FcmPayload
         {

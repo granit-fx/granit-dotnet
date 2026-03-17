@@ -12,7 +12,7 @@ namespace Granit.Notifications.Sms.AzureCommunicationServices.Internal;
 /// Registered as Keyed Service with key "AzureCommunicationServices".
 /// </summary>
 internal sealed partial class AcsSmsSender(
-    IOptions<AcsSmsOptions> options,
+    IOptionsMonitor<AcsSmsOptions> options,
     ILogger<AcsSmsSender> logger,
     IAcsSmsTransport transport) : ISmsSender
 {
@@ -21,7 +21,7 @@ internal sealed partial class AcsSmsSender(
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        AcsSmsOptions opts = options.Value;
+        AcsSmsOptions opts = options.CurrentValue;
 
         using Activity? activity = NotificationsSmsAcsActivitySource.Source.StartActivity(
             NotificationsSmsAcsActivitySource.Operations.SendSms);

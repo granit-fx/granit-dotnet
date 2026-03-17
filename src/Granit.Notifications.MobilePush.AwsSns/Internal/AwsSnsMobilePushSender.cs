@@ -17,7 +17,7 @@ namespace Granit.Notifications.MobilePush.AwsSns.Internal;
 /// is then published to each endpoint ARN. Disabled endpoints trigger token invalidation events.
 /// </remarks>
 internal sealed partial class AwsSnsMobilePushSender(
-    IOptions<AwsSnsMobilePushOptions> options,
+    IOptionsMonitor<AwsSnsMobilePushOptions> options,
     ILogger<AwsSnsMobilePushSender> logger,
     IAwsSnsMobilePushTransport transport,
     IMobilePushEventPublisher eventPublisher) : IMobilePushSender
@@ -27,7 +27,7 @@ internal sealed partial class AwsSnsMobilePushSender(
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        AwsSnsMobilePushOptions opts = options.Value;
+        AwsSnsMobilePushOptions opts = options.CurrentValue;
 
         using Activity? activity = NotificationsMobilePushAwsSnsActivitySource.Source.StartActivity(
             NotificationsMobilePushAwsSnsActivitySource.Operations.Send);

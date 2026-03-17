@@ -36,8 +36,11 @@ public sealed class MailKitEmailSenderTests
         };
         ISmtpTransport transport = Substitute.For<ISmtpTransport>();
 
+        IOptionsMonitor<SmtpOptions> monitor = Substitute.For<IOptionsMonitor<SmtpOptions>>();
+        monitor.CurrentValue.Returns(opts);
+
         MailKitEmailSender sender = new(
-            Microsoft.Extensions.Options.Options.Create(opts),
+            monitor,
             NullLogger<MailKitEmailSender>.Instance,
             () => transport);
 
@@ -377,7 +380,10 @@ public sealed class MailKitEmailSenderTests
         ILogger<MailKitEmailSender> logger = Substitute.For<ILogger<MailKitEmailSender>>();
         logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
-        MailKitEmailSender sender = new(Microsoft.Extensions.Options.Options.Create(opts), logger, () => transport);
+        IOptionsMonitor<SmtpOptions> monitor = Substitute.For<IOptionsMonitor<SmtpOptions>>();
+        monitor.CurrentValue.Returns(opts);
+
+        MailKitEmailSender sender = new(monitor, logger, () => transport);
 
         await sender.SendAsync(SimpleMessage(), TestContext.Current.CancellationToken);
 
@@ -397,7 +403,10 @@ public sealed class MailKitEmailSenderTests
     public void Constructor_WithNullFactory_UsesDefaultFactory()
     {
         SmtpOptions opts = new() { Host = "localhost", Port = 25, UseSsl = false };
-        MailKitEmailSender sender = new(Microsoft.Extensions.Options.Options.Create(opts), NullLogger<MailKitEmailSender>.Instance);
+        IOptionsMonitor<SmtpOptions> monitor = Substitute.For<IOptionsMonitor<SmtpOptions>>();
+        monitor.CurrentValue.Returns(opts);
+
+        MailKitEmailSender sender = new(monitor, NullLogger<MailKitEmailSender>.Instance);
 
         // Should not throw — default factory is used internally
         sender.ShouldNotBeNull();

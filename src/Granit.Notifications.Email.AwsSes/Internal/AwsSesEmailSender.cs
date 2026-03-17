@@ -12,7 +12,7 @@ namespace Granit.Notifications.Email.AwsSes.Internal;
 /// Registered as Keyed Service with key "AwsSes".
 /// </summary>
 internal sealed partial class AwsSesEmailSender(
-    IOptions<AwsSesOptions> options,
+    IOptionsMonitor<AwsSesOptions> options,
     ILogger<AwsSesEmailSender> logger,
     Func<IAwsSesTransport>? transportFactory = null) : IEmailSender
 {
@@ -22,7 +22,7 @@ internal sealed partial class AwsSesEmailSender(
     /// <inheritdoc />
     public async Task SendAsync(EmailMessage message, CancellationToken cancellationToken = default)
     {
-        AwsSesOptions ses = options.Value;
+        AwsSesOptions ses = options.CurrentValue;
 
         using Activity? activity = NotificationsEmailAwsSesActivitySource.Source.StartActivity(
             NotificationsEmailAwsSesActivitySource.Operations.SendEmail);

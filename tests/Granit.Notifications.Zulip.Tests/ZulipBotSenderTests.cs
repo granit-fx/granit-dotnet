@@ -13,13 +13,20 @@ namespace Granit.Notifications.Zulip.Tests;
 
 public sealed class ZulipBotSenderTests
 {
-    private readonly IOptions<ZulipBotOptions> _options = Microsoft.Extensions.Options.Options.Create(new ZulipBotOptions
+    private readonly IOptionsMonitor<ZulipBotOptions> _options = CreateOptionsMonitor();
+
+    private static IOptionsMonitor<ZulipBotOptions> CreateOptionsMonitor()
     {
-        BaseUrl = "https://zulip.example.com",
-        BotEmail = "bot@example.com",
-        ApiKey = "test-api-key",
-        TimeoutSeconds = 30,
-    });
+        IOptionsMonitor<ZulipBotOptions> monitor = Substitute.For<IOptionsMonitor<ZulipBotOptions>>();
+        monitor.CurrentValue.Returns(new ZulipBotOptions
+        {
+            BaseUrl = "https://zulip.example.com",
+            BotEmail = "bot@example.com",
+            ApiKey = "test-api-key",
+            TimeoutSeconds = 30,
+        });
+        return monitor;
+    }
 
     // -- Stream message --
 

@@ -27,9 +27,12 @@ public sealed class AcsEmailSenderTests
 
         IAcsEmailTransport transport = Substitute.For<IAcsEmailTransport>();
 
+        IOptionsMonitor<AcsEmailOptions> monitor = Substitute.For<IOptionsMonitor<AcsEmailOptions>>();
+        monitor.CurrentValue.Returns(opts);
+
         AcsEmailSender sender = new(
             transport,
-            Microsoft.Extensions.Options.Options.Create(opts),
+            monitor,
             NullLogger<AcsEmailSender>.Instance);
 
         return (sender, transport);
@@ -185,9 +188,12 @@ public sealed class AcsEmailSenderTests
         ILogger<AcsEmailSender> loggerSub = Substitute.For<ILogger<AcsEmailSender>>();
         loggerSub.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
+        IOptionsMonitor<AcsEmailOptions> monitor = Substitute.For<IOptionsMonitor<AcsEmailOptions>>();
+        monitor.CurrentValue.Returns(opts);
+
         AcsEmailSender sender = new(
             transport,
-            Microsoft.Extensions.Options.Options.Create(opts),
+            monitor,
             loggerSub);
 
         await sender.SendAsync(SimpleMessage(), TestContext.Current.CancellationToken);

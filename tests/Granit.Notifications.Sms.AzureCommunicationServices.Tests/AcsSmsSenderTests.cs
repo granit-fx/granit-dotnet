@@ -37,8 +37,11 @@ public sealed class AcsSmsSenderTests
         transport.SendAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(SuccessResult());
 
+        IOptionsMonitor<AcsSmsOptions> monitor = Substitute.For<IOptionsMonitor<AcsSmsOptions>>();
+        monitor.CurrentValue.Returns(opts);
+
         AcsSmsSender sender = new(
-            Microsoft.Extensions.Options.Options.Create(opts),
+            monitor,
             NullLogger<AcsSmsSender>.Instance,
             transport);
 
@@ -163,8 +166,11 @@ public sealed class AcsSmsSenderTests
         ILogger<AcsSmsSender> loggerSub = Substitute.For<ILogger<AcsSmsSender>>();
         loggerSub.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
 
+        IOptionsMonitor<AcsSmsOptions> monitor = Substitute.For<IOptionsMonitor<AcsSmsOptions>>();
+        monitor.CurrentValue.Returns(opts);
+
         AcsSmsSender sender = new(
-            Microsoft.Extensions.Options.Options.Create(opts),
+            monitor,
             loggerSub,
             transport);
 

@@ -2,6 +2,7 @@ using Amazon.SimpleNotificationService.Model;
 using Granit.Notifications.Sms.AwsSns.Internal;
 using Granit.Notifications.Sms.AwsSns.Options;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -154,8 +155,11 @@ public sealed class AwsSnsSmsSenderTests
             OriginationNumber = originationNumber,
         };
 
+        IOptionsMonitor<AwsSnsSmsOptions> monitor = Substitute.For<IOptionsMonitor<AwsSnsSmsOptions>>();
+        monitor.CurrentValue.Returns(options);
+
         AwsSnsSmsSender sut = new(
-            Microsoft.Extensions.Options.Options.Create(options),
+            monitor,
             NullLogger<AwsSnsSmsSender>.Instance,
             transport);
 

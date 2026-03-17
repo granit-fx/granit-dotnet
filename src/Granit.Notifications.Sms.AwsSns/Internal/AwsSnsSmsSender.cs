@@ -12,7 +12,7 @@ namespace Granit.Notifications.Sms.AwsSns.Internal;
 /// Registered as Keyed Service with key "AwsSns".
 /// </summary>
 internal sealed partial class AwsSnsSmsSender(
-    IOptions<AwsSnsSmsOptions> options,
+    IOptionsMonitor<AwsSnsSmsOptions> options,
     ILogger<AwsSnsSmsSender> logger,
     IAwsSnsSmsTransport transport) : ISmsSender
 {
@@ -21,7 +21,7 @@ internal sealed partial class AwsSnsSmsSender(
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        AwsSnsSmsOptions opts = options.Value;
+        AwsSnsSmsOptions opts = options.CurrentValue;
 
         using Activity? activity = NotificationsSmsAwsSnsActivitySource.Source.StartActivity(
             NotificationsSmsAwsSnsActivitySource.Operations.SendSms);

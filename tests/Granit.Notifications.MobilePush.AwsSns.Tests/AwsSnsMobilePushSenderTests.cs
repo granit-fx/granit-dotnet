@@ -2,6 +2,7 @@ using Amazon.SimpleNotificationService.Model;
 using Granit.Notifications.MobilePush.AwsSns.Internal;
 using Granit.Notifications.MobilePush.AwsSns.Options;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -140,8 +141,11 @@ public sealed class AwsSnsMobilePushSenderTests
             PlatformApplicationArn = "arn:aws:sns:eu-west-1:123456789:app/GCM/MyApp",
         };
 
+        IOptionsMonitor<AwsSnsMobilePushOptions> monitor = Substitute.For<IOptionsMonitor<AwsSnsMobilePushOptions>>();
+        monitor.CurrentValue.Returns(options);
+
         AwsSnsMobilePushSender sut = new(
-            Microsoft.Extensions.Options.Options.Create(options),
+            monitor,
             NullLogger<AwsSnsMobilePushSender>.Instance,
             transport,
             publisher);

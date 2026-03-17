@@ -11,7 +11,7 @@ namespace Granit.Notifications.Email.Smtp.Internal;
 /// Registered as Keyed Service with key "Smtp".
 /// </summary>
 internal sealed partial class MailKitEmailSender(
-    IOptions<SmtpOptions> options,
+    IOptionsMonitor<SmtpOptions> options,
     ILogger<MailKitEmailSender> logger,
     Func<ISmtpTransport>? transportFactory = null) : IEmailSender
 {
@@ -20,7 +20,7 @@ internal sealed partial class MailKitEmailSender(
     /// <inheritdoc />
     public async Task SendAsync(EmailMessage message, CancellationToken cancellationToken = default)
     {
-        SmtpOptions smtp = options.Value;
+        SmtpOptions smtp = options.CurrentValue;
         int timeoutMs = smtp.TimeoutSeconds * 1000;
 
         MimeMessage mimeMessage = new();

@@ -13,7 +13,7 @@ namespace Granit.Notifications.Zulip.Internal;
 /// </summary>
 internal sealed partial class ZulipBotSender(
     IHttpClientFactory httpClientFactory,
-    IOptions<ZulipBotOptions> options,
+    IOptionsMonitor<ZulipBotOptions> options,
     ILogger<ZulipBotSender> logger) : IZulipSender
 {
     internal const string HttpClientName = "ZulipBot";
@@ -22,7 +22,7 @@ internal sealed partial class ZulipBotSender(
     public async Task SendAsync(ZulipMessage message, CancellationToken cancellationToken = default)
     {
         HttpClient client = httpClientFactory.CreateClient(HttpClientName);
-        ZulipBotOptions botOptions = options.Value;
+        ZulipBotOptions botOptions = options.CurrentValue;
 
         string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{botOptions.BotEmail}:{botOptions.ApiKey}"));
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);

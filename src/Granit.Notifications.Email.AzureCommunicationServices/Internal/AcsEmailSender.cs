@@ -12,13 +12,13 @@ namespace Granit.Notifications.Email.AzureCommunicationServices.Internal;
 /// </summary>
 internal sealed partial class AcsEmailSender(
     IAcsEmailTransport transport,
-    IOptions<AcsEmailOptions> options,
+    IOptionsMonitor<AcsEmailOptions> options,
     ILogger<AcsEmailSender> logger) : IEmailSender
 {
     /// <inheritdoc />
     public async Task SendAsync(EmailMessage message, CancellationToken cancellationToken = default)
     {
-        AcsEmailOptions opts = options.Value;
+        AcsEmailOptions opts = options.CurrentValue;
 
         using Activity? activity = NotificationsEmailAcsActivitySource.Source.StartActivity(
             NotificationsEmailAcsActivitySource.Operations.SendEmail);
