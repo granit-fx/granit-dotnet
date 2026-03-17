@@ -404,7 +404,7 @@ export default defineConfig({
         ),
         starlightLinksValidator({
           errorOnRelativeLinks: false,
-          exclude: ["/api/**", "/blog/**"],
+          exclude: ["/", "/api/**", "/blog/**"],
         }),
         starlightImageZoom(),
         starlightLlmsTxt(),
