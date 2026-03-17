@@ -71,7 +71,7 @@
     <ProjectReference Include="..\..\src\Granit.Cookies.Endpoints\Granit.Cookies.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Cookies.Klaro\Granit.Cookies.Klaro.csproj" />
     <ProjectReference Include="..\..\src\Granit.Core\Granit.Core.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Cors\Granit.Cors.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.Cors\Granit.Http.Cors.csproj" />
     <ProjectReference Include="..\..\src\Granit.DataExchange\Granit.DataExchange.csproj" />
     <ProjectReference Include="..\..\src\Granit.DataExchange.AI\Granit.DataExchange.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.DataExchange.Csv\Granit.DataExchange.Csv.csproj" />

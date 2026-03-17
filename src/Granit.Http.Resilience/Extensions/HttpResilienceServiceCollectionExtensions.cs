@@ -1,10 +1,10 @@
-using Granit.HttpResilience.Options;
+using Granit.Http.Resilience.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
 
-namespace Granit.HttpResilience.Extensions;
+namespace Granit.Http.Resilience.Extensions;
 
 /// <summary>
 /// Extension methods for registering resilient named <see cref="HttpClient"/> instances.

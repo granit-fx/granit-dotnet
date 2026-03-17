@@ -1,6 +1,6 @@
 using Granit.Core.Modularity;
 
-namespace Granit.HttpResilience;
+namespace Granit.Http.Resilience;
 
 /// <summary>
 /// Granit module for standardized outbound HTTP resilience.

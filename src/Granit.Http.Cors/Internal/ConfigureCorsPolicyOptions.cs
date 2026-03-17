@@ -1,8 +1,8 @@
-using Granit.Cors.Options;
+using Granit.Http.Cors.Options;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Options;
 
-namespace Granit.Cors.Internal;
+namespace Granit.Http.Cors.Internal;
 
 /// <summary>
 /// Bridges <see cref="GranitCorsOptions"/> to ASP.NET Core <see cref="CorsOptions"/>

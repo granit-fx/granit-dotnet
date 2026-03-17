@@ -245,7 +245,7 @@ flowchart TD
 | `Granit.Observability` | `Core` |
 | `Granit.MultiTenancy` | `Core` |
 | `Granit.Privacy` | `Core` |
-| `Granit.Cors` | `Core` |
+| `Granit.Http.Cors` | `Core` |
 | `Granit.Guids` | `Timing` |
 | `Granit.Diagnostics` | `Timing` |
 | `Granit.Validation` | `ExceptionHandling`, `Localization` |
@@ -581,7 +581,7 @@ Complete REST API. Includes everything in `Bundle.Essentials` plus:
 |------------------|
 | `Granit.ApiVersioning` |
 | `Granit.ApiDocumentation` |
-| `Granit.Cors` |
+| `Granit.Http.Cors` |
 | `Granit.Idempotency` |
 | `Granit.Localization` |
 | `Granit.Localization.EntityFrameworkCore` |

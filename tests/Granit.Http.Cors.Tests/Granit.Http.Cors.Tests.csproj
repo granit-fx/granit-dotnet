@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.Cors\Granit.Cors.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.Cors\Granit.Http.Cors.csproj" />
   </ItemGroup>
 
 </Project>

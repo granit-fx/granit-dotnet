@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Granit.Cors.Options;
+namespace Granit.Http.Cors.Options;
 
 /// <summary>
 /// Configuration options for the Granit CORS module.

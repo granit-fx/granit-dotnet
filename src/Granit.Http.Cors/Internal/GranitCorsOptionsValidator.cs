@@ -1,8 +1,8 @@
-using Granit.Cors.Options;
+using Granit.Http.Cors.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace Granit.Cors.Internal;
+namespace Granit.Http.Cors.Internal;
 
 /// <summary>
 /// Validates <see cref="GranitCorsOptions"/> at startup.

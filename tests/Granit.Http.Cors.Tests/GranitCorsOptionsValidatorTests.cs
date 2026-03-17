@@ -1,12 +1,12 @@
-using Granit.Cors.Internal;
-using Granit.Cors.Options;
+using Granit.Http.Cors.Internal;
+using Granit.Http.Cors.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Cors.Tests;
+namespace Granit.Http.Cors.Tests;
 
 public sealed class GranitCorsOptionsValidatorTests
 {

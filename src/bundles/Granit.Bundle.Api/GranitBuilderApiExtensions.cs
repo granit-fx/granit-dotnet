@@ -3,7 +3,7 @@ using Granit.ApiVersioning;
 using Granit.Bundle.Essentials;
 using Granit.Caching;
 using Granit.Core.Modularity;
-using Granit.Cors;
+using Granit.Http.Cors;
 using Granit.Idempotency;
 using Granit.Localization;
 
@@ -23,7 +23,7 @@ public static class GranitBuilderApiExtensions
         builder.AddEssentials();
         builder.AddModule<GranitApiVersioningModule>();
         builder.AddModule<GranitApiDocumentationModule>();
-        builder.AddModule<GranitCorsModule>();
+        builder.AddModule<GranitHttpCorsModule>();
         builder.AddModule<GranitIdempotencyModule>();
         builder.AddModule<GranitLocalizationModule>();
         builder.AddModule<GranitCachingModule>();

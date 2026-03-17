@@ -462,7 +462,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `Cors` | |
-| **Package** | -- | `Granit.Cors` | |
+| **Package** | -- | `Granit.Http.Cors` | |
 | `AllowedOrigins` | `string[]` | `[]` | Allowed CORS origins. Wildcard `*` forbidden outside Development (ISO 27001). |
 | `AllowCredentials` | `bool` | `false` | Include `Access-Control-Allow-Credentials`. |
 

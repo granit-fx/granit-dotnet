@@ -1,4 +1,4 @@
-namespace Granit.HttpResilience.Options;
+namespace Granit.Http.Resilience.Options;
 
 /// <summary>
 /// Global HTTP resilience configuration.

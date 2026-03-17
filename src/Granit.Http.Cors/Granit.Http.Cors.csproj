@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>Granit.Cors</PackageId>
+    <PackageId>Granit.Http.Cors</PackageId>
     <Description>Standardized CORS configuration for Granit. ISO 27001 compliant: wildcard forbidden in production, AllowCredentials validation. Configurable via appsettings.json.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Granit.Cors.Tests" />
+    <InternalsVisibleTo Include="Granit.Http.Cors.Tests" />
   </ItemGroup>
 
   <ItemGroup>

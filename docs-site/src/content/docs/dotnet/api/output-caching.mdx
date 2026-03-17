@@ -65,7 +65,7 @@ public class AppModule : GranitModule { }
 
 ```csharp
 app.UseRouting();
-app.UseCors();                    // Granit.Cors
+app.UseCors();                    // Granit.Http.Cors
 app.UseGranitOutputCaching();     // ← AFTER CORS, AFTER routing
 app.UseAuthorization();
 ```

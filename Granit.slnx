@@ -50,7 +50,7 @@
     <Project Path="src/Granit.Cookies.Klaro/Granit.Cookies.Klaro.csproj" />
     <Project Path="src/Granit.Cookies/Granit.Cookies.csproj" />
     <Project Path="src/Granit.Core/Granit.Core.csproj" />
-    <Project Path="src/Granit.Cors/Granit.Cors.csproj" />
+    <Project Path="src/Granit.Http.Cors/Granit.Http.Cors.csproj" />
     <Project Path="src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj" />
     <Project Path="src/Granit.DataExchange.Csv/Granit.DataExchange.Csv.csproj" />
     <Project Path="src/Granit.DataExchange.Endpoints/Granit.DataExchange.Endpoints.csproj" />
@@ -71,7 +71,7 @@
     <Project Path="src/Granit.Guids/Granit.Guids.csproj" />
     <Project Path="src/Granit.Http.OutputCaching/Granit.Http.OutputCaching.csproj" />
     <Project Path="src/Granit.Http.OutputCaching.StackExchangeRedis/Granit.Http.OutputCaching.StackExchangeRedis.csproj" />
-    <Project Path="src/Granit.HttpResilience/Granit.HttpResilience.csproj" />
+    <Project Path="src/Granit.Http.Resilience/Granit.Http.Resilience.csproj" />
     <Project Path="src/Granit.Idempotency/Granit.Idempotency.csproj" />
     <Project Path="src/Granit.Identity.Endpoints/Granit.Identity.Endpoints.csproj" />
     <Project Path="src/Granit.Identity.Cognito/Granit.Identity.Cognito.csproj" />
@@ -225,7 +225,7 @@
     <Project Path="tests/Granit.Cookies.Klaro.Tests/Granit.Cookies.Klaro.Tests.csproj" />
     <Project Path="tests/Granit.Cookies.Tests/Granit.Cookies.Tests.csproj" />
     <Project Path="tests/Granit.Core.Tests/Granit.Core.Tests.csproj" />
-    <Project Path="tests/Granit.Cors.Tests/Granit.Cors.Tests.csproj" />
+    <Project Path="tests/Granit.Http.Cors.Tests/Granit.Http.Cors.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.AI.Tests/Granit.DataExchange.AI.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Csv.Tests/Granit.DataExchange.Csv.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Endpoints.Tests/Granit.DataExchange.Endpoints.Tests.csproj" />
@@ -246,7 +246,7 @@
     <Project Path="tests/Granit.Guids.Tests/Granit.Guids.Tests.csproj" />
     <Project Path="tests/Granit.Http.OutputCaching.Tests/Granit.Http.OutputCaching.Tests.csproj" />
     <Project Path="tests/Granit.Http.OutputCaching.StackExchangeRedis.Tests/Granit.Http.OutputCaching.StackExchangeRedis.Tests.csproj" />
-    <Project Path="tests/Granit.HttpResilience.Tests/Granit.HttpResilience.Tests.csproj" />
+    <Project Path="tests/Granit.Http.Resilience.Tests/Granit.Http.Resilience.Tests.csproj" />
     <Project Path="tests/Granit.Idempotency.Tests/Granit.Idempotency.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Endpoints.Tests/Granit.Identity.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Cognito.Tests/Granit.Identity.Cognito.Tests.csproj" />

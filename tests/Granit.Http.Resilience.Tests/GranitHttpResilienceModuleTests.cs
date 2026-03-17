@@ -6,13 +6,13 @@
 // =============================================================================
 
 using Granit.Core.Modularity;
-using Granit.HttpResilience.Extensions;
+using Granit.Http.Resilience.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;
 
-namespace Granit.HttpResilience.Tests;
+namespace Granit.Http.Resilience.Tests;
 
 public sealed class GranitHttpResilienceModuleTests
 {

@@ -1,8 +1,8 @@
 using Granit.Core.Modularity;
-using Granit.Cors.Extensions;
-using Granit.Cors.Options;
+using Granit.Http.Cors.Extensions;
+using Granit.Http.Cors.Options;
 
-namespace Granit.Cors;
+namespace Granit.Http.Cors;
 
 /// <summary>
 /// Granit module for standardized CORS configuration.
@@ -11,7 +11,7 @@ namespace Granit.Cors;
 /// Registers CORS middleware with a default policy driven by <see cref="GranitCorsOptions"/>.
 /// ISO 27001-compliant: wildcard origins are rejected in non-development environments.
 /// </remarks>
-public sealed class GranitCorsModule : GranitModule
+public sealed class GranitHttpCorsModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>
