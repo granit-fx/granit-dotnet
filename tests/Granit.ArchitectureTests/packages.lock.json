@@ -1221,7 +1221,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.AI": "[0.1.0-dev, )",
-          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Http.Resilience": "[0.1.0-dev, )",
           "OllamaSharp": "[5.*, )"
         }
       },
@@ -1268,8 +1268,8 @@
       "granit.authentication.apikeys": {
         "type": "Project",
         "dependencies": {
-          "Granit.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
@@ -1459,15 +1459,6 @@
           "Granit.BlobStorage": "[0.1.0-dev, )"
         }
       },
-      "granit.bulkhead": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
-          "Granit.ExceptionHandling": "[0.1.0-dev, )",
-          "Granit.Features": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )"
-        }
-      },
       "granit.caching": {
         "type": "Project",
         "dependencies": {
@@ -1512,12 +1503,6 @@
       },
       "granit.core": {
         "type": "Project"
-      },
-      "granit.cors": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
-        }
       },
       "granit.dataexchange": {
         "type": "Project",
@@ -1608,12 +1593,6 @@
           "Granit.Core": "[0.1.0-dev, )"
         }
       },
-      "granit.exceptionhandling": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
-        }
-      },
       "granit.features": {
         "type": "Project",
         "dependencies": {
@@ -1635,7 +1614,28 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
-      "granit.httpresilience": {
+      "granit.http.bulkhead": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Granit.Features": "[0.1.0-dev, )",
+          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
+          "Granit.Security": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.cors": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.exceptionhandling": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.resilience": {
         "type": "Project",
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )",
@@ -1687,7 +1687,7 @@
       "granit.identity.entraid": {
         "type": "Project",
         "dependencies": {
-          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
@@ -1702,7 +1702,7 @@
       "granit.identity.keycloak": {
         "type": "Project",
         "dependencies": {
-          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
@@ -1784,7 +1784,7 @@
       "granit.notifications.brevo": {
         "type": "Project",
         "dependencies": {
-          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Notifications.Email": "[0.1.0-dev, )",
           "Granit.Notifications.Sms": "[0.1.0-dev, )",
           "Granit.Notifications.WhatsApp": "[0.1.0-dev, )"
@@ -1814,14 +1814,14 @@
       "granit.notifications.email.scaleway": {
         "type": "Project",
         "dependencies": {
-          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Notifications.Email": "[0.1.0-dev, )"
         }
       },
       "granit.notifications.email.sendgrid": {
         "type": "Project",
         "dependencies": {
-          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Notifications.Email": "[0.1.0-dev, )"
         }
       },
@@ -1875,7 +1875,7 @@
       "granit.notifications.mobilepush.googlefcm": {
         "type": "Project",
         "dependencies": {
-          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Notifications.MobilePush": "[0.1.0-dev, )"
         }
       },
@@ -1916,7 +1916,7 @@
       "granit.notifications.twilio": {
         "type": "Project",
         "dependencies": {
-          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Notifications.Sms": "[0.1.0-dev, )",
           "Granit.Notifications.WhatsApp": "[0.1.0-dev, )"
         }
@@ -1945,7 +1945,7 @@
       "granit.notifications.zulip": {
         "type": "Project",
         "dependencies": {
-          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Notifications": "[0.1.0-dev, )"
         }
       },
@@ -1975,8 +1975,8 @@
       "granit.persistence": {
         "type": "Project",
         "dependencies": {
-          "Granit.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore": "[10.*, )",
@@ -2051,8 +2051,8 @@
         "type": "Project",
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )",
-          "Granit.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Features": "[0.1.0-dev, )",
+          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "StackExchange.Redis": "[2.*, )"
         }
@@ -2211,7 +2211,7 @@
         "dependencies": {
           "FluentValidation": "[12.*, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.*, )",
-          "Granit.ExceptionHandling": "[0.1.0-dev, )",
+          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )"
         }
       },
@@ -2290,7 +2290,7 @@
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },

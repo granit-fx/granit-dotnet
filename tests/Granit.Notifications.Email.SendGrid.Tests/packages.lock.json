@@ -5,8 +5,8 @@
       "coverlet.collector": {
         "type": "Direct",
         "requested": "[8.*, )",
-        "resolved": "8.0.0",
-        "contentHash": "EMkj/2F6n6IVPrvGYkqzGJs6phuGGkq6N+E7KW9rNyzNxXbwQ1KfMqWyXNf9nCNEQOA6IjFwmOLvkriwKE7Orw=="
+        "resolved": "8.0.1",
+        "contentHash": "heVQl5tKYnnIDYlR1QMVGueYH6iriZTcZB6AjDczQNwZzxkjDIt9C84Pt4cCiZYrbo7jkZOYGWbs6Lo9wAtVLg=="
       },
       "JunitXml.TestLogger": {
         "type": "Direct",
@@ -452,7 +452,7 @@
           "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
-      "granit.httpresilience": {
+      "granit.http.resilience": {
         "type": "Project",
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )",
@@ -486,7 +486,7 @@
       "granit.notifications.email.sendgrid": {
         "type": "Project",
         "dependencies": {
-          "Granit.HttpResilience": "[0.1.0-dev, )",
+          "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Notifications.Email": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Diagnostics.HealthChecks": "[10.*, )",
