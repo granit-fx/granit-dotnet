@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Testing</PackageId>
+    <Description>Shared test infrastructure for Granit modules. Provides GranitTestFixture&lt;TModule&gt; for DI-bootstrapped tests, GranitWebApplicationFactory&lt;TProgram&gt; for endpoint integration tests, configurable fakes (FakeCurrentTenant, FakeCurrentUser, FakeClock, FakeGuidGenerator) with AsyncLocal isolation, and Bogus generators for Granit domain types.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Testing.Tests" />
+    <InternalsVisibleTo Include="Granit.Testing.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Testing.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bogus" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
+    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
+    <ProjectReference Include="..\Granit.Security\Granit.Security.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+  </ItemGroup>
+
+</Project>
