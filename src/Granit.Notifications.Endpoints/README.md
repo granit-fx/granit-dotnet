@@ -14,7 +14,7 @@ dotnet add package Granit.Notifications.Endpoints
 
 ## Dependencies
 
-- `Granit.ApiDocumentation`
+- `Granit.Http.ApiDocumentation`
 - `Granit.Guids`
 - `Granit.Notifications`
 - `Granit.Notifications.MobilePush`

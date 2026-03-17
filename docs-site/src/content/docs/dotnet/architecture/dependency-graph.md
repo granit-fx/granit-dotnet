@@ -115,7 +115,7 @@ flowchart TD
 
 | Domain | Packages |
 |--------|----------|
-| Utilities | Timing, Guids, Diagnostics, Validation, Validation.Europe, Validation.NorthAmerica, Validation.UnitedKingdom, ExceptionHandling, Observability, MultiTenancy, Privacy, Cors, Bulkhead, RateLimiting |
+| Utilities | Timing, Guids, Diagnostics, Validation, Validation.Europe, Validation.NorthAmerica, Validation.UnitedKingdom, Http.ExceptionHandling, Observability, MultiTenancy, Privacy, Cors, Bulkhead, RateLimiting |
 | Identity | Identity, Identity.Keycloak, Identity.EntraId, Identity.Cognito, Identity.GoogleCloud, Identity.EntityFrameworkCore, Identity.Endpoints |
 | Security | Security, Encryption, Vault, Vault.HashiCorp, Vault.Azure, Vault.Aws, Vault.GoogleCloud, Authentication.JwtBearer, Authentication.Keycloak, Authentication.EntraId, Authentication.Cognito, Authentication.GoogleCloud, Authentication.ApiKeys (3), Authorization, Authorization.EntityFrameworkCore, Authorization.Endpoints |
 | Configuration | Settings (3), Features (2), ReferenceData (3) |
@@ -241,7 +241,7 @@ flowchart TD
 |---------|------------|
 | `Granit.Timing` | `Core` |
 | `Granit.Security` | `Core` |
-| `Granit.ExceptionHandling` | `Core` |
+| `Granit.Http.ExceptionHandling` | `Core` |
 | `Granit.Observability` | `Core` |
 | `Granit.MultiTenancy` | `Core` |
 | `Granit.Privacy` | `Core` |
@@ -294,7 +294,7 @@ flowchart TD
 | Package | Depends on |
 |---------|------------|
 | `Granit.ApiVersioning` | `Core` |
-| `Granit.ApiDocumentation` | `ApiVersioning`, `Security` |
+| `Granit.Http.ApiDocumentation` | `ApiVersioning`, `Security` |
 | `Granit.Cookies` | `Timing` |
 | `Granit.Cookies.Klaro` | `Cookies` |
 | `Granit.Cookies.Endpoints` | `Cookies`, `Core` |
@@ -570,7 +570,7 @@ Minimal API foundation.
 | `Granit.Validation` |
 | `Granit.Persistence` |
 | `Granit.Observability` |
-| `Granit.ExceptionHandling` |
+| `Granit.Http.ExceptionHandling` |
 | `Granit.Diagnostics` |
 
 ### Granit.Bundle.Api
@@ -580,7 +580,7 @@ Complete REST API. Includes everything in `Bundle.Essentials` plus:
 | Included package |
 |------------------|
 | `Granit.ApiVersioning` |
-| `Granit.ApiDocumentation` |
+| `Granit.Http.ApiDocumentation` |
 | `Granit.Http.Cors` |
 | `Granit.Idempotency` |
 | `Granit.Localization` |

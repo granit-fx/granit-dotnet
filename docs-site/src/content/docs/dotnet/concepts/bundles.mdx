@@ -33,10 +33,10 @@ Each bundle is a NuGet meta-package with no code of its own. It only declares de
 | `Granit.Timing` | ✓ | ✓ | ✓ | | ✓ |
 | `Granit.Guids` | ✓ | ✓ | ✓ | | ✓ |
 | `Granit.Validation` | ✓ | ✓ | ✓ | | ✓ |
-| `Granit.ExceptionHandling` | ✓ | ✓ | ✓ | | ✓ |
+| `Granit.Http.ExceptionHandling` | ✓ | ✓ | ✓ | | ✓ |
 | `Granit.Observability` | ✓ | ✓ | ✓ | | ✓ |
 | `Granit.ApiVersioning` | | ✓ | | | ✓ |
-| `Granit.ApiDocumentation` | | ✓ | | | ✓ |
+| `Granit.Http.ApiDocumentation` | | ✓ | | | ✓ |
 | `Granit.Http.Cors` | | ✓ | | | ✓ |
 | `Granit.Idempotency` | | ✓ | | | ✓ |
 | `Granit.Cookies` | | ✓ | | | ✓ |
@@ -111,7 +111,7 @@ Bundles are convenience, not requirement. If your project only needs two or thre
 ```xml
 <PackageReference Include="Granit.Core" />
 <PackageReference Include="Granit.Observability" />
-<PackageReference Include="Granit.ExceptionHandling" />
+<PackageReference Include="Granit.Http.ExceptionHandling" />
 ```
 
 This keeps your dependency footprint minimal and avoids pulling in modules you will never configure.

@@ -47,7 +47,7 @@ for durable outbox-backed dispatch with exponential backoff retry.
 |---------|------|------------|
 | `Granit.Notifications` | Fan-out engine, InApp channel, definitions, entity tracking | `Granit.Guids`, `Granit.Timing`, `Granit.Querying` |
 | `Granit.Notifications.EntityFrameworkCore` | EF Core stores (all entities + mobile push tokens) | `Granit.Notifications`, `Granit.Notifications.MobilePush`, `Granit.Persistence` |
-| `Granit.Notifications.Endpoints` | Minimal API endpoints (inbox, preferences, subscriptions, followers) | `Granit.Notifications`, `Granit.Notifications.MobilePush`, `Granit.Validation`, `Granit.ApiDocumentation` |
+| `Granit.Notifications.Endpoints` | Minimal API endpoints (inbox, preferences, subscriptions, followers) | `Granit.Notifications`, `Granit.Notifications.MobilePush`, `Granit.Validation`, `Granit.Http.ApiDocumentation` |
 | `Granit.Notifications.Wolverine` | Durable outbox-backed dispatch via `IMessageBus` | `Granit.Notifications`, `Granit.Wolverine` |
 | `Granit.Notifications.Email` | Email channel abstraction, Keyed Services resolution | `Granit.Notifications` |
 | `Granit.Notifications.Email.Smtp` | MailKit SMTP provider (Keyed Service `"Smtp"`) | `Granit.Notifications.Email` |
@@ -84,7 +84,7 @@ graph TD
     NE[Granit.Notifications.Endpoints] --> N
     NE --> MP
     NE --> V[Granit.Validation]
-    NE --> AD[Granit.ApiDocumentation]
+    NE --> AD[Granit.Http.ApiDocumentation]
 
     NW[Granit.Notifications.Wolverine] --> N
     NW --> W[Granit.Wolverine]

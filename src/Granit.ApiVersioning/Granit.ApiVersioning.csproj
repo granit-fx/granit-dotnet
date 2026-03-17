@@ -7,8 +7,8 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.ApiVersioning.Tests" />
-    <InternalsVisibleTo Include="Granit.ApiDocumentation" />
-    <InternalsVisibleTo Include="Granit.ApiDocumentation.Tests" />
+    <InternalsVisibleTo Include="Granit.Http.ApiDocumentation" />
+    <InternalsVisibleTo Include="Granit.Http.ApiDocumentation.Tests" />
   </ItemGroup>
 
   <ItemGroup>

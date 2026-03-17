@@ -14,7 +14,7 @@ dotnet add package Granit.ReferenceData.Endpoints
 
 ## Dependencies
 
-- `Granit.ApiDocumentation`
+- `Granit.Http.ApiDocumentation`
 - `Granit.Guids`
 - `Granit.ReferenceData`
 - `Granit.Validation`

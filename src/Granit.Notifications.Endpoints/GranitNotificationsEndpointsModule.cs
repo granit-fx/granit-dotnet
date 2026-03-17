@@ -1,5 +1,5 @@
-using Granit.ApiDocumentation;
 using Granit.Core.Modularity;
+using Granit.Http.ApiDocumentation;
 using Granit.Validation;
 
 namespace Granit.Notifications.Endpoints;
@@ -13,7 +13,7 @@ namespace Granit.Notifications.Endpoints;
 /// Validators are auto-discovered by <c>GranitValidationModule</c>.
 /// </remarks>
 [DependsOn(
-    typeof(GranitApiDocumentationModule),
+    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitNotificationsModule),
     typeof(GranitValidationModule))]
 public sealed class GranitNotificationsEndpointsModule : GranitModule;

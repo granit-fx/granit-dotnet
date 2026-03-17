@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
-using Granit.ApiDocumentation;
 using Granit.DataExchange.Endpoints.Dtos.Export;
 using Granit.DataExchange.Endpoints.Dtos.Import;
+using Granit.Http.ApiDocumentation;
 
 namespace Granit.DataExchange.Endpoints.Internal;
 

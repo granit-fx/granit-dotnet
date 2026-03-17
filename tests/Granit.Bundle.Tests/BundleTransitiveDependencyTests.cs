@@ -1,4 +1,3 @@
-using Granit.ApiDocumentation;
 using Granit.ApiVersioning;
 using Granit.Caching;
 using Granit.Core.Modularity;
@@ -6,11 +5,12 @@ using Granit.Diagnostics;
 using Granit.DocumentGeneration;
 using Granit.DocumentGeneration.Excel;
 using Granit.DocumentGeneration.Pdf;
-using Granit.ExceptionHandling;
 using Granit.Features;
 using Granit.Features.EntityFrameworkCore;
 using Granit.Guids;
+using Granit.Http.ApiDocumentation;
 using Granit.Http.Cors;
+using Granit.Http.ExceptionHandling;
 using Granit.Idempotency;
 using Granit.Localization;
 using Granit.MultiTenancy;
@@ -59,7 +59,7 @@ public sealed class BundleTransitiveDependencyTests
         typeof(IClock).Assembly.ShouldNotBeNull();
 
         typeof(GranitApiVersioningModule).Assembly.ShouldNotBeNull();
-        typeof(GranitApiDocumentationModule).Assembly.ShouldNotBeNull();
+        typeof(GranitHttpApiDocumentationModule).Assembly.ShouldNotBeNull();
         typeof(GranitHttpCorsModule).Assembly.ShouldNotBeNull();
         typeof(GranitIdempotencyModule).Assembly.ShouldNotBeNull();
         typeof(GranitLocalizationModule).Assembly.ShouldNotBeNull();

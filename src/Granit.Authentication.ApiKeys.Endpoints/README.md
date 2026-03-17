@@ -13,7 +13,7 @@ dotnet add package Granit.Authentication.ApiKeys.Endpoints
 
 ## Dependencies
 
-- `Granit.ApiDocumentation`
+- `Granit.Http.ApiDocumentation`
 - `Granit.Authentication.ApiKeys`
 - `Granit.Authorization`
 - `Granit.Querying`

@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.ApiDocumentation\Granit.ApiDocumentation.csproj" />
+    <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
     <ProjectReference Include="..\Granit.DataExchange\Granit.DataExchange.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />

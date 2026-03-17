@@ -14,7 +14,7 @@ dotnet add package Granit.Identity.Endpoints
 
 ## Dependencies
 
-- `Granit.ApiDocumentation`
+- `Granit.Http.ApiDocumentation`
 - `Granit.Authorization`
 - `Granit.Identity`
 - `Granit.Querying`

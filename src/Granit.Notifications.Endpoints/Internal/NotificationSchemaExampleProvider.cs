@@ -1,5 +1,5 @@
 using System.Text.Json.Nodes;
-using Granit.ApiDocumentation;
+using Granit.Http.ApiDocumentation;
 using Granit.Notifications.Endpoints.Dtos;
 
 namespace Granit.Notifications.Endpoints.Internal;

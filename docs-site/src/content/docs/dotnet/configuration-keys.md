@@ -432,7 +432,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `ApiDocumentation` | |
-| **Package** | -- | `Granit.ApiDocumentation` | |
+| **Package** | -- | `Granit.Http.ApiDocumentation` | |
 | `MajorVersions` | `int[]` | `[1]` | API versions to generate OpenAPI docs for. |
 | `Title` | `string` | `"API"` | API title in Scalar UI. |
 | `Description` | `string?` | `null` | Markdown description in OpenAPI info. |
@@ -454,7 +454,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | *(configured in code)* | |
-| **Package** | -- | `Granit.ExceptionHandling` | |
+| **Package** | -- | `Granit.Http.ExceptionHandling` | |
 | `ExposeInternalErrorDetails` | `bool` | `false` | Show internal error messages in ProblemDetails. Never `true` in production (ISO 27001). |
 
 ### CORS -- `GranitCorsOptions`

@@ -50,10 +50,10 @@ traffic and integration patterns demand.
 graph TD
     CORS[Granit.Http.Cors] --> CO[Granit.Core]
     AV[Granit.ApiVersioning] --> CO
-    AD[Granit.ApiDocumentation] --> AV
+    AD[Granit.Http.ApiDocumentation] --> AV
     AD --> SEC[Granit.Security]
     RC[Granit.ResponseCompression] --> CO
-    EH[Granit.ExceptionHandling] --> CO
+    EH[Granit.Http.ExceptionHandling] --> CO
     ID[Granit.Idempotency] --> CA[Granit.Caching]
     ID --> SEC
     RL[Granit.RateLimiting] --> CO

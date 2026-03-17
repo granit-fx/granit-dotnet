@@ -13,7 +13,7 @@ dotnet add package Granit.Workflow.Endpoints
 
 ## Dependencies
 
-- `Granit.ApiDocumentation`
+- `Granit.Http.ApiDocumentation`
 - `Granit.Authorization`
 - `Granit.Validation`
 - `Granit.Workflow`
