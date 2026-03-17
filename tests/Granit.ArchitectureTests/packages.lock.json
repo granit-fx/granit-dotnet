@@ -1239,15 +1239,6 @@
           "Microsoft.Extensions.VectorData.Abstractions": "[10.*, )"
         }
       },
-      "granit.apidocumentation": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.ApiVersioning": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
-          "Microsoft.AspNetCore.OpenApi": "[10.*, )",
-          "Scalar.AspNetCore": "[2.*, )"
-        }
-      },
       "granit.apiversioning": {
         "type": "Project",
         "dependencies": {
@@ -1278,9 +1269,9 @@
       "granit.authentication.apikeys.endpoints": {
         "type": "Project",
         "dependencies": {
-          "Granit.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Authentication.ApiKeys": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
@@ -1530,10 +1521,10 @@
       "granit.dataexchange.endpoints": {
         "type": "Project",
         "dependencies": {
-          "Granit.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.DataExchange": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
@@ -1614,6 +1605,15 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.http.apidocumentation": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.ApiVersioning": "[0.1.0-dev, )",
+          "Granit.Security": "[0.1.0-dev, )",
+          "Microsoft.AspNetCore.OpenApi": "[10.*, )",
+          "Scalar.AspNetCore": "[2.*, )"
+        }
+      },
       "granit.http.bulkhead": {
         "type": "Project",
         "dependencies": {
@@ -1668,8 +1668,8 @@
       "granit.identity.endpoints": {
         "type": "Project",
         "dependencies": {
-          "Granit.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
@@ -1745,8 +1745,8 @@
       "granit.localization.endpoints": {
         "type": "Project",
         "dependencies": {
-          "Granit.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
@@ -1836,8 +1836,8 @@
       "granit.notifications.endpoints": {
         "type": "Project",
         "dependencies": {
-          "Granit.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Notifications": "[0.1.0-dev, )",
           "Granit.Notifications.MobilePush": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
@@ -2031,9 +2031,9 @@
       "granit.querying.endpoints": {
         "type": "Project",
         "dependencies": {
-          "Granit.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
@@ -2067,8 +2067,8 @@
       "granit.referencedata.endpoints": {
         "type": "Project",
         "dependencies": {
-          "Granit.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.ReferenceData": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
@@ -2128,8 +2128,8 @@
       "granit.templating.endpoints": {
         "type": "Project",
         "dependencies": {
-          "Granit.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Templating": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
@@ -2356,8 +2356,8 @@
       "granit.workflow.endpoints": {
         "type": "Project",
         "dependencies": {
-          "Granit.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "Granit.Workflow": "[0.1.0-dev, )"
         }
