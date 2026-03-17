@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Http.OutputCaching</PackageId>
+    <Description>Multi-tenant HTTP response caching with GDPR-safe defaults. Wraps ASP.NET Core OutputCaching with tenant-aware cache isolation, tag-based eviction, and secure-by-default policies that exclude authenticated responses.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Http.OutputCaching.Tests" />
+    <InternalsVisibleTo Include="Granit.Http.OutputCaching.StackExchangeRedis" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
+  </ItemGroup>
+
+</Project>

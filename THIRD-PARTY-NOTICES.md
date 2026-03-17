@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-03-15
+Dernière mise à jour : 2026-03-17
 
 ---
 
@@ -12,7 +12,7 @@ Dernière mise à jour : 2026-03-15
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 56                 |
+| MIT          | 57                 |
 | Apache-2.0   | 19                 |
 | BSD-3-Clause | 2                  |
 | BSD-2-Clause | 1                  |
@@ -44,6 +44,7 @@ Dernière mise à jour : 2026-03-15
 | Microsoft.Extensions.Caching.Hybrid | 10.3.0 | (c) Microsoft Corporation |
 | Microsoft.Extensions.Caching.Memory | 10.0.3 | (c) Microsoft Corporation |
 | Microsoft.Extensions.Caching.StackExchangeRedis | 10.0.3 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.OutputCaching.StackExchangeRedis | 10.0.3 | (c) Microsoft Corporation |
 | Microsoft.Extensions.Configuration.Binder | 10.0.3 | (c) Microsoft Corporation |
 | Microsoft.Extensions.DependencyInjection.Abstractions | 10.0.3 | (c) Microsoft Corporation |
 | Microsoft.Extensions.Diagnostics.HealthChecks | 10.0.5 | (c) Microsoft Corporation |

@@ -117,6 +117,7 @@
     <PackageVersion Include="Microsoft.Extensions.Caching.Hybrid" Version="10.*" />
     <PackageVersion Include="StackExchange.Redis" Version="2.*" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.*" />
+    <PackageVersion Include="Microsoft.AspNetCore.OutputCaching.StackExchangeRedis" Version="10.*" />
   </ItemGroup>
   <ItemGroup Label="Observabilité">
     <PackageVersion Include="Serilog.AspNetCore" Version="10.*" />
