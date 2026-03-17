@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.IO;
+using StackExchange.Redis;
 
 namespace Granit.Http.Idempotency.Extensions;
 
@@ -54,7 +55,23 @@ public static class IdempotencyServiceCollectionExtensions
     private static IServiceCollection AddGranitIdempotencyCore(this IServiceCollection services)
     {
         services.AddSingleton<IValidateOptions<IdempotencyOptions>, IdempotencyOptionsValidator>();
-        services.AddScoped<IIdempotencyStore, RedisIdempotencyStore>();
+
+        // Resolve at runtime: Redis-backed store when IConnectionMultiplexer is available,
+        // otherwise fall back to an in-memory store (dev / single-instance deployments).
+        // Using a factory delegate avoids order-dependent service.Any() checks at registration time.
+        services.TryAddScoped<IIdempotencyStore>(sp =>
+        {
+            IConnectionMultiplexer? redis = sp.GetService<IConnectionMultiplexer>();
+            if (redis is not null)
+            {
+                return ActivatorUtilities.CreateInstance<RedisIdempotencyStore>(sp);
+            }
+
+            // Singleton fallback — resolved from the root scope to avoid multiple instances.
+            return sp.GetRequiredService<InMemoryIdempotencyStore>();
+        });
+
+        services.TryAddSingleton<InMemoryIdempotencyStore>();
 
         // RecyclableMemoryStreamManager is thread-safe and should be a singleton
         services.TryAddSingleton<RecyclableMemoryStreamManager>();
