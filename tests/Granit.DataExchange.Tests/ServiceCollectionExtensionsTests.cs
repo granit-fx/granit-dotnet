@@ -1,3 +1,4 @@
+using Granit.Core.Events;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Internal;
 using Granit.DataExchange.Extensions;
@@ -119,15 +120,14 @@ public sealed class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitDataImport_registers_event_publisher()
+    public void AddGranitDataImport_registers_local_event_bus()
     {
         ServiceCollection services = new();
 
         services.AddGranitDataImport();
 
         services.ShouldContain(d =>
-            d.ServiceType == typeof(IDataExchangeEventPublisher) &&
-            d.Lifetime == ServiceLifetime.Singleton);
+            d.ServiceType == typeof(ILocalEventBus));
     }
 
     // ---- Export registration ----------------------------------------
@@ -193,15 +193,14 @@ public sealed class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitDataExport_registers_event_publisher()
+    public void AddGranitDataExport_registers_local_event_bus()
     {
         ServiceCollection services = new();
 
         services.AddGranitDataExport();
 
         services.ShouldContain(d =>
-            d.ServiceType == typeof(IDataExchangeEventPublisher) &&
-            d.Lifetime == ServiceLifetime.Singleton);
+            d.ServiceType == typeof(ILocalEventBus));
     }
 
     [Fact]

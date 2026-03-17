@@ -53,37 +53,6 @@ public sealed class GranitDataExchangeWolverineModuleTests
         descriptor!.ImplementationType.ShouldBe(typeof(WolverineExportCommandDispatcher));
     }
 
-    [Fact]
-    public void ConfigureServices_replaces_event_publisher()
-    {
-        // Arrange
-        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Services.AddSingleton<IImportCommandDispatcher, StubImportDispatcher>();
-        builder.Services.AddSingleton<IExportCommandDispatcher, StubExportDispatcher>();
-        builder.Services.AddSingleton<IDataExchangeEventPublisher, StubEventPublisher>();
-
-        ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
-        GranitDataExchangeWolverineModule module = new();
-
-        // Act
-        module.ConfigureServices(context);
-
-        // Assert
-        ServiceDescriptor? descriptor = builder.Services.FirstOrDefault(
-            d => d.ServiceType == typeof(IDataExchangeEventPublisher));
-        descriptor.ShouldNotBeNull();
-        descriptor!.ImplementationType.ShouldBe(typeof(WolverineDataExchangeEventPublisher));
-    }
-
-    private sealed class StubEventPublisher : IDataExchangeEventPublisher
-    {
-        public Task PublishAsync(Import.Messages.ImportJobCompletedEvent notification, CancellationToken cancellationToken = default) =>
-            Task.CompletedTask;
-
-        public Task PublishAsync(Export.Messages.ExportJobCompletedEvent notification, CancellationToken cancellationToken = default) =>
-            Task.CompletedTask;
-    }
-
     private sealed class StubImportDispatcher : IImportCommandDispatcher
     {
         public Task DispatchAsync(Import.Messages.ExecuteImportCommand command, CancellationToken cancellationToken = default) =>

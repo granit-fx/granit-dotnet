@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Granit.Core.Events;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Internal;
@@ -26,7 +27,7 @@ public sealed class ExportOrchestratorTests
     private readonly IExportCommandDispatcher _dispatcher = Substitute.For<IExportCommandDispatcher>();
     private readonly IImportFileProvider _fileProvider = Substitute.For<IImportFileProvider>();
     private readonly IClock _clock = Substitute.For<IClock>();
-    private readonly IDataExchangeEventPublisher _eventPublisher = Substitute.For<IDataExchangeEventPublisher>();
+    private readonly ILocalEventBus _eventBus = Substitute.For<ILocalEventBus>();
     private readonly DateTimeOffset _now = new(2026, 3, 3, 10, 0, 0, TimeSpan.Zero);
 
     public ExportOrchestratorTests()
@@ -455,7 +456,7 @@ public sealed class ExportOrchestratorTests
         await sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
 
         // Assert
-        await _eventPublisher.Received(1).PublishAsync(
+        await _eventBus.Received(1).PublishAsync(
             Arg.Is<ExportJobCompletedEvent>(e =>
                 e.ExportJobId == jobId &&
                 e.DefinitionName == "Test.Export" &&
@@ -493,7 +494,7 @@ public sealed class ExportOrchestratorTests
         await Should.ThrowAsync<IOException>(
             () => sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken));
 
-        await _eventPublisher.Received(1).PublishAsync(
+        await _eventBus.Received(1).PublishAsync(
             Arg.Is<ExportJobCompletedEvent>(e =>
                 e.ExportJobId == jobId &&
                 e.Status == ExportJobStatus.Failed &&
@@ -573,7 +574,7 @@ public sealed class ExportOrchestratorTests
             _fileProvider,
             _clock,
             new SimpleGuidGenerator(),
-            _eventPublisher,
+            _eventBus,
             NullLogger<ExportOrchestrator>.Instance);
 
         // Act
@@ -681,7 +682,7 @@ public sealed class ExportOrchestratorTests
             _fileProvider,
             _clock,
             new SimpleGuidGenerator(),
-            _eventPublisher,
+            _eventBus,
             NullLogger<ExportOrchestrator>.Instance);
     }
 
@@ -707,7 +708,7 @@ public sealed class ExportOrchestratorTests
             _fileProvider,
             _clock,
             new SimpleGuidGenerator(),
-            _eventPublisher,
+            _eventBus,
             NullLogger<ExportOrchestrator>.Instance);
     }
 

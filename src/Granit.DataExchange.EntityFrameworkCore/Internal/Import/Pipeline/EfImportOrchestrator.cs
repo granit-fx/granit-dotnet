@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using Granit.Core.Events;
 using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Execution;
@@ -26,7 +27,7 @@ internal sealed class EfImportOrchestrator(
     IImportFileProvider fileProvider,
     IServiceProvider serviceProvider,
     IClock clock,
-    IDataExchangeEventPublisher eventPublisher,
+    ILocalEventBus eventBus,
     IOptions<ImportOptions> options) : IImportOrchestrator
 {
     /// <inheritdoc/>
@@ -55,7 +56,7 @@ internal sealed class EfImportOrchestrator(
             job.ModifiedAt = clock.Now;
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
-            await eventPublisher.PublishAsync(new ImportJobCompletedEvent(
+            await eventBus.PublishAsync(new ImportJobCompletedEvent(
                 importJobId, job.DefinitionName, report.FinalStatus, job.CreatedBy,
                 report.TotalRows, report.SucceededRows, report.FailedRows,
                 report.InsertedRows, report.UpdatedRows, report.SkippedRows), cancellationToken).ConfigureAwait(false);
@@ -87,7 +88,7 @@ internal sealed class EfImportOrchestrator(
             job.ModifiedAt = clock.Now;
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
-            await eventPublisher.PublishAsync(new ImportJobCompletedEvent(
+            await eventBus.PublishAsync(new ImportJobCompletedEvent(
                 importJobId, job.DefinitionName, ImportJobStatus.Failed, job.CreatedBy,
                 errorReport.TotalRows, errorReport.SucceededRows, errorReport.FailedRows,
                 errorReport.InsertedRows, errorReport.UpdatedRows, errorReport.SkippedRows), cancellationToken).ConfigureAwait(false);
