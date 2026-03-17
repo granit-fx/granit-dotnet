@@ -1,3 +1,4 @@
+using Granit.Features.Events;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Features.EntityFrameworkCore.Internal;
@@ -14,7 +15,9 @@ namespace Granit.Features.EntityFrameworkCore.Internal;
 /// <see cref="IDbContextFactory{TContext}"/>, making it safe for concurrent request handling.
 /// </remarks>
 internal sealed class EfCoreFeatureStore(
-    IDbContextFactory<GranitFeaturesDbContext> contextFactory) : IFeatureStoreReader, IFeatureStoreWriter
+    IDbContextFactory<GranitFeaturesDbContext> contextFactory,
+    IFeatureEventPublisher eventPublisher,
+    TimeProvider timeProvider) : IFeatureStoreReader, IFeatureStoreWriter
 {
     /// <inheritdoc/>
     public async Task<string?> GetOrNullAsync(
@@ -49,6 +52,8 @@ internal sealed class EfCoreFeatureStore(
                 o => o.TenantId == tenantGuid && o.FeatureName == featureName,
                 cancellationToken).ConfigureAwait(false);
 
+        string? oldValue = existing?.Value;
+
         if (existing is null)
         {
             context.FeatureOverrides.Add(new TenantFeatureOverride
@@ -64,6 +69,10 @@ internal sealed class EfCoreFeatureStore(
         }
 
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        await eventPublisher.PublishAsync(
+            new FeatureOverrideChangedEvent(featureName, tenantGuid, oldValue, value, timeProvider.GetUtcNow()),
+            cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -85,8 +94,13 @@ internal sealed class EfCoreFeatureStore(
             return;
         }
 
+        string oldValue = existing.Value;
         context.FeatureOverrides.Remove(existing);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        await eventPublisher.PublishAsync(
+            new FeatureOverrideChangedEvent(featureName, tenantGuid, oldValue, null, timeProvider.GetUtcNow()),
+            cancellationToken).ConfigureAwait(false);
     }
 
     private static Guid? ParseTenantId(string? tenantId) =>

@@ -1,4 +1,5 @@
 using Granit.Features.Definitions;
+using Granit.Features.Events;
 using Granit.Features.Internal;
 using Granit.Features.ValueProviders;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +48,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IFeatureValueProvider, DefaultValueFeatureValueProvider>();
         services.AddScoped<IFeatureValueProvider, PlanFeatureValueProvider>();
         services.AddScoped<IFeatureValueProvider, TenantFeatureValueProvider>();
+
+        // Event publisher (no-op default; replaced by Wolverine-backed publisher when available)
+        services.TryAddSingleton<IFeatureEventPublisher, NullFeatureEventPublisher>();
 
         services.AddScoped<IFeatureChecker, FeatureChecker>();
         services.AddScoped<IFeatureLimitGuard, FeatureLimitGuard>();
