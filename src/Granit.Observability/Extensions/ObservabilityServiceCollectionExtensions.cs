@@ -69,6 +69,13 @@ public static class ObservabilityServiceCollectionExtensions
 
     private static void ConfigureOpenTelemetry(IHostApplicationBuilder builder, ObservabilityOptions options)
     {
+        // When OTEL_EXPORTER_OTLP_ENDPOINT is set (injected by .NET Aspire, picked up by
+        // ServiceDefaults.UseOtlpExporter()), mixing signal-specific AddOtlpExporter() on the
+        // same IServiceCollection is forbidden by OpenTelemetry SDK 1.9+.
+        // Skip the Granit-specific OTLP exporters — the cross-cutting one covers all signals.
+        bool crossCuttingOtlpActive = !string.IsNullOrWhiteSpace(
+            builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
+
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(r => r.AddService(
                 serviceName: options.ServiceName,
@@ -101,11 +108,12 @@ public static class ObservabilityServiceCollectionExtensions
                         };
                     })
                     .AddHttpClientInstrumentation()
-                    .AddEntityFrameworkCoreInstrumentation()
-                    .AddOtlpExporter(otlp =>
-                    {
-                        otlp.Endpoint = new Uri(options.OtlpEndpoint);
-                    });
+                    .AddEntityFrameworkCoreInstrumentation();
+
+                if (!crossCuttingOtlpActive)
+                {
+                    tracing.AddOtlpExporter(otlp => otlp.Endpoint = new Uri(options.OtlpEndpoint));
+                }
             })
             .WithMetrics(metrics =>
             {
@@ -116,11 +124,12 @@ public static class ObservabilityServiceCollectionExtensions
 
                 metrics
                     .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddOtlpExporter(otlp =>
-                    {
-                        otlp.Endpoint = new Uri(options.OtlpEndpoint);
-                    });
+                    .AddHttpClientInstrumentation();
+
+                if (!crossCuttingOtlpActive)
+                {
+                    metrics.AddOtlpExporter(otlp => otlp.Endpoint = new Uri(options.OtlpEndpoint));
+                }
             });
     }
 }
