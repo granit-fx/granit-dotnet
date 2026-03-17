@@ -252,7 +252,7 @@ flowchart TD
 | `Granit.Validation.Europe` | `Validation`, `Localization` |
 | `Granit.Validation.NorthAmerica` | `Validation`, `Localization` |
 | `Granit.Validation.UnitedKingdom` | `Validation`, `Localization` |
-| `Granit.Bulkhead` | `Core`, `ExceptionHandling`, `Features`, `Security` |
+| `Granit.Http.Bulkhead` | `Core`, `ExceptionHandling`, `Features`, `Security` |
 | `Granit.RateLimiting` | `Core`, `ExceptionHandling`, `Features`, `Security` |
 
 ### Identity
@@ -623,7 +623,7 @@ Multi-tenant SaaS extensions.
 | `Granit.Features` |
 | `Granit.Features.EntityFrameworkCore` |
 | `Granit.RateLimiting` |
-| `Granit.Bulkhead` |
+| `Granit.Http.Bulkhead` |
 
 ## Dependency rules
 

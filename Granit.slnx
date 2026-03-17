@@ -42,7 +42,7 @@
     <Project Path="src/Granit.BlobStorage.Proxy/Granit.BlobStorage.Proxy.csproj" />
     <Project Path="src/Granit.BlobStorage.S3/Granit.BlobStorage.S3.csproj" />
     <Project Path="src/Granit.BlobStorage/Granit.BlobStorage.csproj" />
-    <Project Path="src/Granit.Bulkhead/Granit.Bulkhead.csproj" />
+    <Project Path="src/Granit.Http.Bulkhead/Granit.Http.Bulkhead.csproj" />
     <Project Path="src/Granit.Caching.Hybrid/Granit.Caching.Hybrid.csproj" />
     <Project Path="src/Granit.Caching.StackExchangeRedis/Granit.Caching.StackExchangeRedis.csproj" />
     <Project Path="src/Granit.Caching/Granit.Caching.csproj" />
@@ -65,7 +65,7 @@
     <Project Path="src/Granit.Encryption/Granit.Encryption.csproj" />
     <Project Path="src/Granit.Encryption.EntityFrameworkCore/Granit.Encryption.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Encryption.ReEncryption/Granit.Encryption.ReEncryption.csproj" />
-    <Project Path="src/Granit.ExceptionHandling/Granit.ExceptionHandling.csproj" />
+    <Project Path="src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj" />
     <Project Path="src/Granit.Features.EntityFrameworkCore/Granit.Features.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Features/Granit.Features.csproj" />
     <Project Path="src/Granit.Guids/Granit.Guids.csproj" />
@@ -216,7 +216,7 @@
     <Project Path="tests/Granit.BlobStorage.S3.Tests/Granit.BlobStorage.S3.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.Proxy.Tests/Granit.BlobStorage.Proxy.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.Tests/Granit.BlobStorage.Tests.csproj" />
-    <Project Path="tests/Granit.Bulkhead.Tests/Granit.Bulkhead.Tests.csproj" />
+    <Project Path="tests/Granit.Http.Bulkhead.Tests/Granit.Http.Bulkhead.Tests.csproj" />
     <Project Path="tests/Granit.Bundle.Tests/Granit.Bundle.Tests.csproj" />
     <Project Path="tests/Granit.Caching.Hybrid.Tests/Granit.Caching.Hybrid.Tests.csproj" />
     <Project Path="tests/Granit.Caching.StackExchangeRedis.Tests/Granit.Caching.StackExchangeRedis.Tests.csproj" />
@@ -240,7 +240,7 @@
     <Project Path="tests/Granit.Encryption.Tests/Granit.Encryption.Tests.csproj" />
     <Project Path="tests/Granit.Encryption.EntityFrameworkCore.Tests/Granit.Encryption.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Encryption.ReEncryption.Tests/Granit.Encryption.ReEncryption.Tests.csproj" />
-    <Project Path="tests/Granit.ExceptionHandling.Tests/Granit.ExceptionHandling.Tests.csproj" />
+    <Project Path="tests/Granit.Http.ExceptionHandling.Tests/Granit.Http.ExceptionHandling.Tests.csproj" />
     <Project Path="tests/Granit.Features.EntityFrameworkCore.Tests/Granit.Features.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Features.Tests/Granit.Features.Tests.csproj" />
     <Project Path="tests/Granit.Guids.Tests/Granit.Guids.Tests.csproj" />

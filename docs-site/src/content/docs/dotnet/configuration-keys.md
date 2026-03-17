@@ -545,7 +545,7 @@ Each entry in `Policies`:
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `Bulkhead` | |
-| **Package** | -- | `Granit.Bulkhead` | |
+| **Package** | -- | `Granit.Http.Bulkhead` | |
 | `Enabled` | `bool` | `true` | Enable bulkhead isolation. |
 | `BypassRoles` | `string[]` | `[]` | Roles exempt from bulkhead checks. |
 | `UseFeatureBasedQuotas` | `bool` | `false` | Use `Granit.Features` for dynamic limits. |
