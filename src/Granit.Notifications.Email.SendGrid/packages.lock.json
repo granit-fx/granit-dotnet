@@ -279,10 +279,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Http": "[10.*, )",
-          "Microsoft.Extensions.Http.Resilience": "[10.*, )",
-          "Microsoft.Extensions.Options": "[10.*, )",
-          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+          "Microsoft.Extensions.Http.Resilience": "[10.*, )"
         }
       },
       "granit.notifications": {

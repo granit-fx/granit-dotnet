@@ -248,6 +248,21 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
+      "granit.caching": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Caching.Hybrid": "[10.*, )"
+        }
+      },
+      "granit.caching.stackexchangeredis": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Caching": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Caching.StackExchangeRedis": "[10.*, )",
+          "StackExchange.Redis": "[2.*, )"
+        }
+      },
       "granit.core": {
         "type": "Project"
       },
@@ -260,6 +275,7 @@
       "granit.http.outputcaching.stackexchangeredis": {
         "type": "Project",
         "dependencies": {
+          "Granit.Caching.StackExchangeRedis": "[0.1.0-dev, )",
           "Granit.Http.OutputCaching": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.OutputCaching.StackExchangeRedis": "[10.*, )",
           "StackExchange.Redis": "[2.*, )"
@@ -270,6 +286,21 @@
         "requested": "[10.*, )",
         "resolved": "10.0.5",
         "contentHash": "JTImL13xKz/bfeMA9ZG2SueBqjlJnAD0imv94XWa0vrY5qLGuolNd+wdq6cVVQEtjoqsirjtCnuLWIuuKxPJAg==",
+        "dependencies": {
+          "StackExchange.Redis": "2.7.27"
+        }
+      },
+      "Microsoft.Extensions.Caching.Hybrid": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.4.0",
+        "contentHash": "4V+aMLQeU/p4VcIWIcvGro0L6HynmL2TrelL04Ce1iotP6T5+kjxuZQvl6P1ObSXIRPCbVXtQSt1NxK0fRIuag=="
+      },
+      "Microsoft.Extensions.Caching.StackExchangeRedis": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.5",
+        "contentHash": "zXb143/TpEKOLQuWGw2CkJgb9F4XXh2XbevMvppzsIHr1/pjML0zjc+vzXcpCV8YUwpW5NIaScZhzFSm621B3Q==",
         "dependencies": {
           "StackExchange.Redis": "2.7.27"
         }

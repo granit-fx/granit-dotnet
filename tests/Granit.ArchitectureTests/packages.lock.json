@@ -1713,6 +1713,7 @@
       "granit.http.outputcaching.stackexchangeredis": {
         "type": "Project",
         "dependencies": {
+          "Granit.Caching.StackExchangeRedis": "[0.1.0-dev, )",
           "Granit.Http.OutputCaching": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.OutputCaching.StackExchangeRedis": "[10.*, )",
           "StackExchange.Redis": "[2.*, )"

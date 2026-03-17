@@ -608,7 +608,8 @@
           "FluentValidation": "[12.*, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.*, )",
           "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )"
+          "Granit.Localization": "[0.1.0-dev, )",
+          "Microsoft.AspNetCore.OpenApi": "[10.*, )"
         }
       },
       "Asp.Versioning.Mvc": {
