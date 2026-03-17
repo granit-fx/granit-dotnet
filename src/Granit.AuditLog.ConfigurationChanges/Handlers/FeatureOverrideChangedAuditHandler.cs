@@ -1,54 +1,51 @@
 using Granit.AuditLog.Abstractions;
 using Granit.AuditLog.Domain;
+using Granit.Core.Events;
 using Granit.Core.MultiTenancy;
 using Granit.Features.Events;
 using Granit.Guids;
 using Granit.Security;
 
-namespace Granit.AuditLog.Wolverine.Handlers;
+namespace Granit.AuditLog.ConfigurationChanges.Handlers;
 
 /// <summary>
-/// Wolverine handler that persists <see cref="FeatureOverrideChangedEvent"/> as an
-/// <see cref="AuditLogEntry"/> with category <see cref="AuditLogCategory.ConfigurationChange"/>.
+/// Persists <see cref="FeatureOverrideChangedEvent"/> as an <see cref="AuditLogEntry"/>
+/// with category <see cref="AuditLogCategory.ConfigurationChange"/>.
 /// </summary>
-public static class FeatureOverrideChangedAuditHandler
+public sealed class FeatureOverrideChangedAuditHandler(
+    IAuditLogWriter writer,
+    ICurrentUserService currentUser,
+    ICurrentTenant currentTenant,
+    IGuidGenerator guidGenerator) : ILocalEventHandler<FeatureOverrideChangedEvent>
 {
-    /// <summary>
-    /// Converts a feature override change event into an audit log entry and persists it.
-    /// </summary>
-    public static async Task HandleAsync(
-        FeatureOverrideChangedEvent featureOverrideChangedEvent,
-        IAuditLogWriter writer,
-        ICurrentUserService currentUser,
-        ICurrentTenant currentTenant,
-        IGuidGenerator guidGenerator,
-        CancellationToken cancellationToken)
+    /// <inheritdoc/>
+    public async Task HandleAsync(FeatureOverrideChangedEvent localEvent, CancellationToken cancellationToken = default)
     {
         AuditPropertyChange valueChange = new()
         {
             Id = guidGenerator.Create(),
             PropertyName = "Value",
-            OriginalValue = featureOverrideChangedEvent.OldValue,
-            NewValue = featureOverrideChangedEvent.NewValue,
+            OriginalValue = localEvent.OldValue,
+            NewValue = localEvent.NewValue,
         };
 
         AuditEntityChange entityChange = new()
         {
             Id = guidGenerator.Create(),
             EntityType = "FeatureOverride",
-            EntityId = featureOverrideChangedEvent.FeatureName,
-            ChangeType = DetermineChangeType(featureOverrideChangedEvent),
+            EntityId = localEvent.FeatureName,
+            ChangeType = DetermineChangeType(localEvent),
             PropertyChanges = [valueChange],
         };
 
         AuditLogEntry entry = new()
         {
             Id = guidGenerator.Create(),
-            Timestamp = featureOverrideChangedEvent.Timestamp,
+            Timestamp = localEvent.Timestamp,
             UserId = currentUser.UserId ?? "system",
             UserName = currentUser.UserName,
             Category = AuditLogCategory.ConfigurationChange,
-            TenantId = featureOverrideChangedEvent.TenantId
+            TenantId = localEvent.TenantId
                        ?? (currentTenant.IsAvailable ? currentTenant.Id : null),
             CorrelationId = System.Diagnostics.Activity.Current?.Id,
             EntityChanges = [entityChange],

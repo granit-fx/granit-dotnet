@@ -30,8 +30,10 @@
     <Project Path="src/Granit.Authorization.EntityFrameworkCore/Granit.Authorization.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.AuditLog.Endpoints/Granit.AuditLog.Endpoints.csproj" />
     <Project Path="src/Granit.AuditLog.EntityFrameworkCore/Granit.AuditLog.EntityFrameworkCore.csproj" />
-    <Project Path="src/Granit.AuditLog.Wolverine/Granit.AuditLog.Wolverine.csproj" />
+    <Project Path="src/Granit.AuditLog.ConfigurationChanges/Granit.AuditLog.ConfigurationChanges.csproj" />
     <Project Path="src/Granit.AuditLog/Granit.AuditLog.csproj" />
+    <Project Path="src/Granit.EventBus.Wolverine/Granit.EventBus.Wolverine.csproj" />
+    <Project Path="src/Granit.EventBus/Granit.EventBus.csproj" />
     <Project Path="src/Granit.Authorization/Granit.Authorization.csproj" />
     <Project Path="src/Granit.BackgroundJobs.Endpoints/Granit.BackgroundJobs.Endpoints.csproj" />
     <Project Path="src/Granit.BackgroundJobs.EntityFrameworkCore/Granit.BackgroundJobs.EntityFrameworkCore.csproj" />
@@ -210,7 +212,9 @@
     <Project Path="tests/Granit.AuditLog.Endpoints.Tests/Granit.AuditLog.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.AuditLog.EntityFrameworkCore.Tests/Granit.AuditLog.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.AuditLog.Tests/Granit.AuditLog.Tests.csproj" />
-    <Project Path="tests/Granit.AuditLog.Wolverine.Tests/Granit.AuditLog.Wolverine.Tests.csproj" />
+    <Project Path="tests/Granit.AuditLog.ConfigurationChanges.Tests/Granit.AuditLog.ConfigurationChanges.Tests.csproj" />
+    <Project Path="tests/Granit.EventBus.Tests/Granit.EventBus.Tests.csproj" />
+    <Project Path="tests/Granit.EventBus.Wolverine.Tests/Granit.EventBus.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Authorization.Tests/Granit.Authorization.Tests.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.Endpoints.Tests/Granit.BackgroundJobs.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests.csproj" />

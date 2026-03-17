@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.AuditLog.ConfigurationChanges</PackageId>
+    <Description>Persists Settings and Feature Flags changes as audit log entries with category ConfigurationChange. Registers ILocalEventHandler implementations for SettingChangedEvent and FeatureOverrideChangedEvent — works with any event bus provider (in-process or Wolverine).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.AuditLog.ConfigurationChanges.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AuditLog\Granit.AuditLog.csproj" />
+    <ProjectReference Include="..\Granit.Features\Granit.Features.csproj" />
+    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
+    <ProjectReference Include="..\Granit.Settings\Granit.Settings.csproj" />
+  </ItemGroup>
+
+</Project>

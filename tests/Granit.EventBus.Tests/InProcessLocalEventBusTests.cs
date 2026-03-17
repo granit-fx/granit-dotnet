@@ -1,0 +1,68 @@
+using Granit.Core.Events;
+using Granit.EventBus.Internal;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
+using Shouldly;
+using Xunit;
+
+namespace Granit.EventBus.Tests;
+
+public sealed class InProcessLocalEventBusTests
+{
+    private sealed record TestEvent(string Value);
+
+    private sealed class TestHandler : ILocalEventHandler<TestEvent>
+    {
+        public TestEvent? Received { get; private set; }
+
+        public Task HandleAsync(TestEvent localEvent, CancellationToken cancellationToken = default)
+        {
+            Received = localEvent;
+            return Task.CompletedTask;
+        }
+    }
+
+    [Fact]
+    public async Task PublishAsync_CallsRegisteredHandler()
+    {
+        TestHandler handler = new();
+        ServiceCollection services = new();
+        services.AddSingleton<ILocalEventHandler<TestEvent>>(handler);
+        ServiceProvider sp = services.BuildServiceProvider();
+
+        InProcessLocalEventBus bus = new(sp, NullLogger<InProcessLocalEventBus>.Instance);
+
+        await bus.PublishAsync(new TestEvent("hello"), TestContext.Current.CancellationToken);
+
+        handler.Received.ShouldNotBeNull();
+        handler.Received!.Value.ShouldBe("hello");
+    }
+
+    [Fact]
+    public async Task PublishAsync_NoHandlers_DoesNotThrow()
+    {
+        ServiceProvider sp = new ServiceCollection().BuildServiceProvider();
+        InProcessLocalEventBus bus = new(sp, NullLogger<InProcessLocalEventBus>.Instance);
+
+        await Should.NotThrowAsync(() =>
+            bus.PublishAsync(new TestEvent("lonely"), TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task PublishAsync_MultipleHandlers_AllCalled()
+    {
+        TestHandler handler1 = new();
+        TestHandler handler2 = new();
+        ServiceCollection services = new();
+        services.AddSingleton<ILocalEventHandler<TestEvent>>(handler1);
+        services.AddSingleton<ILocalEventHandler<TestEvent>>(handler2);
+        ServiceProvider sp = services.BuildServiceProvider();
+
+        InProcessLocalEventBus bus = new(sp, NullLogger<InProcessLocalEventBus>.Instance);
+
+        await bus.PublishAsync(new TestEvent("both"), TestContext.Current.CancellationToken);
+
+        handler1.Received.ShouldNotBeNull();
+        handler2.Received.ShouldNotBeNull();
+    }
+}

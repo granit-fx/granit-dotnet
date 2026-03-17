@@ -6,10 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />
@@ -19,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.AuditLog.Wolverine\Granit.AuditLog.Wolverine.csproj" />
+    <ProjectReference Include="..\..\src\Granit.EventBus\Granit.EventBus.csproj" />
   </ItemGroup>
 
 </Project>

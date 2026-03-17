@@ -117,6 +117,14 @@
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
         }
       },
+      "granit.eventbus": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )"
+        }
+      },
       "granit.guids": {
         "type": "Project",
         "dependencies": {
@@ -156,6 +164,7 @@
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Encryption": "[0.1.0-dev, )",
+          "Granit.EventBus": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )"
         }
       },

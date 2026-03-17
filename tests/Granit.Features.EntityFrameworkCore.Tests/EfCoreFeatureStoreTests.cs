@@ -1,3 +1,4 @@
+using Granit.Core.Events;
 using Granit.Features.EntityFrameworkCore.Internal;
 using Granit.Features.Events;
 using Microsoft.EntityFrameworkCore;
@@ -24,8 +25,10 @@ public sealed class EfCoreFeatureStoreTests
             Task.FromResult(CreateDbContext());
     }
 
-    private static EfCoreFeatureStore CreateStore(string dbName, IFeatureEventPublisher? publisher = null) =>
-        new(new InMemoryContextFactory(dbName), publisher ?? new NullFeatureEventPublisher(), TimeProvider.System);
+    private static EfCoreFeatureStore CreateStore(string dbName, ILocalEventBus? eventBus = null) =>
+        new(new InMemoryContextFactory(dbName),
+            eventBus ?? Substitute.For<ILocalEventBus>(),
+            TimeProvider.System);
 
     private static async Task SeedAsync(
         string dbName,
@@ -248,14 +251,14 @@ public sealed class EfCoreFeatureStoreTests
     {
         string db = Guid.NewGuid().ToString();
         var tenantId = Guid.NewGuid();
-        IFeatureEventPublisher publisher = Substitute.For<IFeatureEventPublisher>();
-        EfCoreFeatureStore store = CreateStore(db, publisher);
+        ILocalEventBus eventBus = Substitute.For<ILocalEventBus>();
+        EfCoreFeatureStore store = CreateStore(db, eventBus);
 
         await store.SetAsync(
             "Acme.MaxUsers", tenantId.ToString(), "100",
             TestContext.Current.CancellationToken);
 
-        await publisher.Received(1).PublishAsync(
+        await eventBus.Received(1).PublishAsync(
             Arg.Is<FeatureOverrideChangedEvent>(e =>
                 e.FeatureName == "Acme.MaxUsers" &&
                 e.TenantId == tenantId &&
@@ -272,14 +275,14 @@ public sealed class EfCoreFeatureStoreTests
         await SeedAsync(db, tenantId, "Acme.MaxUsers", "50",
             TestContext.Current.CancellationToken);
 
-        IFeatureEventPublisher publisher = Substitute.For<IFeatureEventPublisher>();
-        EfCoreFeatureStore store = CreateStore(db, publisher);
+        ILocalEventBus eventBus = Substitute.For<ILocalEventBus>();
+        EfCoreFeatureStore store = CreateStore(db, eventBus);
 
         await store.SetAsync(
             "Acme.MaxUsers", tenantId.ToString(), "200",
             TestContext.Current.CancellationToken);
 
-        await publisher.Received(1).PublishAsync(
+        await eventBus.Received(1).PublishAsync(
             Arg.Is<FeatureOverrideChangedEvent>(e =>
                 e.OldValue == "50" &&
                 e.NewValue == "200"),
@@ -294,14 +297,14 @@ public sealed class EfCoreFeatureStoreTests
         await SeedAsync(db, tenantId, "Acme.Feature", "true",
             TestContext.Current.CancellationToken);
 
-        IFeatureEventPublisher publisher = Substitute.For<IFeatureEventPublisher>();
-        EfCoreFeatureStore store = CreateStore(db, publisher);
+        ILocalEventBus eventBus = Substitute.For<ILocalEventBus>();
+        EfCoreFeatureStore store = CreateStore(db, eventBus);
 
         await store.DeleteAsync(
             "Acme.Feature", tenantId.ToString(),
             TestContext.Current.CancellationToken);
 
-        await publisher.Received(1).PublishAsync(
+        await eventBus.Received(1).PublishAsync(
             Arg.Is<FeatureOverrideChangedEvent>(e =>
                 e.OldValue == "true" &&
                 e.NewValue == null),
@@ -311,14 +314,14 @@ public sealed class EfCoreFeatureStoreTests
     [Fact]
     public async Task DeleteAsync_UnknownOverride_DoesNotPublishEvent()
     {
-        IFeatureEventPublisher publisher = Substitute.For<IFeatureEventPublisher>();
-        EfCoreFeatureStore store = CreateStore(Guid.NewGuid().ToString(), publisher);
+        ILocalEventBus eventBus = Substitute.For<ILocalEventBus>();
+        EfCoreFeatureStore store = CreateStore(Guid.NewGuid().ToString(), eventBus);
 
         await store.DeleteAsync(
             "Acme.Ghost", Guid.NewGuid().ToString(),
             TestContext.Current.CancellationToken);
 
-        await publisher.DidNotReceive().PublishAsync(
+        await eventBus.DidNotReceive().PublishAsync(
             Arg.Any<FeatureOverrideChangedEvent>(),
             Arg.Any<CancellationToken>());
     }

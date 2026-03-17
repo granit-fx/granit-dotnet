@@ -1,50 +1,47 @@
 using Granit.AuditLog.Abstractions;
 using Granit.AuditLog.Domain;
+using Granit.Core.Events;
 using Granit.Core.MultiTenancy;
 using Granit.Guids;
 using Granit.Security;
 using Granit.Settings.Events;
 
-namespace Granit.AuditLog.Wolverine.Handlers;
+namespace Granit.AuditLog.ConfigurationChanges.Handlers;
 
 /// <summary>
-/// Wolverine handler that persists <see cref="SettingChangedEvent"/> as an
-/// <see cref="AuditLogEntry"/> with category <see cref="AuditLogCategory.ConfigurationChange"/>.
+/// Persists <see cref="SettingChangedEvent"/> as an <see cref="AuditLogEntry"/>
+/// with category <see cref="AuditLogCategory.ConfigurationChange"/>.
 /// </summary>
-public static class SettingChangedAuditHandler
+public sealed class SettingChangedAuditHandler(
+    IAuditLogWriter writer,
+    ICurrentUserService currentUser,
+    ICurrentTenant currentTenant,
+    IGuidGenerator guidGenerator) : ILocalEventHandler<SettingChangedEvent>
 {
-    /// <summary>
-    /// Converts a setting change event into an audit log entry and persists it.
-    /// </summary>
-    public static async Task HandleAsync(
-        SettingChangedEvent settingChangedEvent,
-        IAuditLogWriter writer,
-        ICurrentUserService currentUser,
-        ICurrentTenant currentTenant,
-        IGuidGenerator guidGenerator,
-        CancellationToken cancellationToken)
+    /// <inheritdoc/>
+    public async Task HandleAsync(SettingChangedEvent localEvent, CancellationToken cancellationToken = default)
     {
         AuditPropertyChange valueChange = new()
         {
             Id = guidGenerator.Create(),
             PropertyName = "Value",
-            OriginalValue = settingChangedEvent.OldValue,
-            NewValue = settingChangedEvent.NewValue,
+            OriginalValue = localEvent.OldValue,
+            NewValue = localEvent.NewValue,
         };
 
         AuditEntityChange entityChange = new()
         {
             Id = guidGenerator.Create(),
             EntityType = "Setting",
-            EntityId = $"{settingChangedEvent.SettingName}:{settingChangedEvent.ProviderName}:{settingChangedEvent.ProviderKey ?? "global"}",
-            ChangeType = DetermineChangeType(settingChangedEvent),
+            EntityId = $"{localEvent.SettingName}:{localEvent.ProviderName}:{localEvent.ProviderKey ?? "global"}",
+            ChangeType = DetermineChangeType(localEvent),
             PropertyChanges = [valueChange],
         };
 
         AuditLogEntry entry = new()
         {
             Id = guidGenerator.Create(),
-            Timestamp = settingChangedEvent.Timestamp,
+            Timestamp = localEvent.Timestamp,
             UserId = currentUser.UserId ?? "system",
             UserName = currentUser.UserName,
             Category = AuditLogCategory.ConfigurationChange,
