@@ -129,7 +129,8 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
         //   AddGranitWolverine() captures the WolverineOptions from inside the UseWolverine lambda
         //   (invoked synchronously) and registers it via GranitWolverineOptionsHolder.
         //   Wolverine 5.20+ registers WolverineOptions via an IServiceProvider-dependent factory —
-        //   it cannot be retrieved via ImplementationInstance before the container is built.
+        //   it cannot be retrieved via ImplementationInstance or by invoking the factory before
+        //   the container is built (the factory requires IServiceProvider).
         //   The container is not yet built so options.Services.AddSingleton() inside
         //   PersistMessagesWithPostgresql is still valid.
         //
