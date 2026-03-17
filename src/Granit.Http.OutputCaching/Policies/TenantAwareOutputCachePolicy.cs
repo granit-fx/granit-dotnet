@@ -30,7 +30,7 @@ internal sealed class TenantAwareOutputCachePolicy : IOutputCachePolicy
     internal const string TenantTagPrefix = "tenant:";
 
     /// <inheritdoc/>
-    public ValueTask CacheRequestAsync(OutputCacheContext context, CancellationToken cancellationToken)
+    public ValueTask CacheRequestAsync(OutputCacheContext context, CancellationToken cancellation)
     {
         ICurrentTenant? tenant = context.HttpContext.RequestServices.GetService<ICurrentTenant>();
 
@@ -45,10 +45,10 @@ internal sealed class TenantAwareOutputCachePolicy : IOutputCachePolicy
     }
 
     /// <inheritdoc/>
-    public ValueTask ServeFromCacheAsync(OutputCacheContext context, CancellationToken cancellationToken) =>
+    public ValueTask ServeFromCacheAsync(OutputCacheContext context, CancellationToken cancellation) =>
         ValueTask.CompletedTask;
 
     /// <inheritdoc/>
-    public ValueTask ServeResponseAsync(OutputCacheContext context, CancellationToken cancellationToken) =>
+    public ValueTask ServeResponseAsync(OutputCacheContext context, CancellationToken cancellation) =>
         ValueTask.CompletedTask;
 }

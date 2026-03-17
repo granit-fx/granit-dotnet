@@ -43,10 +43,8 @@ public sealed class GranitTestFixtureTests : IAsyncDisposable
     }
 
     [Fact]
-    public void ServiceProvider_Throws_Before_Build()
-    {
+    public void ServiceProvider_Throws_Before_Build() =>
         Should.Throw<InvalidOperationException>(() => _ = _fixture.ServiceProvider);
-    }
 
     [Fact]
     public async Task GetService_Returns_Null_For_Unregistered()

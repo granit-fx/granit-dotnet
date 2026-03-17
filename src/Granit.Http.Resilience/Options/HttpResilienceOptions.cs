@@ -15,7 +15,7 @@ namespace Granit.Http.Resilience.Options;
 ///   <item><description>Per-attempt timeout: 10 s</description></item>
 /// </list>
 /// </remarks>
-public sealed class HttpResilienceOptions
+public static class HttpResilienceOptions
 {
     /// <summary>The root appsettings section under which per-client overrides are nested.</summary>
     public const string SectionName = "HttpResilience";

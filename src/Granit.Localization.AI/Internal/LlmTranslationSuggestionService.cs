@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Granit.AI;
+using Granit.AI.Internal;
 using Granit.Localization.AI.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -63,7 +64,7 @@ internal sealed partial class LlmTranslationSuggestionService(
                 .ConfigureAwait(false);
 
             string responseText = response.Text ?? string.Empty;
-            responseText = StripMarkdownCodeFences(responseText);
+            responseText = LlmResponseHelper.StripMarkdownCodeFences(responseText);
 
             Dictionary<string, string>? translations = JsonSerializer.Deserialize<Dictionary<string, string>>(
                 responseText, SerializerOptions);
@@ -146,27 +147,6 @@ internal sealed partial class LlmTranslationSuggestionService(
             - Preserve placeholders like {"{0}"}, {"{1}"} exactly as-is
             - Return ONLY the JSON, no markdown
             """;
-    }
-
-    private static string StripMarkdownCodeFences(string text)
-    {
-        ReadOnlySpan<char> span = text.AsSpan().Trim();
-
-        if (span.StartsWith("```json", StringComparison.OrdinalIgnoreCase))
-        {
-            span = span["```json".Length..];
-        }
-        else if (span.StartsWith("```", StringComparison.Ordinal))
-        {
-            span = span["```".Length..];
-        }
-
-        if (span.EndsWith("```", StringComparison.Ordinal))
-        {
-            span = span[..^"```".Length];
-        }
-
-        return span.Trim().ToString();
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Translation succeeded for key {Key}: {TranslatedCount}/{RequestedCount} cultures")]

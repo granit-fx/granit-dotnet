@@ -85,14 +85,13 @@ public static class ModelBuilderExtensions
         // Detects IConcurrencyAware implementations and configures:
         //   - ConcurrencyStamp as a concurrency token (IsConcurrencyToken)
         //   - VARCHAR(36) max length
-        foreach (Type clrType in modelBuilder.Model.GetEntityTypes().Select(entityType => entityType.ClrType))
+        foreach (Type clrType in modelBuilder.Model.GetEntityTypes()
+            .Select(entityType => entityType.ClrType)
+            .Where(clrType => typeof(IConcurrencyAware).IsAssignableFrom(clrType)))
         {
-            if (typeof(IConcurrencyAware).IsAssignableFrom(clrType))
-            {
-                ConfigureConcurrencyStampMethod // NOSONAR S3011 - intentional: generic EF Core property configuration requires reflection
-                    .MakeGenericMethod(clrType)
-                    .Invoke(null, [modelBuilder]);
-            }
+            ConfigureConcurrencyStampMethod // NOSONAR S3011 - intentional: generic EF Core property configuration requires reflection
+                .MakeGenericMethod(clrType)
+                .Invoke(null, [modelBuilder]);
         }
 
         // --- Translation conventions ---

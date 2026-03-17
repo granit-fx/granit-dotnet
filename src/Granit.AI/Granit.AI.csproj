@@ -22,6 +22,12 @@
     <InternalsVisibleTo Include="Granit.AI.OpenAI.Tests" />
     <InternalsVisibleTo Include="Granit.AI.VectorData" />
     <InternalsVisibleTo Include="Granit.AI.VectorData.Tests" />
+    <InternalsVisibleTo Include="Granit.Localization.AI" />
+    <InternalsVisibleTo Include="Granit.Localization.AI.Tests" />
+    <InternalsVisibleTo Include="Granit.Privacy.AI" />
+    <InternalsVisibleTo Include="Granit.Privacy.AI.Tests" />
+    <InternalsVisibleTo Include="Granit.Workflow.AI" />
+    <InternalsVisibleTo Include="Granit.Workflow.AI.Tests" />
     <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>

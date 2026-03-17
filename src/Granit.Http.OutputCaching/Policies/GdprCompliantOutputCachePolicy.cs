@@ -16,7 +16,7 @@ namespace Granit.Http.OutputCaching.Policies;
 internal sealed class GdprCompliantOutputCachePolicy : IOutputCachePolicy
 {
     /// <inheritdoc/>
-    public ValueTask CacheRequestAsync(OutputCacheContext context, CancellationToken cancellationToken)
+    public ValueTask CacheRequestAsync(OutputCacheContext context, CancellationToken cancellation)
     {
         if (context.HttpContext.User.Identity?.IsAuthenticated == true)
         {
@@ -27,11 +27,11 @@ internal sealed class GdprCompliantOutputCachePolicy : IOutputCachePolicy
     }
 
     /// <inheritdoc/>
-    public ValueTask ServeFromCacheAsync(OutputCacheContext context, CancellationToken cancellationToken) =>
+    public ValueTask ServeFromCacheAsync(OutputCacheContext context, CancellationToken cancellation) =>
         ValueTask.CompletedTask;
 
     /// <inheritdoc/>
-    public ValueTask ServeResponseAsync(OutputCacheContext context, CancellationToken cancellationToken)
+    public ValueTask ServeResponseAsync(OutputCacheContext context, CancellationToken cancellation)
     {
         if (context.HttpContext.Response.Headers.ContainsKey("Set-Cookie"))
         {

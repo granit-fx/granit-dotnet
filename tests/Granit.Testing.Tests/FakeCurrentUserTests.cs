@@ -76,17 +76,17 @@ public sealed class FakeCurrentUserTests
         FakeCurrentUser user = new();
 
 #pragma warning disable xUnit1051
-        var task1 = Task.Run(() =>
+        var task1 = Task.Run(async () =>
         {
             user.UserId = "user-A";
-            Thread.Sleep(50);
+            await Task.Delay(50);
             user.UserId.ShouldBe("user-A");
         });
 
-        var task2 = Task.Run(() =>
+        var task2 = Task.Run(async () =>
         {
             user.UserId = "user-B";
-            Thread.Sleep(50);
+            await Task.Delay(50);
             user.UserId.ShouldBe("user-B");
         });
 

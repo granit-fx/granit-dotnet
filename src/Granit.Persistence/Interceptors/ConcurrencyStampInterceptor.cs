@@ -58,14 +58,12 @@ public sealed class ConcurrencyStampInterceptor : SaveChangesInterceptor
             return;
         }
 
-        foreach (EntityEntry<IConcurrencyAware> entry in context.ChangeTracker.Entries<IConcurrencyAware>())
+        foreach (EntityEntry<IConcurrencyAware> entry in context.ChangeTracker.Entries<IConcurrencyAware>()
+            .Where(entry => entry.State is EntityState.Added or EntityState.Modified))
         {
-            if (entry.State is EntityState.Added or EntityState.Modified)
-            {
 #pragma warning disable GRSEC002 // Concurrency stamp is opaque, not a business identifier — no UUIDv7 needed
-                entry.Entity.ConcurrencyStamp = Guid.NewGuid().ToString();
+            entry.Entity.ConcurrencyStamp = Guid.NewGuid().ToString();
 #pragma warning restore GRSEC002
-            }
         }
     }
 }

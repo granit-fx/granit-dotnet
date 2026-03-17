@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Granit.AI;
+using Granit.AI.Internal;
 using Granit.Workflow.AI.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -64,7 +65,7 @@ internal sealed partial class LlmTransitionAdvisor(
                 .ConfigureAwait(false);
 
             string responseText = response.Text ?? string.Empty;
-            responseText = StripMarkdownCodeFences(responseText);
+            responseText = LlmResponseHelper.StripMarkdownCodeFences(responseText);
 
             LlmRecommendationResponse? result = JsonSerializer.Deserialize<LlmRecommendationResponse>(responseText, SerializerOptions);
 
@@ -129,27 +130,6 @@ internal sealed partial class LlmTransitionAdvisor(
 
          Return ONLY valid JSON, no markdown, no explanation.
          """;
-
-    private static string StripMarkdownCodeFences(string text)
-    {
-        ReadOnlySpan<char> span = text.AsSpan().Trim();
-
-        if (span.StartsWith("```json", StringComparison.OrdinalIgnoreCase))
-        {
-            span = span["```json".Length..];
-        }
-        else if (span.StartsWith("```", StringComparison.Ordinal))
-        {
-            span = span["```".Length..];
-        }
-
-        if (span.EndsWith("```", StringComparison.Ordinal))
-        {
-            span = span[..^"```".Length];
-        }
-
-        return span.Trim().ToString();
-    }
 
     private sealed record LlmRecommendationResponse(
         string? RecommendedTransition,

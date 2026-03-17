@@ -82,20 +82,20 @@ public sealed class FakeCurrentTenantTests
         var id2 = Guid.NewGuid();
 
 #pragma warning disable xUnit1051
-        var task1 = Task.Run(() =>
+        var task1 = Task.Run(async () =>
         {
             tenant.Id = id1;
             tenant.Name = "Tenant1";
-            Thread.Sleep(50);
+            await Task.Delay(50);
             tenant.Id.ShouldBe(id1);
             tenant.Name.ShouldBe("Tenant1");
         });
 
-        var task2 = Task.Run(() =>
+        var task2 = Task.Run(async () =>
         {
             tenant.Id = id2;
             tenant.Name = "Tenant2";
-            Thread.Sleep(50);
+            await Task.Delay(50);
             tenant.Id.ShouldBe(id2);
             tenant.Name.ShouldBe("Tenant2");
         });

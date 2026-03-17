@@ -43,7 +43,7 @@ public sealed class GdprCompliantOutputCachePolicyTests
     {
         // Arrange
         OutputCacheContext context = CreateContext(authenticated: false);
-        context.HttpContext.Response.Headers["Set-Cookie"] = "session=abc";
+        context.HttpContext.Response.Headers.SetCookie = "session=abc";
 
         // Act
         await _sut.ServeResponseAsync(context, CancellationToken.None);
@@ -70,8 +70,13 @@ public sealed class GdprCompliantOutputCachePolicyTests
     public async Task ServeFromCacheAsync_IsNoOp()
     {
         OutputCacheContext context = CreateContext(authenticated: false);
+        bool originalCaching = context.EnableOutputCaching;
+        bool originalStorage = context.AllowCacheStorage;
 
         await _sut.ServeFromCacheAsync(context, CancellationToken.None);
+
+        context.EnableOutputCaching.ShouldBe(originalCaching);
+        context.AllowCacheStorage.ShouldBe(originalStorage);
     }
 
     private static OutputCacheContext CreateContext(bool authenticated)

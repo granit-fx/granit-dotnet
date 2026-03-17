@@ -70,7 +70,7 @@ public static class DbContextOptionsBuilderExtensions
         T? interceptor = serviceProvider.GetService<T>();
         if (interceptor is not null)
         {
-            options.AddInterceptors([interceptor]);
+            options.AddInterceptors(interceptor);
         }
     }
 }

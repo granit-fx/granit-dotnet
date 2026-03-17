@@ -93,17 +93,17 @@ public sealed class FakeClockTests
         FakeClock clock = new();
 
 #pragma warning disable xUnit1051
-        var task1 = Task.Run(() =>
+        var task1 = Task.Run(async () =>
         {
             clock.Now = new DateTimeOffset(2020, 1, 1, 0, 0, 0, TimeSpan.Zero);
-            Thread.Sleep(50);
+            await Task.Delay(50);
             clock.Now.Year.ShouldBe(2020);
         });
 
-        var task2 = Task.Run(() =>
+        var task2 = Task.Run(async () =>
         {
             clock.Now = new DateTimeOffset(2030, 1, 1, 0, 0, 0, TimeSpan.Zero);
-            Thread.Sleep(50);
+            await Task.Delay(50);
             clock.Now.Year.ShouldBe(2030);
         });
 

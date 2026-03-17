@@ -116,18 +116,14 @@ public sealed class HashiCorpTransitEncryptionServiceTests
     [InlineData("vault:v1:abc", "v1")]
     [InlineData("vault:v2:xyz123==", "v2")]
     [InlineData("vault:v10:longciphertext", "v10")]
-    public void GetKeyVersion_ReturnsVersion_ForVaultCiphertext(string ciphertext, string expected)
-    {
+    public void GetKeyVersion_ReturnsVersion_ForVaultCiphertext(string ciphertext, string expected) =>
         _sut.GetKeyVersion(ciphertext).ShouldBe(expected);
-    }
 
     [Theory]
     [InlineData("notavaultciphertext")]
     [InlineData("ENC:abc123")]
     [InlineData("")]
     [InlineData("vault:nover:abc")]
-    public void GetKeyVersion_ReturnsNull_ForNonVersionedCiphertext(string ciphertext)
-    {
+    public void GetKeyVersion_ReturnsNull_ForNonVersionedCiphertext(string ciphertext) =>
         _sut.GetKeyVersion(ciphertext).ShouldBeNull();
-    }
 }

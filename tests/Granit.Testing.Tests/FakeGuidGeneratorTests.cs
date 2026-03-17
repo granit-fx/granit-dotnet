@@ -75,16 +75,16 @@ public sealed class FakeGuidGeneratorTests
         var specificGuid = Guid.NewGuid();
 
 #pragma warning disable xUnit1051
-        var task1 = Task.Run(() =>
+        var task1 = Task.Run(async () =>
         {
             generator.Enqueue(specificGuid);
-            Thread.Sleep(50);
+            await Task.Delay(50);
             generator.Create().ShouldBe(specificGuid);
         });
 
-        var task2 = Task.Run(() =>
+        var task2 = Task.Run(async () =>
         {
-            Thread.Sleep(50);
+            await Task.Delay(50);
             // Should NOT see specificGuid from task1
             Guid result = generator.Create();
             result.ShouldNotBe(specificGuid);

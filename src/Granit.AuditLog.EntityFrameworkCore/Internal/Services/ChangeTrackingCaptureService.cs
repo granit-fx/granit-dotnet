@@ -153,45 +153,45 @@ internal sealed partial class ChangeTrackingCaptureService(
     {
         List<AuditPropertyChangeSnapshot> changes = [];
 
-        foreach (PropertyEntry prop in entry.Properties)
+        foreach (PropertyEntry prop in entry.Properties.Where(p => !p.Metadata.IsPrimaryKey()))
         {
-            if (prop.Metadata.IsPrimaryKey())
+            AuditPropertyChangeSnapshot? snapshot = CapturePropertySnapshot(prop, changeType);
+            if (snapshot is not null)
             {
-                continue;
-            }
-
-            bool isSensitive = prop.Metadata.PropertyInfo?
-                .GetCustomAttributes(typeof(AuditSensitiveAttribute), true).Length > 0;
-
-            switch (changeType)
-            {
-                case AuditChangeType.Created:
-                    changes.Add(new AuditPropertyChangeSnapshot(
-                        prop.Metadata.Name,
-                        null,
-                        isSensitive ? SensitiveMask : SerializeValue(prop.CurrentValue)));
-                    break;
-
-                case AuditChangeType.Deleted:
-                    changes.Add(new AuditPropertyChangeSnapshot(
-                        prop.Metadata.Name,
-                        isSensitive ? SensitiveMask : SerializeValue(prop.OriginalValue),
-                        null));
-                    break;
-
-                default:
-                    if (prop.IsModified && !Equals(prop.OriginalValue, prop.CurrentValue))
-                    {
-                        changes.Add(new AuditPropertyChangeSnapshot(
-                            prop.Metadata.Name,
-                            isSensitive ? SensitiveMask : SerializeValue(prop.OriginalValue),
-                            isSensitive ? SensitiveMask : SerializeValue(prop.CurrentValue)));
-                    }
-                    break;
+                changes.Add(snapshot);
             }
         }
 
         return changes;
+    }
+
+    private static AuditPropertyChangeSnapshot? CapturePropertySnapshot(
+        PropertyEntry prop,
+        AuditChangeType changeType)
+    {
+        bool isSensitive = prop.Metadata.PropertyInfo?
+            .GetCustomAttributes(typeof(AuditSensitiveAttribute), true).Length > 0;
+
+        return changeType switch
+        {
+            AuditChangeType.Created => new AuditPropertyChangeSnapshot(
+                prop.Metadata.Name,
+                null,
+                isSensitive ? SensitiveMask : SerializeValue(prop.CurrentValue)),
+
+            AuditChangeType.Deleted => new AuditPropertyChangeSnapshot(
+                prop.Metadata.Name,
+                isSensitive ? SensitiveMask : SerializeValue(prop.OriginalValue),
+                null),
+
+            _ when prop.IsModified && !Equals(prop.OriginalValue, prop.CurrentValue) =>
+                new AuditPropertyChangeSnapshot(
+                    prop.Metadata.Name,
+                    isSensitive ? SensitiveMask : SerializeValue(prop.OriginalValue),
+                    isSensitive ? SensitiveMask : SerializeValue(prop.CurrentValue)),
+
+            _ => null,
+        };
     }
 
     private static string? SerializeValue(object? value) => value switch

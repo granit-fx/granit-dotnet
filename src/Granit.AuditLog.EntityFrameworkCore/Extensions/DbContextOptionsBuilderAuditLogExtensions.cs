@@ -44,7 +44,7 @@ public static class DbContextOptionsBuilderAuditLogExtensions
 
         if (interceptor is not null)
         {
-            options.AddInterceptors([interceptor]);
+            options.AddInterceptors(interceptor);
         }
 
         return options;

@@ -90,18 +90,22 @@ public sealed class TenantAwareOutputCachePolicyTests
     public async Task ServeFromCacheAsync_IsNoOp()
     {
         OutputCacheContext context = CreateContext(tenant: null);
+        bool originalCaching = context.EnableOutputCaching;
 
-        // Should complete without throwing
         await _sut.ServeFromCacheAsync(context, CancellationToken.None);
+
+        context.EnableOutputCaching.ShouldBe(originalCaching);
     }
 
     [Fact]
     public async Task ServeResponseAsync_IsNoOp()
     {
         OutputCacheContext context = CreateContext(tenant: null);
+        bool originalCaching = context.EnableOutputCaching;
 
-        // Should complete without throwing
         await _sut.ServeResponseAsync(context, CancellationToken.None);
+
+        context.EnableOutputCaching.ShouldBe(originalCaching);
     }
 
     private static OutputCacheContext CreateContext(ICurrentTenant? tenant)

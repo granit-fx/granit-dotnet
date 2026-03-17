@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Granit.AI;
+using Granit.AI.Internal;
 using Granit.Privacy.AI.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -57,7 +58,7 @@ internal sealed partial class LlmPiiDetector(
                 .GetResponseAsync(messages, cancellationToken: linkedCts.Token)
                 .ConfigureAwait(false);
 
-            string responseText = StripMarkdownCodeFences(response.Text ?? string.Empty);
+            string responseText = LlmResponseHelper.StripMarkdownCodeFences(response.Text ?? string.Empty);
 
             LlmPiiResponse? llmResult = JsonSerializer.Deserialize<LlmPiiResponse>(responseText, SerializerOptions);
 
@@ -126,27 +127,6 @@ internal sealed partial class LlmPiiDetector(
 
           Return ONLY valid JSON, no markdown, no explanation.
           """;
-
-    private static string StripMarkdownCodeFences(string text)
-    {
-        ReadOnlySpan<char> span = text.AsSpan().Trim();
-
-        if (span.StartsWith("```json", StringComparison.OrdinalIgnoreCase))
-        {
-            span = span["```json".Length..];
-        }
-        else if (span.StartsWith("```", StringComparison.Ordinal))
-        {
-            span = span["```".Length..];
-        }
-
-        if (span.EndsWith("```", StringComparison.Ordinal))
-        {
-            span = span[..^"```".Length];
-        }
-
-        return span.Trim().ToString();
-    }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "PII scan completed: containsPii={ContainsPii}, itemCount={ItemCount}")]
     private partial void LogScanCompleted(bool containsPii, int itemCount);

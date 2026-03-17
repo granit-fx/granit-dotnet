@@ -11,7 +11,6 @@ const description = route.entry.data.description ?? "";
 // ── Breadcrumb (every page except homepage) ──────────────────────────
 const breadcrumbItems: Array<{ name: string; url: string }> = [];
 if (path !== "/") {
-  breadcrumbItems.push({ name: "Home", url: siteUrl });
   const segments = path.split("/").filter(Boolean);
   let href = "";
   for (const seg of segments) {
@@ -96,7 +95,7 @@ if (path === "/") {
   const frontmatter = route.entry.data as Record<string, unknown>;
   const datePublished =
     frontmatter.date instanceof Date
-      ? frontmatter.date.toISOString().split("T")[0]
+      ? frontmatter.date.toISOString()
       : undefined;
 
   schemas.push({
@@ -106,7 +105,7 @@ if (path === "/") {
     url: `${siteUrl}${path}/`,
     ...(datePublished && { datePublished }),
     ...(route.lastUpdated && {
-      dateModified: route.lastUpdated.toISOString().split("T")[0],
+      dateModified: route.lastUpdated.toISOString(),
     }),
     author,
     publisher,
@@ -147,9 +146,10 @@ if (path === "/") {
       learningResourceType,
     }),
     ...(route.lastUpdated && {
-      dateModified: route.lastUpdated.toISOString().split("T")[0],
+      dateModified: route.lastUpdated.toISOString(),
     }),
     mainEntityOfPage: { "@type": "WebPage", "@id": `${siteUrl}${path}/` },
+    image: `${siteUrl}/og-image.png`,
     inLanguage: "en",
     about: {
       "@type": "SoftwareSourceCode",
@@ -171,9 +171,10 @@ if (path === "/") {
     author,
     publisher,
     ...(route.lastUpdated && {
-      dateModified: route.lastUpdated.toISOString().split("T")[0],
+      dateModified: route.lastUpdated.toISOString(),
     }),
     mainEntityOfPage: { "@type": "WebPage", "@id": `${siteUrl}${path}/` },
+    image: `${siteUrl}/og-image.png`,
     inLanguage: "en",
   });
 }

@@ -1,4 +1,4 @@
-using Granit.Http.OutputCaching.StackExchangeRedis.HealthChecks;
+using Granit.Caching.StackExchangeRedis.HealthChecks;
 using Granit.Http.OutputCaching.StackExchangeRedis.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -98,11 +98,11 @@ public static class RedisOutputCachingServiceCollectionExtensions
         }
 
         builder.Services.AddSingleton(sp =>
-            new RedisOutputCacheHealthCheck(sp.GetRequiredService<IConnectionMultiplexer>(), threshold));
+            new RedisHealthCheck(sp.GetRequiredService<IConnectionMultiplexer>(), threshold));
 
         return builder.Add(new HealthCheckRegistration(
             name,
-            sp => sp.GetRequiredService<RedisOutputCacheHealthCheck>(),
+            sp => sp.GetRequiredService<RedisHealthCheck>(),
             failureStatus,
             ["readiness", "startup"],
             timeout ?? TimeSpan.FromSeconds(5)));
