@@ -7,9 +7,18 @@ sidebar:
 
 import { FileTree } from "@astrojs/starlight/components";
 
-Dynamic RBAC permission system with module-scoped permission definitions, a policy
-provider backed by distributed cache, and an EF Core grant store for persistent
-role-permission assignments.
+## Why dynamic permissions?
+
+Static `[Authorize(Roles = "Admin")]` policies are hardcoded at compile time. Adding a
+new role or changing what "Editor" can do requires a code change, a build, and a
+deployment. In multi-tenant SaaS or enterprise applications, each customer expects to
+define their own roles and fine-tune access — without waiting for a release.
+
+Granit.Authorization solves this with a fully dynamic RBAC system: permissions are
+declared by modules at startup, stored in a database, and cached per role in distributed
+cache. Administrators assign permissions to roles at runtime through management
+endpoints — no redeployment needed. The policy provider evaluates grants on every
+request, so access changes take effect within the cache TTL (seconds, not sprints).
 
 ## Package structure
 
@@ -217,8 +226,58 @@ All grant changes are audit-logged via `AuditedEntity` (ISO 27001 — 3-year ret
 | EF Core | `PermissionGrant`, `IPermissionGrantDbContext`, `IPermissionManagerReader`, `IPermissionManagerWriter` | `Granit.Authorization.EntityFrameworkCore` |
 | Extensions | `AddGranitAuthorization()`, `AddGranitAuthorizationEntityFrameworkCore<T>()` | — |
 
+## When to use — and when not to
+
+Use Granit.Authorization when:
+
+- **Roles and permissions change at runtime** — administrators assign permissions via UI without redeployment
+- You need **module-scoped permissions** — each module declares its own permissions, no central registry to maintain
+- **Audit trail** is required — every grant/revoke is tracked with `AuditedEntity` (ISO 27001)
+
+Skip it when:
+
+- Your app has **2–3 fixed roles** that never change (Admin, User) — static `[Authorize(Roles = "Admin")]` policies are simpler
+- You only need **claim-based** authorization (e.g., "user has scope X") — ASP.NET Core policies handle this natively
+
+## Common pitfalls
+
+:::caution[Permissions not evaluated at runtime]
+If `IPermissionChecker` returns false for everything, check that:
+1. `GranitAuthorizationEntityFrameworkCoreModule` is loaded (permissions need a store)
+2. Permissions are actually granted to the role via `IPermissionManagerWriter`
+3. The distributed cache is reachable — grants are cached per role
+:::
+
+:::caution[Permissions declared but not discovered]
+`IPermissionDefinitionProvider` implementations are discovered from loaded module
+assemblies. If your provider is in an assembly that is not referenced by any module
+in the dependency graph, it will not be found. Verify with a breakpoint in
+`DefinePermissions`.
+:::
+
+## Testing authorization
+
+Mock `IPermissionChecker` in unit tests to isolate business logic from the permission system:
+
+```csharp
+[Fact]
+public async Task Should_reject_unauthorized_user()
+{
+    // Arrange
+    var checker = Substitute.For<IPermissionChecker>();
+    checker.IsGrantedAsync("Invoices.Invoices.Delete")
+        .Returns(false);
+    var service = new InvoiceService(checker, dbContext);
+
+    // Act & Assert
+    await Should.ThrowAsync<ForbiddenException>(
+        () => service.DeleteAsync(invoiceId));
+}
+```
+
 ## See also
 
+- [Adding Authentication guide](/dotnet/getting-started/adding-authentication/) — getting started with auth
 - [Authentication](/dotnet/security/authentication/) -- JWT Bearer, claims transformation
 - [Security](/dotnet/security/security/) -- core abstractions (ICurrentUserService, ActorKind)
 - [Persistence](/dotnet/data/persistence/) -- `AuditedEntity` base class, interceptors

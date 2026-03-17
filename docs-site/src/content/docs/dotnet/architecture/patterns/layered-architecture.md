@@ -79,7 +79,7 @@ flowchart BT
 | `BackgroundJobManager` | `src/Granit.BackgroundJobs/Internal/BackgroundJobManager.cs` |
 | `DefaultBlobStorage` | `src/Granit.BlobStorage/Internal/DefaultBlobStorage.cs` |
 | `PermissionChecker` | `src/Granit.Authorization/Services/PermissionChecker.cs` |
-| `GranitExceptionHandler` | `src/Granit.ExceptionHandling/GranitExceptionHandler.cs` |
+| `GranitExceptionHandler` | `src/Granit.Http.ExceptionHandling/GranitExceptionHandler.cs` |
 
 ### Infrastructure layer (`*.EntityFrameworkCore`, `*.S3`, etc.)
 

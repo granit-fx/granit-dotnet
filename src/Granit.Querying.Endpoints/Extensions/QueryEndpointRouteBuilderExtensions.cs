@@ -88,7 +88,8 @@ public static class QueryEndpointRouteBuilderExtensions
         })
 #pragma warning restore GRAPI001
         .WithName($"Query{entityName}")
-        .WithSummary($"Returns a filtered, sorted, and paginated list of {entityName} entries.");
+        .WithSummary($"Returns a filtered, sorted, and paginated list of {entityName} entries.")
+        .WithDescription($"Executes a dynamic query against {entityName} using the Granit query engine. Accepts filter expressions, sort directives, column selection, pagination, and free-text search via query parameters. The response includes paginated results and total count.");
 
         // GET /meta — query metadata
         if (options.IncludeMetaEndpoint)
@@ -106,7 +107,8 @@ public static class QueryEndpointRouteBuilderExtensions
                     .ConfigureAwait(false);
             })
             .WithName($"Get{entityName}Meta")
-            .WithSummary($"Returns query metadata for {entityName} (columns, filters, sorts, presets).");
+            .WithSummary($"Returns query metadata for {entityName} (columns, filters, sorts, presets).")
+            .WithDescription($"Returns the query definition metadata for {entityName}: available columns with display labels and data types, supported filter operators, default sort order, and the current user's saved views. Use this to dynamically build query UIs without hardcoding column definitions.");
         }
 
         // Saved views CRUD

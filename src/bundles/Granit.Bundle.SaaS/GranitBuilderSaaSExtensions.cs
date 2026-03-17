@@ -1,7 +1,7 @@
-using Granit.Bulkhead;
 using Granit.Core.Modularity;
 using Granit.Features;
 using Granit.Features.EntityFrameworkCore;
+using Granit.Http.Bulkhead;
 using Granit.MultiTenancy;
 using Granit.RateLimiting;
 
@@ -22,7 +22,7 @@ public static class GranitBuilderSaaSExtensions
         builder.AddModule<GranitFeaturesModule>();
         builder.AddModule<GranitFeaturesEntityFrameworkCoreModule>();
         builder.AddModule<GranitRateLimitingModule>();
-        builder.AddModule<GranitBulkheadModule>();
+        builder.AddModule<GranitHttpBulkheadModule>();
         return builder;
     }
 }

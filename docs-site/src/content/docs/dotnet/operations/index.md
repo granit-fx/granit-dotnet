@@ -52,6 +52,6 @@ GDPR and ISO 27001 compliance.
 | `Granit.Diagnostics` | Kubernetes health check endpoints (liveness, readiness, startup) |
 | `Granit.Observability` | Serilog + OpenTelemetry OTLP export to LGTM stack |
 | `Granit.Vault` | HashiCorp Vault integration (dynamic credentials, Transit encryption) |
-| `Granit.Cors` | CORS policy configuration |
-| `Granit.ExceptionHandling` | RFC 7807 Problem Details error responses |
+| `Granit.Http.Cors` | CORS policy configuration |
+| `Granit.Http.ExceptionHandling` | RFC 7807 Problem Details error responses |
 | `Granit.Wolverine.Postgresql` | Wolverine messaging with PostgreSQL transport |

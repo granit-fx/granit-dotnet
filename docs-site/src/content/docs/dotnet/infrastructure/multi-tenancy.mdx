@@ -151,7 +151,7 @@ Mark endpoints that don't require a tenant context:
 app.MapGet("/health", () => Results.Ok());
 ```
 
-`Granit.ApiDocumentation` automatically excludes the `X-Tenant-Id` header from
+`Granit.Http.ApiDocumentation` automatically excludes the `X-Tenant-Id` header from
 OpenAPI docs for these endpoints.
 
 ## Isolation strategies

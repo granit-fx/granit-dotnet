@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Http.OutputCaching.StackExchangeRedis</PackageId>
+    <Description>Redis output cache store for Granit.Http.OutputCaching. Replaces in-memory IOutputCacheStore with Redis via Microsoft.AspNetCore.OutputCaching.StackExchangeRedis. Reuses IConnectionMultiplexer from Granit.Caching.StackExchangeRedis when co-registered. TLS enforced by default.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Http.OutputCaching.StackExchangeRedis.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OutputCaching.StackExchangeRedis" />
+    <PackageReference Include="StackExchange.Redis" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Http.OutputCaching\Granit.Http.OutputCaching.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -7,15 +7,20 @@ sidebar:
 
 import { Tabs, TabItem, FileTree, Steps, Badge } from "@astrojs/starlight/components";
 
-`Granit.Encryption.EntityFrameworkCore` adds a single attribute — `[Encrypted]` — that
-you place on any `string` property of an EF Core entity. At `OnModelCreating` time,
-`ApplyEncryptionConventions` wires up an `EncryptedStringConverter` backed by
-`IStringEncryptionService`. From that point on, encryption and decryption happen
-transparently on every read and write — no manual calls, no extra service layer.
+## Why field-level encryption?
 
-`Granit.Encryption.ReEncryption` pairs with the EF Core package to provide `IReEncryptionJob`:
-a batch-safe job that re-encrypts all `[Encrypted]` fields with the current key version
-after a key rotation.
+Regulations like GDPR (Art. 32) and ISO 27001 (A.8.24) require encryption of sensitive
+data at rest. Full-disk or database-level encryption protects against stolen disks, but
+not against SQL injection, backup leaks, or unauthorized database access by internal
+users — the data is decrypted the moment it is read. Field-level encryption closes this
+gap: individual columns (national IDs, medical records, bank accounts) are encrypted
+with application-managed keys, so even a full database dump is useless without the key.
+
+The challenge is doing this without polluting every repository call with
+`Encrypt()`/`Decrypt()` logic. Granit makes it transparent: add `[Encrypted]` to a
+property, and EF Core handles the rest — encryption on write, decryption on read, no
+manual calls. When compliance requires key rotation, `IReEncryptionJob` re-encrypts
+all marked fields in batch without downtime.
 
 ## Package structure
 
@@ -342,9 +347,72 @@ Requires `IDbContextFactory<TContext>` to be already registered.
 | GDPR Art. 25 | Data protection by design | Encryption enforced at model level, not call site |
 | ISO 27001 A.10.1 | Cryptographic key management | Key rotation via Vault, key retirement via `RetiredKeyVersions` |
 
+## When to use — and when not to
+
+Use field-level encryption when:
+
+- You store **PII** (national IDs, medical records, bank accounts) that regulations require to be encrypted at rest
+- You need **column-level protection** — even DBAs or leaked backups should not see plaintext
+- **Key rotation** is a compliance requirement — `IReEncryptionJob` handles this without downtime
+
+Skip it when:
+
+- Full-disk encryption (TDE, LUKS) is sufficient for your threat model — field-level adds overhead
+- The data is **non-sensitive** (product catalogs, public content) — encryption adds latency on every read/write
+- You need to **query encrypted columns** (WHERE, ORDER BY, LIKE) — encrypted values are opaque ciphertext
+
+## Common pitfalls
+
+:::caution[EF InMemory ignores converters]
+`UseInMemoryDatabase()` does not apply `EncryptedStringConverter`. Tests using
+InMemory will read/write plaintext even on `[Encrypted]` properties. Use SQLite
+or Testcontainers for encryption tests.
+:::
+
+:::caution[Forgetting `ApplyEncryptionConventions`]
+If your `DbContext.OnModelCreating` does not call `modelBuilder.ApplyEncryptionConventions(...)`,
+the `[Encrypted]` attribute is ignored and data is stored in plaintext. This is a
+**silent compliance failure** — no error, no warning.
+:::
+
+:::caution[Re-encryption batch size]
+`IReEncryptionJob.ReEncryptAsync` loads entities in batches. If your table has millions
+of rows, choose a batch size that fits in memory (default 500). Monitor the job duration
+and adjust based on your Vault/KMS latency.
+:::
+
+## Testing encryption
+
+Use SQLite to verify encryption is applied (the value in the database should differ
+from the plaintext):
+
+```csharp
+[Fact]
+public async Task Encrypted_field_is_not_stored_as_plaintext()
+{
+    // Arrange
+    await using var context = CreateSqliteContext<PatientDbContext>();
+    var patient = new Patient { Niss = "85073000123" };
+
+    // Act
+    context.Patients.Add(patient);
+    await context.SaveChangesAsync();
+
+    // Assert — raw SQL shows ciphertext
+    var raw = await context.Database
+        .SqlQueryRaw<string>("SELECT Niss FROM Patients LIMIT 1")
+        .FirstAsync();
+    raw.ShouldNotBe("85073000123");
+
+    // Assert — EF Core decrypts transparently
+    var loaded = await context.Patients.FirstAsync();
+    loaded.Niss.ShouldBe("85073000123");
+}
+```
+
 ## See also
 
+- [Encrypt sensitive data guide](/dotnet/guides/encrypt-sensitive-data/) — step-by-step walkthrough
 - [Vault & Encryption](/dotnet/security/vault-encryption/) — provider configuration, key rotation, `ITransitEncryptionService`
 - [Privacy module](/dotnet/security/privacy/) — GDPR erasure patterns
 - [Persistence module](/dotnet/data/persistence/) — isolated `DbContext`, `ApplyGranitConventions`
-- [Encrypt sensitive data guide](/dotnet/guides/encrypt-sensitive-data/) — end-to-end walkthrough

@@ -5,14 +5,14 @@ sidebar:
   order: 12
 ---
 
-Granit.Cors configures a default CORS policy driven by `appsettings.json`. Wildcard
+Granit.Http.Cors configures a default CORS policy driven by `appsettings.json`. Wildcard
 origins (`*`) are rejected at startup in non-development environments to enforce
 ISO 27001 network access controls.
 
 ## Setup
 
 ```csharp
-[DependsOn(typeof(GranitCorsModule))]
+[DependsOn(typeof(GranitHttpCorsModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -53,9 +53,9 @@ standard for REST APIs. Origins are restricted to the configured list.
 
 | Category | Key types | Package |
 | -------- | --------- | ------- |
-| Module | `GranitCorsModule` | -- |
-| Options | `GranitCorsOptions` | `Granit.Cors` |
-| Extensions | `AddGranitCors()` | `Granit.Cors` |
+| Module | `GranitHttpCorsModule` | -- |
+| Options | `GranitCorsOptions` | `Granit.Http.Cors` |
+| Extensions | `AddGranitCors()` | `Granit.Http.Cors` |
 
 ## See also
 

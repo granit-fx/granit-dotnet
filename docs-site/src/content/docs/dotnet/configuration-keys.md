@@ -423,7 +423,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `ApiVersioning` | |
-| **Package** | -- | `Granit.ApiVersioning` | |
+| **Package** | -- | `Granit.Http.ApiVersioning` | |
 | `DefaultMajorVersion` | `int` | `1` | Default API version when client omits it. |
 | `ReportApiVersions` | `bool` | `true` | Include version headers in responses. |
 
@@ -432,7 +432,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `ApiDocumentation` | |
-| **Package** | -- | `Granit.ApiDocumentation` | |
+| **Package** | -- | `Granit.Http.ApiDocumentation` | |
 | `MajorVersions` | `int[]` | `[1]` | API versions to generate OpenAPI docs for. |
 | `Title` | `string` | `"API"` | API title in Scalar UI. |
 | `Description` | `string?` | `null` | Markdown description in OpenAPI info. |
@@ -454,7 +454,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | *(configured in code)* | |
-| **Package** | -- | `Granit.ExceptionHandling` | |
+| **Package** | -- | `Granit.Http.ExceptionHandling` | |
 | `ExposeInternalErrorDetails` | `bool` | `false` | Show internal error messages in ProblemDetails. Never `true` in production (ISO 27001). |
 
 ### CORS -- `GranitCorsOptions`
@@ -462,7 +462,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `Cors` | |
-| **Package** | -- | `Granit.Cors` | |
+| **Package** | -- | `Granit.Http.Cors` | |
 | `AllowedOrigins` | `string[]` | `[]` | Allowed CORS origins. Wildcard `*` forbidden outside Development (ISO 27001). |
 | `AllowCredentials` | `bool` | `false` | Include `Access-Control-Allow-Credentials`. |
 
@@ -471,7 +471,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `Cookies` | |
-| **Package** | -- | `Granit.Cookies` | |
+| **Package** | -- | `Granit.Http.Cookies` | |
 | `ThrowOnUnregistered` | `bool` | `true` | Fail-fast on unregistered cookies. |
 | `DefaultRetentionDays` | `int` | `365` | Default cookie retention period. |
 | `ThirdPartyServices` | `array` | `[]` | Third-party services for CMP setup (see below). |
@@ -489,7 +489,7 @@ Each entry in `ThirdPartyServices`:
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `Klaro` | |
-| **Package** | -- | `Granit.Cookies.Klaro` | |
+| **Package** | -- | `Granit.Http.Cookies.Klaro` | |
 | `CookieName` | `string` | `"klaro"` | Klaro consent cookie name. |
 
 ### Cookie consent endpoints -- `CookieConsentEndpointsOptions`
@@ -497,7 +497,7 @@ Each entry in `ThirdPartyServices`:
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | *(configured in code)* | |
-| **Package** | -- | `Granit.Cookies.Endpoints` | |
+| **Package** | -- | `Granit.Http.Cookies.Endpoints` | |
 | `RoutePrefix` | `string` | `"cookies"` | Route prefix. |
 | `TagName` | `string` | `"Cookies"` | OpenAPI tag. |
 
@@ -506,7 +506,7 @@ Each entry in `ThirdPartyServices`:
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `Idempotency` | |
-| **Package** | -- | `Granit.Idempotency` | |
+| **Package** | -- | `Granit.Http.Idempotency` | |
 | `HeaderName` | `string` | `"Idempotency-Key"` | HTTP header name. |
 | `KeyPrefix` | `string` | `"idp"` | Redis key prefix. |
 | `CompletedTtl` | `TimeSpan` | `1.00:00:00` | TTL for completed entries. |
@@ -545,7 +545,7 @@ Each entry in `Policies`:
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `Bulkhead` | |
-| **Package** | -- | `Granit.Bulkhead` | |
+| **Package** | -- | `Granit.Http.Bulkhead` | |
 | `Enabled` | `bool` | `true` | Enable bulkhead isolation. |
 | `BypassRoles` | `string[]` | `[]` | Roles exempt from bulkhead checks. |
 | `UseFeatureBasedQuotas` | `bool` | `false` | Use `Granit.Features` for dynamic limits. |
@@ -981,7 +981,7 @@ same `BlobStorage` section.
 | **Package** | -- | `Granit.BlobStorage.FileSystem` | |
 | `BasePath` | `string` | `""` | Root directory for blob storage (required). |
 
-### Blob storage Database -- `DatabaseBlobOptions`
+### Blob storage DbStore -- `DbStoreBlobOptions`
 
 Extends `BlobStorageOptions` with database storage settings. Bound from the
 same `BlobStorage` section.
@@ -989,12 +989,12 @@ same `BlobStorage` section.
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `BlobStorage` | |
-| **Package** | -- | `Granit.BlobStorage.Database` | |
+| **Package** | -- | `Granit.BlobStorage.DbStore` | |
 | `MaxBlobSizeBytes` | `long` | `10485760` (10 MB) | Maximum blob size accepted by the provider. |
 
 ### Blob storage Proxy -- `ProxyBlobOptions`
 
-Configuration for the proxy endpoint provider used by FileSystem and Database
+Configuration for the proxy endpoint provider used by FileSystem and DbStore
 providers. Bound from the `BlobStorage:Proxy` section.
 
 | Key | Type | Default | Description |

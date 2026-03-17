@@ -1,5 +1,6 @@
 using Granit.Authorization;
 using Granit.Core.Modularity;
+using Granit.Http.ApiDocumentation;
 
 namespace Granit.Timeline.Endpoints;
 
@@ -15,6 +16,7 @@ namespace Granit.Timeline.Endpoints;
 /// Permission definition providers are auto-discovered by <c>GranitAuthorizationModule</c>.
 /// </remarks>
 [DependsOn(
-    typeof(GranitTimelineModule),
-    typeof(GranitAuthorizationModule))]
+    typeof(GranitAuthorizationModule),
+    typeof(GranitHttpApiDocumentationModule),
+    typeof(GranitTimelineModule))]
 public sealed class GranitTimelineEndpointsModule : GranitModule;

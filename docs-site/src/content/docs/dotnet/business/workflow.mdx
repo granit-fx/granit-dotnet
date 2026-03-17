@@ -411,8 +411,73 @@ consumption (notifications, timeline).
 | Notifications | `IApproverResolver`, `WorkflowApprovalNotificationType`, `WorkflowStateChangedNotificationType` | `Granit.Workflow.Notifications` |
 | Extensions | `AddGranitWorkflow()`, `AddGranitWorkflowEntityFrameworkCore<T>()`, `AddGranitWorkflowEndpoints()`, `AddGranitWorkflowNotifications()`, `MapWorkflowEndpoints()` | -- |
 
+## When to use — and when not to
+
+Use Granit.Workflow when:
+
+- An entity has **multiple states with business rules** governing transitions (approvals, rejections, escalations)
+- You need an **audit trail** of who changed what and when (ISO 27001, regulatory)
+- Transitions require **permission checks** or **multi-step approval** chains
+- Business users need to **visualize** the lifecycle in admin UIs
+
+Skip it when:
+
+- Your entity has a simple linear lifecycle (Draft → Published) with no branching — a `Status` enum property with a setter guard is enough
+- State changes are purely technical (e.g., background job status) — Wolverine's built-in saga state is simpler
+- You have fewer than 3 states with no conditional transitions
+
+## Common pitfalls
+
+:::caution[Forgetting to register the workflow definition]
+`IWorkflowDefinition<TState>` must be registered in DI. If you define a workflow but
+forget to call `AddGranitWorkflow()` with the definition, `IWorkflowManager<TState>`
+will throw at runtime. Always verify your module has `[DependsOn(typeof(GranitWorkflowModule))]`.
+:::
+
+:::caution[Mutating entity state directly]
+Never set the `Status` property directly — always go through `IWorkflowManager.TransitionAsync()`.
+Direct mutations bypass validation, permission checks, and the audit trail.
+:::
+
+:::caution[Circular transitions]
+The workflow engine does not prevent cycles (A → B → A). This is intentional for
+review loops, but if unintended, your entity can get stuck in an infinite loop of
+event handlers. Always diagram your FSM before implementing.
+:::
+
+## Testing workflows
+
+Test workflow definitions in isolation without a database:
+
+```csharp
+[Fact]
+public async Task Should_transition_from_Draft_to_PendingApproval()
+{
+    // Arrange
+    var definition = new InvoiceWorkflowDefinition();
+    var invoice = new Invoice { Status = InvoiceStatus.Draft };
+    var manager = new WorkflowManager<InvoiceStatus>(
+        definition,
+        NullWorkflowTransitionRecorder.Instance,
+        NullPermissionChecker.Instance);
+
+    // Act
+    var result = await manager.TransitionAsync(
+        invoice, InvoiceStatus.PendingApproval);
+
+    // Assert
+    result.Outcome.ShouldBe(TransitionOutcome.Completed);
+    invoice.Status.ShouldBe(InvoiceStatus.PendingApproval);
+}
+```
+
+For integration tests with EF Core and audit trail, use a `WebApplicationFactory`
+with Testcontainers (PostgreSQL) to verify that `WorkflowTransitionRecord` rows
+are persisted correctly.
+
 ## See also
 
+- [Implement a workflow guide](/dotnet/guides/implement-workflow/) — step-by-step FSM implementation
 - [Core module](../core/module-system/) -- `IDomainEvent`, module system, `IPublishable`
 - [Persistence module](./persistence/) -- `AuditedEntityInterceptor`, `ApplyGranitConventions`
 - [Security module](./authentication/) -- `ICurrentUserService`, permission checking

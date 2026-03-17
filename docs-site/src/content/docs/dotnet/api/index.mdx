@@ -1,12 +1,36 @@
 ---
 title: API & Http
-description: HTTP infrastructure packages — CORS, API versioning, OpenAPI documentation, exception handling, idempotency, rate limiting, and bulkhead isolation.
+description: HTTP infrastructure packages — CORS, API versioning, OpenAPI documentation, exception handling, idempotency, rate limiting, bulkhead isolation, and response compression.
 sidebar:
   label: Overview
   order: 11
 ---
 
-Eight packages that form the HTTP infrastructure layer of a Granit application.
+Nine packages that form the HTTP infrastructure layer of a Granit application.
+
+## Choosing the right modules
+
+Start with the problem you need to solve:
+
+| Problem | Module | When to use |
+| ------- | ------ | ----------- |
+| Clients retry a POST and create duplicates | [Idempotency](/dotnet/api/idempotency/) | Any mutation endpoint called by mobile apps or unreliable networks |
+| A single user floods your API | [Rate Limiting](/dotnet/api/rate-limiting/) | Public APIs, multi-tenant APIs, any endpoint exposed to untrusted clients |
+| One slow tenant blocks requests for others | [Bulkhead](/dotnet/api/bulkhead/) | Multi-tenant SaaS where tenants share compute resources |
+| API responses are large (JSON lists, reports) | [Response Compression](/dotnet/api/response-compression/) | Any API with responses > 1 KB, especially over mobile networks |
+| You need to push events to external systems | [Webhooks](/dotnet/api/webhooks/) | Integration partners expect real-time notifications |
+| You are introducing breaking API changes | [API Versioning](/dotnet/api/api-versioning/) | Any API with external consumers that cannot upgrade simultaneously |
+| Frontend devs need to explore your API | [API Documentation](/dotnet/api/api-documentation/) | Always — self-service API exploration reduces support requests |
+| Your API returns inconsistent error shapes | [Exception Handling](/dotnet/api/exception-handling/) | Always — standardizes all errors to RFC 7807 Problem Details |
+| Browser clients call your API cross-origin | [CORS](/dotnet/api/cors/) | Any API consumed by SPAs or third-party frontends |
+
+:::tip[Most applications need these four from day one]
+**Exception Handling** + **CORS** + **API Documentation** + **API Versioning** — these
+are foundational. Add Idempotency, Rate Limiting, Bulkhead, and Compression as your
+traffic and integration patterns demand.
+:::
+
+## All packages
 
 | Package | Purpose |
 | ------- | ------- |
@@ -18,17 +42,19 @@ Eight packages that form the HTTP infrastructure layer of a Granit application.
 | [Rate Limiting](/dotnet/api/rate-limiting/) | SlidingWindow, FixedWindow, TokenBucket, Concurrency algorithms |
 | [Webhooks](/dotnet/api/webhooks/) | HMAC-signed outbound webhooks, retry, subscription management |
 | [Bulkhead](/dotnet/api/bulkhead/) | Per-tenant concurrency isolation, feature-based quotas, Wolverine middleware |
+| [Response Compression](/dotnet/api/response-compression/) | Brotli + gzip with safe HTTPS defaults, SSE exclusion |
 
 ## Package dependencies
 
 ```mermaid
 graph TD
-    CORS[Granit.Cors] --> CO[Granit.Core]
-    AV[Granit.ApiVersioning] --> CO
-    AD[Granit.ApiDocumentation] --> AV
+    CORS[Granit.Http.Cors] --> CO[Granit.Core]
+    AV[Granit.Http.ApiVersioning] --> CO
+    AD[Granit.Http.ApiDocumentation] --> AV
     AD --> SEC[Granit.Security]
-    EH[Granit.ExceptionHandling] --> CO
-    ID[Granit.Idempotency] --> CA[Granit.Caching]
+    RC[Granit.ResponseCompression] --> CO
+    EH[Granit.Http.ExceptionHandling] --> CO
+    ID[Granit.Http.Idempotency] --> CA[Granit.Caching]
     ID --> SEC
     RL[Granit.RateLimiting] --> CO
     RL --> EH

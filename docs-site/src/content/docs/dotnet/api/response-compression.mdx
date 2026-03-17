@@ -1,0 +1,126 @@
+---
+title: Response Compression
+description: Brotli + gzip response compression with safe HTTPS defaults, SSE exclusion, and configurable compression levels via appsettings.json.
+sidebar:
+  order: 20
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Why compress responses?
+
+A typical JSON API response of 50 KB becomes **5–8 KB** after Brotli compression.
+For mobile clients on metered connections, or high-throughput APIs serving thousands
+of requests per second, that difference directly translates into **lower latency,
+reduced bandwidth costs, and a better user experience**.
+
+ASP.NET Core ships a response compression middleware, but enabling it safely
+requires several decisions: which providers, which MIME types, what about HTTPS
+and the BREACH attack, should SSE streams be compressed? Getting any of these
+wrong can break real-time features or introduce a security vulnerability.
+
+**Granit.Http.ResponseCompression makes those decisions for you** — one line of code,
+safe defaults, nothing to forget.
+
+## What you get
+
+- **Brotli first, gzip fallback** — modern clients get the best ratio (15–25 %
+  smaller than gzip alone), older clients still get compression
+- **HTTPS compression enabled safely** — BREACH is mitigated by Granit's
+  antiforgery tokens, CORS enforcement, and SameSite cookies. For Bearer-token
+  APIs the attack is not even applicable (no secret in the response body)
+- **SSE never compressed** — `text/event-stream` is hardcoded as excluded so
+  Server-Sent Events stream in real time without buffering surprises
+- **Sensible MIME list** — JSON, HTML, CSS, JS, XML, WASM, and SVG out of the box
+- **Fast by default** — `CompressionLevel.Fastest` balances CPU cost and ratio
+  for API workloads; override per provider if you need maximum compression
+
+## Setup
+
+```csharp
+[DependsOn(typeof(GranitHttpResponseCompressionModule))]
+public class AppModule : GranitModule { }
+```
+
+In `Program.cs`, add the middleware **before** anything that produces a response
+body — otherwise those responses won't be compressed:
+
+```csharp
+app.UseGranitResponseCompression(); // first
+app.UseOutputCache();
+app.UseAuthorization();
+app.MapControllers();
+```
+
+That's it. Zero configuration needed for the common case.
+
+## When to tune the defaults
+
+Override in `appsettings.json` only when you have a specific reason:
+
+```json
+{
+  "ResponseCompression": {
+    "EnableForHttps": true,
+    "EnableBrotli": true,
+    "EnableGzip": true,
+    "BrotliLevel": "Fastest",
+    "GzipLevel": "Fastest"
+  }
+}
+```
+
+| Property | Default | When to change |
+| -------- | ------- | -------------- |
+| `EnableForHttps` | `true` | Set to `false` only if you sit behind a reverse proxy that already compresses (Cloudflare, Nginx) and want to avoid double-compression |
+| `EnableBrotli` | `true` | Disable if all clients are internal tools that don't send `Accept-Encoding: br` |
+| `EnableGzip` | `true` | Rarely — gzip is the universal fallback |
+| `BrotliLevel` | `Fastest` | `Optimal` or `SmallestSize` for batch endpoints where latency matters less than bandwidth |
+| `GzipLevel` | `Fastest` | Same reasoning as Brotli |
+
+## Security: HTTPS and BREACH
+
+Compressing responses over HTTPS can theoretically enable the BREACH attack — an
+attacker who can inject content into the same response as a secret (like a CSRF
+token) could deduce the secret by observing compressed sizes.
+
+**In practice, Granit APIs are protected by multiple layers:**
+
+- **Antiforgery tokens** are randomized per request — the compression oracle
+  cannot converge on a stable value
+- **CORS** blocks cross-origin requests by default
+- **SameSite cookies** prevent cross-site request forgery
+
+For REST or GraphQL APIs using **Bearer tokens** (JWT), BREACH does not apply at
+all — the token travels in headers, never in the response body.
+
+<Aside type="tip">
+If your application sits behind a CDN or reverse proxy (Cloudflare, AWS
+CloudFront, Nginx) that already performs edge compression, you may want to
+disable Granit compression to avoid double-encoding. Set `EnableForHttps: false`
+or remove the module entirely.
+</Aside>
+
+## Real-time streams
+
+Server-Sent Events (`text/event-stream`) are **always excluded** from compression.
+This is not configurable — it's a safety invariant. Compressing an SSE stream
+would buffer events and break the real-time contract with clients.
+
+WebSocket frames bypass HTTP response compression entirely (the protocol switches
+after the initial handshake), so no special handling is needed.
+
+## Public API summary
+
+| Category | Key types | Package |
+| -------- | --------- | ------- |
+| Module | `GranitHttpResponseCompressionModule` | -- |
+| Options | `GranitResponseCompressionOptions` | `Granit.Http.ResponseCompression` |
+| Extensions | `AddGranitResponseCompression()`, `UseGranitResponseCompression()` | `Granit.Http.ResponseCompression` |
+
+## See also
+
+- [API & Http overview](/dotnet/api/) -- All HTTP infrastructure packages
+- [CORS](/dotnet/api/cors/) -- Cross-origin request handling
+- [Exception Handling](/dotnet/api/exception-handling/) -- RFC 7807 Problem Details
+- [Caching](/dotnet/data/caching/) -- Output caching, distributed cache

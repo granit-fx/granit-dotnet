@@ -59,25 +59,25 @@
       },
       "WolverineFx.EntityFrameworkCore": {
         "type": "Direct",
-        "requested": "[5.19.*, )",
-        "resolved": "5.19.1",
-        "contentHash": "Ed+HKLyn04aZdMGEARqVEFNJEQciWITl9ycQVZnE6bHwE6Kbsutm07VMxJsg+mTZoz4g6whJQZEhfG/HPjUicQ==",
+        "requested": "[5.20.*, )",
+        "resolved": "5.20.0",
+        "contentHash": "/wb4ccbChhlf84hcXlUW14PgP3i/GYs4rsv2Mh8h0POdR30q0Z5BJQKELKq+jIUR+i3mrLekAKCTMXq5Uep9eg==",
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "10.0.2",
           "Microsoft.EntityFrameworkCore.Design": "10.0.2",
           "Microsoft.EntityFrameworkCore.Relational": "10.0.2",
           "Weasel.EntityFrameworkCore": "8.9.0",
-          "WolverineFx.RDBMS": "5.19.1"
+          "WolverineFx.RDBMS": "5.20.0"
         }
       },
       "WolverineFx.SqlServer": {
         "type": "Direct",
-        "requested": "[5.19.*, )",
-        "resolved": "5.19.1",
-        "contentHash": "MpZjYs6UE7ELaEt8OYGp1yCTnTNDqKZY8M5elWM7uIOvZWb13yllhRgNcxGuBpbCXKL7TZdSuA1R/cQIpjSU6g==",
+        "requested": "[5.20.*, )",
+        "resolved": "5.20.0",
+        "contentHash": "aIdCFTfx6ozYcggddzDRVkcJ8bxJ2z2r4bY7omg6QdNzLfm7Puj2jM3S/gfyliib9RL10qCSWqrvjnW3enI0oQ==",
         "dependencies": {
           "Weasel.SqlServer": "8.9.0",
-          "WolverineFx.RDBMS": "5.19.1"
+          "WolverineFx.RDBMS": "5.20.0"
         }
       },
       "Azure.Core": {
@@ -107,8 +107,8 @@
       },
       "JasperFx": {
         "type": "Transitive",
-        "resolved": "1.21.0",
-        "contentHash": "7a9Uu3XIo7dl2XjzX9oc/t/n9Yx/vb0DMOieWPYrQpQFtzYjxV0ndATygpmhJqWohidORHsg0QJRqp3+o8iDAw==",
+        "resolved": "1.21.1",
+        "contentHash": "oEswL6IWlSsSw+3vylT1fh+aZhiG1LVv/fJxC+E7dtxw80M8jW1cbSh2QaXDMyvYsxWrlwkA8TvCYPuvN5NMVA==",
         "dependencies": {
           "FastExpressionCompiler": "5.3.0",
           "ImTools": "4.0.0",
@@ -122,10 +122,10 @@
       },
       "JasperFx.Events": {
         "type": "Transitive",
-        "resolved": "1.23.1",
-        "contentHash": "zZHSIO//jvBdiv2KeRBtH6W1ufvumQJzOrlahTXk0aG1LZJCkn2Q+ok95jz71tYmse+sZkb857zuARTpYhuhFQ==",
+        "resolved": "1.24.0",
+        "contentHash": "vDkYMarrBqHSqoLBlpQfePz5FdVK/3LyFoBVRCzaWKeS/jxwUQG4fckHu30ozwZId1DulkHKcNjYziO5oyG08Q==",
         "dependencies": {
-          "JasperFx": "1.21.0"
+          "JasperFx": "1.21.1"
         }
       },
       "JasperFx.RuntimeCompiler": {
@@ -782,11 +782,11 @@
       },
       "WolverineFx.RDBMS": {
         "type": "Transitive",
-        "resolved": "5.19.1",
-        "contentHash": "tH2el1Q2BG/5Do9gLHmDgsfQTasItdXlsSVqhBQlgSlWy5yMDt0y+0UR3dVjNZzpEKT3NJgcEHWCnYPnsRjd0A==",
+        "resolved": "5.20.0",
+        "contentHash": "s4cwHJZ2vG6gVefKxLUFL2jri0PXmcJ+3R98B86BeXEcWmYOrEAENCW7l0Cb0TghdxZ9PhEHjFdiP9pcSN1ymw==",
         "dependencies": {
           "Weasel.Core": "8.9.0",
-          "WolverineFx": "5.19.1"
+          "WolverineFx": "5.20.0"
         }
       },
       "ZString": {
@@ -797,18 +797,18 @@
       "granit.core": {
         "type": "Project"
       },
-      "granit.exceptionhandling": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
-        }
-      },
       "granit.guids": {
         "type": "Project",
         "dependencies": {
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
+        }
+      },
+      "granit.http.exceptionhandling": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )"
         }
       },
       "granit.localization": {
@@ -824,8 +824,8 @@
       "granit.persistence": {
         "type": "Project",
         "dependencies": {
-          "Granit.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore": "[10.*, )",
@@ -854,7 +854,7 @@
         "dependencies": {
           "FluentValidation": "[12.*, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.*, )",
-          "Granit.ExceptionHandling": "[0.1.0-dev, )",
+          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )"
         }
       },
@@ -863,8 +863,8 @@
         "dependencies": {
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
-          "WolverineFx": "[5.19.*, )",
-          "WolverineFx.FluentValidation": "[5.19.*, )"
+          "WolverineFx": "[5.20.*, )",
+          "WolverineFx.FluentValidation": "[5.20.*, )"
         }
       },
       "Azure.Identity": {
@@ -1047,12 +1047,12 @@
       },
       "WolverineFx": {
         "type": "CentralTransitive",
-        "requested": "[5.19.*, )",
-        "resolved": "5.19.1",
-        "contentHash": "WshQCeeUjEHdCFZqlqfI5M1tU+FtrGYeAbTnOQBITeQtFwEykcZtAF+4bEWRhOg1xZla3rJdlhJAPJkbJcQINg==",
+        "requested": "[5.20.*, )",
+        "resolved": "5.20.0",
+        "contentHash": "FJykS3j3mIC//E7bsUozBlxYmjhSe7WZ2dX4HybTpy0w6+JWiXC42R6kQk9TPNUv8ldRIV4IlBnMPx5M4G9EtQ==",
         "dependencies": {
-          "JasperFx": "1.21.0",
-          "JasperFx.Events": "1.23.1",
+          "JasperFx": "1.21.1",
+          "JasperFx.Events": "1.24.0",
           "JasperFx.RuntimeCompiler": "4.4.0",
           "Microsoft.Extensions.Caching.Memory": "10.0.0",
           "Microsoft.Extensions.Configuration": "10.0.0",
@@ -1068,12 +1068,12 @@
       },
       "WolverineFx.FluentValidation": {
         "type": "CentralTransitive",
-        "requested": "[5.19.*, )",
-        "resolved": "5.19.1",
-        "contentHash": "y7LDPBdgSg56XG+aG4BYkLjjwZNswbDDXp7jWAz/oK1rQm3hHPeIr52siJvjyk6hdH9Wp/N2oMnm6GTOyW2tKA==",
+        "requested": "[5.20.*, )",
+        "resolved": "5.20.0",
+        "contentHash": "eT1OSZEQ7t4WZt3+2fTA9Xs/F0SAnWSs0lC0nx3UTNm8ME7df2nenM2BKxmJssZx363uCBnr1Qw5hABcJPyHCg==",
         "dependencies": {
           "FluentValidation": "12.0.0",
-          "WolverineFx": "5.19.1"
+          "WolverineFx": "5.20.0"
         }
       }
     }

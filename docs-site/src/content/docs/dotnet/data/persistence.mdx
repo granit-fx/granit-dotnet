@@ -493,8 +493,72 @@ to cascade to the next batch via the durable outbox.
 | Migration dispatch | `IMigrationBatchDispatcher`, `RunMigrationBatchCommand` | `Granit.Persistence.Migrations` |
 | Wolverine dispatch | `GranitPersistenceMigrationsWolverineModule` | `Granit.Persistence.Migrations.Wolverine` |
 
+## Common pitfalls
+
+:::caution[Forgetting `ApplyGranitConventions`]
+If your `DbContext.OnModelCreating` does not call `modelBuilder.ApplyGranitConventions(...)`,
+**no query filters** (soft delete, multi-tenancy, active, publishable) are applied.
+Entities will appear unfiltered — including soft-deleted and other-tenant data. This is
+the #1 cause of "I see deleted records" bugs.
+:::
+
+:::caution[`ExecuteUpdate` / `ExecuteDelete` bypass interceptors]
+EF Core bulk operations (`ExecuteUpdateAsync`, `ExecuteDeleteAsync`) bypass
+`SaveChangesInterceptor`. This means:
+- `SoftDeleteInterceptor` is **not** called — records are **hard-deleted**
+- `AuditedEntityInterceptor` is **not** called — `ModifiedAt`/`ModifiedBy` are not set
+- Domain events are **not** dispatched
+
+Use these operations only for data migrations or batch cleanup, never for business logic.
+:::
+
+:::caution[EF InMemory does not apply value converters]
+`UseInMemoryDatabase()` ignores `HasConversion<>()` — this affects `[Encrypted]` fields,
+enum-to-string conversions, and JSON columns. Always use SQLite or Testcontainers
+(PostgreSQL) for tests that depend on converters or query filters.
+:::
+
+:::caution[Named vs unnamed query filters]
+Never use `HasQueryFilter(expr)` (unnamed) — it silently **replaces** any existing
+filter on the entity. Always use `HasQueryFilter(name, expr)` (EF Core 10 named
+filters) so filters compose instead of overwriting. `ApplyGranitConventions` already
+registers standard filters with names from `GranitFilterNames`.
+:::
+
+## Testing persistence
+
+For unit tests that need query filters and interceptors, use SQLite in-memory:
+
+```csharp
+[Fact]
+public async Task Soft_deleted_entities_are_filtered_out()
+{
+    // Arrange
+    await using var context = CreateSqliteContext<PatientDbContext>();
+    var patient = new Patient { Name = "Jane Doe" };
+    context.Patients.Add(patient);
+    await context.SaveChangesAsync();
+
+    // Act — soft delete
+    patient.IsDeleted = true;
+    await context.SaveChangesAsync();
+
+    // Assert — filtered by default
+    var patients = await context.Patients.ToListAsync();
+    patients.ShouldBeEmpty();
+
+    // Assert — visible when filter is disabled
+    var all = await context.Patients.IgnoreQueryFilters().ToListAsync();
+    all.Count.ShouldBe(1);
+}
+```
+
+For integration tests with real PostgreSQL, use Testcontainers to get full fidelity
+(JSON columns, concurrent transactions, schema isolation).
+
 ## See also
 
+- [Adding Persistence guide](/dotnet/getting-started/adding-persistence/) — step-by-step tutorial for new projects
 - [Core module](../core/module-system/) — domain base types, filter interfaces, `IDataFilter`
 - [Multi-tenancy concept](../../concepts/multi-tenancy.md) — isolation strategies in depth
 - [Security module](./authentication/) — `ICurrentUserService` that feeds audit fields

@@ -211,7 +211,7 @@ The `ICurrentTenant` abstraction uses a null object pattern (`NullTenantContext`
 
 ## Cookie consent: no undeclared cookies
 
-GDPR requires informed consent for non-essential cookies. Most frameworks leave cookie management to the application. Granit inverts this with a **strict registry pattern** in `Granit.Cookies`.
+GDPR requires informed consent for non-essential cookies. Most frameworks leave cookie management to the application. Granit inverts this with a **strict registry pattern** in `Granit.Http.Cookies`.
 
 Every cookie must be declared at startup with its category, retention period, and purpose. Writing an undeclared cookie throws `UnregisteredCookieException` when strict mode is enabled. This means a developer cannot silently introduce a tracking cookie -- the framework rejects it at runtime.
 
@@ -224,7 +224,7 @@ cookies.RegisterCookie(new CookieDefinition(
     Purpose: "Session identification"));
 ```
 
-The `Granit.Cookies.Klaro` package integrates with the Klaro consent management platform (EU-sovereign, open-source) to enforce consent before setting non-essential cookies. Four categories map directly to GDPR requirements:
+The `Granit.Http.Cookies.Klaro` package integrates with the Klaro consent management platform (EU-sovereign, open-source) to enforce consent before setting non-essential cookies. Four categories map directly to GDPR requirements:
 
 | Category | Consent required | Examples |
 |----------|-----------------|----------|

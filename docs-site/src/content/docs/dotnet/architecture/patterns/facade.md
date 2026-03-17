@@ -49,7 +49,7 @@ classDiagram
 | Facade | File | Orchestrated sub-components |
 |--------|------|-----------------------------|
 | `DefaultBlobStorage` | `src/Granit.BlobStorage/Internal/DefaultBlobStorage.cs` | `ICurrentTenant`, `IBlobDescriptorStore`, `IBlobKeyStrategy`, `IBlobStorageClient`, `IBlobPresignedUrlGenerator`, `IBlobValidator[]`, `IClock` |
-| `GranitExceptionHandler` | `src/Granit.ExceptionHandling/GranitExceptionHandler.cs` | `IExceptionStatusCodeMapper[]`, `ILogger`, `ExceptionHandlingOptions` |
+| `GranitExceptionHandler` | `src/Granit.Http.ExceptionHandling/GranitExceptionHandler.cs` | `IExceptionStatusCodeMapper[]`, `ILogger`, `ExceptionHandlingOptions` |
 
 ## Rationale
 

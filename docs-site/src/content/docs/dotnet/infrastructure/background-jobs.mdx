@@ -442,8 +442,71 @@ When `Granit.Observability` is loaded, the activity source is auto-discovered vi
 | Middleware | `RecurringJobSchedulingMiddleware` | `Granit.BackgroundJobs.Wolverine` |
 | Extensions | `AddGranitBackgroundJobs()`, `AddGranitBackgroundJobsEntityFrameworkCore()`, `MapBackgroundJobsEndpoints()` | -- |
 
+## When to use — and when not to
+
+Use Granit.BackgroundJobs when:
+
+- You need **recurring scheduled work** (cron-based: nightly reports, weekly cleanups, hourly syncs)
+- Jobs must be **durable** — surviving restarts and distributed across cluster nodes
+- You need **admin visibility** — pause/resume/trigger jobs via endpoints, audit who did what
+- Jobs must propagate **tenant context** and **user context** (multi-tenant background processing)
+
+Skip it when:
+
+- You need a **one-off async task** after an HTTP request (e.g., send a confirmation email) — use Wolverine's `IMessageBus.PublishAsync()` directly
+- The work is **fire-and-forget with no durability requirement** — `Task.Run()` or a hosted service is simpler
+- You need **sub-second scheduling** — cron's minimum granularity is 1 second; for real-time use Wolverine message scheduling
+
+## Common pitfalls
+
+:::caution[In-memory mode loses jobs on restart]
+The default `BackgroundJobs.Mode = InMemory` is for development only. In production,
+always set `Mode = Durable` with an EF Core store — otherwise, a pod restart drops
+all pending and scheduled jobs silently.
+:::
+
+:::caution[Paused jobs skip rescheduling]
+When a recurring job is paused, the cron scheduler stops scheduling new executions.
+When resumed, it **does not** retroactively execute missed runs — it schedules the
+next future occurrence. Design jobs to be idempotent and catch up on missed work
+if needed.
+:::
+
+:::caution[Wolverine singleton agent]
+The `CronSchedulerAgent` runs on a single Wolverine node (leader election). If that
+node crashes, another node picks up after the leadership timeout (~30s). During this
+window, no new cron jobs are scheduled. Existing running jobs on other nodes are not
+affected.
+:::
+
+## Testing background jobs
+
+Test job handlers as plain classes — no scheduler needed:
+
+```csharp
+[Fact]
+public async Task Cleanup_job_deletes_expired_records()
+{
+    // Arrange
+    await using var context = CreateSqliteContext<AppDbContext>();
+    var clock = new FakeTimeProvider(DateTimeOffset.UtcNow);
+    var handler = new ExpiredRecordCleanupJob(context, clock);
+
+    context.Records.Add(new Record { ExpiresAt = clock.Now.AddDays(-1) });
+    await context.SaveChangesAsync();
+
+    // Act
+    await handler.HandleAsync(new RunExpiredRecordCleanup());
+
+    // Assert
+    var remaining = await context.Records.CountAsync();
+    remaining.ShouldBe(0);
+}
+```
+
 ## See also
 
+- [Add background jobs guide](/dotnet/guides/add-background-jobs/) — step-by-step setup walkthrough
 - [Wolverine module](./wolverine/) -- Transactional outbox, context propagation, retry policy
 - [Persistence module](./persistence/) -- `ApplyGranitConventions`, isolated DbContext pattern
 - [Security module](./authentication/) -- `ICurrentUserService` for audit trail propagation

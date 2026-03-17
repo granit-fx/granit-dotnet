@@ -368,7 +368,7 @@ app.Run();
 
 ## Step 7: Run and test with Scalar
 
-Add the `Granit.ApiDocumentation` package to get **Scalar** (the OpenAPI documentation UI) out of the box. Start the application and navigate to `/scalar` to see your endpoints, try requests, and inspect the generated OpenAPI schema.
+Add the `Granit.Http.ApiDocumentation` package to get **Scalar** (the OpenAPI documentation UI) out of the box. Start the application and navigate to `/scalar` to see your endpoints, try requests, and inspect the generated OpenAPI schema.
 
 Create a product:
 

@@ -1,4 +1,4 @@
-using Granit.ExceptionHandling;
+using Granit.Http.ExceptionHandling;
 using Granit.RateLimiting.Abstractions;
 using Granit.RateLimiting.Exceptions;
 using Granit.RateLimiting.Internal;

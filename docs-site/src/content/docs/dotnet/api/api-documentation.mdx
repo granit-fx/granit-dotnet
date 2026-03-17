@@ -7,10 +7,19 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-Granit.ApiDocumentation generates OpenAPI documents and serves the
-[Scalar](https://scalar.com) interactive UI. One OpenAPI document is generated per
-declared API major version. Supports JWT Bearer and OAuth2 Authorization Code with
-PKCE for interactive authentication.
+## Why interactive API documentation?
+
+An API without discoverable documentation creates friction: frontend developers read
+source code, QA teams guess request shapes, and onboarding new team members takes
+days instead of minutes. Static Swagger pages help, but they lack real authentication
+flows — testers still reach for Postman or curl.
+
+Granit.Http.ApiDocumentation generates versioned OpenAPI 3.1 documents and serves
+[Scalar](https://scalar.com), a modern interactive UI where developers can authenticate
+with OAuth2/PKCE and execute requests directly in the browser. One document is generated
+per API major version, so consumers always find the spec that matches their integration.
+The result: self-service API exploration from day one, fewer support requests, and
+documentation that stays in sync with the code automatically.
 
 ## Setup
 
@@ -18,7 +27,7 @@ PKCE for interactive authentication.
 <TabItem label="JWT Bearer (default)">
 
 ```csharp
-[DependsOn(typeof(GranitApiDocumentationModule))]
+[DependsOn(typeof(GranitHttpApiDocumentationModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -135,13 +144,14 @@ The module registers these OpenAPI transformers automatically:
 
 | Category | Key types | Package |
 | -------- | --------- | ------- |
-| Module | `GranitApiDocumentationModule` | -- |
-| Options | `ApiDocumentationOptions`, `OAuth2Options` | `Granit.ApiDocumentation` |
-| Extension points | `ISchemaExampleProvider`, `InternalApiAttribute` | `Granit.ApiDocumentation` |
-| Extensions | `AddGranitApiDocumentation()`, `UseGranitApiDocumentation()` | `Granit.ApiDocumentation` |
+| Module | `GranitHttpApiDocumentationModule` | -- |
+| Options | `ApiDocumentationOptions`, `OAuth2Options` | `Granit.Http.ApiDocumentation` |
+| Extension points | `ISchemaExampleProvider`, `InternalApiAttribute` | `Granit.Http.ApiDocumentation` |
+| Extensions | `AddGranitApiDocumentation()`, `UseGranitApiDocumentation()` | `Granit.Http.ApiDocumentation` |
 
 ## See also
 
+- [ADR-009: Scalar](/dotnet/architecture/adr/009-scalar-api-documentation/) -- Why Scalar was chosen over Swagger UI
 - [API Versioning](/dotnet/api/api-versioning/) -- URL versioning, RFC 8594 deprecation
 - [Authentication module](/dotnet/security/authentication/) -- JWT Bearer, Keycloak
 - [API & Http overview](/dotnet/api/) -- All HTTP infrastructure packages

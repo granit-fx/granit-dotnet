@@ -18,7 +18,7 @@ dotnet add package Granit.DataExchange.Endpoints
 
 ## Dependencies
 
-- `Granit.ApiDocumentation`
+- `Granit.Http.ApiDocumentation`
 - `Granit.Authorization`
 - `Granit.DataExchange`
 - `Granit.Guids`

@@ -1,6 +1,6 @@
 using Granit.Core.Modularity;
-using Granit.ExceptionHandling;
 using Granit.Guids;
+using Granit.Http.ExceptionHandling;
 using Granit.Persistence.Extensions;
 using Granit.Security;
 using Granit.Timing;

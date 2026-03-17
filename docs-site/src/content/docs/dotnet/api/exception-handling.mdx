@@ -5,7 +5,7 @@ sidebar:
   order: 15
 ---
 
-Granit.ExceptionHandling provides a centralized exception-to-HTTP-response pipeline
+Granit.Http.ExceptionHandling provides a centralized exception-to-HTTP-response pipeline
 implementing RFC 7807 Problem Details. All exceptions are caught, mapped to status
 codes via a chain of responsibility, logged at the appropriate level, and serialized
 as `application/problem+json`.
@@ -127,9 +127,9 @@ may contain PHI, SQL fragments, or internal paths (ISO 27001 violation).
 | Category | Key types | Package |
 | -------- | --------- | ------- |
 | Module | `GranitExceptionHandlingModule` | -- |
-| Pipeline | `IExceptionStatusCodeMapper`, `GranitExceptionHandler` | `Granit.ExceptionHandling` |
-| Options | `ExceptionHandlingOptions` | `Granit.ExceptionHandling` |
-| Extensions | `AddGranitExceptionHandling()`, `UseGranitExceptionHandling()` | `Granit.ExceptionHandling` |
+| Pipeline | `IExceptionStatusCodeMapper`, `GranitExceptionHandler` | `Granit.Http.ExceptionHandling` |
+| Options | `ExceptionHandlingOptions` | `Granit.Http.ExceptionHandling` |
+| Extensions | `AddGranitExceptionHandling()`, `UseGranitExceptionHandling()` | `Granit.Http.ExceptionHandling` |
 
 ## See also
 

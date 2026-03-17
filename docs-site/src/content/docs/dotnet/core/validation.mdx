@@ -7,9 +7,19 @@ sidebar:
 
 import { FileTree } from "@astrojs/starlight/components";
 
-Granit.Validation wraps FluentValidation with structured error codes and international
-validators (IBAN, BIC, E.164, ISO 3166). `Granit.Validation.Europe` adds France and
-Belgium-specific regulatory validators (NISS, NIR, SIREN, VAT, INAMI).
+## Why a validation framework?
+
+Input validation is the first line of defense against bad data, but it is also one of
+the most repetitive tasks in API development. Without a shared approach, teams reinvent
+IBAN checks, phone number formats, and national ID validation in every project — with
+inconsistent error messages and no structured error codes for frontend consumption.
+
+Granit.Validation provides a single place for validation logic: validators are
+auto-discovered, wired into the Minimal API pipeline, and return RFC 7807 problem
+details with stable, machine-readable error codes. The international validator library
+(IBAN, BIC, E.164, ISO 3166) and the European regulatory validators (NISS, NIR, SIREN,
+VAT, INAMI) are battle-tested and locale-aware — so you validate once, correctly,
+instead of copying regex patterns from Stack Overflow.
 
 ## Package structure
 
@@ -20,7 +30,7 @@ Belgium-specific regulatory validators (NISS, NIR, SIREN, VAT, INAMI).
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.Validation` | `GranitValidator<T>`, international validators, endpoint filter | `Granit.ExceptionHandling`, `Granit.Localization` |
+| `Granit.Validation` | `GranitValidator<T>`, international validators, endpoint filter | `Granit.Http.ExceptionHandling`, `Granit.Localization` |
 | `Granit.Validation.Europe` | France/Belgium-specific validators (NISS, NIR, SIREN, VAT) | `Granit.Validation`, `Granit.Localization` |
 
 ## Setup
@@ -217,8 +227,74 @@ public class RegisterClinicRequestValidator : GranitValidator<RegisterClinicRequ
 | European validators | `.BelgianNiss()`, `.FrenchNir()`, `.BelgianEid()`, `.FrenchSiren()`, `.FrenchSiret()`, `.BelgianBce()`, `.FrenchNafCode()`, `.BelgianVat()`, `.FrenchVat()`, `.EuropeanVat()`, `.FrenchRib()`, `.BelgianAccountNumber()`, `.FrenchRpps()`, `.FrenchAdeli()`, `.FrenchFiness()`, `.BelgianInami()`, `.FrenchPostalCode()`, `.BelgianPostalCode()`, `.FrenchInseeCode()` | `Granit.Validation.Europe` |
 | Extensions | `AddGranitValidation()`, `AddGranitValidatorsFromAssemblyContaining<T>()` | -- |
 
+## When to use — and when not to
+
+Use Granit.Validation when:
+
+- You need **structured error codes** that frontends can map to localized messages
+- Validation rules are **complex** (cross-field, conditional, async database lookups)
+- You validate **international formats** (IBAN, NISS, VAT, E.164) that require checksum algorithms
+- You want validation wired into **Minimal API endpoints** or **Wolverine handlers** automatically
+
+Skip it when:
+
+- You only need **simple required/length** checks — `[Required]` and `[MaxLength]` DataAnnotations
+  on a record are faster to write for trivial cases
+- The validation is **domain invariant** logic (e.g., "order total must be positive") — this belongs
+  in the entity/value object constructor, not in a FluentValidation rule
+
+## Common pitfalls
+
+:::caution[Validators not auto-discovered]
+Validators are auto-discovered from module assemblies that have `[WolverineHandlerModule]`.
+If your module does **not** use Wolverine, you must call
+`AddGranitValidatorsFromAssemblyContaining<T>()` manually — otherwise
+`FluentValidationEndpointFilter<T>` silently skips validation (no error, no 422).
+:::
+
+:::caution[Missing `.ValidateBody<T>()` on endpoint]
+Registering a validator is not enough — you must also chain `.ValidateBody<T>()` on
+the Minimal API endpoint. Without this filter, the validator exists in DI but is never
+invoked.
+:::
+
+:::caution[`GranitValidator<T>` vs `AbstractValidator<T>`]
+Always inherit from `GranitValidator<T>`, not FluentValidation's `AbstractValidator<T>`
+directly. `GranitValidator<T>` integrates with Granit's error code system and
+localization pipeline. Using `AbstractValidator<T>` produces unstructured error messages.
+:::
+
+## Testing validators
+
+Test validators in isolation — no DI container needed:
+
+```csharp
+[Fact]
+public void Should_reject_invalid_IBAN()
+{
+    // Arrange
+    var validator = new CreatePatientRequestValidator();
+    var request = new CreatePatientRequest(
+        FirstName: "Jane", LastName: "Doe",
+        Email: "jane@example.com", Phone: "+32470123456",
+        CountryCode: "BE", Iban: "INVALID");
+
+    // Act
+    var result = validator.Validate(request);
+
+    // Assert
+    result.IsValid.ShouldBeFalse();
+    result.Errors.ShouldContain(e => e.PropertyName == "Iban");
+}
+```
+
+For async validators that query the database, inject a mock `DbContext` or use
+`InlineValidator<T>` to test the rule logic in isolation.
+
 ## See also
 
+- [Add an endpoint guide](/dotnet/guides/add-an-endpoint/) — includes validation setup walkthrough
+- [ADR-006: FluentValidation](/dotnet/architecture/adr/006-fluentvalidation/) -- Why FluentValidation was chosen over DataAnnotations
 - [Exception Handling](/dotnet/api/exception-handling/) -- `IExceptionStatusCodeMapper` for validation exceptions
 - [Core module](/dotnet/core/module-system/) -- Exception hierarchy, `IHasValidationErrors`
 - [Persistence module](/dotnet/data/persistence/) -- `AuditedEntityInterceptor` uses `IClock` for timestamps

@@ -7,10 +7,22 @@ sidebar:
 
 import { FileTree } from "@astrojs/starlight/components";
 
-Granit.DocumentGeneration extends the [Templating](/dotnet/business/templating/)
-pipeline with binary document output: HTML→PDF via PuppeteerSharp headless Chromium,
-Excel via ClosedXML, and PDF/A-3b conversion for long-term archival and electronic
-invoicing (Factur-X / ZUGFeRD EN 16931).
+## Why a document generation pipeline?
+
+Every business application eventually needs to produce documents — invoices, contracts,
+reports, export files. The common approach is to build PDF generation as a one-off
+utility using a low-level library, resulting in duplicated layout code, inconsistent
+branding, and no easy way for non-developers to update templates.
+
+Granit.DocumentGeneration solves this with a two-stage pipeline: first, render a
+Scriban text template (HTML or data), then convert the output to a binary format (PDF
+or Excel). Templates are managed through the [Templating](/dotnet/business/templating/)
+system with full lifecycle and approval workflow, so business users control the content
+while developers control the rendering. PDF/A-3b support is built in for long-term
+archival and electronic invoicing (Factur-X / ZUGFeRD EN 16931) — a legal requirement
+in several EU countries.
+
+> **Architecture decisions:** see [ADR-012: PuppeteerSharp](/dotnet/architecture/adr/012-puppeteersharp-pdf-rendering/) for the PDF engine choice and [ADR-011: ClosedXML](/dotnet/architecture/adr/011-closedxml-excel-generation/) for Excel generation.
 
 ## Package structure
 

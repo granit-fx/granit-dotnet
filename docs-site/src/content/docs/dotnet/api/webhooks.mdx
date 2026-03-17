@@ -7,8 +7,19 @@ sidebar:
 
 import { Tabs, TabItem, FileTree } from "@astrojs/starlight/components";
 
-Granit.Webhooks provides outbound webhook dispatch with HMAC-SHA256 signed deliveries,
-retry policies, and ISO 27001-compliant audit trails.
+## Why webhooks?
+
+Polling is expensive: clients repeatedly hit your API asking "did anything change?",
+wasting bandwidth, adding latency, and straining rate limits. Webhooks invert this
+relationship — your application pushes events to subscribers the moment they happen.
+This is how Stripe, GitHub, and Slack work, and it is what integration partners expect
+from a modern API.
+
+But outbound webhooks are harder than they look: deliveries fail, endpoints go down,
+payloads need tamper-proof signatures, and auditors want proof that a notification was
+(or was not) delivered. Granit.Webhooks handles all of this — HMAC-SHA256 signed
+payloads, configurable retry policies, durable outbox dispatch via Wolverine, and a
+full delivery audit trail for ISO 27001 compliance.
 
 ## Package structure
 
@@ -198,8 +209,39 @@ against GDPR data-minimization requirements.
 | Options | `WebhooksOptions` | `Granit.Webhooks` |
 | Extensions | `AddGranitWebhooks()`, `AddGranitWebhooksEntityFrameworkCore()` | — |
 
+## When to use — and when not to
+
+Use Granit.Webhooks when:
+
+- External systems need **real-time notifications** of events in your application
+- You need **tamper-proof deliveries** — HMAC-SHA256 signatures let subscribers verify authenticity
+- **Delivery reliability** matters — durable outbox ensures no event is lost, retries handle transient failures
+- You need an **audit trail** of every delivery attempt (ISO 27001, debugging)
+
+Skip it when:
+
+- Consumers are **internal services** in the same cluster — use Wolverine integration events (lower latency, no HTTP overhead)
+- You only need **one subscriber** that you control — a direct HTTP call or message queue is simpler
+- Events are **high-frequency** (>100/s per subscription) — webhooks add HTTP latency per event; consider a streaming protocol (WebSocket, SSE) instead
+
+## Common pitfalls
+
+:::caution[`StorePayload` persists JSON in clear text]
+When `StorePayload = true`, the full JSON body of every delivery is stored in the
+database. If payloads contain PII, this creates a GDPR compliance risk. Either disable
+it, or ensure the webhook database is encrypted and has a retention policy.
+:::
+
+:::caution[Subscription suspension]
+After repeated delivery failures (configurable), a subscription is automatically
+**suspended**. A `WebhookSubscriptionSuspended` event is published, but if no handler
+re-activates or alerts an admin, the subscription stays silent forever. Monitor this
+event in production.
+:::
+
 ## See also
 
+- [Implement webhooks guide](/dotnet/guides/implement-webhooks/) — step-by-step setup walkthrough
 - [API & Web module](./api-web/) — Exception handling, versioning, idempotency
 - [Persistence module](./persistence/) — EF Core interceptors, query filters
 - [Wolverine module](./wolverine/) — Messaging, transactional outbox

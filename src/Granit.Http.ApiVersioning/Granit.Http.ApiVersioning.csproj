@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>Granit.Http.ApiVersioning</PackageId>
+    <Description>URL-based API versioning for Granit applications. Registers Asp.Versioning with URL + query string readers and sensible defaults.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Http.ApiVersioning.Tests" />
+    <InternalsVisibleTo Include="Granit.Http.ApiDocumentation" />
+    <InternalsVisibleTo Include="Granit.Http.ApiDocumentation.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Mvc" />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,5 +1,5 @@
 using System.Text.Json.Nodes;
-using Granit.ApiDocumentation;
+using Granit.Http.ApiDocumentation;
 using Granit.ReferenceData.Endpoints.Dtos;
 
 namespace Granit.ReferenceData.Endpoints.Internal;

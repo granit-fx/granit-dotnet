@@ -17,15 +17,18 @@ internal static class IdentityUserCacheReadEndpoints
     {
         group.MapGet("/", SearchAsync)
             .WithName("SearchIdentityUserCache")
-            .WithSummary("Searches the user cache by free-text term with pagination.");
+            .WithSummary("Searches the user cache by free-text term with pagination.")
+            .WithDescription("Performs a free-text search across cached user fields (name, email, etc.) with pagination. Only searches the local cache — does not query the identity provider. Use sync endpoints to refresh stale data.");
 
         group.MapGet("/{userId}", GetByIdAsync)
             .WithName("GetIdentityUserById")
-            .WithSummary("Resolves a single user by external ID (cache-aside: fetches from provider if stale/missing).");
+            .WithSummary("Resolves a single user by external ID (cache-aside: fetches from provider if stale/missing).")
+            .WithDescription("Looks up the user in the local cache first. If the entry is missing or stale, transparently fetches from the identity provider and updates the cache before returning. Returns 404 if the user does not exist in either the cache or the provider.");
 
         group.MapPost("/batch", BatchResolveAsync)
             .WithName("BatchResolveIdentityUsers")
-            .WithSummary("Resolves multiple user IDs to identity information in batch.");
+            .WithSummary("Resolves multiple user IDs to identity information in batch.")
+            .WithDescription("Resolves a list of user IDs in a single request, using the cache-aside pattern. Unknown IDs are silently omitted from the result. Useful for enriching lists of entities with user display names without N+1 calls.");
 
         return group;
     }

@@ -1,7 +1,7 @@
-using Granit.ApiDocumentation;
 using Granit.Authorization;
 using Granit.Core.Modularity;
 using Granit.Guids;
+using Granit.Http.ApiDocumentation;
 using Granit.Timing;
 using Granit.Validation;
 
@@ -19,7 +19,7 @@ namespace Granit.Querying.Endpoints;
 /// Validators are auto-discovered by <c>GranitValidationModule</c>.
 /// </remarks>
 [DependsOn(
-    typeof(GranitApiDocumentationModule),
+    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitAuthorizationModule),
     typeof(GranitGuidsModule),
     typeof(GranitQueryingModule),

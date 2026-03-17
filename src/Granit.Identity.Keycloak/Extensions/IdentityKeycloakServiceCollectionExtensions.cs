@@ -1,5 +1,5 @@
 using Granit.Core.Diagnostics;
-using Granit.HttpResilience.Extensions;
+using Granit.Http.Resilience.Extensions;
 using Granit.Identity.Extensions;
 using Granit.Identity.Keycloak.HealthChecks;
 using Granit.Identity.Keycloak.Internal;

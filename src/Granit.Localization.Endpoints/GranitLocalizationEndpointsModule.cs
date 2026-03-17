@@ -1,6 +1,6 @@
-using Granit.ApiDocumentation;
 using Granit.Authorization;
 using Granit.Core.Modularity;
+using Granit.Http.ApiDocumentation;
 using Granit.Validation;
 
 namespace Granit.Localization.Endpoints;
@@ -20,7 +20,7 @@ namespace Granit.Localization.Endpoints;
 /// Permission definition providers are auto-discovered by <c>GranitAuthorizationModule</c>.
 /// </remarks>
 [DependsOn(
-    typeof(GranitApiDocumentationModule),
+    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitAuthorizationModule),
     typeof(GranitLocalizationModule),
     typeof(GranitValidationModule))]

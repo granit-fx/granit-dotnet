@@ -7,9 +7,23 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
+## Why modules?
+
+In a growing .NET application, service registration becomes scattered: some in
+`Program.cs`, some in extension methods, some buried in configuration helpers. There
+is no clear ownership, no dependency ordering, and no way to conditionally load a
+feature without `#if` flags. When two teams add services that conflict, the bug shows
+up at runtime.
+
+Granit modules solve this by making each feature a first-class unit with explicit
+dependencies. The framework loads modules in topological order — if module A depends
+on module B, B is guaranteed to be configured first. Adding a feature is one
+`[DependsOn]` attribute; removing it is deleting that attribute. No scattered
+registration code, no ordering surprises, no accidental coupling.
+
 A Granit module is a self-contained unit that registers its own services into the
 DI container. Modules declare their dependencies with `[DependsOn]` and are loaded
-in topological order -- one call in `Program.cs` replaces dozens of manual
+in topological order — one call in `Program.cs` replaces dozens of manual
 `Add*()` invocations.
 
 ## Prerequisites
@@ -240,6 +254,22 @@ public sealed class MyAppHostModule : GranitModule
 | `Builder` | `IHostApplicationBuilder` | Full builder (needed by some modules like Observability) |
 | `ModuleAssemblies` | `IReadOnlyList<Assembly>` | All loaded module assemblies in topological order |
 | `Items` | `IDictionary<string, object?>` | Shared state for inter-module communication |
+
+## Verify
+
+Confirm your module is loaded by checking the startup logs:
+
+```bash
+dotnet run 2>&1 | grep "Module loaded"
+# → Module loaded: GranitInventoryModule
+```
+
+You can also verify programmatically by resolving a service registered by your module:
+
+```csharp
+app.MapGet("/health/inventory", (IInventoryService svc) =>
+    TypedResults.Ok(new { Module = "Inventory", Status = "Loaded" }));
+```
 
 ## Next steps
 

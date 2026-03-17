@@ -251,7 +251,7 @@
       "granit.core": {
         "type": "Project"
       },
-      "granit.httpresilience": {
+      "granit.http.resilience": {
         "type": "Project",
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )",

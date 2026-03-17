@@ -1,7 +1,7 @@
 using System.Reflection;
 using FluentValidation;
 using Granit.Core.Modularity;
-using Granit.ExceptionHandling;
+using Granit.Http.ExceptionHandling;
 using Granit.Localization;
 using Granit.Localization.Options;
 using Granit.Validation.Extensions;

@@ -1,4 +1,5 @@
 using Granit.Features.EntityFrameworkCore.Internal;
+using Granit.Features.Events;
 using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,6 +37,11 @@ public static class FeaturesEntityFrameworkCoreHostApplicationBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<GranitFeaturesDbContext>(configure);
+
+        // Fallbacks: ensure event publisher and TimeProvider are available even if
+        // AddGranitFeatures() was not called (e.g. in tests or slim setups).
+        builder.Services.TryAddSingleton<IFeatureEventPublisher, NullFeatureEventPublisher>();
+        builder.Services.TryAddSingleton(TimeProvider.System);
 
         builder.Services.Replace(
             ServiceDescriptor.Scoped<IFeatureStoreReader, EfCoreFeatureStore>());

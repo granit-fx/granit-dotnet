@@ -18,7 +18,7 @@ application to production. Every item maps to a compliance requirement
 - [ ] JWT Bearer configured with `RequireHttpsMetadata: true`
 - [ ] RBAC permissions defined and assigned per tenant
 - [ ] No debug or diagnostic endpoints exposed publicly
-- [ ] CORS policy restricted to known origins (`Granit.Cors`)
+- [ ] CORS policy restricted to known origins (`Granit.Http.Cors`)
 - [ ] Rate limiting configured for public-facing endpoints
 - [ ] TLS between all internal components (application to database, application to Redis, application to Vault)
 

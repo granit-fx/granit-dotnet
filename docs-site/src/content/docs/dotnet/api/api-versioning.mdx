@@ -5,15 +5,25 @@ sidebar:
   order: 13
 ---
 
-Granit.ApiVersioning configures URL-based API versioning using
-[Asp.Versioning](https://github.com/dotnet/aspnet-api-versioning).
-Primary reader: URL segment (`/api/v{version:apiVersion}/resource`).
-Fallback reader: query string (`?api-version=1.0`).
+## Why version your API?
+
+Once an API has consumers — mobile apps, third-party integrations, SPAs — every breaking
+change risks breaking them. Without versioning, you face an impossible choice: freeze
+the API forever or coordinate simultaneous upgrades across all clients.
+
+URL-based versioning (`/api/v1/`, `/api/v2/`) makes the contract explicit and
+allows old and new versions to coexist. Consumers migrate on their own schedule.
+Granit.Http.ApiVersioning adds RFC 8594 deprecation headers (`Sunset`, `Deprecation`, `Link`)
+so clients receive advance notice of upcoming removals — no more surprise breakages.
+
+Granit.Http.ApiVersioning configures [Asp.Versioning](https://github.com/dotnet/aspnet-api-versioning)
+with a URL segment primary reader (`/api/v{version:apiVersion}/resource`) and a query
+string fallback (`?api-version=1.0`).
 
 ## Setup
 
 ```csharp
-[DependsOn(typeof(GranitApiVersioningModule))]
+[DependsOn(typeof(GranitHttpApiVersioningModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -70,12 +80,13 @@ Each call to a deprecated endpoint is logged at Warning level.
 
 | Category | Key types | Package |
 | -------- | --------- | ------- |
-| Module | `GranitApiVersioningModule` | -- |
-| Options | `GranitApiVersioningOptions` | `Granit.ApiVersioning` |
-| Attributes | `DeprecatedAttribute` | `Granit.ApiVersioning` |
-| Extensions | `AddGranitApiVersioning()`, `.Deprecated()` | `Granit.ApiVersioning` |
+| Module | `GranitHttpApiVersioningModule` | -- |
+| Options | `GranitApiVersioningOptions` | `Granit.Http.ApiVersioning` |
+| Attributes | `DeprecatedAttribute` | `Granit.Http.ApiVersioning` |
+| Extensions | `AddGranitApiVersioning()`, `.Deprecated()` | `Granit.Http.ApiVersioning` |
 
 ## See also
 
+- [ADR-004: Asp.Versioning](/dotnet/architecture/adr/004-asp-versioning/) -- Why Asp.Versioning was chosen
 - [API Documentation](/dotnet/api/api-documentation/) -- Scalar OpenAPI, multi-version docs
 - [API & Http overview](/dotnet/api/) -- All HTTP infrastructure packages

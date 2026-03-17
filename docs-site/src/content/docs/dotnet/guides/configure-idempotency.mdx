@@ -7,7 +7,7 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-Granit.Idempotency provides Stripe-style HTTP idempotency for your API endpoints.
+Granit.Http.Idempotency provides Stripe-style HTTP idempotency for your API endpoints.
 When a client retries a request (network failure, timeout, double-click), the
 middleware returns the original response without re-executing the business logic.
 State is managed in Redis with atomic locks and AES-256-CBC encryption.
@@ -21,14 +21,14 @@ State is managed in Redis with atomic locks and AES-256-CBC encryption.
 ## 1. Install the package
 
 ```bash
-dotnet add package Granit.Idempotency
+dotnet add package Granit.Http.Idempotency
 ```
 
 ## 2. Register the module
 
 ```csharp
 using Granit.Core.Modularity;
-using Granit.Idempotency;
+using Granit.Http.Idempotency;
 
 [DependsOn(typeof(GranitIdempotencyModule))]
 public sealed class MyAppModule : GranitModule { }
@@ -197,8 +197,28 @@ change on every request, making the hash non-deterministic.
 - **No side-channel**: The idempotency key is hashed before storage, preventing
   Redis key enumeration attacks.
 
+## Verify
+
+Test idempotency by sending the same request twice with the same key:
+
+```bash
+# First request — creates the resource
+curl -s -X POST http://localhost:5000/api/v1/orders \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: order-abc-123" \
+  -d '{"product": "Widget", "quantity": 1}' | jq .id
+# → "d4e5f6a7-..."
+
+# Second request with SAME key — returns cached response, no duplicate
+curl -s -X POST http://localhost:5000/api/v1/orders \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: order-abc-123" \
+  -d '{"product": "Widget", "quantity": 1}' | jq .id
+# → "d4e5f6a7-..." (same ID)
+```
+
 ## Next steps
 
 - [Granit.Caching concept](/dotnet/concepts/configuration/) for distributed cache and encryption setup
 - [Set up notifications](/dotnet/guides/set-up-notifications/) to notify users of completed operations
-- [Granit.Idempotency reference](/dotnet/api/) for the full configuration and service registration details
+- [Granit.Http.Idempotency reference](/dotnet/api/) for the full configuration and service registration details

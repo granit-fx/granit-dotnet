@@ -66,6 +66,7 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
             .WithName("GetGranitLocalization")
             .WithTags(options.TagName)
             .WithSummary("Returns all localization resources for the requested culture.")
+            .WithDescription("Returns all localization resources (key-value pairs) for the requested culture, grouped by resource name. Accepts an optional cultureName query parameter (BCP 47 format); defaults to the Accept-Language header culture. Also returns the list of supported languages. Response is cached for 1 hour (Cache-Control: public, max-age=3600, Vary: Accept-Language). Anonymous — no authentication required.")
             .Produces<ApplicationLocalizationResponse>();
 
         return endpoints;
@@ -107,17 +108,20 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
         group.MapGet("", HandleGetOverridesAsync)
              .WithName("GetLocalizationOverrides")
              .WithSummary("Returns all translation overrides for a resource and culture.")
+             .WithDescription("Returns all active translation overrides for the specified resource and culture as a key-value dictionary. Both resourceName and cultureName query parameters are required. Returns 501 if no override store is registered.")
              .Produces<IReadOnlyDictionary<string, string>>();
 
         group.MapPut("/{resourceName}/{cultureName}/{key}", HandlePutOverrideAsync)
              .WithName("PutLocalizationOverride")
              .WithSummary("Creates or updates a translation override.")
+             .WithDescription("Sets a translation override for a specific resource, culture, and key. If an override already exists, it is replaced. The culture name must be a valid BCP 47 tag. Returns 501 if no override store is registered.")
              .Produces(StatusCodes.Status204NoContent)
              .ValidateBody<Dtos.SetLocalizationOverrideRequest>();
 
         group.MapDelete("/{resourceName}/{cultureName}/{key}", HandleDeleteOverrideAsync)
              .WithName("DeleteLocalizationOverride")
              .WithSummary("Removes a translation override.")
+             .WithDescription("Removes the translation override for the specified resource, culture, and key. The original value from the resource file becomes effective again. No-op if the override does not exist. Returns 501 if no override store is registered.")
              .Produces(StatusCodes.Status204NoContent);
 
         return group;

@@ -1,4 +1,4 @@
-using Granit.HttpResilience.Extensions;
+using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.MobilePush.GoogleFcm.Internal;
 using Granit.Notifications.MobilePush.GoogleFcm.Options;
 using Microsoft.Extensions.DependencyInjection;

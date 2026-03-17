@@ -47,7 +47,7 @@ for durable outbox-backed dispatch with exponential backoff retry.
 |---------|------|------------|
 | `Granit.Notifications` | Fan-out engine, InApp channel, definitions, entity tracking | `Granit.Guids`, `Granit.Timing`, `Granit.Querying` |
 | `Granit.Notifications.EntityFrameworkCore` | EF Core stores (all entities + mobile push tokens) | `Granit.Notifications`, `Granit.Notifications.MobilePush`, `Granit.Persistence` |
-| `Granit.Notifications.Endpoints` | Minimal API endpoints (inbox, preferences, subscriptions, followers) | `Granit.Notifications`, `Granit.Notifications.MobilePush`, `Granit.Validation`, `Granit.ApiDocumentation` |
+| `Granit.Notifications.Endpoints` | Minimal API endpoints (inbox, preferences, subscriptions, followers) | `Granit.Notifications`, `Granit.Notifications.MobilePush`, `Granit.Validation`, `Granit.Http.ApiDocumentation` |
 | `Granit.Notifications.Wolverine` | Durable outbox-backed dispatch via `IMessageBus` | `Granit.Notifications`, `Granit.Wolverine` |
 | `Granit.Notifications.Email` | Email channel abstraction, Keyed Services resolution | `Granit.Notifications` |
 | `Granit.Notifications.Email.Smtp` | MailKit SMTP provider (Keyed Service `"Smtp"`) | `Granit.Notifications.Email` |
@@ -84,7 +84,7 @@ graph TD
     NE[Granit.Notifications.Endpoints] --> N
     NE --> MP
     NE --> V[Granit.Validation]
-    NE --> AD[Granit.ApiDocumentation]
+    NE --> AD[Granit.Http.ApiDocumentation]
 
     NW[Granit.Notifications.Wolverine] --> N
     NW --> W[Granit.Wolverine]
@@ -1133,11 +1133,81 @@ Tags: `notifications.type`, `notifications.channel`, `notifications.delivery_id`
 | Endpoints | `NotificationEndpointsOptions`, `MobilePushTokenEndpoints` | `Granit.Notifications.Endpoints` |
 | Extensions | `AddGranitNotifications()`, `AddGranitNotificationsEntityFrameworkCore()`, `AddGranitNotificationsEmail()`, `AddGranitNotificationsEmailSmtp()`, `AddGranitNotificationsEmailAcs()`, `AddGranitNotificationsEmailScaleway()`, `AddGranitNotificationsEmailSendGrid()`, `AddGranitNotificationsBrevo()`, `AddGranitNotificationsSms()`, `AddGranitNotificationsSmsAcs()`, `AddGranitNotificationsSmsAwsSns()`, `AddGranitNotificationsTwilio()`, `AddGranitNotificationsWhatsApp()`, `AddGranitNotificationsMobilePush()`, `AddGranitNotificationsMobilePushGoogleFcm()`, `AddGranitNotificationsMobilePushAzureNotificationHubs()`, `AddGranitNotificationsMobilePushAwsSns()`, `AddGranitNotificationsSignalR()`, `AddGranitNotificationsPush()`, `AddGranitNotificationsSse()`, `AddGranitNotificationsZulip()`, `AddNotificationDefinitions<T>()`, `MapGranitNotificationEndpoints()`, `MapMobilePushTokenEndpoints()` | various |
 
+## Cross-module recipes
+
+### Workflow + Notifications: notify on state transition
+
+When an entity transitions in a workflow, publish a notification automatically.
+The `WorkflowStateChangedEvent` is published by Wolverine — handle it in a
+notification handler:
+
+```csharp
+public static class InvoiceApprovalNotificationHandler
+{
+    public static async Task Handle(
+        WorkflowStateChangedEvent @event,
+        INotificationPublisher publisher,
+        CancellationToken ct)
+    {
+        if (@event.NewState != nameof(InvoiceStatus.PendingApproval))
+            return;
+
+        await publisher.PublishAsync(new NotificationRequest(
+            Type: "InvoiceApprovalRequired",
+            EntityType: "Invoice",
+            EntityId: @event.EntityId,
+            Recipients: [@event.Properties["ApproverId"]],
+            Data: new { InvoiceNumber = @event.Properties["Number"] }), ct)
+            .ConfigureAwait(false);
+    }
+}
+```
+
+### Authorization + Notifications: permission-gated channels
+
+Use `IPermissionChecker` to restrict notification channels based on the sender's
+permissions (e.g., only managers can trigger SMS notifications):
+
+```csharp
+public class SmsPermissionFilter(IPermissionChecker permissionChecker)
+    : INotificationChannelFilter
+{
+    public async Task<bool> ShouldSendAsync(
+        NotificationContext context, CancellationToken ct)
+    {
+        return await permissionChecker
+            .IsGrantedAsync("Notifications.Sms.Send")
+            .ConfigureAwait(false);
+    }
+}
+```
+
+### Encryption + Notifications: protect PII in notification payloads
+
+When notification data contains PII (patient names, account numbers), encrypt the
+`Data` dictionary before persisting. The `InApp` channel stores the notification
+in the database — combine with `IStringEncryptionService`:
+
+```csharp
+public class EncryptedNotificationEnricher(IStringEncryptionService encryption)
+    : INotificationDataEnricher
+{
+    public Task EnrichAsync(NotificationContext context, CancellationToken ct)
+    {
+        if (context.Data.TryGetValue("PatientName", out var name))
+            context.Data["PatientName"] = encryption.Encrypt(name?.ToString() ?? "");
+        return Task.CompletedTask;
+    }
+}
+```
+
 ## See also
 
+- [Set up notifications guide](/dotnet/guides/set-up-notifications/) — step-by-step configuration walkthrough
 - [Wolverine module](/dotnet/infrastructure/wolverine/) -- Durable messaging, transactional outbox
 - [Persistence module](/dotnet/data/persistence/) -- `AuditedEntity`, `Entity`, interceptors
 - [Identity module](/dotnet/security/identity/) -- User lookup for `IRecipientResolver` implementation
 - [Templating module](./templating/) -- Scriban templates for email/SMS content
+- [Workflow module](/dotnet/business/workflow/) -- FSM engine with transition events
 - [Core module](../core/module-system/) -- `Entity`, `AuditedEntity`, `IMultiTenant`
 - [API Reference](/api/Granit.Notifications.html) (auto-generated from XML docs)

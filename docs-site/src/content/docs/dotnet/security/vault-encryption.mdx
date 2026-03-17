@@ -7,14 +7,20 @@ sidebar:
 
 import { Tabs, TabItem, FileTree, Badge } from "@astrojs/starlight/components";
 
-Granit.Encryption provides a pluggable string encryption service with AES-256-CBC as the
-default provider. Granit.Vault is the abstraction layer defining `ITransitEncryptionService`
-and `IDatabaseCredentialProvider`. Provider packages implement those interfaces:
-Granit.Vault.HashiCorp wraps VaultSharp for HashiCorp Vault Transit encryption and dynamic
-database credentials, Granit.Vault.Azure uses Azure Key Vault for RSA-OAEP-256 encryption
-and dynamic credentials via Key Vault Secrets, Granit.Vault.Aws targets AWS KMS and
-Secrets Manager, and Granit.Vault.GoogleCloud uses Google Cloud KMS for symmetric encryption and Secret Manager for dynamic database credentials. All provider modules are automatically disabled in Development environments
-so no external vault server is required locally.
+## Why centralized secret management?
+
+Hardcoded connection strings and static encryption keys are a security incident waiting
+to happen — they end up in config files, environment variables, and CI pipelines where
+anyone with read access can extract them. When a key is compromised, rotating it means
+touching every service that uses it, usually under pressure during an incident.
+
+A vault solves both problems: encryption keys never leave the vault boundary (transit
+encryption), and database credentials are generated on demand with a short TTL (dynamic
+credentials). If a credential leaks, it expires automatically. Granit abstracts over
+four major vault providers (HashiCorp Vault, Azure Key Vault, AWS KMS, Google Cloud KMS)
+behind a single interface — so your application code does not change when you switch
+clouds or move from development to production. All provider modules are automatically
+disabled in Development environments so no external vault server is required locally.
 
 ## Package structure
 

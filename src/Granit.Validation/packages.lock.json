@@ -31,7 +31,7 @@
       "granit.core": {
         "type": "Project"
       },
-      "granit.exceptionhandling": {
+      "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )"

@@ -8,7 +8,7 @@ sidebar:
 
 > **Date:** 2026-02-26
 > **Authors:** Jean-Francois Meyers
-> **Scope:** granit-dotnet (Granit.ApiDocumentation)
+> **Scope:** granit-dotnet (Granit.Http.ApiDocumentation)
 
 ## Context
 

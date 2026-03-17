@@ -111,12 +111,6 @@
       "granit.core": {
         "type": "Project"
       },
-      "granit.exceptionhandling": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
-        }
-      },
       "granit.guids": {
         "type": "Project",
         "dependencies": {
@@ -125,11 +119,17 @@
           "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
+      "granit.http.exceptionhandling": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )"
+        }
+      },
       "granit.persistence": {
         "type": "Project",
         "dependencies": {
-          "Granit.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore": "[10.*, )",

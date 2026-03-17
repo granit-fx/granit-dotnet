@@ -1,5 +1,5 @@
 using Granit.Core.Modularity;
-using Granit.HttpResilience;
+using Granit.Http.Resilience;
 using Granit.Timing;
 using Granit.Webhooks.Extensions;
 

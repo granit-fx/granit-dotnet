@@ -11,7 +11,7 @@ import { Tabs, TabItem, FileTree, Badge } from "@astrojs/starlight/components";
 pre-configured Axios instances with automatic Bearer token injection, optional `X-Tenant-Id`
 header for multi-tenant applications, and a 401 response interceptor for back-channel logout.
 `@granit/idempotency` extends it with automatic `Idempotency-Key` header injection on mutation
-requests, pairing with `Granit.Idempotency` on the .NET backend.
+requests, pairing with `Granit.Http.Idempotency` on the .NET backend.
 
 **Peer dependencies:** `axios ^1.0.0`
 
@@ -179,7 +179,7 @@ class TimeoutError extends Error {
 ## Response types
 
 ```ts
-// RFC 7807 Problem Details — mirrors Granit.ExceptionHandling output
+// RFC 7807 Problem Details — mirrors Granit.Http.ExceptionHandling output
 interface ProblemDetails {
   type?: string;
   title: string;
@@ -202,7 +202,7 @@ interface PaginatedResponse<T> {
 ## Idempotency
 
 `@granit/idempotency` injects a unique `Idempotency-Key` header on every mutation request
-(`POST`, `PUT`, `PATCH`, `DELETE`). The .NET backend (`Granit.Idempotency`) uses this key
+(`POST`, `PUT`, `PATCH`, `DELETE`). The .NET backend (`Granit.Http.Idempotency`) uses this key
 to deduplicate requests — same key + same payload returns the cached response, same key +
 different payload returns HTTP 409.
 
@@ -251,6 +251,6 @@ vi.mocked(client.get).mockResolvedValue(axiosResponse({ items: [], total: 0 }));
 ## See also
 
 - [Granit.Core module](/dotnet/core/module-system/) — .NET foundation (exception hierarchy, batch operations)
-- [Granit.Idempotency module](/dotnet/api/) — .NET idempotency middleware
+- [Granit.Http.Idempotency module](/dotnet/api/) — .NET idempotency middleware
 - [Authentication](./authentication/) — `setTokenGetter` is wired automatically by `@granit/react-authentication`
 - [Multi-tenancy](./multi-tenancy/) — `setTenantGetter` is wired automatically by `@granit/react-multi-tenancy`

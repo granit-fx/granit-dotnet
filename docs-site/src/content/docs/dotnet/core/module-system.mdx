@@ -399,7 +399,7 @@ internal domain objects — they cross module boundaries.
 
 ## Exception hierarchy
 
-All exceptions map to specific HTTP status codes via `Granit.ExceptionHandling`
+All exceptions map to specific HTTP status codes via `Granit.Http.ExceptionHandling`
 (RFC 7807 Problem Details):
 
 | Exception | Status | Interfaces | Use case |
@@ -504,8 +504,44 @@ tracing.
 | Translation | `ITranslatable<T>`, `ITranslation`, `Translation<T>`, `AuditedTranslation<T>` | 4 |
 | Other | `IVersioned`, `AuditLogEntry`, `LocalizableString`, `GranitActivitySourceRegistry`, `BatchResult<T>` | 5 |
 
+## Common pitfalls
+
+:::caution[Module not loading]
+If a module's `ConfigureServices` is never called, check:
+1. The module is reachable via `[DependsOn]` from your root module
+2. The assembly containing the module is referenced (a `<ProjectReference>` or `<PackageReference>` exists)
+3. The module class is `public` and inherits from `GranitModule`
+
+Unreachable modules are silently ignored — no error, no warning.
+:::
+
+:::caution[Circular dependencies]
+`AddGranitAsync<T>()` performs topological sorting at startup. If module A depends on B
+and B depends on A (directly or transitively), the framework throws
+`InvalidOperationException: Circular dependency detected`. Fix by extracting the shared
+contract into a third module that both depend on.
+:::
+
+:::caution[`[DependsOn]` ordering]
+The order of types in `[DependsOn(typeof(A), typeof(B))]` does **not** determine load
+order — topological sorting does. If you need A to run before B, A must be in B's
+dependency chain, not just listed first in the attribute.
+:::
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---------|-------------|-----|
+| `ConfigureServices` not called | Module not in dependency graph | Add `[DependsOn]` to a loaded module |
+| `Circular dependency detected` | A → B → A (direct or transitive) | Extract shared abstractions into a new module |
+| `Service not registered` at runtime | Module loaded but `ConfigureServices` does not register the service | Check the module's `ConfigureServices` override |
+| `ICurrentTenant.Id` throws | `IsAvailable` not checked | Always guard with `if (currentTenant.IsAvailable)` |
+| Domain events not dispatched | `DomainEventDispatcherInterceptor` not wired | Verify `UseGranitInterceptors()` in DbContext factory |
+
 ## See also
 
+- [Create a module guide](/dotnet/guides/create-a-module/) — step-by-step module creation walkthrough
+- [Your First API](/dotnet/getting-started/your-first-api/) — getting started tutorial
 - [Module system concept](../../concepts/module-system/)
 - [Persistence](./persistence/) — EF Core interceptors that implement audit and soft delete
 - [Security](./authentication/) — `ICurrentUserService` that populates `CreatedBy` / `ModifiedBy`

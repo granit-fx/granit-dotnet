@@ -13,7 +13,7 @@ application -- from route definition to validation and error handling.
 ## Prerequisites
 
 - A working Granit module (see [Create a module](/dotnet/guides/create-a-module/))
-- References to `Granit.Validation` and `Granit.ExceptionHandling`
+- References to `Granit.Validation` and `Granit.Http.ExceptionHandling`
 
 ## Step 1 -- Define request and response DTOs
 
@@ -239,7 +239,7 @@ return TypedResults.Problem(
 return TypedResults.BadRequest("SKU already exists.");
 ```
 
-Granit.ExceptionHandling automatically converts unhandled exceptions into Problem
+Granit.Http.ExceptionHandling automatically converts unhandled exceptions into Problem
 Details responses with appropriate status codes. The `ProblemDetailsResponseOperationTransformer`
 declares these error responses in the OpenAPI documentation.
 
@@ -302,6 +302,23 @@ api.MapInventoryItemEndpoints();
 app.MapHealthChecks("/healthz");
 
 app.Run();
+```
+
+## Verify
+
+Run the application and confirm the endpoint works:
+
+```bash
+# Create a resource
+curl -s -X POST http://localhost:5000/api/v1/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Write docs"}' | jq .
+
+# Verify validation rejects invalid input (expect 422)
+curl -s -X POST http://localhost:5000/api/v1/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title": ""}' | jq .status
+# → 422
 ```
 
 ## Next steps

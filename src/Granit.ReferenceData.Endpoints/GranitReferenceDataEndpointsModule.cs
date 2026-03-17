@@ -1,6 +1,6 @@
-using Granit.ApiDocumentation;
 using Granit.Core.Modularity;
 using Granit.Guids;
+using Granit.Http.ApiDocumentation;
 using Granit.Validation;
 
 namespace Granit.ReferenceData.Endpoints;
@@ -16,7 +16,7 @@ namespace Granit.ReferenceData.Endpoints;
 /// <para>Validators are auto-discovered by <c>GranitValidationModule</c>.</para>
 /// </remarks>
 [DependsOn(
-    typeof(GranitApiDocumentationModule),
+    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitGuidsModule),
     typeof(GranitReferenceDataModule),
     typeof(GranitValidationModule))]

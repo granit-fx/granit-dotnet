@@ -115,11 +115,11 @@ flowchart TD
 
 | Domain | Packages |
 |--------|----------|
-| Utilities | Timing, Guids, Diagnostics, Validation, Validation.Europe, Validation.NorthAmerica, Validation.UnitedKingdom, ExceptionHandling, Observability, MultiTenancy, Privacy, Cors, Bulkhead, RateLimiting |
+| Utilities | Timing, Guids, Diagnostics, Validation, Validation.Europe, Validation.NorthAmerica, Validation.UnitedKingdom, Http.ExceptionHandling, Observability, MultiTenancy, Privacy, Cors, Bulkhead, RateLimiting |
 | Identity | Identity, Identity.Keycloak, Identity.EntraId, Identity.Cognito, Identity.GoogleCloud, Identity.EntityFrameworkCore, Identity.Endpoints |
 | Security | Security, Encryption, Vault, Vault.HashiCorp, Vault.Azure, Vault.Aws, Vault.GoogleCloud, Authentication.JwtBearer, Authentication.Keycloak, Authentication.EntraId, Authentication.Cognito, Authentication.GoogleCloud, Authentication.ApiKeys (3), Authorization, Authorization.EntityFrameworkCore, Authorization.Endpoints |
 | Configuration | Settings (3), Features (2), ReferenceData (3) |
-| Web, API, and Webhooks | ApiVersioning, ApiDocumentation, Cookies, Cookies.Klaro, Cookies.Endpoints, Idempotency, Webhooks (3) |
+| Web, API, and Webhooks | ApiVersioning, ApiDocumentation, Cookies, Cookies.Klaro, Cookies.Endpoints, Http.Idempotency, Webhooks (3) |
 | Storage | BlobStorage (8 incl. GoogleCloud), Imaging (2) |
 | Background Jobs | BackgroundJobs (4) |
 | Localization | Localization, Localization.EntityFrameworkCore, Localization.Endpoints, Localization.SourceGenerator |
@@ -241,18 +241,18 @@ flowchart TD
 |---------|------------|
 | `Granit.Timing` | `Core` |
 | `Granit.Security` | `Core` |
-| `Granit.ExceptionHandling` | `Core` |
+| `Granit.Http.ExceptionHandling` | `Core` |
 | `Granit.Observability` | `Core` |
 | `Granit.MultiTenancy` | `Core` |
 | `Granit.Privacy` | `Core` |
-| `Granit.Cors` | `Core` |
+| `Granit.Http.Cors` | `Core` |
 | `Granit.Guids` | `Timing` |
 | `Granit.Diagnostics` | `Timing` |
 | `Granit.Validation` | `ExceptionHandling`, `Localization` |
 | `Granit.Validation.Europe` | `Validation`, `Localization` |
 | `Granit.Validation.NorthAmerica` | `Validation`, `Localization` |
 | `Granit.Validation.UnitedKingdom` | `Validation`, `Localization` |
-| `Granit.Bulkhead` | `Core`, `ExceptionHandling`, `Features`, `Security` |
+| `Granit.Http.Bulkhead` | `Core`, `ExceptionHandling`, `Features`, `Security` |
 | `Granit.RateLimiting` | `Core`, `ExceptionHandling`, `Features`, `Security` |
 
 ### Identity
@@ -293,12 +293,12 @@ flowchart TD
 
 | Package | Depends on |
 |---------|------------|
-| `Granit.ApiVersioning` | `Core` |
-| `Granit.ApiDocumentation` | `ApiVersioning`, `Security` |
-| `Granit.Cookies` | `Timing` |
-| `Granit.Cookies.Klaro` | `Cookies` |
-| `Granit.Cookies.Endpoints` | `Cookies`, `Core` |
-| `Granit.Idempotency` | `Caching`, `Security` |
+| `Granit.Http.ApiVersioning` | `Core` |
+| `Granit.Http.ApiDocumentation` | `ApiVersioning`, `Security` |
+| `Granit.Http.Cookies` | `Timing` |
+| `Granit.Http.Cookies.Klaro` | `Cookies` |
+| `Granit.Http.Cookies.Endpoints` | `Cookies`, `Core` |
+| `Granit.Http.Idempotency` | `Caching`, `Security` |
 | `Granit.Webhooks` | `Timing`, `Wolverine` |
 | `Granit.Webhooks.EntityFrameworkCore` | `Webhooks`, `Persistence` |
 | `Granit.Webhooks.Wolverine` | `Webhooks`, `Wolverine` |
@@ -312,7 +312,7 @@ flowchart TD
 | `Granit.BlobStorage.AzureBlob` | `BlobStorage` |
 | `Granit.BlobStorage.GoogleCloud` | `BlobStorage` |
 | `Granit.BlobStorage.FileSystem` | `BlobStorage` |
-| `Granit.BlobStorage.Database` | `BlobStorage`, `Persistence` |
+| `Granit.BlobStorage.DbStore` | `BlobStorage`, `Persistence` |
 | `Granit.BlobStorage.Proxy` | `BlobStorage` |
 | `Granit.BlobStorage.EntityFrameworkCore` | `BlobStorage`, `Persistence` |
 | `Granit.Imaging` | `Core` |
@@ -570,7 +570,7 @@ Minimal API foundation.
 | `Granit.Validation` |
 | `Granit.Persistence` |
 | `Granit.Observability` |
-| `Granit.ExceptionHandling` |
+| `Granit.Http.ExceptionHandling` |
 | `Granit.Diagnostics` |
 
 ### Granit.Bundle.Api
@@ -579,10 +579,10 @@ Complete REST API. Includes everything in `Bundle.Essentials` plus:
 
 | Included package |
 |------------------|
-| `Granit.ApiVersioning` |
-| `Granit.ApiDocumentation` |
-| `Granit.Cors` |
-| `Granit.Idempotency` |
+| `Granit.Http.ApiVersioning` |
+| `Granit.Http.ApiDocumentation` |
+| `Granit.Http.Cors` |
+| `Granit.Http.Idempotency` |
 | `Granit.Localization` |
 | `Granit.Localization.EntityFrameworkCore` |
 | `Granit.Caching` |
@@ -623,7 +623,7 @@ Multi-tenant SaaS extensions.
 | `Granit.Features` |
 | `Granit.Features.EntityFrameworkCore` |
 | `Granit.RateLimiting` |
-| `Granit.Bulkhead` |
+| `Granit.Http.Bulkhead` |
 
 ## Dependency rules
 

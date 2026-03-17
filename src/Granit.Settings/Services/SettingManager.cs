@@ -1,40 +1,65 @@
 using Granit.Caching;
 using Granit.Settings.Definitions;
+using Granit.Settings.Events;
 using Granit.Settings.Providers;
 using Granit.Settings.Values;
 
 namespace Granit.Settings.Services;
 
 /// <summary>
-/// Implementation of <see cref="ISettingManager"/>: writes to <see cref="ISettingStoreWriter"/>
-/// and invalidates the cache for the Global, Tenant, and User scopes.
+/// Implementation of <see cref="ISettingManager"/>: writes to <see cref="ISettingStoreWriter"/>,
+/// invalidates the cache, and publishes <see cref="SettingChangedEvent"/> for audit trail.
 /// </summary>
 public sealed class SettingManager(
     ISettingStoreWriter storeWriter,
+    ISettingStoreReader storeReader,
     ICacheService<SettingValue> cache,
-    SettingDefinitionManager definitions) : ISettingManager
+    SettingDefinitionManager definitions,
+    ISettingEventPublisher eventPublisher,
+    TimeProvider timeProvider) : ISettingManager
 {
     private readonly ISettingStoreWriter _storeWriter = storeWriter;
+    private readonly ISettingStoreReader _storeReader = storeReader;
     private readonly ICacheService<SettingValue> _cache = cache;
     private readonly SettingDefinitionManager _definitions = definitions;
+    private readonly ISettingEventPublisher _eventPublisher = eventPublisher;
+    private readonly TimeProvider _timeProvider = timeProvider;
 
     /// <inheritdoc/>
     public async Task SetGlobalAsync(string name, string? value, CancellationToken cancellationToken = default)
     {
         _definitions.Get(name); // Validates that the setting is declared
-        await _storeWriter.SetAsync(name, GlobalSettingValueProvider.ProviderName, null, value, cancellationToken).ConfigureAwait(false);
+        string providerName = GlobalSettingValueProvider.ProviderName;
+
+        SettingValue? oldValue = await _storeReader
+            .GetOrNullAsync(name, providerName, null, cancellationToken).ConfigureAwait(false);
+
+        await _storeWriter.SetAsync(name, providerName, null, value, cancellationToken).ConfigureAwait(false);
         await _cache.RemoveAsync(
-            SettingCacheKey.Build(GlobalSettingValueProvider.ProviderName, null, name), cancellationToken).ConfigureAwait(false);
+            SettingCacheKey.Build(providerName, null, name), cancellationToken).ConfigureAwait(false);
+
+        await _eventPublisher.PublishAsync(
+            new SettingChangedEvent(name, providerName, null, oldValue?.Value, value, _timeProvider.GetUtcNow()),
+            cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async Task SetForTenantAsync(Guid tenantId, string name, string? value, CancellationToken cancellationToken = default)
     {
         _definitions.Get(name);
+        string providerName = TenantSettingValueProvider.ProviderName;
         string tenantKey = tenantId.ToString();
-        await _storeWriter.SetAsync(name, TenantSettingValueProvider.ProviderName, tenantKey, value, cancellationToken).ConfigureAwait(false);
+
+        SettingValue? oldValue = await _storeReader
+            .GetOrNullAsync(name, providerName, tenantKey, cancellationToken).ConfigureAwait(false);
+
+        await _storeWriter.SetAsync(name, providerName, tenantKey, value, cancellationToken).ConfigureAwait(false);
         await _cache.RemoveAsync(
-            SettingCacheKey.Build(TenantSettingValueProvider.ProviderName, tenantKey, name), cancellationToken).ConfigureAwait(false);
+            SettingCacheKey.Build(providerName, tenantKey, name), cancellationToken).ConfigureAwait(false);
+
+        await _eventPublisher.PublishAsync(
+            new SettingChangedEvent(name, providerName, tenantKey, oldValue?.Value, value, _timeProvider.GetUtcNow()),
+            cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -42,9 +67,18 @@ public sealed class SettingManager(
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
         _definitions.Get(name);
-        await _storeWriter.SetAsync(name, UserSettingValueProvider.ProviderName, userId, value, cancellationToken).ConfigureAwait(false);
+        string providerName = UserSettingValueProvider.ProviderName;
+
+        SettingValue? oldValue = await _storeReader
+            .GetOrNullAsync(name, providerName, userId, cancellationToken).ConfigureAwait(false);
+
+        await _storeWriter.SetAsync(name, providerName, userId, value, cancellationToken).ConfigureAwait(false);
         await _cache.RemoveAsync(
-            SettingCacheKey.Build(UserSettingValueProvider.ProviderName, userId, name), cancellationToken).ConfigureAwait(false);
+            SettingCacheKey.Build(providerName, userId, name), cancellationToken).ConfigureAwait(false);
+
+        await _eventPublisher.PublishAsync(
+            new SettingChangedEvent(name, providerName, userId, oldValue?.Value, value, _timeProvider.GetUtcNow()),
+            cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -54,7 +88,15 @@ public sealed class SettingManager(
         string? providerKey = null,
         CancellationToken cancellationToken = default)
     {
+        SettingValue? oldValue = await _storeReader
+            .GetOrNullAsync(name, providerName, providerKey, cancellationToken).ConfigureAwait(false);
+
         await _storeWriter.DeleteAsync(name, providerName, providerKey, cancellationToken).ConfigureAwait(false);
-        await _cache.RemoveAsync(SettingCacheKey.Build(providerName, providerKey, name), cancellationToken).ConfigureAwait(false);
+        await _cache.RemoveAsync(
+            SettingCacheKey.Build(providerName, providerKey, name), cancellationToken).ConfigureAwait(false);
+
+        await _eventPublisher.PublishAsync(
+            new SettingChangedEvent(name, providerName, providerKey, oldValue?.Value, null, _timeProvider.GetUtcNow()),
+            cancellationToken).ConfigureAwait(false);
     }
 }

@@ -12,7 +12,7 @@ dotnet add package Granit.Localization.Endpoints
 
 ## Dependencies
 
-- `Granit.ApiDocumentation`
+- `Granit.Http.ApiDocumentation`
 - `Granit.Authorization`
 - `Granit.Localization`
 - `Granit.Validation`

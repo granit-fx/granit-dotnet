@@ -27,7 +27,7 @@ Every Granit package exposes a `GranitModule` subclass. The module's
 extension methods in `Program.cs`, no global `Startup` class.
 
 ```csharp
-public sealed class GranitBulkheadModule : GranitModule
+public sealed class GranitHttpBulkheadModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.AddGranitBulkhead();

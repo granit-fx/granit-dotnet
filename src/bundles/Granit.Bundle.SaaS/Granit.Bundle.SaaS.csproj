@@ -11,7 +11,7 @@
     <ProjectReference Include="..\..\Granit.Features\Granit.Features.csproj" />
     <ProjectReference Include="..\..\Granit.Features.EntityFrameworkCore\Granit.Features.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\Granit.RateLimiting\Granit.RateLimiting.csproj" />
-    <ProjectReference Include="..\..\Granit.Bulkhead\Granit.Bulkhead.csproj" />
+    <ProjectReference Include="..\..\Granit.Http.Bulkhead\Granit.Http.Bulkhead.csproj" />
   </ItemGroup>
 
 </Project>

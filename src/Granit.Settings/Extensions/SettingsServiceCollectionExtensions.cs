@@ -1,4 +1,5 @@
 using Granit.Settings.Definitions;
+using Granit.Settings.Events;
 using Granit.Settings.Options;
 using Granit.Settings.Providers;
 using Granit.Settings.Services;
@@ -46,6 +47,9 @@ public static class SettingsServiceCollectionExtensions
         services.AddScoped<ISettingValueProvider, DefaultValueSettingValueProvider>();
 
         services.TryAddScoped<SettingValueProviderManager>();
+
+        // Event publisher (no-op default; replaced by Wolverine-backed publisher when available)
+        services.TryAddSingleton<ISettingEventPublisher, NullSettingEventPublisher>();
 
         // Application services (Scoped — tenant/user context per request)
         services.TryAddScoped<ISettingProvider, SettingProvider>();

@@ -1,6 +1,6 @@
 using Granit.Core.Modularity;
 using Granit.Diagnostics;
-using Granit.ExceptionHandling;
+using Granit.Http.ExceptionHandling;
 using Granit.Observability;
 using Granit.Persistence;
 using Granit.Security;

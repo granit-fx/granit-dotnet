@@ -25,15 +25,18 @@ public static class MobilePushTokenEndpoints
 
         group.MapPost("/", RegisterTokenAsync)
             .WithName("RegisterMobilePushToken")
-            .WithSummary("Registers a mobile device token for push notifications.");
+            .WithSummary("Registers a mobile device token for push notifications.")
+            .WithDescription("Registers a device token (FCM or APNs) for the authenticated user. If the token already exists, it is updated (upsert). Returns 201 Created for new registrations, 200 OK for updates. Tokens are scoped to the current tenant.");
 
         group.MapDelete("/{deviceToken}", RemoveTokenAsync)
             .WithName("RemoveMobilePushToken")
-            .WithSummary("Removes a mobile device token.");
+            .WithSummary("Removes a mobile device token.")
+            .WithDescription("Removes the specified device token for the current tenant. Call this when the user logs out or the token becomes invalid. No-op if the token does not exist.");
 
         group.MapGet("/", GetTokensAsync)
             .WithName("GetMobilePushTokens")
-            .WithSummary("Returns the current user's registered device tokens.");
+            .WithSummary("Returns the current user's registered device tokens.")
+            .WithDescription("Returns all device tokens registered by the authenticated user for the current tenant, including the platform (iOS, Android) and registration timestamp.");
 
         return endpoints;
     }

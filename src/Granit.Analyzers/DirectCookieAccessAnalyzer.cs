@@ -13,7 +13,7 @@ namespace Granit.Analyzers;
 /// <remarks>
 /// Direct cookie manipulation bypasses the Strict Registry Pattern and RGPD consent checks.
 /// Use <c>IGranitCookieManager.SetCookieAsync()</c> or <c>IGranitCookieManager.DeleteCookie()</c> instead.
-/// Opt-in: only activates when <c>Granit.Cookies.IGranitCookieManager</c> is present in the compilation.
+/// Opt-in: only activates when <c>Granit.Http.Cookies.IGranitCookieManager</c> is present in the compilation.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class DirectCookieAccessAnalyzer : SingleRuleAnalyzerBase
@@ -39,9 +39,9 @@ public sealed class DirectCookieAccessAnalyzer : SingleRuleAnalyzerBase
     protected override void RegisterActions(AnalysisContext context)
         => context.RegisterCompilationStartAction(compilationContext =>
         {
-            // Opt-in: only activate when Granit.Cookies is referenced.
+            // Opt-in: only activate when Granit.Http.Cookies is referenced.
             INamedTypeSymbol? cookieManager = compilationContext.Compilation
-                .GetTypeByMetadataName("Granit.Cookies.IGranitCookieManager");
+                .GetTypeByMetadataName("Granit.Http.Cookies.IGranitCookieManager");
             if (cookieManager is null)
             {
                 return;

@@ -95,7 +95,7 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
-      "granit.httpresilience": {
+      "granit.http.resilience": {
         "type": "Project",
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )",

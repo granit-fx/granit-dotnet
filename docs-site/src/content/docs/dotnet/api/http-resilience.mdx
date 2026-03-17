@@ -2,14 +2,14 @@
 title: HTTP Resilience
 description: Standardized outbound HTTP resilience for Granit modules — retry, circuit breaker, and per-client appsettings configuration via AddGranitHttpClient()
 sidebar:
-  order: 95
+  order: 19
 ---
 
 import { Aside, Code } from '@astrojs/starlight/components';
 
 ## Overview
 
-`Granit.HttpResilience` wraps [`Microsoft.Extensions.Http.Resilience`](https://learn.microsoft.com/en-us/dotnet/core/resilience/http-resilience)
+`Granit.Http.Resilience` wraps [`Microsoft.Extensions.Http.Resilience`](https://learn.microsoft.com/en-us/dotnet/core/resilience/http-resilience)
 (built on Polly v8) and exposes a single `AddGranitHttpClient()` extension that replaces
 bare `AddHttpClient()` calls across all Granit modules. Every outbound HTTP call
 automatically benefits from retry with exponential back-off, circuit breaking, and
@@ -98,7 +98,7 @@ on an already-struggling auth server:
 
 ```mermaid
 graph TD
-    GHR[Granit.HttpResilience] --> MEHR[Microsoft.Extensions.Http.Resilience]
+    GHR[Granit.Http.Resilience] --> MEHR[Microsoft.Extensions.Http.Resilience]
     MEHR --> POLLY[Polly v8]
     GHR --> WEBHOOKS[Granit.Webhooks]
     GHR --> NOTIF[Granit.Notifications.*]

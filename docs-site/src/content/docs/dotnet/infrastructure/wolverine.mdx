@@ -299,8 +299,44 @@ fallbacks when Wolverine is not installed:
 | Attributes | `[WolverineHandlerModule]` | `Granit.Wolverine` |
 | Extensions | `AddGranitWolverine()`, `AddGranitWolverineWithPostgresql()`, `AddGranitWolverineWithPostgresqlPerTenant<T>()`, `AddInMemoryClaimCheckStore()` | — |
 
+## Common pitfalls
+
+:::caution[Messages stuck in dead letter queue]
+If messages accumulate in the DLQ, check:
+1. The handler throws an unhandled exception — Wolverine retries then moves to DLQ
+2. `ValidationException` bypasses retries (by design) — fix the sender, not the handler
+3. The handler's DI dependencies are missing (module not loaded)
+
+Use `IDeadLetterQueueInspector` or the Wolverine admin endpoints to inspect DLQ entries.
+:::
+
+:::caution[Tenant/user context lost in async handlers]
+Wolverine handlers run outside the HTTP pipeline. If a handler needs `ICurrentTenant`
+or `ICurrentUserService`, ensure `OutgoingContextMiddleware` is configured (it is by
+default with `AddGranitWolverine()`). Context is serialized in message headers and
+restored before handler execution.
+:::
+
+:::caution[Handler not discovered]
+Wolverine discovers handlers from assemblies marked with `[assembly: WolverineHandlerModule]`.
+If your handler is in an assembly without this attribute, it will not be found. Add the
+attribute to the assembly's `AssemblyInfo.cs` or any file in the project.
+:::
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---------|-------------|-----|
+| Message published but handler never runs | Handler not discovered | Add `[assembly: WolverineHandlerModule]` to the assembly |
+| `TenantId` is null in handler | Context middleware not configured | Verify `AddGranitWolverine()` is called |
+| Messages retry indefinitely | No dead letter policy configured | Check `WithFailureRules()` in Wolverine options |
+| PostgreSQL transport errors on startup | Missing PostgreSQL transport registration | Call `AddGranitWolverineWithPostgresql()` instead of `AddGranitWolverine()` |
+| Slow message throughput | Too many handlers in same queue | Split into dedicated queues with `[Queue("name")]` |
+
 ## See also
 
+- [End-to-end tracing guide](/dotnet/guides/end-to-end-tracing/) — trace Wolverine handlers with OpenTelemetry
+- [ADR-005: Wolverine + Cronos](/dotnet/architecture/adr/005-wolverine-cronos/) -- Why Wolverine was chosen for messaging and CQRS
 - [Core module](../core/module-system/) — `IDomainEvent`, `IIntegrationEvent`, `IDomainEventDispatcher`
 - [Persistence module](./persistence/) — `DomainEventDispatcherInterceptor`, transactional outbox
 - [Multi-tenancy module](./multi-tenancy/) — Tenant context propagation

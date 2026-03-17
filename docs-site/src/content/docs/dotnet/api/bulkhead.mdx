@@ -7,7 +7,7 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-`Granit.Bulkhead` provides per-tenant bulkhead isolation built on .NET 10's
+`Granit.Http.Bulkhead` provides per-tenant bulkhead isolation built on .NET 10's
 `System.Threading.RateLimiting.ConcurrencyLimiter`. When a tenant has too many
 concurrent operations in flight, excess requests are rejected immediately (HTTP 503)
 rather than queued — preventing thread pool exhaustion without hiding latency problems.
@@ -21,7 +21,7 @@ to N × P concurrent operations cluster-wide. For distributed quotas, use
 ## Setup
 
 ```csharp
-[DependsOn(typeof(GranitBulkheadModule))]
+[DependsOn(typeof(GranitHttpBulkheadModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -54,7 +54,7 @@ runs and releases it in a `finally` block — the lease is always released, even
 unhandled exceptions.
 
 When the bulkhead is full, `BulkheadRejectedException` is thrown and mapped to
-**503 Service Unavailable** by `Granit.ExceptionHandling`.
+**503 Service Unavailable** by `Granit.Http.ExceptionHandling`.
 
 ## Applying to Wolverine messages
 
@@ -130,7 +130,7 @@ the static `PermitLimit` from configuration.
 
 ## Metrics
 
-`Granit.Bulkhead` emits OpenTelemetry metrics via the `Granit.Bulkhead` meter:
+`Granit.Http.Bulkhead` emits OpenTelemetry metrics via the `Granit.Http.Bulkhead` meter:
 
 | Metric | Type | Description |
 |--------|------|-------------|
@@ -162,17 +162,17 @@ flowchart TD
 
 | Type | Package | Description |
 |------|---------|-------------|
-| `GranitBulkheadModule` | `Granit.Bulkhead` | Module class |
-| `TenantPartitionedBulkhead` | `Granit.Bulkhead` | Core orchestrator — inject to acquire leases manually |
-| `BulkheadLease` | `Granit.Bulkhead` | Disposable permit holder |
-| `IBulkheadQuotaProvider` | `Granit.Bulkhead` | Override to provide dynamic limits |
-| `BulkheadRejectedException` | `Granit.Bulkhead` | Thrown when bulkhead is full; mapped to HTTP 503 |
-| `BulkheadAttribute` | `Granit.Bulkhead` | Wolverine message marker |
-| `RequireGranitBulkhead()` | `Granit.Bulkhead` | Endpoint filter extension |
-| `BulkheadMiddleware` | `Granit.Bulkhead` | Wolverine before/after middleware |
-| `AddGranitBulkhead()` | `Granit.Bulkhead` | DI registration extension |
-| `GranitBulkheadOptions` | `Granit.Bulkhead` | Top-level options |
-| `BulkheadPolicyOptions` | `Granit.Bulkhead` | Per-policy options |
+| `GranitHttpBulkheadModule` | `Granit.Http.Bulkhead` | Module class |
+| `TenantPartitionedBulkhead` | `Granit.Http.Bulkhead` | Core orchestrator — inject to acquire leases manually |
+| `BulkheadLease` | `Granit.Http.Bulkhead` | Disposable permit holder |
+| `IBulkheadQuotaProvider` | `Granit.Http.Bulkhead` | Override to provide dynamic limits |
+| `BulkheadRejectedException` | `Granit.Http.Bulkhead` | Thrown when bulkhead is full; mapped to HTTP 503 |
+| `BulkheadAttribute` | `Granit.Http.Bulkhead` | Wolverine message marker |
+| `RequireGranitBulkhead()` | `Granit.Http.Bulkhead` | Endpoint filter extension |
+| `BulkheadMiddleware` | `Granit.Http.Bulkhead` | Wolverine before/after middleware |
+| `AddGranitBulkhead()` | `Granit.Http.Bulkhead` | DI registration extension |
+| `GranitBulkheadOptions` | `Granit.Http.Bulkhead` | Top-level options |
+| `BulkheadPolicyOptions` | `Granit.Http.Bulkhead` | Per-policy options |
 
 ## See also
 

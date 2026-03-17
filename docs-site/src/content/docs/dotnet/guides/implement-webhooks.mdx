@@ -217,6 +217,24 @@ Subscriptions support both global and tenant-scoped delivery:
 The fan-out handler automatically resolves the tenant from `ICurrentTenant` or from
 the `WebhookTrigger.TenantId` property.
 
+## Verify
+
+Create a subscription and trigger a webhook delivery:
+
+```bash
+# Create a test subscription (use https://webhook.site for testing)
+curl -s -X POST http://localhost:5000/api/v1/webhooks/subscriptions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://webhook.site/your-unique-id",
+    "eventTypes": ["invoice.created"],
+    "secret": "whsec_test123"
+  }' | jq .id
+
+# Trigger an event (create an invoice) and check webhook.site
+# The delivery should arrive with an X-Webhook-Signature header
+```
+
 ## Next steps
 
 - [Set up notifications](/dotnet/guides/set-up-notifications/) for user-facing multi-channel notifications

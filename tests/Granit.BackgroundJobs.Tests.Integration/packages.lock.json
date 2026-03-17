@@ -5,8 +5,8 @@
       "coverlet.collector": {
         "type": "Direct",
         "requested": "[8.*, )",
-        "resolved": "8.0.0",
-        "contentHash": "EMkj/2F6n6IVPrvGYkqzGJs6phuGGkq6N+E7KW9rNyzNxXbwQ1KfMqWyXNf9nCNEQOA6IjFwmOLvkriwKE7Orw=="
+        "resolved": "8.0.1",
+        "contentHash": "heVQl5tKYnnIDYlR1QMVGueYH6iriZTcZB6AjDczQNwZzxkjDIt9C84Pt4cCiZYrbo7jkZOYGWbs6Lo9wAtVLg=="
       },
       "JunitXml.TestLogger": {
         "type": "Direct",
@@ -51,12 +51,12 @@
       },
       "WolverineFx": {
         "type": "Direct",
-        "requested": "[5.19.*, )",
-        "resolved": "5.19.1",
-        "contentHash": "WshQCeeUjEHdCFZqlqfI5M1tU+FtrGYeAbTnOQBITeQtFwEykcZtAF+4bEWRhOg1xZla3rJdlhJAPJkbJcQINg==",
+        "requested": "[5.20.*, )",
+        "resolved": "5.20.0",
+        "contentHash": "FJykS3j3mIC//E7bsUozBlxYmjhSe7WZ2dX4HybTpy0w6+JWiXC42R6kQk9TPNUv8ldRIV4IlBnMPx5M4G9EtQ==",
         "dependencies": {
-          "JasperFx": "1.21.0",
-          "JasperFx.Events": "1.23.1",
+          "JasperFx": "1.21.1",
+          "JasperFx.Events": "1.24.0",
           "JasperFx.RuntimeCompiler": "4.4.0",
           "Microsoft.Extensions.Caching.Memory": "10.0.0",
           "Microsoft.Extensions.Configuration": "10.0.0",
@@ -124,8 +124,8 @@
       },
       "JasperFx": {
         "type": "Transitive",
-        "resolved": "1.21.0",
-        "contentHash": "7a9Uu3XIo7dl2XjzX9oc/t/n9Yx/vb0DMOieWPYrQpQFtzYjxV0ndATygpmhJqWohidORHsg0QJRqp3+o8iDAw==",
+        "resolved": "1.21.1",
+        "contentHash": "oEswL6IWlSsSw+3vylT1fh+aZhiG1LVv/fJxC+E7dtxw80M8jW1cbSh2QaXDMyvYsxWrlwkA8TvCYPuvN5NMVA==",
         "dependencies": {
           "FastExpressionCompiler": "5.3.0",
           "ImTools": "4.0.0",
@@ -139,10 +139,10 @@
       },
       "JasperFx.Events": {
         "type": "Transitive",
-        "resolved": "1.23.1",
-        "contentHash": "zZHSIO//jvBdiv2KeRBtH6W1ufvumQJzOrlahTXk0aG1LZJCkn2Q+ok95jz71tYmse+sZkb857zuARTpYhuhFQ==",
+        "resolved": "1.24.0",
+        "contentHash": "vDkYMarrBqHSqoLBlpQfePz5FdVK/3LyFoBVRCzaWKeS/jxwUQG4fckHu30ozwZId1DulkHKcNjYziO5oyG08Q==",
         "dependencies": {
-          "JasperFx": "1.21.0"
+          "JasperFx": "1.21.1"
         }
       },
       "JasperFx.RuntimeCompiler": {
@@ -714,17 +714,11 @@
         "dependencies": {
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.Wolverine": "[0.1.0-dev, )",
-          "WolverineFx": "[5.19.*, )"
+          "WolverineFx": "[5.20.*, )"
         }
       },
       "granit.core": {
         "type": "Project"
-      },
-      "granit.exceptionhandling": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
-        }
       },
       "granit.guids": {
         "type": "Project",
@@ -732,6 +726,12 @@
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
+        }
+      },
+      "granit.http.exceptionhandling": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )"
         }
       },
       "granit.localization": {
@@ -763,7 +763,7 @@
         "dependencies": {
           "FluentValidation": "[12.*, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.*, )",
-          "Granit.ExceptionHandling": "[0.1.0-dev, )",
+          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )"
         }
       },
@@ -772,8 +772,8 @@
         "dependencies": {
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
-          "WolverineFx": "[5.19.*, )",
-          "WolverineFx.FluentValidation": "[5.19.*, )"
+          "WolverineFx": "[5.20.*, )",
+          "WolverineFx.FluentValidation": "[5.20.*, )"
         }
       },
       "Cronos": {
@@ -940,12 +940,12 @@
       },
       "WolverineFx.FluentValidation": {
         "type": "CentralTransitive",
-        "requested": "[5.19.*, )",
-        "resolved": "5.19.1",
-        "contentHash": "y7LDPBdgSg56XG+aG4BYkLjjwZNswbDDXp7jWAz/oK1rQm3hHPeIr52siJvjyk6hdH9Wp/N2oMnm6GTOyW2tKA==",
+        "requested": "[5.20.*, )",
+        "resolved": "5.20.0",
+        "contentHash": "eT1OSZEQ7t4WZt3+2fTA9Xs/F0SAnWSs0lC0nx3UTNm8ME7df2nenM2BKxmJssZx363uCBnr1Qw5hABcJPyHCg==",
         "dependencies": {
           "FluentValidation": "12.0.0",
-          "WolverineFx": "5.19.1"
+          "WolverineFx": "5.20.0"
         }
       }
     }

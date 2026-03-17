@@ -4,7 +4,7 @@ using Granit.AI.Ollama.HealthChecks;
 using Granit.AI.Ollama.Internal;
 using Granit.AI.Ollama.Options;
 using Granit.Core.Diagnostics;
-using Granit.HttpResilience.Extensions;
+using Granit.Http.Resilience.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;

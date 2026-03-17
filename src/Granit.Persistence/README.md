@@ -12,7 +12,7 @@ dotnet add package Granit.Persistence
 
 ## Dependencies
 
-- `Granit.ExceptionHandling`
+- `Granit.Http.ExceptionHandling`
 - `Granit.Guids`
 - `Granit.Security`
 - `Granit.Timing`

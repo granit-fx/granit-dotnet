@@ -7,11 +7,21 @@ sidebar:
 
 import { Tabs, TabItem, FileTree, Badge } from "@astrojs/starlight/components";
 
-Granit.Localization provides a modular, JSON-based internationalization system for .NET
-applications. Resources are embedded as JSON files, auto-discovered at startup, and served
-via `IStringLocalizer<T>`. Translation overrides live in a database (EF Core) and are
-cached in-memory with per-tenant isolation. A Roslyn source generator produces strongly-typed
-key constants at build time, eliminating magic strings.
+## Why a dedicated localization system?
+
+.NET's built-in `IStringLocalizer` works for simple cases, but it falls short in
+multi-tenant SaaS applications: there is no way for tenants to override translations
+without redeploying, no culture fallback chain, and `.resx` files are painful to manage
+at scale across dozens of cultures. Magic string keys like `L["Invoices.Status.Paid"]`
+compile fine but fail silently at runtime when a key is missing or renamed.
+
+Granit.Localization solves these problems with a layered architecture: JSON resource
+files are embedded per module and auto-discovered at startup (no registration boilerplate).
+Tenants can override any translation at runtime through a database-backed store, cached
+in-memory with per-tenant isolation. A Roslyn source generator produces strongly-typed
+key constants at build time — misspelled keys become compile errors, not runtime blanks.
+The system ships with 17 cultures (14 base + 3 regional), so your application is
+international from the first commit.
 
 ## Package structure
 
@@ -345,8 +355,47 @@ classes matching the resource prefix.
 | Endpoints | `MapGranitLocalization()`, `MapGranitLocalizationOverrides()` | `Granit.Localization.Endpoints` |
 | Generator | `LocalizationKeysGenerator` | `Granit.Localization.SourceGenerator` |
 
+## When to use — and when not to
+
+Use Granit.Localization when:
+
+- Your application supports **multiple languages** (even just 2 — the investment pays off early)
+- **Tenants need to customize** translations at runtime without redeployment
+- You want **compile-time safety** on localization keys (source generator catches typos)
+- You need **culture fallback chains** (fr-CA → fr → en) with module-scoped resource isolation
+
+Skip it when:
+
+- Your app is **single-language with no plans** for i18n — `IStringLocalizer` adds ceremony for no benefit
+- You only need to localize **validation error messages** — FluentValidation's built-in `.WithMessage()` with resource files may be enough
+- Your localization needs are **frontend-only** (React i18n) — use the frontend SDK instead
+
+## Common pitfalls
+
+:::caution[Missing JSON files for a culture]
+All 17 cultures must have a JSON resource file, even if empty. The source generator
+and auto-discovery expect the file to exist. A missing file for one culture means
+`IStringLocalizer<T>` returns the key name instead of a translation — no error, just
+silent degradation.
+:::
+
+:::caution[Overrides cached per tenant]
+Translation overrides are cached in-memory **per tenant**. If you update an override
+via the CRUD endpoints, the change is visible immediately for that tenant. Other tenants
+or other pods see the change after the cache expires (controlled by the caching module TTL).
+:::
+
+:::caution[Source generator not running]
+If `LocalizationKeys` constants are not generated, verify that:
+1. The `Granit.Localization.SourceGenerator` package is referenced as an analyzer
+2. Your JSON resource files follow the `Namespace.ResourceName` naming convention
+3. The project builds without errors (the generator runs at build time)
+:::
+
 ## See also
 
+- [Set up localization guide](/dotnet/guides/set-up-localization/) — step-by-step setup walkthrough
+- [ADR-008: SmartFormat.NET](/dotnet/architecture/adr/008-smartformat-pluralization/) -- Why SmartFormat.NET was chosen for CLDR pluralization
 - [Settings, Features & Reference Data](./settings/) -- uses localization for display names
 - [Persistence module](./persistence/) -- EF Core interceptors used by the override store
 - [Security module](./authentication/) -- permission-based access for override management

@@ -5,8 +5,8 @@
       "coverlet.collector": {
         "type": "Direct",
         "requested": "[8.*, )",
-        "resolved": "8.0.0",
-        "contentHash": "EMkj/2F6n6IVPrvGYkqzGJs6phuGGkq6N+E7KW9rNyzNxXbwQ1KfMqWyXNf9nCNEQOA6IjFwmOLvkriwKE7Orw=="
+        "resolved": "8.0.1",
+        "contentHash": "heVQl5tKYnnIDYlR1QMVGueYH6iriZTcZB6AjDczQNwZzxkjDIt9C84Pt4cCiZYrbo7jkZOYGWbs6Lo9wAtVLg=="
       },
       "JunitXml.TestLogger": {
         "type": "Direct",
@@ -73,6 +73,22 @@
         "contentHash": "L+4/4y0Uqcg8/d6hfnxhnwh4j9FaeULvefTwrk30rr1o4n/vdPfyUQ8k0yzH8VJx7bmFEkDdcRfbtbjEHlaYcA==",
         "dependencies": {
           "xunit.v3.mtp-v1": "[3.2.2]"
+        }
+      },
+      "Asp.Versioning.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.0-preview.2",
+        "contentHash": "I4CuGwl0nO98j6Ft6XlGBgzj1+goE/TSVlnHKgtRkuMZ0K4gy9I+Wyrtto8dyt0hWcFMDFAZ4lYNr58DSemH1g==",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "10.0.0"
+        }
+      },
+      "Asp.Versioning.Http": {
+        "type": "Transitive",
+        "resolved": "10.0.0-preview.2",
+        "contentHash": "4/QzujOrkGn9sMch3eHhR5LpVJ4Xo5T2BNg7U1/r4YwEa8JywzkoGQHjW7Nk0W8ljETnpoJaO5mrTsfEOnJK3A==",
+        "dependencies": {
+          "Asp.Versioning.Abstractions": "10.0.0-preview.2"
         }
       },
       "Castle.Core": {
@@ -346,6 +362,11 @@
         "resolved": "10.0.5",
         "contentHash": "/HUHJ0tw/LQvD0DZrz50eQy/3z7PfX7WWEaXnjKTV9/TNdcgFlNTZGo49QhS7PTmhDqMyHRMqAXSBxLh0vso4g=="
       },
+      "Microsoft.OpenApi": {
+        "type": "Transitive",
+        "resolved": "2.0.0",
+        "contentHash": "GGYLfzV/G/ct80OZ45JxnWP7NvMX1BCugn/lX7TH5o0lcVaviavsLMTxmFV2AybXWjbi3h6FF1vgZiTK6PXndw=="
+      },
       "Microsoft.Testing.Extensions.Telemetry": {
         "type": "Transitive",
         "resolved": "1.9.1",
@@ -516,6 +537,23 @@
           "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
+      "granit.http.apidocumentation": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Http.ApiVersioning": "[0.1.0-dev, )",
+          "Granit.Security": "[0.1.0-dev, )",
+          "Microsoft.AspNetCore.OpenApi": "[10.*, )",
+          "Scalar.AspNetCore": "[2.*, )"
+        }
+      },
+      "granit.http.apiversioning": {
+        "type": "Project",
+        "dependencies": {
+          "Asp.Versioning.Mvc": "[10.0.0-preview.*, )",
+          "Asp.Versioning.Mvc.ApiExplorer": "[10.0.0-preview.*, )",
+          "Granit.Core": "[0.1.0-dev, )"
+        }
+      },
       "granit.querying": {
         "type": "Project",
         "dependencies": {
@@ -543,6 +581,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Timeline": "[0.1.0-dev, )"
         }
       },
@@ -552,6 +591,33 @@
           "Granit.Core": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
+        }
+      },
+      "Asp.Versioning.Mvc": {
+        "type": "CentralTransitive",
+        "requested": "[10.0.0-preview.*, )",
+        "resolved": "10.0.0-preview.2",
+        "contentHash": "AyrcDwLzJp8yRJaFjZMJXkR1Rx2UaJkwGrGlX8sxIt2F5ZGiZwn/puXkB/oEaq55TxLkpiXWAOHHFsiVptp0fA==",
+        "dependencies": {
+          "Asp.Versioning.Http": "10.0.0-preview.2"
+        }
+      },
+      "Asp.Versioning.Mvc.ApiExplorer": {
+        "type": "CentralTransitive",
+        "requested": "[10.0.0-preview.*, )",
+        "resolved": "10.0.0-preview.2",
+        "contentHash": "G/LhAaLQj+gsB8UXRNm65fxjsI7fe87itZExb+MvJOQdrXYalZKbwuzMntO95xM5cKDrDgLnCH64fl6w173aGg==",
+        "dependencies": {
+          "Asp.Versioning.Mvc": "10.0.0-preview.2"
+        }
+      },
+      "Microsoft.AspNetCore.OpenApi": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.5",
+        "contentHash": "vTcxIfOPyfFbYk1g8YcXJfkMnlEWVkSnnjxcZLy60zgwiHMRf2SnZR+9E4HlpwKxgE3yfKMOti8J6WfKuKsw6w==",
+        "dependencies": {
+          "Microsoft.OpenApi": "2.0.0"
         }
       },
       "Microsoft.Extensions.Caching.Abstractions": {
@@ -648,6 +714,12 @@
           "Microsoft.Extensions.Options": "10.0.5",
           "Microsoft.Extensions.Primitives": "10.0.5"
         }
+      },
+      "Scalar.AspNetCore": {
+        "type": "CentralTransitive",
+        "requested": "[2.*, )",
+        "resolved": "2.13.10",
+        "contentHash": "AHsAdrbjIVvV/l6dwsIpluuWZEjafmxLkoJTzdRruRNB3w5VI5MKM1Gu0gyX6xRI0raEtSy3O111YpBrZMOpSA=="
       }
     }
   }

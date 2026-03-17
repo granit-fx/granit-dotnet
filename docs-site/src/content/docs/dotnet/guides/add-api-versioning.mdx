@@ -7,8 +7,8 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-Granit.ApiVersioning integrates `Asp.Versioning.Mvc` to provide URL-segment
-versioning for all API endpoints. Combined with Granit.ApiDocumentation, it
+Granit.Http.ApiVersioning integrates `Asp.Versioning.Mvc` to provide URL-segment
+versioning for all API endpoints. Combined with Granit.Http.ApiDocumentation, it
 generates per-version OpenAPI documents and exposes them through Scalar UI.
 
 ## Prerequisites
@@ -19,21 +19,21 @@ generates per-version OpenAPI documents and exposes them through Scalar UI.
 ## Step 1 -- Install the packages
 
 ```bash
-dotnet add package Granit.ApiVersioning
-dotnet add package Granit.ApiDocumentation
+dotnet add package Granit.Http.ApiVersioning
+dotnet add package Granit.Http.ApiDocumentation
 ```
 
 Add the module dependencies:
 
 ```csharp
 using Granit.Core.Modularity;
-using Granit.ApiDocumentation;
+using Granit.Http.ApiDocumentation;
 
-[DependsOn(typeof(GranitApiDocumentationModule))]
+[DependsOn(typeof(GranitHttpApiDocumentationModule))]
 public sealed class MyAppHostModule : GranitModule { }
 ```
 
-`GranitApiDocumentationModule` depends on `GranitApiVersioningModule` transitively,
+`GranitHttpApiDocumentationModule` depends on `GranitHttpApiVersioningModule` transitively,
 so you do not need to declare both.
 
 ## Step 2 -- Configure versioning

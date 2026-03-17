@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.BlobStorage.DbStore</PackageId>
+    <Description>Database implementation for Granit.BlobStorage. Stores blob content as rows in a relational database with EF Core. Ideal for small files and regulated environments requiring unified backup. Pre-signed URLs provided via Granit.BlobStorage.Proxy.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.BlobStorage.DbStore.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BlobStorage\Granit.BlobStorage.csproj" />
+    <ProjectReference Include="..\Granit.Persistence\Granit.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>

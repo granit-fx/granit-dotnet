@@ -318,8 +318,45 @@ Tagged `["readiness"]` — integrates with Kubernetes readiness probes.
 | Options | `CachingOptions`, `CacheEncryptionOptions`, `RedisCachingOptions`, `HybridCachingOptions` | — |
 | Extensions | `AddGranitCaching()`, `AddGranitCachingRedis()`, `AddGranitCachingHybrid()`, `AddGranitRedisHealthCheck()` | — |
 
+## When to use — and when not to
+
+Use Granit.Caching when:
+
+- You need **typed, strongly-keyed caches** with consistent serialization and TTL policies
+- You store **GDPR-sensitive data** in cache and need **AES-256 encryption** at rest
+- You run **multiple pods** and need L1 (in-memory) + L2 (Redis) with **stampede protection**
+- You want **health checks** and observability on your cache layer
+
+Skip it when:
+
+- You only cache **a handful of values** in a single-pod app — `IMemoryCache` from `Microsoft.Extensions.Caching.Memory` is simpler
+- Your cache values are **never shared** across requests (e.g., per-request computation results) — a local variable is enough
+- You need **full-text search** or **complex querying** on cached data — Redis is a cache, not a database
+
+## Common pitfalls
+
+:::caution[HybridCache stale-data window]
+`HybridCachingOptions.LocalCacheExpiration` (default 30s) means L1 can serve stale
+data for up to 30 seconds after L2 is updated by another pod. Set this to `00:00:00`
+if you need strict consistency (at the cost of always hitting Redis).
+:::
+
+:::caution[Encrypted cache with HybridCache]
+`HybridCache` (L1+L2) does **not** support the `[CacheEncrypted]` attribute. If you
+need encrypted values with HybridCache, encrypt/decrypt manually before calling
+the cache service. `ICacheService<T>` (L2-only) handles encryption transparently.
+:::
+
+:::caution[Redis connection string in production]
+The default `localhost:6379` is for development. In production, always configure
+`Redis.Configuration` with authentication, TLS, and connection timeout. A missing
+Redis in production will degrade to no-cache behavior (every request hits the database).
+:::
+
 ## See also
 
+- [Configure caching guide](/dotnet/guides/configure-caching/) — step-by-step setup walkthrough
+- [ADR-002: Redis](/dotnet/architecture/adr/002-redis/) -- Why Redis was chosen as the distributed cache backend
 - [Persistence module](/dotnet/data/persistence/) — EF Core interceptors, query filters
 - [Security module](./authentication/) — Authorization permission cache uses `ICacheService`
 - [API Reference](/api/Granit.Caching.html) (auto-generated from XML docs)

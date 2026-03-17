@@ -22,11 +22,13 @@ internal static class ReferenceDataReadEndpoints
     {
         group.MapGet("/", GetAllAsync<TEntity>)
             .WithName($"GetAll{typeof(TEntity).Name}")
-            .WithSummary($"Returns a filtered, paginated list of {typeof(TEntity).Name} entries.");
+            .WithSummary($"Returns a filtered, paginated list of {typeof(TEntity).Name} entries.")
+            .WithDescription($"Lists {typeof(TEntity).Name} reference data entries with support for filtering (active-only, search term), sorting, and pagination. Labels are available in all 14 supported languages. By default, only active entries are returned.");
 
         group.MapGet("/{code}", GetByCodeAsync<TEntity>)
             .WithName($"Get{typeof(TEntity).Name}ByCode")
-            .WithSummary($"Returns a single {typeof(TEntity).Name} entry by code.");
+            .WithSummary($"Returns a single {typeof(TEntity).Name} entry by code.")
+            .WithDescription($"Returns the full {typeof(TEntity).Name} entry identified by its unique code, including all localized labels and validity dates. Returns 404 if no entry matches the code.");
 
         return group;
     }

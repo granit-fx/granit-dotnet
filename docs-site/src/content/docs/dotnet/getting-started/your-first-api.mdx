@@ -7,7 +7,21 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-In this first step, you will create a new .NET project, define a Granit module, add a domain model, and expose a working endpoint — all with zero manual DI configuration.
+:::note[What you'll learn — ~15 minutes]
+- How the **module system** replaces manual DI registration
+- How to create a **root module** with `[DependsOn]`
+- How to wire Granit into `Program.cs` with a single line
+- How to expose a **Minimal API endpoint** that uses injected services
+:::
+
+In a typical .NET application, `Program.cs` grows into a wall of `services.Add*()`
+calls — authentication, logging, persistence, caching — each with its own configuration
+and ordering constraints. As the project scales, this file becomes a bottleneck that
+everyone touches and no one owns.
+
+Granit's module system eliminates this problem: each feature registers its own services,
+declares its dependencies, and the framework wires everything in the correct order.
+Your `Program.cs` stays a single line: `AddGranitAsync<AppModule>()`.
 
 ## 1. Create the project
 

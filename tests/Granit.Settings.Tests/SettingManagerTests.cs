@@ -7,6 +7,7 @@
 
 using Granit.Caching;
 using Granit.Settings.Definitions;
+using Granit.Settings.Events;
 using Granit.Settings.Providers;
 using Granit.Settings.Services;
 using Granit.Settings.Stores;
@@ -33,14 +34,15 @@ public sealed class SettingManagerTests
         }
     }
 
-    private static (SettingManager manager, InMemorySettingStore store, ICacheService<SettingValue> cache)
+    private static (SettingManager manager, InMemorySettingStore store, ICacheService<SettingValue> cache, ISettingEventPublisher publisher)
         CreateManager(params SettingDefinition[] defs)
     {
         InMemorySettingStore store = new();
         ICacheService<SettingValue> cache = Substitute.For<ICacheService<SettingValue>>();
+        ISettingEventPublisher publisher = Substitute.For<ISettingEventPublisher>();
         SettingDefinitionManager defManager = ManagerWith(defs);
-        SettingManager manager = new(store, cache, defManager);
-        return (manager, store, cache);
+        SettingManager manager = new(store, store, cache, defManager, publisher, TimeProvider.System);
+        return (manager, store, cache, publisher);
     }
 
     // -------------------------------------------------------------------------
@@ -51,7 +53,7 @@ public sealed class SettingManagerTests
     public async Task SetGlobalAsync_Writes_ToStore_WithProviderName_G()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, InMemorySettingStore store, _) = CreateManager(def);
+        (SettingManager manager, InMemorySettingStore store, _, _) = CreateManager(def);
 
         await manager.SetGlobalAsync("App.Theme", "light", TestContext.Current.CancellationToken);
 
@@ -65,7 +67,7 @@ public sealed class SettingManagerTests
     public async Task SetGlobalAsync_Invalidates_Cache()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, _, ICacheService<SettingValue> cache) = CreateManager(def);
+        (SettingManager manager, _, ICacheService<SettingValue> cache, _) = CreateManager(def);
 
         await manager.SetGlobalAsync("App.Theme", "light", TestContext.Current.CancellationToken);
 
@@ -77,7 +79,7 @@ public sealed class SettingManagerTests
     [Fact]
     public async Task SetGlobalAsync_UnknownSetting_Throws()
     {
-        (SettingManager manager, _, _) = CreateManager();
+        (SettingManager manager, _, _, _) = CreateManager();
 
         Func<Task> act = () => manager.SetGlobalAsync("Unknown.Setting", "value");
 
@@ -92,7 +94,7 @@ public sealed class SettingManagerTests
     public async Task SetForTenantAsync_Writes_ToStore_WithProviderName_T_And_TenantKey()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, InMemorySettingStore store, _) = CreateManager(def);
+        (SettingManager manager, InMemorySettingStore store, _, _) = CreateManager(def);
         var tenantId = Guid.NewGuid();
 
         await manager.SetForTenantAsync(tenantId, "App.Theme", "blue", TestContext.Current.CancellationToken);
@@ -107,7 +109,7 @@ public sealed class SettingManagerTests
     public async Task SetForTenantAsync_Invalidates_Cache_WithTenantKey()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, _, ICacheService<SettingValue> cache) = CreateManager(def);
+        (SettingManager manager, _, ICacheService<SettingValue> cache, _) = CreateManager(def);
         var tenantId = Guid.NewGuid();
 
         await manager.SetForTenantAsync(tenantId, "App.Theme", "blue", TestContext.Current.CancellationToken);
@@ -125,7 +127,7 @@ public sealed class SettingManagerTests
     public async Task SetForUserAsync_Writes_ToStore_WithProviderName_U_And_UserId()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, InMemorySettingStore store, _) = CreateManager(def);
+        (SettingManager manager, InMemorySettingStore store, _, _) = CreateManager(def);
 
         await manager.SetForUserAsync("user-42", "App.Theme", "red", TestContext.Current.CancellationToken);
 
@@ -138,7 +140,7 @@ public sealed class SettingManagerTests
     [Fact]
     public async Task SetForUserAsync_EmptyUserId_Throws()
     {
-        (SettingManager manager, _, _) = CreateManager(new SettingDefinition("App.Theme"));
+        (SettingManager manager, _, _, _) = CreateManager(new SettingDefinition("App.Theme"));
 
         Func<Task> act = () => manager.SetForUserAsync("", "App.Theme", "value");
 
@@ -153,7 +155,7 @@ public sealed class SettingManagerTests
     public async Task DeleteAsync_Removes_FromStore_And_Invalidates_Cache()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, InMemorySettingStore store, ICacheService<SettingValue> cache) = CreateManager(def);
+        (SettingManager manager, InMemorySettingStore store, ICacheService<SettingValue> cache, _) = CreateManager(def);
 
         // Préalable : écrire une valeur
         await store.SetAsync("App.Theme", "G", null, "light", TestContext.Current.CancellationToken);
@@ -166,6 +168,79 @@ public sealed class SettingManagerTests
 
         await cache.Received(1).RemoveAsync(
             Arg.Is<string>(k => k.Contains('G') && k.Contains("App.Theme")),
+            Arg.Any<CancellationToken>());
+    }
+
+    // -------------------------------------------------------------------------
+    // SettingChangedEvent emission
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task SetGlobalAsync_Publishes_SettingChangedEvent()
+    {
+        SettingDefinition def = new("App.Theme");
+        (SettingManager manager, _, _, ISettingEventPublisher publisher) = CreateManager(def);
+
+        await manager.SetGlobalAsync("App.Theme", "dark", TestContext.Current.CancellationToken);
+
+        await publisher.Received(1).PublishAsync(
+            Arg.Is<SettingChangedEvent>(e =>
+                e.SettingName == "App.Theme" &&
+                e.ProviderName == "G" &&
+                e.ProviderKey == null &&
+                e.OldValue == null &&
+                e.NewValue == "dark"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SetGlobalAsync_IncludesOldValue_WhenUpdating()
+    {
+        SettingDefinition def = new("App.Theme");
+        (SettingManager manager, InMemorySettingStore store, _, ISettingEventPublisher publisher) = CreateManager(def);
+
+        await store.SetAsync("App.Theme", "G", null, "light", TestContext.Current.CancellationToken);
+
+        await manager.SetGlobalAsync("App.Theme", "dark", TestContext.Current.CancellationToken);
+
+        await publisher.Received(1).PublishAsync(
+            Arg.Is<SettingChangedEvent>(e =>
+                e.OldValue == "light" &&
+                e.NewValue == "dark"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task DeleteAsync_Publishes_SettingChangedEvent_WithNullNewValue()
+    {
+        SettingDefinition def = new("App.Theme");
+        (SettingManager manager, InMemorySettingStore store, _, ISettingEventPublisher publisher) = CreateManager(def);
+
+        await store.SetAsync("App.Theme", "G", null, "light", TestContext.Current.CancellationToken);
+
+        await manager.DeleteAsync("App.Theme", "G", null, TestContext.Current.CancellationToken);
+
+        await publisher.Received(1).PublishAsync(
+            Arg.Is<SettingChangedEvent>(e =>
+                e.OldValue == "light" &&
+                e.NewValue == null),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SetForTenantAsync_Publishes_SettingChangedEvent_WithTenantKey()
+    {
+        SettingDefinition def = new("App.Theme");
+        (SettingManager manager, _, _, ISettingEventPublisher publisher) = CreateManager(def);
+        var tenantId = Guid.NewGuid();
+
+        await manager.SetForTenantAsync(tenantId, "App.Theme", "blue", TestContext.Current.CancellationToken);
+
+        await publisher.Received(1).PublishAsync(
+            Arg.Is<SettingChangedEvent>(e =>
+                e.ProviderName == "T" &&
+                e.ProviderKey == tenantId.ToString() &&
+                e.NewValue == "blue"),
             Arg.Any<CancellationToken>());
     }
 }

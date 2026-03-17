@@ -16,7 +16,7 @@ Part of the [Granit](https://granit-fx.dev) framework.
 | `Granit.Validation` | FluentValidation integration |
 | `Granit.Persistence` | EF Core audit interceptors, soft delete |
 | `Granit.Observability` | Serilog + OpenTelemetry |
-| `Granit.ExceptionHandling` | RFC 7807 ProblemDetails |
+| `Granit.Http.ExceptionHandling` | RFC 7807 ProblemDetails |
 | `Granit.Diagnostics` | Health checks, readiness probes |
 
 ## Installation

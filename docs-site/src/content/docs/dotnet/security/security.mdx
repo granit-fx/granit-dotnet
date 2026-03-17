@@ -11,6 +11,24 @@ The base security package providing the `ICurrentUserService` abstraction and `A
 enum. Used by every module that needs to know "who is calling" — audit trails, tenant
 resolution, authorization checks.
 
+## Choosing the right security modules
+
+| Problem | Module | When to use |
+| ------- | ------ | ----------- |
+| You need to verify who is calling your API | [Authentication](/dotnet/security/authentication/) | Always — choose the provider package matching your identity platform (Keycloak, Entra ID, or Cognito) |
+| Users/roles need different access levels | [Authorization](/dotnet/security/authorization/) | When permissions change at runtime or differ per tenant |
+| You store PII that must be encrypted at rest | [Field-level Encryption](/dotnet/security/encryption/) | GDPR Art. 32, ISO 27001 A.8.24 — national IDs, medical records, bank accounts |
+| You need external secret/key management | [Vault & Encryption](/dotnet/security/vault-encryption/) | Production environments — never store encryption keys in config files |
+| You manage user accounts (CRUD, sync) | [Identity](/dotnet/security/identity/) | When your API owns user lifecycle (registration, deactivation, profile sync) |
+| Users can request data export or deletion | [Privacy](/dotnet/security/privacy/) | GDPR Art. 15–18 — any app handling EU personal data |
+| Your SPA uses cookie-based auth with consent | [Cookies](/dotnet/security/cookies/) | Browser-based apps with GDPR cookie consent requirements |
+
+:::tip[Minimum security stack]
+**Authentication** (pick one provider) + **Authorization** + **Exception Handling**
+(for consistent 401/403 responses). Add Encryption, Privacy, and Identity as your
+compliance and user management needs grow.
+:::
+
 ## Package structure
 
 <FileTree>

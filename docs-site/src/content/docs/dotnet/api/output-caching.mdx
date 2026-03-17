@@ -1,0 +1,208 @@
+---
+title: Output Caching
+description: Multi-tenant HTTP response caching with GDPR-safe defaults — tenant-aware cache isolation, tag-based eviction, and optional Redis backend via Granit.Http.OutputCaching
+sidebar:
+  order: 21
+---
+
+import { Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+## Overview
+
+`Granit.Http.OutputCaching` wraps ASP.NET Core's native
+[`OutputCaching`](https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output)
+middleware with Granit defaults: authenticated responses are excluded (GDPR), cache keys
+automatically vary by tenant ID when multi-tenancy is active, and tag-based eviction lets
+modules invalidate their own cached responses.
+
+The in-memory store works out of the box. For distributed caching across pods, install
+`Granit.Http.OutputCaching.StackExchangeRedis`.
+
+## Setup
+
+<Tabs>
+<TabItem label="Development">
+
+```csharp
+[DependsOn(typeof(GranitHttpOutputCachingModule))]
+public class AppModule : GranitModule { }
+```
+
+```json
+{
+  "OutputCaching": {
+    "DefaultExpiration": "00:01:00"
+  }
+}
+```
+
+</TabItem>
+<TabItem label="Production (Redis)">
+
+```csharp
+[DependsOn(typeof(GranitHttpOutputCachingStackExchangeRedisModule))]
+public class AppModule : GranitModule { }
+```
+
+```json
+{
+  "OutputCaching": {
+    "DefaultExpiration": "00:01:00",
+    "Redis": {
+      "IsEnabled": true,
+      "Configuration": "redis:6379,password=secret",
+      "InstanceName": "myapp:oc:",
+      "RequireTls": true
+    }
+  }
+}
+```
+
+</TabItem>
+</Tabs>
+
+### Middleware ordering
+
+```csharp
+app.UseRouting();
+app.UseCors();                    // Granit.Http.Cors
+app.UseGranitOutputCaching();     // ← AFTER CORS, AFTER routing
+app.UseAuthorization();
+```
+
+<Aside type="caution">
+`UseGranitOutputCaching()` **must** be called after `UseCors()`. ASP.NET Core requires this
+ordering — output caching middleware must see the final CORS headers to store them correctly.
+</Aside>
+
+## GDPR-safe defaults
+
+The base policy automatically applied to every cached endpoint:
+
+| Rule | Default | Rationale |
+|------|---------|-----------|
+| Authenticated responses excluded | `true` | Prevents personal data leaks across users |
+| Set-Cookie responses excluded | `true` | Session tokens must never be shared |
+| Default TTL | 60 s | Safe for most read-heavy APIs |
+| VaryByQuery keys | `page`, `pageSize`, `sort`, `filter`, `q`, `include`, `expand` | Covers pagination, search, and resource expansion |
+
+## Multi-tenant isolation
+
+When `Granit.MultiTenancy` is active, cache keys automatically vary by `ICurrentTenant.Id`:
+
+- Tenant A's cached response is **never** served to Tenant B
+- Each cached response is tagged `tenant:{id}` for per-tenant bulk eviction
+- Without multi-tenancy, the policy is a no-op (zero overhead)
+
+<Aside type="note">
+The tenant-aware policy resolves `ICurrentTenant` from `HttpContext.RequestServices` per
+request (not constructor-injected). This avoids the captive dependency problem since
+policies are singletons while tenant context is scoped.
+</Aside>
+
+## Caching endpoints
+
+Use `.CacheOutput()` on minimal API endpoints:
+
+```csharp
+app.MapGet("/api/v1/reference-data", () => GetReferenceData())
+   .CacheOutput(p => p.Tag("reference-data"));
+
+app.MapGet("/api/v1/products/{id}", (int id) => GetProduct(id))
+   .CacheOutput();
+```
+
+### Named policies
+
+| Policy | Behavior |
+|--------|----------|
+| `GranitDefault` | GDPR + tenant-aware + configured TTL |
+| `GranitNoCache` | Explicitly disables caching for an endpoint |
+
+```csharp
+app.MapGet("/api/v1/health", () => "OK")
+   .CacheOutput(GranitOutputCachePolicyNames.NoCache);
+```
+
+## Tag-based eviction
+
+Inject `IOutputCacheEvictionService` to invalidate cached responses:
+
+```csharp
+public sealed class UpdateProductHandler(IOutputCacheEvictionService eviction)
+{
+    public async Task HandleAsync(UpdateProductCommand cmd, CancellationToken ct)
+    {
+        // ... update product ...
+
+        // Evict all cached responses tagged "products"
+        await eviction.EvictModuleCacheAsync("products", ct);
+    }
+}
+```
+
+### Per-tenant eviction
+
+```csharp
+// Evict all cached responses for a specific tenant
+await eviction.EvictTenantCacheAsync(tenantId, ct);
+```
+
+## Redis backend
+
+`Granit.Http.OutputCaching.StackExchangeRedis` replaces the in-memory store with Redis
+for cross-pod cache sharing.
+
+<Aside type="tip">
+When `Granit.Caching.StackExchangeRedis` is co-registered, the existing
+`IConnectionMultiplexer` is reused — no duplicate TCP connections to Redis.
+</Aside>
+
+### Health check
+
+```csharp
+builder.Services.AddHealthChecks()
+    .AddGranitRedisOutputCacheHealthCheck();
+```
+
+Returns `Healthy`, `Degraded` (latency > 100 ms), or `Unhealthy` (unreachable).
+Tagged `readiness` and `startup` for Kubernetes probes.
+
+## Configuration reference
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `OutputCaching:DefaultExpiration` | `00:01:00` | Default response cache TTL |
+| `OutputCaching:VaryByQueryKeys` | `["page","pageSize","sort","filter","q","include","expand"]` | Query params included in cache key |
+| `OutputCaching:EnableTenantIsolation` | `true` | Vary by tenant ID when available |
+| `OutputCaching:ExcludeAuthenticatedResponses` | `true` | Skip caching for authenticated users |
+| `OutputCaching:Redis:IsEnabled` | `true` | Enable/disable Redis store |
+| `OutputCaching:Redis:Configuration` | `localhost:6379` | Redis connection string |
+| `OutputCaching:Redis:InstanceName` | `dd:oc:` | Redis key prefix |
+| `OutputCaching:Redis:RequireTls` | `true` | Enforce TLS for Redis |
+
+## Public API summary
+
+| Category | Key types | Package |
+|----------|-----------|---------|
+| Module | `GranitHttpOutputCachingModule` | `Granit.Http.OutputCaching` |
+| Options | `OutputCachingOptions` | `Granit.Http.OutputCaching` |
+| Policies | `GranitOutputCachePolicyNames`, `GdprCompliantOutputCachePolicy`, `TenantAwareOutputCachePolicy` | `Granit.Http.OutputCaching` |
+| Eviction | `IOutputCacheEvictionService` | `Granit.Http.OutputCaching` |
+| Extensions | `AddGranitOutputCaching()`, `UseGranitOutputCaching()` | `Granit.Http.OutputCaching` |
+| Redis module | `GranitHttpOutputCachingStackExchangeRedisModule` | `Granit.Http.OutputCaching.StackExchangeRedis` |
+| Redis options | `RedisOutputCachingOptions` | `Granit.Http.OutputCaching.StackExchangeRedis` |
+| Redis extensions | `AddGranitRedisOutputCache()`, `AddGranitRedisOutputCacheHealthCheck()` | `Granit.Http.OutputCaching.StackExchangeRedis` |
+
+## Compliance
+
+- **GDPR Article 5(1)(f)** — integrity and confidentiality: authenticated responses excluded from caching by default
+- **ISO 27001 A.10.1** — encryption in transit: Redis TLS enforced by default
+- **ISO 27001 A.9.4** — access control: tenant-isolated cache keys prevent cross-tenant data leakage
+
+## Further reading
+
+- [Caching](/dotnet/data/caching/) — distributed caching with `ICacheService<T>`
+- [CORS](/dotnet/api/cors/) — must be registered before output caching
+- [Multi-tenancy](/dotnet/core/multi-tenancy/) — tenant context used for cache isolation
+- [ASP.NET Core Output Caching](https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output) — upstream documentation

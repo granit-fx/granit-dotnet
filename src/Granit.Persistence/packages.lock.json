@@ -128,18 +128,18 @@
       "granit.core": {
         "type": "Project"
       },
-      "granit.exceptionhandling": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
-        }
-      },
       "granit.guids": {
         "type": "Project",
         "dependencies": {
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
+        }
+      },
+      "granit.http.exceptionhandling": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )"
         }
       },
       "granit.security": {

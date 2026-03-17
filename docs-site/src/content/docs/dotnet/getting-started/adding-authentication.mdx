@@ -7,7 +7,17 @@ sidebar:
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
-In the previous step, you added persistence with EF Core and automatic audit trails. The audit fields (`CreatedBy`, `ModifiedBy`) are still empty because the API does not know who is calling it. In this step, you will add JWT Bearer authentication with Keycloak claims transformation so that every request carries a verified identity.
+:::note[What you'll learn — ~15 minutes]
+- How to add **JWT Bearer authentication** with a single module dependency
+- How **Keycloak claims transformation** maps realm roles to .NET claims
+- How **audit fields** automatically populate with the authenticated user
+- How to **protect endpoints** with `RequireAuthorization()`
+:::
+
+In the previous step, you added persistence with EF Core and automatic audit trails.
+The audit fields (`CreatedBy`, `ModifiedBy`) are still empty because the API does not
+know who is calling it. In this step, you will add JWT Bearer authentication with
+Keycloak claims transformation so that every request carries a verified identity.
 
 ## 1. Add the authentication packages
 
