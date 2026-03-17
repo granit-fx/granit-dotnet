@@ -40,6 +40,32 @@ services.AddGranitHttpClient("granit-webhooks", (sp, client) =>
 
 The returned `IHttpClientBuilder` can be chained for further customization.
 
+## Auth token propagation
+
+In microservice architectures, downstream services often need the same JWT token that
+the incoming request carries. `AddAuthTokenPropagation()` adds a `DelegatingHandler`
+that reads the `Authorization` header from the current `HttpContext` and sets it on
+every outgoing request automatically.
+
+```csharp
+services.AddGranitHttpClient("catalog-service")
+    .AddAuthTokenPropagation();
+```
+
+<Aside type="note">
+If the outgoing request already contains an `Authorization` header, the handler leaves
+it untouched — explicit overrides always win. Calls made outside an HTTP request pipeline
+(e.g. background jobs) will not propagate any token.
+</Aside>
+
+Combine with Aspire service discovery for zero-configuration inter-service calls:
+
+```csharp
+services.AddGranitHttpClient("catalog-service",
+    client => client.BaseAddress = new Uri("https+http://catalog-service"))
+    .AddAuthTokenPropagation();
+```
+
 ## Per-client configuration
 
 Override pipeline settings per named client in `appsettings.json` without redeploying:
