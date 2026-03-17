@@ -446,7 +446,7 @@
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Http.ApiVersioning": "[0.1.0-dev, )",
           "Granit.Http.Cors": "[0.1.0-dev, )",
-          "Granit.Idempotency": "[0.1.0-dev, )",
+          "Granit.Http.Idempotency": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )",
           "Granit.Localization.EntityFrameworkCore": "[0.1.0-dev, )"
         }
@@ -592,7 +592,7 @@
           "Granit.Core": "[0.1.0-dev, )"
         }
       },
-      "granit.idempotency": {
+      "granit.http.idempotency": {
         "type": "Project",
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",

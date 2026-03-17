@@ -318,7 +318,7 @@
           "Granit.Core": "[0.1.0-dev, )"
         }
       },
-      "granit.idempotency": {
+      "granit.http.idempotency": {
         "type": "Project",
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
