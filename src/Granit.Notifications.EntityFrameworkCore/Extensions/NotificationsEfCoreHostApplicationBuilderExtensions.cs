@@ -42,28 +42,31 @@ public static class NotificationsEfCoreHostApplicationBuilderExtensions
         builder.Services.AddGranitDbContext<NotificationDbContext>(configure);
 
         // UserNotification store — CQRS forwarding pattern
+        // Scoped: AddGranitDbContext registers IDbContextFactory<T> as Scoped (interceptors
+        // depend on ICurrentTenant/ICurrentUser which are Scoped). Stores injecting the factory
+        // must also be Scoped to avoid captive dependency violations.
         builder.Services.RemoveAll<InMemoryUserNotificationStore>();
-        builder.Services.AddSingleton<EfCoreUserNotificationStore>();
+        builder.Services.AddScoped<EfCoreUserNotificationStore>();
         builder.Services.Replace(
-            ServiceDescriptor.Singleton<IUserNotificationReader>(sp => sp.GetRequiredService<EfCoreUserNotificationStore>()));
+            ServiceDescriptor.Scoped<IUserNotificationReader>(sp => sp.GetRequiredService<EfCoreUserNotificationStore>()));
         builder.Services.Replace(
-            ServiceDescriptor.Singleton<IUserNotificationWriter>(sp => sp.GetRequiredService<EfCoreUserNotificationStore>()));
+            ServiceDescriptor.Scoped<IUserNotificationWriter>(sp => sp.GetRequiredService<EfCoreUserNotificationStore>()));
 
         // Preference store — CQRS forwarding pattern
         builder.Services.RemoveAll<InMemoryNotificationPreferenceStore>();
-        builder.Services.AddSingleton<EfCoreNotificationPreferenceStore>();
+        builder.Services.AddScoped<EfCoreNotificationPreferenceStore>();
         builder.Services.Replace(
-            ServiceDescriptor.Singleton<INotificationPreferenceReader>(sp => sp.GetRequiredService<EfCoreNotificationPreferenceStore>()));
+            ServiceDescriptor.Scoped<INotificationPreferenceReader>(sp => sp.GetRequiredService<EfCoreNotificationPreferenceStore>()));
         builder.Services.Replace(
-            ServiceDescriptor.Singleton<INotificationPreferenceWriter>(sp => sp.GetRequiredService<EfCoreNotificationPreferenceStore>()));
+            ServiceDescriptor.Scoped<INotificationPreferenceWriter>(sp => sp.GetRequiredService<EfCoreNotificationPreferenceStore>()));
 
         // Subscription store — CQRS forwarding pattern
         builder.Services.RemoveAll<InMemoryNotificationSubscriptionStore>();
-        builder.Services.AddSingleton<EfCoreNotificationSubscriptionStore>();
+        builder.Services.AddScoped<EfCoreNotificationSubscriptionStore>();
         builder.Services.Replace(
-            ServiceDescriptor.Singleton<INotificationSubscriptionReader>(sp => sp.GetRequiredService<EfCoreNotificationSubscriptionStore>()));
+            ServiceDescriptor.Scoped<INotificationSubscriptionReader>(sp => sp.GetRequiredService<EfCoreNotificationSubscriptionStore>()));
         builder.Services.Replace(
-            ServiceDescriptor.Singleton<INotificationSubscriptionWriter>(sp => sp.GetRequiredService<EfCoreNotificationSubscriptionStore>()));
+            ServiceDescriptor.Scoped<INotificationSubscriptionWriter>(sp => sp.GetRequiredService<EfCoreNotificationSubscriptionStore>()));
 
         // Delivery store — write-only (ISO 27001 audit)
         builder.Services.Replace(
@@ -71,11 +74,11 @@ public static class NotificationsEfCoreHostApplicationBuilderExtensions
 
         // MobilePush token store — CQRS forwarding pattern
         builder.Services.RemoveAll<InMemoryMobilePushTokenStore>();
-        builder.Services.AddSingleton<EfCoreMobilePushTokenStore>();
+        builder.Services.AddScoped<EfCoreMobilePushTokenStore>();
         builder.Services.Replace(
-            ServiceDescriptor.Singleton<IMobilePushTokenReader>(sp => sp.GetRequiredService<EfCoreMobilePushTokenStore>()));
+            ServiceDescriptor.Scoped<IMobilePushTokenReader>(sp => sp.GetRequiredService<EfCoreMobilePushTokenStore>()));
         builder.Services.Replace(
-            ServiceDescriptor.Singleton<IMobilePushTokenWriter>(sp => sp.GetRequiredService<EfCoreMobilePushTokenStore>()));
+            ServiceDescriptor.Scoped<IMobilePushTokenWriter>(sp => sp.GetRequiredService<EfCoreMobilePushTokenStore>()));
 
         return builder;
     }

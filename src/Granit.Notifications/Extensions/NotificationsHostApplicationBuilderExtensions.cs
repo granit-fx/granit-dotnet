@@ -68,8 +68,9 @@ public static class NotificationsHostApplicationBuilderExtensions
         builder.Services.AddScoped<INotificationPublisher, ChannelNotificationPublisher>();
         builder.Services.AddHostedService<NotificationDispatchWorker>();
 
-        // InApp channel (built-in)
-        builder.Services.AddSingleton<INotificationChannel, InAppNotificationChannel>();
+        // InApp channel (built-in) — Scoped because IUserNotificationWriter is Scoped when
+        // the EF Core provider is active (captive dependency if registered as Singleton).
+        builder.Services.AddScoped<INotificationChannel, InAppNotificationChannel>();
 
         return builder;
     }

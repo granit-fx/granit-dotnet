@@ -1,5 +1,6 @@
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -16,7 +17,8 @@ public sealed class BackgroundJobsSeedServiceTests
         IReadOnlyList<RecurringJobRegistration> registrations = [
             new RecurringJobRegistration("job-a", "0 * * * *", "MyMessage, MyAssembly")
         ];
-        BackgroundJobsSeedService sut = new(storeWriter, registrations);
+        IServiceScopeFactory scopeFactory = BuildScopeFactory(storeWriter);
+        BackgroundJobsSeedService sut = new(scopeFactory, registrations);
         CancellationToken cancellationToken = TestContext.Current.CancellationToken;
 
         // Act
@@ -31,7 +33,8 @@ public sealed class BackgroundJobsSeedServiceTests
     {
         // Arrange
         IBackgroundJobStoreWriter storeWriter = Substitute.For<IBackgroundJobStoreWriter>();
-        BackgroundJobsSeedService sut = new(storeWriter, []);
+        IServiceScopeFactory scopeFactory = BuildScopeFactory(storeWriter);
+        BackgroundJobsSeedService sut = new(scopeFactory, []);
 
         // Act
         Func<Task> act = () => sut.StopAsync(TestContext.Current.CancellationToken);
@@ -40,5 +43,13 @@ public sealed class BackgroundJobsSeedServiceTests
         await Should.NotThrowAsync(act);
         await storeWriter.DidNotReceive().SeedJobsAsync(Arg.Any<IEnumerable<RecurringJobRegistration>>(),
             Arg.Any<CancellationToken>());
+    }
+
+    private static IServiceScopeFactory BuildScopeFactory(IBackgroundJobStoreWriter storeWriter)
+    {
+        ServiceCollection services = new();
+        services.AddScoped<IBackgroundJobStoreWriter>(_ => storeWriter);
+        ServiceProvider provider = services.BuildServiceProvider();
+        return provider.GetRequiredService<IServiceScopeFactory>();
     }
 }

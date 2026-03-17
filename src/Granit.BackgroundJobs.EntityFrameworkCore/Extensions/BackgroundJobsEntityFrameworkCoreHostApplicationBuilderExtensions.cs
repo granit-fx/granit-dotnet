@@ -34,11 +34,14 @@ public static class BackgroundJobsEntityFrameworkCoreHostApplicationBuilderExten
     {
         builder.Services.AddGranitDbContext<BackgroundJobsDbContext>(configure);
 
-        builder.Services.AddSingleton<EfBackgroundJobStore>();
+        // Scoped: AddGranitDbContext registers IDbContextFactory<T> as Scoped (interceptors depend on
+        // ICurrentTenant/ICurrentUser which are Scoped). EfBackgroundJobStore injects the factory and
+        // must therefore also be Scoped to avoid captive dependency violations.
+        builder.Services.AddScoped<EfBackgroundJobStore>();
         builder.Services.Replace(
-            ServiceDescriptor.Singleton<IBackgroundJobStoreReader>(sp => sp.GetRequiredService<EfBackgroundJobStore>()));
+            ServiceDescriptor.Scoped<IBackgroundJobStoreReader>(sp => sp.GetRequiredService<EfBackgroundJobStore>()));
         builder.Services.Replace(
-            ServiceDescriptor.Singleton<IBackgroundJobStoreWriter>(sp => sp.GetRequiredService<EfBackgroundJobStore>()));
+            ServiceDescriptor.Scoped<IBackgroundJobStoreWriter>(sp => sp.GetRequiredService<EfBackgroundJobStore>()));
 
         return builder;
     }

@@ -10,10 +10,11 @@ namespace Granit.BackgroundJobs.EntityFrameworkCore.Internal;
 /// <see cref="IBackgroundJobStoreWriter"/>.
 /// </summary>
 /// <remarks>
-/// Registered as a <b>Singleton</b> when <see cref="JobStoreMode.Durable"/> is configured.
-/// Each operation creates and disposes its own <see cref="BackgroundJobsDbContext"/> via
-/// <see cref="IDbContextFactory{TContext}"/>, making it safe for background services and
-/// <see cref="Microsoft.Extensions.Hosting.IHostedService"/> consumers.
+/// Registered as <b>Scoped</b> when <see cref="JobStoreMode.Durable"/> is configured.
+/// <c>AddGranitDbContext</c> registers <see cref="IDbContextFactory{TContext}"/> as Scoped
+/// (required so interceptors can resolve <c>ICurrentTenant</c> and <c>ICurrentUser</c>);
+/// this store must therefore also be Scoped to avoid captive dependency violations.
+/// Each operation creates and disposes its own <see cref="BackgroundJobsDbContext"/> via the factory.
 /// </remarks>
 internal sealed class EfBackgroundJobStore(
     IDbContextFactory<BackgroundJobsDbContext> contextFactory,

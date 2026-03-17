@@ -84,10 +84,11 @@ public static class BackgroundJobsHostApplicationBuilderExtensions
         IReadOnlyList<RecurringJobRegistration> registrations =
             RecurringJobDiscovery.Discover(scanAssemblies);
 
-        // Seed jobs after the host is built — store must be resolved from DI.
+        // Seed jobs after the host is built — store must be resolved via a scope because
+        // IBackgroundJobStoreWriter is Scoped when the EF Core provider is used.
         builder.Services.AddHostedService(sp =>
             new BackgroundJobsSeedService(
-                sp.GetRequiredService<IBackgroundJobStoreWriter>(),
+                sp.GetRequiredService<IServiceScopeFactory>(),
                 registrations));
 
         return builder;

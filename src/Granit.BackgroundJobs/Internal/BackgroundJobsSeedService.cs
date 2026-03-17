@@ -1,4 +1,5 @@
 using Granit.BackgroundJobs.Domain;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Granit.BackgroundJobs.Internal;
@@ -9,12 +10,20 @@ namespace Granit.BackgroundJobs.Internal;
 /// Runs once on application start, before any Wolverine handlers are invoked.
 /// </summary>
 internal sealed class BackgroundJobsSeedService(
-    IBackgroundJobStoreWriter storeWriter,
+    IServiceScopeFactory scopeFactory,
     IReadOnlyList<RecurringJobRegistration> registrations) : IHostedService
 {
     /// <inheritdoc/>
-    public Task StartAsync(CancellationToken cancellationToken) =>
-        storeWriter.SeedJobsAsync(registrations, cancellationToken);
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        // IBackgroundJobStoreWriter is Scoped when using the EF Core provider.
+        // IHostedService runs as a singleton-like root-scope service; create an explicit
+        // scope so that Scoped dependencies are resolved correctly.
+        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+        IBackgroundJobStoreWriter storeWriter =
+            scope.ServiceProvider.GetRequiredService<IBackgroundJobStoreWriter>();
+        await storeWriter.SeedJobsAsync(registrations, cancellationToken).ConfigureAwait(false);
+    }
 
     /// <inheritdoc/>
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
