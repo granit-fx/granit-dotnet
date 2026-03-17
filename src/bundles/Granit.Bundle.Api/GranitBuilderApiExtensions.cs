@@ -4,7 +4,7 @@ using Granit.Core.Modularity;
 using Granit.Http.ApiDocumentation;
 using Granit.Http.ApiVersioning;
 using Granit.Http.Cors;
-using Granit.Idempotency;
+using Granit.Http.Idempotency;
 using Granit.Localization;
 
 namespace Granit.Bundle.Api;

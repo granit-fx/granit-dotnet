@@ -1,6 +1,6 @@
 using System.Net.Http.Headers;
 using System.Text;
-using Granit.HttpResilience.Extensions;
+using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.Sms;
 using Granit.Notifications.Twilio.HealthChecks;
 using Granit.Notifications.Twilio.Internal;

@@ -14,7 +14,7 @@ Everything in `Granit.Bundle.Essentials`, plus:
 | `Granit.Http.ApiVersioning` | Asp.Versioning integration |
 | `Granit.Http.ApiDocumentation` | Scalar OpenAPI documentation |
 | `Granit.Http.Cors` | CORS policy configuration |
-| `Granit.Idempotency` | Idempotency-Key middleware |
+| `Granit.Http.Idempotency` | Idempotency-Key middleware |
 | `Granit.Localization` | i18n (17 cultures) |
 | `Granit.Localization.EntityFrameworkCore` | Localization EF Core store |
 | `Granit.Caching` | Distributed caching abstractions |

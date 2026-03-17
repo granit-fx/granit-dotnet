@@ -1,4 +1,4 @@
-using Granit.HttpResilience.Extensions;
+using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Zulip.HealthChecks;
 using Granit.Notifications.Zulip.Internal;

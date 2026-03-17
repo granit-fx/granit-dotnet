@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
-    <ProjectReference Include="..\Granit.ExceptionHandling\Granit.ExceptionHandling.csproj" />
+    <ProjectReference Include="..\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
     <ProjectReference Include="..\Granit.Features\Granit.Features.csproj" />
     <ProjectReference Include="..\Granit.Security\Granit.Security.csproj" />
   </ItemGroup>

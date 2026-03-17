@@ -1,5 +1,5 @@
 using FluentValidation;
-using Granit.ExceptionHandling;
+using Granit.Http.ExceptionHandling;
 using Microsoft.AspNetCore.Http;
 
 namespace Granit.Validation.Internal;

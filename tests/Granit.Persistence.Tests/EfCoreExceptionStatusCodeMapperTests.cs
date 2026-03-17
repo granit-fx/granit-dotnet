@@ -8,8 +8,8 @@
 //   - No registration when ExceptionHandling is not configured
 // =============================================================================
 
-using Granit.ExceptionHandling;
-using Granit.ExceptionHandling.Extensions;
+using Granit.Http.ExceptionHandling;
+using Granit.Http.ExceptionHandling.Extensions;
 using Granit.Persistence.ExceptionHandling;
 using Granit.Persistence.Extensions;
 using Microsoft.AspNetCore.Http;

@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>Granit.ExceptionHandling</PackageId>
+    <PackageId>Granit.Http.ExceptionHandling</PackageId>
     <Description>Centralized exception handling for Granit APIs. Native .NET RFC 7807 (Problem Details) handler, chain of responsibility for HTTP mapping, ISO 27001 5xx error masking in production, systematic OTEL traceId.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Granit.ExceptionHandling.Tests" />
+    <InternalsVisibleTo Include="Granit.Http.ExceptionHandling.Tests" />
   </ItemGroup>
 
   <ItemGroup>

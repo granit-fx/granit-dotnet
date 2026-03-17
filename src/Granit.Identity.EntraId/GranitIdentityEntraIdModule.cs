@@ -1,5 +1,5 @@
 using Granit.Core.Modularity;
-using Granit.HttpResilience;
+using Granit.Http.Resilience;
 using Granit.Identity.EntraId.Extensions;
 using Granit.Timing;
 

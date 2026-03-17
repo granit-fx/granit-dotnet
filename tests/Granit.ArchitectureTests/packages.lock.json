@@ -1248,6 +1248,28 @@
           "TngTech.ArchUnitNET.xUnit": "[0.13.*, )"
         }
       },
+      "granit.auditlog": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Granit.Querying": "[0.1.0-dev, )"
+        }
+      },
+      "granit.auditlog.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AuditLog": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.auditlog.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AuditLog": "[0.1.0-dev, )",
+          "Granit.Persistence": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
+        }
+      },
       "granit.authentication.apikeys": {
         "type": "Project",
         "dependencies": {
@@ -1557,6 +1579,22 @@
           "Granit.Core": "[0.1.0-dev, )"
         }
       },
+      "granit.encryption.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Granit.Encryption": "[0.1.0-dev, )",
+          "Granit.Persistence": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore": "[10.*, )"
+        }
+      },
+      "granit.encryption.reencryption": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Encryption.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore": "[10.*, )"
+        }
+      },
       "granit.features": {
         "type": "Project",
         "dependencies": {
@@ -1644,11 +1682,31 @@
           "StackExchange.Redis": "[2.*, )"
         }
       },
+      "granit.http.outputcaching": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.outputcaching.stackexchangeredis": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Http.OutputCaching": "[0.1.0-dev, )",
+          "Microsoft.AspNetCore.OutputCaching.StackExchangeRedis": "[10.*, )",
+          "StackExchange.Redis": "[2.*, )"
+        }
+      },
       "granit.http.resilience": {
         "type": "Project",
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )",
           "Microsoft.Extensions.Http.Resilience": "[10.*, )"
+        }
+      },
+      "granit.http.responsecompression": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )"
         }
       },
       "granit.identity": {
@@ -2637,6 +2695,15 @@
         "contentHash": "vTcxIfOPyfFbYk1g8YcXJfkMnlEWVkSnnjxcZLy60zgwiHMRf2SnZR+9E4HlpwKxgE3yfKMOti8J6WfKuKsw6w==",
         "dependencies": {
           "Microsoft.OpenApi": "2.0.0"
+        }
+      },
+      "Microsoft.AspNetCore.OutputCaching.StackExchangeRedis": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.5",
+        "contentHash": "JTImL13xKz/bfeMA9ZG2SueBqjlJnAD0imv94XWa0vrY5qLGuolNd+wdq6cVVQEtjoqsirjtCnuLWIuuKxPJAg==",
+        "dependencies": {
+          "StackExchange.Redis": "2.7.27"
         }
       },
       "Microsoft.AspNetCore.SignalR.StackExchangeRedis": {

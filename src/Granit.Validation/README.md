@@ -12,7 +12,7 @@ dotnet add package Granit.Validation
 
 ## Dependencies
 
-- `Granit.ExceptionHandling`
+- `Granit.Http.ExceptionHandling`
 - `Granit.Localization`
 
 ## Documentation

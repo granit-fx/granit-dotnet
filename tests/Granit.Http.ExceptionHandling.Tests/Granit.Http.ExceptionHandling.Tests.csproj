@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.ExceptionHandling\Granit.ExceptionHandling.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
   </ItemGroup>
 
 </Project>

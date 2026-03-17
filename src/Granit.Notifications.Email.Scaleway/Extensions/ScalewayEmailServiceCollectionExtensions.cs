@@ -1,4 +1,4 @@
-using Granit.HttpResilience.Extensions;
+using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.Email.Scaleway.Diagnostics;
 using Granit.Notifications.Email.Scaleway.HealthChecks;
 using Granit.Notifications.Email.Scaleway.Internal;

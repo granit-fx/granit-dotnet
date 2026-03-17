@@ -14,7 +14,7 @@ dotnet add package Granit.Authentication.ApiKeys
 
 ## Dependencies
 
-- `Granit.ExceptionHandling`
+- `Granit.Http.ExceptionHandling`
 - `Granit.Guids`
 - `Granit.Querying`
 - `Granit.Security`

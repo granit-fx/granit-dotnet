@@ -1,4 +1,4 @@
-using Granit.ExceptionHandling;
+using Granit.Http.ExceptionHandling;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +7,7 @@ namespace Granit.Persistence.ExceptionHandling;
 /// <summary>
 /// Maps EF Core exceptions to HTTP status codes.
 /// Registered as an additional <see cref="IExceptionStatusCodeMapper"/> when both
-/// <c>Granit.Persistence</c> and <c>Granit.ExceptionHandling</c> are in use.
+/// <c>Granit.Persistence</c> and <c>Granit.Http.ExceptionHandling</c> are in use.
 /// </summary>
 /// <remarks>
 /// Returns <c>409 Conflict</c> for <see cref="DbUpdateConcurrencyException"/> (optimistic concurrency violation).

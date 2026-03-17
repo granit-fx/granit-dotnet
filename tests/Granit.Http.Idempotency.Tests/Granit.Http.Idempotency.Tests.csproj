@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.Idempotency\Granit.Idempotency.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.Idempotency\Granit.Http.Idempotency.csproj" />
   </ItemGroup>
 
 </Project>

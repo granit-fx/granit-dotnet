@@ -1,5 +1,5 @@
 using Granit.Core.Modularity;
-using Granit.HttpResilience;
+using Granit.Http.Resilience;
 using Granit.Notifications.Email.SendGrid.Extensions;
 
 namespace Granit.Notifications.Email.SendGrid;

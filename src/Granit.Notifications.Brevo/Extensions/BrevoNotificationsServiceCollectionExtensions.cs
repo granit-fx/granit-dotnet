@@ -1,4 +1,4 @@
-using Granit.HttpResilience.Extensions;
+using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.Brevo.HealthChecks;
 using Granit.Notifications.Brevo.Internal;
 using Granit.Notifications.Brevo.Options;

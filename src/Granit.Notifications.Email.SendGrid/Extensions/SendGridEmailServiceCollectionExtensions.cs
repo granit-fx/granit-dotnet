@@ -1,4 +1,4 @@
-using Granit.HttpResilience.Extensions;
+using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.Email.SendGrid.Diagnostics;
 using Granit.Notifications.Email.SendGrid.HealthChecks;
 using Granit.Notifications.Email.SendGrid.Internal;

@@ -1,4 +1,4 @@
-using Granit.ExceptionHandling;
+using Granit.Http.ExceptionHandling;
 using Microsoft.AspNetCore.Http;
 
 namespace Granit.RateLimiting.Exceptions;

@@ -1,7 +1,7 @@
 using Granit.Authentication.ApiKeys.Extensions;
 using Granit.Core.Modularity;
-using Granit.ExceptionHandling;
 using Granit.Guids;
+using Granit.Http.ExceptionHandling;
 using Granit.Querying;
 using Granit.Security;
 using Granit.Timing;

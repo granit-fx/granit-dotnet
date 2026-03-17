@@ -11,7 +11,7 @@ using Granit.Http.ApiDocumentation;
 using Granit.Http.ApiVersioning;
 using Granit.Http.Cors;
 using Granit.Http.ExceptionHandling;
-using Granit.Idempotency;
+using Granit.Http.Idempotency;
 using Granit.Localization;
 using Granit.MultiTenancy;
 using Granit.Notifications;

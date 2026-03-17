@@ -26,7 +26,7 @@
     <ProjectReference Include="..\Granit.Security\Granit.Security.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
 
-    <ProjectReference Include="..\Granit.ExceptionHandling\Granit.ExceptionHandling.csproj" />
+    <ProjectReference Include="..\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Bundle.Essentials</PackageId>
-    <Description>Meta-package grouping the essential Granit modules for a minimal API: Core, Timing, Guids, Security, Validation, Persistence, Observability, ExceptionHandling, Diagnostics.</Description>
+    <Description>Meta-package grouping the essential Granit modules for a minimal API: Core, Timing, Guids, Security, Validation, Persistence, Observability, Http.ExceptionHandling, Diagnostics.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -14,7 +14,7 @@
     <ProjectReference Include="..\..\Granit.Validation\Granit.Validation.csproj" />
     <ProjectReference Include="..\..\Granit.Persistence\Granit.Persistence.csproj" />
     <ProjectReference Include="..\..\Granit.Observability\Granit.Observability.csproj" />
-    <ProjectReference Include="..\..\Granit.ExceptionHandling\Granit.ExceptionHandling.csproj" />
+    <ProjectReference Include="..\..\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
     <ProjectReference Include="..\..\Granit.Diagnostics\Granit.Diagnostics.csproj" />
   </ItemGroup>
 

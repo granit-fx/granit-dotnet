@@ -13,7 +13,7 @@ dotnet add package Granit.RateLimiting
 ## Dependencies
 
 - `Granit.Core`
-- `Granit.ExceptionHandling`
+- `Granit.Http.ExceptionHandling`
 - `Granit.Features`
 - `Granit.Security`
 

@@ -1,4 +1,4 @@
-# Granit.HttpResilience
+# Granit.Http.Resilience
 
 Standardized outbound HTTP resilience for Granit modules. Wraps `Microsoft.Extensions.Http.Resilience`
 (Polly v8) and exposes `AddGranitHttpClient()` with retry, circuit breaker, and per-request timeout.
@@ -9,7 +9,7 @@ Part of the [granit](https://granit-fx.dev) framework.
 ## Installation
 
 ```bash
-dotnet add package Granit.HttpResilience
+dotnet add package Granit.Http.Resilience
 ```
 
 ## Dependencies

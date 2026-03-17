@@ -73,7 +73,7 @@ opts.Policies.AddMiddleware<BulkheadMiddleware>(
 ## Dependencies
 
 - `Granit.Core`
-- `Granit.ExceptionHandling`
+- `Granit.Http.ExceptionHandling`
 - `Granit.Features`
 - `Granit.Security`
 

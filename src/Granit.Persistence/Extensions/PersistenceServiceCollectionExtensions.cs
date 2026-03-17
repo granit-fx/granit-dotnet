@@ -1,6 +1,6 @@
 using Granit.Core.DataFiltering;
 using Granit.Core.Events;
-using Granit.ExceptionHandling;
+using Granit.Http.ExceptionHandling;
 using Granit.Persistence.DataSeeding;
 using Granit.Persistence.ExceptionHandling;
 using Granit.Persistence.Interceptors;
@@ -34,7 +34,7 @@ public static class PersistenceServiceCollectionExtensions
     ///   </item>
     ///   <item>
     ///     <see cref="EfCoreExceptionStatusCodeMapper"/> if
-    ///     <c>Granit.ExceptionHandling</c> is present in the container
+    ///     <c>Granit.Http.ExceptionHandling</c> is present in the container
     ///     (<see cref="IExceptionStatusCodeMapper"/> already registered).
     ///   </item>
     /// </list>
@@ -48,7 +48,7 @@ public static class PersistenceServiceCollectionExtensions
         services.TryAddSingleton<IDomainEventDispatcher, NullDomainEventDispatcher>();
         services.AddSingleton<IDataFilter, DataFilter>();
 
-        // Register the EF Core exception mapper only when Granit.ExceptionHandling
+        // Register the EF Core exception mapper only when Granit.Http.ExceptionHandling
         // has been configured (IExceptionStatusCodeMapper already in the container).
         // This avoids a hard dependency on ExceptionHandling for consumers that don't use it.
         if (services.Any(d => d.ServiceType == typeof(IExceptionStatusCodeMapper)))

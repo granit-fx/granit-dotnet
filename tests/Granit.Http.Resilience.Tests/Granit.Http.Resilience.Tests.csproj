@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.HttpResilience\Granit.HttpResilience.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.Resilience\Granit.Http.Resilience.csproj" />
   </ItemGroup>
 
 </Project>

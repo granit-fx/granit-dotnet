@@ -1,5 +1,5 @@
 using Granit.Core.Diagnostics;
-using Granit.HttpResilience.Extensions;
+using Granit.Http.Resilience.Extensions;
 using Granit.Identity.EntraId.HealthChecks;
 using Granit.Identity.EntraId.Internal;
 using Granit.Identity.EntraId.Options;

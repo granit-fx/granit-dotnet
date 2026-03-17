@@ -1,6 +1,6 @@
 using System.Threading.Channels;
 using Granit.Core.Diagnostics;
-using Granit.HttpResilience.Extensions;
+using Granit.Http.Resilience.Extensions;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Endpoints;
 using Granit.Webhooks.Handlers;
