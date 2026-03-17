@@ -2884,8 +2884,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.9",
-        "contentHash": "BeQpbWJbvnrM8mUCmMgB6ApbSQ4C+4PmiNvE2bfSsxfgmbfAUX4zIe2xFKlGwpOG5dCgqx/8RQwh53VJZRSypQ=="
+        "resolved": "2.13.10",
+        "contentHash": "AHsAdrbjIVvV/l6dwsIpluuWZEjafmxLkoJTzdRruRNB3w5VI5MKM1Gu0gyX6xRI0raEtSy3O111YpBrZMOpSA=="
       },
       "Scriban": {
         "type": "CentralTransitive",
