@@ -1,6 +1,6 @@
 using System.IO.Compression;
 
-namespace Granit.ResponseCompression.Options;
+namespace Granit.Http.ResponseCompression.Options;
 
 /// <summary>
 /// Configuration options for the Granit response compression module.

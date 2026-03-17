@@ -1,12 +1,12 @@
-using Granit.ResponseCompression.Internal;
-using Granit.ResponseCompression.Options;
+using Granit.Http.ResponseCompression.Internal;
+using Granit.Http.ResponseCompression.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace Granit.ResponseCompression.Extensions;
+namespace Granit.Http.ResponseCompression.Extensions;
 
 /// <summary>
 /// Extension methods for registering Granit response compression services.

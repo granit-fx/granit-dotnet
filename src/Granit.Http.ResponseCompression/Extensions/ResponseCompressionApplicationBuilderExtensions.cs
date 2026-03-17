@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 
-namespace Granit.ResponseCompression.Extensions;
+namespace Granit.Http.ResponseCompression.Extensions;
 
 /// <summary>
 /// Extension methods for adding Granit response compression to the middleware pipeline.

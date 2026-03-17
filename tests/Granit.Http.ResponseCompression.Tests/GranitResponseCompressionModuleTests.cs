@@ -1,5 +1,5 @@
 using Granit.Core.Modularity;
-using Granit.ResponseCompression.Extensions;
+using Granit.Http.ResponseCompression.Extensions;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -7,17 +7,17 @@ using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
-namespace Granit.ResponseCompression.Tests;
+namespace Granit.Http.ResponseCompression.Tests;
 
-public sealed class GranitResponseCompressionModuleTests
+public sealed class GranitHttpResponseCompressionModuleTests
 {
     [Fact]
-    public void GranitResponseCompressionModule_IsGranitModule() =>
-        typeof(GranitResponseCompressionModule).IsAssignableTo(typeof(GranitModule)).ShouldBeTrue();
+    public void GranitHttpResponseCompressionModule_IsGranitModule() =>
+        typeof(GranitHttpResponseCompressionModule).IsAssignableTo(typeof(GranitModule)).ShouldBeTrue();
 
     [Fact]
-    public void GranitResponseCompressionModule_IsSealed() =>
-        typeof(GranitResponseCompressionModule).IsSealed.ShouldBeTrue();
+    public void GranitHttpResponseCompressionModule_IsSealed() =>
+        typeof(GranitHttpResponseCompressionModule).IsSealed.ShouldBeTrue();
 
     [Fact]
     public void AddGranitResponseCompression_RegistersResponseCompressionOptionsConfigurator()

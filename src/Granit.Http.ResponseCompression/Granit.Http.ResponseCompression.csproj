@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>Granit.ResponseCompression</PackageId>
+    <PackageId>Granit.Http.ResponseCompression</PackageId>
     <Description>Standardized HTTP response compression for Granit. Brotli (primary) + gzip (fallback) with safe HTTPS defaults and SSE/WebSocket exclusion.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Granit.ResponseCompression.Tests" />
+    <InternalsVisibleTo Include="Granit.Http.ResponseCompression.Tests" />
   </ItemGroup>
 
   <ItemGroup>

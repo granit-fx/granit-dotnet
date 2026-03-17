@@ -129,7 +129,7 @@
     <Project Path="src/Granit.ReferenceData.Endpoints/Granit.ReferenceData.Endpoints.csproj" />
     <Project Path="src/Granit.ReferenceData.EntityFrameworkCore/Granit.ReferenceData.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.ReferenceData/Granit.ReferenceData.csproj" />
-    <Project Path="src/Granit.ResponseCompression/Granit.ResponseCompression.csproj" />
+    <Project Path="src/Granit.Http.ResponseCompression/Granit.Http.ResponseCompression.csproj" />
     <Project Path="src/Granit.Security/Granit.Security.csproj" />
     <Project Path="src/Granit.Settings.Endpoints/Granit.Settings.Endpoints.csproj" />
     <Project Path="src/Granit.Settings.EntityFrameworkCore/Granit.Settings.EntityFrameworkCore.csproj" />
@@ -305,7 +305,7 @@
     <Project Path="tests/Granit.ReferenceData.Endpoints.Tests/Granit.ReferenceData.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.ReferenceData.EntityFrameworkCore.Tests/Granit.ReferenceData.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.ReferenceData.Tests/Granit.ReferenceData.Tests.csproj" />
-    <Project Path="tests/Granit.ResponseCompression.Tests/Granit.ResponseCompression.Tests.csproj" />
+    <Project Path="tests/Granit.Http.ResponseCompression.Tests/Granit.Http.ResponseCompression.Tests.csproj" />
     <Project Path="tests/Granit.Security.Tests/Granit.Security.Tests.csproj" />
     <Project Path="tests/Granit.Settings.Endpoints.Tests/Granit.Settings.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Settings.EntityFrameworkCore.Tests/Granit.Settings.EntityFrameworkCore.Tests.csproj" />

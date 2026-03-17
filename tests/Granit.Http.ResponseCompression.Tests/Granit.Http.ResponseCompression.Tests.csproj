@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.ResponseCompression\Granit.ResponseCompression.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.ResponseCompression\Granit.Http.ResponseCompression.csproj" />
   </ItemGroup>
 
 </Project>

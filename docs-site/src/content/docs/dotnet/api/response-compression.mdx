@@ -19,7 +19,7 @@ requires several decisions: which providers, which MIME types, what about HTTPS
 and the BREACH attack, should SSE streams be compressed? Getting any of these
 wrong can break real-time features or introduce a security vulnerability.
 
-**Granit.ResponseCompression makes those decisions for you** — one line of code,
+**Granit.Http.ResponseCompression makes those decisions for you** — one line of code,
 safe defaults, nothing to forget.
 
 ## What you get
@@ -38,7 +38,7 @@ safe defaults, nothing to forget.
 ## Setup
 
 ```csharp
-[DependsOn(typeof(GranitResponseCompressionModule))]
+[DependsOn(typeof(GranitHttpResponseCompressionModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -114,9 +114,9 @@ after the initial handshake), so no special handling is needed.
 
 | Category | Key types | Package |
 | -------- | --------- | ------- |
-| Module | `GranitResponseCompressionModule` | -- |
-| Options | `GranitResponseCompressionOptions` | `Granit.ResponseCompression` |
-| Extensions | `AddGranitResponseCompression()`, `UseGranitResponseCompression()` | `Granit.ResponseCompression` |
+| Module | `GranitHttpResponseCompressionModule` | -- |
+| Options | `GranitResponseCompressionOptions` | `Granit.Http.ResponseCompression` |
+| Extensions | `AddGranitResponseCompression()`, `UseGranitResponseCompression()` | `Granit.Http.ResponseCompression` |
 
 ## See also
 

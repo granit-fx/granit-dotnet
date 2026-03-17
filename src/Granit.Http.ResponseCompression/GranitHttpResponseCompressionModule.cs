@@ -1,7 +1,7 @@
 using Granit.Core.Modularity;
-using Granit.ResponseCompression.Extensions;
+using Granit.Http.ResponseCompression.Extensions;
 
-namespace Granit.ResponseCompression;
+namespace Granit.Http.ResponseCompression;
 
 /// <summary>
 /// Granit module for standardized HTTP response compression.
@@ -12,7 +12,7 @@ namespace Granit.ResponseCompression;
 /// HTTPS compression is enabled (BREACH mitigated by antiforgery enforcement).
 /// SSE streams (<c>text/event-stream</c>) are always excluded.
 /// </remarks>
-public sealed class GranitResponseCompressionModule : GranitModule
+public sealed class GranitHttpResponseCompressionModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>

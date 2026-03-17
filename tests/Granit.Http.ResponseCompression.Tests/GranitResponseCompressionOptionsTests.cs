@@ -1,9 +1,9 @@
 using System.IO.Compression;
-using Granit.ResponseCompression.Options;
+using Granit.Http.ResponseCompression.Options;
 using Shouldly;
 using Xunit;
 
-namespace Granit.ResponseCompression.Tests;
+namespace Granit.Http.ResponseCompression.Tests;
 
 public sealed class GranitResponseCompressionOptionsTests
 {

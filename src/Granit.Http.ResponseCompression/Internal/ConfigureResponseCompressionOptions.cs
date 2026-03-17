@@ -1,8 +1,8 @@
-using Granit.ResponseCompression.Options;
+using Granit.Http.ResponseCompression.Options;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Options;
 
-namespace Granit.ResponseCompression.Internal;
+namespace Granit.Http.ResponseCompression.Internal;
 
 /// <summary>
 /// Bridges <see cref="GranitResponseCompressionOptions"/> to ASP.NET Core

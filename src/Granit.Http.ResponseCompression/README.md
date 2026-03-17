@@ -1,4 +1,4 @@
-# Granit.ResponseCompression
+# Granit.Http.ResponseCompression
 
 Standardized HTTP response compression for Granit applications. Brotli (primary)
 and gzip (fallback) with safe HTTPS defaults and SSE/WebSocket exclusion.
@@ -9,7 +9,7 @@ Part of the [granit](https://granit-fx.dev) framework.
 ## Installation
 
 ```bash
-dotnet add package Granit.ResponseCompression
+dotnet add package Granit.Http.ResponseCompression
 ```
 
 ## Dependencies
