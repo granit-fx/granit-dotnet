@@ -27,11 +27,11 @@
     <Copyright>Copyright 2026 Jean-Francois Meyers</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageTags>dotnet;framework;modular;modular-monolith;vertical-slicing;efcore;wolverine;clean-architecture</PackageTags>
+    <PackageTags>dotnet;framework;modular;modular-monolith;efcore;wolverine</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/granit-fx/granit-dotnet</RepositoryUrl>
     <PackageProjectUrl>https://github.com/granit-fx/granit-dotnet</PackageProjectUrl>
-    <Description>Granit - Rock-solid, production-ready modular framework for .NET. Built with Vertical Slicing and zero compromises on Developer Experience.</Description>
+    <Description>Granit - Rock-solid, production-ready modular framework for .NET. Built as a Modular Monolith with zero compromises on Developer Experience.</Description>
     <PackageIcon>granit-icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
