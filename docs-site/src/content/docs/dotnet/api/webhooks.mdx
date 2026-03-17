@@ -209,6 +209,36 @@ against GDPR data-minimization requirements.
 | Options | `WebhooksOptions` | `Granit.Webhooks` |
 | Extensions | `AddGranitWebhooks()`, `AddGranitWebhooksEntityFrameworkCore()` | — |
 
+## When to use — and when not to
+
+Use Granit.Webhooks when:
+
+- External systems need **real-time notifications** of events in your application
+- You need **tamper-proof deliveries** — HMAC-SHA256 signatures let subscribers verify authenticity
+- **Delivery reliability** matters — durable outbox ensures no event is lost, retries handle transient failures
+- You need an **audit trail** of every delivery attempt (ISO 27001, debugging)
+
+Skip it when:
+
+- Consumers are **internal services** in the same cluster — use Wolverine integration events (lower latency, no HTTP overhead)
+- You only need **one subscriber** that you control — a direct HTTP call or message queue is simpler
+- Events are **high-frequency** (>100/s per subscription) — webhooks add HTTP latency per event; consider a streaming protocol (WebSocket, SSE) instead
+
+## Common pitfalls
+
+:::caution[`StorePayload` persists JSON in clear text]
+When `StorePayload = true`, the full JSON body of every delivery is stored in the
+database. If payloads contain PII, this creates a GDPR compliance risk. Either disable
+it, or ensure the webhook database is encrypted and has a retention policy.
+:::
+
+:::caution[Subscription suspension]
+After repeated delivery failures (configurable), a subscription is automatically
+**suspended**. A `WebhookSubscriptionSuspended` event is published, but if no handler
+re-activates or alerts an admin, the subscription stays silent forever. Monitor this
+event in production.
+:::
+
 ## See also
 
 - [API & Web module](./api-web/) — Exception handling, versioning, idempotency
