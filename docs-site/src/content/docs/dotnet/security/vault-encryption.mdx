@@ -30,7 +30,9 @@ so no external vault server is required locally.
 | Package | Role | Depends on |
 |---------|------|------------|
 | `Granit.Encryption` | `IStringEncryptionService`, AES-256-CBC provider | `Granit.Core` |
-| `Granit.Vault` | Abstraction layer — `ITransitEncryptionService`, `IDatabaseCredentialProvider`, localization | `Granit.Encryption` |
+| `Granit.Encryption.EntityFrameworkCore` | `[Encrypted]` attribute, `EncryptedStringConverter`, `ApplyEncryptionConventions` | `Granit.Encryption`, `Granit.Persistence` |
+| `Granit.Encryption.ReEncryption` | `IReEncryptionJob`, `DefaultReEncryptionJob<TContext>` | `Granit.Encryption.EntityFrameworkCore` |
+| `Granit.Vault` | Abstraction layer — `ITransitEncryptionService`, `IDatabaseCredentialProvider`, `ReEncryptionOptions`, `RetiredKeyVersionException` | `Granit.Encryption` |
 | `Granit.Vault.HashiCorp` | HashiCorp Vault provider — VaultSharp client, Transit encryption, dynamic database credentials | `Granit.Vault` |
 | `Granit.Vault.Azure` | Azure Key Vault encryption (RSA-OAEP-256), dynamic credentials from Key Vault Secrets | `Granit.Vault` |
 | `Granit.Vault.Aws` | AWS KMS encryption, dynamic credentials from Secrets Manager | `Granit.Vault` |
@@ -46,6 +48,8 @@ graph TD
     VGC[Granit.Vault.GoogleCloud] --> V
     V --> E[Granit.Encryption]
     E --> C[Granit.Core]
+    EEFC[Granit.Encryption.EntityFrameworkCore] --> E
+    EERE[Granit.Encryption.ReEncryption] --> EEFC
 ```
 
 ## Granit.Encryption
@@ -131,44 +135,155 @@ When `ProviderName` is `"Vault"`, `IStringEncryptionService` delegates to
 
 ### ITransitEncryptionService
 
-The transit encryption abstraction for encrypt/decrypt operations:
+The transit encryption abstraction for encrypt, decrypt, and key-rotation operations:
 
 ```csharp
 public interface ITransitEncryptionService
 {
+    // Encrypt plaintext — returns provider-specific ciphertext
     Task<string> EncryptAsync(
         string keyName, string plaintext,
         CancellationToken cancellationToken = default);
 
+    // Decrypt ciphertext — returns original plaintext
     Task<string> DecryptAsync(
         string keyName, string ciphertext,
         CancellationToken cancellationToken = default);
+
+    // Re-encrypt ciphertext to the latest key version (no plaintext exposure on HashiCorp)
+    Task<string> RewrapAsync(
+        string keyName, string ciphertext,
+        CancellationToken cancellationToken = default);
+
+    // Parse the key version from a versioned ciphertext (e.g. "v1" from "vault:v1:...")
+    // Returns null for providers whose ciphertext does not embed a version
+    string? GetKeyVersion(string ciphertext);
 }
 ```
 
-Ciphertext follows the Vault format: `vault:v1:base64encodeddata...`
+HashiCorp Vault ciphertext format: `vault:v{N}:base64data` — the version number is
+embedded in the prefix. Azure Key Vault, AWS KMS, and Google Cloud KMS produce
+opaque Base64 ciphertext without a version prefix (`GetKeyVersion` returns `null`).
 
 ### Usage
 
 ```csharp
-public class SensitiveDataService(ITransitEncryptionService transit)
+public class HealthRecordService(ITransitEncryptionService transit)
 {
-    public async Task<string> ProtectSsnAsync(
-        string ssn, CancellationToken cancellationToken)
+    public async Task<string> EncryptDiagnosisAsync(
+        string diagnosis, CancellationToken cancellationToken)
     {
+        // HashiCorp returns "vault:v3:AbCdEf..." — version embedded in prefix
         return await transit.EncryptAsync(
-            "pii-data", ssn, cancellationToken).ConfigureAwait(false);
-        // Returns: "vault:v1:AbCdEf..."
+            "health-records", diagnosis, cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<string> RevealSsnAsync(
-        string encryptedSsn, CancellationToken cancellationToken)
+    public async Task<string> DecryptDiagnosisAsync(
+        string ciphertext, CancellationToken cancellationToken)
     {
         return await transit.DecryptAsync(
-            "pii-data", encryptedSsn, cancellationToken).ConfigureAwait(false);
+            "health-records", ciphertext, cancellationToken).ConfigureAwait(false);
     }
 }
 ```
+
+---
+
+## Key rotation
+
+### RewrapAsync — server-side re-encryption
+
+Vault Transit's `/transit/rewrap` endpoint re-encrypts an existing ciphertext to the
+latest key version **entirely server-side** — the plaintext never leaves Vault:
+
+```csharp
+public async Task MigrateHealthRecordAsync(
+    string oldCiphertext, CancellationToken cancellationToken)
+{
+    // oldCiphertext = "vault:v1:..." → newCiphertext = "vault:v3:..."
+    string newCiphertext = await transit.RewrapAsync(
+        "health-records", oldCiphertext, cancellationToken).ConfigureAwait(false);
+
+    // Persist newCiphertext in the database
+}
+```
+
+For AWS KMS, Azure Key Vault, and Google Cloud KMS (which have no server-side rewrap),
+`RewrapAsync` falls back to `DecryptAsync` + `EncryptAsync`. The effect is identical —
+a new ciphertext encrypted with the current key — but the plaintext passes through
+application memory momentarily.
+
+### GetKeyVersion — inspecting ciphertext age
+
+`GetKeyVersion` parses the version prefix from a Vault Transit ciphertext string:
+
+```csharp
+string? version = transit.GetKeyVersion("vault:v2:AbCdEf...");
+// version = "v2"
+
+string? version2 = transit.GetKeyVersion("not-a-vault-ciphertext");
+// version2 = null
+```
+
+Use this to identify rows that need re-encryption:
+
+```csharp
+foreach (string ciphertext in ciphertexts)
+{
+    string? version = transit.GetKeyVersion(ciphertext);
+    if (version == "v1" || version == "v2")
+    {
+        string rewrapped = await transit.RewrapAsync("pii-data", ciphertext, ct)
+            .ConfigureAwait(false);
+        // update DB row with rewrapped
+    }
+}
+```
+
+### ReEncryptionOptions — retiring old key versions
+
+After re-encryption, configure `RetiredKeyVersions` to make any missed row fail loudly:
+
+```json
+{
+  "ReEncryption": {
+    "RetiredKeyVersions": ["v1", "v2"],
+    "BatchSize": 500
+  }
+}
+```
+
+```csharp
+builder.Services.Configure<ReEncryptionOptions>(
+    builder.Configuration.GetSection(ReEncryptionOptions.SectionName));
+```
+
+`HashiCorpVaultStringEncryptionProvider` checks `RetiredKeyVersions` before every
+decrypt call. If the ciphertext carries a retired version prefix, it throws
+`RetiredKeyVersionException` instead of delegating to Vault:
+
+```csharp
+try
+{
+    string plaintext = encryptionService.Decrypt(row.NationalId);
+}
+catch (RetiredKeyVersionException ex)
+{
+    // A row escaped the re-encryption job — fix before retiring the Vault key
+    logger.LogError("Retired key version {Version} still in use", ex.KeyVersion);
+    throw;
+}
+```
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `RetiredKeyVersions` | `ISet<string>` | `{}` | Versions that trigger `RetiredKeyVersionException` on decrypt |
+| `BatchSize` | `int` | `500` | Default batch size for `IReEncryptionJob` |
+
+### Complete rotation workflow
+
+See the [Field-level Encryption](/dotnet/security/encryption/#full-key-rotation-workflow)
+page for the end-to-end workflow diagram combining `IReEncryptionJob` and `RewrapAsync`.
 
 ---
 
