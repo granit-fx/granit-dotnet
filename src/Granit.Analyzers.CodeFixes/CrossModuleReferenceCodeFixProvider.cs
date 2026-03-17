@@ -83,7 +83,7 @@ public sealed class CrossModuleReferenceCodeFixProvider : CodeFixProvider
             CodeAction.Create(
                 title: title,
                 createChangedDocument: cancellationToken =>
-                    ReplaceWithContractsTypeAsync(context.Document, node, contractsNamespace, cancellationToken),
+                    ReplaceWithContractsTypeAsync(context.Document, contractsNamespace, cancellationToken),
                 equivalenceKey: title),
             diagnostic);
     }
@@ -127,7 +127,6 @@ public sealed class CrossModuleReferenceCodeFixProvider : CodeFixProvider
 
     private static async Task<Document> ReplaceWithContractsTypeAsync(
         Document document,
-        SyntaxNode node,
         string contractsNamespace,
         CancellationToken cancellationToken)
     {
