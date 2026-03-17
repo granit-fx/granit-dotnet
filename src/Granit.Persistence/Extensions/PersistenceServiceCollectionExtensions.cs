@@ -21,6 +21,7 @@ public static class PersistenceServiceCollectionExtensions
     /// <list type="bullet">
     ///   <item>ISO 27001 audit interceptor (<see cref="AuditedEntityInterceptor"/>)</item>
     ///   <item>Versioning interceptor (<see cref="VersioningInterceptor"/>)</item>
+    ///   <item>Optimistic concurrency interceptor (<see cref="ConcurrencyStampInterceptor"/>)</item>
     ///   <item>GDPR soft delete interceptor (<see cref="SoftDeleteInterceptor"/>)</item>
     ///   <item>
     ///     Data filter service (<see cref="IDataFilter"/>) for runtime filter control.
@@ -43,6 +44,7 @@ public static class PersistenceServiceCollectionExtensions
     {
         services.AddScoped<AuditedEntityInterceptor>();
         services.AddScoped<VersioningInterceptor>();
+        services.AddScoped<ConcurrencyStampInterceptor>();
         services.AddScoped<SoftDeleteInterceptor>();
         services.AddScoped<DomainEventDispatcherInterceptor>();
         services.TryAddSingleton<IDomainEventDispatcher, NullDomainEventDispatcher>();

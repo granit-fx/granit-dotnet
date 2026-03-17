@@ -1,6 +1,6 @@
 ---
 title: Persistence
-description: EF Core interceptors, audit trail, soft delete, data seeding, zero-downtime migrations
+description: EF Core interceptors, audit trail, soft delete, optimistic concurrency, data seeding, zero-downtime migrations
 sidebar:
   order: 2
 ---
@@ -8,9 +8,10 @@ sidebar:
 import { Tabs, TabItem, FileTree, Badge } from "@astrojs/starlight/components";
 
 Granit.Persistence provides the data access layer for the framework. It automates
-ISO 27001 audit trails, GDPR-compliant soft delete, domain event dispatching,
-entity versioning, and multi-tenant query filtering — all through EF Core interceptors
-and conventions. No manual `WHERE` clauses, no forgotten audit fields.
+ISO 27001 audit trails, GDPR-compliant soft delete, optimistic concurrency control,
+domain event dispatching, entity versioning, and multi-tenant query filtering — all
+through EF Core interceptors and conventions. No manual `WHERE` clauses, no forgotten
+audit fields, no silent data overwrites.
 
 ## Package structure
 
@@ -50,7 +51,7 @@ graph TD
 public class AppModule : GranitModule { }
 ```
 
-Registers all four interceptors and `IDataFilter`.
+Registers all five interceptors and `IDataFilter`.
 
 </TabItem>
 <TabItem label="With migrations">
@@ -130,14 +131,15 @@ Manual filters cause duplicates or conflicts.
 
 ## Interceptors
 
-Four interceptors execute on every `SaveChanges` call, in this order:
+Five interceptors execute on every `SaveChanges` call, in this order:
 
 | Order | Interceptor | Behavior |
 |-------|-------------|----------|
 | 1 | `AuditedEntityInterceptor` | Populates `CreatedAt`, `CreatedBy`, `ModifiedAt`, `ModifiedBy`, auto-generates `Id`, injects `TenantId` |
 | 2 | `VersioningInterceptor` | Sets `BusinessId` and `Version` on `IVersioned` entities |
-| 3 | `DomainEventDispatcherInterceptor` | Collects domain events before save, dispatches after commit |
-| 4 | `SoftDeleteInterceptor` | Converts `DELETE` to `UPDATE` for `ISoftDeletable` entities |
+| 3 | `ConcurrencyStampInterceptor` | Regenerates `ConcurrencyStamp` on `IConcurrencyAware` entities |
+| 4 | `DomainEventDispatcherInterceptor` | Collects domain events before save, dispatches after commit |
+| 5 | `SoftDeleteInterceptor` | Converts `DELETE` to `UPDATE` for `ISoftDeletable` entities |
 
 :::note
 SoftDeleteInterceptor must be last — it changes `EntityState.Deleted` to
@@ -235,6 +237,89 @@ For `IVersioned` entities on `EntityState.Added`:
 - Generates `BusinessId` if empty (first version of a new entity)
 - Determines `Version` from change tracker (starting at 1)
 - Modified entities are untouched — versioning is explicit (create a new entity with same `BusinessId`)
+
+### ConcurrencyStampInterceptor
+
+Prevents silent data loss from concurrent writes. When two users load the same
+entity and both save changes, the second write fails instead of overwriting the first.
+
+Targets entities implementing `IConcurrencyAware`:
+
+```csharp
+public class Order : AuditedEntity, IConcurrencyAware
+{
+    public string Reference { get; set; } = string.Empty;
+    public OrderStatus Status { get; set; }
+    public string ConcurrencyStamp { get; set; } = string.Empty;
+}
+```
+
+| Entity state | Action |
+|-------------|--------|
+| `Added` | Sets `ConcurrencyStamp` to a new GUID string |
+| `Modified` | Regenerates `ConcurrencyStamp` with a new GUID string |
+
+`ApplyGranitConventions` auto-discovers `IConcurrencyAware` entities and configures
+`ConcurrencyStamp` as an EF Core concurrency token (`VARCHAR(36)`,
+`.IsConcurrencyToken()`). No manual Fluent API configuration needed.
+
+EF Core includes the stamp in the `WHERE` clause on update:
+
+```sql
+UPDATE Orders
+SET Status = @newStatus, ConcurrencyStamp = @newStamp
+WHERE Id = @id AND ConcurrencyStamp = @originalStamp
+```
+
+If the stamp in the database differs from the original value loaded by the entity,
+EF Core throws `DbUpdateConcurrencyException` — mapped to **HTTP 409 Conflict**
+by `EfCoreExceptionStatusCodeMapper`.
+
+#### Connected vs disconnected updates
+
+**Connected** — entity loaded from the same `DbContext`. EF Core tracks
+`OriginalValue` automatically; nothing extra to do:
+
+```csharp
+var order = await db.Orders.FindAsync(orderId, ct);
+order!.Status = OrderStatus.Confirmed;
+await db.SaveChangesAsync(ct); // stamp checked automatically
+```
+
+**Disconnected** (CQRS command, new `DbContext`) — the frontend sends the stamp it
+received in the GET response. You must set `OriginalValue` explicitly before saving:
+
+```csharp
+var order = await db.Orders.FindAsync(request.Id, ct);
+order!.Status = request.NewStatus;
+
+// Tell EF Core what the client believes the current stamp is
+db.Entry(order).Property(e => e.ConcurrencyStamp).OriginalValue = request.ConcurrencyStamp;
+
+await db.SaveChangesAsync(ct); // throws DbUpdateConcurrencyException on mismatch
+```
+
+Use `IConcurrencyStampRequest` as a DTO convention:
+
+```csharp
+public sealed record UpdateOrderStatusRequest(
+    Guid Id,
+    OrderStatus NewStatus,
+    string ConcurrencyStamp) : IConcurrencyStampRequest;
+```
+
+:::caution[ExecuteUpdate bypasses this interceptor]
+`ExecuteUpdateAsync()` emits raw SQL and never reaches `ConcurrencyStampInterceptor`.
+The concurrency stamp is **not** regenerated and **not** checked. Use the change
+tracker for entities that need optimistic concurrency protection.
+:::
+
+:::tip[When to use IConcurrencyAware]
+Add `IConcurrencyAware` to entities where concurrent modifications are likely and
+data loss is unacceptable: orders, payments, appointments, inventory, shared
+configuration. For read-heavy entities that rarely conflict, the overhead is
+negligible but unnecessary.
+:::
 
 ## Query filters
 
@@ -483,7 +568,7 @@ to cascade to the next batch via the durable outbox.
 | Category | Key types | Package |
 |----------|-----------|---------|
 | Module | `GranitPersistenceModule` | `Granit.Persistence` |
-| Interceptors | `AuditedEntityInterceptor`, `SoftDeleteInterceptor`, `DomainEventDispatcherInterceptor`, `VersioningInterceptor` | `Granit.Persistence` |
+| Interceptors | `AuditedEntityInterceptor`, `VersioningInterceptor`, `ConcurrencyStampInterceptor`, `DomainEventDispatcherInterceptor`, `SoftDeleteInterceptor` | `Granit.Persistence` |
 | Extensions | `AddGranitPersistence()`, `AddGranitDbContext<T>()`, `UseGranitInterceptors()`, `ApplyGranitConventions()` | `Granit.Persistence` |
 | Data seeding | `IDataSeeder`, `IDataSeedContributor`, `DataSeedContext` | `Granit.Persistence` |
 | Purging | `ISoftDeletePurgeTarget`, `PurgeSoftDeletedBeforeAsync()` | `Granit.Persistence` |
@@ -550,6 +635,34 @@ public async Task Soft_deleted_entities_are_filtered_out()
     // Assert — visible when filter is disabled
     var all = await context.Patients.IgnoreQueryFilters().ToListAsync();
     all.Count.ShouldBe(1);
+}
+```
+
+For concurrency conflict tests, use SQLite (the InMemory provider does not enforce
+concurrency tokens):
+
+```csharp
+[Fact]
+public async Task Concurrent_modification_throws_DbUpdateConcurrencyException()
+{
+    // Arrange — create entity via context1
+    await using var context1 = CreateSqliteContext<OrderDbContext>();
+    var order = new Order { Reference = "ORD-001" };
+    context1.Orders.Add(order);
+    await context1.SaveChangesAsync();
+
+    // Load the same entity in context2
+    await using var context2 = CreateSqliteContext<OrderDbContext>(ensureCreated: false);
+    var sameOrder = await context2.Orders.FindAsync(order.Id);
+
+    // Modify and save via context1 — stamp changes in DB
+    order.Status = OrderStatus.Confirmed;
+    await context1.SaveChangesAsync();
+
+    // Act — context2 still has the old stamp
+    sameOrder!.Status = OrderStatus.Cancelled;
+    await Should.ThrowAsync<DbUpdateConcurrencyException>(
+        () => context2.SaveChangesAsync());
 }
 ```
 
