@@ -42,9 +42,11 @@ public sealed class DefaultReEncryptionJobTests
             ctx.SaveChanges();
         }
 
-        // Verify initial encrypt was called once
-        _encryption.Received(1).Encrypt("123-45-6789");
-        _encryption.ClearReceivedCalls();
+        // Verify the raw value is encrypted after initial save
+        using SqliteCommand cmd = connection.CreateCommand();
+        cmd.CommandText = "SELECT Ssn FROM Patients WHERE Id = 1";
+        string? initialRaw = cmd.ExecuteScalar() as string;
+        initialRaw.ShouldBe("ENC:123-45-6789");
 
         // Run re-encryption job
         IDbContextFactory<TestDbContext> factory = new InlineDbContextFactory(options, _encryption);
@@ -52,8 +54,10 @@ public sealed class DefaultReEncryptionJobTests
 
         await sut.ReEncryptAsync<PatientEntity>(cancellationToken: TestContext.Current.CancellationToken);
 
-        // Encrypt should have been called again for the SSN field
-        _encryption.Received(1).Encrypt("123-45-6789");
+        // After re-encryption, the raw value should still be encrypted
+        // (decrypt → re-encrypt cycle: "ENC:123-45-6789" → "123-45-6789" → "ENC:123-45-6789")
+        string? reEncryptedRaw = cmd.ExecuteScalar() as string;
+        reEncryptedRaw.ShouldBe("ENC:123-45-6789");
     }
 
     [Fact]

@@ -67,7 +67,12 @@ public sealed class ApplyEncryptionConventionsTests
             ctx.SaveChanges();
         }
 
-        _encryption.Received(1).Encrypt("123-45-6789");
+        // Verify the raw database value is encrypted (not the original plaintext).
+        // We read raw SQL because EF Core would apply the decrypt converter on read.
+        using SqliteCommand cmd = connection.CreateCommand();
+        cmd.CommandText = "SELECT Ssn FROM Patients WHERE Id = 1";
+        string? rawValue = cmd.ExecuteScalar() as string;
+        rawValue.ShouldBe("ENC:123-45-6789");
     }
 
     [Fact]
