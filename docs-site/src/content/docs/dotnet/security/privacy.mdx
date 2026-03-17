@@ -7,9 +7,20 @@ sidebar:
 
 import { FileTree } from "@astrojs/starlight/components";
 
-Granit.Privacy implements GDPR data subject rights (Art. 15–18): data export
-orchestration via saga, right to erasure with cascading notifications, and legal
-agreement tracking.
+## Why a privacy module?
+
+GDPR gives every user the right to request a full export of their personal data
+(Art. 15) and the right to be forgotten (Art. 17). In a modular application, personal
+data is scattered across multiple modules — patient records, uploaded documents,
+notification logs, audit trails. Implementing these rights manually means every module
+needs custom export/deletion logic, and missing one module means a compliance violation
+with fines up to 4% of annual turnover.
+
+Granit.Privacy turns this into a framework concern: modules register as data providers,
+and a saga orchestrates collection or deletion across all of them. The saga handles
+timeouts, partial failures, and cascading notifications automatically. Legal agreement
+tracking (privacy policy versions, consent records) is built in, so you can prove
+compliance during an audit without building a custom consent system.
 
 ## Package structure
 

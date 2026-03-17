@@ -7,15 +7,20 @@ sidebar:
 
 import { Tabs, TabItem, FileTree, Steps, Badge } from "@astrojs/starlight/components";
 
-`Granit.Encryption.EntityFrameworkCore` adds a single attribute — `[Encrypted]` — that
-you place on any `string` property of an EF Core entity. At `OnModelCreating` time,
-`ApplyEncryptionConventions` wires up an `EncryptedStringConverter` backed by
-`IStringEncryptionService`. From that point on, encryption and decryption happen
-transparently on every read and write — no manual calls, no extra service layer.
+## Why field-level encryption?
 
-`Granit.Encryption.ReEncryption` pairs with the EF Core package to provide `IReEncryptionJob`:
-a batch-safe job that re-encrypts all `[Encrypted]` fields with the current key version
-after a key rotation.
+Regulations like GDPR (Art. 32) and ISO 27001 (A.8.24) require encryption of sensitive
+data at rest. Full-disk or database-level encryption protects against stolen disks, but
+not against SQL injection, backup leaks, or unauthorized database access by internal
+users — the data is decrypted the moment it is read. Field-level encryption closes this
+gap: individual columns (national IDs, medical records, bank accounts) are encrypted
+with application-managed keys, so even a full database dump is useless without the key.
+
+The challenge is doing this without polluting every repository call with
+`Encrypt()`/`Decrypt()` logic. Granit makes it transparent: add `[Encrypted]` to a
+property, and EF Core handles the rest — encryption on write, decryption on read, no
+manual calls. When compliance requires key rotation, `IReEncryptionJob` re-encrypts
+all marked fields in batch without downtime.
 
 ## Package structure
 

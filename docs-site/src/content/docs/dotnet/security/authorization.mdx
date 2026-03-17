@@ -7,9 +7,18 @@ sidebar:
 
 import { FileTree } from "@astrojs/starlight/components";
 
-Dynamic RBAC permission system with module-scoped permission definitions, a policy
-provider backed by distributed cache, and an EF Core grant store for persistent
-role-permission assignments.
+## Why dynamic permissions?
+
+Static `[Authorize(Roles = "Admin")]` policies are hardcoded at compile time. Adding a
+new role or changing what "Editor" can do requires a code change, a build, and a
+deployment. In multi-tenant SaaS or enterprise applications, each customer expects to
+define their own roles and fine-tune access — without waiting for a release.
+
+Granit.Authorization solves this with a fully dynamic RBAC system: permissions are
+declared by modules at startup, stored in a database, and cached per role in distributed
+cache. Administrators assign permissions to roles at runtime through management
+endpoints — no redeployment needed. The policy provider evaluates grants on every
+request, so access changes take effect within the cache TTL (seconds, not sprints).
 
 ## Package structure
 

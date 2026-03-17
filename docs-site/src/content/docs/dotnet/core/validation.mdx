@@ -7,9 +7,19 @@ sidebar:
 
 import { FileTree } from "@astrojs/starlight/components";
 
-Granit.Validation wraps FluentValidation with structured error codes and international
-validators (IBAN, BIC, E.164, ISO 3166). `Granit.Validation.Europe` adds France and
-Belgium-specific regulatory validators (NISS, NIR, SIREN, VAT, INAMI).
+## Why a validation framework?
+
+Input validation is the first line of defense against bad data, but it is also one of
+the most repetitive tasks in API development. Without a shared approach, teams reinvent
+IBAN checks, phone number formats, and national ID validation in every project — with
+inconsistent error messages and no structured error codes for frontend consumption.
+
+Granit.Validation provides a single place for validation logic: validators are
+auto-discovered, wired into the Minimal API pipeline, and return RFC 7807 problem
+details with stable, machine-readable error codes. The international validator library
+(IBAN, BIC, E.164, ISO 3166) and the European regulatory validators (NISS, NIR, SIREN,
+VAT, INAMI) are battle-tested and locale-aware — so you validate once, correctly,
+instead of copying regex patterns from Stack Overflow.
 
 ## Package structure
 
@@ -219,6 +229,7 @@ public class RegisterClinicRequestValidator : GranitValidator<RegisterClinicRequ
 
 ## See also
 
+- [ADR-006: FluentValidation](/dotnet/architecture/adr/006-fluentvalidation/) -- Why FluentValidation was chosen over DataAnnotations
 - [Exception Handling](/dotnet/api/exception-handling/) -- `IExceptionStatusCodeMapper` for validation exceptions
 - [Core module](/dotnet/core/module-system/) -- Exception hierarchy, `IHasValidationErrors`
 - [Persistence module](/dotnet/data/persistence/) -- `AuditedEntityInterceptor` uses `IClock` for timestamps

@@ -7,8 +7,19 @@ sidebar:
 
 import { Tabs, TabItem, FileTree } from "@astrojs/starlight/components";
 
-Granit.Webhooks provides outbound webhook dispatch with HMAC-SHA256 signed deliveries,
-retry policies, and ISO 27001-compliant audit trails.
+## Why webhooks?
+
+Polling is expensive: clients repeatedly hit your API asking "did anything change?",
+wasting bandwidth, adding latency, and straining rate limits. Webhooks invert this
+relationship — your application pushes events to subscribers the moment they happen.
+This is how Stripe, GitHub, and Slack work, and it is what integration partners expect
+from a modern API.
+
+But outbound webhooks are harder than they look: deliveries fail, endpoints go down,
+payloads need tamper-proof signatures, and auditors want proof that a notification was
+(or was not) delivered. Granit.Webhooks handles all of this — HMAC-SHA256 signed
+payloads, configurable retry policies, durable outbox dispatch via Wolverine, and a
+full delivery audit trail for ISO 27001 compliance.
 
 ## Package structure
 
