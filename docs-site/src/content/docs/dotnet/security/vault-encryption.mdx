@@ -280,6 +280,14 @@ catch (RetiredKeyVersionException ex)
 | `RetiredKeyVersions` | `ISet<string>` | `{}` | Versions that trigger `RetiredKeyVersionException` on decrypt |
 | `BatchSize` | `int` | `500` | Default batch size for `IReEncryptionJob` |
 
+:::note
+`RetiredKeyVersions` is **only enforced by the HashiCorp Vault provider**. AWS KMS,
+Azure Key Vault, and Google Cloud KMS produce opaque ciphertext with no embedded version
+prefix — `GetKeyVersion` always returns `null` for those providers, so the retired-version
+check is silently skipped. If you switch providers, remove `RetiredKeyVersions` from
+configuration to avoid confusion.
+:::
+
 ### Complete rotation workflow
 
 See the [Field-level Encryption](/dotnet/security/encryption/#full-key-rotation-workflow)
