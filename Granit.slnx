@@ -30,6 +30,7 @@
     <Project Path="src/Granit.Authorization.EntityFrameworkCore/Granit.Authorization.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.AuditLog.Endpoints/Granit.AuditLog.Endpoints.csproj" />
     <Project Path="src/Granit.AuditLog.EntityFrameworkCore/Granit.AuditLog.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.AuditLog.Wolverine/Granit.AuditLog.Wolverine.csproj" />
     <Project Path="src/Granit.AuditLog/Granit.AuditLog.csproj" />
     <Project Path="src/Granit.Authorization/Granit.Authorization.csproj" />
     <Project Path="src/Granit.BackgroundJobs.Endpoints/Granit.BackgroundJobs.Endpoints.csproj" />
@@ -145,6 +146,8 @@
     <Project Path="src/Granit.Templating/Granit.Templating.csproj" />
     <Project Path="src/Granit.Timeline.Endpoints/Granit.Timeline.Endpoints.csproj" />
     <Project Path="src/Granit.Timeline.EntityFrameworkCore/Granit.Timeline.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Testing/Granit.Testing.csproj" />
     <Project Path="src/Granit.Timeline.AI/Granit.Timeline.AI.csproj" />
     <Project Path="src/Granit.Timeline.Notifications/Granit.Timeline.Notifications.csproj" />
     <Project Path="src/Granit.Timeline/Granit.Timeline.csproj" />
@@ -207,6 +210,7 @@
     <Project Path="tests/Granit.AuditLog.Endpoints.Tests/Granit.AuditLog.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.AuditLog.EntityFrameworkCore.Tests/Granit.AuditLog.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.AuditLog.Tests/Granit.AuditLog.Tests.csproj" />
+    <Project Path="tests/Granit.AuditLog.Wolverine.Tests/Granit.AuditLog.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Authorization.Tests/Granit.Authorization.Tests.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.Endpoints.Tests/Granit.BackgroundJobs.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests.csproj" />
@@ -324,6 +328,8 @@
     <Project Path="tests/Granit.Templating.Workflow.Tests/Granit.Templating.Workflow.Tests.csproj" />
     <Project Path="tests/Granit.Timeline.Endpoints.Tests/Granit.Timeline.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Timeline.EntityFrameworkCore.Tests/Granit.Timeline.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Testing.EntityFrameworkCore.Tests/Granit.Testing.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Testing.Tests/Granit.Testing.Tests.csproj" />
     <Project Path="tests/Granit.Timeline.AI.Tests/Granit.Timeline.AI.Tests.csproj" />
     <Project Path="tests/Granit.Timeline.Notifications.Tests/Granit.Timeline.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Timeline.Tests/Granit.Timeline.Tests.csproj" />
