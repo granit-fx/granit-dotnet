@@ -839,8 +839,8 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[5.20.*, )",
-        "resolved": "5.20.0",
-        "contentHash": "FJykS3j3mIC//E7bsUozBlxYmjhSe7WZ2dX4HybTpy0w6+JWiXC42R6kQk9TPNUv8ldRIV4IlBnMPx5M4G9EtQ==",
+        "resolved": "5.20.1",
+        "contentHash": "8wB+Y5BBzQTulHxpbzi6BCG55vM4yvgz/savFUAzWU+Vs6qFpL8joV/O8Gj0VMVVY0c9Isyx9+wLoGJPsYTrZw==",
         "dependencies": {
           "JasperFx": "1.21.1",
           "JasperFx.Events": "1.24.0",
