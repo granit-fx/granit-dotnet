@@ -19,9 +19,20 @@ public static class JwtBearerServiceCollectionExtensions
     /// Adds generic OIDC JWT Bearer authentication and the CurrentUser service.
     /// Reads the <c>"Authentication"</c> section from configuration.
     /// </summary>
+    // Sentinel: prevents double-registration when AddGranitAsync is called multiple times
+    // (e.g. AddSharedHostingAsync + a second service-specific AddGranitAsync call).
+    private sealed class GranitJwtBearerRegistered;
+
     public static IServiceCollection AddGranitJwtBearer(
         this IServiceCollection services)
     {
+        if (services.Any(sd => sd.ServiceType == typeof(GranitJwtBearerRegistered)))
+        {
+            return services;
+        }
+
+        services.AddSingleton<GranitJwtBearerRegistered>();
+
         services
             .AddOptions<JwtBearerAuthOptions>()
             .BindConfiguration(JwtBearerAuthOptions.SectionName)
