@@ -84,4 +84,50 @@ public sealed class HashiCorpTransitEncryptionServiceTests
 
         result.ShouldBe(originalText);
     }
+
+    [Fact]
+    public async Task RewrapAsync_CallsVaultTransitRewrap_AndReturnsNewCiphertext()
+    {
+        string oldCiphertext = "vault:v1:abc123encrypted";
+        string newCiphertext = "vault:v3:xyz789rewrapped";
+
+        ITransitSecretsEngine transitEngine = Substitute.For<ITransitSecretsEngine>();
+        ISecretsEngine secretsEngine = Substitute.For<ISecretsEngine>();
+        secretsEngine.Transit.Returns(transitEngine);
+        _vaultClient.V1.Returns(Substitute.For<IVaultClientV1>());
+        _vaultClient.V1.Secrets.Returns(secretsEngine);
+
+        transitEngine.RewrapAsync(
+                "sensitive-data",
+                Arg.Is<RewrapRequestOptions>(r => r.CipherText == oldCiphertext),
+                "transit",
+                null)
+            .Returns(new VaultSharp.V1.Commons.Secret<EncryptionResponse>
+            {
+                Data = new EncryptionResponse { CipherText = newCiphertext }
+            });
+
+        string result = await _sut.RewrapAsync("sensitive-data", oldCiphertext, TestContext.Current.CancellationToken);
+
+        result.ShouldBe(newCiphertext);
+    }
+
+    [Theory]
+    [InlineData("vault:v1:abc", "v1")]
+    [InlineData("vault:v2:xyz123==", "v2")]
+    [InlineData("vault:v10:longciphertext", "v10")]
+    public void GetKeyVersion_ReturnsVersion_ForVaultCiphertext(string ciphertext, string expected)
+    {
+        _sut.GetKeyVersion(ciphertext).ShouldBe(expected);
+    }
+
+    [Theory]
+    [InlineData("notavaultciphertext")]
+    [InlineData("ENC:abc123")]
+    [InlineData("")]
+    [InlineData("vault:nover:abc")]
+    public void GetKeyVersion_ReturnsNull_ForNonVersionedCiphertext(string ciphertext)
+    {
+        _sut.GetKeyVersion(ciphertext).ShouldBeNull();
+    }
 }

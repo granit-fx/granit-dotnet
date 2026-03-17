@@ -71,6 +71,24 @@ internal sealed partial class KmsTransitEncryptionService(
         return result;
     }
 
+    /// <inheritdoc />
+    /// <remarks>
+    /// AWS KMS does not expose a server-side rewrap endpoint.
+    /// This implementation falls back to decrypt-then-re-encrypt.
+    /// </remarks>
+    public async Task<string> RewrapAsync(
+        string keyName,
+        string ciphertext,
+        CancellationToken cancellationToken = default)
+    {
+        string plaintext = await DecryptAsync(keyName, ciphertext, cancellationToken).ConfigureAwait(false);
+        return await EncryptAsync(keyName, plaintext, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    /// <remarks>AWS KMS ciphertext does not embed a key version — returns <c>null</c>.</remarks>
+    public string? GetKeyVersion(string ciphertext) => null;
+
     [LoggerMessage(Level = LogLevel.Debug, Message = "KMS encrypt succeeded for key {KeyName}")]
     private partial void LogEncryptSuccess(string keyName);
 

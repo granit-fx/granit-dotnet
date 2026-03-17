@@ -63,6 +63,8 @@
     <Project Path="src/Granit.DocumentGeneration.Pdf/Granit.DocumentGeneration.Pdf.csproj" />
     <Project Path="src/Granit.DocumentGeneration/Granit.DocumentGeneration.csproj" />
     <Project Path="src/Granit.Encryption/Granit.Encryption.csproj" />
+    <Project Path="src/Granit.Encryption.EntityFrameworkCore/Granit.Encryption.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Encryption.ReEncryption/Granit.Encryption.ReEncryption.csproj" />
     <Project Path="src/Granit.ExceptionHandling/Granit.ExceptionHandling.csproj" />
     <Project Path="src/Granit.Features.EntityFrameworkCore/Granit.Features.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Features/Granit.Features.csproj" />
@@ -232,6 +234,8 @@
     <Project Path="tests/Granit.DocumentGeneration.Pdf.Tests/Granit.DocumentGeneration.Pdf.Tests.csproj" />
     <Project Path="tests/Granit.DocumentGeneration.Tests/Granit.DocumentGeneration.Tests.csproj" />
     <Project Path="tests/Granit.Encryption.Tests/Granit.Encryption.Tests.csproj" />
+    <Project Path="tests/Granit.Encryption.EntityFrameworkCore.Tests/Granit.Encryption.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Encryption.ReEncryption.Tests/Granit.Encryption.ReEncryption.Tests.csproj" />
     <Project Path="tests/Granit.ExceptionHandling.Tests/Granit.ExceptionHandling.Tests.csproj" />
     <Project Path="tests/Granit.Features.EntityFrameworkCore.Tests/Granit.Features.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Features.Tests/Granit.Features.Tests.csproj" />

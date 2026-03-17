@@ -63,6 +63,24 @@ internal sealed partial class AzureKeyVaultTransitEncryptionService(
         return plaintext;
     }
 
+    /// <inheritdoc />
+    /// <remarks>
+    /// Azure Key Vault does not expose a server-side rewrap endpoint.
+    /// This implementation falls back to decrypt-then-re-encrypt.
+    /// </remarks>
+    public async Task<string> RewrapAsync(
+        string keyName,
+        string ciphertext,
+        CancellationToken cancellationToken = default)
+    {
+        string plaintext = await DecryptAsync(keyName, ciphertext, cancellationToken).ConfigureAwait(false);
+        return await EncryptAsync(keyName, plaintext, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    /// <remarks>Azure Key Vault ciphertext does not embed a key version — returns <c>null</c>.</remarks>
+    public string? GetKeyVersion(string ciphertext) => null;
+
     private static EncryptionAlgorithm MapAlgorithm(string algorithm) => algorithm switch
     {
         "RSA-OAEP" => EncryptionAlgorithm.RsaOaep,

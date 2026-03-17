@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.RegularExpressions;
 using Granit.Vault.HashiCorp.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,6 +18,10 @@ public sealed partial class HashiCorpTransitEncryptionService(
     ILogger<HashiCorpTransitEncryptionService> logger) : ITransitEncryptionService
 {
     private readonly HashiCorpVaultOptions _options = options.Value;
+
+    // Vault Transit ciphertext format: vault:v{N}:...
+    [GeneratedRegex(@"^vault:(?<version>v\d+):", RegexOptions.None, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex VaultVersionRegex();
 
     public async Task<string> EncryptAsync(
         string keyName,
@@ -57,9 +62,38 @@ public sealed partial class HashiCorpTransitEncryptionService(
         return Encoding.UTF8.GetString(bytes);
     }
 
+    /// <inheritdoc />
+    public async Task<string> RewrapAsync(
+        string keyName,
+        string ciphertext,
+        CancellationToken cancellationToken = default)
+    {
+        // VaultSharp API does not expose cancellation — WaitAsync provides a defensive timeout.
+        Secret<EncryptionResponse> result = await vaultClient.V1.Secrets.Transit.RewrapAsync(
+            keyName,
+            new RewrapRequestOptions
+            {
+                CipherText = ciphertext
+            },
+            mountPoint: _options.TransitMountPoint).WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        LogRewrapped(logger, keyName);
+        return result.Data.CipherText;
+    }
+
+    /// <inheritdoc />
+    public string? GetKeyVersion(string ciphertext)
+    {
+        Match match = VaultVersionRegex().Match(ciphertext);
+        return match.Success ? match.Groups["version"].Value : null;
+    }
+
     [LoggerMessage(Level = LogLevel.Debug, Message = "Data encrypted with Transit key {KeyName}")]
     private static partial void LogEncrypted(ILogger logger, string keyName);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Data decrypted with Transit key {KeyName}")]
     private static partial void LogDecrypted(ILogger logger, string keyName);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Data rewrapped with Transit key {KeyName}")]
+    private static partial void LogRewrapped(ILogger logger, string keyName);
 }

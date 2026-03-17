@@ -1,5 +1,7 @@
 using Granit.Encryption;
 using Granit.Encryption.Options;
+using Granit.Vault.Exceptions;
+using Granit.Vault.Options;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Vault.HashiCorp.Providers;
@@ -10,9 +12,12 @@ namespace Granit.Vault.HashiCorp.Providers;
 /// </summary>
 public sealed class HashiCorpVaultStringEncryptionProvider(
     ITransitEncryptionService transitEncryption,
-    IOptions<StringEncryptionOptions> options) : IStringEncryptionProvider
+    IOptions<StringEncryptionOptions> options,
+    IOptions<ReEncryptionOptions>? reEncryptionOptions = null) : IStringEncryptionProvider
 {
     private readonly string _keyName = options.Value.VaultKeyName;
+    private readonly ISet<string> _retiredVersions = reEncryptionOptions?.Value.RetiredKeyVersions
+        ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
     /// <inheritdoc/>
     public string ProviderName => StringEncryptionOptions.VaultProviderName;
@@ -29,6 +34,15 @@ public sealed class HashiCorpVaultStringEncryptionProvider(
         if (string.IsNullOrEmpty(cipherText))
         {
             return null;
+        }
+
+        // Guard: throw loudly if ciphertext was encrypted with a retired key version.
+        // This prevents silently returning garbage and ensures the re-encryption job
+        // is run before any key version is marked as retired.
+        string? keyVersion = transitEncryption.GetKeyVersion(cipherText);
+        if (keyVersion is not null && _retiredVersions.Contains(keyVersion))
+        {
+            throw new RetiredKeyVersionException(keyVersion);
         }
 
         try
