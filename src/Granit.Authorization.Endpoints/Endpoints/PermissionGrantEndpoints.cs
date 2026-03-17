@@ -25,15 +25,18 @@ internal static class PermissionGrantEndpoints
 
         adminGroup.MapGet("/{roleName}", GetGrantedPermissionsAsync)
             .WithName("GetRolePermissions")
-            .WithSummary("Returns the list of permissions explicitly granted to a role.");
+            .WithSummary("Returns the list of permissions explicitly granted to a role.")
+            .WithDescription("Returns only the permissions explicitly assigned to the specified role for the current tenant. Does not include inherited or implicit permissions. The role name is case-sensitive and must match the identity provider's role definition.");
 
         adminGroup.MapPut("/{roleName}/{permissionName}", GrantPermissionAsync)
             .WithName("GrantPermission")
-            .WithSummary("Grants a permission to a role. No-op if already granted.");
+            .WithSummary("Grants a permission to a role. No-op if already granted.")
+            .WithDescription("Grants the specified permission to the role for the current tenant. The permission name must match a registered permission definition (returns 422 otherwise). Idempotent — granting an already-granted permission is a no-op.");
 
         adminGroup.MapDelete("/{roleName}/{permissionName}", RevokePermissionAsync)
             .WithName("RevokePermission")
-            .WithSummary("Revokes a permission from a role. No-op if not granted.");
+            .WithSummary("Revokes a permission from a role. No-op if not granted.")
+            .WithDescription("Revokes the specified permission from the role for the current tenant. The permission name must match a registered permission definition (returns 422 otherwise). Idempotent — revoking a non-granted permission is a no-op.");
 
         return group;
     }

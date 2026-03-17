@@ -40,17 +40,20 @@ public static class UserSettingsEndpointRouteBuilderExtensions
         group.MapGet("", HandleGetAllUserSettingsAsync)
              .WithName("GetAllUserSettings")
              .WithSummary("Returns all client-visible settings resolved for the current user.")
+             .WithDescription("Returns all settings marked as client-visible, resolved through the cascading chain (User → Tenant → Global). Only settings with the ClientVisible flag are included. The values reflect the effective configuration for the authenticated user.")
              .Produces<IReadOnlyDictionary<string, string?>>();
 
         group.MapGet("/{name}", HandleGetUserSettingAsync)
              .WithName("GetUserSetting")
              .WithSummary("Returns a single setting resolved for the current user.")
+             .WithDescription("Returns the effective value of a single setting resolved through the cascading chain (User → Tenant → Global). Returns 404 if the setting name does not match any registered setting definition.")
              .Produces<SettingValueResponse>()
              .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPut("/{name}", HandlePutUserSettingAsync)
              .WithName("UpdateUserSetting")
              .WithSummary("Sets a user-level setting value.")
+             .WithDescription("Sets a user-level override for the specified setting. This value takes precedence over tenant and global values for this user. Pass null to clear. Returns 404 if the setting name is not defined.")
              .Produces(StatusCodes.Status204NoContent)
              .ProducesProblem(StatusCodes.Status404NotFound)
              .ValidateBody<UpdateSettingValueRequest>();
@@ -58,6 +61,7 @@ public static class UserSettingsEndpointRouteBuilderExtensions
         group.MapDelete("/{name}", HandleDeleteUserSettingAsync)
              .WithName("DeleteUserSetting")
              .WithSummary("Clears the user-level setting value (falls back to tenant/global).")
+             .WithDescription("Removes the user-level override for the specified setting. The effective value reverts to the tenant or global value. Returns 404 if the setting name is not defined.")
              .Produces(StatusCodes.Status204NoContent)
              .ProducesProblem(StatusCodes.Status404NotFound);
 

@@ -15,7 +15,8 @@ internal static class ApiKeyScopesEndpoints
     {
         group.MapPut("/{id:guid}/scopes", UpdateScopesAsync)
             .WithName("UpdateApiKeyScopes")
-            .WithSummary("Updates the permissions and allowed CIDR ranges for an API key.");
+            .WithSummary("Updates the permissions and allowed CIDR ranges for an API key.")
+            .WithDescription("Replaces the full list of permissions and allowed CIDR ranges for the specified key. Both fields are replaced entirely (not merged). Returns 404 if the key does not exist.");
 
         return group;
     }

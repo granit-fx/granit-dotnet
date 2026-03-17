@@ -15,7 +15,8 @@ internal static class IdentityCapabilitiesEndpoints
     {
         group.MapGet("/capabilities", GetCapabilities)
             .WithName("GetIdentityProviderCapabilities")
-            .WithSummary("Returns the capabilities of the active identity provider.");
+            .WithSummary("Returns the capabilities of the active identity provider.")
+            .WithDescription("Returns the feature flags of the currently active identity provider (Keycloak, Azure AD, etc.): session termination support, native password reset, group hierarchy, custom attributes, credential verification, and user creation. The front-end uses this to conditionally render identity management features.");
 
         return group;
     }

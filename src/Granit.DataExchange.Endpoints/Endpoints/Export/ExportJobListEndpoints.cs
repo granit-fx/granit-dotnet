@@ -22,7 +22,8 @@ internal static class ExportJobListEndpoints
     {
         group.MapGet("/jobs", ListAsync)
             .WithName("ListExportJobs")
-            .WithSummary("Lists export jobs with optional status filter and pagination.");
+            .WithSummary("Lists export jobs with optional status filter and pagination.")
+            .WithDescription("Returns a paginated list of export jobs ordered by creation date descending. Supports filtering by job status (Created, Processing, Completed, Failed). Intended for admin dashboards monitoring export activity.");
 
         return group;
     }

@@ -1,4 +1,5 @@
 using Granit.Core.Modularity;
+using Granit.Http.ApiDocumentation;
 
 namespace Granit.Http.Cookies.Endpoints;
 
@@ -9,5 +10,7 @@ namespace Granit.Http.Cookies.Endpoints;
 /// Exposes <c>GET /cookies/config</c> via
 /// <see cref="Extensions.CookieConsentEndpointRouteBuilderExtensions.MapGranitCookieConsent"/>.
 /// </remarks>
-[DependsOn(typeof(GranitHttpCookiesModule))]
+[DependsOn(
+    typeof(GranitHttpApiDocumentationModule),
+    typeof(GranitHttpCookiesModule))]
 public sealed class GranitHttpCookiesEndpointsModule : GranitModule;

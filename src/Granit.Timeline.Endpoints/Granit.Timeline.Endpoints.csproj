@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
+    <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\Granit.Timeline\Granit.Timeline.csproj" />
   </ItemGroup>
 

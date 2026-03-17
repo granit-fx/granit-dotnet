@@ -19,15 +19,18 @@ internal static class BackgroundJobsWriteEndpoints
     {
         group.MapPost("/{name}/pause", PauseJobAsync)
             .WithName("PauseBackgroundJob")
-            .WithSummary("Pauses a recurring background job. The current execution completes normally.");
+            .WithSummary("Pauses a recurring background job. The current execution completes normally.")
+            .WithDescription("Pauses the job's recurring schedule. If the job is currently executing, the in-flight execution will complete — only future occurrences are suppressed. Use the resume endpoint to re-enable scheduling. Returns 404 if the job name is not registered.");
 
         group.MapPost("/{name}/resume", ResumeJobAsync)
             .WithName("ResumeBackgroundJob")
-            .WithSummary("Resumes a paused background job and schedules its next occurrence.");
+            .WithSummary("Resumes a paused background job and schedules its next occurrence.")
+            .WithDescription("Re-enables the recurring schedule of a previously paused job and computes the next occurrence. No-op if the job is not paused. Returns 404 if the job name is not registered.");
 
         group.MapPost("/{name}/trigger", TriggerJobAsync)
             .WithName("TriggerBackgroundJob")
-            .WithSummary("Triggers an immediate execution of the job, independent of its schedule.");
+            .WithSummary("Triggers an immediate execution of the job, independent of its schedule.")
+            .WithDescription("Enqueues the job for immediate execution regardless of its cron schedule or paused state. The response is 202 Accepted — the actual execution is asynchronous. Does not affect the regular schedule. Returns 404 if the job name is not registered.");
 
         return group;
     }

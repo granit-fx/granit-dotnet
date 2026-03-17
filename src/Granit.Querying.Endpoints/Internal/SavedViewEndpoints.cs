@@ -36,7 +36,8 @@ internal static class SavedViewEndpoints
             CancellationToken cancellationToken) =>
             GetListAsync(store, entityType, tenant, user, cancellationToken))
             .WithName($"GetSavedViews_{entityType}")
-            .WithSummary("Returns saved views for the current user.");
+            .WithSummary("Returns saved views for the current user.")
+            .WithDescription("Returns all saved views owned by the authenticated user for this entity type within the current tenant. Each view contains its filter, sort, column selection, and whether it is the user's default view.");
 
         savedViews.MapPost("/", (
             CreateSavedViewRequest request,
@@ -49,6 +50,7 @@ internal static class SavedViewEndpoints
             CreateAsync(request, store, guidGenerator, entityType, tenant, user, clock, cancellationToken))
             .WithName($"CreateSavedView_{entityType}")
             .WithSummary("Creates a new saved view.")
+            .WithDescription("Creates a new saved view for the current user and entity type. The view stores a reusable query configuration (filters, sort, column selection). Returns 201 Created with the saved view details.")
             .ValidateBody<CreateSavedViewRequest>();
 
         savedViews.MapPut("/{id:guid}", (
@@ -61,6 +63,7 @@ internal static class SavedViewEndpoints
             UpdateAsync(id, request, reader, writer, clock, cancellationToken))
             .WithName($"UpdateSavedView_{entityType}")
             .WithSummary("Updates an existing saved view.")
+            .WithDescription("Replaces the name, filter, sort, and column selection of an existing saved view. Returns 404 if the view does not exist.")
             .ValidateBody<UpdateSavedViewRequest>();
 
         savedViews.MapDelete("/{id:guid}", (
@@ -69,7 +72,8 @@ internal static class SavedViewEndpoints
             CancellationToken cancellationToken) =>
             DeleteAsync(id, store, cancellationToken))
             .WithName($"DeleteSavedView_{entityType}")
-            .WithSummary("Deletes a saved view.");
+            .WithSummary("Deletes a saved view.")
+            .WithDescription("Permanently deletes the saved view. If it was the user's default view, no default is set afterward. Returns 404 if the view does not exist.");
 
         savedViews.MapPost("/{id:guid}/set-default", (
             Guid id,
@@ -78,7 +82,8 @@ internal static class SavedViewEndpoints
             CancellationToken cancellationToken) =>
             SetDefaultAsync(id, store, entityType, user, cancellationToken))
             .WithName($"SetDefaultSavedView_{entityType}")
-            .WithSummary("Sets a saved view as the default for the current user.");
+            .WithSummary("Sets a saved view as the default for the current user.")
+            .WithDescription("Marks the specified saved view as the user's default for this entity type. The previous default (if any) is unset. The default view is automatically applied when the user opens the list page.");
     }
 
     private static async Task<Ok<List<SavedViewResponse>>> GetListAsync(

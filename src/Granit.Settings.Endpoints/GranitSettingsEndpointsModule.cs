@@ -1,5 +1,6 @@
 using Granit.Authorization;
 using Granit.Core.Modularity;
+using Granit.Http.ApiDocumentation;
 using Granit.Timing;
 using Granit.Validation;
 
@@ -24,6 +25,7 @@ namespace Granit.Settings.Endpoints;
 /// </remarks>
 [DependsOn(
     typeof(GranitAuthorizationModule),
+    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitSettingsModule),
     typeof(GranitTimingModule),
     typeof(GranitValidationModule))]

@@ -92,73 +92,89 @@ public static partial class TemplatingEndpointRouteBuilderExtensions
 
         group.MapGet("/", HandleListAsync)
              .WithName("ListTemplates")
-             .WithSummary("Returns a paginated list of templates with filters.");
+             .WithSummary("Returns a paginated list of templates with filters.")
+             .WithDescription("Returns templates with optional filtering by category, status, and search term. Each item includes the template name, current lifecycle status, category, and last modification date. Content is not included — use the detail endpoint for full content.");
 
         group.MapGet("/{name}", HandleGetDetailAsync)
              .WithName("GetTemplateDetail")
-             .WithSummary("Returns detail of a template (current draft and published revision).");
+             .WithSummary("Returns detail of a template (current draft and published revision).")
+             .WithDescription("Returns the full detail of a template including both the current draft revision (if any) and the published revision (if any). Includes content, metadata, category, and variable bindings. Returns 404 if the template name does not exist.");
 
         group.MapPost("/", HandleCreateAsync)
              .WithName("CreateTemplateDraft")
              .WithSummary("Creates a new template draft.")
+             .WithDescription("Creates a new template with an initial draft revision. The template name must be unique. The draft can be previewed and edited before publishing. Returns 201 Created with the template detail.")
              .ValidateBody<SaveTemplateRequest>();
 
         group.MapPut("/{name}", HandleUpdateAsync)
              .WithName("UpdateTemplateDraft")
              .WithSummary("Updates an existing template draft.")
+             .WithDescription("Replaces the draft revision content and metadata. Only the draft revision is affected — published and archived revisions are immutable. Creates a new draft if none exists. Returns 404 if the template does not exist.")
              .ValidateBody<SaveTemplateRequest>();
 
         group.MapDelete("/{name}/draft", HandleDeleteDraftAsync)
              .WithName("DeleteTemplateDraft")
-             .WithSummary("Deletes the draft revision of a template (published/archived are preserved).");
+             .WithSummary("Deletes the draft revision of a template (published/archived are preserved).")
+             .WithDescription("Removes only the draft revision. Published and archived revisions remain unaffected. Returns 404 if the template does not exist or has no draft revision.");
 
         group.MapPost("/{name}/publish", HandlePublishAsync)
              .WithName("PublishTemplate")
-             .WithSummary("Publishes the current draft, archiving any previous published revision.");
+             .WithSummary("Publishes the current draft, archiving any previous published revision.")
+             .WithDescription("Promotes the current draft to published status. If a published revision already exists, it is archived first. The draft is consumed — a new draft must be created for further edits. Returns 404 if the template or draft does not exist.");
 
         group.MapPost("/{name}/unpublish", HandleUnpublishAsync)
              .WithName("UnpublishTemplate")
-             .WithSummary("Unpublishes the template (archives the published revision).");
+             .WithSummary("Unpublishes the template (archives the published revision).")
+             .WithDescription("Archives the currently published revision. The template will no longer be available for rendering until a new revision is published. Returns 404 if the template has no published revision.");
 
         group.MapGet("/{name}/lifecycle", HandleGetLifecycleAsync)
              .WithName("GetTemplateLifecycle")
-             .WithSummary("Returns lifecycle status, workflow state, and available transitions.");
+             .WithSummary("Returns lifecycle status, workflow state, and available transitions.")
+             .WithDescription("Returns the current lifecycle state of the template (draft, published, archived), the workflow state if workflow integration is enabled, and the list of available state transitions for the current user.");
 
         group.MapPost("/{name}/preview", HandlePreviewAsync)
              .WithName("PreviewTemplate")
-             .WithSummary("Renders the current draft with optional test data and returns the HTML output.");
+             .WithSummary("Renders the current draft with optional test data and returns the HTML output.")
+             .WithDescription("Renders the template's current draft content using the configured template engine (Liquid, Razor, etc.) with optional test data. Returns the rendered HTML. Useful for live preview in the template editor. Returns 404 if the template or draft does not exist.");
 
         group.MapGet("/{name}/variables", HandleGetVariablesAsync)
              .WithName("GetTemplateVariables")
-             .WithSummary("Returns all available template variables (global, model, enriched) for autocompletion.");
+             .WithSummary("Returns all available template variables (global, model, enriched) for autocompletion.")
+             .WithDescription("Returns all variables available for use in the template: global variables (application-wide), model variables (bound to the template's entity type), and enriched variables (computed at render time). Used to power autocompletion in the template editor.");
 
         group.MapGet("/{name}/history", HandleGetHistoryAsync)
              .WithName("GetTemplateHistory")
-             .WithSummary("Returns a paginated revision history for the template (without content).");
+             .WithSummary("Returns a paginated revision history for the template (without content).")
+             .WithDescription("Returns a paginated list of all revisions for the template, ordered by creation date descending. Each entry includes revision ID, status, author, and timestamp — but not the content. Use the revision detail endpoint to retrieve content.");
 
         group.MapGet("/{name}/history/{revisionId:guid}", HandleGetRevisionDetailAsync)
              .WithName("GetTemplateRevisionDetail")
-             .WithSummary("Returns the full detail of a specific template revision (including content).");
+             .WithSummary("Returns the full detail of a specific template revision (including content).")
+             .WithDescription("Returns the complete content and metadata of a specific historical revision, identified by its GUID. Useful for comparing versions or restoring a previous revision. Returns 404 if the revision does not exist.");
 
         // ----- Categories -----
 
         group.MapGet("/categories", HandleListCategoriesAsync)
              .WithName("ListTemplateCategories")
-             .WithSummary("Returns all template categories ordered by sort order then name.");
+             .WithSummary("Returns all template categories ordered by sort order then name.")
+             .WithDescription("Returns all template categories for organizing templates. Categories are sorted by their sort order, then alphabetically by name. Each category includes its ID, name, and template count.");
 
         group.MapPost("/categories", HandleCreateCategoryAsync)
              .WithName("CreateTemplateCategory")
              .WithSummary("Creates a new template category.")
+             .WithDescription("Creates a new template category with the given name and sort order. The name must be unique.")
              .ValidateBody<SaveTemplateCategoryRequest>();
 
         group.MapPut("/categories/{id:guid}", HandleUpdateCategoryAsync)
              .WithName("UpdateTemplateCategory")
              .WithSummary("Updates an existing template category.")
+             .WithDescription("Updates the name and sort order of an existing category. Returns 404 if the category does not exist.")
              .ValidateBody<SaveTemplateCategoryRequest>();
 
         group.MapDelete("/categories/{id:guid}", HandleDeleteCategoryAsync)
              .WithName("DeleteTemplateCategory")
-             .WithSummary("Deletes a template category (409 if templates are still associated).");
+             .WithSummary("Deletes a template category (409 if templates are still associated).")
+             .WithDescription("Deletes the template category. Returns 409 Conflict if templates are still associated with this category — reassign or delete them first. Returns 404 if the category does not exist.");
 
         return group;
     }

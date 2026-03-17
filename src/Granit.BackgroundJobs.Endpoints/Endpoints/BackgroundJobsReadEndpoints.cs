@@ -19,11 +19,13 @@ internal static class BackgroundJobsReadEndpoints
     {
         group.MapGet("/", GetAllJobsAsync)
             .WithName("GetAllBackgroundJobs")
-            .WithSummary("Returns the current status of all registered background jobs with pagination.");
+            .WithSummary("Returns the current status of all registered background jobs with pagination.")
+            .WithDescription("Lists all background jobs registered in the application with their current execution state, schedule, last run time, and next occurrence. Supports pagination via page and pageSize query parameters.");
 
         group.MapGet("/{name}", GetJobByNameAsync)
             .WithName("GetBackgroundJobByName")
-            .WithSummary("Returns the status of a specific background job.");
+            .WithSummary("Returns the status of a specific background job.")
+            .WithDescription("Returns the detailed status of a single background job identified by its registered name. Includes execution state, last run time, next scheduled occurrence, and error information if the last run failed. Returns 404 if no job with the given name is registered.");
 
         return group;
     }

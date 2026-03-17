@@ -24,19 +24,23 @@ internal static class ImportExecutionEndpoints
     {
         group.MapPost("/{jobId:guid}/execute", ExecuteAsync)
             .WithName("ExecuteImportJob")
-            .WithSummary("Dispatches the import job for asynchronous background execution.");
+            .WithSummary("Dispatches the import job for asynchronous background execution.")
+            .WithDescription("Enqueues the import job for background processing. Returns 202 Accepted — poll the status endpoint to track progress. The job must be in 'Mapped' status (mappings confirmed). Returns 400 if the job is in an invalid state, or 404 if not found.");
 
         group.MapPost("/{jobId:guid}/dry-run", DryRunAsync)
             .WithName("DryRunImportJob")
-            .WithSummary("Executes a dry-run of the import (validates without persisting data).");
+            .WithSummary("Executes a dry-run of the import (validates without persisting data).")
+            .WithDescription("Runs the full import pipeline (parsing, mapping, validation) without persisting any data. Returns a detailed report with row-level validation results. Use this to preview errors before committing. The job must be in 'Mapped' status.");
 
         group.MapGet("/{jobId:guid}", GetStatusAsync)
             .WithName("GetImportJobStatus")
-            .WithSummary("Returns the current status of an import job.");
+            .WithSummary("Returns the current status of an import job.")
+            .WithDescription("Returns the current state of the import job including status (Created, Previewed, Mapped, Executing, Completed, PartiallyCompleted, Failed, Cancelled), original file name, row counts, and timing information. Returns 404 if not found.");
 
         group.MapDelete("/{jobId:guid}", CancelAsync)
             .WithName("CancelImportJob")
-            .WithSummary("Cancels an import job that has not yet started execution.");
+            .WithSummary("Cancels an import job that has not yet started execution.")
+            .WithDescription("Cancels the import job and deletes the uploaded file from blob storage. Only jobs that have not yet started execution (Executing, Completed, PartiallyCompleted, Failed) can be cancelled. Returns 400 if the job is in a non-cancellable state.");
 
         return group;
     }

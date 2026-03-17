@@ -18,7 +18,8 @@ internal static class ApiKeyCreateEndpoints
     {
         group.MapPost("/", CreateAsync)
             .WithName("CreateApiKey")
-            .WithSummary("Creates a new API key. The raw secret is returned once.");
+            .WithSummary("Creates a new API key. The raw secret is returned once.")
+            .WithDescription("Generates a new API key with the specified type, environment, permissions, and optional CIDR restrictions. The response includes the full raw secret — this is the only time the secret is available. Store it securely; it cannot be retrieved later. The key is immediately active.");
 
         return group;
     }

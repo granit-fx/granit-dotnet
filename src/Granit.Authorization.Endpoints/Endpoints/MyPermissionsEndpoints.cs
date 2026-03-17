@@ -20,6 +20,7 @@ internal static class MyPermissionsEndpoints
         group.MapGet("/me", GetMyPermissionsAsync)
             .WithName("GetMyPermissions")
             .WithSummary("Returns the list of permissions granted to the current user.")
+            .WithDescription("Evaluates all registered permission definitions against the current user's claims and roles. Returns the flat list of granted permission names. Useful for front-end UI to conditionally render actions based on the user's effective permissions.")
             .RequireAuthorization();
 
         return group;

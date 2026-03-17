@@ -27,15 +27,18 @@ internal static class ExportExecutionEndpoints
         group.MapPost("/jobs", CreateExportJobAsync)
             .WithName("CreateExportJob")
             .WithSummary("Creates and dispatches an export job (sync or background).")
+            .WithDescription("Creates an export job for the given definition, format, and field selection. Small datasets may complete synchronously; larger ones are dispatched for background processing. Poll the status endpoint to track progress. Returns 400 if the definition name or format is invalid.")
             .ValidateBody<CreateExportJobRequest>();
 
         group.MapGet("/jobs/{jobId:guid}", GetJobStatusAsync)
             .WithName("GetExportJobStatus")
-            .WithSummary("Returns the current status of an export job.");
+            .WithSummary("Returns the current status of an export job.")
+            .WithDescription("Returns the current status of the export job (Created, Processing, Completed, Failed). Once the status is Completed, the download endpoint becomes available. Returns 404 if the job ID is not found.");
 
         group.MapGet("/jobs/{jobId:guid}/download", DownloadAsync)
             .WithName("DownloadExportFile")
-            .WithSummary("Downloads the generated export file for a completed job.");
+            .WithSummary("Downloads the generated export file for a completed job.")
+            .WithDescription("Streams the generated export file (xlsx, csv, etc.) as a binary download. The Content-Type and Content-Disposition headers are set according to the export format. Returns 404 if the job does not exist, or 400 if the job has not completed yet.");
 
         return group;
     }

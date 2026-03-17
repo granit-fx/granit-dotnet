@@ -22,7 +22,8 @@ internal static class ImportJobListEndpoints
     {
         group.MapGet("/jobs", ListAsync)
             .WithName("ListImportJobs")
-            .WithSummary("Lists import jobs with optional status filter and pagination.");
+            .WithSummary("Lists import jobs with optional status filter and pagination.")
+            .WithDescription("Returns a paginated list of import jobs ordered by creation date descending. Supports filtering by job status. Intended for admin dashboards monitoring import activity.");
 
         return group;
     }
