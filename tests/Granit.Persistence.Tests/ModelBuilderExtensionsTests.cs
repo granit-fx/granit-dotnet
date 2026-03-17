@@ -545,6 +545,42 @@ public sealed class ModelBuilderExtensionsTests
     }
 
     // -------------------------------------------------------------------------
+    // IConcurrencyAware — concurrency token property configuration
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void ApplyGranitConventions_ConcurrencyAware_ConfiguresConcurrencyToken()
+    {
+        using TestDbContextWithConcurrencyAware context = CreateContextWithConcurrencyAware();
+
+        Microsoft.EntityFrameworkCore.Metadata.IEntityType? entityType =
+            context.Model.FindEntityType(typeof(TestConcurrencyAwareEntity));
+
+        entityType.ShouldNotBeNull();
+        Microsoft.EntityFrameworkCore.Metadata.IProperty? property =
+            entityType!.FindProperty(nameof(IConcurrencyAware.ConcurrencyStamp));
+
+        property.ShouldNotBeNull("ConcurrencyStamp property must exist on the model");
+        property!.IsConcurrencyToken.ShouldBeTrue("ConcurrencyStamp must be configured as a concurrency token");
+        property.GetMaxLength().ShouldBe(36, "ConcurrencyStamp must be VARCHAR(36)");
+    }
+
+    [Fact]
+    public void ApplyGranitConventions_NonConcurrencyAware_NoConcurrencyToken()
+    {
+        using TestDbContext context = CreateContext();
+
+        Microsoft.EntityFrameworkCore.Metadata.IEntityType? entityType =
+            context.Model.FindEntityType(typeof(TestCategory));
+
+        entityType.ShouldNotBeNull();
+        Microsoft.EntityFrameworkCore.Metadata.IProperty? property =
+            entityType!.FindProperty("ConcurrencyStamp");
+
+        property.ShouldBeNull("non-IConcurrencyAware entity must not have ConcurrencyStamp");
+    }
+
+    // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 
@@ -626,6 +662,16 @@ public sealed class ModelBuilderExtensionsTests
                 .Options;
 
         return new TestDbContextWithCombinedSdPr(options, SharedDataFilter);
+    }
+
+    private static TestDbContextWithConcurrencyAware CreateContextWithConcurrencyAware()
+    {
+        DbContextOptions<TestDbContextWithConcurrencyAware> options =
+            new DbContextOptionsBuilder<TestDbContextWithConcurrencyAware>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+
+        return new TestDbContextWithConcurrencyAware(options);
     }
 
     // Always uses SharedTenant and SharedDataFilter — same reason as above.
@@ -854,6 +900,21 @@ internal sealed class TestDbContextWithCombinedSdPr(
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyGranitConventions(dataFilter: _dataFilter);
+}
+
+internal sealed class TestConcurrencyAwareEntity : IConcurrencyAware
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string ConcurrencyStamp { get; set; } = string.Empty;
+}
+
+internal sealed class TestDbContextWithConcurrencyAware(DbContextOptions<TestDbContextWithConcurrencyAware> options) : DbContext(options)
+{
+    public DbSet<TestConcurrencyAwareEntity> ConcurrencyAwareEntities => Set<TestConcurrencyAwareEntity>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder) =>
+        modelBuilder.ApplyGranitConventions();
 }
 
 #endregion

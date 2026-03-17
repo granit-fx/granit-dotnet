@@ -54,6 +54,12 @@
           "Granit.Core": "[0.1.0-dev, )"
         }
       },
+      "granit.eventbus": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )"
+        }
+      },
       "granit.http.apidocumentation": {
         "type": "Project",
         "dependencies": {
@@ -95,6 +101,7 @@
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Encryption": "[0.1.0-dev, )",
+          "Granit.EventBus": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )"
         }
       },

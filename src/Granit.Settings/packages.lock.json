@@ -24,6 +24,12 @@
           "Granit.Core": "[0.1.0-dev, )"
         }
       },
+      "granit.eventbus": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )"
+        }
+      },
       "granit.security": {
         "type": "Project",
         "dependencies": {

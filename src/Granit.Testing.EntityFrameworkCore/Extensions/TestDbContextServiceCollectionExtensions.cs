@@ -43,10 +43,11 @@ public static class TestDbContextServiceCollectionExtensions
 
             AuditedEntityInterceptor auditInterceptor = new(user, clock, guidGenerator, tenant);
             VersioningInterceptor versioningInterceptor = new(guidGenerator);
+            ConcurrencyStampInterceptor concurrencyStampInterceptor = new();
             SoftDeleteInterceptor softDeleteInterceptor = new(user, clock);
 
             options.UseInMemoryDatabase(guidGenerator.Create().ToString())
-                .AddInterceptors(auditInterceptor, versioningInterceptor, softDeleteInterceptor);
+                .AddInterceptors(auditInterceptor, versioningInterceptor, concurrencyStampInterceptor, softDeleteInterceptor);
         });
 
         return services;

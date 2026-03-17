@@ -159,6 +159,13 @@ export default defineConfig({
                         { label: "Use with AI Assistants", link: "/dotnet/guides/use-with-ai-assistants/" },
                       ],
                     },
+                    {
+                      label: "Testing",
+                      collapsed: true,
+                      items: [
+                        { label: "Testing Infrastructure", link: "/dotnet/guides/testing/" },
+                      ],
+                    },
                   ],
                 },
                 {

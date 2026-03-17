@@ -17,6 +17,10 @@ public static class ModelBuilderExtensions
         typeof(ModelBuilderExtensions)
             .GetMethod(nameof(SetEntityFilter), BindingFlags.Static | BindingFlags.NonPublic)!; // NOSONAR S3011 - intentional: generic EF Core filter pattern requires reflection on private generic method
 
+    private static readonly MethodInfo ConfigureConcurrencyStampMethod =
+        typeof(ModelBuilderExtensions)
+            .GetMethod(nameof(ConfigureConcurrencyStamp), BindingFlags.Static | BindingFlags.NonPublic)!; // NOSONAR S3011 - intentional: generic EF Core property configuration requires reflection
+
     /// <summary>
     /// Applies Granit conventions to all entity types in the model:
     /// <list type="bullet">
@@ -75,6 +79,20 @@ public static class ModelBuilderExtensions
             SetEntityFilterMethod // NOSONAR S3011 - intentional: generic EF Core filter pattern requires reflection
                 .MakeGenericMethod(clrType)
                 .Invoke(null, [modelBuilder, currentTenant, proxy]);
+        }
+
+        // --- Concurrency token conventions ---
+        // Detects IConcurrencyAware implementations and configures:
+        //   - ConcurrencyStamp as a concurrency token (IsConcurrencyToken)
+        //   - VARCHAR(36) max length
+        foreach (Type clrType in modelBuilder.Model.GetEntityTypes().Select(entityType => entityType.ClrType))
+        {
+            if (typeof(IConcurrencyAware).IsAssignableFrom(clrType))
+            {
+                ConfigureConcurrencyStampMethod // NOSONAR S3011 - intentional: generic EF Core property configuration requires reflection
+                    .MakeGenericMethod(clrType)
+                    .Invoke(null, [modelBuilder]);
+            }
         }
 
         // --- Translation conventions ---
@@ -194,6 +212,16 @@ public static class ModelBuilderExtensions
             builder.HasQueryFilter(GranitFilterNames.Publishable,
                 Expression.Lambda<Func<TEntity, bool>>(Expression.OrElse(bypass, isPublished), param));
         }
+    }
+
+    // Configures the ConcurrencyStamp property as a concurrency token with VARCHAR(36).
+    private static void ConfigureConcurrencyStamp<TEntity>(ModelBuilder modelBuilder)
+        where TEntity : class, IConcurrencyAware
+    {
+        modelBuilder.Entity<TEntity>()
+            .Property(e => e.ConcurrencyStamp)
+            .HasMaxLength(36)
+            .IsConcurrencyToken();
     }
 
     // Internal wrapper: EF Core evaluates simple property access on a ConstantExpression

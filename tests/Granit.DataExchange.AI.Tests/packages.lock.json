@@ -306,6 +306,7 @@
       "granit.dataexchange": {
         "type": "Project",
         "dependencies": {
+          "Granit.EventBus": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
@@ -318,6 +319,14 @@
           "Granit.AI": "[0.1.0-dev, )",
           "Granit.DataExchange": "[0.1.0-dev, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )"
+        }
+      },
+      "granit.eventbus": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Logging.Abstractions": "[10.*, )"
         }
       },

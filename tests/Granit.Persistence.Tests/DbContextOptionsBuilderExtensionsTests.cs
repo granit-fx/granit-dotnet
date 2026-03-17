@@ -28,7 +28,7 @@ public sealed class DbContextOptionsBuilderExtensionsTests
         // Act
         builder.UseGranitInterceptors(scope.ServiceProvider);
 
-        // Assert — all 4 interceptors should be present
+        // Assert — all 5 interceptors should be present
         DbContextOptions options = builder.Options;
         IEnumerable<IInterceptor> interceptors = options.Extensions
             .OfType<Microsoft.EntityFrameworkCore.Infrastructure.CoreOptionsExtension>()
@@ -36,6 +36,7 @@ public sealed class DbContextOptionsBuilderExtensionsTests
 
         interceptors.ShouldContain(i => i is AuditedEntityInterceptor);
         interceptors.ShouldContain(i => i is VersioningInterceptor);
+        interceptors.ShouldContain(i => i is ConcurrencyStampInterceptor);
         interceptors.ShouldContain(i => i is DomainEventDispatcherInterceptor);
         interceptors.ShouldContain(i => i is SoftDeleteInterceptor);
     }

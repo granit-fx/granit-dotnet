@@ -116,6 +116,14 @@
       "granit.core": {
         "type": "Project"
       },
+      "granit.eventbus": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )"
+        }
+      },
       "granit.features": {
         "type": "Project",
         "dependencies": {
@@ -126,6 +134,7 @@
       "granit.features.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
+          "Granit.EventBus": "[0.1.0-dev, )",
           "Granit.Features": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"

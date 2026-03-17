@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  .NET 10 · C# 14 · EF Core 10 · CQRS · Vertical Slicing · Modular Architecture
+  .NET 10 · C# 14 · EF Core 10 · CQRS · Modular Monolith
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
 ---
 
 Granit is a rock-solid, production-ready modular framework for .NET and React.
-Built with Vertical Slicing and zero compromises on Developer Experience.
+Built as a Modular Monolith with zero compromises on Developer Experience.
 It provides **100 NuGet packages** organized as independent modules,
 compliant with **GDPR/ISO 27001** requirements.
 

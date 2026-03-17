@@ -63,18 +63,19 @@ public sealed class InMemoryDbContextFactory<TContext>
 
     /// <summary>
     /// Creates a new <typeparamref name="TContext"/> instance with Granit interceptors
-    /// (audit, versioning, soft-delete) wired to the fakes.
+    /// (audit, versioning, concurrency stamp, soft-delete) wired to the fakes.
     /// </summary>
     /// <returns>A configured <typeparamref name="TContext"/> instance.</returns>
     public TContext CreateContext()
     {
         AuditedEntityInterceptor auditInterceptor = new(_user, _clock, _guidGenerator, _tenant);
         VersioningInterceptor versioningInterceptor = new(_guidGenerator);
+        ConcurrencyStampInterceptor concurrencyStampInterceptor = new();
         SoftDeleteInterceptor softDeleteInterceptor = new(_user, _clock);
 
         DbContextOptionsBuilder<TContext> optionsBuilder = new DbContextOptionsBuilder<TContext>()
             .UseInMemoryDatabase(_databaseName)
-            .AddInterceptors(auditInterceptor, versioningInterceptor, softDeleteInterceptor);
+            .AddInterceptors(auditInterceptor, versioningInterceptor, concurrencyStampInterceptor, softDeleteInterceptor);
 
         _configureOptions?.Invoke(optionsBuilder);
 

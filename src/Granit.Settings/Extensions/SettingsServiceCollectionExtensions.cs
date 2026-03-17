@@ -1,5 +1,5 @@
+using Granit.EventBus.Extensions;
 using Granit.Settings.Definitions;
-using Granit.Settings.Events;
 using Granit.Settings.Options;
 using Granit.Settings.Providers;
 using Granit.Settings.Services;
@@ -48,8 +48,9 @@ public static class SettingsServiceCollectionExtensions
 
         services.TryAddScoped<SettingValueProviderManager>();
 
-        // Event publisher (no-op default; replaced by Wolverine-backed publisher when available)
-        services.TryAddSingleton<ISettingEventPublisher, NullSettingEventPublisher>();
+        // Event bus fallback (in-process default if not already registered)
+        services.AddGranitEventBus();
+        services.TryAddSingleton(TimeProvider.System);
 
         // Application services (Scoped — tenant/user context per request)
         services.TryAddScoped<ISettingProvider, SettingProvider>();

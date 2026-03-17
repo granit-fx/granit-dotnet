@@ -1,3 +1,4 @@
+using Granit.Core.Events;
 using Granit.Features.Events;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +17,7 @@ namespace Granit.Features.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class EfCoreFeatureStore(
     IDbContextFactory<GranitFeaturesDbContext> contextFactory,
-    IFeatureEventPublisher eventPublisher,
+    ILocalEventBus eventBus,
     TimeProvider timeProvider) : IFeatureStoreReader, IFeatureStoreWriter
 {
     /// <inheritdoc/>
@@ -70,8 +71,12 @@ internal sealed class EfCoreFeatureStore(
 
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(
+        await eventBus.PublishAsync(
             new FeatureOverrideChangedEvent(featureName, tenantGuid, oldValue, value, timeProvider.GetUtcNow()),
+            cancellationToken).ConfigureAwait(false);
+
+        await eventBus.PublishAsync(
+            new FeatureValueChangedEvent(featureName, tenantGuid),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -98,8 +103,12 @@ internal sealed class EfCoreFeatureStore(
         context.FeatureOverrides.Remove(existing);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(
+        await eventBus.PublishAsync(
             new FeatureOverrideChangedEvent(featureName, tenantGuid, oldValue, null, timeProvider.GetUtcNow()),
+            cancellationToken).ConfigureAwait(false);
+
+        await eventBus.PublishAsync(
+            new FeatureValueChangedEvent(featureName, tenantGuid),
             cancellationToken).ConfigureAwait(false);
     }
 

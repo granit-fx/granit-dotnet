@@ -19,6 +19,7 @@ public static class DbContextOptionsBuilderExtensions
     /// <list type="number">
     ///   <item><see cref="AuditedEntityInterceptor"/> — ISO 27001 audit fields (created/modified by/at, tenant, GUID).</item>
     ///   <item><see cref="VersioningInterceptor"/> — auto-assigns <c>BusinessId</c> and <c>Version</c> on <c>IVersioned</c> entities.</item>
+    ///   <item><see cref="ConcurrencyStampInterceptor"/> — regenerates <c>ConcurrencyStamp</c> on <c>IConcurrencyAware</c> entities.</item>
     ///   <item><see cref="DomainEventDispatcherInterceptor"/> — collects and dispatches domain events after save.</item>
     ///   <item><see cref="SoftDeleteInterceptor"/> — converts physical deletes to soft deletes for <c>ISoftDeletable</c> entities.</item>
     /// </list>
@@ -49,11 +50,12 @@ public static class DbContextOptionsBuilderExtensions
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(serviceProvider);
 
-        // Order matters: Audit → Versioning → DomainEvents → SoftDelete.
+        // Order matters: Audit → Versioning → ConcurrencyStamp → DomainEvents → SoftDelete.
         // SoftDelete must be last because it converts Deleted → Modified,
         // which would prevent other interceptors from seeing the original state.
         AddInterceptorIfRegistered<AuditedEntityInterceptor>(options, serviceProvider);
         AddInterceptorIfRegistered<VersioningInterceptor>(options, serviceProvider);
+        AddInterceptorIfRegistered<ConcurrencyStampInterceptor>(options, serviceProvider);
         AddInterceptorIfRegistered<DomainEventDispatcherInterceptor>(options, serviceProvider);
         AddInterceptorIfRegistered<SoftDeleteInterceptor>(options, serviceProvider);
 

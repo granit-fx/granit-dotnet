@@ -6,6 +6,7 @@
 // =============================================================================
 
 using Granit.Caching;
+using Granit.Core.Events;
 using Granit.Settings.Definitions;
 using Granit.Settings.Events;
 using Granit.Settings.Providers;
@@ -34,15 +35,15 @@ public sealed class SettingManagerTests
         }
     }
 
-    private static (SettingManager manager, InMemorySettingStore store, ICacheService<SettingValue> cache, ISettingEventPublisher publisher)
+    private static (SettingManager manager, InMemorySettingStore store, ICacheService<SettingValue> cache, ILocalEventBus eventBus)
         CreateManager(params SettingDefinition[] defs)
     {
         InMemorySettingStore store = new();
         ICacheService<SettingValue> cache = Substitute.For<ICacheService<SettingValue>>();
-        ISettingEventPublisher publisher = Substitute.For<ISettingEventPublisher>();
+        ILocalEventBus eventBus = Substitute.For<ILocalEventBus>();
         SettingDefinitionManager defManager = ManagerWith(defs);
-        SettingManager manager = new(store, store, cache, defManager, publisher, TimeProvider.System);
-        return (manager, store, cache, publisher);
+        SettingManager manager = new(store, store, cache, defManager, eventBus, TimeProvider.System);
+        return (manager, store, cache, eventBus);
     }
 
     // -------------------------------------------------------------------------
@@ -179,11 +180,11 @@ public sealed class SettingManagerTests
     public async Task SetGlobalAsync_Publishes_SettingChangedEvent()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, _, _, ISettingEventPublisher publisher) = CreateManager(def);
+        (SettingManager manager, _, _, ILocalEventBus eventBus) = CreateManager(def);
 
         await manager.SetGlobalAsync("App.Theme", "dark", TestContext.Current.CancellationToken);
 
-        await publisher.Received(1).PublishAsync(
+        await eventBus.Received(1).PublishAsync(
             Arg.Is<SettingChangedEvent>(e =>
                 e.SettingName == "App.Theme" &&
                 e.ProviderName == "G" &&
@@ -197,13 +198,13 @@ public sealed class SettingManagerTests
     public async Task SetGlobalAsync_IncludesOldValue_WhenUpdating()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, InMemorySettingStore store, _, ISettingEventPublisher publisher) = CreateManager(def);
+        (SettingManager manager, InMemorySettingStore store, _, ILocalEventBus eventBus) = CreateManager(def);
 
         await store.SetAsync("App.Theme", "G", null, "light", TestContext.Current.CancellationToken);
 
         await manager.SetGlobalAsync("App.Theme", "dark", TestContext.Current.CancellationToken);
 
-        await publisher.Received(1).PublishAsync(
+        await eventBus.Received(1).PublishAsync(
             Arg.Is<SettingChangedEvent>(e =>
                 e.OldValue == "light" &&
                 e.NewValue == "dark"),
@@ -214,13 +215,13 @@ public sealed class SettingManagerTests
     public async Task DeleteAsync_Publishes_SettingChangedEvent_WithNullNewValue()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, InMemorySettingStore store, _, ISettingEventPublisher publisher) = CreateManager(def);
+        (SettingManager manager, InMemorySettingStore store, _, ILocalEventBus eventBus) = CreateManager(def);
 
         await store.SetAsync("App.Theme", "G", null, "light", TestContext.Current.CancellationToken);
 
         await manager.DeleteAsync("App.Theme", "G", null, TestContext.Current.CancellationToken);
 
-        await publisher.Received(1).PublishAsync(
+        await eventBus.Received(1).PublishAsync(
             Arg.Is<SettingChangedEvent>(e =>
                 e.OldValue == "light" &&
                 e.NewValue == null),
@@ -231,12 +232,12 @@ public sealed class SettingManagerTests
     public async Task SetForTenantAsync_Publishes_SettingChangedEvent_WithTenantKey()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, _, _, ISettingEventPublisher publisher) = CreateManager(def);
+        (SettingManager manager, _, _, ILocalEventBus eventBus) = CreateManager(def);
         var tenantId = Guid.NewGuid();
 
         await manager.SetForTenantAsync(tenantId, "App.Theme", "blue", TestContext.Current.CancellationToken);
 
-        await publisher.Received(1).PublishAsync(
+        await eventBus.Received(1).PublishAsync(
             Arg.Is<SettingChangedEvent>(e =>
                 e.ProviderName == "T" &&
                 e.ProviderKey == tenantId.ToString() &&
