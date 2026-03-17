@@ -346,7 +346,7 @@ registration, `FluentValidationEndpointFilter<T>` silently skips validation.
 
 ## Idempotency
 
-The `Granit.Idempotency` package provides Stripe-style idempotency via the
+The `Granit.Http.Idempotency` package provides Stripe-style idempotency via the
 `Idempotency-Key` HTTP header, backed by Redis.
 
 ### Header

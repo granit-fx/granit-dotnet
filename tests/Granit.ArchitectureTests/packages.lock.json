@@ -1465,25 +1465,6 @@
           "StackExchange.Redis": "[2.*, )"
         }
       },
-      "granit.cookies": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Timing": "[0.1.0-dev, )"
-        }
-      },
-      "granit.cookies.endpoints": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Cookies": "[0.1.0-dev, )",
-          "Granit.Core": "[0.1.0-dev, )"
-        }
-      },
-      "granit.cookies.klaro": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Cookies": "[0.1.0-dev, )"
-        }
-      },
       "granit.core": {
         "type": "Project"
       },
@@ -1623,6 +1604,25 @@
           "Granit.Security": "[0.1.0-dev, )"
         }
       },
+      "granit.http.cookies": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.cookies.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Granit.Http.Cookies": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.cookies.klaro": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Http.Cookies": "[0.1.0-dev, )"
+        }
+      },
       "granit.http.cors": {
         "type": "Project",
         "dependencies": {
@@ -1635,20 +1635,20 @@
           "Granit.Core": "[0.1.0-dev, )"
         }
       },
-      "granit.http.resilience": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Http.Resilience": "[10.*, )"
-        }
-      },
-      "granit.idempotency": {
+      "granit.http.idempotency": {
         "type": "Project",
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Microsoft.IO.RecyclableMemoryStream": "[3.*, )",
           "StackExchange.Redis": "[2.*, )"
+        }
+      },
+      "granit.http.resilience": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Http.Resilience": "[10.*, )"
         }
       },
       "granit.identity": {

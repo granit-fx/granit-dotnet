@@ -54,7 +54,7 @@ graph TD
     AD --> SEC[Granit.Security]
     RC[Granit.ResponseCompression] --> CO
     EH[Granit.Http.ExceptionHandling] --> CO
-    ID[Granit.Idempotency] --> CA[Granit.Caching]
+    ID[Granit.Http.Idempotency] --> CA[Granit.Caching]
     ID --> SEC
     RL[Granit.RateLimiting] --> CO
     RL --> EH

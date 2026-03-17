@@ -42,8 +42,8 @@ stateDiagram-v2
 
 | Component | File |
 |-----------|------|
-| `IdempotencyState` | `src/Granit.Idempotency/Models/IdempotencyState.cs` |
-| `IdempotencyMiddleware` | `src/Granit.Idempotency/Internal/IdempotencyMiddleware.cs` |
+| `IdempotencyState` | `src/Granit.Http.Idempotency/Models/IdempotencyState.cs` |
+| `IdempotencyMiddleware` | `src/Granit.Http.Idempotency/Internal/IdempotencyMiddleware.cs` |
 
 States: `Absent` -> `InProgress` -> `Completed`
 

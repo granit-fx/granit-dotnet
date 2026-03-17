@@ -119,7 +119,7 @@ flowchart TD
 | Identity | Identity, Identity.Keycloak, Identity.EntraId, Identity.Cognito, Identity.GoogleCloud, Identity.EntityFrameworkCore, Identity.Endpoints |
 | Security | Security, Encryption, Vault, Vault.HashiCorp, Vault.Azure, Vault.Aws, Vault.GoogleCloud, Authentication.JwtBearer, Authentication.Keycloak, Authentication.EntraId, Authentication.Cognito, Authentication.GoogleCloud, Authentication.ApiKeys (3), Authorization, Authorization.EntityFrameworkCore, Authorization.Endpoints |
 | Configuration | Settings (3), Features (2), ReferenceData (3) |
-| Web, API, and Webhooks | ApiVersioning, ApiDocumentation, Cookies, Cookies.Klaro, Cookies.Endpoints, Idempotency, Webhooks (3) |
+| Web, API, and Webhooks | ApiVersioning, ApiDocumentation, Cookies, Cookies.Klaro, Cookies.Endpoints, Http.Idempotency, Webhooks (3) |
 | Storage | BlobStorage (8 incl. GoogleCloud), Imaging (2) |
 | Background Jobs | BackgroundJobs (4) |
 | Localization | Localization, Localization.EntityFrameworkCore, Localization.Endpoints, Localization.SourceGenerator |
@@ -295,10 +295,10 @@ flowchart TD
 |---------|------------|
 | `Granit.Http.ApiVersioning` | `Core` |
 | `Granit.Http.ApiDocumentation` | `ApiVersioning`, `Security` |
-| `Granit.Cookies` | `Timing` |
-| `Granit.Cookies.Klaro` | `Cookies` |
-| `Granit.Cookies.Endpoints` | `Cookies`, `Core` |
-| `Granit.Idempotency` | `Caching`, `Security` |
+| `Granit.Http.Cookies` | `Timing` |
+| `Granit.Http.Cookies.Klaro` | `Cookies` |
+| `Granit.Http.Cookies.Endpoints` | `Cookies`, `Core` |
+| `Granit.Http.Idempotency` | `Caching`, `Security` |
 | `Granit.Webhooks` | `Timing`, `Wolverine` |
 | `Granit.Webhooks.EntityFrameworkCore` | `Webhooks`, `Persistence` |
 | `Granit.Webhooks.Wolverine` | `Webhooks`, `Wolverine` |
@@ -582,7 +582,7 @@ Complete REST API. Includes everything in `Bundle.Essentials` plus:
 | `Granit.Http.ApiVersioning` |
 | `Granit.Http.ApiDocumentation` |
 | `Granit.Http.Cors` |
-| `Granit.Idempotency` |
+| `Granit.Http.Idempotency` |
 | `Granit.Localization` |
 | `Granit.Localization.EntityFrameworkCore` |
 | `Granit.Caching` |

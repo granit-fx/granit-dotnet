@@ -67,7 +67,7 @@ sequenceDiagram
 | Middleware | File | Role |
 |-----------|------|------|
 | `TenantResolutionMiddleware` | `src/Granit.MultiTenancy/Middleware/TenantResolutionMiddleware.cs` | Resolves the tenant via `TenantResolverPipeline` (Header > JWT) |
-| `IdempotencyMiddleware` | `src/Granit.Idempotency/Internal/IdempotencyMiddleware.cs` | Stripe-style HTTP idempotency with state machine |
+| `IdempotencyMiddleware` | `src/Granit.Http.Idempotency/Internal/IdempotencyMiddleware.cs` | Stripe-style HTTP idempotency with state machine |
 
 ### Wolverine pipeline -- incoming behaviors
 

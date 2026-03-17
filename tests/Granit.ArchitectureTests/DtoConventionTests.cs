@@ -17,7 +17,7 @@ public sealed class DtoConventionTests
             "Granit.Authentication.ApiKeys.Endpoints",
             "Granit.Authorization.Endpoints",
             "Granit.BackgroundJobs.Endpoints",
-            "Granit.Cookies.Endpoints",
+            "Granit.Http.Cookies.Endpoints",
             "Granit.DataExchange.Endpoints",
             "Granit.Identity.Endpoints",
             "Granit.Localization.Endpoints",

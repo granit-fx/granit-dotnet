@@ -112,7 +112,7 @@ The following modules use `IDistributedCache` or `IHybridCache` internally and b
 from provider upgrades:
 
 - Granit.Features (hybrid cache for feature flag resolution)
-- Granit.Idempotency (Redis required for distributed idempotency keys)
+- Granit.Http.Idempotency (Redis required for distributed idempotency keys)
 - Granit.RateLimiting (Redis required for distributed rate limiting)
 
 ## Storage providers
@@ -251,7 +251,7 @@ Some modules require specific infrastructure services regardless of provider cho
 | Granit.Vault.Azure | Azure Key Vault (DefaultAzureCredential) |
 | Granit.Vault.Aws | AWS KMS + Secrets Manager |
 | Granit.Vault.GoogleCloud | Google Cloud KMS + Secret Manager |
-| Granit.Idempotency | Redis (StackExchange.Redis) |
+| Granit.Http.Idempotency | Redis (StackExchange.Redis) |
 | Granit.RateLimiting | Redis (StackExchange.Redis) |
 | Granit.Notifications.SignalR | Redis backplane (for multi-pod deployments) |
 | Granit.BlobStorage.S3 | S3-compatible object storage |

@@ -5,23 +5,23 @@ sidebar:
   order: 6
 ---
 
-Granit.Cookies enforces a strict cookie registry: every cookie must be declared at
+Granit.Http.Cookies enforces a strict cookie registry: every cookie must be declared at
 startup with a GDPR category. Writing an undeclared cookie throws
 `UnregisteredCookieException`. Consent is resolved per-category via a pluggable
-`IConsentResolver`. `Granit.Cookies.Klaro` integrates with the EU-sovereign
+`IConsentResolver`. `Granit.Http.Cookies.Klaro` integrates with the EU-sovereign
 [Klaro](https://klaro.org/) consent management platform.
 
 ## Package structure
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.Cookies` | Cookie registry, consent enforcement | `Granit.Timing` |
-| `Granit.Cookies.Klaro` | Klaro CMP consent resolver | `Granit.Cookies` |
+| `Granit.Http.Cookies` | Cookie registry, consent enforcement | `Granit.Timing` |
+| `Granit.Http.Cookies.Klaro` | Klaro CMP consent resolver | `Granit.Http.Cookies` |
 
 ## Setup
 
 ```csharp
-[DependsOn(typeof(GranitCookiesModule))]
+[DependsOn(typeof(GranitHttpCookiesModule))]
 public class AppModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -109,7 +109,7 @@ public interface IConsentResolver
 [Klaro](https://klaro.org/) is a self-hosted, EU-sovereign consent management platform.
 
 ```csharp
-[DependsOn(typeof(GranitCookiesKlaroModule))]
+[DependsOn(typeof(GranitHttpCookiesKlaroModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -157,10 +157,10 @@ Undeclared cookies bypass consent checks and category enforcement.
 
 | Category | Key types | Package |
 | -------- | --------- | ------- |
-| Modules | `GranitCookiesModule`, `GranitCookiesKlaroModule` | -- |
-| Registry | `ICookieRegistry`, `CookieDefinition`, `CookieCategory`, `GranitCookiesBuilder` | `Granit.Cookies` |
-| Manager | `IGranitCookieManager`, `IConsentResolver` | `Granit.Cookies` |
-| Klaro | `KlaroConsentResolver`, `KlaroOptions` | `Granit.Cookies.Klaro` |
+| Modules | `GranitHttpCookiesModule`, `GranitHttpCookiesKlaroModule` | -- |
+| Registry | `ICookieRegistry`, `CookieDefinition`, `CookieCategory`, `GranitCookiesBuilder` | `Granit.Http.Cookies` |
+| Manager | `IGranitCookieManager`, `IConsentResolver` | `Granit.Http.Cookies` |
+| Klaro | `KlaroConsentResolver`, `KlaroOptions` | `Granit.Http.Cookies.Klaro` |
 | Extensions | `AddGranitCookies()`, `AddGranitCookiesKlaro()` | -- |
 
 ## See also

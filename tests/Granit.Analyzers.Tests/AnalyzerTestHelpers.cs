@@ -116,11 +116,11 @@ internal static class AnalyzerTestHelpers
         """;
 
     /// <summary>
-    /// Minimal stub for <c>Granit.Cookies.IGranitCookieManager</c> — used to activate
+    /// Minimal stub for <c>Granit.Http.Cookies.IGranitCookieManager</c> — used to activate
     /// the opt-in GRSEC004 analyzer.
     /// </summary>
     internal const string GranitCookieManagerStub = """
-        namespace Granit.Cookies
+        namespace Granit.Http.Cookies
         {
             public interface IGranitCookieManager
             {

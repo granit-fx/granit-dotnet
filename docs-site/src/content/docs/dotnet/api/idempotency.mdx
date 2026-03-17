@@ -5,7 +5,7 @@ sidebar:
   order: 16
 ---
 
-Granit.Idempotency provides Stripe-style HTTP idempotency middleware backed by Redis.
+Granit.Http.Idempotency provides Stripe-style HTTP idempotency middleware backed by Redis.
 Ensures that retried POST/PUT/PATCH requests produce the same response without
 re-executing side effects. Uses SHA-256 composite keys and AES-256-CBC encrypted
 entries.
@@ -125,10 +125,10 @@ Replayed responses include an `X-Idempotency-Replayed: true` header.
 | Category | Key types | Package |
 | -------- | --------- | ------- |
 | Module | `GranitIdempotencyModule` | -- |
-| Store | `IIdempotencyStore`, `IIdempotencyMetadata`, `IdempotencyEntry`, `IdempotencyState` | `Granit.Idempotency` |
-| Metadata | `IdempotentAttribute` | `Granit.Idempotency` |
-| Options | `IdempotencyOptions` | `Granit.Idempotency` |
-| Extensions | `AddGranitIdempotency()`, `UseGranitIdempotency()` | `Granit.Idempotency` |
+| Store | `IIdempotencyStore`, `IIdempotencyMetadata`, `IdempotencyEntry`, `IdempotencyState` | `Granit.Http.Idempotency` |
+| Metadata | `IdempotentAttribute` | `Granit.Http.Idempotency` |
+| Options | `IdempotencyOptions` | `Granit.Http.Idempotency` |
+| Extensions | `AddGranitIdempotency()`, `UseGranitIdempotency()` | `Granit.Http.Idempotency` |
 
 ## See also
 

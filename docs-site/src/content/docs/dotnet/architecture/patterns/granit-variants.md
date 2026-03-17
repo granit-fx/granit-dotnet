@@ -130,7 +130,7 @@ entirely managed by Wolverine.
 `ArrayPool<byte>.Shared` in the idempotency middleware.
 
 ```text
-src/Granit.Idempotency/Internal/IdempotencyMiddleware.cs
+src/Granit.Http.Idempotency/Internal/IdempotencyMiddleware.cs
 ```
 
 The HTTP body is hashed in streaming mode without allocating a complete buffer,

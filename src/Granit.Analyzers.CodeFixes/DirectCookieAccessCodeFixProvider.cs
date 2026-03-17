@@ -20,7 +20,7 @@ public sealed class DirectCookieAccessCodeFixProvider : DependencyInjectionCodeF
     protected override string InterfaceName => "IGranitCookieManager";
     protected override string FieldName => "_cookieManager";
     protected override string ParamName => "cookieManager";
-    protected override string UsingNamespace => "Granit.Cookies";
+    protected override string UsingNamespace => "Granit.Http.Cookies";
 
     protected override bool IsExpectedNodeType(SyntaxNode node) =>
         node is InvocationExpressionSyntax;

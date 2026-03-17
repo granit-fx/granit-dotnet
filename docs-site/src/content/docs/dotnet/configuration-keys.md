@@ -471,7 +471,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `Cookies` | |
-| **Package** | -- | `Granit.Cookies` | |
+| **Package** | -- | `Granit.Http.Cookies` | |
 | `ThrowOnUnregistered` | `bool` | `true` | Fail-fast on unregistered cookies. |
 | `DefaultRetentionDays` | `int` | `365` | Default cookie retention period. |
 | `ThirdPartyServices` | `array` | `[]` | Third-party services for CMP setup (see below). |
@@ -489,7 +489,7 @@ Each entry in `ThirdPartyServices`:
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `Klaro` | |
-| **Package** | -- | `Granit.Cookies.Klaro` | |
+| **Package** | -- | `Granit.Http.Cookies.Klaro` | |
 | `CookieName` | `string` | `"klaro"` | Klaro consent cookie name. |
 
 ### Cookie consent endpoints -- `CookieConsentEndpointsOptions`
@@ -497,7 +497,7 @@ Each entry in `ThirdPartyServices`:
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | *(configured in code)* | |
-| **Package** | -- | `Granit.Cookies.Endpoints` | |
+| **Package** | -- | `Granit.Http.Cookies.Endpoints` | |
 | `RoutePrefix` | `string` | `"cookies"` | Route prefix. |
 | `TagName` | `string` | `"Cookies"` | OpenAPI tag. |
 
@@ -506,7 +506,7 @@ Each entry in `ThirdPartyServices`:
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `Idempotency` | |
-| **Package** | -- | `Granit.Idempotency` | |
+| **Package** | -- | `Granit.Http.Idempotency` | |
 | `HeaderName` | `string` | `"Idempotency-Key"` | HTTP header name. |
 | `KeyPrefix` | `string` | `"idp"` | Redis key prefix. |
 | `CompletedTtl` | `TimeSpan` | `1.00:00:00` | TTL for completed entries. |
