@@ -1,18 +1,18 @@
-using Granit.BlobStorage.Database.Options;
+using Granit.BlobStorage.DbStore.Options;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
-namespace Granit.BlobStorage.Database.Tests;
+namespace Granit.BlobStorage.DbStore.Tests;
 
-public sealed class DatabaseBlobOptionsValidatorTests
+public sealed class DbStoreBlobOptionsValidatorTests
 {
-    private static readonly DatabaseBlobOptionsValidator Validator = new();
+    private static readonly DbStoreBlobOptionsValidator Validator = new();
 
     [Fact]
     public void Validate_DefaultOptions_ReturnsSuccess()
     {
-        DatabaseBlobOptions options = new();
+        DbStoreBlobOptions options = new();
 
         ValidateOptionsResult result = Validator.Validate(null, options);
 
@@ -22,7 +22,7 @@ public sealed class DatabaseBlobOptionsValidatorTests
     [Fact]
     public void Validate_CustomMaxSize_ReturnsSuccess()
     {
-        DatabaseBlobOptions options = new() { MaxBlobSizeBytes = 5 * 1024 * 1024 };
+        DbStoreBlobOptions options = new() { MaxBlobSizeBytes = 5 * 1024 * 1024 };
 
         ValidateOptionsResult result = Validator.Validate(null, options);
 
@@ -35,11 +35,11 @@ public sealed class DatabaseBlobOptionsValidatorTests
     [InlineData(-100)]
     public void Validate_ZeroOrNegativeMaxSize_ReturnsFail(long maxSize)
     {
-        DatabaseBlobOptions options = new() { MaxBlobSizeBytes = maxSize };
+        DbStoreBlobOptions options = new() { MaxBlobSizeBytes = maxSize };
 
         ValidateOptionsResult result = Validator.Validate(null, options);
 
         result.Failed.ShouldBeTrue();
-        result.FailureMessage.ShouldContain(nameof(DatabaseBlobOptions.MaxBlobSizeBytes));
+        result.FailureMessage.ShouldContain(nameof(DbStoreBlobOptions.MaxBlobSizeBytes));
     }
 }

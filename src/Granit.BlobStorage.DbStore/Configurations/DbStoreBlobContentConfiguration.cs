@@ -1,15 +1,15 @@
-using Granit.BlobStorage.Database.Entities;
+using Granit.BlobStorage.DbStore.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Granit.BlobStorage.Database.Configurations;
+namespace Granit.BlobStorage.DbStore.Configurations;
 
 /// <summary>
-/// EF Core configuration for <see cref="DatabaseBlobContent"/>.
+/// EF Core configuration for <see cref="DbStoreBlobContent"/>.
 /// </summary>
-internal sealed class DatabaseBlobContentConfiguration : IEntityTypeConfiguration<DatabaseBlobContent>
+internal sealed class DbStoreBlobContentConfiguration : IEntityTypeConfiguration<DbStoreBlobContent>
 {
-    public void Configure(EntityTypeBuilder<DatabaseBlobContent> builder)
+    public void Configure(EntityTypeBuilder<DbStoreBlobContent> builder)
     {
         builder.ToTable("storage_blob_contents");
         builder.HasKey(e => e.Id);

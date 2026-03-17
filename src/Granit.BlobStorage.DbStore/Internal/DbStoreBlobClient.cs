@@ -1,16 +1,16 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Granit.BlobStorage.Database.Diagnostics;
-using Granit.BlobStorage.Database.Entities;
-using Granit.BlobStorage.Database.Internal;
-using Granit.BlobStorage.Database.Options;
+using Granit.BlobStorage.DbStore.Diagnostics;
+using Granit.BlobStorage.DbStore.Entities;
+using Granit.BlobStorage.DbStore.Internal;
+using Granit.BlobStorage.DbStore.Options;
 using Granit.BlobStorage.Internal;
 using Granit.Guids;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace Granit.BlobStorage.Database.Internal;
+namespace Granit.BlobStorage.DbStore.Internal;
 
 /// <summary>
 /// Database implementation of <see cref="IBlobStoreProvider"/>.
@@ -22,9 +22,9 @@ namespace Granit.BlobStorage.Database.Internal;
 /// </remarks>
 // Infrastructure adapter over EF Core. Integration tests use in-memory database.
 [ExcludeFromCodeCoverage]
-internal sealed class DatabaseBlobClient(
-    IDbContextFactory<DatabaseBlobStorageDbContext> contextFactory,
-    IOptions<DatabaseBlobOptions> options,
+internal sealed class DbStoreBlobClient(
+    IDbContextFactory<DbStoreBlobStorageDbContext> contextFactory,
+    IOptions<DbStoreBlobOptions> options,
     IClock clock,
     IGuidGenerator guidGenerator) : IBlobStoreProvider
 {
@@ -36,9 +36,9 @@ internal sealed class DatabaseBlobClient(
         string contentType,
         CancellationToken cancellationToken = default)
     {
-        using Activity? activity = BlobStorageDatabaseActivitySource.Source.StartActivity(BlobStorageDatabaseActivitySource.Save);
-        activity?.SetTag(BlobStorageDatabaseActivitySource.TagObjectKey, objectKey);
-        activity?.SetTag(BlobStorageDatabaseActivitySource.TagContentType, contentType);
+        using Activity? activity = BlobStorageDbStoreActivitySource.Source.StartActivity(BlobStorageDbStoreActivitySource.Save);
+        activity?.SetTag(BlobStorageDbStoreActivitySource.TagObjectKey, objectKey);
+        activity?.SetTag(BlobStorageDbStoreActivitySource.TagContentType, contentType);
 
         using MemoryStream ms = new();
         await content.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
@@ -50,10 +50,10 @@ internal sealed class DatabaseBlobClient(
                 $"Blob size ({bytes.Length} bytes) exceeds the maximum allowed size ({options.Value.MaxBlobSizeBytes} bytes).");
         }
 
-        await using DatabaseBlobStorageDbContext context =
+        await using DbStoreBlobStorageDbContext context =
             await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        DatabaseBlobContent entity = new()
+        DbStoreBlobContent entity = new()
         {
             Id = guidGenerator.Create(),
             ObjectKey = objectKey,
@@ -71,13 +71,13 @@ internal sealed class DatabaseBlobClient(
         string objectKey,
         CancellationToken cancellationToken = default)
     {
-        using Activity? activity = BlobStorageDatabaseActivitySource.Source.StartActivity(BlobStorageDatabaseActivitySource.Read);
-        activity?.SetTag(BlobStorageDatabaseActivitySource.TagObjectKey, objectKey);
+        using Activity? activity = BlobStorageDbStoreActivitySource.Source.StartActivity(BlobStorageDbStoreActivitySource.Read);
+        activity?.SetTag(BlobStorageDbStoreActivitySource.TagObjectKey, objectKey);
 
-        await using DatabaseBlobStorageDbContext context =
+        await using DbStoreBlobStorageDbContext context =
             await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        DatabaseBlobContent entity = await context.BlobContents
+        DbStoreBlobContent entity = await context.BlobContents
             .AsNoTracking()
             .FirstOrDefaultAsync(e => e.ObjectKey == objectKey, cancellationToken)
             .ConfigureAwait(false)
@@ -92,10 +92,10 @@ internal sealed class DatabaseBlobClient(
         string objectKey,
         CancellationToken cancellationToken = default)
     {
-        using Activity? activity = BlobStorageDatabaseActivitySource.Source.StartActivity(BlobStorageDatabaseActivitySource.Delete);
-        activity?.SetTag(BlobStorageDatabaseActivitySource.TagObjectKey, objectKey);
+        using Activity? activity = BlobStorageDbStoreActivitySource.Source.StartActivity(BlobStorageDbStoreActivitySource.Delete);
+        activity?.SetTag(BlobStorageDbStoreActivitySource.TagObjectKey, objectKey);
 
-        await using DatabaseBlobStorageDbContext context =
+        await using DbStoreBlobStorageDbContext context =
             await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         await context.BlobContents
@@ -110,13 +110,13 @@ internal sealed class DatabaseBlobClient(
         string objectKey,
         CancellationToken cancellationToken = default)
     {
-        using Activity? activity = BlobStorageDatabaseActivitySource.Source.StartActivity(BlobStorageDatabaseActivitySource.GetSize);
-        activity?.SetTag(BlobStorageDatabaseActivitySource.TagObjectKey, objectKey);
+        using Activity? activity = BlobStorageDbStoreActivitySource.Source.StartActivity(BlobStorageDbStoreActivitySource.GetSize);
+        activity?.SetTag(BlobStorageDbStoreActivitySource.TagObjectKey, objectKey);
 
-        await using DatabaseBlobStorageDbContext context =
+        await using DbStoreBlobStorageDbContext context =
             await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        DatabaseBlobContent entity = await context.BlobContents
+        DbStoreBlobContent entity = await context.BlobContents
             .AsNoTracking()
             .FirstOrDefaultAsync(e => e.ObjectKey == objectKey, cancellationToken)
             .ConfigureAwait(false)
@@ -132,13 +132,13 @@ internal sealed class DatabaseBlobClient(
         int byteCount,
         CancellationToken cancellationToken = default)
     {
-        using Activity? activity = BlobStorageDatabaseActivitySource.Source.StartActivity(BlobStorageDatabaseActivitySource.PartialStream);
-        activity?.SetTag(BlobStorageDatabaseActivitySource.TagObjectKey, objectKey);
+        using Activity? activity = BlobStorageDbStoreActivitySource.Source.StartActivity(BlobStorageDbStoreActivitySource.PartialStream);
+        activity?.SetTag(BlobStorageDbStoreActivitySource.TagObjectKey, objectKey);
 
-        await using DatabaseBlobStorageDbContext context =
+        await using DbStoreBlobStorageDbContext context =
             await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        DatabaseBlobContent entity = await context.BlobContents
+        DbStoreBlobContent entity = await context.BlobContents
             .AsNoTracking()
             .FirstOrDefaultAsync(e => e.ObjectKey == objectKey, cancellationToken)
             .ConfigureAwait(false)

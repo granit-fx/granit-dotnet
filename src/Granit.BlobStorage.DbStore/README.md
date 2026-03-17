@@ -1,4 +1,4 @@
-# Granit.BlobStorage.Database
+# Granit.BlobStorage.DbStore
 
 Database implementation for `Granit.BlobStorage`. Stores blob content as rows in
 a relational database via EF Core. Ideal for small files and regulated environments
@@ -13,7 +13,7 @@ Pre-signed URLs are not natively supported — use `Granit.BlobStorage.Proxy` to
 provide token-based upload/download endpoints.
 
 ```text
-Client ──PUT──> /api/blobs/upload/{token} ──stream──> DatabaseBlobClient.SaveAsync()
+Client ──PUT──> /api/blobs/upload/{token} ──stream──> DbStoreBlobClient.SaveAsync()
                                                         │
                                               storage_blob_contents (EF Core)
 ```
@@ -22,7 +22,7 @@ Client ──PUT──> /api/blobs/upload/{token} ──stream──> DatabaseBl
 
 ```csharp
 // Program.cs
-builder.AddGranitBlobStorageDatabase(options =>
+builder.AddGranitBlobStorageDbStore(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("BlobStorage")));
 builder.AddGranitBlobStorageProxy();       // required for pre-signed URLs
 
@@ -55,7 +55,7 @@ app.MapGranitBlobProxyEndpoints();
 Object key format: `{tenantId}/{containerName}/{yyyy}/{MM}/{blobId}`
 
 All tenants share the same database table. Isolation is enforced by EF Core global
-query filters via `IMultiTenant` on the `DatabaseBlobContent` entity.
+query filters via `IMultiTenant` on the `DbStoreBlobContent` entity.
 
 ## Size limits
 

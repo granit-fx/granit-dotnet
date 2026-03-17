@@ -312,7 +312,7 @@ flowchart TD
 | `Granit.BlobStorage.AzureBlob` | `BlobStorage` |
 | `Granit.BlobStorage.GoogleCloud` | `BlobStorage` |
 | `Granit.BlobStorage.FileSystem` | `BlobStorage` |
-| `Granit.BlobStorage.Database` | `BlobStorage`, `Persistence` |
+| `Granit.BlobStorage.DbStore` | `BlobStorage`, `Persistence` |
 | `Granit.BlobStorage.Proxy` | `BlobStorage` |
 | `Granit.BlobStorage.EntityFrameworkCore` | `BlobStorage`, `Persistence` |
 | `Granit.Imaging` | `Core` |

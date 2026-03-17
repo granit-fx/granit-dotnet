@@ -1,6 +1,6 @@
 using Granit.BlobStorage.Options;
 
-namespace Granit.BlobStorage.Database.Options;
+namespace Granit.BlobStorage.DbStore.Options;
 
 /// <summary>
 /// Configuration options for the database blob storage provider.
@@ -8,7 +8,7 @@ namespace Granit.BlobStorage.Database.Options;
 /// <remarks>
 /// Bound from the <c>"BlobStorage"</c> configuration section (inherits <see cref="BlobStorageOptions.SectionName"/>).
 /// </remarks>
-public sealed class DatabaseBlobOptions : BlobStorageOptions
+public sealed class DbStoreBlobOptions : BlobStorageOptions
 {
     /// <summary>
     /// Maximum allowed blob size in bytes. Defaults to 10 MB.

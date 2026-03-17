@@ -12,8 +12,8 @@
     <InternalsVisibleTo Include="Granit.BlobStorage.S3.Tests" />
     <InternalsVisibleTo Include="Granit.BlobStorage.AzureBlob" />
     <InternalsVisibleTo Include="Granit.BlobStorage.AzureBlob.Tests" />
-    <InternalsVisibleTo Include="Granit.BlobStorage.Database" />
-    <InternalsVisibleTo Include="Granit.BlobStorage.Database.Tests" />
+    <InternalsVisibleTo Include="Granit.BlobStorage.DbStore" />
+    <InternalsVisibleTo Include="Granit.BlobStorage.DbStore.Tests" />
     <InternalsVisibleTo Include="Granit.BlobStorage.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.BlobStorage.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="Granit.BlobStorage.FileSystem" />

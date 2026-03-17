@@ -1,7 +1,7 @@
 using Granit.Core.MultiTenancy;
 using Granit.Timing;
 
-namespace Granit.BlobStorage.Database.Internal;
+namespace Granit.BlobStorage.DbStore.Internal;
 
 /// <summary>
 /// Builds tenant-prefixed object keys for database blob storage.
@@ -9,10 +9,10 @@ namespace Granit.BlobStorage.Database.Internal;
 /// <remarks>
 /// The bucket name is unused — all blobs share the same database table.
 /// </remarks>
-internal sealed class DatabaseBlobKeyStrategy(
+internal sealed class DbStoreBlobKeyStrategy(
     ICurrentTenant currentTenant,
     IClock clock) : TenantPrefixBlobKeyStrategy(currentTenant, clock)
 {
     /// <inheritdoc/>
-    public override string ResolveBucketName(string containerName) => "database";
+    public override string ResolveBucketName(string containerName) => "dbstore";
 }

@@ -57,7 +57,7 @@
     <ProjectReference Include="..\..\src\Granit.BlobStorage\Granit.BlobStorage.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.AI\Granit.BlobStorage.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.AzureBlob\Granit.BlobStorage.AzureBlob.csproj" />
-    <ProjectReference Include="..\..\src\Granit.BlobStorage.Database\Granit.BlobStorage.Database.csproj" />
+    <ProjectReference Include="..\..\src\Granit.BlobStorage.DbStore\Granit.BlobStorage.DbStore.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.EntityFrameworkCore\Granit.BlobStorage.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.FileSystem\Granit.BlobStorage.FileSystem.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.GoogleCloud\Granit.BlobStorage.GoogleCloud.csproj" />

@@ -981,7 +981,7 @@ same `BlobStorage` section.
 | **Package** | -- | `Granit.BlobStorage.FileSystem` | |
 | `BasePath` | `string` | `""` | Root directory for blob storage (required). |
 
-### Blob storage Database -- `DatabaseBlobOptions`
+### Blob storage DbStore -- `DbStoreBlobOptions`
 
 Extends `BlobStorageOptions` with database storage settings. Bound from the
 same `BlobStorage` section.
@@ -989,12 +989,12 @@ same `BlobStorage` section.
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `BlobStorage` | |
-| **Package** | -- | `Granit.BlobStorage.Database` | |
+| **Package** | -- | `Granit.BlobStorage.DbStore` | |
 | `MaxBlobSizeBytes` | `long` | `10485760` (10 MB) | Maximum blob size accepted by the provider. |
 
 ### Blob storage Proxy -- `ProxyBlobOptions`
 
-Configuration for the proxy endpoint provider used by FileSystem and Database
+Configuration for the proxy endpoint provider used by FileSystem and DbStore
 providers. Bound from the `BlobStorage:Proxy` section.
 
 | Key | Type | Default | Description |

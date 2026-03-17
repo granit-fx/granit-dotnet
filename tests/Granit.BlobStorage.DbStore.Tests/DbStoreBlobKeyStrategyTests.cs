@@ -1,28 +1,28 @@
-using Granit.BlobStorage.Database.Internal;
+using Granit.BlobStorage.DbStore.Internal;
 using Granit.Core.MultiTenancy;
 using Granit.Timing;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.BlobStorage.Database.Tests;
+namespace Granit.BlobStorage.DbStore.Tests;
 
-public sealed class DatabaseBlobKeyStrategyTests
+public sealed class DbStoreBlobKeyStrategyTests
 {
     private static readonly Guid TenantId = Guid.Parse("11111111-1111-1111-1111-111111111111");
     private static readonly DateTimeOffset Now = new(2026, 2, 23, 12, 0, 0, TimeSpan.Zero);
 
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly IClock _clock = Substitute.For<IClock>();
-    private readonly DatabaseBlobKeyStrategy _sut;
+    private readonly DbStoreBlobKeyStrategy _sut;
 
-    public DatabaseBlobKeyStrategyTests()
+    public DbStoreBlobKeyStrategyTests()
     {
         _currentTenant.IsAvailable.Returns(true);
         _currentTenant.Id.Returns(TenantId);
         _clock.Now.Returns(Now);
 
-        _sut = new DatabaseBlobKeyStrategy(
+        _sut = new DbStoreBlobKeyStrategy(
             _currentTenant,
             _clock);
     }
@@ -56,7 +56,7 @@ public sealed class DatabaseBlobKeyStrategyTests
         var blobId = Guid.NewGuid();
         var tenantB = Guid.Parse("33333333-3333-3333-3333-333333333333");
 
-        DatabaseBlobKeyStrategy strategyB = new(
+        DbStoreBlobKeyStrategy strategyB = new(
             BuildTenantSubstitute(tenantB), _clock);
 
         string keyA = _sut.BuildObjectKey("medical-images", blobId);
@@ -84,19 +84,19 @@ public sealed class DatabaseBlobKeyStrategyTests
     // ── ResolveBucketName ─────────────────────────────────────────────────────
 
     [Fact]
-    public void ResolveBucketName_ShouldReturnDatabase()
+    public void ResolveBucketName_ShouldReturnDbStore()
     {
         string bucket = _sut.ResolveBucketName("medical-images");
 
-        bucket.ShouldBe("database");
+        bucket.ShouldBe("dbstore");
     }
 
     [Fact]
     public void ResolveBucketName_ShouldReturnSameValueRegardlessOfContainer()
     {
-        _sut.ResolveBucketName("medical-images").ShouldBe("database");
-        _sut.ResolveBucketName("prescriptions").ShouldBe("database");
-        _sut.ResolveBucketName("avatars").ShouldBe("database");
+        _sut.ResolveBucketName("medical-images").ShouldBe("dbstore");
+        _sut.ResolveBucketName("prescriptions").ShouldBe("dbstore");
+        _sut.ResolveBucketName("avatars").ShouldBe("dbstore");
     }
 
     // ── TryExtractTenantId ────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 using Granit.Core.Domain;
 
-namespace Granit.BlobStorage.Database.Entities;
+namespace Granit.BlobStorage.DbStore.Entities;
 
 /// <summary>
 /// Stores the raw binary content of a blob in a relational database row.
@@ -9,7 +9,7 @@ namespace Granit.BlobStorage.Database.Entities;
 /// Each row represents one blob. The <see cref="ObjectKey"/> links this record
 /// to the <c>BlobDescriptor</c> managed by <c>Granit.BlobStorage.EntityFrameworkCore</c>.
 /// </remarks>
-public sealed class DatabaseBlobContent : IMultiTenant
+public sealed class DbStoreBlobContent : IMultiTenant
 {
     /// <summary>Primary key.</summary>
     public Guid Id { get; set; }
