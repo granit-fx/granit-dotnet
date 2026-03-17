@@ -31,14 +31,6 @@
         "resolved": "2.6.0",
         "contentHash": "XE8a+11nZg0LRaf+RGABEWaHIf8yGd5w8v/Ra1iWxMBmAVzwuKbW7G21mS0U7w7sh1lYcgckInWGgnz4qyET8A=="
       },
-      "granit.apiversioning": {
-        "type": "Project",
-        "dependencies": {
-          "Asp.Versioning.Mvc": "[10.0.0-preview.*, )",
-          "Asp.Versioning.Mvc.ApiExplorer": "[10.0.0-preview.*, )",
-          "Granit.Core": "[0.1.0-dev, )"
-        }
-      },
       "granit.authorization": {
         "type": "Project",
         "dependencies": {
@@ -65,10 +57,18 @@
       "granit.http.apidocumentation": {
         "type": "Project",
         "dependencies": {
-          "Granit.ApiVersioning": "[0.1.0-dev, )",
+          "Granit.Http.ApiVersioning": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.OpenApi": "[10.*, )",
           "Scalar.AspNetCore": "[2.*, )"
+        }
+      },
+      "granit.http.apiversioning": {
+        "type": "Project",
+        "dependencies": {
+          "Asp.Versioning.Mvc": "[10.0.0-preview.*, )",
+          "Asp.Versioning.Mvc.ApiExplorer": "[10.0.0-preview.*, )",
+          "Granit.Core": "[0.1.0-dev, )"
         }
       },
       "granit.http.exceptionhandling": {
