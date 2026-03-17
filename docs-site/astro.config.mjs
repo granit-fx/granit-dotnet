@@ -429,6 +429,7 @@ export default defineConfig({
         // fr: { label: 'Français', lang: 'fr' },  // Enable when French translation starts
       },
       components: {
+        Head: "./src/components/Head.astro",
         Header: "./src/components/Header.astro",
         Footer: "./src/components/Footer.astro",
       },

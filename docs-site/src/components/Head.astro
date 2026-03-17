@@ -1,0 +1,184 @@
+---
+import DefaultHead from "@astrojs/starlight/components/Head.astro";
+import JsonLd from "./JsonLd.astro";
+
+const route = Astro.locals.starlightRoute;
+const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const siteUrl = "https://granit-fx.dev";
+const title = route.entry.data.title;
+const description = route.entry.data.description ?? "";
+
+// ── Breadcrumb (every page except homepage) ──────────────────────────
+const breadcrumbItems: Array<{ name: string; url: string }> = [];
+if (path !== "/") {
+  breadcrumbItems.push({ name: "Home", url: siteUrl });
+  const segments = path.split("/").filter(Boolean);
+  let href = "";
+  for (const seg of segments) {
+    href += `/${seg}`;
+    const label = seg
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+    breadcrumbItems.push({ name: label, url: `${siteUrl}${href}/` });
+  }
+}
+
+const breadcrumbSchema =
+  breadcrumbItems.length > 1
+    ? {
+        "@type": "BreadcrumbList" as const,
+        itemListElement: breadcrumbItems.map((item, i) => ({
+          "@type": "ListItem" as const,
+          position: i + 1,
+          name: item.name,
+          item: item.url,
+        })),
+      }
+    : null;
+
+// ── Author (shared) ─────────────────────────────────────────────────
+const author = {
+  "@type": "Person" as const,
+  name: "JF Meyers",
+  url: "https://github.com/jfmeyers",
+  image: "https://avatars.githubusercontent.com/u/18008364",
+};
+
+const publisher = {
+  "@type": "Organization" as const,
+  name: "Granit",
+  url: siteUrl,
+  logo: {
+    "@type": "ImageObject" as const,
+    url: `${siteUrl}/granit-icon.svg`,
+  },
+};
+
+// ── Page-type detection ─────────────────────────────────────────────
+type SchemaObject = Record<string, unknown>;
+const schemas: SchemaObject[] = [];
+
+if (path === "/") {
+  // Homepage: WebSite + Organization
+  schemas.push({
+    "@type": "WebSite",
+    name: "Granit",
+    url: siteUrl,
+    description:
+      "Rock-solid, production-ready modular framework for .NET 10 — auth, persistence, messaging, GDPR & ISO 27001 compliance out of the box.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: { "@type": "EntryPoint", urlTemplate: `${siteUrl}/?q={search_term_string}` },
+      "query-input": "required name=search_term_string",
+    },
+  });
+  schemas.push({
+    "@type": "Organization",
+    name: "Granit",
+    url: siteUrl,
+    logo: `${siteUrl}/granit-icon.svg`,
+    sameAs: [
+      "https://github.com/granit-fx/granit-dotnet",
+      "https://discord.gg/tZbD5neS",
+    ],
+  });
+} else if (path === "/blog") {
+  // Blog index
+  schemas.push({
+    "@type": "Blog",
+    name: "Granit Blog",
+    url: `${siteUrl}/blog/`,
+    description: "Technical articles about the Granit framework for .NET 10.",
+    publisher,
+  });
+} else if (path.startsWith("/blog/")) {
+  // Blog post
+  const frontmatter = route.entry.data as Record<string, unknown>;
+  const datePublished =
+    frontmatter.date instanceof Date
+      ? frontmatter.date.toISOString().split("T")[0]
+      : undefined;
+
+  schemas.push({
+    "@type": "BlogPosting",
+    headline: title,
+    description,
+    url: `${siteUrl}${path}/`,
+    ...(datePublished && { datePublished }),
+    ...(route.lastUpdated && {
+      dateModified: route.lastUpdated.toISOString().split("T")[0],
+    }),
+    author,
+    publisher,
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${siteUrl}${path}/` },
+    image: `${siteUrl}/og-image.png`,
+    inLanguage: "en",
+  });
+} else if (
+  path.startsWith("/dotnet/") ||
+  path.startsWith("/frontend/")
+) {
+  // Technical documentation pages
+  const isGuide = path.startsWith("/dotnet/guides/") || path.startsWith("/frontend/guides/");
+  const isGettingStarted =
+    path.startsWith("/dotnet/getting-started/") ||
+    path.startsWith("/frontend/getting-started/");
+  const isAdr = path.includes("/architecture/adr/");
+  const isPattern = path.includes("/architecture/patterns/");
+
+  const learningResourceType = isGuide
+    ? "guide"
+    : isGettingStarted
+      ? "tutorial"
+      : isAdr
+        ? "architectural decision record"
+        : isPattern
+          ? "design pattern"
+          : undefined;
+
+  schemas.push({
+    "@type": "TechArticle",
+    headline: title,
+    description,
+    url: `${siteUrl}${path}/`,
+    author,
+    publisher,
+    ...(learningResourceType && {
+      learningResourceType,
+    }),
+    ...(route.lastUpdated && {
+      dateModified: route.lastUpdated.toISOString().split("T")[0],
+    }),
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${siteUrl}${path}/` },
+    inLanguage: "en",
+    about: {
+      "@type": "SoftwareSourceCode",
+      name: "Granit",
+      programmingLanguage: path.startsWith("/frontend/")
+        ? "TypeScript"
+        : "C#",
+      runtimePlatform: path.startsWith("/frontend/") ? "Node.js" : ".NET 10",
+      license: "https://spdx.org/licenses/Apache-2.0",
+    },
+  });
+} else {
+  // Community pages (contributing, migration, troubleshooting)
+  schemas.push({
+    "@type": "Article",
+    headline: title,
+    description,
+    url: `${siteUrl}${path}/`,
+    author,
+    publisher,
+    ...(route.lastUpdated && {
+      dateModified: route.lastUpdated.toISOString().split("T")[0],
+    }),
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${siteUrl}${path}/` },
+    inLanguage: "en",
+  });
+}
+---
+
+<DefaultHead {...Astro.props}><slot /></DefaultHead>
+{schemas.map((schema) => <JsonLd schema={schema} />)}
+{breadcrumbSchema && <JsonLd schema={breadcrumbSchema} />}
