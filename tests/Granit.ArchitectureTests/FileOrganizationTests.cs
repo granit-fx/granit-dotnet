@@ -588,6 +588,17 @@ public sealed partial class FileOrganizationTests
     {
         foreach (string line in File.ReadLines(filePath))
         {
+            string trimmed = line.TrimStart();
+
+            // Skip XML doc comments and regular comments
+            if (trimmed.StartsWith("///", StringComparison.Ordinal)
+                || trimmed.StartsWith("//", StringComparison.Ordinal)
+                || trimmed.StartsWith("/*", StringComparison.Ordinal)
+                || trimmed.StartsWith('*'))
+            {
+                continue;
+            }
+
             // Only match actual type declarations (class/record), not generic constraints (where T : Entity)
             if ((line.Contains("class ", StringComparison.Ordinal)
                 || line.Contains("record ", StringComparison.Ordinal))

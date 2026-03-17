@@ -1,12 +1,12 @@
 ---
 title: API & Http
-description: HTTP infrastructure packages — CORS, API versioning, OpenAPI documentation, exception handling, idempotency, rate limiting, and bulkhead isolation.
+description: HTTP infrastructure packages — CORS, API versioning, OpenAPI documentation, exception handling, idempotency, rate limiting, bulkhead isolation, and response compression.
 sidebar:
   label: Overview
   order: 11
 ---
 
-Eight packages that form the HTTP infrastructure layer of a Granit application.
+Nine packages that form the HTTP infrastructure layer of a Granit application.
 
 | Package | Purpose |
 | ------- | ------- |
@@ -18,6 +18,7 @@ Eight packages that form the HTTP infrastructure layer of a Granit application.
 | [Rate Limiting](/dotnet/api/rate-limiting/) | SlidingWindow, FixedWindow, TokenBucket, Concurrency algorithms |
 | [Webhooks](/dotnet/api/webhooks/) | HMAC-signed outbound webhooks, retry, subscription management |
 | [Bulkhead](/dotnet/api/bulkhead/) | Per-tenant concurrency isolation, feature-based quotas, Wolverine middleware |
+| [Response Compression](/dotnet/api/response-compression/) | Brotli + gzip with safe HTTPS defaults, SSE exclusion |
 
 ## Package dependencies
 
@@ -27,6 +28,7 @@ graph TD
     AV[Granit.ApiVersioning] --> CO
     AD[Granit.ApiDocumentation] --> AV
     AD --> SEC[Granit.Security]
+    RC[Granit.ResponseCompression] --> CO
     EH[Granit.ExceptionHandling] --> CO
     ID[Granit.Idempotency] --> CA[Granit.Caching]
     ID --> SEC
