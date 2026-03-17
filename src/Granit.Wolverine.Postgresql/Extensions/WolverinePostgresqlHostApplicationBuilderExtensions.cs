@@ -98,7 +98,7 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Shared core setup: options binding, connection string resolution, and <c>UseWolverine</c>.
+    /// Shared core setup: options binding, connection string resolution, and PostgreSQL Wolverine configuration.
     /// </summary>
     private static IHostApplicationBuilder AddGranitWolverineWithPostgresqlCore(
         IHostApplicationBuilder builder,
@@ -125,17 +125,19 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
         //
         // Path A — AddGranitWolverine() was called first (production via [DependsOn] module ordering):
         //   UseWolverine() can only be called once; calling it again throws.
-        //   WolverineOptions is registered as a singleton instance — retrieve it from the service
-        //   descriptors and extend it directly. The container is not yet built so
-        //   options.Services.AddSingleton() inside PersistMessagesWithPostgresql is still valid.
+        //   Wolverine 5.20+ registers WolverineOptions via a factory (ImplementationFactory),
+        //   not as an ImplementationInstance. Invoke the factory with null — the lambda is
+        //   always `_ => options` and ignores the IServiceProvider argument.
+        //   The container is not yet built so options.Services.AddSingleton() inside
+        //   PersistMessagesWithPostgresql is still valid.
         //
         // Path B — called standalone without AddGranitWolverine() (integration tests, manual wiring):
         //   UseWolverine() hasn't been called yet — it is safe to call it once here.
         WolverineOptions? existing = builder.Services
             .Where(sd => sd.ServiceType == typeof(WolverineOptions))
-            .Select(sd => sd.ImplementationInstance)
-            .OfType<WolverineOptions>()
-            .FirstOrDefault();
+            .Select(sd => sd.ImplementationInstance as WolverineOptions
+                          ?? sd.ImplementationFactory?.Invoke(null!) as WolverineOptions)
+            .FirstOrDefault(x => x is not null);
 
         if (existing is not null)
         {
