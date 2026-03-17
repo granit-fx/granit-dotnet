@@ -35,11 +35,11 @@ public static class WebhooksEfCoreHostApplicationBuilderExtensions
     {
         builder.Services.AddGranitDbContext<WebhooksDbContext>(configure);
 
-        builder.Services.AddSingleton<EfWebhookSubscriptionStore>();
+        builder.Services.AddScoped<EfWebhookSubscriptionStore>();
         builder.Services.Replace(
-            ServiceDescriptor.Singleton<IWebhookSubscriptionReader>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
+            ServiceDescriptor.Scoped<IWebhookSubscriptionReader>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
         builder.Services.Replace(
-            ServiceDescriptor.Singleton<IWebhookSubscriptionWriter>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
+            ServiceDescriptor.Scoped<IWebhookSubscriptionWriter>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
 
         builder.Services.Replace(
             ServiceDescriptor.Scoped<IWebhookDeliveryWriter, EfWebhookDeliveryStore>());
