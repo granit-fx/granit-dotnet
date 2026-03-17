@@ -61,7 +61,7 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
             WolverinePostgresqlOptionsValidator>();
 
         // Read options directly from IConfiguration: the DI container is not yet
-        // built at this point, so IOptions<> is not resolvable inside ConfigureWolverine().
+        // built at this point, so IOptions<> is not resolvable inside UseWolverine().
         WolverinePostgresqlOptions options = new();
         builder.Configuration
             .GetSection(WolverinePostgresqlOptions.SectionName)
@@ -69,7 +69,11 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
 
         string connectionString = ResolveConnectionString(builder.Configuration, options);
 
-        builder.Services.ConfigureWolverine(opts =>
+        // UseWolverine runs eagerly before the DI container is built.
+        // ConfigureWolverine must NOT be used here: it registers a late-bound IWolverineExtension
+        // in DI that runs after the container is locked, and PersistMessagesWithPostgresql
+        // tries to add singletons to the read-only service collection (Wolverine 3.0+ breaking change).
+        builder.UseWolverine(opts =>
         {
             opts.PersistMessagesWithPostgresql(connectionString);
             opts.UseEntityFrameworkCoreTransactions(options.TransactionMode);
@@ -126,7 +130,7 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
             WolverinePostgresqlOptionsValidator>();
 
         // Read options directly from IConfiguration: the DI container is not yet
-        // built at this point, so IOptions<> is not resolvable inside ConfigureWolverine().
+        // built at this point, so IOptions<> is not resolvable inside UseWolverine().
         WolverinePostgresqlOptions options = new();
         builder.Configuration
             .GetSection(WolverinePostgresqlOptions.SectionName)
@@ -139,7 +143,11 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
         builder.Services.AddTenantPerDatabaseDbContext<TContext>(
             static (opts, connectionString) => opts.UseNpgsql(connectionString));
 
-        builder.Services.ConfigureWolverine(opts =>
+        // UseWolverine runs eagerly before the DI container is built.
+        // ConfigureWolverine must NOT be used here: it registers a late-bound IWolverineExtension
+        // in DI that runs after the container is locked, and PersistMessagesWithPostgresql
+        // tries to add singletons to the read-only service collection (Wolverine 3.0+ breaking change).
+        builder.UseWolverine(opts =>
         {
             opts.PersistMessagesWithPostgresql(connectionString);
             opts.UseEntityFrameworkCoreTransactions(options.TransactionMode);
