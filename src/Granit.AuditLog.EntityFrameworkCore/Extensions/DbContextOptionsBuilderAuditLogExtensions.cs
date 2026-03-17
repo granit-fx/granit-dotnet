@@ -1,4 +1,4 @@
-using Granit.AuditLog.EntityFrameworkCore.Internal.Interceptors;
+using Granit.AuditLog.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

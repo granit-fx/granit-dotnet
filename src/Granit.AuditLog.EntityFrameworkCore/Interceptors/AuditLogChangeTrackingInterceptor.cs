@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Granit.AuditLog.EntityFrameworkCore.Internal.Interceptors;
+namespace Granit.AuditLog.EntityFrameworkCore.Interceptors;
 
 /// <summary>
 /// EF Core interceptor that captures entity changes for the audit trail.
