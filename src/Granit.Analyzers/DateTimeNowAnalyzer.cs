@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,12 +15,12 @@ namespace Granit.Analyzers;
 /// Always active — no opt-in needed.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class DateTimeNowAnalyzer : DiagnosticAnalyzer
+public sealed class DateTimeNowAnalyzer : SingleRuleAnalyzerBase
 {
     /// <summary>Diagnostic identifier.</summary>
     public const string DiagnosticId = "GRSEC001";
 
-    private static readonly DiagnosticDescriptor Rule = new(
+    private static readonly DiagnosticDescriptor _rule = new(
         DiagnosticId,
         title: "Avoid direct DateTime/DateTimeOffset clock access",
         messageFormat: "Use IClock from Granit.Timing instead of {0} to ensure deterministic, testable time access",
@@ -33,19 +32,11 @@ public sealed class DateTimeNowAnalyzer : DiagnosticAnalyzer
             + "Use IClock from Granit.Timing instead.");
 
     /// <inheritdoc/>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(Rule);
+    protected override DiagnosticDescriptor Rule => _rule;
 
     /// <inheritdoc/>
-    public override void Initialize(AnalysisContext context)
-    {
-        context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
-        context.RegisterSyntaxNodeAction(
-            AnalyzeMemberAccess,
-            SyntaxKind.SimpleMemberAccessExpression);
-    }
+    protected override void RegisterActions(AnalysisContext context)
+        => context.RegisterSyntaxNodeAction(AnalyzeMemberAccess, SyntaxKind.SimpleMemberAccessExpression);
 
     private static void AnalyzeMemberAccess(SyntaxNodeAnalysisContext context)
     {
@@ -72,6 +63,6 @@ public sealed class DateTimeNowAnalyzer : DiagnosticAnalyzer
         string fullAccess = propertySymbol.ContainingType.Name + "." + memberName;
 
         context.ReportDiagnostic(
-            Diagnostic.Create(Rule, memberAccess.GetLocation(), fullAccess));
+            Diagnostic.Create(_rule, memberAccess.GetLocation(), fullAccess));
     }
 }

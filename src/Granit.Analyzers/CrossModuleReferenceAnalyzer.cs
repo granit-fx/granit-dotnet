@@ -19,7 +19,7 @@ namespace Granit.Analyzers;
 /// Opt-in: only activates when <c>*.Modules.*</c> namespaces are present in the compilation.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class CrossModuleReferenceAnalyzer : DiagnosticAnalyzer
+public sealed class CrossModuleReferenceAnalyzer : SingleRuleAnalyzerBase
 {
     /// <summary>Diagnostic identifier.</summary>
     public const string DiagnosticId = "GRMOD001";
@@ -33,7 +33,7 @@ public sealed class CrossModuleReferenceAnalyzer : DiagnosticAnalyzer
     private const string ModulesSegment = ".Modules.";
     private const string ContractsSegment = "Contracts";
 
-    private static readonly DiagnosticDescriptor Rule = new(
+    private static readonly DiagnosticDescriptor _rule = new(
         DiagnosticId,
         title: "Cross-module reference to internal type — use Contracts",
         messageFormat: "Type '{0}' from module '{1}' cannot be referenced from module '{2}'. "
@@ -46,16 +46,11 @@ public sealed class CrossModuleReferenceAnalyzer : DiagnosticAnalyzer
             + "and violate module boundary isolation.");
 
     /// <inheritdoc/>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(Rule);
+    protected override DiagnosticDescriptor Rule => _rule;
 
     /// <inheritdoc/>
-    public override void Initialize(AnalysisContext context)
-    {
-        context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
-        context.RegisterCompilationStartAction(compilationContext =>
+    protected override void RegisterActions(AnalysisContext context)
+        => context.RegisterCompilationStartAction(compilationContext =>
         {
             if (!HasModulesNamespace(compilationContext.Compilation.GlobalNamespace))
             {
@@ -69,7 +64,6 @@ public sealed class CrossModuleReferenceAnalyzer : DiagnosticAnalyzer
                 SyntaxKind.IdentifierName,
                 SyntaxKind.GenericName);
         });
-    }
 
     private static void AnalyzeTypeReference(
         SyntaxNodeAnalysisContext context,
@@ -134,7 +128,7 @@ public sealed class CrossModuleReferenceAnalyzer : DiagnosticAnalyzer
         });
 
         context.ReportDiagnostic(Diagnostic.Create(
-            Rule,
+            _rule,
             context.Node.GetLocation(),
             properties,
             referencedType.Name,

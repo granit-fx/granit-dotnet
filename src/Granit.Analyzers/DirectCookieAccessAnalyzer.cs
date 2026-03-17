@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,12 +16,12 @@ namespace Granit.Analyzers;
 /// Opt-in: only activates when <c>Granit.Cookies.IGranitCookieManager</c> is present in the compilation.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class DirectCookieAccessAnalyzer : DiagnosticAnalyzer
+public sealed class DirectCookieAccessAnalyzer : SingleRuleAnalyzerBase
 {
     /// <summary>Diagnostic identifier.</summary>
     public const string DiagnosticId = "GRSEC004";
 
-    private static readonly DiagnosticDescriptor Rule = new(
+    private static readonly DiagnosticDescriptor _rule = new(
         DiagnosticId,
         title: "Avoid direct IResponseCookies access — use IGranitCookieManager",
         messageFormat: "Use IGranitCookieManager instead of directly calling IResponseCookies.{0}() "
@@ -34,16 +33,11 @@ public sealed class DirectCookieAccessAnalyzer : DiagnosticAnalyzer
             + "and RGPD consent checks. Use IGranitCookieManager.SetCookieAsync() or DeleteCookie() instead.");
 
     /// <inheritdoc/>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(Rule);
+    protected override DiagnosticDescriptor Rule => _rule;
 
     /// <inheritdoc/>
-    public override void Initialize(AnalysisContext context)
-    {
-        context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
-        context.RegisterCompilationStartAction(compilationContext =>
+    protected override void RegisterActions(AnalysisContext context)
+        => context.RegisterCompilationStartAction(compilationContext =>
         {
             // Opt-in: only activate when Granit.Cookies is referenced.
             INamedTypeSymbol? cookieManager = compilationContext.Compilation
@@ -64,7 +58,6 @@ public sealed class DirectCookieAccessAnalyzer : DiagnosticAnalyzer
                 nodeContext => AnalyzeInvocation(nodeContext, responseCookies),
                 SyntaxKind.InvocationExpression);
         });
-    }
 
     private static void AnalyzeInvocation(
         SyntaxNodeAnalysisContext context,
@@ -94,7 +87,7 @@ public sealed class DirectCookieAccessAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), methodName));
+        context.ReportDiagnostic(Diagnostic.Create(_rule, invocation.GetLocation(), methodName));
     }
 
     private static bool ImplementsOrEquals(INamedTypeSymbol type, INamedTypeSymbol interfaceType) =>

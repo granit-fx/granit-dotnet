@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -19,12 +18,12 @@ namespace Granit.Analyzers;
 /// Always active — no opt-in needed.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class TypedResultsBadRequestAnalyzer : DiagnosticAnalyzer
+public sealed class TypedResultsBadRequestAnalyzer : SingleRuleAnalyzerBase
 {
     /// <summary>Diagnostic identifier.</summary>
     public const string DiagnosticId = "GRAPI002";
 
-    private static readonly DiagnosticDescriptor Rule = new(
+    private static readonly DiagnosticDescriptor _rule = new(
         DiagnosticId,
         title: "Avoid TypedResults.BadRequest with body — use TypedResults.Problem for RFC 7807",
         messageFormat: "Use TypedResults.Problem(detail: ..., statusCode: StatusCodes.Status400BadRequest) "
@@ -37,19 +36,11 @@ public sealed class TypedResultsBadRequestAnalyzer : DiagnosticAnalyzer
             + "statusCode parameters for a uniform error contract.");
 
     /// <inheritdoc/>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(Rule);
+    protected override DiagnosticDescriptor Rule => _rule;
 
     /// <inheritdoc/>
-    public override void Initialize(AnalysisContext context)
-    {
-        context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
-        context.RegisterSyntaxNodeAction(
-            AnalyzeInvocation,
-            SyntaxKind.InvocationExpression);
-    }
+    protected override void RegisterActions(AnalysisContext context)
+        => context.RegisterSyntaxNodeAction(AnalyzeInvocation, SyntaxKind.InvocationExpression);
 
     private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
     {
@@ -90,6 +81,6 @@ public sealed class TypedResultsBadRequestAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation()));
+        context.ReportDiagnostic(Diagnostic.Create(_rule, invocation.GetLocation()));
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,7 +16,7 @@ namespace Granit.Analyzers;
 /// Always active — no opt-in needed.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class HardcodedSecretAnalyzer : DiagnosticAnalyzer
+public sealed class HardcodedSecretAnalyzer : SingleRuleAnalyzerBase
 {
     /// <summary>Diagnostic identifier.</summary>
     public const string DiagnosticId = "GRSEC003";
@@ -41,7 +40,7 @@ public sealed class HardcodedSecretAnalyzer : DiagnosticAnalyzer
         "private_key"
     };
 
-    private static readonly DiagnosticDescriptor Rule = new(
+    private static readonly DiagnosticDescriptor _rule = new(
         DiagnosticId,
         title: "Potential hardcoded secret detected",
         messageFormat: "Potential hardcoded secret detected in '{0}'. Use Granit.Vault or secure configuration instead.",
@@ -53,19 +52,11 @@ public sealed class HardcodedSecretAnalyzer : DiagnosticAnalyzer
             + "configuration providers.");
 
     /// <inheritdoc/>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(Rule);
+    protected override DiagnosticDescriptor Rule => _rule;
 
     /// <inheritdoc/>
-    public override void Initialize(AnalysisContext context)
-    {
-        context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
-        context.RegisterSyntaxNodeAction(
-            AnalyzeStringLiteral,
-            SyntaxKind.StringLiteralExpression);
-    }
+    protected override void RegisterActions(AnalysisContext context)
+        => context.RegisterSyntaxNodeAction(AnalyzeStringLiteral, SyntaxKind.StringLiteralExpression);
 
     private static void AnalyzeStringLiteral(SyntaxNodeAnalysisContext context)
     {
@@ -100,7 +91,7 @@ public sealed class HardcodedSecretAnalyzer : DiagnosticAnalyzer
         }
 
         context.ReportDiagnostic(
-            Diagnostic.Create(Rule, literal.GetLocation(), identifierName));
+            Diagnostic.Create(_rule, literal.GetLocation(), identifierName));
     }
 
     private static bool IsSecretIdentifier(string name)

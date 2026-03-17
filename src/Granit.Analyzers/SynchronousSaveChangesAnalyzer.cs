@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,12 +16,12 @@ namespace Granit.Analyzers;
 /// present in the compilation.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class SynchronousSaveChangesAnalyzer : DiagnosticAnalyzer
+public sealed class SynchronousSaveChangesAnalyzer : SingleRuleAnalyzerBase
 {
     /// <summary>Diagnostic identifier.</summary>
     public const string DiagnosticId = "GREF001";
 
-    private static readonly DiagnosticDescriptor Rule = new(
+    private static readonly DiagnosticDescriptor _rule = new(
         DiagnosticId,
         title: "Use SaveChangesAsync() instead of SaveChanges()",
         messageFormat: "Use SaveChangesAsync() instead of SaveChanges() to avoid blocking the thread pool",
@@ -33,16 +32,11 @@ public sealed class SynchronousSaveChangesAnalyzer : DiagnosticAnalyzer
             + "the thread pool under load. Use SaveChangesAsync() instead.");
 
     /// <inheritdoc/>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(Rule);
+    protected override DiagnosticDescriptor Rule => _rule;
 
     /// <inheritdoc/>
-    public override void Initialize(AnalysisContext context)
-    {
-        context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
-        context.RegisterCompilationStartAction(compilationContext =>
+    protected override void RegisterActions(AnalysisContext context)
+        => context.RegisterCompilationStartAction(compilationContext =>
         {
             // Opt-in: only activate when EF Core DbContext is referenced.
             INamedTypeSymbol? dbContextSymbol = compilationContext.Compilation
@@ -56,7 +50,6 @@ public sealed class SynchronousSaveChangesAnalyzer : DiagnosticAnalyzer
                 nodeContext => AnalyzeInvocation(nodeContext, dbContextSymbol),
                 SyntaxKind.InvocationExpression);
         });
-    }
 
     private static void AnalyzeInvocation(
         SyntaxNodeAnalysisContext context,
@@ -85,7 +78,7 @@ public sealed class SynchronousSaveChangesAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation()));
+        context.ReportDiagnostic(Diagnostic.Create(_rule, invocation.GetLocation()));
     }
 
     private static bool InheritsFromOrEquals(INamedTypeSymbol type, INamedTypeSymbol baseType)

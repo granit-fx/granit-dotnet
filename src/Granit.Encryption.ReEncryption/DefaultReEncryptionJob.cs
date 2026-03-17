@@ -58,9 +58,8 @@ public sealed class DefaultReEncryptionJob<TContext>(IDbContextFactory<TContext>
 
             count = batch.Count;
 
-            foreach (TEntity entity in batch)
+            foreach (EntityEntry<TEntity> entry in batch.Select(entity => ctx.Entry(entity)))
             {
-                EntityEntry<TEntity> entry = ctx.Entry(entity);
                 foreach (PropertyInfo prop in encryptedProperties)
                 {
                     entry.Property(prop.Name).IsModified = true;

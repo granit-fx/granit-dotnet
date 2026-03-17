@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,12 +15,12 @@ namespace Granit.Analyzers;
 /// Always active — no opt-in needed.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class GuidNewGuidAnalyzer : DiagnosticAnalyzer
+public sealed class GuidNewGuidAnalyzer : SingleRuleAnalyzerBase
 {
     /// <summary>Diagnostic identifier.</summary>
     public const string DiagnosticId = "GRSEC002";
 
-    private static readonly DiagnosticDescriptor Rule = new(
+    private static readonly DiagnosticDescriptor _rule = new(
         DiagnosticId,
         title: "Avoid Guid.NewGuid() — use IGuidGenerator",
         messageFormat: "Use IGuidGenerator.Create() from Granit.Guids instead of Guid.NewGuid() "
@@ -34,19 +33,11 @@ public sealed class GuidNewGuidAnalyzer : DiagnosticAnalyzer
             + "sequential GUID generation.");
 
     /// <inheritdoc/>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(Rule);
+    protected override DiagnosticDescriptor Rule => _rule;
 
     /// <inheritdoc/>
-    public override void Initialize(AnalysisContext context)
-    {
-        context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
-        context.RegisterSyntaxNodeAction(
-            AnalyzeInvocation,
-            SyntaxKind.InvocationExpression);
-    }
+    protected override void RegisterActions(AnalysisContext context)
+        => context.RegisterSyntaxNodeAction(AnalyzeInvocation, SyntaxKind.InvocationExpression);
 
     private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
     {
@@ -73,6 +64,6 @@ public sealed class GuidNewGuidAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation()));
+        context.ReportDiagnostic(Diagnostic.Create(_rule, invocation.GetLocation()));
     }
 }

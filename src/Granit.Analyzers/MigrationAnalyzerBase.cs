@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using Granit.Analyzers.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -7,25 +6,15 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Granit.Analyzers;
 
 /// <summary>
-/// Abstract base for migration analyzers. Provides the <see cref="SupportedDiagnostics"/>
-/// property and the <see cref="Initialize"/> scaffold (concurrent execution, no generated code).
+/// Abstract base for migration analyzers. Extends <see cref="SingleRuleAnalyzerBase"/>
+/// and wires <see cref="SingleRuleAnalyzerBase.RegisterActions"/> to
+/// <see cref="OnCompilationStart"/> via <c>RegisterCompilationStartAction</c>.
 /// </summary>
-public abstract class MigrationAnalyzerBase : DiagnosticAnalyzer
+public abstract class MigrationAnalyzerBase : SingleRuleAnalyzerBase
 {
-    /// <summary>Gets the diagnostic descriptor for this analyzer.</summary>
-    protected abstract DiagnosticDescriptor Rule { get; }
-
     /// <inheritdoc/>
-    public sealed override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-        ImmutableArray.Create(Rule);
-
-    /// <inheritdoc/>
-    public sealed override void Initialize(AnalysisContext context)
-    {
-        context.EnableConcurrentExecution();
-        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-        context.RegisterCompilationStartAction(OnCompilationStart);
-    }
+    protected sealed override void RegisterActions(AnalysisContext context)
+        => context.RegisterCompilationStartAction(OnCompilationStart);
 
     /// <summary>
     /// Resolves required symbols and registers the syntax node action.
