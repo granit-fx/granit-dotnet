@@ -1,5 +1,6 @@
 using Granit.Persistence.Extensions;
 using Granit.Persistence.MultiTenancy;
+using Granit.Wolverine.Internal;
 using Granit.Wolverine.Postgresql.Internal;
 using Granit.Wolverine.Postgresql.Options;
 using Microsoft.EntityFrameworkCore;
@@ -125,18 +126,19 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
         //
         // Path A — AddGranitWolverine() was called first (production via [DependsOn] module ordering):
         //   UseWolverine() can only be called once; calling it again throws.
-        //   Wolverine 5.20+ registers WolverineOptions via a factory (ImplementationFactory),
-        //   not as an ImplementationInstance. Invoke the factory with null — the lambda is
-        //   always `_ => options` and ignores the IServiceProvider argument.
+        //   AddGranitWolverine() captures the WolverineOptions from inside the UseWolverine lambda
+        //   (invoked synchronously) and registers it via GranitWolverineOptionsHolder.
+        //   Wolverine 5.20+ registers WolverineOptions via an IServiceProvider-dependent factory —
+        //   it cannot be retrieved via ImplementationInstance before the container is built.
         //   The container is not yet built so options.Services.AddSingleton() inside
         //   PersistMessagesWithPostgresql is still valid.
         //
         // Path B — called standalone without AddGranitWolverine() (integration tests, manual wiring):
-        //   UseWolverine() hasn't been called yet — it is safe to call it once here.
+        //   GranitWolverineOptionsHolder is absent — UseWolverine() hasn't been called yet — safe to
+        //   call it once here.
         WolverineOptions? existing = builder.Services
-            .Where(sd => sd.ServiceType == typeof(WolverineOptions))
-            .Select(sd => sd.ImplementationInstance as WolverineOptions
-                          ?? sd.ImplementationFactory?.Invoke(null!) as WolverineOptions)
+            .Where(sd => sd.ServiceType == typeof(GranitWolverineOptionsHolder))
+            .Select(sd => (sd.ImplementationInstance as GranitWolverineOptionsHolder)?.Options)
             .FirstOrDefault(x => x is not null);
 
         if (existing is not null)
