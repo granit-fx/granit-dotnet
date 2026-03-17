@@ -67,9 +67,11 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
             .GetSection(WolverinePostgresqlOptions.SectionName)
             .Bind(options);
 
+        string connectionString = ResolveConnectionString(builder.Configuration, options);
+
         builder.Services.ConfigureWolverine(opts =>
         {
-            opts.PersistMessagesWithPostgresql(options.TransportConnectionString);
+            opts.PersistMessagesWithPostgresql(connectionString);
             opts.UseEntityFrameworkCoreTransactions(options.TransactionMode);
             opts.Policies.AutoApplyTransactions();
 
@@ -130,6 +132,8 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
             .GetSection(WolverinePostgresqlOptions.SectionName)
             .Bind(options);
 
+        string connectionString = ResolveConnectionString(builder.Configuration, options);
+
         // Register the per-tenant factory and DbContext as Scoped via Granit.Persistence.
         // TryAdd semantics preserve any existing registration (e.g., overrides from integration tests).
         builder.Services.AddTenantPerDatabaseDbContext<TContext>(
@@ -137,7 +141,7 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
 
         builder.Services.ConfigureWolverine(opts =>
         {
-            opts.PersistMessagesWithPostgresql(options.TransportConnectionString);
+            opts.PersistMessagesWithPostgresql(connectionString);
             opts.UseEntityFrameworkCoreTransactions(options.TransactionMode);
             opts.Policies.AutoApplyTransactions();
 
@@ -145,5 +149,26 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
         });
 
         return builder;
+    }
+
+    /// <summary>
+    /// Resolves the transport connection string from explicit value or <c>ConnectionStrings:{name}</c> fallback.
+    /// </summary>
+    private static string ResolveConnectionString(IConfiguration configuration, WolverinePostgresqlOptions options)
+    {
+        if (!string.IsNullOrWhiteSpace(options.TransportConnectionString))
+        {
+            return options.TransportConnectionString;
+        }
+
+        if (!string.IsNullOrWhiteSpace(options.TransportConnectionStringName))
+        {
+            return configuration.GetConnectionString(options.TransportConnectionStringName)
+                ?? throw new InvalidOperationException(
+                    $"Connection string '{options.TransportConnectionStringName}' not found in ConnectionStrings configuration. " +
+                    "Ensure the Aspire resource name matches TransportConnectionStringName.");
+        }
+
+        return string.Empty;
     }
 }

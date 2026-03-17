@@ -24,11 +24,29 @@ public sealed class WolverinePostgresqlOptions
     public const string SectionName = "WolverinePostgresql";
 
     /// <summary>
-    /// PostgreSQL connection string for the Wolverine Outbox tables.
-    /// Must be non-empty. Required for ISO 27001-compliant durable messaging.
+    /// Explicit PostgreSQL connection string for the Wolverine Outbox tables.
+    /// Takes priority over <see cref="TransportConnectionStringName"/>.
+    /// Required (either this or <see cref="TransportConnectionStringName"/>) for ISO 27001-compliant durable messaging.
     /// </summary>
-    [Required]
-    public string TransportConnectionString { get; set; } = string.Empty;
+    public string? TransportConnectionString { get; set; }
+
+    /// <summary>
+    /// Name of the connection string in the <c>ConnectionStrings</c> configuration section.
+    /// Used as fallback when <see cref="TransportConnectionString"/> is null or empty.
+    /// Enables seamless integration with .NET Aspire service discovery.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// // appsettings.json
+    /// {
+    ///   "WolverinePostgresql": {
+    ///     "TransportConnectionStringName": "catalog-db"
+    ///   }
+    /// }
+    /// // Aspire injects ConnectionStrings:catalog-db → Wolverine reads it automatically.
+    /// </code>
+    /// </example>
+    public string? TransportConnectionStringName { get; set; }
 
     /// <summary>
     /// EF Core transaction wrapping mode for Wolverine handlers.

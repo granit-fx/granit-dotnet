@@ -11,11 +11,13 @@ internal sealed class WolverinePostgresqlOptionsValidator : IValidateOptions<Wol
     /// <inheritdoc/>
     public ValidateOptionsResult Validate(string? name, WolverinePostgresqlOptions options)
     {
-        if (string.IsNullOrWhiteSpace(options.TransportConnectionString))
+        if (string.IsNullOrWhiteSpace(options.TransportConnectionString) &&
+            string.IsNullOrWhiteSpace(options.TransportConnectionStringName))
         {
             return ValidateOptionsResult.Fail(
-                $"{nameof(options.TransportConnectionString)} must be non-empty. " +
-                "A valid PostgreSQL connection string is required for the Wolverine Outbox (ISO 27001 compliance).");
+                $"Either {nameof(options.TransportConnectionString)} or {nameof(options.TransportConnectionStringName)} " +
+                "must be configured. A valid PostgreSQL connection string is required for the Wolverine Outbox (ISO 27001 compliance). " +
+                "Use TransportConnectionStringName for Aspire integration (e.g., \"catalog-db\").");
         }
 
         return ValidateOptionsResult.Success;
