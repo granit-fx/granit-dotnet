@@ -33,7 +33,7 @@ public static class AdminSettingsEndpointRouteBuilderExtensions
         configure?.Invoke(options);
 
         RouteGroupBuilder group = endpoints
-            .MapGroup(options.GlobalRoutePrefix)
+            .MapGranitGroup(options.GlobalRoutePrefix)
             .WithTags(options.TagName);
 
         group.MapGet("", HandleGetAllGlobalSettingsAsync)
@@ -49,8 +49,7 @@ public static class AdminSettingsEndpointRouteBuilderExtensions
              .WithSummary("Sets a global-level setting value.")
              .WithDescription("Sets or clears a global-level setting value. Pass null to remove the override and revert to the definition's default. The setting name must match a registered setting definition (returns 404 otherwise). Requires the Settings.Global.Manage permission.")
              .Produces(StatusCodes.Status204NoContent)
-             .ProducesProblem(StatusCodes.Status404NotFound)
-             .ValidateBody<UpdateSettingValueRequest>();
+             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }
@@ -69,7 +68,7 @@ public static class AdminSettingsEndpointRouteBuilderExtensions
         configure?.Invoke(options);
 
         RouteGroupBuilder group = endpoints
-            .MapGroup(options.TenantRoutePrefix)
+            .MapGranitGroup(options.TenantRoutePrefix)
             .WithTags(options.TagName);
 
         group.MapGet("", HandleGetAllTenantSettingsAsync)
@@ -86,8 +85,7 @@ public static class AdminSettingsEndpointRouteBuilderExtensions
              .WithSummary("Sets a tenant-level setting value.")
              .WithDescription("Sets or clears a tenant-level setting value for the current tenant. Pass null to remove the tenant override and fall back to the global value. The setting name must match a registered setting definition (returns 404 otherwise). Requires the Settings.Tenant.Manage permission.")
              .Produces(StatusCodes.Status204NoContent)
-             .ProducesProblem(StatusCodes.Status404NotFound)
-             .ValidateBody<UpdateSettingValueRequest>();
+             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }

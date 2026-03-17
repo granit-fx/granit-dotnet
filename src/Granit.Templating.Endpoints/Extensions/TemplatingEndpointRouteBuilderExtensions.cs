@@ -86,7 +86,7 @@ public static partial class TemplatingEndpointRouteBuilderExtensions
         configure?.Invoke(options);
 
         RouteGroupBuilder group = endpoints
-            .MapGroup(options.RoutePrefix)
+            .MapGranitGroup(options.RoutePrefix)
             .RequireAuthorization(TemplatingPermissions.Manage)
             .WithTags(options.TagName);
 
@@ -103,14 +103,12 @@ public static partial class TemplatingEndpointRouteBuilderExtensions
         group.MapPost("/", HandleCreateAsync)
              .WithName("CreateTemplateDraft")
              .WithSummary("Creates a new template draft.")
-             .WithDescription("Creates a new template with an initial draft revision. The template name must be unique. The draft can be previewed and edited before publishing. Returns 201 Created with the template detail.")
-             .ValidateBody<SaveTemplateRequest>();
+             .WithDescription("Creates a new template with an initial draft revision. The template name must be unique. The draft can be previewed and edited before publishing. Returns 201 Created with the template detail.");
 
         group.MapPut("/{name}", HandleUpdateAsync)
              .WithName("UpdateTemplateDraft")
              .WithSummary("Updates an existing template draft.")
-             .WithDescription("Replaces the draft revision content and metadata. Only the draft revision is affected — published and archived revisions are immutable. Creates a new draft if none exists. Returns 404 if the template does not exist.")
-             .ValidateBody<SaveTemplateRequest>();
+             .WithDescription("Replaces the draft revision content and metadata. Only the draft revision is affected — published and archived revisions are immutable. Creates a new draft if none exists. Returns 404 if the template does not exist.");
 
         group.MapDelete("/{name}/draft", HandleDeleteDraftAsync)
              .WithName("DeleteTemplateDraft")
@@ -162,14 +160,12 @@ public static partial class TemplatingEndpointRouteBuilderExtensions
         group.MapPost("/categories", HandleCreateCategoryAsync)
              .WithName("CreateTemplateCategory")
              .WithSummary("Creates a new template category.")
-             .WithDescription("Creates a new template category with the given name and sort order. The name must be unique.")
-             .ValidateBody<SaveTemplateCategoryRequest>();
+             .WithDescription("Creates a new template category with the given name and sort order. The name must be unique.");
 
         group.MapPut("/categories/{id:guid}", HandleUpdateCategoryAsync)
              .WithName("UpdateTemplateCategory")
              .WithSummary("Updates an existing template category.")
-             .WithDescription("Updates the name and sort order of an existing category. Returns 404 if the category does not exist.")
-             .ValidateBody<SaveTemplateCategoryRequest>();
+             .WithDescription("Updates the name and sort order of an existing category. Returns 404 if the category does not exist.");
 
         group.MapDelete("/categories/{id:guid}", HandleDeleteCategoryAsync)
              .WithName("DeleteTemplateCategory")

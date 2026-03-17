@@ -1,5 +1,6 @@
 using Granit.Authorization.Endpoints.Endpoints;
 using Granit.Authorization.Endpoints.Options;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -44,7 +45,7 @@ public static class AuthorizationEndpointRouteBuilderExtensions
         configure?.Invoke(options);
 
         RouteGroupBuilder group = endpoints
-            .MapGroup(options.RoutePrefix)
+            .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
         group.MapMyPermissionsEndpoints();

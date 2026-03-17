@@ -1259,7 +1259,8 @@
         "type": "Project",
         "dependencies": {
           "Granit.AuditLog": "[0.1.0-dev, )",
-          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )"
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
         }
       },
       "granit.auditlog.entityframeworkcore": {
@@ -1354,7 +1355,8 @@
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )"
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
         }
       },
       "granit.authorization.entityframeworkcore": {
@@ -1380,7 +1382,8 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
-          "Granit.Querying": "[0.1.0-dev, )"
+          "Granit.Querying": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
         }
       },
       "granit.backgroundjobs.entityframeworkcore": {
@@ -2262,7 +2265,8 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Timeline": "[0.1.0-dev, )"
+          "Granit.Timeline": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
         }
       },
       "granit.timeline.entityframeworkcore": {
@@ -2292,7 +2296,8 @@
           "FluentValidation": "[12.*, )",
           "FluentValidation.DependencyInjectionExtensions": "[12.*, )",
           "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )"
+          "Granit.Localization": "[0.1.0-dev, )",
+          "Microsoft.AspNetCore.OpenApi": "[10.*, )"
         }
       },
       "granit.validation.ai": {

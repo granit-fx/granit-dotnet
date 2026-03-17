@@ -101,7 +101,7 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
         configure?.Invoke(options);
 
         RouteGroupBuilder group = endpoints
-            .MapGroup($"{options.RoutePrefix}/overrides")
+            .MapGranitGroup($"{options.RoutePrefix}/overrides")
             .RequireAuthorization(LocalizationOverridesPermissions.Manage)
             .WithTags(options.TagName);
 
@@ -115,8 +115,7 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
              .WithName("PutLocalizationOverride")
              .WithSummary("Creates or updates a translation override.")
              .WithDescription("Sets a translation override for a specific resource, culture, and key. If an override already exists, it is replaced. The culture name must be a valid BCP 47 tag. Returns 501 if no override store is registered.")
-             .Produces(StatusCodes.Status204NoContent)
-             .ValidateBody<Dtos.SetLocalizationOverrideRequest>();
+             .Produces(StatusCodes.Status204NoContent);
 
         group.MapDelete("/{resourceName}/{cultureName}/{key}", HandleDeleteOverrideAsync)
              .WithName("DeleteLocalizationOverride")

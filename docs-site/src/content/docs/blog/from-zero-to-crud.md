@@ -136,7 +136,7 @@ The response includes audit fields. The caller sees who created or modified each
 
 ## Step 4: Add FluentValidation
 
-Granit uses **FluentValidation** with structured error codes. Validators are discovered automatically when registered with `AddGranitValidatorsFromAssemblyContaining`. Error messages are returned as codes (e.g., `Granit:Validation:NotEmptyValidator`) that the frontend resolves from its localization dictionary.
+Granit uses **FluentValidation** with structured error codes. Validators are auto-discovered from loaded module assemblies by `GranitValidationModule`. Error messages are returned as codes (e.g., `Granit:Validation:NotEmptyValidator`) that the frontend resolves from its localization dictionary.
 
 ```csharp title="Validators/ProductCreateRequestValidator.cs"
 using FluentValidation;
@@ -145,7 +145,7 @@ using ProductCatalog.Contracts;
 namespace ProductCatalog.Validators;
 
 internal sealed class ProductCreateRequestValidator
-    : AbstractValidator<ProductCreateRequest>
+    : GranitValidator<ProductCreateRequest>
 {
     public ProductCreateRequestValidator()
     {
@@ -167,7 +167,7 @@ Write a matching validator for `ProductUpdateRequest`. The rules are usually ide
 
 ## Step 5: Create the endpoints
 
-Granit uses **Minimal APIs** with route groups. Validation is applied per-endpoint using the `.ValidateBody<T>()` extension method, which adds a `FluentValidationEndpointFilter<T>`. If the request body fails validation, the filter short-circuits with a **422 Unprocessable Entity** response containing `HttpValidationProblemDetails`.
+Granit uses **Minimal APIs** with route groups. Validation is applied **automatically** via `MapGranitGroup()`, which replaces `MapGroup()` and adds a `FluentValidationAutoEndpointFilter` to all endpoints. If the request body fails validation, the filter short-circuits with a **422 Unprocessable Entity** response containing `HttpValidationProblemDetails`.
 
 For errors, always use `TypedResults.Problem` (RFC 7807 Problem Details). Never return raw strings or `BadRequest<string>`.
 
@@ -188,13 +188,13 @@ internal static class ProductEndpoints
     public static void MapProductEndpoints(this IEndpointRouteBuilder routes)
     {
         RouteGroupBuilder group = routes
-            .MapGroup("/api/v1/products")
+            .MapGranitGroup("/api/v1/products")
             .WithTags("Products");
 
         group.MapGet("/", ListProducts);
         group.MapGet("/{id:guid}", GetProduct);
-        group.MapPost("/", CreateProduct).ValidateBody<ProductCreateRequest>();
-        group.MapPut("/{id:guid}", UpdateProduct).ValidateBody<ProductUpdateRequest>();
+        group.MapPost("/", CreateProduct);  // validated automatically
+        group.MapPut("/{id:guid}", UpdateProduct);  // validated automatically
         group.MapDelete("/{id:guid}", DeleteProduct);
     }
 
@@ -342,7 +342,7 @@ public sealed class ProductModule : GranitModule
 
 The `[DependsOn(typeof(GranitPersistenceModule))]` attribute declares a direct dependency. Granit resolves the module graph topologically -- `GranitPersistenceModule` and its own dependencies (`GranitTimingModule`, `GranitGuidsModule`, `GranitSecurityModule`, `GranitExceptionHandlingModule`) are configured first. You only declare **direct** dependencies; transitive ones are resolved automatically.
 
-The validator registration call `AddGranitValidatorsFromAssemblyContaining` scans the assembly for all `IValidator<T>` implementations and registers them as scoped services. Without this call, `FluentValidationEndpointFilter<T>` silently passes through without validation -- a subtle bug that is easy to miss.
+`GranitValidationModule` auto-discovers all `IValidator<T>` implementations from loaded module assemblies and registers them as scoped services. `MapGranitGroup()` applies automatic validation to all endpoints in the route group -- no per-endpoint `.ValidateBody<T>()` calls needed.
 
 Now wire the module into your application:
 

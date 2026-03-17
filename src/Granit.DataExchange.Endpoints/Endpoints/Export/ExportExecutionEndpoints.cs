@@ -5,7 +5,6 @@ using Granit.DataExchange.Endpoints.Internal.Import;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.Timing;
-using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -27,8 +26,7 @@ internal static class ExportExecutionEndpoints
         group.MapPost("/jobs", CreateExportJobAsync)
             .WithName("CreateExportJob")
             .WithSummary("Creates and dispatches an export job (sync or background).")
-            .WithDescription("Creates an export job for the given definition, format, and field selection. Small datasets may complete synchronously; larger ones are dispatched for background processing. Poll the status endpoint to track progress. Returns 400 if the definition name or format is invalid.")
-            .ValidateBody<CreateExportJobRequest>();
+            .WithDescription("Creates an export job for the given definition, format, and field selection. Small datasets may complete synchronously; larger ones are dispatched for background processing. Poll the status endpoint to track progress. Returns 400 if the definition name or format is invalid.");
 
         group.MapGet("/jobs/{jobId:guid}", GetJobStatusAsync)
             .WithName("GetExportJobStatus")

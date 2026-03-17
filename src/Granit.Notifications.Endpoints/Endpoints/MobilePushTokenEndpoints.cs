@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Granit.Core.MultiTenancy;
 using Granit.Notifications.MobilePush;
 using Granit.Timing;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -19,7 +20,7 @@ public static class MobilePushTokenEndpoints
         this IEndpointRouteBuilder endpoints,
         string prefix = "api/notifications/mobile-push/tokens")
     {
-        RouteGroupBuilder group = endpoints.MapGroup(prefix)
+        RouteGroupBuilder group = endpoints.MapGranitGroup(prefix)
             .RequireAuthorization()
             .WithTags("MobilePush");
 

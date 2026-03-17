@@ -3,6 +3,7 @@ using Granit.DataExchange.Endpoints.Endpoints.Import;
 using Granit.DataExchange.Endpoints.Internal.Export;
 using Granit.DataExchange.Endpoints.Internal.Import;
 using Granit.DataExchange.Endpoints.Options;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -77,7 +78,7 @@ public static class DataExchangeEndpointRouteBuilderExtensions
             policy => policy.RequireRole(options.RequiredRole));
 
         RouteGroupBuilder group = endpoints
-            .MapGroup(options.RoutePrefix)
+            .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
         // Import endpoints (listing, upload, mappings, execution, reports)

@@ -1,6 +1,7 @@
 using Granit.Authentication.ApiKeys.Endpoints.Endpoints;
 using Granit.Authentication.ApiKeys.Endpoints.Options;
 using Granit.Authentication.ApiKeys.Endpoints.Permissions;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -59,7 +60,7 @@ public static class ApiKeysEndpointRouteBuilderExtensions
             policy => policy.RequireRole(options.RequiredRole));
 
         RouteGroupBuilder group = endpoints
-            .MapGroup(options.RoutePrefix)
+            .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
         // Read endpoints (list, get by ID)

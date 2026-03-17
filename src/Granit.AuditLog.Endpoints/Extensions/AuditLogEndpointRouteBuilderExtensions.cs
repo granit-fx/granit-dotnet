@@ -1,5 +1,6 @@
 using Granit.AuditLog.Endpoints.Endpoints;
 using Granit.AuditLog.Endpoints.Options;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -43,7 +44,7 @@ public static class AuditLogEndpointRouteBuilderExtensions
             policy => policy.RequireRole(options.RequiredRole));
 
         RouteGroupBuilder group = endpoints
-            .MapGroup(options.RoutePrefix)
+            .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName)
             .RequireAuthorization(options.AuthorizationPolicy);
 

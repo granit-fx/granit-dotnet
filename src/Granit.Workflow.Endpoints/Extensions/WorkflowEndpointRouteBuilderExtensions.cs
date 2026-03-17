@@ -1,3 +1,4 @@
+using Granit.Validation.AspNetCore;
 using Granit.Workflow.Endpoints.Endpoints;
 using Granit.Workflow.Endpoints.Internal;
 using Granit.Workflow.Endpoints.Options;
@@ -57,7 +58,7 @@ public static class WorkflowEndpointRouteBuilderExtensions
             policy => policy.RequireRole(options.RequiredRole));
 
         RouteGroupBuilder group = endpoints
-            .MapGroup(options.RoutePrefix)
+            .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName)
             .RequireAuthorization(WorkflowAuthorizationPolicy.PolicyName);
 

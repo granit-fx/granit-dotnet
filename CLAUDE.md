@@ -147,11 +147,17 @@ Full standards: [`docs/guide/conventions/`](docs/guide/conventions/index.md)
 - **Errors**: Always `TypedResults.Problem(detail, statusCode)` (RFC 7807). Return type: `ProblemHttpResult`.
 - **No entity exposure**: EF entities must NOT be returned — create `*Response` records.
 
-### Validator registration
+### Validation
 
-- Modules with `[assembly: WolverineHandlerModule]` → automatic via `AddGranitWolverine()`
-- Modules **without** Wolverine → MUST call `AddGranitValidatorsFromAssemblyContaining<T>()` manually
-- Without registration, `FluentValidationEndpointFilter<T>` silently skips validation
+- **Auto-validation**: use `endpoints.MapGranitGroup(prefix)` instead of `MapGroup()` — applies
+  `FluentValidationAutoEndpointFilter` automatically to all endpoints in the group
+- **Validator discovery**: `GranitValidationModule` auto-discovers all `IValidator<T>` from
+  loaded module assemblies (no manual registration needed)
+- **Opt-out**: `group.MapPost("/x", Handler).WithMetadata(new SkipAutoValidationAttribute())`
+- **OpenAPI enrichment**: `FluentValidationSchemaTransformer` exposes validation constraints
+  (maxLength, pattern, required, etc.) in the OpenAPI schema for frontend code generators
+- **Architecture tests**: `ValidationConventionTests` ensures all `*Request` types have
+  validators and all route groups use `MapGranitGroup()`
 
 ### Isolated DbContext — MANDATORY for `*.EntityFrameworkCore` packages
 

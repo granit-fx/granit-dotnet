@@ -322,27 +322,36 @@ var api = app.MapGroup("v{version:apiVersion}")
 
 ### Route groups
 
-Endpoints are organized by `MapGroup` with OpenAPI tags:
+Endpoints are organized by `MapGranitGroup` with OpenAPI tags. `MapGranitGroup()`
+replaces `MapGroup()` and automatically applies FluentValidation to all endpoints
+in the group:
 
 ```csharp
-RouteGroupBuilder group = endpoints.MapGroup(prefix)
+RouteGroupBuilder group = endpoints.MapGranitGroup(prefix)
     .RequireAuthorization()
     .WithTags("MobilePush");
 ```
 
-### Validation filter
+### Automatic validation
 
-Attach FluentValidation to endpoints via `.ValidateBody<T>()`:
+All endpoints within a `MapGranitGroup()` route group are automatically validated.
+For each request argument, the filter resolves `IValidator<T>` from DI and validates
+if one exists. No per-endpoint wiring is needed:
 
 ```csharp
-group.MapPost("/", HandleCreate)
-    .ValidateBody<TemplateCreateRequest>();
+// Validated automatically — no .ValidateBody<T>() needed
+group.MapPost("/", HandleCreate);
+group.MapPut("/{id}", HandleUpdate);
 ```
 
-Modules with `[assembly: WolverineHandlerModule]` get automatic validator discovery
-via `AddGranitWolverine()`. Modules without Wolverine handlers must call
-`AddGranitValidatorsFromAssemblyContaining<TValidator>()` manually. Without
-registration, `FluentValidationEndpointFilter<T>` silently skips validation.
+Validators are auto-discovered from all loaded module assemblies by
+`GranitValidationModule`. To opt out of validation on a specific endpoint, use
+`SkipAutoValidationAttribute`:
+
+```csharp
+group.MapPost("/special", HandleSpecial)
+    .WithMetadata(new SkipAutoValidationAttribute());
+```
 
 ## Idempotency
 

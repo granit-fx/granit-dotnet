@@ -1,0 +1,112 @@
+using System.Collections.Concurrent;
+using System.Security.Claims;
+using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Granit.Validation.AspNetCore;
+
+/// <summary>
+/// Non-generic endpoint filter that automatically validates all endpoint arguments
+/// for which an <see cref="IValidator{T}"/> is registered in the DI container.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Applied implicitly via <see cref="GranitEndpointRouteBuilderExtensions.MapGranitGroup"/>,
+/// removing the need for explicit <c>.ValidateBody&lt;T&gt;()</c> calls on each endpoint.
+/// </para>
+/// <para>
+/// When validation fails, returns <c>422 Unprocessable Entity</c> with a
+/// <c>HttpValidationProblemDetails</c> body containing structured error codes
+/// (e.g. <c>Granit:Validation:NotEmptyValidator</c>).
+/// </para>
+/// <para>
+/// Arguments of primitive types, strings, enums, <see cref="CancellationToken"/>,
+/// <see cref="IFormFile"/>, <see cref="Guid"/>, <see cref="HttpContext"/>, and
+/// <see cref="ClaimsPrincipal"/> are skipped. If no validator is registered for
+/// a complex argument type, the filter passes through without error.
+/// </para>
+/// <para>
+/// Endpoints decorated with <see cref="SkipAutoValidationAttribute"/> via
+/// <c>.WithMetadata(new SkipAutoValidationAttribute())</c> are excluded from
+/// automatic validation.
+/// </para>
+/// </remarks>
+internal sealed class FluentValidationAutoEndpointFilter : IEndpointFilter
+{
+    private static readonly ConcurrentDictionary<Type, Type> ValidatorTypeCache = new();
+
+    /// <inheritdoc/>
+    public async ValueTask<object?> InvokeAsync(
+        EndpointFilterInvocationContext context,
+        EndpointFilterDelegate next)
+    {
+        Endpoint? endpoint = context.HttpContext.GetEndpoint();
+
+        if (endpoint?.Metadata.GetMetadata<SkipAutoValidationAttribute>() is not null)
+        {
+            return await next(context).ConfigureAwait(false);
+        }
+
+        foreach (object? arg in context.Arguments)
+        {
+            if (arg is null)
+            {
+                continue;
+            }
+
+            Type argType = arg.GetType();
+
+            if (!ShouldValidate(argType))
+            {
+                continue;
+            }
+
+            Type validatorType = ValidatorTypeCache.GetOrAdd(
+                argType,
+                static t => typeof(IValidator<>).MakeGenericType(t));
+
+            if (context.HttpContext.RequestServices.GetService(validatorType)
+                is not IValidator validator)
+            {
+                continue;
+            }
+
+            IValidationContext validationContext = new ValidationContext<object>(arg);
+
+            ValidationResult result = await validator
+                .ValidateAsync(validationContext, context.HttpContext.RequestAborted)
+                .ConfigureAwait(false);
+
+            if (!result.IsValid)
+            {
+                // Results.ValidationProblem is needed (not TypedResults.ValidationProblem)
+                // to enforce 422 status code.
+#pragma warning disable GRAPI001
+                return Results.ValidationProblem(
+                    result.ToDictionary(),
+                    statusCode: StatusCodes.Status422UnprocessableEntity);
+#pragma warning restore GRAPI001
+            }
+        }
+
+        return await next(context).ConfigureAwait(false);
+    }
+
+    private static bool ShouldValidate(Type type) =>
+        !type.IsPrimitive
+        && !type.IsEnum
+        && type != typeof(string)
+        && type != typeof(Guid)
+        && type != typeof(DateTime)
+        && type != typeof(DateTimeOffset)
+        && type != typeof(DateOnly)
+        && type != typeof(TimeOnly)
+        && type != typeof(decimal)
+        && type != typeof(CancellationToken)
+        && type != typeof(HttpContext)
+        && !typeof(ClaimsPrincipal).IsAssignableFrom(type)
+        && !typeof(IFormFile).IsAssignableFrom(type)
+        && !typeof(IFormFileCollection).IsAssignableFrom(type);
+}

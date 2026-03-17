@@ -5,7 +5,6 @@ using Granit.Querying.Endpoints.Dtos;
 using Granit.Querying.SavedViews;
 using Granit.Querying.SavedViews.Domain;
 using Granit.Timing;
-using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -50,8 +49,7 @@ internal static class SavedViewEndpoints
             CreateAsync(request, store, guidGenerator, entityType, tenant, user, clock, cancellationToken))
             .WithName($"CreateSavedView_{entityType}")
             .WithSummary("Creates a new saved view.")
-            .WithDescription("Creates a new saved view for the current user and entity type. The view stores a reusable query configuration (filters, sort, column selection). Returns 201 Created with the saved view details.")
-            .ValidateBody<CreateSavedViewRequest>();
+            .WithDescription("Creates a new saved view for the current user and entity type. The view stores a reusable query configuration (filters, sort, column selection). Returns 201 Created with the saved view details.");
 
         savedViews.MapPut("/{id:guid}", (
             Guid id,
@@ -63,8 +61,7 @@ internal static class SavedViewEndpoints
             UpdateAsync(id, request, reader, writer, clock, cancellationToken))
             .WithName($"UpdateSavedView_{entityType}")
             .WithSummary("Updates an existing saved view.")
-            .WithDescription("Replaces the name, filter, sort, and column selection of an existing saved view. Returns 404 if the view does not exist.")
-            .ValidateBody<UpdateSavedViewRequest>();
+            .WithDescription("Replaces the name, filter, sort, and column selection of an existing saved view. Returns 404 if the view does not exist.");
 
         savedViews.MapDelete("/{id:guid}", (
             Guid id,

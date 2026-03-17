@@ -1,6 +1,6 @@
 ---
 title: Validation
-description: FluentValidation integration with structured error codes, international validators (IBAN, BIC, E.164, ISO 3166), and EU regulatory validators (France, Belgium).
+description: FluentValidation integration with automatic endpoint validation, structured error codes, OpenAPI schema enrichment, and international validators (IBAN, BIC, E.164, ISO 3166).
 sidebar:
   order: 6
 ---
@@ -15,22 +15,24 @@ IBAN checks, phone number formats, and national ID validation in every project �
 inconsistent error messages and no structured error codes for frontend consumption.
 
 Granit.Validation provides a single place for validation logic: validators are
-auto-discovered, wired into the Minimal API pipeline, and return RFC 7807 problem
-details with stable, machine-readable error codes. The international validator library
-(IBAN, BIC, E.164, ISO 3166) and the European regulatory validators (NISS, NIR, SIREN,
-VAT, INAMI) are battle-tested and locale-aware — so you validate once, correctly,
-instead of copying regex patterns from Stack Overflow.
+auto-discovered, and validation is applied **automatically** to all Minimal API endpoints
+via `MapGranitGroup()`. When validation fails, the filter returns RFC 7807 problem
+details with stable, machine-readable error codes. Validation constraints are also
+**exposed in the OpenAPI schema** so frontend code generators can enforce the same rules
+client-side.
 
 ## Package structure
 
 <FileTree>
-- Granit.Validation/ GranitValidator, international validators, endpoint filter
+- Granit.Validation/ GranitValidator, auto-validation filter, OpenAPI enrichment
   - Granit.Validation.Europe France/Belgium regulatory validators
+  - Granit.Validation.NorthAmerica US/Canada validators
+  - Granit.Validation.UnitedKingdom UK validators
 </FileTree>
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.Validation` | `GranitValidator<T>`, international validators, endpoint filter | `Granit.Http.ExceptionHandling`, `Granit.Localization` |
+| `Granit.Validation` | `GranitValidator<T>`, auto-validation filter, OpenAPI enrichment | `Granit.Http.ExceptionHandling`, `Granit.Localization` |
 | `Granit.Validation.Europe` | France/Belgium-specific validators (NISS, NIR, SIREN, VAT) | `Granit.Validation`, `Granit.Localization` |
 
 ## Setup
@@ -41,12 +43,7 @@ public class AppModule : GranitModule { }
 ```
 
 The module auto-discovers all `IValidator<T>` implementations from loaded module
-assemblies. Manual registration is only needed for modules without the Wolverine
-handler attribute:
-
-```csharp
-services.AddGranitValidatorsFromAssemblyContaining<CreatePatientRequestValidator>();
-```
+assemblies. No manual registration is needed.
 
 ## Writing validators
 
@@ -73,14 +70,36 @@ public class CreatePatientRequestValidator : GranitValidator<CreatePatientReques
 }
 ```
 
-## Minimal API endpoint filter
+## Automatic endpoint validation
 
-Apply validation to Minimal API endpoints with `.ValidateBody<T>()`:
+Validation is applied **automatically** to all endpoints within a `MapGranitGroup()`
+route group. No per-endpoint wiring is needed.
+
+### How it works
+
+Use `MapGranitGroup()` instead of `MapGroup()` when creating route groups:
 
 ```csharp
-app.MapPost("/api/v1/patients", CreatePatient)
-    .ValidateBody<CreatePatientRequest>();
+RouteGroupBuilder group = endpoints
+    .MapGranitGroup(options.RoutePrefix)  // ← auto-validation included
+    .RequireAuthorization()
+    .WithTags("Patients");
+
+group.MapPost("/", CreatePatient);   // validated automatically
+group.MapPut("/{id}", UpdatePatient); // validated automatically
+group.MapGet("/", ListPatients);      // no body → skipped
 ```
+
+`MapGranitGroup()` applies a `FluentValidationAutoEndpointFilter` to all endpoints in
+the group. For each request, the filter:
+
+1. Inspects all endpoint arguments
+2. Skips primitives, strings, `Guid`, `CancellationToken`, `HttpContext`, enums
+3. For each complex argument, resolves `IValidator<T>` from DI
+4. If a validator is found and validation fails → **422 Unprocessable Entity**
+5. If no validator is registered → passes through silently
+
+### Validation response
 
 When validation fails, the filter returns `422 Unprocessable Entity` with a
 `HttpValidationProblemDetails` body:
@@ -96,10 +115,53 @@ When validation fails, the filter returns `422 Unprocessable Entity` with a
 }
 ```
 
+### Opting out
+
+To skip auto-validation on a specific endpoint, use `SkipAutoValidationAttribute`:
+
+```csharp
+group.MapPost("/special", HandleSpecial)
+    .WithMetadata(new SkipAutoValidationAttribute());
+```
+
 :::tip
-If no `IValidator<T>` is registered, the filter passes through silently. This
-allows gradual adoption: add validators incrementally without breaking endpoints.
+If no `IValidator<T>` is registered for an argument type, the filter passes through
+silently. This means query/filter DTOs, pagination objects, and other types that do not
+need validation work without any special handling.
 :::
+
+## OpenAPI schema enrichment
+
+`GranitValidationModule` registers a `FluentValidationSchemaTransformer` that
+automatically enriches OpenAPI schemas with validation constraints extracted from
+your `IValidator<T>` implementations.
+
+### What gets exposed
+
+| FluentValidation rule | OpenAPI property |
+| --------------------- | ---------------- |
+| `NotEmpty()` / `NotNull()` | `required` |
+| `MaximumLength(n)` | `maxLength: n` |
+| `MinimumLength(n)` | `minLength: n` |
+| `Length(min, max)` | `minLength + maxLength` |
+| `GreaterThanOrEqualTo(n)` | `minimum: n` |
+| `GreaterThan(n)` | `exclusiveMinimum: n` |
+| `LessThanOrEqualTo(n)` | `maximum: n` |
+| `LessThan(n)` | `exclusiveMaximum: n` |
+| `InclusiveBetween(a, b)` | `minimum + maximum` |
+| `Matches(regex)` | `pattern: regex` |
+| `EmailAddress()` | `format: "email"` |
+| Custom (IBAN, E.164...) | `x-granit-validator: "Granit:Validation:InvalidIban"` |
+| `MustAsync()` / async rules | Ignored (no static OpenAPI equivalent) |
+
+### Frontend benefit
+
+TypeScript code generators (openapi-typescript, orval) automatically include these
+constraints in generated types. The frontend can:
+
+- Display `maxLength` on `<input>` elements
+- Validate client-side with the same rules before sending the request
+- Use `x-granit-validator` extensions for custom validations (IBAN, E.164)
 
 ## International validators
 
@@ -217,15 +279,26 @@ public class RegisterClinicRequestValidator : GranitValidator<RegisterClinicRequ
 | `.BelgianPostalCode()` | BE | 4 digits (1000-9999) | -- |
 | `.FrenchInseeCode()` | FR | 5 chars (dept + commune) | Supports 2A/2B (Corse), DOM 971-976 |
 
+## Architecture tests
+
+Two architecture tests in `Granit.ArchitectureTests` enforce validation conventions:
+
+1. **`Request_types_in_Endpoints_should_have_validators`** — every `*Request` type in
+   `.Endpoints` assemblies must have a corresponding `IValidator<T>` implementation
+2. **`Top_level_route_groups_should_use_MapGranitGroup`** — top-level route groups must
+   use `MapGranitGroup()` instead of `MapGroup()` to ensure auto-validation is active
+
 ## Public API summary
 
 | Category | Key types | Package |
 | -------- | --------- | ------- |
 | Modules | `GranitValidationModule`, `GranitValidationEuropeModule` | -- |
-| Validation | `GranitValidator<T>`, `FluentValidationEndpointFilter<T>`, `.ValidateBody<T>()`, `.WithErrorCodeAndMessage()` | `Granit.Validation` |
+| Auto-validation | `MapGranitGroup()`, `FluentValidationAutoEndpointFilter`, `SkipAutoValidationAttribute` | `Granit.Validation` |
+| OpenAPI | `FluentValidationSchemaTransformer` | `Granit.Validation` |
+| Validation | `GranitValidator<T>`, `.WithErrorCodeAndMessage()` | `Granit.Validation` |
 | International validators | `.Email()`, `.E164Phone()`, `.Iban()`, `.BicSwift()`, `.SepaCreditorIdentifier()`, `.Iso3166Alpha2CountryCode()`, `.Bcp47LanguageTag()` | `Granit.Validation` |
 | European validators | `.BelgianNiss()`, `.FrenchNir()`, `.BelgianEid()`, `.FrenchSiren()`, `.FrenchSiret()`, `.BelgianBce()`, `.FrenchNafCode()`, `.BelgianVat()`, `.FrenchVat()`, `.EuropeanVat()`, `.FrenchRib()`, `.BelgianAccountNumber()`, `.FrenchRpps()`, `.FrenchAdeli()`, `.FrenchFiness()`, `.BelgianInami()`, `.FrenchPostalCode()`, `.BelgianPostalCode()`, `.FrenchInseeCode()` | `Granit.Validation.Europe` |
-| Extensions | `AddGranitValidation()`, `AddGranitValidatorsFromAssemblyContaining<T>()` | -- |
+| Extensions | `AddGranitValidation()` | -- |
 
 ## When to use — and when not to
 
@@ -245,17 +318,11 @@ Skip it when:
 
 ## Common pitfalls
 
-:::caution[Validators not auto-discovered]
-Validators are auto-discovered from module assemblies that have `[WolverineHandlerModule]`.
-If your module does **not** use Wolverine, you must call
-`AddGranitValidatorsFromAssemblyContaining<T>()` manually — otherwise
-`FluentValidationEndpointFilter<T>` silently skips validation (no error, no 422).
-:::
-
-:::caution[Missing `.ValidateBody<T>()` on endpoint]
-Registering a validator is not enough — you must also chain `.ValidateBody<T>()` on
-the Minimal API endpoint. Without this filter, the validator exists in DI but is never
-invoked.
+:::caution[Always use `MapGranitGroup()` for route groups]
+Use `endpoints.MapGranitGroup(prefix)` instead of `endpoints.MapGroup(prefix)` in
+`.Endpoints` packages. Without `MapGranitGroup()`, validation is not applied even if
+validators are registered. The architecture test
+`Top_level_route_groups_should_use_MapGranitGroup` catches this at build time.
 :::
 
 :::caution[`GranitValidator<T>` vs `AbstractValidator<T>`]

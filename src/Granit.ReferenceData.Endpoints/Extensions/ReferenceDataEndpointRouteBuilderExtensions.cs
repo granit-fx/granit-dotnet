@@ -1,6 +1,7 @@
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Endpoints.Endpoints;
 using Granit.ReferenceData.Endpoints.Options;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -59,7 +60,7 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
         string entitySegment = ToKebabCase(typeof(TEntity).Name);
 
         RouteGroupBuilder group = endpoints
-            .MapGroup($"{options.RoutePrefix}/{entitySegment}")
+            .MapGranitGroup($"{options.RoutePrefix}/{entitySegment}")
             .WithTags(options.TagName);
 
         group.MapReadEndpoints<TEntity>();

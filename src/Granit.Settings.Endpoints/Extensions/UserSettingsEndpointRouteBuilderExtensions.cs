@@ -33,7 +33,7 @@ public static class UserSettingsEndpointRouteBuilderExtensions
         configure?.Invoke(options);
 
         RouteGroupBuilder group = endpoints
-            .MapGroup(options.UserRoutePrefix)
+            .MapGranitGroup(options.UserRoutePrefix)
             .RequireAuthorization()
             .WithTags(options.TagName);
 
@@ -55,8 +55,7 @@ public static class UserSettingsEndpointRouteBuilderExtensions
              .WithSummary("Sets a user-level setting value.")
              .WithDescription("Sets a user-level override for the specified setting. This value takes precedence over tenant and global values for this user. Pass null to clear. Returns 404 if the setting name is not defined.")
              .Produces(StatusCodes.Status204NoContent)
-             .ProducesProblem(StatusCodes.Status404NotFound)
-             .ValidateBody<UpdateSettingValueRequest>();
+             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapDelete("/{name}", HandleDeleteUserSettingAsync)
              .WithName("DeleteUserSetting")

@@ -1,11 +1,14 @@
 // =============================================================================
-// Tests - FluentValidationEndpointFilter<T>
+// Tests - FluentValidationAutoEndpointFilter
 // =============================================================================
 // Verifies:
 //   - Valid request passes through to next delegate
 //   - Invalid request returns 422 with ValidationProblemDetails
-//   - Missing validator passes through (graceful degradation)
-//   - Missing argument passes through
+//   - No validator registered → passes through (graceful degradation)
+//   - Primitive / string arguments are skipped
+//   - [SkipAutoValidation] metadata skips validation
+//   - Multiple errors returned (CascadeMode.Continue via GranitValidator)
+//   - Null arguments are skipped
 // =============================================================================
 
 // Results.Ok() is used as a mock return value in EndpointFilterDelegate — not an endpoint.
@@ -21,7 +24,7 @@ using Xunit;
 
 namespace Granit.Validation.Tests;
 
-public sealed class FluentValidationEndpointFilterTests
+public sealed class FluentValidationAutoEndpointFilterTests
 {
     // -------------------------------------------------------------------------
     // Valid request → passes through
@@ -31,7 +34,7 @@ public sealed class FluentValidationEndpointFilterTests
     public async Task InvokeAsync_ValidRequest_CallsNext()
     {
         TestRequest request = new("Alice", 25);
-        FluentValidationEndpointFilter<TestRequest> filter = new();
+        FluentValidationAutoEndpointFilter filter = new();
 
         bool nextCalled = false;
         EndpointFilterDelegate next = _ =>
@@ -56,7 +59,7 @@ public sealed class FluentValidationEndpointFilterTests
     public async Task InvokeAsync_InvalidRequest_Returns422()
     {
         TestRequest request = new("", -1);
-        FluentValidationEndpointFilter<TestRequest> filter = new();
+        FluentValidationAutoEndpointFilter filter = new();
 
         bool nextCalled = false;
         EndpointFilterDelegate next = _ =>
@@ -86,7 +89,7 @@ public sealed class FluentValidationEndpointFilterTests
     public async Task InvokeAsync_NoValidator_CallsNext()
     {
         TestRequest request = new("", -1);
-        FluentValidationEndpointFilter<TestRequest> filter = new();
+        FluentValidationAutoEndpointFilter filter = new();
 
         bool nextCalled = false;
         EndpointFilterDelegate next = _ =>
@@ -104,13 +107,13 @@ public sealed class FluentValidationEndpointFilterTests
     }
 
     // -------------------------------------------------------------------------
-    // No argument of type T → passes through
+    // Primitive arguments are skipped
     // -------------------------------------------------------------------------
 
     [Fact]
-    public async Task InvokeAsync_NoMatchingArgument_CallsNext()
+    public async Task InvokeAsync_PrimitiveArgument_CallsNext()
     {
-        FluentValidationEndpointFilter<TestRequest> filter = new();
+        FluentValidationAutoEndpointFilter filter = new();
 
         bool nextCalled = false;
         EndpointFilterDelegate next = _ =>
@@ -120,7 +123,7 @@ public sealed class FluentValidationEndpointFilterTests
         };
 
         DefaultEndpointFilterInvocationContext context =
-            CreateContext(argument: "not a TestRequest", withValidator: true);
+            CreateContext(argument: 42, withValidator: false);
 
         await filter.InvokeAsync(context, next);
 
@@ -128,14 +131,111 @@ public sealed class FluentValidationEndpointFilterTests
     }
 
     // -------------------------------------------------------------------------
-    // Multiple errors returned (CascadeMode.Continue)
+    // String arguments are skipped
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task InvokeAsync_StringArgument_CallsNext()
+    {
+        FluentValidationAutoEndpointFilter filter = new();
+
+        bool nextCalled = false;
+        EndpointFilterDelegate next = _ =>
+        {
+            nextCalled = true;
+            return ValueTask.FromResult<object?>(Results.Ok());
+        };
+
+        DefaultEndpointFilterInvocationContext context =
+            CreateContext(argument: "some string", withValidator: false);
+
+        await filter.InvokeAsync(context, next);
+
+        nextCalled.ShouldBeTrue();
+    }
+
+    // -------------------------------------------------------------------------
+    // Guid arguments are skipped
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task InvokeAsync_GuidArgument_CallsNext()
+    {
+        FluentValidationAutoEndpointFilter filter = new();
+
+        bool nextCalled = false;
+        EndpointFilterDelegate next = _ =>
+        {
+            nextCalled = true;
+            return ValueTask.FromResult<object?>(Results.Ok());
+        };
+
+        DefaultEndpointFilterInvocationContext context =
+            CreateContext(argument: Guid.NewGuid(), withValidator: false);
+
+        await filter.InvokeAsync(context, next);
+
+        nextCalled.ShouldBeTrue();
+    }
+
+    // -------------------------------------------------------------------------
+    // Null arguments are skipped
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task InvokeAsync_NullArgument_CallsNext()
+    {
+        FluentValidationAutoEndpointFilter filter = new();
+
+        bool nextCalled = false;
+        EndpointFilterDelegate next = _ =>
+        {
+            nextCalled = true;
+            return ValueTask.FromResult<object?>(Results.Ok());
+        };
+
+        DefaultEndpointFilterInvocationContext context =
+            CreateContext(argument: null!, withValidator: true);
+
+        await filter.InvokeAsync(context, next);
+
+        nextCalled.ShouldBeTrue();
+    }
+
+    // -------------------------------------------------------------------------
+    // [SkipAutoValidation] → skips validation
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task InvokeAsync_SkipAutoValidation_CallsNext()
+    {
+        TestRequest request = new("", -1);
+        FluentValidationAutoEndpointFilter filter = new();
+
+        bool nextCalled = false;
+        EndpointFilterDelegate next = _ =>
+        {
+            nextCalled = true;
+            return ValueTask.FromResult<object?>(Results.Ok());
+        };
+
+        DefaultEndpointFilterInvocationContext context =
+            CreateContext(request, withValidator: true, skipAutoValidation: true);
+
+        await filter.InvokeAsync(context, next);
+
+        nextCalled.ShouldBeTrue();
+    }
+
+    // -------------------------------------------------------------------------
+    // Multiple errors returned (CascadeMode.Continue via GranitValidator)
     // -------------------------------------------------------------------------
 
     [Fact]
     public async Task InvokeAsync_MultipleErrors_ReturnsAllErrors()
     {
         TestRequest request = new("", -1);
-        FluentValidationEndpointFilter<TestRequest> filter = new();
+        FluentValidationAutoEndpointFilter filter = new();
 
         EndpointFilterDelegate next = _ => ValueTask.FromResult<object?>(Results.Ok());
 
@@ -150,11 +250,35 @@ public sealed class FluentValidationEndpointFilterTests
     }
 
     // -------------------------------------------------------------------------
+    // CancellationToken argument is skipped
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task InvokeAsync_CancellationTokenArgument_CallsNext()
+    {
+        FluentValidationAutoEndpointFilter filter = new();
+
+        bool nextCalled = false;
+        EndpointFilterDelegate next = _ =>
+        {
+            nextCalled = true;
+            return ValueTask.FromResult<object?>(Results.Ok());
+        };
+
+        DefaultEndpointFilterInvocationContext context =
+            CreateContext(argument: CancellationToken.None, withValidator: false);
+
+        await filter.InvokeAsync(context, next);
+
+        nextCalled.ShouldBeTrue();
+    }
+
+    // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 
     private static DefaultEndpointFilterInvocationContext CreateContext(
-        object argument, bool withValidator)
+        object argument, bool withValidator, bool skipAutoValidation = false)
     {
         ServiceCollection services = new();
 
@@ -169,6 +293,15 @@ public sealed class FluentValidationEndpointFilterTests
         {
             RequestServices = serviceProvider,
         };
+
+        if (skipAutoValidation)
+        {
+            Endpoint endpoint = new(
+                _ => Task.CompletedTask,
+                new EndpointMetadataCollection(new SkipAutoValidationAttribute()),
+                "TestEndpoint");
+            httpContext.SetEndpoint(endpoint);
+        }
 
         return new DefaultEndpointFilterInvocationContext(httpContext, argument);
     }

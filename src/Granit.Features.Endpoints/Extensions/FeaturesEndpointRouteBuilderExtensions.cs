@@ -32,7 +32,7 @@ public static class FeaturesEndpointRouteBuilderExtensions
         configure?.Invoke(options);
 
         RouteGroupBuilder group = endpoints
-            .MapGroup(options.RoutePrefix)
+            .MapGranitGroup(options.RoutePrefix)
             .RequireAuthorization()
             .WithTags(options.TagName);
 
@@ -90,8 +90,7 @@ public static class FeaturesEndpointRouteBuilderExtensions
              .WithDescription("Creates or updates a tenant-level override for the specified feature. The value is validated against the feature's value type (Toggle: true/false, Numeric: min/max bounds, Selection: allowed values). Returns 404 if the feature is not declared. Requires the Features.Manage permission.")
              .Produces(StatusCodes.Status204NoContent)
              .ProducesProblem(StatusCodes.Status404NotFound)
-             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
-             .ValidateBody<SetFeatureOverrideRequest>();
+             .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapDelete("/overrides/{name}", HandleDeleteOverrideAsync)
              .RequireAuthorization(FeaturesPermissions.Manage)

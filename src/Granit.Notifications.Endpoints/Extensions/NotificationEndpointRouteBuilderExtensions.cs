@@ -7,6 +7,7 @@ using Granit.Notifications.Endpoints.Dtos;
 using Granit.Notifications.Endpoints.Options;
 using Granit.Querying;
 using Granit.Timing;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -33,7 +34,7 @@ public static class NotificationEndpointRouteBuilderExtensions
         NotificationEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        RouteGroupBuilder group = endpoints.MapGroup(options.RoutePrefix)
+        RouteGroupBuilder group = endpoints.MapGranitGroup(options.RoutePrefix)
             .RequireAuthorization()
             .WithTags(options.TagName);
 

@@ -6,6 +6,8 @@ using Granit.Localization;
 using Granit.Localization.Options;
 using Granit.Validation.Extensions;
 using Granit.Validation.Internal;
+using Granit.Validation.OpenApi;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Validation;
@@ -52,5 +54,12 @@ public sealed class GranitValidationModule : GranitModule
             context.Services.AddValidatorsFromAssembly(
                 assembly, ServiceLifetime.Scoped, includeInternalTypes: true);
         }
+
+        // Enrich OpenAPI schemas with FluentValidation constraints
+        // (maxLength, minLength, pattern, required, etc.)
+        context.Services.AddOpenApi(options =>
+        {
+            options.AddSchemaTransformer<FluentValidationSchemaTransformer>();
+        });
     }
 }

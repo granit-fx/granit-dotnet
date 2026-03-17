@@ -3,6 +3,7 @@ using Granit.Querying.Endpoints.Internal;
 using Granit.Querying.Endpoints.Options;
 using Granit.Querying.Meta;
 using Granit.Querying.SavedViews;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -54,7 +55,7 @@ public static class QueryEndpointRouteBuilderExtensions
         string tag = options.TagName ?? typeof(TEntity).Name;
         string entityName = typeof(TEntity).Name;
 
-        RouteGroupBuilder group = endpoints.MapGroup(pattern).WithTags(tag);
+        RouteGroupBuilder group = endpoints.MapGranitGroup(pattern).WithTags(tag);
 
         if (options.AuthorizationPolicy is not null)
         {
