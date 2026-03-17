@@ -92,6 +92,7 @@
     <ProjectReference Include="..\..\src\Granit.Encryption.ReEncryption\Granit.Encryption.ReEncryption.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
     <ProjectReference Include="..\..\src\Granit.Features\Granit.Features.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Features.Endpoints\Granit.Features.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Features.EntityFrameworkCore\Granit.Features.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Idempotency\Granit.Http.Idempotency.csproj" />

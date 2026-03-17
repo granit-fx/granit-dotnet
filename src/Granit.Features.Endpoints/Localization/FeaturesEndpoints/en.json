@@ -1,0 +1,8 @@
+{
+  "culture": "en",
+  "texts": {
+    "PermissionGroup:Features": "Features",
+    "Permission:Features.Read": "View feature definitions",
+    "Permission:Features.Manage": "Manage feature overrides (set, delete)"
+  }
+}

@@ -16,6 +16,7 @@ support gating via attributes, middleware, and imperative checks.
 <FileTree>
 
 - Granit.Features/ SaaS feature management (Toggle/Numeric/Selection)
+  - Granit.Features.Endpoints Feature definitions, values, and override HTTP endpoints
   - Granit.Features.EntityFrameworkCore Isolated FeaturesDbContext
 
 </FileTree>
@@ -23,6 +24,7 @@ support gating via attributes, middleware, and imperative checks.
 | Package | Role | Depends on |
 |---------|------|------------|
 | `Granit.Features` | `IFeatureChecker`, `IFeatureLimitGuard`, plan-based cascade | `Granit.Caching`, `Granit.Localization` |
+| `Granit.Features.Endpoints` | Definitions, values, and override HTTP endpoints | `Granit.Features`, `Granit.Authorization`, `Granit.Validation` |
 | `Granit.Features.EntityFrameworkCore` | `FeaturesDbContext` (isolated) | `Granit.Features`, `Granit.Persistence` |
 
 ## Dependency graph
@@ -31,6 +33,9 @@ support gating via attributes, middleware, and imperative checks.
 graph TD
     F[Granit.Features] --> CA[Granit.Caching]
     F --> L[Granit.Localization]
+    FEP[Granit.Features.Endpoints] --> F
+    FEP --> A[Granit.Authorization]
+    FEP --> V[Granit.Validation]
     FEF[Granit.Features.EntityFrameworkCore] --> F
     FEF --> P[Granit.Persistence]
 ```
@@ -60,6 +65,22 @@ public class AppModule : GranitModule { }
 ```csharp
 builder.AddGranitFeaturesEntityFrameworkCore(opt =>
     opt.UseNpgsql(connectionString));
+```
+
+</TabItem>
+<TabItem label="With endpoints">
+
+```csharp
+[DependsOn(
+    typeof(GranitFeaturesModule),
+    typeof(GranitFeaturesEntityFrameworkCoreModule),
+    typeof(GranitFeaturesEndpointsModule))]
+public class AppModule : GranitModule { }
+```
+
+```csharp
+// Program.cs — map endpoints
+app.MapGranitFeatures();  // GET/PUT/DELETE /features/*
 ```
 
 </TabItem>
@@ -221,14 +242,36 @@ public interface IFeatureStoreWriter
 }
 ```
 
+## Endpoints
+
+`Granit.Features.Endpoints` exposes REST endpoints for browsing definitions, reading
+resolved values, and managing tenant-level overrides.
+
+| Scope | Method | Route | Permission |
+|-------|--------|-------|------------|
+| Definitions | `GET` | `/features/definitions` | `Features.Read` |
+| Values | `GET` | `/features/values` | Authenticated |
+| Values | `GET` | `/features/values/{name}` | Authenticated |
+| Overrides | `PUT` | `/features/overrides/{name}` | `Features.Manage` |
+| Overrides | `DELETE` | `/features/overrides/{name}` | `Features.Manage` |
+
+Override values are validated against the feature's value type before persistence:
+
+- **Toggle** — must be `"true"` or `"false"` (case-insensitive)
+- **Numeric** — must be a valid integer within `NumericConstraint` bounds
+- **Selection** — must be one of the declared `SelectionValues`
+
+Invalid values return HTTP 422 with a descriptive `ProblemDetails` response.
+
 ## Public API summary
 
 | Category | Key types | Package |
 |----------|-----------|---------|
-| Modules | `GranitFeaturesModule`, `GranitFeaturesEntityFrameworkCoreModule` | -- |
+| Modules | `GranitFeaturesModule`, `GranitFeaturesEntityFrameworkCoreModule`, `GranitFeaturesEndpointsModule` | -- |
 | Abstractions | `IFeatureChecker`, `IFeatureLimitGuard`, `IFeatureStoreReader`, `IFeatureStoreWriter` | `Granit.Features` |
 | Definitions | `FeatureDefinition`, `FeatureDefinitionProvider`, `FeatureValueType`, `NumericConstraint`, `SelectionValues` | `Granit.Features` |
 | Gating | `[RequiresFeature]`, `.RequiresFeature()`, `RequiresFeatureMiddleware` | `Granit.Features` |
+| Endpoints | `MapGranitFeatures()`, `FeaturesPermissions`, `FeaturesEndpointsOptions` | `Granit.Features.Endpoints` |
 
 ## See also
 
