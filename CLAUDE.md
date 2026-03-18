@@ -193,10 +193,6 @@ Reference: [`docs/framework/data/persistence.md`](docs/framework/data/persistenc
 
 Each package has `*.Tests` project (xUnit + Shouldly + NSubstitute + Bogus). Part of DoD.
 
-### Markdown
-
-All `.md` must pass `npx markdownlint-cli2 "file.md"` before committing.
-
 ## Anti-patterns — NEVER do this
 
 ### Code
@@ -276,6 +272,11 @@ The docs live in `docs-site/` (Astro + Starlight). Key paths:
 | `docs-site/src/data/constants.ts` | Counters (update when adding packages/patterns/ADRs) |
 
 **When creating a new module**: create `.mdx` in `reference/modules/`, update `PACKAGE_COUNT` in `constants.ts`, add "See also" links from related pages.
+
+## MCP — Roslyn Navigator
+
+Use `roslyn-navigator` MCP tools for semantic navigation — **prefer over Grep/Read for all C# code**.
+Full guide in global `~/.claude/CLAUDE.md`.
 
 ## Definition of Done
 
