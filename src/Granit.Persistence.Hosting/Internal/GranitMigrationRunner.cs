@@ -1,3 +1,4 @@
+using System.Reflection;
 using Granit.Core.Modularity;
 using Granit.Persistence.DataSeeding;
 using Granit.Persistence.Hosting.Options;
@@ -137,7 +138,8 @@ internal sealed partial class GranitMigrationRunner(
         else
         {
             LogMigratingContext(moduleName, dbContextType.Name);
-            var dbContext = (DbContext)scope.ServiceProvider.GetRequiredService(dbContextType);
+            await using DbContext dbContext = await ResolveDbContextAsync(scope.ServiceProvider, dbContextType, ct)
+                .ConfigureAwait(false);
             await dbContext.Database.MigrateAsync(ct).ConfigureAwait(false);
             LogMigratedContext(moduleName, dbContextType.Name);
         }
@@ -157,7 +159,8 @@ internal sealed partial class GranitMigrationRunner(
             await using AsyncServiceScope tenantScope = scopeFactory.CreateAsyncScope();
 
             LogMigratingContextForTenant(moduleName, dbContextType.Name, tenantId);
-            var dbContext = (DbContext)tenantScope.ServiceProvider.GetRequiredService(dbContextType);
+            await using DbContext dbContext = await ResolveDbContextAsync(tenantScope.ServiceProvider, dbContextType, ct)
+                .ConfigureAwait(false);
             await isolator.IsolateAsync(dbContext, tenantId, ct).ConfigureAwait(false);
             await dbContext.Database.MigrateAsync(ct).ConfigureAwait(false);
             LogMigratedContextForTenant(moduleName, dbContextType.Name, tenantId);
@@ -196,6 +199,32 @@ internal sealed partial class GranitMigrationRunner(
         DataSeedContext seedContext = new();
         await seeder.SeedAsync(seedContext, ct).ConfigureAwait(false);
         LogSeedingCompleted();
+    }
+
+    /// <summary>
+    /// Resolves a DbContext from the service provider, preferring IDbContextFactory{T}
+    /// (which correctly scopes interceptors) over direct DbContext resolution.
+    /// </summary>
+    private static async Task<DbContext> ResolveDbContextAsync(
+        IServiceProvider serviceProvider, Type dbContextType, CancellationToken ct)
+    {
+        // Try IDbContextFactory<TContext> first — handles scoped interceptors correctly
+        Type factoryType = typeof(IDbContextFactory<>).MakeGenericType(dbContextType);
+        object? factory = serviceProvider.GetService(factoryType);
+
+        if (factory is not null)
+        {
+            // Call CreateDbContextAsync via reflection (generic method)
+            MethodInfo createMethod = factoryType.GetMethod("CreateDbContextAsync")!;
+            var task = (Task)createMethod.Invoke(factory, [ct])!;
+            await task.ConfigureAwait(false);
+
+            // Extract result from Task<TContext>
+            return (DbContext)((dynamic)task).Result;
+        }
+
+        // Fallback to direct resolution (scoped DbContext)
+        return (DbContext)serviceProvider.GetRequiredService(dbContextType);
     }
 
     private static async Task<bool> HasTenantsAsync(ITenantEnumerator enumerator, CancellationToken ct)
