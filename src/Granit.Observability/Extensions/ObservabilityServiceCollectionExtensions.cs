@@ -25,15 +25,40 @@ public static class ObservabilityServiceCollectionExtensions
         builder.Services
             .AddOptions<ObservabilityOptions>()
             .BindConfiguration(ObservabilityOptions.SectionName)
+            // Apply smart fallbacks when the Observability section is absent or incomplete.
+            // PostConfigure runs after BindConfiguration so explicit config always wins.
+            .PostConfigure<IHostEnvironment>((opts, env) =>
+            {
+                if (string.IsNullOrWhiteSpace(opts.ServiceName) || opts.ServiceName is "unknown-service")
+                {
+                    opts.ServiceName = env.ApplicationName;
+                }
+
+                if (string.IsNullOrWhiteSpace(opts.Environment) || opts.Environment is "development")
+                {
+                    opts.Environment = env.EnvironmentName.ToLowerInvariant();
+                }
+            })
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
         // Read options directly from IConfiguration: the DI container is not yet
         // built at this point, so IOptions<> is not resolvable inside Serilog/OTel configuration.
+        // Apply the same fallbacks as PostConfigure above.
         ObservabilityOptions options = new();
         builder.Configuration
             .GetSection(ObservabilityOptions.SectionName)
             .Bind(options);
+
+        if (string.IsNullOrWhiteSpace(options.ServiceName) || options.ServiceName is "unknown-service")
+        {
+            options.ServiceName = builder.Environment.ApplicationName;
+        }
+
+        if (string.IsNullOrWhiteSpace(options.Environment) || options.Environment is "development")
+        {
+            options.Environment = builder.Environment.EnvironmentName.ToLowerInvariant();
+        }
 
         ConfigureSerilog(builder, options);
         ConfigureOpenTelemetry(builder, options);
