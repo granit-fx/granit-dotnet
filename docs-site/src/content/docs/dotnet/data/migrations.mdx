@@ -1,6 +1,6 @@
 ---
 title: "Migrations"
-description: Three migration approaches for Granit applications — the --migrate CLI mode for production deployments, standard EF Core for development, and Expand & Contract for zero-downtime breaking changes.
+description: Three migration approaches for Granit applications — the CLI mode for production deployments, standard EF Core for development, and Expand & Contract for zero-downtime breaking changes.
 sidebar:
   label: Migrations
   order: 5
@@ -13,7 +13,7 @@ Granit provides two complementary tools for schema management:
 1. **How to _apply_ migrations** — at startup, via `--migrate`, or via a SQL script
 2. **How to handle _breaking_ schema changes** — Expand & Contract for zero-downtime deployments
 
-| | `--migrate` CLI mode | Standard (at startup) | SQL script (CI/CD) | Expand & Contract |
+| | CLI mode | Standard (at startup) | SQL script (CI/CD) | Expand & Contract |
 |---|---|---|---|---|
 | **Package** | `Granit.Persistence.Hosting` | EF Core built-in | EF Core built-in | `Granit.Persistence.Migrations` |
 | **When** | Production, K8s init container | Dev / single instance | Production DDL-only | Zero-downtime breaking changes |
@@ -25,7 +25,7 @@ any migration that must rename, split, or backfill a column without downtime.
 
 ---
 
-## `--migrate` CLI mode
+## CLI mode
 
 `Granit.Persistence.Hosting` adds a first-class `--migrate` CLI mode to any Granit application.
 Running `dotnet run --migrate` (or `docker run myapp --migrate` in CI/CD) applies all pending EF
