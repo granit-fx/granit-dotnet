@@ -6,6 +6,7 @@ using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Notifications.Endpoints.Endpoints;
@@ -44,11 +45,11 @@ public static class MobilePushTokenEndpoints
 
     private static async Task<Results<Created, Ok>> RegisterTokenAsync(
         MobilePushTokenRegisterRequest request,
-        IMobilePushTokenWriter tokenWriter,
-        IMobilePushTokenReader tokenReader,
+        [FromServices] IMobilePushTokenWriter tokenWriter,
+        [FromServices] IMobilePushTokenReader tokenReader,
         ClaimsPrincipal user,
-        ICurrentTenant tenant,
-        IClock clock,
+        [FromServices] ICurrentTenant tenant,
+        [FromServices] IClock clock,
         CancellationToken cancellationToken)
     {
         string userId = GetUserId(user);
@@ -77,8 +78,8 @@ public static class MobilePushTokenEndpoints
 
     private static async Task<NoContent> RemoveTokenAsync(
         string deviceToken,
-        IMobilePushTokenWriter tokenWriter,
-        ICurrentTenant tenant,
+        [FromServices] IMobilePushTokenWriter tokenWriter,
+        [FromServices] ICurrentTenant tenant,
         CancellationToken cancellationToken)
     {
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
@@ -89,9 +90,9 @@ public static class MobilePushTokenEndpoints
     }
 
     private static async Task<Ok<IReadOnlyList<MobilePushTokenResponse>>> GetTokensAsync(
-        IMobilePushTokenReader tokenReader,
+        [FromServices] IMobilePushTokenReader tokenReader,
         ClaimsPrincipal user,
-        ICurrentTenant tenant,
+        [FromServices] ICurrentTenant tenant,
         CancellationToken cancellationToken)
     {
         string userId = GetUserId(user);

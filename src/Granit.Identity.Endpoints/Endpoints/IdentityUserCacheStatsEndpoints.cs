@@ -2,6 +2,7 @@ using Granit.Identity.Endpoints.Dtos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Identity.Endpoints.Endpoints;
@@ -22,7 +23,7 @@ internal static class IdentityUserCacheStatsEndpoints
     }
 
     private static async Task<Ok<IdentityUserCacheStatsResponse>> GetStatsAsync(
-        IUserCacheStats cacheStats,
+        [FromServices] IUserCacheStats cacheStats,
         CancellationToken cancellationToken)
     {
         int total = await cacheStats.GetCountAsync(cancellationToken).ConfigureAwait(false);

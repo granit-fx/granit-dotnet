@@ -9,6 +9,7 @@ using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Features.Endpoints.Extensions;
@@ -106,7 +107,7 @@ public static class FeaturesEndpointRouteBuilderExtensions
     // -------------------------------------------------------------------------
 
     private static Ok<IReadOnlyList<FeatureGroupResponse>> HandleGetDefinitionsAsync(
-        IFeatureDefinitionStore definitionStore)
+        [FromServices] IFeatureDefinitionStore definitionStore)
     {
         IReadOnlyList<FeatureDefinition> all = definitionStore.GetAll();
 
@@ -126,8 +127,8 @@ public static class FeaturesEndpointRouteBuilderExtensions
     // -------------------------------------------------------------------------
 
     private static async Task<Ok<IReadOnlyDictionary<string, string>>> HandleGetAllValuesAsync(
-        IFeatureDefinitionStore definitionStore,
-        IFeatureChecker featureChecker,
+        [FromServices] IFeatureDefinitionStore definitionStore,
+        [FromServices] IFeatureChecker featureChecker,
         CancellationToken cancellationToken)
     {
         IReadOnlyList<FeatureDefinition> definitions = definitionStore.GetAll();
@@ -146,8 +147,8 @@ public static class FeaturesEndpointRouteBuilderExtensions
 
     private static async Task<Results<Ok<FeatureValueResponse>, ProblemHttpResult>> HandleGetValueAsync(
         string name,
-        IFeatureDefinitionStore definitionStore,
-        IFeatureChecker featureChecker,
+        [FromServices] IFeatureDefinitionStore definitionStore,
+        [FromServices] IFeatureChecker featureChecker,
         CancellationToken cancellationToken)
     {
         if (definitionStore.GetOrNull(name) is null)
@@ -169,9 +170,9 @@ public static class FeaturesEndpointRouteBuilderExtensions
     private static async Task<Results<NoContent, ProblemHttpResult>> HandleSetOverrideAsync(
         string name,
         SetFeatureOverrideRequest body,
-        IFeatureDefinitionStore definitionStore,
-        IFeatureStoreWriter storeWriter,
-        ICurrentTenant currentTenant,
+        [FromServices] IFeatureDefinitionStore definitionStore,
+        [FromServices] IFeatureStoreWriter storeWriter,
+        [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
         FeatureDefinition? definition = definitionStore.GetOrNull(name);
@@ -203,9 +204,9 @@ public static class FeaturesEndpointRouteBuilderExtensions
 
     private static async Task<Results<NoContent, ProblemHttpResult>> HandleDeleteOverrideAsync(
         string name,
-        IFeatureDefinitionStore definitionStore,
-        IFeatureStoreWriter storeWriter,
-        ICurrentTenant currentTenant,
+        [FromServices] IFeatureDefinitionStore definitionStore,
+        [FromServices] IFeatureStoreWriter storeWriter,
+        [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
         if (definitionStore.GetOrNull(name) is null)

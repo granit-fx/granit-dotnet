@@ -29,7 +29,7 @@ internal static class WorkflowReadEndpoints
     private static async Task<Ok<PagedResult<TransitionHistoryResponse>>> GetTransitionHistoryAsync(
         string entityType,
         string entityId,
-        IWorkflowHistoryQuery historyQuery,
+        [FromServices] IWorkflowHistoryQuery historyQuery,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = QueryingDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)

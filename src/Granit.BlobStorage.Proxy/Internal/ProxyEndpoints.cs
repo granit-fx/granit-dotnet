@@ -3,6 +3,7 @@ using Granit.BlobStorage.Internal;
 using Granit.BlobStorage.Proxy.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Granit.BlobStorage.Proxy.Internal;
 
@@ -19,8 +20,8 @@ internal static class ProxyEndpoints
     internal static async Task<Results<NoContent, ProblemHttpResult>> HandleUploadAsync(
         string token,
         HttpContext context,
-        IBlobProxyTokenStore tokenStore,
-        IBlobStoreProvider storeProvider,
+        [FromServices] IBlobProxyTokenStore tokenStore,
+        [FromServices] IBlobStoreProvider storeProvider,
         CancellationToken cancellationToken)
     {
         using Activity? activity = BlobStorageProxyActivitySource.Source.StartActivity(BlobStorageProxyActivitySource.Upload);
@@ -74,8 +75,8 @@ internal static class ProxyEndpoints
     /// </summary>
     internal static async Task<Results<FileStreamHttpResult, ProblemHttpResult>> HandleDownloadAsync(
         string token,
-        IBlobProxyTokenStore tokenStore,
-        IBlobStoreProvider storeProvider,
+        [FromServices] IBlobProxyTokenStore tokenStore,
+        [FromServices] IBlobStoreProvider storeProvider,
         CancellationToken cancellationToken)
     {
         using Activity? activity = BlobStorageProxyActivitySource.Source.StartActivity(BlobStorageProxyActivitySource.Download);

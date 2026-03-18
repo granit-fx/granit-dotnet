@@ -5,6 +5,7 @@ using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Authentication.ApiKeys.Endpoints.Endpoints;
@@ -26,10 +27,10 @@ internal static class ApiKeyRotateEndpoints
 
     private static async Task<Results<Ok<ApiKeyRotateResponse>, NotFound>> RotateAsync(
         Guid id,
-        IApiKeyAdminStore adminStore,
-        IApiKeyGenerator generator,
-        IGuidGenerator guidGenerator,
-        IClock clock,
+        [FromServices] IApiKeyAdminStore adminStore,
+        [FromServices] IApiKeyGenerator generator,
+        [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] IClock clock,
         CancellationToken cancellationToken)
     {
         ApiKeyEntry? existing = await adminStore.FindByIdAsync(id, cancellationToken)

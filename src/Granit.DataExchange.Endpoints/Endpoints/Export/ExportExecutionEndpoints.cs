@@ -43,8 +43,8 @@ internal static class ExportExecutionEndpoints
 
     private static async Task<Results<Created<ExportJobResponse>, ProblemHttpResult>> CreateExportJobAsync(
         CreateExportJobRequest request,
-        IExportOrchestrator orchestrator,
-        IServiceProvider serviceProvider,
+        [FromServices] IExportOrchestrator orchestrator,
+        [FromServices] IServiceProvider serviceProvider,
         [FromServices] IClock clock,
         CancellationToken cancellationToken)
     {
@@ -87,7 +87,7 @@ internal static class ExportExecutionEndpoints
 
     private static async Task<Results<Ok<ExportJobResponse>, NotFound>> GetJobStatusAsync(
         Guid jobId,
-        IExportOrchestrator orchestrator,
+        [FromServices] IExportOrchestrator orchestrator,
         CancellationToken cancellationToken)
     {
         ExportJob? job = await orchestrator.GetJobAsync(jobId, cancellationToken).ConfigureAwait(false);
@@ -101,7 +101,7 @@ internal static class ExportExecutionEndpoints
 
     private static async Task<Results<FileStreamHttpResult, NotFound, ProblemHttpResult>> DownloadAsync(
         Guid jobId,
-        IExportOrchestrator orchestrator,
+        [FromServices] IExportOrchestrator orchestrator,
         CancellationToken cancellationToken)
     {
         ExportJob? job = await orchestrator.GetJobAsync(jobId, cancellationToken).ConfigureAwait(false);

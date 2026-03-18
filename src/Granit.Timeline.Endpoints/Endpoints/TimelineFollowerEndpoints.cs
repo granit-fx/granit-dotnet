@@ -3,6 +3,7 @@ using Granit.Timeline.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Timeline.Endpoints.Endpoints;
@@ -35,8 +36,8 @@ internal static class TimelineFollowerEndpoints
     private static async Task<NoContent> FollowAsync(
         string entityType,
         string entityId,
-        ITimelineFollowerService followerService,
-        ICurrentUserService currentUser,
+        [FromServices] ITimelineFollowerService followerService,
+        [FromServices] ICurrentUserService currentUser,
         CancellationToken cancellationToken)
     {
         string userId = currentUser.UserId ?? string.Empty;
@@ -47,8 +48,8 @@ internal static class TimelineFollowerEndpoints
     private static async Task<NoContent> UnfollowAsync(
         string entityType,
         string entityId,
-        ITimelineFollowerService followerService,
-        ICurrentUserService currentUser,
+        [FromServices] ITimelineFollowerService followerService,
+        [FromServices] ICurrentUserService currentUser,
         CancellationToken cancellationToken)
     {
         string userId = currentUser.UserId ?? string.Empty;
@@ -59,7 +60,7 @@ internal static class TimelineFollowerEndpoints
     private static async Task<Ok<IReadOnlyList<string>>> GetFollowersAsync(
         string entityType,
         string entityId,
-        ITimelineFollowerService followerService,
+        [FromServices] ITimelineFollowerService followerService,
         CancellationToken cancellationToken)
     {
         IReadOnlyList<string> followers = await followerService.GetFollowerIdsAsync(entityType, entityId, cancellationToken).ConfigureAwait(false);

@@ -6,6 +6,7 @@ using Granit.DataExchange.Export;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,7 +36,7 @@ internal static class ExportDefinitionEndpoints
     }
 
     private static Ok<IReadOnlyList<ExportDefinitionResponse>> ListDefinitionsAsync(
-        IServiceProvider serviceProvider)
+        [FromServices] IServiceProvider serviceProvider)
     {
         IEnumerable<IExportDefinitionDescriptor> descriptors =
             serviceProvider.GetServices<IExportDefinitionDescriptor>();
@@ -50,7 +51,7 @@ internal static class ExportDefinitionEndpoints
 
     private static Results<Ok<IReadOnlyList<ExportFieldResponse>>, NotFound> GetFieldsAsync(
         string name,
-        IServiceProvider serviceProvider)
+        [FromServices] IServiceProvider serviceProvider)
     {
         IExportDefinitionDescriptor? descriptor =
             ExportDefinitionResolver.FindByName(serviceProvider, name);

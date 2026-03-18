@@ -136,6 +136,45 @@ internal static class AnalyzerTestHelpers
         """;
 
     /// <summary>
+    /// Minimal stubs for ASP.NET Core binding attributes: <c>[FromServices]</c>,
+    /// <c>[FromQuery]</c>, <c>[FromRoute]</c>, <c>[FromBody]</c>, <c>[FromHeader]</c>,
+    /// <c>[FromForm]</c> (from <c>Microsoft.AspNetCore.Mvc</c>) and
+    /// <c>[AsParameters]</c>, <c>IFormFile</c>, <c>IFormFileCollection</c>
+    /// (from <c>Microsoft.AspNetCore.Http</c>) — used by GRAPI003 tests.
+    /// </summary>
+    internal const string MinimalApiBindingStub = """
+        namespace Microsoft.AspNetCore.Http
+        {
+            [System.AttributeUsage(System.AttributeTargets.Parameter)]
+            public sealed class AsParametersAttribute : System.Attribute { }
+
+            public interface IFormFile { }
+            public interface IFormFileCollection { }
+        }
+
+        namespace Microsoft.AspNetCore.Mvc
+        {
+            [System.AttributeUsage(System.AttributeTargets.Parameter)]
+            public sealed class FromServicesAttribute : System.Attribute { }
+
+            [System.AttributeUsage(System.AttributeTargets.Parameter)]
+            public sealed class FromQueryAttribute : System.Attribute { }
+
+            [System.AttributeUsage(System.AttributeTargets.Parameter)]
+            public sealed class FromRouteAttribute : System.Attribute { }
+
+            [System.AttributeUsage(System.AttributeTargets.Parameter)]
+            public sealed class FromBodyAttribute : System.Attribute { }
+
+            [System.AttributeUsage(System.AttributeTargets.Parameter)]
+            public sealed class FromHeaderAttribute : System.Attribute { }
+
+            [System.AttributeUsage(System.AttributeTargets.Parameter)]
+            public sealed class FromFormAttribute : System.Attribute { }
+        }
+        """;
+
+    /// <summary>
     /// Minimal ASP.NET Core stubs for <c>Results</c>, <c>TypedResults</c>, <c>StatusCodes</c>,
     /// and typed result types — used by GRAPI001 and GRAPI002 tests.
     /// </summary>

@@ -4,6 +4,7 @@ using Granit.Timeline.Internal;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Timeline.Endpoints.Endpoints;
@@ -32,9 +33,9 @@ internal static class TimelineEntryEndpoints
         string entityType,
         string entityId,
         PostTimelineEntryRequest request,
-        ITimelineWriter writer,
-        ITimelineFollowerService followerService,
-        ITimelineNotifier notifier,
+        [FromServices] ITimelineWriter writer,
+        [FromServices] ITimelineFollowerService followerService,
+        [FromServices] ITimelineNotifier notifier,
         CancellationToken cancellationToken)
     {
         TimelineEntry entry = await writer.PostEntryAsync(
@@ -83,7 +84,7 @@ internal static class TimelineEntryEndpoints
         string entityType,
         string entityId,
         Guid entryId,
-        ITimelineWriter writer,
+        [FromServices] ITimelineWriter writer,
         CancellationToken cancellationToken)
 #pragma warning restore S1172
     {

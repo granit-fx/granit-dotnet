@@ -1,6 +1,7 @@
 using Granit.Authentication.JwtBearer.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -19,9 +20,9 @@ internal static partial class BackChannelLogoutEndpoint
     public static async Task<Results<Ok, ProblemHttpResult>> HandleAsync(
         HttpRequest request,
         BackChannelLogoutTokenValidator validator,
-        IRevokedSessionStore store,
-        IOptions<JwtBearerAuthOptions> options,
-        ILogger<BackChannelLogoutTokenValidator> logger,
+        [FromServices] IRevokedSessionStore store,
+        [FromServices] IOptions<JwtBearerAuthOptions> options,
+        [FromServices] ILogger<BackChannelLogoutTokenValidator> logger,
         CancellationToken cancellationToken)
     {
         if (!request.HasFormContentType)

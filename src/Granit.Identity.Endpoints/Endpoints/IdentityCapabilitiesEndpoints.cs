@@ -2,6 +2,7 @@ using Granit.Identity.Endpoints.Dtos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Identity.Endpoints.Endpoints;
@@ -22,7 +23,7 @@ internal static class IdentityCapabilitiesEndpoints
     }
 
     private static Ok<IdentityProviderCapabilitiesResponse> GetCapabilities(
-        IIdentityProviderCapabilities capabilities) =>
+        [FromServices] IIdentityProviderCapabilities capabilities) =>
         TypedResults.Ok(new IdentityProviderCapabilitiesResponse(
             capabilities.ProviderName,
             capabilities.SupportsIndividualSessionTermination,

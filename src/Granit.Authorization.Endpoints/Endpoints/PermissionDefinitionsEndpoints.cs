@@ -4,6 +4,7 @@ using Granit.Authorization.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -32,7 +33,7 @@ internal static class PermissionDefinitionsEndpoints
     }
 
     private static Ok<IReadOnlyList<PermissionGroupResponse>> GetDefinitions(
-        IPermissionDefinitionManager definitionManager,
+        [FromServices] IPermissionDefinitionManager definitionManager,
         HttpContext httpContext)
     {
         IStringLocalizerFactory? localizerFactory =

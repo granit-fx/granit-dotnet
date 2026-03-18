@@ -4,6 +4,7 @@ using Granit.Querying.SavedViews;
 using Granit.Querying.SavedViews.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Granit.Querying.Endpoints.Internal;
 
@@ -16,9 +17,9 @@ internal static class QueryEndpointHandler
     /// GET / — Executes a paginated or grouped query.
     /// </summary>
     internal static async Task<IResult> QueryAsync<TEntity>(
-        IQueryEngine<TEntity> engine,
+        [FromServices] IQueryEngine<TEntity> engine,
         BindableQueryRequest request,
-        IQueryable<TEntity> source,
+        [FromServices] IQueryable<TEntity> source,
         CancellationToken cancellationToken)
         where TEntity : class
     {
@@ -42,10 +43,10 @@ internal static class QueryEndpointHandler
     /// GET /meta — Returns query metadata for frontend auto-configuration.
     /// </summary>
     internal static async Task<Ok<QueryMetadata>> GetMetadataAsync<TEntity>(
-        IQueryEngine<TEntity> engine,
-        ISavedViewStoreReader savedViewStore,
+        [FromServices] IQueryEngine<TEntity> engine,
+        [FromServices] ISavedViewStoreReader savedViewStore,
         QueryDefinition<TEntity> definition,
-        Granit.Core.MultiTenancy.ICurrentTenant tenant,
+        [FromServices] Granit.Core.MultiTenancy.ICurrentTenant tenant,
         System.Security.Claims.ClaimsPrincipal user,
         CancellationToken cancellationToken)
         where TEntity : class

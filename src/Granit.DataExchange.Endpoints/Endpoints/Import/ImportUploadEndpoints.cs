@@ -50,9 +50,9 @@ internal static class ImportUploadEndpoints
     private static async Task<Results<Created<ImportJobResponse>, ProblemHttpResult>> UploadAsync(
         IFormFile file,
         [FromForm] string definitionName,
-        IServiceProvider serviceProvider,
-        IImportFileProvider fileProvider,
-        IImportJobWriter jobWriter,
+        [FromServices] IServiceProvider serviceProvider,
+        [FromServices] IImportFileProvider fileProvider,
+        [FromServices] IImportJobWriter jobWriter,
         [FromServices] IGuidGenerator guidGenerator,
         [FromServices] IClock clock,
         CancellationToken cancellationToken)
@@ -110,11 +110,11 @@ internal static class ImportUploadEndpoints
 
     private static async Task<Results<Ok<ImportPreviewResponse>, NotFound>> PreviewAsync(
         Guid jobId,
-        IImportJobReader jobReader,
-        IImportJobWriter jobWriter,
-        IServiceProvider serviceProvider,
-        IImportFileProvider fileProvider,
-        IMappingSuggestionService mappingService,
+        [FromServices] IImportJobReader jobReader,
+        [FromServices] IImportJobWriter jobWriter,
+        [FromServices] IServiceProvider serviceProvider,
+        [FromServices] IImportFileProvider fileProvider,
+        [FromServices] IMappingSuggestionService mappingService,
         CancellationToken cancellationToken)
     {
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
@@ -159,8 +159,8 @@ internal static class ImportUploadEndpoints
     private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> ConfirmMappingsAsync(
         Guid jobId,
         ConfirmMappingsRequest request,
-        IImportJobReader jobReader,
-        IImportJobWriter jobWriter,
+        [FromServices] IImportJobReader jobReader,
+        [FromServices] IImportJobWriter jobWriter,
         CancellationToken cancellationToken)
     {
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);

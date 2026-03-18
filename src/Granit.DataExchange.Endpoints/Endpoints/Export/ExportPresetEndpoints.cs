@@ -6,6 +6,7 @@ using Granit.DataExchange.Export;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.DataExchange.Endpoints.Endpoints.Export;
@@ -41,7 +42,7 @@ internal static class ExportPresetEndpoints
 
     private static async Task<Ok<IReadOnlyList<ExportPresetResponse>>> ListPresetsAsync(
         string definitionName,
-        IExportPresetReader presetReader,
+        [FromServices] IExportPresetReader presetReader,
         CancellationToken cancellationToken)
     {
         IReadOnlyList<ExportPreset> presets =
@@ -57,8 +58,8 @@ internal static class ExportPresetEndpoints
 
     private static async Task<Results<Created, ProblemHttpResult>> SavePresetAsync(
         SaveExportPresetRequest request,
-        IExportPresetWriter presetWriter,
-        IServiceProvider serviceProvider,
+        [FromServices] IExportPresetWriter presetWriter,
+        [FromServices] IServiceProvider serviceProvider,
         CancellationToken cancellationToken)
     {
         IExportDefinitionDescriptor? descriptor =
@@ -99,8 +100,8 @@ internal static class ExportPresetEndpoints
     private static async Task<Results<NoContent, NotFound>> DeletePresetAsync(
         string definitionName,
         string presetName,
-        IExportPresetReader presetReader,
-        IExportPresetWriter presetWriter,
+        [FromServices] IExportPresetReader presetReader,
+        [FromServices] IExportPresetWriter presetWriter,
         CancellationToken cancellationToken)
     {
         ExportPreset? existing =

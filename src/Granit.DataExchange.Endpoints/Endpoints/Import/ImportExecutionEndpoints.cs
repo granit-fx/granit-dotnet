@@ -7,6 +7,7 @@ using Granit.DataExchange.Import.Reporting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.DataExchange.Endpoints.Endpoints.Import;
@@ -47,8 +48,8 @@ internal static class ImportExecutionEndpoints
 
     private static async Task<Results<Accepted, NotFound, ProblemHttpResult>> ExecuteAsync(
         Guid jobId,
-        IImportJobReader jobReader,
-        IImportCommandDispatcher dispatcher,
+        [FromServices] IImportJobReader jobReader,
+        [FromServices] IImportCommandDispatcher dispatcher,
         CancellationToken cancellationToken)
     {
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
@@ -72,8 +73,8 @@ internal static class ImportExecutionEndpoints
 
     private static async Task<Results<Ok<ImportReportResponse>, NotFound, ProblemHttpResult>> DryRunAsync(
         Guid jobId,
-        IImportJobReader jobReader,
-        IImportOrchestrator orchestrator,
+        [FromServices] IImportJobReader jobReader,
+        [FromServices] IImportOrchestrator orchestrator,
         CancellationToken cancellationToken)
     {
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
@@ -96,7 +97,7 @@ internal static class ImportExecutionEndpoints
 
     private static async Task<Results<Ok<ImportJobResponse>, NotFound>> GetStatusAsync(
         Guid jobId,
-        IImportJobReader jobReader,
+        [FromServices] IImportJobReader jobReader,
         CancellationToken cancellationToken)
     {
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
@@ -110,9 +111,9 @@ internal static class ImportExecutionEndpoints
 
     private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> CancelAsync(
         Guid jobId,
-        IImportJobReader jobReader,
-        IImportJobWriter jobWriter,
-        IImportFileProvider fileProvider,
+        [FromServices] IImportJobReader jobReader,
+        [FromServices] IImportJobWriter jobWriter,
+        [FromServices] IImportFileProvider fileProvider,
         CancellationToken cancellationToken)
     {
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);

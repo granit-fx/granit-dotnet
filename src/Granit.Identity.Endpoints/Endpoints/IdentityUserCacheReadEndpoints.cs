@@ -4,6 +4,7 @@ using Granit.Querying;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Identity.Endpoints.Endpoints;
@@ -34,7 +35,7 @@ internal static class IdentityUserCacheReadEndpoints
     }
 
     private static async Task<Ok<PagedResult<IdentityUser>>> SearchAsync(
-        IUserLookupService lookupService,
+        [FromServices] IUserLookupService lookupService,
         [AsParameters] IdentityUserCacheListRequest request,
         CancellationToken cancellationToken)
     {
@@ -52,7 +53,7 @@ internal static class IdentityUserCacheReadEndpoints
 
     private static async Task<Results<Ok<IdentityUser>, NotFound>> GetByIdAsync(
         string userId,
-        IUserLookupService lookupService,
+        [FromServices] IUserLookupService lookupService,
         CancellationToken cancellationToken)
     {
         IdentityUser? user = await lookupService.FindByIdAsync(userId, cancellationToken).ConfigureAwait(false);
@@ -67,7 +68,7 @@ internal static class IdentityUserCacheReadEndpoints
 
     private static async Task<Ok<IReadOnlyList<IdentityUser>>> BatchResolveAsync(
         IdentityUserCacheBatchRequest request,
-        IUserLookupService lookupService,
+        [FromServices] IUserLookupService lookupService,
         CancellationToken cancellationToken)
     {
         IReadOnlyList<IdentityUser> users = await lookupService.FindByIdsAsync(

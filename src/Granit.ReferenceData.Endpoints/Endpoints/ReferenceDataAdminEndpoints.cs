@@ -49,7 +49,7 @@ internal static class ReferenceDataAdminEndpoints
 
     private static async Task<Created> CreateAsync<TEntity>(
         ReferenceDataCreateRequest request,
-        IReferenceDataStoreWriter<TEntity> storeWriter,
+        [FromServices] IReferenceDataStoreWriter<TEntity> storeWriter,
         [FromServices] IGuidGenerator guidGenerator,
         CancellationToken cancellationToken = default)
         where TEntity : ReferenceDataEntity, new()
@@ -86,8 +86,8 @@ internal static class ReferenceDataAdminEndpoints
     private static async Task<Results<Ok, NotFound>> UpdateAsync<TEntity>(
         string code,
         ReferenceDataUpdateRequest request,
-        IReferenceDataStoreReader<TEntity> storeReader,
-        IReferenceDataStoreWriter<TEntity> storeWriter,
+        [FromServices] IReferenceDataStoreReader<TEntity> storeReader,
+        [FromServices] IReferenceDataStoreWriter<TEntity> storeWriter,
         CancellationToken cancellationToken = default)
         where TEntity : ReferenceDataEntity, new()
     {
@@ -123,8 +123,8 @@ internal static class ReferenceDataAdminEndpoints
 
     private static async Task<Results<NoContent, NotFound>> DeactivateAsync<TEntity>(
         string code,
-        IReferenceDataStoreReader<TEntity> storeReader,
-        IReferenceDataStoreWriter<TEntity> storeWriter,
+        [FromServices] IReferenceDataStoreReader<TEntity> storeReader,
+        [FromServices] IReferenceDataStoreWriter<TEntity> storeWriter,
         CancellationToken cancellationToken = default)
         where TEntity : ReferenceDataEntity, new()
     {

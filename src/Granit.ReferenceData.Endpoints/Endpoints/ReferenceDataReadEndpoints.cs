@@ -4,6 +4,7 @@ using Granit.ReferenceData.Endpoints.Dtos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.ReferenceData.Endpoints.Endpoints;
@@ -34,7 +35,7 @@ internal static class ReferenceDataReadEndpoints
     }
 
     private static async Task<Ok<PagedResult<TEntity>>> GetAllAsync<TEntity>(
-        IReferenceDataStoreReader<TEntity> storeReader,
+        [FromServices] IReferenceDataStoreReader<TEntity> storeReader,
         [AsParameters] ReferenceDataQueryParameters parameters,
         CancellationToken cancellationToken = default)
         where TEntity : ReferenceDataEntity
@@ -54,7 +55,7 @@ internal static class ReferenceDataReadEndpoints
 
     private static async Task<Results<Ok<TEntity>, NotFound>> GetByCodeAsync<TEntity>(
         string code,
-        IReferenceDataStoreReader<TEntity> storeReader,
+        [FromServices] IReferenceDataStoreReader<TEntity> storeReader,
         CancellationToken cancellationToken = default)
         where TEntity : ReferenceDataEntity
     {

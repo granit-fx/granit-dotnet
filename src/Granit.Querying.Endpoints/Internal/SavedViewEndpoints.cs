@@ -29,8 +29,8 @@ internal static class SavedViewEndpoints
         RouteGroupBuilder savedViews = group.MapGroup("/saved-views");
 
         savedViews.MapGet("/", (
-            ISavedViewStoreReader store,
-            ICurrentTenant tenant,
+            [FromServices] ISavedViewStoreReader store,
+            [FromServices] ICurrentTenant tenant,
             ClaimsPrincipal user,
             CancellationToken cancellationToken) =>
             GetListAsync(store, entityType, tenant, user, cancellationToken))
@@ -40,9 +40,9 @@ internal static class SavedViewEndpoints
 
         savedViews.MapPost("/", (
             CreateSavedViewRequest request,
-            ISavedViewStoreWriter store,
+            [FromServices] ISavedViewStoreWriter store,
             [FromServices] IGuidGenerator guidGenerator,
-            ICurrentTenant tenant,
+            [FromServices] ICurrentTenant tenant,
             ClaimsPrincipal user,
             [FromServices] IClock clock,
             CancellationToken cancellationToken) =>
@@ -54,8 +54,8 @@ internal static class SavedViewEndpoints
         savedViews.MapPut("/{id:guid}", (
             Guid id,
             UpdateSavedViewRequest request,
-            ISavedViewStoreReader reader,
-            ISavedViewStoreWriter writer,
+            [FromServices] ISavedViewStoreReader reader,
+            [FromServices] ISavedViewStoreWriter writer,
             [FromServices] IClock clock,
             CancellationToken cancellationToken) =>
             UpdateAsync(id, request, reader, writer, clock, cancellationToken))
@@ -65,7 +65,7 @@ internal static class SavedViewEndpoints
 
         savedViews.MapDelete("/{id:guid}", (
             Guid id,
-            ISavedViewStoreWriter store,
+            [FromServices] ISavedViewStoreWriter store,
             CancellationToken cancellationToken) =>
             DeleteAsync(id, store, cancellationToken))
             .WithName($"DeleteSavedView_{entityType}")
@@ -74,7 +74,7 @@ internal static class SavedViewEndpoints
 
         savedViews.MapPost("/{id:guid}/set-default", (
             Guid id,
-            ISavedViewStoreWriter store,
+            [FromServices] ISavedViewStoreWriter store,
             ClaimsPrincipal user,
             CancellationToken cancellationToken) =>
             SetDefaultAsync(id, store, entityType, user, cancellationToken))
@@ -84,9 +84,9 @@ internal static class SavedViewEndpoints
     }
 
     private static async Task<Ok<List<SavedViewResponse>>> GetListAsync(
-        ISavedViewStoreReader store,
+        [FromServices] ISavedViewStoreReader store,
         string entityType,
-        ICurrentTenant tenant,
+        [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user,
         CancellationToken cancellationToken)
     {
@@ -102,12 +102,12 @@ internal static class SavedViewEndpoints
 
     private static async Task<Created<SavedViewResponse>> CreateAsync(
         CreateSavedViewRequest request,
-        ISavedViewStoreWriter store,
-        IGuidGenerator guidGenerator,
+        [FromServices] ISavedViewStoreWriter store,
+        [FromServices] IGuidGenerator guidGenerator,
         string entityType,
-        ICurrentTenant tenant,
+        [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user,
-        IClock clock,
+        [FromServices] IClock clock,
         CancellationToken cancellationToken)
     {
         string userId = GetUserId(user);
@@ -136,9 +136,9 @@ internal static class SavedViewEndpoints
     private static async Task<Results<NoContent, NotFound>> UpdateAsync(
         Guid id,
         UpdateSavedViewRequest request,
-        ISavedViewStoreReader reader,
-        ISavedViewStoreWriter writer,
-        IClock clock,
+        [FromServices] ISavedViewStoreReader reader,
+        [FromServices] ISavedViewStoreWriter writer,
+        [FromServices] IClock clock,
         CancellationToken cancellationToken)
     {
         SavedView? existing = await reader.GetAsync(id, cancellationToken).ConfigureAwait(false);
@@ -161,7 +161,7 @@ internal static class SavedViewEndpoints
 
     private static async Task<NoContent> DeleteAsync(
         Guid id,
-        ISavedViewStoreWriter store,
+        [FromServices] ISavedViewStoreWriter store,
         CancellationToken cancellationToken)
     {
         await store.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
@@ -170,7 +170,7 @@ internal static class SavedViewEndpoints
 
     private static async Task<NoContent> SetDefaultAsync(
         Guid id,
-        ISavedViewStoreWriter store,
+        [FromServices] ISavedViewStoreWriter store,
         string entityType,
         ClaimsPrincipal user,
         CancellationToken cancellationToken)

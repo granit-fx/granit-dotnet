@@ -8,6 +8,7 @@ using Granit.DataExchange.Import.Reporting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -38,7 +39,7 @@ internal static class ImportReportEndpoints
 
     private static async Task<Results<Ok<ImportReportResponse>, NotFound>> GetReportAsync(
         Guid jobId,
-        IImportJobReader jobReader,
+        [FromServices] IImportJobReader jobReader,
         CancellationToken cancellationToken)
     {
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
@@ -58,9 +59,9 @@ internal static class ImportReportEndpoints
 
     private static async Task<Results<FileStreamHttpResult, NoContent, NotFound>> GetCorrectionFileAsync(
         Guid jobId,
-        IImportJobReader jobReader,
-        IImportFileProvider fileProvider,
-        IServiceProvider serviceProvider,
+        [FromServices] IImportJobReader jobReader,
+        [FromServices] IImportFileProvider fileProvider,
+        [FromServices] IServiceProvider serviceProvider,
         CancellationToken cancellationToken)
     {
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);

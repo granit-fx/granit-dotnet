@@ -2,6 +2,7 @@ using Granit.Core.Exceptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.BackgroundJobs.Endpoints.Endpoints;
@@ -37,7 +38,7 @@ internal static class BackgroundJobsWriteEndpoints
 
     private static async Task<Results<NoContent, NotFound>> PauseJobAsync(
         string name,
-        IBackgroundJobWriter writer,
+        [FromServices] IBackgroundJobWriter writer,
         CancellationToken cancellationToken)
     {
         try
@@ -53,7 +54,7 @@ internal static class BackgroundJobsWriteEndpoints
 
     private static async Task<Results<NoContent, NotFound>> ResumeJobAsync(
         string name,
-        IBackgroundJobWriter writer,
+        [FromServices] IBackgroundJobWriter writer,
         CancellationToken cancellationToken)
     {
         try
@@ -69,7 +70,7 @@ internal static class BackgroundJobsWriteEndpoints
 
     private static async Task<Results<Accepted, NotFound>> TriggerJobAsync(
         string name,
-        IBackgroundJobWriter writer,
+        [FromServices] IBackgroundJobWriter writer,
         CancellationToken cancellationToken)
     {
         try

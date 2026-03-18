@@ -4,6 +4,7 @@ using Granit.Querying;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Authentication.ApiKeys.Endpoints.Endpoints;
@@ -29,7 +30,7 @@ internal static class ApiKeyReadEndpoints
     }
 
     private static async Task<Ok<PagedResult<ApiKeyResponse>>> ListAsync(
-        IApiKeyAdminStore adminStore,
+        [FromServices] IApiKeyAdminStore adminStore,
         [AsParameters] ApiKeyListRequest request,
         CancellationToken cancellationToken)
     {
@@ -52,7 +53,7 @@ internal static class ApiKeyReadEndpoints
 
     private static async Task<Results<Ok<ApiKeyResponse>, NotFound>> GetByIdAsync(
         Guid id,
-        IApiKeyAdminStore adminStore,
+        [FromServices] IApiKeyAdminStore adminStore,
         CancellationToken cancellationToken)
     {
         ApiKeyEntry? entry = await adminStore.FindByIdAsync(id, cancellationToken)

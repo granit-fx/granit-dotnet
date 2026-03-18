@@ -5,6 +5,7 @@ using Granit.Identity.Endpoints.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 
@@ -43,8 +44,8 @@ internal static class IdentityWebhookEndpoints
     private static async Task<Results<Ok, UnauthorizedHttpResult, ProblemHttpResult>> HandleWebhookAsync(
         HttpRequest request,
         WebhookSignatureValidator signatureValidator,
-        IOptions<IdentityWebhookOptions> webhookOptions,
-        IUserLookupService lookupService,
+        [FromServices] IOptions<IdentityWebhookOptions> webhookOptions,
+        [FromServices] IUserLookupService lookupService,
         CancellationToken cancellationToken)
     {
         // Read raw body for signature validation

@@ -50,7 +50,7 @@ internal static class BackgroundJobsReadEndpoints
 
     private static async Task<Results<Ok<BackgroundJobStatus>, NotFound>> GetJobByNameAsync(
         string name,
-        IBackgroundJobReader reader,
+        [FromServices] IBackgroundJobReader reader,
         CancellationToken cancellationToken)
     {
         BackgroundJobStatus? job = await reader.FindAsync(name, cancellationToken).ConfigureAwait(false);

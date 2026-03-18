@@ -3,6 +3,7 @@ using Granit.Http.Cookies.Endpoints.Internal;
 using Granit.Http.Cookies.Endpoints.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
 
@@ -38,8 +39,8 @@ public static class CookieConsentEndpointRouteBuilderExtensions
     }
 
     private static Ok<CookieConsentConfigResponse> HandleGetConfig(
-        ICookieRegistry cookieRegistry,
-        IThirdPartyServiceRegistry serviceRegistry,
+        [FromServices] ICookieRegistry cookieRegistry,
+        [FromServices] IThirdPartyServiceRegistry serviceRegistry,
         HttpContext context)
     {
         context.Response.Headers.CacheControl = "public, max-age=3600";

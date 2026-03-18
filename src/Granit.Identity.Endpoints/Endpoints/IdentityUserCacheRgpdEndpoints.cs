@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Identity.Endpoints.Endpoints;
@@ -27,7 +28,7 @@ internal static class IdentityUserCacheRgpdEndpoints
 
     private static async Task<NoContent> EraseAsync(
         string userId,
-        IUserLookupService lookupService,
+        [FromServices] IUserLookupService lookupService,
         CancellationToken cancellationToken)
     {
         await lookupService.DeleteByIdAsync(userId, cancellationToken).ConfigureAwait(false);
@@ -36,7 +37,7 @@ internal static class IdentityUserCacheRgpdEndpoints
 
     private static async Task<NoContent> PseudonymizeAsync(
         string userId,
-        IUserLookupService lookupService,
+        [FromServices] IUserLookupService lookupService,
         CancellationToken cancellationToken)
     {
         await lookupService.PseudonymizeByIdAsync(userId, cancellationToken).ConfigureAwait(false);

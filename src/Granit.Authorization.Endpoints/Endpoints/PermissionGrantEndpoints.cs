@@ -5,6 +5,7 @@ using Granit.Core.MultiTenancy;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Authorization.Endpoints.Endpoints;
@@ -43,8 +44,8 @@ internal static class PermissionGrantEndpoints
 
     private static async Task<Ok<PermissionGrantResponse>> GetGrantedPermissionsAsync(
         string roleName,
-        IPermissionManagerReader permissionManagerReader,
-        ICurrentTenant currentTenant,
+        [FromServices] IPermissionManagerReader permissionManagerReader,
+        [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
@@ -59,9 +60,9 @@ internal static class PermissionGrantEndpoints
     private static async Task<Results<NoContent, ValidationProblem>> GrantPermissionAsync(
         string roleName,
         string permissionName,
-        IPermissionManagerWriter permissionManagerWriter,
-        IPermissionDefinitionManager definitionManager,
-        ICurrentTenant currentTenant,
+        [FromServices] IPermissionManagerWriter permissionManagerWriter,
+        [FromServices] IPermissionDefinitionManager definitionManager,
+        [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
         if (!definitionManager.Exists(permissionName))
@@ -84,9 +85,9 @@ internal static class PermissionGrantEndpoints
     private static async Task<Results<NoContent, ValidationProblem>> RevokePermissionAsync(
         string roleName,
         string permissionName,
-        IPermissionManagerWriter permissionManagerWriter,
-        IPermissionDefinitionManager definitionManager,
-        ICurrentTenant currentTenant,
+        [FromServices] IPermissionManagerWriter permissionManagerWriter,
+        [FromServices] IPermissionDefinitionManager definitionManager,
+        [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
         if (!definitionManager.Exists(permissionName))

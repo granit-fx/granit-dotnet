@@ -71,8 +71,8 @@ public static class NotificationEndpointRouteBuilderExtensions
     }
 
     private static async Task<Ok<PagedResult<UserNotificationResponse>>> GetNotificationsAsync(
-        IUserNotificationReader reader,
-        ICurrentTenant tenant,
+        [FromServices] IUserNotificationReader reader,
+        [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user,
         int page = 1, int pageSize = QueryingDefaults.DefaultPageSize)
     {
@@ -86,8 +86,8 @@ public static class NotificationEndpointRouteBuilderExtensions
     }
 
     private static async Task<Ok<UnreadCountResponse>> GetUnreadCountAsync(
-        IUserNotificationReader reader,
-        ICurrentTenant tenant,
+        [FromServices] IUserNotificationReader reader,
+        [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user)
     {
         string userId = GetUserId(user);
@@ -98,7 +98,7 @@ public static class NotificationEndpointRouteBuilderExtensions
 
     private static async Task<NoContent> MarkAsReadAsync(
         Guid id,
-        IUserNotificationWriter writer,
+        [FromServices] IUserNotificationWriter writer,
         [FromServices] IClock clock)
     {
         await writer.MarkAsReadAsync(id, clock.Now).ConfigureAwait(false);
@@ -106,8 +106,8 @@ public static class NotificationEndpointRouteBuilderExtensions
     }
 
     private static async Task<NoContent> MarkAllAsReadAsync(
-        IUserNotificationWriter writer,
-        ICurrentTenant tenant,
+        [FromServices] IUserNotificationWriter writer,
+        [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user,
         [FromServices] IClock clock)
     {
@@ -131,8 +131,8 @@ public static class NotificationEndpointRouteBuilderExtensions
     private static async Task<Ok<PagedResult<UserNotificationResponse>>> GetEntityActivityFeedAsync(
         string entityType,
         string entityId,
-        IUserNotificationReader reader,
-        ICurrentTenant tenant,
+        [FromServices] IUserNotificationReader reader,
+        [FromServices] ICurrentTenant tenant,
         int page = 1, int pageSize = QueryingDefaults.DefaultPageSize)
     {
         int clampedPage = Math.Max(page, 1);
@@ -163,8 +163,8 @@ public static class NotificationEndpointRouteBuilderExtensions
     }
 
     private static async Task<Ok<List<NotificationPreferenceResponse>>> GetPreferencesAsync(
-        INotificationPreferenceReader reader,
-        ICurrentTenant tenant,
+        [FromServices] INotificationPreferenceReader reader,
+        [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user)
     {
         string userId = GetUserId(user);
@@ -178,9 +178,9 @@ public static class NotificationEndpointRouteBuilderExtensions
 
     private static async Task<NoContent> UpdatePreferenceAsync(
         NotificationPreferenceUpdateRequest request,
-        INotificationPreferenceWriter writer,
+        [FromServices] INotificationPreferenceWriter writer,
         [FromServices] IGuidGenerator guidGenerator,
-        ICurrentTenant tenant,
+        [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user,
         [FromServices] IClock clock)
     {
@@ -204,7 +204,7 @@ public static class NotificationEndpointRouteBuilderExtensions
     }
 
     private static Ok<IReadOnlyList<NotificationDefinition>> GetNotificationTypes(
-        INotificationDefinitionStore definitionStore)
+        [FromServices] INotificationDefinitionStore definitionStore)
     {
         IReadOnlyList<NotificationDefinition> definitions = definitionStore.GetAll();
         return TypedResults.Ok(definitions);
@@ -230,8 +230,8 @@ public static class NotificationEndpointRouteBuilderExtensions
     }
 
     private static async Task<Ok<List<NotificationSubscriptionResponse>>> GetSubscriptionsAsync(
-        INotificationSubscriptionReader reader,
-        ICurrentTenant tenant,
+        [FromServices] INotificationSubscriptionReader reader,
+        [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user)
     {
         string userId = GetUserId(user);
@@ -242,8 +242,8 @@ public static class NotificationEndpointRouteBuilderExtensions
 
     private static async Task<NoContent> SubscribeAsync(
         string typeName,
-        INotificationSubscriptionWriter writer,
-        ICurrentTenant tenant,
+        [FromServices] INotificationSubscriptionWriter writer,
+        [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user)
     {
         string userId = GetUserId(user);
@@ -254,8 +254,8 @@ public static class NotificationEndpointRouteBuilderExtensions
 
     private static async Task<NoContent> UnsubscribeAsync(
         string typeName,
-        INotificationSubscriptionWriter writer,
-        ICurrentTenant tenant,
+        [FromServices] INotificationSubscriptionWriter writer,
+        [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user)
     {
         string userId = GetUserId(user);
@@ -286,8 +286,8 @@ public static class NotificationEndpointRouteBuilderExtensions
     private static async Task<NoContent> FollowEntityAsync(
         string entityType,
         string entityId,
-        INotificationSubscriptionWriter writer,
-        ICurrentTenant tenant,
+        [FromServices] INotificationSubscriptionWriter writer,
+        [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user)
     {
         string userId = GetUserId(user);
@@ -299,8 +299,8 @@ public static class NotificationEndpointRouteBuilderExtensions
     private static async Task<NoContent> UnfollowEntityAsync(
         string entityType,
         string entityId,
-        INotificationSubscriptionWriter writer,
-        ICurrentTenant tenant,
+        [FromServices] INotificationSubscriptionWriter writer,
+        [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user)
     {
         string userId = GetUserId(user);
@@ -312,8 +312,8 @@ public static class NotificationEndpointRouteBuilderExtensions
     private static async Task<Ok<List<NotificationSubscriptionResponse>>> GetEntityFollowersAsync(
         string entityType,
         string entityId,
-        INotificationSubscriptionReader reader,
-        ICurrentTenant tenant)
+        [FromServices] INotificationSubscriptionReader reader,
+        [FromServices] ICurrentTenant tenant)
     {
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
         IReadOnlyList<NotificationSubscription> followers = await reader.GetEntityFollowersAsync(entityType, entityId, tenantId).ConfigureAwait(false);

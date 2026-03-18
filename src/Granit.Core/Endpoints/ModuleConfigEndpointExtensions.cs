@@ -52,7 +52,7 @@ public static class ModuleConfigEndpointExtensions
         return endpoints;
     }
 
-    private static Ok<TResponse> HandleGetConfig<TResponse>(IModuleConfigProvider<TResponse> provider)
+    private static Ok<TResponse> HandleGetConfig<TResponse>([FromServices] IModuleConfigProvider<TResponse> provider)
         where TResponse : class =>
         TypedResults.Ok(provider.GetConfig());
 }

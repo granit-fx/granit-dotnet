@@ -2,6 +2,7 @@ using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Authentication.ApiKeys.Endpoints.Endpoints;
@@ -23,8 +24,8 @@ internal static class ApiKeyRevokeEndpoints
 
     private static async Task<Results<NoContent, NotFound>> RevokeAsync(
         Guid id,
-        IApiKeyAdminStore adminStore,
-        IClock clock,
+        [FromServices] IApiKeyAdminStore adminStore,
+        [FromServices] IClock clock,
         CancellationToken cancellationToken)
     {
         bool revoked = await adminStore.RevokeAsync(id, clock.Now, cancellationToken)

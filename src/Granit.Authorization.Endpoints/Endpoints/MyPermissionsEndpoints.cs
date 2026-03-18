@@ -3,6 +3,7 @@ using Granit.Authorization.Endpoints.Dtos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Authorization.Endpoints.Endpoints;
@@ -27,8 +28,8 @@ internal static class MyPermissionsEndpoints
     }
 
     private static async Task<Ok<MyPermissionsResponse>> GetMyPermissionsAsync(
-        IPermissionDefinitionManager definitionManager,
-        IPermissionChecker permissionChecker,
+        [FromServices] IPermissionDefinitionManager definitionManager,
+        [FromServices] IPermissionChecker permissionChecker,
         CancellationToken cancellationToken)
     {
         IReadOnlyList<PermissionDefinition> allPermissions = definitionManager.GetAll();

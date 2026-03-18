@@ -3,6 +3,7 @@ using Granit.Identity.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Identity.Endpoints.Endpoints;
@@ -34,7 +35,7 @@ internal static class IdentityUserCacheSyncEndpoints
 
     private static async Task<Ok<IReadOnlyList<IdentityUser>>> SyncAsync(
         IdentityUserCacheSyncRequest request,
-        IUserLookupService lookupService,
+        [FromServices] IUserLookupService lookupService,
         CancellationToken cancellationToken)
     {
         var results = new List<IdentityUser>();
@@ -54,7 +55,7 @@ internal static class IdentityUserCacheSyncEndpoints
     }
 
     private static async Task<Ok<IdentityUserCacheSyncAllResponse>> SyncAllAsync(
-        IUserLookupService lookupService,
+        [FromServices] IUserLookupService lookupService,
         CancellationToken cancellationToken)
     {
         int synced = await lookupService.RefreshAllAsync(cancellationToken).ConfigureAwait(false);
@@ -62,7 +63,7 @@ internal static class IdentityUserCacheSyncEndpoints
     }
 
     private static async Task<Ok<IdentityUserCacheSyncStaleResponse>> SyncStaleAsync(
-        IUserLookupService lookupService,
+        [FromServices] IUserLookupService lookupService,
         CancellationToken cancellationToken)
     {
         int refreshed = await lookupService.RefreshStaleAsync(cancellationToken).ConfigureAwait(false);

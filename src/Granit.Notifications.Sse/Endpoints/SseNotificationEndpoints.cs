@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using Granit.Notifications.Sse.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 
@@ -33,8 +34,8 @@ public static class SseNotificationEndpoints
     }
 
     private static IResult HandleStream(
-        ISseConnectionManager connectionManager,
-        IOptions<SseChannelOptions> options,
+        [FromServices] ISseConnectionManager connectionManager,
+        [FromServices] IOptions<SseChannelOptions> options,
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {

@@ -39,6 +39,7 @@
     <ProjectReference Include="..\..\src\Granit.AI.OpenAI\Granit.AI.OpenAI.csproj" />
     <ProjectReference Include="..\..\src\Granit.AuditLog\Granit.AuditLog.csproj" />
     <ProjectReference Include="..\..\src\Granit.AuditLog.Endpoints\Granit.AuditLog.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.AuditLog.ConfigurationChanges\Granit.AuditLog.ConfigurationChanges.csproj" />
     <ProjectReference Include="..\..\src\Granit.AuditLog.EntityFrameworkCore\Granit.AuditLog.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ApiVersioning\Granit.Http.ApiVersioning.csproj" />
@@ -90,6 +91,8 @@
     <ProjectReference Include="..\..\src\Granit.Encryption\Granit.Encryption.csproj" />
     <ProjectReference Include="..\..\src\Granit.Encryption.EntityFrameworkCore\Granit.Encryption.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Encryption.ReEncryption\Granit.Encryption.ReEncryption.csproj" />
+    <ProjectReference Include="..\..\src\Granit.EventBus\Granit.EventBus.csproj" />
+    <ProjectReference Include="..\..\src\Granit.EventBus.Wolverine\Granit.EventBus.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
     <ProjectReference Include="..\..\src\Granit.Features\Granit.Features.csproj" />
     <ProjectReference Include="..\..\src\Granit.Features.Endpoints\Granit.Features.Endpoints.csproj" />
@@ -143,6 +146,7 @@
     <ProjectReference Include="..\..\src\Granit.Observability\Granit.Observability.csproj" />
     <ProjectReference Include="..\..\src\Granit.Observability.AI\Granit.Observability.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence\Granit.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Persistence.Hosting\Granit.Persistence.Hosting.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.Migrations\Granit.Persistence.Migrations.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.Migrations.Wolverine\Granit.Persistence.Migrations.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy\Granit.Privacy.csproj" />
@@ -170,6 +174,8 @@
     <ProjectReference Include="..\..\src\Granit.Timeline.EntityFrameworkCore\Granit.Timeline.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Timeline.AI\Granit.Timeline.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Timeline.Notifications\Granit.Timeline.Notifications.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Testing\Granit.Testing.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Testing.EntityFrameworkCore\Granit.Testing.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Timing\Granit.Timing.csproj" />
     <ProjectReference Include="..\..\src\Granit.Validation\Granit.Validation.csproj" />
     <ProjectReference Include="..\..\src\Granit.Validation.AI\Granit.Validation.AI.csproj" />

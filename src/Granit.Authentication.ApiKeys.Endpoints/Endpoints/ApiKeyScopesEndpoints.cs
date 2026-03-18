@@ -2,6 +2,7 @@ using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Authentication.ApiKeys.Endpoints.Endpoints;
@@ -24,7 +25,7 @@ internal static class ApiKeyScopesEndpoints
     private static async Task<Results<NoContent, NotFound>> UpdateScopesAsync(
         Guid id,
         ApiKeyUpdateScopesRequest request,
-        IApiKeyAdminStore adminStore,
+        [FromServices] IApiKeyAdminStore adminStore,
         CancellationToken cancellationToken)
     {
         bool updated = await adminStore.UpdateScopesAsync(
