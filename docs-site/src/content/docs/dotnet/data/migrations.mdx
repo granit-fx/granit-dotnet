@@ -71,6 +71,54 @@ to run multiple times.
 </TabItem>
 </Tabs>
 
+### EF Core CLI reference
+
+Common commands for working with migrations. When your solution has multiple
+DbContexts, always specify `--context` to target the right one.
+
+```bash
+# Add a migration to a specific DbContext
+dotnet ef migrations add AddSchedulingTables \
+    --project src/MyApp.Host \
+    --context AppDbContext \
+    --output-dir Migrations/App
+
+# Add a migration to a secondary DbContext
+dotnet ef migrations add AddSecurityTables \
+    --project src/MyApp.Host \
+    --context SecurityDbContext \
+    --output-dir Migrations/Security
+
+# Apply pending migrations (specific context)
+dotnet ef database update \
+    --project src/MyApp.Host \
+    --context AppDbContext
+
+# Generate idempotent SQL script for CI/CD
+dotnet ef migrations script --idempotent \
+    --project src/MyApp.Host \
+    --context AppDbContext \
+    -o migrations/app.sql
+
+# List pending migrations
+dotnet ef migrations list \
+    --project src/MyApp.Host \
+    --context AppDbContext
+
+# Remove the last unapplied migration
+dotnet ef migrations remove \
+    --project src/MyApp.Host \
+    --context AppDbContext
+```
+
+:::tip[Multiple DbContexts]
+Use `--output-dir` to keep migrations organized per DbContext. A typical
+Granit application might have:
+
+- `Migrations/App/` — business entities + Granit modules (Settings, Workflow, etc.)
+- `Migrations/Security/` — Authorization, Identity, ApiKeys
+:::
+
 ### When standard migrations are enough
 
 Standard migrations handle most schema changes without issues:
