@@ -88,7 +88,8 @@ public sealed class ObservabilityServiceCollectionExtensionsTests
 
         // Assert
         ObservabilityOptions options = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
-        options.ServiceName.ShouldBe("unknown-service");
+        // When no ServiceName is configured, the fallback is IHostEnvironment.ApplicationName.
+        options.ServiceName.ShouldBe(builder.Environment.ApplicationName);
         options.OtlpEndpoint.ShouldBe("http://localhost:4317");
         options.EnableTracing.ShouldBeTrue();
         options.EnableMetrics.ShouldBeTrue();
