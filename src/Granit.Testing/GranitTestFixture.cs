@@ -66,7 +66,7 @@ public class GranitTestFixture<TModule> : IAsyncDisposable, IDisposable
     public async Task BuildAsync(Action<IServiceCollection>? configureServices = null)
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
-        builder.AddGranit<TModule>();
+        await builder.AddGranitAsync<TModule>().ConfigureAwait(false);
 
         builder.Services.Replace(ServiceDescriptor.Singleton<ICurrentTenant>(Tenant));
         builder.Services.Replace(ServiceDescriptor.Singleton<ICurrentUserService>(User));

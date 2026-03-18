@@ -124,10 +124,9 @@ public static class WolverineHostApplicationBuilderExtensions
         // Register the captured WolverineOptions as an ImplementationInstance singleton so that
         // Granit.Wolverine.Postgresql (and other Granit provider packages) can find it via the
         // service descriptors before the DI container is built — without going through the factory.
-        if (captured is not null)
-        {
-            builder.Services.AddSingleton(new GranitWolverineOptionsHolder(captured));
-        }
+        // UseWolverine invokes the configure lambda synchronously, so captured is always
+        // non-null here. The null-forgiving operator suppresses the static analysis false positive.
+        builder.Services.AddSingleton(new GranitWolverineOptionsHolder(captured!));
 
         return builder;
     }
