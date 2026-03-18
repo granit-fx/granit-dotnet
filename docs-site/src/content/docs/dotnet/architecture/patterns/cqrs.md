@@ -1,7 +1,8 @@
 ---
-title: "CQRS"
+title: "CQRS — Command Query Responsibility Segregation"
 description: "Command Query Responsibility Segregation with enforced Reader/Writer interface separation"
 sidebar:
+  label: CQRS
   order: 2
 ---
 

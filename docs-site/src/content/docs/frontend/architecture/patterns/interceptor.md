@@ -1,7 +1,8 @@
 ---
-title: "Interceptor"
-description: "Transparent HTTP request/response pipeline processing for token injection and error handling"
+title: "Interceptor Pattern \u2014 HTTP Request Pipeline"
+description: Implement transparent HTTP request/response pipeline processing in React apps — Axios interceptors for Bearer token injection, X-Tenant-Id headers, and 401 back-channel logout handling.
 sidebar:
+  label: Interceptor
   order: 4
 ---
 

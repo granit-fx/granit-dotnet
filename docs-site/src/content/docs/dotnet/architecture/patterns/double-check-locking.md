@@ -1,7 +1,8 @@
 ---
-title: "Double-Check Locking"
+title: "Double-Check Locking — Thread-Safe Singleton"
 description: "How Granit prevents cache stampedes with double-check locking in the distributed cache service"
 sidebar:
+  label: Double-Check Locking
   order: 46
 ---
 

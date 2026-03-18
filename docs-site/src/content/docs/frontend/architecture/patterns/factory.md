@@ -1,7 +1,8 @@
 ---
-title: "Factory"
-description: "Encapsulate complex object creation behind simple functions across all @granit packages"
+title: "Factory Pattern \u2014 React Provider Creation"
+description: How the Factory pattern drives every @granit/* package — encapsulating complex initialization (Keycloak, i18next, Axios) behind simple TypeScript factory functions with minimal config.
 sidebar:
+  label: Factory
   order: 1
 ---
 

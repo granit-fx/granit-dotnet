@@ -1,7 +1,8 @@
 ---
-title: "Circuit Breaker and Retry"
+title: "Circuit Breaker & Retry — HTTP Resilience"
 description: "Resilience for HTTP clients and async messaging with exponential backoff and automatic recovery"
 sidebar:
+  label: Circuit Breaker and Retry
   order: 15
 ---
 

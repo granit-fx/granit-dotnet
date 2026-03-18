@@ -1,7 +1,8 @@
 ---
-title: "Template Method"
-description: "Module lifecycle hooks and validator base classes in Granit"
+title: "Template Method — Base Class Hooks in .NET"
+description: "Define the skeleton of an algorithm in a base class and let subclasses override steps — used for module lifecycle hooks and abstract validator base classes."
 sidebar:
+  label: Template Method
   order: 27
 ---
 

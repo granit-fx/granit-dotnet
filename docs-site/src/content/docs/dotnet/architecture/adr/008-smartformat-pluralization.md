@@ -1,6 +1,6 @@
 ---
 title: "ADR-008: SmartFormat.NET — CLDR Pluralization"
-description: "Selection of SmartFormat.NET for CLDR-compliant pluralization in the localization system"
+description: "SmartFormat.NET handles CLDR-compliant pluralization across 17 cultures in Granit's localization system, replacing ICU workarounds with a clean extension model."
 sidebar:
   order: 8
   label: "008 - SmartFormat.NET"

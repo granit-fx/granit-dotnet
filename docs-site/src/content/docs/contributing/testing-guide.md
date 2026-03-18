@@ -1,7 +1,8 @@
 ---
-title: Testing Guide
-description: Testing conventions for Granit -- xUnit, Shouldly, NSubstitute, Bogus, architecture tests
+title: "Testing Guide \u2014 xUnit, NSubstitute & Testcontainers"
+description: Testing conventions for Granit packages — xUnit, Shouldly, NSubstitute, Bogus, Testcontainers integration tests, FakeTimeProvider, and NetArchTest architecture rules.
 sidebar:
+  label: Testing Guide
   order: 4
 ---
 

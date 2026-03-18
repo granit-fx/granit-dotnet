@@ -1,7 +1,8 @@
 ---
-title: "Facade"
-description: "Simplified entry points for blob storage orchestration and exception handling in Granit"
+title: "Facade Pattern — Simplified Module API"
+description: "Expose complex subsystems through a single, simplified API — Granit facades unify blob storage orchestration and exception mapping behind clean, discoverable interfaces."
 sidebar:
+  label: Facade
   order: 34
 ---
 

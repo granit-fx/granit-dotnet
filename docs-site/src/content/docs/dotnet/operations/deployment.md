@@ -1,8 +1,9 @@
 ---
-title: Deployment
-description: Kubernetes deployment, Docker containerization, health probes, and scaling
+title: "Deployment \u2014 Kubernetes, Helm & Docker"
+description: Deploy Granit applications on Kubernetes with Docker multi-stage builds, liveness/readiness/startup health probes, Helm values, resource sizing, graceful shutdown, and Alpine-based minimal images.
 sidebar:
   order: 1
+  label: Deployment
 ---
 
 This guide covers deploying Granit applications on Kubernetes, including Docker

@@ -1,7 +1,8 @@
 ---
-title: HTTP Conventions
-description: Status codes, Problem Details, DTO naming, pagination, and response format conventions
+title: "HTTP Conventions \u2014 REST API Standards"
+description: HTTP conventions for Granit APIs — status codes, RFC 7807 Problem Details, DTO naming, pagination, and OpenAPI-compatible response formats.
 sidebar:
+  label: HTTP Conventions
   order: 31
 ---
 

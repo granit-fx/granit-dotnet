@@ -1,7 +1,8 @@
 ---
-title: "Feature Flags"
-description: "Runtime feature toggles with SaaS tiering, multi-level resolution, and hybrid cache"
+title: "Feature Flags — Runtime Feature Toggles"
+description: "Toggle features at runtime without redeployment — per-tenant, per-plan SaaS tiering with multi-level resolution (global → tenant → user) backed by HybridCache."
 sidebar:
+  label: Feature Flags
   order: 16
 ---
 

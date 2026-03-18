@@ -1,7 +1,8 @@
 ---
-title: Provider Compatibility
+title: Provider Compatibility Matrix
 description: Database, cache, storage, and infrastructure provider support matrix for Granit modules
 sidebar:
+  label: Provider Compatibility
   order: 33
 ---
 

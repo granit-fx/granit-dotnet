@@ -1,7 +1,8 @@
 ---
-title: "Marker Interface"
+title: "Marker Interface — Convention-Based Discovery"
 description: "How Granit uses marker interfaces to apply cross-cutting behaviors declaratively"
 sidebar:
+  label: Marker Interface
   order: 50
 ---
 

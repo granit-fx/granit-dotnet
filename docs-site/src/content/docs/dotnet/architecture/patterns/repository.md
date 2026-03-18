@@ -1,7 +1,8 @@
 ---
-title: "Repository (Store)"
-description: "How Granit abstracts data access behind CQRS Reader/Writer store interfaces"
+title: "Repository (Store) — CQRS Data Access"
+description: "Abstract data access behind separate IReader/IWriter store interfaces following CQRS — EF Core DbContext implements both, swappable with in-memory fakes in tests."
 sidebar:
+  label: Repository (Store)
   order: 40
 ---
 

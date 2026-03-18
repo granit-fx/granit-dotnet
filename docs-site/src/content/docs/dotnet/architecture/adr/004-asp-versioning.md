@@ -1,6 +1,6 @@
 ---
 title: "ADR-004: Asp.Versioning — REST API Versioning"
-description: "Adoption of Asp.Versioning for semantic REST API versioning with OpenAPI integration"
+description: "How Asp.Versioning provides URL-segment and header-based REST API versioning with full OpenAPI 3.1 document generation per version in Granit."
 sidebar:
   order: 4
   label: "004 - API Versioning"

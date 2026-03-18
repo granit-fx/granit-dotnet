@@ -1,7 +1,8 @@
 ---
-title: "Factory Method"
-description: "Runtime creation of Vault clients and tenant-isolated DbContexts in Granit"
+title: "Factory Method — Provider-Agnostic Creation"
+description: "Defer object creation to runtime with named factory methods — resolve the right Vault client, AI provider, or tenant-isolated DbContext without tightly coupling callers."
 sidebar:
+  label: Factory Method
   order: 29
 ---
 

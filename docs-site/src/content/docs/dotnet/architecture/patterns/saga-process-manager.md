@@ -1,7 +1,8 @@
 ---
-title: "Saga / Process Manager"
+title: "Saga / Process Manager — Long-Running Workflows"
 description: "Multi-step process orchestration with Wolverine sagas, import/export pipelines, and workflow FSM"
 sidebar:
+  label: Saga / Process Manager
   order: 20
 ---
 

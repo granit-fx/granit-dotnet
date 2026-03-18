@@ -1,7 +1,8 @@
 ---
-title: "Middleware Pipeline"
+title: "Middleware Pipeline — ASP.NET Request Flow"
 description: "Dual ASP.NET Core and Wolverine middleware pipeline for cross-cutting context propagation"
 sidebar:
+  label: Middleware Pipeline
   order: 6
 ---
 

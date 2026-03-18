@@ -1,7 +1,8 @@
 ---
-title: Anti-patterns
-description: Common code patterns that compile but cause runtime issues, break conventions, or produce maintenance debt
+title: "Anti-Patterns \u2014 Common .NET Mistakes to Avoid"
+description: Avoid these .NET anti-patterns in Granit — DateTime.Now, new Regex, string interpolation in logs, lock on object, unnamed HasQueryFilter, and more with correct alternatives.
 sidebar:
+  label: Anti-patterns
   order: 2
 ---
 

@@ -1,7 +1,8 @@
 ---
-title: Migration
-description: Versioning strategy, breaking change policy, and upgrade guides for Granit
+title: "Migration Guide \u2014 Upgrading Granit Versions"
+description: Step-by-step upgrade guides for Granit major versions — semantic versioning policy, breaking change log, and migration steps for all %%PACKAGE_COUNT%% packages.
 sidebar:
+  label: Migration
   order: 0
 ---
 

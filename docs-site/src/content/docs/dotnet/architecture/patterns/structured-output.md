@@ -1,7 +1,8 @@
 ---
-title: "Structured Output"
+title: "Structured Output — AI JSON Schema Responses"
 description: "Constraining LLM responses to a strongly-typed JSON schema, eliminating free-text parsing and guaranteeing valid objects"
 sidebar:
+  label: Structured Output
   order: 59
 ---
 

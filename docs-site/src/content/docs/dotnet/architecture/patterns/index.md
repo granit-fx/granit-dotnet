@@ -1,7 +1,8 @@
 ---
-title: Pattern Library
-description: 55 design patterns and their implementation in Granit
+title: "Pattern Library — 51 Design Patterns for .NET"
+description: Catalogue of design patterns implemented in Granit — GoF patterns, architecture patterns, cloud/SaaS patterns, concurrency, security, and .NET idioms.
 sidebar:
+  label: Pattern Library
   order: 0
   badge:
     text: "55"

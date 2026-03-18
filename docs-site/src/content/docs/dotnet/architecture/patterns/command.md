@@ -1,7 +1,8 @@
 ---
-title: "Command"
-description: "Wolverine message-based commands with transactional outbox in Granit"
+title: "Command Pattern — CQRS & Wolverine Handlers"
+description: "Encapsulate mutations as Wolverine command messages with transactional outbox — decouple callers from handlers and guarantee at-least-once delivery across services."
 sidebar:
+  label: Command
   order: 21
 ---
 

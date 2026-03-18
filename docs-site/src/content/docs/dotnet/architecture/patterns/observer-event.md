@@ -1,7 +1,8 @@
 ---
-title: "Observer / Event"
-description: "Implicit event subscription via Wolverine handler discovery in Granit"
+title: "Observer / Event — Distributed Event Bus"
+description: "Decouple publishers from subscribers using Wolverine's convention-based handler discovery — no explicit wiring, supports both in-process and distributed event delivery."
 sidebar:
+  label: Observer / Event
   order: 24
 ---
 

@@ -1,7 +1,8 @@
 ---
-title: Coding Standards
-description: C# style rules, naming conventions, and architecture patterns for Granit contributors
+title: "C# 14 Coding Standards & .NET Conventions"
+description: C# 14 and .NET 10 coding standards for Granit — naming conventions, primary constructors, collection expressions, and architecture rules enforced by Roslyn analyzers.
 sidebar:
+  label: Coding Standards
   order: 2
 ---
 

@@ -1,7 +1,8 @@
 ---
-title: Git Workflow
-description: Branching strategy, commit conventions, MR targets, and release process for Granit
+title: "Git Workflow \u2014 Branching, PRs & Conventional Commits"
+description: GitFlow branching strategy, Conventional Commits format, PR targets, and semantic release process for contributing to the Granit open-source .NET framework.
 sidebar:
+  label: Git Workflow
   order: 6
 ---
 

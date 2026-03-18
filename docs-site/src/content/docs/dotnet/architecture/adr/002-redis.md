@@ -1,6 +1,6 @@
 ---
 title: "ADR-002: Redis via StackExchange.Redis — Distributed Cache"
-description: "Selection of Redis via StackExchange.Redis as the distributed cache backend for L1+L2 caching"
+description: "StackExchange.Redis powers Granit's L2 distributed cache layer — selected for pub/sub invalidation, Lua scripting for atomic rate limiting, and HybridCache support."
 sidebar:
   order: 2
   label: "002 - Redis Distributed Cache"

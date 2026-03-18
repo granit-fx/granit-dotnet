@@ -1,7 +1,8 @@
 ---
-title: "Fan-Out"
+title: "Fan-Out Pattern — Parallel Event Processing"
 description: "One trigger to N independent commands via Wolverine cascading messages and Outbox"
 sidebar:
+  label: Fan-Out
   order: 10
 ---
 

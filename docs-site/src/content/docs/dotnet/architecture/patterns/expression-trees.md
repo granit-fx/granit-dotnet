@@ -1,7 +1,8 @@
 ---
-title: "Expression Trees"
+title: "Expression Trees — Dynamic LINQ Queries"
 description: "How Granit dynamically builds EF Core query filters using expression trees for marker interfaces"
 sidebar:
+  label: Expression Trees
   order: 49
 ---
 

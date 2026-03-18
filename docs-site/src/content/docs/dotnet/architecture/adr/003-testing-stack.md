@@ -1,6 +1,6 @@
 ---
 title: "ADR-003: Testing Stack — xUnit v3, NSubstitute and Bogus"
-description: "Selection of xUnit v3, NSubstitute, and Bogus as the foundational testing stack"
+description: "Why Granit chose xUnit v3, NSubstitute, and Bogus — parallel test isolation, source-generator mocking, and realistic fake data generation over alternatives."
 sidebar:
   order: 3
   label: "003 - Testing Stack"

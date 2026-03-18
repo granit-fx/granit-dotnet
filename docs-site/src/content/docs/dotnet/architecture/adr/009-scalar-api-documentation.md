@@ -1,6 +1,6 @@
 ---
 title: "ADR-009: Scalar.AspNetCore — Interactive API Documentation"
-description: "Adoption of Scalar as the interactive OpenAPI documentation UI replacing Swagger UI"
+description: "Scalar replaces Swagger UI as Granit's interactive OpenAPI documentation — faster rendering, OpenAPI 3.1 support, per-version docs, and MIT licensing."
 sidebar:
   order: 9
   label: "009 - Scalar API Docs"

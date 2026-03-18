@@ -1,7 +1,8 @@
 ---
-title: Definition of Done
-description: Blocking checklist that must pass before any push or merge request
+title: Definition of Done for .NET Contributors
+description: Blocking Definition of Done checklist for Granit — tests, dotnet format, markdownlint, docs, and security checks that must all pass before any push or PR.
 sidebar:
+  label: Definition of Done
   order: 5
 ---
 

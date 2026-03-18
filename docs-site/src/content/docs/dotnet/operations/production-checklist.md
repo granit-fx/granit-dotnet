@@ -1,8 +1,9 @@
 ---
-title: Production checklist
-description: Go-live verification for security, GDPR, ISO 27001, and operational readiness
+title: "Production Checklist \u2014 Go-Live Readiness"
+description: Pre-production go-live checklist for Granit applications — security hardening, GDPR Art. 15/17/32 verification, ISO 27001 A.12.4 audit trail confirmation, and operational readiness gates.
 sidebar:
   order: 5
+  label: Production Checklist
 ---
 
 This checklist covers the mandatory verifications before deploying a Granit

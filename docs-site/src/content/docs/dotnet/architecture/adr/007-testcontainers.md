@@ -1,6 +1,6 @@
 ---
 title: "ADR-007: Testcontainers — Containerized Integration Tests"
-description: "Adoption of Testcontainers for ephemeral PostgreSQL containers in integration tests"
+description: "Testcontainers spins up ephemeral PostgreSQL containers for integration tests — no mocks, real SQL, fully isolated per test run with automatic cleanup."
 sidebar:
   order: 7
   label: "007 - Testcontainers"

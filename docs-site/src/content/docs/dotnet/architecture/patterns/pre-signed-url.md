@@ -1,7 +1,8 @@
 ---
-title: "Pre-Signed URL"
+title: "Pre-Signed URL — Secure Direct File Upload"
 description: "Direct-to-cloud file upload/download bypassing the application server with GDPR crypto-shredding"
 sidebar:
+  label: Pre-Signed URL
   order: 18
 ---
 

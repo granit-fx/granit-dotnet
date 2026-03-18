@@ -1,7 +1,8 @@
 ---
-title: Troubleshooting
-description: Common errors, anti-patterns, and frequently asked questions for Granit
+title: "Troubleshooting \u2014 Common Issues & Fixes"
+description: Diagnose and fix common Granit errors — module loading failures, DbContext misconfiguration, validator issues, anti-patterns to avoid, and FAQ answers.
 sidebar:
+  label: Troubleshooting
   order: 0
 ---
 

@@ -1,7 +1,8 @@
 ---
-title: "Transactional Outbox"
-description: "Reliable event publishing through same-transaction persistence via Wolverine Outbox"
+title: "Transactional Outbox — Reliable Event Delivery"
+description: "Guarantee event delivery without distributed transactions — persist domain events in the same EF Core transaction, then relay them asynchronously via Wolverine Outbox."
 sidebar:
+  label: Transactional Outbox
   order: 9
 ---
 

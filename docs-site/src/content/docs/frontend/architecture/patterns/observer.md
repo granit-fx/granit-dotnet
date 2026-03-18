@@ -1,7 +1,8 @@
 ---
-title: "Observer"
-description: "Event notification for Keycloak lifecycle and notification transport state changes"
+title: "Observer Pattern \u2014 React Event Subscriptions"
+description: Decouple event producers from consumers in React apps using the Observer pattern — Keycloak session lifecycle events and SignalR/SSE notification transport state changes.
 sidebar:
+  label: Observer
   order: 6
 ---
 

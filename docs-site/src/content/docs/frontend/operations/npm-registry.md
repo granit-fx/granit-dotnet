@@ -1,6 +1,6 @@
 ---
 title: Frontend npm Registry
-description: Hybrid publication strategy for @granit/* packages — local source-direct and GitHub Packages npm registry.
+description: Publish and consume @granit/* packages — hybrid strategy with pnpm source-direct for local development and GitHub Packages npm registry for Docker builds and production CI.
 sidebar:
   order: 21
 ---

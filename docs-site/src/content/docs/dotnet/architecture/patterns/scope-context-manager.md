@@ -1,7 +1,8 @@
 ---
-title: "Scope / Context Manager"
+title: "Scope / Context Manager — Ambient State"
 description: "How Granit encapsulates context changes in IDisposable scopes with automatic restoration"
 sidebar:
+  label: Scope / Context Manager
   order: 47
 ---
 

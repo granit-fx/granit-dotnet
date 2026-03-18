@@ -1,7 +1,8 @@
 ---
-title: "REPR"
+title: "REPR — Request-Endpoint-Response Pattern"
 description: "Request-Endpoint-Response pattern adapted for .NET Minimal APIs without external dependencies"
 sidebar:
+  label: REPR
   order: 7
 ---
 

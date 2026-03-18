@@ -1,6 +1,6 @@
 ---
 title: Tech Stack
-description: Third-party libraries and frameworks used by Granit, organized by domain with rationale and ADR links
+description: Complete third-party library reference for Granit — OpenTelemetry, Wolverine, EF Core, Redis, FluentValidation, and more, with ADR rationale per dependency.
 sidebar:
   order: 34
 ---

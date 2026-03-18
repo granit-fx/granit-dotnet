@@ -1,7 +1,8 @@
 ---
-title: "State Machine"
-description: "Explicit state transitions for idempotency and blob lifecycle in Granit"
+title: "State Machine — Workflow State Transitions"
+description: "Model workflow and lifecycle states as explicit finite-state machines — prevents invalid transitions, powers idempotency tracking, and drives Wolverine saga orchestration."
 sidebar:
+  label: State Machine
   order: 25
 ---
 

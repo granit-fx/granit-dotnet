@@ -1,6 +1,6 @@
 ---
 title: "ADR-010: Scriban — Text Template Engine"
-description: "Selection of Scriban as the sandboxed text template engine for document generation"
+description: "Scriban provides a sandboxed, high-performance Liquid-compatible template engine for Granit document generation — safe for multi-tenant user-supplied templates."
 sidebar:
   order: 10
   label: "010 - Scriban"

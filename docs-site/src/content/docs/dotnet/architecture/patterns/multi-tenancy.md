@@ -1,7 +1,8 @@
 ---
-title: "Multi-Tenancy"
-description: "Tenant isolation with three strategies, soft dependency, and async context propagation"
+title: "Multi-Tenancy Pattern — Tenant Data Isolation"
+description: "Isolate tenant data with three EF Core strategies — shared schema, separate schema, or separate database — propagated via AsyncLocal and soft-dependency ICurrentTenant."
 sidebar:
+  label: Multi-Tenancy
   order: 17
 ---
 

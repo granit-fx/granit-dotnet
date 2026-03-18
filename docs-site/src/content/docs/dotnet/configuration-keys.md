@@ -1,7 +1,8 @@
 ---
-title: Configuration Keys
+title: "Configuration Keys \u2014 All Settings Reference"
 description: Complete reference of all appsettings sections and Options classes across Granit packages
 sidebar:
+  label: Configuration Keys
   order: 30
 ---
 

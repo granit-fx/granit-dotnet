@@ -1,7 +1,8 @@
 ---
-title: Architecture
-description: Design decisions, patterns, and ADRs
+title: "Architecture, Design Patterns & ADRs"
+description: Architectural decisions, design patterns, and ADRs for Granit — modular .NET 10 framework with hexagonal architecture, CQRS, and multi-tenancy support.
 sidebar:
+  label: Architecture
   order: 0
 ---
 

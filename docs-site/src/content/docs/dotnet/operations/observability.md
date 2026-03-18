@@ -1,8 +1,9 @@
 ---
-title: Observability
-description: Production observability with Serilog, OpenTelemetry, and the Grafana LGTM stack
+title: "Observability \u2014 Grafana LGTM & OpenTelemetry"
+description: Production observability with Serilog structured logging, OpenTelemetry OTLP export, and the Grafana LGTM stack — Loki for logs, Tempo for traces, Mimir for metrics, with pre-built alert rules.
 sidebar:
   order: 3
+  label: Observability
 ---
 
 This guide covers the production observability setup for Granit applications:

@@ -1,7 +1,8 @@
 ---
-title: "Strategy"
-description: "Interchangeable algorithms for tenant isolation, blob keys, and encryption in Granit"
+title: "Strategy Pattern — Pluggable Implementations"
+description: "Swap algorithms at runtime without changing callers — pluggable strategies for tenant isolation, blob key generation, and encryption schemes in Granit modules."
 sidebar:
+  label: Strategy
   order: 26
 ---
 

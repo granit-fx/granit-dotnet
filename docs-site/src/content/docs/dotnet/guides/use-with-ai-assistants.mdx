@@ -1,8 +1,6 @@
 ---
 title: Use Granit docs with AI assistants
-description: >-
-  Get accurate, context-aware answers about Granit from
-  ChatGPT, Claude, Copilot, or any LLM.
+description: Get accurate, context-aware answers about Granit from ChatGPT, Claude, GitHub Copilot, or any LLM — ingest the full documentation as plain text for real framework knowledge, not guesswork.
 sidebar:
   order: 99
 ---
@@ -61,10 +59,35 @@ with Granit context built in.
 file as project knowledge — it stays available across all
 conversations in that project.
 
-### Claude Code
+### Claude Code (MCP server)
 
-Add this to your project's `CLAUDE.md` so Claude Code
-loads Granit context automatically:
+The fastest way: add the Granit MCP server so Claude Code
+can **search** the documentation in real time — no file
+upload, always up to date.
+
+Add this to your project's `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "granit-docs": {
+      "type": "url",
+      "url": "https://mcp.granit-fx.dev/mcp"
+    }
+  }
+}
+```
+
+Claude Code now has three Granit tools:
+
+- **`search_granit_docs`** — full-text search across all docs
+- **`get_module_reference`** — pull the full reference for a module
+- **`list_patterns`** — list all architecture patterns
+
+### Claude Code (file context)
+
+Alternatively, add this to your project's `CLAUDE.md` so
+Claude Code loads Granit context as a static file:
 
 ```markdown
 ## Granit documentation

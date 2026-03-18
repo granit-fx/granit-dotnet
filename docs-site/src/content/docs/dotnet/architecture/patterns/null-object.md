@@ -1,7 +1,8 @@
 ---
-title: "Null Object"
-description: "No-op implementations that eliminate null checks across the Granit module system"
+title: "Null Object — Safe Default Implementations"
+description: "Eliminate null guard boilerplate with no-op default implementations — NullTenantContext, NullDataFilter, and NullClock make optional module dependencies safe without null checks."
 sidebar:
+  label: Null Object
   order: 23
 ---
 

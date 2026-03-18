@@ -1,7 +1,8 @@
 ---
-title: "Unit of Work"
+title: "Unit of Work — EF Core Transaction Scope"
 description: "How Granit uses EF Core DbContext as an implicit Unit of Work with a chained interceptor pipeline"
 sidebar:
+  label: Unit of Work
   order: 42
 ---
 

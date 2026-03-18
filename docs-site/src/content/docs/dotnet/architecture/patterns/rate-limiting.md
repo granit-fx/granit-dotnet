@@ -1,7 +1,8 @@
 ---
-title: "Rate Limiting"
+title: "Rate Limiting Pattern — API Throttling"
 description: "Per-tenant throttling with Redis Lua scripts, dynamic quotas, and dual HTTP/messaging integration"
 sidebar:
+  label: Rate Limiting
   order: 19
 ---
 

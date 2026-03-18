@@ -1,7 +1,8 @@
 ---
-title: Development Setup
-description: Prerequisites, build instructions, and project structure for Granit contributors
+title: .NET Development Environment Setup
+description: Set up a Granit contributor environment — .NET 10 SDK, Docker, Rider or VS Code, solution build, and integration test prerequisites covered step by step.
 sidebar:
+  label: Development Setup
   order: 1
 ---
 

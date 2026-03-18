@@ -1,7 +1,8 @@
 ---
-title: Granit-Specific Variants
+title: "Granit-Specific Design Pattern Variants"
 description: 10 hybrid patterns unique to Granit — adaptations of classic patterns for GDPR, multi-tenancy, and Wolverine
 sidebar:
+  label: Granit-Specific Variants
   order: 55
 ---
 

@@ -1,7 +1,8 @@
 ---
-title: "Module System"
+title: "Module System Pattern — DependsOn Graph"
 description: "ABP-inspired module system with topological sorting for deterministic startup ordering"
 sidebar:
+  label: Module System
   order: 1
 ---
 

@@ -1,7 +1,8 @@
 ---
-title: "Chain of Responsibility"
-description: "Ordered handler pipeline for tenant resolution and blob validation in Granit"
+title: "Chain of Responsibility — Middleware Pipeline"
+description: "Pass a request through an ordered chain of handlers until one processes it — used for tenant resolution, blob validation, and ASP.NET Core middleware composition."
 sidebar:
+  label: Chain of Responsibility
   order: 20
 ---
 

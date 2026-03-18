@@ -1,8 +1,9 @@
 ---
-title: Guides
-description: Step-by-step how-to guides for common tasks
+title: "How-To Guides for .NET Developers"
+description: Step-by-step how-to guides for .NET developers — endpoints, modules, EF Core persistence, Redis caching, Wolverine background jobs, multi-tenancy, webhooks, tracing, and testing with Granit.
 sidebar:
   order: 0
+  label: Guides
 ---
 
 Task-oriented guides that show you how to accomplish specific goals with Granit.

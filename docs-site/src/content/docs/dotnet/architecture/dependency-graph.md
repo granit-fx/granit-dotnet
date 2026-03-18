@@ -1,7 +1,8 @@
 ---
-title: Dependency Graph
-description: Package dependency visualization and module relationship map for all Granit packages
+title: "Dependency Graph \u2014 Module Relationships"
+description: Visual dependency graph of all Granit NuGet packages — understand module relationships, layering, and safe extension points before adding references.
 sidebar:
+  label: Dependency Graph
   order: 32
 ---
 

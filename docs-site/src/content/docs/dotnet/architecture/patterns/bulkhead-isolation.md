@@ -1,7 +1,8 @@
 ---
-title: "Bulkhead Isolation"
+title: "Bulkhead Isolation — Fault Containment in .NET"
 description: "Resource compartmentalization preventing cascade failures across queues, tenants, and services"
 sidebar:
+  label: Bulkhead Isolation
   order: 13
 ---
 

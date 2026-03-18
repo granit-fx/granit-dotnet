@@ -1,7 +1,8 @@
 ---
-title: "Adapter"
-description: "Interface translation for typed cache keys, S3 storage, and SMTP transport in Granit"
+title: "Adapter Pattern — Provider Abstraction in .NET"
+description: "Bridge incompatible interfaces without modifying existing code — Granit adapters wrap S3, Azure Blob, SMTP, and cache backends behind stable provider-agnostic contracts."
 sidebar:
+  label: Adapter
   order: 31
 ---
 

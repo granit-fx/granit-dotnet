@@ -1,6 +1,6 @@
 ---
 title: "ADR-011: ClosedXML — Excel Spreadsheet Generation"
-description: "Selection of ClosedXML for Excel file generation from templates with MIT licensing"
+description: "ClosedXML generates xlsx files from .NET objects with no Excel dependency — chosen for MIT licensing, template-based styling, and OpenXML abstraction."
 sidebar:
   order: 11
   label: "011 - ClosedXML"

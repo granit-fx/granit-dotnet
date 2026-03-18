@@ -1,7 +1,8 @@
 ---
-title: "Strategy"
-description: "Pluggable implementations behind a common interface for log transports and notification channels"
+title: "Strategy Pattern \u2014 Pluggable SDK Backends"
+description: Swap implementations at runtime using the Strategy pattern in @granit/* packages — pluggable log transports (console, OTLP), notification channels (SignalR, SSE), and storage backends.
 sidebar:
+  label: Strategy
   order: 5
 ---
 

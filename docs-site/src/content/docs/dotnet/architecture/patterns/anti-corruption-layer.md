@@ -1,7 +1,8 @@
 ---
-title: "Anti-Corruption Layer"
-description: "Translation layer isolating domain models from external API models and SDKs"
+title: "Anti-Corruption Layer — Domain Boundary Guard"
+description: "Protect your domain model from external API churn — the Anti-Corruption Layer translates third-party SDK models into stable DDD value objects and aggregates."
 sidebar:
+  label: Anti-Corruption Layer
   order: 8
 ---
 

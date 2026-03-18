@@ -1,7 +1,8 @@
 ---
-title: "Adapter"
-description: "Convert third-party APIs into React-compatible interfaces with typed state"
+title: "Adapter Pattern \u2014 TypeScript API Adapters"
+description: How the Adapter pattern isolates React applications from third-party library APIs — wrapping imperative callbacks into reactive hooks with typed state in @granit/* packages.
 sidebar:
+  label: Adapter
   order: 3
 ---
 

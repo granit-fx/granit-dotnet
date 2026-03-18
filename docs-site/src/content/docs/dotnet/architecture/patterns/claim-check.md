@@ -1,7 +1,8 @@
 ---
-title: "Claim Check"
-description: "Replace large message payloads with lightweight references to external storage"
+title: "Claim Check — Large Message Offloading"
+description: "Offload large Wolverine message payloads to blob storage and pass a lightweight reference token — keeps the message bus lean and avoids size limit violations."
 sidebar:
+  label: Claim Check
   order: 11
 ---
 

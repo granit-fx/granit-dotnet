@@ -1,7 +1,8 @@
 ---
-title: "Soft Delete"
+title: "Soft Delete — EF Core Global Query Filters"
 description: "How Granit intercepts deletions to preserve audit trails for ISO 27001 and GDPR compliance"
 sidebar:
+  label: Soft Delete
   order: 41
 ---
 

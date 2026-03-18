@@ -1,7 +1,8 @@
 ---
-title: "Singleton"
-description: "DI singletons and AsyncLocal per-flow state for tenant context and data filters in Granit"
+title: "Singleton Pattern — DI-Managed Instances"
+description: "Manage shared state safely in .NET — DI-registered singletons for stateless services, AsyncLocal for per-request tenant context and data filter state without thread leaks."
 sidebar:
+  label: Singleton
   order: 30
 ---
 

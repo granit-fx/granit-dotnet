@@ -1,7 +1,8 @@
 ---
-title: "AI Workspace"
+title: "AI Workspace — Scoped AI Context Pattern"
 description: "Named, per-tenant AI provider configuration resolved at runtime — the IHttpClientFactory pattern applied to LLMs"
 sidebar:
+  label: AI Workspace
   order: 57
 ---
 

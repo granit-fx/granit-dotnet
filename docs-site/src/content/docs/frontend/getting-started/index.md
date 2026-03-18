@@ -1,7 +1,8 @@
 ---
-title: Getting Started
-description: Get started with the Granit frontend SDK — TypeScript packages and React bindings for building applications on top of Granit.
+title: Getting Started with Granit Frontend SDK
+description: Get started with the Granit frontend SDK — headless TypeScript packages and React 19 bindings for authentication, querying, multi-tenancy, and observability.
 sidebar:
+  label: Getting Started
   order: 1
 ---
 

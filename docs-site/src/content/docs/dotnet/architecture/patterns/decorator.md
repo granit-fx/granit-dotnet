@@ -1,7 +1,8 @@
 ---
-title: "Decorator"
+title: "Decorator Pattern — Cross-Cutting Concerns"
 description: "Layered cache services with serialization, encryption, and anti-stampede in Granit"
 sidebar:
+  label: Decorator
   order: 33
 ---
 

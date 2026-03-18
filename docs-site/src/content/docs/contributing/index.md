@@ -1,7 +1,8 @@
 ---
-title: Contributing to Granit
-description: How to contribute to the Granit framework — guidelines, setup, and conventions
+title: "Contributing to Granit \u2014 Open-Source .NET Framework"
+description: Everything you need to contribute to Granit — dev setup, C# coding standards, git workflow, module structure, testing guide, and Definition of Done.
 sidebar:
+  label: Contributing to Granit
   order: 0
 ---
 

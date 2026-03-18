@@ -1,7 +1,8 @@
 ---
-title: "Cache-Aside"
+title: "Cache-Aside Pattern — Redis & IMemoryCache"
 description: "Lazy-loading cache with HybridCache (L1 + L2 Redis) and anti-stampede protection"
 sidebar:
+  label: Cache-Aside
   order: 14
 ---
 

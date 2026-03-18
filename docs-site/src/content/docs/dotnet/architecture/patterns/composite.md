@@ -1,7 +1,8 @@
 ---
-title: "Composite"
+title: "Composite Pattern — Tree Structures in .NET"
 description: "Progressive entity hierarchy with composable audit and compliance interfaces in Granit"
 sidebar:
+  label: Composite
   order: 32
 ---
 

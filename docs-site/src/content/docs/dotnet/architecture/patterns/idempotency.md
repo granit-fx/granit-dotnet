@@ -1,7 +1,8 @@
 ---
-title: "Idempotency"
+title: "Idempotency Pattern — Duplicate Request Safety"
 description: "Stripe-style HTTP idempotency with state machine, SHA-256 payload hashing, and Redis store"
 sidebar:
+  label: Idempotency
   order: 12
 ---
 

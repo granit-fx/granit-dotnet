@@ -1,7 +1,8 @@
 ---
-title: "Mediator"
-description: "Wolverine as the central mediator for commands, events, and queries in Granit"
+title: "Mediator Pattern — In-Process Command Routing"
+description: "Route commands, queries, and events through Wolverine as a central in-process mediator — eliminates direct service dependencies and enables cross-cutting pipeline behaviors."
 sidebar:
+  label: Mediator
   order: 22
 ---
 

@@ -1,7 +1,8 @@
 ---
-title: "Data Filtering"
+title: "Data Filtering — EF Core Dynamic Query Filters"
 description: "How Granit automatically applies global query filters based on marker interfaces"
 sidebar:
+  label: Data Filtering
   order: 44
 ---
 

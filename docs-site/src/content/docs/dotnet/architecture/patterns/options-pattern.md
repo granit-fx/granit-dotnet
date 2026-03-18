@@ -1,7 +1,8 @@
 ---
-title: "Options Pattern"
+title: "Options Pattern — Typed Configuration in .NET"
 description: "How every Granit module structures configuration as strongly-typed, startup-validated options classes"
 sidebar:
+  label: Options Pattern
   order: 48
 ---
 

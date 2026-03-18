@@ -1,7 +1,8 @@
 ---
-title: Module Structure
-description: How to create a new Granit module -- project layout, DbContext checklist, NuGet packaging
+title: "Module Structure \u2014 Anatomy of a Granit Package"
+description: Anatomy of a Granit package — standard project layout, abstractions/endpoints/persistence layers, isolated DbContext checklist, and NuGet packaging conventions.
 sidebar:
+  label: Module Structure
   order: 3
 ---
 

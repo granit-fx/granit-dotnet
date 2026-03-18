@@ -1,7 +1,8 @@
 ---
-title: "Layered Architecture"
-description: "Three-layer structure with strict dependency direction from infrastructure to domain"
+title: "Layered Architecture — Module Layer Split"
+description: "Structure modules in three strict layers — Abstractions, Provider, and Endpoints — with unidirectional dependencies from infrastructure to domain, enforced by architecture tests."
 sidebar:
+  label: Layered Architecture
   order: 5
 ---
 

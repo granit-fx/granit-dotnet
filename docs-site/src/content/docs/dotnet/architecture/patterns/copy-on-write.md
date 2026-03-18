@@ -1,7 +1,8 @@
 ---
-title: "Copy-on-Write"
+title: "Copy-on-Write — Immutable State Snapshots"
 description: "How Granit uses immutable state with ImmutableDictionary to ensure thread-safe data filtering"
 sidebar:
+  label: Copy-on-Write
   order: 45
 ---
 

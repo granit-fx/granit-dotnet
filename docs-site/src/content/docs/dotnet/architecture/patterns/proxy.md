@@ -1,7 +1,8 @@
 ---
-title: "Proxy"
+title: "Proxy Pattern — EF Core Interceptors & Query Filters"
 description: "EF Core interceptors and query filter proxies for transparent audit and soft delete in Granit"
 sidebar:
+  label: Proxy
   order: 35
 ---
 
