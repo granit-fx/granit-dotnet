@@ -126,6 +126,8 @@
     <Project Path="src/Granit.Persistence.Hosting/Granit.Persistence.Hosting.csproj" />
     <Project Path="src/Granit.Persistence.Migrations.Wolverine/Granit.Persistence.Migrations.Wolverine.csproj" />
     <Project Path="src/Granit.Persistence.Migrations/Granit.Persistence.Migrations.csproj" />
+    <Project Path="src/Granit.Persistence.Postgres/Granit.Persistence.Postgres.csproj" />
+    <Project Path="src/Granit.Persistence.SqlServer/Granit.Persistence.SqlServer.csproj" />
     <Project Path="src/Granit.Persistence/Granit.Persistence.csproj" />
     <Project Path="src/Granit.Privacy/Granit.Privacy.csproj" />
     <Project Path="src/Granit.Privacy.AI/Granit.Privacy.AI.csproj" />
@@ -310,6 +312,8 @@
     <Project Path="tests/Granit.Observability.Tests/Granit.Observability.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Hosting.Tests/Granit.Persistence.Hosting.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Migrations.Tests/Granit.Persistence.Migrations.Tests.csproj" />
+    <Project Path="tests/Granit.Persistence.Postgres.Tests/Granit.Persistence.Postgres.Tests.csproj" />
+    <Project Path="tests/Granit.Persistence.SqlServer.Tests/Granit.Persistence.SqlServer.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Migrations.Wolverine.Tests/Granit.Persistence.Migrations.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Tests/Granit.Persistence.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Tests/Granit.Privacy.Tests.csproj" />
