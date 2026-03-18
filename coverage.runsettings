@@ -8,7 +8,8 @@
           <!-- Exclude source-generated code from coverage -->
           <ExcludeByAttribute>ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
           <!-- Exclude ASP.NET OpenAPI source generator and compiler-generated interceptors -->
-          <Exclude>[*]Microsoft.AspNetCore.OpenApi.Generated*,[*]System.Runtime.CompilerServices.InterceptsLocationAttribute*</Exclude>
+          <!-- Exclude GranitModule subclasses — DI wiring only, no logic to unit test -->
+          <Exclude>[*]Microsoft.AspNetCore.OpenApi.Generated*,[*]System.Runtime.CompilerServices.InterceptsLocationAttribute*,[Granit.*]*Module</Exclude>
         </Configuration>
       </DataCollector>
     </DataCollectors>

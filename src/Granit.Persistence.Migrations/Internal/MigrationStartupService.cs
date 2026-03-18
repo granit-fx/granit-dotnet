@@ -1,6 +1,8 @@
 using Granit.Persistence.Migrations.Messages;
 using Granit.Persistence.Migrations.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -53,7 +55,10 @@ internal sealed partial class MigrationStartupService(
     private async Task ResumeAsync(CancellationToken cancellationToken)
     {
         await using MigrationProgressDbContext db = await progressFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        await db.Database.EnsureCreatedAsync(cancellationToken).ConfigureAwait(false);
+
+        // EnsureCreatedAsync is a no-op when the database already has tables (from host migrations).
+        // Use the relational database creator to create only missing tables from this DbContext model.
+        await EnsureProgressTableAsync(db, cancellationToken).ConfigureAwait(false);
 
         List<MigrationProgress> pending = await db.MigrationProgresses
             .Where(p => p.Status == MigrationStatus.Pending || p.Status == MigrationStatus.InProgress)
@@ -115,6 +120,36 @@ internal sealed partial class MigrationStartupService(
         }
 
         return commands;
+    }
+
+    /// <summary>
+    /// Creates the <c>data_migration_progress</c> table if it doesn't exist.
+    /// </summary>
+    /// <remarks>
+    /// <c>EnsureCreatedAsync()</c> is a no-op when the database already has tables
+    /// (e.g., from host application migrations). We use <see cref="IRelationalDatabaseCreator"/>
+    /// with a try/catch probe to detect missing tables.
+    /// </remarks>
+    private static async Task EnsureProgressTableAsync(MigrationProgressDbContext db, CancellationToken ct)
+    {
+        IRelationalDatabaseCreator creator = db.GetService<IRelationalDatabaseCreator>();
+
+        if (!await creator.HasTablesAsync(ct).ConfigureAwait(false))
+        {
+            await creator.CreateTablesAsync(ct).ConfigureAwait(false);
+            return;
+        }
+
+        // Database has tables (from host migrations) — EnsureCreated would be a no-op.
+        // Try to query the progress table; if it fails, create it.
+        try
+        {
+            await db.MigrationProgresses.AnyAsync(ct).ConfigureAwait(false);
+        }
+        catch (Exception) when (!ct.IsCancellationRequested)
+        {
+            await creator.CreateTablesAsync(ct).ConfigureAwait(false);
+        }
     }
 
     [LoggerMessage(Level = LogLevel.Information,
