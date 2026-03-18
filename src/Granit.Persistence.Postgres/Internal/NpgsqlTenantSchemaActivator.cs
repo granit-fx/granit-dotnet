@@ -1,7 +1,8 @@
 using System.Data.Common;
 using System.Text.RegularExpressions;
+using Granit.Persistence.MultiTenancy;
 
-namespace Granit.Persistence.MultiTenancy;
+namespace Granit.Persistence.Postgres.Internal;
 
 /// <summary>
 /// PostgreSQL implementation of <see cref="ITenantSchemaActivator"/> that executes
@@ -9,10 +10,8 @@ namespace Granit.Persistence.MultiTenancy;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Registered as the default <see cref="ITenantSchemaActivator"/> by
-/// <see cref="Extensions.PersistenceTenantExtensions"/>. Applications using a different
-/// database provider must register their own implementation before calling
-/// <c>AddTenantPerSchemaDbContext</c>.
+/// Registered by <c>AddGranitPostgres()</c>. Call that method before
+/// <c>AddTenantPerSchemaDbContext</c> to ensure this implementation is used.
 /// </para>
 /// <para>
 /// Safety is ensured by two layers:
@@ -24,7 +23,7 @@ namespace Granit.Persistence.MultiTenancy;
 /// </list>
 /// </para>
 /// </remarks>
-internal sealed partial class PostgresqlTenantSchemaActivator : ITenantSchemaActivator
+internal sealed partial class NpgsqlTenantSchemaActivator : ITenantSchemaActivator
 {
     /// <summary>
     /// Matches valid PostgreSQL unquoted identifiers: lower-case letters, digits, underscores,
@@ -56,10 +55,6 @@ internal sealed partial class PostgresqlTenantSchemaActivator : ITenantSchemaAct
     /// Builds the <c>SET search_path</c> command text with a validated and double-quoted
     /// PostgreSQL identifier.
     /// </summary>
-    /// <remarks>
-    /// <c>SET search_path</c> is a session-variable command and does not accept bound
-    /// parameters. Safety relies on <see cref="ValidateSchemaName"/> plus double-quoting.
-    /// </remarks>
     private static string BuildSetSearchPathCommand(string schema) =>
         $"SET search_path TO \"{ValidateSchemaName(schema)}\", public";
 

@@ -1,4 +1,6 @@
 using Granit.Persistence.Hosting;
+using Granit.Persistence.Migrations;
+using Granit.Persistence.MultiTenancy;
 using Granit.Persistence.Postgres.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -12,14 +14,17 @@ namespace Granit.Persistence.Postgres.Extensions;
 public static class PersistencePostgresHostApplicationBuilderExtensions
 {
     /// <summary>
-    /// Registers PostgreSQL-specific persistence services, including the
-    /// <see cref="IGranitMigrationLock"/> implementation backed by
-    /// <c>pg_try_advisory_lock</c>.
+    /// Registers PostgreSQL-specific persistence services:
+    /// <list type="bullet">
+    ///   <item><see cref="IGranitMigrationLock"/> — <c>pg_try_advisory_lock</c>-backed distributed migration lock.</item>
+    ///   <item><see cref="ITenantSchemaActivator"/> — executes <c>SET search_path</c> per tenant.</item>
+    ///   <item><see cref="ITenantDbIsolator"/> — isolates a <c>DbContext</c> to a tenant schema before migrations.</item>
+    /// </list>
     /// </summary>
     /// <remarks>
-    /// Call this before <c>AddGranitMigrateSupport()</c> so that
-    /// <c>TryAddSingleton&lt;IGranitMigrationLock, NullMigrationLock&gt;()</c>
-    /// is a no-op and the advisory lock is used instead.
+    /// Call this before <c>AddGranitMigrateSupport()</c> and before any
+    /// <c>AddTenantPerSchemaDbContext</c> call so that <c>TryAdd</c> registrations
+    /// are not overridden by no-op fallbacks.
     /// </remarks>
     /// <param name="builder">The host application builder.</param>
     /// <returns>The builder for chaining.</returns>
@@ -27,6 +32,8 @@ public static class PersistencePostgresHostApplicationBuilderExtensions
         this IHostApplicationBuilder builder)
     {
         builder.Services.TryAddSingleton<IGranitMigrationLock, NpgsqlAdvisoryMigrationLock>();
+        builder.Services.TryAddSingleton<ITenantSchemaActivator, NpgsqlTenantSchemaActivator>();
+        builder.Services.TryAddSingleton<ITenantDbIsolator, NpgsqlTenantDbIsolator>();
         return builder;
     }
 }

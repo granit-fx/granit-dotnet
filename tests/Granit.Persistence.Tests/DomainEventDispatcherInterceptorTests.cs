@@ -11,11 +11,16 @@ namespace Granit.Persistence.Tests;
 public sealed class DomainEventDispatcherInterceptorTests
 {
     private readonly IDomainEventDispatcher _dispatcher;
+    private readonly IIntegrationEventDispatcher _integrationDispatcher;
 
     public DomainEventDispatcherInterceptorTests()
     {
         _dispatcher = Substitute.For<IDomainEventDispatcher>();
         _dispatcher.DispatchAsync(Arg.Any<IReadOnlyList<IDomainEvent>>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+        _integrationDispatcher = Substitute.For<IIntegrationEventDispatcher>();
+        _integrationDispatcher
+            .DispatchAsync(Arg.Any<IReadOnlyList<IIntegrationEvent>>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
     }
 
@@ -152,13 +157,70 @@ public sealed class DomainEventDispatcherInterceptorTests
             Arg.Any<CancellationToken>());
     }
 
+    [Fact]
+    public async Task SaveChangesAsync_IntegrationEventsFromAggregate_DispatchedBeforeCommit()
+    {
+        // Arrange
+        await using TestDbContext context = CreateContext();
+        TestAggregateWithIntegrationEvent aggregate = new();
+        aggregate.DoSomething();
+        context.AggregatesWithIntegrationEvent.Add(aggregate);
+
+        // Act
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert — integration event dispatched (SavingChanges — before commit)
+        await _integrationDispatcher.Received(1).DispatchAsync(
+            Arg.Is<IReadOnlyList<IIntegrationEvent>>(events => events.Count == 1),
+            Arg.Any<CancellationToken>());
+
+        // Domain event also dispatched (SavedChanges — after commit)
+        await _dispatcher.Received(1).DispatchAsync(
+            Arg.Is<IReadOnlyList<IDomainEvent>>(events => events.Count == 1),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SaveChangesAsync_IntegrationEventsCleared_AfterCollecting()
+    {
+        // Arrange
+        await using TestDbContext context = CreateContext();
+        TestAggregateWithIntegrationEvent aggregate = new();
+        aggregate.DoSomething();
+        context.AggregatesWithIntegrationEvent.Add(aggregate);
+
+        // Act
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert — integration events cleared from aggregate
+        aggregate.IntegrationEvents.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task SaveChangesAsync_NoIntegrationEvents_DoesNotDispatchIntegration()
+    {
+        // Arrange
+        await using TestDbContext context = CreateContext();
+        TestAggregate aggregate = new();
+        aggregate.DoSomething();
+        context.Aggregates.Add(aggregate);
+
+        // Act
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert — no integration event dispatch
+        await _integrationDispatcher.DidNotReceive().DispatchAsync(
+            Arg.Any<IReadOnlyList<IIntegrationEvent>>(),
+            Arg.Any<CancellationToken>());
+    }
+
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 
     private TestDbContext CreateContext()
     {
-        DomainEventDispatcherInterceptor interceptor = new(_dispatcher);
+        DomainEventDispatcherInterceptor interceptor = new(_dispatcher, _integrationDispatcher);
         DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .AddInterceptors(interceptor)
@@ -172,6 +234,8 @@ public sealed class DomainEventDispatcherInterceptorTests
 
     private sealed record SomethingHappened(Guid EntityId) : IDomainEvent;
 
+    private sealed record SomethingBroadcast(Guid EntityId) : IIntegrationEvent;
+
     private sealed class TestAggregate : AggregateRoot
     {
         public string Name { get; set; } = string.Empty;
@@ -184,6 +248,17 @@ public sealed class DomainEventDispatcherInterceptorTests
         public void DoSomething() => AddDomainEvent(new SomethingHappened(Id));
     }
 
+    private sealed class TestAggregateWithIntegrationEvent : AggregateRoot
+    {
+        public string Name { get; set; } = string.Empty;
+
+        public void DoSomething()
+        {
+            AddDomainEvent(new SomethingHappened(Id));
+            AddDistributedEvent(new SomethingBroadcast(Id));
+        }
+    }
+
     private sealed class TestPlainEntity : Entity
     {
         public string Name { get; set; } = string.Empty;
@@ -193,12 +268,14 @@ public sealed class DomainEventDispatcherInterceptorTests
     {
         public DbSet<TestAggregate> Aggregates => Set<TestAggregate>();
         public DbSet<TestAuditedAggregate> AuditedAggregates => Set<TestAuditedAggregate>();
+        public DbSet<TestAggregateWithIntegrationEvent> AggregatesWithIntegrationEvent => Set<TestAggregateWithIntegrationEvent>();
         public DbSet<TestPlainEntity> PlainEntities => Set<TestPlainEntity>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TestAggregate>().Property(e => e.Id).ValueGeneratedNever();
             modelBuilder.Entity<TestAuditedAggregate>().Property(e => e.Id).ValueGeneratedNever();
+            modelBuilder.Entity<TestAggregateWithIntegrationEvent>().Property(e => e.Id).ValueGeneratedNever();
             modelBuilder.Entity<TestPlainEntity>().Property(e => e.Id).ValueGeneratedNever();
         }
     }

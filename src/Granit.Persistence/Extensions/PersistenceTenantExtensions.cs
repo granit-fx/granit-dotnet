@@ -86,10 +86,10 @@ public static class PersistenceTenantExtensions
     /// <see cref="TenantSchemaOptions"/>).
     /// </para>
     /// <para>
-    /// If no custom <see cref="ITenantSchemaActivator"/> is registered, the default
-    /// <see cref="PostgresqlTenantSchemaActivator"/> is used. To use a different database
-    /// provider, register your <see cref="ITenantSchemaActivator"/> before calling this method
-    /// (e.g. <see cref="MySqlTenantSchemaActivator"/> or <see cref="OracleTenantSchemaActivator"/>).
+    /// No default <see cref="ITenantSchemaActivator"/> is registered. Call
+    /// <c>AddGranitPostgres()</c> (from <c>Granit.Persistence.Postgres</c>) before this
+    /// method to register the PostgreSQL implementation, or register your own
+    /// <see cref="ITenantSchemaActivator"/> for a different database provider.
     /// </para>
     /// </remarks>
     public static IServiceCollection AddTenantPerSchemaDbContext<TContext>(
@@ -102,7 +102,6 @@ public static class PersistenceTenantExtensions
             .Configure(configureTenantSchema ?? (_ => { }));
 
         services.TryAddSingleton<ITenantSchemaProvider, DefaultTenantSchemaProvider>();
-        services.TryAddSingleton<ITenantSchemaActivator, PostgresqlTenantSchemaActivator>();
 
         services.AddSingleton(new TenantPerSchemaDbContextOptions<TContext>
         {
@@ -215,7 +214,6 @@ public static class PersistenceTenantExtensions
                 .Configure(configureTenantSchema ?? (_ => { }));
 
             services.TryAddSingleton<ITenantSchemaProvider, DefaultTenantSchemaProvider>();
-            services.TryAddSingleton<ITenantSchemaActivator, PostgresqlTenantSchemaActivator>();
 
             TenantPerSchemaDbContextOptions<TContext> perSchemaOpts = new()
             {

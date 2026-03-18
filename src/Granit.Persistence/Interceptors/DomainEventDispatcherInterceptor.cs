@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Granit.Core.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -6,44 +7,71 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 namespace Granit.Persistence.Interceptors;
 
 /// <summary>
-/// EF Core interceptor that collects domain events from tracked
-/// <see cref="IDomainEventSource"/> entities before <c>SaveChanges</c>
-/// and dispatches them after the transaction commits.
+/// EF Core interceptor that collects and dispatches events from tracked aggregate roots.
 /// </summary>
 /// <remarks>
-/// Events are collected <em>before</em> save (while change tracker entries are available)
-/// and dispatched <em>after</em> save (so that the database state is consistent).
-/// If <c>SaveChanges</c> throws, no events are dispatched.
+/// <para>
+/// Two dispatch timings are used deliberately:
+/// <list type="bullet">
+///   <item>
+///     <c>SavingChanges</c> — integration events (<see cref="IIntegrationEvent"/>) added via
+///     <c>AggregateRoot.AddDistributedEvent()</c> are dispatched before the transaction commits
+///     so Wolverine can write outbox envelopes atomically.
+///   </item>
+///   <item>
+///     <c>SavedChanges</c> — domain events (<see cref="IDomainEvent"/>) added via
+///     <c>AggregateRoot.AddDomainEvent()</c> are dispatched after the transaction commits
+///     so handlers can safely read committed data.
+///   </item>
+/// </list>
+/// </para>
+/// <para>
+/// Inter-callback state is stored in a static <see cref="ConcurrentDictionary{TKey,TValue}"/>
+/// keyed by <c>DbContext.ContextId.InstanceId</c> rather than <c>AsyncLocal</c> to avoid
+/// cross-request leaks on interceptors registered as singletons or used across
+/// concurrent <c>SaveChanges</c> calls on the same async flow.
+/// </para>
 /// </remarks>
-public sealed class DomainEventDispatcherInterceptor(IDomainEventDispatcher dispatcher) : SaveChangesInterceptor
+public sealed class DomainEventDispatcherInterceptor(
+    IDomainEventDispatcher domainDispatcher,
+    IIntegrationEventDispatcher integrationDispatcher) : SaveChangesInterceptor
 {
-    // AsyncLocal because multiple SaveChanges calls may be in-flight concurrently
-    // across different DbContext instances in the same async flow.
-    private static readonly AsyncLocal<List<IDomainEvent>?> PendingEvents = new();
+    // Pending domain events keyed by DbContext.ContextId.InstanceId (set in SavingChanges,
+    // consumed in SavedChanges / SaveChangesFailed).
+    private static readonly ConcurrentDictionary<Guid, List<IDomainEvent>>
+        PendingDomainEventsBag = new();
 
     /// <inheritdoc />
     public override InterceptionResult<int> SavingChanges(
         DbContextEventData eventData,
         InterceptionResult<int> result)
     {
-        CollectDomainEvents(eventData.Context);
+        if (eventData.Context is not null)
+        {
+            CollectAndDispatchIntegrationEventsSync(eventData.Context);
+        }
+
         return base.SavingChanges(eventData, result);
     }
 
     /// <inheritdoc />
-    public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
+    public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
         DbContextEventData eventData,
         InterceptionResult<int> result,
         CancellationToken cancellationToken = default)
     {
-        CollectDomainEvents(eventData.Context);
-        return base.SavingChangesAsync(eventData, result, cancellationToken);
+        if (eventData.Context is not null)
+        {
+            await CollectAndDispatchIntegrationEventsAsync(eventData.Context, cancellationToken).ConfigureAwait(false);
+        }
+
+        return await base.SavingChangesAsync(eventData, result, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public override int SavedChanges(SaveChangesCompletedEventData eventData, int result)
     {
-        DispatchCollectedEventsSync();
+        DispatchDomainEventsSync(eventData.Context);
         return base.SavedChanges(eventData, result);
     }
 
@@ -53,15 +81,18 @@ public sealed class DomainEventDispatcherInterceptor(IDomainEventDispatcher disp
         int result,
         CancellationToken cancellationToken = default)
     {
-        await DispatchCollectedEventsAsync(cancellationToken).ConfigureAwait(false);
+        await DispatchDomainEventsAsync(eventData.Context, cancellationToken).ConfigureAwait(false);
         return await base.SavedChangesAsync(eventData, result, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public override void SaveChangesFailed(DbContextErrorEventData eventData)
     {
-        // Discard collected events — the transaction failed.
-        PendingEvents.Value = null;
+        if (eventData.Context is not null)
+        {
+            PendingDomainEventsBag.TryRemove(eventData.Context.ContextId.InstanceId, out _);
+        }
+
         base.SaveChangesFailed(eventData);
     }
 
@@ -70,63 +101,101 @@ public sealed class DomainEventDispatcherInterceptor(IDomainEventDispatcher disp
         DbContextErrorEventData eventData,
         CancellationToken cancellationToken = default)
     {
-        // Discard collected events — the transaction failed.
-        PendingEvents.Value = null;
+        if (eventData.Context is not null)
+        {
+            PendingDomainEventsBag.TryRemove(eventData.Context.ContextId.InstanceId, out _);
+        }
+
         return base.SaveChangesFailedAsync(eventData, cancellationToken);
     }
 
-    private static void CollectDomainEvents(DbContext? context)
+    // ──────────────────────────────────────────────────────────────────────────
+    // Collection & dispatch
+
+    private void CollectAndDispatchIntegrationEventsSync(DbContext context)
     {
-        if (context is null)
+        (List<IDomainEvent>? domainEvents, List<IIntegrationEvent>? integrationEvents) = Collect(context);
+
+        if (domainEvents is { Count: > 0 })
         {
-            return;
+            PendingDomainEventsBag[context.ContextId.InstanceId] = domainEvents;
         }
 
-        List<IDomainEvent>? events = null;
-
-        foreach (EntityEntry entry in context.ChangeTracker.Entries())
+        if (integrationEvents is { Count: > 0 })
         {
-            if (entry.Entity is not IDomainEventSource source || source.DomainEvents.Count == 0)
-            {
-                continue;
-            }
-
-            events ??= [];
-            events.AddRange(source.DomainEvents);
-            source.ClearDomainEvents();
+            integrationDispatcher.DispatchAsync(integrationEvents, CancellationToken.None)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
         }
-
-        PendingEvents.Value = events;
     }
 
-    private void DispatchCollectedEventsSync()
+    private async Task CollectAndDispatchIntegrationEventsAsync(DbContext context, CancellationToken ct)
     {
-        List<IDomainEvent>? events = PendingEvents.Value;
-        PendingEvents.Value = null;
+        (List<IDomainEvent>? domainEvents, List<IIntegrationEvent>? integrationEvents) = Collect(context);
 
-        if (events is null or { Count: 0 })
+        if (domainEvents is { Count: > 0 })
+        {
+            PendingDomainEventsBag[context.ContextId.InstanceId] = domainEvents;
+        }
+
+        if (integrationEvents is { Count: > 0 })
+        {
+            await integrationDispatcher.DispatchAsync(integrationEvents, ct).ConfigureAwait(false);
+        }
+    }
+
+    private void DispatchDomainEventsSync(DbContext? context)
+    {
+        if (context is null ||
+            !PendingDomainEventsBag.TryRemove(context.ContextId.InstanceId, out List<IDomainEvent>? events) ||
+            events.Count == 0)
         {
             return;
         }
 
-        // Synchronous dispatch: fire-and-forget is acceptable here because
-        // domain events are in-process and dispatched on the local queue.
-        dispatcher.DispatchAsync(events, CancellationToken.None)
+        domainDispatcher.DispatchAsync(events, CancellationToken.None)
             .ConfigureAwait(false)
             .GetAwaiter()
             .GetResult();
     }
 
-    private async Task DispatchCollectedEventsAsync(CancellationToken cancellationToken)
+    private async Task DispatchDomainEventsAsync(DbContext? context, CancellationToken ct)
     {
-        List<IDomainEvent>? events = PendingEvents.Value;
-        PendingEvents.Value = null;
-
-        if (events is null or { Count: 0 })
+        if (context is null ||
+            !PendingDomainEventsBag.TryRemove(context.ContextId.InstanceId, out List<IDomainEvent>? events) ||
+            events.Count == 0)
         {
             return;
         }
 
-        await dispatcher.DispatchAsync(events, cancellationToken).ConfigureAwait(false);
+        await domainDispatcher.DispatchAsync(events, ct).ConfigureAwait(false);
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // ChangeTracker scan
+
+    private static (List<IDomainEvent>? DomainEvents, List<IIntegrationEvent>? IntegrationEvents)
+        Collect(DbContext context)
+    {
+        List<IDomainEvent>? domainEvents = null;
+        List<IIntegrationEvent>? integrationEvents = null;
+
+        foreach (EntityEntry entry in context.ChangeTracker.Entries())
+        {
+            if (entry.Entity is IDomainEventSource domainSource && domainSource.DomainEvents.Count > 0)
+            {
+                (domainEvents ??= []).AddRange(domainSource.DomainEvents);
+                domainSource.ClearDomainEvents();
+            }
+
+            if (entry.Entity is IIntegrationEventSource integrationSource && integrationSource.IntegrationEvents.Count > 0)
+            {
+                (integrationEvents ??= []).AddRange(integrationSource.IntegrationEvents);
+                integrationSource.ClearIntegrationEvents();
+            }
+        }
+
+        return (domainEvents, integrationEvents);
     }
 }

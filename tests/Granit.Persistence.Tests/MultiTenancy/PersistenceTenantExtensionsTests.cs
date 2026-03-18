@@ -108,16 +108,17 @@ public sealed class PersistenceTenantExtensionsTests
     }
 
     [Fact]
-    public void AddTenantPerSchemaDbContext_RegistersDefaultSchemaActivator()
+    public void AddTenantPerSchemaDbContext_DoesNotRegisterDefaultSchemaActivator()
     {
+        // No default ITenantSchemaActivator since Granit.Persistence.Postgres was
+        // decoupled from the generic persistence package. Callers must invoke
+        // AddGranitPostgres() (or register their own implementation) before this call.
         ServiceCollection services = new();
 
         services.AddTenantPerSchemaDbContext<TestDbContext>(opts =>
             opts.UseInMemoryDatabase("shared-db"));
 
-        services.ShouldContain(d =>
-            d.ServiceType == typeof(ITenantSchemaActivator) &&
-            d.Lifetime == ServiceLifetime.Singleton);
+        services.ShouldNotContain(d => d.ServiceType == typeof(ITenantSchemaActivator));
     }
 
     [Fact]
@@ -201,16 +202,18 @@ public sealed class PersistenceTenantExtensionsTests
     }
 
     [Fact]
-    public void AddGranitIsolatedDbContext_WithSchemaPerTenant_RegistersSchemaActivator()
+    public void AddGranitIsolatedDbContext_WithSchemaPerTenant_DoesNotRegisterDefaultSchemaActivator()
     {
+        // No default ITenantSchemaActivator since Granit.Persistence.Postgres was
+        // decoupled from the generic persistence package. Callers must invoke
+        // AddGranitPostgres() (or register their own implementation) before this call.
         ServiceCollection services = new();
 
         services.AddGranitIsolatedDbContext<TestDbContext>(
             configureShared: opts => opts.UseInMemoryDatabase("shared"),
             configureSchemaPerTenant: opts => opts.UseInMemoryDatabase("schema-db"));
 
-        services.ShouldContain(d =>
-            d.ServiceType == typeof(ITenantSchemaActivator));
+        services.ShouldNotContain(d => d.ServiceType == typeof(ITenantSchemaActivator));
     }
 
     [Fact]
