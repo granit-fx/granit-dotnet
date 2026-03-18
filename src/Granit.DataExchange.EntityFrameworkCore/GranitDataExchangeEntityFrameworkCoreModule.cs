@@ -23,7 +23,11 @@ public sealed class GranitDataExchangeEntityFrameworkCoreModule : GranitModule
     /// <inheritdoc />
     public override async Task OnApplicationInitializationAsync(ApplicationInitializationContext context)
     {
-        IDbContextFactory<DataExchangeDbContext> factory = context.ServiceProvider
+        // IDbContextFactory<T> is Scoped (multi-tenant interceptor isolation).
+        // OnApplicationInitializationAsync runs against the root provider — a scope is required.
+        await using AsyncServiceScope scope = context.ServiceProvider.CreateAsyncScope();
+
+        IDbContextFactory<DataExchangeDbContext> factory = scope.ServiceProvider
             .GetRequiredService<IDbContextFactory<DataExchangeDbContext>>();
 
         await using DataExchangeDbContext dbContext = await factory
