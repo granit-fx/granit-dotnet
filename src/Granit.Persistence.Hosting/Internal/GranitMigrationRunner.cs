@@ -1,4 +1,3 @@
-using System.Reflection;
 using Granit.Core.Modularity;
 using Granit.Persistence.DataSeeding;
 using Granit.Persistence.Hosting.Options;
@@ -202,30 +201,18 @@ internal sealed partial class GranitMigrationRunner(
     }
 
     /// <summary>
-    /// Resolves a DbContext from the service provider, preferring IDbContextFactory{T}
-    /// (which correctly scopes interceptors) over direct DbContext resolution.
+    /// Resolves a DbContext from a scoped service provider.
     /// </summary>
-    private static async Task<DbContext> ResolveDbContextAsync(
-        IServiceProvider serviceProvider, Type dbContextType, CancellationToken ct)
-    {
-        // Try IDbContextFactory<TContext> first — handles scoped interceptors correctly
-        Type factoryType = typeof(IDbContextFactory<>).MakeGenericType(dbContextType);
-        object? factory = serviceProvider.GetService(factoryType);
-
-        if (factory is not null)
-        {
-            // Call CreateDbContextAsync via reflection (generic method)
-            MethodInfo createMethod = factoryType.GetMethod("CreateDbContextAsync")!;
-            var task = (Task)createMethod.Invoke(factory, [ct])!;
-            await task.ConfigureAwait(false);
-
-            // Extract result from Task<TContext>
-            return (DbContext)((dynamic)task).Result;
-        }
-
-        // Fallback to direct resolution (scoped DbContext)
-        return (DbContext)serviceProvider.GetRequiredService(dbContextType);
-    }
+    /// <remarks>
+    /// Always resolves the DbContext directly (not via IDbContextFactory).
+    /// EF Core registers TContext as Scoped even when AddDbContextFactory is used,
+    /// so scoped resolution works for both AddDbContext and AddDbContextFactory registrations.
+    /// Using IDbContextFactory would fail because singleton factories capture the root
+    /// IServiceProvider and cannot resolve scoped interceptors.
+    /// </remarks>
+    private static Task<DbContext> ResolveDbContextAsync(
+        IServiceProvider serviceProvider, Type dbContextType, CancellationToken ct) =>
+        Task.FromResult((DbContext)serviceProvider.GetRequiredService(dbContextType));
 
     private static async Task<bool> HasTenantsAsync(ITenantEnumerator enumerator, CancellationToken ct)
     {
