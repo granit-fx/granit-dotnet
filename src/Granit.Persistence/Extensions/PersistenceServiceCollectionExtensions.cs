@@ -2,6 +2,7 @@ using Granit.Core.DataFiltering;
 using Granit.Core.Events;
 using Granit.Http.ExceptionHandling;
 using Granit.Persistence.DataSeeding;
+using Granit.Persistence.Events;
 using Granit.Persistence.ExceptionHandling;
 using Granit.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
@@ -29,9 +30,14 @@ public static class PersistenceServiceCollectionExtensions
     ///     not in instance fields.
     ///   </item>
     ///   <item>Domain event dispatcher interceptor (<see cref="DomainEventDispatcherInterceptor"/>)</item>
+    ///   <item>Entity lifecycle event interceptor (<see cref="EntityLifecycleEventInterceptor"/>)</item>
     ///   <item>
     ///     No-op <see cref="IDomainEventDispatcher"/> (replaced by Wolverine implementation
     ///     when <c>Granit.Wolverine</c> is configured).
+    ///   </item>
+    ///   <item>
+    ///     No-op <see cref="IIntegrationEventDispatcher"/> (replaced by Wolverine implementation
+    ///     when <c>Granit.EventBus.Wolverine</c> is configured).
     ///   </item>
     ///   <item>
     ///     <see cref="EfCoreExceptionStatusCodeMapper"/> if
@@ -47,7 +53,9 @@ public static class PersistenceServiceCollectionExtensions
         services.AddScoped<ConcurrencyStampInterceptor>();
         services.AddScoped<SoftDeleteInterceptor>();
         services.AddScoped<DomainEventDispatcherInterceptor>();
+        services.AddScoped<EntityLifecycleEventInterceptor>();
         services.TryAddSingleton<IDomainEventDispatcher, NullDomainEventDispatcher>();
+        services.TryAddSingleton<IIntegrationEventDispatcher, NullIntegrationEventDispatcher>();
         services.AddSingleton<IDataFilter, DataFilter>();
 
         // Register the EF Core exception mapper only when Granit.Http.ExceptionHandling

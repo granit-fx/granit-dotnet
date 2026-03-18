@@ -62,8 +62,58 @@ public sealed class AggregateRootTests
         new TestAggregate().ShouldBeAssignableTo<IDomainEventSource>();
 
     [Fact]
+    public void AggregateRoot_ImplementsIIntegrationEventSource() =>
+        new TestAggregate().ShouldBeAssignableTo<IIntegrationEventSource>();
+
+    [Fact]
     public void AggregateRoot_InheritsEntity() =>
         new TestAggregate().ShouldBeAssignableTo<Entity>();
+
+    [Fact]
+    public void NewAggregateRoot_HasNoIntegrationEvents()
+    {
+        TestAggregate aggregate = new();
+
+        aggregate.IntegrationEvents.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void AddDistributedEvent_CollectsIntegrationEvents()
+    {
+        TestAggregate aggregate = new();
+
+        aggregate.Broadcast();
+
+        aggregate.IntegrationEvents.Count.ShouldBe(1);
+        aggregate.IntegrationEvents.ShouldContain(e => e is SomethingBroadcast);
+    }
+
+    [Fact]
+    public void AddDistributedEvent_CollectsMultipleIntegrationEvents()
+    {
+        TestAggregate aggregate = new();
+
+        aggregate.Broadcast();
+        aggregate.Broadcast();
+
+        aggregate.IntegrationEvents.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    public void ClearIntegrationEvents_RemovesAllEvents()
+    {
+        TestAggregate aggregate = new();
+        aggregate.Broadcast();
+        aggregate.Broadcast();
+
+        aggregate.ClearIntegrationEvents();
+
+        aggregate.IntegrationEvents.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void AddDistributedEvent_NullEvent_Throws() =>
+        Should.Throw<ArgumentNullException>(() => new TestAggregate().BroadcastNull());
 
     // -------------------------------------------------------------------------
     // CreationAuditedAggregateRoot
@@ -171,10 +221,14 @@ public sealed class AggregateRootTests
 
     private sealed record SomethingHappened(Guid EntityId) : IDomainEvent;
 
+    private sealed record SomethingBroadcast(Guid EntityId) : IIntegrationEvent;
+
     private sealed class TestAggregate : AggregateRoot
     {
         public void DoSomething() => AddDomainEvent(new SomethingHappened(Id));
         public void RaiseNull() => AddDomainEvent(null!);
+        public void Broadcast() => AddDistributedEvent(new SomethingBroadcast(Id));
+        public void BroadcastNull() => AddDistributedEvent(null!);
     }
 
     private sealed class TestCreationAuditedAggregate : CreationAuditedAggregateRoot

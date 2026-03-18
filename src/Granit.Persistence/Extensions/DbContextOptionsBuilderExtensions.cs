@@ -20,7 +20,8 @@ public static class DbContextOptionsBuilderExtensions
     ///   <item><see cref="AuditedEntityInterceptor"/> — ISO 27001 audit fields (created/modified by/at, tenant, GUID).</item>
     ///   <item><see cref="VersioningInterceptor"/> — auto-assigns <c>BusinessId</c> and <c>Version</c> on <c>IVersioned</c> entities.</item>
     ///   <item><see cref="ConcurrencyStampInterceptor"/> — regenerates <c>ConcurrencyStamp</c> on <c>IConcurrencyAware</c> entities.</item>
-    ///   <item><see cref="DomainEventDispatcherInterceptor"/> — collects and dispatches domain events after save.</item>
+    ///   <item><see cref="DomainEventDispatcherInterceptor"/> — collects and dispatches domain and integration events from aggregate roots.</item>
+    ///   <item><see cref="EntityLifecycleEventInterceptor"/> — auto-dispatches lifecycle events for <c>IEmitEntityLifecycleEvents</c> / <c>IHasEntityEto&lt;TEto&gt;</c> entities.</item>
     ///   <item><see cref="SoftDeleteInterceptor"/> — converts physical deletes to soft deletes for <c>ISoftDeletable</c> entities.</item>
     /// </list>
     /// </para>
@@ -57,6 +58,7 @@ public static class DbContextOptionsBuilderExtensions
         AddInterceptorIfRegistered<VersioningInterceptor>(options, serviceProvider);
         AddInterceptorIfRegistered<ConcurrencyStampInterceptor>(options, serviceProvider);
         AddInterceptorIfRegistered<DomainEventDispatcherInterceptor>(options, serviceProvider);
+        AddInterceptorIfRegistered<EntityLifecycleEventInterceptor>(options, serviceProvider);
         AddInterceptorIfRegistered<SoftDeleteInterceptor>(options, serviceProvider);
 
         return options;
