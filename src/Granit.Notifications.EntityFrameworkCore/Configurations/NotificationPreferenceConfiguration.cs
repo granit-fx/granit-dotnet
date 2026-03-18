@@ -8,7 +8,9 @@ internal sealed class NotificationPreferenceConfiguration : IEntityTypeConfigura
 {
     public void Configure(EntityTypeBuilder<NotificationPreference> builder)
     {
-        builder.ToTable("notification_preferences");
+        builder.ToTable(
+            GranitNotificationsDbProperties.DbTablePrefix + "preferences",
+            GranitNotificationsDbProperties.DbSchema);
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.UserId).HasMaxLength(256).IsRequired();
@@ -19,6 +21,6 @@ internal sealed class NotificationPreferenceConfiguration : IEntityTypeConfigura
 
         builder.HasIndex(x => new { x.UserId, x.NotificationTypeName, x.ChannelName, x.TenantId })
             .IsUnique()
-            .HasDatabaseName("ix_notification_preferences_unique");
+            .HasDatabaseName($"uq_{GranitNotificationsDbProperties.DbTablePrefix}preferences_user_type_channel_tenant");
     }
 }

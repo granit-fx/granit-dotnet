@@ -13,7 +13,9 @@ internal sealed class AuditPropertyChangeConfiguration : IEntityTypeConfiguratio
     /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<AuditPropertyChange> builder)
     {
-        builder.ToTable("audit_property_changes");
+        builder.ToTable(
+            GranitAuditLogDbProperties.DbTablePrefix + "property_changes",
+            GranitAuditLogDbProperties.DbSchema);
 
         builder.HasKey(e => e.Id);
 

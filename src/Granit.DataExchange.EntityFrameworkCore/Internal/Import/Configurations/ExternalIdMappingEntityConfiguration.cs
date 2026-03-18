@@ -12,7 +12,9 @@ internal sealed class ExternalIdMappingEntityConfiguration : IEntityTypeConfigur
 {
     public void Configure(EntityTypeBuilder<ExternalIdMappingEntity> builder)
     {
-        builder.ToTable("data_import_external_id_mappings");
+        builder.ToTable(
+            GranitDataExchangeDbProperties.DbTablePrefix + "external_id_mappings",
+            GranitDataExchangeDbProperties.DbSchema);
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.DefinitionName).HasMaxLength(200).IsRequired();
@@ -23,6 +25,6 @@ internal sealed class ExternalIdMappingEntityConfiguration : IEntityTypeConfigur
 
         builder.HasIndex(e => new { e.DefinitionName, e.ExternalId, e.TenantId })
             .IsUnique()
-            .HasDatabaseName("ix_ext_id_def_ext_tenant");
+            .HasDatabaseName($"uq_{GranitDataExchangeDbProperties.DbTablePrefix}external_id_mappings_def_ext_tenant");
     }
 }

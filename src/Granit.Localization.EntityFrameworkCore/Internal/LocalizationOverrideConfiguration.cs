@@ -14,7 +14,9 @@ internal sealed class LocalizationOverrideConfiguration
     /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<LocalizationOverride> builder)
     {
-        builder.ToTable("i18n_localization_overrides");
+        builder.ToTable(
+            GranitLocalizationDbProperties.DbTablePrefix + "overrides",
+            GranitLocalizationDbProperties.DbSchema);
 
         builder.HasKey(e => e.Id);
 
@@ -52,10 +54,10 @@ internal sealed class LocalizationOverrideConfiguration
         // Unique composite index: one override per (tenant, resource, culture, key)
         builder.HasIndex(e => new { e.TenantId, e.ResourceName, e.CultureName, e.Key })
                .IsUnique()
-               .HasDatabaseName("uq_i18n_localization_overrides_tenant_resource_culture_key");
+               .HasDatabaseName($"uq_{GranitLocalizationDbProperties.DbTablePrefix}overrides_tenant_resource_culture_key");
 
         // Non-unique index to speed up bulk reads per (tenant, resource, culture)
         builder.HasIndex(e => new { e.TenantId, e.ResourceName, e.CultureName })
-               .HasDatabaseName("ix_i18n_localization_overrides_tenant_resource_culture");
+               .HasDatabaseName($"ix_{GranitLocalizationDbProperties.DbTablePrefix}overrides_tenant_resource_culture");
     }
 }

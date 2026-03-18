@@ -11,7 +11,9 @@ internal sealed class ImportJobConfiguration : IEntityTypeConfiguration<ImportJo
 {
     public void Configure(EntityTypeBuilder<ImportJob> builder)
     {
-        builder.ToTable("data_import_jobs");
+        builder.ToTable(
+            GranitDataExchangeDbProperties.DbTablePrefix + "import_jobs",
+            GranitDataExchangeDbProperties.DbSchema);
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.DefinitionName).HasMaxLength(200).IsRequired();
@@ -38,6 +40,6 @@ internal sealed class ImportJobConfiguration : IEntityTypeConfiguration<ImportJo
         builder.Property(e => e.ModifiedBy).HasMaxLength(200);
 
         builder.HasIndex(e => new { e.DefinitionName, e.Status })
-            .HasDatabaseName("ix_data_import_jobs_definition_status");
+            .HasDatabaseName($"ix_{GranitDataExchangeDbProperties.DbTablePrefix}import_jobs_definition_status");
     }
 }

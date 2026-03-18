@@ -41,7 +41,7 @@ public sealed class GranitFeaturesDbContextTests
             .FindEntityType(typeof(TenantFeatureOverride))!
             .GetTableName();
 
-        tableName.ShouldBe("saas_feature_overrides");
+        tableName.ShouldBe("feature_overrides");
     }
 
     [Fact]

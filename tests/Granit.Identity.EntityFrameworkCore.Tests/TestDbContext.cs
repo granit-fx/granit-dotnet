@@ -14,5 +14,5 @@ internal sealed class TestDbContext(DbContextOptions<TestDbContext> options)
     public DbSet<UserCacheEntry> UserCacheEntries => Set<UserCacheEntry>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
-        modelBuilder.ConfigureIdentityUserCache();
+        modelBuilder.ConfigureIdentityModule();
 }

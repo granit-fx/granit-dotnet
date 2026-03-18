@@ -12,7 +12,9 @@ internal sealed class TimelineAttachmentConfiguration : IEntityTypeConfiguration
 {
     public void Configure(EntityTypeBuilder<TimelineAttachment> builder)
     {
-        builder.ToTable("timeline_attachments");
+        builder.ToTable(
+            GranitTimelineDbProperties.DbTablePrefix + "attachments",
+            GranitTimelineDbProperties.DbSchema);
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.FileName).HasMaxLength(512).IsRequired();
@@ -22,6 +24,6 @@ internal sealed class TimelineAttachmentConfiguration : IEntityTypeConfiguration
 
         // Lookup attachments for a given entry
         builder.HasIndex(x => x.EntryId)
-            .HasDatabaseName("ix_timeline_attachments_entry");
+            .HasDatabaseName($"ix_{GranitTimelineDbProperties.DbTablePrefix}attachments_entry");
     }
 }

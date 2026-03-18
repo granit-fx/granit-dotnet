@@ -13,7 +13,9 @@ internal sealed class AuditEntityChangeConfiguration : IEntityTypeConfiguration<
     /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<AuditEntityChange> builder)
     {
-        builder.ToTable("audit_entity_changes");
+        builder.ToTable(
+            GranitAuditLogDbProperties.DbTablePrefix + "entity_changes",
+            GranitAuditLogDbProperties.DbSchema);
 
         builder.HasKey(e => e.Id);
 
@@ -31,7 +33,7 @@ internal sealed class AuditEntityChangeConfiguration : IEntityTypeConfiguration<
             .IsRequired();
 
         builder.HasIndex(e => new { e.EntityType, e.EntityId })
-            .HasDatabaseName("ix_audit_entity_changes_type_id");
+            .HasDatabaseName($"ix_{GranitAuditLogDbProperties.DbTablePrefix}entity_changes_type_id");
 
         builder.HasMany(e => e.PropertyChanges)
             .WithOne()

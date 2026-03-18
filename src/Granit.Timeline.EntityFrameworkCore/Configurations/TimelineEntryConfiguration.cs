@@ -12,7 +12,9 @@ internal sealed class TimelineEntryConfiguration : IEntityTypeConfiguration<Time
 {
     public void Configure(EntityTypeBuilder<TimelineEntry> builder)
     {
-        builder.ToTable("timeline_entries");
+        builder.ToTable(
+            GranitTimelineDbProperties.DbTablePrefix + "entries",
+            GranitTimelineDbProperties.DbSchema);
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.EntityType).HasMaxLength(256).IsRequired();
@@ -27,10 +29,10 @@ internal sealed class TimelineEntryConfiguration : IEntityTypeConfiguration<Time
         // Primary stream query: all entries for an entity, newest first
         builder.HasIndex(x => new { x.EntityType, x.EntityId, x.TenantId, x.CreatedAt })
             .IsDescending(false, false, false, true)
-            .HasDatabaseName("ix_timeline_entries_entity_stream");
+            .HasDatabaseName($"ix_{GranitTimelineDbProperties.DbTablePrefix}entries_entity_stream");
 
         // Self-referencing for threaded replies (no navigation property)
         builder.HasIndex(x => x.ParentEntryId)
-            .HasDatabaseName("ix_timeline_entries_parent");
+            .HasDatabaseName($"ix_{GranitTimelineDbProperties.DbTablePrefix}entries_parent");
     }
 }

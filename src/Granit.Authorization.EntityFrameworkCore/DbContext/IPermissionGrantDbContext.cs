@@ -6,7 +6,7 @@ namespace Granit.Authorization.EntityFrameworkCore.DbContext;
 /// <summary>
 /// Implement this interface on the host application's <see cref="Microsoft.EntityFrameworkCore.DbContext"/>
 /// to enable Granit.Authorization.EntityFrameworkCore persistence.
-/// Call <see cref="PermissionGrantModelBuilderExtensions.ConfigurePermissionGrants"/> in <c>OnModelCreating</c>.
+/// Call <see cref="PermissionGrantModelBuilderExtensions.ConfigureAuthorizationModule"/> in <c>OnModelCreating</c>.
 /// </summary>
 public interface IPermissionGrantDbContext
 {

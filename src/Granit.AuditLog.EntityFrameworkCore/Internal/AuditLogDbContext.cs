@@ -1,5 +1,5 @@
 using Granit.AuditLog.Domain;
-using Granit.AuditLog.EntityFrameworkCore.Internal.Configurations;
+using Granit.AuditLog.EntityFrameworkCore.Extensions;
 using Granit.Core.DataFiltering;
 using Granit.Core.MultiTenancy;
 using Granit.Persistence.Extensions;
@@ -39,9 +39,7 @@ internal sealed class AuditLogDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfiguration(new AuditLogEntryConfiguration());
-        modelBuilder.ApplyConfiguration(new AuditEntityChangeConfiguration());
-        modelBuilder.ApplyConfiguration(new AuditPropertyChangeConfiguration());
+        modelBuilder.ConfigureAuditLogModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

@@ -2,7 +2,7 @@ using Granit.Core.DataFiltering;
 using Granit.Core.MultiTenancy;
 using Granit.Persistence.Extensions;
 using Granit.Webhooks.Domain;
-using Granit.Webhooks.EntityFrameworkCore.Configurations;
+using Granit.Webhooks.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Webhooks.EntityFrameworkCore.Internal;
@@ -29,8 +29,7 @@ internal sealed class WebhooksDbContext(
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new WebhookSubscriptionConfiguration());
-        modelBuilder.ApplyConfiguration(new WebhookDeliveryAttemptConfiguration());
+        modelBuilder.ConfigureWebhooksModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

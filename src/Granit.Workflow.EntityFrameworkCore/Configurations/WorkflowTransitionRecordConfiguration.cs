@@ -17,7 +17,9 @@ internal sealed class WorkflowTransitionRecordConfiguration
 {
     public void Configure(EntityTypeBuilder<WorkflowTransitionRecord> builder)
     {
-        builder.ToTable("workflow_transition_records");
+        builder.ToTable(
+            GranitWorkflowDbProperties.DbTablePrefix + "transition_records",
+            GranitWorkflowDbProperties.DbSchema);
 
         builder.HasKey(e => e.Id);
 
@@ -51,14 +53,14 @@ internal sealed class WorkflowTransitionRecordConfiguration
 
         // Hot path: query transition history for a specific entity
         builder.HasIndex(e => new { e.EntityType, e.EntityId, e.TransitionedAt })
-            .HasDatabaseName("ix_workflow_transition_records_entity_type_id_at");
+            .HasDatabaseName($"ix_{GranitWorkflowDbProperties.DbTablePrefix}transition_records_entity_type_id_at");
 
         // RGPD: enables bulk export and erasure by tenant
         builder.HasIndex(e => new { e.TenantId, e.TransitionedAt })
-            .HasDatabaseName("ix_workflow_transition_records_tenantid_at");
+            .HasDatabaseName($"ix_{GranitWorkflowDbProperties.DbTablePrefix}transition_records_tenantid_at");
 
         // Audit query: all transitions by a specific user
         builder.HasIndex(e => new { e.TransitionedBy, e.TransitionedAt })
-            .HasDatabaseName("ix_workflow_transition_records_by_user_at");
+            .HasDatabaseName($"ix_{GranitWorkflowDbProperties.DbTablePrefix}transition_records_by_user_at");
     }
 }

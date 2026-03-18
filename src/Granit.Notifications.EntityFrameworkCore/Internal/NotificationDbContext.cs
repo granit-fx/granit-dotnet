@@ -2,6 +2,7 @@ using Granit.Core.DataFiltering;
 using Granit.Core.MultiTenancy;
 using Granit.Notifications.Domain;
 using Granit.Notifications.EntityFrameworkCore.Entities;
+using Granit.Notifications.EntityFrameworkCore.Extensions;
 using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,7 +36,7 @@ internal sealed class NotificationDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(NotificationDbContext).Assembly);
+        modelBuilder.ConfigureNotificationsModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

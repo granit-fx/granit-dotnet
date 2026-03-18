@@ -8,7 +8,9 @@ internal sealed class NotificationSubscriptionConfiguration : IEntityTypeConfigu
 {
     public void Configure(EntityTypeBuilder<NotificationSubscription> builder)
     {
-        builder.ToTable("notification_subscriptions");
+        builder.ToTable(
+            GranitNotificationsDbProperties.DbTablePrefix + "subscriptions",
+            GranitNotificationsDbProperties.DbSchema);
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.UserId).HasMaxLength(256).IsRequired();
@@ -19,10 +21,10 @@ internal sealed class NotificationSubscriptionConfiguration : IEntityTypeConfigu
 
         // Global subscription
         builder.HasIndex(x => new { x.UserId, x.NotificationTypeName, x.TenantId })
-            .HasDatabaseName("ix_notification_subscriptions_global");
+            .HasDatabaseName($"ix_{GranitNotificationsDbProperties.DbTablePrefix}subscriptions_global");
 
         // Entity followers
         builder.HasIndex(x => new { x.EntityType, x.EntityId, x.TenantId })
-            .HasDatabaseName("ix_notification_subscriptions_entity");
+            .HasDatabaseName($"ix_{GranitNotificationsDbProperties.DbTablePrefix}subscriptions_entity");
     }
 }

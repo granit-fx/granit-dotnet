@@ -8,7 +8,9 @@ internal sealed class NotificationDeliveryAttemptConfiguration : IEntityTypeConf
 {
     public void Configure(EntityTypeBuilder<NotificationDeliveryAttempt> builder)
     {
-        builder.ToTable("notification_delivery_attempts");
+        builder.ToTable(
+            GranitNotificationsDbProperties.DbTablePrefix + "delivery_attempts",
+            GranitNotificationsDbProperties.DbSchema);
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.NotificationTypeName).HasMaxLength(256).IsRequired();
@@ -17,10 +19,10 @@ internal sealed class NotificationDeliveryAttemptConfiguration : IEntityTypeConf
         builder.Property(x => x.ErrorMessage).HasMaxLength(2048);
 
         builder.HasIndex(x => new { x.NotificationId, x.ChannelName })
-            .HasDatabaseName("ix_notification_delivery_attempts_notification");
+            .HasDatabaseName($"ix_{GranitNotificationsDbProperties.DbTablePrefix}delivery_attempts_notification");
 
         builder.HasIndex(x => new { x.TenantId, x.OccurredAt })
             .IsDescending(false, true)
-            .HasDatabaseName("ix_notification_delivery_attempts_audit");
+            .HasDatabaseName($"ix_{GranitNotificationsDbProperties.DbTablePrefix}delivery_attempts_audit");
     }
 }

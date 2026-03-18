@@ -10,7 +10,9 @@ internal sealed class UserNotificationConfiguration : IEntityTypeConfiguration<U
 {
     public void Configure(EntityTypeBuilder<UserNotification> builder)
     {
-        builder.ToTable("notification_user_notifications");
+        builder.ToTable(
+            GranitNotificationsDbProperties.DbTablePrefix + "user_notifications",
+            GranitNotificationsDbProperties.DbSchema);
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.NotificationTypeName).HasMaxLength(256).IsRequired();
@@ -27,11 +29,11 @@ internal sealed class UserNotificationConfiguration : IEntityTypeConfiguration<U
         // Paginated inbox
         builder.HasIndex(x => new { x.RecipientUserId, x.TenantId, x.State, x.CreatedAt })
             .IsDescending(false, false, false, true)
-            .HasDatabaseName("ix_notification_user_notifications_inbox");
+            .HasDatabaseName($"ix_{GranitNotificationsDbProperties.DbTablePrefix}user_notifications_inbox");
 
         // Activity feed: per-entity notification history
         builder.HasIndex(x => new { x.RelatedEntityType, x.RelatedEntityId, x.TenantId, x.CreatedAt })
             .IsDescending(false, false, false, true)
-            .HasDatabaseName("ix_notification_user_notifications_entity_feed");
+            .HasDatabaseName($"ix_{GranitNotificationsDbProperties.DbTablePrefix}user_notifications_entity_feed");
     }
 }

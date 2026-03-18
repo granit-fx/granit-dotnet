@@ -13,7 +13,9 @@ internal sealed class TemplateCategoryEntityConfiguration
     /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<TemplateCategoryEntity> builder)
     {
-        builder.ToTable("templating_categories");
+        builder.ToTable(
+            GranitTemplatingDbProperties.DbTablePrefix + "categories",
+            GranitTemplatingDbProperties.DbSchema);
 
         builder.HasKey(e => e.Id);
 
@@ -40,10 +42,10 @@ internal sealed class TemplateCategoryEntityConfiguration
         // Unique constraint on Name for business rule enforcement.
         builder.HasIndex(e => e.Name)
             .IsUnique()
-            .HasDatabaseName("ix_templating_categories_name");
+            .HasDatabaseName($"uq_{GranitTemplatingDbProperties.DbTablePrefix}categories_name");
 
         // Sort index for default ordering (SortOrder, Name).
         builder.HasIndex(e => new { e.SortOrder, e.Name })
-            .HasDatabaseName("ix_templating_categories_sort");
+            .HasDatabaseName($"ix_{GranitTemplatingDbProperties.DbTablePrefix}categories_sort");
     }
 }

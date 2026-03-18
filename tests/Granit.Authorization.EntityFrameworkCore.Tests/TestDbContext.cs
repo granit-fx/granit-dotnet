@@ -15,5 +15,5 @@ internal sealed class TestDbContext(DbContextOptions<TestDbContext> options)
     public DbSet<PermissionGrant> PermissionGrants => Set<PermissionGrant>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
-        modelBuilder.ConfigurePermissionGrants();
+        modelBuilder.ConfigureAuthorizationModule();
 }

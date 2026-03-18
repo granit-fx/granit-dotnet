@@ -1,0 +1,121 @@
+---
+title: "Query Filters — Soft Delete, Multi-Tenant, Active"
+description: Named EF Core 10 query filters for soft delete, multi-tenancy, active state, publishable state, and GDPR processing restriction — with runtime bypass and translation conventions.
+sidebar:
+  label: Query Filters
+  order: 4
+---
+
+`ApplyGranitConventions` registers one **named** `HasQueryFilter` per applicable
+interface on each entity type (EF Core 10). Filters are independent — bypass one
+without affecting the others.
+
+| Interface | Filter key (`GranitFilterNames`) | Filter expression | Default |
+|-----------|----------------------------------|------------------|---------|
+| `ISoftDeletable` | `SoftDelete` | `!e.IsDeleted` | Enabled |
+| `IActive` | `Active` | `e.IsActive` | Enabled |
+| `IProcessingRestrictable` | `ProcessingRestrictable` | `!e.IsProcessingRestricted` | Enabled |
+| `IMultiTenant` | `MultiTenant` | `e.TenantId == currentTenant.Id` | Enabled |
+| `IPublishable` | `Publishable` | `e.IsPublished` | Enabled |
+
+Filters are re-evaluated per query via `DataFilter`'s `AsyncLocal` state — EF Core
+extracts `FilterProxy` boolean properties as parameterized expressions.
+
+## Runtime filter control — service scope
+
+Use `IDataFilter` to bypass a filter for all queries in the current async flow:
+
+```csharp
+public class PatientAdminService(IDataFilter dataFilter, AppDbContext db)
+{
+    public async Task<List<Patient>> GetAllIncludingDeletedAsync(
+        CancellationToken cancellationToken)
+    {
+        using (dataFilter.Disable<ISoftDeletable>())
+        {
+            return await db.Patients
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+        // Filter re-enabled automatically
+    }
+}
+```
+
+Scopes nest correctly — inner `Enable`/`Disable` calls restore the outer state
+on disposal.
+
+## Per-query bypass (EF Core 10)
+
+Use `IgnoreQueryFilters` with one or more filter keys to bypass specific filters
+for a single query, without affecting other queries in the same flow:
+
+```csharp
+// Bypass only soft delete — multi-tenant and other filters still apply
+var deletedPatients = await db.Patients
+    .IgnoreQueryFilters([GranitFilterNames.SoftDelete])
+    .Where(p => p.IsDeleted)
+    .ToListAsync(cancellationToken)
+    .ConfigureAwait(false);
+
+// Bypass all named filters (equivalent to IgnoreQueryFilters() without args)
+var allPatients = await db.Patients
+    .IgnoreQueryFilters([
+        GranitFilterNames.SoftDelete,
+        GranitFilterNames.MultiTenant])
+    .ToListAsync(cancellationToken)
+    .ConfigureAwait(false);
+```
+
+## Translation conventions
+
+For entities implementing `ITranslatable<T>`, `ApplyGranitConventions` automatically
+configures:
+
+- Foreign key: `Translation.ParentId → Parent.Id` with cascade delete
+- Unique index: `(ParentId, Culture)`
+- Culture column: max length 20 (BCP 47)
+
+Query extensions for translated entities:
+
+```csharp
+// Eager load translations for a culture
+var patients = await db.Patients
+    .IncludeTranslations<Patient, PatientTranslation>("fr")
+    .ToListAsync(cancellationToken)
+    .ConfigureAwait(false);
+
+// Filter by translation property
+var results = await db.Patients
+    .WhereTranslation<Patient, PatientTranslation>("fr", t => t.DisplayName.Contains("Jean"))
+    .ToListAsync(cancellationToken)
+    .ConfigureAwait(false);
+```
+
+## Common pitfalls
+
+:::caution[Forgetting `ApplyGranitConventions`]
+If your `DbContext.OnModelCreating` does not call `modelBuilder.ApplyGranitConventions(...)`,
+**no query filters** (soft delete, multi-tenancy, active, publishable) are applied.
+Entities will appear unfiltered — including soft-deleted and other-tenant data. This is
+the #1 cause of "I see deleted records" bugs.
+:::
+
+:::caution[Named vs unnamed query filters]
+Never use `HasQueryFilter(expr)` (unnamed) — it silently **replaces** any existing
+filter on the entity. Always use `HasQueryFilter(name, expr)` (EF Core 10 named
+filters) so filters compose instead of overwriting. `ApplyGranitConventions` already
+registers standard filters with names from `GranitFilterNames`.
+:::
+
+:::caution[EF InMemory does not apply value converters]
+`UseInMemoryDatabase()` ignores `HasConversion<>()` — this affects `[Encrypted]` fields,
+enum-to-string conversions, and JSON columns. Always use SQLite or Testcontainers
+(PostgreSQL) for tests that depend on converters or query filters.
+:::
+
+## See also
+
+- [Persistence overview](./persistence/) — setup, isolated DbContext, host-owned migrations
+- [Interceptors](./interceptors/) — audit, soft delete, concurrency, events
+- [Zero-downtime migrations](./migrations/) — Expand & Contract pattern

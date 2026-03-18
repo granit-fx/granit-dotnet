@@ -12,7 +12,9 @@ internal sealed class AIUsageRecordEntityConfiguration : IEntityTypeConfiguratio
     /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<AIUsageRecordEntity> builder)
     {
-        builder.ToTable("ai_usage_records");
+        builder.ToTable(
+            GranitAIDbProperties.DbTablePrefix + "usage_records",
+            GranitAIDbProperties.DbSchema);
 
         builder.HasKey(e => e.Id);
 
@@ -53,10 +55,10 @@ internal sealed class AIUsageRecordEntityConfiguration : IEntityTypeConfiguratio
 
         // Tenant-scoped queries by workspace and time range (billing, dashboards).
         builder.HasIndex(e => new { e.TenantId, e.WorkspaceName, e.CreatedAt })
-            .HasDatabaseName("ix_ai_usage_records_tenant_workspace_date");
+            .HasDatabaseName($"ix_{GranitAIDbProperties.DbTablePrefix}usage_records_tenant_workspace_date");
 
         // Cost aggregation queries by provider/model.
         builder.HasIndex(e => new { e.TenantId, e.Provider, e.Model })
-            .HasDatabaseName("ix_ai_usage_records_tenant_provider_model");
+            .HasDatabaseName($"ix_{GranitAIDbProperties.DbTablePrefix}usage_records_tenant_provider_model");
     }
 }

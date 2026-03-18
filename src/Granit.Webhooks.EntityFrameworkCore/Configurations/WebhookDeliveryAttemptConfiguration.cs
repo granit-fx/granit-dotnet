@@ -19,7 +19,9 @@ internal sealed class WebhookDeliveryAttemptConfiguration : IEntityTypeConfigura
     /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<WebhookDeliveryAttempt> builder)
     {
-        builder.ToTable("webhook_delivery_attempts");
+        builder.ToTable(
+            GranitWebhooksDbProperties.DbTablePrefix + "delivery_attempts",
+            GranitWebhooksDbProperties.DbSchema);
 
         builder.HasKey(e => e.Id);
 
@@ -65,15 +67,15 @@ internal sealed class WebhookDeliveryAttemptConfiguration : IEntityTypeConfigura
 
         // Delivery lookup by subscription (e.g., history view).
         builder.HasIndex(e => new { e.SubscriptionId, e.OccurredAt })
-            .HasDatabaseName("ix_webhook_delivery_attempts_subscriptionid_occurredat");
+            .HasDatabaseName($"ix_{GranitWebhooksDbProperties.DbTablePrefix}delivery_attempts_subscriptionid_occurredat");
 
         // RGPD: enables bulk export and erasure by tenant.
         builder.HasIndex(e => new { e.TenantId, e.OccurredAt })
-            .HasDatabaseName("ix_webhook_delivery_attempts_tenantid_occurredat");
+            .HasDatabaseName($"ix_{GranitWebhooksDbProperties.DbTablePrefix}delivery_attempts_tenantid_occurredat");
 
         // Unique index on DeliveryId for deduplication.
         builder.HasIndex(e => e.DeliveryId)
             .IsUnique()
-            .HasDatabaseName("uq_webhook_delivery_attempts_deliveryid");
+            .HasDatabaseName($"uq_{GranitWebhooksDbProperties.DbTablePrefix}delivery_attempts_deliveryid");
     }
 }

@@ -1,5 +1,5 @@
 using Granit.Authentication.ApiKeys.Domain;
-using Granit.Authentication.ApiKeys.EntityFrameworkCore.EntityConfigurations;
+using Granit.Authentication.ApiKeys.EntityFrameworkCore.Extensions;
 using Granit.Core.DataFiltering;
 using Granit.Core.MultiTenancy;
 using Granit.Persistence.Extensions;
@@ -26,7 +26,7 @@ internal sealed class ApiKeysDbContext(
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfiguration(new ApiKeyEntryConfiguration());
+        modelBuilder.ConfigureApiKeysModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

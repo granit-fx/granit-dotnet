@@ -14,7 +14,9 @@ internal sealed class TemplateRevisionEntityConfiguration
     /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<TemplateRevisionEntity> builder)
     {
-        builder.ToTable("templating_revisions");
+        builder.ToTable(
+            GranitTemplatingDbProperties.DbTablePrefix + "revisions",
+            GranitTemplatingDbProperties.DbSchema);
 
         builder.HasKey(e => e.RevisionId);
 
@@ -59,11 +61,11 @@ internal sealed class TemplateRevisionEntityConfiguration
 
         // Composite index for lifecycle queries: find draft/published by (name, culture, status)
         builder.HasIndex(e => new { e.TemplateName, e.Culture, e.Status })
-            .HasDatabaseName("ix_templating_revisions_name_culture_status");
+            .HasDatabaseName($"ix_{GranitTemplatingDbProperties.DbTablePrefix}revisions_name_culture_status");
 
         // Index for history queries: all revisions for a given key
         builder.HasIndex(e => new { e.TemplateName, e.Culture })
-            .HasDatabaseName("ix_templating_revisions_name_culture");
+            .HasDatabaseName($"ix_{GranitTemplatingDbProperties.DbTablePrefix}revisions_name_culture");
 
         // Optional FK to template category.
         builder.Property(e => e.CategoryId);

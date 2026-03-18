@@ -12,7 +12,9 @@ internal sealed class SavedViewEntityConfiguration : IEntityTypeConfiguration<Sa
 {
     public void Configure(EntityTypeBuilder<SavedView> builder)
     {
-        builder.ToTable("querying_saved_views");
+        builder.ToTable(
+            GranitQueryingDbProperties.DbTablePrefix + "saved_views",
+            GranitQueryingDbProperties.DbSchema);
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.EntityType).HasMaxLength(200).IsRequired();
@@ -34,6 +36,6 @@ internal sealed class SavedViewEntityConfiguration : IEntityTypeConfiguration<Sa
 
         builder.HasIndex(e => new { e.EntityType, e.UserId, e.Name, e.TenantId })
             .IsUnique()
-            .HasDatabaseName("ix_querying_saved_views_entity_user_name_tenant");
+            .HasDatabaseName($"uq_{GranitQueryingDbProperties.DbTablePrefix}saved_views_entity_user_name_tenant");
     }
 }

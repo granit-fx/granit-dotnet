@@ -1,6 +1,7 @@
 using Granit.Core.DataFiltering;
 using Granit.Core.MultiTenancy;
 using Granit.Persistence.Extensions;
+using Granit.Templating.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Templating.EntityFrameworkCore.Internal;
@@ -28,8 +29,7 @@ internal sealed class TemplatingDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfiguration(new TemplateRevisionEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new TemplateCategoryEntityConfiguration());
+        modelBuilder.ConfigureTemplatingModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

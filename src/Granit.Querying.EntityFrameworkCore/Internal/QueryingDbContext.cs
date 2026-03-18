@@ -1,6 +1,7 @@
 using Granit.Core.DataFiltering;
 using Granit.Core.MultiTenancy;
 using Granit.Persistence.Extensions;
+using Granit.Querying.EntityFrameworkCore.Extensions;
 using Granit.Querying.SavedViews;
 using Granit.Querying.SavedViews.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ internal sealed class QueryingDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfiguration(new SavedViewEntityConfiguration());
+        modelBuilder.ConfigureQueryingModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

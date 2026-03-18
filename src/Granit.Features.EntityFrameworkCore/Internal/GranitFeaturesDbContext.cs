@@ -1,5 +1,6 @@
 using Granit.Core.DataFiltering;
 using Granit.Core.MultiTenancy;
+using Granit.Features.EntityFrameworkCore.Extensions;
 using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,7 +32,7 @@ internal sealed class GranitFeaturesDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfiguration(new TenantFeatureOverrideConfiguration());
+        modelBuilder.ConfigureFeaturesModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

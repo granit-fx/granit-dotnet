@@ -3,19 +3,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Identity.EntityFrameworkCore.DbContext;
 
-/// <summary>EF Core model builder extensions for the identity user cache schema.</summary>
+/// <summary>EF Core model builder extensions for the Identity module.</summary>
 public static class UserCacheModelBuilderExtensions
 {
     /// <summary>
+    /// Applies all entity configurations for the Granit Identity module.
+    /// </summary>
+    /// <remarks>
     /// Configures the <see cref="UserCacheEntry"/> entity: table name, column constraints,
     /// and indexes for efficient lookup and search.
     /// Call this from <c>OnModelCreating</c> in the host application's DbContext.
-    /// </summary>
-    public static ModelBuilder ConfigureIdentityUserCache(this ModelBuilder builder)
+    /// </remarks>
+    public static ModelBuilder ConfigureIdentityModule(this ModelBuilder builder)
     {
         builder.Entity<UserCacheEntry>(entity =>
         {
-            entity.ToTable("identity_user_cache_entries");
+            entity.ToTable(
+                GranitIdentityDbProperties.DbTablePrefix + "user_cache_entries",
+                GranitIdentityDbProperties.DbSchema);
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.ExternalUserId).HasMaxLength(256).IsRequired();
@@ -27,17 +32,17 @@ public static class UserCacheModelBuilderExtensions
             // Unique: one cache entry per user per tenant
             entity.HasIndex(e => new { e.TenantId, e.ExternalUserId })
                   .IsUnique()
-                  .HasDatabaseName("uq_identity_user_cache_tenant_external_id");
+                  .HasDatabaseName($"uq_{GranitIdentityDbProperties.DbTablePrefix}user_cache_tenant_external_id");
 
             // Search indexes
             entity.HasIndex(e => new { e.TenantId, e.Username })
-                  .HasDatabaseName("ix_identity_user_cache_tenant_username");
+                  .HasDatabaseName($"ix_{GranitIdentityDbProperties.DbTablePrefix}user_cache_tenant_username");
 
             entity.HasIndex(e => new { e.TenantId, e.Email })
-                  .HasDatabaseName("ix_identity_user_cache_tenant_email");
+                  .HasDatabaseName($"ix_{GranitIdentityDbProperties.DbTablePrefix}user_cache_tenant_email");
 
             entity.HasIndex(e => new { e.TenantId, e.LastName, e.FirstName })
-                  .HasDatabaseName("ix_identity_user_cache_tenant_name");
+                  .HasDatabaseName($"ix_{GranitIdentityDbProperties.DbTablePrefix}user_cache_tenant_name");
         });
 
         return builder;

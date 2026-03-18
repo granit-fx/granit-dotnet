@@ -1,8 +1,7 @@
 using Granit.Core.DataFiltering;
 using Granit.Core.MultiTenancy;
-using Granit.DataExchange.EntityFrameworkCore.Internal.Export.Configurations;
+using Granit.DataExchange.EntityFrameworkCore.Extensions;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Export.Entities;
-using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Configurations;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Entities;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
@@ -32,11 +31,7 @@ internal sealed class DataExchangeDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfiguration(new ImportJobConfiguration());
-        modelBuilder.ApplyConfiguration(new SavedMappingEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new ExternalIdMappingEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new ExportJobConfiguration());
-        modelBuilder.ApplyConfiguration(new ExportPresetEntityConfiguration());
+        modelBuilder.ConfigureDataExchangeModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

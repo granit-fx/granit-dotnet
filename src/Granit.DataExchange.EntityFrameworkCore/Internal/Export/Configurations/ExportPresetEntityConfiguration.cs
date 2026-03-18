@@ -12,7 +12,9 @@ internal sealed class ExportPresetEntityConfiguration : IEntityTypeConfiguration
 {
     public void Configure(EntityTypeBuilder<ExportPresetEntity> builder)
     {
-        builder.ToTable("data_import_export_presets");
+        builder.ToTable(
+            GranitDataExchangeDbProperties.DbTablePrefix + "export_presets",
+            GranitDataExchangeDbProperties.DbSchema);
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.DefinitionName).HasMaxLength(200).IsRequired();
@@ -26,6 +28,6 @@ internal sealed class ExportPresetEntityConfiguration : IEntityTypeConfiguration
 
         builder.HasIndex(e => new { e.DefinitionName, e.PresetName, e.TenantId })
             .IsUnique()
-            .HasDatabaseName("ix_export_presets_def_name_tenant");
+            .HasDatabaseName($"uq_{GranitDataExchangeDbProperties.DbTablePrefix}export_presets_def_name_tenant");
     }
 }

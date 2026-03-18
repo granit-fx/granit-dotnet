@@ -14,7 +14,9 @@ internal sealed class BackgroundJobDefinitionConfiguration
     /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<BackgroundJobDefinition> builder)
     {
-        builder.ToTable("scheduling_background_jobs");
+        builder.ToTable(
+            GranitBackgroundJobsDbProperties.DbTablePrefix + "background_jobs",
+            GranitBackgroundJobsDbProperties.DbSchema);
 
         builder.HasKey(e => e.Id);
 
@@ -50,6 +52,6 @@ internal sealed class BackgroundJobDefinitionConfiguration
 
         builder.HasIndex(e => e.JobName)
             .IsUnique()
-            .HasDatabaseName("uq_scheduling_background_jobs_name");
+            .HasDatabaseName($"uq_{GranitBackgroundJobsDbProperties.DbTablePrefix}background_jobs_name");
     }
 }

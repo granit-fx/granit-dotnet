@@ -12,7 +12,9 @@ internal sealed class SavedMappingEntityConfiguration : IEntityTypeConfiguration
 {
     public void Configure(EntityTypeBuilder<SavedMappingEntity> builder)
     {
-        builder.ToTable("data_import_saved_mappings");
+        builder.ToTable(
+            GranitDataExchangeDbProperties.DbTablePrefix + "saved_mappings",
+            GranitDataExchangeDbProperties.DbSchema);
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.DefinitionName).HasMaxLength(200).IsRequired();
@@ -23,6 +25,6 @@ internal sealed class SavedMappingEntityConfiguration : IEntityTypeConfiguration
 
         builder.HasIndex(e => new { e.DefinitionName, e.TenantId })
             .IsUnique()
-            .HasDatabaseName("ix_saved_mappings_def_tenant");
+            .HasDatabaseName($"uq_{GranitDataExchangeDbProperties.DbTablePrefix}saved_mappings_def_tenant");
     }
 }

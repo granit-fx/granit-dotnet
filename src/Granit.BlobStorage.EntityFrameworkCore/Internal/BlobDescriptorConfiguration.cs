@@ -13,7 +13,9 @@ internal sealed class BlobDescriptorConfiguration : IEntityTypeConfiguration<Blo
     /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<BlobDescriptor> builder)
     {
-        builder.ToTable("storage_blob_descriptors");
+        builder.ToTable(
+            GranitBlobStorageDbProperties.DbTablePrefix + "descriptors",
+            GranitBlobStorageDbProperties.DbSchema);
 
         builder.HasKey(e => e.Id);
 
@@ -66,11 +68,11 @@ internal sealed class BlobDescriptorConfiguration : IEntityTypeConfiguration<Blo
 
         // Composite index for tenant-scoped queries by container.
         builder.HasIndex(e => new { e.TenantId, e.ContainerName })
-            .HasDatabaseName("ix_storage_blob_descriptors_tenant_container");
+            .HasDatabaseName($"ix_{GranitBlobStorageDbProperties.DbTablePrefix}descriptors_tenant_container");
 
         // The S3 object key is globally unique across all tenants.
         builder.HasIndex(e => e.ObjectKey)
             .IsUnique()
-            .HasDatabaseName("uq_storage_blob_descriptors_object_key");
+            .HasDatabaseName($"uq_{GranitBlobStorageDbProperties.DbTablePrefix}descriptors_object_key");
     }
 }

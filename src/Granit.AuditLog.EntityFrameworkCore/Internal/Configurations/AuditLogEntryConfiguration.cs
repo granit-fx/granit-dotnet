@@ -13,7 +13,9 @@ internal sealed class AuditLogEntryConfiguration : IEntityTypeConfiguration<Audi
     /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<AuditLogEntry> builder)
     {
-        builder.ToTable("audit_log_entries");
+        builder.ToTable(
+            GranitAuditLogDbProperties.DbTablePrefix + "log_entries",
+            GranitAuditLogDbProperties.DbSchema);
 
         builder.HasKey(e => e.Id);
 
@@ -45,13 +47,13 @@ internal sealed class AuditLogEntryConfiguration : IEntityTypeConfiguration<Audi
 
         // Indexes for common query patterns.
         builder.HasIndex(e => e.Timestamp)
-            .HasDatabaseName("ix_audit_log_entries_timestamp");
+            .HasDatabaseName($"ix_{GranitAuditLogDbProperties.DbTablePrefix}log_entries_timestamp");
 
         builder.HasIndex(e => new { e.UserId, e.Timestamp })
-            .HasDatabaseName("ix_audit_log_entries_user_timestamp");
+            .HasDatabaseName($"ix_{GranitAuditLogDbProperties.DbTablePrefix}log_entries_user_timestamp");
 
         builder.HasIndex(e => new { e.TenantId, e.Timestamp })
-            .HasDatabaseName("ix_audit_log_entries_tenant_timestamp");
+            .HasDatabaseName($"ix_{GranitAuditLogDbProperties.DbTablePrefix}log_entries_tenant_timestamp");
 
         builder.HasMany(e => e.EntityChanges)
             .WithOne()

@@ -2,6 +2,7 @@ using Granit.Core.DataFiltering;
 using Granit.Core.MultiTenancy;
 using Granit.Persistence.Extensions;
 using Granit.Timeline.Domain;
+using Granit.Timeline.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Timeline.EntityFrameworkCore.Internal;
@@ -29,7 +30,7 @@ internal sealed class TimelineDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(TimelineDbContext).Assembly);
+        modelBuilder.ConfigureTimelineModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

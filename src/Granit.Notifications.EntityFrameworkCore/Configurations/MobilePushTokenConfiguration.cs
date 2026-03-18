@@ -8,7 +8,9 @@ internal sealed class MobilePushTokenConfiguration : IEntityTypeConfiguration<Mo
 {
     public void Configure(EntityTypeBuilder<MobilePushTokenEntity> builder)
     {
-        builder.ToTable("mobile_push_tokens");
+        builder.ToTable(
+            GranitNotificationsDbProperties.DbTablePrefix + "mobile_push_tokens",
+            GranitNotificationsDbProperties.DbSchema);
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.UserId).HasMaxLength(256).IsRequired();
@@ -19,10 +21,10 @@ internal sealed class MobilePushTokenConfiguration : IEntityTypeConfiguration<Mo
         // Unique constraint: one device token per tenant
         builder.HasIndex(x => new { x.DeviceToken, x.TenantId })
             .IsUnique()
-            .HasDatabaseName("ix_mobile_push_tokens_device_tenant");
+            .HasDatabaseName($"uq_{GranitNotificationsDbProperties.DbTablePrefix}mobile_push_tokens_device_tenant");
 
         // Lookup by user + tenant
         builder.HasIndex(x => new { x.UserId, x.TenantId })
-            .HasDatabaseName("ix_mobile_push_tokens_user_tenant");
+            .HasDatabaseName($"ix_{GranitNotificationsDbProperties.DbTablePrefix}mobile_push_tokens_user_tenant");
     }
 }

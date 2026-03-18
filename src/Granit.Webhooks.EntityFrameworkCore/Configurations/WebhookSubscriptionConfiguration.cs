@@ -13,7 +13,9 @@ internal sealed class WebhookSubscriptionConfiguration : IEntityTypeConfiguratio
     /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<WebhookSubscription> builder)
     {
-        builder.ToTable("webhook_subscriptions");
+        builder.ToTable(
+            GranitWebhooksDbProperties.DbTablePrefix + "subscriptions",
+            GranitWebhooksDbProperties.DbSchema);
 
         builder.HasKey(e => e.Id);
 
@@ -58,6 +60,6 @@ internal sealed class WebhookSubscriptionConfiguration : IEntityTypeConfiguratio
 
         // Hot path: fan-out query filters on (EventType, TenantId, Status).
         builder.HasIndex(e => new { e.EventType, e.TenantId, e.Status })
-            .HasDatabaseName("ix_webhook_subscriptions_eventtype_tenantid_status");
+            .HasDatabaseName($"ix_{GranitWebhooksDbProperties.DbTablePrefix}subscriptions_eventtype_tenantid_status");
     }
 }

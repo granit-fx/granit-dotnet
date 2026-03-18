@@ -1,6 +1,7 @@
 using Granit.Core.DataFiltering;
 using Granit.Core.MultiTenancy;
 using Granit.Localization.EntityFrameworkCore.Entities;
+using Granit.Localization.EntityFrameworkCore.Extensions;
 using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,7 +33,7 @@ internal sealed class GranitLocalizationOverridesDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfiguration(new LocalizationOverrideConfiguration());
+        modelBuilder.ConfigureLocalizationModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

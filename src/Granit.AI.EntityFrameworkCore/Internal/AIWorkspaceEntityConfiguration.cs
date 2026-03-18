@@ -12,7 +12,9 @@ internal sealed class AIWorkspaceEntityConfiguration : IEntityTypeConfiguration<
     /// <inheritdoc/>
     public void Configure(EntityTypeBuilder<AIWorkspaceEntity> builder)
     {
-        builder.ToTable("ai_workspaces");
+        builder.ToTable(
+            GranitAIDbProperties.DbTablePrefix + "workspaces",
+            GranitAIDbProperties.DbSchema);
 
         builder.HasKey(e => e.Id);
 
@@ -65,6 +67,6 @@ internal sealed class AIWorkspaceEntityConfiguration : IEntityTypeConfiguration<
         // Workspace name is unique per tenant.
         builder.HasIndex(e => new { e.TenantId, e.Name })
             .IsUnique()
-            .HasDatabaseName("uq_ai_workspaces_tenant_name");
+            .HasDatabaseName($"uq_{GranitAIDbProperties.DbTablePrefix}workspaces_tenant_name");
     }
 }

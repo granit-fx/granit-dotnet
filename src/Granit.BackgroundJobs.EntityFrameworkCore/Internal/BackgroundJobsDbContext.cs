@@ -1,4 +1,5 @@
 using Granit.BackgroundJobs.Domain;
+using Granit.BackgroundJobs.EntityFrameworkCore.Extensions;
 using Granit.Core.DataFiltering;
 using Granit.Core.MultiTenancy;
 using Granit.Persistence.Extensions;
@@ -32,7 +33,7 @@ internal sealed class BackgroundJobsDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfiguration(new BackgroundJobDefinitionConfiguration());
+        modelBuilder.ConfigureBackgroundJobsModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

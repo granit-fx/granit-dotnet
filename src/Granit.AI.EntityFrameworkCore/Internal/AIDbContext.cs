@@ -1,3 +1,4 @@
+using Granit.AI.EntityFrameworkCore.Extensions;
 using Granit.Core.DataFiltering;
 using Granit.Core.MultiTenancy;
 using Granit.Persistence.Extensions;
@@ -28,8 +29,7 @@ internal sealed class AIDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfiguration(new AIWorkspaceEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new AIUsageRecordEntityConfiguration());
+        modelBuilder.ConfigureAIModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

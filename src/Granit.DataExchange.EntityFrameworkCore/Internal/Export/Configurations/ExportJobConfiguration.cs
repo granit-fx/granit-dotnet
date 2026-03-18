@@ -12,7 +12,9 @@ internal sealed class ExportJobConfiguration : IEntityTypeConfiguration<ExportJo
 {
     public void Configure(EntityTypeBuilder<ExportJob> builder)
     {
-        builder.ToTable("data_import_export_jobs");
+        builder.ToTable(
+            GranitDataExchangeDbProperties.DbTablePrefix + "export_jobs",
+            GranitDataExchangeDbProperties.DbSchema);
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.DefinitionName).HasMaxLength(200).IsRequired();
@@ -33,9 +35,9 @@ internal sealed class ExportJobConfiguration : IEntityTypeConfiguration<ExportJo
         builder.Property(e => e.ModifiedBy).HasMaxLength(200);
 
         builder.HasIndex(e => e.TenantId)
-            .HasDatabaseName("ix_export_jobs_tenant");
+            .HasDatabaseName($"ix_{GranitDataExchangeDbProperties.DbTablePrefix}export_jobs_tenant");
 
         builder.HasIndex(e => e.Status)
-            .HasDatabaseName("ix_export_jobs_status");
+            .HasDatabaseName($"ix_{GranitDataExchangeDbProperties.DbTablePrefix}export_jobs_status");
     }
 }
