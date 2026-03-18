@@ -1,3 +1,4 @@
+using System.Reflection;
 using FluentValidation;
 using Granit.Core.Diagnostics;
 using Granit.Security;
@@ -89,8 +90,18 @@ public static class WolverineHostApplicationBuilderExtensions
             captured = opts;
 
             // Auto-discover assemblies decorated with [assembly: WolverineHandlerModule].
-            // Application modules mark themselves, eliminating centralized IncludeAssembly() calls.
+            // Granit library packages use this attribute to opt in to handler scanning.
             opts.Discovery.IncludeHandlerModules = true;
+
+            // Always include the entry assembly so application handlers are discovered
+            // without requiring [assembly: WolverineHandlerModule] in application code.
+            // Library packages (Granit modules) still use the attribute; this only adds
+            // the host application assembly (e.g. MyService.exe).
+            var entryAssembly = Assembly.GetEntryAssembly();
+            if (entryAssembly is not null)
+            {
+                opts.Discovery.IncludeAssembly(entryAssembly);
+            }
 
             // IDomainEvent — force local routing, never forward to external transports.
             // IIntegrationEvent routing is configured by the provider package.
