@@ -22,6 +22,10 @@ public sealed partial class GranitApplication
     public IReadOnlyList<Type> GetModuleTypes() =>
         [.. _modules.Select(m => m.ModuleType)];
 
+    /// <summary>Returns the module instances in topological order (dependencies first).</summary>
+    public IReadOnlyList<GranitModule> GetModuleInstances() =>
+        [.. _modules.Where(m => m.IsEnabled).Select(m => m.Instance)];
+
     /// <summary>
     /// Calls <see cref="GranitModule.ConfigureServices"/> on each module
     /// in topological order (synchronous version).

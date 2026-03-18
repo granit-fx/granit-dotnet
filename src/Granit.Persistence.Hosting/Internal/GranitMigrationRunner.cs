@@ -1,0 +1,266 @@
+using Granit.Core.Modularity;
+using Granit.Persistence.DataSeeding;
+using Granit.Persistence.Hosting.Options;
+using Granit.Persistence.Migrations;
+using Granit.Persistence.Migrations.Internal;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+namespace Granit.Persistence.Hosting.Internal;
+
+/// <summary>
+/// Orchestrates EF Core migrations across all <see cref="IMigratableModule{TContext}"/> modules
+/// discovered from the Granit module dependency graph.
+/// </summary>
+internal sealed partial class GranitMigrationRunner(
+    GranitApplication application,
+    IServiceScopeFactory scopeFactory,
+    IGranitMigrationLock migrationLock,
+    GranitMigrateOptions options,
+    ILogger<GranitMigrationRunner> logger) : IGranitMigrationRunner
+{
+    private static readonly Type MigratableModuleOpenGeneric = typeof(IMigratableModule<>);
+
+    public async Task<int> RunAsync(CancellationToken cancellationToken = default)
+    {
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutCts.CancelAfter(options.Timeout);
+        CancellationToken ct = timeoutCts.Token;
+
+        // Discover migratable modules in topological order
+        List<(GranitModule Module, Type DbContextType)> migratableModules = DiscoverMigratableModules();
+
+        if (migratableModules.Count == 0)
+        {
+            LogNoMigratableModules();
+            return 0;
+        }
+
+        LogMigrationStart(migratableModules.Count);
+
+        // Acquire distributed lock
+        await using IAsyncDisposable? lockHandle = await migrationLock
+            .TryAcquireAsync("GranitMigration", ct)
+            .ConfigureAwait(false);
+
+        if (lockHandle is null)
+        {
+            LogMigrationSkipped();
+            return 0;
+        }
+
+        try
+        {
+            // Migrate each DbContext in topological order
+            foreach ((GranitModule module, Type dbContextType) in migratableModules)
+            {
+                await MigrateWithRetryAsync(module, dbContextType, ct).ConfigureAwait(false);
+            }
+
+            // Ensure Expand & Contract tracking table exists
+            await EnsureExpandContractDbAsync(ct).ConfigureAwait(false);
+
+            // Data seeding
+            if (options.SeedAfterMigration)
+            {
+                await SeedAsync(ct).ConfigureAwait(false);
+            }
+
+            LogMigrationCompleted();
+            return 0;
+        }
+        catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
+        {
+            LogMigrationTimeout(options.Timeout);
+            return 1;
+        }
+        catch (Exception ex)
+        {
+            LogMigrationFailed(ex);
+            return 1;
+        }
+    }
+
+    private List<(GranitModule Module, Type DbContextType)> DiscoverMigratableModules()
+    {
+        List<(GranitModule, Type)> result = [];
+
+        foreach (GranitModule module in application.GetModuleInstances())
+        {
+            Type moduleType = module.GetType();
+            Type? migratableInterface = moduleType.GetInterfaces()
+                .FirstOrDefault(i => i.IsGenericType &&
+                                     i.GetGenericTypeDefinition() == MigratableModuleOpenGeneric);
+
+            if (migratableInterface is not null)
+            {
+                Type dbContextType = migratableInterface.GetGenericArguments()[0];
+                LogModuleDiscovered(moduleType.Name, dbContextType.Name);
+                result.Add((module, dbContextType));
+            }
+        }
+
+        return result;
+    }
+
+    private async Task MigrateWithRetryAsync(GranitModule module, Type dbContextType, CancellationToken ct)
+    {
+        string moduleName = module.GetType().Name;
+
+        for (int attempt = 1; attempt <= options.MaxRetries; attempt++)
+        {
+            try
+            {
+                await MigrateDbContextAsync(moduleName, dbContextType, ct).ConfigureAwait(false);
+                return;
+            }
+            catch (Exception ex) when (attempt < options.MaxRetries && !ct.IsCancellationRequested)
+            {
+                LogRetry(moduleName, attempt, options.MaxRetries, ex);
+                await Task.Delay(options.RetryDelay, ct).ConfigureAwait(false);
+            }
+        }
+    }
+
+    private async Task MigrateDbContextAsync(string moduleName, Type dbContextType, CancellationToken ct)
+    {
+        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+
+        // Check for multi-tenant migration
+        ITenantEnumerator? tenantEnumerator = scope.ServiceProvider.GetService<ITenantEnumerator>();
+
+        if (tenantEnumerator is not null && await HasTenantsAsync(tenantEnumerator, ct).ConfigureAwait(false))
+        {
+            await MigratePerTenantAsync(moduleName, dbContextType, scope.ServiceProvider, tenantEnumerator, ct)
+                .ConfigureAwait(false);
+        }
+        else
+        {
+            LogMigratingContext(moduleName, dbContextType.Name);
+            var dbContext = (DbContext)scope.ServiceProvider.GetRequiredService(dbContextType);
+            await dbContext.Database.MigrateAsync(ct).ConfigureAwait(false);
+            LogMigratedContext(moduleName, dbContextType.Name);
+        }
+    }
+
+    private async Task MigratePerTenantAsync(
+        string moduleName,
+        Type dbContextType,
+        IServiceProvider serviceProvider,
+        ITenantEnumerator tenantEnumerator,
+        CancellationToken ct)
+    {
+        ITenantDbIsolator isolator = serviceProvider.GetRequiredService<ITenantDbIsolator>();
+
+        await foreach (Guid tenantId in tenantEnumerator.GetActiveTenantIdsAsync(ct).ConfigureAwait(false))
+        {
+            await using AsyncServiceScope tenantScope = scopeFactory.CreateAsyncScope();
+
+            LogMigratingContextForTenant(moduleName, dbContextType.Name, tenantId);
+            var dbContext = (DbContext)tenantScope.ServiceProvider.GetRequiredService(dbContextType);
+            await isolator.IsolateAsync(dbContext, tenantId, ct).ConfigureAwait(false);
+            await dbContext.Database.MigrateAsync(ct).ConfigureAwait(false);
+            LogMigratedContextForTenant(moduleName, dbContextType.Name, tenantId);
+        }
+    }
+
+    private async Task EnsureExpandContractDbAsync(CancellationToken ct)
+    {
+        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+        IDbContextFactory<MigrationProgressDbContext>? factory =
+            scope.ServiceProvider.GetService<IDbContextFactory<MigrationProgressDbContext>>();
+
+        if (factory is null)
+        {
+            return;
+        }
+
+        LogCreatingExpandContractDb();
+        await using MigrationProgressDbContext progressDb = await factory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await progressDb.Database.EnsureCreatedAsync(ct).ConfigureAwait(false);
+    }
+
+    private async Task SeedAsync(CancellationToken ct)
+    {
+        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+        IDataSeeder? seeder = scope.ServiceProvider.GetService<IDataSeeder>();
+
+        if (seeder is null)
+        {
+            return;
+        }
+
+        LogSeedingStart();
+        DataSeedContext seedContext = new();
+        await seeder.SeedAsync(seedContext, ct).ConfigureAwait(false);
+        LogSeedingCompleted();
+    }
+
+    private static async Task<bool> HasTenantsAsync(ITenantEnumerator enumerator, CancellationToken ct)
+    {
+        await foreach (Guid _ in enumerator.GetActiveTenantIdsAsync(ct).ConfigureAwait(false))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    // --- Log messages ---
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "No modules implement IMigratableModule<T>. Nothing to migrate.")]
+    private partial void LogNoMigratableModules();
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Starting migrations for {Count} migratable module(s).")]
+    private partial void LogMigrationStart(int count);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Migration skipped — another instance holds the migration lock.")]
+    private partial void LogMigrationSkipped();
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Discovered migratable module '{ModuleName}' with DbContext '{ContextName}'.")]
+    private partial void LogModuleDiscovered(string moduleName, string contextName);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Migrating '{ModuleName}' ({ContextName})...")]
+    private partial void LogMigratingContext(string moduleName, string contextName);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Migrated '{ModuleName}' ({ContextName}) successfully.")]
+    private partial void LogMigratedContext(string moduleName, string contextName);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Migrating '{ModuleName}' ({ContextName}) for tenant '{TenantId}'...")]
+    private partial void LogMigratingContextForTenant(string moduleName, string contextName, Guid tenantId);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Migrated '{ModuleName}' ({ContextName}) for tenant '{TenantId}' successfully.")]
+    private partial void LogMigratedContextForTenant(string moduleName, string contextName, Guid tenantId);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Migration attempt {Attempt}/{MaxRetries} failed for '{ModuleName}'. Retrying...")]
+    private partial void LogRetry(string moduleName, int attempt, int maxRetries, Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Creating Expand & Contract progress tracking table.")]
+    private partial void LogCreatingExpandContractDb();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Running data seeders...")]
+    private partial void LogSeedingStart();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Data seeding completed.")]
+    private partial void LogSeedingCompleted();
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "All migrations completed successfully.")]
+    private partial void LogMigrationCompleted();
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Migration timed out after {Timeout}.")]
+    private partial void LogMigrationTimeout(TimeSpan timeout);
+
+    [LoggerMessage(Level = LogLevel.Critical, Message = "Migration failed.")]
+    private partial void LogMigrationFailed(Exception ex);
+}

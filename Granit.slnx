@@ -123,6 +123,7 @@
     <Project Path="src/Granit.Notifications/Granit.Notifications.csproj" />
     <Project Path="src/Granit.Observability/Granit.Observability.csproj" />
     <Project Path="src/Granit.Observability.AI/Granit.Observability.AI.csproj" />
+    <Project Path="src/Granit.Persistence.Hosting/Granit.Persistence.Hosting.csproj" />
     <Project Path="src/Granit.Persistence.Migrations.Wolverine/Granit.Persistence.Migrations.Wolverine.csproj" />
     <Project Path="src/Granit.Persistence.Migrations/Granit.Persistence.Migrations.csproj" />
     <Project Path="src/Granit.Persistence/Granit.Persistence.csproj" />
@@ -307,6 +308,7 @@
     <Project Path="tests/Granit.Notifications.Zulip.Tests/Granit.Notifications.Zulip.Tests.csproj" />
     <Project Path="tests/Granit.Observability.AI.Tests/Granit.Observability.AI.Tests.csproj" />
     <Project Path="tests/Granit.Observability.Tests/Granit.Observability.Tests.csproj" />
+    <Project Path="tests/Granit.Persistence.Hosting.Tests/Granit.Persistence.Hosting.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Migrations.Tests/Granit.Persistence.Migrations.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Migrations.Wolverine.Tests/Granit.Persistence.Migrations.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Tests/Granit.Persistence.Tests.csproj" />

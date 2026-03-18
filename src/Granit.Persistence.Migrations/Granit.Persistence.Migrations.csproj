@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Persistence.Migrations.Tests" />
+    <InternalsVisibleTo Include="Granit.Persistence.Hosting" />
     <InternalsVisibleTo Include="Granit.Persistence.Migrations.Wolverine" />
     <InternalsVisibleTo Include="Granit.Persistence.Migrations.Wolverine.Tests" />
     <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
