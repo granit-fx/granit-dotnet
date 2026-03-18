@@ -2,7 +2,6 @@ using Granit.Core.Modularity;
 using Granit.Persistence.DataSeeding;
 using Granit.Persistence.Hosting.Options;
 using Granit.Persistence.Migrations;
-using Granit.Persistence.Migrations.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -168,17 +167,19 @@ internal sealed partial class GranitMigrationRunner(
     private async Task EnsureExpandContractDbAsync(CancellationToken ct)
     {
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
-        IDbContextFactory<MigrationProgressDbContext>? factory =
-            scope.ServiceProvider.GetService<IDbContextFactory<MigrationProgressDbContext>>();
 
-        if (factory is null)
+        // Resolve MigrationProgressDbContext dynamically to avoid exposing the internal type
+        // in this assembly's public surface (which would cause ReflectionTypeLoadException
+        // when other modules scan assemblies).
+        IMigrationProgressDbEnsurer? ensurer = scope.ServiceProvider.GetService<IMigrationProgressDbEnsurer>();
+
+        if (ensurer is null)
         {
             return;
         }
 
         LogCreatingExpandContractDb();
-        await using MigrationProgressDbContext progressDb = await factory.CreateDbContextAsync(ct).ConfigureAwait(false);
-        await progressDb.Database.EnsureCreatedAsync(ct).ConfigureAwait(false);
+        await ensurer.EnsureCreatedAsync(ct).ConfigureAwait(false);
     }
 
     private async Task SeedAsync(CancellationToken ct)

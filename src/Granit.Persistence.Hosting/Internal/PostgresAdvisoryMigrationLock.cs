@@ -1,6 +1,6 @@
+using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Npgsql;
 
 namespace Granit.Persistence.Hosting.Internal;
 
@@ -9,13 +9,18 @@ namespace Granit.Persistence.Hosting.Internal;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Uses a raw <see cref="NpgsqlConnection"/> (NOT EF Core) because advisory locks are
+/// Uses a raw <see cref="DbConnection"/> (NOT EF Core) because advisory locks are
 /// session-scoped — they are tied to the physical connection. EF Core's connection pooling
 /// would release the connection (and the lock) after each command.
 /// </para>
 /// <para>
 /// The connection is kept open for the entire migration duration and closed when
 /// the returned <see cref="IAsyncDisposable"/> is disposed.
+/// </para>
+/// <para>
+/// Provider-agnostic: uses <see cref="DbProviderFactories"/> to create the connection.
+/// The host must register a <see cref="DbProviderFactory"/> for the
+/// <c>DefaultConnection</c> provider (Npgsql does this automatically).
 /// </para>
 /// </remarks>
 internal sealed partial class PostgresAdvisoryMigrationLock(
@@ -32,11 +37,19 @@ internal sealed partial class PostgresAdvisoryMigrationLock(
             return NoOpHandle.Instance;
         }
 
-        NpgsqlConnection connection = new(connectionString);
+        // Create a raw ADO.NET connection (not EF Core) to hold the advisory lock
+        if (!DbProviderFactories.TryGetFactory("Npgsql", out DbProviderFactory? providerFactory))
+        {
+            LogNoProviderFactory();
+            return NoOpHandle.Instance;
+        }
+
+        DbConnection connection = providerFactory.CreateConnection()!;
+        connection.ConnectionString = connectionString;
         await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
 
         // hashtext returns a 32-bit integer hash — unique enough for advisory locks
-        await using NpgsqlCommand command = connection.CreateCommand();
+        await using DbCommand command = connection.CreateCommand();
         command.CommandText = $"SELECT pg_try_advisory_lock(hashtext('{resource}'))";
 
         object? result = await command.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
@@ -58,6 +71,10 @@ internal sealed partial class PostgresAdvisoryMigrationLock(
     private partial void LogNoConnectionString();
 
     [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Npgsql DbProviderFactory not registered. Skipping distributed migration lock.")]
+    private partial void LogNoProviderFactory();
+
+    [LoggerMessage(Level = LogLevel.Warning,
         Message = "Could not acquire migration lock for '{Resource}'. Another instance is migrating.")]
     private partial void LogLockNotAcquired(string resource);
 
@@ -66,7 +83,7 @@ internal sealed partial class PostgresAdvisoryMigrationLock(
     private partial void LogLockAcquired(string resource);
 
     private sealed partial class AdvisoryLockHandle(
-        NpgsqlConnection connection,
+        DbConnection connection,
         string resource,
         ILogger logger) : IAsyncDisposable
     {
@@ -74,7 +91,7 @@ internal sealed partial class PostgresAdvisoryMigrationLock(
         {
             try
             {
-                await using NpgsqlCommand command = connection.CreateCommand();
+                await using DbCommand command = connection.CreateCommand();
                 command.CommandText = $"SELECT pg_advisory_unlock(hashtext('{resource}'))";
                 await command.ExecuteScalarAsync().ConfigureAwait(false);
                 LogLockReleased(resource);
