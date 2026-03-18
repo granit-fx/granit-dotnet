@@ -2,6 +2,7 @@ using Granit.Core.Modularity;
 using Granit.Persistence.DataSeeding;
 using Granit.Persistence.Hosting.Options;
 using Granit.Persistence.Migrations;
+using Granit.Persistence.Migrations.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -137,8 +138,7 @@ internal sealed partial class GranitMigrationRunner(
         else
         {
             LogMigratingContext(moduleName, dbContextType.Name);
-            await using DbContext dbContext = await ResolveDbContextAsync(scope.ServiceProvider, dbContextType, ct)
-                .ConfigureAwait(false);
+            var dbContext = (DbContext)scope.ServiceProvider.GetRequiredService(dbContextType);
             await dbContext.Database.MigrateAsync(ct).ConfigureAwait(false);
             LogMigratedContext(moduleName, dbContextType.Name);
         }
@@ -158,8 +158,7 @@ internal sealed partial class GranitMigrationRunner(
             await using AsyncServiceScope tenantScope = scopeFactory.CreateAsyncScope();
 
             LogMigratingContextForTenant(moduleName, dbContextType.Name, tenantId);
-            await using DbContext dbContext = await ResolveDbContextAsync(tenantScope.ServiceProvider, dbContextType, ct)
-                .ConfigureAwait(false);
+            var dbContext = (DbContext)tenantScope.ServiceProvider.GetRequiredService(dbContextType);
             await isolator.IsolateAsync(dbContext, tenantId, ct).ConfigureAwait(false);
             await dbContext.Database.MigrateAsync(ct).ConfigureAwait(false);
             LogMigratedContextForTenant(moduleName, dbContextType.Name, tenantId);
@@ -169,19 +168,17 @@ internal sealed partial class GranitMigrationRunner(
     private async Task EnsureExpandContractDbAsync(CancellationToken ct)
     {
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+        IDbContextFactory<MigrationProgressDbContext>? factory =
+            scope.ServiceProvider.GetService<IDbContextFactory<MigrationProgressDbContext>>();
 
-        // Resolve MigrationProgressDbContext dynamically to avoid exposing the internal type
-        // in this assembly's public surface (which would cause ReflectionTypeLoadException
-        // when other modules scan assemblies).
-        IMigrationProgressDbEnsurer? ensurer = scope.ServiceProvider.GetService<IMigrationProgressDbEnsurer>();
-
-        if (ensurer is null)
+        if (factory is null)
         {
             return;
         }
 
         LogCreatingExpandContractDb();
-        await ensurer.EnsureCreatedAsync(ct).ConfigureAwait(false);
+        await using MigrationProgressDbContext progressDb = await factory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await progressDb.Database.EnsureCreatedAsync(ct).ConfigureAwait(false);
     }
 
     private async Task SeedAsync(CancellationToken ct)
@@ -199,20 +196,6 @@ internal sealed partial class GranitMigrationRunner(
         await seeder.SeedAsync(seedContext, ct).ConfigureAwait(false);
         LogSeedingCompleted();
     }
-
-    /// <summary>
-    /// Resolves a DbContext from a scoped service provider.
-    /// </summary>
-    /// <remarks>
-    /// Always resolves the DbContext directly (not via IDbContextFactory).
-    /// EF Core registers TContext as Scoped even when AddDbContextFactory is used,
-    /// so scoped resolution works for both AddDbContext and AddDbContextFactory registrations.
-    /// Using IDbContextFactory would fail because singleton factories capture the root
-    /// IServiceProvider and cannot resolve scoped interceptors.
-    /// </remarks>
-    private static Task<DbContext> ResolveDbContextAsync(
-        IServiceProvider serviceProvider, Type dbContextType, CancellationToken ct) =>
-        Task.FromResult((DbContext)serviceProvider.GetRequiredService(dbContextType));
 
     private static async Task<bool> HasTenantsAsync(ITenantEnumerator enumerator, CancellationToken ct)
     {

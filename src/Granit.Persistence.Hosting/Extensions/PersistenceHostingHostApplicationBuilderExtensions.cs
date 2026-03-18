@@ -31,7 +31,7 @@ public static class PersistenceHostingHostApplicationBuilderExtensions
         configure?.Invoke(options);
 
         builder.Services.AddSingleton(options);
-        builder.Services.TryAddSingleton<IGranitMigrationLock, NullMigrationLock>();
+        builder.Services.TryAddSingleton<IGranitMigrationLock, PostgresAdvisoryMigrationLock>();
         builder.Services.TryAddSingleton<IGranitMigrationRunner, GranitMigrationRunner>();
 
         // Disable DataSeedingHostedService by default when Hosting is loaded.
