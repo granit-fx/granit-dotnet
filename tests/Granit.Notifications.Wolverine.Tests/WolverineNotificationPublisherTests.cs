@@ -98,7 +98,7 @@ public sealed class WolverineNotificationPublisherTests
     public async Task PublishAsync_DataIsSerializedToJsonElement()
     {
         TestNotificationType notifType = new();
-        var data = new TestData("serialized-value");
+        TestData data = new("serialized-value");
 
         await _sut.PublishAsync(notifType, data, ["user-1"], TestContext.Current.CancellationToken);
 

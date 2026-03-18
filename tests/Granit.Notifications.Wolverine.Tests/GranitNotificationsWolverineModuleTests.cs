@@ -62,13 +62,13 @@ public sealed class GranitNotificationsWolverineModuleTests
         module.ConfigureServices(context);
 
         // Assert — invoke all registered IWolverineExtension to cover lambda bodies
-        var extensions = builder.Services
+        IEnumerable<IWolverineExtension?> extensions = builder.Services
             .Where(d => d.ServiceType == typeof(IWolverineExtension))
             .Select(d => d.ImplementationInstance as IWolverineExtension)
             .Where(e => e is not null);
 
         WolverineOptions opts = new();
-        foreach (var ext in extensions)
+        foreach (IWolverineExtension? ext in extensions)
         {
             ext!.Configure(opts);
         }
