@@ -14,8 +14,8 @@ public sealed class GranitNotificationsEmailAwsSesModuleTests
         typeof(GranitNotificationsEmailAwsSesModule).IsAssignableTo(typeof(GranitModule)).ShouldBeTrue();
 
     [Fact]
-    public void IsNotSealed() =>
-        typeof(GranitNotificationsEmailAwsSesModule).IsSealed.ShouldBeFalse();
+    public void IsSealed() =>
+        typeof(GranitNotificationsEmailAwsSesModule).IsSealed.ShouldBeTrue();
 
     [Fact]
     public void ConfigureServices_RegistersKeyedEmailSender()
