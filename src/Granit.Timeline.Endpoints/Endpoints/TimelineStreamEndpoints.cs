@@ -3,6 +3,7 @@ using Granit.Timeline.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Timeline.Endpoints.Endpoints;
@@ -25,9 +26,9 @@ internal static class TimelineStreamEndpoints
     private static async Task<Ok<PagedResult<TimelineStreamEntry>>> GetStreamAsync(
         string entityType,
         string entityId,
-        ITimelineReader reader,
-        int page = 1,
-        int pageSize = QueryingDefaults.DefaultPageSize,
+        [FromServices] ITimelineReader reader,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = QueryingDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
         PagedResult<TimelineStreamEntry> result = await reader.GetStreamAsync(entityType, entityId, page, pageSize, cancellationToken).ConfigureAwait(false);

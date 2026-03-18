@@ -31,7 +31,7 @@ internal static class BackgroundJobsReadEndpoints
     }
 
     private static async Task<Ok<PagedResult<BackgroundJobStatus>>> GetAllJobsAsync(
-        IBackgroundJobReader reader,
+        [FromServices] IBackgroundJobReader reader,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = QueryingDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)

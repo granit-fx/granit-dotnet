@@ -39,7 +39,7 @@ internal static class AuditLogReadEndpoints
 
     private static async Task<Ok<PagedResult<AuditLogEntryResponse>>> GetPagedAsync(
         [AsParameters] AuditLogQueryParameters parameters,
-        IAuditLogReader reader,
+        [FromServices] IAuditLogReader reader,
         CancellationToken cancellationToken)
     {
         AuditLogQuery query = new(
@@ -65,7 +65,7 @@ internal static class AuditLogReadEndpoints
 
     private static async Task<Results<Ok<AuditLogEntryDetailResponse>, ProblemHttpResult>> GetByIdAsync(
         Guid id,
-        IAuditLogReader reader,
+        [FromServices] IAuditLogReader reader,
         CancellationToken cancellationToken)
     {
         AuditLogEntry? entry = await reader
@@ -86,7 +86,7 @@ internal static class AuditLogReadEndpoints
         string entityId,
         [FromQuery] int? page,
         [FromQuery] int? pageSize,
-        IAuditLogReader reader,
+        [FromServices] IAuditLogReader reader,
         CancellationToken cancellationToken)
     {
         PagedResult<AuditLogEntry> result = await reader
