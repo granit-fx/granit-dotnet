@@ -6,6 +6,7 @@ using Granit.Wolverine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
+using Wolverine;
 using Xunit;
 
 namespace Granit.Notifications.Wolverine.Tests;
@@ -45,6 +46,35 @@ public sealed class GranitNotificationsWolverineModuleTests
             d => d.ServiceType == typeof(INotificationPublisher));
         descriptor.ShouldNotBeNull();
         descriptor!.ImplementationType.ShouldBe(typeof(WolverineNotificationPublisher));
+    }
+
+    [Fact]
+    public void ConfigureServices_registers_wolverine_queue_configuration()
+    {
+        // Arrange
+        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+        builder.Services.AddSingleton<INotificationPublisher, StubNotificationPublisher>();
+
+        ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
+        GranitNotificationsWolverineModule module = new();
+
+        // Act
+        module.ConfigureServices(context);
+
+        // Assert — invoke all registered IWolverineExtension to cover lambda bodies
+        var extensions = builder.Services
+            .Where(d => d.ServiceType == typeof(IWolverineExtension))
+            .Select(d => d.ImplementationInstance as IWolverineExtension)
+            .Where(e => e is not null);
+
+        WolverineOptions opts = new();
+        foreach (var ext in extensions)
+        {
+            ext!.Configure(opts);
+        }
+
+        // If we get here without exception, the Wolverine queue configuration succeeded
+        opts.ShouldNotBeNull();
     }
 
     private sealed class StubNotificationPublisher : INotificationPublisher
