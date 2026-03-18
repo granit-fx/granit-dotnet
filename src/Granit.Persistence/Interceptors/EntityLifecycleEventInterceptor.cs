@@ -231,7 +231,7 @@ public sealed class EntityLifecycleEventInterceptor(
             (domainEvents ??= []).Add(domainEvent);
 
             // Distributed ETO (only for entities implementing IHasEntityEto<TEto>)
-            if (entity is IEntityEtoProvider etoProvider)
+            if (entity is IEntityEtoProvider)
             {
                 Func<object, (Type, object)> etoFactory =
                     EtoFactoryCache.GetOrAdd(entityType, BuildEtoFactory);

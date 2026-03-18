@@ -55,7 +55,7 @@ public sealed partial class EndpointParameterBindingTests
     [Fact]
     public void Endpoint_service_parameters_must_have_FromServices()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
         List<string> violations = [];
 
         foreach (string csFile in GetEndpointSourceFiles(srcDir))
@@ -257,7 +257,7 @@ public sealed partial class EndpointParameterBindingTests
         string? dir = Path.GetDirectoryName(typeof(EndpointParameterBindingTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Combine(dir, ".git")))
+            if (Directory.Exists(Path.Join(dir, ".git")))
             {
                 return dir;
             }

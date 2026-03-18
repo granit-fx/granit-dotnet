@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -177,30 +178,11 @@ public sealed class MinimalApiServiceParameterAnalyzer : SingleRuleAnalyzerBase
             return true;
         }
 
-        foreach (INamedTypeSymbol iface in type.AllInterfaces)
-        {
-            if (iface.ToDisplayString() == IResultFqn)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return type.AllInterfaces.Any(iface => iface.ToDisplayString() == IResultFqn);
     }
 
-    private static bool HasBindingAttribute(ParameterSyntax parameter)
-    {
-        foreach (AttributeListSyntax attrList in parameter.AttributeLists)
-        {
-            foreach (AttributeSyntax attr in attrList.Attributes)
-            {
-                if (BindingAttributeNames.Contains(attr.Name.ToString()))
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
+    private static bool HasBindingAttribute(ParameterSyntax parameter) =>
+        parameter.AttributeLists
+            .SelectMany(attrList => attrList.Attributes)
+            .Any(attr => BindingAttributeNames.Contains(attr.Name.ToString()));
 }

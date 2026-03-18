@@ -45,6 +45,10 @@ public static class SqlServerHealthChecksBuilderExtensions
                     await cmd.ExecuteScalarAsync(ct).ConfigureAwait(false);
                     return HealthCheckResult.Healthy();
                 }
+                catch (OperationCanceledException oce) when (ct.IsCancellationRequested)
+                {
+                    return new HealthCheckResult(failureStatus, description: "SQL Server health check was canceled.", exception: oce);
+                }
                 catch (Exception ex)
                 {
                     return new HealthCheckResult(failureStatus, exception: ex);

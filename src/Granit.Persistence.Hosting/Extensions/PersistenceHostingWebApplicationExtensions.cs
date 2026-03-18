@@ -55,6 +55,10 @@ public static class PersistenceHostingWebApplicationExtensions
         {
             exitCode = await runner.RunAsync().ConfigureAwait(false);
         }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             logger.LogCritical(ex, "Migration failed with an unhandled exception.");

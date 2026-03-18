@@ -45,6 +45,10 @@ public static class NpgsqlHealthChecksBuilderExtensions
                     await cmd.ExecuteScalarAsync(ct).ConfigureAwait(false);
                     return HealthCheckResult.Healthy();
                 }
+                catch (OperationCanceledException oce) when (ct.IsCancellationRequested)
+                {
+                    return new HealthCheckResult(failureStatus, description: "PostgreSQL health check was canceled.", exception: oce);
+                }
                 catch (Exception ex)
                 {
                     return new HealthCheckResult(failureStatus, exception: ex);
