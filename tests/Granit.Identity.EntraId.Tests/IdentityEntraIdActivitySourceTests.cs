@@ -143,9 +143,11 @@ public sealed class IdentityEntraIdActivitySourceTests : IDisposable
 
         await _provider.GetGroupsAsync(TestContext.Current.CancellationToken);
 
-        Activity? activity = _activities.Find(a => a.OperationName == IdentityEntraIdActivitySource.GetGroups);
-        activity.ShouldNotBeNull();
-        activity.Status.ShouldBe(ActivityStatusCode.Error);
+        // Filter by both operation name AND status to avoid cross-contamination from parallel test classes
+        // (EntraIdIdentityProviderTests also calls GetGroupsAsync with success, producing Unset activities).
+        _activities.ShouldContain(a =>
+            a.OperationName == IdentityEntraIdActivitySource.GetGroups
+            && a.Status == ActivityStatusCode.Error);
     }
 
     [Fact]
