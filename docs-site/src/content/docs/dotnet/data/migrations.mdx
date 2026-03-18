@@ -175,8 +175,9 @@ By default, `AddGranitMigrateSupport()` registers `NullMigrationLock` — a no-o
 always succeeds, suitable for single-instance deployments and init containers (which run
 exactly once).
 
-For multi-instance scenarios where multiple pods could start simultaneously, register a
-real distributed lock by implementing `IGranitMigrationLock`:
+For multi-instance scenarios where multiple pods could start simultaneously, you need a
+real distributed lock. The `IGranitMigrationLock` interface returns `null` when the lock
+cannot be acquired — signalling the runner to skip migrations on that instance:
 
 ```csharp
 public interface IGranitMigrationLock
@@ -186,53 +187,27 @@ public interface IGranitMigrationLock
 }
 ```
 
-The recommended implementation for PostgreSQL uses advisory locks, which are
-session-scoped and zero-dependency:
+**For PostgreSQL**, `Granit.Persistence.Postgres` provides `NpgsqlAdvisoryMigrationLock`
+out of the box — zero configuration required. Call `AddGranitPostgres()` before
+`AddGranitMigrateSupport()` and the advisory lock is registered automatically via
+`TryAddSingleton`:
 
 ```csharp
-// In your host application (e.g., Guava.Infrastructure)
-public sealed class PostgresAdvisoryMigrationLock(NpgsqlDataSource dataSource)
-    : IGranitMigrationLock
-{
-    public async Task<IAsyncDisposable?> TryAcquireAsync(
-        string resource, CancellationToken cancellationToken)
-    {
-        NpgsqlConnection connection = await dataSource
-            .OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
-
-        await using NpgsqlCommand command = connection.CreateCommand();
-        command.CommandText = "SELECT pg_try_advisory_lock(hashtext(@resource))";
-        NpgsqlParameter param = command.CreateParameter();
-        param.ParameterName = "resource";
-        param.Value = resource;
-        command.Parameters.Add(param);
-
-        bool acquired = (bool)(await command.ExecuteScalarAsync(cancellationToken)
-            .ConfigureAwait(false))!;
-
-        if (!acquired)
-        {
-            await connection.DisposeAsync().ConfigureAwait(false);
-            return null;
-        }
-
-        return new LockHandle(connection, resource);
-    }
-}
+builder.AddGranitPostgres();           // registers NpgsqlAdvisoryMigrationLock
+builder.AddGranitMigrateSupport();     // uses it automatically
 ```
 
-Register it before `AddGranitMigrateSupport()` so `TryAddSingleton` defers to it:
+See [Persistence — PostgreSQL](/dotnet/data/persistence-postgres/#distributed-migration-lock)
+for how the advisory lock works and why it requires a raw connection instead of the EF
+Core connection pool.
+
+**For SQL Server or custom databases**, implement `IGranitMigrationLock` and register it
+manually before `AddGranitMigrateSupport()`:
 
 ```csharp
-builder.Services.AddSingleton<IGranitMigrationLock, PostgresAdvisoryMigrationLock>();
+builder.Services.AddSingleton<IGranitMigrationLock, MyCustomMigrationLock>();
 builder.AddGranitMigrateSupport();
 ```
-
-:::note
-Advisory lock connections must use a dedicated `NpgsqlConnection`, not the EF Core
-connection pool. Advisory locks are session-scoped — returning the connection to the
-pool would silently release the lock.
-:::
 
 ### Multi-tenant support
 
