@@ -36,6 +36,9 @@
     "onlyBuiltDependencies": [
       "esbuild",
       "sharp"
-    ]
+    ],
+    "overrides": {
+      "fast-xml-parser": ">=5.5.6"
+    }
   }
 }
