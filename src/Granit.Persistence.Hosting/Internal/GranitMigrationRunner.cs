@@ -19,8 +19,6 @@ internal sealed partial class GranitMigrationRunner(
     GranitMigrateOptions options,
     ILogger<GranitMigrationRunner> logger) : IGranitMigrationRunner
 {
-    private static readonly Type MigratableModuleOpenGeneric = typeof(IMigratableModule<>);
-
     public async Task<int> RunAsync(CancellationToken cancellationToken = default)
     {
         using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -74,6 +72,11 @@ internal sealed partial class GranitMigrationRunner(
             LogMigrationTimeout(options.Timeout);
             return 1;
         }
+        catch (OperationCanceledException)
+        {
+            // External cancellation — rethrow to honor the caller's CancellationToken
+            throw;
+        }
         catch (Exception ex)
         {
             LogMigrationFailed(ex);
@@ -87,15 +90,10 @@ internal sealed partial class GranitMigrationRunner(
 
         foreach (GranitModule module in application.GetModuleInstances())
         {
-            Type moduleType = module.GetType();
-            Type? migratableInterface = moduleType.GetInterfaces()
-                .FirstOrDefault(i => i.IsGenericType &&
-                                     i.GetGenericTypeDefinition() == MigratableModuleOpenGeneric);
-
-            if (migratableInterface is not null)
+            if (module is IMigratableModule migratable)
             {
-                Type dbContextType = migratableInterface.GetGenericArguments()[0];
-                LogModuleDiscovered(moduleType.Name, dbContextType.Name);
+                Type dbContextType = migratable.DbContextType;
+                LogModuleDiscovered(module.GetType().Name, dbContextType.Name);
                 result.Add((module, dbContextType));
             }
         }
@@ -137,7 +135,7 @@ internal sealed partial class GranitMigrationRunner(
         else
         {
             LogMigratingContext(moduleName, dbContextType.Name);
-            await using DbContext dbContext = await ResolveDbContextAsync(scope.ServiceProvider, dbContextType, ct)
+            await using DbContext dbContext = await ResolveDbContextAsync(scope.ServiceProvider, dbContextType)
                 .ConfigureAwait(false);
             await dbContext.Database.MigrateAsync(ct).ConfigureAwait(false);
             LogMigratedContext(moduleName, dbContextType.Name);
@@ -158,7 +156,7 @@ internal sealed partial class GranitMigrationRunner(
             await using AsyncServiceScope tenantScope = scopeFactory.CreateAsyncScope();
 
             LogMigratingContextForTenant(moduleName, dbContextType.Name, tenantId);
-            await using DbContext dbContext = await ResolveDbContextAsync(tenantScope.ServiceProvider, dbContextType, ct)
+            await using DbContext dbContext = await ResolveDbContextAsync(tenantScope.ServiceProvider, dbContextType)
                 .ConfigureAwait(false);
             await isolator.IsolateAsync(dbContext, tenantId, ct).ConfigureAwait(false);
             await dbContext.Database.MigrateAsync(ct).ConfigureAwait(false);
@@ -210,18 +208,20 @@ internal sealed partial class GranitMigrationRunner(
     /// Using IDbContextFactory would fail because singleton factories capture the root
     /// IServiceProvider and cannot resolve scoped interceptors.
     /// </remarks>
-    private static Task<DbContext> ResolveDbContextAsync(
-        IServiceProvider serviceProvider, Type dbContextType, CancellationToken ct) =>
+    private static Task<DbContext> ResolveDbContextAsync(IServiceProvider serviceProvider, Type dbContextType) =>
         Task.FromResult((DbContext)serviceProvider.GetRequiredService(dbContextType));
 
     private static async Task<bool> HasTenantsAsync(ITenantEnumerator enumerator, CancellationToken ct)
     {
-        await foreach (Guid _ in enumerator.GetActiveTenantIdsAsync(ct).ConfigureAwait(false))
+        IAsyncEnumerator<Guid> e = enumerator.GetActiveTenantIdsAsync(ct).GetAsyncEnumerator(ct);
+        try
         {
-            return true;
+            return await e.MoveNextAsync().ConfigureAwait(false);
         }
-
-        return false;
+        finally
+        {
+            await e.DisposeAsync().ConfigureAwait(false);
+        }
     }
 
     // --- Log messages ---

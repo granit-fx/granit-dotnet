@@ -3,6 +3,17 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.Persistence.Hosting;
 
 /// <summary>
+/// Non-generic base for <see cref="IMigratableModule{TContext}"/>.
+/// Exposes the <see cref="DbContext"/> type without requiring generic type arguments at the
+/// call site — used by <see cref="IGranitMigrationRunner"/> for discovery.
+/// </summary>
+public interface IMigratableModule
+{
+    /// <summary>The <see cref="DbContext"/> type that owns EF Core migrations for this module.</summary>
+    Type DbContextType { get; }
+}
+
+/// <summary>
 /// Marker interface for Granit modules that own a migratable <see cref="DbContext"/>.
 /// </summary>
 /// <remarks>
@@ -28,4 +39,7 @@ namespace Granit.Persistence.Hosting;
 /// }
 /// </code>
 /// </example>
-public interface IMigratableModule<TContext> where TContext : DbContext;
+public interface IMigratableModule<TContext> : IMigratableModule where TContext : DbContext
+{
+    Type IMigratableModule.DbContextType => typeof(TContext);
+}

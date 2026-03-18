@@ -33,22 +33,16 @@ public sealed class NullAIWorkspaceStoreWriterTests
         new() { Name = "test", Provider = "OpenAI", Model = "gpt-4o" };
 
     [Fact]
-    public async Task SaveAsync_DoesNotThrow()
-    {
-        await Should.NotThrowAsync(() => _sut.SaveAsync(CreateWorkspace(), TestContext.Current.CancellationToken));
-    }
+    public Task SaveAsync_DoesNotThrow() =>
+        Should.NotThrowAsync(() => _sut.SaveAsync(CreateWorkspace(), TestContext.Current.CancellationToken));
 
     [Fact]
-    public async Task UpdateAsync_DoesNotThrow()
-    {
-        await Should.NotThrowAsync(() => _sut.UpdateAsync(CreateWorkspace(), TestContext.Current.CancellationToken));
-    }
+    public Task UpdateAsync_DoesNotThrow() =>
+        Should.NotThrowAsync(() => _sut.UpdateAsync(CreateWorkspace(), TestContext.Current.CancellationToken));
 
     [Fact]
-    public async Task DeleteAsync_DoesNotThrow()
-    {
-        await Should.NotThrowAsync(() => _sut.DeleteAsync("any-workspace", TestContext.Current.CancellationToken));
-    }
+    public Task DeleteAsync_DoesNotThrow() =>
+        Should.NotThrowAsync(() => _sut.DeleteAsync("any-workspace", TestContext.Current.CancellationToken));
 }
 
 public sealed class NullAIUsageTrackerTests

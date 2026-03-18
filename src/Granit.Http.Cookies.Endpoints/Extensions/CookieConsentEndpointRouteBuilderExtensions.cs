@@ -3,8 +3,8 @@ using Granit.Http.Cookies.Endpoints.Internal;
 using Granit.Http.Cookies.Endpoints.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Http.Cookies.Endpoints.Extensions;
