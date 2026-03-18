@@ -411,39 +411,6 @@ jobs:
           --skip-duplicate
 
   # ---------------------------------------------------------------------------
-  # DOCS (Astro Starlight → Cloudflare Pages)
+  # DOCS: build & deploy handled by Cloudflare Pages (Git integration).
+  # See CF Dashboard > Pages > granit-docs > Settings > Builds & deployments.
   # ---------------------------------------------------------------------------
-  docs:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
-      - name: Install dependencies
-        working-directory: docs-site
-        run: pnpm install --frozen-lockfile
-
-      - name: Build Starlight
-        working-directory: docs-site
-        run: pnpm astro build
-
-      - name: Generate search index for MCP server
-        working-directory: docs-site
-        run: node scripts/generate-search-index.mjs
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@da0e0dfe58b7a431659754fdf3f186c529afbe65 # v3.14.1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy docs-site/dist --project-name=granit-docs --branch=${{ github.ref_name }}
