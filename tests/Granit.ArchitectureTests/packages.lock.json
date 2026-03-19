@@ -1466,6 +1466,7 @@
       "granit.blobstorage": {
         "type": "Project",
         "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.Core": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )"
         }

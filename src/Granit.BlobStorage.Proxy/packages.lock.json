@@ -8,9 +8,20 @@
         "resolved": "3.3.4",
         "contentHash": "0k2Jwpc8eq0hjOtX6TxRkHm9clkJ2PAQ3heEHgqIJZcsfdFosC/iyz18nsgTVDDWpID80rC7aiYK7ripx+Qndg=="
       },
+      "granit.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Cronos": "[0.11.*, )",
+          "Granit.Core": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Security": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
       "granit.blobstorage": {
         "type": "Project",
         "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.Core": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )"
         }
@@ -24,11 +35,23 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.security": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )"
+        }
+      },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )"
         }
+      },
+      "Cronos": {
+        "type": "CentralTransitive",
+        "requested": "[0.11.*, )",
+        "resolved": "0.11.1",
+        "contentHash": "5Ug+giPQITSAdTp/METAsofRSSUi3I5p7t4dlcXnzUgUzwZb4HkOBcYfpHuPwAHrnKJjmyW8amVzLD6mfLpaBg=="
       }
     }
   }

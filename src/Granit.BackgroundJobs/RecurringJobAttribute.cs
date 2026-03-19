@@ -18,12 +18,12 @@ namespace Granit.BackgroundJobs;
 /// </para>
 /// <example>
 /// <code>
-/// [RecurringJob("0 * * * *", Name = "hourly-cleanup")]
-/// public sealed class HourlyCleanupCommand { }
+/// [RecurringJob("0 * * * *", "my-module-hourly-cleanup")]
+/// public sealed record HourlyCleanupJob : IBackgroundJob;
 ///
-/// public static class HourlyCleanupHandler
+/// internal static partial class HourlyCleanupHandler
 /// {
-///     public static async Task Handle(HourlyCleanupCommand command, IMyService service)
+///     public static async Task HandleAsync(HourlyCleanupJob job, IMyService service)
 ///         => await service.CleanupAsync();
 ///     // Rescheduling is injected automatically — no code needed here.
 /// }
