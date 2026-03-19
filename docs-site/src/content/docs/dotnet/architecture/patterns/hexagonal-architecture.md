@@ -136,3 +136,4 @@ PresignedUploadTicket ticket = await blobStorage.InitiateUploadAsync(
 ## Further reading
 
 - [Hexagonal Architecture -- Alistair Cockburn (original article, 2005)](https://alistair.cockburn.us/hexagonal-architecture/)
+- [Architecture Styles -- DDD, Clean Architecture & Vertical Slices](/dotnet/concepts/architecture-styles/)

@@ -65,7 +65,7 @@ flowchart BT
 ### Domain layer (`Granit.Core`)
 
 | Component | File |
-|-----------|------|
+| --------- | ---- |
 | `Entity` > `CreationAuditedEntity` > `AuditedEntity` > `FullAuditedEntity` | `src/Granit.Core/Domain/` |
 | `ISoftDeletable`, `IMultiTenant`, `IActive` | `src/Granit.Core/Domain/` |
 | `IDomainEvent`, `IIntegrationEvent` | `src/Granit.Core/Events/` |
@@ -75,7 +75,7 @@ flowchart BT
 ### Application layer (functional packages)
 
 | Service | File |
-|---------|------|
+| ------- | ---- |
 | `FeatureChecker` | `src/Granit.Features/Checker/FeatureChecker.cs` |
 | `BackgroundJobManager` | `src/Granit.BackgroundJobs/Internal/BackgroundJobManager.cs` |
 | `DefaultBlobStorage` | `src/Granit.BlobStorage/Internal/DefaultBlobStorage.cs` |
@@ -85,7 +85,7 @@ flowchart BT
 ### Infrastructure layer (`*.EntityFrameworkCore`, `*.S3`, etc.)
 
 | Component | File |
-|-----------|------|
+| --------- | ---- |
 | `EfBlobDescriptorStore` | `src/Granit.BlobStorage.EntityFrameworkCore/Internal/EfBlobDescriptorStore.cs` |
 | `EfCoreFeatureStore` | `src/Granit.Features.EntityFrameworkCore/Internal/EfCoreFeatureStore.cs` |
 | `EfBackgroundJobStore` | `src/Granit.BackgroundJobs.EntityFrameworkCore/Internal/EfBackgroundJobStore.cs` |
@@ -106,7 +106,7 @@ contains no dependency on EF Core or the AWS SDK.
 ## Rationale
 
 | Problem | Solution |
-|---------|----------|
+| ------- | -------- |
 | Coupling between business logic and database | The domain only knows about interfaces (ports) |
 | Difficulty testing business logic in isolation | Application services are testable with mocks |
 | Changing provider (S3 to another) impacts the entire codebase | Only the infrastructure layer changes |
@@ -135,3 +135,4 @@ public sealed class Patient : FullAuditedEntity, IMultiTenant
 ## Further reading
 
 - [Presentation Domain Data Layering -- Martin Fowler](https://martinfowler.com/bliki/PresentationDomainDataLayering.html)
+- [Architecture Styles -- DDD, Clean Architecture & Vertical Slices](/dotnet/concepts/architecture-styles/)

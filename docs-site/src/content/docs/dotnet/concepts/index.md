@@ -20,6 +20,7 @@ and extend it without surprises.
 graph TD
     MS[Module System] --> DI[Dependency Injection]
     MS --> Bundles
+    MS --> AS[Architecture Styles]
     DI --> Config[Configuration]
     DI --> P[Persistence]
     P --> CQRS[CQRS]
@@ -45,6 +46,8 @@ Start with the **Module System** — every other concept builds on it.
 - [Configuration](./configuration/) — Options (startup), Settings (runtime), Module Config
   (frontend read-only)
 - [Bundles](./bundles/) — meta-packages and the fluent `GranitBuilder` API for quick onboarding
+- [Architecture Styles](./architecture-styles/) — DDD orthogonality, Clean Architecture
+  vs Vertical Slice Architecture, how Granit supports both
 
 ## Data and infrastructure
 

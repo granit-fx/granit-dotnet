@@ -1,11 +1,11 @@
 ---
-title: "Pattern Library — 51 Design Patterns for .NET"
+title: "Pattern Library — 52 Design Patterns for .NET"
 description: Catalogue of design patterns implemented in Granit — GoF patterns, architecture patterns, cloud/SaaS patterns, concurrency, security, and .NET idioms.
 sidebar:
   label: Pattern Library
   order: 0
   badge:
-    text: "55"
+    text: "56"
     variant: note
 ---
 
@@ -25,6 +25,7 @@ and references to the actual source files where the pattern is applied.
 | [Event-Driven](./event-driven/) | IDomainEvent (local) + IIntegrationEvent (durable) |
 | [REPR](./repr/) | Minimal API Request-Endpoint-Response |
 | [CQRS](./cqrs/) | IReader / IWriter separation, ArchUnitNET enforcement |
+| [Vertical Slice Architecture](./vertical-slice-architecture/) | Feature-organized code, per-use-case slices |
 | [Anti-Corruption Layer](./anti-corruption-layer/) | Isolation of Keycloak, S3, Brevo, FCM via internal DTOs |
 
 ## Cloud and SaaS patterns
