@@ -1,0 +1,164 @@
+---
+title: "Event Catalog — All Domain and Integration Events"
+description: Comprehensive reference of all domain events (*Event) and integration events (*Eto) emitted across Granit modules, organized by module with compliance tags.
+sidebar:
+  label: Event Catalog
+  order: 8
+  badge:
+    text: New
+    variant: tip
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Every event in Granit follows two naming conventions enforced by architecture tests:
+
+- **Domain events** (`IDomainEvent`) — suffix `*Event`, in-process, after commit
+- **Integration events** (`IIntegrationEvent`) — suffix `*Eto`, durable Wolverine outbox
+
+See the [Event Bus](/dotnet/infrastructure/event-bus/) page for architecture and usage patterns.
+
+## Custom events by module
+
+<Tabs>
+<TabItem label="Security & Audit">
+
+### Authentication.ApiKeys
+
+| Event | Type | Trigger | Compliance |
+|-------|------|---------|------------|
+| `ApiKeyCreatedEvent` | Domain | `ApiKeyEntry.Create()` | ISO 27001 |
+| `ApiKeyRevokedEvent` | Domain | Service layer | ISO 27001 |
+| `ApiKeyRotatedEvent` | Domain | Service layer | ISO 27001 |
+| `ApiKeyScopesUpdatedEvent` | Domain | Service layer | ISO 27001 |
+| `ApiKeyUsedEto` | Integration | `ApiKeyEntry.RecordUsage()` | ISO 27001 |
+| `ApiKeyExpiredEvent` | Domain | `ApiKeyEntry.MarkAsExpired()` | ISO 27001 |
+
+### Identity
+
+| Event | Type | Trigger | Compliance |
+|-------|------|---------|------------|
+| `IdentityUserUpdatedEvent` | Wolverine | Identity provider webhook | — |
+| `IdentityUserDeletedEvent` | Wolverine | Identity provider webhook | GDPR Art. 17 |
+| `UserCacheEntryErasedEvent` | Domain | After hard-delete in handler | GDPR Art. 17 |
+| `UserCacheSyncedEto` | Integration | After cache upsert in handler | — |
+
+### Privacy
+
+| Event | Type | Trigger | Compliance |
+|-------|------|---------|------------|
+| `PersonalDataDeletionRequestedEto` | Integration | GDPR Art. 17 request | GDPR |
+| `PersonalDataDeletedEto` | Integration | After provider deletion | GDPR + ISO 27001 |
+| `PersonalDataRequestedEto` | Integration | GDPR Art. 15/20 export | GDPR |
+| `PersonalDataPreparedEto` | Integration | Provider fragment ready | GDPR |
+| `ExportCompletedEto` | Integration | All fragments assembled | GDPR |
+| `ExportTimedOutEvent` | Domain | Provider deadline exceeded | GDPR |
+| `LegalAgreementAcceptedEto` | Integration | User accepts agreement | GDPR Art. 7 |
+| `LegalAgreementObsoleteEto` | Integration | Document version superseded | GDPR Art. 7 |
+
+### Authorization
+
+| Event | Type | Trigger | Compliance |
+|-------|------|---------|------------|
+| `PermissionGrantChangedEvent` | Domain | Permission grant mutation | ISO 27001 |
+
+</TabItem>
+<TabItem label="Delivery & Observability">
+
+### Notifications
+
+| Event | Type | Trigger | Compliance |
+|-------|------|---------|------------|
+| `UserNotificationCreatedEvent` | Domain | `UserNotification.RaiseCreatedEvent()` | — |
+| `UserNotificationReadEvent` | Domain | `UserNotification.MarkAsRead()` | — |
+
+### Webhooks
+
+| Event | Type | Trigger | Compliance |
+|-------|------|---------|------------|
+| `WebhookSubscriptionCreatedEvent` | Domain | `WebhookSubscription.Create()` | ISO 27001 |
+| `WebhookSubscriptionActivatedEvent` | Domain | `WebhookSubscription.Activate()` | — |
+| `WebhookSubscriptionSuspendedEvent` | Domain | `WebhookSubscription.Suspend()` | ISO 27001 |
+| `WebhookSubscriptionDeactivatedEvent` | Domain | `WebhookSubscription.Deactivate()` | — |
+| `WebhookDeliverySucceededEvent` | Domain | `WebhookSubscription.RecordSuccess()` | — |
+| `WebhookDeliveryFailureThresholdExceededEto` | Integration | `RecordFailure()` (threshold: 5) | SLA |
+
+### BackgroundJobs
+
+| Event | Type | Trigger | Compliance |
+|-------|------|---------|------------|
+| `BackgroundJobPausedEvent` | Domain | `BackgroundJobDefinition.Pause()` | ISO 27001 |
+| `BackgroundJobResumedEvent` | Domain | `BackgroundJobDefinition.Resume()` | — |
+| `BackgroundJobDefinitionChangedEvent` | Domain | `UpdateDefinition()` (cron changed) | ISO 27001 |
+| `BackgroundJobExecutionStartedEto` | Integration | `RecordExecutionStart()` | — |
+| `BackgroundJobFailureThresholdExceededEto` | Integration | `RecordFailure()` (threshold: 3) | SLA |
+
+</TabItem>
+<TabItem label="Data Pipeline">
+
+### BlobStorage
+
+| Event | Type | Trigger | Compliance |
+|-------|------|---------|------------|
+| `BlobUploadStartedEvent` | Domain | `BlobDescriptor.MarkAsUploading()` | — |
+| `BlobValidatedEvent` | Domain | `BlobDescriptor.MarkAsValid()` | — |
+| `BlobRejectedEvent` | Domain | `BlobDescriptor.MarkAsRejected()` | — |
+| `BlobDeletedEvent` | Domain | `BlobDescriptor.MarkAsDeleted()` | GDPR Art. 17 |
+
+### DataExchange
+
+| Event | Type | Trigger | Compliance |
+|-------|------|---------|------------|
+| `ImportJobCompletedEvent` | Wolverine | Import orchestrator | — |
+| `ImportJobCancelledEvent` | Domain | `ImportJob.Cancel()` | ISO 27001 |
+| `ExportJobCompletedEvent` | Wolverine | Export orchestrator | — |
+| `ExportJobFailedEto` | Integration | Export orchestrator catch block | SLA |
+
+### Timeline
+
+| Event | Type | Trigger | Compliance |
+|-------|------|---------|------------|
+| `TimelineEntryPostedEvent` | Domain | `TimelineEntry.RaisePostedEvent()` | — |
+| `TimelineEntrySoftDeletedEvent` | Domain | `TimelineEntry.SoftDelete()` | ISO 27001 |
+
+### Workflow
+
+| Event | Type | Trigger | Compliance |
+|-------|------|---------|------------|
+| `WorkflowTransitionedEvent<TState>` | Domain | State transition | — |
+| `WorkflowStateChangedEvent` | Domain | State change | — |
+| `WorkflowApprovalRequestedEvent` | Domain | Approval requested | — |
+
+</TabItem>
+</Tabs>
+
+## Lifecycle events (automatic)
+
+Entities implementing `IEmitEntityLifecycleEvents` automatically emit six events via `EntityLifecycleEventInterceptor`:
+
+| Domain Event | Integration Event | Trigger |
+|-------------|------------------|---------|
+| `EntityCreatedEvent<T>` | `EntityCreatedEto<T>` | First `SaveChanges` |
+| `EntityUpdatedEvent<T>` | `EntityUpdatedEto<T>` | Property change detected |
+| `EntityDeletedEvent<T>` | `EntityDeletedEto<T>` | Entity removed or soft-deleted |
+
+### Entities with lifecycle events
+
+| Entity | Module | Use case |
+|--------|--------|----------|
+| `SettingRecord` | Settings.EntityFrameworkCore | Config cache invalidation |
+| `TenantFeatureOverride` | Features.EntityFrameworkCore | Feature flag cache refresh |
+| `LocalizationOverride` | Localization.EntityFrameworkCore | Translation cache + CDN invalidation |
+| `ReferenceDataEntity` | ReferenceData | Client-side cache invalidation |
+
+See [Entity Lifecycle Events](/dotnet/data/entity-lifecycle-events/) for setup details.
+
+## Event count summary
+
+| Category | Custom | Lifecycle (auto) | Total |
+|----------|--------|-----------------|-------|
+| Security & Audit | 14 | 0 | 14 |
+| Delivery & Observability | 12 | 0 | 12 |
+| Data Pipeline | 11 | 0 | 11 |
+| Cache Invalidation | 0 | 24 (4 entities x 6) | 24 |
+| **Total** | **37** | **24** | **61** |
