@@ -1,27 +1,49 @@
 using Granit.AuditLog.Abstractions;
 using Granit.AuditLog.Domain;
+using Granit.AuditLog.Options;
 using Granit.Querying;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 namespace Granit.AuditLog.EntityFrameworkCore.Internal.Services;
 
 /// <summary>
-/// EF Core implementation of <see cref="IAuditLogReader"/>.
+/// EF Core implementation of <see cref="IAuditLogReader"/> with in-memory caching
+/// for immutable audit entries and short-lived entity query results.
 /// </summary>
 internal sealed class EfCoreAuditLogReader(
-    IDbContextFactory<AuditLogDbContext> dbContextFactory) : IAuditLogReader
+    IDbContextFactory<AuditLogDbContext> dbContextFactory,
+    IMemoryCache memoryCache,
+    IOptions<AuditLogOptions> options) : IAuditLogReader
 {
+    private readonly AuditLogOptions _options = options.Value;
+
     /// <inheritdoc/>
     public async Task<AuditLogEntry?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
+        string cacheKey = $"audit:entry:{id}";
+
+        if (memoryCache.TryGetValue(cacheKey, out AuditLogEntry? cached))
+        {
+            return cached;
+        }
+
         await using AuditLogDbContext dbContext = await dbContextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        return await dbContext.AuditLogEntries
+        AuditLogEntry? entry = await dbContext.AuditLogEntries
             .Include(e => e.EntityChanges)
                 .ThenInclude(ec => ec.PropertyChanges)
             .FirstOrDefaultAsync(e => e.Id == id, cancellationToken)
             .ConfigureAwait(false);
+
+        if (entry is not null)
+        {
+            memoryCache.Set(cacheKey, entry, _options.CacheEntryTtl);
+        }
+
+        return entry;
     }
 
     /// <inheritdoc/>
@@ -61,6 +83,13 @@ internal sealed class EfCoreAuditLogReader(
         int pageSize = QueryingDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
+        string cacheKey = $"audit:entity:{entityType}:{entityId}:p{page}:s{pageSize}";
+
+        if (memoryCache.TryGetValue(cacheKey, out PagedResult<AuditLogEntry>? cached))
+        {
+            return cached!;
+        }
+
         await using AuditLogDbContext dbContext = await dbContextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
@@ -80,10 +109,13 @@ internal sealed class EfCoreAuditLogReader(
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        return new PagedResult<AuditLogEntry>(
+        var result = new PagedResult<AuditLogEntry>(
             items,
             totalCount,
             HasMore: page * pageSize < totalCount);
+
+        memoryCache.Set(cacheKey, result, _options.CacheEntityQueryTtl);
+        return result;
     }
 
     private static IQueryable<AuditLogEntry> ApplyFilters(

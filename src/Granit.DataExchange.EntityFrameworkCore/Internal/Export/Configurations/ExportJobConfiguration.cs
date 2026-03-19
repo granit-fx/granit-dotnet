@@ -34,10 +34,10 @@ internal sealed class ExportJobConfiguration : IEntityTypeConfiguration<ExportJo
         builder.Property(e => e.ModifiedAt);
         builder.Property(e => e.ModifiedBy).HasMaxLength(200);
 
-        builder.HasIndex(e => e.TenantId)
-            .HasDatabaseName($"ix_{GranitDataExchangeDbProperties.DbTablePrefix}export_jobs_tenant");
+        builder.HasIndex(e => new { e.TenantId, e.Status })
+            .HasDatabaseName($"ix_{GranitDataExchangeDbProperties.DbTablePrefix}export_jobs_tenant_status");
 
-        builder.HasIndex(e => e.Status)
-            .HasDatabaseName($"ix_{GranitDataExchangeDbProperties.DbTablePrefix}export_jobs_status");
+        builder.HasIndex(e => new { e.DefinitionName, e.Status })
+            .HasDatabaseName($"ix_{GranitDataExchangeDbProperties.DbTablePrefix}export_jobs_definition_status");
     }
 }

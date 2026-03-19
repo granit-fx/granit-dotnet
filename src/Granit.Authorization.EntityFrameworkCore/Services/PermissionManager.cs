@@ -1,9 +1,8 @@
 using Granit.Authorization.Abstractions;
-using Granit.Authorization.Cache;
 using Granit.Authorization.EntityFrameworkCore.DbContext;
 using Granit.Authorization.EntityFrameworkCore.Entities;
-using Granit.Authorization.Services;
-using Granit.Caching;
+using Granit.Authorization.Events;
+using Granit.Core.Events;
 using Granit.Guids;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,7 +17,7 @@ namespace Granit.Authorization.EntityFrameworkCore.Services;
 internal sealed partial class PermissionManager<TContext>(
     TContext context,
     IPermissionDefinitionManager definitionManager,
-    ICacheService<PermissionGrantCacheItem> cache,
+    ILocalEventBus eventBus,
     IGuidGenerator guidGenerator,
     ILogger<PermissionManager<TContext>> logger)
     : IPermissionManagerReader, IPermissionManagerWriter
@@ -64,9 +63,10 @@ internal sealed partial class PermissionManager<TContext>(
 
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        // Cache invalidation — same key format as PermissionChecker.BuildCacheKey
-        await cache.RemoveAsync(
-            PermissionChecker.BuildCacheKey(tenantId, roleName, permissionName),
+        // Event-driven cache invalidation — consumed by PermissionCacheInvalidationHandler.
+        // Decoupled from the store so other modules can react to permission changes.
+        await eventBus.PublishAsync(
+            new PermissionGrantChangedEvent(permissionName, roleName, tenantId, isGranted),
             cancellationToken).ConfigureAwait(false);
 
         // ISO 27001 audit trail: emitted as structured log → Serilog → OTLP → Loki (3-year retention)

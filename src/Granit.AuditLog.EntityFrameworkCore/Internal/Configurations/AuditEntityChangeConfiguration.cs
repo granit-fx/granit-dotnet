@@ -32,7 +32,9 @@ internal sealed class AuditEntityChangeConfiguration : IEntityTypeConfiguration<
             .HasMaxLength(20)
             .IsRequired();
 
-        builder.HasIndex(e => new { e.EntityType, e.EntityId })
+        // Covering index for the EXISTS subquery in GetByEntityAsync
+        // (EntityType, EntityId) for filtering + AuditLogEntryId for the semi-join.
+        builder.HasIndex(e => new { e.EntityType, e.EntityId, e.AuditLogEntryId })
             .HasDatabaseName($"ix_{GranitAuditLogDbProperties.DbTablePrefix}entity_changes_type_id");
 
         builder.HasMany(e => e.PropertyChanges)

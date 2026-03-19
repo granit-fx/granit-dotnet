@@ -57,6 +57,18 @@ public sealed class AuditLogOptions
     public TimeSpan AccessDeniedRetention { get; set; } = TimeSpan.FromDays(2555);
 
     /// <summary>
+    /// Cache duration for individual audit log entries retrieved by ID.
+    /// Entries are immutable so a long TTL is safe. Default: 30 minutes.
+    /// </summary>
+    public TimeSpan CacheEntryTtl { get; set; } = TimeSpan.FromMinutes(30);
+
+    /// <summary>
+    /// Cache duration for entity-scoped audit log queries (<c>GetByEntityAsync</c>).
+    /// Short TTL because new entries may be appended. Default: 2 minutes.
+    /// </summary>
+    public TimeSpan CacheEntityQueryTtl { get; set; } = TimeSpan.FromMinutes(2);
+
+    /// <summary>
     /// Interval between cleanup runs. Default: 24 hours.
     /// </summary>
     public TimeSpan CleanupInterval { get; set; } = TimeSpan.FromHours(24);

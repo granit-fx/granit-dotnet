@@ -56,14 +56,11 @@ internal sealed class EfCoreSettingStore<TDbContext>(IServiceScopeFactory scopeF
         await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
         TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
 
-        List<SettingRecord> records = await context.SettingRecords
+        return await context.SettingRecords
             .AsNoTracking()
             .Where(r => r.ProviderName == providerName && r.ProviderKey == providerKey)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-
-        return records
             .Select(r => new SettingValue(r.Name, r.ProviderName, r.ProviderKey, r.Value))
-            .ToList();
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

@@ -54,6 +54,7 @@ internal sealed class EfCoreNotificationSubscriptionStore(IDbContextFactory<Noti
     {
         await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         return await db.Subscriptions
+            .AsNoTracking()
             .Where(s => s.UserId == userId && s.TenantId == tenantId)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
     }
@@ -103,6 +104,7 @@ internal sealed class EfCoreNotificationSubscriptionStore(IDbContextFactory<Noti
     {
         await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         return await db.Subscriptions
+            .AsNoTracking()
             .Where(s => s.EntityType == entityType && s.EntityId == entityId && s.TenantId == tenantId)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
     }

@@ -2,21 +2,20 @@
 // Tests - PermissionManager
 // =============================================================================
 // Vérifie que le manager :
-//   - Crée un grant + invalide le cache + émet un log [AUDIT] lors de SetAsync(true)
-//   - Supprime le grant + invalide le cache + émet un log [AUDIT] lors de SetAsync(false)
-//   - Est no-op si l'état est déjà celui demandé (pas d'écriture DB, pas de cache)
+//   - Crée un grant + publie PermissionGrantChangedEvent + émet un log [AUDIT] lors de SetAsync(true)
+//   - Supprime le grant + publie PermissionGrantChangedEvent + émet un log [AUDIT] lors de SetAsync(false)
+//   - Est no-op si l'état est déjà celui demandé (pas d'écriture DB, pas d'événement)
 //   - Lève InvalidOperationException pour une permission non définie
 //   - Retourne les permissions accordées à un rôle
 //   - Retourne les rôles ayant accès à une permission
 // =============================================================================
 
 using Granit.Authorization.Abstractions;
-using Granit.Authorization.Cache;
 using Granit.Authorization.EntityFrameworkCore.DbContext;
 using Granit.Authorization.EntityFrameworkCore.Entities;
 using Granit.Authorization.EntityFrameworkCore.Services;
-using Granit.Authorization.Services;
-using Granit.Caching;
+using Granit.Authorization.Events;
+using Granit.Core.Events;
 using Granit.Guids;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -35,11 +34,11 @@ public sealed class PermissionManagerTests
     // --- SetAsync: grant ---
 
     [Fact]
-    public async Task SetAsync_GrantNew_CreatesGrantInvalidatesCacheAndLogsAudit()
+    public async Task SetAsync_GrantNew_CreatesGrantPublishesEventAndLogsAudit()
     {
         // Arrange
         (TestDbContext context, PermissionManager<TestDbContext> manager,
-            ICacheService<PermissionGrantCacheItem> cache,
+            ILocalEventBus eventBus,
             ILogger<PermissionManager<TestDbContext>> logger) = BuildManager();
 
         // Act
@@ -51,9 +50,13 @@ public sealed class PermissionManagerTests
             TestContext.Current.CancellationToken);
         exists.ShouldBeTrue();
 
-        // Assert — cache invalidated
-        await cache.Received(1).RemoveAsync(
-            PermissionChecker.BuildCacheKey(TenantId, "accountant", DefinedPermission),
+        // Assert — event published for cache invalidation
+        await eventBus.Received(1).PublishAsync(
+            Arg.Is<PermissionGrantChangedEvent>(e =>
+                e.PermissionName == DefinedPermission &&
+                e.RoleName == "accountant" &&
+                e.TenantId == TenantId &&
+                e.IsGranted),
             Arg.Any<CancellationToken>());
 
         // Assert — ISO 27001 audit log emitted
@@ -68,11 +71,11 @@ public sealed class PermissionManagerTests
     // --- SetAsync: revoke ---
 
     [Fact]
-    public async Task SetAsync_RevokeExisting_RemovesGrantInvalidatesCacheAndLogsAudit()
+    public async Task SetAsync_RevokeExisting_RemovesGrantPublishesEventAndLogsAudit()
     {
         // Arrange
         (TestDbContext context, PermissionManager<TestDbContext> manager,
-            ICacheService<PermissionGrantCacheItem> cache,
+            ILocalEventBus eventBus,
             ILogger<PermissionManager<TestDbContext>> logger) = BuildManager();
 
         await SeedAsync(context, "accountant", DefinedPermission, TenantId);
@@ -86,9 +89,13 @@ public sealed class PermissionManagerTests
             TestContext.Current.CancellationToken);
         exists.ShouldBeFalse();
 
-        // Assert — cache invalidated
-        await cache.Received(1).RemoveAsync(
-            PermissionChecker.BuildCacheKey(TenantId, "accountant", DefinedPermission),
+        // Assert — event published for cache invalidation
+        await eventBus.Received(1).PublishAsync(
+            Arg.Is<PermissionGrantChangedEvent>(e =>
+                e.PermissionName == DefinedPermission &&
+                e.RoleName == "accountant" &&
+                e.TenantId == TenantId &&
+                !e.IsGranted),
             Arg.Any<CancellationToken>());
 
         // Assert — audit log emitted
@@ -103,11 +110,11 @@ public sealed class PermissionManagerTests
     // --- SetAsync: no-op ---
 
     [Fact]
-    public async Task SetAsync_GrantAlreadyExists_NoOpNoCacheInvalidationNoLog()
+    public async Task SetAsync_GrantAlreadyExists_NoOpNoEventNoLog()
     {
         // Arrange
         (TestDbContext context, PermissionManager<TestDbContext> manager,
-            ICacheService<PermissionGrantCacheItem> cache,
+            ILocalEventBus eventBus,
             ILogger<PermissionManager<TestDbContext>> logger) = BuildManager();
 
         await SeedAsync(context, "accountant", DefinedPermission, TenantId);
@@ -121,8 +128,9 @@ public sealed class PermissionManagerTests
             TestContext.Current.CancellationToken);
         count.ShouldBe(1);
 
-        // Assert — cache NOT invalidated (no-op)
-        await cache.DidNotReceive().RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+        // Assert — no event published (no-op)
+        await eventBus.DidNotReceive().PublishAsync(
+            Arg.Any<PermissionGrantChangedEvent>(), Arg.Any<CancellationToken>());
 
         // Assert — no audit log (no-op)
         logger.DidNotReceive().Log(
@@ -192,7 +200,7 @@ public sealed class PermissionManagerTests
     // --- Helpers ---
 
     private static (TestDbContext, PermissionManager<TestDbContext>,
-        ICacheService<PermissionGrantCacheItem>,
+        ILocalEventBus,
         ILogger<PermissionManager<TestDbContext>>) BuildManager()
     {
         TestDbContext context = new(new DbContextOptionsBuilder<TestDbContext>()
@@ -203,8 +211,7 @@ public sealed class PermissionManagerTests
         definitionManager.Exists(DefinedPermission).Returns(true);
         definitionManager.Exists(UndefinedPermission).Returns(false);
 
-        ICacheService<PermissionGrantCacheItem> cache =
-            Substitute.For<ICacheService<PermissionGrantCacheItem>>();
+        ILocalEventBus eventBus = Substitute.For<ILocalEventBus>();
 
         ILogger<PermissionManager<TestDbContext>> logger =
             Substitute.For<ILogger<PermissionManager<TestDbContext>>>();
@@ -213,11 +220,11 @@ public sealed class PermissionManagerTests
         PermissionManager<TestDbContext> manager = new(
             context,
             definitionManager,
-            cache,
+            eventBus,
             new SimpleGuidGenerator(),
             logger);
 
-        return (context, manager, cache, logger);
+        return (context, manager, eventBus, logger);
     }
 
     private static async Task SeedAsync(
