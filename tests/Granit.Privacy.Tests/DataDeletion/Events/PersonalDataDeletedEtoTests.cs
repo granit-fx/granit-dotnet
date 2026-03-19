@@ -5,14 +5,14 @@ using Xunit;
 
 namespace Granit.Privacy.Tests.DataDeletion.Events;
 
-public sealed class PersonalDataDeletedEventTests
+public sealed class PersonalDataDeletedEtoTests
 {
     [Fact]
     public void Constructor_SetsAllProperties()
     {
         var requestId = Guid.NewGuid();
 
-        var sut = new PersonalDataDeletedEvent(
+        var sut = new PersonalDataDeletedEto(
             requestId,
             "patients",
             DeletionAction.PhysicalDelete,
@@ -29,7 +29,7 @@ public sealed class PersonalDataDeletedEventTests
     [Fact]
     public void Details_CanBeNull()
     {
-        var sut = new PersonalDataDeletedEvent(
+        var sut = new PersonalDataDeletedEto(
             Guid.NewGuid(),
             "billing",
             DeletionAction.Anonymized,
@@ -47,7 +47,7 @@ public sealed class PersonalDataDeletedEventTests
     [InlineData(DeletionAction.Mixed)]
     public void Constructor_AcceptsAllDeletionActions(DeletionAction action)
     {
-        var sut = new PersonalDataDeletedEvent(
+        var sut = new PersonalDataDeletedEto(
             Guid.NewGuid(),
             "provider",
             action,
@@ -62,8 +62,8 @@ public sealed class PersonalDataDeletedEventTests
     {
         var requestId = Guid.NewGuid();
 
-        var a = new PersonalDataDeletedEvent(requestId, "p", DeletionAction.SoftDelete, 3, "info");
-        var b = new PersonalDataDeletedEvent(requestId, "p", DeletionAction.SoftDelete, 3, "info");
+        var a = new PersonalDataDeletedEto(requestId, "p", DeletionAction.SoftDelete, 3, "info");
+        var b = new PersonalDataDeletedEto(requestId, "p", DeletionAction.SoftDelete, 3, "info");
 
         a.ShouldBe(b);
     }
@@ -71,8 +71,8 @@ public sealed class PersonalDataDeletedEventTests
     [Fact]
     public void Equality_DifferentValues_AreNotEqual()
     {
-        var a = new PersonalDataDeletedEvent(Guid.NewGuid(), "p", DeletionAction.SoftDelete, 3, null);
-        var b = new PersonalDataDeletedEvent(Guid.NewGuid(), "q", DeletionAction.Retained, 1, null);
+        var a = new PersonalDataDeletedEto(Guid.NewGuid(), "p", DeletionAction.SoftDelete, 3, null);
+        var b = new PersonalDataDeletedEto(Guid.NewGuid(), "q", DeletionAction.Retained, 1, null);
 
         a.ShouldNotBe(b);
     }

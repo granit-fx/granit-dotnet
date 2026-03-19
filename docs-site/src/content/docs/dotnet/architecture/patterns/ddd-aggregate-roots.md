@@ -117,7 +117,7 @@ public sealed class BlobDescriptor : AggregateRoot, IMultiTenant
         SizeBytes = sizeBytes;
         ValidatedAt = at;
 
-        AddDomainEvent(new BlobValidated(Id, ContainerName, contentType, sizeBytes));
+        AddDomainEvent(new BlobValidatedEvent(Id, ContainerName, contentType, sizeBytes));
     }
 }
 ```

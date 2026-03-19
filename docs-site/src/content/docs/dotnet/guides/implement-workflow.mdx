@@ -215,7 +215,7 @@ When a user triggers a transition marked with `RequiresApproval()` but lacks
 the required permission:
 
 1. The entity moves to `PendingReview` instead of the target state
-2. A `WorkflowApprovalRequested` domain event is published
+2. A `WorkflowApprovalRequestedEvent` domain event is published
 3. If `Granit.Workflow.Notifications` is installed, designated approvers receive
    a notification
 4. An approver (a user with the required permission) completes the transition

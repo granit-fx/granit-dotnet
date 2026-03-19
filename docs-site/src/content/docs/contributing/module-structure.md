@@ -121,7 +121,7 @@ Granit.Example.EntityFrameworkCore/
 | Module class | **Module root** | `GranitBlobStorageModule.cs` |
 | Domain entity | **`Domain/`** | `Domain/ExportJob.cs` |
 | Business exception | **`Exceptions/`** | `Exceptions/BlobNotFoundException.cs` |
-| Wolverine event | **`Events/`** | `Events/BlobDeleted.cs` |
+| Wolverine event | **`Events/`** | `Events/BlobDeletedEvent.cs` |
 | Internal implementation | **`Internal/`** | `Internal/DefaultBlobStorage.cs` |
 | Options class | **`Options/`** | `Options/BlobStorageOptions.cs` |
 | DI extension | **`Extensions/`** | `Extensions/BlobStorageServiceCollectionExtensions.cs` |

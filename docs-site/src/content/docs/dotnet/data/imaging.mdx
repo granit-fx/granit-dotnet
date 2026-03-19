@@ -123,15 +123,15 @@ ImageResult sanitized = await pipeline
 
 ## Combining with blob storage
 
-A typical pattern: subscribe to `BlobValidated` events to post-process images
+A typical pattern: subscribe to `BlobValidatedEvent` events to post-process images
 asynchronously after upload validation. The Wolverine handler downloads the validated
 blob, applies the image pipeline, and re-uploads the result:
 
 ```csharp
-public static class BlobValidatedHandler
+public static class BlobValidatedEventHandler
 {
     public static async Task HandleAsync(
-        BlobValidated @event,
+        BlobValidatedEvent @event,
         IBlobStorage blobStorage,
         IImageProcessor imageProcessor,
         CancellationToken cancellationToken)

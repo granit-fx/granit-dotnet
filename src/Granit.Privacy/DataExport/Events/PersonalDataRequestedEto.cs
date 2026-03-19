@@ -6,7 +6,7 @@ namespace Granit.Privacy.DataExport.Events;
 /// Published when a data subject requests export of their personal data (RGPD Art. 15/20).
 /// Each registered data provider handles this event and prepares its fragment.
 /// </summary>
-public sealed record PersonalDataRequestedEvent(
+public sealed record PersonalDataRequestedEto(
     Guid RequestId,
     Guid UserId,
     DateTimeOffset RequestedAt) : IIntegrationEvent;

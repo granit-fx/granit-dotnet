@@ -7,7 +7,7 @@ using Xunit;
 namespace Granit.Workflow.Tests;
 
 /// <summary>
-/// Tests for <see cref="WorkflowTransitioned{TState}"/> domain event record.
+/// Tests for <see cref="WorkflowTransitionedEvent{TState}"/> domain event record.
 /// </summary>
 public sealed class WorkflowTransitionedTests
 {
@@ -15,7 +15,7 @@ public sealed class WorkflowTransitionedTests
     public void Constructor_ShouldSetAllProperties()
     {
         // Arrange & Act
-        WorkflowTransitioned<WorkflowLifecycleStatus> evt = new(
+        WorkflowTransitionedEvent<WorkflowLifecycleStatus> evt = new(
             EntityType: "Document",
             EntityId: "abc-123",
             PreviousState: WorkflowLifecycleStatus.Draft,
@@ -34,7 +34,7 @@ public sealed class WorkflowTransitionedTests
     public void Record_ShouldImplementIDomainEvent()
     {
         // Arrange & Act
-        WorkflowTransitioned<WorkflowLifecycleStatus> evt = new(
+        WorkflowTransitionedEvent<WorkflowLifecycleStatus> evt = new(
             "Document", "id-1", WorkflowLifecycleStatus.Draft,
             WorkflowLifecycleStatus.PendingReview, "user-1");
 
@@ -46,11 +46,11 @@ public sealed class WorkflowTransitionedTests
     public void Record_ShouldSupportValueEquality()
     {
         // Arrange
-        WorkflowTransitioned<WorkflowLifecycleStatus> evt1 = new(
+        WorkflowTransitionedEvent<WorkflowLifecycleStatus> evt1 = new(
             "Document", "id-1", WorkflowLifecycleStatus.Draft,
             WorkflowLifecycleStatus.Published, "user-1");
 
-        WorkflowTransitioned<WorkflowLifecycleStatus> evt2 = new(
+        WorkflowTransitionedEvent<WorkflowLifecycleStatus> evt2 = new(
             "Document", "id-1", WorkflowLifecycleStatus.Draft,
             WorkflowLifecycleStatus.Published, "user-1");
 
@@ -62,11 +62,11 @@ public sealed class WorkflowTransitionedTests
     public void Record_WithDifferentValues_ShouldNotBeEqual()
     {
         // Arrange
-        WorkflowTransitioned<WorkflowLifecycleStatus> evt1 = new(
+        WorkflowTransitionedEvent<WorkflowLifecycleStatus> evt1 = new(
             "Document", "id-1", WorkflowLifecycleStatus.Draft,
             WorkflowLifecycleStatus.Published, "user-1");
 
-        WorkflowTransitioned<WorkflowLifecycleStatus> evt2 = new(
+        WorkflowTransitionedEvent<WorkflowLifecycleStatus> evt2 = new(
             "Document", "id-2", WorkflowLifecycleStatus.Draft,
             WorkflowLifecycleStatus.Published, "user-1");
 
@@ -78,12 +78,12 @@ public sealed class WorkflowTransitionedTests
     public void Record_ShouldSupportWith()
     {
         // Arrange
-        WorkflowTransitioned<WorkflowLifecycleStatus> original = new(
+        WorkflowTransitionedEvent<WorkflowLifecycleStatus> original = new(
             "Document", "id-1", WorkflowLifecycleStatus.Draft,
             WorkflowLifecycleStatus.Published, "user-1");
 
         // Act
-        WorkflowTransitioned<WorkflowLifecycleStatus> copy = original with { TransitionedBy = "user-2" };
+        WorkflowTransitionedEvent<WorkflowLifecycleStatus> copy = original with { TransitionedBy = "user-2" };
 
         // Assert
         copy.TransitionedBy.ShouldBe("user-2");

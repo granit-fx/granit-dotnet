@@ -6,7 +6,7 @@ namespace Granit.Timeline.Events;
 /// <summary>
 /// Raised when a new timeline entry (comment, internal note, or system log) is created.
 /// </summary>
-public sealed record TimelineEntryPosted(
+public sealed record TimelineEntryPostedEvent(
     Guid EntryId,
     string EntityType,
     string EntityId,

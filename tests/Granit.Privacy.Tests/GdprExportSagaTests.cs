@@ -39,7 +39,7 @@ public sealed class GdprExportSagaTests
         DataProviderRegistry registry = BuildRegistry("patients", "billing");
         var requestId = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        PersonalDataRequestedEvent evt = new(requestId, userId, DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto evt = new(requestId, userId, DateTimeOffset.UtcNow);
 
         await saga.StartAsync(evt, registry, DefaultOptions(), context);
 
@@ -57,7 +57,7 @@ public sealed class GdprExportSagaTests
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("patients", "billing");
         var requestId = Guid.NewGuid();
-        PersonalDataRequestedEvent evt = new(requestId, Guid.NewGuid(), DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto evt = new(requestId, Guid.NewGuid(), DateTimeOffset.UtcNow);
 
         await saga.StartAsync(evt, registry, DefaultOptions(), context);
 
@@ -74,13 +74,13 @@ public sealed class GdprExportSagaTests
         GdprExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("patients", "billing", "appointments");
-        PersonalDataRequestedEvent startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
         await saga.StartAsync(startEvt, registry, DefaultOptions(), context);
 
-        ExportCompletedEvent? result1 = saga.Handle(
-            new PersonalDataPreparedEvent(startEvt.RequestId, "patients", "blob-1", "application/json"));
-        ExportCompletedEvent? result2 = saga.Handle(
-            new PersonalDataPreparedEvent(startEvt.RequestId, "billing", "blob-2", "application/json"));
+        ExportCompletedEto? result1 = saga.Handle(
+            new PersonalDataPreparedEto(startEvt.RequestId, "patients", "blob-1", "application/json"));
+        ExportCompletedEto? result2 = saga.Handle(
+            new PersonalDataPreparedEto(startEvt.RequestId, "billing", "blob-2", "application/json"));
 
         result1.ShouldBeNull();
         result2.ShouldBeNull();
@@ -94,12 +94,12 @@ public sealed class GdprExportSagaTests
         GdprExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("patients", "billing");
-        PersonalDataRequestedEvent startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
         await saga.StartAsync(startEvt, registry, DefaultOptions(), context);
 
-        saga.Handle(new PersonalDataPreparedEvent(startEvt.RequestId, "patients", "blob-patients", "application/json"));
-        ExportCompletedEvent? result = saga.Handle(
-            new PersonalDataPreparedEvent(startEvt.RequestId, "billing", "blob-billing", "application/json"));
+        saga.Handle(new PersonalDataPreparedEto(startEvt.RequestId, "patients", "blob-patients", "application/json"));
+        ExportCompletedEto? result = saga.Handle(
+            new PersonalDataPreparedEto(startEvt.RequestId, "billing", "blob-billing", "application/json"));
 
         result.ShouldNotBeNull();
         result!.RequestId.ShouldBe(startEvt.RequestId);
@@ -119,12 +119,12 @@ public sealed class GdprExportSagaTests
         GdprExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("patients", "billing", "appointments");
-        PersonalDataRequestedEvent startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
         await saga.StartAsync(startEvt, registry, DefaultOptions(), context);
 
-        saga.Handle(new PersonalDataPreparedEvent(startEvt.RequestId, "patients", "blob-patients", "application/json"));
-        saga.Handle(new PersonalDataPreparedEvent(startEvt.RequestId, "billing", "blob-billing", "application/json"));
-        ExportCompletedEvent result = saga.Handle(new ExportTimedOutEvent(startEvt.RequestId));
+        saga.Handle(new PersonalDataPreparedEto(startEvt.RequestId, "patients", "blob-patients", "application/json"));
+        saga.Handle(new PersonalDataPreparedEto(startEvt.RequestId, "billing", "blob-billing", "application/json"));
+        ExportCompletedEto result = saga.Handle(new ExportTimedOutEvent(startEvt.RequestId));
 
         result.IsPartial.ShouldBeTrue();
         result.MissingProviders.ShouldContain("appointments");
@@ -141,9 +141,9 @@ public sealed class GdprExportSagaTests
         GdprExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry emptyRegistry = new();
-        PersonalDataRequestedEvent evt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto evt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
 
-        ExportCompletedEvent? result = await saga.StartAsync(evt, emptyRegistry, DefaultOptions(), context);
+        ExportCompletedEto? result = await saga.StartAsync(evt, emptyRegistry, DefaultOptions(), context);
 
         result.ShouldNotBeNull();
         result!.IsPartial.ShouldBeFalse();
@@ -160,17 +160,17 @@ public sealed class GdprExportSagaTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void PersonalDataPreparedEvent_ContainsOnlyBlobReferenceId_NotRawData()
+    public void PersonalDataPreparedEto_ContainsOnlyBlobReferenceId_NotRawData()
     {
         // Structural contract: the event record only carries a BlobReferenceId,
         // never raw personal data — enforced by the type definition (ISO 27001 compliance).
-        PersonalDataPreparedEvent evt = new(
+        PersonalDataPreparedEto evt = new(
             Guid.NewGuid(), "patients", "blob-ref-123", "application/json");
 
         evt.BlobReferenceId.ShouldBe("blob-ref-123");
 
         System.Reflection.PropertyInfo[] properties =
-            typeof(PersonalDataPreparedEvent).GetProperties();
+            typeof(PersonalDataPreparedEto).GetProperties();
         string[] allowedProperties =
             ["RequestId", "ProviderName", "BlobReferenceId", "ContentType", "EqualityContract"];
         properties.Select(p => p.Name).ShouldAllBe(name => allowedProperties.Contains(name));
@@ -188,7 +188,7 @@ public sealed class GdprExportSagaTests
         IOptions<GranitPrivacyOptions> options = Microsoft.Extensions.Options.Options.Create(
             new GranitPrivacyOptions { ExportTimeoutMinutes = 10 });
         DataProviderRegistry registry = BuildRegistry("auth");
-        PersonalDataRequestedEvent evt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto evt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
 
         await saga.StartAsync(evt, registry, options, context);
 
@@ -205,16 +205,16 @@ public sealed class GdprExportSagaTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public async Task ExportCompletedEvent_ArchiveBlobReferenceId_UsesGdprExportConvention()
+    public async Task ExportCompletedEto_ArchiveBlobReferenceId_UsesGdprExportConvention()
     {
         GdprExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("auth");
-        PersonalDataRequestedEvent startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
         await saga.StartAsync(startEvt, registry, DefaultOptions(), context);
 
-        ExportCompletedEvent? result = saga.Handle(
-            new PersonalDataPreparedEvent(startEvt.RequestId, "auth", "blob-auth", "application/json"));
+        ExportCompletedEto? result = saga.Handle(
+            new PersonalDataPreparedEto(startEvt.RequestId, "auth", "blob-auth", "application/json"));
 
         result!.ArchiveBlobReferenceId.ShouldBe($"gdpr-export/{startEvt.RequestId}");
     }

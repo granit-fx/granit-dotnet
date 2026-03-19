@@ -100,7 +100,7 @@ Soft delete is not erasure. GDPR Article 17 requires actual deletion when there 
 
 ```
 User -> API: DELETE /privacy/my-data
-API -> Saga: PersonalDataDeletionRequestedEvent
+API -> Saga: PersonalDataDeletionRequestedEto
 Saga -> Identity: DeleteByIdAsync (hard delete)
 Saga -> BlobStorage: Delete user blobs
 Saga -> Notifications: Delete delivery records

@@ -36,15 +36,15 @@ sequenceDiagram
     participant P2 as Provider B
     participant Blob as BlobStorage
 
-    App->>Saga: PersonalDataRequestedEvent
+    App->>Saga: PersonalDataRequestedEto
     Saga->>P1: Request data
     Saga->>P2: Request data
     Saga->>Saga: Schedule timeout (30 min)
     P1->>Blob: Upload fragment
-    P1->>Saga: PersonalDataPreparedEvent
+    P1->>Saga: PersonalDataPreparedEto
     P2->>Blob: Upload fragment
-    P2->>Saga: PersonalDataPreparedEvent
-    Saga->>App: ExportCompletedEvent (complete)
+    P2->>Saga: PersonalDataPreparedEto
+    Saga->>App: ExportCompletedEto (complete)
 ```
 
 ## Implementation in Granit
@@ -66,8 +66,8 @@ personal data fragments from multiple providers, with configurable timeout.
 
 ```csharp
 // Saga start -- dispatches to all registered providers
-public async Task<ExportCompletedEvent?> StartAsync(
-    PersonalDataRequestedEvent @event,
+public async Task<ExportCompletedEto?> StartAsync(
+    PersonalDataRequestedEto @event,
     IDataProviderRegistry registry,
     IOptions<GranitPrivacyOptions> options,
     IMessageContext context)
@@ -83,7 +83,7 @@ public async Task<ExportCompletedEvent?> StartAsync(
         .ConfigureAwait(false);
 
     return ExpectedCount == 0
-        ? new ExportCompletedEvent(Id, [], IsPartial: false)
+        ? new ExportCompletedEto(Id, [], IsPartial: false)
         : null;
 }
 ```
@@ -154,14 +154,14 @@ Business workflow orchestration with transitions, permissions, and routing to a
 ```csharp
 // --- Trigger a GDPR export ---
 await messageBus.PublishAsync(
-    new PersonalDataRequestedEvent(
+    new PersonalDataRequestedEto(
         RequestId: Guid.NewGuid(),
         UserId: patient.Id),
     cancellationToken).ConfigureAwait(false);
 
 // The GdprExportSaga collects fragments from each provider.
 // When all fragments are received (or timeout):
-// -> ExportCompletedEvent { BlobReferences, IsPartial }
+// -> ExportCompletedEto { BlobReferences, IsPartial }
 
 // --- Trigger an import ---
 Guid jobId = await importOrchestrator

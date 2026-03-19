@@ -16,7 +16,7 @@ namespace Granit.Webhooks.Tests;
 public sealed class WebhookSubscriptionTests
 {
     [Fact]
-    public void Suspend_ShouldEmitWebhookSubscriptionSuspendedEvent()
+    public void Suspend_ShouldEmitWebhookSubscriptionSuspendedEventEvent()
     {
         WebhookSubscription subscription = BuildSubscription();
 
@@ -27,13 +27,13 @@ public sealed class WebhookSubscriptionTests
         subscription.SuspendedBy.ShouldBe("system");
 
         IDomainEvent domainEvent = subscription.DomainEvents.ShouldHaveSingleItem();
-        WebhookSubscriptionSuspended suspended = domainEvent.ShouldBeOfType<WebhookSubscriptionSuspended>();
+        WebhookSubscriptionSuspendedEvent suspended = domainEvent.ShouldBeOfType<WebhookSubscriptionSuspendedEvent>();
         suspended.SubscriptionId.ShouldBe(subscription.Id);
         suspended.Reason.ShouldBe("HTTP 401");
     }
 
     [Fact]
-    public void Deactivate_ShouldEmitWebhookSubscriptionDeactivatedEvent()
+    public void Deactivate_ShouldEmitWebhookSubscriptionDeactivatedEventEvent()
     {
         WebhookSubscription subscription = BuildSubscription();
 
@@ -43,7 +43,7 @@ public sealed class WebhookSubscriptionTests
         subscription.DeactivationReason.ShouldBe("Admin request");
 
         IDomainEvent domainEvent = subscription.DomainEvents.ShouldHaveSingleItem();
-        WebhookSubscriptionDeactivated deactivated = domainEvent.ShouldBeOfType<WebhookSubscriptionDeactivated>();
+        WebhookSubscriptionDeactivatedEvent deactivated = domainEvent.ShouldBeOfType<WebhookSubscriptionDeactivatedEvent>();
         deactivated.SubscriptionId.ShouldBe(subscription.Id);
         deactivated.Reason.ShouldBe("Admin request");
     }
@@ -68,8 +68,8 @@ public sealed class WebhookSubscriptionTests
         subscription.Deactivate("Permanently removed");
 
         subscription.DomainEvents.Count.ShouldBe(2);
-        subscription.DomainEvents.First().ShouldBeOfType<WebhookSubscriptionSuspended>();
-        subscription.DomainEvents.Last().ShouldBeOfType<WebhookSubscriptionDeactivated>();
+        subscription.DomainEvents.First().ShouldBeOfType<WebhookSubscriptionSuspendedEvent>();
+        subscription.DomainEvents.Last().ShouldBeOfType<WebhookSubscriptionDeactivatedEvent>();
     }
 
     private static WebhookSubscription BuildSubscription() =>

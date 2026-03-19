@@ -16,7 +16,7 @@ namespace Granit.BackgroundJobs.Tests;
 public sealed class BackgroundJobDefinitionTests
 {
     [Fact]
-    public void Pause_ShouldEmitBackgroundJobPausedEvent()
+    public void Pause_ShouldEmitBackgroundJobPausedEventEvent()
     {
         BackgroundJobDefinition job = BuildJob();
 
@@ -25,13 +25,13 @@ public sealed class BackgroundJobDefinitionTests
         job.IsEnabled.ShouldBeFalse();
 
         IDomainEvent domainEvent = job.DomainEvents.ShouldHaveSingleItem();
-        BackgroundJobPaused paused = domainEvent.ShouldBeOfType<BackgroundJobPaused>();
+        BackgroundJobPausedEvent paused = domainEvent.ShouldBeOfType<BackgroundJobPausedEvent>();
         paused.JobId.ShouldBe(job.Id);
         paused.JobName.ShouldBe("test-job");
     }
 
     [Fact]
-    public void Resume_ShouldEmitBackgroundJobResumedEvent()
+    public void Resume_ShouldEmitBackgroundJobResumedEventEvent()
     {
         BackgroundJobDefinition job = BuildJob(enabled: false);
 
@@ -40,7 +40,7 @@ public sealed class BackgroundJobDefinitionTests
         job.IsEnabled.ShouldBeTrue();
 
         IDomainEvent domainEvent = job.DomainEvents.ShouldHaveSingleItem();
-        BackgroundJobResumed resumed = domainEvent.ShouldBeOfType<BackgroundJobResumed>();
+        BackgroundJobResumedEvent resumed = domainEvent.ShouldBeOfType<BackgroundJobResumedEvent>();
         resumed.JobId.ShouldBe(job.Id);
         resumed.JobName.ShouldBe("test-job");
     }
@@ -65,8 +65,8 @@ public sealed class BackgroundJobDefinitionTests
         job.Resume();
 
         job.DomainEvents.Count.ShouldBe(2);
-        job.DomainEvents.First().ShouldBeOfType<BackgroundJobPaused>();
-        job.DomainEvents.Last().ShouldBeOfType<BackgroundJobResumed>();
+        job.DomainEvents.First().ShouldBeOfType<BackgroundJobPausedEvent>();
+        job.DomainEvents.Last().ShouldBeOfType<BackgroundJobResumedEvent>();
     }
 
     private static BackgroundJobDefinition BuildJob(bool enabled = true)

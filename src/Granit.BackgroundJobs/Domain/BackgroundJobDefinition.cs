@@ -137,20 +137,20 @@ public sealed class BackgroundJobDefinition : AggregateRoot
     }
 
     /// <summary>
-    /// Pauses the job and emits a <see cref="BackgroundJobPaused"/> domain event.
+    /// Pauses the job and emits a <see cref="BackgroundJobPausedEvent"/> domain event.
     /// </summary>
     internal void Pause()
     {
         IsEnabled = false;
-        AddDomainEvent(new BackgroundJobPaused(Id, JobName));
+        AddDomainEvent(new BackgroundJobPausedEvent(Id, JobName));
     }
 
     /// <summary>
-    /// Resumes the job and emits a <see cref="BackgroundJobResumed"/> domain event.
+    /// Resumes the job and emits a <see cref="BackgroundJobResumedEvent"/> domain event.
     /// </summary>
     internal void Resume()
     {
         IsEnabled = true;
-        AddDomainEvent(new BackgroundJobResumed(Id, JobName));
+        AddDomainEvent(new BackgroundJobResumedEvent(Id, JobName));
     }
 }

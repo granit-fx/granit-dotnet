@@ -15,10 +15,10 @@ Granit distinguishes two categories of events with fundamentally different
 guarantees:
 
 - **IDomainEvent**: in-process, synchronous, same transaction. Never crosses
-  the Outbox. Naming convention: `XxxOccurred`.
+  the Outbox. Naming convention: `*Event` suffix.
 - **IIntegrationEvent**: cross-module, durable via Wolverine Outbox,
   dispatched only after the transaction commits. Naming convention:
-  `XxxEvent`. Flat DTOs only (never EF Core entities).
+  `*Eto` suffix (Event Transfer Object). Flat DTOs only (never EF Core entities).
 
 ## Diagram
 
@@ -41,7 +41,7 @@ sequenceDiagram
 
     Note over H,IH: IIntegrationEvent -- via Outbox
     H->>DB: Modify entity
-    H->>OB: Publish BedReleasedEvent
+    H->>OB: Publish BedReleasedEto
     H->>DB: SaveChangesAsync() -- atomic commit (data + Outbox)
     OB->>TX: Post-commit dispatch
     TX->>IH: Guaranteed delivery (retry, DLQ)
@@ -100,7 +100,7 @@ public sealed class PatientDischargedOccurred : IDomainEvent
 }
 
 // 2. Define an integration event (durable, cross-module)
-public sealed class BedReleasedEvent : IIntegrationEvent
+public sealed class BedReleasedEto : IIntegrationEvent
 {
     public required Guid BedId { get; init; }
     public required Guid WardId { get; init; }
@@ -127,7 +127,7 @@ public static class DischargePatientHandler
         };
 
         // Integration event -- persisted in the Outbox, dispatched after commit
-        yield return new BedReleasedEvent
+        yield return new BedReleasedEto
         {
             BedId = patient.BedId,
             WardId = patient.WardId,

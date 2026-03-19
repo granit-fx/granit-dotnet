@@ -209,7 +209,7 @@ public static class ApproveInvoiceHandler
 
 When a user triggers a transition that requires a permission they lack, and the
 transition has `RequiresApproval()` enabled, the workflow manager routes the entity to
-a pending review state and publishes a `WorkflowApprovalRequested` domain event:
+a pending review state and publishes a `WorkflowApprovalRequestedEvent` domain event:
 
 ```mermaid
 sequenceDiagram
@@ -223,7 +223,7 @@ sequenceDiagram
     PC-->>WM: false
     Note over WM: RequiresApproval = true
     WM-->>U: ApprovalRequested (→ PendingReview)
-    WM->>EV: WorkflowApprovalRequested
+    WM->>EV: WorkflowApprovalRequestedEvent
     Note over EV: Notifications module sends InApp + Email to approvers
 ```
 
@@ -374,7 +374,7 @@ Query parameters: `page` (default 1), `pageSize` (default 20, max 100).
 
 | Notification type | Severity | Default channels | Trigger |
 |-------------------|----------|------------------|---------|
-| `WorkflowApprovalNotificationType` | Warning | InApp + Email | `WorkflowApprovalRequested` domain event |
+| `WorkflowApprovalNotificationType` | Warning | InApp + Email | `WorkflowApprovalRequestedEvent` domain event |
 | `WorkflowStateChangedNotificationType` | Info | InApp + SignalR | `WorkflowStateChangedEvent` domain event |
 
 Wolverine handlers consume the domain events and dispatch notifications via the
@@ -384,12 +384,12 @@ Wolverine handlers consume the domain events and dispatch notifications via the
 
 | Event | Published when | Payload |
 |-------|----------------|---------|
-| `WorkflowTransitioned<TState>` | Transition completes (generic, app-level) | `EntityType`, `EntityId`, `PreviousState`, `NewState`, `TransitionedBy` |
+| `WorkflowTransitionedEvent<TState>` | Transition completes (generic, app-level) | `EntityType`, `EntityId`, `PreviousState`, `NewState`, `TransitionedBy` |
 | `WorkflowStateChangedEvent` | Transition completes (non-generic, framework-level) | `EntityType`, `EntityId`, `PreviousState`, `NewState`, `TransitionedBy` |
-| `WorkflowApprovalRequested` | Transition routed to approval | `EntityType`, `EntityId`, `RequestedBy`, `TargetState`, `RequiredPermission` |
+| `WorkflowApprovalRequestedEvent` | Transition routed to approval | `EntityType`, `EntityId`, `RequestedBy`, `TargetState`, `RequiredPermission` |
 
 :::tip
-`WorkflowTransitioned<TState>` is generic and type-safe — use it in application
+`WorkflowTransitionedEvent<TState>` is generic and type-safe — use it in application
 handlers. `WorkflowStateChangedEvent` uses string states for framework-level
 consumption (notifications, timeline).
 :::
@@ -407,7 +407,7 @@ consumption (notifications, timeline).
 | Permission | `IWorkflowPermissionChecker` | `Granit.Workflow` |
 | Audit | `WorkflowTransitionRecord`, `IWorkflowTransitionRecorder`, `IWorkflowHistoryQuery` | `Granit.Workflow` / `.EntityFrameworkCore` |
 | Domain | `WorkflowLifecycleStatus`, `PublicationWorkflow` | `Granit.Workflow` |
-| Events | `WorkflowTransitioned<TState>`, `WorkflowStateChangedEvent`, `WorkflowApprovalRequested` | `Granit.Workflow` |
+| Events | `WorkflowTransitionedEvent<TState>`, `WorkflowStateChangedEvent`, `WorkflowApprovalRequestedEvent` | `Granit.Workflow` |
 | EF Core | `IWorkflowDbContext`, `WorkflowTransitionInterceptor` | `Granit.Workflow.EntityFrameworkCore` |
 | Notifications | `IApproverResolver`, `WorkflowApprovalNotificationType`, `WorkflowStateChangedNotificationType` | `Granit.Workflow.Notifications` |
 | Extensions | `AddGranitWorkflow()`, `AddGranitWorkflowEntityFrameworkCore<T>()`, `AddGranitWorkflowEndpoints()`, `AddGranitWorkflowNotifications()`, `MapWorkflowEndpoints()` | -- |

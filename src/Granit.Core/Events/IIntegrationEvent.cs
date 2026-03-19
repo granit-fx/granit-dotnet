@@ -12,6 +12,6 @@ namespace Granit.Core.Events;
 /// Use flat, serializable DTOs only. Exposing an entity as an integration event
 /// leaks the internal model and breaks module boundaries.
 /// </para>
-/// <para>Naming convention: <c>XxxEvent</c> (e.g., <c>BedReleasedEvent</c>).</para>
+/// <para>Naming convention: <c>*Eto</c> suffix — Event Transfer Object (e.g., <c>BedReleasedEto</c>).</para>
 /// </remarks>
 public interface IIntegrationEvent { }

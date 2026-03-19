@@ -12,14 +12,14 @@ namespace Granit.Privacy.DataExport;
 /// <para>
 /// Flow:
 /// <list type="number">
-///   <item><see cref="PersonalDataRequestedEvent"/> starts the Saga and schedules a timeout.</item>
+///   <item><see cref="PersonalDataRequestedEto"/> starts the Saga and schedules a timeout.</item>
 ///   <item>Each registered data provider handles the event, uploads its data fragment to
-///   BlobStorage, and publishes a <see cref="PersonalDataPreparedEvent"/> with the
+///   BlobStorage, and publishes a <see cref="PersonalDataPreparedEto"/> with the
 ///   <c>BlobReferenceId</c>.</item>
 ///   <item>The Saga collects fragments. When all expected fragments arrive it publishes
-///   <see cref="ExportCompletedEvent"/> with <c>IsPartial = false</c>.</item>
+///   <see cref="ExportCompletedEto"/> with <c>IsPartial = false</c>.</item>
 ///   <item>If the timeout fires before all fragments arrive, the Saga publishes a partial
-///   <see cref="ExportCompletedEvent"/> with <c>IsPartial = true</c> listing missing providers.</item>
+///   <see cref="ExportCompletedEto"/> with <c>IsPartial = true</c> listing missing providers.</item>
 /// </list>
 /// </para>
 /// <para>
@@ -27,14 +27,14 @@ namespace Granit.Privacy.DataExport;
 /// is never stored in the Saga state or event payloads.
 /// </para>
 /// <para>
-/// The <c>ArchiveBlobReferenceId</c> in <see cref="ExportCompletedEvent"/> uses the convention
+/// The <c>ArchiveBlobReferenceId</c> in <see cref="ExportCompletedEto"/> uses the convention
 /// <c>"gdpr-export/{RequestId}"</c>. The application assembles the final archive under this key
 /// using the individual fragment references.
 /// </para>
 /// </remarks>
 public sealed class GdprExportSaga : Saga
 {
-    /// <summary>Saga correlation ID — equals <see cref="PersonalDataRequestedEvent.RequestId"/>.</summary>
+    /// <summary>Saga correlation ID — equals <see cref="PersonalDataRequestedEto.RequestId"/>.</summary>
     public Guid Id { get; set; }
 
     /// <summary>User whose data is being exported.</summary>
@@ -54,8 +54,8 @@ public sealed class GdprExportSaga : Saga
     /// If no providers are registered, completes immediately.
     /// Otherwise, schedules a timeout to handle unresponsive providers.
     /// </summary>
-    public async Task<ExportCompletedEvent?> StartAsync(
-        PersonalDataRequestedEvent @event,
+    public async Task<ExportCompletedEto?> StartAsync(
+        PersonalDataRequestedEto @event,
         IDataProviderRegistry registry,
         IOptions<GranitPrivacyOptions> options,
         IMessageContext context)
@@ -68,7 +68,7 @@ public sealed class GdprExportSaga : Saga
         if (ExpectedCount == 0)
         {
             MarkCompleted();
-            return new ExportCompletedEvent(Id, UserId, $"gdpr-export/{Id}", IsPartial: false, []);
+            return new ExportCompletedEto(Id, UserId, $"gdpr-export/{Id}", IsPartial: false, []);
         }
 
         await context.ScheduleAsync(
@@ -82,7 +82,7 @@ public sealed class GdprExportSaga : Saga
     /// Handles a fragment prepared by a data provider.
     /// Completes the Saga if all expected fragments have been received.
     /// </summary>
-    public ExportCompletedEvent? Handle(PersonalDataPreparedEvent @event)
+    public ExportCompletedEto? Handle(PersonalDataPreparedEto @event)
     {
         ReceivedFragments.Add(new ReceivedFragment(@event.ProviderName, @event.BlobReferenceId, @event.ContentType));
         PendingProviders.Remove(@event.ProviderName);
@@ -93,17 +93,17 @@ public sealed class GdprExportSaga : Saga
         }
 
         MarkCompleted();
-        return new ExportCompletedEvent(Id, UserId, $"gdpr-export/{Id}", IsPartial: false, []);
+        return new ExportCompletedEto(Id, UserId, $"gdpr-export/{Id}", IsPartial: false, []);
     }
 
     /// <summary>
     /// Handles the timeout event.
-    /// Publishes a partial <see cref="ExportCompletedEvent"/> with whatever fragments arrived.
+    /// Publishes a partial <see cref="ExportCompletedEto"/> with whatever fragments arrived.
     /// </summary>
-    public ExportCompletedEvent Handle(ExportTimedOutEvent @event)
+    public ExportCompletedEto Handle(ExportTimedOutEvent @event)
     {
         MarkCompleted();
-        return new ExportCompletedEvent(
+        return new ExportCompletedEto(
             Id,
             UserId,
             $"gdpr-export/{Id}",

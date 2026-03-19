@@ -17,6 +17,6 @@ namespace Granit.Core.Events;
 /// }
 /// </code>
 /// </para>
-/// <para>Naming convention: <c>XxxOccurred</c> (e.g., <c>PatientDischarged</c>).</para>
+/// <para>Naming convention: <c>*Event</c> suffix (e.g., <c>PatientDischargedEvent</c>).</para>
 /// </remarks>
 public interface IDomainEvent { }

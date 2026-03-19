@@ -8,7 +8,7 @@ namespace Granit.Privacy.DataExport.Events;
 /// The <see cref="BlobReferenceId"/> points to the fragment stored in BlobStorage —
 /// raw data is never included in the event payload (ISO 27001 compliance).
 /// </summary>
-public sealed record PersonalDataPreparedEvent(
+public sealed record PersonalDataPreparedEto(
     [property: SagaIdentity] Guid RequestId,
     string ProviderName,
     string BlobReferenceId,

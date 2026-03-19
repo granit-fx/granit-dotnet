@@ -70,10 +70,10 @@ providers and waits for each to complete.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Requested: PersonalDataRequestedEvent
+    [*] --> Requested: PersonalDataRequestedEto
     Requested --> Collecting: Query all providers
-    Collecting --> Prepared: PersonalDataPreparedEvent
-    Prepared --> Completed: ExportCompletedEvent
+    Collecting --> Prepared: PersonalDataPreparedEto
+    Prepared --> Completed: ExportCompletedEto
     Collecting --> TimedOut: ExportTimedOutEvent
     Completed --> [*]
     TimedOut --> [*]
@@ -95,7 +95,7 @@ sequenceDiagram
     participant Notifications
 
     User->>API: DELETE /privacy/my-data
-    API->>Saga: PersonalDataDeletionRequestedEvent
+    API->>Saga: PersonalDataDeletionRequestedEto
     Saga->>Identity: DeleteByIdAsync (hard delete)
     Saga->>BlobStorage: Delete user blobs
     Saga->>Notifications: Delete delivery records
@@ -139,7 +139,7 @@ a policy update.
 | Module | `GranitPrivacyModule` | -- |
 | Registry | `IDataProviderRegistry`, `ILegalDocumentRegistry`, `ILegalAgreementChecker` | `Granit.Privacy` |
 | Builder | `GranitPrivacyBuilder`, `GranitPrivacyOptions` | `Granit.Privacy` |
-| Events | `PersonalDataRequestedEvent`, `PersonalDataDeletionRequestedEvent`, `ExportCompletedEvent`, `ExportTimedOutEvent` | `Granit.Privacy` |
+| Events | `PersonalDataRequestedEto`, `PersonalDataDeletionRequestedEto`, `ExportCompletedEto`, `ExportTimedOutEvent` | `Granit.Privacy` |
 | Extensions | `AddGranitPrivacy()` | `Granit.Privacy` |
 
 ## See also

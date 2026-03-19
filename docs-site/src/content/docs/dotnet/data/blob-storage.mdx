@@ -567,9 +567,9 @@ Single-tenant deployments (no `ICurrentTenant`) omit the tenant prefix:
 
 | Event | Trigger |
 | ----- | ------- |
-| `BlobValidated(BlobId, ContainerName, VerifiedContentType, SizeBytes)` | Blob passes all validators |
-| `BlobRejected(BlobId, ContainerName, RejectionReason)` | Validation fails |
-| `BlobDeleted(BlobId, ContainerName, DeletionReason)` | GDPR crypto-shredding |
+| `BlobValidatedEvent(BlobId, ContainerName, VerifiedContentType, SizeBytes)` | Blob passes all validators |
+| `BlobRejectedEvent(BlobId, ContainerName, RejectionReason)` | Validation fails |
+| `BlobDeletedEvent(BlobId, ContainerName, DeletionReason)` | GDPR crypto-shredding |
 
 Subscribe via Wolverine handlers to react to blob lifecycle changes (e.g. trigger
 image processing after validation, notify the user on rejection).
@@ -740,7 +740,7 @@ Verifies GCS connectivity by listing one object in the default bucket. Tagged
 | Domain | `BlobDescriptor`, `BlobStatus`, `BlobUploadRequest` | `Granit.BlobStorage` |
 | Presigned URLs | `PresignedUploadTicket`, `PresignedDownloadUrl`, `DownloadUrlOptions` | `Granit.BlobStorage` |
 | Validation | `IBlobValidator`, `BlobValidationResult`, `BlobValidationContext`, `MagicBytesValidator`, `MaxSizeValidator` | `Granit.BlobStorage` |
-| Events | `BlobValidated`, `BlobRejected`, `BlobDeleted` | `Granit.BlobStorage` |
+| Events | `BlobValidatedEvent`, `BlobRejectedEvent`, `BlobDeletedEvent` | `Granit.BlobStorage` |
 | S3 options | `S3BlobOptions`, `BlobTenantIsolation` | `Granit.BlobStorage.S3` |
 | Azure options | `AzureBlobOptions` | `Granit.BlobStorage.AzureBlob` |
 | Google Cloud options | `GoogleCloudStorageOptions` | `Granit.BlobStorage.GoogleCloud` |

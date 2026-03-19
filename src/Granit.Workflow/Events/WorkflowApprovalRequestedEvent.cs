@@ -7,7 +7,7 @@ namespace Granit.Workflow.Events;
 /// requesting user lacks the required permission. Handled by
 /// <c>Granit.Workflow.Notifications</c> to notify designated approvers.
 /// </summary>
-public sealed record WorkflowApprovalRequested(
+public sealed record WorkflowApprovalRequestedEvent(
     string EntityType,
     string EntityId,
     string RequestedBy,

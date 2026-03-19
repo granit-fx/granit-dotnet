@@ -30,7 +30,7 @@ public sealed record WorkflowTransition<TState> where TState : struct, Enum
     /// <summary>
     /// When <c>true</c> and the current user lacks <see cref="RequiredPermission"/>,
     /// the transition is routed to a pending review state instead of being denied.
-    /// A <see cref="Events.WorkflowApprovalRequested"/> domain event is published
+    /// A <see cref="Events.WorkflowApprovalRequestedEvent"/> domain event is published
     /// to notify designated approvers.
     /// </summary>
     public bool RequiresApproval { get; init; }

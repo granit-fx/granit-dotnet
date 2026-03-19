@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Granit.Privacy.Tests.DataDeletion.Events;
 
-public sealed class PersonalDataDeletionRequestedEventTests
+public sealed class PersonalDataDeletionRequestedEtoTests
 {
     [Fact]
     public void Constructor_SetsAllProperties()
@@ -13,7 +13,7 @@ public sealed class PersonalDataDeletionRequestedEventTests
         var userId = Guid.NewGuid();
         DateTimeOffset requestedAt = DateTimeOffset.UtcNow;
 
-        var sut = new PersonalDataDeletionRequestedEvent(
+        var sut = new PersonalDataDeletionRequestedEto(
             requestId,
             userId,
             "dpo@example.com",
@@ -34,8 +34,8 @@ public sealed class PersonalDataDeletionRequestedEventTests
         var userId = Guid.NewGuid();
         DateTimeOffset requestedAt = DateTimeOffset.UtcNow;
 
-        var a = new PersonalDataDeletionRequestedEvent(requestId, userId, "admin", requestedAt, "reason");
-        var b = new PersonalDataDeletionRequestedEvent(requestId, userId, "admin", requestedAt, "reason");
+        var a = new PersonalDataDeletionRequestedEto(requestId, userId, "admin", requestedAt, "reason");
+        var b = new PersonalDataDeletionRequestedEto(requestId, userId, "admin", requestedAt, "reason");
 
         a.ShouldBe(b);
     }
@@ -45,8 +45,8 @@ public sealed class PersonalDataDeletionRequestedEventTests
     {
         DateTimeOffset requestedAt = DateTimeOffset.UtcNow;
 
-        PersonalDataDeletionRequestedEvent a = new(Guid.NewGuid(), Guid.NewGuid(), "a", requestedAt, "r1");
-        PersonalDataDeletionRequestedEvent b = new(Guid.NewGuid(), Guid.NewGuid(), "b", requestedAt, "r2");
+        PersonalDataDeletionRequestedEto a = new(Guid.NewGuid(), Guid.NewGuid(), "a", requestedAt, "r1");
+        PersonalDataDeletionRequestedEto b = new(Guid.NewGuid(), Guid.NewGuid(), "b", requestedAt, "r2");
 
         a.ShouldNotBe(b);
     }

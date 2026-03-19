@@ -76,7 +76,7 @@ public void MarkAsValid(string contentType, long size, DateTimeOffset at)
     SizeBytes = size;
     ValidatedAt = at;
 
-    AddDomainEvent(new BlobValidated(Id, ContainerName, contentType, size));
+    AddDomainEvent(new BlobValidatedEvent(Id, ContainerName, contentType, size));
 }
 ```
 

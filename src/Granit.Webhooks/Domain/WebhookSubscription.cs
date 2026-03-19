@@ -111,7 +111,7 @@ public sealed class WebhookSubscription : AuditedAggregateRoot
     }
 
     /// <summary>
-    /// Suspends the subscription and emits a <see cref="WebhookSubscriptionSuspended"/> domain event.
+    /// Suspends the subscription and emits a <see cref="WebhookSubscriptionSuspendedEvent"/> domain event.
     /// </summary>
     internal void Suspend(DateTimeOffset suspendedAt, string suspendedBy, string reason)
     {
@@ -119,16 +119,16 @@ public sealed class WebhookSubscription : AuditedAggregateRoot
         DeactivationReason = reason;
         SuspendedAt = suspendedAt;
         SuspendedBy = suspendedBy;
-        AddDomainEvent(new WebhookSubscriptionSuspended(Id, reason));
+        AddDomainEvent(new WebhookSubscriptionSuspendedEvent(Id, reason));
     }
 
     /// <summary>
-    /// Permanently deactivates the subscription and emits a <see cref="WebhookSubscriptionDeactivated"/> domain event.
+    /// Permanently deactivates the subscription and emits a <see cref="WebhookSubscriptionDeactivatedEvent"/> domain event.
     /// </summary>
     internal void Deactivate(string reason)
     {
         Status = WebhookSubscriptionStatus.Deactivated;
         DeactivationReason = reason;
-        AddDomainEvent(new WebhookSubscriptionDeactivated(Id, reason));
+        AddDomainEvent(new WebhookSubscriptionDeactivatedEvent(Id, reason));
     }
 }

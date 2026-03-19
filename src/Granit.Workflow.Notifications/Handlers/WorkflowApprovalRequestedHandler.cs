@@ -7,14 +7,14 @@ using Microsoft.Extensions.Logging;
 namespace Granit.Workflow.Notifications.Handlers;
 
 /// <summary>
-/// Wolverine handler that processes <see cref="WorkflowApprovalRequested"/> domain events
+/// Wolverine handler that processes <see cref="WorkflowApprovalRequestedEvent"/> domain events
 /// by notifying designated approvers via <see cref="INotificationPublisher"/>.
 /// </summary>
 /// <remarks>
 /// <para>
 /// When a user without the required permission triggers a transition that supports
 /// approval routing (<c>RequiresApproval = true</c>), the workflow engine publishes
-/// a <see cref="WorkflowApprovalRequested"/> event. This handler:
+/// a <see cref="WorkflowApprovalRequestedEvent"/> event. This handler:
 /// </para>
 /// <list type="number">
 ///   <item>Resolves approver user IDs via <see cref="IApproverResolver"/>.</item>
@@ -32,10 +32,10 @@ public sealed partial class WorkflowApprovalRequestedHandler(
     ILogger<WorkflowApprovalRequestedHandler> logger)
 {
     /// <summary>
-    /// Handles the <see cref="WorkflowApprovalRequested"/> event by notifying approvers.
+    /// Handles the <see cref="WorkflowApprovalRequestedEvent"/> event by notifying approvers.
     /// </summary>
     public async Task HandleAsync(
-        WorkflowApprovalRequested message,
+        WorkflowApprovalRequestedEvent message,
         CancellationToken cancellationToken)
     {
         IReadOnlyList<string> approverIds = await approverResolver.ResolveApproversAsync(

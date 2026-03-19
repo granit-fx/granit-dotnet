@@ -157,13 +157,13 @@ public sealed class InMemoryTimelineStoreTests
     // ── Domain Events ────────────────────────────────────────────────────────
 
     [Fact]
-    public async Task PostEntryAsync_ShouldEmitTimelineEntryPostedEvent()
+    public async Task PostEntryAsync_ShouldEmitTimelineEntryPostedEventEvent()
     {
         TimelineEntry entry = await _store.PostEntryAsync(
             "Patient", "p-1", TimelineEntryType.Comment, "Hello",
             cancellationToken: TestContext.Current.CancellationToken);
 
-        TimelineEntryPosted evt = entry.DomainEvents.ShouldHaveSingleItem().ShouldBeOfType<TimelineEntryPosted>();
+        TimelineEntryPostedEvent evt = entry.DomainEvents.ShouldHaveSingleItem().ShouldBeOfType<TimelineEntryPostedEvent>();
         evt.EntryId.ShouldBe(entry.Id);
         evt.EntityType.ShouldBe("Patient");
         evt.EntityId.ShouldBe("p-1");
@@ -172,7 +172,7 @@ public sealed class InMemoryTimelineStoreTests
     }
 
     [Fact]
-    public async Task DeleteEntryAsync_ShouldEmitTimelineEntrySoftDeletedEvent()
+    public async Task DeleteEntryAsync_ShouldEmitTimelineEntrySoftDeletedEventEvent()
     {
         TimelineEntry entry = await _store.PostEntryAsync(
             "Patient", "p-1", TimelineEntryType.Comment, "To delete",
@@ -181,7 +181,7 @@ public sealed class InMemoryTimelineStoreTests
 
         await _store.DeleteEntryAsync(entry.Id, TestContext.Current.CancellationToken);
 
-        TimelineEntrySoftDeleted evt = entry.DomainEvents.ShouldHaveSingleItem().ShouldBeOfType<TimelineEntrySoftDeleted>();
+        TimelineEntrySoftDeletedEvent evt = entry.DomainEvents.ShouldHaveSingleItem().ShouldBeOfType<TimelineEntrySoftDeletedEvent>();
         evt.EntryId.ShouldBe(entry.Id);
         evt.EntityType.ShouldBe("Patient");
         evt.EntityId.ShouldBe("p-1");

@@ -4,7 +4,7 @@ namespace Granit.Workflow.Events;
 
 /// <summary>
 /// Non-generic domain event published when a workflow state transition completes.
-/// Unlike <see cref="WorkflowTransitioned{TState}"/> (generic, app-published),
+/// Unlike <see cref="WorkflowTransitionedEvent{TState}"/> (generic, app-published),
 /// this event uses string states for framework-level consumption by notification handlers.
 /// </summary>
 /// <param name="EntityType">The entity type (e.g. "Publication", "Invoice").</param>

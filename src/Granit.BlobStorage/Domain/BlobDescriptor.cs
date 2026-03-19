@@ -139,7 +139,7 @@ public sealed class BlobDescriptor : AggregateRoot, IMultiTenant
         SizeBytes = sizeBytes;
         ValidatedAt = validatedAt;
 
-        AddDomainEvent(new BlobValidated(Id, ContainerName, verifiedContentType, sizeBytes));
+        AddDomainEvent(new BlobValidatedEvent(Id, ContainerName, verifiedContentType, sizeBytes));
     }
 
     /// <summary>
@@ -159,7 +159,7 @@ public sealed class BlobDescriptor : AggregateRoot, IMultiTenant
         Status = BlobStatus.Rejected;
         RejectionReason = reason;
 
-        AddDomainEvent(new BlobRejected(Id, ContainerName, reason));
+        AddDomainEvent(new BlobRejectedEvent(Id, ContainerName, reason));
     }
 
     /// <summary>
@@ -182,6 +182,6 @@ public sealed class BlobDescriptor : AggregateRoot, IMultiTenant
         DeletedAt = deletedAt;
         DeletionReason = reason;
 
-        AddDomainEvent(new BlobDeleted(Id, ContainerName, reason));
+        AddDomainEvent(new BlobDeletedEvent(Id, ContainerName, reason));
     }
 }

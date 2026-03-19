@@ -61,14 +61,14 @@ public sealed class TimelineEntry : CreationAuditedEntity, ISoftDeletable, IMult
     public void ClearDomainEvents() => _domainEvents.Clear();
 
     /// <summary>
-    /// Raises a <see cref="TimelineEntryPosted"/> domain event.
+    /// Raises a <see cref="TimelineEntryPostedEvent"/> domain event.
     /// Called by the store after the entry is fully initialized.
     /// </summary>
     internal void RaisePostedEvent() =>
-        _domainEvents.Add(new TimelineEntryPosted(Id, EntityType, EntityId, EntryType, AuthorId));
+        _domainEvents.Add(new TimelineEntryPostedEvent(Id, EntityType, EntityId, EntryType, AuthorId));
 
     /// <summary>
-    /// Marks this entry as soft-deleted and raises a <see cref="TimelineEntrySoftDeleted"/> domain event.
+    /// Marks this entry as soft-deleted and raises a <see cref="TimelineEntrySoftDeletedEvent"/> domain event.
     /// </summary>
     /// <exception cref="InvalidOperationException">When the entry is a <see cref="TimelineEntryType.SystemLog"/>.</exception>
     internal void SoftDelete(DateTimeOffset deletedAt, string? deletedBy)
@@ -81,6 +81,6 @@ public sealed class TimelineEntry : CreationAuditedEntity, ISoftDeletable, IMult
         IsDeleted = true;
         DeletedAt = deletedAt;
         DeletedBy = deletedBy;
-        _domainEvents.Add(new TimelineEntrySoftDeleted(Id, EntityType, EntityId));
+        _domainEvents.Add(new TimelineEntrySoftDeletedEvent(Id, EntityType, EntityId));
     }
 }

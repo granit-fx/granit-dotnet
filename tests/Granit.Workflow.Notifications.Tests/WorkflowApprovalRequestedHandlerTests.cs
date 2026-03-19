@@ -18,7 +18,7 @@ public sealed class WorkflowApprovalRequestedHandlerTests
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly WorkflowApprovalRequestedHandler _handler;
 
-    private static readonly WorkflowApprovalRequested SampleEvent = new(
+    private static readonly WorkflowApprovalRequestedEvent SampleEvent = new(
         EntityType: "Patient",
         EntityId: "42",
         RequestedBy: "user-1",

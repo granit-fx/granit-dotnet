@@ -7,7 +7,7 @@ namespace Granit.Workflow.Events;
 /// Routed to the Wolverine local <c>domain-events</c> queue (in-process, transactional).
 /// </summary>
 /// <typeparam name="TState">Enum type representing the workflow states.</typeparam>
-public sealed record WorkflowTransitioned<TState>(
+public sealed record WorkflowTransitionedEvent<TState>(
     string EntityType,
     string EntityId,
     TState PreviousState,

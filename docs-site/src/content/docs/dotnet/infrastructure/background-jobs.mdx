@@ -226,8 +226,8 @@ public interface IBackgroundJobWriter
 
 | Method | Behavior |
 |--------|----------|
-| `PauseAsync` | Sets `IsEnabled = false`. Current execution completes; rescheduling is skipped. Emits `BackgroundJobPaused` domain event |
-| `ResumeAsync` | Sets `IsEnabled = true` and immediately schedules the next cron occurrence. Emits `BackgroundJobResumed` domain event |
+| `PauseAsync` | Sets `IsEnabled = false`. Current execution completes; rescheduling is skipped. Emits `BackgroundJobPausedEvent` domain event |
+| `ResumeAsync` | Sets `IsEnabled = true` and immediately schedules the next cron occurrence. Emits `BackgroundJobResumedEvent` domain event |
 | `TriggerNowAsync` | Dispatches the job message immediately. Propagates caller identity via `X-Triggered-By` header for audit |
 
 ### Store-level interfaces
@@ -384,8 +384,8 @@ In production, grant the permission via:
 
 | Event | Emitted when |
 |-------|-------------|
-| `BackgroundJobPaused(Guid JobId, string JobName)` | Job is paused via `IBackgroundJobWriter.PauseAsync` |
-| `BackgroundJobResumed(Guid JobId, string JobName)` | Job is resumed via `IBackgroundJobWriter.ResumeAsync` |
+| `BackgroundJobPausedEvent(Guid JobId, string JobName)` | Job is paused via `IBackgroundJobWriter.PauseAsync` |
+| `BackgroundJobResumedEvent(Guid JobId, string JobName)` | Job is resumed via `IBackgroundJobWriter.ResumeAsync` |
 
 Both implement `IDomainEvent` and can be handled by Wolverine or in-process subscribers.
 
@@ -435,7 +435,7 @@ When `Granit.Observability` is loaded, the activity source is auto-discovered vi
 | CQRS | `IBackgroundJobReader`, `IBackgroundJobWriter` | `Granit.BackgroundJobs` |
 | Store | `IBackgroundJobStoreReader`, `IBackgroundJobStoreWriter` | `Granit.BackgroundJobs` |
 | Domain | `BackgroundJobDefinition`, `BackgroundJobStatus`, `RecurringJobRegistration`, `JobStoreMode` | `Granit.BackgroundJobs` |
-| Events | `BackgroundJobPaused`, `BackgroundJobResumed` | `Granit.BackgroundJobs` |
+| Events | `BackgroundJobPausedEvent`, `BackgroundJobResumedEvent` | `Granit.BackgroundJobs` |
 | Abstractions | `IBackgroundJobDispatcher`, `IDeadLetterQueueInspector` | `Granit.BackgroundJobs` |
 | Headers | `BackgroundJobHeaders` (`X-Triggered-By`) | `Granit.BackgroundJobs` |
 | Options | `BackgroundJobsOptions`, `BackgroundJobsEndpointsOptions` | -- |

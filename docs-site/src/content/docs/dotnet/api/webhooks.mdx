@@ -163,8 +163,8 @@ When consecutive failures exceed the threshold, the subscription transitions:
 | Failures | Status | Domain event |
 |----------|--------|-------------|
 | 0 | `Active` | — |
-| Threshold reached | `Suspended` | `WebhookSubscriptionSuspended` |
-| Non-retriable (4xx) | `Deactivated` | `WebhookSubscriptionDeactivated` |
+| Threshold reached | `Suspended` | `WebhookSubscriptionSuspendedEvent` |
+| Non-retriable (4xx) | `Deactivated` | `WebhookSubscriptionDeactivatedEvent` |
 
 Suspension records `SuspendedAt` and `SuspendedBy` for ISO 27001 audit compliance.
 
@@ -206,7 +206,7 @@ against GDPR data-minimization requirements.
 | Publisher | `IWebhookPublisher` (`PublishAsync<TPayload>`) | `Granit.Webhooks` |
 | Subscriptions | `IWebhookSubscriptionReader`, `IWebhookSubscriptionWriter`, `WebhookSubscription` | `Granit.Webhooks` |
 | Delivery | `WebhookDeliveryAttempt`, `WebhookEnvelope`, `IWebhookDeliveryReader`, `IWebhookDeliveryWriter` | `Granit.Webhooks` |
-| Events | `WebhookSubscriptionSuspended`, `WebhookSubscriptionDeactivated` | `Granit.Webhooks` |
+| Events | `WebhookSubscriptionSuspendedEvent`, `WebhookSubscriptionDeactivatedEvent` | `Granit.Webhooks` |
 | Options | `WebhooksOptions` | `Granit.Webhooks` |
 | Extensions | `AddGranitWebhooks()`, `AddGranitWebhooksEntityFrameworkCore()` | — |
 
@@ -235,7 +235,7 @@ it, or ensure the webhook database is encrypted and has a retention policy.
 
 :::caution[Subscription suspension]
 After repeated delivery failures (configurable), a subscription is automatically
-**suspended**. A `WebhookSubscriptionSuspended` event is published, but if no handler
+**suspended**. A `WebhookSubscriptionSuspendedEvent` event is published, but if no handler
 re-activates or alerts an admin, the subscription stays silent forever. Monitor this
 event in production.
 :::

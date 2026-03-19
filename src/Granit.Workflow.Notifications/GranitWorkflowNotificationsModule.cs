@@ -8,7 +8,7 @@ namespace Granit.Workflow.Notifications;
 
 /// <summary>
 /// Granit module for the workflow approval notification bridge.
-/// Routes <see cref="Events.WorkflowApprovalRequested"/> events to designated approvers
+/// Routes <see cref="Events.WorkflowApprovalRequestedEvent"/> events to designated approvers
 /// via <c>Granit.Notifications</c>.
 /// </summary>
 /// <remarks>

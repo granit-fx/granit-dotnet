@@ -6,7 +6,7 @@ namespace Granit.Privacy.DataDeletion.Events;
 /// Published by each data provider after handling a personal data deletion request.
 /// Provides a complete audit trail of what was done (ISO 27001 compliance).
 /// </summary>
-public sealed record PersonalDataDeletedEvent(
+public sealed record PersonalDataDeletedEto(
     Guid RequestId,
     string ProviderName,
     DeletionAction Action,
