@@ -149,7 +149,7 @@ stateDiagram-v2
 |-------|-------------|
 | `Draft` | Being edited. Filtered by `IPublishable` (not visible in standard queries). |
 | `PendingReview` | Awaiting approval from a user with the required permission. |
-| `Published` | Active published version. Exactly one per `BusinessId` (unique filtered index). |
+| `Published` | Active published version. Exactly one per `VersionId` (unique filtered index). |
 | `Archived` | Former version, preserved for ISO 27001 audit trail (3-year retention). |
 
 ```csharp
@@ -274,7 +274,7 @@ public class DocumentRevision : VersionedWorkflowEntity
 }
 ```
 
-`VersionedWorkflowEntity` provides `BusinessId`, `Version`, `LifecycleStatus`, and
+`VersionedWorkflowEntity` provides `VersionId`, `Version`, `LifecycleStatus`, and
 `IsPublished` — the interceptor keeps `IsPublished` in sync with the lifecycle status.
 
 ## ISO 27001 audit trail

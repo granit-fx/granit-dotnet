@@ -102,9 +102,9 @@ The filter is restored automatically when the `using` block exits.
 
 Targets entities implementing `IVersionedEntity`. On insert:
 
-- Assigns a `BusinessId` (human-readable sequential identifier scoped to
-  the entity type).
-- Sets `Version` to `max(Version) + 1` for that `BusinessId`.
+- Assigns a `VersionId` (stable GUID shared across all versions of the same
+  logical entity).
+- Sets `Version` to `max(Version) + 1` for that `VersionId`.
 
 This gives you an immutable version history without a separate history table.
 

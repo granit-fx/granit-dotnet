@@ -187,7 +187,7 @@ public sealed class WorkflowTransitionInterceptorTests
         TestVersionedEntity entity = new()
         {
             Id = Guid.NewGuid(),
-            BusinessId = Guid.NewGuid(),
+            VersionId = Guid.NewGuid(),
             Version = 1,
             LifecycleStatus = WorkflowLifecycleStatus.Published,
             IsPublished = false, // Intentionally wrong — interceptor should fix
@@ -209,7 +209,7 @@ public sealed class WorkflowTransitionInterceptorTests
         TestVersionedEntity entity = new()
         {
             Id = Guid.NewGuid(),
-            BusinessId = Guid.NewGuid(),
+            VersionId = Guid.NewGuid(),
             Version = 1,
             LifecycleStatus = WorkflowLifecycleStatus.Draft,
             IsPublished = true, // Intentionally wrong
@@ -254,7 +254,7 @@ public sealed class WorkflowTransitionInterceptorTests
 
     private sealed class TestVersionedEntity : Entity, IVersionedEntity, IWorkflowStateful
     {
-        public Guid BusinessId { get; set; }
+        public Guid VersionId { get; set; }
         public int Version { get; set; }
         public WorkflowLifecycleStatus LifecycleStatus { get; set; }
         public bool IsPublished { get; set; }

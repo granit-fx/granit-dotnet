@@ -129,7 +129,7 @@ services.AddGranitDbContext<GranitLocalizationOverridesDbContext>(
 `UseGranitInterceptors` adds four interceptors in a fixed sequence:
 
 1. **`AuditedEntityInterceptor`** — sets `CreatedAt`, `CreatedBy`, `ModifiedAt`, `ModifiedBy`, `TenantId`, and `Id` (sequential GUID) on new or modified entities. ISO 27001 compliance.
-2. **`VersioningInterceptor`** — assigns `BusinessId` and increments `Version` on `IVersioned` entities.
+2. **`VersioningInterceptor`** — assigns `VersionId` and increments `Version` on `IVersioned` entities.
 3. **`DomainEventDispatcherInterceptor`** — collects domain events from entities after `SaveChanges` and dispatches them through Wolverine.
 4. **`SoftDeleteInterceptor`** — converts physical deletes to soft deletes for `ISoftDeletable` entities by flipping `IsDeleted = true` and changing the entry state from `Deleted` to `Modified`.
 

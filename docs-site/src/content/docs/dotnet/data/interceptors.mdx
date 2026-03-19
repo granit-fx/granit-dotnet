@@ -13,7 +13,7 @@ Five interceptors execute on every `SaveChanges` call, in this order:
 | Order | Interceptor | Behavior |
 |-------|-------------|----------|
 | 1 | `AuditedEntityInterceptor` | Populates `CreatedAt`, `CreatedBy`, `ModifiedAt`, `ModifiedBy`, auto-generates `Id`, injects `TenantId` |
-| 2 | `VersioningInterceptor` | Sets `BusinessId` and `Version` on `IVersioned` entities |
+| 2 | `VersioningInterceptor` | Sets `VersionId` and `Version` on `IVersioned` entities |
 | 3 | `ConcurrencyStampInterceptor` | Regenerates `ConcurrencyStamp` on `IConcurrencyAware` entities |
 | 4 | `DomainEventDispatcherInterceptor` | Collects domain events before save, dispatches after commit |
 | 5 | `SoftDeleteInterceptor` | Converts `DELETE` to `UPDATE` for `ISoftDeletable` entities |
@@ -115,9 +115,9 @@ replaces it with real message bus dispatch.
 
 For `IVersioned` entities on `EntityState.Added`:
 
-- Generates `BusinessId` if empty (first version of a new entity)
+- Generates `VersionId` if empty (first version of a new entity)
 - Determines `Version` from change tracker (starting at 1)
-- Modified entities are untouched — versioning is explicit (create a new entity with same `BusinessId`)
+- Modified entities are untouched — versioning is explicit (create a new entity with same `VersionId`)
 
 ## ConcurrencyStampInterceptor
 

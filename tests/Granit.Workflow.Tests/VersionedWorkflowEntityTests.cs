@@ -23,7 +23,7 @@ public sealed class VersionedWorkflowEntityTests
         TestVersionedWorkflowEntity entity = new();
 
         // Assert
-        entity.BusinessId.ShouldBe(Guid.Empty);
+        entity.VersionId.ShouldBe(Guid.Empty);
         entity.Version.ShouldBe(0);
         entity.LifecycleStatus.ShouldBe(WorkflowLifecycleStatus.Draft);
         entity.IsPublished.ShouldBeFalse();
@@ -42,7 +42,7 @@ public sealed class VersionedWorkflowEntityTests
 
         // Act — write through interface casts (same as VersioningInterceptor / WorkflowTransitionInterceptor)
         IVersioned versioned = entity;
-        versioned.BusinessId = businessId;
+        versioned.VersionId = businessId;
         versioned.Version = 3;
 
         IVersionedEntity versionedEntity = entity;
@@ -52,7 +52,7 @@ public sealed class VersionedWorkflowEntityTests
         publishable.IsPublished = true;
 
         // Assert — read through concrete type
-        entity.BusinessId.ShouldBe(businessId);
+        entity.VersionId.ShouldBe(businessId);
         entity.Version.ShouldBe(3);
         entity.LifecycleStatus.ShouldBe(WorkflowLifecycleStatus.Published);
         entity.IsPublished.ShouldBeTrue();
@@ -143,7 +143,7 @@ public sealed class VersionedWorkflowEntityTests
         TestVersionedWorkflowEntity entity = new();
 
         IVersioned versioned = entity;
-        versioned.BusinessId = businessId;
+        versioned.VersionId = businessId;
         versioned.Version = 5;
 
         IVersionedEntity versionedEntity = entity;
@@ -153,7 +153,7 @@ public sealed class VersionedWorkflowEntityTests
         publishable.IsPublished = false;
 
         // Assert — cast to interface
-        versionedEntity.BusinessId.ShouldBe(businessId);
+        versionedEntity.VersionId.ShouldBe(businessId);
         versionedEntity.Version.ShouldBe(5);
         versionedEntity.LifecycleStatus.ShouldBe(WorkflowLifecycleStatus.Archived);
         versionedEntity.IsPublished.ShouldBeFalse();

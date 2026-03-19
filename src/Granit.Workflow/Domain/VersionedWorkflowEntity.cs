@@ -8,8 +8,8 @@ namespace Granit.Workflow.Domain;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Inherits from <see cref="AuditedEntity"/> for CreatedAt/By and ModifiedAt/By tracking.
-/// Implements both <see cref="IVersionedEntity"/> and <see cref="IWorkflowStateful"/>
+/// Inherits from <see cref="AuditedAggregateRoot"/> for audit tracking and domain/integration
+/// event support. Implements both <see cref="IVersionedEntity"/> and <see cref="IWorkflowStateful"/>
 /// to integrate with the global query filter system and the
 /// <c>WorkflowTransitionInterceptor</c> audit trail.
 /// </para>
@@ -31,19 +31,43 @@ namespace Granit.Workflow.Domain;
 /// by implementing the static abstract member explicitly.
 /// </para>
 /// </remarks>
-public abstract class VersionedWorkflowEntity : AuditedEntity, IVersionedEntity, IWorkflowStateful
+public abstract class VersionedWorkflowEntity : AuditedAggregateRoot, IVersionedEntity, IWorkflowStateful
 {
-    /// <inheritdoc/>
-    public Guid BusinessId { get; set; }
+    /// <summary>
+    /// Initializes a new instance for EF Core materialization.
+    /// </summary>
+    protected VersionedWorkflowEntity()
+    {
+    }
 
     /// <inheritdoc/>
-    public int Version { get; set; }
+    public Guid VersionId { get; private set; }
 
     /// <inheritdoc/>
-    public WorkflowLifecycleStatus LifecycleStatus { get; set; }
+    public int Version { get; private set; }
 
     /// <inheritdoc/>
-    public bool IsPublished { get; set; }
+    public WorkflowLifecycleStatus LifecycleStatus { get; private set; }
+
+    /// <inheritdoc/>
+    public bool IsPublished { get; private set; }
+
+    // Explicit interface implementations for interceptor write access.
+    // VersioningInterceptor writes VersionId/Version via IVersioned cast.
+    // WorkflowTransitionInterceptor writes IsPublished via IPublishable cast.
+    // EF Core ChangeTracker bypasses C# setters entirely.
+
+    /// <inheritdoc/>
+    Guid IVersioned.VersionId { get => VersionId; set => VersionId = value; }
+
+    /// <inheritdoc/>
+    int IVersioned.Version { get => Version; set => Version = value; }
+
+    /// <inheritdoc/>
+    WorkflowLifecycleStatus IVersionedEntity.LifecycleStatus { get => LifecycleStatus; set => LifecycleStatus = value; }
+
+    /// <inheritdoc/>
+    bool IPublishable.IsPublished { get => IsPublished; set => IsPublished = value; }
 
     /// <inheritdoc/>
     static string IWorkflowStateful.StatusPropertyName => nameof(LifecycleStatus);
@@ -54,6 +78,16 @@ public abstract class VersionedWorkflowEntity : AuditedEntity, IVersionedEntity,
     static string IWorkflowStateful.WorkflowEntityType =>
         throw new NotSupportedException(
             "Derived classes must implement IWorkflowStateful.WorkflowEntityType explicitly.");
+
+    /// <summary>
+    /// Transitions the lifecycle status. Subtypes should expose domain-specific behavior
+    /// methods (e.g., <c>Publish()</c>, <c>Archive()</c>) that call this method.
+    /// </summary>
+    /// <param name="status">The new lifecycle status.</param>
+    protected void SetLifecycleStatus(WorkflowLifecycleStatus status)
+    {
+        LifecycleStatus = status;
+    }
 
     /// <inheritdoc/>
     public virtual string GetWorkflowEntityId() => Id.ToString();

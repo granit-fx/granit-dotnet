@@ -17,7 +17,7 @@ public sealed class VersioningInterceptorTests
 
     public VersioningInterceptorTests()
     {
-        // Each call returns a distinct GUID so we can distinguish multiple BusinessId assignments
+        // Each call returns a distinct GUID so we can distinguish multiple VersionId assignments
         _guidGenerator.Create().Returns(_ =>
         {
             int n = ++_guidCallCount;
@@ -26,11 +26,11 @@ public sealed class VersioningInterceptorTests
     }
 
     // ========================================================================
-    // BusinessId assignment
+    // VersionId assignment
     // ========================================================================
 
     [Fact]
-    public async Task SaveChanges_WhenBusinessIdIsEmpty_ShouldAssignNewBusinessId()
+    public async Task SaveChanges_WhenVersionIdIsEmpty_ShouldAssignNewVersionId()
     {
         // Arrange
         using TestDbContext context = CreateContext();
@@ -45,20 +45,20 @@ public sealed class VersioningInterceptorTests
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        entity.BusinessId.ShouldNotBe(Guid.Empty);
+        entity.VersionId.ShouldNotBe(Guid.Empty);
     }
 
     [Fact]
-    public async Task SaveChanges_WhenBusinessIdIsSet_ShouldNotOverwrite()
+    public async Task SaveChanges_WhenVersionIdIsSet_ShouldNotOverwrite()
     {
         // Arrange
-        var existingBusinessId = Guid.NewGuid();
+        var existingVersionId = Guid.NewGuid();
         using TestDbContext context = CreateContext();
         TestVersionedEntity entity = new()
         {
             Id = Guid.NewGuid(),
             Name = "Patient v2",
-            BusinessId = existingBusinessId,
+            VersionId = existingVersionId,
         };
         context.Entities.Add(entity);
 
@@ -66,7 +66,7 @@ public sealed class VersioningInterceptorTests
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        entity.BusinessId.ShouldBe(existingBusinessId);
+        entity.VersionId.ShouldBe(existingVersionId);
     }
 
     // ========================================================================
@@ -104,17 +104,17 @@ public sealed class VersioningInterceptorTests
         {
             Id = Guid.NewGuid(),
             Name = "v1",
-            BusinessId = businessId,
+            VersionId = businessId,
         };
         context.Entities.Add(v1);
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        // Add second version with same BusinessId
+        // Add second version with same VersionId
         TestVersionedEntity v2 = new()
         {
             Id = Guid.NewGuid(),
             Name = "v2",
-            BusinessId = businessId,
+            VersionId = businessId,
         };
         context.Entities.Add(v2);
 
@@ -127,7 +127,7 @@ public sealed class VersioningInterceptorTests
     }
 
     [Fact]
-    public async Task SaveChanges_MultipleAddsForSameBusinessId_ShouldIncrementSequentially()
+    public async Task SaveChanges_MultipleAddsForSameVersionId_ShouldIncrementSequentially()
     {
         // Arrange — two entities added in the same SaveChanges batch
         var businessId = Guid.NewGuid();
@@ -137,13 +137,13 @@ public sealed class VersioningInterceptorTests
         {
             Id = Guid.NewGuid(),
             Name = "Batch v1",
-            BusinessId = businessId,
+            VersionId = businessId,
         };
         TestVersionedEntity v2 = new()
         {
             Id = Guid.NewGuid(),
             Name = "Batch v2",
-            BusinessId = businessId,
+            VersionId = businessId,
         };
         context.Entities.Add(v1);
         context.Entities.Add(v2);
@@ -170,7 +170,7 @@ public sealed class VersioningInterceptorTests
         {
             Id = Guid.NewGuid(),
             Name = "Original",
-            BusinessId = Guid.NewGuid(),
+            VersionId = Guid.NewGuid(),
             Version = 1,
         };
         context.Entities.Add(entity);
@@ -227,7 +227,7 @@ public sealed class VersioningInterceptorTests
         context.SaveChanges();
 
         // Assert
-        entity.BusinessId.ShouldNotBe(Guid.Empty);
+        entity.VersionId.ShouldNotBe(Guid.Empty);
         entity.Version.ShouldBe(1);
     }
 
@@ -252,7 +252,7 @@ public sealed class VersioningInterceptorTests
     private sealed class TestVersionedEntity : Entity, IVersioned
     {
         public string Name { get; set; } = string.Empty;
-        public Guid BusinessId { get; set; }
+        public Guid VersionId { get; set; }
         public int Version { get; set; }
     }
 

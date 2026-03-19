@@ -7,22 +7,22 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 namespace Granit.Persistence.Interceptors;
 
 /// <summary>
-/// EF Core interceptor that auto-assigns <see cref="IVersioned.BusinessId"/> and
+/// EF Core interceptor that auto-assigns <see cref="IVersioned.VersionId"/> and
 /// <see cref="IVersioned.Version"/> on newly added entities.
 /// </summary>
 /// <remarks>
 /// <para>
 /// On <c>EntityState.Added</c>:
 /// <list type="bullet">
-///   <item>If <see cref="IVersioned.BusinessId"/> is <see cref="Guid.Empty"/>,
+///   <item>If <see cref="IVersioned.VersionId"/> is <see cref="Guid.Empty"/>,
 ///         a new identifier is generated (first version of a new business entity).</item>
 ///   <item><see cref="IVersioned.Version"/> is set to the next value for that
-///         <see cref="IVersioned.BusinessId"/> (max existing + 1), starting at 1.</item>
+///         <see cref="IVersioned.VersionId"/> (max existing + 1), starting at 1.</item>
 /// </list>
 /// </para>
 /// <para>
 /// <c>EntityState.Modified</c> entities are left untouched — updates are in-place.
-/// Creating a new version is an explicit operation (add a new entity with the same BusinessId).
+/// Creating a new version is an explicit operation (add a new entity with the same VersionId).
 /// </para>
 /// <para>
 /// Registered as Scoped. Must be ordered after <see cref="AuditedEntityInterceptor"/>
@@ -58,7 +58,7 @@ public sealed class VersioningInterceptor(IGuidGenerator guidGenerator) : SaveCh
             return;
         }
 
-        // Collect all Added IVersioned entries first to handle multiple adds for the same BusinessId
+        // Collect all Added IVersioned entries first to handle multiple adds for the same VersionId
         List<IVersioned> addedEntities = [];
 
         foreach (EntityEntry entry in context.ChangeTracker.Entries()
@@ -72,15 +72,15 @@ public sealed class VersioningInterceptor(IGuidGenerator guidGenerator) : SaveCh
 
         foreach (IVersioned versioned in addedEntities)
         {
-            // Assign a new BusinessId for brand-new logical entities
-            if (versioned.BusinessId == Guid.Empty)
+            // Assign a new VersionId for brand-new logical entities
+            if (versioned.VersionId == Guid.Empty)
             {
-                versioned.BusinessId = guidGenerator.Create();
+                versioned.VersionId = guidGenerator.Create();
             }
 
-            // Determine the next version for this BusinessId.
+            // Determine the next version for this VersionId.
             // Check both the ChangeTracker (for other pending adds) and existing tracked entities.
-            int maxVersion = GetMaxTrackedVersion(context, versioned.BusinessId, versioned);
+            int maxVersion = GetMaxTrackedVersion(context, versioned.VersionId, versioned);
 
             versioned.Version = maxVersion + 1;
         }
@@ -94,7 +94,7 @@ public sealed class VersioningInterceptor(IGuidGenerator guidGenerator) : SaveCh
         {
             if (entry.Entity is IVersioned tracked
                 && !ReferenceEquals(tracked, current)
-                && tracked.BusinessId == businessId
+                && tracked.VersionId == businessId
                 && tracked.Version > max)
             {
                 max = tracked.Version;

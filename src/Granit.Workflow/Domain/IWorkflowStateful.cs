@@ -1,15 +1,15 @@
-namespace Granit.Workflow;
+namespace Granit.Workflow.Domain;
 
 /// <summary>
 /// Marker interface for entities whose workflow state transitions should be
-/// automatically recorded in the <see cref="Domain.WorkflowTransitionRecord"/> audit trail
+/// automatically recorded in the <see cref="WorkflowTransitionRecord"/> audit trail
 /// by the <c>WorkflowTransitionInterceptor</c>.
 /// </summary>
 /// <remarks>
 /// <para>
 /// The interceptor compares <c>OriginalValues</c> vs <c>CurrentValues</c> for the
 /// property identified by <see cref="StatusPropertyName"/>. When a difference is
-/// detected on <c>SaveChanges</c>, a new <see cref="Domain.WorkflowTransitionRecord"/>
+/// detected on <c>SaveChanges</c>, a new <see cref="WorkflowTransitionRecord"/>
 /// is added to the same transaction.
 /// </para>
 /// <para>
@@ -27,7 +27,7 @@ public interface IWorkflowStateful
 
     /// <summary>
     /// Logical entity type name for audit trail identification (e.g. <c>"Document"</c>).
-    /// Used in <see cref="Domain.WorkflowTransitionRecord.EntityType"/>.
+    /// Used in <see cref="WorkflowTransitionRecord.EntityType"/>.
     /// </summary>
     static abstract string WorkflowEntityType { get; }
 

@@ -10,12 +10,12 @@ namespace Granit.Workflow.Domain;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Extends <see cref="IVersioned"/> for <c>BusinessId</c>/<c>Version</c>
+/// Extends <see cref="IVersioned"/> for <c>VersionId</c>/<c>Version</c>
 /// and <see cref="IPublishable"/> for the global query filter
 /// (<c>WHERE IsPublished = true</c>).
 /// </para>
 /// <para>
-/// At most one version per <see cref="IVersioned.BusinessId"/> may have
+/// At most one version per <see cref="IVersioned.VersionId"/> may have
 /// <see cref="WorkflowLifecycleStatus.Published"/> at any time.
 /// This invariant is enforced by a unique filtered index in PostgreSQL.
 /// </para>

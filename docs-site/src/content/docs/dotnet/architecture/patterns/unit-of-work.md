@@ -32,7 +32,7 @@ sequenceDiagram
 
     activate DB
     DB->>AI: SavingChanges -- CreatedAt/By, ModifiedAt/By, TenantId
-    AI->>VI: SavingChanges -- BusinessId, Version
+    AI->>VI: SavingChanges -- VersionId, Version
     VI->>DEI: SavingChanges -- collects IDomainEvent
     DEI->>SDI: SavingChanges -- DELETE to UPDATE (IsDeleted)
     SDI->>PG: BEGIN + INSERT/UPDATE
@@ -55,7 +55,7 @@ Registered in `src/Granit.Persistence/Extensions/DbContextOptionsBuilderExtensio
 | Order | Interceptor | Role |
 | --- | --- | --- |
 | 1 | `AuditedEntityInterceptor` | ISO 27001 -- `CreatedAt/By`, `ModifiedAt/By`, `TenantId`, auto-`Id` |
-| 2 | `VersioningInterceptor` | `BusinessId` and `Version` on `IVersioned` entities |
+| 2 | `VersioningInterceptor` | `VersionId` and `Version` on `IVersioned` entities |
 | 3 | `DomainEventDispatcherInterceptor` | Collects `IDomainEvent` before save, dispatches after commit |
 | 4 | `SoftDeleteInterceptor` | GDPR -- converts `DELETE` to `UPDATE` (`IsDeleted`, `DeletedAt/By`) |
 

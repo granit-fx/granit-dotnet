@@ -350,7 +350,7 @@ background jobs or admin operations with explicit authorization checks.
 
 | Interface | Properties | Purpose |
 |-----------|-----------|---------|
-| `IVersioned` | `BusinessId`, `Version` | Versioned audit history (stable ID across versions) |
+| `IVersioned` | `VersionId`, `Version` | Versioned audit history (stable ID across versions) |
 | `ITranslatable<T>` | `Translations` collection | Multi-language entity content |
 | `ITranslation` | `ParentId`, `Culture` | Translation record (with `Translation<T>` and `AuditedTranslation<T>` base classes) |
 
