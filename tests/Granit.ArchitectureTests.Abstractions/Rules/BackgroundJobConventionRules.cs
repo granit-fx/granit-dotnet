@@ -19,18 +19,13 @@ public static class BackgroundJobConventionRules
         Architecture architecture,
         string typePrefix)
     {
-        List<string> violations = [];
-
-        foreach (Class c in architecture.Classes
+        List<string> violations = architecture.Classes
             .Where(c => c.FullName.StartsWith(typePrefix, StringComparison.Ordinal)
                 && !c.IsAbstract.GetValueOrDefault()
-                && ImplementsInterface(c, "Granit.BackgroundJobs.IBackgroundJob")))
-        {
-            if (!c.Name.EndsWith("Job", StringComparison.Ordinal))
-            {
-                violations.Add($"{c.FullName} (IBackgroundJob must end with 'Job')");
-            }
-        }
+                && ImplementsInterface(c, "Granit.BackgroundJobs.IBackgroundJob"))
+            .Where(c => !c.Name.EndsWith("Job", StringComparison.Ordinal))
+            .Select(c => $"{c.FullName} (IBackgroundJob must end with 'Job')")
+            .ToList();
 
         violations.ShouldBeEmpty(
             "Background job types must end with 'Job' suffix. " +
@@ -44,18 +39,13 @@ public static class BackgroundJobConventionRules
         Architecture architecture,
         string typePrefix)
     {
-        List<string> violations = [];
-
-        foreach (Class c in architecture.Classes
+        List<string> violations = architecture.Classes
             .Where(c => c.FullName.StartsWith(typePrefix, StringComparison.Ordinal)
                 && !c.IsAbstract.GetValueOrDefault()
-                && HasAttribute(c, "Granit.BackgroundJobs.RecurringJobAttribute")))
-        {
-            if (!ImplementsInterface(c, "Granit.BackgroundJobs.IBackgroundJob"))
-            {
-                violations.Add($"{c.FullName} (has [RecurringJob] but does not implement IBackgroundJob)");
-            }
-        }
+                && HasAttribute(c, "Granit.BackgroundJobs.RecurringJobAttribute"))
+            .Where(c => !ImplementsInterface(c, "Granit.BackgroundJobs.IBackgroundJob"))
+            .Select(c => $"{c.FullName} (has [RecurringJob] but does not implement IBackgroundJob)")
+            .ToList();
 
         violations.ShouldBeEmpty(
             "Types with [RecurringJob] must implement IBackgroundJob. " +
