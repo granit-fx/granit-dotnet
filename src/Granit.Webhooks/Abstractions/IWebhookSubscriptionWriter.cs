@@ -1,3 +1,5 @@
+using Granit.Core.Domain.ValueObjects;
+
 namespace Granit.Webhooks.Abstractions;
 
 /// <summary>
@@ -14,7 +16,7 @@ public interface IWebhookSubscriptionWriter
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The created subscription and its plain-text signing secret (returned once).</returns>
     Task<WebhookSubscriptionCreatedResult> CreateAsync(
-        string targetUrl,
+        HttpsUrl targetUrl,
         string eventType,
         Guid? tenantId,
         CancellationToken cancellationToken = default);
@@ -22,7 +24,7 @@ public interface IWebhookSubscriptionWriter
     /// <summary>
     /// Updates the target URL of an existing subscription.
     /// </summary>
-    Task UpdateTargetUrlAsync(Guid subscriptionId, string targetUrl, CancellationToken cancellationToken = default);
+    Task UpdateTargetUrlAsync(Guid subscriptionId, HttpsUrl targetUrl, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Activates a suspended subscription, clearing failure counters and audit fields.
