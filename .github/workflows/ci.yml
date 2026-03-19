@@ -411,6 +411,32 @@ jobs:
           --skip-duplicate
 
   # ---------------------------------------------------------------------------
+  # CODE INDEX: generate and attach code-index.json to the GitHub Release.
+  # Consumed by the granit-mcp Worker for code search and navigation tools.
+  # ---------------------------------------------------------------------------
+  code-index:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Generate code-index.json
+        run: node docs-site/scripts/generate-code-index.mjs
+
+      - name: Upload to GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.ref_name }}" code-index.json --clobber
+
+  # ---------------------------------------------------------------------------
   # DOCS: build & deploy handled by Cloudflare Pages (Git integration).
   # See CF Dashboard > Pages > granit-docs > Settings > Builds & deployments.
   # ---------------------------------------------------------------------------

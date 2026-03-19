@@ -160,7 +160,7 @@ using Granit.Core.Events;
 namespace MyApp.IntegrationEvents;
 
 // Flat, serializable DTO — no EF entities, no IQueryable, no internal domain objects.
-public sealed record OrderShippedEvent(
+public sealed record OrderShippedEto(
     Guid OrderId,
     string TrackingNumber,
     DateTimeOffset ShippedAt) : IIntegrationEvent;
@@ -175,9 +175,9 @@ Use flat records with primitive types and `Guid` references only.
 **Step 2.** Create the handler:
 
 ```csharp
-public sealed class ShippingNotificationHandler : IDistributedEventHandler<OrderShippedEvent>
+public sealed class ShippingNotificationHandler : IDistributedEventHandler<OrderShippedEto>
 {
-    public async Task HandleAsync(OrderShippedEvent integrationEvent, CancellationToken ct = default)
+    public async Task HandleAsync(OrderShippedEto integrationEvent, CancellationToken ct = default)
     {
         // Notify external ERP, send customer email, update tracking dashboard...
     }
@@ -188,7 +188,7 @@ public sealed class ShippingNotificationHandler : IDistributedEventHandler<Order
 
 ```csharp
 await distributedEventBus.PublishAsync(
-    new OrderShippedEvent(orderId, tracking, timeProvider.GetUtcNow()), ct);
+    new OrderShippedEto(orderId, tracking, timeProvider.GetUtcNow()), ct);
 ```
 
 :::tip[Idempotency is your responsibility]
@@ -207,7 +207,7 @@ version fields, or `INSERT ... ON CONFLICT DO NOTHING`.
     ```csharp
     // In your module's ConfigureServices or DI extension:
     services.AddScoped<ILocalEventHandler<OrderPlacedEvent>, OrderPlacedAuditHandler>();
-    services.AddScoped<IDistributedEventHandler<OrderShippedEvent>, ShippingNotificationHandler>();
+    services.AddScoped<IDistributedEventHandler<OrderShippedEto>, ShippingNotificationHandler>();
     ```
 
     Multiple handlers per event type are supported — all are called sequentially.
@@ -314,7 +314,7 @@ pending message on restart. This guarantees at-least-once delivery.
 
 ```csharp
 // ✅ GOOD — flat record, serializable, only primitives and Guids
-public sealed record InvoiceGeneratedEvent(
+public sealed record InvoiceGeneratedEto(
     Guid InvoiceId,
     Guid CustomerId,
     decimal TotalAmount,
@@ -322,14 +322,15 @@ public sealed record InvoiceGeneratedEvent(
     DateTimeOffset GeneratedAt) : IIntegrationEvent;
 
 // ❌ BAD — leaks EF entity, not serializable across services
-public sealed record InvoiceGeneratedEvent(
+public sealed record InvoiceGeneratedEto(
     Invoice Invoice,           // EF entity — breaks module boundary
     Customer Customer,         // Internal domain object
     IQueryable<LineItem> Items // Not serializable at all
 ) : IIntegrationEvent;
 ```
 
-**Naming**: use `XxxEvent` (e.g., `OrderShippedEvent`). Not `XxxDto`, not `XxxMessage`.
+**Naming**: use `XxxEto` for integration events (e.g., `OrderShippedEto`) and `XxxEvent`
+for domain events (e.g., `OrderPlacedEvent`). Never `*Dto`, never `*Message`.
 
 **Versioning**: adding new fields is safe (JSON deserialization ignores unknowns).
 Removing or renaming fields is a breaking change — introduce a new event type instead.

@@ -21,7 +21,7 @@ Granit solves both problems through two event types, a transactional outbox, and
 Domain events stay within the same process. They are routed to a local queue named `"domain-events"` and never leave the application boundary. Use them for side effects that belong to the same bounded context.
 
 ```csharp
-public sealed record PatientDischargedOccurred(
+public sealed record PatientDischargedEvent(
     Guid PatientId, Guid BedId) : IDomainEvent;
 ```
 
@@ -37,7 +37,7 @@ public sealed record PatientDischargedOccurred(
 Integration events cross module boundaries. They are persisted in the transactional outbox and survive process crashes. Use them when the consumer is a different module or when at-least-once delivery matters.
 
 ```csharp
-public sealed record BedReleasedEvent(
+public sealed record BedReleasedEto(
     Guid BedId, Guid WardId, DateTimeOffset ReleasedAt) : IIntegrationEvent;
 ```
 
@@ -86,10 +86,10 @@ public static class DischargePatientHandler
         patient.Discharge();
 
         // Domain event -- same transaction, local queue
-        yield return new PatientDischargedOccurred(patient.Id, patient.BedId);
+        yield return new PatientDischargedEvent(patient.Id, patient.BedId);
 
         // Integration event -- persisted in outbox, durable delivery
-        yield return new BedReleasedEvent(
+        yield return new BedReleasedEto(
             patient.BedId, patient.WardId, DateTimeOffset.UtcNow);
     }
 }
