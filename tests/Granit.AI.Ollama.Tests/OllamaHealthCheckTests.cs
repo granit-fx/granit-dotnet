@@ -9,7 +9,7 @@ namespace Granit.AI.Ollama.Tests;
 
 public sealed class OllamaHealthCheckTests
 {
-    private static OllamaHealthCheck CreateHealthCheck(
+    private static (OllamaHealthCheck HealthCheck, HttpClient Client) CreateHealthCheck(
         HttpMessageHandler handler,
         OllamaOptions? options = null)
     {
@@ -17,7 +17,7 @@ public sealed class OllamaHealthCheckTests
         var httpClient = new HttpClient(handler);
         IHttpClientFactory factory = Substitute.For<IHttpClientFactory>();
         factory.CreateClient("GranitAIOllamaHealthCheck").Returns(httpClient);
-        return new OllamaHealthCheck(factory, Microsoft.Extensions.Options.Options.Create(opts));
+        return (new OllamaHealthCheck(factory, Microsoft.Extensions.Options.Options.Create(opts)), httpClient);
     }
 
     private static HealthCheckContext CreateContext() => new()
@@ -29,7 +29,8 @@ public sealed class OllamaHealthCheckTests
     public async Task CheckHealthAsync_SuccessStatusCode_ReturnsHealthy()
     {
         using var handler = new FakeHttpMessageHandler(new HttpResponseMessage(HttpStatusCode.OK));
-        OllamaHealthCheck healthCheck = CreateHealthCheck(handler);
+        (OllamaHealthCheck healthCheck, HttpClient client) = CreateHealthCheck(handler);
+        using HttpClient _ = client;
 
         HealthCheckResult result = await healthCheck.CheckHealthAsync(
             CreateContext(), TestContext.Current.CancellationToken);
@@ -44,7 +45,8 @@ public sealed class OllamaHealthCheckTests
     public async Task CheckHealthAsync_NonSuccessStatusCode_ReturnsUnhealthy(HttpStatusCode statusCode)
     {
         using var handler = new FakeHttpMessageHandler(new HttpResponseMessage(statusCode));
-        OllamaHealthCheck healthCheck = CreateHealthCheck(handler);
+        (OllamaHealthCheck healthCheck, HttpClient client) = CreateHealthCheck(handler);
+        using HttpClient _ = client;
 
         HealthCheckResult result = await healthCheck.CheckHealthAsync(
             CreateContext(), TestContext.Current.CancellationToken);
@@ -57,7 +59,8 @@ public sealed class OllamaHealthCheckTests
     public async Task CheckHealthAsync_TaskCanceledException_ReturnsUnhealthy()
     {
         using var handler = new ThrowingHttpMessageHandler(new TaskCanceledException());
-        OllamaHealthCheck healthCheck = CreateHealthCheck(handler);
+        (OllamaHealthCheck healthCheck, HttpClient client) = CreateHealthCheck(handler);
+        using HttpClient _ = client;
 
         HealthCheckResult result = await healthCheck.CheckHealthAsync(
             CreateContext(), TestContext.Current.CancellationToken);
@@ -70,7 +73,8 @@ public sealed class OllamaHealthCheckTests
     public async Task CheckHealthAsync_HttpRequestException_ReturnsUnhealthy()
     {
         using var handler = new ThrowingHttpMessageHandler(new HttpRequestException());
-        OllamaHealthCheck healthCheck = CreateHealthCheck(handler);
+        (OllamaHealthCheck healthCheck, HttpClient client) = CreateHealthCheck(handler);
+        using HttpClient _ = client;
 
         HealthCheckResult result = await healthCheck.CheckHealthAsync(
             CreateContext(), TestContext.Current.CancellationToken);
@@ -87,7 +91,8 @@ public sealed class OllamaHealthCheckTests
     {
         var exception = (Exception)Activator.CreateInstance(exceptionType)!;
         using var handler = new ThrowingHttpMessageHandler(exception);
-        OllamaHealthCheck healthCheck = CreateHealthCheck(handler);
+        (OllamaHealthCheck healthCheck, HttpClient client) = CreateHealthCheck(handler);
+        using HttpClient _ = client;
 
         HealthCheckResult result = await healthCheck.CheckHealthAsync(
             CreateContext(), TestContext.Current.CancellationToken);
