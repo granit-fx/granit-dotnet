@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
 using Granit.Core.Events;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Granit.Persistence.Interceptors;
@@ -181,15 +180,15 @@ public sealed class DomainEventDispatcherInterceptor(
         List<IDomainEvent>? domainEvents = null;
         List<IIntegrationEvent>? integrationEvents = null;
 
-        foreach (EntityEntry entry in context.ChangeTracker.Entries())
+        foreach (object entity in context.ChangeTracker.Entries().Select(entry => entry.Entity))
         {
-            if (entry.Entity is IDomainEventSource domainSource && domainSource.DomainEvents.Count > 0)
+            if (entity is IDomainEventSource domainSource && domainSource.DomainEvents.Count > 0)
             {
                 (domainEvents ??= []).AddRange(domainSource.DomainEvents);
                 domainSource.ClearDomainEvents();
             }
 
-            if (entry.Entity is IIntegrationEventSource integrationSource && integrationSource.IntegrationEvents.Count > 0)
+            if (entity is IIntegrationEventSource integrationSource && integrationSource.IntegrationEvents.Count > 0)
             {
                 (integrationEvents ??= []).AddRange(integrationSource.IntegrationEvents);
                 integrationSource.ClearIntegrationEvents();

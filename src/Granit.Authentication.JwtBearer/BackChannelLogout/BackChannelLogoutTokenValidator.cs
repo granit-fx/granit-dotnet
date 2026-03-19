@@ -20,7 +20,9 @@ namespace Granit.Authentication.JwtBearer.BackChannelLogout;
 internal partial class BackChannelLogoutTokenValidator
 #pragma warning restore CA1852
 {
-    private const string BackChannelLogoutEvent = "http://schemas.openid.net/event/backchannel-logout";
+    // OIDC Back-Channel Logout 1.0 spec mandates this exact URI (identifier, not a network endpoint).
+    // https://openid.net/specs/openid-connect-backchannel-1_0.html#Validation
+    private const string BackChannelLogoutEvent = "http://schemas.openid.net/event/backchannel-logout"; // NOSONAR (S5332)
 
     private readonly IOptions<JwtBearerAuthOptions> _options;
     private readonly JsonWebTokenHandler _tokenHandler;
