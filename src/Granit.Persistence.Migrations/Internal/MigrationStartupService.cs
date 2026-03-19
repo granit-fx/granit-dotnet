@@ -132,6 +132,12 @@ internal sealed partial class MigrationStartupService(
     /// </remarks>
     private static async Task EnsureProgressTableAsync(MigrationProgressDbContext db, CancellationToken ct)
     {
+        if (!db.Database.IsRelational())
+        {
+            // Non-relational providers (e.g. InMemory) don't need table creation.
+            return;
+        }
+
         IRelationalDatabaseCreator creator = db.GetService<IRelationalDatabaseCreator>();
 
         if (!await creator.HasTablesAsync(ct).ConfigureAwait(false))

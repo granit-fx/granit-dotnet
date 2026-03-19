@@ -26,12 +26,6 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
         ServicePrincipalObjectId = "sp-object-id",
     };
 
-    private readonly MockHttpMessageHandler _tokenHandler = new()
-    {
-        ResponseBody = """{"access_token":"fake-token","expires_in":300}""",
-    };
-
-    private readonly HttpClient _tokenHttpClient;
     private readonly EntraIdAdminTokenService _tokenService;
     private readonly IPasswordResetNotifier _passwordResetNotifier = Substitute.For<IPasswordResetNotifier>();
     private readonly IIdentityEventPublisher _eventPublisher = Substitute.For<IIdentityEventPublisher>();
@@ -50,9 +44,13 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
         _httpClient = new HttpClient(_handler) { BaseAddress = new Uri("https://graph.microsoft.com/") };
         _httpClientFactory.CreateClient("MicrosoftGraph").Returns(_httpClient);
 
-        _tokenHttpClient = new HttpClient(_tokenHandler) { BaseAddress = new Uri("https://graph.microsoft.com/") };
+        MockHttpMessageHandler tokenHandler = new()
+        {
+            ResponseBody = """{"access_token":"fake-token","expires_in":300}""",
+        };
+        HttpClient tokenClient = new(tokenHandler) { BaseAddress = new Uri("https://graph.microsoft.com/") };
         IHttpClientFactory tokenFactory = Substitute.For<IHttpClientFactory>();
-        tokenFactory.CreateClient("MicrosoftGraph").Returns(_tokenHttpClient);
+        tokenFactory.CreateClient("MicrosoftGraph").Returns(tokenClient);
 
         IClock clock = Substitute.For<IClock>();
         clock.Now.Returns(DateTimeOffset.UtcNow);
@@ -248,7 +246,7 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.ShouldBe(new DateTimeOffset(2026, 3, 1, 12, 0, 0, TimeSpan.Zero));
+        result.Value.ShouldBe(new DateTimeOffset(2026, 3, 1, 12, 0, 0, TimeSpan.Zero));
     }
 
     [Fact]
@@ -312,7 +310,7 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
             """;
 
         MockSequenceHttpMessageHandler sequenceHandler = new([assignmentsResponse, servicePrincipalResponse]);
-        using HttpClient sequenceClient = new(sequenceHandler) { BaseAddress = new Uri("https://graph.microsoft.com/") };
+        HttpClient sequenceClient = new(sequenceHandler) { BaseAddress = new Uri("https://graph.microsoft.com/") };
         IHttpClientFactory sequenceFactory = Substitute.For<IHttpClientFactory>();
         sequenceFactory.CreateClient("MicrosoftGraph").Returns(sequenceClient);
 
@@ -515,10 +513,7 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
 
     public void Dispose()
     {
-        _httpClient.Dispose();
-        _handler.Dispose();
-        _tokenHttpClient.Dispose();
-        _tokenHandler.Dispose();
         _activityListener.Dispose();
+        _httpClient.Dispose();
     }
 }
