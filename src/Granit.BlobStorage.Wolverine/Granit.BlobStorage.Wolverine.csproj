@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.BlobStorage.Wolverine</PackageId>
-    <Description>Wolverine integration for Granit.BlobStorage: recurring hourly job for automatic orphan blob cleanup via IBlobStorage.CleanupOrphansAsync().</Description>
+    <Description>Background jobs for Granit.BlobStorage: recurring hourly orphan blob cleanup via Granit.BackgroundJobs and IBlobStorage.CleanupOrphansAsync().</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -12,13 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="WolverineFx" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
     <ProjectReference Include="..\Granit.BlobStorage\Granit.BlobStorage.csproj" />
-    <ProjectReference Include="..\Granit.Wolverine\Granit.Wolverine.csproj" />
   </ItemGroup>
 
 </Project>
