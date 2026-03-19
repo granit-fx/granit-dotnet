@@ -1,0 +1,11 @@
+{
+  "culture": "it",
+  "texts": {
+    "PermissionGroup:BlobStorage": "Archiviazione file",
+    "Permission:BlobStorage.Blobs.View": "Visualizzare i descrittori dei file",
+    "Permission:BlobStorage.Blobs.Upload": "Caricare file",
+    "Permission:BlobStorage.Blobs.Download": "Scaricare file",
+    "Permission:BlobStorage.Blobs.Delete": "Eliminare file",
+    "Permission:BlobStorage.Blobs.Manage": "Gestire i file (confermare i caricamenti, pulire gli orfani)"
+  }
+}

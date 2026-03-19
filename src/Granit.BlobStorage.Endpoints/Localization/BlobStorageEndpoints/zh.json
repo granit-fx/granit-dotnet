@@ -1,0 +1,11 @@
+{
+  "culture": "zh",
+  "texts": {
+    "PermissionGroup:BlobStorage": "文件存储",
+    "Permission:BlobStorage.Blobs.View": "查看文件描述符",
+    "Permission:BlobStorage.Blobs.Upload": "上传文件",
+    "Permission:BlobStorage.Blobs.Download": "下载文件",
+    "Permission:BlobStorage.Blobs.Delete": "删除文件",
+    "Permission:BlobStorage.Blobs.Manage": "管理文件（确认上传、清理孤立文件）"
+  }
+}

@@ -71,4 +71,17 @@ public interface IBlobStorage
         Guid blobId,
         string? deletionReason = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Confirms a client-side upload by running the post-upload validation pipeline.
+    /// </summary>
+    Task<BlobConfirmationResult> ConfirmUploadAsync(
+        string containerName,
+        Guid blobId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Cleans up orphaned blobs stuck in Pending/Uploading for over 24 hours.
+    /// </summary>
+    Task<int> CleanupOrphansAsync(CancellationToken cancellationToken = default);
 }

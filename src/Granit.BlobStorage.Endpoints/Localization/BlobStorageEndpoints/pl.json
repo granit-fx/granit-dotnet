@@ -1,0 +1,11 @@
+{
+  "culture": "pl",
+  "texts": {
+    "PermissionGroup:BlobStorage": "Magazyn plików",
+    "Permission:BlobStorage.Blobs.View": "Wyświetlanie deskryptorów plików",
+    "Permission:BlobStorage.Blobs.Upload": "Przesyłanie plików",
+    "Permission:BlobStorage.Blobs.Download": "Pobieranie plików",
+    "Permission:BlobStorage.Blobs.Delete": "Usuwanie plików",
+    "Permission:BlobStorage.Blobs.Manage": "Zarządzanie plikami (potwierdzanie przesyłań, czyszczenie osieroconych plików)"
+  }
+}

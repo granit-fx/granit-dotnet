@@ -4,6 +4,7 @@ using Granit.BlobStorage.Options;
 using Granit.Core.MultiTenancy;
 using Granit.Guids;
 using Granit.Timing;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Granit.BlobStorage.Internal;
@@ -12,15 +13,17 @@ namespace Granit.BlobStorage.Internal;
 /// Default orchestrator for blob storage operations.
 /// Coordinates tenant resolution, key strategy, storage provider, pre-signed URL generation, and descriptor persistence.
 /// </summary>
-internal sealed class DefaultBlobStorage(
+internal sealed partial class DefaultBlobStorage(
     IBlobDescriptorReader reader,
     IBlobDescriptorWriter writer,
     IBlobKeyStrategy keyStrategy,
     IBlobStoreProvider storeProvider,
     IPresignedUrlProvider presignedUrlProvider,
+    IEnumerable<IBlobValidator> validators,
     IGuidGenerator guidGenerator,
     IClock clock,
     ICurrentTenant currentTenant,
+    ILogger<DefaultBlobStorage> logger,
     IOptions<BlobStorageOptions> options) : IBlobStorage
 {
     private BlobStorageOptions Options => options.Value;
@@ -117,17 +120,101 @@ internal sealed class DefaultBlobStorage(
         await writer.UpdateAsync(descriptor, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<BlobDescriptor> FindOrThrowAsync(
-        string containerName,
-        Guid blobId,
-        CancellationToken cancellationToken)
+    /// <inheritdoc/>
+    public async Task<BlobConfirmationResult> ConfirmUploadAsync(
+        string containerName, Guid blobId, CancellationToken cancellationToken = default)
     {
-        BlobDescriptor? descriptor = await reader.FindAsync(blobId, cancellationToken).ConfigureAwait(false);
-        if (descriptor is null)
+        BlobDescriptor descriptor = await FindOrThrowAsync(containerName, blobId, cancellationToken).ConfigureAwait(false);
+        if (descriptor.Status != BlobStatus.Pending)
         {
-            throw new BlobNotFoundException(blobId, containerName);
+            throw new BlobNotValidException(blobId, descriptor.Status);
         }
 
-        return descriptor;
+        descriptor.MarkAsUploading();
+        string bucket = keyStrategy.ResolveBucketName(containerName);
+
+        long actualSize;
+        try
+        {
+            actualSize = await storeProvider.GetSizeAsync(bucket, descriptor.ObjectKey, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogFileNotFound(blobId, containerName, ex);
+            descriptor.MarkAsRejected("File not found in storage provider.");
+            await writer.UpdateAsync(descriptor, cancellationToken).ConfigureAwait(false);
+            return new BlobConfirmationResult(false, BlobStatus.Rejected, null, null, "File not found in storage provider.");
+        }
+
+        var context = new BlobValidationContext
+        {
+            Descriptor = descriptor,
+            ActualSizeBytes = actualSize,
+            OpenPartialStreamAsync = (byteCount, ct) => storeProvider.OpenPartialReadAsync(bucket, descriptor.ObjectKey, byteCount, ct),
+        };
+
+        string? verifiedContentType = null;
+        foreach (IBlobValidator validator in validators.OrderBy(v => v.Order))
+        {
+            BlobValidationResult result = await validator.ValidateAsync(context, cancellationToken).ConfigureAwait(false);
+            if (!result.IsValid)
+            {
+                await storeProvider.DeleteAsync(bucket, descriptor.ObjectKey, cancellationToken).ConfigureAwait(false);
+                descriptor.MarkAsRejected(result.FailureReason!);
+                await writer.UpdateAsync(descriptor, cancellationToken).ConfigureAwait(false);
+                return new BlobConfirmationResult(false, BlobStatus.Rejected, null, null, result.FailureReason);
+            }
+
+            verifiedContentType ??= result.VerifiedContentType;
+        }
+
+        verifiedContentType ??= descriptor.DeclaredContentType;
+        descriptor.MarkAsValid(verifiedContentType, actualSize, clock.Now);
+        await writer.UpdateAsync(descriptor, cancellationToken).ConfigureAwait(false);
+        return new BlobConfirmationResult(true, BlobStatus.Valid, verifiedContentType, actualSize, null);
     }
+
+    /// <inheritdoc/>
+    public async Task<int> CleanupOrphansAsync(CancellationToken cancellationToken = default)
+    {
+        DateTimeOffset cutoff = clock.Now.AddHours(-24);
+        IReadOnlyList<BlobDescriptor> orphans = await reader.FindOrphanedAsync(cutoff, batchSize: 100, cancellationToken).ConfigureAwait(false);
+
+        int cleaned = 0;
+        foreach (BlobDescriptor descriptor in orphans)
+        {
+            string bucket = keyStrategy.ResolveBucketName(descriptor.ContainerName);
+            try
+            {
+                await storeProvider.DeleteAsync(bucket, descriptor.ObjectKey, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                LogOrphanDeleteFailed(descriptor.Id, ex);
+            }
+
+            if (descriptor.Status == BlobStatus.Pending)
+            {
+                descriptor.MarkAsUploading();
+            }
+            descriptor.MarkAsRejected("Orphan cleanup");
+            await writer.UpdateAsync(descriptor, cancellationToken).ConfigureAwait(false);
+            cleaned++;
+        }
+
+        return cleaned;
+    }
+
+    private async Task<BlobDescriptor> FindOrThrowAsync(
+        string containerName, Guid blobId, CancellationToken cancellationToken)
+    {
+        BlobDescriptor? descriptor = await reader.FindAsync(blobId, cancellationToken).ConfigureAwait(false);
+        return descriptor ?? throw new BlobNotFoundException(blobId, containerName);
+    }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Blob {BlobId} in container '{ContainerName}' not found on storage provider during confirm.")]
+    private partial void LogFileNotFound(Guid blobId, string containerName, Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to delete storage object for orphaned blob {BlobId} during cleanup.")]
+    private partial void LogOrphanDeleteFailed(Guid blobId, Exception exception);
 }
