@@ -140,6 +140,24 @@ Full standards: [`docs/guide/conventions/`](docs/guide/conventions/index.md)
 - **`ArgumentException.ThrowIfNullOrEmpty()`** / `ThrowIfNullOrWhiteSpace()`: for strings
 - **`AddAuthorizationBuilder()`**: not `AddAuthorization(Action<>)` (ASP0025)
 
+### Events — naming convention (STRICT)
+
+Two event categories with **mandatory suffixes** — enforced by architecture tests:
+
+| Scope | Interface | Suffix | Example | Dispatched |
+| ----- | --------- | ------ | ------- | ---------- |
+| Domain (local, in-process) | `IDomainEvent` | `*Event` | `BlobValidatedEvent` | After commit (`SavedChanges`) |
+| Integration (distributed, outbox) | `IIntegrationEvent` | `*Eto` | `PersonalDataDeletedEto` | Before commit (`SavingChanges`) for Wolverine outbox |
+
+- **`*Event`**: raised via `AddDomainEvent()` — synchronous, same transaction, handlers
+  run after commit. Past-tense verb + `Event` suffix.
+- **`*Eto`** (Event Transfer Object): raised via `AddDistributedEvent()` — durable,
+  persisted in Wolverine outbox atomically. Past-tense verb + `Eto` suffix.
+- **Generic lifecycle**: `EntityCreatedEvent<T>`, `EntityCreatedEto<T>` — automatic via
+  `IEmitEntityLifecycleEvents` marker interface.
+- **NEVER** use bare past-tense names without suffix (`BlobValidated` is wrong,
+  `BlobValidatedEvent` is correct).
+
 ### DTOs & API responses
 
 - **Prefixed names**: `WorkflowTransitionRequest`, not `TransitionRequest` — OpenAPI flattens namespaces
@@ -245,6 +263,8 @@ Each package has `*.Tests` project (xUnit + Shouldly + NSubstitute + Bogus). Par
 - Traditional constructors with only field assignments → primary constructors
 - Unnamed `HasQueryFilter(expr)` → named `HasQueryFilter(name, expr)` (EF Core 10)
 - Swashbuckle / NSwag → `Microsoft.AspNetCore.OpenApi` + Scalar UI
+- Domain event without `Event` suffix → `BlobValidatedEvent` (not `BlobValidated`)
+- Integration event without `Eto` suffix → `PersonalDataDeletedEto` (not `PersonalDataDeletedEvent`)
 - Public setters on aggregate roots → `private set` + behavior methods
 - Manual `IDomainEventSource` implementation → inherit from `AggregateRoot` (or variants)
 - `new XxxEntity { ... }` on aggregate roots → `XxxEntity.Create(...)` factory method
