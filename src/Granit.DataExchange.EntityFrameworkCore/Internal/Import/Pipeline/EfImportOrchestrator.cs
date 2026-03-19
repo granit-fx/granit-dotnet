@@ -39,8 +39,7 @@ internal sealed class EfImportOrchestrator(
             throw new InvalidOperationException($"Import job '{importJobId}' not found.");
         }
 
-        job.Status = ImportJobStatus.Executing;
-        job.ModifiedAt = clock.Now;
+        job.MarkAsExecuting();
         await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
         var stopwatch = Stopwatch.StartNew();
@@ -50,10 +49,7 @@ internal sealed class EfImportOrchestrator(
             ImportReport report = await ExecuteTypedPipelineAsync(job, dryRun: false, cancellationToken).ConfigureAwait(false);
 
             stopwatch.Stop();
-            job.Status = report.FinalStatus;
-            job.CompletedAt = clock.Now;
-            job.ReportJson = JsonSerializer.Serialize(report);
-            job.ModifiedAt = clock.Now;
+            job.Complete(report.FinalStatus, JsonSerializer.Serialize(report), clock.Now);
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
             await eventBus.PublishAsync(new ImportJobCompletedEvent(
@@ -82,10 +78,7 @@ internal sealed class EfImportOrchestrator(
                 ],
             };
 
-            job.Status = ImportJobStatus.Failed;
-            job.CompletedAt = clock.Now;
-            job.ReportJson = JsonSerializer.Serialize(errorReport);
-            job.ModifiedAt = clock.Now;
+            job.Complete(ImportJobStatus.Failed, JsonSerializer.Serialize(errorReport), clock.Now);
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
             await eventBus.PublishAsync(new ImportJobCompletedEvent(

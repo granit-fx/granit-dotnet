@@ -60,11 +60,7 @@ public sealed class EfExportJobStoreTests
         await sut.CreateAsync(job, TestContext.Current.CancellationToken);
 
         // Act
-        job.Status = ExportJobStatus.Completed;
-        job.RowCount = 42;
-        job.FileName = "export.csv";
-        job.BlobReference = "blob-123";
-        job.CompletedAt = DateTimeOffset.UtcNow;
+        job.Complete("blob-123", "export.csv", 42, DateTimeOffset.UtcNow);
         await sut.UpdateAsync(job, TestContext.Current.CancellationToken);
 
         // Assert
@@ -87,9 +83,7 @@ public sealed class EfExportJobStoreTests
         await sut.CreateAsync(job, TestContext.Current.CancellationToken);
 
         // Act
-        job.Status = ExportJobStatus.Failed;
-        job.ErrorMessage = "Something went wrong";
-        job.CompletedAt = DateTimeOffset.UtcNow;
+        job.Fail("Something went wrong", DateTimeOffset.UtcNow);
         await sut.UpdateAsync(job, TestContext.Current.CancellationToken);
 
         // Assert
@@ -109,15 +103,14 @@ public sealed class EfExportJobStoreTests
         await sut.CreateAsync(job, TestContext.Current.CancellationToken);
 
         // Act — Queued → Exporting → Completed
-        job.Status = ExportJobStatus.Exporting;
+        job.MarkAsExporting();
         await sut.UpdateAsync(job, TestContext.Current.CancellationToken);
 
         ExportJob? interim = await sut.GetAsync(job.Id, TestContext.Current.CancellationToken);
         interim.ShouldNotBeNull();
         interim!.Status.ShouldBe(ExportJobStatus.Exporting);
 
-        job.Status = ExportJobStatus.Completed;
-        job.RowCount = 10;
+        job.Complete("blob-ref", "export.csv", 10, DateTimeOffset.UtcNow);
         await sut.UpdateAsync(job, TestContext.Current.CancellationToken);
 
         ExportJob? final = await sut.GetAsync(job.Id, TestContext.Current.CancellationToken);
@@ -135,12 +128,9 @@ public sealed class EfExportJobStoreTests
     }
 
     private static ExportJob BuildJob() =>
-        new()
-        {
-            Id = Guid.NewGuid(),
-            DefinitionName = "Test.Export",
-            Format = "csv",
-            RequestJson = """{"DefinitionName":"Test.Export","Format":"csv"}""",
-            Status = ExportJobStatus.Queued,
-        };
+        ExportJob.Create(
+            Guid.NewGuid(),
+            "Test.Export",
+            "csv",
+            """{"DefinitionName":"Test.Export","Format":"csv"}""");
 }

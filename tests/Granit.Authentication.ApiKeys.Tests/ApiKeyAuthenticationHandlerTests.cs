@@ -4,6 +4,7 @@ using System.Text.Encodings.Web;
 using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.Internal;
 using Granit.Authentication.ApiKeys.Options;
+using Granit.Core.Domain;
 using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -69,18 +70,19 @@ public sealed class ApiKeyAuthenticationHandlerTests
         return await handler.AuthenticateAsync();
     }
 
-    private static ApiKeyEntry CreateActiveApiKey(ApiKeyGenerationResult result) => new()
+    private static ApiKeyEntry CreateActiveApiKey(ApiKeyGenerationResult result)
     {
-        Id = Guid.NewGuid(),
-        Name = "Test Key",
-        Type = ApiKeyType.Secret,
-        Environment = "live",
-        HashedKey = result.HashedKey,
-        Prefix = result.Prefix,
-        LastFourChars = result.LastFourChars,
-        Permissions = ["MyApp.Patients.Read", "MyApp.Patients.Write"],
-        AllowedCidrs = [],
-    };
+        var entry = ApiKeyEntry.Create(
+            Guid.NewGuid(),
+            "Test Key",
+            ApiKeyType.Secret,
+            "live",
+            result.HashedKey,
+            result.Prefix,
+            result.LastFourChars);
+        entry.UpdatePermissions(["MyApp.Patients.Read", "MyApp.Patients.Write"]);
+        return entry;
+    }
 
     // --- No result scenarios ---
 
@@ -147,7 +149,7 @@ public sealed class ApiKeyAuthenticationHandlerTests
     {
         ApiKeyGenerationResult gen = _generator.Generate(ApiKeyType.Secret, "live");
         ApiKeyEntry apiKey = CreateActiveApiKey(gen);
-        apiKey.RevokedAt = Now.AddDays(-1);
+        apiKey.Revoke(Now.AddDays(-1));
 
         _store.FindByHashAsync(gen.HashedKey, Arg.Any<CancellationToken>())
             .Returns(apiKey);
@@ -165,7 +167,7 @@ public sealed class ApiKeyAuthenticationHandlerTests
     {
         ApiKeyGenerationResult gen = _generator.Generate(ApiKeyType.Secret, "live");
         ApiKeyEntry apiKey = CreateActiveApiKey(gen);
-        apiKey.ExpiresAt = Now.AddMinutes(-1);
+        apiKey.SetExpiration(Now.AddMinutes(-1));
 
         _store.FindByHashAsync(gen.HashedKey, Arg.Any<CancellationToken>())
             .Returns(apiKey);
@@ -181,7 +183,7 @@ public sealed class ApiKeyAuthenticationHandlerTests
     {
         ApiKeyGenerationResult gen = _generator.Generate(ApiKeyType.Secret, "live");
         ApiKeyEntry apiKey = CreateActiveApiKey(gen);
-        apiKey.ExpiresAt = Now; // Exact boundary: <= now means expired
+        apiKey.SetExpiration(Now); // Exact boundary: <= now means expired
 
         _store.FindByHashAsync(gen.HashedKey, Arg.Any<CancellationToken>())
             .Returns(apiKey);
@@ -197,7 +199,7 @@ public sealed class ApiKeyAuthenticationHandlerTests
     {
         ApiKeyGenerationResult gen = _generator.Generate(ApiKeyType.Secret, "live");
         ApiKeyEntry apiKey = CreateActiveApiKey(gen);
-        apiKey.ExpiresAt = Now.AddHours(1);
+        apiKey.SetExpiration(Now.AddHours(1));
 
         _store.FindByHashAsync(gen.HashedKey, Arg.Any<CancellationToken>())
             .Returns(apiKey);
@@ -212,7 +214,7 @@ public sealed class ApiKeyAuthenticationHandlerTests
     {
         ApiKeyGenerationResult gen = _generator.Generate(ApiKeyType.Secret, "live");
         ApiKeyEntry apiKey = CreateActiveApiKey(gen);
-        apiKey.ExpiresAt = null;
+        // ExpiresAt is null by default from factory — no need to set it
 
         _store.FindByHashAsync(gen.HashedKey, Arg.Any<CancellationToken>())
             .Returns(apiKey);
@@ -229,7 +231,7 @@ public sealed class ApiKeyAuthenticationHandlerTests
     {
         ApiKeyGenerationResult gen = _generator.Generate(ApiKeyType.Secret, "live");
         ApiKeyEntry apiKey = CreateActiveApiKey(gen);
-        apiKey.AllowedCidrs = ["10.0.0.0/8"];
+        apiKey.UpdateAllowedCidrs(["10.0.0.0/8"]);
 
         _store.FindByHashAsync(gen.HashedKey, Arg.Any<CancellationToken>())
             .Returns(apiKey);
@@ -247,7 +249,7 @@ public sealed class ApiKeyAuthenticationHandlerTests
     {
         ApiKeyGenerationResult gen = _generator.Generate(ApiKeyType.Secret, "live");
         ApiKeyEntry apiKey = CreateActiveApiKey(gen);
-        apiKey.AllowedCidrs = ["10.0.0.0/8"];
+        apiKey.UpdateAllowedCidrs(["10.0.0.0/8"]);
 
         _store.FindByHashAsync(gen.HashedKey, Arg.Any<CancellationToken>())
             .Returns(apiKey);
@@ -264,7 +266,7 @@ public sealed class ApiKeyAuthenticationHandlerTests
     {
         ApiKeyGenerationResult gen = _generator.Generate(ApiKeyType.Secret, "live");
         ApiKeyEntry apiKey = CreateActiveApiKey(gen);
-        apiKey.AllowedCidrs = [];
+        // AllowedCidrs is empty by default from factory — no restriction
 
         _store.FindByHashAsync(gen.HashedKey, Arg.Any<CancellationToken>())
             .Returns(apiKey);
@@ -317,9 +319,9 @@ public sealed class ApiKeyAuthenticationHandlerTests
     public async Task HandleAuthenticate_KeyWithTenantId_IncludesTenantClaim()
     {
         ApiKeyGenerationResult gen = _generator.Generate(ApiKeyType.Secret, "live");
-        ApiKeyEntry apiKey = CreateActiveApiKey(gen);
         var tenantId = Guid.NewGuid();
-        apiKey.TenantId = tenantId;
+        ApiKeyEntry apiKey = CreateActiveApiKey(gen);
+        ((IMultiTenant)apiKey).TenantId = tenantId;
 
         _store.FindByHashAsync(gen.HashedKey, Arg.Any<CancellationToken>())
             .Returns(apiKey);
@@ -335,7 +337,7 @@ public sealed class ApiKeyAuthenticationHandlerTests
     {
         ApiKeyGenerationResult gen = _generator.Generate(ApiKeyType.Secret, "live");
         ApiKeyEntry apiKey = CreateActiveApiKey(gen);
-        apiKey.TenantId = null;
+        // TenantId is null by default from factory — no need to set it
 
         _store.FindByHashAsync(gen.HashedKey, Arg.Any<CancellationToken>())
             .Returns(apiKey);
@@ -351,7 +353,7 @@ public sealed class ApiKeyAuthenticationHandlerTests
     {
         ApiKeyGenerationResult gen = _generator.Generate(ApiKeyType.Secret, "live");
         ApiKeyEntry apiKey = CreateActiveApiKey(gen);
-        apiKey.Permissions = [];
+        apiKey.UpdatePermissions([]);
 
         _store.FindByHashAsync(gen.HashedKey, Arg.Any<CancellationToken>())
             .Returns(apiKey);
@@ -489,8 +491,8 @@ public sealed class ApiKeyAuthenticationHandlerTests
     {
         ApiKeyGenerationResult gen = _generator.Generate(ApiKeyType.Secret, "live");
         ApiKeyEntry apiKey = CreateActiveApiKey(gen);
-        apiKey.RevokedAt = Now.AddDays(-2);
-        apiKey.ExpiresAt = Now.AddDays(-1);
+        apiKey.Revoke(Now.AddDays(-2));
+        apiKey.SetExpiration(Now.AddDays(-1));
 
         _store.FindByHashAsync(gen.HashedKey, Arg.Any<CancellationToken>())
             .Returns(apiKey);
@@ -511,8 +513,15 @@ public sealed class ApiKeyAuthenticationHandlerTests
     public async Task HandleAuthenticate_AllKeyTypes_Succeed(ApiKeyType keyType)
     {
         ApiKeyGenerationResult gen = _generator.Generate(keyType, "live");
-        ApiKeyEntry apiKey = CreateActiveApiKey(gen);
-        apiKey.Type = keyType;
+        var apiKey = ApiKeyEntry.Create(
+            Guid.NewGuid(),
+            "Test Key",
+            keyType,
+            "live",
+            gen.HashedKey,
+            gen.Prefix,
+            gen.LastFourChars);
+        apiKey.UpdatePermissions(["MyApp.Patients.Read", "MyApp.Patients.Write"]);
 
         _store.FindByHashAsync(gen.HashedKey, Arg.Any<CancellationToken>())
             .Returns(apiKey);

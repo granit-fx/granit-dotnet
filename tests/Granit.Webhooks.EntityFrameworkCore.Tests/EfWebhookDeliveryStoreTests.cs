@@ -219,16 +219,17 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
 
     private async Task SeedSubscriptionAsync(Guid subscriptionId, int consecutiveFailures = 0)
     {
-        await using WebhooksDbContext context = new(_options);
-        context.WebhookSubscriptions.Add(new WebhookSubscription
+        var sub = WebhookSubscription.Create(subscriptionId, "https://example.com/hook", "test.event", "protected-secret");
+
+        for (int i = 0; i < consecutiveFailures; i++)
         {
-            Id = subscriptionId,
-            TargetUrl = "https://example.com/hook",
-            EventType = "test.event",
-            SigningSecret = "protected-secret",
-            Status = WebhookSubscriptionStatus.Active,
-            ConsecutiveFailureCount = consecutiveFailures,
-        });
+            sub.RecordFailure();
+        }
+
+        sub.ClearDomainEvents();
+
+        await using WebhooksDbContext context = new(_options);
+        context.WebhookSubscriptions.Add(sub);
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
     }
 

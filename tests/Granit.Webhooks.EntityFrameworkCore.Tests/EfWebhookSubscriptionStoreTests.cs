@@ -160,13 +160,27 @@ public sealed class EfWebhookSubscriptionStoreTests : IAsyncDisposable
     private static WebhookSubscription CreateSubscription(
         string eventType,
         Guid? tenantId,
-        WebhookSubscriptionStatus status = WebhookSubscriptionStatus.Active) => new()
+        WebhookSubscriptionStatus status = WebhookSubscriptionStatus.Active)
+    {
+        var sub = WebhookSubscription.Create(
+            Guid.NewGuid(),
+            $"https://example.com/{Guid.NewGuid()}",
+            eventType,
+            "protected-secret",
+            tenantId);
+
+        switch (status)
         {
-            Id = Guid.NewGuid(),
-            TargetUrl = $"https://example.com/{Guid.NewGuid()}",
-            EventType = eventType,
-            SigningSecret = "protected-secret",
-            TenantId = tenantId,
-            Status = status,
-        };
+            case WebhookSubscriptionStatus.Suspended:
+                sub.Suspend(DateTimeOffset.UtcNow, "system", "test suspension");
+                sub.ClearDomainEvents();
+                break;
+            case WebhookSubscriptionStatus.Deactivated:
+                sub.Deactivate("test deactivation");
+                sub.ClearDomainEvents();
+                break;
+        }
+
+        return sub;
+    }
 }

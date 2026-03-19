@@ -94,14 +94,7 @@ public sealed class ExportExecutionEndpointsTests : IAsyncDisposable
         _orchestrator.ExportAsync(Arg.Any<ExportRequest>(), Arg.Any<CancellationToken>())
             .Returns(new ExportJobResult(jobId, ExportJobStatus.Queued));
         _orchestrator.GetJobAsync(jobId, Arg.Any<CancellationToken>())
-            .Returns(new ExportJob
-            {
-                Id = jobId,
-                DefinitionName = "Test.Export",
-                Format = "csv",
-                RequestJson = "{}",
-                Status = ExportJobStatus.Queued,
-            });
+            .Returns(ExportJob.Create(jobId, "Test.Export", "csv", "{}"));
 
         CreateExportJobRequest request = new("Test.Export", "csv", null, false, null, null, null, null);
 
@@ -181,17 +174,10 @@ public sealed class ExportExecutionEndpointsTests : IAsyncDisposable
     {
         // Arrange
         var jobId = Guid.NewGuid();
+        var completedJob = ExportJob.Create(jobId, "Test.Export", "xlsx", "{}");
+        completedJob.Complete("blob-ref", "export.xlsx", 100, DateTimeOffset.UtcNow);
         _orchestrator.GetJobAsync(jobId, Arg.Any<CancellationToken>())
-            .Returns(new ExportJob
-            {
-                Id = jobId,
-                DefinitionName = "Test.Export",
-                Format = "xlsx",
-                RequestJson = "{}",
-                Status = ExportJobStatus.Completed,
-                RowCount = 100,
-                FileName = "export.xlsx",
-            });
+            .Returns(completedJob);
 
         // Act
         HttpResponseMessage response = await _adminClient.GetAsync(
@@ -229,17 +215,10 @@ public sealed class ExportExecutionEndpointsTests : IAsyncDisposable
     {
         // Arrange
         var jobId = Guid.NewGuid();
+        var downloadJob = ExportJob.Create(jobId, "Test.Export", "csv", "{}");
+        downloadJob.Complete("blob-ref", "export.csv", 10, DateTimeOffset.UtcNow);
         _orchestrator.GetJobAsync(jobId, Arg.Any<CancellationToken>())
-            .Returns(new ExportJob
-            {
-                Id = jobId,
-                DefinitionName = "Test.Export",
-                Format = "csv",
-                RequestJson = "{}",
-                Status = ExportJobStatus.Completed,
-                BlobReference = "blob-ref",
-                FileName = "export.csv",
-            });
+            .Returns(downloadJob);
 
         byte[] fileContent = "Name;Email\nAlice;alice@test.com"u8.ToArray();
         _orchestrator.GetDownloadAsync(jobId, Arg.Any<CancellationToken>())
@@ -259,15 +238,10 @@ public sealed class ExportExecutionEndpointsTests : IAsyncDisposable
     {
         // Arrange
         var jobId = Guid.NewGuid();
+        var exportingJob = ExportJob.Create(jobId, "Test.Export", "csv", "{}");
+        exportingJob.MarkAsExporting();
         _orchestrator.GetJobAsync(jobId, Arg.Any<CancellationToken>())
-            .Returns(new ExportJob
-            {
-                Id = jobId,
-                DefinitionName = "Test.Export",
-                Format = "csv",
-                RequestJson = "{}",
-                Status = ExportJobStatus.Exporting,
-            });
+            .Returns(exportingJob);
 
         // Act
         HttpResponseMessage response = await _adminClient.GetAsync(

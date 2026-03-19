@@ -49,8 +49,7 @@ internal sealed class InMemoryUserNotificationStore : IUserNotificationReader, I
     {
         if (_notifications.TryGetValue(id, out UserNotification? notification))
         {
-            notification.State = UserNotificationState.Read;
-            notification.ReadAt = readAt;
+            notification.MarkAsRead(readAt);
         }
         return Task.CompletedTask;
     }
@@ -60,8 +59,7 @@ internal sealed class InMemoryUserNotificationStore : IUserNotificationReader, I
         foreach (UserNotification notification in _notifications.Values
             .Where(n => n.RecipientUserId == recipientUserId && n.TenantId == tenantId && n.State == UserNotificationState.Unread))
         {
-            notification.State = UserNotificationState.Read;
-            notification.ReadAt = readAt;
+            notification.MarkAsRead(readAt);
         }
         return Task.CompletedTask;
     }

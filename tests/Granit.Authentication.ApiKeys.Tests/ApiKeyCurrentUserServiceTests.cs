@@ -8,13 +8,14 @@ namespace Granit.Authentication.ApiKeys.Tests;
 
 public sealed class ApiKeyCurrentUserServiceTests
 {
-    private readonly ApiKeyEntry _apiKey = new()
-    {
-        Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-        Name = "Partenaire Labo X",
-        Type = ApiKeyType.Secret,
-        Environment = "live",
-    };
+    private readonly ApiKeyEntry _apiKey = ApiKeyEntry.Create(
+        Guid.Parse("11111111-1111-1111-1111-111111111111"),
+        "Partenaire Labo X",
+        ApiKeyType.Secret,
+        "live",
+        "dummy-hash",
+        "gk_live_sk_",
+        "abcd");
 
     private readonly ApiKeyCurrentUserService _sut;
 

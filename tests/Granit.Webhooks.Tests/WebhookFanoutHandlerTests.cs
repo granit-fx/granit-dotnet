@@ -155,12 +155,6 @@ public sealed class WebhookFanoutHandlerTests : IDisposable
         OccurredAt = DateTimeOffset.UtcNow,
     };
 
-    private static WebhookSubscription BuildSubscription() => new()
-    {
-        Id = Guid.NewGuid(),
-        TargetUrl = "https://example.com/webhook",
-        EventType = "test.event",
-        SigningSecret = "protected-secret",
-        Status = WebhookSubscriptionStatus.Active,
-    };
+    private static WebhookSubscription BuildSubscription() =>
+        WebhookSubscription.Create(Guid.NewGuid(), "https://example.com/webhook", "test.event", "protected-secret");
 }

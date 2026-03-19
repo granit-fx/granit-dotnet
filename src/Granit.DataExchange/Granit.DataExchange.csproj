@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Granit.DataExchange.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.DataExchange.Endpoints.Tests" />
     <InternalsVisibleTo Include="Granit.DataExchange.Tests" />
     <InternalsVisibleTo Include="Granit.DataExchange.Csv" />
     <InternalsVisibleTo Include="Granit.DataExchange.Excel" />

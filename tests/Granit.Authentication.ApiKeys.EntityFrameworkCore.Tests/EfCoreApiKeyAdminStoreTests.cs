@@ -93,7 +93,7 @@ public sealed class EfCoreApiKeyAdminStoreTests : IDisposable
     public async Task RevokeAsync_AlreadyRevokedKey_ReturnsFalse()
     {
         ApiKeyEntry entry = CreateEntry();
-        entry.RevokedAt = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        entry.Revoke(new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero));
         await SeedAsync(entry);
 
         bool result = await _sut.RevokeAsync(
@@ -214,7 +214,7 @@ public sealed class EfCoreApiKeyAdminStoreTests : IDisposable
     {
         await SeedAsync(CreateEntry("hash1", "Active Key"));
         ApiKeyEntry revoked = CreateEntry("hash2", "Revoked Key");
-        revoked.RevokedAt = DateTimeOffset.UtcNow;
+        revoked.Revoke(DateTimeOffset.UtcNow);
         await SeedAsync(revoked);
 
         PagedResult<ApiKeyEntry> result = await _sut.ListAsync(
@@ -229,7 +229,7 @@ public sealed class EfCoreApiKeyAdminStoreTests : IDisposable
     {
         await SeedAsync(CreateEntry("hash1", "Active Key"));
         ApiKeyEntry revoked = CreateEntry("hash2", "Revoked Key");
-        revoked.RevokedAt = DateTimeOffset.UtcNow;
+        revoked.Revoke(DateTimeOffset.UtcNow);
         await SeedAsync(revoked);
 
         PagedResult<ApiKeyEntry> result = await _sut.ListAsync(
@@ -287,17 +287,18 @@ public sealed class EfCoreApiKeyAdminStoreTests : IDisposable
         string hash = "default_hash",
         string name = "Test Key",
         ApiKeyType type = ApiKeyType.Secret,
-        string environment = "test") => new()
-        {
-            Id = Guid.NewGuid(),
-            Name = name,
-            Type = type,
-            Environment = environment,
-            HashedKey = hash,
-            Prefix = "gk_test_sk_",
-            LastFourChars = "abcd",
-            Permissions = ["Read"],
-            AllowedCidrs = [],
-            CreatedBy = "test",
-        };
+        string environment = "test")
+    {
+        var entry = ApiKeyEntry.Create(
+            Guid.NewGuid(),
+            name,
+            type,
+            environment,
+            hash,
+            "gk_test_sk_",
+            "abcd");
+        entry.UpdatePermissions(["Read"]);
+        entry.CreatedBy = "test";
+        return entry;
+    }
 }

@@ -219,12 +219,22 @@ public sealed class RetryWebhookHandlerTests
         IsSuccess = isSuccess,
     };
 
-    private static WebhookSubscription BuildSubscription(Guid id, WebhookSubscriptionStatus status) => new()
+    private static WebhookSubscription BuildSubscription(Guid id, WebhookSubscriptionStatus status)
     {
-        Id = id,
-        TargetUrl = "https://example.com/webhook",
-        EventType = "test.event",
-        SigningSecret = "test-secret",
-        Status = status,
-    };
+        var sub = WebhookSubscription.Create(id, "https://example.com/webhook", "test.event", "test-secret");
+
+        switch (status)
+        {
+            case WebhookSubscriptionStatus.Suspended:
+                sub.Suspend(DateTimeOffset.UtcNow, "system", "test suspension");
+                sub.ClearDomainEvents();
+                break;
+            case WebhookSubscriptionStatus.Deactivated:
+                sub.Deactivate("test deactivation");
+                sub.ClearDomainEvents();
+                break;
+        }
+
+        return sub;
+    }
 }

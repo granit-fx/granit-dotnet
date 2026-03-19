@@ -134,16 +134,24 @@ public sealed class InMemoryUserNotificationStoreTests
         UserNotificationState state = UserNotificationState.Unread,
         DateTimeOffset? createdAt = null,
         string? relatedEntityType = null,
-        string? relatedEntityId = null) => new()
+        string? relatedEntityId = null)
+    {
+        var notification = UserNotification.Create(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "test.notification",
+            NotificationSeverity.Info,
+            userId,
+            JsonSerializer.SerializeToElement(new { key = "value" }),
+            createdAt ?? DateTimeOffset.UtcNow,
+            relatedEntityType: relatedEntityType,
+            relatedEntityId: relatedEntityId);
+
+        if (state == UserNotificationState.Read)
         {
-            Id = Guid.NewGuid(),
-            RecipientUserId = userId,
-            NotificationTypeName = "test.notification",
-            Severity = NotificationSeverity.Info,
-            Data = JsonSerializer.SerializeToElement(new { key = "value" }),
-            State = state,
-            CreatedAt = createdAt ?? DateTimeOffset.UtcNow,
-            RelatedEntityType = relatedEntityType,
-            RelatedEntityId = relatedEntityId,
-        };
+            notification.MarkAsRead(DateTimeOffset.UtcNow);
+        }
+
+        return notification;
+    }
 }

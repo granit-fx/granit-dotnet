@@ -59,8 +59,7 @@ internal sealed class EfWebhookDeliveryStore(IDbContextFactory<WebhooksDbContext
 
         if (subscription is not null)
         {
-            subscription.LastSuccessAt = clock.Now;
-            subscription.ConsecutiveFailureCount = 0;
+            subscription.RecordSuccess(clock.Now);
         }
 
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -98,7 +97,7 @@ internal sealed class EfWebhookDeliveryStore(IDbContextFactory<WebhooksDbContext
 
         if (subscription is not null)
         {
-            subscription.ConsecutiveFailureCount++;
+            subscription.RecordFailure();
         }
 
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

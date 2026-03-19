@@ -164,13 +164,22 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
     private static WebhookSubscription BuildSubscription(
         string eventType,
         Guid? tenantId,
-        WebhookSubscriptionStatus status) => new()
+        WebhookSubscriptionStatus status)
+    {
+        var sub = WebhookSubscription.Create(Guid.NewGuid(), "https://example.com/webhook", eventType, "protected-secret", tenantId);
+
+        switch (status)
         {
-            Id = Guid.NewGuid(),
-            TargetUrl = "https://example.com/webhook",
-            EventType = eventType,
-            SigningSecret = "protected-secret",
-            TenantId = tenantId,
-            Status = status,
-        };
+            case WebhookSubscriptionStatus.Suspended:
+                sub.Suspend(DateTimeOffset.UtcNow, "system", "test suspension");
+                sub.ClearDomainEvents();
+                break;
+            case WebhookSubscriptionStatus.Deactivated:
+                sub.Deactivate("test deactivation");
+                sub.ClearDomainEvents();
+                break;
+        }
+
+        return sub;
+    }
 }

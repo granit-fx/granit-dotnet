@@ -1,5 +1,4 @@
 using Granit.Core.Domain;
-using Granit.Core.Events;
 using Granit.Webhooks.Events;
 
 namespace Granit.Webhooks.Domain;
@@ -19,67 +18,97 @@ namespace Granit.Webhooks.Domain;
 /// and <see cref="SuspendedBy"/> (UserId only, never PII).
 /// </para>
 /// </remarks>
-public sealed class WebhookSubscription : AuditedEntity, IDomainEventSource
+public sealed class WebhookSubscription : AuditedAggregateRoot
 {
-    private readonly List<IDomainEvent> _domainEvents = [];
+    // Parameterless constructor required by EF Core materializer.
+    private WebhookSubscription() { }
+
+    /// <summary>
+    /// Creates a new active <see cref="WebhookSubscription"/>.
+    /// </summary>
+    public static WebhookSubscription Create(
+        Guid id,
+        string targetUrl,
+        string eventType,
+        string signingSecret,
+        Guid? tenantId = null) => new()
+        {
+            Id = id,
+            TargetUrl = targetUrl,
+            EventType = eventType,
+            SigningSecret = signingSecret,
+            TenantId = tenantId,
+            Status = WebhookSubscriptionStatus.Active,
+        };
 
     /// <summary>
     /// The HTTPS endpoint that receives webhook HTTP POST requests.
     /// Maximum length: 2048 characters.
     /// </summary>
-    public string TargetUrl { get; set; } = string.Empty;
+    public string TargetUrl { get; private set; } = string.Empty;
 
     /// <summary>
     /// Logical event type this subscription is registered for (e.g., <c>"document.uploaded"</c>).
     /// Maximum length: 200 characters.
     /// </summary>
-    public string EventType { get; set; } = string.Empty;
+    public string EventType { get; private set; } = string.Empty;
 
     /// <summary>
     /// Protected signing secret used to compute the <c>x-granit-signature</c> HMAC.
     /// The raw value is opaque — protected by <see cref="Abstractions.IWebhookSecretProtector"/>.
     /// Never store or log the plaintext secret. Maximum length: 1000 characters.
     /// </summary>
-    public string SigningSecret { get; set; } = string.Empty;
+    public string SigningSecret { get; private set; } = string.Empty;
 
     /// <summary>
     /// Tenant this subscription belongs to.
     /// <c>null</c> indicates a global subscription that applies regardless of tenant context.
     /// </summary>
-    public Guid? TenantId { get; set; }
+    public Guid? TenantId { get; private set; }
 
     /// <summary>Current lifecycle status of the subscription.</summary>
-    public WebhookSubscriptionStatus Status { get; set; } = WebhookSubscriptionStatus.Active;
+    public WebhookSubscriptionStatus Status { get; private set; } = WebhookSubscriptionStatus.Active;
 
     /// <summary>
     /// Human-readable reason for suspension or deactivation.
     /// Set automatically on HTTP non-retriable errors. Maximum length: 500 characters.
     /// </summary>
-    public string? DeactivationReason { get; set; }
+    public string? DeactivationReason { get; private set; }
 
     /// <summary>
     /// Number of consecutive delivery failures since the last successful delivery.
     /// Reset to zero on success.
     /// </summary>
-    public int ConsecutiveFailureCount { get; set; }
+    public int ConsecutiveFailureCount { get; private set; }
 
     /// <summary>UTC timestamp of the last successful delivery. Null if never delivered.</summary>
-    public DateTimeOffset? LastSuccessAt { get; set; }
+    public DateTimeOffset? LastSuccessAt { get; private set; }
 
     /// <summary>UTC timestamp when the subscription was suspended. ISO 27001 audit field.</summary>
-    public DateTimeOffset? SuspendedAt { get; set; }
+    public DateTimeOffset? SuspendedAt { get; private set; }
 
     /// <summary>
     /// UserId (not PII) of the operator who suspended the subscription, or the system identifier
     /// for automatic suspensions. ISO 27001 audit field. Maximum length: 450 characters.
     /// </summary>
-    public string? SuspendedBy { get; set; }
+    public string? SuspendedBy { get; private set; }
 
-    /// <inheritdoc />
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+    /// <summary>
+    /// Records a successful delivery. Resets failure counters.
+    /// </summary>
+    internal void RecordSuccess(DateTimeOffset at)
+    {
+        LastSuccessAt = at;
+        ConsecutiveFailureCount = 0;
+    }
 
-    /// <inheritdoc />
-    public void ClearDomainEvents() => _domainEvents.Clear();
+    /// <summary>
+    /// Records a delivery failure.
+    /// </summary>
+    internal void RecordFailure()
+    {
+        ConsecutiveFailureCount++;
+    }
 
     /// <summary>
     /// Suspends the subscription and emits a <see cref="WebhookSubscriptionSuspended"/> domain event.
@@ -90,7 +119,7 @@ public sealed class WebhookSubscription : AuditedEntity, IDomainEventSource
         DeactivationReason = reason;
         SuspendedAt = suspendedAt;
         SuspendedBy = suspendedBy;
-        _domainEvents.Add(new WebhookSubscriptionSuspended(Id, reason));
+        AddDomainEvent(new WebhookSubscriptionSuspended(Id, reason));
     }
 
     /// <summary>
@@ -100,6 +129,6 @@ public sealed class WebhookSubscription : AuditedEntity, IDomainEventSource
     {
         Status = WebhookSubscriptionStatus.Deactivated;
         DeactivationReason = reason;
-        _domainEvents.Add(new WebhookSubscriptionDeactivated(Id, reason));
+        AddDomainEvent(new WebhookSubscriptionDeactivated(Id, reason));
     }
 }

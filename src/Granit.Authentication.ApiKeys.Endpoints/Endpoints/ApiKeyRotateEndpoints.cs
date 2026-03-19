@@ -47,22 +47,19 @@ internal static class ApiKeyRotateEndpoints
         // Generate new key with same settings
         ApiKeyGenerationResult keyResult = generator.Generate(existing.Type, existing.Environment);
 
-        var newEntry = new ApiKeyEntry
-        {
-            Id = guidGenerator.Create(),
-            Name = existing.Name,
-            Type = existing.Type,
-            Environment = existing.Environment,
-            HashedKey = keyResult.HashedKey,
-            Prefix = keyResult.Prefix,
-            LastFourChars = keyResult.LastFourChars,
-            Permissions = [.. existing.Permissions],
-            AllowedCidrs = [.. existing.AllowedCidrs],
-            ExpiresAt = existing.ExpiresAt,
-            CacheBehavior = existing.CacheBehavior,
-            TenantId = existing.TenantId,
-            CreatedAt = clock.Now,
-        };
+        var newEntry = ApiKeyEntry.Create(
+            guidGenerator.Create(),
+            existing.Name,
+            existing.Type,
+            existing.Environment,
+            keyResult.HashedKey,
+            keyResult.Prefix,
+            keyResult.LastFourChars,
+            existing.TenantId);
+        newEntry.UpdatePermissions([.. existing.Permissions]);
+        newEntry.UpdateAllowedCidrs([.. existing.AllowedCidrs]);
+        newEntry.SetExpiration(existing.ExpiresAt);
+        newEntry.SetCacheBehavior(existing.CacheBehavior);
 
         await adminStore.CreateAsync(newEntry, cancellationToken).ConfigureAwait(false);
 

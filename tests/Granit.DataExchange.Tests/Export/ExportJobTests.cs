@@ -9,31 +9,29 @@ namespace Granit.DataExchange.Tests.Export;
 public sealed class ExportJobTests
 {
     [Fact]
-    public void Inherits_AuditedEntity() =>
-        typeof(ExportJob).IsAssignableTo(typeof(AuditedEntity)).ShouldBeTrue();
+    public void Inherits_AuditedAggregateRoot() =>
+        typeof(ExportJob).IsAssignableTo(typeof(AuditedAggregateRoot)).ShouldBeTrue();
 
     [Fact]
-    public void DefaultStatus_IsQueued()
+    public void Create_DefaultStatus_IsQueued()
     {
-        ExportJob job = new()
-        {
-            DefinitionName = "Test",
-            Format = "xlsx",
-            RequestJson = "{}",
-        };
+        var job = ExportJob.Create(
+            Guid.NewGuid(),
+            "Test",
+            "xlsx",
+            "{}");
 
         job.Status.ShouldBe(ExportJobStatus.Queued);
     }
 
     [Fact]
-    public void NullableProperties_AreNullByDefault()
+    public void Create_NullableProperties_AreNullByDefault()
     {
-        ExportJob job = new()
-        {
-            DefinitionName = "Test",
-            Format = "csv",
-            RequestJson = "{}",
-        };
+        var job = ExportJob.Create(
+            Guid.NewGuid(),
+            "Test",
+            "csv",
+            "{}");
 
         job.BlobReference.ShouldBeNull();
         job.FileName.ShouldBeNull();
@@ -44,32 +42,73 @@ public sealed class ExportJobTests
     }
 
     [Fact]
-    public void Properties_CanBeSetAndRead()
+    public void Create_SetsAllProperties()
     {
+        var id = Guid.NewGuid();
         var tenantId = Guid.NewGuid();
-        DateTimeOffset now = DateTimeOffset.UtcNow;
 
-        ExportJob job = new()
-        {
-            DefinitionName = "Acme.PatientExport",
-            Format = "xlsx",
-            RequestJson = """{"filter":"active"}""",
-            Status = ExportJobStatus.Completed,
-            BlobReference = "exports/abc.xlsx",
-            FileName = "patients_2026-03-03.xlsx",
-            RowCount = 42,
-            CompletedAt = now,
-            TenantId = tenantId,
-        };
+        var job = ExportJob.Create(
+            id,
+            "Acme.PatientExport",
+            "xlsx",
+            """{"filter":"active"}""",
+            tenantId);
 
+        job.Id.ShouldBe(id);
         job.DefinitionName.ShouldBe("Acme.PatientExport");
         job.Format.ShouldBe("xlsx");
         job.RequestJson.ShouldBe("""{"filter":"active"}""");
+        job.Status.ShouldBe(ExportJobStatus.Queued);
+        job.TenantId.ShouldBe(tenantId);
+    }
+
+    [Fact]
+    public void Complete_SetsCompletedState()
+    {
+        var job = ExportJob.Create(
+            Guid.NewGuid(),
+            "Test",
+            "xlsx",
+            "{}");
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+
+        job.Complete("exports/abc.xlsx", "patients_2026-03-03.xlsx", 42, now);
+
         job.Status.ShouldBe(ExportJobStatus.Completed);
         job.BlobReference.ShouldBe("exports/abc.xlsx");
         job.FileName.ShouldBe("patients_2026-03-03.xlsx");
         job.RowCount.ShouldBe(42);
         job.CompletedAt.ShouldBe(now);
-        job.TenantId.ShouldBe(tenantId);
+    }
+
+    [Fact]
+    public void MarkAsExporting_TransitionsStatus()
+    {
+        var job = ExportJob.Create(
+            Guid.NewGuid(),
+            "Test",
+            "csv",
+            "{}");
+
+        job.MarkAsExporting();
+
+        job.Status.ShouldBe(ExportJobStatus.Exporting);
+    }
+
+    [Fact]
+    public void Fail_SetsFailedState()
+    {
+        var job = ExportJob.Create(
+            Guid.NewGuid(),
+            "Test",
+            "csv",
+            "{}");
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+
+        job.Fail("Something went wrong", now);
+
+        job.Status.ShouldBe(ExportJobStatus.Failed);
+        job.ErrorMessage.ShouldBe("Something went wrong");
+        job.CompletedAt.ShouldBe(now);
     }
 }

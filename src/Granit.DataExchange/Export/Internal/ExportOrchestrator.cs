@@ -40,14 +40,11 @@ internal sealed partial class ExportOrchestrator(
         _ = ResolveWriter(request.Format);
 
         // Create the job entity
-        ExportJob job = new()
-        {
-            Id = guidGenerator.Create(),
-            DefinitionName = request.DefinitionName,
-            Format = request.Format,
-            RequestJson = JsonSerializer.Serialize(request),
-            Status = ExportJobStatus.Queued,
-        };
+        var job = ExportJob.Create(
+            guidGenerator.Create(),
+            request.DefinitionName,
+            request.Format,
+            JsonSerializer.Serialize(request));
 
         await jobWriter.CreateAsync(job, cancellationToken).ConfigureAwait(false);
 
@@ -70,7 +67,7 @@ internal sealed partial class ExportOrchestrator(
 
         try
         {
-            job.Status = ExportJobStatus.Exporting;
+            job.MarkAsExporting();
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
             ExportRequest request = JsonSerializer.Deserialize<ExportRequest>(job.RequestJson)!;
@@ -92,11 +89,7 @@ internal sealed partial class ExportOrchestrator(
             string fileName = $"{SanitizeFileName(request.DefinitionName)}_{clock.Now:yyyy-MM-dd_HHmmss}{writer.FileExtension}";
             string blobReference = await fileProvider.SaveAsync(fileName, outputStream, cancellationToken).ConfigureAwait(false);
 
-            job.Status = ExportJobStatus.Completed;
-            job.BlobReference = blobReference;
-            job.FileName = fileName;
-            job.RowCount = rowCount;
-            job.CompletedAt = clock.Now;
+            job.Complete(blobReference, fileName, rowCount, clock.Now);
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
             await eventBus.PublishAsync(new ExportJobCompletedEvent(
@@ -107,9 +100,7 @@ internal sealed partial class ExportOrchestrator(
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            job.Status = ExportJobStatus.Failed;
-            job.ErrorMessage = ex.Message;
-            job.CompletedAt = clock.Now;
+            job.Fail(ex.Message, clock.Now);
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
             await eventBus.PublishAsync(new ExportJobCompletedEvent(

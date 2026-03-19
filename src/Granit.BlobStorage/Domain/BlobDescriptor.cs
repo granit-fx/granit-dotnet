@@ -1,6 +1,5 @@
 using Granit.BlobStorage.Events;
 using Granit.Core.Domain;
-using Granit.Core.Events;
 
 namespace Granit.BlobStorage.Domain;
 
@@ -22,10 +21,8 @@ namespace Granit.BlobStorage.Domain;
 /// <see cref="BlobStatus.Deleted"/> means the S3 bytes are gone; the audit row remains for 3 years.
 /// </para>
 /// </remarks>
-public sealed class BlobDescriptor : IDomainEventSource, IMultiTenant
+public sealed class BlobDescriptor : AggregateRoot, IMultiTenant
 {
-    private readonly List<IDomainEvent> _domainEvents = [];
-
     // Parameterless constructor required by EF Core materializer.
     private BlobDescriptor() { }
 
@@ -50,9 +47,6 @@ public sealed class BlobDescriptor : IDomainEventSource, IMultiTenant
             Status = BlobStatus.Pending,
             CreatedAt = createdAt,
         };
-
-    /// <summary>Unique identifier, used as the public <c>BlobId</c> in API responses.</summary>
-    public Guid Id { get; private set; }
 
     /// <summary>Identifier of the tenant that owns this blob.</summary>
     public Guid? TenantId { get; private set; }
@@ -108,12 +102,6 @@ public sealed class BlobDescriptor : IDomainEventSource, IMultiTenant
     /// <summary>Human-readable reason for deletion (e.g. "RGPD Art. 17 request"); null unless <see cref="BlobStatus.Deleted"/>.</summary>
     public string? DeletionReason { get; private set; }
 
-    /// <inheritdoc />
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
-
-    /// <inheritdoc />
-    public void ClearDomainEvents() => _domainEvents.Clear();
-
     /// <summary>
     /// Transitions from <see cref="BlobStatus.Pending"/> to <see cref="BlobStatus.Uploading"/>.
     /// Called when the S3 upload notification is received.
@@ -151,7 +139,7 @@ public sealed class BlobDescriptor : IDomainEventSource, IMultiTenant
         SizeBytes = sizeBytes;
         ValidatedAt = validatedAt;
 
-        _domainEvents.Add(new BlobValidated(Id, ContainerName, verifiedContentType, sizeBytes));
+        AddDomainEvent(new BlobValidated(Id, ContainerName, verifiedContentType, sizeBytes));
     }
 
     /// <summary>
@@ -171,7 +159,7 @@ public sealed class BlobDescriptor : IDomainEventSource, IMultiTenant
         Status = BlobStatus.Rejected;
         RejectionReason = reason;
 
-        _domainEvents.Add(new BlobRejected(Id, ContainerName, reason));
+        AddDomainEvent(new BlobRejected(Id, ContainerName, reason));
     }
 
     /// <summary>
@@ -194,6 +182,6 @@ public sealed class BlobDescriptor : IDomainEventSource, IMultiTenant
         DeletedAt = deletedAt;
         DeletionReason = reason;
 
-        _domainEvents.Add(new BlobDeleted(Id, ContainerName, reason));
+        AddDomainEvent(new BlobDeleted(Id, ContainerName, reason));
     }
 }

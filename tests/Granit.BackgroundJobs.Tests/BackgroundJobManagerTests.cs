@@ -50,15 +50,19 @@ public sealed class BackgroundJobManagerTests : IDisposable
     private static BackgroundJobDefinition MakeJob(
         string name = "test-job",
         string cron = "0 * * * *",
-        bool enabled = true) =>
-        new()
+        bool enabled = true)
+    {
+        var job = BackgroundJobDefinition.Create(
+            Guid.NewGuid(), name, cron, typeof(FakeDailyReportMessage).AssemblyQualifiedName!);
+
+        if (!enabled)
         {
-            Id = Guid.NewGuid(),
-            JobName = name,
-            CronExpression = cron,
-            MessageType = typeof(FakeDailyReportMessage).AssemblyQualifiedName!,
-            IsEnabled = enabled,
-        };
+            job.Pause();
+            job.ClearDomainEvents();
+        }
+
+        return job;
+    }
 
     // =========================================================================
     // GetAllAsync
@@ -93,8 +97,9 @@ public sealed class BackgroundJobManagerTests : IDisposable
             typeof(FakeDailyReportMessage).AssemblyQualifiedName!.Split(',')[0].Trim();
 
         BackgroundJobDefinition job = MakeJob("daily-report", "0 8 * * *");
-        job.ConsecutiveFailureCount = 3;
-        job.LastErrorMessage = "timeout";
+        job.RecordFailure("timeout");
+        job.RecordFailure("timeout");
+        job.RecordFailure("timeout");
         _storeReader.GetAllJobsAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<BackgroundJobDefinition>>([job]));
 

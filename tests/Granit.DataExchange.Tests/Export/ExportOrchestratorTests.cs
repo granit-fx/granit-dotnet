@@ -42,15 +42,12 @@ public sealed class ExportOrchestratorTests
             {
                 // Return a job matching the requested ID with Queued status by default
                 Guid id = call.Arg<Guid>();
-                return new ExportJob
-                {
-                    Id = id,
-                    DefinitionName = "Test.Export",
-                    Format = "csv",
-                    RequestJson = JsonSerializer.Serialize(new ExportRequest(
-                        "Test.Export", "csv", null, false, null, null, null, null)),
-                    Status = ExportJobStatus.Queued,
-                };
+                return ExportJob.Create(
+                    id,
+                    "Test.Export",
+                    "csv",
+                    JsonSerializer.Serialize(new ExportRequest(
+                        "Test.Export", "csv", null, false, null, null, null, null)));
             });
     }
 
@@ -147,14 +144,7 @@ public sealed class ExportOrchestratorTests
         ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         ExportRequest request = new("Test.Export", "csv", ["Name"], false, null, null, null, null);
-        ExportJob job = new()
-        {
-            Id = jobId,
-            DefinitionName = "Test.Export",
-            Format = "csv",
-            RequestJson = JsonSerializer.Serialize(request),
-            Status = ExportJobStatus.Queued,
-        };
+        var job = ExportJob.Create(jobId, "Test.Export", "csv", JsonSerializer.Serialize(request));
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         IExportWriter capturedWriter = Substitute.For<IExportWriter>();
@@ -193,14 +183,7 @@ public sealed class ExportOrchestratorTests
         ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         ExportRequest request = new("Test.Export", "csv", ["Company.Name"], false, null, null, null, null);
-        ExportJob job = new()
-        {
-            Id = jobId,
-            DefinitionName = "Test.Export",
-            Format = "csv",
-            RequestJson = JsonSerializer.Serialize(request),
-            Status = ExportJobStatus.Queued,
-        };
+        var job = ExportJob.Create(jobId, "Test.Export", "csv", JsonSerializer.Serialize(request));
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         List<IReadOnlyDictionary<string, object?>> capturedRows = [];
@@ -272,14 +255,7 @@ public sealed class ExportOrchestratorTests
         // Arrange
         var jobId = Guid.NewGuid();
         ExportRequest request = new("Test.QueryExport", "csv", null, false, "-Name", null, null, null);
-        ExportJob job = new()
-        {
-            Id = jobId,
-            DefinitionName = "Test.QueryExport",
-            Format = "csv",
-            RequestJson = JsonSerializer.Serialize(request),
-            Status = ExportJobStatus.Queued,
-        };
+        var job = ExportJob.Create(jobId, "Test.QueryExport", "csv", JsonSerializer.Serialize(request));
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         FakeQueryEngine queryEngine = new();
@@ -303,14 +279,7 @@ public sealed class ExportOrchestratorTests
         ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         ExportRequest request = new("Test.Export", "csv", [], false, null, null, null, null);
-        ExportJob job = new()
-        {
-            Id = jobId,
-            DefinitionName = "Test.Export",
-            Format = "csv",
-            RequestJson = JsonSerializer.Serialize(request),
-            Status = ExportJobStatus.Queued,
-        };
+        var job = ExportJob.Create(jobId, "Test.Export", "csv", JsonSerializer.Serialize(request));
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         IReadOnlyList<ExportFieldDescriptor>? capturedFields = null;
@@ -347,14 +316,7 @@ public sealed class ExportOrchestratorTests
         ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         ExportRequest request = new("Test.Export", "csv", ["Email", "Name"], false, null, null, null, null);
-        ExportJob job = new()
-        {
-            Id = jobId,
-            DefinitionName = "Test.Export",
-            Format = "csv",
-            RequestJson = JsonSerializer.Serialize(request),
-            Status = ExportJobStatus.Queued,
-        };
+        var job = ExportJob.Create(jobId, "Test.Export", "csv", JsonSerializer.Serialize(request));
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         IReadOnlyList<ExportFieldDescriptor>? capturedFields = null;
@@ -415,14 +377,7 @@ public sealed class ExportOrchestratorTests
         Dictionary<string, string> filter = new() { ["name.eq"] = "Alice" };
         Dictionary<string, string> presets = new() { ["status"] = "Active" };
         ExportRequest request = new("Test.QueryExport", "csv", null, false, "-Name", filter, presets, "test search");
-        ExportJob job = new()
-        {
-            Id = jobId,
-            DefinitionName = "Test.QueryExport",
-            Format = "csv",
-            RequestJson = JsonSerializer.Serialize(request),
-            Status = ExportJobStatus.Queued,
-        };
+        var job = ExportJob.Create(jobId, "Test.QueryExport", "csv", JsonSerializer.Serialize(request));
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         FakeQueryEngine queryEngine = new();
@@ -539,16 +494,8 @@ public sealed class ExportOrchestratorTests
         // Arrange — xlsx format
         ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
-        ExportJob job = new()
-        {
-            Id = jobId,
-            DefinitionName = "Test.Export",
-            Format = "xlsx",
-            RequestJson = "{}",
-            Status = ExportJobStatus.Completed,
-            BlobReference = "blob-ref-xlsx",
-            FileName = "test_export.xlsx",
-        };
+        var job = ExportJob.Create(jobId, "Test.Export", "xlsx", "{}");
+        job.Complete("blob-ref-xlsx", "test_export.xlsx", 0, DateTimeOffset.UtcNow);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         IExportWriter xlsxWriter = Substitute.For<IExportWriter>();
@@ -612,9 +559,9 @@ public sealed class ExportOrchestratorTests
         // Arrange
         ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
-        ExportJob job = BuildJob(jobId, ExportJobStatus.Completed);
-        job.BlobReference = "blob-ref-export";
-        job.FileName = "test_export.csv";
+        var job = ExportJob.Create(jobId, "Test.Export", "csv",
+            JsonSerializer.Serialize(new ExportRequest("Test.Export", "csv", null, false, null, null, null, null)));
+        job.Complete("blob-ref-export", "test_export.csv", 10, DateTimeOffset.UtcNow);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
         MemoryStream blobStream = new([1, 2, 3]);
@@ -736,16 +683,31 @@ public sealed class ExportOrchestratorTests
         return writer;
     }
 
-    private static ExportJob BuildJob(Guid id, ExportJobStatus status) =>
-        new()
+    private static ExportJob BuildJob(Guid id, ExportJobStatus status)
+    {
+        var job = ExportJob.Create(
+            id,
+            "Test.Export",
+            "csv",
+            JsonSerializer.Serialize(new ExportRequest(
+                "Test.Export", "csv", null, false, null, null, null, null)));
+
+        // Transition to desired status using behavior methods
+        if (status == ExportJobStatus.Exporting)
         {
-            Id = id,
-            DefinitionName = "Test.Export",
-            Format = "csv",
-            RequestJson = JsonSerializer.Serialize(new ExportRequest(
-                "Test.Export", "csv", null, false, null, null, null, null)),
-            Status = status,
-        };
+            job.MarkAsExporting();
+        }
+        else if (status == ExportJobStatus.Completed)
+        {
+            job.Complete("blob-ref", "export.csv", 0, DateTimeOffset.UtcNow);
+        }
+        else if (status == ExportJobStatus.Failed)
+        {
+            job.Fail("failed", DateTimeOffset.UtcNow);
+        }
+
+        return job;
+    }
 
     // ── Test types ──────────────────────────────────────────────────────
 

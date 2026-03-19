@@ -98,18 +98,19 @@ public sealed class EfCoreApiKeyStoreTests : IDisposable
         await db.SaveChangesAsync(TestContext.Current.CancellationToken);
     }
 
-    private static ApiKeyEntry CreateEntry(string hash) => new()
+    private static ApiKeyEntry CreateEntry(string hash)
     {
-        Id = Guid.NewGuid(),
-        Name = "Test Key",
-        Type = ApiKeyType.Secret,
-        Environment = "test",
-        HashedKey = hash,
-        Prefix = "gk_test_sk_",
-        LastFourChars = "abcd",
-        Permissions = ["Read"],
-        AllowedCidrs = [],
-        CreatedBy = "test",
-    };
+        var entry = ApiKeyEntry.Create(
+            Guid.NewGuid(),
+            "Test Key",
+            ApiKeyType.Secret,
+            "test",
+            hash,
+            "gk_test_sk_",
+            "abcd");
+        entry.UpdatePermissions(["Read"]);
+        entry.CreatedBy = "test";
+        return entry;
+    }
 
 }

@@ -69,12 +69,17 @@ public sealed class BackgroundJobDefinitionTests
         job.DomainEvents.Last().ShouldBeOfType<BackgroundJobResumed>();
     }
 
-    private static BackgroundJobDefinition BuildJob(bool enabled = true) => new()
+    private static BackgroundJobDefinition BuildJob(bool enabled = true)
     {
-        Id = Guid.NewGuid(),
-        JobName = "test-job",
-        CronExpression = "0 8 * * *",
-        MessageType = "TestMessage, TestAssembly",
-        IsEnabled = enabled,
-    };
+        var job = BackgroundJobDefinition.Create(
+            Guid.NewGuid(), "test-job", "0 8 * * *", "TestMessage, TestAssembly");
+
+        if (!enabled)
+        {
+            job.Pause();
+            job.ClearDomainEvents();
+        }
+
+        return job;
+    }
 }

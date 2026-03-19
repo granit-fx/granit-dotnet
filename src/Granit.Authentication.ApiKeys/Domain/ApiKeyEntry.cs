@@ -6,55 +6,126 @@ namespace Granit.Authentication.ApiKeys.Domain;
 /// <summary>
 /// Represents an API key with its metadata, permissions, and lifecycle state.
 /// </summary>
-public class ApiKeyEntry : AuditedEntity, ISoftDeletable, IMultiTenant
+public sealed class ApiKeyEntry : FullAuditedAggregateRoot, IMultiTenant
 {
+    // Parameterless constructor required by EF Core materializer.
+    private ApiKeyEntry() { }
+
+    /// <summary>
+    /// Creates a new active <see cref="ApiKeyEntry"/>.
+    /// </summary>
+    public static ApiKeyEntry Create(
+        Guid id,
+        string name,
+        ApiKeyType type,
+        string environment,
+        string hashedKey,
+        string prefix,
+        string lastFourChars,
+        Guid? tenantId = null) => new()
+        {
+            Id = id,
+            Name = name,
+            Type = type,
+            Environment = environment,
+            HashedKey = hashedKey,
+            Prefix = prefix,
+            LastFourChars = lastFourChars,
+            TenantId = tenantId,
+        };
+
     /// <summary>Display name of the API key (e.g., "Partenaire Labo X").</summary>
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; private set; } = string.Empty;
 
     /// <summary>Type of the API key (Secret, Publishable, Webhook, Ephemeral).</summary>
-    public ApiKeyType Type { get; set; }
+    public ApiKeyType Type { get; private set; }
 
     /// <summary>Target environment (<c>live</c>, <c>test</c>, <c>dev</c>).</summary>
-    public string Environment { get; set; } = string.Empty;
+    public string Environment { get; private set; } = string.Empty;
 
     /// <summary>SHA-256 hash of the raw secret. The raw secret is never stored.</summary>
-    public string HashedKey { get; set; } = string.Empty;
+    public string HashedKey { get; private set; } = string.Empty;
 
     /// <summary>Prefix of the key for display purposes (e.g., <c>gk_live_sk_</c>).</summary>
-    public string Prefix { get; set; } = string.Empty;
+    public string Prefix { get; private set; } = string.Empty;
 
     /// <summary>Last four characters of the raw secret for identification.</summary>
-    public string LastFourChars { get; set; } = string.Empty;
+    public string LastFourChars { get; private set; } = string.Empty;
 
     /// <summary>Permissions granted to this API key (e.g., <c>["MyApp.Patients.Read"]</c>).</summary>
-    public List<string> Permissions { get; set; } = [];
+    public List<string> Permissions { get; private set; } = [];
 
     /// <summary>Allowed CIDR ranges for IP whitelisting. Empty means no restriction.</summary>
-    public List<string> AllowedCidrs { get; set; } = [];
+    public List<string> AllowedCidrs { get; private set; } = [];
 
     /// <summary>Expiration date. <c>null</c> means the key does not expire.</summary>
-    public DateTimeOffset? ExpiresAt { get; set; }
+    public DateTimeOffset? ExpiresAt { get; private set; }
 
     /// <summary>Timestamp of the last API call using this key.</summary>
-    public DateTimeOffset? LastUsedAt { get; set; }
+    public DateTimeOffset? LastUsedAt { get; private set; }
 
     /// <summary>Timestamp when the key was revoked. <c>null</c> if still active.</summary>
-    public DateTimeOffset? RevokedAt { get; set; }
+    public DateTimeOffset? RevokedAt { get; private set; }
 
     /// <summary>Controls caching behavior for this key.</summary>
-    public CacheBehavior CacheBehavior { get; set; }
+    public CacheBehavior CacheBehavior { get; private set; }
 
-    // ISoftDeletable
+    // IMultiTenant — explicit interface for private set encapsulation
     /// <inheritdoc/>
-    public bool IsDeleted { get; set; }
-
-    /// <inheritdoc/>
-    public DateTimeOffset? DeletedAt { get; set; }
+    public Guid? TenantId { get; private set; }
 
     /// <inheritdoc/>
-    public string? DeletedBy { get; set; }
+    Guid? IMultiTenant.TenantId
+    {
+        get => TenantId;
+        set => TenantId = value;
+    }
 
-    // IMultiTenant
-    /// <inheritdoc/>
-    public Guid? TenantId { get; set; }
+    /// <summary>
+    /// Revokes the API key.
+    /// </summary>
+    public void Revoke(DateTimeOffset revokedAt)
+    {
+        RevokedAt = revokedAt;
+    }
+
+    /// <summary>
+    /// Records that this key was used for an API call.
+    /// </summary>
+    internal void RecordUsage(DateTimeOffset usedAt)
+    {
+        LastUsedAt = usedAt;
+    }
+
+    /// <summary>
+    /// Updates the permissions granted to this key.
+    /// </summary>
+    public void UpdatePermissions(List<string> permissions)
+    {
+        Permissions = permissions;
+    }
+
+    /// <summary>
+    /// Updates the allowed CIDR ranges for IP whitelisting.
+    /// </summary>
+    public void UpdateAllowedCidrs(List<string> cidrs)
+    {
+        AllowedCidrs = cidrs;
+    }
+
+    /// <summary>
+    /// Sets the expiration date.
+    /// </summary>
+    public void SetExpiration(DateTimeOffset? expiresAt)
+    {
+        ExpiresAt = expiresAt;
+    }
+
+    /// <summary>
+    /// Sets the caching behavior.
+    /// </summary>
+    public void SetCacheBehavior(CacheBehavior cacheBehavior)
+    {
+        CacheBehavior = cacheBehavior;
+    }
 }

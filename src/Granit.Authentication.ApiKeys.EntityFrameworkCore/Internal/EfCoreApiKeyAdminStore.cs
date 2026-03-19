@@ -116,8 +116,8 @@ internal sealed class EfCoreApiKeyAdminStore(
             return false;
         }
 
-        entry.Permissions = permissions;
-        entry.AllowedCidrs = allowedCidrs;
+        entry.UpdatePermissions(permissions);
+        entry.UpdateAllowedCidrs(allowedCidrs);
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return true;

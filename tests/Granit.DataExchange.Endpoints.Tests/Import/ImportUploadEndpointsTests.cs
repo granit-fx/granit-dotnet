@@ -310,17 +310,33 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
         return content;
     }
 
-    private static ImportJob BuildJob(Guid id, ImportJobStatus status) =>
-        new()
+    private static ImportJob BuildJob(Guid id, ImportJobStatus status)
+    {
+        var job = ImportJob.Create(
+            id,
+            "Test.Import",
+            "Object",
+            "test.csv",
+            "text/csv",
+            100,
+            "blob-ref-1");
+        job.CreatedAt = DateTimeOffset.UtcNow;
+
+        // Transition to desired status using behavior methods
+        if (status == ImportJobStatus.Previewed)
         {
-            Id = id,
-            DefinitionName = "Test.Import",
-            EntityTypeName = "Object",
-            OriginalFileName = "test.csv",
-            MimeType = "text/csv",
-            FileSizeBytes = 100,
-            BlobReference = "blob-ref-1",
-            Status = status,
-            CreatedAt = DateTimeOffset.UtcNow,
-        };
+            job.MarkAsPreviewed();
+        }
+        else if (status == ImportJobStatus.Mapped)
+        {
+            job.MarkAsPreviewed();
+            job.ConfirmMappings("[]");
+        }
+        else if (status == ImportJobStatus.Executing)
+        {
+            job.MarkAsExecuting();
+        }
+
+        return job;
+    }
 }

@@ -35,19 +35,12 @@ internal sealed class InMemoryBackgroundJobStore(IGuidGenerator guidGenerator) :
         {
             _jobs.AddOrUpdate(
                 reg.JobName,
-                addValueFactory: _ => new BackgroundJobDefinition
-                {
-                    Id = guidGenerator.Create(),
-                    JobName = reg.JobName,
-                    CronExpression = reg.CronExpression,
-                    MessageType = reg.MessageType,
-                    IsEnabled = true,
-                },
+                addValueFactory: _ => BackgroundJobDefinition.Create(
+                    guidGenerator.Create(), reg.JobName, reg.CronExpression, reg.MessageType),
                 updateValueFactory: (_, existing) =>
                 {
                     // Preserve administrative state — only sync CronExpression changes.
-                    existing.CronExpression = reg.CronExpression;
-                    existing.MessageType = reg.MessageType;
+                    existing.UpdateDefinition(reg.CronExpression, reg.MessageType);
                     return existing;
                 });
         }
@@ -60,10 +53,7 @@ internal sealed class InMemoryBackgroundJobStore(IGuidGenerator guidGenerator) :
     {
         if (_jobs.TryGetValue(jobName, out BackgroundJobDefinition? job))
         {
-            job.LastExecutedAt = startedAt;
-            job.LastErrorMessage = null;
-            job.ConsecutiveFailureCount = 0;
-            job.TriggeredBy = null;
+            job.RecordExecutionStart(startedAt);
         }
 
         return Task.CompletedTask;
@@ -74,7 +64,7 @@ internal sealed class InMemoryBackgroundJobStore(IGuidGenerator guidGenerator) :
     {
         if (_jobs.TryGetValue(jobName, out BackgroundJobDefinition? job))
         {
-            job.NextExecutionAt = nextExecution;
+            job.ScheduleNext(nextExecution);
         }
 
         return Task.CompletedTask;
@@ -85,8 +75,7 @@ internal sealed class InMemoryBackgroundJobStore(IGuidGenerator guidGenerator) :
     {
         if (_jobs.TryGetValue(jobName, out BackgroundJobDefinition? job))
         {
-            job.ConsecutiveFailureCount++;
-            job.LastErrorMessage = errorMessage;
+            job.RecordFailure(errorMessage);
         }
 
         return Task.CompletedTask;
@@ -115,7 +104,7 @@ internal sealed class InMemoryBackgroundJobStore(IGuidGenerator guidGenerator) :
     {
         if (_jobs.TryGetValue(jobName, out BackgroundJobDefinition? job))
         {
-            job.TriggeredBy = triggeredBy;
+            job.SetTriggeredBy(triggeredBy);
         }
 
         return Task.CompletedTask;

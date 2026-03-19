@@ -53,20 +53,13 @@ internal sealed class EfBackgroundJobStore(
 
             if (existing is null)
             {
-                context.Jobs.Add(new BackgroundJobDefinition
-                {
-                    Id = guidGenerator.Create(),
-                    JobName = reg.JobName,
-                    CronExpression = reg.CronExpression,
-                    MessageType = reg.MessageType,
-                    IsEnabled = true,
-                });
+                context.Jobs.Add(BackgroundJobDefinition.Create(
+                    guidGenerator.Create(), reg.JobName, reg.CronExpression, reg.MessageType));
             }
             else
             {
                 // Preserve administrative state — only sync scheduling metadata.
-                existing.CronExpression = reg.CronExpression;
-                existing.MessageType = reg.MessageType;
+                existing.UpdateDefinition(reg.CronExpression, reg.MessageType);
             }
         }
 

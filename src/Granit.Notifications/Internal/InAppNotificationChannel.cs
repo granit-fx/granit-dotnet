@@ -18,20 +18,17 @@ internal sealed class InAppNotificationChannel(
 
     public async Task SendAsync(NotificationDeliveryContext context, CancellationToken cancellationToken = default)
     {
-        UserNotification notification = new()
-        {
-            Id = guidGenerator.Create(),
-            NotificationId = context.NotificationId,
-            NotificationTypeName = context.NotificationTypeName,
-            Severity = context.Severity,
-            RecipientUserId = context.RecipientUserId,
-            Data = context.Data,
-            State = UserNotificationState.Unread,
-            CreatedAt = clock.Now,
-            TenantId = context.TenantId,
-            RelatedEntityType = context.RelatedEntity?.EntityType,
-            RelatedEntityId = context.RelatedEntity?.EntityId,
-        };
+        var notification = UserNotification.Create(
+            guidGenerator.Create(),
+            context.NotificationId,
+            context.NotificationTypeName,
+            context.Severity,
+            context.RecipientUserId,
+            context.Data,
+            clock.Now,
+            context.TenantId,
+            context.RelatedEntity?.EntityType,
+            context.RelatedEntity?.EntityId);
 
         await userNotificationWriter.InsertAsync(notification, cancellationToken).ConfigureAwait(false);
     }

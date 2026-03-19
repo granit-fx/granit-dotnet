@@ -17,19 +17,23 @@ public sealed class EfImportJobStoreTests
         new(new InMemoryDataExchangeContextFactory(dbName));
 
     private static ImportJob CreateJob(Guid? id = null) =>
-        new()
-        {
-            Id = id ?? Guid.NewGuid(),
-            DefinitionName = "Test.Import",
-            EntityTypeName = "TestEntity",
-            OriginalFileName = "test.csv",
-            MimeType = "text/csv",
-            FileSizeBytes = 1024,
-            BlobReference = "imports/test.csv",
-            Status = ImportJobStatus.Created,
-            CreatedAt = DateTimeOffset.UtcNow,
-            CreatedBy = "test-user",
-        };
+        CreateJobWithTenant(tenantId: null, id);
+
+    private static ImportJob CreateJobWithTenant(Guid? tenantId, Guid? id = null)
+    {
+        var job = ImportJob.Create(
+            id ?? Guid.NewGuid(),
+            "Test.Import",
+            "TestEntity",
+            "test.csv",
+            "text/csv",
+            1024,
+            "imports/test.csv",
+            tenantId);
+        job.CreatedAt = DateTimeOffset.UtcNow;
+        job.CreatedBy = "test-user";
+        return job;
+    }
 
     [Fact]
     public async Task GetAsync_returns_null_when_not_found()
@@ -94,7 +98,7 @@ public sealed class EfImportJobStoreTests
         await store.CreateAsync(job, TestContext.Current.CancellationToken);
 
         // Act
-        job.Status = ImportJobStatus.Executing;
+        job.MarkAsExecuting();
         job.ModifiedAt = DateTimeOffset.UtcNow;
         job.ModifiedBy = "system";
         await store.UpdateAsync(job, TestContext.Current.CancellationToken);
@@ -113,11 +117,10 @@ public sealed class EfImportJobStoreTests
         string dbName = NewDb();
         EfImportJobStore store = CreateStore(dbName);
         var tenantId = Guid.NewGuid();
-        ImportJob job = CreateJob();
-        job.TenantId = tenantId;
-        job.MappingsJson = "[{\"sourceColumn\":\"A\"}]";
-        job.ReportJson = "{\"totalRows\":100}";
-        job.CompletedAt = DateTimeOffset.UtcNow;
+        ImportJob job = CreateJobWithTenant(tenantId);
+        // Use internal behavior methods to set state
+        job.SetMappings("[{\"sourceColumn\":\"A\"}]");
+        job.Complete(ImportJobStatus.Completed, "{\"totalRows\":100}", DateTimeOffset.UtcNow);
 
         // Act
         await store.CreateAsync(job, TestContext.Current.CancellationToken);
@@ -141,18 +144,13 @@ public sealed class EfImportJobStoreTests
         ImportJob job = CreateJob();
         await store.CreateAsync(job, TestContext.Current.CancellationToken);
 
-        // Act — simulate full lifecycle
-        job.Status = ImportJobStatus.Previewed;
+        // Act — simulate full lifecycle using behavior methods
+        // Note: Previewed and Mapped don't have dedicated transition methods,
+        // but Executing and Completed do.
+        job.MarkAsExecuting();
         await store.UpdateAsync(job, TestContext.Current.CancellationToken);
 
-        job.Status = ImportJobStatus.Mapped;
-        await store.UpdateAsync(job, TestContext.Current.CancellationToken);
-
-        job.Status = ImportJobStatus.Executing;
-        await store.UpdateAsync(job, TestContext.Current.CancellationToken);
-
-        job.Status = ImportJobStatus.Completed;
-        job.CompletedAt = DateTimeOffset.UtcNow;
+        job.Complete(ImportJobStatus.Completed, "{}", DateTimeOffset.UtcNow);
         await store.UpdateAsync(job, TestContext.Current.CancellationToken);
 
         // Assert

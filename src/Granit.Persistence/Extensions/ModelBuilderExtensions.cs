@@ -3,6 +3,7 @@ using System.Reflection;
 using Granit.Core.DataFiltering;
 using Granit.Core.Domain;
 using Granit.Core.MultiTenancy;
+using Granit.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -119,7 +120,56 @@ public static class ModelBuilderExtensions
                 .Invoke(null, [modelBuilder]);
         }
 
+        // --- SingleValueObject<T> conventions ---
+        // Auto-applies value converters for properties whose CLR type inherits from
+        // SingleValueObject<T>, mapping them to the underlying primitive column type.
+        ApplySingleValueObjectConverters(modelBuilder);
+
         return modelBuilder;
+    }
+
+    // Scans all entity properties for SingleValueObject<T> types and applies a ValueConverter
+    // that extracts/wraps the underlying primitive. No schema change — same column type.
+    private static void ApplySingleValueObjectConverters(ModelBuilder modelBuilder)
+    {
+        Type svoOpenType = typeof(SingleValueObject<>);
+
+        foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (IMutableProperty property in entityType.GetProperties())
+            {
+                Type? svoBase = GetSingleValueObjectBase(property.ClrType);
+                if (svoBase is null)
+                {
+                    continue;
+                }
+
+                Type primitiveType = svoBase.GetGenericArguments()[0];
+                Type converterType = typeof(SingleValueObjectConverter<,>)
+                    .MakeGenericType(property.ClrType, primitiveType);
+
+                property.SetValueConverter(
+                    (Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter)
+                    Activator.CreateInstance(converterType)!);
+            }
+        }
+    }
+
+    private static Type? GetSingleValueObjectBase(Type type)
+    {
+        Type svoOpenType = typeof(SingleValueObject<>);
+        Type? current = type;
+        while (current is not null && current != typeof(object))
+        {
+            if (current.IsGenericType && current.GetGenericTypeDefinition() == svoOpenType)
+            {
+                return current;
+            }
+
+            current = current.BaseType;
+        }
+
+        return null;
     }
 
     // Configures a translation entity type: FK, cascade delete, unique index, Culture max length.

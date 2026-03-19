@@ -6,64 +6,142 @@ namespace Granit.DataExchange.Import.Domain;
 /// Represents an import job with its lifecycle state and metadata.
 /// </summary>
 /// <remarks>
-/// Inherits <see cref="AuditedEntity"/> for ISO 27001-compliant audit trail
+/// Inherits <see cref="AuditedAggregateRoot"/> for ISO 27001-compliant audit trail
 /// (CreatedAt, CreatedBy, ModifiedAt, ModifiedBy).
 /// </remarks>
-public sealed class ImportJob : AuditedEntity
+public sealed class ImportJob : AuditedAggregateRoot
 {
+    // Parameterless constructor required by EF Core materializer.
+    private ImportJob() { }
+
+    /// <summary>
+    /// Creates a new <see cref="ImportJob"/> in <see cref="ImportJobStatus.Created"/> state.
+    /// </summary>
+    public static ImportJob Create(
+        Guid id,
+        string definitionName,
+        string entityTypeName,
+        string originalFileName,
+        string mimeType,
+        long fileSizeBytes,
+        string blobReference,
+        Guid? tenantId = null) => new()
+        {
+            Id = id,
+            DefinitionName = definitionName,
+            EntityTypeName = entityTypeName,
+            OriginalFileName = originalFileName,
+            MimeType = mimeType,
+            FileSizeBytes = fileSizeBytes,
+            BlobReference = blobReference,
+            Status = ImportJobStatus.Created,
+            TenantId = tenantId,
+        };
+
     /// <summary>
     /// The import definition name (e.g. <c>"Acme.PatientImport"</c>).
     /// Links to the registered <c>ImportDefinition&lt;T&gt;</c>.
     /// </summary>
-    public required string DefinitionName { get; set; }
+    public string DefinitionName { get; private set; } = string.Empty;
 
     /// <summary>
     /// CLR type name of the target entity (e.g. <c>"Patient"</c>).
     /// </summary>
-    public required string EntityTypeName { get; set; }
+    public string EntityTypeName { get; private set; } = string.Empty;
 
     /// <summary>
     /// Original file name as uploaded by the user.
     /// </summary>
-    public required string OriginalFileName { get; set; }
+    public string OriginalFileName { get; private set; } = string.Empty;
 
     /// <summary>
     /// MIME type of the uploaded file (e.g. <c>"text/csv"</c>).
     /// </summary>
-    public required string MimeType { get; set; }
+    public string MimeType { get; private set; } = string.Empty;
 
     /// <summary>
     /// File size in bytes.
     /// </summary>
-    public required long FileSizeBytes { get; set; }
+    public long FileSizeBytes { get; private set; }
 
     /// <summary>
     /// Reference to the file in blob storage.
     /// </summary>
-    public required string BlobReference { get; set; }
+    public string BlobReference { get; private set; } = string.Empty;
 
     /// <summary>
     /// Current lifecycle status.
     /// </summary>
-    public ImportJobStatus Status { get; set; } = ImportJobStatus.Created;
+    public ImportJobStatus Status { get; private set; } = ImportJobStatus.Created;
 
     /// <summary>
     /// Serialized column mappings (JSON). Set after user confirmation.
     /// </summary>
-    public string? MappingsJson { get; set; }
+    public string? MappingsJson { get; private set; }
 
     /// <summary>
     /// Serialized import report (JSON). Set after execution completes.
     /// </summary>
-    public string? ReportJson { get; set; }
+    public string? ReportJson { get; private set; }
 
     /// <summary>
     /// Timestamp when the import completed (success, partial, or failure).
     /// </summary>
-    public DateTimeOffset? CompletedAt { get; set; }
+    public DateTimeOffset? CompletedAt { get; private set; }
 
     /// <summary>
     /// Tenant identifier. Soft dependency on <c>ICurrentTenant</c>.
     /// </summary>
-    public Guid? TenantId { get; set; }
+    public Guid? TenantId { get; private set; }
+
+    /// <summary>
+    /// Sets the column mappings after user confirmation.
+    /// </summary>
+    internal void SetMappings(string mappingsJson)
+    {
+        MappingsJson = mappingsJson;
+    }
+
+    /// <summary>
+    /// Transitions to <see cref="ImportJobStatus.Previewed"/> after header extraction.
+    /// </summary>
+    internal void MarkAsPreviewed()
+    {
+        Status = ImportJobStatus.Previewed;
+    }
+
+    /// <summary>
+    /// Confirms mappings and transitions to <see cref="ImportJobStatus.Mapped"/>.
+    /// </summary>
+    internal void ConfirmMappings(string mappingsJson)
+    {
+        MappingsJson = mappingsJson;
+        Status = ImportJobStatus.Mapped;
+    }
+
+    /// <summary>
+    /// Cancels the import job.
+    /// </summary>
+    internal void Cancel()
+    {
+        Status = ImportJobStatus.Cancelled;
+    }
+
+    /// <summary>
+    /// Transitions to <see cref="ImportJobStatus.Executing"/>.
+    /// </summary>
+    internal void MarkAsExecuting()
+    {
+        Status = ImportJobStatus.Executing;
+    }
+
+    /// <summary>
+    /// Marks the import as completed with a final status and report.
+    /// </summary>
+    internal void Complete(ImportJobStatus finalStatus, string reportJson, DateTimeOffset completedAt)
+    {
+        Status = finalStatus;
+        ReportJson = reportJson;
+        CompletedAt = completedAt;
+    }
 }

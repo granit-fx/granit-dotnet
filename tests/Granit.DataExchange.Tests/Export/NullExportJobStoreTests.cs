@@ -22,12 +22,7 @@ public sealed class NullExportJobStoreTests
     [Fact]
     public async Task CreateAsync_DoesNotThrow()
     {
-        ExportJob job = new()
-        {
-            DefinitionName = "Test",
-            Format = "csv",
-            RequestJson = "{}",
-        };
+        var job = ExportJob.Create(Guid.NewGuid(), "Test", "csv", "{}");
 
         await Should.NotThrowAsync(() =>
             _store.CreateAsync(job, TestContext.Current.CancellationToken));
@@ -36,12 +31,7 @@ public sealed class NullExportJobStoreTests
     [Fact]
     public async Task UpdateAsync_DoesNotThrow()
     {
-        ExportJob job = new()
-        {
-            DefinitionName = "Test",
-            Format = "csv",
-            RequestJson = "{}",
-        };
+        var job = ExportJob.Create(Guid.NewGuid(), "Test", "csv", "{}");
 
         await Should.NotThrowAsync(() =>
             _store.UpdateAsync(job, TestContext.Current.CancellationToken));

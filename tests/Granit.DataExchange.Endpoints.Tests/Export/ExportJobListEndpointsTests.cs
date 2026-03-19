@@ -208,17 +208,25 @@ public sealed class ExportJobListEndpointsTests : IAsyncDisposable
 
     // ── Helpers ──────────────────────────────────────────────────────────
 
-    private static ExportJob CreateJob(ExportJobStatus status) =>
-        new()
+    private static ExportJob CreateJob(ExportJobStatus status)
+    {
+        var job = ExportJob.Create(Guid.NewGuid(), "Test.Export", "xlsx", "{}");
+
+        if (status == ExportJobStatus.Exporting)
         {
-            Id = Guid.NewGuid(),
-            DefinitionName = "Test.Export",
-            Format = "xlsx",
-            RequestJson = "{}",
-            Status = status,
-            RowCount = 42,
-            FileName = "export.xlsx",
-        };
+            job.MarkAsExporting();
+        }
+        else if (status == ExportJobStatus.Completed)
+        {
+            job.Complete("blob-ref", "export.xlsx", 42, DateTimeOffset.UtcNow);
+        }
+        else if (status == ExportJobStatus.Failed)
+        {
+            job.Fail("failed", DateTimeOffset.UtcNow);
+        }
+
+        return job;
+    }
 
     private HttpClient BuildClient(string role)
     {

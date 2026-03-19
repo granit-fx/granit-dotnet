@@ -354,7 +354,7 @@ public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
     {
         var id = Guid.NewGuid();
         ApiKeyEntry revoked = CreateSampleEntry(id);
-        revoked.RevokedAt = DateTimeOffset.UtcNow.AddDays(-1);
+        revoked.Revoke(DateTimeOffset.UtcNow.AddDays(-1));
 
         _adminStore.FindByIdAsync(id, Arg.Any<CancellationToken>())
             .Returns(revoked);
@@ -372,9 +372,9 @@ public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
         var oldId = Guid.NewGuid();
         var newId = Guid.NewGuid();
         ApiKeyEntry existing = CreateSampleEntry(oldId);
-        existing.Permissions = ["Patients.Read", "Patients.Write"];
-        existing.AllowedCidrs = ["10.0.0.0/24"];
-        existing.CacheBehavior = CacheBehavior.NoCache;
+        existing.UpdatePermissions(["Patients.Read", "Patients.Write"]);
+        existing.UpdateAllowedCidrs(["10.0.0.0/24"]);
+        existing.SetCacheBehavior(CacheBehavior.NoCache);
 
         _adminStore.FindByIdAsync(oldId, Arg.Any<CancellationToken>())
             .Returns(existing);
@@ -452,20 +452,19 @@ public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
     // Helpers
     // =========================================================================
 
-    private static ApiKeyEntry CreateSampleEntry(Guid? id = null) =>
-        new()
-        {
-            Id = id ?? Guid.NewGuid(),
-            Name = "Test Key",
-            Type = ApiKeyType.Secret,
-            Environment = "live",
-            HashedKey = "fake-sha256-hash-for-test-only", // gitleaks:allow
-            Prefix = "gk_live_sk_",
-            LastFourChars = "Ab1x",
-            Permissions = [],
-            AllowedCidrs = [],
-            CreatedAt = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
-        };
+    private static ApiKeyEntry CreateSampleEntry(Guid? id = null)
+    {
+        var entry = ApiKeyEntry.Create(
+            id ?? Guid.NewGuid(),
+            "Test Key",
+            ApiKeyType.Secret,
+            "live",
+            "fake-sha256-hash-for-test-only", // gitleaks:allow
+            "gk_live_sk_",
+            "Ab1x");
+        entry.CreatedAt = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        return entry;
+    }
 
     private static HttpClient BuildClient(WebApplication app, string role)
     {

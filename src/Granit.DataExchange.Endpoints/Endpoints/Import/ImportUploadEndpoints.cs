@@ -90,18 +90,15 @@ internal static class ImportUploadEndpoints
         await using Stream stream = file.OpenReadStream();
         string blobReference = await fileProvider.SaveAsync(file.FileName, stream, cancellationToken).ConfigureAwait(false);
 
-        ImportJob job = new()
-        {
-            Id = guidGenerator.Create(),
-            DefinitionName = descriptor.Name,
-            EntityTypeName = descriptor.EntityType.Name,
-            OriginalFileName = file.FileName,
-            MimeType = file.ContentType,
-            FileSizeBytes = file.Length,
-            BlobReference = blobReference,
-            Status = ImportJobStatus.Created,
-            CreatedAt = clock.Now,
-        };
+        var job = ImportJob.Create(
+            guidGenerator.Create(),
+            descriptor.Name,
+            descriptor.EntityType.Name,
+            file.FileName,
+            file.ContentType,
+            file.Length,
+            blobReference);
+        job.CreatedAt = clock.Now;
 
         await jobWriter.CreateAsync(job, cancellationToken).ConfigureAwait(false);
 
@@ -150,7 +147,7 @@ internal static class ImportUploadEndpoints
 
         IReadOnlyList<ImportFieldMetadata> fieldMetadata = descriptor.GetFieldMetadata();
 
-        job.Status = ImportJobStatus.Previewed;
+        job.MarkAsPreviewed();
         await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Ok(new ImportPreviewResponse(headers, previewRows, suggestions, fieldMetadata));
@@ -176,8 +173,7 @@ internal static class ImportUploadEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        job.MappingsJson = JsonSerializer.Serialize(request.Mappings);
-        job.Status = ImportJobStatus.Mapped;
+        job.ConfirmMappings(JsonSerializer.Serialize(request.Mappings));
         await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.NoContent();

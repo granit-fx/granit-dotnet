@@ -207,18 +207,23 @@ public sealed class ImportJobListEndpointsTests : IAsyncDisposable
 
     // ── Helpers ──────────────────────────────────────────────────────────
 
-    private static ImportJob CreateJob(ImportJobStatus status) =>
-        new()
+    private static ImportJob CreateJob(ImportJobStatus status)
+    {
+        var job = ImportJob.Create(
+            Guid.NewGuid(), "Test.Import", "TestEntity", "test.csv", "text/csv", 1024, "blob-ref");
+
+        if (status == ImportJobStatus.Completed)
         {
-            Id = Guid.NewGuid(),
-            DefinitionName = "Test.Import",
-            EntityTypeName = "TestEntity",
-            OriginalFileName = "test.csv",
-            MimeType = "text/csv",
-            FileSizeBytes = 1024,
-            BlobReference = "blob-ref",
-            Status = status,
-        };
+            job.MarkAsExecuting();
+            job.Complete(ImportJobStatus.Completed, "{}", DateTimeOffset.UtcNow);
+        }
+        else if (status == ImportJobStatus.Executing)
+        {
+            job.MarkAsExecuting();
+        }
+
+        return job;
+    }
 
     private HttpClient BuildClient(string role)
     {

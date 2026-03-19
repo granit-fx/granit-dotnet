@@ -21,60 +21,92 @@ public sealed class UserNotificationTests
         typeof(UserNotification).IsSealed.ShouldBeTrue();
 
     [Fact]
-    public void DefaultValues_AreCorrect()
+    public void Create_SetsAllProperties()
     {
-        UserNotification notification = new();
-
-        notification.Id.ShouldBe(Guid.Empty);
-        notification.NotificationId.ShouldBe(Guid.Empty);
-        notification.NotificationTypeName.ShouldBe(string.Empty);
-        notification.Severity.ShouldBe(NotificationSeverity.Info);
-        notification.RecipientUserId.ShouldBe(string.Empty);
-        notification.State.ShouldBe(UserNotificationState.Unread);
-        notification.CreatedAt.ShouldBe(default);
-        notification.ReadAt.ShouldBeNull();
-        notification.TenantId.ShouldBeNull();
-        notification.RelatedEntityType.ShouldBeNull();
-        notification.RelatedEntityId.ShouldBeNull();
-    }
-
-    [Fact]
-    public void Properties_CanBeSet()
-    {
+        var id = Guid.NewGuid();
         var notificationId = Guid.NewGuid();
         var tenantId = Guid.NewGuid();
         DateTimeOffset now = DateTimeOffset.UtcNow;
         JsonElement data = JsonDocument.Parse("""{"key":"value"}""").RootElement;
 
-        UserNotification notification = new()
-        {
-            NotificationId = notificationId,
-            NotificationTypeName = "order.created",
-            Severity = NotificationSeverity.Warning,
-            RecipientUserId = "user-42",
-            Data = data,
-            State = UserNotificationState.Read,
-            CreatedAt = now,
-            ReadAt = now.AddMinutes(5),
-            TenantId = tenantId,
-            RelatedEntityType = "Order",
-            RelatedEntityId = "ORD-001",
-        };
+        var notification = UserNotification.Create(
+            id,
+            notificationId,
+            "order.created",
+            NotificationSeverity.Warning,
+            "user-42",
+            data,
+            now,
+            tenantId,
+            "Order",
+            "ORD-001");
 
+        notification.Id.ShouldBe(id);
         notification.NotificationId.ShouldBe(notificationId);
         notification.NotificationTypeName.ShouldBe("order.created");
         notification.Severity.ShouldBe(NotificationSeverity.Warning);
         notification.RecipientUserId.ShouldBe("user-42");
         notification.Data.GetProperty("key").GetString().ShouldBe("value");
-        notification.State.ShouldBe(UserNotificationState.Read);
+        notification.State.ShouldBe(UserNotificationState.Unread);
         notification.CreatedAt.ShouldBe(now);
-        notification.ReadAt.ShouldBe(now.AddMinutes(5));
+        notification.ReadAt.ShouldBeNull();
         notification.TenantId.ShouldBe(tenantId);
         notification.RelatedEntityType.ShouldBe("Order");
         notification.RelatedEntityId.ShouldBe("ORD-001");
     }
 
     [Fact]
-    public void DefaultState_IsUnread() =>
-        new UserNotification().State.ShouldBe(UserNotificationState.Unread);
+    public void Create_DefaultState_IsUnread()
+    {
+        var notification = UserNotification.Create(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "test.notification",
+            NotificationSeverity.Info,
+            "user-1",
+            JsonSerializer.SerializeToElement(new { }),
+            DateTimeOffset.UtcNow);
+
+        notification.State.ShouldBe(UserNotificationState.Unread);
+    }
+
+    [Fact]
+    public void MarkAsRead_SetsStateAndReadAt()
+    {
+        var notification = UserNotification.Create(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "test.notification",
+            NotificationSeverity.Info,
+            "user-1",
+            JsonSerializer.SerializeToElement(new { }),
+            DateTimeOffset.UtcNow);
+
+        DateTimeOffset readAt = DateTimeOffset.UtcNow.AddMinutes(5);
+        notification.MarkAsRead(readAt);
+
+        notification.State.ShouldBe(UserNotificationState.Read);
+        notification.ReadAt.ShouldBe(readAt);
+    }
+
+    [Fact]
+    public void MarkAsRead_AlreadyRead_DoesNotChangeReadAt()
+    {
+        var notification = UserNotification.Create(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "test.notification",
+            NotificationSeverity.Info,
+            "user-1",
+            JsonSerializer.SerializeToElement(new { }),
+            DateTimeOffset.UtcNow);
+
+        DateTimeOffset firstRead = DateTimeOffset.UtcNow.AddMinutes(5);
+        notification.MarkAsRead(firstRead);
+
+        DateTimeOffset secondRead = DateTimeOffset.UtcNow.AddMinutes(10);
+        notification.MarkAsRead(secondRead);
+
+        notification.ReadAt.ShouldBe(firstRead);
+    }
 }

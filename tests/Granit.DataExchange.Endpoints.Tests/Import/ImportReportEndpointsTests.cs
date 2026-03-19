@@ -213,20 +213,33 @@ public sealed class ImportReportEndpointsTests : IAsyncDisposable
         return client;
     }
 
-    private static ImportJob BuildJob(Guid id, ImportJobStatus status, string? reportJson) =>
-        new()
+    private static ImportJob BuildJob(Guid id, ImportJobStatus status, string? reportJson)
+    {
+        var job = ImportJob.Create(id, "Test.Import", "Object", "test.csv", "text/csv", 100, "blob-ref-1");
+        job.CreatedAt = DateTimeOffset.UtcNow;
+
+        if (status == ImportJobStatus.Completed && reportJson is not null)
         {
-            Id = id,
-            DefinitionName = "Test.Import",
-            EntityTypeName = "Object",
-            OriginalFileName = "test.csv",
-            MimeType = "text/csv",
-            FileSizeBytes = 100,
-            BlobReference = "blob-ref-1",
-            Status = status,
-            CreatedAt = DateTimeOffset.UtcNow,
-            ReportJson = reportJson,
-        };
+            job.MarkAsExecuting();
+            job.Complete(ImportJobStatus.Completed, reportJson, DateTimeOffset.UtcNow);
+        }
+        else if (status == ImportJobStatus.PartiallyCompleted && reportJson is not null)
+        {
+            job.MarkAsExecuting();
+            job.Complete(ImportJobStatus.PartiallyCompleted, reportJson, DateTimeOffset.UtcNow);
+        }
+        else if (status == ImportJobStatus.Failed && reportJson is not null)
+        {
+            job.MarkAsExecuting();
+            job.Complete(ImportJobStatus.Failed, reportJson, DateTimeOffset.UtcNow);
+        }
+        else if (status == ImportJobStatus.Executing)
+        {
+            job.MarkAsExecuting();
+        }
+
+        return job;
+    }
 
     private static ImportReport BuildReport() =>
         new()

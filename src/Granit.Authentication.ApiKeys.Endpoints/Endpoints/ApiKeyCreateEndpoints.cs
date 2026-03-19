@@ -35,21 +35,18 @@ internal static class ApiKeyCreateEndpoints
     {
         ApiKeyGenerationResult keyResult = generator.Generate(request.Type, request.Environment);
 
-        var entry = new ApiKeyEntry
-        {
-            Id = guidGenerator.Create(),
-            Name = request.Name,
-            Type = request.Type,
-            Environment = request.Environment,
-            HashedKey = keyResult.HashedKey,
-            Prefix = keyResult.Prefix,
-            LastFourChars = keyResult.LastFourChars,
-            Permissions = request.Permissions ?? [],
-            AllowedCidrs = request.AllowedCidrs ?? [],
-            ExpiresAt = request.ExpiresAt,
-            CacheBehavior = request.CacheBehavior,
-            CreatedAt = clock.Now,
-        };
+        var entry = ApiKeyEntry.Create(
+            guidGenerator.Create(),
+            request.Name,
+            request.Type,
+            request.Environment,
+            keyResult.HashedKey,
+            keyResult.Prefix,
+            keyResult.LastFourChars);
+        entry.UpdatePermissions(request.Permissions ?? []);
+        entry.UpdateAllowedCidrs(request.AllowedCidrs ?? []);
+        entry.SetExpiration(request.ExpiresAt);
+        entry.SetCacheBehavior(request.CacheBehavior);
 
         await adminStore.CreateAsync(entry, cancellationToken).ConfigureAwait(false);
 

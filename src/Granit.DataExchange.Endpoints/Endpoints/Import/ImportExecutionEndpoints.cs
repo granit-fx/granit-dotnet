@@ -130,7 +130,7 @@ internal static class ImportExecutionEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        job.Status = ImportJobStatus.Cancelled;
+        job.Cancel();
         await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
         await fileProvider.DeleteAsync(job.BlobReference, cancellationToken).ConfigureAwait(false);
 

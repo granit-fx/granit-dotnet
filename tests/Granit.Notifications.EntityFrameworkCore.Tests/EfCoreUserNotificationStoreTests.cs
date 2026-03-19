@@ -94,10 +94,9 @@ public sealed class EfCoreUserNotificationStoreTests : IDisposable
             await _store.InsertAsync(BuildNotification(recipientUserId: userId, tenantId: tenantId), TestContext.Current.CancellationToken);
         }
 
-        // Insert 1 read notification via direct DB manipulation
+        // Insert 1 read notification via MarkAsRead behavior method
         UserNotification readNotification = BuildNotification(recipientUserId: userId, tenantId: tenantId);
-        readNotification.State = UserNotificationState.Read;
-        readNotification.ReadAt = DateTimeOffset.UtcNow;
+        readNotification.MarkAsRead(DateTimeOffset.UtcNow);
         await _store.InsertAsync(readNotification, TestContext.Current.CancellationToken);
 
         int count = await _store.GetUnreadCountAsync(userId, tenantId, TestContext.Current.CancellationToken);
@@ -170,18 +169,16 @@ public sealed class EfCoreUserNotificationStoreTests : IDisposable
         Guid? tenantId = null,
         DateTimeOffset? createdAt = null,
         string? relatedEntityType = null,
-        string? relatedEntityId = null) => new()
-        {
-            Id = Guid.NewGuid(),
-            NotificationId = Guid.NewGuid(),
-            NotificationTypeName = "test.notification",
-            Severity = NotificationSeverity.Info,
-            RecipientUserId = recipientUserId,
-            Data = JsonSerializer.SerializeToElement(new { key = "value" }),
-            State = UserNotificationState.Unread,
-            CreatedAt = createdAt ?? DateTimeOffset.UtcNow,
-            TenantId = tenantId,
-            RelatedEntityType = relatedEntityType,
-            RelatedEntityId = relatedEntityId,
-        };
+        string? relatedEntityId = null) =>
+        UserNotification.Create(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "test.notification",
+            NotificationSeverity.Info,
+            recipientUserId,
+            JsonSerializer.SerializeToElement(new { key = "value" }),
+            createdAt ?? DateTimeOffset.UtcNow,
+            tenantId,
+            relatedEntityType,
+            relatedEntityId);
 }
