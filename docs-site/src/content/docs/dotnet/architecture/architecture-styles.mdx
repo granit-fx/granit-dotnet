@@ -94,8 +94,8 @@ flowchart TB
 The framework's own module split — `Granit.BlobStorage` (domain + application),
 `Granit.BlobStorage.EntityFrameworkCore` (infrastructure),
 `Granit.BlobStorage.Endpoints` (presentation) — follows Clean Architecture by
-design. The [Hexagonal Architecture](./patterns/hexagonal-architecture/)
-and [Layered Architecture](./patterns/layered-architecture/) pattern
+design. The [Hexagonal Architecture](/dotnet/architecture/patterns/hexagonal-architecture/)
+and [Layered Architecture](/dotnet/architecture/patterns/layered-architecture/) pattern
 pages document this in detail.
 :::
 
@@ -180,8 +180,8 @@ src/App.PatientManagement/
 └── PatientManagementModule.cs
 ```
 
-The [REPR pattern](./patterns/repr/) already groups endpoints by feature,
-and the [Vertical Slice Architecture](./patterns/vertical-slice-architecture/)
+The [REPR pattern](/dotnet/architecture/patterns/repr/) already groups endpoints by feature,
+and the [Vertical Slice Architecture](/dotnet/architecture/patterns/vertical-slice-architecture/)
 pattern page documents the full approach.
 
 ### When to choose Vertical Slice Architecture
@@ -243,14 +243,14 @@ changes consistently require touching multiple layers for simple operations.
 
 ### Granit patterns
 
-- [Hexagonal Architecture — Ports & Adapters](./patterns/hexagonal-architecture/)
-- [Layered Architecture — Module Layer Split](./patterns/layered-architecture/)
-- [Vertical Slice Architecture — Feature-Organized Code](./patterns/vertical-slice-architecture/)
-- [REPR — Request-Endpoint-Response](./patterns/repr/)
-- [CQRS — Reader/Writer Separation](./patterns/cqrs/)
-- [DDD Aggregate Roots](./patterns/ddd-aggregate-roots/)
-- [ADR-017 — DDD Aggregate Root & Value Object Strategy](./adr/017-ddd-aggregate-value-object-strategy/)
-- [Modular Monolith vs Microservices](../concepts/modular-monolith-vs-microservices/)
+- [Hexagonal Architecture — Ports & Adapters](/dotnet/architecture/patterns/hexagonal-architecture/)
+- [Layered Architecture — Module Layer Split](/dotnet/architecture/patterns/layered-architecture/)
+- [Vertical Slice Architecture — Feature-Organized Code](/dotnet/architecture/patterns/vertical-slice-architecture/)
+- [REPR — Request-Endpoint-Response](/dotnet/architecture/patterns/repr/)
+- [CQRS — Reader/Writer Separation](/dotnet/architecture/patterns/cqrs/)
+- [DDD Aggregate Roots](/dotnet/architecture/patterns/ddd-aggregate-roots/)
+- [ADR-017 — DDD Aggregate Root & Value Object Strategy](/dotnet/architecture/adr/017-ddd-aggregate-value-object-strategy/)
+- [Modular Monolith vs Microservices](/dotnet/concepts/modular-monolith-vs-microservices/)
 
 ### External references
 
