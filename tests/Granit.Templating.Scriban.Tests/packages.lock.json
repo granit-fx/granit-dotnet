@@ -258,7 +258,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Templating": "[0.1.0-dev, )",
-          "Scriban": "[6.*, )"
+          "Scriban": "[6.6.0, )"
         }
       },
       "granit.timing": {
@@ -287,9 +287,9 @@
       },
       "Scriban": {
         "type": "CentralTransitive",
-        "requested": "[6.*, )",
-        "resolved": "6.5.8",
-        "contentHash": "PxLtQCQpUfIGklfiWE1q5xYjIrk4Z2xO/0yu0wTsdK/6EujonWvllDaK+fLK+a5leVqKzQ91oX6wJm83Wb9cmw=="
+        "requested": "[6.6.0, )",
+        "resolved": "6.6.0",
+        "contentHash": "rDzWFaCLsnFMRifEs9F95mCQ1f9thva2ckXlHZ6xzCJ5SFqsB1u1Y/ZtQlc0iySg+H7HOR75J7ya2X4RmJvOFw=="
       }
     }
   }

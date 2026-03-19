@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-03-17
+Dernière mise à jour : 2026-03-19
 
 ---
 
@@ -99,7 +99,7 @@ Dernière mise à jour : 2026-03-17
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
-| Scriban | 6.5.3 | Copyright (c) Alexandre Mutel |
+| Scriban | 6.6.0 | Copyright (c) Alexandre Mutel |
 
 ### PostgreSQL License
 
