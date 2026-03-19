@@ -19,7 +19,6 @@ and extend it without surprises.
 ```mermaid
 graph TD
     MS[Module System] --> DI[Dependency Injection]
-    MS --> Bundles
     DI --> Config[Configuration]
     DI --> P[Persistence]
     P --> CQRS[CQRS]
