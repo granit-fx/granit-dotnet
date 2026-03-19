@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 namespace Granit.BlobStorage.Wolverine;
 
 /// <summary>
-/// Wolverine handler for <see cref="CleanupOrphanBlobsCommand"/>.
+/// Handler for <see cref="CleanupOrphanBlobsCommand"/>.
 /// Delegates to <see cref="IBlobStorage.CleanupOrphansAsync"/> to clean up
 /// blobs stuck in Pending/Uploading for over 24 hours.
 /// </summary>
