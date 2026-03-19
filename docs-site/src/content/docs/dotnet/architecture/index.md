@@ -11,7 +11,7 @@ throughout the Granit framework.
 
 ## Sections
 
-- **[Pattern Library](./patterns/)** — 56 design patterns with their concrete
+- **[Pattern Library](./patterns/)** — 57 design patterns with their concrete
   implementation in Granit, organized by category (architecture, cloud/SaaS,
   GoF, data, concurrency, .NET idioms, security)
 - **[ADRs](./adr/)** — 17 Architecture Decision Records documenting key

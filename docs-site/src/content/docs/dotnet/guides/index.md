@@ -48,3 +48,8 @@ from scratch, begin with [Getting Started](/dotnet/getting-started/).
 - [Encrypt Sensitive Data](./encrypt-sensitive-data/) -- Vault Transit and AES-256
 - [Implement Audit Timeline](./implement-audit-timeline/) -- entity change tracking
 - [End-to-End Tracing](./end-to-end-tracing/) -- OpenTelemetry distributed tracing
+- [Testing](./testing/) -- unit and integration test patterns with GranitTestFixture
+
+## AI and tooling
+
+- [Use with AI Assistants](./use-with-ai-assistants/) -- ingest Granit docs into ChatGPT, Claude, Copilot
