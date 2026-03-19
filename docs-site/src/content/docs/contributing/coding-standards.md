@@ -52,6 +52,31 @@ The suffix `Dto` is **forbidden**. It conveys no information about the type's
 role. Use `Request` or `Response` instead.
 :::
 
+### Event naming (enforced by architecture tests)
+
+Two event categories with **mandatory suffixes**:
+
+| Scope | Interface | Suffix | Example | Location |
+| ----- | --------- | ------ | ------- | -------- |
+| Domain (in-process) | `IDomainEvent` | `*Event` | `BlobValidatedEvent` | `Granit.{Module}/Events/` |
+| Integration (distributed) | `IIntegrationEvent` | `*Eto` | `PersonalDataDeletedEto` | `Granit.{Module}/Events/` |
+
+- `*Event` — raised via `AddDomainEvent()`, synchronous, same transaction
+- `*Eto` (Event Transfer Object) — raised via `AddDistributedEvent()`, durable Wolverine outbox
+- Use `sealed record` implementing the marker interface
+- Past-tense verb + suffix (e.g., `BlobValidatedEvent`, not `BlobValidated`)
+
+### Background job naming (enforced by architecture tests)
+
+| Interface | Attribute | Suffix | Example | Location |
+| --------- | --------- | ------ | ------- | -------- |
+| `IBackgroundJob` | `[RecurringJob]` | `*Job` | `OrphanBlobCleanupJob` | `Granit.{Module}/Jobs/` |
+
+- `sealed record` implementing `IBackgroundJob`, decorated with `[RecurringJob("cron", "name")]`
+- Job name format: `{module-kebab}-{action-kebab}` (e.g., `"blob-storage-orphan-cleanup"`)
+- Handler in same `Jobs/` folder: `internal static partial class {Action}Handler`
+- Never use `*Command` suffix for jobs — commands are CQRS
+
 ### Entity/API separation
 
 EF Core entities must **never** be returned directly by an endpoint. Create a
