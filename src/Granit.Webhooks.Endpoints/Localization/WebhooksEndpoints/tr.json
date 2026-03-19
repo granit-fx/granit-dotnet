@@ -1,0 +1,14 @@
+{
+  "culture": "tr",
+  "texts": {
+    "PermissionGroup:Webhooks": "Webhooks",
+    "Permission:Webhooks.Subscriptions.View": "Webhook aboneliklerini görüntüle",
+    "Permission:Webhooks.Subscriptions.Create": "Webhook abonelikleri oluştur",
+    "Permission:Webhooks.Subscriptions.Update": "Webhook aboneliklerini güncelle",
+    "Permission:Webhooks.Subscriptions.Delete": "Webhook aboneliklerini sil",
+    "Permission:Webhooks.Subscriptions.Manage": "Webhookları yönet (yaşam döngüsü, gizli anahtar rotasyonu, test ping, istatistikler)",
+    "Granit:Validation:InvalidWebhookUrl": "Hedef URL geçerli bir HTTPS URL olmalıdır",
+    "Granit:Validation:WebhookUrlPrivateAddress": "Özel, yerel veya ayrılmış IP adreslerine izin verilmez",
+    "Granit:Validation:WebhookUrlBlockedTld": "Dahili alan adlarına (.local, .internal, .localhost, .onion) izin verilmez"
+  }
+}

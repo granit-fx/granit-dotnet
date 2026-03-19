@@ -1,0 +1,14 @@
+{
+  "culture": "ja",
+  "texts": {
+    "PermissionGroup:Webhooks": "Webhooks",
+    "Permission:Webhooks.Subscriptions.View": "Webhook サブスクリプションを表示",
+    "Permission:Webhooks.Subscriptions.Create": "Webhook サブスクリプションを作成",
+    "Permission:Webhooks.Subscriptions.Update": "Webhook サブスクリプションを更新",
+    "Permission:Webhooks.Subscriptions.Delete": "Webhook サブスクリプションを削除",
+    "Permission:Webhooks.Subscriptions.Manage": "Webhooks を管理（ライフサイクル、シークレットローテーション、テスト Ping、統計）",
+    "Granit:Validation:InvalidWebhookUrl": "ターゲット URL は有効な HTTPS URL である必要があります",
+    "Granit:Validation:WebhookUrlPrivateAddress": "プライベート、ローカル、または予約済みの IP アドレスは許可されていません",
+    "Granit:Validation:WebhookUrlBlockedTld": "内部ドメイン名（.local、.internal、.localhost、.onion）は許可されていません"
+  }
+}

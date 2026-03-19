@@ -1,0 +1,14 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:Webhooks": "Webhooks",
+    "Permission:Webhooks.Subscriptions.View": "Webhookabonnementen bekijken",
+    "Permission:Webhooks.Subscriptions.Create": "Webhookabonnementen aanmaken",
+    "Permission:Webhooks.Subscriptions.Update": "Webhookabonnementen bijwerken",
+    "Permission:Webhooks.Subscriptions.Delete": "Webhookabonnementen verwijderen",
+    "Permission:Webhooks.Subscriptions.Manage": "Webhooks beheren (levenscyclus, geheimrotatie, testping, statistieken)",
+    "Granit:Validation:InvalidWebhookUrl": "De doel-URL moet een geldige HTTPS-URL zijn",
+    "Granit:Validation:WebhookUrlPrivateAddress": "Privé-, lokale of gereserveerde IP-adressen zijn niet toegestaan",
+    "Granit:Validation:WebhookUrlBlockedTld": "Interne domeinnamen (.local, .internal, .localhost, .onion) zijn niet toegestaan"
+  }
+}

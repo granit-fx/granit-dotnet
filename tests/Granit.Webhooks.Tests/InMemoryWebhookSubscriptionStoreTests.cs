@@ -2,10 +2,13 @@
 // Tests - InMemoryWebhookSubscriptionStore
 // =============================================================================
 // Verifies filtering by eventType, tenantId, Status = Active; global subscriptions
-// (TenantId = null); deactivation.
+// (TenantId = null); CRUD operations and lifecycle transitions.
 // =============================================================================
 
+using Granit.Core.Exceptions;
+using Granit.Guids;
 using Granit.Timing;
+using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.Internal;
 using NSubstitute;
@@ -22,7 +25,17 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
     {
         IClock clock = Substitute.For<IClock>();
         clock.Now.Returns(_ => DateTimeOffset.UtcNow);
-        _store = new InMemoryWebhookSubscriptionStore(clock);
+
+        IGuidGenerator guidGenerator = Substitute.For<IGuidGenerator>();
+        guidGenerator.Create().Returns(_ => Guid.NewGuid());
+
+        IWebhookSecretProtector secretProtector = Substitute.For<IWebhookSecretProtector>();
+#pragma warning disable CA2012 // NSubstitute ValueTask setup — consumed exactly once per call
+        secretProtector.ProtectAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(ci => new ValueTask<string>($"protected:{ci.ArgAt<string>(0)}"));
+#pragma warning restore CA2012
+
+        _store = new InMemoryWebhookSubscriptionStore(clock, guidGenerator, secretProtector);
     }
 
     [Fact]
@@ -95,6 +108,40 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
     }
 
     [Fact]
+    public async Task GetAllAsync_ReturnsAllSubscriptions()
+    {
+        _store.Add(BuildSubscription("a.event", null, WebhookSubscriptionStatus.Active));
+        _store.Add(BuildSubscription("b.event", null, WebhookSubscriptionStatus.Suspended));
+        _store.Add(BuildSubscription("c.event", null, WebhookSubscriptionStatus.Deactivated));
+
+        IReadOnlyList<WebhookSubscription> result =
+            await _store.GetAllAsync(TestContext.Current.CancellationToken);
+
+        result.Count.ShouldBe(3);
+    }
+
+    // -------------------------------------------------------------------------
+    // CreateAsync
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task CreateAsync_ReturnsSubscriptionWithPlainSecret()
+    {
+        WebhookSubscriptionCreatedResult result = await _store.CreateAsync(
+            "https://example.com/hook", "test.event", null, TestContext.Current.CancellationToken);
+
+        result.Subscription.ShouldNotBeNull();
+        result.Subscription.TargetUrl.ShouldBe("https://example.com/hook");
+        result.Subscription.EventType.ShouldBe("test.event");
+        result.Subscription.Status.ShouldBe(WebhookSubscriptionStatus.Active);
+        result.PlainSecret.ShouldStartWith("whsec_");
+    }
+
+    // -------------------------------------------------------------------------
+    // DeactivateAsync
+    // -------------------------------------------------------------------------
+
+    [Fact]
     public async Task DeactivateAsync_SetsStatusToDeactivated()
     {
         WebhookSubscription sub = BuildSubscription("test.event", Guid.NewGuid(), WebhookSubscriptionStatus.Active);
@@ -108,11 +155,22 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
     }
 
     [Fact]
-    public async Task DeactivateAsync_UnknownId_DoesNotThrow()
+    public async Task DeactivateAsync_UnknownId_ThrowsEntityNotFoundException()
     {
         Func<Task> act = () => _store.DeactivateAsync(Guid.NewGuid(), "reason", TestContext.Current.CancellationToken);
 
-        await Should.NotThrowAsync(act);
+        await Should.ThrowAsync<EntityNotFoundException>(act);
+    }
+
+    [Fact]
+    public async Task DeactivateAsync_AlreadyDeactivated_ThrowsConflictException()
+    {
+        WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Deactivated);
+        _store.Add(sub);
+
+        Func<Task> act = () => _store.DeactivateAsync(sub.Id, "reason", TestContext.Current.CancellationToken);
+
+        await Should.ThrowAsync<ConflictException>(act);
     }
 
     // -------------------------------------------------------------------------
@@ -125,21 +183,32 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
         WebhookSubscription sub = BuildSubscription("test.event", Guid.NewGuid(), WebhookSubscriptionStatus.Active);
         _store.Add(sub);
 
-        await _store.SuspendAsync(sub.Id, "too many failures", TestContext.Current.CancellationToken);
+        await _store.SuspendAsync(sub.Id, "admin-user-id", "too many failures", TestContext.Current.CancellationToken);
 
         WebhookSubscription? updated = await _store.FindByIdAsync(sub.Id, TestContext.Current.CancellationToken);
         updated!.Status.ShouldBe(WebhookSubscriptionStatus.Suspended);
         updated.DeactivationReason.ShouldBe("too many failures");
         updated.SuspendedAt.ShouldNotBeNull();
-        updated.SuspendedBy.ShouldBe("system");
+        updated.SuspendedBy.ShouldBe("admin-user-id");
     }
 
     [Fact]
-    public async Task SuspendAsync_UnknownId_DoesNotThrow()
+    public async Task SuspendAsync_UnknownId_ThrowsEntityNotFoundException()
     {
-        Func<Task> act = () => _store.SuspendAsync(Guid.NewGuid(), "reason", TestContext.Current.CancellationToken);
+        Func<Task> act = () => _store.SuspendAsync(Guid.NewGuid(), "user", "reason", TestContext.Current.CancellationToken);
 
-        await Should.NotThrowAsync(act);
+        await Should.ThrowAsync<EntityNotFoundException>(act);
+    }
+
+    [Fact]
+    public async Task SuspendAsync_NotActive_ThrowsConflictException()
+    {
+        WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Suspended);
+        _store.Add(sub);
+
+        Func<Task> act = () => _store.SuspendAsync(sub.Id, "user", "reason", TestContext.Current.CancellationToken);
+
+        await Should.ThrowAsync<ConflictException>(act);
     }
 
     [Fact]
@@ -149,12 +218,97 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
         WebhookSubscription sub = BuildSubscription("test.event", tenantId, WebhookSubscriptionStatus.Active);
         _store.Add(sub);
 
-        await _store.SuspendAsync(sub.Id, "suspended", TestContext.Current.CancellationToken);
+        await _store.SuspendAsync(sub.Id, "system", "suspended", TestContext.Current.CancellationToken);
 
         IReadOnlyList<WebhookSubscription> result =
             await _store.GetActiveSubscriptionsAsync("test.event", tenantId, TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
+    }
+
+    // -------------------------------------------------------------------------
+    // ActivateAsync
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task ActivateAsync_SetsStatusToActive()
+    {
+        WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Suspended);
+        _store.Add(sub);
+
+        await _store.ActivateAsync(sub.Id, TestContext.Current.CancellationToken);
+
+        WebhookSubscription? updated = await _store.FindByIdAsync(sub.Id, TestContext.Current.CancellationToken);
+        updated!.Status.ShouldBe(WebhookSubscriptionStatus.Active);
+        updated.SuspendedAt.ShouldBeNull();
+        updated.SuspendedBy.ShouldBeNull();
+        updated.ConsecutiveFailureCount.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task ActivateAsync_NotSuspended_ThrowsConflictException()
+    {
+        WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Active);
+        _store.Add(sub);
+
+        Func<Task> act = () => _store.ActivateAsync(sub.Id, TestContext.Current.CancellationToken);
+
+        await Should.ThrowAsync<ConflictException>(act);
+    }
+
+    // -------------------------------------------------------------------------
+    // DeleteAsync
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task DeleteAsync_RemovesSubscription()
+    {
+        WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Active);
+        _store.Add(sub);
+
+        await _store.DeleteAsync(sub.Id, TestContext.Current.CancellationToken);
+
+        WebhookSubscription? found = await _store.FindByIdAsync(sub.Id, TestContext.Current.CancellationToken);
+        found.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task DeleteAsync_UnknownId_ThrowsEntityNotFoundException()
+    {
+        Func<Task> act = () => _store.DeleteAsync(Guid.NewGuid(), TestContext.Current.CancellationToken);
+
+        await Should.ThrowAsync<EntityNotFoundException>(act);
+    }
+
+    // -------------------------------------------------------------------------
+    // RotateSecretAsync
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task RotateSecretAsync_ReturnsNewPlainSecret()
+    {
+        WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Active);
+        _store.Add(sub);
+
+        string newSecret = await _store.RotateSecretAsync(sub.Id, TestContext.Current.CancellationToken);
+
+        newSecret.ShouldStartWith("whsec_");
+    }
+
+    // -------------------------------------------------------------------------
+    // UpdateTargetUrlAsync
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task UpdateTargetUrlAsync_UpdatesUrl()
+    {
+        WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Active);
+        _store.Add(sub);
+
+        await _store.UpdateTargetUrlAsync(sub.Id, "https://new-url.com/hook", TestContext.Current.CancellationToken);
+
+        WebhookSubscription? updated = await _store.FindByIdAsync(sub.Id, TestContext.Current.CancellationToken);
+        updated!.TargetUrl.ShouldBe("https://new-url.com/hook");
     }
 
     // -------------------------------------------------------------------------

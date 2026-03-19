@@ -1,0 +1,14 @@
+{
+  "culture": "zh",
+  "texts": {
+    "PermissionGroup:Webhooks": "Webhooks",
+    "Permission:Webhooks.Subscriptions.View": "查看 Webhook 订阅",
+    "Permission:Webhooks.Subscriptions.Create": "创建 Webhook 订阅",
+    "Permission:Webhooks.Subscriptions.Update": "更新 Webhook 订阅",
+    "Permission:Webhooks.Subscriptions.Delete": "删除 Webhook 订阅",
+    "Permission:Webhooks.Subscriptions.Manage": "管理 Webhooks（生命周期、密钥轮换、测试 Ping、统计数据）",
+    "Granit:Validation:InvalidWebhookUrl": "目标 URL 必须是有效的 HTTPS URL",
+    "Granit:Validation:WebhookUrlPrivateAddress": "不允许使用私有、本地或保留的 IP 地址",
+    "Granit:Validation:WebhookUrlBlockedTld": "不允许使用内部域名（.local、.internal、.localhost、.onion）"
+  }
+}

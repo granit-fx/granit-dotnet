@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Webhooks.Endpoints</PackageId>
+    <Description>Minimal API endpoints for administering Granit webhook subscriptions. CRUD, lifecycle transitions, secret rotation, test-ping, and statistics. Protected by granular Webhooks.Subscriptions.* permission policies.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Webhooks.Endpoints.Tests" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
+    <ProjectReference Include="..\Granit.Querying.Endpoints\Granit.Querying.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
+    <ProjectReference Include="..\Granit.Webhooks\Granit.Webhooks.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\**\*.json" />
+  </ItemGroup>
+
+</Project>

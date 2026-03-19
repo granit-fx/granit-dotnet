@@ -1,0 +1,14 @@
+{
+  "culture": "de",
+  "texts": {
+    "PermissionGroup:Webhooks": "Webhooks",
+    "Permission:Webhooks.Subscriptions.View": "Webhook-Abonnements anzeigen",
+    "Permission:Webhooks.Subscriptions.Create": "Webhook-Abonnements erstellen",
+    "Permission:Webhooks.Subscriptions.Update": "Webhook-Abonnements aktualisieren",
+    "Permission:Webhooks.Subscriptions.Delete": "Webhook-Abonnements löschen",
+    "Permission:Webhooks.Subscriptions.Manage": "Webhooks verwalten (Lebenszyklus, Geheimnisrotation, Test-Ping, Statistiken)",
+    "Granit:Validation:InvalidWebhookUrl": "Die Ziel-URL muss eine gültige HTTPS-URL sein",
+    "Granit:Validation:WebhookUrlPrivateAddress": "Private, lokale oder reservierte IP-Adressen sind nicht erlaubt",
+    "Granit:Validation:WebhookUrlBlockedTld": "Interne Domainnamen (.local, .internal, .localhost, .onion) sind nicht erlaubt"
+  }
+}

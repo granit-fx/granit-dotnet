@@ -10,6 +10,8 @@
     <InternalsVisibleTo Include="Granit.Webhooks.Tests" />
     <InternalsVisibleTo Include="Granit.Webhooks.Wolverine" />
     <InternalsVisibleTo Include="Granit.Webhooks.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Webhooks.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Webhooks.Endpoints.Tests" />
     <InternalsVisibleTo Include="Granit.Webhooks.EntityFrameworkCore.Tests" />
     <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />

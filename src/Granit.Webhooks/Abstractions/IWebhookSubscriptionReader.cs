@@ -21,4 +21,7 @@ public interface IWebhookSubscriptionReader
 
     /// <summary>Returns the subscription with the given identifier, or <c>null</c> if not found.</summary>
     Task<WebhookSubscription?> FindByIdAsync(Guid subscriptionId, CancellationToken cancellationToken = default);
+
+    /// <summary>Returns all subscriptions regardless of status.</summary>
+    Task<IReadOnlyList<WebhookSubscription>> GetAllAsync(CancellationToken cancellationToken = default);
 }

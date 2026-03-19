@@ -131,4 +131,34 @@ public sealed class WebhookSubscription : AuditedAggregateRoot
         DeactivationReason = reason;
         AddDomainEvent(new WebhookSubscriptionDeactivatedEvent(Id, reason));
     }
+
+    /// <summary>
+    /// Activates a suspended subscription. Clears suspension audit fields and resets failure counters.
+    /// Emits a <see cref="WebhookSubscriptionActivatedEvent"/> domain event.
+    /// </summary>
+    internal void Activate()
+    {
+        Status = WebhookSubscriptionStatus.Active;
+        SuspendedAt = null;
+        SuspendedBy = null;
+        DeactivationReason = null;
+        ConsecutiveFailureCount = 0;
+        AddDomainEvent(new WebhookSubscriptionActivatedEvent(Id));
+    }
+
+    /// <summary>
+    /// Updates the target URL for webhook delivery.
+    /// </summary>
+    internal void UpdateTargetUrl(string targetUrl)
+    {
+        TargetUrl = targetUrl;
+    }
+
+    /// <summary>
+    /// Replaces the signing secret with a new protected value.
+    /// </summary>
+    internal void RotateSecret(string newProtectedSecret)
+    {
+        SigningSecret = newProtectedSecret;
+    }
 }

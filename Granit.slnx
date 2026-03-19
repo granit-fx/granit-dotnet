@@ -168,6 +168,7 @@
     <Project Path="src/Granit.Vault.GoogleCloud/Granit.Vault.GoogleCloud.csproj" />
     <Project Path="src/Granit.Vault.HashiCorp/Granit.Vault.HashiCorp.csproj" />
     <Project Path="src/Granit.Vault/Granit.Vault.csproj" />
+    <Project Path="src/Granit.Webhooks.Endpoints/Granit.Webhooks.Endpoints.csproj" />
     <Project Path="src/Granit.Webhooks.EntityFrameworkCore/Granit.Webhooks.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Webhooks.Wolverine/Granit.Webhooks.Wolverine.csproj" />
     <Project Path="src/Granit.Webhooks/Granit.Webhooks.csproj" />
@@ -356,6 +357,7 @@
     <Project Path="tests/Granit.Vault.GoogleCloud.Tests/Granit.Vault.GoogleCloud.Tests.csproj" />
     <Project Path="tests/Granit.Vault.HashiCorp.Tests/Granit.Vault.HashiCorp.Tests.csproj" />
     <Project Path="tests/Granit.Vault.Tests/Granit.Vault.Tests.csproj" />
+    <Project Path="tests/Granit.Webhooks.Endpoints.Tests/Granit.Webhooks.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.EntityFrameworkCore.Tests/Granit.Webhooks.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.Tests/Granit.Webhooks.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.Wolverine.Tests/Granit.Webhooks.Wolverine.Tests.csproj" />

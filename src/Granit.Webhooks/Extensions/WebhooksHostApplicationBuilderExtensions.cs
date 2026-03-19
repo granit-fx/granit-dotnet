@@ -80,6 +80,11 @@ public static class WebhooksHostApplicationBuilderExtensions
         // Redelivery service — used by admin endpoints.
         builder.Services.AddScoped<RetryWebhookHandler>();
 
+        // Test ping, stats, and queryable provider — replaceable defaults.
+        builder.Services.AddScoped<IWebhookTestPingService, WebhookTestPingService>();
+        builder.Services.AddSingleton<IWebhookStatsReader, NullWebhookStatsReader>();
+        builder.Services.AddSingleton<IWebhookQueryableProvider, NullWebhookQueryableProvider>();
+
         return builder;
     }
 }

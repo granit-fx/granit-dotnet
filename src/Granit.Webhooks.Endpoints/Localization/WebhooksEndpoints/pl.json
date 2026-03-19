@@ -1,0 +1,14 @@
+{
+  "culture": "pl",
+  "texts": {
+    "PermissionGroup:Webhooks": "Webhooks",
+    "Permission:Webhooks.Subscriptions.View": "Przeglądanie subskrypcji webhooków",
+    "Permission:Webhooks.Subscriptions.Create": "Tworzenie subskrypcji webhooków",
+    "Permission:Webhooks.Subscriptions.Update": "Aktualizacja subskrypcji webhooków",
+    "Permission:Webhooks.Subscriptions.Delete": "Usuwanie subskrypcji webhooków",
+    "Permission:Webhooks.Subscriptions.Manage": "Zarządzanie webhookami (cykl życia, rotacja sekretów, testowy ping, statystyki)",
+    "Granit:Validation:InvalidWebhookUrl": "Docelowy URL musi być prawidłowym adresem HTTPS",
+    "Granit:Validation:WebhookUrlPrivateAddress": "Prywatne, lokalne lub zarezerwowane adresy IP nie są dozwolone",
+    "Granit:Validation:WebhookUrlBlockedTld": "Wewnętrzne nazwy domen (.local, .internal, .localhost, .onion) nie są dozwolone"
+  }
+}

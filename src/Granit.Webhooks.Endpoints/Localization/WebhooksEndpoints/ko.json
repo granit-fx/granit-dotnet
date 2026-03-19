@@ -1,0 +1,14 @@
+{
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:Webhooks": "Webhooks",
+    "Permission:Webhooks.Subscriptions.View": "Webhook 구독 조회",
+    "Permission:Webhooks.Subscriptions.Create": "Webhook 구독 생성",
+    "Permission:Webhooks.Subscriptions.Update": "Webhook 구독 수정",
+    "Permission:Webhooks.Subscriptions.Delete": "Webhook 구독 삭제",
+    "Permission:Webhooks.Subscriptions.Manage": "Webhooks 관리 (수명 주기, 시크릿 교체, 테스트 핑, 통계)",
+    "Granit:Validation:InvalidWebhookUrl": "대상 URL은 유효한 HTTPS URL이어야 합니다",
+    "Granit:Validation:WebhookUrlPrivateAddress": "사설, 로컬 또는 예약된 IP 주소는 허용되지 않습니다",
+    "Granit:Validation:WebhookUrlBlockedTld": "내부 도메인 이름(.local, .internal, .localhost, .onion)은 허용되지 않습니다"
+  }
+}
