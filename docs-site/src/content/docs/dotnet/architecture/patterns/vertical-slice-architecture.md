@@ -208,4 +208,4 @@ public sealed record PatientManagementPatientResponse(
 - [REPR pattern in Granit](./repr/)
 - [CQRS -- Reader/Writer separation](./cqrs/)
 - [Module System -- topological loading](./module-system/)
-- [Architecture Styles -- DDD, Clean Architecture & Vertical Slices](/dotnet/concepts/architecture-styles/)
+- [Architecture Styles -- DDD, Clean Architecture & Vertical Slices](/dotnet/architecture/architecture-styles/)

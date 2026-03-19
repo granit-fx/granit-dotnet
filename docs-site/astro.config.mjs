@@ -286,6 +286,10 @@ export default defineConfig({
                       link: "/dotnet/architecture/tech-stack/",
                     },
                     {
+                      label: "Architecture Styles",
+                      link: "/dotnet/architecture/architecture-styles/",
+                    },
+                    {
                       label: "Patterns",
                       autogenerate: {
                         directory: "dotnet/architecture/patterns",

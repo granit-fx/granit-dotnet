@@ -135,4 +135,4 @@ public sealed class Patient : FullAuditedEntity, IMultiTenant
 ## Further reading
 
 - [Presentation Domain Data Layering -- Martin Fowler](https://martinfowler.com/bliki/PresentationDomainDataLayering.html)
-- [Architecture Styles -- DDD, Clean Architecture & Vertical Slices](/dotnet/concepts/architecture-styles/)
+- [Architecture Styles -- DDD, Clean Architecture & Vertical Slices](/dotnet/architecture/architecture-styles/)
