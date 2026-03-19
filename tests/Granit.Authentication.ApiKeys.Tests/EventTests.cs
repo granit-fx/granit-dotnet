@@ -1,4 +1,6 @@
+using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.Events;
+using Granit.Core.Events;
 using Shouldly;
 using Xunit;
 
@@ -107,5 +109,67 @@ public sealed class ApiKeyScopesUpdatedEventTests
         var evt2 = new ApiKeyScopesUpdatedEvent(id, "hash");
 
         evt1.ShouldBe(evt2);
+    }
+}
+
+public sealed class ApiKeyUsedEtoTests
+{
+    [Fact]
+    public void ImplementsIIntegrationEvent() =>
+        new ApiKeyUsedEto(Guid.NewGuid(), "gk_live_sk_", DateTimeOffset.UtcNow)
+            .ShouldBeAssignableTo<IIntegrationEvent>();
+
+    [Fact]
+    public void RecordUsage_RaisesApiKeyUsedEto()
+    {
+        DateTimeOffset usedAt = DateTimeOffset.UtcNow;
+        var entry = ApiKeyEntry.Create(
+            Guid.NewGuid(), "Test Key", ApiKeyType.Secret, "live",
+            "hash", "gk_live_sk_", "abcd");
+
+        entry.RecordUsage(usedAt);
+
+        IIntegrationEvent integrationEvent = entry.IntegrationEvents.ShouldHaveSingleItem();
+        ApiKeyUsedEto eto = integrationEvent.ShouldBeOfType<ApiKeyUsedEto>();
+        eto.ApiKeyId.ShouldBe(entry.Id);
+        eto.Prefix.ShouldBe("gk_live_sk_");
+        eto.UsedAt.ShouldBe(usedAt);
+    }
+}
+
+public sealed class ApiKeyExpiredEventTests
+{
+    [Fact]
+    public void ImplementsIDomainEvent() =>
+        new ApiKeyExpiredEvent(Guid.NewGuid(), "gk_live_sk_", DateTimeOffset.UtcNow)
+            .ShouldBeAssignableTo<IDomainEvent>();
+
+    [Fact]
+    public void MarkAsExpired_RaisesApiKeyExpiredEvent()
+    {
+        DateTimeOffset expiresAt = DateTimeOffset.UtcNow.AddDays(-1);
+        var entry = ApiKeyEntry.Create(
+            Guid.NewGuid(), "Test Key", ApiKeyType.Secret, "live",
+            "hash", "gk_live_sk_", "abcd");
+        entry.SetExpiration(expiresAt);
+
+        entry.MarkAsExpired();
+
+        IDomainEvent domainEvent = entry.DomainEvents.ShouldHaveSingleItem();
+        ApiKeyExpiredEvent evt = domainEvent.ShouldBeOfType<ApiKeyExpiredEvent>();
+        evt.ApiKeyId.ShouldBe(entry.Id);
+        evt.ExpiredAt.ShouldBe(expiresAt);
+    }
+
+    [Fact]
+    public void MarkAsExpired_NoExpiration_DoesNotEmitEvent()
+    {
+        var entry = ApiKeyEntry.Create(
+            Guid.NewGuid(), "Test Key", ApiKeyType.Secret, "live",
+            "hash", "gk_live_sk_", "abcd");
+
+        entry.MarkAsExpired();
+
+        entry.DomainEvents.ShouldBeEmpty();
     }
 }

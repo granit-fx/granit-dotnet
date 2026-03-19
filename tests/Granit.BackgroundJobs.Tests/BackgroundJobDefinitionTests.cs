@@ -69,6 +69,92 @@ public sealed class BackgroundJobDefinitionTests
         job.DomainEvents.Last().ShouldBeOfType<BackgroundJobResumedEvent>();
     }
 
+    [Fact]
+    public void UpdateDefinition_DifferentCron_ShouldEmitBackgroundJobDefinitionChangedEvent()
+    {
+        BackgroundJobDefinition job = BuildJob();
+        job.ClearDomainEvents();
+
+        job.UpdateDefinition("0 9 * * *", "TestMessage, TestAssembly");
+
+        IDomainEvent domainEvent = job.DomainEvents.ShouldHaveSingleItem();
+        BackgroundJobDefinitionChangedEvent changed = domainEvent.ShouldBeOfType<BackgroundJobDefinitionChangedEvent>();
+        changed.JobId.ShouldBe(job.Id);
+        changed.JobName.ShouldBe("test-job");
+        changed.OldCronExpression.ShouldBe("0 8 * * *");
+        changed.NewCronExpression.ShouldBe("0 9 * * *");
+    }
+
+    [Fact]
+    public void UpdateDefinition_SameCron_ShouldNotEmitEvent()
+    {
+        BackgroundJobDefinition job = BuildJob();
+        job.ClearDomainEvents();
+
+        job.UpdateDefinition("0 8 * * *", "NewMessage, NewAssembly");
+
+        job.DomainEvents.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void RecordExecutionStart_ShouldEmitBackgroundJobExecutionStartedEto()
+    {
+        BackgroundJobDefinition job = BuildJob();
+        DateTimeOffset startedAt = DateTimeOffset.UtcNow;
+
+        job.RecordExecutionStart(startedAt);
+
+        IIntegrationEvent integrationEvent = job.IntegrationEvents.ShouldHaveSingleItem();
+        BackgroundJobExecutionStartedEto eto = integrationEvent.ShouldBeOfType<BackgroundJobExecutionStartedEto>();
+        eto.JobId.ShouldBe(job.Id);
+        eto.JobName.ShouldBe("test-job");
+        eto.StartedAt.ShouldBe(startedAt);
+    }
+
+    [Fact]
+    public void RecordFailure_BelowThreshold_ShouldNotEmitIntegrationEvent()
+    {
+        BackgroundJobDefinition job = BuildJob();
+
+        job.RecordFailure("timeout");
+        job.RecordFailure("timeout");
+
+        job.ConsecutiveFailureCount.ShouldBe(2);
+        job.IntegrationEvents.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void RecordFailure_AtThreshold_ShouldEmitBackgroundJobFailureThresholdExceededEto()
+    {
+        BackgroundJobDefinition job = BuildJob();
+
+        job.RecordFailure("error 1");
+        job.RecordFailure("error 2");
+        job.RecordFailure("error 3");
+
+        job.ConsecutiveFailureCount.ShouldBe(3);
+
+        IIntegrationEvent integrationEvent = job.IntegrationEvents.ShouldHaveSingleItem();
+        BackgroundJobFailureThresholdExceededEto eto = integrationEvent.ShouldBeOfType<BackgroundJobFailureThresholdExceededEto>();
+        eto.JobId.ShouldBe(job.Id);
+        eto.JobName.ShouldBe("test-job");
+        eto.ConsecutiveFailureCount.ShouldBe(3);
+        eto.LastErrorMessage.ShouldBe("error 3");
+    }
+
+    [Fact]
+    public void RecordFailure_AboveThreshold_ShouldEmitOnEachSubsequentFailure()
+    {
+        BackgroundJobDefinition job = BuildJob();
+
+        for (int i = 0; i < 5; i++)
+        {
+            job.RecordFailure($"error {i + 1}");
+        }
+
+        job.IntegrationEvents.Count.ShouldBe(3); // failures 3, 4, 5
+    }
+
     private static BackgroundJobDefinition BuildJob(bool enabled = true)
     {
         var job = BackgroundJobDefinition.Create(

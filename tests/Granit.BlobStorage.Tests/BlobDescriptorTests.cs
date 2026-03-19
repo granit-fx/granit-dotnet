@@ -195,13 +195,16 @@ public sealed class BlobDescriptorTests
     }
 
     [Fact]
-    public void MarkAsUploading_ShouldNotEmitAnyDomainEvent()
+    public void MarkAsUploading_ShouldEmitBlobUploadStartedEvent()
     {
         BlobDescriptor descriptor = CreatePending();
 
         descriptor.MarkAsUploading();
 
-        descriptor.DomainEvents.ShouldBeEmpty();
+        BlobUploadStartedEvent evt = descriptor.DomainEvents.ShouldHaveSingleItem().ShouldBeOfType<BlobUploadStartedEvent>();
+        evt.BlobId.ShouldBe(descriptor.Id);
+        evt.ContainerName.ShouldBe("medical-images");
+        evt.OriginalFileName.ShouldBe("radio.jpg");
     }
 
     [Fact]
@@ -209,10 +212,10 @@ public sealed class BlobDescriptorTests
     {
         BlobDescriptor descriptor = CreatePending();
         descriptor.MarkAsUploading();
+        descriptor.ClearDomainEvents();
 
         descriptor.MarkAsValid("image/jpeg", 512_000, Now.AddMinutes(2));
 
-        descriptor.DomainEvents.ShouldHaveSingleItem();
         BlobValidatedEvent evt = descriptor.DomainEvents.ShouldHaveSingleItem().ShouldBeOfType<BlobValidatedEvent>();
         evt.BlobId.ShouldBe(descriptor.Id);
         evt.ContainerName.ShouldBe("medical-images");
@@ -225,6 +228,7 @@ public sealed class BlobDescriptorTests
     {
         BlobDescriptor descriptor = CreatePending();
         descriptor.MarkAsUploading();
+        descriptor.ClearDomainEvents();
 
         descriptor.MarkAsRejected("MIME mismatch");
 
@@ -271,7 +275,8 @@ public sealed class BlobDescriptorTests
         descriptor.MarkAsValid("image/jpeg", 512_000, Now);
         descriptor.MarkAsDeleted(Now.AddDays(1), "cleanup");
 
-        descriptor.DomainEvents.Count.ShouldBe(2);
+        descriptor.DomainEvents.Count.ShouldBe(3);
+        descriptor.DomainEvents.ShouldContain(e => e is BlobUploadStartedEvent);
         descriptor.DomainEvents.ShouldContain(e => e is BlobValidatedEvent);
         descriptor.DomainEvents.ShouldContain(e => e is BlobDeletedEvent);
     }

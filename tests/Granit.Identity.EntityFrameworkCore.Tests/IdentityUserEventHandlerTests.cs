@@ -1,3 +1,4 @@
+using Granit.Core.Events;
 using Granit.Identity.EntityFrameworkCore.Entities;
 using Granit.Identity.EntityFrameworkCore.Events;
 using Granit.Identity.EntityFrameworkCore.Handlers;
@@ -14,10 +15,12 @@ public sealed class IdentityUserEventHandlerTests
 {
     private readonly IIdentityProvider _provider = Substitute.For<IIdentityProvider>();
     private readonly IUserCacheStore _store = Substitute.For<IUserCacheStore>();
+    private readonly ILocalEventBus _localEventBus = Substitute.For<ILocalEventBus>();
+    private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
     private readonly TimeProvider _timeProvider = Substitute.For<TimeProvider>();
 
     private IdentityUserEventHandler CreateHandler() => new(
-        _provider, _store, _timeProvider,
+        _provider, _store, _localEventBus, _distributedEventBus, _timeProvider,
         NullLogger<IdentityUserEventHandler>.Instance);
 
     public IdentityUserEventHandlerTests()

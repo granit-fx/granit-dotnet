@@ -1,4 +1,6 @@
 using System.Reflection;
+using Granit.Core.Domain;
+using Granit.Core.Events;
 using Granit.Workflow.Domain;
 using Shouldly;
 using Xunit;
@@ -28,23 +30,28 @@ public sealed class VersionedWorkflowEntityTests
     }
 
     // ========================================================================
-    // Property setters
+    // Property setters via interface casts (same path as interceptors)
     // ========================================================================
 
     [Fact]
-    public void Properties_ShouldBeSettable()
+    public void Properties_ShouldBeSettableViaInterfaceCast()
     {
         // Arrange
         var businessId = Guid.NewGuid();
-        TestVersionedWorkflowEntity entity = new()
-        {
-            BusinessId = businessId,
-            Version = 3,
-            LifecycleStatus = WorkflowLifecycleStatus.Published,
-            IsPublished = true,
-        };
+        TestVersionedWorkflowEntity entity = new();
 
-        // Assert
+        // Act — write through interface casts (same as VersioningInterceptor / WorkflowTransitionInterceptor)
+        IVersioned versioned = entity;
+        versioned.BusinessId = businessId;
+        versioned.Version = 3;
+
+        IVersionedEntity versionedEntity = entity;
+        versionedEntity.LifecycleStatus = WorkflowLifecycleStatus.Published;
+
+        IPublishable publishable = entity;
+        publishable.IsPublished = true;
+
+        // Assert — read through concrete type
         entity.BusinessId.ShouldBe(businessId);
         entity.Version.ShouldBe(3);
         entity.LifecycleStatus.ShouldBe(WorkflowLifecycleStatus.Published);
@@ -100,11 +107,11 @@ public sealed class VersionedWorkflowEntityTests
     }
 
     // ========================================================================
-    // AuditedEntity inheritance
+    // AuditedAggregateRoot inheritance
     // ========================================================================
 
     [Fact]
-    public void Entity_ShouldInheritAuditedEntityProperties()
+    public void Entity_ShouldInheritAuditedAggregateRootProperties()
     {
         // Arrange
         DateTimeOffset now = DateTimeOffset.UtcNow;
@@ -131,18 +138,22 @@ public sealed class VersionedWorkflowEntityTests
     [Fact]
     public void Entity_ShouldImplementIVersionedEntity()
     {
-        // Arrange & Act
-        TestVersionedWorkflowEntity entity = new()
-        {
-            BusinessId = Guid.NewGuid(),
-            Version = 5,
-            LifecycleStatus = WorkflowLifecycleStatus.Archived,
-            IsPublished = false,
-        };
+        // Arrange & Act — set via interface casts
+        var businessId = Guid.NewGuid();
+        TestVersionedWorkflowEntity entity = new();
+
+        IVersioned versioned = entity;
+        versioned.BusinessId = businessId;
+        versioned.Version = 5;
+
+        IVersionedEntity versionedEntity = entity;
+        versionedEntity.LifecycleStatus = WorkflowLifecycleStatus.Archived;
+
+        IPublishable publishable = entity;
+        publishable.IsPublished = false;
 
         // Assert — cast to interface
-        IVersionedEntity versionedEntity = entity;
-        versionedEntity.BusinessId.ShouldBe(entity.BusinessId);
+        versionedEntity.BusinessId.ShouldBe(businessId);
         versionedEntity.Version.ShouldBe(5);
         versionedEntity.LifecycleStatus.ShouldBe(WorkflowLifecycleStatus.Archived);
         versionedEntity.IsPublished.ShouldBeFalse();
@@ -163,6 +174,58 @@ public sealed class VersionedWorkflowEntityTests
     }
 
     // ========================================================================
+    // Domain & integration event support (from AuditedAggregateRoot)
+    // ========================================================================
+
+    [Fact]
+    public void Entity_ShouldSupportDomainEvents()
+    {
+        // Arrange
+        TestVersionedWorkflowEntity entity = new();
+
+        // Act
+        entity.RaiseDomainEvent(new TestDomainEvent("test-payload"));
+
+        // Assert
+        entity.DomainEvents.ShouldHaveSingleItem();
+        entity.DomainEvents.First().ShouldBeOfType<TestDomainEvent>()
+            .Payload.ShouldBe("test-payload");
+    }
+
+    [Fact]
+    public void Entity_ShouldSupportIntegrationEvents()
+    {
+        // Arrange
+        TestVersionedWorkflowEntity entity = new();
+
+        // Act
+        entity.RaiseIntegrationEvent(new TestIntegrationEto("test-data"));
+
+        // Assert
+        entity.IntegrationEvents.ShouldHaveSingleItem();
+        entity.IntegrationEvents.First().ShouldBeOfType<TestIntegrationEto>()
+            .Data.ShouldBe("test-data");
+    }
+
+    // ========================================================================
+    // SetLifecycleStatus behavior method
+    // ========================================================================
+
+    [Fact]
+    public void SetLifecycleStatus_ShouldUpdateStatus()
+    {
+        // Arrange
+        TestVersionedWorkflowEntity entity = new();
+        entity.LifecycleStatus.ShouldBe(WorkflowLifecycleStatus.Draft);
+
+        // Act
+        entity.TransitionTo(WorkflowLifecycleStatus.PendingReview);
+
+        // Assert
+        entity.LifecycleStatus.ShouldBe(WorkflowLifecycleStatus.PendingReview);
+    }
+
+    // ========================================================================
     // Helpers
     // ========================================================================
 
@@ -173,12 +236,25 @@ public sealed class VersionedWorkflowEntityTests
             .GetValue(null)!;
 
     // ========================================================================
-    // Test entity — re-implements IWorkflowStateful to provide WorkflowEntityType
+    // Test types
     // ========================================================================
 
     private sealed class TestVersionedWorkflowEntity : VersionedWorkflowEntity, IWorkflowStateful
     {
         public static string StatusPropertyName => nameof(LifecycleStatus);
         public static string WorkflowEntityType => "TestDocument";
+
+        /// <summary>Exposes <see cref="AddDomainEvent"/> for testing.</summary>
+        public void RaiseDomainEvent(IDomainEvent domainEvent) => AddDomainEvent(domainEvent);
+
+        /// <summary>Exposes <see cref="AddDistributedEvent"/> for testing.</summary>
+        public void RaiseIntegrationEvent(IIntegrationEvent integrationEvent) => AddDistributedEvent(integrationEvent);
+
+        /// <summary>Exposes <see cref="SetLifecycleStatus"/> for testing.</summary>
+        public void TransitionTo(WorkflowLifecycleStatus status) => SetLifecycleStatus(status);
     }
+
+    private sealed record TestDomainEvent(string Payload) : IDomainEvent;
+
+    private sealed record TestIntegrationEto(string Data) : IIntegrationEvent;
 }

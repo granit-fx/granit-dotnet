@@ -28,6 +28,7 @@ public sealed class ExportOrchestratorTests
     private readonly IImportFileProvider _fileProvider = Substitute.For<IImportFileProvider>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly ILocalEventBus _eventBus = Substitute.For<ILocalEventBus>();
+    private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
     private readonly DateTimeOffset _now = new(2026, 3, 3, 10, 0, 0, TimeSpan.Zero);
 
     public ExportOrchestratorTests()
@@ -522,6 +523,7 @@ public sealed class ExportOrchestratorTests
             _clock,
             new SimpleGuidGenerator(),
             _eventBus,
+            _distributedEventBus,
             NullLogger<ExportOrchestrator>.Instance);
 
         // Act
@@ -630,6 +632,7 @@ public sealed class ExportOrchestratorTests
             _clock,
             new SimpleGuidGenerator(),
             _eventBus,
+            _distributedEventBus,
             NullLogger<ExportOrchestrator>.Instance);
     }
 
@@ -656,6 +659,7 @@ public sealed class ExportOrchestratorTests
             _clock,
             new SimpleGuidGenerator(),
             _eventBus,
+            _distributedEventBus,
             NullLogger<ExportOrchestrator>.Instance);
     }
 
