@@ -158,6 +158,23 @@ Two event categories with **mandatory suffixes** — enforced by architecture te
 - **NEVER** use bare past-tense names without suffix (`BlobValidated` is wrong,
   `BlobValidatedEvent` is correct).
 
+### Background Jobs — naming convention (STRICT)
+
+Single category with **mandatory suffix** — enforced by architecture tests:
+
+| Interface | Attribute | Suffix | Example | Location |
+| --------- | --------- | ------ | ------- | -------- |
+| `IBackgroundJob` | `[RecurringJob]` | `*Job` | `OrphanBlobCleanupJob` | `Granit.{Module}/Jobs/` |
+
+- **`*Job`**: `sealed record` implementing `IBackgroundJob`, decorated with
+  `[RecurringJob("cron", "name")]`. Handler in same `Jobs/` folder.
+- **Job name format**: `{module-kebab}-{action-kebab}` (e.g., `"blob-storage-orphan-cleanup"`).
+  Module prefix ensures global uniqueness.
+- **Handler naming**: `{Action}Handler` (e.g., `OrphanBlobCleanupHandler`) — `internal static partial class`.
+- **NEVER** use `*Command` suffix for jobs — commands are CQRS, jobs are scheduled work units.
+- **NEVER** create a separate `.Wolverine` package for jobs — jobs live in the base module's
+  `Jobs/` folder. Wolverine scheduling is handled by `Granit.BackgroundJobs.Wolverine`.
+
 ### DTOs & API responses
 
 - **Prefixed names**: `WorkflowTransitionRequest`, not `TransitionRequest` — OpenAPI flattens namespaces

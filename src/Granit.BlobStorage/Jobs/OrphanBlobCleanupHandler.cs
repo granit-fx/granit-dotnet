@@ -1,16 +1,16 @@
 using Microsoft.Extensions.Logging;
 
-namespace Granit.BlobStorage.Wolverine;
+namespace Granit.BlobStorage.Jobs;
 
 /// <summary>
-/// Handler for <see cref="CleanupOrphanBlobsCommand"/>.
+/// Handler for <see cref="OrphanBlobCleanupJob"/>.
 /// Delegates to <see cref="IBlobStorage.CleanupOrphansAsync"/> to clean up
 /// blobs stuck in Pending/Uploading for over 24 hours.
 /// </summary>
-internal static partial class CleanupOrphanBlobsHandler
+internal static partial class OrphanBlobCleanupHandler
 {
     public static async Task HandleAsync(
-        CleanupOrphanBlobsCommand command,
+        OrphanBlobCleanupJob job,
         IBlobStorage blobStorage,
         ILogger logger,
         CancellationToken cancellationToken)
