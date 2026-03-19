@@ -118,16 +118,8 @@ public sealed class NotificationBackedNotifierTests
             Arg.Any<CancellationToken>());
     }
 
-    private static TimelineEntry BuildEntry() => new()
-    {
-        Id = Guid.NewGuid(),
-        EntityType = "Patient",
-        EntityId = "p-1",
-        EntryType = TimelineEntryType.Comment,
-        Body = "Hello @[User](user:00000000-0000-0000-0000-000000000001)",
-        AuthorId = "author-1",
-        AuthorName = "Author Name",
-        CreatedAt = DateTimeOffset.UtcNow,
-        CreatedBy = "author-1",
-    };
+    private static TimelineEntry BuildEntry() => TimelineEntry.Create(
+        Guid.NewGuid(), "Patient", "p-1", TimelineEntryType.Comment,
+        "Hello @[User](user:00000000-0000-0000-0000-000000000001)",
+        "author-1", "Author Name", DateTimeOffset.UtcNow, "author-1");
 }

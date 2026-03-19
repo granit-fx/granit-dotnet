@@ -20,26 +20,19 @@ public sealed class DomainConventionTests
     public void Domain_entities_should_not_be_in_Internal_namespaces() =>
         DomainConventionRules.DomainEntitiesShouldNotBeInternal(Architecture, "Granit.");
 
-    /// <summary>
-    /// Types that manually implement <c>IDomainEventSource</c> instead of inheriting from
-    /// an aggregate root base class. These are migration candidates.
-    /// </summary>
-    /// <remarks>
-    /// Allowlist will shrink as entities are migrated to aggregate roots (Phases 1-3).
-    /// </remarks>
     [Fact]
-    public void Manual_IDomainEventSource_implementors_should_use_aggregate_root_bases()
-    {
-        // Allowlist: entities not yet migrated to aggregate root bases.
-        // Remove entries as they are migrated (Phases 1-3 of the DDD improvement plan).
-        string[] allowlist =
-        [
-            "Granit.Timeline.Domain.TimelineEntry",
-        ];
+    public void Aggregate_roots_should_not_have_public_setters() =>
+        DomainConventionRules.AggregateRootsShouldNotHavePublicSetters(Architecture, "Granit.");
 
+    /// <summary>
+    /// No type should manually implement <c>IDomainEventSource</c> — use aggregate root base classes instead.
+    /// </summary>
+    [Fact]
+    public void No_manual_IDomainEventSource_implementors()
+    {
         IReadOnlyList<string> violators =
             DomainConventionRules.FindManualDomainEventSourceImplementors(
-                Architecture, "Granit.", allowlist);
+                Architecture, "Granit.");
 
         violators.ShouldBeEmpty(
             "Types should inherit from AggregateRoot (or audited variants) instead of manually " +

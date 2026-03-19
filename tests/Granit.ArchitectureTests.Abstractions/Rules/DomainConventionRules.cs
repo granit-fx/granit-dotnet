@@ -86,6 +86,36 @@ public static class DomainConventionRules
             $"Violators: {string.Join(", ", violations.Select(c => c.FullName))}");
     }
 
+    /// <summary>
+    /// Aggregate root subclasses must not have public mutable properties (except explicit
+    /// interface implementations like <c>IMultiTenant.TenantId</c> or <c>ISoftDeletable</c>).
+    /// </summary>
+    public static void AggregateRootsShouldNotHavePublicSetters(
+        Architecture architecture,
+        string typePrefix)
+    {
+        List<string> violations = [];
+
+        foreach (Class c in architecture.Classes
+            .Where(c => c.FullName.StartsWith(typePrefix, StringComparison.Ordinal)
+                && !c.IsAbstract.GetValueOrDefault()
+                && IsAssignableToAggregateRoot(c)))
+        {
+            // set_ methods with Public visibility indicate mutable public properties.
+            // Exclude explicit interface implementations (contain '.' in name).
+            violations.AddRange(c.Members
+                .Where(m => m.Name.StartsWith("set_", StringComparison.Ordinal)
+                    && m.Visibility == Visibility.Public
+                    && !m.Name.Contains('.'))
+                .Select(m => $"{c.Name}.{m.Name["set_".Length..]}"));
+        }
+
+        violations.ShouldBeEmpty(
+            "Aggregate root properties must use private setters. " +
+            "Use behavior methods for state transitions. " +
+            $"Violators: {string.Join(", ", violations)}");
+    }
+
     private static bool IsAssignableToValueObject(Class c) =>
         HasBaseClass(c, "Granit.Core.Domain.ValueObject");
 

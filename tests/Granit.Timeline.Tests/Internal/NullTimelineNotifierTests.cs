@@ -12,15 +12,9 @@ public sealed class NullTimelineNotifierTests
     [Fact]
     public async Task NotifyEntryPostedAsync_CompletesWithoutThrowing()
     {
-        TimelineEntry entry = new()
-        {
-            EntityType = "Patient",
-            EntityId = "123",
-            EntryType = TimelineEntryType.Comment,
-            Body = "Test comment",
-            AuthorId = "user-1",
-            AuthorName = "Alice",
-        };
+        var entry = TimelineEntry.Create(
+            Guid.NewGuid(), "Patient", "123", TimelineEntryType.Comment,
+            "Test comment", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
         List<string> followerIds = ["user-2", "user-3"];
 
         Func<Task> act = () => _notifier.NotifyEntryPostedAsync(
@@ -32,15 +26,9 @@ public sealed class NullTimelineNotifierTests
     [Fact]
     public async Task NotifyEntryPostedAsync_WithEmptyFollowers_CompletesWithoutThrowing()
     {
-        TimelineEntry entry = new()
-        {
-            EntityType = "Invoice",
-            EntityId = "456",
-            EntryType = TimelineEntryType.SystemLog,
-            Body = "{}",
-            AuthorId = "system",
-            AuthorName = "System",
-        };
+        var entry = TimelineEntry.Create(
+            Guid.NewGuid(), "Invoice", "456", TimelineEntryType.SystemLog,
+            "{}", "system", "System", DateTimeOffset.UtcNow, "system");
         List<string> followerIds = [];
 
         Func<Task> act = () => _notifier.NotifyEntryPostedAsync(
@@ -52,15 +40,9 @@ public sealed class NullTimelineNotifierTests
     [Fact]
     public async Task NotifyEntryPostedAsync_ReturnsCompletedTask()
     {
-        TimelineEntry entry = new()
-        {
-            EntityType = "Patient",
-            EntityId = "1",
-            EntryType = TimelineEntryType.Comment,
-            Body = "text",
-            AuthorId = "user-1",
-            AuthorName = "Bob",
-        };
+        var entry = TimelineEntry.Create(
+            Guid.NewGuid(), "Patient", "1", TimelineEntryType.Comment,
+            "text", "user-1", "Bob", DateTimeOffset.UtcNow, "user-1");
 
         Task result = _notifier.NotifyEntryPostedAsync(entry, [], TestContext.Current.CancellationToken);
 
@@ -71,15 +53,9 @@ public sealed class NullTimelineNotifierTests
     [Fact]
     public async Task NotifyMentionedUsersAsync_CompletesWithoutThrowing()
     {
-        TimelineEntry entry = new()
-        {
-            EntityType = "Patient",
-            EntityId = "789",
-            EntryType = TimelineEntryType.Comment,
-            Body = "Hey @user-2",
-            AuthorId = "user-1",
-            AuthorName = "Alice",
-        };
+        var entry = TimelineEntry.Create(
+            Guid.NewGuid(), "Patient", "789", TimelineEntryType.Comment,
+            "Hey @user-2", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
         List<string> mentionedUserIds = ["user-2"];
 
         Func<Task> act = () => _notifier.NotifyMentionedUsersAsync(
@@ -91,15 +67,9 @@ public sealed class NullTimelineNotifierTests
     [Fact]
     public async Task NotifyMentionedUsersAsync_WithEmptyMentions_CompletesWithoutThrowing()
     {
-        TimelineEntry entry = new()
-        {
-            EntityType = "Invoice",
-            EntityId = "1",
-            EntryType = TimelineEntryType.InternalNote,
-            Body = "No mentions here",
-            AuthorId = "user-1",
-            AuthorName = "Alice",
-        };
+        var entry = TimelineEntry.Create(
+            Guid.NewGuid(), "Invoice", "1", TimelineEntryType.InternalNote,
+            "No mentions here", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
         List<string> mentionedUserIds = [];
 
         Func<Task> act = () => _notifier.NotifyMentionedUsersAsync(
@@ -111,15 +81,9 @@ public sealed class NullTimelineNotifierTests
     [Fact]
     public async Task NotifyMentionedUsersAsync_ReturnsCompletedTask()
     {
-        TimelineEntry entry = new()
-        {
-            EntityType = "Patient",
-            EntityId = "1",
-            EntryType = TimelineEntryType.Comment,
-            Body = "text",
-            AuthorId = "user-1",
-            AuthorName = "Bob",
-        };
+        var entry = TimelineEntry.Create(
+            Guid.NewGuid(), "Patient", "1", TimelineEntryType.Comment,
+            "text", "user-1", "Bob", DateTimeOffset.UtcNow, "user-1");
 
         Task result = _notifier.NotifyMentionedUsersAsync(entry, [], TestContext.Current.CancellationToken);
 

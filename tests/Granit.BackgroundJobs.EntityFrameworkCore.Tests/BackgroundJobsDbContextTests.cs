@@ -139,19 +139,13 @@ public sealed class BackgroundJobsDbContextTests
     {
         await using BackgroundJobsDbContext ctx = CreateInMemory();
 
-        BackgroundJobDefinition job = new()
-        {
-            Id = Guid.NewGuid(),
-            JobName = "daily-report",
-            MessageType = "My.App.DailyReportMessage, My.App",
-            CronExpression = "0 8 * * *",
-            IsEnabled = true,
-            LastExecutedAt = new DateTimeOffset(2026, 1, 15, 8, 0, 0, TimeSpan.Zero),
-            NextExecutionAt = new DateTimeOffset(2026, 1, 16, 8, 0, 0, TimeSpan.Zero),
-            ConsecutiveFailureCount = 2,
-            LastErrorMessage = "Timeout after 30s",
-            TriggeredBy = "admin-user",
-        };
+        var job = BackgroundJobDefinition.Create(
+            Guid.NewGuid(), "daily-report", "0 8 * * *", "My.App.DailyReportMessage, My.App");
+        job.RecordExecutionStart(new DateTimeOffset(2026, 1, 15, 8, 0, 0, TimeSpan.Zero));
+        job.ScheduleNext(new DateTimeOffset(2026, 1, 16, 8, 0, 0, TimeSpan.Zero));
+        job.RecordFailure("Timeout after 30s");
+        job.RecordFailure("Timeout after 30s");
+        job.SetTriggeredBy("admin-user");
 
         ctx.Jobs.Add(job);
         await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);

@@ -28,15 +28,19 @@ public sealed class RecurringJobSchedulingMiddlewareTests
     private static BackgroundJobDefinition MakeJob(
         string name = "fake-daily-report",
         string cron = "0 8 * * *",
-        bool enabled = true) =>
-        new()
+        bool enabled = true)
+    {
+        var job = BackgroundJobDefinition.Create(
+            Guid.NewGuid(), name, cron, typeof(FakeDailyReportMessage).AssemblyQualifiedName!);
+
+        if (!enabled)
         {
-            Id = Guid.NewGuid(),
-            JobName = name,
-            CronExpression = cron,
-            MessageType = typeof(FakeDailyReportMessage).AssemblyQualifiedName!,
-            IsEnabled = enabled,
-        };
+            job.Pause();
+            job.ClearDomainEvents();
+        }
+
+        return job;
+    }
 
     // =========================================================================
     // BeforeAsync

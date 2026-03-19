@@ -41,16 +41,24 @@ public sealed class CronSchedulerAgentTests
         string jobName,
         string cron = "0 9 * * *",
         bool isEnabled = true,
-        DateTimeOffset? nextExecutionAt = null) =>
-        new()
+        DateTimeOffset? nextExecutionAt = null)
+    {
+        var job = BackgroundJobDefinition.Create(
+            Guid.NewGuid(), jobName, cron, typeof(FakeJobMessage).AssemblyQualifiedName!);
+
+        if (!isEnabled)
         {
-            Id = Guid.NewGuid(),
-            JobName = jobName,
-            CronExpression = cron,
-            MessageType = typeof(FakeJobMessage).AssemblyQualifiedName!,
-            IsEnabled = isEnabled,
-            NextExecutionAt = nextExecutionAt,
-        };
+            job.Pause();
+            job.ClearDomainEvents();
+        }
+
+        if (nextExecutionAt.HasValue)
+        {
+            job.ScheduleNext(nextExecutionAt);
+        }
+
+        return job;
+    }
 
     // Minimal job message class for testing
     private sealed class FakeJobMessage;
@@ -152,7 +160,7 @@ public sealed class CronSchedulerAgentTests
         await agent.StartAsync(TestContext.Current.CancellationToken);
 
         // Simulate that RecordNextExecutionAsync updated NextExecutionAt
-        job.NextExecutionAt = _clock.Now.AddHours(1);
+        job.ScheduleNext(_clock.Now.AddHours(1));
         _storeReader.GetEnabledJobsAsync(Arg.Any<CancellationToken>())
             .Returns([job]);
 
