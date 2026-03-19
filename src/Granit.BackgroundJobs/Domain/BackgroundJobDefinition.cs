@@ -1,6 +1,7 @@
 using Granit.BackgroundJobs.Events;
 using Granit.BackgroundJobs.Internal;
 using Granit.Core.Domain;
+using Granit.Core.Events;
 
 namespace Granit.BackgroundJobs.Domain;
 
@@ -126,6 +127,12 @@ public sealed class BackgroundJobDefinition : AggregateRoot
     {
         ConsecutiveFailureCount++;
         LastErrorMessage = errorMessage;
+
+        if (ConsecutiveFailureCount >= 3)
+        {
+            AddDistributedEvent(new BackgroundJobFailureThresholdExceededEto(
+                Id, JobName, ConsecutiveFailureCount, errorMessage));
+        }
     }
 
     /// <summary>

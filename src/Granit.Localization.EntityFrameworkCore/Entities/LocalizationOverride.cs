@@ -15,7 +15,7 @@ namespace Granit.Localization.EntityFrameworkCore.Entities;
 /// satisfying the ISO 27001 3-year audit trail requirement.
 /// </para>
 /// </remarks>
-public sealed class LocalizationOverride : AuditedEntity, IMultiTenant
+public sealed class LocalizationOverride : AuditedEntity, IMultiTenant, IEmitEntityLifecycleEvents
 {
     /// <summary>Tenant scope. <c>null</c> = host-level override (applies to all tenants).</summary>
     public Guid? TenantId { get; set; }

@@ -108,6 +108,12 @@ public sealed class WebhookSubscription : AuditedAggregateRoot
     internal void RecordFailure()
     {
         ConsecutiveFailureCount++;
+
+        if (ConsecutiveFailureCount >= 5)
+        {
+            AddDistributedEvent(new WebhookDeliveryFailureThresholdExceededEto(
+                Id, TargetUrl, ConsecutiveFailureCount));
+        }
     }
 
     /// <summary>

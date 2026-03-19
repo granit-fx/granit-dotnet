@@ -95,6 +95,7 @@ public sealed class ApiKeyEntry : FullAuditedAggregateRoot, IMultiTenant
     internal void RecordUsage(DateTimeOffset usedAt)
     {
         LastUsedAt = usedAt;
+        AddDistributedEvent(new Events.ApiKeyUsedEto(Id, Prefix, usedAt));
     }
 
     /// <summary>
