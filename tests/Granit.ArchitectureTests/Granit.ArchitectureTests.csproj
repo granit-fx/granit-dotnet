@@ -66,6 +66,7 @@
     <ProjectReference Include="..\..\src\Granit.BlobStorage.FileSystem\Granit.BlobStorage.FileSystem.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.GoogleCloud\Granit.BlobStorage.GoogleCloud.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.Proxy\Granit.BlobStorage.Proxy.csproj" />
+    <ProjectReference Include="..\..\src\Granit.BlobStorage.Endpoints\Granit.BlobStorage.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.S3\Granit.BlobStorage.S3.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Bulkhead\Granit.Http.Bulkhead.csproj" />
     <ProjectReference Include="..\..\src\Granit.Caching\Granit.Caching.csproj" />
@@ -148,6 +149,8 @@
     <ProjectReference Include="..\..\src\Granit.Persistence\Granit.Persistence.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.Hosting\Granit.Persistence.Hosting.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.Migrations\Granit.Persistence.Migrations.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Persistence.Postgres\Granit.Persistence.Postgres.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Persistence.SqlServer\Granit.Persistence.SqlServer.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.Migrations.Wolverine\Granit.Persistence.Migrations.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy\Granit.Privacy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.AI\Granit.Privacy.AI.csproj" />
@@ -189,6 +192,7 @@
     <ProjectReference Include="..\..\src\Granit.Vault.HashiCorp\Granit.Vault.HashiCorp.csproj" />
     <ProjectReference Include="..\..\src\Granit.Webhooks\Granit.Webhooks.csproj" />
     <ProjectReference Include="..\..\src\Granit.Webhooks.EntityFrameworkCore\Granit.Webhooks.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Webhooks.Endpoints\Granit.Webhooks.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Webhooks.Wolverine\Granit.Webhooks.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Wolverine\Granit.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Wolverine.Postgresql\Granit.Wolverine.Postgresql.csproj" />
