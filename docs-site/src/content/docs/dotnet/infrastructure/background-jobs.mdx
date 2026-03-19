@@ -115,18 +115,38 @@ survive process restarts and is not cluster-safe. Suitable for single-instance d
 </TabItem>
 </Tabs>
 
+## Naming convention
+
+Background jobs follow a strict naming convention, parallel to events (`*Event` / `*Eto`):
+
+| Aspect | Convention |
+|--------|-----------|
+| **Marker** | `IBackgroundJob` + `[RecurringJob]` attribute |
+| **Suffix** | `*Job` (e.g., `OrphanBlobCleanupJob`) |
+| **Record shape** | `[RecurringJob("cron", "name")] sealed record XxxJob : IBackgroundJob` |
+| **Handler** | `internal static partial class XxxHandler` with `HandleAsync` |
+| **Location** | `Granit.{Module}/Jobs/` (job + handler in same folder) |
+| **Job name** | `{module-kebab}-{action-kebab}` (e.g., `"blob-storage-orphan-cleanup"`) |
+
+Architecture tests enforce:
+
+- All `IBackgroundJob` implementors must end with `Job`
+- All `[RecurringJob]`-decorated types must implement `IBackgroundJob`
+
 ## Declaring a recurring job
 
-Decorate a plain message class with `[RecurringJob]` and write a Wolverine-convention handler:
+Implement `IBackgroundJob`, decorate with `[RecurringJob]`, and write a handler:
 
 ```csharp
-[RecurringJob("0 2 * * *", "nightly-appointment-cleanup")]
-public sealed class NightlyAppointmentCleanupCommand;
+// src/Granit.MyModule/Jobs/NightlyCleanupJob.cs
+[RecurringJob("0 2 * * *", "my-module-nightly-cleanup")]
+public sealed record NightlyCleanupJob : IBackgroundJob;
 
-public static class NightlyAppointmentCleanupHandler
+// src/Granit.MyModule/Jobs/NightlyCleanupHandler.cs
+internal static partial class NightlyCleanupHandler
 {
-    public static async Task Handle(
-        NightlyAppointmentCleanupCommand command,
+    public static async Task HandleAsync(
+        NightlyCleanupJob job,
         AppDbContext db,
         IClock clock,
         CancellationToken cancellationToken)
@@ -431,6 +451,7 @@ When `Granit.Observability` is loaded, the activity source is auto-discovered vi
 | Category | Key types | Package |
 |----------|-----------|---------|
 | Module | `GranitBackgroundJobsModule`, `GranitBackgroundJobsEntityFrameworkCoreModule`, `GranitBackgroundJobsEndpointsModule`, `GranitBackgroundJobsWolverineModule` | -- |
+| Marker | `IBackgroundJob` | `Granit.BackgroundJobs` |
 | Attribute | `[RecurringJob]` | `Granit.BackgroundJobs` |
 | CQRS | `IBackgroundJobReader`, `IBackgroundJobWriter` | `Granit.BackgroundJobs` |
 | Store | `IBackgroundJobStoreReader`, `IBackgroundJobStoreWriter` | `Granit.BackgroundJobs` |
