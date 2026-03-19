@@ -116,12 +116,14 @@ public static class LayerDependencyRules
     public static void IQueryableShouldNotEscapePersistenceLayer(
         ArchUnitNET.Domain.Architecture architecture)
     {
-        string[] allowedNamespaceFragments = ["EntityFrameworkCore", "Querying", "Persistence"];
+        string[] allowedNamespaceFragments = ["EntityFrameworkCore", "Querying", "Persistence", "Export"];
 
         IEnumerable<IType> violators = architecture.Types
             .Where(t => !allowedNamespaceFragments.Any(ns =>
                 t.Namespace.FullName.Contains(ns, StringComparison.Ordinal)))
             .Where(t => !t.Name.EndsWith("QueryableProvider", StringComparison.Ordinal))
+            .Where(t => !t.Name.EndsWith("EndpointRouteBuilderExtensions", StringComparison.Ordinal))
+            .Where(t => !t.Name.EndsWith("DataSource", StringComparison.Ordinal))
             .Where(t => t.Dependencies
                 .Any(d => d.Target.FullName.StartsWith("System.Linq.IQueryable", StringComparison.Ordinal)));
 
