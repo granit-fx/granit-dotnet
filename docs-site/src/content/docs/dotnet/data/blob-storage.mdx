@@ -43,6 +43,7 @@ consistent while minimizing server resource usage.
   - Granit.BlobStorage.FileSystem Local file system storage
   - Granit.BlobStorage.DbStore EF Core database storage (small files)
   - Granit.BlobStorage.Proxy Token-based proxy endpoints for server-side providers
+  - Granit.BlobStorage.Endpoints Minimal API admin endpoints (upload, confirm, download, delete)
   - Granit.BlobStorage.EntityFrameworkCore Isolated DbContext, EF persistence (metadata)
 </FileTree>
 
@@ -751,6 +752,7 @@ Verifies GCS connectivity by listing one object in the default bucket. Tagged
 
 ## See also
 
+- [Blob Storage Endpoints](/dotnet/api/blob-storage-endpoints/) -- Admin API (upload, confirm, download, delete, cleanup)
 - [Configure blob storage](/dotnet/guides/configure-blob-storage/) -- Step-by-step guide
 - [Pre-signed URL pattern](/dotnet/architecture/patterns/pre-signed-url/) -- Architectural pattern
 - [Imaging module](/dotnet/data/imaging/) -- Image processing pipeline, WebP/AVIF, EXIF stripping

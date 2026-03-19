@@ -1,0 +1,122 @@
+---
+title: "Blob Storage Endpoints — Admin API"
+description: Minimal API endpoints for blob storage administration — upload initiation, confirmation with validation pipeline, download URL generation, deletion, orphan cleanup, and queryable descriptors.
+sidebar:
+  label: Blob Storage Endpoints
+  order: 12
+---
+
+import { FileTree } from "@astrojs/starlight/components";
+
+## Overview
+
+`Granit.BlobStorage.Endpoints` exposes a Minimal API for managing the full blob lifecycle:
+initiate uploads (presigned URLs), confirm uploads (validation pipeline), generate download
+URLs, delete blobs (crypto-shredding), and clean up orphans. All endpoints are protected
+by the `BlobStorage.Admin` authorization policy with configurable role requirements.
+
+## Package structure
+
+<FileTree>
+- Granit.BlobStorage.Endpoints/ Minimal API route groups + DTOs + validators
+  - Granit.BlobStorage Core abstractions (IBlobStorage, BlobDescriptor)
+  - Granit.BlobStorage.EntityFrameworkCore EF Core persistence + IBlobQueryableProvider
+</FileTree>
+
+## Installation
+
+```csharp
+// In your application startup
+app.MapBlobStorageEndpoints();
+
+// With custom options:
+app.MapBlobStorageEndpoints(opts =>
+{
+    opts.RoutePrefix = "admin/blobs";
+    opts.RequiredRole = "storage-admin";
+    opts.TagName = "Storage";
+});
+```
+
+## Configuration
+
+| Option | Default | Description |
+| ------ | ------- | ----------- |
+| `RoutePrefix` | `"blobs"` | Route prefix for all blob endpoints |
+| `RequiredRole` | `"granit-blobs-admin"` | Role required for the authorization policy |
+| `TagName` | `"BlobStorage"` | OpenAPI tag name for endpoint grouping |
+
+Configuration section: `BlobStorageEndpoints`.
+
+## Endpoints
+
+### Upload flow
+
+| Method | Route | Handler | Description |
+| ------ | ----- | ------- | ----------- |
+| `POST` | `/upload` | `InitiateBlobUpload` | Initiate a direct-to-cloud upload, returns presigned URL |
+| `POST` | `/{id}/confirm` | `ConfirmBlobUpload` | Confirm upload completed, runs validation pipeline |
+
+### Read
+
+| Method | Route | Handler | Description |
+| ------ | ----- | ------- | ----------- |
+| `GET` | `/{id}` | `GetBlobDescriptor` | Get a blob descriptor by ID |
+
+### Operations
+
+| Method | Route | Handler | Description |
+| ------ | ----- | ------- | ----------- |
+| `POST` | `/{id}/download-url` | `GenerateBlobDownloadUrl` | Generate a presigned download URL |
+| `DELETE` | `/{id}` | `DeleteBlob` | Delete a blob (crypto-shredding, audit record retained) |
+| `POST` | `/cleanup-orphans` | `CleanupOrphanedBlobs` | Clean up orphaned blobs stuck in Pending/Uploading |
+
+### Query
+
+When `Granit.BlobStorage.EntityFrameworkCore` is registered, a query endpoint is available:
+
+| Method | Route | Handler | Description |
+| ------ | ----- | ------- | ----------- |
+| `POST` | `/query` | `QueryBlobDescriptors` | Filter, sort, and paginate blob descriptors |
+
+## DTOs
+
+| DTO | Direction | Used by |
+| --- | --------- | ------- |
+| `BlobUploadInitiateRequest` | Input | POST upload |
+| `BlobUploadInitiateResponse` | Output | POST upload (includes presigned URL) |
+| `BlobConfirmUploadRequest` | Input | POST confirm |
+| `BlobConfirmUploadResponse` | Output | POST confirm (includes validation outcome) |
+| `BlobDownloadUrlRequest` | Input | POST download-url |
+| `BlobDownloadUrlResponse` | Output | POST download-url (includes presigned URL) |
+| `BlobDeleteRequest` | Input | DELETE |
+| `BlobDescriptorResponse` | Output | GET by ID |
+| `BlobCleanupOrphansResponse` | Output | POST cleanup-orphans |
+
+## Permissions
+
+All endpoints require the `BlobStorage.Admin` authorization policy. Granular permissions
+are defined in `BlobStoragePermissions`:
+
+| Permission | Description |
+| ---------- | ----------- |
+| `BlobStorage.Blobs.View` | View blob descriptors |
+| `BlobStorage.Blobs.Upload` | Upload blobs |
+| `BlobStorage.Blobs.Download` | Download blobs |
+| `BlobStorage.Blobs.Delete` | Delete blobs |
+| `BlobStorage.Blobs.Manage` | Manage blobs (confirm uploads, cleanup orphans) |
+
+## Validation
+
+All request DTOs are automatically validated via `FluentValidation` through
+`MapGranitGroup()`. Key rules:
+
+- **Container names**: lowercase alphanumeric with hyphens, max 128 chars
+- **File names**: non-empty, max 1024 chars
+- **Content types**: valid MIME format (`type/subtype`)
+- **File size**: must be positive
+- **Deletion reason**: max 500 chars (optional)
+
+## See also
+
+- [Blob Storage](/dotnet/data/blob-storage/) — core module documentation
