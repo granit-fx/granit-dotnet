@@ -230,6 +230,7 @@
     <Project Path="tests/Granit.BlobStorage.AI.Tests/Granit.BlobStorage.AI.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.AzureBlob.Tests/Granit.BlobStorage.AzureBlob.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.DbStore.Tests/Granit.BlobStorage.DbStore.Tests.csproj" />
+    <Project Path="tests/Granit.BlobStorage.Endpoints.Tests/Granit.BlobStorage.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.EntityFrameworkCore.Tests/Granit.BlobStorage.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.FileSystem.Tests/Granit.BlobStorage.FileSystem.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.GoogleCloud.Tests/Granit.BlobStorage.GoogleCloud.Tests.csproj" />
