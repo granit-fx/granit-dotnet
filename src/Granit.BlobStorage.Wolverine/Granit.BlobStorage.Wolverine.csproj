@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.BlobStorage.Wolverine</PackageId>
+    <Description>Wolverine integration for Granit.BlobStorage: recurring hourly job for automatic orphan blob cleanup via IBlobStorage.CleanupOrphansAsync().</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.BlobStorage.Wolverine.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WolverineFx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.BlobStorage\Granit.BlobStorage.csproj" />
+    <ProjectReference Include="..\Granit.Wolverine\Granit.Wolverine.csproj" />
+  </ItemGroup>
+
+</Project>

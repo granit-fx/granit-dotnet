@@ -68,6 +68,7 @@
     <ProjectReference Include="..\..\src\Granit.BlobStorage.Proxy\Granit.BlobStorage.Proxy.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.Endpoints\Granit.BlobStorage.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.S3\Granit.BlobStorage.S3.csproj" />
+    <ProjectReference Include="..\..\src\Granit.BlobStorage.Wolverine\Granit.BlobStorage.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Bulkhead\Granit.Http.Bulkhead.csproj" />
     <ProjectReference Include="..\..\src\Granit.Caching\Granit.Caching.csproj" />
     <ProjectReference Include="..\..\src\Granit.Caching.Hybrid\Granit.Caching.Hybrid.csproj" />
