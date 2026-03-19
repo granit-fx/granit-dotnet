@@ -66,17 +66,9 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
     {
         // Arrange
         var entryId = Guid.NewGuid();
-        TimelineEntry entry = new()
-        {
-            Id = entryId,
-            EntityType = "Patient",
-            EntityId = "42",
-            EntryType = TimelineEntryType.Comment,
-            Body = "Test comment",
-            AuthorId = "user-1",
-            AuthorName = "Alice",
-            CreatedAt = DateTimeOffset.UtcNow,
-        };
+        var entry = TimelineEntry.Create(
+            entryId, "Patient", "42", TimelineEntryType.Comment,
+            "Test comment", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
 
         _writer.PostEntryAsync("Patient", "42", TimelineEntryType.Comment, "Test comment",
                 null, Arg.Any<CancellationToken>())
@@ -110,17 +102,9 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
     {
         // Arrange
         var entryId = Guid.NewGuid();
-        TimelineEntry entry = new()
-        {
-            Id = entryId,
-            EntityType = "Patient",
-            EntityId = "42",
-            EntryType = TimelineEntryType.InternalNote,
-            Body = "Staff only note",
-            AuthorId = "user-1",
-            AuthorName = "Alice",
-            CreatedAt = DateTimeOffset.UtcNow,
-        };
+        var entry = TimelineEntry.Create(
+            entryId, "Patient", "42", TimelineEntryType.InternalNote,
+            "Staff only note", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
 
         _writer.PostEntryAsync("Patient", "42", TimelineEntryType.InternalNote, "Staff only note",
                 null, Arg.Any<CancellationToken>())
@@ -153,18 +137,10 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         // Arrange
         var parentId = Guid.NewGuid();
         var entryId = Guid.NewGuid();
-        TimelineEntry entry = new()
-        {
-            Id = entryId,
-            EntityType = "Patient",
-            EntityId = "42",
-            EntryType = TimelineEntryType.Comment,
-            Body = "Reply",
-            AuthorId = "user-1",
-            AuthorName = "Alice",
-            ParentEntryId = parentId,
-            CreatedAt = DateTimeOffset.UtcNow,
-        };
+        var entry = TimelineEntry.Create(
+            entryId, "Patient", "42", TimelineEntryType.Comment,
+            "Reply", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1",
+            parentEntryId: parentId);
 
         _writer.PostEntryAsync("Patient", "42", TimelineEntryType.Comment, "Reply",
                 parentId, Arg.Any<CancellationToken>())
@@ -199,17 +175,9 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         var mentionedUserId = Guid.NewGuid();
         string mentionBody = $"Hey @[Bob](user:{mentionedUserId}), check this!";
         var entryId = Guid.NewGuid();
-        TimelineEntry entry = new()
-        {
-            Id = entryId,
-            EntityType = "Patient",
-            EntityId = "42",
-            EntryType = TimelineEntryType.Comment,
-            Body = mentionBody,
-            AuthorId = "user-1",
-            AuthorName = "Alice",
-            CreatedAt = DateTimeOffset.UtcNow,
-        };
+        var entry = TimelineEntry.Create(
+            entryId, "Patient", "42", TimelineEntryType.Comment,
+            mentionBody, "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
 
         _writer.PostEntryAsync("Patient", "42", TimelineEntryType.Comment, mentionBody,
                 null, Arg.Any<CancellationToken>())
@@ -249,17 +217,9 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
     {
         // Arrange
         var entryId = Guid.NewGuid();
-        TimelineEntry entry = new()
-        {
-            Id = entryId,
-            EntityType = "Patient",
-            EntityId = "42",
-            EntryType = TimelineEntryType.Comment,
-            Body = "No mentions here",
-            AuthorId = "user-1",
-            AuthorName = "Alice",
-            CreatedAt = DateTimeOffset.UtcNow,
-        };
+        var entry = TimelineEntry.Create(
+            entryId, "Patient", "42", TimelineEntryType.Comment,
+            "No mentions here", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
 
         _writer.PostEntryAsync("Patient", "42", TimelineEntryType.Comment, "No mentions here",
                 null, Arg.Any<CancellationToken>())

@@ -173,6 +173,34 @@ Every isolated `DbContext` MUST:
 
 Reference: [`docs/framework/data/persistence.md`](docs/framework/data/persistence.md)
 
+### DDD — Aggregate Root vs Entity
+
+Use `AggregateRoot` (or audited variants) when the entity has a state machine, raises
+domain events, or encapsulates invariants. Use plain `Entity` for append-only records,
+configuration, caches, or lookup tables.
+
+**Aggregate Root rules (enforced by `DomainConventionTests`):**
+
+- **Private setters**: all properties `{ get; private set; }`. Use behavior methods for
+  state transitions (e.g., `MarkAsValid()`, `Revoke()`)
+- **Factory method**: `public static Xxx Create(...)` — the only way to construct
+- **Private EF Core constructor**: keep `private Xxx() { }` for materialization
+- **Explicit interface for `IMultiTenant`**: when `TenantId` has `private set`, add
+  explicit `Guid? IMultiTenant.TenantId { get; set; }` for interceptor injection
+- **Domain events via base class**: use `AddDomainEvent()` / `AddDistributedEvent()` —
+  NEVER manually implement `IDomainEventSource`
+- **No public setters on aggregate roots** — architecture test enforces this
+
+**Value Objects (`SingleValueObject<T>`):**
+
+- Inherit from `SingleValueObject<T>` for single-primitive wrappers
+- Must be `sealed` with `init` properties
+- Provide `Create()` factory with validation + implicit operators for backward compat
+- EF Core converters auto-applied by `ApplyGranitConventions` (no migration needed)
+- JSON serialization handled by `SingleValueObjectJsonConverterFactory`
+
+Reference: [ADR-017](docs-site/src/content/docs/dotnet/architecture/adr/017-ddd-aggregate-value-object-strategy.md)
+
 ### Multi-tenancy — soft dependency
 
 `ICurrentTenant` lives in `Granit.Core.MultiTenancy` — available everywhere without referencing `Granit.MultiTenancy`.
@@ -217,6 +245,9 @@ Each package has `*.Tests` project (xUnit + Shouldly + NSubstitute + Bogus). Par
 - Traditional constructors with only field assignments → primary constructors
 - Unnamed `HasQueryFilter(expr)` → named `HasQueryFilter(name, expr)` (EF Core 10)
 - Swashbuckle / NSwag → `Microsoft.AspNetCore.OpenApi` + Scalar UI
+- Public setters on aggregate roots → `private set` + behavior methods
+- Manual `IDomainEventSource` implementation → inherit from `AggregateRoot` (or variants)
+- `new XxxEntity { ... }` on aggregate roots → `XxxEntity.Create(...)` factory method
 
 ### Architecture
 

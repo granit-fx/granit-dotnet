@@ -28,20 +28,18 @@ internal static class TimelineEntityFactory
         string body,
         Guid? parentEntryId,
         AuditContext context) =>
-        new()
-        {
-            Id = context.GuidGenerator.Create(),
-            EntityType = entityType,
-            EntityId = entityId,
-            EntryType = entryType,
-            Body = body,
-            AuthorId = context.CurrentUser.UserId ?? string.Empty,
-            AuthorName = context.CurrentUser.UserName ?? string.Empty,
-            ParentEntryId = parentEntryId,
-            CreatedAt = context.Clock.Now,
-            CreatedBy = context.CurrentUser.UserId ?? string.Empty,
-            TenantId = context.CurrentTenant.IsAvailable ? context.CurrentTenant.Id : null,
-        };
+        TimelineEntry.Create(
+            context.GuidGenerator.Create(),
+            entityType,
+            entityId,
+            entryType,
+            body,
+            context.CurrentUser.UserId ?? string.Empty,
+            context.CurrentUser.UserName ?? string.Empty,
+            context.Clock.Now,
+            context.CurrentUser.UserId ?? string.Empty,
+            context.CurrentTenant.IsAvailable ? context.CurrentTenant.Id : null,
+            parentEntryId);
 
     internal static TimelineAttachment CreateAttachment(
         Guid entryId,
