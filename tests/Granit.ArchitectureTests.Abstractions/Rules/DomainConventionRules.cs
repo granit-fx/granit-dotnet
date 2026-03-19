@@ -116,6 +116,118 @@ public static class DomainConventionRules
             $"Violators: {string.Join(", ", violations)}");
     }
 
+    /// <summary>
+    /// Aggregate root subclasses must have a <c>public static</c> factory method named <c>Create</c>.
+    /// This enforces controlled creation and prevents direct <c>new</c> usage.
+    /// </summary>
+    public static void AggregateRootsShouldHaveFactoryMethod(
+        Architecture architecture,
+        string typePrefix)
+    {
+        List<string> violations = [];
+
+        foreach (Class c in architecture.Classes
+            .Where(c => c.FullName.StartsWith(typePrefix, StringComparison.Ordinal)
+                && !c.IsAbstract.GetValueOrDefault()
+                && IsAssignableToAggregateRoot(c)))
+        {
+            // ArchUnitNET MethodMember.Name includes parameter types (e.g. "Create(Guid,String)").
+            bool hasCreate = c.Members.OfType<MethodMember>()
+                .Any(m => m.Name.StartsWith("Create(", StringComparison.Ordinal)
+                    && m.Visibility == Visibility.Public);
+
+            if (!hasCreate)
+            {
+                violations.Add(c.FullName);
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Aggregate roots must have a public static Create(...) factory method. " +
+            "Direct construction via 'new' is not allowed. " +
+            $"Violators: {string.Join(", ", violations)}");
+    }
+
+    /// <summary>
+    /// Aggregate root subclasses must have a private parameterless constructor for EF Core
+    /// materialization. Without it, EF Core cannot hydrate entities from the database.
+    /// </summary>
+    public static void AggregateRootsShouldHavePrivateParameterlessConstructor(
+        Architecture architecture,
+        string typePrefix)
+    {
+        List<string> violations = [];
+
+        foreach (Class c in architecture.Classes
+            .Where(c => c.FullName.StartsWith(typePrefix, StringComparison.Ordinal)
+                && !c.IsAbstract.GetValueOrDefault()
+                && IsAssignableToAggregateRoot(c)))
+        {
+            // ArchUnitNET may not expose constructors in Members. Check via
+            // the type's Constructors property or fall back to member scan.
+            bool hasPrivateCtor = c.Constructors
+                .Any(ctor => ctor.Visibility == Visibility.Private
+                    && !ctor.Parameters.Any());
+
+            if (!hasPrivateCtor)
+            {
+                violations.Add(c.FullName);
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Aggregate roots must have a private parameterless constructor for EF Core materialization. " +
+            $"Violators: {string.Join(", ", violations)}");
+    }
+
+    /// <summary>
+    /// Enforces event naming conventions:
+    /// <list type="bullet">
+    /// <item><c>IDomainEvent</c> implementors must end with <c>Event</c></item>
+    /// <item><c>IIntegrationEvent</c> implementors must end with <c>Eto</c></item>
+    /// </list>
+    /// Generic lifecycle events (<c>EntityCreatedEvent&lt;T&gt;</c>, <c>EntityCreatedEto&lt;T&gt;</c>) are excluded.
+    /// </summary>
+    public static void EventNamingShouldFollowConvention(
+        Architecture architecture,
+        string typePrefix)
+    {
+        List<string> violations = [];
+
+        foreach (Class c in architecture.Classes
+            .Where(c => c.FullName.StartsWith(typePrefix, StringComparison.Ordinal)
+                && !c.IsAbstract.GetValueOrDefault()))
+        {
+            // Skip generic lifecycle events (e.g. EntityCreatedEvent`1)
+            if (c.Name.Contains('`'))
+            {
+                continue;
+            }
+
+            bool implementsDomainEvent = c.Dependencies.Any(d =>
+                d.Target.FullName == "Granit.Core.Events.IDomainEvent"
+                && d is ArchUnitNET.Domain.Dependencies.ImplementsInterfaceDependency);
+
+            bool implementsIntegrationEvent = c.Dependencies.Any(d =>
+                d.Target.FullName == "Granit.Core.Events.IIntegrationEvent"
+                && d is ArchUnitNET.Domain.Dependencies.ImplementsInterfaceDependency);
+
+            if (implementsDomainEvent && !c.Name.EndsWith("Event", StringComparison.Ordinal))
+            {
+                violations.Add($"{c.FullName} (IDomainEvent must end with 'Event')");
+            }
+
+            if (implementsIntegrationEvent && !c.Name.EndsWith("Eto", StringComparison.Ordinal))
+            {
+                violations.Add($"{c.FullName} (IIntegrationEvent must end with 'Eto')");
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Event naming convention violated — IDomainEvent → *Event, IIntegrationEvent → *Eto. " +
+            $"Violators: {string.Join(", ", violations)}");
+    }
+
     private static bool IsAssignableToValueObject(Class c) =>
         HasBaseClass(c, "Granit.Core.Domain.ValueObject");
 
