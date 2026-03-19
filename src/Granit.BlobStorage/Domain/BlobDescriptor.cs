@@ -116,6 +116,7 @@ public sealed class BlobDescriptor : AggregateRoot, IMultiTenant
         }
 
         Status = BlobStatus.Uploading;
+        AddDomainEvent(new BlobUploadStartedEvent(Id, ContainerName, OriginalFileName));
     }
 
     /// <summary>

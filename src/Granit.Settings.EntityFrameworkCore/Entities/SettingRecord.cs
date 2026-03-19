@@ -16,7 +16,7 @@ namespace Granit.Settings.EntityFrameworkCore.Entities;
 /// satisfying the ISO 27001 3-year audit trail requirement.
 /// </para>
 /// </remarks>
-public sealed class SettingRecord : AuditedEntity
+public sealed class SettingRecord : AuditedEntity, IEmitEntityLifecycleEvents
 {
     /// <summary>Setting name (e.g. <c>"Notifications.Email.Enabled"</c>). Max 256 characters.</summary>
     public string Name { get; set; } = string.Empty;

@@ -24,7 +24,7 @@ namespace Granit.ReferenceData.Domain;
 /// are filtered out by the EF Core global query filter unless explicitly disabled.
 /// </para>
 /// </remarks>
-public abstract class ReferenceDataEntity : AuditedEntity, IActive
+public abstract class ReferenceDataEntity : AuditedEntity, IActive, IEmitEntityLifecycleEvents
 {
     /// <summary>
     /// Unique business key for the reference data entry (e.g., "BE", "EUR", "fr").

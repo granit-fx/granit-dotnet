@@ -1,3 +1,4 @@
+using Granit.Core.Events;
 using Granit.Identity.EntityFrameworkCore.Entities;
 using Granit.Identity.EntityFrameworkCore.Events;
 using Granit.Identity.EntityFrameworkCore.Internal;
@@ -13,6 +14,8 @@ namespace Granit.Identity.EntityFrameworkCore.Handlers;
 internal sealed partial class IdentityUserEventHandler(
     IIdentityProvider identityProvider,
     IUserCacheStore store,
+    ILocalEventBus localEventBus,
+    IDistributedEventBus distributedEventBus,
     TimeProvider timeProvider,
     ILogger<IdentityUserEventHandler> logger)
 {
@@ -33,6 +36,11 @@ internal sealed partial class IdentityUserEventHandler(
     {
         await store.DeleteByExternalIdAsync(@event.UserId, @event.TenantId, cancellationToken)
             .ConfigureAwait(false);
+
+        await localEventBus.PublishAsync(
+            new UserCacheEntryErasedEvent(@event.UserId, @event.TenantId), cancellationToken)
+            .ConfigureAwait(false);
+
         LogUserCacheDeleted(@event.UserId);
     }
 
@@ -90,6 +98,10 @@ internal sealed partial class IdentityUserEventHandler(
         };
 
         await store.UpsertAsync(entry, cancellationToken).ConfigureAwait(false);
+
+        await distributedEventBus.PublishAsync(
+            new UserCacheSyncedEto(user.Id, entry.TenantId, entry.LastSyncedAt), cancellationToken)
+            .ConfigureAwait(false);
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "User {UserId} not found in identity provider during cache sync")]

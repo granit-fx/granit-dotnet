@@ -1,3 +1,4 @@
+using Granit.Authentication.ApiKeys.Events;
 using Granit.Core.Domain;
 using Granit.Core.MultiTenancy;
 
@@ -95,6 +96,21 @@ public sealed class ApiKeyEntry : FullAuditedAggregateRoot, IMultiTenant
     internal void RecordUsage(DateTimeOffset usedAt)
     {
         LastUsedAt = usedAt;
+        AddDistributedEvent(new ApiKeyUsedEto(Id, Prefix, usedAt));
+    }
+
+    /// <summary>
+    /// Marks this key as expired and emits an <see cref="ApiKeyExpiredEvent"/> domain event.
+    /// Called by the authentication handler when an expired key is detected.
+    /// </summary>
+    internal void MarkAsExpired()
+    {
+        if (ExpiresAt is null)
+        {
+            return;
+        }
+
+        AddDomainEvent(new ApiKeyExpiredEvent(Id, Prefix, ExpiresAt.Value));
     }
 
     /// <summary>

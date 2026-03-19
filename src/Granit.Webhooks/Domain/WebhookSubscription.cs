@@ -32,7 +32,9 @@ public sealed class WebhookSubscription : AuditedAggregateRoot
         HttpsUrl targetUrl,
         string eventType,
         string signingSecret,
-        Guid? tenantId = null) => new()
+        Guid? tenantId = null)
+    {
+        var subscription = new WebhookSubscription
         {
             Id = id,
             TargetUrl = targetUrl,
@@ -41,6 +43,10 @@ public sealed class WebhookSubscription : AuditedAggregateRoot
             TenantId = tenantId,
             Status = WebhookSubscriptionStatus.Active,
         };
+
+        subscription.AddDomainEvent(new WebhookSubscriptionCreatedEvent(id, eventType, targetUrl.Value));
+        return subscription;
+    }
 
     /// <summary>
     /// The HTTPS endpoint that receives webhook HTTP POST requests.
@@ -96,19 +102,28 @@ public sealed class WebhookSubscription : AuditedAggregateRoot
 
     /// <summary>
     /// Records a successful delivery. Resets failure counters.
+    /// Emits a <see cref="WebhookDeliverySucceededEvent"/> domain event.
     /// </summary>
     internal void RecordSuccess(DateTimeOffset at)
     {
         LastSuccessAt = at;
         ConsecutiveFailureCount = 0;
+        AddDomainEvent(new WebhookDeliverySucceededEvent(Id, at));
     }
 
     /// <summary>
     /// Records a delivery failure.
+    /// Publishes a <see cref="WebhookDeliveryFailureThresholdExceededEto"/> integration event when <see cref="ConsecutiveFailureCount"/> reaches 5.
     /// </summary>
     internal void RecordFailure()
     {
         ConsecutiveFailureCount++;
+
+        if (ConsecutiveFailureCount >= 5)
+        {
+            AddDistributedEvent(new WebhookDeliveryFailureThresholdExceededEto(
+                Id, TargetUrl.Value, ConsecutiveFailureCount));
+        }
     }
 
     /// <summary>

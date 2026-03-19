@@ -1,4 +1,5 @@
 using Granit.Core.Domain;
+using Granit.Notifications.Events;
 
 namespace Granit.Notifications.Domain;
 
@@ -59,6 +60,13 @@ public sealed class UserNotification : AggregateRoot, IMultiTenant
     }
 
     /// <summary>
+    /// Raises a <see cref="UserNotificationCreatedEvent"/> domain event.
+    /// Called by the store after the notification is fully initialized.
+    /// </summary>
+    internal void RaiseCreatedEvent() =>
+        AddDomainEvent(new UserNotificationCreatedEvent(NotificationId, NotificationTypeName, Severity, RecipientUserId, TenantId));
+
+    /// <summary>
     /// Marks the notification as read.
     /// </summary>
     public void MarkAsRead(DateTimeOffset readAt)
@@ -70,5 +78,6 @@ public sealed class UserNotification : AggregateRoot, IMultiTenant
 
         State = UserNotificationState.Read;
         ReadAt = readAt;
+        AddDomainEvent(new UserNotificationReadEvent(Id, RecipientUserId, readAt));
     }
 }

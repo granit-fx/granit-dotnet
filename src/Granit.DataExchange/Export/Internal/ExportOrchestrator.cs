@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Granit.Core.Events;
 using Granit.DataExchange.Export.Domain;
+using Granit.DataExchange.Export.Events;
 using Granit.DataExchange.Export.Messages;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.Guids;
@@ -29,6 +30,7 @@ internal sealed partial class ExportOrchestrator(
     IClock clock,
     IGuidGenerator guidGenerator,
     ILocalEventBus eventBus,
+    IDistributedEventBus distributedEventBus,
     ILogger<ExportOrchestrator> logger) : IExportOrchestrator
 {
     /// <inheritdoc/>
@@ -106,6 +108,9 @@ internal sealed partial class ExportOrchestrator(
             await eventBus.PublishAsync(new ExportJobCompletedEvent(
                 jobId, job.DefinitionName, ExportJobStatus.Failed,
                 job.CreatedBy, RowCount: null, ex.Message), cancellationToken).ConfigureAwait(false);
+
+            await distributedEventBus.PublishAsync(new ExportJobFailedEto(
+                jobId, job.DefinitionName, ex.Message), cancellationToken).ConfigureAwait(false);
 
             LogExportFailed(jobId, ex);
             throw;

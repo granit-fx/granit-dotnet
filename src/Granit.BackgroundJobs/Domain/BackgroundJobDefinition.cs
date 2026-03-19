@@ -96,8 +96,14 @@ public sealed class BackgroundJobDefinition : AggregateRoot
     /// </summary>
     internal void UpdateDefinition(string cronExpression, string messageType)
     {
+        string oldCron = CronExpression;
         CronExpression = cronExpression;
         MessageType = messageType;
+
+        if (!string.Equals(oldCron, cronExpression, StringComparison.Ordinal))
+        {
+            AddDomainEvent(new BackgroundJobDefinitionChangedEvent(Id, JobName, oldCron, cronExpression));
+        }
     }
 
     /// <summary>
@@ -109,6 +115,7 @@ public sealed class BackgroundJobDefinition : AggregateRoot
         LastErrorMessage = null;
         ConsecutiveFailureCount = 0;
         TriggeredBy = null;
+        AddDistributedEvent(new BackgroundJobExecutionStartedEto(Id, JobName, startedAt));
     }
 
     /// <summary>
@@ -126,6 +133,12 @@ public sealed class BackgroundJobDefinition : AggregateRoot
     {
         ConsecutiveFailureCount++;
         LastErrorMessage = errorMessage;
+
+        if (ConsecutiveFailureCount >= 3)
+        {
+            AddDistributedEvent(new BackgroundJobFailureThresholdExceededEto(
+                Id, JobName, ConsecutiveFailureCount, LastErrorMessage));
+        }
     }
 
     /// <summary>

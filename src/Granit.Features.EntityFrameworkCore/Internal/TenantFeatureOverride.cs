@@ -13,7 +13,7 @@ namespace Granit.Features.EntityFrameworkCore.Internal;
 /// satisfying the ISO 27001 3-year audit trail requirement.
 /// <c>TenantId</c> is injected automatically by the same interceptor on insert.
 /// </remarks>
-internal sealed class TenantFeatureOverride : AuditedEntity, IMultiTenant
+internal sealed class TenantFeatureOverride : AuditedEntity, IMultiTenant, IEmitEntityLifecycleEvents
 {
     /// <summary>Tenant scope. Never null for a tenant override (enforced at the store level).</summary>
     public Guid? TenantId { get; set; }

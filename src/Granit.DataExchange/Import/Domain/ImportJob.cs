@@ -1,4 +1,5 @@
 using Granit.Core.Domain;
+using Granit.DataExchange.Import.Events;
 
 namespace Granit.DataExchange.Import.Domain;
 
@@ -125,6 +126,7 @@ public sealed class ImportJob : AuditedAggregateRoot
     internal void Cancel()
     {
         Status = ImportJobStatus.Cancelled;
+        AddDomainEvent(new ImportJobCancelledEvent(Id, DefinitionName));
     }
 
     /// <summary>
