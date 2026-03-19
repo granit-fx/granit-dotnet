@@ -101,19 +101,13 @@ public static class DomainConventionRules
                 && !c.IsAbstract.GetValueOrDefault()
                 && IsAssignableToAggregateRoot(c)))
         {
-            // Check for public setters via ArchUnitNET member access.
             // set_ methods with Public visibility indicate mutable public properties.
-            IEnumerable<IMember> publicSetters = c.Members
+            // Exclude explicit interface implementations (contain '.' in name).
+            violations.AddRange(c.Members
                 .Where(m => m.Name.StartsWith("set_", StringComparison.Ordinal)
                     && m.Visibility == Visibility.Public
-                    // Exclude explicit interface implementations (contain '.' in name)
-                    && !m.Name.Contains('.'));
-
-            foreach (IMember setter in publicSetters)
-            {
-                string propertyName = setter.Name["set_".Length..];
-                violations.Add($"{c.Name}.{propertyName}");
-            }
+                    && !m.Name.Contains('.'))
+                .Select(m => $"{c.Name}.{m.Name["set_".Length..]}"));
         }
 
         violations.ShouldBeEmpty(
