@@ -760,7 +760,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Templating": "[0.1.0-dev, )",
-          "Scriban": "[6.*, )"
+          "Scriban": "[6.6.0, )"
         }
       },
       "granit.timing": {
@@ -966,8 +966,8 @@
       "PuppeteerSharp": {
         "type": "CentralTransitive",
         "requested": "[24.*, )",
-        "resolved": "24.39.0",
-        "contentHash": "T0Y6LiBa/c7Yk0O5i1A7FG0rSzgyJjGXtkGMCLwR9L7dZaXOjHj3/nq43KSlyzu98+loSKtVbFAnDpOM/Tc+zQ==",
+        "resolved": "24.39.1",
+        "contentHash": "RCKyk1wqutXytk3Cb//XxrK7ouaBoN5UvEaOQRQ3TRPqVLimDgBpumZlVLyg4XMeI7FkoPh/2QQ865mFINCFDQ==",
         "dependencies": {
           "WebDriverBiDi": "0.0.45"
         }
@@ -975,14 +975,14 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.10",
-        "contentHash": "AHsAdrbjIVvV/l6dwsIpluuWZEjafmxLkoJTzdRruRNB3w5VI5MKM1Gu0gyX6xRI0raEtSy3O111YpBrZMOpSA=="
+        "resolved": "2.13.11",
+        "contentHash": "bH99KIEEaYhC+mMM9011OJtou0y/9O2NXo6h9/k104sAniMzFSGKNaiIX6NRkxc487MJD8vYu3I3nJtW/nU/3g=="
       },
       "Scriban": {
         "type": "CentralTransitive",
-        "requested": "[6.*, )",
-        "resolved": "6.5.8",
-        "contentHash": "PxLtQCQpUfIGklfiWE1q5xYjIrk4Z2xO/0yu0wTsdK/6EujonWvllDaK+fLK+a5leVqKzQ91oX6wJm83Wb9cmw=="
+        "requested": "[6.6.0, )",
+        "resolved": "6.6.0",
+        "contentHash": "rDzWFaCLsnFMRifEs9F95mCQ1f9thva2ckXlHZ6xzCJ5SFqsB1u1Y/ZtQlc0iySg+H7HOR75J7ya2X4RmJvOFw=="
       },
       "Serilog.AspNetCore": {
         "type": "CentralTransitive",
@@ -1022,8 +1022,8 @@
       "StackExchange.Redis": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.12.1",
-        "contentHash": "IHxJWFM3b4g2Jrp0y7W8r27ODW6v+9oW5voJA4UNNxy0Dshn/lKqAL08kbfDKlRgB3gZFGmUX/u/mHq+mVfvwQ==",
+        "resolved": "2.12.4",
+        "contentHash": "KNyzLp0aTcvWSxnbS6rCxX+2e+Q3goXhW80Iu7dwMkCQbENkoBw418I/UpgIxGzmS4gV10a5CdfdY4O0tO9Nrg==",
         "dependencies": {
           "Pipelines.Sockets.Unofficial": "2.2.8",
           "System.IO.Hashing": "10.0.2"

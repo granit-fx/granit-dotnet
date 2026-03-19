@@ -210,7 +210,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Templating": "[0.1.0-dev, )",
-          "Scriban": "[6.*, )"
+          "Scriban": "[6.6.0, )"
         }
       },
       "granit.timing": {
@@ -379,8 +379,8 @@
       "PuppeteerSharp": {
         "type": "CentralTransitive",
         "requested": "[24.*, )",
-        "resolved": "24.39.0",
-        "contentHash": "T0Y6LiBa/c7Yk0O5i1A7FG0rSzgyJjGXtkGMCLwR9L7dZaXOjHj3/nq43KSlyzu98+loSKtVbFAnDpOM/Tc+zQ==",
+        "resolved": "24.39.1",
+        "contentHash": "RCKyk1wqutXytk3Cb//XxrK7ouaBoN5UvEaOQRQ3TRPqVLimDgBpumZlVLyg4XMeI7FkoPh/2QQ865mFINCFDQ==",
         "dependencies": {
           "Microsoft.Extensions.Logging": "10.0.0",
           "WebDriverBiDi": "0.0.45"
@@ -388,9 +388,9 @@
       },
       "Scriban": {
         "type": "CentralTransitive",
-        "requested": "[6.*, )",
-        "resolved": "6.5.8",
-        "contentHash": "PxLtQCQpUfIGklfiWE1q5xYjIrk4Z2xO/0yu0wTsdK/6EujonWvllDaK+fLK+a5leVqKzQ91oX6wJm83Wb9cmw=="
+        "requested": "[6.6.0, )",
+        "resolved": "6.6.0",
+        "contentHash": "rDzWFaCLsnFMRifEs9F95mCQ1f9thva2ckXlHZ6xzCJ5SFqsB1u1Y/ZtQlc0iySg+H7HOR75J7ya2X4RmJvOFw=="
       }
     }
   }

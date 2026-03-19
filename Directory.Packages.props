@@ -14,7 +14,7 @@
   <ItemGroup Label="Templating">
     <PackageVersion Include="ClosedXML" Version="0.105.*" />
     <PackageVersion Include="PuppeteerSharp" Version="24.*" />
-    <PackageVersion Include="Scriban" Version="6.*" />
+    <PackageVersion Include="Scriban" Version="6.6.0" />
   </ItemGroup>
   <ItemGroup Label="AI">
     <PackageVersion Include="Anthropic" Version="12.*" />
@@ -97,7 +97,6 @@
   <ItemGroup Label="Security overrides">
     <PackageVersion Include="MimeKit" Version="4.15.1" />
   </ItemGroup>
-
   <ItemGroup Label="Notifications">
     <PackageVersion Include="AWSSDK.SimpleEmailV2" Version="4.*" />
     <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="4.*" />
