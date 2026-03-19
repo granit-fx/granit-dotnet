@@ -1,4 +1,5 @@
 using Granit.Core.Domain;
+using Granit.Core.Domain.ValueObjects;
 using Granit.Webhooks.Events;
 
 namespace Granit.Webhooks.Domain;
@@ -28,7 +29,7 @@ public sealed class WebhookSubscription : AuditedAggregateRoot
     /// </summary>
     public static WebhookSubscription Create(
         Guid id,
-        string targetUrl,
+        HttpsUrl targetUrl,
         string eventType,
         string signingSecret,
         Guid? tenantId = null) => new()
@@ -43,9 +44,9 @@ public sealed class WebhookSubscription : AuditedAggregateRoot
 
     /// <summary>
     /// The HTTPS endpoint that receives webhook HTTP POST requests.
-    /// Maximum length: 2048 characters.
+    /// Validated as an absolute HTTPS URL. Maximum length: 2048 characters.
     /// </summary>
-    public string TargetUrl { get; private set; } = string.Empty;
+    public HttpsUrl TargetUrl { get; private set; } = null!;
 
     /// <summary>
     /// Logical event type this subscription is registered for (e.g., <c>"document.uploaded"</c>).
@@ -149,7 +150,7 @@ public sealed class WebhookSubscription : AuditedAggregateRoot
     /// <summary>
     /// Updates the target URL for webhook delivery.
     /// </summary>
-    internal void UpdateTargetUrl(string targetUrl)
+    internal void UpdateTargetUrl(HttpsUrl targetUrl)
     {
         TargetUrl = targetUrl;
     }

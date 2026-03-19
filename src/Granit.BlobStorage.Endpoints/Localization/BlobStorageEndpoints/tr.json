@@ -1,0 +1,11 @@
+{
+  "culture": "tr",
+  "texts": {
+    "PermissionGroup:BlobStorage": "Dosya depolama",
+    "Permission:BlobStorage.Blobs.View": "Dosya tanımlayıcılarını görüntüle",
+    "Permission:BlobStorage.Blobs.Upload": "Dosya yükle",
+    "Permission:BlobStorage.Blobs.Download": "Dosya indir",
+    "Permission:BlobStorage.Blobs.Delete": "Dosya sil",
+    "Permission:BlobStorage.Blobs.Manage": "Dosyaları yönet (yüklemeleri onayla, sahipsiz dosyaları temizle)"
+  }
+}

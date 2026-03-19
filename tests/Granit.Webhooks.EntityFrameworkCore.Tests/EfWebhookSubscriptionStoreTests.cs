@@ -1,6 +1,10 @@
+using Granit.Guids;
+using Granit.Timing;
+using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -8,6 +12,8 @@ namespace Granit.Webhooks.EntityFrameworkCore.Tests;
 
 public sealed class EfWebhookSubscriptionStoreTests : IAsyncDisposable
 {
+    private static readonly DateTimeOffset Now = new(2026, 3, 19, 12, 0, 0, TimeSpan.Zero);
+
     private readonly DbContextOptions<WebhooksDbContext> _options;
     private readonly IDbContextFactory<WebhooksDbContext> _contextFactory;
     private readonly EfWebhookSubscriptionStore _sut;
@@ -18,8 +24,18 @@ public sealed class EfWebhookSubscriptionStoreTests : IAsyncDisposable
             .UseInMemoryDatabase(databaseName: $"webhooks-sub-{Guid.NewGuid()}")
             .Options;
 
+        IGuidGenerator guidGenerator = Substitute.For<IGuidGenerator>();
+        guidGenerator.Create().Returns(_ => Guid.NewGuid());
+        IWebhookSecretProtector secretProtector = Substitute.For<IWebhookSecretProtector>();
+#pragma warning disable CA2012 // ValueTask consumed by NSubstitute internals
+        secretProtector.ProtectAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new ValueTask<string>("protected-secret"));
+#pragma warning restore CA2012
+        IClock clock = Substitute.For<IClock>();
+        clock.Now.Returns(Now);
+
         _contextFactory = new TestWebhooksDbContextFactory(_options);
-        _sut = new EfWebhookSubscriptionStore(_contextFactory);
+        _sut = new EfWebhookSubscriptionStore(_contextFactory, guidGenerator, secretProtector, clock);
     }
 
     public async ValueTask DisposeAsync()
@@ -139,10 +155,10 @@ public sealed class EfWebhookSubscriptionStoreTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task DeactivateAsync_no_op_when_not_found()
+    public async Task DeactivateAsync_throws_when_not_found()
     {
-        // Act & Assert — should not throw
-        await Should.NotThrowAsync(async () =>
+        // Act & Assert
+        await Should.ThrowAsync<Granit.Core.Exceptions.EntityNotFoundException>(async () =>
             await _sut.DeactivateAsync(Guid.NewGuid(), "reason", TestContext.Current.CancellationToken));
     }
 

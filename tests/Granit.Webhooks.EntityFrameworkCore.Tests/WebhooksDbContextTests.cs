@@ -42,7 +42,7 @@ public sealed class WebhooksDbContextTests : IAsyncDisposable
 
             // Assert
             subscription.ShouldNotBeNull();
-            subscription!.TargetUrl.ShouldBe("https://example.com/hook");
+            subscription!.TargetUrl.Value.ShouldBe("https://example.com/hook");
         }
     }
 

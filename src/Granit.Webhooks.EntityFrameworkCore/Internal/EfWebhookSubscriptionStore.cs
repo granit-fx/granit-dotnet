@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using Granit.Core.Domain.ValueObjects;
 using Granit.Core.Exceptions;
 using Granit.Guids;
 using Granit.Timing;
@@ -52,7 +53,7 @@ internal sealed class EfWebhookSubscriptionStore(
     }
 
     public async Task<WebhookSubscriptionCreatedResult> CreateAsync(
-        string targetUrl,
+        HttpsUrl targetUrl,
         string eventType,
         Guid? tenantId,
         CancellationToken cancellationToken = default)
@@ -78,7 +79,7 @@ internal sealed class EfWebhookSubscriptionStore(
 
     public async Task UpdateTargetUrlAsync(
         Guid subscriptionId,
-        string targetUrl,
+        HttpsUrl targetUrl,
         CancellationToken cancellationToken = default)
     {
         await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);

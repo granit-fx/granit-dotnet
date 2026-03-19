@@ -24,6 +24,18 @@ public sealed class DomainConventionTests
     public void Aggregate_roots_should_not_have_public_setters() =>
         DomainConventionRules.AggregateRootsShouldNotHavePublicSetters(Architecture, "Granit.");
 
+    [Fact]
+    public void Aggregate_roots_should_have_factory_method() =>
+        DomainConventionRules.AggregateRootsShouldHaveFactoryMethod(Architecture, "Granit.");
+
+    [Fact]
+    public void Aggregate_roots_should_have_private_parameterless_constructor() =>
+        DomainConventionRules.AggregateRootsShouldHavePrivateParameterlessConstructor(Architecture, "Granit.");
+
+    [Fact]
+    public void Event_naming_should_follow_convention() =>
+        DomainConventionRules.EventNamingShouldFollowConvention(Architecture, "Granit.");
+
     /// <summary>
     /// No type should manually implement <c>IDomainEventSource</c> — use aggregate root base classes instead.
     /// </summary>

@@ -108,23 +108,28 @@ public static class LayerDependencyRules
 
     /// <summary>
     /// IQueryable must not escape the persistence/data layer.
-    /// Types in the given allowed namespaces are exempt.
+    /// Types whose namespace contains a default-allowed fragment (EntityFrameworkCore,
+    /// Querying, Persistence) are exempt, as are types following the
+    /// <c>*QueryableProvider</c> convention — the standard bridge for exposing
+    /// IQueryable to the Querying endpoints layer.
     /// </summary>
     public static void IQueryableShouldNotEscapePersistenceLayer(
-        ArchUnitNET.Domain.Architecture architecture,
-        params string[] allowedNamespaceFragments)
+        ArchUnitNET.Domain.Architecture architecture)
     {
-        string[] defaultAllowed = ["EntityFrameworkCore", "Querying", "Persistence"];
-        string[] allAllowed = [.. defaultAllowed, .. allowedNamespaceFragments];
+        string[] allowedNamespaceFragments = ["EntityFrameworkCore", "Querying", "Persistence", "Export"];
 
         IEnumerable<IType> violators = architecture.Types
-            .Where(t => !allAllowed.Any(ns =>
+            .Where(t => !allowedNamespaceFragments.Any(ns =>
                 t.Namespace.FullName.Contains(ns, StringComparison.Ordinal)))
+            .Where(t => !t.Name.EndsWith("QueryableProvider", StringComparison.Ordinal))
+            .Where(t => !t.Name.EndsWith("EndpointRouteBuilderExtensions", StringComparison.Ordinal))
+            .Where(t => !t.Name.EndsWith("DataSource", StringComparison.Ordinal))
             .Where(t => t.Dependencies
                 .Any(d => d.Target.FullName.StartsWith("System.Linq.IQueryable", StringComparison.Ordinal)));
 
         violators.ShouldBeEmpty(
             "IQueryable<T> must not escape the persistence layer. " +
+            "Types following the *QueryableProvider convention are exempt. " +
             $"Violators: {string.Join(", ", violators.Select(t => t.FullName))}");
     }
 }

@@ -5,6 +5,7 @@ using Granit.BlobStorage.Options;
 using Granit.Core.MultiTenancy;
 using Granit.Guids;
 using Granit.Timing;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
@@ -39,9 +40,11 @@ public sealed class DefaultBlobStorageTests
             _keyStrategy,
             _storeProvider,
             _presignedUrlProvider,
+            [],
             _guidGenerator,
             _clock,
             _currentTenant,
+            NullLogger<DefaultBlobStorage>.Instance,
             Microsoft.Extensions.Options.Options.Create(new BlobStorageOptions()));
     }
 
@@ -132,7 +135,9 @@ public sealed class DefaultBlobStorageTests
         BlobStorageOptions customOptions = new() { UploadUrlExpiry = TimeSpan.FromMinutes(30) };
         DefaultBlobStorage sutWithCustomOptions = new(
             _reader, _writer, _keyStrategy, _storeProvider, _presignedUrlProvider,
+            [],
             _guidGenerator, _clock, _currentTenant,
+            NullLogger<DefaultBlobStorage>.Instance,
             Microsoft.Extensions.Options.Options.Create(customOptions));
 
         // Act
@@ -319,7 +324,111 @@ public sealed class DefaultBlobStorageTests
         result.ShouldBeNull();
     }
 
+    // ── ConfirmUploadAsync ─────────────────────────────────────────────────
+
+    [Fact]
+    public async Task ConfirmUploadAsync_WhenAllValidatorsPass_ShouldTransitionToValid()
+    {
+        var blobId = Guid.NewGuid();
+        BlobDescriptor descriptor = BuildDescriptorInStatus(blobId, BlobStatus.Pending);
+        _reader.FindAsync(blobId, Arg.Any<CancellationToken>()).Returns(descriptor);
+        _keyStrategy.ResolveBucketName("medical-images").Returns("granit-blobs");
+        _storeProvider.GetSizeAsync("granit-blobs", Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(512_000L);
+
+        IBlobValidator validator = Substitute.For<IBlobValidator>();
+        validator.Order.Returns(10);
+        validator.ValidateAsync(Arg.Any<BlobValidationContext>(), Arg.Any<CancellationToken>())
+            .Returns(BlobValidationResult.Success("image/jpeg"));
+
+        DefaultBlobStorage sut = BuildSutWithValidators([validator]);
+        BlobConfirmationResult result = await sut.ConfirmUploadAsync("medical-images", blobId, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeTrue();
+        result.Status.ShouldBe(BlobStatus.Valid);
+        result.VerifiedContentType.ShouldBe("image/jpeg");
+        result.SizeBytes.ShouldBe(512_000L);
+    }
+
+    [Fact]
+    public async Task ConfirmUploadAsync_WhenValidatorFails_ShouldRejectAndDeleteStorageObject()
+    {
+        var blobId = Guid.NewGuid();
+        BlobDescriptor descriptor = BuildDescriptorInStatus(blobId, BlobStatus.Pending);
+        _reader.FindAsync(blobId, Arg.Any<CancellationToken>()).Returns(descriptor);
+        _keyStrategy.ResolveBucketName("medical-images").Returns("granit-blobs");
+        _storeProvider.GetSizeAsync("granit-blobs", Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(512_000L);
+
+        IBlobValidator validator = Substitute.For<IBlobValidator>();
+        validator.Order.Returns(10);
+        validator.ValidateAsync(Arg.Any<BlobValidationContext>(), Arg.Any<CancellationToken>())
+            .Returns(BlobValidationResult.Failure("Content-Type mismatch"));
+
+        DefaultBlobStorage sut = BuildSutWithValidators([validator]);
+        BlobConfirmationResult result = await sut.ConfirmUploadAsync("medical-images", blobId, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.Status.ShouldBe(BlobStatus.Rejected);
+        await _storeProvider.Received(1).DeleteAsync("granit-blobs", Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ConfirmUploadAsync_WhenFileNotOnStorage_ShouldReject()
+    {
+        var blobId = Guid.NewGuid();
+        BlobDescriptor descriptor = BuildDescriptorInStatus(blobId, BlobStatus.Pending);
+        _reader.FindAsync(blobId, Arg.Any<CancellationToken>()).Returns(descriptor);
+        _keyStrategy.ResolveBucketName("medical-images").Returns("granit-blobs");
+        _storeProvider.GetSizeAsync("granit-blobs", Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns<long>(_ => throw new InvalidOperationException("Not found"));
+
+        BlobConfirmationResult result = await _sut.ConfirmUploadAsync("medical-images", blobId, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.RejectionReason.ShouldBe("File not found in storage provider.");
+    }
+
+    [Fact]
+    public async Task ConfirmUploadAsync_WhenBlobNotPending_ShouldThrow()
+    {
+        var blobId = Guid.NewGuid();
+        _reader.FindAsync(blobId, Arg.Any<CancellationToken>()).Returns(BuildDescriptorInStatus(blobId, BlobStatus.Valid));
+
+        await Should.ThrowAsync<BlobNotValidException>(() => _sut.ConfirmUploadAsync("medical-images", blobId));
+    }
+
+    // ── CleanupOrphansAsync ──────────────────────────────────────────────────
+
+    [Fact]
+    public async Task CleanupOrphansAsync_ShouldRejectOrphans()
+    {
+        var blobId = Guid.NewGuid();
+        BlobDescriptor orphan = BuildDescriptorInStatus(blobId, BlobStatus.Pending);
+        _reader.FindOrphanedAsync(Arg.Any<DateTimeOffset>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns([orphan]);
+        _keyStrategy.ResolveBucketName("medical-images").Returns("granit-blobs");
+
+        int cleaned = await _sut.CleanupOrphansAsync(TestContext.Current.CancellationToken);
+
+        cleaned.ShouldBe(1);
+        await _writer.Received(1).UpdateAsync(Arg.Is<BlobDescriptor>(d => d.Status == BlobStatus.Rejected), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CleanupOrphansAsync_WhenNoOrphans_ShouldReturnZero()
+    {
+        _reader.FindOrphanedAsync(Arg.Any<DateTimeOffset>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<BlobDescriptor>());
+
+        (await _sut.CleanupOrphansAsync(TestContext.Current.CancellationToken)).ShouldBe(0);
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private DefaultBlobStorage BuildSutWithValidators(IBlobValidator[] blobValidators) =>
+        new(_reader, _writer, _keyStrategy, _storeProvider, _presignedUrlProvider,
+            blobValidators, _guidGenerator, _clock, _currentTenant,
+            NullLogger<DefaultBlobStorage>.Instance,
+            Microsoft.Extensions.Options.Options.Create(new BlobStorageOptions()));
+
 
     private static BlobDescriptor BuildValidDescriptor(Guid blobId)
     {

@@ -1,0 +1,11 @@
+{
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:BlobStorage": "파일 저장소",
+    "Permission:BlobStorage.Blobs.View": "파일 설명자 조회",
+    "Permission:BlobStorage.Blobs.Upload": "파일 업로드",
+    "Permission:BlobStorage.Blobs.Download": "파일 다운로드",
+    "Permission:BlobStorage.Blobs.Delete": "파일 삭제",
+    "Permission:BlobStorage.Blobs.Manage": "파일 관리 (업로드 확인, 고아 파일 정리)"
+  }
+}

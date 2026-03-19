@@ -11,7 +11,7 @@ a small set of principles: modules compose with explicit dependency declarations
 is always scoped to its tenant, events cross boundaries without coupling, and compliance
 is structural rather than bolted on.
 
-Understanding these twelve concepts gives you the mental model to use Granit effectively
+Understanding these concepts gives you the mental model to use Granit effectively
 and extend it without surprises.
 
 ## How concepts connect
@@ -43,7 +43,6 @@ Start with the **Module System** — every other concept builds on it.
   pattern, PostConfigure
 - [Configuration](./configuration/) — Options (startup), Settings (runtime), Module Config
   (frontend read-only)
-- [Bundles](./bundles/) — meta-packages and the fluent `GranitBuilder` API for quick onboarding
 
 ## Data and infrastructure
 
@@ -63,6 +62,10 @@ Start with the **Module System** — every other concept builds on it.
 - [Security Model](./security-model/) — JWT authentication, provider-agnostic RBAC,
   per-role caching, back-channel logout
 - [Compliance](./compliance/) — GDPR and ISO 27001 enforcement as structural patterns
+
+## Tooling
+
+- [Bundles](./bundles/) — meta-packages and the fluent `GranitBuilder` API for quick onboarding
 
 ## Architecture decisions
 

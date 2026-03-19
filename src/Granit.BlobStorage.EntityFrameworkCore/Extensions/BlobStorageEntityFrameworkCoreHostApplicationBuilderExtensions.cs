@@ -40,6 +40,8 @@ public static class BlobStorageEntityFrameworkCoreHostApplicationBuilderExtensio
         builder.Services.AddScoped<IBlobDescriptorReader>(sp => sp.GetRequiredService<EfBlobDescriptorStore>());
         builder.Services.AddScoped<IBlobDescriptorWriter>(sp => sp.GetRequiredService<EfBlobDescriptorStore>());
 
+        builder.Services.AddScoped<IBlobQueryableProvider, EfBlobQueryableProvider>();
+
         return builder;
     }
 }

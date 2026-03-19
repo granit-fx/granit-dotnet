@@ -33,7 +33,7 @@ public sealed class LayerDependencyTests
 
     [Fact]
     public void IQueryable_should_not_appear_in_non_persistence_types() =>
-        LayerDependencyRules.IQueryableShouldNotEscapePersistenceLayer(Architecture, "DataExchange");
+        LayerDependencyRules.IQueryableShouldNotEscapePersistenceLayer(Architecture);
 
     [Fact]
     public void Endpoint_types_should_not_inherit_from_domain_entities() =>

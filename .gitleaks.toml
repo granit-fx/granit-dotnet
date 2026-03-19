@@ -8,3 +8,8 @@ useDefault = true
     '''tests/.*Tests.*\.cs$''',
     '''src/Granit\.Analyzers/AnalyzerReleases\.Unshipped\.md$''',
   ]
+
+  # False positive: example signing secret in webhooks doc (not a real secret)
+  commits = [
+    "a83201b043e0491bdd45401cd3eec3332d6dedfa",
+  ]

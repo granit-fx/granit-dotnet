@@ -1,0 +1,11 @@
+{
+  "culture": "sv",
+  "texts": {
+    "PermissionGroup:BlobStorage": "Fillagring",
+    "Permission:BlobStorage.Blobs.View": "Visa filbeskrivningar",
+    "Permission:BlobStorage.Blobs.Upload": "Ladda upp filer",
+    "Permission:BlobStorage.Blobs.Download": "Ladda ner filer",
+    "Permission:BlobStorage.Blobs.Delete": "Ta bort filer",
+    "Permission:BlobStorage.Blobs.Manage": "Hantera filer (bekräfta uppladdningar, rensa föräldralösa filer)"
+  }
+}

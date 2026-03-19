@@ -1,0 +1,11 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:BlobStorage": "Bestandsopslag",
+    "Permission:BlobStorage.Blobs.View": "Bestandsdescriptors bekijken",
+    "Permission:BlobStorage.Blobs.Upload": "Bestanden uploaden",
+    "Permission:BlobStorage.Blobs.Download": "Bestanden downloaden",
+    "Permission:BlobStorage.Blobs.Delete": "Bestanden verwijderen",
+    "Permission:BlobStorage.Blobs.Manage": "Bestanden beheren (uploads bevestigen, weesbestanden opruimen)"
+  }
+}

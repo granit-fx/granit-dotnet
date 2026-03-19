@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Security.Cryptography;
+using Granit.Core.Domain.ValueObjects;
 using Granit.Core.Exceptions;
 using Granit.Guids;
 using Granit.Timing;
@@ -50,7 +51,7 @@ internal sealed class InMemoryWebhookSubscriptionStore(
     }
 
     public async Task<WebhookSubscriptionCreatedResult> CreateAsync(
-        string targetUrl,
+        HttpsUrl targetUrl,
         string eventType,
         Guid? tenantId,
         CancellationToken cancellationToken = default)
@@ -72,7 +73,7 @@ internal sealed class InMemoryWebhookSubscriptionStore(
         return new WebhookSubscriptionCreatedResult(subscription, plainSecret);
     }
 
-    public Task UpdateTargetUrlAsync(Guid subscriptionId, string targetUrl, CancellationToken cancellationToken = default)
+    public Task UpdateTargetUrlAsync(Guid subscriptionId, HttpsUrl targetUrl, CancellationToken cancellationToken = default)
     {
         if (!_subscriptions.TryGetValue(subscriptionId, out WebhookSubscription? subscription))
         {

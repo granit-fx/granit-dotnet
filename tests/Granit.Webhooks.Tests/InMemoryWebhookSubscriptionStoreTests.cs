@@ -131,7 +131,7 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
             "https://example.com/hook", "test.event", null, TestContext.Current.CancellationToken);
 
         result.Subscription.ShouldNotBeNull();
-        result.Subscription.TargetUrl.ShouldBe("https://example.com/hook");
+        result.Subscription.TargetUrl.Value.ShouldBe("https://example.com/hook");
         result.Subscription.EventType.ShouldBe("test.event");
         result.Subscription.Status.ShouldBe(WebhookSubscriptionStatus.Active);
         result.PlainSecret.ShouldStartWith("whsec_");
@@ -308,7 +308,7 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
         await _store.UpdateTargetUrlAsync(sub.Id, "https://new-url.com/hook", TestContext.Current.CancellationToken);
 
         WebhookSubscription? updated = await _store.FindByIdAsync(sub.Id, TestContext.Current.CancellationToken);
-        updated!.TargetUrl.ShouldBe("https://new-url.com/hook");
+        updated!.TargetUrl.Value.ShouldBe("https://new-url.com/hook");
     }
 
     // -------------------------------------------------------------------------

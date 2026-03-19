@@ -152,8 +152,8 @@ Guid? IMultiTenant.TenantId
 
 #### Two-Tier Event Model
 
-- **`AddDomainEvent()`**: local, dispatched after commit. Naming: `XxxOccurred`.
-- **`AddDistributedEvent()`**: durable outbox, dispatched before commit. Naming: `XxxEvent`.
+- **`AddDomainEvent()`**: local, dispatched after commit. Naming: `XxxEvent` (e.g., `BlobValidatedEvent`).
+- **`AddDistributedEvent()`**: durable outbox, dispatched before commit. Naming: `XxxEto` (e.g., `PersonalDataDeletedEto`).
 
 See [Event-Driven Architecture](/dotnet/architecture/patterns/event-driven/) for details.
 
