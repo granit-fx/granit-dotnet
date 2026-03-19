@@ -6,6 +6,14 @@ sidebar:
   order: 2
 ---
 
+:::tip[Core principle]
+CQRS is one of Granit's foundational design principles —
+every data module enforces it. For the "why" (compliance,
+least privilege, mental model), see the
+[CQRS concept page](/dotnet/concepts/cqrs/).
+This page focuses on implementation details and inventory.
+:::
+
 ## Definition
 
 CQRS separates **read** (Query) and **write** (Command) operations into distinct
@@ -166,7 +174,20 @@ public static async Task Handle(
 }
 ```
 
+## When NOT to merge Reader and Writer
+
+These are the most common regressions caught by architecture tests:
+
+| Anti-pattern | Why it breaks CQRS |
+| --- | --- |
+| Inject `IXxxStore` in a constructor | Bypasses the split — use Reader or Writer |
+| Create a combined `IProductService` | Same problem — split into Reader + Writer |
+| Pass `DbContext` to endpoints | No interface boundary, no audit trail |
+| Inject the Writer "just in case" | Violates least privilege — remove it |
+
 ## Further reading
 
+- [CQRS concept](/dotnet/concepts/cqrs/) — mental model, compliance benefits, and
+  common mistakes
 - [CQRS pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/dotnet/architecture/patterns/cqrs)
 - [CQRS -- Martin Fowler](https://martinfowler.com/bliki/CQRS.html)

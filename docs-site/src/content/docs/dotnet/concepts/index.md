@@ -11,7 +11,7 @@ a small set of principles: modules compose with explicit dependency declarations
 is always scoped to its tenant, events cross boundaries without coupling, and compliance
 is structural rather than bolted on.
 
-Understanding these eleven concepts gives you the mental model to use Granit effectively
+Understanding these twelve concepts gives you the mental model to use Granit effectively
 and extend it without surprises.
 
 ## How concepts connect
@@ -22,9 +22,12 @@ graph TD
     MS --> Bundles
     DI --> Config[Configuration]
     DI --> P[Persistence]
+    P --> CQRS[CQRS]
     P --> MT[Multi-Tenancy]
     P --> C[Compliance]
+    CQRS --> C
     MS --> Msg[Messaging]
+    Msg --> CQRS
     Msg --> WO[Wolverine Optionality]
     Msg --> C
     MT --> SM[Security Model]
@@ -47,6 +50,8 @@ Start with the **Module System** — every other concept builds on it.
 
 - [Persistence](./persistence/) — isolated DbContext, interceptors (audit, soft delete,
   versioning), automatic query filters
+- [CQRS](./cqrs/) — Reader/Writer separation, compliance-driven data access,
+  least-privilege injection
 - [Multi-Tenancy](./multi-tenancy/) — three isolation strategies, transparent query filters,
   async-safe tenant context
 - [Messaging](./messaging/) — domain events, integration events, transactional outbox,

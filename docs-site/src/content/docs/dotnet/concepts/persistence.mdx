@@ -292,10 +292,37 @@ implements `IAuditedEntity`, `ISoftDeletable`, and `IMultiTenant`:
    `WHERE IsDeleted = false AND TenantId = @tenantId`
 2. Application code sees only active, non-deleted, tenant-scoped records.
 
+## Accessing data — Reader/Writer separation
+
+Application code does **not** use the `DbContext` directly. Each module exposes
+`IXxxReader` (read-only) and `IXxxWriter` (mutations) interfaces. Endpoints
+and handlers inject only the interface matching their intent:
+
+```csharp
+// A read endpoint injects ONLY the Reader — no write access possible
+private static async Task<Ok<List<BlobDescriptor>>> ListBlobsAsync(
+    IBlobDescriptorReader reader,
+    CancellationToken cancellationToken)
+{
+    var blobs = await reader.FindAllAsync(cancellationToken).ConfigureAwait(false);
+    return TypedResults.Ok(blobs);
+}
+```
+
+This separation is enforced by architecture tests and gives you:
+
+- **Least privilege** — a read endpoint cannot accidentally mutate data
+- **ISO 27001 audit** — the DI graph shows which components have write access
+- **GDPR safety** — Reader interfaces expose no `Delete` methods
+
+See the [CQRS concept](./cqrs/) for the full mental model, examples, and common
+mistakes to avoid.
+
 ## Further reading
 
 - [Persistence reference](/dotnet/data/persistence/) — configuration
   options, migration commands, and API surface
+- [CQRS concept](./cqrs/) — Reader/Writer separation and compliance benefits
 - [Multi-Tenancy concept](./multi-tenancy/) — tenant resolution and
   isolation strategies
 - [Compliance concept](./compliance/) — how audit trails and soft delete
