@@ -224,6 +224,7 @@ export default defineConfig({
                   items: [
                     { label: "Overview", link: "/dotnet/ai/" },
                     { label: "Setup & Configuration", link: "/dotnet/ai/setup/" },
+                    { label: "API Endpoints", link: "/dotnet/ai/endpoints/" },
                     {
                       label: "User Experience",
                       collapsed: true,
