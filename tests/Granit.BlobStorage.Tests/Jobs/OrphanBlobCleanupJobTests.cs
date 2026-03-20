@@ -19,8 +19,6 @@ public sealed class OrphanBlobCleanupJobTests
     }
 
     [Fact]
-    public void Should_implement_IBackgroundJob()
-    {
+    public void Should_implement_IBackgroundJob() =>
         typeof(IBackgroundJob).IsAssignableFrom(typeof(OrphanBlobCleanupJob)).ShouldBeTrue();
-    }
 }

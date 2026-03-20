@@ -138,15 +138,6 @@ public static class WebhookTargetUrlValidatorExtensions
         }
 
         string host = uri.Host;
-
-        foreach (string tld in BlockedTlds)
-        {
-            if (host.EndsWith(tld, StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return !BlockedTlds.Any(tld => host.EndsWith(tld, StringComparison.OrdinalIgnoreCase));
     }
 }

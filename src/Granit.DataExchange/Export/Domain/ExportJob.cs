@@ -87,10 +87,8 @@ public sealed class ExportJob : AuditedAggregateRoot
     /// <summary>
     /// Transitions to <see cref="ExportJobStatus.Exporting"/>.
     /// </summary>
-    internal void MarkAsExporting()
-    {
+    internal void MarkAsExporting() =>
         Status = ExportJobStatus.Exporting;
-    }
 
     /// <summary>
     /// Marks the export as completed.

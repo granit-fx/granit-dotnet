@@ -1,7 +1,6 @@
 using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Granit.Guids;
-using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -30,7 +29,6 @@ internal static class ApiKeyCreateEndpoints
         [FromServices] IApiKeyGenerator generator,
         [FromServices] IApiKeyAdminStore adminStore,
         [FromServices] IGuidGenerator guidGenerator,
-        [FromServices] IClock clock,
         CancellationToken cancellationToken)
     {
         ApiKeyGenerationResult keyResult = generator.Generate(request.Type, request.Environment);

@@ -1,5 +1,6 @@
 using Granit.Identity.EntraId.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
+using Shouldly;
 using Xunit;
 
 namespace Granit.Identity.EntraId.Tests;
@@ -11,6 +12,7 @@ public sealed class NullPasswordResetNotifierTests
     {
         NullPasswordResetNotifier notifier = new(NullLogger<NullPasswordResetNotifier>.Instance);
 
-        await notifier.NotifyAsync("user-1", "temp-password", TestContext.Current.CancellationToken);
+        await Should.NotThrowAsync(() =>
+            notifier.NotifyAsync("user-1", "temp-password", TestContext.Current.CancellationToken));
     }
 }

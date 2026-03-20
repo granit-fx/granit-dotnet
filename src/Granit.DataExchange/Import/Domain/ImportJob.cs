@@ -98,18 +98,14 @@ public sealed class ImportJob : AuditedAggregateRoot
     /// <summary>
     /// Sets the column mappings after user confirmation.
     /// </summary>
-    internal void SetMappings(string mappingsJson)
-    {
+    internal void SetMappings(string mappingsJson) =>
         MappingsJson = mappingsJson;
-    }
 
     /// <summary>
     /// Transitions to <see cref="ImportJobStatus.Previewed"/> after header extraction.
     /// </summary>
-    internal void MarkAsPreviewed()
-    {
+    internal void MarkAsPreviewed() =>
         Status = ImportJobStatus.Previewed;
-    }
 
     /// <summary>
     /// Confirms mappings and transitions to <see cref="ImportJobStatus.Mapped"/>.
@@ -132,10 +128,8 @@ public sealed class ImportJob : AuditedAggregateRoot
     /// <summary>
     /// Transitions to <see cref="ImportJobStatus.Executing"/>.
     /// </summary>
-    internal void MarkAsExecuting()
-    {
+    internal void MarkAsExecuting() =>
         Status = ImportJobStatus.Executing;
-    }
 
     /// <summary>
     /// Marks the import as completed with a final status and report.

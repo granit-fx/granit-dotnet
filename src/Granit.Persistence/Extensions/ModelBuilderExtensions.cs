@@ -132,8 +132,6 @@ public static class ModelBuilderExtensions
     // that extracts/wraps the underlying primitive. No schema change — same column type.
     private static void ApplySingleValueObjectConverters(ModelBuilder modelBuilder)
     {
-        Type svoOpenType = typeof(SingleValueObject<>);
-
         foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes())
         {
             foreach (IMutableProperty property in entityType.GetProperties())

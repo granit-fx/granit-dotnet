@@ -165,16 +165,12 @@ public sealed class WebhookSubscription : AuditedAggregateRoot
     /// <summary>
     /// Updates the target URL for webhook delivery.
     /// </summary>
-    internal void UpdateTargetUrl(HttpsUrl targetUrl)
-    {
+    internal void UpdateTargetUrl(HttpsUrl targetUrl) =>
         TargetUrl = targetUrl;
-    }
 
     /// <summary>
     /// Replaces the signing secret with a new protected value.
     /// </summary>
-    internal void RotateSecret(string newProtectedSecret)
-    {
+    internal void RotateSecret(string newProtectedSecret) =>
         SigningSecret = newProtectedSecret;
-    }
 }

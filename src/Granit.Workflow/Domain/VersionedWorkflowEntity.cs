@@ -84,10 +84,8 @@ public abstract class VersionedWorkflowEntity : AuditedAggregateRoot, IVersioned
     /// methods (e.g., <c>Publish()</c>, <c>Archive()</c>) that call this method.
     /// </summary>
     /// <param name="status">The new lifecycle status.</param>
-    protected void SetLifecycleStatus(WorkflowLifecycleStatus status)
-    {
+    protected void SetLifecycleStatus(WorkflowLifecycleStatus status) =>
         LifecycleStatus = status;
-    }
 
     /// <inheritdoc/>
     public virtual string GetWorkflowEntityId() => Id.ToString();

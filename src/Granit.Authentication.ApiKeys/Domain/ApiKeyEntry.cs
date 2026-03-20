@@ -85,10 +85,8 @@ public sealed class ApiKeyEntry : FullAuditedAggregateRoot, IMultiTenant
     /// <summary>
     /// Revokes the API key.
     /// </summary>
-    public void Revoke(DateTimeOffset revokedAt)
-    {
+    public void Revoke(DateTimeOffset revokedAt) =>
         RevokedAt = revokedAt;
-    }
 
     /// <summary>
     /// Records that this key was used for an API call.
@@ -116,32 +114,24 @@ public sealed class ApiKeyEntry : FullAuditedAggregateRoot, IMultiTenant
     /// <summary>
     /// Updates the permissions granted to this key.
     /// </summary>
-    public void UpdatePermissions(List<string> permissions)
-    {
+    public void UpdatePermissions(List<string> permissions) =>
         Permissions = permissions;
-    }
 
     /// <summary>
     /// Updates the allowed CIDR ranges for IP whitelisting.
     /// </summary>
-    public void UpdateAllowedCidrs(List<string> cidrs)
-    {
+    public void UpdateAllowedCidrs(List<string> cidrs) =>
         AllowedCidrs = cidrs;
-    }
 
     /// <summary>
     /// Sets the expiration date.
     /// </summary>
-    public void SetExpiration(DateTimeOffset? expiresAt)
-    {
+    public void SetExpiration(DateTimeOffset? expiresAt) =>
         ExpiresAt = expiresAt;
-    }
 
     /// <summary>
     /// Sets the caching behavior.
     /// </summary>
-    public void SetCacheBehavior(CacheBehavior cacheBehavior)
-    {
+    public void SetCacheBehavior(CacheBehavior cacheBehavior) =>
         CacheBehavior = cacheBehavior;
-    }
 }

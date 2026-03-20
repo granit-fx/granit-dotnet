@@ -121,10 +121,8 @@ public sealed class BackgroundJobDefinition : AggregateRoot
     /// <summary>
     /// Schedules the next execution time.
     /// </summary>
-    internal void ScheduleNext(DateTimeOffset? nextExecution)
-    {
+    internal void ScheduleNext(DateTimeOffset? nextExecution) =>
         NextExecutionAt = nextExecution;
-    }
 
     /// <summary>
     /// Records an execution failure.
@@ -144,10 +142,8 @@ public sealed class BackgroundJobDefinition : AggregateRoot
     /// <summary>
     /// Sets the UserId of the operator who manually triggered this job.
     /// </summary>
-    internal void SetTriggeredBy(string? triggeredBy)
-    {
+    internal void SetTriggeredBy(string? triggeredBy) =>
         TriggeredBy = triggeredBy;
-    }
 
     /// <summary>
     /// Pauses the job and emits a <see cref="BackgroundJobPausedEvent"/> domain event.
