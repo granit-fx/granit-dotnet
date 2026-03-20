@@ -2,6 +2,7 @@ using System.Diagnostics.Metrics;
 using Granit.Core.MultiTenancy;
 using Granit.Http.Bulkhead.Abstractions;
 using Granit.Http.Bulkhead.Attributes;
+using Granit.Http.Bulkhead.Diagnostics;
 using Granit.Http.Bulkhead.Internal;
 using Granit.Http.Bulkhead.Options;
 using Granit.Http.Bulkhead.Wolverine;

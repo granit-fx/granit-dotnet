@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
 namespace Granit.AuditLog.EntityFrameworkCore.Diagnostics;
@@ -32,14 +33,20 @@ public sealed class AuditLogMetrics
     }
 
     public void RecordPersisted(long count, string? tenantId) =>
-        _entriesPersisted.Add(count,
-            new KeyValuePair<string, object?>("tenant_id", tenantId ?? "global"));
+        _entriesPersisted.Add(count, new TagList
+        {
+            { "tenant_id", tenantId ?? "global" },
+        });
 
     public void RecordPurged(long count, string category) =>
-        _entriesPurged.Add(count,
-            new KeyValuePair<string, object?>("category", category));
+        _entriesPurged.Add(count, new TagList
+        {
+            { "category", category },
+        });
 
     public void RecordCaptureError(string? tenantId) =>
-        _captureErrors.Add(1,
-            new KeyValuePair<string, object?>("tenant_id", tenantId ?? "global"));
+        _captureErrors.Add(1, new TagList
+        {
+            { "tenant_id", tenantId ?? "global" },
+        });
 }

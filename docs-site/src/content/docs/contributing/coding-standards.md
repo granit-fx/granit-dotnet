@@ -112,6 +112,86 @@ Two event categories with **mandatory suffixes**:
 - Handler in same `Jobs/` folder: `internal static partial class {Action}Handler`
 - Never use `*Command` suffix for jobs — commands are CQRS
 
+### Metrics and diagnostics naming
+
+Every module with observable operations SHOULD expose OpenTelemetry metrics via
+a dedicated `*Metrics.cs` class and, when long-running or cross-process
+operations exist, a `*ActivitySource.cs` class.
+
+#### File placement
+
+| File | Location | Example |
+| ---- | -------- | ------- |
+| `{Module}Metrics.cs` | `Diagnostics/` folder | `Diagnostics/BlobStorageMetrics.cs` |
+| `{Module}ActivitySource.cs` | `Diagnostics/` folder | `Diagnostics/BlobStorageActivitySource.cs` |
+
+Both classes live in the **base abstraction project** (`Granit.{Module}`), not in
+a provider or EF Core sub-project, so all implementations can share the same
+meter and activity source.
+
+#### Metrics class conventions
+
+| Element | Convention | Example |
+| ------- | ---------- | ------- |
+| Class | `sealed class {Module}Metrics` | `sealed class BlobStorageMetrics` |
+| Meter name (const) | `"Granit.{Module}"` (PascalCase) | `"Granit.BlobStorage"` |
+| Constructor | `IMeterFactory` injection (never `new Meter(...)`) | `BlobStorageMetrics(IMeterFactory meterFactory)` |
+| Instrument fields | `private readonly` | `private readonly Counter<long> _uploadsInitiated;` |
+| DI registration | `services.TryAddSingleton<{Module}Metrics>();` | In module's `Add*()` extension |
+
+#### Metric naming (`granit.{module}.{entity}.{action}`)
+
+| Segment | Format | Example |
+| ------- | ------ | ------- |
+| Prefix | `granit` (always) | `granit.` |
+| Module | lowercase, no dots | `blobstorage`, `ratelimiting`, `dataexchange` |
+| Entity | lowercase noun (plural for collections) | `blobs`, `requests`, `jobs`, `rows` |
+| Action | lowercase past-tense verb or adjective | `completed`, `failed`, `active`, `duration` |
+
+Full example: `granit.blobstorage.blobs.deleted`,
+`granit.dataexchange.import.duration`
+
+#### Instrument types
+
+| Type | When to use | Unit |
+| ---- | ----------- | ---- |
+| `Counter<long>` | Monotonically increasing counts | `null` (dimensionless) |
+| `UpDownCounter<long>` | Current state (active leases, connections) | `null` |
+| `Histogram<double>` | Duration distributions (P50/P95/P99) | `"s"` (seconds) |
+
+#### Tag conventions
+
+| Tag | Format | Required | Example |
+| --- | ------ | -------- | ------- |
+| `tenant_id` | `snake_case` | **Always** (coalesce `null` to `"global"`) | `tenantId ?? "global"` |
+| Operation-specific | `snake_case` | Per-metric | `status`, `channel`, `provider` |
+
+Tags are passed via `TagList` (not `KeyValuePair` arrays) to avoid boxing
+and allocation on hot paths.
+
+#### Record methods
+
+Public methods named `Record{Action}()` with minimal parameters. Use `TagList`
+for zero-allocation tag passing:
+
+```csharp
+public void RecordDeleted(string? tenantId, string container) =>
+    _blobsDeleted.Add(1, new TagList
+    {
+        { "tenant_id", tenantId ?? "global" },
+        { "container", container },
+    });
+```
+
+#### ActivitySource conventions
+
+| Element | Convention | Example |
+| ------- | ---------- | ------- |
+| Class | `internal static class {Module}ActivitySource` | `DataExchangeActivitySource` |
+| Name (const) | `"Granit.{Module}"` (PascalCase, matches Meter) | `"Granit.DataExchange"` |
+| Operations | `{module-kebab}.{action}` (kebab-case) | `data-exchange.import.execute` |
+| Registration | `GranitActivitySourceRegistry.Register(Name)` | In `Add*()` extension |
+
 ### Entity/API separation
 
 EF Core entities must **never** be returned directly by an endpoint. Create a

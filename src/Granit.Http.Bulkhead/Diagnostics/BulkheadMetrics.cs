@@ -1,6 +1,7 @@
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
-namespace Granit.Http.Bulkhead;
+namespace Granit.Http.Bulkhead.Diagnostics;
 
 /// <summary>
 /// OpenTelemetry metrics for the bulkhead module.
@@ -25,17 +26,23 @@ public sealed class BulkheadMetrics
     }
 
     public void RecordAcquired(string policyName, string? tenantId) =>
-        _activeCounter.Add(1,
-            new KeyValuePair<string, object?>("policy", policyName),
-            new KeyValuePair<string, object?>("tenant_id", tenantId ?? "global"));
+        _activeCounter.Add(1, new TagList
+        {
+            { "policy", policyName },
+            { "tenant_id", tenantId ?? "global" },
+        });
 
     public void RecordReleased(string policyName, string? tenantId) =>
-        _activeCounter.Add(-1,
-            new KeyValuePair<string, object?>("policy", policyName),
-            new KeyValuePair<string, object?>("tenant_id", tenantId ?? "global"));
+        _activeCounter.Add(-1, new TagList
+        {
+            { "policy", policyName },
+            { "tenant_id", tenantId ?? "global" },
+        });
 
     public void RecordRejected(string policyName, string? tenantId) =>
-        _rejectedCounter.Add(1,
-            new KeyValuePair<string, object?>("policy", policyName),
-            new KeyValuePair<string, object?>("tenant_id", tenantId ?? "global"));
+        _rejectedCounter.Add(1, new TagList
+        {
+            { "policy", policyName },
+            { "tenant_id", tenantId ?? "global" },
+        });
 }

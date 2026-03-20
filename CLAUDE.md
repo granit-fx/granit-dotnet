@@ -140,6 +140,17 @@ Full standards: [`docs/guide/conventions/`](docs/guide/conventions/index.md)
 - **`ArgumentException.ThrowIfNullOrEmpty()`** / `ThrowIfNullOrWhiteSpace()`: for strings
 - **`AddAuthorizationBuilder()`**: not `AddAuthorization(Action<>)` (ASP0025)
 
+### Metrics & diagnostics — MANDATORY conventions
+
+- **Directory**: `Diagnostics/` folder in the base module project
+- **Class**: `sealed class {Module}Metrics` with `IMeterFactory` constructor injection
+- **Meter name**: `"Granit.{Module}"` (PascalCase, one per module)
+- **Metric name**: `granit.{module}.{entity}.{action}` (all lowercase, dot-separated)
+- **Tags**: `snake_case`, always include `tenant_id` (coalesced to `"global"`), passed via `TagList`
+- **DI**: `services.TryAddSingleton<{Module}Metrics>();`
+- **ActivitySource**: `internal static class {Module}ActivitySource` in same `Diagnostics/` folder
+- **Registration**: `GranitActivitySourceRegistry.Register(Name)` in `Add*()` extension
+
 ### Events — naming convention (STRICT)
 
 Two event categories with **mandatory suffixes** — enforced by architecture tests:
