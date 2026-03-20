@@ -51,7 +51,19 @@ def walk_files(directory: Path, ext: str) -> list[Path]:
 # ─── Project graph from .csproj ──────────────────────────────────────────────
 
 
+def read_default_framework(src_root: Path) -> str:
+    """Read TargetFramework from Directory.Build.props (walks up from src_root)."""
+    for directory in [src_root, src_root.parent]:
+        props = directory / "Directory.Build.props"
+        if props.is_file():
+            m = re.search(r"<TargetFrameworks?>(.*?)</TargetFrameworks?>", props.read_text(encoding="utf-8"))
+            if m:
+                return m.group(1)
+    return ""
+
+
 def parse_project_graph(src_root: Path) -> list[dict]:
+    default_fw = read_default_framework(src_root)
     csproj_files = walk_files(src_root, ".csproj")
     projects = []
 
@@ -62,9 +74,9 @@ def parse_project_graph(src_root: Path) -> list[dict]:
 
         xml = file.read_text(encoding="utf-8")
 
-        # Extract TargetFramework(s)
+        # Extract TargetFramework(s) — fall back to Directory.Build.props
         fw_match = re.search(r"<TargetFrameworks?>(.*?)</TargetFrameworks?>", xml)
-        framework = fw_match.group(1) if fw_match else ""
+        framework = fw_match.group(1) if fw_match else default_fw
 
         # Extract ProjectReference dependencies
         deps = []
@@ -334,8 +346,8 @@ def extract_members(content: str, type_start_offset: int, type_kind: str) -> lis
 
 def main() -> None:
     args = parse_args()
-    repo_root = Path.cwd()
-    src_root = Path(args.src) if os.path.isabs(args.src) else repo_root / args.src
+    src_root = Path(args.src).resolve()
+    repo_root = src_root.parent
     output = Path(args.out) if os.path.isabs(args.out) else repo_root / args.out
 
     if not src_root.is_dir():
