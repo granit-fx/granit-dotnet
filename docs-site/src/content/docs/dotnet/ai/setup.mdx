@@ -44,6 +44,7 @@ OpenAI or Anthropic. Swapping providers is a one-line configuration change.
   - Granit.AI.EntityFrameworkCore Isolated DbContext for workspaces and usage tracking
   - Granit.AI.Extraction Structured document extraction (PDF → typed C# object)
   - Granit.AI.VectorData Multi-tenant vector storage for semantic search (RAG)
+  - Granit.AI.Endpoints REST API for workspaces, usage tracking, chat & embedding proxy
 - Granit.DataExchange.AI/ AI-powered column mapping for CSV/Excel import
 - Granit.Querying.AI/ Natural Language Query — phrases to structured filters
 
@@ -57,6 +58,7 @@ OpenAI or Anthropic. Swapping providers is a one-line configuration change.
 | `Granit.AI.Anthropic` | Claude models via official Anthropic SDK | `Granit.AI` |
 | `Granit.AI.Ollama` | Local models, health check, zero API key | `Granit.AI` |
 | `Granit.AI.EntityFrameworkCore` | `AIDbContext`, `EfAIWorkspaceStore`, `EfAIUsageStore` | `Granit.AI`, `Granit.Persistence` |
+| `Granit.AI.Endpoints` | Workspace CRUD, usage query, chat/embedding proxy | `Granit.AI`, `Granit.Authorization`, `Granit.Querying.Endpoints` |
 | `Granit.AI.Extraction` | `IDocumentExtractor<T>`, structured output from documents | `Granit.AI` |
 | `Granit.AI.VectorData` | `IVectorCollection<T>`, `ISemanticSearchService` for RAG | `Granit.AI` |
 | `Granit.DataExchange.AI` | AI-powered `ISemanticMappingService` for import mapping | `Granit.AI`, `Granit.DataExchange` |

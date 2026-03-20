@@ -1,0 +1,231 @@
+---
+title: "AI Endpoints — REST API for Workspaces, Usage & Inference"
+description: Minimal API endpoints for AI workspace CRUD, usage tracking via Granit.Querying, and chat/embedding proxy with SSE streaming. Two-tier authorization (admin + user).
+sidebar:
+  label: Endpoints
+  order: 3
+  badge:
+    text: New
+    variant: tip
+---
+
+import { Tabs, TabItem, FileTree } from "@astrojs/starlight/components";
+
+`Granit.AI.Endpoints` exposes the AI module's capabilities via Minimal API endpoints.
+It covers workspace administration, usage analytics, and inference proxy — all protected
+by granular permission policies.
+
+## Package structure
+
+<FileTree>
+
+- Granit.AI.Endpoints/
+  - Endpoints/
+    - AIWorkspaceEndpoints.cs Workspace CRUD (list, get, create, update, delete)
+    - AIChatEndpoints.cs Chat completion (sync + SSE streaming)
+    - AIEmbeddingEndpoints.cs Embedding generation proxy
+  - Queries/
+    - AIUsageRecordQueryDefinition.cs Usage tracking via Granit.Querying
+  - Dtos/ Request/response records
+  - Validators/ FluentValidation (auto-applied via MapGranitGroup)
+  - Permissions/ Granular AI.\* permission constants
+  - Options/ AIEndpointsOptions (route prefix, roles, limits)
+  - Localization/ 17 cultures
+
+</FileTree>
+
+## Installation
+
+```csharp
+// Program.cs
+builder.AddGranitAI();                          // Core abstractions
+builder.AddGranitAIEntityFrameworkCore(o => ...) // Persistence (workspaces + usage)
+builder.AddGranitAIOpenAI();                     // Provider (or AzureOpenAI, Ollama...)
+
+// Route registration
+app.MapAIEndpoints();
+
+// With custom options:
+app.MapAIEndpoints(opts =>
+{
+    opts.RoutePrefix = "api/ai";
+    opts.AdminRole = "platform-admin";
+    opts.UserRole = "ai-consumer";
+});
+```
+
+## Authorization model
+
+Two authorization policies, configurable via `AIEndpointsOptions`:
+
+| Policy | Default role | Endpoints |
+|--------|-------------|-----------|
+| **Admin** | `granit-ai-admin` | Workspace CRUD, usage query |
+| **User** | `granit-ai-user` | Chat completion, embedding generation |
+
+## Endpoint groups
+
+### Workspace management (Admin)
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| `GET` | `/ai/workspaces` | List all workspaces (system + dynamic) |
+| `GET` | `/ai/workspaces/{name}` | Get a workspace by name |
+| `POST` | `/ai/workspaces` | Create a dynamic workspace |
+| `PUT` | `/ai/workspaces/{name}` | Update a dynamic workspace |
+| `DELETE` | `/ai/workspaces/{name}` | Soft-delete a dynamic workspace |
+
+System workspaces (declared in code) are read-only. Attempting to modify or delete them
+returns `422 Unprocessable Entity` with `AI:Workspace:SystemImmutable`.
+
+### Usage tracking (Admin) via Granit.Querying
+
+Instead of custom listing endpoints, usage records are exposed through
+`MapQueryEndpoints<AIUsageRecord>` — providing filtering, sorting, pagination,
+groupBy with aggregates, saved views, and metadata out of the box.
+
+| Route | Features |
+|-------|----------|
+| `GET /ai/usage/query` | Paginated query with filters |
+| `GET /ai/usage/query/meta` | Query metadata for frontend |
+| `GET /ai/usage/query/saved-views` | User's saved views |
+
+**Query definition schema:**
+
+| Feature | Fields |
+|---------|--------|
+| Filterable | WorkspaceName, Provider, Model, Timestamp |
+| Sortable | Timestamp (default: `-timestamp`), InputTokens, OutputTokens, EstimatedCostUsd |
+| GlobalSearch | WorkspaceName, Provider, Model |
+| GroupBy | WorkspaceName, Provider, Model |
+| Aggregates | Sum(InputTokens), Sum(OutputTokens), Sum(EstimatedCostUsd) |
+| DateFilter | Timestamp (ThisMonth default) |
+
+**Usage summary** is achieved via `?groupBy=provider` or `?groupBy=workspaceName` —
+the query engine computes aggregates automatically.
+
+### Chat completion proxy (User)
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| `POST` | `/ai/chat/{workspaceName}` | Synchronous chat completion |
+| `POST` | `/ai/chat/{workspaceName}/stream` | SSE streaming completion |
+
+<Tabs>
+<TabItem label="Synchronous">
+
+```json
+// POST /ai/chat/my-gpt4
+{
+  "messages": [
+    { "role": "system", "content": "You are a helpful assistant." },
+    { "role": "user", "content": "What is Granit?" }
+  ]
+}
+
+// Response 200
+{
+  "workspaceName": "my-gpt4",
+  "model": "gpt-4o",
+  "content": "Granit is a modular .NET framework...",
+  "usage": { "inputTokens": 42, "outputTokens": 128, "estimatedCostUsd": null },
+  "duration": "00:00:01.234"
+}
+```
+
+</TabItem>
+<TabItem label="SSE Streaming">
+
+```json
+// POST /ai/chat/my-gpt4/stream
+// Same request body as synchronous
+
+// Response: text/event-stream
+data: {"content":"Granit"}
+data: {"content":" is"}
+data: {"content":" a modular"}
+data: [DONE]
+```
+
+</TabItem>
+</Tabs>
+
+After each successful completion, `IAIUsageTracker.RecordAsync` logs the interaction
+for ISO 27001 audit trail and cost monitoring.
+
+### Embedding generation proxy (User)
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| `POST` | `/ai/embeddings/{workspaceName}` | Generate embeddings for text inputs |
+
+```json
+// POST /ai/embeddings/ada-embed
+{ "inputs": ["Hello world", "Granit framework"] }
+
+// Response 200
+{
+  "workspaceName": "ada-embed",
+  "model": "text-embedding-3-small",
+  "embeddings": [
+    { "index": 0, "vector": [0.0123, -0.0456, ...] },
+    { "index": 1, "vector": [0.0789, -0.0012, ...] }
+  ]
+}
+```
+
+## Error handling
+
+All errors follow RFC 7807 (`ProblemDetails`):
+
+| Scenario | HTTP | Detail key |
+|----------|------|------------|
+| Workspace not found | 404 | `AI:Workspace:NotFound` |
+| Provider not registered | 502 | `AI:Provider:NotRegistered` |
+| Rate limit exceeded | 429 | `AI:RateLimit:Exceeded` |
+| Provider unavailable | 503 | `AI:Service:Unavailable` |
+| System workspace modification | 422 | `AI:Workspace:SystemImmutable` |
+| Validation failure | 400 | Auto via `FluentValidationAutoEndpointFilter` |
+
+## Validation
+
+All request DTOs are auto-validated via `MapGranitGroup`:
+
+| DTO | Rules |
+|-----|-------|
+| `AIWorkspaceCreateRequest` | Name: `^[a-z0-9][a-z0-9-]*$`, max 128; Provider/Model: required; Temperature: 0–2; MaxOutputTokens: > 0 |
+| `AIWorkspaceUpdateRequest` | Same as create (without name) |
+| `AIChatRequest` | Messages: required, max 100; Role: user/assistant/system; Content: max 128k |
+| `AIEmbeddingRequest` | Inputs: required, max 50; each max 32k |
+
+## Permissions
+
+```csharp
+AIPermissions.Workspaces.View    // "AI.Workspaces.View"
+AIPermissions.Workspaces.Create  // "AI.Workspaces.Create"
+AIPermissions.Workspaces.Update  // "AI.Workspaces.Update"
+AIPermissions.Workspaces.Delete  // "AI.Workspaces.Delete"
+AIPermissions.Usage.View         // "AI.Usage.View"
+AIPermissions.Chat.Execute       // "AI.Chat.Execute"
+AIPermissions.Embeddings.Execute // "AI.Embeddings.Execute"
+```
+
+## Configuration
+
+```json
+{
+  "AIEndpoints": {
+    "RoutePrefix": "ai",
+    "AdminRole": "granit-ai-admin",
+    "UserRole": "granit-ai-user",
+    "MaxChatMessages": 100,
+    "MaxEmbeddingInputs": 50
+  }
+}
+```
+
+## See also
+
+- [AI Setup](/dotnet/ai/setup/) — Provider configuration, workspace architecture
+- [Semantic Search](/dotnet/ai/semantic-search/) — Vector storage and RAG
+- [Document Extraction](/dotnet/ai/document-extraction/) — Structured extraction from PDFs

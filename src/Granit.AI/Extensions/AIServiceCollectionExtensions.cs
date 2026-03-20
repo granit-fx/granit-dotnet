@@ -47,6 +47,9 @@ public static class AIServiceCollectionExtensions
         // Usage tracking (no-op by default, overridden by EF Core package)
         builder.Services.TryAddSingleton<IAIUsageTracker, NullAIUsageTracker>();
 
+        // Usage queryable (no-op by default, overridden by EF Core package)
+        builder.Services.TryAddTransient<IAIUsageQueryableProvider, NullAIUsageQueryableProvider>();
+
         return builder;
     }
 }

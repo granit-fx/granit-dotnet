@@ -38,6 +38,7 @@ public static class AIEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddScoped<IAIWorkspaceStoreWriter>(sp => sp.GetRequiredService<EfAIWorkspaceStore>());
 
         builder.Services.AddScoped<IAIUsageTracker, EfAIUsageStore>();
+        builder.Services.AddScoped<IAIUsageQueryableProvider, EfAIUsageQueryableProvider>();
 
         return builder;
     }
