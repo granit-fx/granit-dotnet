@@ -1,0 +1,23 @@
+namespace Granit.Validation.ServerValidation;
+
+/// <summary>
+/// Wraps a <see cref="Func{T, TResult}"/> delegate as an <see cref="IServerValidator"/>.
+/// </summary>
+/// <remarks>
+/// Use this class in <see cref="IServerValidatorContributor"/> implementations to avoid
+/// creating a dedicated class for each validator:
+/// <code>
+/// yield return new DelegatingServerValidator(
+///     "Granit:Validation:InvalidIban", IbanAlgorithm.IsValid);
+/// </code>
+/// </remarks>
+public sealed class DelegatingServerValidator(string errorCode, Func<string?, bool> validateFunc)
+    : IServerValidator
+{
+    /// <inheritdoc />
+    public string ErrorCode { get; } = errorCode
+        ?? throw new ArgumentNullException(nameof(errorCode));
+
+    /// <inheritdoc />
+    public bool Validate(string? value) => validateFunc(value);
+}
