@@ -1,6 +1,6 @@
 ---
 title: "Feature Flags — Runtime Feature Toggles"
-description: "Toggle features at runtime without redeployment — per-tenant, per-plan SaaS tiering with multi-level resolution (global → tenant → user) backed by HybridCache."
+description: "Toggle features at runtime without redeployment — per-tenant, per-plan SaaS tiering with multi-level resolution (global → tenant → user) backed by FusionCache."
 sidebar:
   label: Feature Flags
   order: 16
@@ -11,7 +11,7 @@ sidebar:
 The Feature Flags pattern enables activating or deactivating features at runtime
 without redeployment. Granit extends this pattern for SaaS tiering: feature
 resolution follows a multi-level cascade **Tenant > Plan > Default**, with a
-hybrid L1/L2 cache for performance.
+FusionCache L1/L2 cache for performance.
 
 Three feature types are supported:
 
@@ -25,14 +25,14 @@ Three feature types are supported:
 sequenceDiagram
     participant API as Endpoint / Handler
     participant FC as FeatureChecker
-    participant HC as HybridCache (L1+L2)
+    participant HC as FusionCache (L1+L2)
     participant TVP as TenantValueProvider (20)
     participant PVP as PlanValueProvider (10)
     participant DVP as DefaultValueProvider (0)
     participant FS as IFeatureStore (DB)
 
     API->>FC: GetValueAsync("MaxUsers")
-    FC->>HC: GetOrCreateAsync("t:{tid}:MaxUsers")
+    FC->>HC: GetOrSetAsync("t:{tid}:MaxUsers")
     alt Cache hit
         HC-->>FC: Cached value
     else Cache miss
@@ -74,9 +74,9 @@ sequenceDiagram
 
 | Component | File | Role |
 |-----------|------|------|
-| `FeatureChecker` | `src/Granit.Features/Checker/FeatureChecker.cs` | Resolution orchestration + `HybridCache` |
+| `FeatureChecker` | `src/Granit.Features/Internal/FeatureChecker.cs` | Resolution orchestration + `IFusionCache` |
 | `FeatureCacheKey` | `src/Granit.Features/Cache/FeatureCacheKey.cs` | Format: `t:{tenantId}:{featureName}` |
-| `FeatureCacheInvalidationHandler` | `src/Granit.Features/Cache/FeatureCacheInvalidationHandler.cs` | Listens to `FeatureValueChangedEvent`, purges cache |
+| `FeatureCacheInvalidationHandler` | `src/Granit.Features/Cache/FeatureCacheInvalidationHandler.cs` | Listens to `FeatureValueChangedEvent`, expires cache entries |
 
 ### Numeric limit guard
 
@@ -100,8 +100,8 @@ sequenceDiagram
 |---------|----------|
 | Different SaaS plans (Free/Pro/Enterprise) with different limits | `Numeric` features with `NumericConstraint` + `FeatureLimitGuard` |
 | Per-tenant override without redeployment | `TenantFeatureValueProvider` reads overrides from DB |
-| Performance: resolution must not query the DB on every request | `HybridCache` L1 (in-memory) + L2 (Redis) with event-driven invalidation |
-| Multi-instance consistency: a feature change must be visible everywhere | `FeatureValueChangedEvent` purges L1 and L2 cache via Wolverine |
+| Performance: resolution must not query the DB on every request | FusionCache L1 (in-memory) + L2 (Redis) with event-driven invalidation |
+| Multi-instance consistency: a feature change must be visible everywhere | `FeatureValueChangedEvent` expires cache entries via `ExpireAsync` + backplane |
 | API protection: block access if the feature is disabled | `[RequiresFeature]` on MVC, Minimal API, and Wolverine handlers |
 
 ## Usage example

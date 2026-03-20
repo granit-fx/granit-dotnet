@@ -7,11 +7,11 @@ namespace Granit.Caching.StackExchangeRedis;
 
 /// <summary>
 /// Granit module for the Redis distributed cache provider.
-/// Replaces the Memory provider registered by <c>GranitCachingModule</c>.
+/// Upgrades the FusionCache instance registered by <c>GranitCachingModule</c>
+/// with L2 Redis distributed cache and a Redis pub/sub backplane for cross-pod
+/// L1 invalidation.
 /// </summary>
 /// <remarks>
-/// This module depends on <c>GranitCachingModule</c>, which registers the
-/// <see cref="Granit.Caching.ICacheService{TCacheItem}"/> abstraction and options.
 /// <para>
 /// Enabling AES-256 encryption:
 /// <code>

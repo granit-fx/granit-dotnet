@@ -26,7 +26,7 @@ For test-only dependencies, see [Testing stack (ADR-003)](/dotnet/architecture/a
 | [Entity Framework Core](https://learn.microsoft.com/en-us/ef/core/) | MIT | ORM, migrations, interceptors (audit, soft delete) | — |
 | [Npgsql.EntityFrameworkCore.PostgreSQL](https://www.npgsql.org/) | PostgreSQL | PostgreSQL provider for EF Core | — |
 | [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) | MIT | Redis client for distributed caching | [ADR-002](/dotnet/architecture/adr/002-redis/) |
-| [Microsoft.Extensions.Caching.Hybrid](https://learn.microsoft.com/en-us/aspnet/core/performance/caching/hybrid) | MIT | L1/L2 HybridCache (.NET 9+) | [ADR-002](/dotnet/architecture/adr/002-redis/) |
+| [FusionCache](https://github.com/ZiggyCreatures/FusionCache) | MIT | L1/L2 cache with backplane, fail-safe, stampede protection, OpenTelemetry | [ADR-018](/dotnet/architecture/adr/018-fusioncache-caching-provider/) |
 
 ## Messaging and scheduling
 

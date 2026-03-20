@@ -8,7 +8,7 @@ sidebar:
 
 > **Date:** 2026-03-20
 > **Authors:** Jean-Francois Meyers
-> **Scope:** granit-dotnet (Granit.Caching, Granit.Caching.FusionCache, Granit.Authorization, Granit.Settings, Granit.Features, Granit.Localization, Granit.ReferenceData)
+> **Scope:** granit-dotnet (Granit.Caching, Granit.Authorization, Granit.Settings, Granit.Features, Granit.Localization, Granit.ReferenceData)
 > **Supersedes:** ADR-002 (Redis) partially — Redis remains as L2 backend, but the caching layer changes from `HybridCache` to FusionCache.
 
 ## Context
@@ -48,17 +48,19 @@ caching provider. Drop `ICacheService<T>` entirely — consumers inject
 
 | Package | Action |
 | ------- | ------ |
-| `Granit.Caching` | **Slim down** — keep config + encryption only. Add `EncryptingFusionCacheSerializer`. |
+| `Granit.Caching` | **Consolidated** — FusionCache wiring, backplane, OpenTelemetry, config, encryption (`EncryptingFusionCacheSerializer`). |
 | `Granit.Caching.StackExchangeRedis` | **Unchanged** — Redis `IDistributedCache` + health check |
-| `Granit.Caching.FusionCache` | **New** — FusionCache wiring, backplane, OpenTelemetry |
 | `Granit.Caching.Hybrid` | **Deleted** |
 
-### NuGet dependencies (all MIT license)
+### NuGet dependencies in Granit.Caching (all MIT license)
 
 - `ZiggyCreatures.FusionCache`
 - `ZiggyCreatures.FusionCache.Serialization.SystemTextJson`
-- `ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis`
 - `ZiggyCreatures.FusionCache.OpenTelemetry`
+
+### NuGet dependencies in Granit.Caching.StackExchangeRedis (all MIT license)
+
+- `ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis`
 
 ## Alternatives considered
 

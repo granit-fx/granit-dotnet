@@ -32,7 +32,7 @@ For binary document output (PDF, Excel), see
 <FileTree>
 - Granit.Templating/ Core pipeline: ITextTemplateRenderer, resolvers, engines, enrichers, global contexts, template store CQRS
   - Granit.Templating.Scriban Scriban engine (sandboxed, no I/O or reflection), template caching, built-in global contexts
-  - Granit.Templating.EntityFrameworkCore EF Core persistence (TemplatingDbContext), HybridCache-backed store, StoreTemplateResolver
+  - Granit.Templating.EntityFrameworkCore EF Core persistence (TemplatingDbContext), FusionCache-backed store, StoreTemplateResolver
   - Granit.Templating.Endpoints 16 admin endpoints (CRUD, preview, publish, categories, history, variables)
   - Granit.Templating.Workflow Bridge to Granit.Workflow: FSM validation, approval routing, unified audit trail
 </FileTree>
@@ -41,7 +41,7 @@ For binary document output (PDF, Excel), see
 | ------- | ---- | ---------- |
 | `Granit.Templating` | Core pipeline: rendering, resolution, enrichment, store interfaces | -- |
 | `Granit.Templating.Scriban` | Scriban template engine (sandboxed), `now.*` and `context.*` globals | `Granit.Templating` |
-| `Granit.Templating.EntityFrameworkCore` | EF Core store, `StoreTemplateResolver` (Priority=100), HybridCache | `Granit.Templating`, `Granit.Persistence` |
+| `Granit.Templating.EntityFrameworkCore` | EF Core store, `StoreTemplateResolver` (Priority=100), FusionCache | `Granit.Templating`, `Granit.Persistence` |
 | `Granit.Templating.Endpoints` | 16 admin Minimal API endpoints, `Templates.Manage` permission | `Granit.Templating`, `Granit.Authorization` |
 | `Granit.Templating.Workflow` | Workflow bridge: FSM validation, `IWorkflowTransitionRecorder` | `Granit.Templating`, `Granit.Workflow` |
 
@@ -162,7 +162,7 @@ Tenant scoping is the resolver's responsibility.
 
 | Resolver | Priority | Source |
 |----------|----------|--------|
-| `StoreTemplateResolver` | 100 | EF Core database (published revisions, HybridCache) |
+| `StoreTemplateResolver` | 100 | EF Core database (published revisions, FusionCache) |
 | `EmbeddedTemplateResolver` | -100 | Assembly embedded resources (code-level fallback) |
 
 **Stage 3 -- Engine rendering.** `ITemplateEngine` selects itself via `CanRender(descriptor)`

@@ -1,6 +1,6 @@
 using ZiggyCreatures.Caching.Fusion.Serialization;
 
-namespace Granit.Caching.FusionCache.Internal;
+namespace Granit.Caching.Internal;
 
 /// <summary>
 /// Decorator that applies AES-256-CBC encryption on top of an inner <see cref="IFusionCacheSerializer"/>.

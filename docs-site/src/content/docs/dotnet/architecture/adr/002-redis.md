@@ -1,6 +1,6 @@
 ---
 title: "ADR-002: Redis via StackExchange.Redis — Distributed Cache"
-description: "StackExchange.Redis powers Granit's L2 distributed cache layer — selected for pub/sub invalidation, Lua scripting for atomic rate limiting, and HybridCache support."
+description: "StackExchange.Redis powers Granit's L2 distributed cache layer — selected for pub/sub invalidation, Lua scripting for atomic rate limiting, and FusionCache backplane support."
 sidebar:
   order: 2
   label: "002 - Redis Distributed Cache"
@@ -8,7 +8,7 @@ sidebar:
 
 > **Date:** 2026-02-21
 > **Authors:** Jean-Francois Meyers
-> **Scope:** granit-dotnet (Granit.Caching, Granit.Caching.StackExchangeRedis, Granit.Caching.Hybrid)
+> **Scope:** granit-dotnet (Granit.Caching, Granit.Caching.StackExchangeRedis) — FusionCache uses Redis as L2 backend and backplane
 
 ## Context
 
@@ -23,12 +23,12 @@ requires a distributed cache backend for:
 - **SignalR**: Redis backplane for real-time notifications
 
 The choice of cache backend determines the implementation of
-`Granit.Caching.StackExchangeRedis` and the L1+L2 pattern of `Granit.Caching.Hybrid`.
+`Granit.Caching.StackExchangeRedis` and the L1+L2 pattern in `Granit.Caching` (FusionCache).
 
 ## Decision
 
 **Redis** via **StackExchange.Redis** as the distributed cache backend (L2),
-combined with `Microsoft.Extensions.Caching.Hybrid` for the L1+L2 pattern.
+combined with FusionCache for the L1+L2 pattern (see [ADR-018](/dotnet/architecture/adr/018-fusioncache-caching-provider/)).
 
 ## Alternatives considered
 
@@ -36,7 +36,7 @@ combined with `Microsoft.Extensions.Caching.Hybrid` for the L1+L2 pattern.
 
 - **License**: MIT (StackExchange.Redis)
 - **Advantage**: de facto standard, native `IDistributedCache` integration,
-  HybridCache support, Pub/Sub for invalidation, SignalR backplane
+  FusionCache L2 + backplane support, Pub/Sub for invalidation, SignalR backplane
 
 ### Option 2: Memcached
 
@@ -62,7 +62,7 @@ combined with `Microsoft.Extensions.Caching.Hybrid` for the L1+L2 pattern.
 | --------- | -------- | --------- | ------ | ------ |
 | Client license | MIT | Apache-2.0 | Freemium | MIT |
 | IDistributedCache | Native MS | Third-party | Third-party | Compatible |
-| HybridCache .NET 10 | Yes | No | No | Compatible |
+| FusionCache L2 | Yes | No | No | Compatible |
 | Pub/Sub | Yes | No | Yes | Yes |
 | SignalR backplane | Yes (MS official) | No | No | Untested |
 | Maturity | 10+ years | Mature | Mature | Recent |
@@ -71,10 +71,10 @@ combined with `Microsoft.Extensions.Caching.Hybrid` for the L1+L2 pattern.
 
 ### Positive
 
-- Native integration with Microsoft DI (`IDistributedCache`, `HybridCache`)
+- Native integration with Microsoft DI (`IDistributedCache`, FusionCache)
 - MIT client, stable and very widely adopted
-- Pub/Sub for cache invalidation and SignalR backplane
-- Transparent L1+L2 HybridCache pipeline via `Granit.Caching`
+- Pub/Sub for FusionCache backplane and SignalR backplane
+- Transparent L1+L2 FusionCache pipeline via `Granit.Caching`
 
 ### Negative
 

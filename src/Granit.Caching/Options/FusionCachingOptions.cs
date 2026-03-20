@@ -1,4 +1,4 @@
-namespace Granit.Caching.FusionCache.Options;
+namespace Granit.Caching.Options;
 
 /// <summary>
 /// Configuration options for the FusionCache provider.

@@ -1,5 +1,5 @@
 using Granit.Caching;
-using Granit.Caching.FusionCache.Internal;
+using Granit.Caching.Internal;
 using Shouldly;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion.Serialization;

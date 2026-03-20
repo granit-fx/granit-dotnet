@@ -70,7 +70,7 @@ builder.Services.AddGranitTemplatingWithScriban();
 // Excel ClosedXML engine (additive -- both engines coexist)
 builder.Services.AddGranitDocumentGenerationExcel();
 
-// EF Core store (IDocumentTemplateStoreReader/Writer + HybridCache L1)
+// EF Core store (IDocumentTemplateStoreReader/Writer + FusionCache)
 builder.AddGranitTemplatingEntityFrameworkCore(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
@@ -204,7 +204,7 @@ public sealed class TemplateAdminService(
         await storeWriter.SaveDraftAsync(
             key, html, "text/html", "admin@example.com", cancellationToken);
 
-        // Publish the draft (invalidates HybridCache)
+        // Publish the draft (invalidates FusionCache)
         await storeWriter.PublishAsync(
             key, "admin@example.com", cancellationToken);
     }

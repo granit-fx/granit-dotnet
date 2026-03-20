@@ -52,7 +52,7 @@ for architecture guidance.
 ## What is the minimum .NET version?
 
 **NET 10** is the minimum supported version. Granit uses C# 14 language features
-and .NET 10 APIs (`TimeProvider`, `HybridCache`, `[GeneratedRegex]` improvements,
+and .NET 10 APIs (`TimeProvider`, `[GeneratedRegex]` improvements, named query filters,
 etc.) that are not available in earlier runtimes.
 
 There are no plans to backport to .NET 8 or .NET 9.

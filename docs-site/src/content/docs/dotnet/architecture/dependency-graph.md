@@ -39,7 +39,7 @@ flowchart TD
     subgraph Foundation
         UTILS["Utilities (14)"]:::core
         SEC["Security (18)"]:::security
-        CACHE["Caching (3)"]:::dataLyr
+        CACHE["Caching (2)"]:::dataLyr
         IDENT["Identity (7)"]:::security
     end
 
@@ -167,7 +167,6 @@ flowchart TD
     subgraph Caching
         CACHE["Caching"]
         CACHE_REDIS["Caching.Redis"]
-        CACHE_HYB["Caching.Hybrid"]
     end
 
     subgraph Persistence
@@ -208,7 +207,6 @@ flowchart TD
     AUTHZ --> AUTHZ_EP
 
     CACHE --> CACHE_REDIS
-    CACHE_REDIS --> CACHE_HYB
 
     GUIDS --> PERS
     SEC --> PERS
@@ -685,11 +683,6 @@ Webhooks, BlobStorage.
 These modules manage infrastructure data (not business entities), use `IDbContextFactory`
 for thread safety with parallel Wolverine handlers, and do not need
 `AuditedEntityInterceptor` or `SoftDeleteInterceptor`.
-
-### Caching.Hybrid depends on StackExchangeRedis
-
-`HybridCache` (.NET 9+) requires a distributed L2 backend. Redis is the only backend
-supported by the Granit stack, making this a structural dependency.
 
 ### DataExchange depends on Querying
 

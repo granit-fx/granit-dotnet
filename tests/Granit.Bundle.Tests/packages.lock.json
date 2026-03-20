@@ -441,7 +441,7 @@
       "granit.authorization": {
         "type": "Project",
         "dependencies": {
-          "Granit.Caching.FusionCache": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )"
         }
       },
@@ -449,7 +449,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Bundle.Essentials": "[0.1.0-dev, )",
-          "Granit.Caching.FusionCache": "[0.1.0-dev, )",
+          "Granit.Caching.StackExchangeRedis": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Http.ApiVersioning": "[0.1.0-dev, )",
           "Granit.Http.Idempotency": "[0.1.0-dev, )",
@@ -508,16 +508,9 @@
       "granit.caching": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
-        }
-      },
-      "granit.caching.fusioncache": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Caching.StackExchangeRedis": "[0.1.0-dev, )",
+          "Granit.Core": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "ZiggyCreatures.FusionCache": "[2.*, )",
-          "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": "[2.*, )",
           "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
@@ -527,7 +520,8 @@
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
           "Microsoft.Extensions.Caching.StackExchangeRedis": "[10.*, )",
-          "StackExchange.Redis": "[2.*, )"
+          "StackExchange.Redis": "[2.*, )",
+          "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": "[2.*, )"
         }
       },
       "granit.core": {
@@ -568,7 +562,7 @@
       "granit.features": {
         "type": "Project",
         "dependencies": {
-          "Granit.Caching.FusionCache": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )"
         }
       },
@@ -643,7 +637,7 @@
       "granit.localization": {
         "type": "Project",
         "dependencies": {
-          "Granit.Caching.FusionCache": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Core": "[0.1.0-dev, )",
           "SmartFormat": "[3.*, )"
         }
@@ -1002,9 +996,10 @@
       "PuppeteerSharp": {
         "type": "CentralTransitive",
         "requested": "[24.*, )",
-        "resolved": "24.39.1",
-        "contentHash": "RCKyk1wqutXytk3Cb//XxrK7ouaBoN5UvEaOQRQ3TRPqVLimDgBpumZlVLyg4XMeI7FkoPh/2QQ865mFINCFDQ==",
+        "resolved": "24.40.0",
+        "contentHash": "vVvHFHCRW6772ptQmwzIxmc2CdkEv+F9kTlCncv4VFSGev1ev5mtlL9aVOPdHc6ss5ck6sArP4b2JtNy/7GzGA==",
         "dependencies": {
+          "Microsoft.IO.RecyclableMemoryStream": "3.0.1",
           "WebDriverBiDi": "0.0.45"
         }
       },

@@ -1,4 +1,4 @@
-using Granit.Caching.FusionCache;
+using Granit.Caching;
 using Granit.Core.Modularity;
 using Granit.Localization.Extensions;
 using Granit.Localization.Options;
@@ -10,7 +10,7 @@ namespace Granit.Localization;
 /// Granit module for modular JSON localization.
 /// Registers IStringLocalizerFactory and the default Granit resource.
 /// </summary>
-[DependsOn(typeof(GranitCachingFusionCacheModule))]
+[DependsOn(typeof(GranitCachingModule))]
 public sealed class GranitLocalizationModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)

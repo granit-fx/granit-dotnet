@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <PackageId>Granit.Caching</PackageId>
-    <Description>Cache configuration and AES-256-CBC encryption for Granit. Provides CachingOptions, CacheEncryptionOptions, ICacheValueEncryptor, and [CacheEncrypted] attribute for GDPR/ISO 27001 compliance. Provider-agnostic — see Granit.Caching.FusionCache for the production provider.</Description>
+    <Description>FusionCache-based caching for Granit. Provides IFusionCache with L1 in-memory cache, fail-safe, factory timeouts, eager refresh, AES-256-CBC encryption, and native OpenTelemetry. Add Granit.Caching.StackExchangeRedis for L2 Redis + backplane.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Caching.Tests" />
+    <InternalsVisibleTo Include="Granit.Caching.FusionCache.Tests" />
     <InternalsVisibleTo Include="Granit.Caching.StackExchangeRedis" />
-    <InternalsVisibleTo Include="Granit.Caching.FusionCache" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,10 +19,14 @@
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="ZiggyCreatures.FusionCache" />
+    <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" />
+    <PackageReference Include="ZiggyCreatures.FusionCache.OpenTelemetry" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
   </ItemGroup>
 
 </Project>

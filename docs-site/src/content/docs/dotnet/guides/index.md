@@ -39,7 +39,7 @@ from scratch, begin with [Getting Started](/dotnet/getting-started/).
 
 ## Caching, versioning, and API
 
-- [Configure Caching](./configure-caching/) -- memory, Redis, HybridCache
+- [Configure Caching](./configure-caching/) -- memory, Redis, FusionCache
 - [Add API Versioning](./add-api-versioning/) -- URL segment and header versioning
 - [Configure Idempotency](./configure-idempotency/) -- Idempotency-Key middleware
 

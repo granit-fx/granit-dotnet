@@ -1,6 +1,6 @@
 ---
 title: "Decorator Pattern — Cross-Cutting Concerns"
-description: "Layered cache services with serialization, encryption, and anti-stampede in Granit"
+description: "Layered services with encryption, caching, and cross-cutting concerns in Granit"
 sidebar:
   label: Decorator
   order: 33
@@ -16,16 +16,16 @@ its behavior (serialization, encryption, caching, anti-stampede protection).
 
 ```mermaid
 classDiagram
-    class IDistributedCache {
-        +GetAsync()
-        +SetAsync()
+    class IFusionCacheSerializer {
+        +SerializeAsync()
+        +DeserializeAsync()
     }
 
-    class DistributedCacheService {
-        -cache : IDistributedCache
+    class EncryptingFusionCacheSerializer {
+        -inner : IFusionCacheSerializer
         -encryptor : ICacheValueEncryptor
-        -semaphore : SemaphoreSlim
-        +GetOrAddAsync()
+        +SerializeAsync()
+        +DeserializeAsync()
     }
 
     class ILocalizationOverrideStore {
@@ -35,12 +35,12 @@ classDiagram
 
     class CachedLocalizationOverrideStore {
         -inner : ILocalizationOverrideStore
-        -memoryCache : IMemoryCache
+        -cache : IFusionCache
         +GetOverridesAsync()
         +SetOverrideAsync()
     }
 
-    DistributedCacheService --> IDistributedCache : decorates
+    EncryptingFusionCacheSerializer --> IFusionCacheSerializer : decorates
     CachedLocalizationOverrideStore --> ILocalizationOverrideStore : decorates
 ```
 
@@ -48,37 +48,37 @@ classDiagram
 
 | Decorator | File | Target | Added responsibilities |
 |-----------|------|--------|-----------------------|
-| `DistributedCacheService` | `src/Granit.Caching/DistributedCacheService.cs` | `IDistributedCache` | JSON serialization, `ICacheValueEncryptor` encryption, double-check locking anti-stampede |
-| `CachedLocalizationOverrideStore` | `src/Granit.Localization/CachedLocalizationOverrideStore.cs` | `ILocalizationOverrideStore` | In-memory cache with per-tenant invalidation |
+| `EncryptingFusionCacheSerializer` | `src/Granit.Caching/EncryptingFusionCacheSerializer.cs` | `IFusionCacheSerializer` | AES-256-CBC encryption of L2 (Redis) cache values |
+| `CachedLocalizationOverrideStore` | `src/Granit.Localization/Internal/CachedLocalizationOverrideStore.cs` | `ILocalizationOverrideStore` | FusionCache with per-tenant invalidation |
 
-**Custom variant -- Conditional encryption**: `DistributedCacheService`
-applies AES-256-CBC encryption only if the target type carries the
-`[CacheEncrypted]` attribute or if the configuration requires it.
+**Custom variant -- Conditional encryption**: `EncryptingFusionCacheSerializer`
+wraps the inner serializer and applies AES-256-CBC encryption to all values
+written to L2 (Redis). L1 (in-process) stores unencrypted objects.
 
 ## Rationale
 
-Separating concerns (serialization, encryption, anti-stampede) from cache
-logic allows testing and configuring them independently. The localization
-decorator avoids hitting the database on every translation resolution.
+Separating concerns (encryption, caching) from business logic allows testing
+and configuring them independently. The localization decorator avoids hitting
+the database on every translation resolution.
 
 ## Usage example
 
 ```csharp
-// The consumer uses ICacheService<T> -- the decorator is transparent
-ICacheService<PatientDto> cache = serviceProvider
-    .GetRequiredService<ICacheService<PatientDto>>();
+// The consumer uses IFusionCache -- the decorator is transparent
+IFusionCache cache = serviceProvider
+    .GetRequiredService<IFusionCache>();
 
-PatientDto patient = await cache.GetOrAddAsync(
+PatientDto patient = await cache.GetOrSetAsync(
     $"patient:{patientId}",
-    async ct => await db.Patients.FindAsync([patientId], ct),
-    cancellationToken);
+    async (ctx, ct) => await db.Patients.FindAsync([patientId], ct),
+    cancellationToken: cancellationToken);
 
 // Behind the scenes:
-// 1. Check IDistributedCache (Redis)
-// 2. If miss -> SemaphoreSlim (anti-stampede)
-// 3. Double-check after lock
+// 1. Check L1 (in-process memory)
+// 2. If miss -> check L2 (Redis, decrypted via EncryptingFusionCacheSerializer)
+// 3. If miss -> native stampede protection (only one factory call)
 // 4. Execute the factory
-// 5. Serialize to JSON -> encrypt (if [CacheEncrypted]) -> store in Redis
+// 5. Store in L1 + serialize -> encrypt -> store in L2 (Redis)
 ```
 
 ## Further reading

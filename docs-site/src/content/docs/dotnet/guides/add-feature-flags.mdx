@@ -1,6 +1,6 @@
 ---
 title: "Add Feature Flags \u2014 Runtime Toggles"
-description: Define SaaS feature flags with toggle, numeric, and selection value types — cascading Tenant/Plan/Default resolution, quota limit guards, EF Core persistence, and HybridCache for low-latency reads.
+description: Define SaaS feature flags with toggle, numeric, and selection value types — cascading Tenant/Plan/Default resolution, quota limit guards, EF Core persistence, and FusionCache for low-latency reads.
 sidebar:
   order: 9
   label: Add feature flags
@@ -10,7 +10,7 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 
 Granit.Features provides a SaaS-oriented feature management system. Features are
 resolved through a cascade (Tenant override, Plan value, Default) and cached with
-hybrid L1/L2 caching. Three value types cover common scenarios: toggles, numeric
+FusionCache L1/L2 caching. Three value types cover common scenarios: toggles, numeric
 quotas, and selection lists.
 
 ## Prerequisites
@@ -192,7 +192,7 @@ Plan value     (priority 200)
 Default        (priority 300) <- value declared in code
 ```
 
-Results are cached by `IHybridCache` (L1 in-process + L2 Redis) and invalidated
+Results are cached by `IFusionCache` (L1 in-process + L2 Redis) and invalidated
 via `FeatureValueChangedEvent` through Wolverine.
 
 :::note[Good to know]
@@ -265,7 +265,7 @@ dotnet ef migrations add AddFeatureOverrides --context FeaturesDbContext
 ### Invalidate cache on override changes
 
 After modifying a tenant override, publish `FeatureValueChangedEvent` to invalidate
-the hybrid cache across all instances:
+the FusionCache across all instances:
 
 ```csharp
 using Granit.Features.Events;

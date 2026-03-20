@@ -27,7 +27,7 @@ This page documents the current support status for each infrastructure dimension
 | Infrastructure | Primary (tested) | Secondary (compatible) |
 |----------------|-------------------|------------------------|
 | Database | PostgreSQL | SQL Server, SQLite (via EF Core) |
-| Cache | Memory (`IDistributedCache`) | Redis (StackExchange.Redis), HybridCache (L1+L2) |
+| Cache | Memory (`IDistributedCache`) | Redis (StackExchange.Redis), FusionCache (L1+L2) |
 | Blob storage | S3-compatible (MinIO, AWS S3) | Azure Blob, Google Cloud Storage |
 | Identity provider | Keycloak | Entra ID (Azure AD), AWS Cognito, Google Cloud Identity Platform, custom (`IIdentityProvider`) |
 | Messaging | PostgreSQL (Wolverine) | SQL Server (Wolverine), RabbitMQ (Wolverine) |
@@ -98,9 +98,9 @@ augment this.
 
 | Package | Provider | Role |
 |---------|----------|------|
-| Granit.Caching | Memory (`MemoryDistributedCache`) | Default, no external dependency |
-| Granit.Caching.StackExchangeRedis | Redis (StackExchange.Redis) | Replaces `IDistributedCache` with `RedisCache` |
-| Granit.Caching.Hybrid | HybridCache (L1 memory + L2 distributed) | Two-tier cache with stampede protection |
+| Granit.Caching | FusionCache (L1 memory + L2 distributed) | Default with in-memory only, stampede protection built-in |
+| Granit.Caching.StackExchangeRedis | Redis (StackExchange.Redis) | Adds Redis as L2 distributed backplane |
+| Granit.Caching.FusionCache | FusionCache with Redis | FusionCache with Redis L2 and backplane |
 
 ### Cache encryption
 
@@ -109,10 +109,9 @@ automatically applies AES-256 encryption to cached values at rest in Redis.
 
 ### Modules that consume caching
 
-The following modules use `IDistributedCache` or `IHybridCache` internally and benefit
-from provider upgrades:
+The following modules use `IFusionCache` internally and benefit from provider upgrades:
 
-- Granit.Features (hybrid cache for feature flag resolution)
+- Granit.Features (FusionCache for feature flag resolution)
 - Granit.Http.Idempotency (Redis required for distributed idempotency keys)
 - Granit.RateLimiting (Redis required for distributed rate limiting)
 

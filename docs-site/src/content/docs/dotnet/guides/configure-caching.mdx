@@ -1,207 +1,263 @@
 ---
-title: "Configure Caching \u2014 Redis & In-Memory"
-description: Set up distributed caching with ICacheService<T>, Redis (StackExchange.Redis), HybridCache (L1+L2), stampede protection, and AES-256 encryption for GDPR-sensitive cached data.
+title: "Configure Caching -- FusionCache L1/L2"
+description: Set up caching with IFusionCache, L1 in-memory for development, Redis L2 + pub/sub backplane for production, fail-safe, eager refresh, and AES-256 encryption for GDPR-sensitive data.
 sidebar:
   order: 14
   label: Configure caching
 ---
 
-import { Tabs, TabItem } from "@astrojs/starlight/components";
+import { Tabs, TabItem, Aside, Steps } from "@astrojs/starlight/components";
 
-Granit.Caching provides a typed cache abstraction (`ICacheService<T>`) that works
-identically across three providers: in-memory for development, Redis for production,
-and HybridCache (L1 memory + L2 Redis) for multi-pod Kubernetes deployments.
-Built-in stampede protection and optional AES-256 encryption for GDPR-sensitive data.
+Granit uses [FusionCache](https://github.com/ZiggyCreatures/FusionCache) as its
+caching provider. Two packages cover all deployment scenarios:
+
+- **`Granit.Caching`** -- L1 in-memory cache with fail-safe, eager refresh, and
+  OpenTelemetry. Ideal for development and tests.
+- **`Granit.Caching.StackExchangeRedis`** -- Upgrades to Redis L2 distributed cache
+  with a pub/sub backplane for cross-pod L1 invalidation. Add this for production.
+
+You inject `IFusionCache` everywhere -- the same API works regardless of the
+underlying topology.
 
 ## Prerequisites
 
 - A working Granit application
 - Redis server (for production setups)
 
-## Step 1 -- Install the package
+## Development setup (memory-only)
 
-Choose the package matching your deployment target:
+<Steps>
 
-<Tabs>
-<TabItem label="Development (in-memory)">
+1. **Install the package**
 
-```bash
-dotnet add package Granit.Caching
-```
+   ```bash
+   dotnet add package Granit.Caching
+   ```
+
+2. **Register the module**
+
+   ```csharp
+   [DependsOn(typeof(GranitCachingModule))]
+   public sealed class AppModule : GranitModule { }
+   ```
+
+   No Redis, no additional configuration. `GranitCachingModule` registers
+   `IFusionCache` with an L1 in-memory cache backed by `MemoryDistributedCache`.
+
+3. **Configure (optional)**
+
+   ```json title="appsettings.Development.json"
+   {
+     "Cache": {
+       "KeyPrefix": "myapp"
+     }
+   }
+   ```
+
+</Steps>
+
+## Production setup (Redis L2 + backplane)
+
+<Steps>
+
+1. **Install both packages**
+
+   ```bash
+   dotnet add package Granit.Caching
+   dotnet add package Granit.Caching.StackExchangeRedis
+   ```
+
+2. **Register both modules**
+
+   ```csharp
+   [DependsOn(
+       typeof(GranitCachingModule),
+       typeof(GranitCachingRedisModule))]
+   public sealed class AppModule : GranitModule { }
+   ```
+
+   `GranitCachingRedisModule` depends on `GranitCachingModule` -- if you only
+   declare `GranitCachingRedisModule`, the base module is pulled in automatically.
+
+3. **Configure appsettings.json**
+
+   ```json title="appsettings.Production.json"
+   {
+     "Cache": {
+       "KeyPrefix": "myapp",
+       "DefaultAbsoluteExpirationRelativeToNow": "01:00:00",
+       "EncryptValues": true,
+       "Encryption": {
+         "Key": "<base64-aes256-key-from-vault>"
+       },
+       "Redis": {
+         "IsEnabled": true,
+         "Configuration": "redis-service:6379",
+         "InstanceName": "myapp:"
+       },
+       "FusionCache": {
+         "FailSafeIsEnabled": true,
+         "FactorySoftTimeout": "00:00:02",
+         "FactoryHardTimeout": "00:00:10",
+         "EagerRefreshThreshold": 0.8
+       }
+     }
+   }
+   ```
+
+</Steps>
+
+<Aside type="caution" title="Encryption key management">
+The AES encryption key must be provided via Vault or External Secrets Operator
+(ESO), never stored in plain text in `appsettings.json`. The example above uses a
+placeholder for illustration.
+</Aside>
+
+## appsettings.json configuration reference
+
+Three configuration sections control caching behavior.
+
+### `Cache` section (`CachingOptions`)
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `KeyPrefix` | `string` | `"dd"` | Prefix for all cache keys. Format: `{KeyPrefix}:{userKey}` |
+| `DefaultAbsoluteExpirationRelativeToNow` | `TimeSpan?` | `1h` | Default entry duration (TTL) |
+| `DefaultSlidingExpiration` | `TimeSpan?` | `20min` | Sliding expiration (reset on each access) |
+| `EncryptValues` | `bool` | `false` | Enable AES-256 encryption globally on L2 |
+| `JsonOptions` | `JsonSerializerOptions?` | `null` | Custom JSON serialization options |
+
+### `Cache:Redis` section (`RedisCachingOptions`)
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `IsEnabled` | `bool` | `true` | Set `false` to disable Redis without changing modules |
+| `Configuration` | `string` | `"localhost:6379"` | StackExchange.Redis connection string |
+| `InstanceName` | `string` | `"dd:"` | Redis key prefix for multi-app isolation |
+
+### `Cache:FusionCache` section (`FusionCachingOptions`)
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `FailSafeIsEnabled` | `bool` | `true` | Serve expired entries as fallback when the factory fails |
+| `FailSafeMaxDuration` | `TimeSpan` | `2h` | Max duration to keep fail-safe entries available |
+| `FailSafeThrottleDuration` | `TimeSpan` | `30s` | Min interval between fail-safe activations per key |
+| `FactorySoftTimeout` | `TimeSpan` | `2s` | Return stale data if factory exceeds this; factory continues in background |
+| `FactoryHardTimeout` | `TimeSpan` | `10s` | Absolute max factory execution time |
+| `EagerRefreshThreshold` | `float` | `0.8` | Fraction of TTL at which background refresh triggers (0 = disabled) |
+| `BackplaneChannelPrefix` | `string` | `"granit:fc"` | Redis pub/sub channel prefix for backplane |
+
+## Using IFusionCache in your code
+
+Inject `IFusionCache` via constructor injection. FusionCache handles stampede
+protection (single factory execution per key), fail-safe, and eager refresh out
+of the box.
+
+### Read-through caching (GetOrSetAsync)
 
 ```csharp
-[DependsOn(typeof(GranitCachingModule))]
-public sealed class AppModule : GranitModule { }
-```
-
-No additional configuration needed. Uses `MemoryDistributedCache` internally.
-
-</TabItem>
-<TabItem label="Production (Redis)">
-
-```bash
-dotnet add package Granit.Caching.StackExchangeRedis
-```
-
-```csharp
-[DependsOn(typeof(GranitCachingRedisModule))]
-public sealed class AppModule : GranitModule { }
-```
-
-</TabItem>
-<TabItem label="Kubernetes (HybridCache)">
-
-```bash
-dotnet add package Granit.Caching.Hybrid
-```
-
-```csharp
-[DependsOn(typeof(GranitCachingHybridModule))]
-public sealed class AppModule : GranitModule { }
-```
-
-Hybrid pulls in `Caching.StackExchangeRedis` transitively.
-
-</TabItem>
-</Tabs>
-
-## Step 2 -- Configure appsettings.json
-
-<Tabs>
-<TabItem label="Development">
-
-```json
+public sealed class ProductService(
+    IFusionCache cache,
+    AppDbContext db)
 {
-  "Cache": {
-    "KeyPrefix": "myapp"
-  }
-}
-```
-
-</TabItem>
-<TabItem label="Production (Redis)">
-
-```json
-{
-  "Cache": {
-    "KeyPrefix": "myapp",
-    "DefaultAbsoluteExpirationRelativeToNow": "01:00:00",
-    "DefaultSlidingExpiration": "00:20:00",
-    "EncryptValues": true,
-    "Encryption": {
-      "Key": "<base64-aes256-key-from-vault>"
-    },
-    "Redis": {
-      "IsEnabled": true,
-      "Configuration": "redis-service:6379",
-      "InstanceName": "myapp:"
-    }
-  }
-}
-```
-
-</TabItem>
-<TabItem label="Kubernetes (HybridCache)">
-
-```json
-{
-  "Cache": {
-    "KeyPrefix": "myapp",
-    "EncryptValues": true,
-    "Encryption": {
-      "Key": "<base64-aes256-key-from-vault>"
-    },
-    "Redis": {
-      "IsEnabled": true,
-      "Configuration": "redis-service:6379",
-      "InstanceName": "myapp:"
-    },
-    "Hybrid": {
-      "LocalCacheExpiration": "00:00:30"
-    }
-  }
-}
-```
-
-</TabItem>
-</Tabs>
-
-:::caution[Warning]
-The AES encryption key must be provided via Vault, never stored in plain text
-in `appsettings.json`. The example above uses a placeholder for illustration.
-:::
-
-## Step 3 -- Use ICacheService in your code
-
-### String key (simple)
-
-```csharp
-public sealed class UserService(ICacheService<UserCacheItem> cache)
-{
-    public async Task<UserCacheItem> GetByIdAsync(
+    public async Task<ProductResponse?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken)
     {
-        return await cache.GetOrAddAsync(
-            id.ToString(),
-            async ct => await LoadUserFromDatabaseAsync(id, ct),
-            cancellationToken: cancellationToken);
+        return await cache.GetOrSetAsync<ProductResponse>(
+            $"products:{id}",
+            async (ctx, ct) =>
+            {
+                // Factory: called on cache miss or eager refresh
+                return await db.Products
+                    .Where(p => p.Id == id)
+                    .Select(p => new ProductResponse(p.Id, p.Name, p.Price))
+                    .FirstOrDefaultAsync(ct)
+                    .ConfigureAwait(false);
+            },
+            token: cancellationToken).ConfigureAwait(false);
     }
 }
 ```
 
-### Typed key
+### Custom entry options
+
+Override the default duration or fail-safe behavior per call:
 
 ```csharp
-public sealed class UserService(ICacheService<UserCacheItem, Guid> cache)
+var options = new FusionCacheEntryOptions
 {
-    public async Task<UserCacheItem> GetByIdAsync(
-        Guid id,
-        CancellationToken cancellationToken)
-    {
-        return await cache.GetOrAddAsync(
-            id,
-            async ct => await LoadUserFromDatabaseAsync(id, ct),
-            cancellationToken: cancellationToken);
-    }
-}
+    Duration = TimeSpan.FromMinutes(5),
+    IsFailSafeEnabled = true,
+    FailSafeMaxDuration = TimeSpan.FromHours(1),
+};
+
+var result = await cache.GetOrSetAsync<UserProfile>(
+    $"profiles:{userId}",
+    async (ctx, ct) => await LoadProfileAsync(userId, ct).ConfigureAwait(false),
+    options,
+    token: cancellationToken).ConfigureAwait(false);
 ```
 
-The business code is identical regardless of the provider (Memory, Redis, or Hybrid).
-
-## Step 4 -- Customize cache key naming
-
-Keys are built automatically using the format `{KeyPrefix}:{CacheName}:{userKey}`.
-
-| `KeyPrefix` | Cache item type | User key | Final key |
-|-------------|----------------|----------|-----------|
-| `myapp` | `UserCacheItem` | `d4e5f6` | `myapp:User:d4e5f6` |
-| `myapp` | `PatientCacheItem` | `p-001` | `myapp:Patient:p-001` |
-
-The convention automatically strips the `CacheItem` suffix from the type name.
-Use the `[CacheName]` attribute to override the convention:
+### Direct set and get
 
 ```csharp
-[CacheName("Session")]
-public sealed class SessionData
-{
-    public string UserId { get; init; } = default!;
-    public DateTimeOffset ExpiresAt { get; init; }
-}
+// Store a value
+await cache.SetAsync(
+    $"session:{sessionId}",
+    sessionData,
+    new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(30) },
+    token: cancellationToken).ConfigureAwait(false);
+
+// Retrieve (returns default if missing)
+var session = await cache.GetOrDefaultAsync<SessionData>(
+    $"session:{sessionId}",
+    token: cancellationToken).ConfigureAwait(false);
 ```
 
-This produces keys like `myapp:Session:abc` instead of `myapp:SessionData:abc`.
+## Key naming conventions
 
-## Step 5 -- Enable encryption for sensitive data
+FusionCache applies the `KeyPrefix` from `CachingOptions` automatically as
+`{KeyPrefix}:` before every key you provide. Use colon-separated segments for
+your keys:
+
+| KeyPrefix | Your key | Final key in Redis |
+|-----------|----------|--------------------|
+| `myapp` | `products:d4e5f6` | `myapp:products:d4e5f6` |
+| `myapp` | `settings:G:theme` | `myapp:settings:G:theme` |
+
+Use a consistent pattern: `{entity}:{identifier}` or `{module}:{scope}:{identifier}`.
+
+## Encryption configuration
+
+AES-256-CBC encryption protects values stored in Redis (L2 only). The L1
+in-memory cache stores plain .NET objects -- same threat model as `IMemoryCache`.
 
 ### Global encryption
 
-Set `EncryptValues: true` in the `Cache` section to encrypt all cached values
-with AES-256-CBC.
+Set `EncryptValues: true` in the `Cache` section. All values serialized to Redis
+are encrypted with AES-256-CBC via `EncryptingFusionCacheSerializer`.
 
-### Per-type control
+```json
+{
+  "Cache": {
+    "EncryptValues": true,
+    "Encryption": {
+      "Key": "<base64-aes256-key>"
+    }
+  }
+}
+```
 
-Use `[CacheEncrypted]` to control encryption independently of the global flag:
+Generate a key:
+
+```csharp
+Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32))
+```
+
+### Per-type control with `[CacheEncrypted]`
+
+The `[CacheEncrypted]` attribute overrides the global `EncryptValues` flag:
 
 ```csharp
 // Always encrypted, even if EncryptValues = false
@@ -226,81 +282,101 @@ public sealed class UserSessionCacheItem
 }
 ```
 
-The attribute takes priority over the global `EncryptValues` flag.
+| Attribute | Global EncryptValues | Result |
+|-----------|---------------------|--------|
+| `[CacheEncrypted]` | any | Encrypted |
+| `[CacheEncrypted(false)]` | any | Not encrypted |
+| No attribute | `true` | Encrypted |
+| No attribute | `false` | Not encrypted |
 
-## Step 6 -- Cache invalidation
+## Cache invalidation patterns
 
-Remove a cached entry explicitly:
+FusionCache offers two invalidation strategies. Prefer `ExpireAsync` over
+`RemoveAsync` in production -- it works with fail-safe to provide resilience.
+
+### ExpireAsync (recommended)
+
+Marks the entry as logically expired. If fail-safe is enabled, the stale value
+remains available as a fallback while the factory re-populates:
 
 ```csharp
-await cache.RemoveAsync("user-id", cancellationToken);
+// After updating a setting in the database
+await cache.ExpireAsync(
+    $"settings:G:{settingName}",
+    token: cancellationToken).ConfigureAwait(false);
 ```
 
-### Invalidation in multi-pod deployments
+With the Redis backplane, `ExpireAsync` propagates to all pods -- their L1
+caches are invalidated in real-time via pub/sub.
 
-With HybridCache, `RemoveAsync` clears the L2 (Redis) and the local L1 cache of
-the calling pod. Other pods' L1 caches expire naturally within the
-`LocalCacheExpiration` window (default: 30 seconds).
+### RemoveAsync (hard delete)
 
-:::tip[Pro tip]
-For data requiring strong consistency across pods, use the Redis-only provider
-(`Granit.Caching.StackExchangeRedis`) instead of HybridCache. The L1 cache
-introduces an eventual consistency window bounded by `LocalCacheExpiration`.
-:::
+Removes the entry entirely. No fail-safe fallback is available after removal:
 
-## Configuration reference
+```csharp
+await cache.RemoveAsync(
+    $"session:{sessionId}",
+    token: cancellationToken).ConfigureAwait(false);
+```
 
-### CachingOptions (`Cache` section)
+Use `RemoveAsync` only when stale data must never be served (e.g., security
+tokens, revoked sessions).
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `KeyPrefix` | `string` | `"dd"` | Prefix for all cache keys |
-| `DefaultAbsoluteExpirationRelativeToNow` | `TimeSpan?` | `1h` | Default absolute expiration |
-| `DefaultSlidingExpiration` | `TimeSpan?` | `20min` | Default sliding expiration |
-| `EncryptValues` | `bool` | `false` | Enable AES-256 encryption globally |
+### When to use which
 
-### RedisCachingOptions (`Cache:Redis` section)
+| Scenario | Method | Why |
+|----------|--------|-----|
+| Setting changed | `ExpireAsync` | Stale value is acceptable briefly; factory refreshes |
+| Permission revoked | `ExpireAsync` | Fail-safe provides graceful degradation |
+| Session terminated | `RemoveAsync` | Stale session must never be served |
+| Cache key rotation | `RemoveAsync` | Old key format must disappear |
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `IsEnabled` | `bool` | `true` | Disable Redis without changing the loaded module |
-| `Configuration` | `string` | `"localhost:6379"` | StackExchange.Redis connection string |
-| `InstanceName` | `string` | `"dd:"` | Redis key prefix for multi-app isolation |
+## Troubleshooting
 
-### HybridCachingOptions (`Cache:Hybrid` section)
+### Redis module is loaded but falls back to in-memory
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `LocalCacheExpiration` | `TimeSpan` | `30s` | L1 cache TTL (bounds staleness across pods) |
+Check that `Cache:Redis:IsEnabled` is `true` (default). `GranitCachingRedisModule`
+reads this at startup and disables itself when set to `false`.
 
-## Stampede protection
+### Encryption errors after key rotation
 
-`GetOrAddAsync` guarantees the factory executes only once, even under heavy
-concurrency (10+ simultaneous requests for the same missing key):
+If you rotate the AES key, existing encrypted entries in Redis become
+unreadable. Either flush the Redis cache or let entries expire naturally.
+Fail-safe entries encrypted with the old key will also fail to deserialize.
 
-1. Lock-free check (cache hit returns immediately)
-2. Acquire lock (`SemaphoreSlim` stored in a bounded `IMemoryCache`, TTL 30s)
-3. Double-check (another thread may have populated the cache)
-4. Execute the factory (guaranteed single execution)
+### High latency on cache miss
 
-With HybridCache, stampede protection is built into the .NET runtime -- no
-additional `SemaphoreSlim` needed.
+The `FactorySoftTimeout` (default 2 s) controls how long FusionCache waits
+before returning a stale value. If your factory is consistently slow, consider:
+
+- Increasing `FactorySoftTimeout` for that specific call
+- Lowering `EagerRefreshThreshold` to trigger background refresh earlier
+- Optimizing the underlying query
+
+### Backplane not invalidating across pods
+
+Verify that all pods connect to the same Redis instance and use the same
+`BackplaneChannelPrefix`. Check Redis pub/sub with:
+
+```bash
+redis-cli SUBSCRIBE "granit:fc:*"
+```
 
 ## Verify
 
-Confirm caching is working by checking the response time:
+Confirm caching is working by checking response times:
 
 ```bash
-# First call — cache miss (hits database)
+# First call -- cache miss (hits database)
 time curl -s http://localhost:5000/api/v1/products/1 > /dev/null
-# → real 0.120s
+# -> real 0.120s
 
-# Second call — cache hit (significantly faster)
+# Second call -- cache hit
 time curl -s http://localhost:5000/api/v1/products/1 > /dev/null
-# → real 0.008s
+# -> real 0.008s
 
-# If using Redis, inspect the cached key
-redis-cli KEYS "dd:*"
+# If using Redis, inspect cached keys
+redis-cli KEYS "myapp:*"
 ```
 
 ## Next steps

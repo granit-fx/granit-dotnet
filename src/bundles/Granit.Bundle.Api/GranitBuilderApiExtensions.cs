@@ -1,5 +1,5 @@
 using Granit.Bundle.Essentials;
-using Granit.Caching.FusionCache;
+using Granit.Caching.StackExchangeRedis;
 using Granit.Core.Modularity;
 using Granit.Http.ApiDocumentation;
 using Granit.Http.ApiVersioning;
@@ -16,7 +16,7 @@ public static class GranitBuilderApiExtensions
 {
     /// <summary>
     /// Adds the Api bundle: Essentials + ApiVersioning, ApiDocumentation,
-    /// Cors, Idempotency, Localization, Caching.
+    /// Cors, Idempotency, Localization, Caching + Redis.
     /// </summary>
     public static GranitBuilder AddApi(this GranitBuilder builder)
     {
@@ -26,7 +26,7 @@ public static class GranitBuilderApiExtensions
         builder.AddModule<GranitHttpCorsModule>();
         builder.AddModule<GranitIdempotencyModule>();
         builder.AddModule<GranitLocalizationModule>();
-        builder.AddModule<GranitCachingFusionCacheModule>();
+        builder.AddModule<GranitCachingRedisModule>();
         return builder;
     }
 }

@@ -1,6 +1,6 @@
 ---
 title: "Adapter Pattern — Provider Abstraction in .NET"
-description: "Bridge incompatible interfaces without modifying existing code — Granit adapters wrap S3, Azure Blob, SMTP, and cache backends behind stable provider-agnostic contracts."
+description: "Bridge incompatible interfaces without modifying existing code — Granit adapters wrap S3, Azure Blob, SMTP, and cloud providers behind stable provider-agnostic contracts."
 sidebar:
   label: Adapter
   order: 31
@@ -16,22 +16,6 @@ collaborate. The adapter wraps the existing class and translates calls.
 
 ```mermaid
 classDiagram
-    class ICacheService_TCacheItem_TKey {
-        +GetOrAddAsync(key: TKey)
-    }
-
-    class ICacheService_TCacheItem {
-        +GetOrAddAsync(key: string)
-    }
-
-    class TypedKeyCacheServiceAdapter {
-        -inner : ICacheService_TCacheItem
-        +GetOrAddAsync(key: TKey)
-    }
-
-    ICacheService_TCacheItem_TKey <|.. TypedKeyCacheServiceAdapter
-    TypedKeyCacheServiceAdapter --> ICacheService_TCacheItem : delegates via key.ToString()
-
     class IBlobStorageClient {
         +DeleteObjectAsync()
         +HeadObjectAsync()
@@ -48,33 +32,49 @@ classDiagram
 
     IBlobStorageClient <|.. S3BlobClient
     S3BlobClient --> AmazonS3Client : adapts
+
+    class ISmtpTransport {
+        +SendAsync()
+    }
+
+    class SmtpClient {
+        +ConnectAsync()
+        +SendAsync()
+    }
+
+    class MailKitSmtpTransport {
+        -smtpClient : SmtpClient
+    }
+
+    ISmtpTransport <|.. MailKitSmtpTransport
+    MailKitSmtpTransport --> SmtpClient : adapts
 ```
 
 ## Implementation in Granit
 
 | Adapter | File | Target interface | Adapted class |
 |---------|------|------------------|---------------|
-| `TypedKeyCacheServiceAdapter<TCacheItem, TKey>` | `src/Granit.Caching/TypedKeyCacheServiceAdapter.cs` | `ICacheService<TCacheItem, TKey>` | `ICacheService<TCacheItem>` (string keys) |
 | `S3BlobClient` | `src/Granit.BlobStorage.S3/Internal/S3BlobClient.cs` | `IBlobStorageClient` | `AmazonS3Client` (AWS SDK) |
 | `MailKitSmtpTransport` | `src/Granit.Notifications.Email.Smtp/MailKitSmtpTransport.cs` | `ISmtpTransport` | `SmtpClient` (MailKit, sealed) |
 
 ## Rationale
 
-`TypedKeyCacheServiceAdapter` enables strongly-typed keys (Guid, int,
-composite) while delegating to the existing string-key-based cache service.
 `S3BlobClient` isolates the framework from the AWS SDK, allowing provider
 changes (European hosting, MinIO) without touching the core.
+`MailKitSmtpTransport` wraps the sealed MailKit `SmtpClient` behind a
+testable `ISmtpTransport` interface.
 
 ## Usage example
 
 ```csharp
-// Application uses typed keys -- the adapter converts to string
-ICacheService<PatientDto, Guid> cache = serviceProvider
-    .GetRequiredService<ICacheService<PatientDto, Guid>>();
+// Replacing S3 with MinIO -- only the adapter changes
+services.AddSingleton<IBlobStorageClient, MinioBlobClient>();
 
-PatientDto patient = await cache.GetOrAddAsync(
-    patientId, // Guid -- converted to string by the adapter
-    async ct => await db.Patients.FindAsync([patientId], ct),
+// The rest of the application code remains unchanged
+IBlobStorage blobStorage = serviceProvider.GetRequiredService<IBlobStorage>();
+PresignedUploadTicket ticket = await blobStorage.InitiateUploadAsync(
+    "medical-documents",
+    new BlobUploadRequest("mri-report.pdf", "application/pdf", MaxAllowedBytes: 50_000_000),
     cancellationToken);
 ```
 
