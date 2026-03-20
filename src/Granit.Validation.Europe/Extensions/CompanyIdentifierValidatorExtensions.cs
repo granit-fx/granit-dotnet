@@ -61,4 +61,11 @@ public static partial class CompanyIdentifierValidatorExtensions
         ruleBuilder
             .Must(value => value != null && NafCodeRegex().IsMatch(value.Trim().ToUpperInvariant()))
             .WithErrorCodeAndMessage("Granit:Validation:InvalidFrenchNafCode");
+
+    // -------------------------------------------------------------------------
+    // Server-side single-field validation delegates
+    // -------------------------------------------------------------------------
+
+    internal static bool IsValidFrenchNafCode(string? value) =>
+        value is not null && NafCodeRegex().IsMatch(value.Trim().ToUpperInvariant());
 }

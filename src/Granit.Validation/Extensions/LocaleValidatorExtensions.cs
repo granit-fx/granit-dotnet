@@ -46,4 +46,14 @@ public static partial class LocaleValidatorExtensions
         ruleBuilder
             .Must(value => value != null && Bcp47Regex().IsMatch(value.Trim()))
             .WithErrorCodeAndMessage("Granit:Validation:InvalidBcp47LanguageTag");
+
+    // -------------------------------------------------------------------------
+    // Server-side single-field validation delegates
+    // -------------------------------------------------------------------------
+
+    internal static bool IsValidIso3166Alpha2(string? value) =>
+        value is not null && Iso3166Alpha2Regex().IsMatch(value.Trim().ToUpperInvariant());
+
+    internal static bool IsValidBcp47LanguageTag(string? value) =>
+        value is not null && Bcp47Regex().IsMatch(value.Trim());
 }

@@ -25,7 +25,8 @@ client-side.
 ## Package structure
 
 <FileTree>
-- Granit.Validation/ GranitValidator, auto-validation filter, OpenAPI enrichment
+- Granit.Validation/ GranitValidator, auto-validation filter, OpenAPI enrichment, server validation registry
+  - Granit.Validation.Endpoints Single-field & batch server-side validation endpoints
   - Granit.Validation.Europe France/Belgium regulatory validators
   - Granit.Validation.NorthAmerica US/Canada validators
   - Granit.Validation.UnitedKingdom UK validators
@@ -33,7 +34,8 @@ client-side.
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.Validation` | `GranitValidator<T>`, auto-validation filter, OpenAPI enrichment | `Granit.Http.ExceptionHandling`, `Granit.Localization` |
+| `Granit.Validation` | `GranitValidator<T>`, auto-validation filter, OpenAPI enrichment, `ServerValidatorRegistry` | `Granit.Http.ExceptionHandling`, `Granit.Localization` |
+| `Granit.Validation.Endpoints` | Single-field & batch server-side validation REST endpoints | `Granit.Validation`, `Granit.Http.ApiDocumentation` |
 | `Granit.Validation.Europe` | France/Belgium-specific validators (NISS, NIR, SIREN, VAT) | `Granit.Validation`, `Granit.Localization` |
 
 ## Setup
@@ -151,9 +153,47 @@ your `IValidator<T>` implementations.
 | `LessThan(n)` | `exclusiveMaximum: n` |
 | `InclusiveBetween(a, b)` | `minimum + maximum` |
 | `Matches(regex)` | `pattern: regex` |
+| `Matches(regex).WithPatternHint(key)` | `pattern` + `x-granit-pattern-hint: key` |
 | `EmailAddress()` | `format: "email"` |
 | Custom (IBAN, E.164...) | `x-granit-validator: "Granit:Validation:InvalidIban"` |
 | `MustAsync()` / async rules | Ignored (no static OpenAPI equivalent) |
+
+### Pattern hints
+
+When a `Matches(regex)` rule is used, the frontend only sees the raw regex
+pattern — not helpful for end users. Chain `.WithPatternHint()` to provide
+an i18n key that the frontend can resolve to a human-readable hint:
+
+```csharp
+RuleFor(x => x.CountryCode)
+    .Matches(@"^[A-Z]{2}$")
+    .WithPatternHint("Granit:Validation:Hints:Alpha2Code");
+```
+
+The transformer emits both `pattern` and `x-granit-pattern-hint` in the
+OpenAPI schema:
+
+```json
+{
+  "pattern": "^[A-Z]{2}$",
+  "x-granit-pattern-hint": "Granit:Validation:Hints:Alpha2Code"
+}
+```
+
+The frontend uses the hint key to display a proactive helper text
+(e.g. "2 uppercase letters (e.g. FR, BE)") and enriches the error
+message when validation fails.
+
+Built-in hint keys:
+
+| Key | en | fr |
+| --- | -- | -- |
+| `Hints:Alpha2Code` | 2 uppercase letters (e.g. FR, BE) | 2 lettres majuscules (ex. FR, BE) |
+| `Hints:Alpha3Code` | 3 uppercase letters (e.g. FRA, BEL) | 3 lettres majuscules (ex. FRA, BEL) |
+| `Hints:NumericCode` | 3 digits (e.g. 250, 056) | 3 chiffres (ex. 250, 056) |
+
+All hint keys are prefixed with `Granit:Validation:` (omitted in the table).
+Add custom hints in `Localization/Validation/*.json` files.
 
 ### Frontend benefit
 
@@ -163,6 +203,7 @@ constraints in generated types. The frontend can:
 - Display `maxLength` on `<input>` elements
 - Validate client-side with the same rules before sending the request
 - Use `x-granit-validator` extensions for custom validations (IBAN, E.164)
+- Use `x-granit-pattern-hint` to show helpful format descriptions
 
 ## International validators
 
@@ -280,6 +321,101 @@ public class RegisterClinicRequestValidator : GranitValidator<RegisterClinicRequ
 | `.BelgianPostalCode()` | BE | 4 digits (1000-9999) | -- |
 | `.FrenchInseeCode()` | FR | 5 chars (dept + commune) | Supports 2A/2B (Corse), DOM 971-976 |
 
+## Server-side single-field validation
+
+Some validation rules (IBAN checksum, SIREN Luhn, European VAT) cannot be translated
+into standard OpenAPI constraints. They appear in the spec as `x-granit-validator`
+extensions. Until now, these were only validated at form submit (422 response).
+
+`Granit.Validation.Endpoints` adds REST endpoints for **real-time field validation**
+(debounced) without submitting the entire form.
+
+### Setup
+
+```csharp
+// Program.cs — map the validation endpoints
+app.MapGranitValidation()
+   .RequireGranitRateLimiting("validation");  // recommended for public forms
+```
+
+The endpoint group has **no authentication by default** — suitable for public forms
+(registration, contact). Chain `.RequireAuthorization()` for authenticated applications:
+
+```csharp
+app.MapGranitValidation()
+   .RequireAuthorization()
+   .RequireGranitRateLimiting("validation");
+```
+
+### Endpoints
+
+| Method | Route | Description |
+| ------ | ----- | ----------- |
+| `POST` | `/validation/validate` | Validate a single field |
+| `POST` | `/validation/validate-batch` | Validate up to 20 fields in one call |
+| `GET` | `/validation/validators` | List all registered validator error codes |
+
+### Single-field validation
+
+```json
+// POST /validation/validate
+{ "errorCode": "Granit:Validation:InvalidIban", "value": "BE68539007547034" }
+// → { "errorCode": "Granit:Validation:InvalidIban", "status": "Valid" }
+```
+
+Unknown error codes return **404 Not Found** (RFC 7807).
+
+### Batch validation
+
+```json
+// POST /validation/validate-batch
+{
+  "fields": [
+    { "errorCode": "Granit:Validation:InvalidIban", "value": "BE68539007547034" },
+    { "errorCode": "Granit:Validation:InvalidEmail", "value": "bad" },
+    { "errorCode": "Unknown:Code", "value": "x" }
+  ]
+}
+// → { "results": [
+//     { "errorCode": "Granit:Validation:InvalidIban", "status": "Valid" },
+//     { "errorCode": "Granit:Validation:InvalidEmail", "status": "Invalid" },
+//     { "errorCode": "Unknown:Code", "status": "ValidatorNotFound" }
+//   ] }
+```
+
+Unknown error codes return `ValidatorNotFound` status instead of failing the batch.
+
+### How validators are discovered
+
+Framework packages (`Granit.Validation`, `.Europe`, `.NorthAmerica`, `.UnitedKingdom`)
+register their validators via `IServerValidatorContributor`. Application projects can
+add custom validators the same way — they are auto-discovered from all module assemblies:
+
+```csharp
+// In your application module assembly — auto-discovered, no registration needed
+internal sealed class AppServerValidatorContributor : IServerValidatorContributor
+{
+    public IEnumerable<IServerValidator> GetValidators()
+    {
+        yield return new DelegatingServerValidator(
+            "Acme:Validation:InvalidLicenseKey",
+            LicenseKeyAlgorithm.IsValid);
+    }
+}
+```
+
+### Anti-DDoS protection
+
+The package has **no dependency** on `Granit.RateLimiting` or `Granit.Http.Bulkhead`.
+Protection is applied by the application via the returned `RouteGroupBuilder`:
+
+| Layer | Mechanism | Applied by |
+| ----- | --------- | ---------- |
+| Rate limiting | `RequireGranitRateLimiting()` | Application |
+| Input constraints | `ErrorCode` ≤ 128 chars, `Value` ≤ 500 chars, batch ≤ 20 | Package (FluentValidation) |
+| Bulkhead | `RequireGranitBulkhead()` | Application |
+| WAF / CDN | CloudFlare, nginx L7 | Infrastructure |
+
 ## Architecture tests
 
 Two architecture tests in `Granit.ArchitectureTests` enforce validation conventions:
@@ -299,6 +435,8 @@ Two architecture tests in `Granit.ArchitectureTests` enforce validation conventi
 | Validation | `GranitValidator<T>`, `.WithErrorCodeAndMessage()` | `Granit.Validation` |
 | International validators | `.Email()`, `.E164Phone()`, `.Iban()`, `.BicSwift()`, `.SepaCreditorIdentifier()`, `.Iso3166Alpha2CountryCode()`, `.Bcp47LanguageTag()` | `Granit.Validation` |
 | European validators | `.BelgianNiss()`, `.FrenchNir()`, `.BelgianEid()`, `.FrenchSiren()`, `.FrenchSiret()`, `.BelgianBce()`, `.FrenchNafCode()`, `.BelgianVat()`, `.FrenchVat()`, `.EuropeanVat()`, `.FrenchRib()`, `.BelgianAccountNumber()`, `.FrenchRpps()`, `.FrenchAdeli()`, `.FrenchFiness()`, `.BelgianInami()`, `.FrenchPostalCode()`, `.BelgianPostalCode()`, `.FrenchInseeCode()` | `Granit.Validation.Europe` |
+| Server validation | `IServerValidator`, `DelegatingServerValidator`, `IServerValidatorContributor`, `ServerValidatorRegistry` | `Granit.Validation` |
+| Server validation endpoints | `MapGranitValidation()` | `Granit.Validation.Endpoints` |
 | Extensions | `AddGranitValidation()` | -- |
 
 ## When to use — and when not to

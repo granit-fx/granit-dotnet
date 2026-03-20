@@ -15,6 +15,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using FluentValidation;
+using Granit.Validation.Extensions;
 using Granit.Validation.OpenApi;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
@@ -107,6 +108,34 @@ public sealed class FluentValidationSchemaTransformerTests
 
         OpenApiSchema codeSchema = GetProperty(schema, "code");
         codeSchema.Pattern.ShouldBe(@"^[A-Z]{3}$");
+    }
+
+    // -------------------------------------------------------------------------
+    // Matches + WithPatternHint → pattern + x-granit-pattern-hint
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task TransformAsync_MatchesWithPatternHint_SetsPatternAndHintExtension()
+    {
+        OpenApiSchema schema = await TransformAsync<PatternHintRequest, PatternHintRequestValidator>();
+
+        OpenApiSchema codeSchema = GetProperty(schema, "code");
+        codeSchema.Pattern.ShouldBe(@"^[A-Z]{2}$");
+        codeSchema.Extensions.ShouldNotBeNull();
+        codeSchema.Extensions.ShouldContainKey("x-granit-pattern-hint");
+    }
+
+    [Fact]
+    public async Task TransformAsync_MatchesWithoutPatternHint_DoesNotSetHintExtension()
+    {
+        OpenApiSchema schema = await TransformAsync<PatternRequest, PatternRequestValidator>();
+
+        OpenApiSchema codeSchema = GetProperty(schema, "code");
+        codeSchema.Pattern.ShouldBe(@"^[A-Z]{3}$");
+        if (codeSchema.Extensions is not null)
+        {
+            codeSchema.Extensions.ShouldNotContainKey("x-granit-pattern-hint");
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -255,6 +284,16 @@ public sealed class FluentValidationSchemaTransformerTests
     private sealed class PatternRequestValidator : GranitValidator<PatternRequest>
     {
         public PatternRequestValidator() => RuleFor(x => x.Code).Matches(@"^[A-Z]{3}$");
+    }
+
+    private sealed record PatternHintRequest(string Code);
+
+    private sealed class PatternHintRequestValidator : GranitValidator<PatternHintRequest>
+    {
+        public PatternHintRequestValidator() =>
+            RuleFor(x => x.Code)
+                .Matches(@"^[A-Z]{2}$")
+                .WithPatternHint("Granit:Validation:Hints:Alpha2Code");
     }
 
     private sealed record NoValidatorRequest(string Name);

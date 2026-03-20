@@ -62,6 +62,9 @@
     "Granit:Validation:MaxChatMessages": "チャットメッセージの最大数を超えました。",
     "Granit:Validation:MaxBatchSize": "バッチサイズが許可される最大項目数を超えています。",
     "Granit:Validation:MaxEmbeddingInputs": "エンベディング入力の最大数を超えました。",
-    "Granit:Validation:MaxCustomAttributes": "カスタム属性の最大数を超えました。"
+    "Granit:Validation:MaxCustomAttributes": "カスタム属性の最大数を超えました。",
+    "Granit:Validation:Hints:Alpha2Code": "2 uppercase letters (e.g. FR, BE)",
+    "Granit:Validation:Hints:Alpha3Code": "3 uppercase letters (e.g. FRA, BEL)",
+    "Granit:Validation:Hints:NumericCode": "3 digits (e.g. 250, 056)"
   }
 }
