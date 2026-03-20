@@ -21,6 +21,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
+PUBLIC_PREFIX = "public "
+
 # ─── CLI ──────────────────────────────────────────────────────────────────────
 
 
@@ -162,9 +164,9 @@ def index_of_any(s: str, chars: str) -> int:
 
 
 def strip_public_prefix(s: str) -> str:
-    if not s.startswith("public "):
+    if not s.startswith(PUBLIC_PREFIX):
         return s
-    return s[7:].lstrip()
+    return s[len(PUBLIC_PREFIX):].lstrip()
 
 
 def is_skippable_line(line: str) -> bool:
@@ -183,7 +185,7 @@ def is_signature_complete(pending: str) -> bool:
 
 
 def is_public_member(full_line: str, type_kind: str) -> bool:
-    if full_line.startswith("public "):
+    if full_line.startswith(PUBLIC_PREFIX):
         return True
     if type_kind != "interface":
         return False
@@ -287,7 +289,7 @@ def parse_member_line(line: str, type_kind: str) -> dict | None:
     if re.match(r"^public\s+(?:class|interface|struct|record|enum)\s", line):
         return None
 
-    clean_line = f"public {line}" if type_kind == "interface" and not line.startswith("public ") else line
+    clean_line = f"{PUBLIC_PREFIX}{line}" if type_kind == "interface" and not line.startswith(PUBLIC_PREFIX) else line
 
     no_access = re.sub(r"^public\s+", "", clean_line)
     no_access = re.sub(r"(?:new|virtual|abstract|override|static|async|readonly)\s+", "", no_access)
@@ -301,17 +303,23 @@ def parse_member_line(line: str, type_kind: str) -> dict | None:
     return try_parse_property(line, no_access, type_kind)
 
 
-def extract_members(content: str, type_start_offset: int, type_kind: str) -> list[dict]:
-    members: list[dict] = []
+def _try_collect_member(pending_line: str, type_kind: str) -> dict | None:
+    full_line = re.sub(r"\s+", " ", pending_line).strip()
+    if not is_public_member(full_line, type_kind):
+        return None
+    return parse_member_line(full_line, type_kind)
 
+
+def extract_members(content: str, type_start_offset: int, type_kind: str) -> list[dict]:
     after_type = content[type_start_offset:]
     brace_idx = after_type.find("{")
     if brace_idx == -1:
-        return members
+        return []
 
     body_start = type_start_offset + brace_idx + 1
     lines = content[body_start:].split("\n")
 
+    members: list[dict] = []
     depth = 1
     pending_line = ""
 
@@ -331,11 +339,9 @@ def extract_members(content: str, type_start_offset: int, type_kind: str) -> lis
         if not is_signature_complete(pending_line):
             continue
 
-        full_line = re.sub(r"\s+", " ", pending_line).strip()
-        if is_public_member(full_line, type_kind):
-            member = parse_member_line(full_line, type_kind)
-            if member:
-                members.append(member)
+        member = _try_collect_member(pending_line, type_kind)
+        if member:
+            members.append(member)
         pending_line = ""
 
     return members
@@ -400,7 +406,7 @@ def main() -> None:
     total_members = sum(len(s["members"]) for s in symbols)
     size_kb = len(json.dumps(index)) // 1024
 
-    print(f"\ncode-index.json generated:")
+    print("\ncode-index.json generated:")
     print(f"  {len(symbols)} types, {total_members} members")
     print(f"  {len(project_graph)} projects in dependency graph")
     print(f"  {size_kb} KB")
