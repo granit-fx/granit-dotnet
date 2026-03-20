@@ -154,7 +154,7 @@ This provides end-to-end request visibility across services.
 
 ## Metrics (Mimir)
 
-### Exposed metrics
+### Infrastructure metrics
 
 | Metric | Type | Description |
 | --- | --- | --- |
@@ -163,6 +163,16 @@ This provides end-to-end request visibility across services.
 | `db_client_operation_duration_seconds` | Histogram | Database operation duration |
 | `dotnet_gc_collections_total` | Counter | .NET GC collection count |
 | `dotnet_process_memory_bytes` | Gauge | Process memory usage |
+
+### Application metrics
+
+Granit modules emit business-level metrics (counters, histograms) covering
+AI, BackgroundJobs, BlobStorage, DataExchange, EventBus, Identity,
+Notifications, Privacy, Vault, Webhooks, and Workflow. All follow the
+`granit.{module}.{entity}.{action}` naming convention with `tenant_id` tagging.
+
+See the [Application metrics reference](/dotnet/core/metrics/) for the
+complete list of instruments, tags, and example PromQL queries.
 
 ### Recommended Grafana dashboards
 
@@ -173,6 +183,7 @@ Build these dashboards for comprehensive production visibility:
 3. **Cache**: hit ratio, Redis latency, evictions
 4. **Wolverine**: messages processed/s, error rate, queue depth, dead letter count
 5. **Infrastructure**: CPU, memory, GC pressure, thread count
+6. **Granit modules**: webhook/notification delivery rates, AI token usage, vault operation latency, background job status (see [metrics reference](/dotnet/core/metrics/#grafana-dashboard-queries-promql))
 
 ## Alerting
 

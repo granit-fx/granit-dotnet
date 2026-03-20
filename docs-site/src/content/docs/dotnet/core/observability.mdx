@@ -113,6 +113,8 @@ GranitActivitySourceRegistry.Register("Granit.Workflow");
 | `Granit.Workflow` | `workflow.transition` |
 | `Granit.BlobStorage` | `blob.upload`, `blob.download`, `blob.delete` |
 | `Granit.DataExchange` | `import.execute`, `export.execute` |
+| `Granit.EventBus` | `eventbus.publish.local`, `eventbus.publish.distributed` |
+| `Granit.Privacy` | `privacy.export.execute`, `privacy.deletion.execute` |
 
 ## Configuration reference
 
@@ -137,6 +139,7 @@ GranitActivitySourceRegistry.Register("Granit.Workflow");
 
 ## See also
 
+- [Application metrics reference](/dotnet/core/metrics/) -- All metrics emitted by Granit modules, with PromQL examples
 - [ADR-001: Serilog + OpenTelemetry](/dotnet/architecture/adr/001-observability/) -- Why this observability stack was chosen
 - [Diagnostics module](/dotnet/core/diagnostics/) -- Kubernetes health probes
 - [Core module](/dotnet/core/module-system/) -- `GranitActivitySourceRegistry` lives in `Granit.Core.Diagnostics`
