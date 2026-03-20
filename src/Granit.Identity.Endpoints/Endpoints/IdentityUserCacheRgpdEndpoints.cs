@@ -16,12 +16,14 @@ internal static class IdentityUserCacheRgpdEndpoints
         group.MapDelete("/{userId}", EraseAsync)
             .WithName("EraseIdentityUserCache")
             .WithSummary("RGPD Art. 17 — permanently deletes the cached entry for a user.")
-            .WithDescription("Implements the RGPD right to erasure (Article 17). Permanently removes the user's cached identity data. This does not affect the upstream identity provider — the data will be re-cached if the user is looked up again. For full erasure, also delete in the identity provider.");
+            .WithDescription("Implements the RGPD right to erasure (Article 17). Permanently removes the user's cached identity data. This does not affect the upstream identity provider — the data will be re-cached if the user is looked up again. For full erasure, also delete in the identity provider.")
+            .Produces(StatusCodes.Status204NoContent);
 
         group.MapPatch("/{userId}/pseudonymize", PseudonymizeAsync)
             .WithName("PseudonymizeIdentityUserCache")
             .WithSummary("RGPD Art. 18 — replaces PII with anonymized data in the cached entry.")
-            .WithDescription("Implements the RGPD right to restriction of processing (Article 18). Replaces all personally identifiable information (name, email, etc.) with anonymized placeholders while preserving the entry for referential integrity. Irreversible.");
+            .WithDescription("Implements the RGPD right to restriction of processing (Article 18). Replaces all personally identifiable information (name, email, etc.) with anonymized placeholders while preserving the entry for referential integrity. Irreversible.")
+            .Produces(StatusCodes.Status204NoContent);
 
         return group;
     }

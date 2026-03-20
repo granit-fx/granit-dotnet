@@ -27,6 +27,7 @@ internal static class PermissionDefinitionsEndpoints
             .WithName("GetPermissionDefinitions")
             .WithSummary("Returns all registered permission definitions grouped by category.")
             .WithDescription("Returns the full registry of permission definitions discovered from all loaded modules, organized by permission group. Display names are localized based on the Accept-Language header. This endpoint is intended for admin UIs that manage role-to-permission assignments.")
+            .Produces<IReadOnlyList<PermissionGroupResponse>>()
             .RequireAuthorization(AuthorizationEndpointsPermissions.Definitions.Read);
 
         return group;

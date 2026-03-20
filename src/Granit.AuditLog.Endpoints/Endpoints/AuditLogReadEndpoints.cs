@@ -22,17 +22,21 @@ internal static class AuditLogReadEndpoints
         group.MapGet("/", GetPagedAsync)
             .WithName("GetAuditLogEntries")
             .WithSummary("List audit log entries with pagination and filters.")
-            .WithDescription("Returns a paginated list of audit log entries ordered by timestamp descending. Supports filtering by actor (userId), entity type/ID, category, and date range. Each entry contains a summary with the number of entity changes — use the detail endpoint to retrieve full property-level diffs. ISO 27001 A.12.4 compliant.");
+            .WithDescription("Returns a paginated list of audit log entries ordered by timestamp descending. Supports filtering by actor (userId), entity type/ID, category, and date range. Each entry contains a summary with the number of entity changes — use the detail endpoint to retrieve full property-level diffs. ISO 27001 A.12.4 compliant.")
+            .Produces<PagedResult<AuditLogEntryResponse>>();
 
         group.MapGet("/{id:guid}", GetByIdAsync)
             .WithName("GetAuditLogEntryById")
             .WithSummary("Get a single audit log entry with full change details.")
-            .WithDescription("Returns the complete audit log entry including all entity changes and property-level diffs (original → new value). Sensitive properties are masked with '***'. Returns 404 if the entry does not exist.");
+            .WithDescription("Returns the complete audit log entry including all entity changes and property-level diffs (original → new value). Sensitive properties are masked with '***'. Returns 404 if the entry does not exist.")
+            .Produces<AuditLogEntryDetailResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/entity/{entityType}/{entityId}", GetByEntityAsync)
             .WithName("GetAuditLogEntriesByEntity")
             .WithSummary("Get audit trail for a specific entity instance.")
-            .WithDescription("Returns all audit log entries associated with a specific entity, identified by its CLR type name and primary key. Results are paginated and ordered by timestamp descending. Useful for displaying the full change history of a single record.");
+            .WithDescription("Returns all audit log entries associated with a specific entity, identified by its CLR type name and primary key. Results are paginated and ordered by timestamp descending. Useful for displaying the full change history of a single record.")
+            .Produces<PagedResult<AuditLogEntryResponse>>();
 
         return group;
     }

@@ -25,12 +25,15 @@ internal static class ExportDefinitionEndpoints
         group.MapGet("/definitions", ListDefinitionsAsync)
             .WithName("ListExportDefinitions")
             .WithSummary("Lists all registered export definitions.")
-            .WithDescription("Returns all export definitions registered by application modules. Each definition describes an exportable dataset, its supported output formats, and metadata. Use the fields endpoint to discover selectable columns for a specific definition.");
+            .WithDescription("Returns all export definitions registered by application modules. Each definition describes an exportable dataset, its supported output formats, and metadata. Use the fields endpoint to discover selectable columns for a specific definition.")
+            .Produces<IReadOnlyList<ExportDefinitionResponse>>();
 
         group.MapGet("/definitions/{name}/fields", GetFieldsAsync)
             .WithName("GetExportDefinitionFields")
             .WithSummary("Returns the available fields for a given export definition.")
-            .WithDescription("Returns the list of selectable fields for the named export definition — each with its property name, display label, and data type. Use this to populate a field picker UI before creating an export job. Returns 404 if the definition name is not registered.");
+            .WithDescription("Returns the list of selectable fields for the named export definition — each with its property name, display label, and data type. Use this to populate a field picker UI before creating an export job. Returns 404 if the definition name is not registered.")
+            .Produces<IReadOnlyList<ExportFieldResponse>>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }

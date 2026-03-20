@@ -14,13 +14,31 @@ internal static class WebhookSubscriptionWriteEndpoints
     internal static RouteGroupBuilder MapWriteEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/subscriptions", Create)
-            .WithSummary("Create a new webhook subscription");
+            .WithName("CreateWebhookSubscription")
+            .WithSummary("Creates a new webhook subscription.")
+            .WithDescription(
+                "Registers a new webhook subscription for the specified event type. "
+                + "The response includes the plain-text signing secret which is only returned once. "
+                + "The subscription starts in the Active status.")
+            .Produces<WebhookSubscriptionCreatedResponse>(StatusCodes.Status201Created);
 
         group.MapPut("/subscriptions/{id:guid}", Update)
-            .WithSummary("Update a webhook subscription's target URL");
+            .WithName("UpdateWebhookSubscription")
+            .WithSummary("Updates a webhook subscription's target URL.")
+            .WithDescription(
+                "Replaces the target URL of an existing subscription. "
+                + "The subscription keeps its current status, secret, and event type. "
+                + "Returns 404 if the subscription does not exist.")
+            .Produces<WebhookSubscriptionResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapDelete("/subscriptions/{id:guid}", Delete)
-            .WithSummary("Delete a webhook subscription");
+            .WithName("DeleteWebhookSubscription")
+            .WithSummary("Deletes a webhook subscription.")
+            .WithDescription(
+                "Permanently removes a webhook subscription and all its associated delivery history. "
+                + "This action is irreversible.")
+            .Produces(StatusCodes.Status204NoContent);
 
         return group;
     }

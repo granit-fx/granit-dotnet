@@ -14,23 +14,51 @@ internal static class AIWorkspaceEndpoints
     {
         group.MapGet("/workspaces", ListAllAsync)
             .WithName("ListAIWorkspaces")
-            .WithSummary("List all AI workspaces (system and dynamic)");
+            .WithSummary("Lists all AI workspaces, both system and dynamic.")
+            .WithDescription(
+                "Returns every registered workspace with its provider, model, and configuration. "
+                + "System workspaces are defined in configuration; dynamic workspaces are user-created.")
+            .Produces<AIWorkspaceListResponse>();
 
         group.MapGet("/workspaces/{name}", GetByNameAsync)
             .WithName("GetAIWorkspace")
-            .WithSummary("Get an AI workspace by name");
+            .WithSummary("Returns an AI workspace by its name.")
+            .WithDescription(
+                "Fetches the full configuration of a single workspace including provider, model, "
+                + "system prompt, and active status. Returns 404 if no workspace matches the name.")
+            .Produces<AIWorkspaceResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/workspaces", CreateAsync)
             .WithName("CreateAIWorkspace")
-            .WithSummary("Create a new dynamic AI workspace");
+            .WithSummary("Creates a new dynamic AI workspace.")
+            .WithDescription(
+                "Registers a new user-defined workspace with the specified provider and model configuration. "
+                + "Returns 409 if a workspace with the same name already exists.")
+            .Produces<AIWorkspaceResponse>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPut("/workspaces/{name}", UpdateAsync)
             .WithName("UpdateAIWorkspace")
-            .WithSummary("Update an existing dynamic AI workspace");
+            .WithSummary("Updates an existing dynamic AI workspace.")
+            .WithDescription(
+                "Replaces the provider, model, and prompt configuration of a dynamic workspace. "
+                + "System workspaces cannot be modified and return 422. "
+                + "Returns 404 if the workspace does not exist.")
+            .Produces<AIWorkspaceResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapDelete("/workspaces/{name}", DeleteAsync)
             .WithName("DeleteAIWorkspace")
-            .WithSummary("Delete a dynamic AI workspace");
+            .WithSummary("Deletes a dynamic AI workspace.")
+            .WithDescription(
+                "Permanently removes a user-created workspace. "
+                + "System workspaces cannot be deleted and return 422. "
+                + "Returns 404 if the workspace does not exist.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
 
         return group;
     }

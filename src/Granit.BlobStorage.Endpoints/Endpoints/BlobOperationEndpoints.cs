@@ -14,15 +14,30 @@ internal static class BlobOperationEndpoints
     {
         group.MapPost("/{id:guid}/confirm", ConfirmUploadAsync)
             .WithName("ConfirmBlobUpload")
-            .WithSummary("Confirm a client-side upload — runs the validation pipeline");
+            .WithSummary("Confirms a client-side upload and runs the validation pipeline.")
+            .WithDescription(
+                "Triggers content-type verification and size validation on an uploaded blob. "
+                + "The response includes the validation result: verified content type, actual size, "
+                + "and an optional rejection reason if the blob failed validation.")
+            .Produces<BlobConfirmUploadResponse>();
 
         group.MapPost("/{id:guid}/download-url", GenerateDownloadUrlAsync)
             .WithName("GenerateBlobDownloadUrl")
-            .WithSummary("Generate a pre-signed download URL");
+            .WithSummary("Generates a time-limited pre-signed download URL.")
+            .WithDescription(
+                "Creates a pre-signed URL for direct client-side download of the blob content. "
+                + "An optional custom file name can be specified to override the Content-Disposition header. "
+                + "The URL expires after the provider-configured duration.")
+            .Produces<BlobDownloadUrlResponse>();
 
         group.MapPost("/cleanup-orphans", CleanupOrphansAsync)
             .WithName("CleanupOrphanedBlobs")
-            .WithSummary("Clean up orphaned blobs stuck in Pending/Uploading state");
+            .WithSummary("Cleans up orphaned blobs stuck in Pending or Uploading state.")
+            .WithDescription(
+                "Scans for blobs that never completed the upload/confirm cycle and deletes them. "
+                + "Returns the number of orphaned blobs removed. "
+                + "Typically called on a schedule or via the admin dashboard.")
+            .Produces<BlobCleanupOrphansResponse>();
 
         return group;
     }

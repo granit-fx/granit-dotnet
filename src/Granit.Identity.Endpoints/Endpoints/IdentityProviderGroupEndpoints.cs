@@ -17,7 +17,8 @@ internal static class IdentityProviderGroupEndpoints
         group.MapGet("/", GetGroupsAsync)
             .WithName("GetIdentityProviderGroups")
             .WithSummary("Lists all groups defined in the identity provider.")
-            .WithDescription("Returns all groups available in the identity provider, including their hierarchical structure.");
+            .WithDescription("Returns all groups available in the identity provider, including their hierarchical structure.")
+            .Produces<IReadOnlyList<IdentityGroup>>();
 
         return group;
     }
@@ -27,7 +28,8 @@ internal static class IdentityProviderGroupEndpoints
         group.MapGet("/", GetUserGroupsAsync)
             .WithName("GetIdentityProviderUserGroups")
             .WithSummary("Lists groups a specific user belongs to.")
-            .WithDescription("Returns all groups the specified user is a member of.");
+            .WithDescription("Returns all groups the specified user is a member of.")
+            .Produces<IReadOnlyList<IdentityGroup>>();
 
         return group;
     }
@@ -37,12 +39,14 @@ internal static class IdentityProviderGroupEndpoints
         group.MapPut("/{groupId}", AddUserToGroupAsync)
             .WithName("AddIdentityProviderUserToGroup")
             .WithSummary("Adds a user to a group.")
-            .WithDescription("Adds the specified user to the group. Idempotent — adding a user already in the group has no effect.");
+            .WithDescription("Adds the specified user to the group. Idempotent — adding a user already in the group has no effect.")
+            .Produces(StatusCodes.Status204NoContent);
 
         group.MapDelete("/{groupId}", RemoveUserFromGroupAsync)
             .WithName("RemoveIdentityProviderUserFromGroup")
             .WithSummary("Removes a user from a group.")
-            .WithDescription("Removes the specified user from the group. Idempotent — removing a non-member has no effect.");
+            .WithDescription("Removes the specified user from the group. Idempotent — removing a non-member has no effect.")
+            .Produces(StatusCodes.Status204NoContent);
 
         return group;
     }

@@ -55,19 +55,27 @@ public static class NotificationEndpointRouteBuilderExtensions
     {
         group.MapGet("/", GetNotificationsAsync)
             .WithName("GetNotifications")
-            .WithSummary("Returns the user's notification inbox, newest first.");
+            .WithSummary("Returns the user's notification inbox, newest first.")
+            .WithDescription("Returns a paginated list of the current user's notifications. Supports filtering by read/unread status. Results are sorted by creation date, newest first.")
+            .Produces<PagedResult<UserNotificationResponse>>();
 
         group.MapGet("/unread/count", GetUnreadCountAsync)
             .WithName("GetUnreadCount")
-            .WithSummary("Returns the number of unread notifications for the current user.");
+            .WithSummary("Returns the number of unread notifications for the current user.")
+            .WithDescription("Returns the total count of unread notifications for the authenticated user within the current tenant. Use this to display a badge count in the UI.")
+            .Produces<UnreadCountResponse>();
 
         group.MapPost("/{id:guid}/read", MarkAsReadAsync)
             .WithName("MarkAsRead")
-            .WithSummary("Marks a single notification as read.");
+            .WithSummary("Marks a single notification as read.")
+            .WithDescription("Marks the specified notification as read by setting its read timestamp. Idempotent — marking an already-read notification is a no-op.")
+            .Produces(StatusCodes.Status204NoContent);
 
         group.MapPost("/read-all", MarkAllAsReadAsync)
             .WithName("MarkAllAsRead")
-            .WithSummary("Marks all notifications as read for the current user.");
+            .WithSummary("Marks all notifications as read for the current user.")
+            .WithDescription("Marks all unread notifications as read for the authenticated user within the current tenant. Useful for a 'mark all as read' bulk action.")
+            .Produces(StatusCodes.Status204NoContent);
     }
 
     private static async Task<Ok<PagedResult<UserNotificationResponse>>> GetNotificationsAsync(
@@ -125,7 +133,9 @@ public static class NotificationEndpointRouteBuilderExtensions
     {
         group.MapGet("/entity/{entityType}/{entityId}", GetEntityActivityFeedAsync)
             .WithName("GetEntityActivityFeed")
-            .WithSummary("Returns the activity feed for a specific entity.");
+            .WithSummary("Returns the activity feed for a specific entity.")
+            .WithDescription("Returns a paginated list of notifications related to a specific entity. Useful for displaying an activity log on an entity detail page. Results are sorted by creation date, newest first.")
+            .Produces<PagedResult<UserNotificationResponse>>();
     }
 
     private static async Task<Ok<PagedResult<UserNotificationResponse>>> GetEntityActivityFeedAsync(
@@ -151,15 +161,21 @@ public static class NotificationEndpointRouteBuilderExtensions
     {
         group.MapGet("/preferences", GetPreferencesAsync)
             .WithName("GetPreferences")
-            .WithSummary("Returns notification delivery preferences for the current user.");
+            .WithSummary("Returns notification delivery preferences for the current user.")
+            .WithDescription("Returns all notification delivery preferences for the authenticated user within the current tenant. Each preference indicates whether a specific notification type is enabled or disabled for a given channel.")
+            .Produces<List<NotificationPreferenceResponse>>();
 
         group.MapPut("/preferences", UpdatePreferenceAsync)
             .WithName("UpdatePreference")
-            .WithSummary("Creates or updates a notification delivery preference.");
+            .WithSummary("Creates or updates a notification delivery preference.")
+            .WithDescription("Creates or updates a delivery preference for a specific notification type and channel. If a preference already exists for the same type and channel, it is replaced (upsert).")
+            .Produces(StatusCodes.Status204NoContent);
 
         group.MapGet("/types", GetNotificationTypes)
             .WithName("GetNotificationTypes")
-            .WithSummary("Returns all registered notification type definitions.");
+            .WithSummary("Returns all registered notification type definitions.")
+            .WithDescription("Returns all notification types registered in the system with their metadata. Use this to build the preferences UI, showing which notification types are available and their supported channels.")
+            .Produces<IReadOnlyList<NotificationDefinition>>();
     }
 
     private static async Task<Ok<List<NotificationPreferenceResponse>>> GetPreferencesAsync(
@@ -218,15 +234,21 @@ public static class NotificationEndpointRouteBuilderExtensions
     {
         group.MapGet("/subscriptions", GetSubscriptionsAsync)
             .WithName("GetSubscriptions")
-            .WithSummary("Returns all notification subscriptions for the current user.");
+            .WithSummary("Returns all notification subscriptions for the current user.")
+            .WithDescription("Returns all notification type subscriptions for the authenticated user within the current tenant. Each subscription indicates a notification type the user has opted into.")
+            .Produces<List<NotificationSubscriptionResponse>>();
 
         group.MapPost("/subscriptions/{typeName}", SubscribeAsync)
             .WithName("Subscribe")
-            .WithSummary("Subscribes the current user to a notification type.");
+            .WithSummary("Subscribes the current user to a notification type.")
+            .WithDescription("Subscribes the authenticated user to the specified notification type within the current tenant. Idempotent — subscribing to an already-subscribed type is a no-op.")
+            .Produces(StatusCodes.Status204NoContent);
 
         group.MapDelete("/subscriptions/{typeName}", UnsubscribeAsync)
             .WithName("Unsubscribe")
-            .WithSummary("Unsubscribes the current user from a notification type.");
+            .WithSummary("Unsubscribes the current user from a notification type.")
+            .WithDescription("Removes the authenticated user's subscription to the specified notification type within the current tenant. Idempotent — unsubscribing from a non-subscribed type is a no-op.")
+            .Produces(StatusCodes.Status204NoContent);
     }
 
     private static async Task<Ok<List<NotificationSubscriptionResponse>>> GetSubscriptionsAsync(
@@ -272,15 +294,21 @@ public static class NotificationEndpointRouteBuilderExtensions
     {
         group.MapPost("/entity/{entityType}/{entityId}/follow", FollowEntityAsync)
             .WithName("FollowEntity")
-            .WithSummary("Subscribes the current user as a follower of an entity.");
+            .WithSummary("Subscribes the current user as a follower of an entity.")
+            .WithDescription("Adds the authenticated user as a follower of the specified entity within the current tenant. Followers receive notifications when activity occurs on the entity. Idempotent.")
+            .Produces(StatusCodes.Status204NoContent);
 
         group.MapDelete("/entity/{entityType}/{entityId}/follow", UnfollowEntityAsync)
             .WithName("UnfollowEntity")
-            .WithSummary("Unsubscribes the current user from an entity.");
+            .WithSummary("Unsubscribes the current user from an entity.")
+            .WithDescription("Removes the authenticated user from the follower list of the specified entity within the current tenant. The user will no longer receive entity-level notifications. Idempotent.")
+            .Produces(StatusCodes.Status204NoContent);
 
         group.MapGet("/entity/{entityType}/{entityId}/followers", GetEntityFollowersAsync)
             .WithName("GetEntityFollowers")
-            .WithSummary("Returns all followers of a specific entity.");
+            .WithSummary("Returns all followers of a specific entity.")
+            .WithDescription("Returns all users following the specified entity within the current tenant. Each entry includes the user ID and subscription metadata.")
+            .Produces<List<NotificationSubscriptionResponse>>();
     }
 
     private static async Task<NoContent> FollowEntityAsync(

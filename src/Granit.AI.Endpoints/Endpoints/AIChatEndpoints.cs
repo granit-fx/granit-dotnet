@@ -19,12 +19,25 @@ internal static class AIChatEndpoints
     {
         group.MapPost("/chat/{workspaceName}", CompleteAsync)
             .WithName("AIChatComplete")
-            .WithSummary("Send messages to an AI workspace and get a completion response");
+            .WithSummary("Sends messages to an AI workspace and returns a completion response.")
+            .WithDescription(
+                "Forwards the conversation to the underlying AI provider configured for the workspace. "
+                + "Returns the assistant's reply, token usage, and response duration. "
+                + "Returns 404 if the workspace does not exist, or 502 if the provider is unavailable.")
+            .Produces<AIChatResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status502BadGateway);
 
         group.MapPost("/chat/{workspaceName}/stream", StreamAsync)
             .WithName("AIChatStream")
-            .WithSummary("Stream a chat completion response via Server-Sent Events")
-            .Produces<string>(StatusCodes.Status200OK, "text/event-stream");
+            .WithSummary("Streams a chat completion response via Server-Sent Events.")
+            .WithDescription(
+                "Opens an SSE stream that emits incremental content chunks as they arrive from the provider. "
+                + "The stream ends with a [DONE] sentinel. "
+                + "Returns 404 if the workspace does not exist, or 502 if the provider is unavailable.")
+            .Produces<string>(StatusCodes.Status200OK, "text/event-stream")
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status502BadGateway);
 
         return group;
     }

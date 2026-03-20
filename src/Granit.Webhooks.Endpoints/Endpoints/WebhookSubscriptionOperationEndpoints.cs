@@ -13,13 +13,30 @@ internal static class WebhookSubscriptionOperationEndpoints
     internal static RouteGroupBuilder MapOperationEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/subscriptions/{id:guid}/rotate-secret", RotateSecret)
-            .WithSummary("Rotate a subscription's signing secret");
+            .WithName("RotateWebhookSecret")
+            .WithSummary("Rotates a subscription's signing secret.")
+            .WithDescription(
+                "Generates a new HMAC signing secret for the subscription. "
+                + "The previous secret is invalidated immediately. "
+                + "The new plain-text secret is returned once and cannot be retrieved later.")
+            .Produces<WebhookSubscriptionRotateSecretResponse>();
 
         group.MapPost("/subscriptions/{id:guid}/test-ping", TestPing)
-            .WithSummary("Send a test webhook to the subscription's target URL");
+            .WithName("TestWebhookPing")
+            .WithSummary("Sends a test ping to the subscription's target URL.")
+            .WithDescription(
+                "Dispatches a synthetic test event to the subscription endpoint and reports "
+                + "the HTTP status code and round-trip duration. Does not affect delivery statistics "
+                + "or the consecutive failure counter.")
+            .Produces<WebhookSubscriptionTestPingResponse>();
 
         group.MapGet("/stats", GetStats)
-            .WithSummary("Get aggregate webhook statistics");
+            .WithName("GetWebhookStats")
+            .WithSummary("Returns aggregate webhook delivery statistics.")
+            .WithDescription(
+                "Provides a summary of all webhook subscriptions: total count by status, "
+                + "number of deliveries in the last 24 hours, success rate, and average response time.")
+            .Produces<WebhookSubscriptionStatsResponse>();
 
         return group;
     }

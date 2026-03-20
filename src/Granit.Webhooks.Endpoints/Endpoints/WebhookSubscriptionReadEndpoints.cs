@@ -14,7 +14,11 @@ internal static class WebhookSubscriptionReadEndpoints
     internal static RouteGroupBuilder MapReadEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/subscriptions/{id:guid}", GetById)
-            .WithSummary("Get a webhook subscription by ID")
+            .WithName("GetWebhookSubscription")
+            .WithSummary("Returns a webhook subscription by its unique identifier.")
+            .WithDescription(
+                "Fetches the full details of a single webhook subscription including its current status, "
+                + "target URL, event type, and delivery statistics. Returns 404 if the subscription does not exist.")
             .Produces<WebhookSubscriptionResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 

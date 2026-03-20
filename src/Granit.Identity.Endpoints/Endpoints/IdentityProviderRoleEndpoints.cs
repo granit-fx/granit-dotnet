@@ -17,12 +17,14 @@ internal static class IdentityProviderRoleEndpoints
         group.MapGet("/", GetRolesAsync)
             .WithName("GetIdentityProviderRoles")
             .WithSummary("Lists all roles defined in the identity provider.")
-            .WithDescription("Returns all roles available in the identity provider (Keycloak realm roles, Cognito groups, etc.).");
+            .WithDescription("Returns all roles available in the identity provider (Keycloak realm roles, Cognito groups, etc.).")
+            .Produces<IReadOnlyList<IdentityRole>>();
 
         group.MapGet("/{roleName}/members", GetRoleMembersAsync)
             .WithName("GetIdentityProviderRoleMembers")
             .WithSummary("Lists all users assigned to a specific role.")
-            .WithDescription("Returns users who have the specified role assigned.");
+            .WithDescription("Returns users who have the specified role assigned.")
+            .Produces<IReadOnlyList<IdentityUser>>();
 
         return group;
     }
@@ -32,7 +34,8 @@ internal static class IdentityProviderRoleEndpoints
         group.MapGet("/", GetUserRolesAsync)
             .WithName("GetIdentityProviderUserRoles")
             .WithSummary("Lists roles assigned to a specific user.")
-            .WithDescription("Returns all roles currently assigned to the specified user.");
+            .WithDescription("Returns all roles currently assigned to the specified user.")
+            .Produces<IReadOnlyList<IdentityRole>>();
 
         return group;
     }
@@ -42,12 +45,14 @@ internal static class IdentityProviderRoleEndpoints
         group.MapPut("/{roleName}", AssignRoleAsync)
             .WithName("AssignIdentityProviderRole")
             .WithSummary("Assigns a role to a user.")
-            .WithDescription("Assigns the specified role to the user. Idempotent — assigning an already-assigned role has no effect.");
+            .WithDescription("Assigns the specified role to the user. Idempotent — assigning an already-assigned role has no effect.")
+            .Produces(StatusCodes.Status204NoContent);
 
         group.MapDelete("/{roleName}", RemoveRoleAsync)
             .WithName("RemoveIdentityProviderRole")
             .WithSummary("Removes a role from a user.")
-            .WithDescription("Removes the specified role from the user. Idempotent — removing a non-assigned role has no effect.");
+            .WithDescription("Removes the specified role from the user. Idempotent — removing a non-assigned role has no effect.")
+            .Produces(StatusCodes.Status204NoContent);
 
         return group;
     }

@@ -17,17 +17,21 @@ internal static class IdentityProviderPasswordEndpoints
         group.MapGet("/changed-at", GetPasswordChangedAtAsync)
             .WithName("GetIdentityProviderPasswordChangedAt")
             .WithSummary("Returns the timestamp of the user's last password change.")
-            .WithDescription("Returns the date and time of the user's last password change, or null if the information is not available.");
+            .WithDescription("Returns the date and time of the user's last password change, or null if the information is not available.")
+            .Produces<IdentityPasswordChangedAtResponse>();
 
         group.MapPost("/reset-email", SendPasswordResetEmailAsync)
             .WithName("SendIdentityProviderPasswordResetEmail")
             .WithSummary("Sends a password reset email to the user.")
-            .WithDescription("Triggers a password reset email via the identity provider. Returns 501 if the provider does not support native password reset emails.");
+            .WithDescription("Triggers a password reset email via the identity provider. Returns 501 if the provider does not support native password reset emails.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status501NotImplemented);
 
         group.MapPost("/temporary", SetTemporaryPasswordAsync)
             .WithName("SetIdentityProviderTemporaryPassword")
             .WithSummary("Sets a temporary password for the user.")
-            .WithDescription("Sets a temporary password that the user must change on next login. Useful for admin-initiated password resets.");
+            .WithDescription("Sets a temporary password that the user must change on next login. Useful for admin-initiated password resets.")
+            .Produces(StatusCodes.Status204NoContent);
 
         return group;
     }

@@ -21,7 +21,8 @@ internal static class WorkflowReadEndpoints
         group.MapGet("/{entityType}/{entityId}/history", GetTransitionHistoryAsync)
             .WithName("GetWorkflowTransitionHistory")
             .WithSummary("Returns the ISO 27001-compliant audit trail of workflow transitions for an entity.")
-            .WithDescription("Returns a paginated list of all state transitions for the specified entity, ordered by timestamp descending. Each entry includes the source and target state, the actor, an optional comment, and the transition timestamp. This history is immutable and serves as the ISO 27001 A.12.4 audit trail for workflow changes.");
+            .WithDescription("Returns a paginated list of all state transitions for the specified entity, ordered by timestamp descending. Each entry includes the source and target state, the actor, an optional comment, and the transition timestamp. This history is immutable and serves as the ISO 27001 A.12.4 audit trail for workflow changes.")
+            .Produces<PagedResult<TransitionHistoryResponse>>();
 
         return group;
     }

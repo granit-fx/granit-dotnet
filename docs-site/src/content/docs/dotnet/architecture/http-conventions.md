@@ -333,6 +333,114 @@ RouteGroupBuilder group = endpoints.MapGranitGroup(prefix)
     .WithTags("MobilePush");
 ```
 
+### OpenAPI endpoint metadata
+
+Every endpoint must declare **5 metadata elements** for a complete OpenAPI schema.
+These metadata elements power Scalar UI documentation, generated TypeScript clients,
+and frontend autocompletion.
+
+#### Required chain (in order)
+
+```csharp
+group.MapGet("/{id:guid}", GetByIdAsync)
+    .WithName("GetBlobDescriptor")
+    .WithSummary("Returns a blob descriptor by its unique identifier.")
+    .WithDescription(
+        "Fetches the full metadata of a blob including its status, content type, "
+        + "size, and validation results. The containerName query parameter is required. "
+        + "Returns 404 if the blob does not exist in the specified container.")
+    .Produces<BlobDescriptorResponse>()
+    .ProducesProblem(StatusCodes.Status404NotFound);
+```
+
+| Element | Purpose | Convention |
+|---------|---------|------------|
+| `.WithName()` | OpenAPI `operationId` | PascalCase `VerbNoun` (e.g., `GetBlobDescriptor`, `CreateExportJob`) |
+| `.WithSummary()` | One-line description in Scalar UI list | Imperative sentence, ends with period, ~100 chars |
+| `.WithDescription()` | Expanded description in Scalar UI detail | 2-4 sentences: what it does, context/behavior, error codes |
+| `.Produces<T>()` | Success response schema | One per success path (see mapping table below) |
+| `.ProducesProblem()` | Error response schema | One per distinct error status code |
+
+#### Return type to Produces mapping
+
+The handler's return type determines which `.Produces()` and `.ProducesProblem()`
+calls are needed:
+
+| Handler return type | Produces | ProducesProblem |
+|---------------------|----------|-----------------|
+| `Ok<T>` | `.Produces<T>()` | — |
+| `Created<T>` | `.Produces<T>(StatusCodes.Status201Created)` | — |
+| `Created` (no body) | `.Produces(StatusCodes.Status201Created)` | — |
+| `NoContent` | `.Produces(StatusCodes.Status204NoContent)` | — |
+| `Accepted` | `.Produces(StatusCodes.Status202Accepted)` | — |
+| `NotFound` in `Results<>` | — | `.ProducesProblem(StatusCodes.Status404NotFound)` |
+| `ProblemHttpResult` in `Results<>` | — | `.ProducesProblem(StatusCodes.StatusXxx)` |
+| `ValidationProblem` in `Results<>` | — | `.ProducesValidationProblem()` |
+| `FileStreamHttpResult` | `.Produces(StatusCodes.Status200OK, contentType: "application/octet-stream")` | — |
+
+For `ProblemHttpResult`, read the handler body to determine the exact status code
+used in `TypedResults.Problem(statusCode: ...)`.
+
+#### Examples by endpoint type
+
+**Read (single resource)**:
+
+```csharp
+group.MapGet("/{id:guid}", GetByIdAsync)
+    .WithName("GetApiKeyById")
+    .WithSummary("Returns an API key by its unique identifier.")
+    .WithDescription("Fetches the full details of an API key. Returns 404 if not found.")
+    .Produces<ApiKeyResponse>()
+    .ProducesProblem(StatusCodes.Status404NotFound);
+```
+
+**Create**:
+
+```csharp
+group.MapPost("/", CreateAsync)
+    .WithName("CreateApiKey")
+    .WithSummary("Creates a new API key.")
+    .WithDescription(
+        "Generates a new API key with the specified scopes. "
+        + "The plain-text key is returned once and cannot be retrieved later.")
+    .Produces<ApiKeyCreateResponse>(StatusCodes.Status201Created);
+```
+
+**Delete**:
+
+```csharp
+group.MapDelete("/{id:guid}", DeleteAsync)
+    .WithName("DeleteWebhookSubscription")
+    .WithSummary("Deletes a webhook subscription.")
+    .WithDescription("Permanently removes the subscription. This action is irreversible.")
+    .Produces(StatusCodes.Status204NoContent);
+```
+
+**Async dispatch (background job)**:
+
+```csharp
+group.MapPost("/{jobId:guid}/execute", ExecuteAsync)
+    .WithName("ExecuteImportJob")
+    .WithSummary("Dispatches the import job for background execution.")
+    .WithDescription(
+        "Enqueues the job for background processing. Returns 202 Accepted. "
+        + "Returns 400 if the job is in an invalid state, or 404 if not found.")
+    .Produces(StatusCodes.Status202Accepted)
+    .ProducesProblem(StatusCodes.Status404NotFound)
+    .ProducesProblem(StatusCodes.Status400BadRequest);
+```
+
+**File download**:
+
+```csharp
+group.MapGet("/jobs/{jobId:guid}/download", DownloadAsync)
+    .WithName("DownloadExportFile")
+    .WithSummary("Downloads the generated export file.")
+    .WithDescription("Streams the file as a binary download. Returns 404 if not found.")
+    .Produces(StatusCodes.Status200OK, contentType: "application/octet-stream")
+    .ProducesProblem(StatusCodes.Status404NotFound);
+```
+
 ### Automatic validation
 
 All endpoints within a `MapGranitGroup()` route group are automatically validated.

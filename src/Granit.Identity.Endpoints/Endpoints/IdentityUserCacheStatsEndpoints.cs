@@ -17,7 +17,8 @@ internal static class IdentityUserCacheStatsEndpoints
         group.MapGet("/stats", GetStatsAsync)
             .WithName("GetIdentityUserCacheStats")
             .WithSummary("Returns cache statistics: total entries, stale count, oldest/newest sync timestamps.")
-            .WithDescription("Returns aggregate statistics about the identity user cache: total number of cached entries, count of stale entries needing refresh, and the timestamp range of the oldest and newest synchronization. Useful for monitoring cache health and scheduling sync operations.");
+            .WithDescription("Returns aggregate statistics about the identity user cache: total number of cached entries, count of stale entries needing refresh, and the timestamp range of the oldest and newest synchronization. Useful for monitoring cache health and scheduling sync operations.")
+            .Produces<IdentityUserCacheStatsResponse>();
 
         return group;
     }

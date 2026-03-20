@@ -18,7 +18,8 @@ internal static class TimelineStreamEndpoints
         group.MapGet("/{entityType}/{entityId}", GetStreamAsync)
             .WithName("GetTimelineStream")
             .WithSummary("Returns the paginated activity stream for an entity, newest first.")
-            .WithDescription("Returns comments, internal notes, and system log entries associated with the entity, ordered by occurrence date descending. Supports pagination via page and pageSize query parameters. Soft-deleted entries are excluded.");
+            .WithDescription("Returns comments, internal notes, and system log entries associated with the entity, ordered by occurrence date descending. Supports pagination via page and pageSize query parameters. Soft-deleted entries are excluded.")
+            .Produces<PagedResult<TimelineStreamEntry>>();
 
         return group;
     }

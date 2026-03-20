@@ -17,17 +17,21 @@ internal static class IdentityProviderSessionEndpoints
         group.MapGet("/", GetUserSessionsAsync)
             .WithName("GetIdentityProviderUserSessions")
             .WithSummary("Lists active sessions for a user.")
-            .WithDescription("Returns all active sessions for the specified user from the identity provider.");
+            .WithDescription("Returns all active sessions for the specified user from the identity provider.")
+            .Produces<IReadOnlyList<IdentitySession>>();
 
         group.MapDelete("/{sessionId}", TerminateSessionAsync)
             .WithName("TerminateIdentityProviderSession")
             .WithSummary("Terminates a specific user session.")
-            .WithDescription("Terminates the specified session, forcing the user to re-authenticate on that device. Returns 501 if the provider does not support individual session termination.");
+            .WithDescription("Terminates the specified session, forcing the user to re-authenticate on that device. Returns 501 if the provider does not support individual session termination.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status501NotImplemented);
 
         group.MapDelete("/", TerminateAllSessionsAsync)
             .WithName("TerminateAllIdentityProviderSessions")
             .WithSummary("Terminates all active sessions for a user.")
-            .WithDescription("Terminates every active session for the specified user, forcing re-authentication on all devices.");
+            .WithDescription("Terminates every active session for the specified user, forcing re-authentication on all devices.")
+            .Produces(StatusCodes.Status204NoContent);
 
         return group;
     }
@@ -37,7 +41,8 @@ internal static class IdentityProviderSessionEndpoints
         group.MapGet("/", GetUserDeviceActivityAsync)
             .WithName("GetIdentityProviderUserDevices")
             .WithSummary("Lists device activity for a user.")
-            .WithDescription("Returns device activity information for the specified user, including device type, OS, browser, and associated sessions.");
+            .WithDescription("Returns device activity information for the specified user, including device type, OS, browser, and associated sessions.")
+            .Produces<IReadOnlyList<IdentityDeviceActivity>>();
 
         return group;
     }

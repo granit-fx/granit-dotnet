@@ -28,7 +28,9 @@ internal static class WorkflowTransitionEndpoints<TState> where TState : struct,
                 $"Returns the list of transitions available from the specified current state " +
                 $"for the current user, considering their permissions. Transitions where the user " +
                 $"lacks the required permission but approval routing is enabled are included " +
-                $"with RequiresApproval = true.");
+                $"with RequiresApproval = true.")
+            .Produces<WorkflowStatusResponse>()
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapPost("/transitions", ExecuteTransitionAsync)
             .WithName($"Execute{stateName}Transition")
@@ -38,7 +40,9 @@ internal static class WorkflowTransitionEndpoints<TState> where TState : struct,
                 "Returns the outcome: Completed (direct transition), ApprovalRequested " +
                 "(routed to pending review), Denied (no permission and no approval path), " +
                 "or InvalidTransition (no such transition defined). The caller is responsible " +
-                "for persisting the resulting state on the entity.");
+                "for persisting the resulting state on the entity.")
+            .Produces<WorkflowTransitionResultResponse>()
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         return group;
     }

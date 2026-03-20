@@ -211,6 +211,41 @@ Single category with **mandatory suffix** — enforced by architecture tests:
 - **Errors**: Always `TypedResults.Problem(detail, statusCode)` (RFC 7807). Return type: `ProblemHttpResult`.
 - **No entity exposure**: EF entities must NOT be returned — create `*Response` records.
 
+### OpenAPI endpoint metadata — MANDATORY (5 elements)
+
+Every endpoint MUST declare all 5 metadata elements, chained in this order:
+
+```csharp
+group.MapGet("/{id:guid}", GetByIdAsync)
+    .WithName("GetBlobDescriptor")                          // PascalCase operation ID
+    .WithSummary("Returns a blob descriptor by ID.")        // Imperative, ~100 chars, period
+    .WithDescription("Fetches the full metadata...")        // 2-4 sentences: what, context, errors
+    .Produces<BlobDescriptorResponse>()                     // Success response type
+    .ProducesProblem(StatusCodes.Status404NotFound);        // One per error path
+```
+
+**Return type → Produces mapping:**
+
+| Handler return type | Produces | ProducesProblem |
+| ------------------- | -------- | --------------- |
+| `Ok<T>` | `.Produces<T>()` | — |
+| `Created<T>` | `.Produces<T>(StatusCodes.Status201Created)` | — |
+| `Created` (no body) | `.Produces(StatusCodes.Status201Created)` | — |
+| `NoContent` | `.Produces(StatusCodes.Status204NoContent)` | — |
+| `Accepted` | `.Produces(StatusCodes.Status202Accepted)` | — |
+| `NotFound` in `Results` | — | `.ProducesProblem(Status404NotFound)` |
+| `ProblemHttpResult` in `Results` | — | `.ProducesProblem(StatusXxx)` — read handler body |
+| `ValidationProblem` in `Results` | — | `.ProducesValidationProblem()` |
+| `FileStreamHttpResult` | `.Produces(Status200OK, contentType: "application/octet-stream")` | — |
+
+**Rules:**
+
+- **WithName**: PascalCase `VerbNoun` (e.g., `GetBlobDescriptor`, `CreateExportJob`)
+- **WithSummary**: imperative sentence ending with period, ~100 chars
+- **WithDescription**: 2-4 factual sentences — what, context/behavior, error codes
+- **ProducesProblem**: one call per distinct error status code (read handler body for exact code)
+- **Never omit** `.Produces()` — without it, OpenAPI schema has no response type
+
 ### Validation
 
 - **Auto-validation**: use `endpoints.MapGranitGroup(prefix)` instead of `MapGroup()` — applies
@@ -323,6 +358,10 @@ Each package has `*.Tests` project (xUnit + Shouldly + NSubstitute + Bogus). Par
 - `.WithMessage("hardcoded string")` in validators → `.WithErrorCodeAndMessage("Granit:Validation:XxxCode")` + localization JSON
 - `View` action in permissions → `Read` (RBAC standard: `Read`, not `View`)
 - Two-segment permission names (`Features.Read`) → three-segment `Features.Flags.Read` (`[Group].[Resource].[Action]`)
+- Endpoint without `.WithName()` → always declare an operation ID
+- Endpoint without `.WithSummary()` / `.WithDescription()` → always document the endpoint
+- Endpoint without `.Produces<T>()` → always declare the success response type
+- Endpoint without `.ProducesProblem()` when handler returns `NotFound`/`ProblemHttpResult` → always declare error responses
 
 ### Architecture
 
@@ -383,6 +422,17 @@ The docs live in `docs-site/` (Astro + Starlight). Key paths:
 
 Use `roslyn-navigator` MCP tools for semantic navigation — **prefer over Grep/Read for all C# code**.
 Full guide in global `~/.claude/CLAUDE.md`.
+
+## Code index (`.mcp-code-index.json`)
+
+A pre-commit hook regenerates `.mcp-code-index.json` when `.cs` or `.csproj`
+files are staged. This file is consumed by the `granit-mcp` Worker for code
+navigation tools (`search_code`, `get_public_api`, `get_project_graph`).
+
+- **Script:** `python3 scripts/generate-code-index.py` (Python 3.8+, no deps)
+- **Hook:** `.husky/pre-commit` — runs automatically on `.cs`/`.csproj` changes
+- **CI:** drift check validates the file is up to date
+- **NEVER edit `.mcp-code-index.json` manually** — always regenerate
 
 ## Definition of Done
 

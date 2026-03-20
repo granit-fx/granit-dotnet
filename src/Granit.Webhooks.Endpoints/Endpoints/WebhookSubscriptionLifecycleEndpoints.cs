@@ -15,13 +15,31 @@ internal static class WebhookSubscriptionLifecycleEndpoints
     internal static RouteGroupBuilder MapLifecycleEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/subscriptions/{id:guid}/activate", Activate)
-            .WithSummary("Activate a suspended subscription");
+            .WithName("ActivateWebhookSubscription")
+            .WithSummary("Activates a suspended webhook subscription.")
+            .WithDescription(
+                "Transitions a subscription from Suspended to Active status. "
+                + "Deliveries will resume for matching events. "
+                + "The consecutive failure counter is not reset.")
+            .Produces<WebhookSubscriptionResponse>();
 
         group.MapPost("/subscriptions/{id:guid}/suspend", Suspend)
-            .WithSummary("Suspend an active subscription");
+            .WithName("SuspendWebhookSubscription")
+            .WithSummary("Suspends an active webhook subscription.")
+            .WithDescription(
+                "Temporarily pauses event delivery for the subscription. "
+                + "The caller's identity is recorded alongside the suspension reason. "
+                + "Use the activate endpoint to resume deliveries.")
+            .Produces<WebhookSubscriptionResponse>();
 
         group.MapPost("/subscriptions/{id:guid}/deactivate", Deactivate)
-            .WithSummary("Permanently deactivate a subscription");
+            .WithName("DeactivateWebhookSubscription")
+            .WithSummary("Permanently deactivates a webhook subscription.")
+            .WithDescription(
+                "Moves the subscription to the Deactivated terminal status. "
+                + "No further deliveries will be attempted. A deactivation reason must be provided. "
+                + "This action cannot be reversed — create a new subscription instead.")
+            .Produces<WebhookSubscriptionResponse>();
 
         return group;
     }

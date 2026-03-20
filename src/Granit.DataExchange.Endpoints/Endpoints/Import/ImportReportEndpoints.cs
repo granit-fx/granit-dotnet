@@ -27,12 +27,17 @@ internal static class ImportReportEndpoints
         group.MapGet("/{jobId:guid}/report", GetReportAsync)
             .WithName("GetImportReport")
             .WithSummary("Returns the import execution report for a completed job.")
-            .WithDescription("Returns the detailed execution report including total rows processed, success/failure counts, and per-row error details. Available after execution or dry-run completes. Returns 404 if the job does not exist or no report has been generated yet.");
+            .WithDescription("Returns the detailed execution report including total rows processed, success/failure counts, and per-row error details. Available after execution or dry-run completes. Returns 404 if the job does not exist or no report has been generated yet.")
+            .Produces<ImportReportResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/{jobId:guid}/correction-file", GetCorrectionFileAsync)
             .WithName("GetImportCorrectionFile")
             .WithSummary("Downloads a correction file containing only the failed rows with error annotations.")
-            .WithDescription("Generates and streams a file containing only the rows that failed validation or import, annotated with error messages. The file format matches the original upload. Users can fix the errors and re-upload. Returns 204 if there are no failed rows, or 404 if the job or report does not exist.");
+            .WithDescription("Generates and streams a file containing only the rows that failed validation or import, annotated with error messages. The file format matches the original upload. Users can fix the errors and re-upload. Returns 204 if there are no failed rows, or 404 if the job or report does not exist.")
+            .Produces(StatusCodes.Status200OK, contentType: "application/octet-stream")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }

@@ -26,17 +26,24 @@ internal static class ExportExecutionEndpoints
         group.MapPost("/jobs", CreateExportJobAsync)
             .WithName("CreateExportJob")
             .WithSummary("Creates and dispatches an export job (sync or background).")
-            .WithDescription("Creates an export job for the given definition, format, and field selection. Small datasets may complete synchronously; larger ones are dispatched for background processing. Poll the status endpoint to track progress. Returns 400 if the definition name or format is invalid.");
+            .WithDescription("Creates an export job for the given definition, format, and field selection. Small datasets may complete synchronously; larger ones are dispatched for background processing. Poll the status endpoint to track progress. Returns 400 if the definition name or format is invalid.")
+            .Produces<ExportJobResponse>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapGet("/jobs/{jobId:guid}", GetJobStatusAsync)
             .WithName("GetExportJobStatus")
             .WithSummary("Returns the current status of an export job.")
-            .WithDescription("Returns the current status of the export job (Created, Processing, Completed, Failed). Once the status is Completed, the download endpoint becomes available. Returns 404 if the job ID is not found.");
+            .WithDescription("Returns the current status of the export job (Created, Processing, Completed, Failed). Once the status is Completed, the download endpoint becomes available. Returns 404 if the job ID is not found.")
+            .Produces<ExportJobResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/jobs/{jobId:guid}/download", DownloadAsync)
             .WithName("DownloadExportFile")
             .WithSummary("Downloads the generated export file for a completed job.")
-            .WithDescription("Streams the generated export file (xlsx, csv, etc.) as a binary download. The Content-Type and Content-Disposition headers are set according to the export format. Returns 404 if the job does not exist, or 400 if the job has not completed yet.");
+            .WithDescription("Streams the generated export file (xlsx, csv, etc.) as a binary download. The Content-Type and Content-Disposition headers are set according to the export format. Returns 404 if the job does not exist, or 400 if the job has not completed yet.")
+            .Produces(StatusCodes.Status200OK, contentType: "application/octet-stream")
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         return group;
     }

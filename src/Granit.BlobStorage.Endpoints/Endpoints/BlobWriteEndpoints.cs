@@ -13,11 +13,21 @@ internal static class BlobWriteEndpoints
     {
         group.MapPost("/upload", InitiateUploadAsync)
             .WithName("InitiateBlobUpload")
-            .WithSummary("Initiate a direct-to-cloud upload and get a pre-signed URL");
+            .WithSummary("Initiates a direct-to-cloud upload and returns a pre-signed URL.")
+            .WithDescription(
+                "Creates a new blob descriptor and generates a pre-signed URL for direct client-side upload. "
+                + "The response includes the upload URL, required HTTP headers, and expiration time. "
+                + "After uploading, call the confirm endpoint to trigger the validation pipeline.")
+            .Produces<BlobUploadInitiateResponse>(StatusCodes.Status201Created);
 
         group.MapDelete("/{id:guid}", DeleteAsync)
             .WithName("DeleteBlob")
-            .WithSummary("Delete a blob (crypto-shredding — audit record retained)");
+            .WithSummary("Deletes a blob using crypto-shredding.")
+            .WithDescription(
+                "Permanently removes the blob content from storage via crypto-shredding. "
+                + "The blob descriptor and audit trail are retained with the provided deletion reason. "
+                + "A containerName and deletionReason must be supplied in the request body.")
+            .Produces(StatusCodes.Status204NoContent);
 
         return group;
     }

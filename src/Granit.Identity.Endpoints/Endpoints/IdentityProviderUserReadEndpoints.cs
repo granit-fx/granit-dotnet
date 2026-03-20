@@ -17,12 +17,15 @@ internal static class IdentityProviderUserReadEndpoints
         group.MapGet("/", GetUsersAsync)
             .WithName("GetIdentityProviderUsers")
             .WithSummary("Lists users from the identity provider with optional search and pagination.")
-            .WithDescription("Queries the identity provider directly (Keycloak, Cognito, etc.) for user records. Supports free-text search and pagination. Unlike the cache endpoints, this always hits the provider.");
+            .WithDescription("Queries the identity provider directly (Keycloak, Cognito, etc.) for user records. Supports free-text search and pagination. Unlike the cache endpoints, this always hits the provider.")
+            .Produces<IReadOnlyList<IdentityUser>>();
 
         group.MapGet("/{userId}", GetUserAsync)
             .WithName("GetIdentityProviderUser")
             .WithSummary("Gets a single user by ID from the identity provider.")
-            .WithDescription("Fetches a user record directly from the identity provider. Returns 404 if the user does not exist in the provider.");
+            .WithDescription("Fetches a user record directly from the identity provider. Returns 404 if the user does not exist in the provider.")
+            .Produces<IdentityUser>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }

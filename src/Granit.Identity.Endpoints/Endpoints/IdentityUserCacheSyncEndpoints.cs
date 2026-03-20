@@ -18,17 +18,20 @@ internal static class IdentityUserCacheSyncEndpoints
         group.MapPost("/sync", SyncAsync)
             .WithName("SyncIdentityUsers")
             .WithSummary("Forces refresh of specific users from the identity provider.")
-            .WithDescription("Fetches the latest data for the specified user IDs from the identity provider and updates the cache. Returns the refreshed user records. Users not found in the provider are silently skipped.");
+            .WithDescription("Fetches the latest data for the specified user IDs from the identity provider and updates the cache. Returns the refreshed user records. Users not found in the provider are silently skipped.")
+            .Produces<IReadOnlyList<IdentityUser>>();
 
         group.MapPost("/sync-all", SyncAllAsync)
             .WithName("SyncAllIdentityUsers")
             .WithSummary("Full sync — fetches all users from the identity provider and upserts the cache.")
-            .WithDescription("Fetches every user from the identity provider and upserts the entire cache. This is an expensive operation — use sparingly (e.g., nightly scheduled job or initial setup). Returns the count of synchronized entries.");
+            .WithDescription("Fetches every user from the identity provider and upserts the entire cache. This is an expensive operation — use sparingly (e.g., nightly scheduled job or initial setup). Returns the count of synchronized entries.")
+            .Produces<IdentityUserCacheSyncAllResponse>();
 
         group.MapPost("/sync-stale", SyncStaleAsync)
             .WithName("SyncStaleIdentityUsers")
             .WithSummary("Incremental sync — refreshes only stale cache entries.")
-            .WithDescription("Refreshes only cache entries whose last sync timestamp exceeds the configured staleness threshold. More efficient than a full sync for routine maintenance. Returns the count of refreshed entries.");
+            .WithDescription("Refreshes only cache entries whose last sync timestamp exceeds the configured staleness threshold. More efficient than a full sync for routine maintenance. Returns the count of refreshed entries.")
+            .Produces<IdentityUserCacheSyncStaleResponse>();
 
         return group;
     }

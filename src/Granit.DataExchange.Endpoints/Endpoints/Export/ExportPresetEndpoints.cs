@@ -25,17 +25,22 @@ internal static class ExportPresetEndpoints
         group.MapGet("/presets/{definitionName}", ListPresetsAsync)
             .WithName("ListExportPresets")
             .WithSummary("Lists saved export presets for a given definition.")
-            .WithDescription("Returns all saved export presets for the given export definition. Presets store a reusable field selection, output format, and sorting configuration so users can quickly re-export without reconfiguring.");
+            .WithDescription("Returns all saved export presets for the given export definition. Presets store a reusable field selection, output format, and sorting configuration so users can quickly re-export without reconfiguring.")
+            .Produces<IReadOnlyList<ExportPresetResponse>>();
 
         group.MapPost("/presets", SavePresetAsync)
             .WithName("SaveExportPreset")
             .WithSummary("Saves or updates an export preset.")
-            .WithDescription("Creates or updates a named preset for the given export definition. If a preset with the same definition and name already exists, it is overwritten. The definition name must reference a registered export definition. At least one selected field is required.");
+            .WithDescription("Creates or updates a named preset for the given export definition. If a preset with the same definition and name already exists, it is overwritten. The definition name must reference a registered export definition. At least one selected field is required.")
+            .Produces(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapDelete("/presets/{definitionName}/{presetName}", DeletePresetAsync)
             .WithName("DeleteExportPreset")
             .WithSummary("Deletes a saved export preset.")
-            .WithDescription("Permanently removes the named export preset. Returns 404 if the preset does not exist.");
+            .WithDescription("Permanently removes the named export preset. Returns 404 if the preset does not exist.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }

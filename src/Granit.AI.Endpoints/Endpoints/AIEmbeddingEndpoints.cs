@@ -17,7 +17,14 @@ internal static class AIEmbeddingEndpoints
     {
         group.MapPost("/embeddings/{workspaceName}", GenerateAsync)
             .WithName("AIGenerateEmbeddings")
-            .WithSummary("Generate embeddings for input texts using the specified workspace");
+            .WithSummary("Generates vector embeddings for input texts using the specified workspace.")
+            .WithDescription(
+                "Sends the input texts to the embedding model configured for the workspace and returns "
+                + "float vectors for each input. Returns 404 if the workspace does not exist, "
+                + "or 502 if the provider is unavailable.")
+            .Produces<AIEmbeddingResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status502BadGateway);
 
         return group;
     }

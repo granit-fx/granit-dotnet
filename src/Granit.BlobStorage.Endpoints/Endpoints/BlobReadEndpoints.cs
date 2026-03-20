@@ -14,7 +14,13 @@ internal static class BlobReadEndpoints
     {
         group.MapGet("/{id:guid}", GetByIdAsync)
             .WithName("GetBlobDescriptor")
-            .WithSummary("Get a blob descriptor by ID");
+            .WithSummary("Returns a blob descriptor by its unique identifier.")
+            .WithDescription(
+                "Fetches the full metadata of a blob including its status, content type, size, "
+                + "and validation results. The containerName query parameter is required. "
+                + "Returns 404 if the blob does not exist in the specified container.")
+            .Produces<BlobDescriptorResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }

@@ -18,17 +18,21 @@ internal static class IdentityProviderUserWriteEndpoints
         group.MapPost("/", CreateUserAsync)
             .WithName("CreateIdentityProviderUser")
             .WithSummary("Creates a new user in the identity provider.")
-            .WithDescription("Creates a user in the upstream identity provider (Keycloak, Cognito, etc.). Returns the created user with its provider-assigned ID. Returns 501 if the provider does not support user creation.");
+            .WithDescription("Creates a user in the upstream identity provider (Keycloak, Cognito, etc.). Returns the created user with its provider-assigned ID. Returns 501 if the provider does not support user creation.")
+            .Produces<IdentityUser>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status501NotImplemented);
 
         group.MapPut("/{userId}", UpdateUserAsync)
             .WithName("UpdateIdentityProviderUser")
             .WithSummary("Updates an existing user in the identity provider.")
-            .WithDescription("Updates the mutable fields (email, name, attributes) of a user in the identity provider. Only provided fields are updated.");
+            .WithDescription("Updates the mutable fields (email, name, attributes) of a user in the identity provider. Only provided fields are updated.")
+            .Produces(StatusCodes.Status204NoContent);
 
         group.MapPatch("/{userId}/enabled", SetUserEnabledAsync)
             .WithName("SetIdentityProviderUserEnabled")
             .WithSummary("Enables or disables a user in the identity provider.")
-            .WithDescription("Toggles the enabled state of a user account. A disabled user cannot authenticate.");
+            .WithDescription("Toggles the enabled state of a user account. A disabled user cannot authenticate.")
+            .Produces(StatusCodes.Status204NoContent);
 
         return group;
     }
