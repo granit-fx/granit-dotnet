@@ -1,5 +1,6 @@
 using Granit.Querying.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 
@@ -53,7 +54,7 @@ public sealed class QueryEngineStreamTests : IAsyncLifetime
     {
         // Arrange
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         // Act — default preset filters to Electronics (3 items)
         List<TestProduct> items = [];
@@ -75,7 +76,7 @@ public sealed class QueryEngineStreamTests : IAsyncLifetime
     {
         // Arrange
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         // Act
         List<TestProduct> items = [];
@@ -101,7 +102,7 @@ public sealed class QueryEngineStreamTests : IAsyncLifetime
     {
         // Arrange
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         // Act — sort ascending by price
         List<TestProduct> items = [];
@@ -128,7 +129,7 @@ public sealed class QueryEngineStreamTests : IAsyncLifetime
     {
         // Arrange
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         // Act
         List<TestProduct> items = [];
@@ -149,7 +150,7 @@ public sealed class QueryEngineStreamTests : IAsyncLifetime
     {
         // Arrange
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         // Act
         List<TestProduct> items = [];
@@ -175,7 +176,7 @@ public sealed class QueryEngineStreamTests : IAsyncLifetime
     {
         // Arrange
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         // Act — even with PageSize=1, stream should return all items
         List<TestProduct> items = [];

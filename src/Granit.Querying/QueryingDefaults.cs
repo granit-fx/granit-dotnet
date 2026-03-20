@@ -10,4 +10,7 @@ public static class QueryingDefaults
 
     /// <summary>Maximum allowed page size.</summary>
     public const int MaxPageSize = 100;
+
+    /// <summary>Maximum number of items returned by <c>ExecuteStreamAsync</c>.</summary>
+    public const int MaxStreamSize = 100_000;
 }

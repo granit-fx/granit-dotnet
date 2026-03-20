@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Granit.Querying.Filtering;
 using Granit.Querying.Options;
+using Granit.Querying.Search;
 
 namespace Granit.Querying;
 
@@ -20,6 +21,7 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     {
         DefaultPageSizeValue = options.DefaultPageSize;
         MaxPageSizeValue = options.MaxPageSize;
+        MaxStreamSizeValue = options.MaxStreamSize;
     }
 
     internal List<ColumnDescriptor> Columns { get; } = [];
@@ -31,7 +33,9 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     internal List<string> GlobalSearchProperties { get; } = [];
     internal int DefaultPageSizeValue { get; private set; }
     internal int MaxPageSizeValue { get; private set; }
+    internal int MaxStreamSizeValue { get; private set; }
     internal string? CursorPropertyName { get; private set; }
+    internal Type? GlobalSearchStrategyType { get; private set; }
     internal string? DefaultSortValue { get; private set; }
 
     /// <summary>
@@ -76,6 +80,21 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
             GlobalSearchProperties.Add(GetPropertyName(property));
         }
 
+        return this;
+    }
+
+    /// <summary>
+    /// Overrides the default global search strategy (<c>LIKE '%term%'</c>) with a custom
+    /// implementation. Use this for provider-specific full-text search (e.g. PostgreSQL FTS).
+    /// </summary>
+    /// <typeparam name="TStrategy">
+    /// The search strategy type. Must implement <see cref="IGlobalSearchStrategy{TEntity}"/>
+    /// and be registered in DI.
+    /// </typeparam>
+    public QueryDefinitionBuilder<TEntity> UseSearchStrategy<TStrategy>()
+        where TStrategy : class, IGlobalSearchStrategy<TEntity>
+    {
+        GlobalSearchStrategyType = typeof(TStrategy);
         return this;
     }
 
@@ -252,6 +271,18 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(size, 0);
         MaxPageSizeValue = size;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the maximum number of items returned by streaming queries
+    /// (<see cref="IQueryEngine{TEntity}.ExecuteStreamAsync"/>). Default is <c>100_000</c>.
+    /// </summary>
+    /// <param name="size">The maximum stream size.</param>
+    public QueryDefinitionBuilder<TEntity> MaxStreamSize(int size)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(size, 0);
+        MaxStreamSizeValue = size;
         return this;
     }
 

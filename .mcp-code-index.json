@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-20T22:54:29.757070+00:00",
+  "generatedAt": "2026-03-21T00:00:02.177890+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -19369,6 +19369,15 @@
       ]
     },
     {
+      "name": "QueryingEfCoreMetrics",
+      "fqn": "Granit.Querying.EntityFrameworkCore.Diagnostics.QueryingEfCoreMetrics",
+      "kind": "class",
+      "project": "Granit.Querying.EntityFrameworkCore",
+      "file": "src/Granit.Querying.EntityFrameworkCore/Diagnostics/QueryingEfCoreMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "QueryingEfCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Querying.EntityFrameworkCore.Extensions.QueryingEfCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -19422,8 +19431,15 @@
       "kind": "class",
       "project": "Granit.Querying.EntityFrameworkCore",
       "file": "src/Granit.Querying.EntityFrameworkCore/GranitQueryingEntityFrameworkCoreModule.cs",
-      "line": 14,
-      "members": []
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "ServiceCollectionExtensions",
@@ -19619,7 +19635,7 @@
       "kind": "interface",
       "project": "Granit.Querying",
       "file": "src/Granit.Querying/IQueryEngine.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "ExecuteAsync",
@@ -19698,7 +19714,7 @@
       "kind": "record",
       "project": "Granit.Querying",
       "file": "src/Granit.Querying/Meta/PaginationMeta.cs",
-      "line": 9,
+      "line": 10,
       "members": []
     },
     {
@@ -19755,6 +19771,12 @@
           "name": "MaxPageSize",
           "kind": "property",
           "signature": "int MaxPageSize",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxStreamSize",
+          "kind": "property",
+          "signature": "int MaxStreamSize",
           "returnType": "int"
         }
       ]
@@ -19850,7 +19872,7 @@
       "kind": "class",
       "project": "Granit.Querying",
       "file": "src/Granit.Querying/QueryDefinitionBuilder.cs",
-      "line": 12,
+      "line": 13,
       "members": []
     },
     {
@@ -19962,6 +19984,22 @@
       "file": "src/Granit.Querying/SavedViews/UpdateSavedViewRequest.cs",
       "line": 6,
       "members": []
+    },
+    {
+      "name": "IGlobalSearchStrategy",
+      "fqn": "Granit.Querying.Search.IGlobalSearchStrategy",
+      "kind": "interface",
+      "project": "Granit.Querying",
+      "file": "src/Granit.Querying/Search/IGlobalSearchStrategy.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ApplySearch",
+          "kind": "method",
+          "signature": "ApplySearch(IQueryable<TEntity> source, string searchTerm, IReadOnlyList<string> searchProperties)",
+          "returnType": "IQueryable<TEntity>"
+        }
+      ]
     },
     {
       "name": "IRateLimitCounterStore",

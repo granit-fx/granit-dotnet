@@ -253,6 +253,6 @@ public sealed class LlmNaturalLanguageQueryTranslatorTests
             GroupByFields = [],
             Columns = [],
             PresetFilterGroups = [],
-            Pagination = new PaginationMeta(25, 100, false),
+            Pagination = new PaginationMeta(25, 100, QueryingDefaults.MaxStreamSize, false),
         };
 }

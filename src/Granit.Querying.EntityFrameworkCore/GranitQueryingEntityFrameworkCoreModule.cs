@@ -1,5 +1,8 @@
 using Granit.Core.Modularity;
 using Granit.Persistence;
+using Granit.Querying.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Querying.EntityFrameworkCore;
 
@@ -11,4 +14,11 @@ namespace Granit.Querying.EntityFrameworkCore;
 [DependsOn(
     typeof(GranitQueryingModule),
     typeof(GranitPersistenceModule))]
-public sealed class GranitQueryingEntityFrameworkCoreModule : GranitModule;
+public sealed class GranitQueryingEntityFrameworkCoreModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddSingleton<QueryingEfCoreMetrics>();
+    }
+}

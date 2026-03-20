@@ -1,8 +1,13 @@
+using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using Granit.Querying.EntityFrameworkCore.Diagnostics;
 using Granit.Querying.Filtering;
 using Granit.Querying.Meta;
 using Granit.Querying.SavedViews;
+using Granit.Querying.Search;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Granit.Querying.EntityFrameworkCore.Internal;
 
@@ -12,10 +17,18 @@ namespace Granit.Querying.EntityFrameworkCore.Internal;
 /// → apply global search → apply sort → count → apply pagination (or group by).
 /// </summary>
 internal sealed class QueryEngine<TEntity>(
-    QueryDefinition<TEntity> definition) : IQueryEngine<TEntity>
+    QueryDefinition<TEntity> definition,
+    ILogger<QueryEngine<TEntity>> logger,
+    IGlobalSearchStrategy<TEntity>? searchStrategy = null,
+    QueryingEfCoreMetrics? metrics = null) : IQueryEngine<TEntity>
     where TEntity : class
 {
+    private static readonly string EntityTypeName = typeof(TEntity).Name;
+
     private readonly QueryDefinitionBuilder<TEntity> _builder = definition.GetBuilder();
+    private readonly ILogger _logger = logger;
+    private readonly IGlobalSearchStrategy<TEntity> _searchStrategy = searchStrategy ?? new ContainsSearchStrategy<TEntity>();
+    private readonly QueryingEfCoreMetrics? _metrics = metrics;
 
     /// <inheritdoc/>
     public async Task<PagedResult<TEntity>> ExecuteAsync(
@@ -23,29 +36,116 @@ internal sealed class QueryEngine<TEntity>(
         QueryRequest request,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<TEntity> query = ApplyCommonFilters(source, request);
+        using Activity? activity = QueryingEfCoreActivitySource.Source.StartActivity(QueryingEfCoreActivitySource.ExecuteQuery);
+        activity?.SetTag("entity_type", EntityTypeName);
+        long startTimestamp = Stopwatch.GetTimestamp();
 
-        // Sort
-        query = query.ApplySort(request.Sort, _builder);
+        IQueryable<TEntity> filtered = ApplyCommonFilters(source.AsNoTracking(), request);
 
         // Pagination
         int pageSize = ClampPageSize(request.PageSize);
 
+        PagedResult<TEntity> result;
+
         if (request.Cursor is not null && _builder.CursorPropertyName is not null)
         {
-            return await query.ApplyCursorPaginationAsync(
-                request.Cursor, pageSize, _builder.CursorPropertyName, cancellationToken)
+            // Cursor pagination: sort first, then apply cursor filter
+            string effectiveSort = string.IsNullOrWhiteSpace(request.Sort)
+                ? _builder.DefaultSortValue ?? string.Empty
+                : request.Sort;
+            IQueryable<TEntity> sorted = filtered.ApplySort(request.Sort, _builder);
+            result = await sorted.ApplyCursorPaginationAsync(
+                request.Cursor, pageSize, _builder.CursorPropertyName, cancellationToken,
+                _logger, effectiveSort)
+                .ConfigureAwait(false);
+        }
+        else
+        {
+            // Offset pagination: count on filtered (unsorted), then sort + paginate
+            int page = request.Page ?? 1;
+            if (page < 1)
+            {
+                page = 1;
+            }
+
+            int? precomputedCount = request.SkipTotalCount
+                ? null
+                : await filtered.CountAsync(cancellationToken).ConfigureAwait(false);
+
+            IQueryable<TEntity> query = filtered.ApplySort(request.Sort, _builder);
+
+            result = await query.ApplyOffsetPaginationAsync(page, pageSize, precomputedCount, cancellationToken)
                 .ConfigureAwait(false);
         }
 
+        RecordMetrics("paged", startTimestamp);
+        return result;
+    }
+
+    /// <inheritdoc/>
+    public async Task<PagedResult<TProjection>> ExecuteAsync<TProjection>(
+        IQueryable<TEntity> source,
+        QueryRequest request,
+        Expression<Func<TEntity, TProjection>> projection,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(projection);
+
+        IQueryable<TEntity> filtered = ApplyCommonFilters(source.AsNoTracking(), request);
+
+        int pageSize = ClampPageSize(request.PageSize);
+
+        if (request.Cursor is not null && _builder.CursorPropertyName is not null)
+        {
+            // Cursor pagination with projection: sort, apply cursor, project, materialize
+            IQueryable<TEntity> sorted = filtered.ApplySort(request.Sort, _builder);
+            return await ApplyCursorPaginationWithProjectionAsync(
+                sorted, request.Cursor, pageSize, projection, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        // Offset pagination with projection
         int page = request.Page ?? 1;
         if (page < 1)
         {
             page = 1;
         }
 
-        return await query.ApplyOffsetPaginationAsync(page, pageSize, request.SkipTotalCount, cancellationToken)
+        int? precomputedCount = request.SkipTotalCount
+            ? null
+            : await filtered.CountAsync(cancellationToken).ConfigureAwait(false);
+
+        IQueryable<TEntity> sorted2 = filtered.ApplySort(request.Sort, _builder);
+        int skip = (page - 1) * pageSize;
+
+        if (precomputedCount is null)
+        {
+            // Fetch pageSize + 1 to determine HasMore without COUNT(*)
+            List<TProjection> items = await sorted2
+                .Skip(skip)
+                .Take(pageSize + 1)
+                .Select(projection)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            bool hasMore = items.Count > pageSize;
+            if (hasMore)
+            {
+                items.RemoveAt(items.Count - 1);
+            }
+
+            return new PagedResult<TProjection>(items, TotalCount: null, HasMore: hasMore);
+        }
+
+        List<TProjection> pagedItems = await sorted2
+            .Skip(skip)
+            .Take(pageSize)
+            .Select(projection)
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
+
+        bool hasMorePages = skip + pagedItems.Count < precomputedCount.Value;
+        return new PagedResult<TProjection>(pagedItems, precomputedCount.Value, HasMore: hasMorePages);
     }
 
     /// <inheritdoc/>
@@ -54,15 +154,22 @@ internal sealed class QueryEngine<TEntity>(
         QueryRequest request,
         CancellationToken cancellationToken = default)
     {
+        using Activity? activity = QueryingEfCoreActivitySource.Source.StartActivity(QueryingEfCoreActivitySource.ExecuteGrouped);
+        activity?.SetTag("entity_type", EntityTypeName);
+        long startTimestamp = Stopwatch.GetTimestamp();
+
         if (string.IsNullOrWhiteSpace(request.GroupBy))
         {
             return new GroupedResult<TEntity>([], 0);
         }
 
-        IQueryable<TEntity> query = ApplyCommonFilters(source, request);
+        IQueryable<TEntity> query = ApplyCommonFilters(source.AsNoTracking(), request);
 
-        return await query.ApplyGroupByAsync(request.GroupBy, _builder, cancellationToken)
+        GroupedResult<TEntity> result = await query.ApplyGroupByAsync(request.GroupBy, _builder, cancellationToken)
             .ConfigureAwait(false);
+
+        RecordMetrics("grouped", startTimestamp);
+        return result;
     }
 
     /// <inheritdoc/>
@@ -71,13 +178,30 @@ internal sealed class QueryEngine<TEntity>(
         QueryRequest request,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        IQueryable<TEntity> query = ApplyCommonFilters(source, request);
+        Activity? activity = QueryingEfCoreActivitySource.Source.StartActivity(QueryingEfCoreActivitySource.ExecuteStream);
+        activity?.SetTag("entity_type", EntityTypeName);
+        long startTimestamp = Stopwatch.GetTimestamp();
+
+        IQueryable<TEntity> query = ApplyCommonFilters(source.AsNoTracking(), request);
         query = query.ApplySort(request.Sort, _builder);
 
-        await foreach (TEntity entity in query.AsAsyncEnumerable().WithCancellation(cancellationToken).ConfigureAwait(false))
+        int limit = _builder.MaxStreamSizeValue;
+        int count = 0;
+
+        await foreach (TEntity entity in query.Take(limit).AsAsyncEnumerable().WithCancellation(cancellationToken).ConfigureAwait(false))
         {
+            count++;
             yield return entity;
         }
+
+        if (count >= limit)
+        {
+            QueryingEfCoreLog.StreamLimitReached(_logger, EntityTypeName, limit);
+            _metrics?.RecordStreamLimitReached(tenantId: null, EntityTypeName);
+        }
+
+        RecordMetrics("stream", startTimestamp);
+        activity?.Dispose();
     }
 
     /// <inheritdoc/>
@@ -125,9 +249,65 @@ internal sealed class QueryEngine<TEntity>(
             Pagination = new PaginationMeta(
                 _builder.DefaultPageSizeValue,
                 _builder.MaxPageSizeValue,
+                _builder.MaxStreamSizeValue,
                 _builder.CursorPropertyName is not null),
             DefaultSort = _builder.DefaultSortValue,
         };
+
+    private async Task<PagedResult<TProjection>> ApplyCursorPaginationWithProjectionAsync<TProjection>(
+        IQueryable<TEntity> sortedSource,
+        string cursor,
+        int pageSize,
+        Expression<Func<TEntity, TProjection>> projection,
+        CancellationToken cancellationToken)
+    {
+        // Apply cursor filter on entity query, then project
+        // We reuse the cursor pagination logic but inline it here to project before materializing
+        string cursorPropertyName = _builder.CursorPropertyName!;
+        System.Reflection.PropertyInfo? property = typeof(TEntity).GetProperty(
+            cursorPropertyName,
+            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.IgnoreCase);
+
+        IQueryable<TEntity> query = sortedSource;
+
+        if (property is not null && !string.IsNullOrEmpty(cursor))
+        {
+            string? cursorValue = CursorEncoder.Decode<string>(cursor, _logger);
+            if (cursorValue is not null)
+            {
+                object? converted = FilterExpressionBuilder.ConvertValue(
+                    cursorValue,
+                    Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType,
+                    _logger, cursorPropertyName);
+
+                if (converted is not null)
+                {
+                    ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "e");
+                    MemberExpression member = Expression.Property(parameter, property);
+                    ConstantExpression constant = Expression.Constant(converted, property.PropertyType);
+                    BinaryExpression greaterThan = Expression.GreaterThan(member, constant);
+                    var predicate = Expression.Lambda<Func<TEntity, bool>>(greaterThan, parameter);
+                    query = query.Where(predicate);
+                }
+            }
+        }
+
+        List<TProjection> items = await query
+            .Take(pageSize + 1)
+            .Select(projection)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        bool hasMore = items.Count > pageSize;
+        if (hasMore)
+        {
+            items.RemoveAt(items.Count - 1);
+        }
+
+        // Note: NextCursor cannot be computed from projected items (we don't know the cursor property value)
+        // Cursor pagination with projection does not support NextCursor
+        return new PagedResult<TProjection>(items, TotalCount: null, HasMore: hasMore);
+    }
 
     private IQueryable<TEntity> ApplyCommonFilters(IQueryable<TEntity> source, QueryRequest request)
     {
@@ -137,7 +317,7 @@ internal sealed class QueryEngine<TEntity>(
         if (request.Filter is not null)
         {
             List<FilterCriteria> criteria = ParseFilterCriteria(request.Filter);
-            query = query.ApplyFilters(criteria, _builder);
+            query = query.ApplyFilters(criteria, _builder, _logger);
         }
 
         // Apply presets
@@ -146,10 +326,10 @@ internal sealed class QueryEngine<TEntity>(
         // Apply quick filters
         query = query.ApplyQuickFilters(request.QuickFilters, _builder);
 
-        // Apply global search
+        // Apply global search via strategy (default: ContainsSearchStrategy = LIKE '%term%')
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
-            query = query.ApplyGlobalSearch(request.Search, _builder);
+            query = _searchStrategy.ApplySearch(query, request.Search, _builder.GlobalSearchProperties);
         }
 
         return query;
@@ -187,5 +367,17 @@ internal sealed class QueryEngine<TEntity>(
         }
 
         return criteria;
+    }
+
+    private void RecordMetrics(string mode, long startTimestamp)
+    {
+        if (_metrics is null)
+        {
+            return;
+        }
+
+        double elapsed = Stopwatch.GetElapsedTime(startTimestamp).TotalSeconds;
+        _metrics.RecordQueryExecuted(tenantId: null, EntityTypeName, mode);
+        _metrics.RecordQueryDuration(tenantId: null, EntityTypeName, mode, elapsed);
     }
 }

@@ -2,6 +2,7 @@ using Granit.Querying.EntityFrameworkCore.Internal;
 using Granit.Querying.Filtering;
 using Granit.Querying.Meta;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 
@@ -58,7 +59,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
     public async Task ExecuteAsync_returns_paged_result()
     {
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -74,7 +75,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
     public async Task ExecuteAsync_applies_filter()
     {
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -92,7 +93,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
     public async Task ExecuteAsync_applies_search()
     {
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -111,7 +112,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
     public async Task ExecuteAsync_applies_sort()
     {
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -129,7 +130,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
     public async Task ExecuteAsync_clamps_page_size()
     {
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -143,7 +144,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
     public async Task ExecuteAsync_pages_correctly()
     {
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         PagedResult<TestProduct> page1 = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -174,7 +175,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
     public void GetMetadata_returns_complete_metadata()
     {
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         QueryMetadata metadata = engine.GetMetadata();
 
@@ -193,7 +194,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
     public async Task ExecuteAsync_applies_quick_filter()
     {
         QuickFilterDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         // Explicitly activate "Expensive" quick filter
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
@@ -208,7 +209,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
     public async Task ExecuteAsync_applies_default_quick_filters_when_none_specified()
     {
         QuickFilterDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         // No quick filters specified → default "Active" filter applied
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
@@ -224,7 +225,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
     public async Task ExecuteAsync_combines_quick_filters_with_AND()
     {
         QuickFilterDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         // Activate both "Expensive" and "Active" → AND semantics
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
@@ -239,7 +240,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
     public void GetMetadata_includes_quick_filters()
     {
         QuickFilterDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         QueryMetadata metadata = engine.GetMetadata();
 
@@ -256,7 +257,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
     public void GetMetadata_includes_filter_operators_for_fields()
     {
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
 
         QueryMetadata metadata = engine.GetMetadata();
 

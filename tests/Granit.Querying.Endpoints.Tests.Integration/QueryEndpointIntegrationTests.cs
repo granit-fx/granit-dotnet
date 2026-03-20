@@ -154,7 +154,7 @@ public sealed class QueryEndpointIntegrationTests : IAsyncDisposable
             QuickFilters = [],
             DateFilters = [],
             GroupByFields = [],
-            Pagination = new PaginationMeta(20, 100, false),
+            Pagination = new PaginationMeta(20, 100, QueryingDefaults.MaxStreamSize, false),
             DefaultSort = "-Price",
         };
 
@@ -190,7 +190,7 @@ public sealed class QueryEndpointIntegrationTests : IAsyncDisposable
             QuickFilters = [],
             DateFilters = [],
             GroupByFields = [],
-            Pagination = new PaginationMeta(20, 100, false),
+            Pagination = new PaginationMeta(20, 100, QueryingDefaults.MaxStreamSize, false),
             DefaultSort = null,
         };
 

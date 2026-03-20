@@ -22,4 +22,7 @@ public sealed class QueryingOptions
 
     /// <summary>Maximum allowed page size. Default: <c>100</c>.</summary>
     public int MaxPageSize { get; set; } = QueryingDefaults.MaxPageSize;
+
+    /// <summary>Maximum number of items returned by streaming queries. Default: <c>100_000</c>.</summary>
+    public int MaxStreamSize { get; set; } = QueryingDefaults.MaxStreamSize;
 }

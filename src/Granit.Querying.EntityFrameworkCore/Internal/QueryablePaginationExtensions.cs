@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Granit.Querying.EntityFrameworkCore.Internal;
 
@@ -11,17 +12,19 @@ internal static class QueryablePaginationExtensions
 {
     /// <summary>
     /// Applies offset pagination (page/pageSize) and returns a <see cref="PagedResult{T}"/>.
+    /// When <paramref name="precomputedCount"/> is provided, skips the <c>COUNT(*)</c> query.
+    /// When <c>null</c>, fetches <c>pageSize + 1</c> to determine <c>HasMore</c> without counting.
     /// </summary>
     public static async Task<PagedResult<T>> ApplyOffsetPaginationAsync<T>(
         this IQueryable<T> source,
         int page,
         int pageSize,
-        bool skipTotalCount,
+        int? precomputedCount,
         CancellationToken cancellationToken)
     {
         int skip = (page - 1) * pageSize;
 
-        if (skipTotalCount)
+        if (precomputedCount is null)
         {
             // Fetch pageSize + 1 to determine HasMore without COUNT(*)
             List<T> items = await source
@@ -39,7 +42,7 @@ internal static class QueryablePaginationExtensions
             return new PagedResult<T>(items, TotalCount: null, HasMore: hasMore);
         }
 
-        int totalCount = await source.CountAsync(cancellationToken).ConfigureAwait(false);
+        int totalCount = precomputedCount.Value;
 
         List<T> pagedItems = await source
             .Skip(skip)
@@ -53,20 +56,25 @@ internal static class QueryablePaginationExtensions
 
     /// <summary>
     /// Applies keyset/cursor pagination and returns a <see cref="PagedResult{T}"/>.
+    /// When <paramref name="effectiveSort"/> is provided, uses composite cursor encoding
+    /// (all sort field values in the cursor) for correct keyset semantics with dynamic sorting.
+    /// Falls back to legacy single-field cursor for backward compatibility.
     /// </summary>
     public static async Task<PagedResult<T>> ApplyCursorPaginationAsync<T>(
         this IQueryable<T> source,
         string? cursor,
         int pageSize,
         string cursorPropertyName,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        ILogger? logger = null,
+        string? effectiveSort = null)
         where T : class
     {
-        PropertyInfo? property = typeof(T).GetProperty(
+        PropertyInfo? cursorProperty = typeof(T).GetProperty(
             cursorPropertyName,
             BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 
-        if (property is null)
+        if (cursorProperty is null)
         {
             List<T> fallback = await source.Take(pageSize).ToListAsync(cancellationToken).ConfigureAwait(false);
             return new PagedResult<T>(fallback, TotalCount: null, HasMore: false);
@@ -74,25 +82,55 @@ internal static class QueryablePaginationExtensions
 
         IQueryable<T> query = source;
 
+        // Parse sort fields for composite cursor support
+        List<CompositeCursorBuilder.SortField> sortFields = [];
+        if (!string.IsNullOrWhiteSpace(effectiveSort))
+        {
+            sortFields = CompositeCursorBuilder.ParseSortFields<T>(effectiveSort);
+
+            // Ensure cursor property is included as tiebreaker (append if missing)
+            if (!sortFields.Exists(f => f.Property.Name.Equals(cursorPropertyName, StringComparison.OrdinalIgnoreCase)))
+            {
+                sortFields.Add(new CompositeCursorBuilder.SortField(cursorProperty, Descending: false));
+            }
+        }
+
         if (!string.IsNullOrEmpty(cursor))
         {
-            // Decode cursor and filter WHERE property > cursorValue
-            string? cursorValue = CursorEncoder.Decode<string>(cursor);
-            if (cursorValue is not null)
-            {
-                object? converted = FilterExpressionBuilder.ConvertValue(
-                    cursorValue,
-                    Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType);
+            // Try composite cursor first
+            Dictionary<string, string>? compositeValues = CursorEncoder.DecodeComposite(cursor, logger);
 
-                if (converted is not null)
+            if (compositeValues is not null && sortFields.Count > 0)
+            {
+                // Composite cursor: build compound WHERE from sort fields
+                Expression<Func<T, bool>>? predicate = CompositeCursorBuilder.BuildCursorPredicate<T>(
+                    sortFields, compositeValues, logger);
+
+                if (predicate is not null)
                 {
-                    ParameterExpression parameter = Expression.Parameter(typeof(T), "e");
-                    MemberExpression member = Expression.Property(parameter, property);
-                    ConstantExpression constant = Expression.Constant(converted, property.PropertyType);
-                    BinaryExpression greaterThan = Expression.GreaterThan(member, constant);
-                    var predicate =
-                        Expression.Lambda<Func<T, bool>>(greaterThan, parameter);
                     query = query.Where(predicate);
+                }
+            }
+            else
+            {
+                // Legacy single-field cursor: WHERE cursorProperty > cursorValue
+                string? cursorValue = CursorEncoder.Decode<string>(cursor, logger);
+                if (cursorValue is not null)
+                {
+                    object? converted = FilterExpressionBuilder.ConvertValue(
+                        cursorValue,
+                        Nullable.GetUnderlyingType(cursorProperty.PropertyType) ?? cursorProperty.PropertyType,
+                        logger, cursorPropertyName);
+
+                    if (converted is not null)
+                    {
+                        ParameterExpression parameter = Expression.Parameter(typeof(T), "e");
+                        MemberExpression member = Expression.Property(parameter, cursorProperty);
+                        ConstantExpression constant = Expression.Constant(converted, cursorProperty.PropertyType);
+                        BinaryExpression greaterThan = Expression.GreaterThan(member, constant);
+                        var predicate = Expression.Lambda<Func<T, bool>>(greaterThan, parameter);
+                        query = query.Where(predicate);
+                    }
                 }
             }
         }
@@ -109,10 +147,20 @@ internal static class QueryablePaginationExtensions
         {
             items.RemoveAt(items.Count - 1);
             T lastItem = items[^1];
-            object? lastValue = property.GetValue(lastItem);
-            if (lastValue is not null)
+
+            if (sortFields.Count > 0)
             {
-                nextCursor = CursorEncoder.Encode(lastValue.ToString()!);
+                // Composite cursor: encode all sort field values
+                nextCursor = CompositeCursorBuilder.EncodeCompositeCursor(lastItem, sortFields);
+            }
+            else
+            {
+                // Legacy single-field cursor
+                object? lastValue = cursorProperty.GetValue(lastItem);
+                if (lastValue is not null)
+                {
+                    nextCursor = CursorEncoder.Encode(lastValue.ToString()!);
+                }
             }
         }
 

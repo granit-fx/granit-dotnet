@@ -71,6 +71,7 @@ interface QueryParams {
   readonly pageSize?: number;
   readonly cursor?: string;           // opaque cursor for keyset pagination
   readonly search?: string;           // global full-text search
+  readonly skipTotalCount?: boolean;  // skip COUNT(*) for faster queries
   readonly filters?: readonly FilterEntry[];
   readonly sort?: readonly SortEntry[];
   readonly presets?: Readonly<Record<string, readonly string[]>>;
@@ -114,8 +115,9 @@ interface SortEntry {
 ```ts
 interface PagedResult<T> {
   readonly items: readonly T[];
-  readonly totalCount: number;
-  readonly nextCursor?: string;
+  readonly totalCount: number | null; // null when skipTotalCount=true or cursor pagination
+  readonly hasMore: boolean;          // always computed, safe for "Load more" UIs
+  readonly nextCursor?: string;       // opaque — composite cursor encoding sort field values
 }
 
 interface GroupedResult<T> {
@@ -133,6 +135,13 @@ interface GroupEntry<T> {
 }
 ```
 
+:::tip[`hasMore` vs `totalCount`]
+When `skipTotalCount` is `true`, the backend fetches `pageSize + 1` rows to determine
+`hasMore` without running a `COUNT(*)` — useful for large tables where counting is
+expensive. The `totalCount` field will be `null` in this case. Use `hasMore` for
+"Load more" / infinite scroll UIs, and `totalCount` for traditional page navigation.
+:::
+
 ### Query metadata
 
 ```ts
@@ -146,6 +155,13 @@ interface QueryMetadata {
   readonly groupByFields: readonly GroupByField[];
   readonly pagination: PaginationMeta;
   readonly defaultSort?: string;
+}
+
+interface PaginationMeta {
+  readonly defaultPageSize: number;  // e.g. 20
+  readonly maxPageSize: number;      // e.g. 100
+  readonly maxStreamSize: number;    // e.g. 100_000 — ceiling for export streaming
+  readonly supportsCursor: boolean;  // true when keyset pagination is available
 }
 
 interface ColumnDefinition {
@@ -258,6 +274,31 @@ const OPERATOR_LABELS: Record<FilterOperator, string>;
 function inferOperators(clrType: string): readonly FilterOperator[];
 ```
 
+### Pagination modes
+
+The backend supports two pagination strategies. The frontend should choose based on UX:
+
+| Mode                 | When to use                             | Query params         | Response shape                            |
+| -------------------- | --------------------------------------- | -------------------- | ----------------------------------------- |
+| **Offset** (default) | Page navigation, data grids             | `page`, `pageSize`   | `totalCount` + `hasMore`                  |
+| **Cursor** (keyset)  | Infinite scroll, large datasets (100K+) | `cursor`, `pageSize` | `hasMore` + `nextCursor`, no `totalCount` |
+
+**Cursor pagination details:**
+
+- Cursors are **opaque** — the frontend must never parse or construct them.
+- The backend encodes all active sort field values into the cursor (composite keyset).
+  This means changing the sort order **invalidates existing cursors** — reset to
+  `cursor: undefined` when the user changes sort.
+- Check `pagination.supportsCursor` in the metadata before enabling cursor mode.
+- When combining cursor pagination with sorting, the backend automatically appends the
+  cursor property as a tiebreaker if it is not already in the sort specification.
+
+**`skipTotalCount` optimization:**
+
+For large tables, pass `skipTotalCount: true` to avoid the `COUNT(*)` query. The backend
+fetches `pageSize + 1` rows to compute `hasMore` without counting. Use this for "Load more"
+UIs where total count is not displayed.
+
 ## React bindings
 
 :::note[Framework-agnostic core]
@@ -327,12 +368,15 @@ interface UsePaginationReturn<T> {
 
 ### `useInfiniteScroll<T>(options)`
 
-Load-more pagination — accumulates items from successive pages.
+Load-more pagination — accumulates items from successive pages. Supports both offset
+and cursor modes. When `pagination.supportsCursor` is `true` in the metadata, the hook
+automatically uses cursor pagination with `skipTotalCount: true` for optimal performance
+on large datasets.
 
 ```ts
 interface UseInfiniteScrollReturn<T> {
   readonly items: readonly T[];
-  readonly totalCount: number;
+  readonly totalCount: number | null; // null when using cursor pagination
   readonly hasMore: boolean;
   readonly loadMore: () => void;
   readonly refresh: () => void;
@@ -410,8 +454,27 @@ interface UseSmartFilterReturn {
 | Saved views hook | `useSavedViews()` | `@granit/react-querying` |
 | Smart filter | `useSmartFilter()` | `@granit/react-querying` |
 
+## Backend pipeline overview
+
+Understanding the backend pipeline helps frontend developers know what happens when
+query params are sent to `GET /api/{entity}`:
+
+1. **Filtering** — `filter[field.op]=value` validated against a whitelist of filterable columns
+2. **Presets** — OR within each group, AND between groups (mutually exclusive toggles)
+3. **Quick filters** — independent toggleable predicates (AND semantics)
+4. **Global search** — `search=term` across declared properties (pluggable strategy — default: `LIKE '%term%'`)
+5. **Count** — `COUNT(*)` on the filtered (unsorted) query (skipped when `skipTotalCount=true`)
+6. **Sort** — `sort=-createdAt,name` validated against sortable column whitelist
+7. **Pagination** — offset (`Skip/Take`) or keyset (composite cursor `WHERE` clause)
+
+Key constraints enforced server-side:
+
+- `pageSize` is clamped to `maxPageSize` (default 100) — the frontend cannot request unlimited rows
+- Non-whitelisted filter/sort fields are silently ignored
+- Streaming exports are capped at `maxStreamSize` (default 100K rows)
+
 ## See also
 
-- [Granit.Querying module](/dotnet/data/persistence/) — .NET whitelist-first querying with expression trees
+- [Granit.Querying module](/dotnet/business/querying/) — .NET whitelist-first querying with expression trees
 - [Notifications](/frontend/infrastructure/notifications/) — Uses `useInfiniteScroll` from this package for the notification inbox
 - [Data Exchange](./data-exchange/) — Uses `@granit/utils` for shared formatting

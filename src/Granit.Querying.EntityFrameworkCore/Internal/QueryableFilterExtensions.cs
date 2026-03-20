@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Granit.Querying.Filtering;
+using Microsoft.Extensions.Logging;
 
 namespace Granit.Querying.EntityFrameworkCore.Internal;
 
@@ -15,7 +16,8 @@ internal static class QueryableFilterExtensions
     public static IQueryable<TEntity> ApplyFilters<TEntity>(
         this IQueryable<TEntity> source,
         IReadOnlyList<FilterCriteria> criteria,
-        QueryDefinitionBuilder<TEntity> builder)
+        QueryDefinitionBuilder<TEntity> builder,
+        ILogger? logger = null)
         where TEntity : class
     {
         var filterableFields = builder.Columns
@@ -33,7 +35,7 @@ internal static class QueryableFilterExtensions
             }
 
             Expression<Func<TEntity, bool>>? predicate =
-                FilterExpressionBuilder.Build<TEntity>(criterion);
+                FilterExpressionBuilder.Build<TEntity>(criterion, logger);
 
             if (predicate is not null)
             {
@@ -47,6 +49,7 @@ internal static class QueryableFilterExtensions
     /// <summary>
     /// Applies global free-text search across all declared global search properties.
     /// Uses OR semantics (any property matching satisfies the search).
+    /// Delegates to <see cref="ContainsSearchStrategy{TEntity}"/> for the actual implementation.
     /// </summary>
     public static IQueryable<TEntity> ApplyGlobalSearch<TEntity>(
         this IQueryable<TEntity> source,
@@ -54,39 +57,7 @@ internal static class QueryableFilterExtensions
         QueryDefinitionBuilder<TEntity> builder)
         where TEntity : class
     {
-        if (string.IsNullOrWhiteSpace(searchTerm) || builder.GlobalSearchProperties.Count == 0)
-        {
-            return source;
-        }
-
-        ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "e");
-        Expression? combined = null;
-
-        foreach (string propertyName in builder.GlobalSearchProperties)
-        {
-            MemberExpression member = Expression.Property(parameter, propertyName);
-            if (member.Type != typeof(string))
-            {
-                continue;
-            }
-
-            // e.Property != null && e.Property.Contains(searchTerm)
-            Expression notNull = Expression.NotEqual(member, Expression.Constant(null, typeof(string)));
-            Expression contains = Expression.Call(
-                member,
-                typeof(string).GetMethod(nameof(string.Contains), [typeof(string)])!,
-                Expression.Constant(searchTerm));
-            Expression predicate = Expression.AndAlso(notNull, contains);
-
-            combined = combined is null ? predicate : Expression.OrElse(combined, predicate);
-        }
-
-        if (combined is null)
-        {
-            return source;
-        }
-
-        return source.Where(Expression.Lambda<Func<TEntity, bool>>(combined, parameter));
+        return new ContainsSearchStrategy<TEntity>().ApplySearch(source, searchTerm, builder.GlobalSearchProperties);
     }
 
     /// <summary>

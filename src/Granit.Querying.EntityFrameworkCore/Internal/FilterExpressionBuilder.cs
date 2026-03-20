@@ -1,7 +1,9 @@
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
+using Granit.Querying.EntityFrameworkCore.Diagnostics;
 using Granit.Querying.Filtering;
+using Microsoft.Extensions.Logging;
 
 namespace Granit.Querying.EntityFrameworkCore.Internal;
 
@@ -25,8 +27,10 @@ internal static class FilterExpressionBuilder
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <param name="criteria">The filter criterion.</param>
+    /// <param name="logger">Optional logger for diagnosing conversion failures.</param>
     /// <returns>A predicate expression, or <c>null</c> if the property is not found.</returns>
-    public static Expression<Func<TEntity, bool>>? Build<TEntity>(FilterCriteria criteria)
+    public static Expression<Func<TEntity, bool>>? Build<TEntity>(
+        FilterCriteria criteria, ILogger? logger = null)
         where TEntity : class
     {
         PropertyInfo? property = typeof(TEntity).GetProperty(
@@ -35,6 +39,11 @@ internal static class FilterExpressionBuilder
 
         if (property is null)
         {
+            if (logger is not null)
+            {
+                QueryingEfCoreLog.FilterFieldNotFound(logger, criteria.Field, typeof(TEntity).Name);
+            }
+
             return null;
         }
 
@@ -44,16 +53,16 @@ internal static class FilterExpressionBuilder
 
         Expression? body = criteria.Operator switch
         {
-            FilterOperator.Eq => BuildEqualsExpression(member, criteria.Value, propertyType),
+            FilterOperator.Eq => BuildEqualsExpression(member, criteria.Value, propertyType, logger, criteria.Field),
             FilterOperator.Contains => BuildStringMethodExpression(member, criteria.Value, StringContainsMethod),
             FilterOperator.StartsWith => BuildStringMethodExpression(member, criteria.Value, StringStartsWithMethod),
             FilterOperator.EndsWith => BuildStringMethodExpression(member, criteria.Value, StringEndsWithMethod),
-            FilterOperator.Gt => BuildComparisonExpression(member, criteria.Value, propertyType, Expression.GreaterThan),
-            FilterOperator.Gte => BuildComparisonExpression(member, criteria.Value, propertyType, Expression.GreaterThanOrEqual),
-            FilterOperator.Lt => BuildComparisonExpression(member, criteria.Value, propertyType, Expression.LessThan),
-            FilterOperator.Lte => BuildComparisonExpression(member, criteria.Value, propertyType, Expression.LessThanOrEqual),
-            FilterOperator.In => BuildInExpression(member, criteria.Value, propertyType),
-            FilterOperator.Between => BuildBetweenExpression(member, criteria.Value, propertyType),
+            FilterOperator.Gt => BuildComparisonExpression(member, criteria.Value, propertyType, Expression.GreaterThan, logger, criteria.Field),
+            FilterOperator.Gte => BuildComparisonExpression(member, criteria.Value, propertyType, Expression.GreaterThanOrEqual, logger, criteria.Field),
+            FilterOperator.Lt => BuildComparisonExpression(member, criteria.Value, propertyType, Expression.LessThan, logger, criteria.Field),
+            FilterOperator.Lte => BuildComparisonExpression(member, criteria.Value, propertyType, Expression.LessThanOrEqual, logger, criteria.Field),
+            FilterOperator.In => BuildInExpression(member, criteria.Value, propertyType, logger, criteria.Field),
+            FilterOperator.Between => BuildBetweenExpression(member, criteria.Value, propertyType, logger, criteria.Field),
             _ => null,
         };
 
@@ -66,9 +75,10 @@ internal static class FilterExpressionBuilder
     }
 
     private static BinaryExpression? BuildEqualsExpression(
-        MemberExpression member, string value, Type propertyType)
+        MemberExpression member, string value, Type propertyType,
+        ILogger? logger = null, string? field = null)
     {
-        object? converted = ConvertValue(value, propertyType);
+        object? converted = ConvertValue(value, propertyType, logger, field);
         if (converted is null && propertyType.IsValueType)
         {
             return null;
@@ -94,9 +104,10 @@ internal static class FilterExpressionBuilder
 
     private static BinaryExpression? BuildComparisonExpression(
         MemberExpression member, string value, Type propertyType,
-        Func<Expression, Expression, BinaryExpression> comparison)
+        Func<Expression, Expression, BinaryExpression> comparison,
+        ILogger? logger = null, string? field = null)
     {
-        object? converted = ConvertValue(value, propertyType);
+        object? converted = ConvertValue(value, propertyType, logger, field);
         if (converted is null)
         {
             return null;
@@ -118,14 +129,15 @@ internal static class FilterExpressionBuilder
     }
 
     private static Expression? BuildInExpression(
-        MemberExpression member, string value, Type propertyType)
+        MemberExpression member, string value, Type propertyType,
+        ILogger? logger = null, string? field = null)
     {
         string[] parts = value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         List<object> values = [];
 
         foreach (string part in parts)
         {
-            object? converted = ConvertValue(part, propertyType);
+            object? converted = ConvertValue(part, propertyType, logger, field);
             if (converted is not null)
             {
                 values.Add(converted);
@@ -161,7 +173,8 @@ internal static class FilterExpressionBuilder
     }
 
     private static BinaryExpression? BuildBetweenExpression(
-        MemberExpression member, string value, Type propertyType)
+        MemberExpression member, string value, Type propertyType,
+        ILogger? logger = null, string? field = null)
     {
         string[] parts = value.Split(',', StringSplitOptions.TrimEntries);
         if (parts.Length != 2)
@@ -169,8 +182,8 @@ internal static class FilterExpressionBuilder
             return null;
         }
 
-        object? lower = ConvertValue(parts[0], propertyType);
-        object? upper = ConvertValue(parts[1], propertyType);
+        object? lower = ConvertValue(parts[0], propertyType, logger, field);
+        object? upper = ConvertValue(parts[1], propertyType, logger, field);
         if (lower is null || upper is null)
         {
             return null;
@@ -198,7 +211,8 @@ internal static class FilterExpressionBuilder
             Expression.LessThanOrEqual(left, upperExpr));
     }
 
-    internal static object? ConvertValue(string value, Type targetType)
+    internal static object? ConvertValue(
+        string value, Type targetType, ILogger? logger = null, string? field = null)
     {
         try
         {
@@ -244,8 +258,14 @@ internal static class FilterExpressionBuilder
 
             return Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
         }
-        catch
+        catch (Exception ex)
         {
+            if (logger is not null)
+            {
+                QueryingEfCoreLog.FilterValueConversionFailed(
+                    logger, field ?? "(unknown)", value, targetType.Name, ex);
+            }
+
             return null;
         }
     }

@@ -41,7 +41,7 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
         IQueryable<TestProduct> source = _db.Products.OrderBy(p => p.Name);
 
         PagedResult<TestProduct> result = await source.ApplyOffsetPaginationAsync(
-            1, 2, skipTotalCount: false, TestContext.Current.CancellationToken);
+            1, 2, precomputedCount: 5, TestContext.Current.CancellationToken);
 
         result.Items.Count.ShouldBe(2);
         result.TotalCount.ShouldBe(5);
@@ -55,7 +55,7 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
         IQueryable<TestProduct> source = _db.Products.OrderBy(p => p.Name);
 
         PagedResult<TestProduct> result = await source.ApplyOffsetPaginationAsync(
-            2, 2, skipTotalCount: false, TestContext.Current.CancellationToken);
+            2, 2, precomputedCount: 5, TestContext.Current.CancellationToken);
 
         result.Items.Count.ShouldBe(2);
         result.TotalCount.ShouldBe(5);
@@ -69,7 +69,7 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
         IQueryable<TestProduct> source = _db.Products.OrderBy(p => p.Name);
 
         PagedResult<TestProduct> result = await source.ApplyOffsetPaginationAsync(
-            3, 2, skipTotalCount: false, TestContext.Current.CancellationToken);
+            3, 2, precomputedCount: 5, TestContext.Current.CancellationToken);
 
         result.Items.Count.ShouldBe(1);
         result.TotalCount.ShouldBe(5);
@@ -82,7 +82,7 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
         IQueryable<TestProduct> source = _db.Products.OrderBy(p => p.Name);
 
         PagedResult<TestProduct> result = await source.ApplyOffsetPaginationAsync(
-            10, 2, skipTotalCount: false, TestContext.Current.CancellationToken);
+            10, 2, precomputedCount: 5, TestContext.Current.CancellationToken);
 
         result.Items.ShouldBeEmpty();
         result.TotalCount.ShouldBe(5);
@@ -94,7 +94,7 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
         IQueryable<TestProduct> source = _db.Products.OrderBy(p => p.Name);
 
         PagedResult<TestProduct> result = await source.ApplyOffsetPaginationAsync(
-            1, 2, skipTotalCount: false, TestContext.Current.CancellationToken);
+            1, 2, precomputedCount: 5, TestContext.Current.CancellationToken);
 
         result.HasMore.ShouldBeTrue();
     }
@@ -105,12 +105,12 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
         IQueryable<TestProduct> source = _db.Products.OrderBy(p => p.Name);
 
         PagedResult<TestProduct> result = await source.ApplyOffsetPaginationAsync(
-            3, 2, skipTotalCount: false, TestContext.Current.CancellationToken);
+            3, 2, precomputedCount: 5, TestContext.Current.CancellationToken);
 
         result.HasMore.ShouldBeFalse();
     }
 
-    // ── Offset pagination — skipTotalCount ────────────────────────────
+    // ── Offset pagination — null precomputedCount (skip total count) ──
 
     [Fact]
     public async Task ApplyOffsetPagination_skipTotalCount_returns_null_totalCount()
@@ -118,7 +118,7 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
         IQueryable<TestProduct> source = _db.Products.OrderBy(p => p.Name);
 
         PagedResult<TestProduct> result = await source.ApplyOffsetPaginationAsync(
-            1, 2, skipTotalCount: true, TestContext.Current.CancellationToken);
+            1, 2, precomputedCount: null, TestContext.Current.CancellationToken);
 
         result.TotalCount.ShouldBeNull();
         result.Items.Count.ShouldBe(2);
@@ -130,7 +130,7 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
         IQueryable<TestProduct> source = _db.Products.OrderBy(p => p.Name);
 
         PagedResult<TestProduct> result = await source.ApplyOffsetPaginationAsync(
-            1, 2, skipTotalCount: true, TestContext.Current.CancellationToken);
+            1, 2, precomputedCount: null, TestContext.Current.CancellationToken);
 
         result.HasMore.ShouldBeTrue();
         result.Items.Count.ShouldBe(2);
@@ -142,7 +142,7 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
         IQueryable<TestProduct> source = _db.Products.OrderBy(p => p.Name);
 
         PagedResult<TestProduct> result = await source.ApplyOffsetPaginationAsync(
-            3, 2, skipTotalCount: true, TestContext.Current.CancellationToken);
+            3, 2, precomputedCount: null, TestContext.Current.CancellationToken);
 
         result.HasMore.ShouldBeFalse();
         result.Items.Count.ShouldBe(1);
@@ -155,7 +155,7 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
 
         // 5 items, pageSize=5 => no extra item fetched
         PagedResult<TestProduct> result = await source.ApplyOffsetPaginationAsync(
-            1, 5, skipTotalCount: true, TestContext.Current.CancellationToken);
+            1, 5, precomputedCount: null, TestContext.Current.CancellationToken);
 
         result.HasMore.ShouldBeFalse();
         result.Items.Count.ShouldBe(5);

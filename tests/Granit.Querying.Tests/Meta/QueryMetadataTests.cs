@@ -18,7 +18,7 @@ public sealed class QueryMetadataTests
             QuickFilters = [new QuickFilterMeta("MyItems", "Mes éléments", true)],
             DateFilters = [new DateFilterMeta("CreatedAt", DatePeriod.ThisMonth, [DatePeriod.Today, DatePeriod.ThisMonth, DatePeriod.ThisYear])],
             GroupByFields = [new GroupByField("Status", "String")],
-            Pagination = new PaginationMeta(20, 100, true),
+            Pagination = new PaginationMeta(20, 100, QueryingDefaults.MaxStreamSize, true),
             DefaultSort = "-createdAt",
         };
 
@@ -87,10 +87,11 @@ public sealed class QueryMetadataTests
     [Fact]
     public void PaginationMeta_properties()
     {
-        PaginationMeta pagination = new(25, 200, false);
+        PaginationMeta pagination = new(25, 200, 50_000, false);
 
         pagination.DefaultPageSize.ShouldBe(25);
         pagination.MaxPageSize.ShouldBe(200);
+        pagination.MaxStreamSize.ShouldBe(50_000);
         pagination.SupportsCursor.ShouldBeFalse();
     }
 
@@ -116,7 +117,7 @@ public sealed class QueryMetadataTests
             QuickFilters = [],
             DateFilters = [],
             GroupByFields = [],
-            Pagination = new PaginationMeta(20, 100, false),
+            Pagination = new PaginationMeta(20, 100, QueryingDefaults.MaxStreamSize, false),
         };
 
         metadata.DefaultSort.ShouldBeNull();

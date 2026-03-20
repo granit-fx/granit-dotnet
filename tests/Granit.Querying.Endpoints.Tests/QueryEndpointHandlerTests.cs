@@ -274,7 +274,7 @@ public sealed class QueryEndpointHandlerTests
             QuickFilters = [],
             DateFilters = [],
             GroupByFields = [],
-            Pagination = new PaginationMeta(20, 100, false),
+            Pagination = new PaginationMeta(20, 100, QueryingDefaults.MaxStreamSize, false),
         };
 
     private static BindableQueryRequest CreateBindableRequest(QueryRequest queryRequest)
