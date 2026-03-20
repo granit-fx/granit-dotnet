@@ -59,8 +59,15 @@ public static class BlobStorageEndpointRouteBuilderExtensions
         group.MapWriteEndpoints();
         group.MapOperationEndpoints();
 
-        IBlobQueryableProvider? provider = endpoints.ServiceProvider.GetService<IBlobQueryableProvider>();
-        if (provider is not null)
+        // Use a temporary scope because IBlobQueryableProvider is Scoped
+        // when EF Core persistence is registered and cannot be resolved from the root provider.
+        bool hasQueryableProvider;
+        using (IServiceScope scope = endpoints.ServiceProvider.CreateScope())
+        {
+            hasQueryableProvider = scope.ServiceProvider.GetService<IBlobQueryableProvider>() is not null;
+        }
+
+        if (hasQueryableProvider)
         {
             group.MapQueryEndpoints<BlobDescriptor>(
                 "query",

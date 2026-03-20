@@ -60,10 +60,16 @@ public static class AIEndpointRouteBuilderExtensions
             .RequireAuthorization(AIAuthorizationPolicy.AdminPolicyName);
         adminGroup.MapWorkspaceEndpoints();
 
-        // Admin endpoints — usage tracking via Granit.Querying
-        IAIUsageQueryableProvider? usageProvider =
-            endpoints.ServiceProvider.GetService<IAIUsageQueryableProvider>();
-        if (usageProvider is not null)
+        // Admin endpoints — usage tracking via Granit.Querying.
+        // Use a temporary scope because IAIUsageQueryableProvider is Scoped
+        // when EF Core persistence is registered and cannot be resolved from the root provider.
+        bool hasQueryableProvider;
+        using (IServiceScope scope = endpoints.ServiceProvider.CreateScope())
+        {
+            hasQueryableProvider = scope.ServiceProvider.GetService<IAIUsageQueryableProvider>() is not null;
+        }
+
+        if (hasQueryableProvider)
         {
             RouteGroupBuilder usageGroup = group.MapGroup("")
                 .WithTags(options.UsageTagName)

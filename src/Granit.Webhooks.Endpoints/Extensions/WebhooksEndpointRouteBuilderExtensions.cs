@@ -65,9 +65,16 @@ public static class WebhooksEndpointRouteBuilderExtensions
         group.MapLifecycleEndpoints();
         group.MapOperationEndpoints();
 
-        // Query endpoints for subscription list and delivery attempts
-        IWebhookQueryableProvider? provider = endpoints.ServiceProvider.GetService<IWebhookQueryableProvider>();
-        if (provider is not null)
+        // Query endpoints for subscription list and delivery attempts.
+        // Use a temporary scope because IWebhookQueryableProvider is Scoped
+        // when EF Core persistence is registered and cannot be resolved from the root provider.
+        bool hasQueryableProvider;
+        using (IServiceScope scope = endpoints.ServiceProvider.CreateScope())
+        {
+            hasQueryableProvider = scope.ServiceProvider.GetService<IWebhookQueryableProvider>() is not null;
+        }
+
+        if (hasQueryableProvider)
         {
             group.MapQueryEndpoints<WebhookSubscription>(
                 "subscriptions/query",
