@@ -169,7 +169,6 @@ segments). Enforced across all `*.Endpoints` modules.
 - **Localization resource**: `internal sealed class {Module}EndpointsLocalizationResource` with `[LocalizationResourceName]`
 - **Auto-discovery**: providers are auto-discovered by `GranitAuthorizationModule` (no manual registration)
 - **Standard actions**: use `Read` for consultation (never `View`), `Manage` for grouped write operations, `Execute` for single actions
-
 ### Events — naming convention (STRICT)
 
 Two event categories with **mandatory suffixes** — enforced by architecture tests:
