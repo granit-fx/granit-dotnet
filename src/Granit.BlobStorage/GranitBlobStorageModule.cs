@@ -1,6 +1,9 @@
 using Granit.BackgroundJobs;
+using Granit.BlobStorage.Diagnostics;
 using Granit.Core.Modularity;
 using Granit.Guids;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.BlobStorage;
 
@@ -21,4 +24,10 @@ namespace Granit.BlobStorage;
 [DependsOn(
     typeof(GranitBackgroundJobsModule),
     typeof(GranitGuidsModule))]
-public sealed class GranitBlobStorageModule : GranitModule;
+public sealed class GranitBlobStorageModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddSingleton<BlobStorageMetrics>();
+    }
+}

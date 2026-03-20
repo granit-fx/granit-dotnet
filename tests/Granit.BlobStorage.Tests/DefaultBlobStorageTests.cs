@@ -1,3 +1,5 @@
+using System.Diagnostics.Metrics;
+using Granit.BlobStorage.Diagnostics;
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Exceptions;
 using Granit.BlobStorage.Internal;
@@ -5,6 +7,7 @@ using Granit.BlobStorage.Options;
 using Granit.Core.MultiTenancy;
 using Granit.Guids;
 using Granit.Timing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -26,6 +29,7 @@ public sealed class DefaultBlobStorageTests
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
+    private readonly BlobStorageMetrics _metrics = new(new ServiceCollection().AddMetrics().BuildServiceProvider().GetRequiredService<IMeterFactory>());
     private readonly DefaultBlobStorage _sut;
 
     public DefaultBlobStorageTests()
@@ -44,6 +48,7 @@ public sealed class DefaultBlobStorageTests
             _guidGenerator,
             _clock,
             _currentTenant,
+            _metrics,
             NullLogger<DefaultBlobStorage>.Instance,
             Microsoft.Extensions.Options.Options.Create(new BlobStorageOptions()));
     }
@@ -137,6 +142,7 @@ public sealed class DefaultBlobStorageTests
             _reader, _writer, _keyStrategy, _storeProvider, _presignedUrlProvider,
             [],
             _guidGenerator, _clock, _currentTenant,
+            _metrics,
             NullLogger<DefaultBlobStorage>.Instance,
             Microsoft.Extensions.Options.Options.Create(customOptions));
 
@@ -426,6 +432,7 @@ public sealed class DefaultBlobStorageTests
     private DefaultBlobStorage BuildSutWithValidators(IBlobValidator[] blobValidators) =>
         new(_reader, _writer, _keyStrategy, _storeProvider, _presignedUrlProvider,
             blobValidators, _guidGenerator, _clock, _currentTenant,
+            _metrics,
             NullLogger<DefaultBlobStorage>.Instance,
             Microsoft.Extensions.Options.Options.Create(new BlobStorageOptions()));
 
