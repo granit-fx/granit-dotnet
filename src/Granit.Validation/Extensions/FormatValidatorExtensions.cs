@@ -57,4 +57,17 @@ public static partial class FormatValidatorExtensions
         ruleBuilder
             .Must(value => value != null && ColorHexRegex().IsMatch(value.Trim()))
             .WithErrorCodeAndMessage("Granit:Validation:InvalidColorHex");
+
+    // -------------------------------------------------------------------------
+    // Server-side single-field validation delegates
+    // -------------------------------------------------------------------------
+
+    internal static bool IsValidSlug(string? value) =>
+        value is not null && SlugRegex().IsMatch(value);
+
+    internal static bool IsValidBase64String(string? value) =>
+        value is not null && value.Length > 0 && Convert.TryFromBase64String(value, new byte[value.Length], out _);
+
+    internal static bool IsValidColorHex(string? value) =>
+        value is not null && ColorHexRegex().IsMatch(value.Trim());
 }

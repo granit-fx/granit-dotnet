@@ -70,7 +70,7 @@ The scope in parentheses maps to the Granit module area:
 | ----- | -------- |
 | `core` | `Granit.Core`, `Granit.Timing`, `Granit.Guids` |
 | `persistence` | `Granit.Persistence`, `Granit.Persistence.Migrations` |
-| `caching` | `Granit.Caching`, `Granit.Caching.Hybrid`, `Granit.Caching.StackExchangeRedis` |
+| `caching` | `Granit.Caching`, `Granit.Caching.StackExchangeRedis` |
 | `identity` | `Granit.Identity`, `Granit.Identity.Keycloak`, `Granit.Identity.EntityFrameworkCore` |
 | `notifications` | All `Granit.Notifications.*` packages |
 | `templating` | `Granit.Templating`, `Granit.Templating.Scriban`, `Granit.DocumentGeneration` |

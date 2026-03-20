@@ -50,7 +50,6 @@
     <Project Path="src/Granit.BlobStorage.S3/Granit.BlobStorage.S3.csproj" />
     <Project Path="src/Granit.BlobStorage/Granit.BlobStorage.csproj" />
     <Project Path="src/Granit.Http.Bulkhead/Granit.Http.Bulkhead.csproj" />
-    <Project Path="src/Granit.Caching.FusionCache/Granit.Caching.FusionCache.csproj" />
     <Project Path="src/Granit.Caching.StackExchangeRedis/Granit.Caching.StackExchangeRedis.csproj" />
     <Project Path="src/Granit.Caching/Granit.Caching.csproj" />
     <Project Path="src/Granit.Http.Cookies.Endpoints/Granit.Http.Cookies.Endpoints.csproj" />
@@ -161,6 +160,7 @@
     <Project Path="src/Granit.Timeline/Granit.Timeline.csproj" />
     <Project Path="src/Granit.Timing/Granit.Timing.csproj" />
     <Project Path="src/Granit.Validation.AI/Granit.Validation.AI.csproj" />
+    <Project Path="src/Granit.Validation.Endpoints/Granit.Validation.Endpoints.csproj" />
     <Project Path="src/Granit.Validation.Europe/Granit.Validation.Europe.csproj" />
     <Project Path="src/Granit.Validation.NorthAmerica/Granit.Validation.NorthAmerica.csproj" />
     <Project Path="src/Granit.Validation.UnitedKingdom/Granit.Validation.UnitedKingdom.csproj" />
@@ -352,6 +352,7 @@
     <Project Path="tests/Granit.Timeline.Tests/Granit.Timeline.Tests.csproj" />
     <Project Path="tests/Granit.Timing.Tests/Granit.Timing.Tests.csproj" />
     <Project Path="tests/Granit.Validation.AI.Tests/Granit.Validation.AI.Tests.csproj" />
+    <Project Path="tests/Granit.Validation.Endpoints.Tests/Granit.Validation.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Validation.Europe.Tests/Granit.Validation.Europe.Tests.csproj" />
     <Project Path="tests/Granit.Validation.NorthAmerica.Tests/Granit.Validation.NorthAmerica.Tests.csproj" />
     <Project Path="tests/Granit.Validation.UnitedKingdom.Tests/Granit.Validation.UnitedKingdom.Tests.csproj" />

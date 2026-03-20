@@ -77,7 +77,7 @@ application to production. Every item maps to a compliance requirement
 ## Cache (Redis)
 
 - [ ] Redis accessible and password-protected (credentials from Vault)
-- [ ] `[CacheEncrypted]` applied on types containing sensitive data
+- [ ] Encrypted serializer configured for FusionCache entries containing sensitive data
 - [ ] TTL configured to prevent memory exhaustion
 - [ ] Stampede protection active (Granit default configuration)
 

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Caching.StackExchangeRedis.Extensions;
 
@@ -15,13 +16,21 @@ namespace Granit.Caching.StackExchangeRedis.Extensions;
 public static class RedisCachingServiceCollectionExtensions
 {
     /// <summary>
-    /// Replaces the Memory provider with Redis as the <c>IDistributedCache</c>.
+    /// Upgrades FusionCache with L2 Redis distributed cache and Redis pub/sub backplane.
     /// Enables AES-256 encryption (<see cref="AesCacheValueEncryptor"/>) when
     /// <c>CachingOptions.EncryptValues = true</c>.
     /// </summary>
     /// <remarks>
-    /// The <c>IsEnabled</c> check is handled by the module (<c>GranitCachingRedisModule</c>).
-    /// Calling this method always registers the Redis provider.
+    /// <para>
+    /// Prerequisites: <c>AddGranitCaching()</c> must be called before this method
+    /// (via <c>GranitCachingModule</c> dependency).
+    /// </para>
+    /// <para>
+    /// This method upgrades the existing FusionCache instance (registered by <c>AddGranitCaching</c>)
+    /// by adding <c>WithRegisteredDistributedCache()</c> for L2 Redis and a Redis backplane
+    /// for cross-pod L1 invalidation. FusionCache's builder is additive — calling
+    /// <c>AddFusionCache()</c> again configures the same default cache instance.
+    /// </para>
     /// </remarks>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
@@ -34,7 +43,7 @@ public static class RedisCachingServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        // Remplace IDistributedCache (MemoryDistributedCache → RedisCache)
+        // Replace IDistributedCache (MemoryDistributedCache -> RedisCache)
         // Deferred configuration: reads RedisCachingOptions at resolution time.
         services.AddStackExchangeRedisCache(_ => { });
         services
@@ -56,6 +65,32 @@ public static class RedisCachingServiceCollectionExtensions
 
             return new NullCacheValueEncryptor();
         });
+
+        // Register IConnectionMultiplexer singleton (used by backplane + health check)
+        if (services.All(d => d.ServiceType != typeof(IConnectionMultiplexer)))
+        {
+            services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                RedisCachingOptions opts = sp.GetRequiredService<IOptions<RedisCachingOptions>>().Value;
+                return ConnectionMultiplexer.Connect(opts.Configuration);
+            });
+        }
+
+        // Upgrade FusionCache: add L2 distributed cache + Redis backplane
+        // FusionCache's builder is additive — this configures the same default cache instance
+        services.AddFusionCache()
+            .WithRegisteredDistributedCache();
+
+        // Backplane: Redis pub/sub for cross-pod L1 invalidation
+        services.AddFusionCacheStackExchangeRedisBackplane(_ => { });
+
+        // Deferred backplane configuration via options
+        services.AddOptions<ZiggyCreatures.Caching.Fusion.Backplane.StackExchangeRedis.RedisBackplaneOptions>()
+            .Configure<IConnectionMultiplexer>(
+                (backplane, mux) =>
+                {
+                    backplane.ConnectionMultiplexerFactory = () => Task.FromResult(mux);
+                });
 
         return services;
     }

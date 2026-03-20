@@ -61,4 +61,14 @@ public static partial class StandardValidatorExtensions
         ruleBuilder
             .Must(value => value != null && UuidRegex().IsMatch(value.Trim()))
             .WithErrorCodeAndMessage("Granit:Validation:InvalidUuid");
+
+    // -------------------------------------------------------------------------
+    // Server-side single-field validation delegates
+    // -------------------------------------------------------------------------
+
+    internal static bool IsValidIso8601Duration(string? value) =>
+        value is not null && Iso8601DurationRegex().IsMatch(value.Trim());
+
+    internal static bool IsValidUuid(string? value) =>
+        value is not null && UuidRegex().IsMatch(value.Trim());
 }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Caching.StackExchangeRedis</PackageId>
-    <Description>Redis provider for Granit.Caching. Replaces IDistributedCache (MemoryDistributedCache) with RedisCache (StackExchange.Redis). Enables AES-256 encryption automatically when CachingOptions.EncryptValues = true.</Description>
+    <Description>Redis provider for Granit.Caching. Upgrades FusionCache with L2 Redis distributed cache, Redis pub/sub backplane for cross-pod L1 invalidation, AES-256 encryption, and health checks.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -15,6 +15,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
     <PackageReference Include="StackExchange.Redis" />
+    <PackageReference Include="ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis" />
   </ItemGroup>
 
   <ItemGroup>

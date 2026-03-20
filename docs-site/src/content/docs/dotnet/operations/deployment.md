@@ -235,6 +235,6 @@ ISO 27001 compliance.
 | --- | --- |
 | Horizontal scaling | Stateless by design -- scale replicas freely. Wolverine uses durable PostgreSQL queues, so messages are not lost during scale events. |
 | Database connections | Each replica opens its own connection pool. Use PgBouncer to limit total connections to PostgreSQL. |
-| Redis | All replicas share the same Redis instance for distributed cache. HybridCache (L1 in-process + L2 Redis) reduces Redis load. |
+| Redis | All replicas share the same Redis instance for distributed cache. FusionCache (L1 in-process + L2 Redis) reduces Redis load. |
 | Background jobs | `Granit.BackgroundJobs` uses Wolverine scheduling. Jobs are durable and survive pod restarts. Only one replica executes each scheduled job (leader election via PostgreSQL advisory locks). |
 | Multi-tenancy | Tenant isolation is enforced at the query level (EF Core global filters). No per-tenant infrastructure is required unless data sovereignty demands physical separation. |

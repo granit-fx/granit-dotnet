@@ -24,7 +24,7 @@ flowchart BT
         EF["*.EntityFrameworkCore<br/>(DbContext, EF stores)"]
         S3["*.S3<br/>(S3BlobClient)"]
         VAULT["Granit.Vault<br/>(VaultClientFactory)"]
-        CACHE["Granit.Caching<br/>(DistributedCacheService)"]
+        CACHE["Granit.Caching<br/>(FusionCache + encryption)"]
     end
 
     subgraph Application

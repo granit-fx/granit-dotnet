@@ -314,13 +314,13 @@ Wolverine__RetryDelays__1=00:00:30
 | **Package** | -- | `Granit.Caching` | |
 | `Key` | `string?` | `null` | AES-256 key (base64, 32 bytes). From Vault in production. |
 
-### Hybrid cache -- `HybridCachingOptions`
+### FusionCache -- `FusionCacheOptions`
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| **Section** | -- | `Cache:Hybrid` | |
-| **Package** | -- | `Granit.Caching.Hybrid` | |
-| `LocalCacheExpiration` | `TimeSpan` | `00:00:30` | L1 (in-memory) expiration per pod. Max recommended: 60s. |
+| **Section** | -- | `Cache:FusionCache` | |
+| **Package** | -- | `Granit.Caching` | |
+| `DefaultEntryOptions:Duration` | `TimeSpan` | `00:05:00` | Default cache entry duration. |
 
 ### Redis cache -- `RedisCachingOptions`
 

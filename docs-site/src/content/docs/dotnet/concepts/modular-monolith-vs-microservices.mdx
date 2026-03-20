@@ -51,7 +51,7 @@ builder.AddGranit(granit =>
 {
     // Core infrastructure
     granit.AddModule<GranitPersistenceModule>();
-    granit.AddModule<GranitCachingHybridModule>();
+    granit.AddModule<GranitCachingModule>();
     granit.AddModule<GranitObservabilityModule>();
 
     // Domain modules — each owns its DbContext

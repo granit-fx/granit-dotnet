@@ -39,4 +39,14 @@ public static partial class ContactValidatorExtensions
         ruleBuilder
             .Must(value => value != null && E164Regex().IsMatch(value))
             .WithErrorCodeAndMessage("Granit:Validation:InvalidE164Phone");
+
+    // -------------------------------------------------------------------------
+    // Server-side single-field validation delegates
+    // -------------------------------------------------------------------------
+
+    internal static bool IsValidEmail(string? value) =>
+        value is not null && EmailRegex().IsMatch(value);
+
+    internal static bool IsValidE164Phone(string? value) =>
+        value is not null && E164Regex().IsMatch(value);
 }

@@ -1,4 +1,4 @@
-using Granit.Caching.FusionCache;
+using Granit.Caching;
 using Granit.Core.Modularity;
 using Granit.Features.Definitions;
 using Granit.Features.ValueProviders;
@@ -20,13 +20,13 @@ public sealed class GranitFeaturesModuleTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void Module_DependsOn_GranitCachingFusionCacheModule()
+    public void Module_DependsOn_GranitCachingModule()
     {
         var attributes = (DependsOnAttribute[])Attribute.GetCustomAttributes(
             typeof(GranitFeaturesModule), typeof(DependsOnAttribute));
 
         attributes.SelectMany(a => a.DependedTypes)
-                  .ShouldContain(typeof(GranitCachingFusionCacheModule));
+                  .ShouldContain(typeof(GranitCachingModule));
     }
 
     [Fact]

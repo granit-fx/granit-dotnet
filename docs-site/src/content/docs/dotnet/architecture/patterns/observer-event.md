@@ -83,10 +83,10 @@ public static class FeatureCacheInvalidationHandler
 {
     public static async Task Handle(
         FeatureValueChangedEvent evt,
-        HybridCache cache)
+        IFusionCache cache)
     {
         string cacheKey = FeatureCacheKey.Build(evt.TenantId, evt.FeatureName);
-        await cache.RemoveAsync(cacheKey);
+        await cache.ExpireAsync(cacheKey);
     }
 }
 

@@ -71,10 +71,25 @@ internal sealed class FluentValidationSchemaTransformer(
             // OpenAPI uses camelCase, FluentValidation uses PascalCase
             string pascalName = char.ToUpperInvariant(property.Key[0]) + property.Key[1..];
 
+            string? patternHint = null;
+
             foreach ((IPropertyValidator propertyValidator, IRuleComponent component)
                 in descriptor.GetValidatorsForMember(pascalName))
             {
+                if (propertyValidator is IPatternHintProvider hintProvider)
+                {
+                    patternHint = hintProvider.HintKey;
+                    continue;
+                }
+
                 ApplyConstraint(schema, propertySchema, propertyValidator, component, property.Key);
+            }
+
+            if (patternHint is not null && propertySchema.Pattern is not null)
+            {
+                propertySchema.Extensions ??= new Dictionary<string, IOpenApiExtension>();
+                propertySchema.Extensions["x-granit-pattern-hint"] =
+                    new JsonNodeExtension(JsonValue.Create(patternHint)!);
             }
         }
 

@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.Caching.FusionCache\Granit.Caching.FusionCache.csproj" />
+    <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
     <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
     <!-- Optional at runtime: ICurrentTenant resolved via GetService for cache key scoping -->
   </ItemGroup>

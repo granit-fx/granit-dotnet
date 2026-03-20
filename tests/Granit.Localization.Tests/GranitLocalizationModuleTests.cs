@@ -21,7 +21,7 @@ public sealed class GranitLocalizationModuleTests : IDisposable
     private static (ServiceConfigurationContext context, HostApplicationBuilder builder) CreateContext()
     {
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        // IFusionCache is a transitive dependency (via GranitCachingFusionCacheModule) — register manually for unit tests
+        // IFusionCache is a transitive dependency (via GranitCachingModule) — register manually for unit tests
         builder.Services.AddSingleton<IFusionCache>(new FusionCache(new FusionCacheOptions()));
         ServiceConfigurationContext context = new(
             builder.Services,

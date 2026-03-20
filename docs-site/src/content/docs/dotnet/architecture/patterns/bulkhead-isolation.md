@@ -121,14 +121,15 @@ services.AddHttpClient("keycloak-admin")
 
 ### 5. SemaphoreSlim -- anti-stampede per resource
 
-Shared resources (token cache, distributed cache) use `SemaphoreSlim(1, 1)` to
-serialize concurrent access during a cache miss. This mechanism prevents a
-request spike from generating N parallel calls to the same external service.
+Shared resources (token cache) use `SemaphoreSlim(1, 1)` to serialize
+concurrent access. This mechanism prevents a request spike from generating N
+parallel calls to the same external service. For distributed caching, FusionCache
+provides native stampede protection (no manual `SemaphoreSlim` needed).
 
 | Component | Protected resource | Pattern |
 | --- | --- | --- |
 | `KeycloakAdminTokenService` | Keycloak token | Double-check locking |
-| `DistributedCacheService` | Distributed cache | Double-check locking |
+| FusionCache | Distributed cache | Native stampede protection |
 
 ### 6. Channel-based isolation -- Webhooks
 
@@ -144,7 +145,7 @@ without interference.
 | `src/Granit.Wolverine/Extensions/WolverineHostApplicationBuilderExtensions.cs` | Queue routing for domain-events |
 | `src/Granit.RateLimiting/Internal/TenantPartitionedRateLimiter.cs` | Per-tenant isolation |
 | `src/Granit.Identity.Keycloak/Internal/KeycloakAdminTokenService.cs` | SemaphoreSlim anti-stampede |
-| `src/Granit.Caching/DistributedCacheService.cs` | SemaphoreSlim cache miss |
+| `src/Granit.Caching/` | FusionCache native stampede protection |
 | `src/Granit.Webhooks/Internal/WebhookDispatchWorker.cs` | Separate trigger/delivery channels |
 
 ## Rationale

@@ -63,4 +63,17 @@ public static partial class AddressValidatorExtensions
         ruleBuilder
             .Must(value => value != null && FrenchInseeCodeRegex().IsMatch(value))
             .WithErrorCodeAndMessage("Granit:Validation:InvalidFrenchInseeCode");
+
+    // -------------------------------------------------------------------------
+    // Server-side single-field validation delegates
+    // -------------------------------------------------------------------------
+
+    internal static bool IsValidFrenchPostalCode(string? value) =>
+        value is not null && FrenchPostalCodeRegex().IsMatch(value);
+
+    internal static bool IsValidBelgianPostalCode(string? value) =>
+        value is not null && BelgianPostalCodeRegex().IsMatch(value);
+
+    internal static bool IsValidFrenchInseeCode(string? value) =>
+        value is not null && FrenchInseeCodeRegex().IsMatch(value);
 }

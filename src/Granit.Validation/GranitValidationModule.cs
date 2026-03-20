@@ -7,6 +7,7 @@ using Granit.Localization.Options;
 using Granit.Validation.Extensions;
 using Granit.Validation.Internal;
 using Granit.Validation.OpenApi;
+using Granit.Validation.ServerValidation;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -54,6 +55,21 @@ public sealed class GranitValidationModule : GranitModule
             context.Services.AddValidatorsFromAssembly(
                 assembly, ServiceLifetime.Scoped, includeInternalTypes: true);
         }
+
+        // Auto-discover IServerValidatorContributor from all loaded module assemblies.
+        foreach (Assembly assembly in context.ModuleAssemblies)
+        {
+            IEnumerable<Type> contributorTypes = assembly.GetTypes()
+                .Where(t => t is { IsAbstract: false, IsInterface: false }
+                    && typeof(IServerValidatorContributor).IsAssignableFrom(t));
+
+            foreach (Type contributorType in contributorTypes)
+            {
+                context.Services.AddSingleton(typeof(IServerValidatorContributor), contributorType);
+            }
+        }
+
+        context.Services.AddSingleton<ServerValidatorRegistry>();
 
         // Enrich OpenAPI schemas with FluentValidation constraints
         // (maxLength, minLength, pattern, required, etc.)

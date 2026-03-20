@@ -33,7 +33,7 @@ issues and guarantees that cross-package contracts remain consistent.
 | ------------ | ------- | ------- |
 | **Major** (`X.0.0`) | Breaking changes -- public API removals, behavioral changes, required migrations | Removing a method from `IGuidGenerator` |
 | **Minor** (`0.X.0`) | New features, backward-compatible additions | Adding `Granit.Notifications.WhatsApp` |
-| **Patch** (`0.0.X`) | Bug fixes, performance improvements, documentation corrections | Fixing a race condition in `HybridCache` |
+| **Patch** (`0.0.X`) | Bug fixes, performance improvements, documentation corrections | Fixing a race condition in FusionCache serialization |
 
 ### Pre-release versions
 

@@ -101,7 +101,7 @@ public sealed class CachingTests : IAsyncDisposable
     {
         await _fixture.BuildAsync();
 
-        var cache = _fixture.GetRequiredService<ICacheService<string>>();
+        var cache = _fixture.GetRequiredService<IFusionCache>();
         cache.ShouldNotBeNull();
     }
 

@@ -22,7 +22,7 @@ Granit ships %%PACKAGE_COUNT%% packages. That level of granularity is great for 
 | **Api** | Essentials + ApiVersioning, ApiDocumentation, Cors, Http.Idempotency, Cookies | REST API projects |
 | **Documents** | Templating.Scriban, DocumentGeneration.Pdf, DocumentGeneration.Excel | Document generation |
 | **Notifications** | Notifications + Email.Smtp, Sms, Push, SignalR | Multi-channel notifications |
-| **SaaS** | Api + MultiTenancy, Settings, Features, Localization, BackgroundJobs, Caching.Hybrid | Full SaaS platform |
+| **SaaS** | Api + MultiTenancy, Settings, Features, Localization, BackgroundJobs, Caching | Full SaaS platform |
 
 Each bundle is a NuGet meta-package with no code of its own. It only declares dependencies on the modules it groups.
 
@@ -54,7 +54,7 @@ Each bundle is a NuGet meta-package with no code of its own. It only declares de
 | `Granit.Features` | | | | | ✓ |
 | `Granit.Localization` | | | | | ✓ |
 | `Granit.BackgroundJobs` | | | | | ✓ |
-| `Granit.Caching.Hybrid` | | | | | ✓ |
+| `Granit.Caching` | | | | | ✓ |
 
 SaaS inherits everything in Api, which inherits everything in Essentials.
 The `Notifications` and `Documents` bundles are standalone — add them on top of any base.

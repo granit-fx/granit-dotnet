@@ -241,18 +241,19 @@ to the redis server(s). UnableToConnect on localhost:6379/Interactive
 **Diagnosis**: Test connectivity with `redis-cli ping` from the application host.
 Check the connection string in your configuration.
 
-### HybridCache not invalidating
+### FusionCache not invalidating across pods
 
-**Symptom**: Stale data is served from cache after updates.
+**Symptom**: Stale data is served from cache after updates on another pod.
 
 **Common causes**:
 
 1. **Missing cache key invalidation**: After a write operation, the
-   corresponding cache entry was not removed or updated.
-2. **L1/L2 desynchronization**: The in-memory (L1) cache on one instance is not
-   aware of invalidation performed by another instance. HybridCache handles this
-   via Redis pub/sub, but only if the Redis backplane is correctly configured.
+   corresponding cache entry was not expired. Use `ExpireAsync` (not
+   `RemoveAsync`) so fail-safe can serve stale data as fallback.
+2. **Backplane not configured**: The Redis backplane propagates L1 invalidation
+   across pods. It requires `GranitCachingRedisModule` to be loaded and Redis
+   to support pub/sub.
 
-**Fix**: Verify that `AddGranitHybridCache()` is called with a valid Redis
-connection and that the Redis instance supports pub/sub (not all managed Redis
-services enable it by default).
+**Fix**: Verify that `GranitCachingRedisModule` is loaded (via the bundle or
+`[DependsOn]`) and that the Redis instance supports pub/sub (not all managed
+Redis services enable it by default). Check `Cache:Redis:IsEnabled` is `true`.

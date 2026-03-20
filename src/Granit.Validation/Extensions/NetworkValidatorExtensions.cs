@@ -78,4 +78,22 @@ public static partial class NetworkValidatorExtensions
         ruleBuilder
             .Must(value => value != null && MacAddressRegex().IsMatch(value.Trim()))
             .WithErrorCodeAndMessage("Granit:Validation:InvalidMacAddress");
+
+    // -------------------------------------------------------------------------
+    // Server-side single-field validation delegates
+    // -------------------------------------------------------------------------
+
+    internal static bool IsValidUrl(string? value) =>
+        value is not null && UrlRegex().IsMatch(value.Trim());
+
+    internal static bool IsValidIpv4Address(string? value) =>
+        value is not null && Ipv4Regex().IsMatch(value.Trim());
+
+    internal static bool IsValidIpv6Address(string? value) =>
+        value is not null
+        && System.Net.IPAddress.TryParse(value.Trim(), out System.Net.IPAddress? ip)
+        && ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6;
+
+    internal static bool IsValidMacAddress(string? value) =>
+        value is not null && MacAddressRegex().IsMatch(value.Trim());
 }

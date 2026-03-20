@@ -1,4 +1,4 @@
-using Granit.Caching.FusionCache.Options;
+using Granit.Caching.Options;
 using Shouldly;
 using Xunit;
 

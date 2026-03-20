@@ -106,7 +106,7 @@ classDiagram
 | BackgroundJobs | `IBackgroundJobStoreReader` / `IBackgroundJobStoreWriter` | `InMemoryBackgroundJobStore`, `EfBackgroundJobStore` |
 | Webhooks | `IWebhookSubscriptionStoreReader` / `IWebhookSubscriptionStoreWriter` | `EfWebhookSubscriptionStore` |
 | Settings | `ISettingStoreReader` / `ISettingStoreWriter` | `EfCoreSettingStore` |
-| Caching | `ICacheService(T)` | `DistributedCacheService`, `HybridCacheService` |
+| Caching | `IFusionCache` | FusionCache (via `Granit.Caching`) |
 | Encryption | `IStringEncryptionProvider` | `AesStringEncryptionProvider` |
 
 ## Rationale

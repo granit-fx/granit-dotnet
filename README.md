@@ -33,7 +33,7 @@ compliant with **GDPR/ISO 27001** requirements.
 | **Identity** | Identity provider abstractions, user cache (cache-aside, login-time sync, GDPR) |
 | **Persistence** | EF Core interceptors: audit trail (3 years), GDPR soft delete, multi-tenancy, settings, features |
 | **Multi-tenancy** | Schema or database isolation, automatic resolution, transparent filtering |
-| **Caching** | Distributed caching (HybridCache, Redis), AES-256 value encryption |
+| **Caching** | FusionCache (L1+L2+backplane, fail-safe, eager refresh), Redis, AES-256 encryption |
 | **Observability** | Structured logging + distributed tracing → OTLP, health checks, metrics |
 | **Messaging** | Transactional outbox, HMAC-SHA256 webhooks, notifications (6 channels), cron jobs |
 | **API** | Versioning, OpenAPI Scalar, Stripe-style idempotency, ProblemDetails, CORS |

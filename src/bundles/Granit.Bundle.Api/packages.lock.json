@@ -265,21 +265,14 @@
         "type": "Project",
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Caching.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Caching.Memory": "[10.*, )",
           "Microsoft.Extensions.Configuration.Binder": "[10.*, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
-          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
-        }
-      },
-      "granit.caching.fusioncache": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Caching.StackExchangeRedis": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )",
           "ZiggyCreatures.FusionCache": "[2.*, )",
-          "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": "[2.*, )",
           "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
@@ -289,7 +282,8 @@
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
           "Microsoft.Extensions.Caching.StackExchangeRedis": "[10.*, )",
-          "StackExchange.Redis": "[2.*, )"
+          "StackExchange.Redis": "[2.*, )",
+          "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": "[2.*, )"
         }
       },
       "granit.core": {
@@ -356,7 +350,7 @@
       "granit.localization": {
         "type": "Project",
         "dependencies": {
-          "Granit.Caching.FusionCache": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Core": "[0.1.0-dev, )",
           "Microsoft.Extensions.Localization": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",

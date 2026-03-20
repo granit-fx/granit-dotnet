@@ -1,7 +1,7 @@
 using System.Reflection;
 using Granit.Authorization.Abstractions;
 using Granit.Authorization.Extensions;
-using Granit.Caching.FusionCache;
+using Granit.Caching;
 using Granit.Core.Modularity;
 using Granit.Security;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +17,7 @@ namespace Granit.Authorization;
 /// </summary>
 [DependsOn(
     typeof(GranitSecurityModule),
-    typeof(GranitCachingFusionCacheModule))]
+    typeof(GranitCachingModule))]
 public sealed class GranitAuthorizationModule : GranitModule
 {
     /// <inheritdoc />

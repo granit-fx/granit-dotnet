@@ -62,6 +62,9 @@
     "Granit:Validation:MaxChatMessages": "Número máximo de mensagens de conversa excedido.",
     "Granit:Validation:MaxBatchSize": "O tamanho do lote não deve exceder o número máximo de itens permitidos.",
     "Granit:Validation:MaxEmbeddingInputs": "Número máximo de entradas de embedding excedido.",
-    "Granit:Validation:MaxCustomAttributes": "O número máximo de atributos personalizados foi excedido."
+    "Granit:Validation:MaxCustomAttributes": "O número máximo de atributos personalizados foi excedido.",
+    "Granit:Validation:Hints:Alpha2Code": "2 uppercase letters (e.g. FR, BE)",
+    "Granit:Validation:Hints:Alpha3Code": "3 uppercase letters (e.g. FRA, BEL)",
+    "Granit:Validation:Hints:NumericCode": "3 digits (e.g. 250, 056)"
   }
 }

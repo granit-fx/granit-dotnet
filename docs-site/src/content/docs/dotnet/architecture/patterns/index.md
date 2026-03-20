@@ -40,7 +40,7 @@ and references to the actual source files where the pattern is applied.
 | [Pre-Signed URL](./pre-signed-url/) | Direct-to-cloud S3 upload/download |
 | [Sidecar / Behavior](./sidecar-behavior/) | Context propagation via Wolverine Behaviors |
 | [Circuit Breaker and Retry](./circuit-breaker-retry/) | Standard resilience + Wolverine RetryWithCooldown |
-| [Cache-Aside](./cache-aside/) | Double-check locking + HybridCache L1/L2 |
+| [Cache-Aside](./cache-aside/) | FusionCache L1/L2 with native stampede protection |
 | [Rate Limiting](./rate-limiting/) | Per-tenant rate limiting with dynamic quotas |
 | [Saga / Process Manager](./saga-process-manager/) | GDPR export, import/export orchestrators |
 | [Fan-Out](./fan-out/) | Wolverine cascade for notifications and webhooks |
@@ -72,8 +72,8 @@ and references to the actual source files where the pattern is applied.
 
 | Pattern | Description |
 | ------- | ----------- |
-| [Adapter](./adapter/) | TypedKeyCacheServiceAdapter, S3BlobClient |
-| [Decorator](./decorator/) | DistributedCacheService, CachedLocalizationOverrideStore |
+| [Adapter](./adapter/) | S3BlobClient, MailKitSmtpTransport |
+| [Decorator](./decorator/) | EncryptingFusionCacheSerializer, CachedLocalizationOverrideStore |
 | [Proxy](./proxy/) | FilterProxy for EF Core, Interceptors |
 | [Facade](./facade/) | DefaultBlobStorage, GranitExceptionHandler |
 | [Composite](./composite/) | Auditable entity hierarchy |
@@ -94,7 +94,7 @@ and references to the actual source files where the pattern is applied.
 | ------- | ----------- |
 | [Scope / Context Manager](./scope-context-manager/) | `using` pattern for context restoration |
 | [Copy-on-Write](./copy-on-write/) | ImmutableDictionary for thread-safe state |
-| [Double-Check Locking](./double-check-locking/) | Anti-stampede on cache miss |
+| [Double-Check Locking](./double-check-locking/) | Anti-stampede for token caching and singletons |
 
 ## .NET idiom patterns
 

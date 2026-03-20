@@ -1,6 +1,6 @@
 ---
-title: "Caching \u2014 Redis & In-Memory for .NET"
-description: Typed distributed cache with stampede protection, AES-256 encryption for GDPR-sensitive data, HybridCache (L1+L2), Redis health checks, and IDistributedCache integration.
+title: "Caching — FusionCache for .NET"
+description: FusionCache-based caching with L1 in-memory, L2 Redis, fail-safe, factory timeouts, eager refresh, AES-256 encryption for GDPR-sensitive data, Redis backplane for cross-pod invalidation, and native OpenTelemetry metrics.
 sidebar:
   label: Caching
   order: 6
@@ -8,33 +8,32 @@ sidebar:
 
 import { Tabs, TabItem, FileTree, Badge } from "@astrojs/starlight/components";
 
-Granit.Caching provides a typed, provider-swappable cache layer. Same `ICacheService<T>`
-interface whether you're using in-memory for dev, Redis for production, or HybridCache
-(L1 memory + L2 Redis) for multi-pod Kubernetes deployments. Built-in stampede protection,
-AES-256 encryption for GDPR-sensitive data, and convention-based key naming.
+Granit.Caching integrates [FusionCache](https://github.com/ZiggyCreatures/FusionCache) as the
+caching layer. Consumers inject `IFusionCache` directly — there is no custom abstraction.
+Out of the box you get L1 in-memory cache with fail-safe (stale-on-error), soft/hard factory
+timeouts, eager background refresh, stampede protection, and native OpenTelemetry metrics.
+Add the Redis package for L2 distributed cache with AES-256 encryption and a pub/sub backplane
+for real-time cross-pod L1 invalidation.
 
 ## Package structure
 
 <FileTree>
-- Granit.Caching/ Base abstractions, in-memory default, AES encryption
-  - Granit.Caching.StackExchangeRedis/ Redis L2 provider, health checks
-    - Granit.Caching.Hybrid HybridCache L1+L2 (memory + Redis)
+- Granit.Caching/ FusionCache L1 in-memory, fail-safe, encryption, OTel
+  - Granit.Caching.StackExchangeRedis/ Redis L2 + backplane + health check
 </FileTree>
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.Caching` | `ICacheService<T>`, stampede protection, encryption | `Granit.Core` |
-| `Granit.Caching.StackExchangeRedis` | Redis provider, health check | `Granit.Caching` |
-| `Granit.Caching.Hybrid` | HybridCache L1+L2 | `Granit.Caching.StackExchangeRedis`, `Granit.Timing` |
+| `Granit.Caching` | `IFusionCache` with L1 in-memory, fail-safe, factory timeouts, eager refresh, `EncryptingFusionCacheSerializer`, OpenTelemetry | `Granit.Core`, `Granit.Timing` |
+| `Granit.Caching.StackExchangeRedis` | Redis L2 distributed cache, Redis pub/sub backplane, AES-256 encryption, health check | `Granit.Caching` |
 
 ## Dependency graph
 
 ```mermaid
 graph TD
     C[Granit.Caching] --> CO[Granit.Core]
+    C --> T[Granit.Timing]
     R[Granit.Caching.StackExchangeRedis] --> C
-    H[Granit.Caching.Hybrid] --> R
-    H --> T[Granit.Timing]
 ```
 
 ## Setup
@@ -47,33 +46,14 @@ graph TD
 public class AppModule : GranitModule { }
 ```
 
-No configuration needed. Uses `MemoryDistributedCache` internally.
+No configuration needed. L1 in-memory cache with fail-safe and factory timeouts enabled
+by default. Uses `MemoryDistributedCache` as a no-op L2 backend.
 
 </TabItem>
-<TabItem label="Production (Redis)">
+<TabItem label="Production (Redis L2 + backplane)">
 
 ```csharp
 [DependsOn(typeof(GranitCachingRedisModule))]
-public class AppModule : GranitModule { }
-```
-
-```json
-{
-  "Cache": {
-    "KeyPrefix": "myapp",
-    "Redis": {
-      "Configuration": "redis-service:6379",
-      "InstanceName": "myapp:"
-    }
-  }
-}
-```
-
-</TabItem>
-<TabItem label="Kubernetes (HybridCache)">
-
-```csharp
-[DependsOn(typeof(GranitCachingHybridModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -86,177 +66,319 @@ public class AppModule : GranitModule { }
       "Key": "<base64-aes256-key-from-vault>"
     },
     "Redis": {
-      "Configuration": "redis-service:6379",
+      "Configuration": "redis-service:6379,password=secret,ssl=true",
       "InstanceName": "myapp:"
-    },
-    "Hybrid": {
-      "LocalCacheExpiration": "00:00:30"
     }
   }
 }
 ```
 
+`GranitCachingRedisModule` upgrades the FusionCache instance registered by `GranitCachingModule`
+with L2 Redis and a Redis pub/sub backplane. It also enables AES-256 encryption when
+`EncryptValues` is `true`.
+
 </TabItem>
 </Tabs>
 
-## ICacheService
+## Quick start
 
-The main abstraction — inject it with your cache item type:
+Inject `IFusionCache` (from `ZiggyCreatures.Caching.Fusion`) and use the FusionCache API
+directly. No custom abstraction layer.
 
 ```csharp
-public class PatientCacheItem
-{
-    public Guid Id { get; set; }
-    public string FullName { get; set; } = string.Empty;
-    public DateOnly DateOfBirth { get; set; }
-}
+using ZiggyCreatures.Caching.Fusion;
 
-public class PatientService(
-    ICacheService<PatientCacheItem, Guid> cache,
-    AppDbContext db)
+public sealed class PatientService(IFusionCache cache, AppDbContext db)
 {
-    public async Task<PatientCacheItem?> GetAsync(
+    public async Task<PatientResponse?> GetAsync(
         Guid id, CancellationToken cancellationToken)
     {
-        return await cache.GetOrAddAsync(id, async ct =>
-        {
-            var patient = await db.Patients
-                .Where(p => p.Id == id)
-                .Select(p => new PatientCacheItem
-                {
-                    Id = p.Id,
-                    FullName = $"{p.FirstName} {p.LastName}",
-                    DateOfBirth = p.DateOfBirth
-                })
-                .FirstOrDefaultAsync(ct)
-                .ConfigureAwait(false);
+        return await cache.GetOrSetAsync<PatientResponse>(
+            $"patient:{id}",
+            async (ctx, ct) =>
+            {
+                var patient = await db.Patients
+                    .Where(p => p.Id == id)
+                    .Select(p => new PatientResponse(p.Id, p.FullName, p.DateOfBirth))
+                    .FirstOrDefaultAsync(ct)
+                    .ConfigureAwait(false);
 
-            return patient!;
-        }, cancellationToken: cancellationToken)
-        .ConfigureAwait(false);
+                return patient!;
+            },
+            token: cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task InvalidateAsync(
+        Guid id, CancellationToken cancellationToken)
+    {
+        // Mark stale — fail-safe keeps the entry as fallback
+        await cache.ExpireAsync($"patient:{id}", token: cancellationToken)
+            .ConfigureAwait(false);
     }
 }
 ```
 
-### Interface
+### Common API methods
 
-```csharp
-public interface ICacheService<TCacheItem>
+| Method | Purpose |
+|--------|---------|
+| `GetOrSetAsync<T>(key, factory, options?, token:)` | Get from cache or populate via factory |
+| `GetOrDefaultAsync<T>(key, token:)` | Get only, returns `default(T)` on miss |
+| `SetAsync<T>(key, value, options?, token:)` | Store a value directly |
+| `ExpireAsync(key, token:)` | Mark stale (fail-safe keeps it as fallback) |
+| `RemoveAsync(key, token:)` | Delete completely (no fail-safe fallback) |
+| `TryGetAsync<T>(key, token:)` | Returns `MaybeValue<T>` (check `.HasValue`) |
+
+:::tip
+Prefer `ExpireAsync` over `RemoveAsync` for cache invalidation. `ExpireAsync` marks the entry
+as stale but keeps it available as a fail-safe fallback if the next factory call fails.
+`RemoveAsync` deletes the entry entirely, removing the safety net.
+:::
+
+## Configuration
+
+### CachingOptions (`Cache` section)
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `KeyPrefix` | `"dd"` | Global key prefix. FusionCache keys become `{KeyPrefix}:{userKey}` |
+| `DefaultAbsoluteExpirationRelativeToNow` | `01:00:00` | Default TTL (mapped to FusionCache `Duration`) |
+| `DefaultSlidingExpiration` | `00:20:00` | Default sliding expiration |
+| `EncryptValues` | `false` | Enable AES-256 encryption on L2 (Redis) serialization |
+| `JsonOptions` | `null` | Custom `System.Text.Json` serializer options |
+
+### CacheEncryptionOptions (`Cache:Encryption` section)
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `Key` | -- | AES-256 encryption key (base64-encoded, 32 bytes) |
+
+### FusionCachingOptions (`Cache:FusionCache` section)
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `FailSafeIsEnabled` | `true` | Enable fail-safe (stale-on-error) |
+| `FailSafeMaxDuration` | `02:00:00` | Maximum duration to keep fail-safe entries |
+| `FailSafeThrottleDuration` | `00:00:30` | Minimum interval between fail-safe activations for the same key |
+| `FactorySoftTimeout` | `00:00:02` | Soft timeout — return stale data if factory is slow |
+| `FactoryHardTimeout` | `00:00:10` | Hard timeout — abandon factory execution |
+| `EagerRefreshThreshold` | `0.8` | Fraction of TTL at which background refresh triggers (0 = disabled) |
+| `BackplaneChannelPrefix` | `"granit:fc"` | Redis pub/sub channel prefix for backplane notifications |
+
+### RedisCachingOptions (`Cache:Redis` section)
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `IsEnabled` | `true` | Enable/disable Redis module (useful for dev override) |
+| `Configuration` | `"localhost:6379"` | StackExchange.Redis connection string |
+| `InstanceName` | `"dd:"` | Redis key prefix for app isolation |
+
+### Full configuration example
+
+```json
 {
-    Task<TCacheItem?> GetAsync(string key, CancellationToken cancellationToken = default);
-    Task<TCacheItem> GetOrAddAsync(string key,
-        Func<CancellationToken, Task<TCacheItem>> factory,
-        DistributedCacheEntryOptions? options = null,
-        CancellationToken cancellationToken = default);
-    Task SetAsync(string key, TCacheItem value,
-        DistributedCacheEntryOptions? options = null,
-        CancellationToken cancellationToken = default);
-    Task RemoveAsync(string key, CancellationToken cancellationToken = default);
-    Task RefreshAsync(string key, CancellationToken cancellationToken = default);
+  "Cache": {
+    "KeyPrefix": "myapp",
+    "DefaultAbsoluteExpirationRelativeToNow": "01:00:00",
+    "EncryptValues": true,
+    "Encryption": {
+      "Key": "<base64-aes256-key>"
+    },
+    "FusionCache": {
+      "FailSafeIsEnabled": true,
+      "FailSafeMaxDuration": "02:00:00",
+      "FailSafeThrottleDuration": "00:00:30",
+      "FactorySoftTimeout": "00:00:02",
+      "FactoryHardTimeout": "00:00:10",
+      "EagerRefreshThreshold": 0.8,
+      "BackplaneChannelPrefix": "granit:fc"
+    },
+    "Redis": {
+      "IsEnabled": true,
+      "Configuration": "redis-service:6379,password=secret,ssl=true",
+      "InstanceName": "myapp:"
+    }
+  }
 }
 ```
 
-`ICacheService<TCacheItem, TKey>` adds overloads accepting `TKey` instead of `string`
-(converted via `ToString()`).
+## Fail-safe
 
-## Key naming convention
-
-Cache keys follow the pattern: `{KeyPrefix}:{CacheName}:{userKey}`
-
-| Part | Source | Example |
-|------|--------|---------|
-| `KeyPrefix` | `CachingOptions.KeyPrefix` | `myapp` |
-| `CacheName` | Type name (strips `CacheItem` suffix) or `[CacheName]` | `Patient` |
-| `userKey` | Caller-provided | `d4e5f6a7-...` |
-
-**Result:** `myapp:Patient:d4e5f6a7-...`
-
-Override the convention with `[CacheName]`:
-
-```csharp
-[CacheName("PatientSummary")]
-public class PatientSummaryCacheItem { /* ... */ }
-// Key: myapp:PatientSummary:{userKey}
-```
-
-## Stampede protection
-
-`GetOrAddAsync` guarantees **one factory execution** under concurrent requests:
+Fail-safe keeps expired entries as a temporary fallback when the factory (database query,
+HTTP call) fails or times out. Instead of propagating a 500 error to the user, FusionCache
+serves the last known good value.
 
 ```mermaid
 sequenceDiagram
-    participant R1 as Request 1
-    participant R2 as Request 2
-    participant C as CacheService
+    participant C as Consumer
+    participant FC as FusionCache
     participant DB as Database
 
-    R1->>C: GetOrAddAsync("patient:123")
-    R2->>C: GetOrAddAsync("patient:123")
-    C->>C: Cache miss
-    C->>C: Acquire SemaphoreSlim
-    Note over R2,C: R2 waits (lock held)
-    C->>DB: Execute factory
-    DB-->>C: PatientCacheItem
-    C->>C: Store in cache
-    C->>C: Release lock
-    C-->>R1: PatientCacheItem
-    C->>C: Double-check → cache hit
-    C-->>R2: PatientCacheItem (from cache)
+    C->>FC: GetOrSetAsync("patient:123")
+    FC->>FC: Entry expired (stale)
+    FC->>DB: Execute factory
+    DB--xFC: Connection refused
+    FC->>FC: Fail-safe activated
+    FC-->>C: Stale PatientResponse (200 OK)
+    Note over FC: Throttle: retry after 30s
 ```
 
-SemaphoreSlim instances are stored in a dedicated `IMemoryCache` with `SizeLimit=10,000`
-and auto-cleanup after 30 seconds.
+Fail-safe is enabled by default (`FailSafeIsEnabled = true`). The `FailSafeMaxDuration`
+(default 2 hours) controls how long stale entries are kept. The `FailSafeThrottleDuration`
+(default 30 seconds) prevents retry storms by spacing out factory re-executions.
+
+## Factory timeouts
+
+Factory timeouts protect the HTTP request pipeline from slow downstream calls:
+
+- **Soft timeout** (default 2 seconds): if the factory is still running and a stale value
+  exists, return the stale value immediately. The factory continues in the background and
+  updates the cache when it completes.
+- **Hard timeout** (default 10 seconds): if the factory exceeds this limit, it is abandoned
+  regardless of stale data availability.
+
+```mermaid
+sequenceDiagram
+    participant C as Consumer
+    participant FC as FusionCache
+    participant DB as Database
+
+    C->>FC: GetOrSetAsync("patient:123")
+    FC->>FC: Entry expired (stale exists)
+    FC->>DB: Execute factory
+    Note over FC,DB: Factory running > 2s (soft timeout)
+    FC-->>C: Stale PatientResponse (immediate)
+    DB-->>FC: Fresh data (5s later)
+    FC->>FC: Update cache silently
+```
 
 :::note
-HybridCache has native stampede protection built into .NET — the SemaphoreSlim
-mechanism only applies to `DistributedCacheService`.
+Soft timeout only works when a stale entry exists (fail-safe must be enabled). On a true
+cache miss with no prior value, the request waits for the factory up to the hard timeout.
 :::
+
+## Eager refresh
+
+When `EagerRefreshThreshold` is set (default 0.8 = 80%), FusionCache triggers a background
+refresh when a request arrives after 80% of the TTL has elapsed. The current (still valid)
+value is returned immediately while the factory runs in the background.
+
+With a 1-hour TTL and 0.8 threshold, any request arriving after 48 minutes triggers a
+background refresh. Consumers never see expired data under normal traffic patterns.
+
+Set `EagerRefreshThreshold` to `0` to disable eager refresh.
+
+## Backplane
+
+In multi-pod Kubernetes deployments, each pod has its own L1 in-memory cache. Without
+coordination, invalidating a cache entry on pod A leaves pods B and C serving stale L1 data.
+
+The Redis backplane solves this via pub/sub notifications:
+
+```mermaid
+sequenceDiagram
+    participant A as Pod A
+    participant R as Redis (pub/sub)
+    participant B as Pod B
+    participant C as Pod C
+
+    A->>A: ExpireAsync("patient:123")
+    A->>R: Publish invalidation
+    R->>B: Notify
+    R->>C: Notify
+    B->>B: Evict L1 "patient:123"
+    C->>C: Evict L1 "patient:123"
+```
+
+The backplane is automatically enabled when `GranitCachingRedisModule` is loaded. The
+`BackplaneChannelPrefix` (default `"granit:fc"`) is used as the Redis pub/sub channel prefix.
+FusionCache auto-recovery ensures that transient Redis disconnections do not lose invalidation
+messages — they are replayed when the connection is restored.
 
 ## Encryption
 
-AES-256-CBC encryption for GDPR-sensitive cached data. Each encryption operation
-generates a random IV (16 bytes).
+`EncryptingFusionCacheSerializer` is a decorator around the SystemTextJson serializer that
+applies AES-256-CBC encryption to all L2 (Redis) traffic. L1 in-memory cache stores plain
+.NET objects — same threat model as `IMemoryCache`.
 
-### Per-type control
+| Layer | Storage | Encrypted |
+|-------|---------|-----------|
+| L1 | In-memory (per pod) | No (plain .NET objects) |
+| L2 | Redis (shared) | Yes (when `EncryptValues = true`) |
 
-```csharp
-[CacheEncrypted]          // Always encrypt this type
-public class PatientCacheItem { /* ... */ }
+Encryption is activated by setting `CachingOptions.EncryptValues = true` and providing
+an AES-256 key in `CacheEncryptionOptions.Key`. The `GranitCachingRedisModule` replaces
+the no-op `NullCacheValueEncryptor` with `AesCacheValueEncryptor` at startup.
 
-[CacheEncrypted(false)]   // Never encrypt (override global setting)
-public class CountryCacheItem { /* ... */ }
-```
-
-**Priority:** `[CacheEncrypted]` attribute > `CachingOptions.EncryptValues` global flag.
+Each encryption operation generates a random 16-byte IV, prepended to the ciphertext.
 
 :::caution
-HybridCache does **not** support encryption — `HybridCache` manages L2 serialization
-internally and provides no byte-level interception point. Use `DistributedCacheService`
-(Redis without Hybrid) when encryption is required.
+The encryption key must be exactly 32 bytes (256 bits) when base64-decoded. In production,
+load the key from a secret manager (Vault, Azure Key Vault) via environment variables.
+Never commit encryption keys to source control.
 :::
 
-## HybridCache (L1 + L2)
+## OpenTelemetry
 
-Two-tier cache for multi-pod Kubernetes deployments:
+FusionCache emits native OpenTelemetry metrics under the `ZiggyCreatures.FusionCache` meter.
+Key metrics include:
 
-| Tier | Backend | Latency | Scope |
-|------|---------|---------|-------|
-| L1 | In-memory per pod | < 1 ms | Pod-local |
-| L2 | Redis (shared) | ~ 2 ms | Cluster-wide |
+| Metric | Description |
+|--------|-------------|
+| `fusioncache.cache.hit` | Cache hits (L1 and L2) |
+| `fusioncache.cache.miss` | Cache misses |
+| `fusioncache.cache.stale_hit` | Fail-safe activations (stale data served) |
+| `fusioncache.cache.set` | Cache writes |
+| `fusioncache.cache.remove` | Cache removals |
+| `fusioncache.factory.synthetic_timeout` | Factory soft timeout activations |
+| `fusioncache.cache.expire` | Expire (mark stale) operations |
+| `fusioncache.backplane.message_published` | Backplane notifications sent |
+| `fusioncache.backplane.message_received` | Backplane notifications received |
 
+No additional configuration is needed — FusionCache automatically integrates with
+the OpenTelemetry SDK when it is registered in the application.
+
+## Cache invalidation
+
+Use `ExpireAsync` to mark cache entries as stale. This preserves the fail-safe fallback
+while ensuring the next access triggers a fresh factory execution.
+
+### Pattern: Wolverine event handler
+
+Granit modules use Wolverine message handlers for cache invalidation. When a domain event
+is raised (e.g., permission grant changed), the handler expires the corresponding cache key:
+
+```csharp
+using ZiggyCreatures.Caching.Fusion;
+
+public static class PermissionCacheInvalidationHandler
+{
+    public static async Task HandleAsync(
+        PermissionGrantChangedEvent @event,
+        IFusionCache cache,
+        CancellationToken cancellationToken)
+    {
+        string key = PermissionChecker.BuildCacheKey(
+            @event.TenantId, @event.RoleName, @event.PermissionName);
+        await cache.ExpireAsync(key, token: cancellationToken)
+            .ConfigureAwait(false);
+    }
+}
 ```
-Pod A: GetOrAddAsync("patient:123")
-  L1 miss → L2 miss → DB query → store L1 (30s) + L2 (1h)
 
-Pod B: GetOrAddAsync("patient:123")
-  L1 miss → L2 hit → ~2ms
+This pattern is used across Authorization, Features, Settings, Localization, and
+ReferenceData modules.
 
-RemoveAsync on Pod A:
-  Clears L2 + L1 on Pod A
-  Pod B L1: expires within LocalCacheExpiration (30s)
-```
+:::caution[ExpireAsync vs RemoveAsync]
+`ExpireAsync` marks the entry as stale but keeps it in cache. On the next access, FusionCache
+executes the factory. If the factory fails, fail-safe returns the stale value (resilience).
 
-The `LocalCacheExpiration` setting bounds the stale-data window between pods.
+`RemoveAsync` deletes the entry completely. On the next access, if the factory fails, there
+is no fallback — the error propagates to the consumer.
+
+**Use `ExpireAsync` by default.** Only use `RemoveAsync` when stale data is actively harmful
+(e.g., revoked security tokens).
+:::
 
 ## Redis health check
 
@@ -271,93 +393,60 @@ builder.Services.AddHealthChecks()
 | >= 100 ms | Degraded | Pod stays in load balancer |
 | Unreachable | Unhealthy | Pod removed from load balancer |
 
-Tagged `["readiness"]` — integrates with Kubernetes readiness probes.
-
-## Configuration reference
-
-```json
-{
-  "Cache": {
-    "KeyPrefix": "myapp",
-    "DefaultAbsoluteExpirationRelativeToNow": "01:00:00",
-    "DefaultSlidingExpiration": "00:20:00",
-    "EncryptValues": false,
-    "Encryption": {
-      "Key": "<base64-aes256-key>"
-    },
-    "Redis": {
-      "IsEnabled": true,
-      "Configuration": "redis-service:6379",
-      "InstanceName": "myapp:"
-    },
-    "Hybrid": {
-      "LocalCacheExpiration": "00:00:30"
-    }
-  }
-}
-```
-
-| Property | Default | Description |
-|----------|---------|-------------|
-| `KeyPrefix` | `"dd"` | Global key prefix |
-| `DefaultAbsoluteExpirationRelativeToNow` | `01:00:00` | Default absolute TTL |
-| `DefaultSlidingExpiration` | `00:20:00` | Default sliding TTL |
-| `EncryptValues` | `false` | Global encryption flag |
-| `Encryption.Key` | — | AES-256 key (base64, 32 bytes) |
-| `Redis.IsEnabled` | `true` | Enable/disable Redis module |
-| `Redis.Configuration` | `"localhost:6379"` | StackExchange.Redis connection string |
-| `Redis.InstanceName` | `"dd:"` | Redis key prefix (app isolation) |
-| `Hybrid.LocalCacheExpiration` | `00:00:30` | L1 memory TTL (stale-data window) |
+Tagged `["readiness", "startup"]` — integrates with Kubernetes readiness probes.
 
 ## Public API summary
 
 | Category | Key types | Package |
 |----------|-----------|---------|
-| Module | `GranitCachingModule`, `GranitCachingRedisModule`, `GranitCachingHybridModule` | — |
-| Abstractions | `ICacheService<T>`, `ICacheService<T, TKey>`, `ICacheValueEncryptor` | `Granit.Caching` |
-| Attributes | `[CacheName]`, `[CacheEncrypted]` | `Granit.Caching` |
-| Options | `CachingOptions`, `CacheEncryptionOptions`, `RedisCachingOptions`, `HybridCachingOptions` | — |
-| Extensions | `AddGranitCaching()`, `AddGranitCachingRedis()`, `AddGranitCachingHybrid()`, `AddGranitRedisHealthCheck()` | — |
+| Modules | `GranitCachingModule`, `GranitCachingRedisModule` | -- |
+| Cache interface | `IFusionCache` (from ZiggyCreatures.FusionCache) | `Granit.Caching` |
+| Encryption | `ICacheValueEncryptor`, `AesCacheValueEncryptor`, `EncryptingFusionCacheSerializer` | `Granit.Caching` |
+| Options | `CachingOptions`, `CacheEncryptionOptions`, `FusionCachingOptions`, `RedisCachingOptions` | -- |
+| Extensions | `AddGranitCaching()`, `AddGranitCachingRedis()`, `AddGranitRedisHealthCheck()` | -- |
+| Health check | `RedisHealthCheck` | `Granit.Caching.StackExchangeRedis` |
 
 ## When to use — and when not to
 
 Use Granit.Caching when:
 
-- You need **typed, strongly-keyed caches** with consistent serialization and TTL policies
-- You store **GDPR-sensitive data** in cache and need **AES-256 encryption** at rest
-- You run **multiple pods** and need L1 (in-memory) + L2 (Redis) with **stampede protection**
-- You want **health checks** and observability on your cache layer
+- You need **L1 + L2 caching** with fail-safe resilience and factory timeouts
+- You run **multiple pods** and need a **backplane** for real-time cross-pod L1 invalidation
+- You store **GDPR-sensitive data** in Redis and need **AES-256 encryption** at rest
+- You want **native OpenTelemetry metrics** for cache observability
+- You need **stampede protection** (one factory execution per key under concurrent requests)
 
 Skip it when:
 
-- You only cache **a handful of values** in a single-pod app — `IMemoryCache` from `Microsoft.Extensions.Caching.Memory` is simpler
-- Your cache values are **never shared** across requests (e.g., per-request computation results) — a local variable is enough
+- You only cache **a handful of values** in a single-pod app — `IMemoryCache` is simpler
+- Your cache values are **never shared** across requests — a local variable is enough
 - You need **full-text search** or **complex querying** on cached data — Redis is a cache, not a database
 
 ## Common pitfalls
 
-:::caution[HybridCache stale-data window]
-`HybridCachingOptions.LocalCacheExpiration` (default 30s) means L1 can serve stale
-data for up to 30 seconds after L2 is updated by another pod. Set this to `00:00:00`
-if you need strict consistency (at the cost of always hitting Redis).
-:::
-
-:::caution[Encrypted cache with HybridCache]
-`HybridCache` (L1+L2) does **not** support the `[CacheEncrypted]` attribute. If you
-need encrypted values with HybridCache, encrypt/decrypt manually before calling
-the cache service. `ICacheService<T>` (L2-only) handles encryption transparently.
-:::
-
 :::caution[Redis connection string in production]
 The default `localhost:6379` is for development. In production, always configure
-`Redis.Configuration` with authentication, TLS, and connection timeout. A missing
-Redis in production will degrade to no-cache behavior (every request hits the database).
+`Redis.Configuration` with authentication, TLS, and connection timeout. A missing Redis in
+production degrades gracefully (FusionCache continues with L1 only) but you lose L2 persistence
+and backplane notifications.
+:::
+
+:::caution[Encryption applies to L2 only]
+`EncryptValues` encrypts data serialized to Redis (L2). The L1 in-memory cache stores plain
+.NET objects and is not encrypted. This matches the threat model: L1 lives in the same process
+memory as the application, while L2 is on a shared network resource.
+:::
+
+:::caution[Key prefix coordination]
+`CachingOptions.KeyPrefix` is prepended to all FusionCache keys as `{KeyPrefix}:`. Ensure all
+pods of the same application use the same prefix. Different applications sharing a Redis instance
+must use different prefixes to avoid key collisions.
 :::
 
 ## See also
 
-- [Configure caching guide](/dotnet/guides/configure-caching/) — step-by-step setup walkthrough
+- [ADR-018: FusionCache](/dotnet/architecture/adr/018-fusioncache-caching-provider/) -- Why FusionCache was chosen as the caching provider
 - [ADR-002: Redis](/dotnet/architecture/adr/002-redis/) -- Why Redis was chosen as the distributed cache backend
-- [Persistence module](/dotnet/data/persistence/) — EF Core interceptors, query filters
-- [Security module](./authentication/) — Authorization permission cache uses `ICacheService`
+- [FusionCache documentation](https://github.com/ZiggyCreatures/FusionCache/blob/main/docs/README.md) -- Official FusionCache docs
+- [Persistence module](/dotnet/data/persistence/) -- EF Core interceptors, query filters
 - [API Reference](/api/Granit.Caching.html) (auto-generated from XML docs)

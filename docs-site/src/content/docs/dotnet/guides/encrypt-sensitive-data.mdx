@@ -187,15 +187,14 @@ old ciphertexts remain readable (the key version is embedded in the ciphertext p
 
 ## Step 5 -- Encrypt cached values
 
-For data stored in Redis or another distributed cache, use the `[CacheEncrypted]`
-attribute to enable transparent AES-256 encryption of cached values:
+For data stored in Redis or another distributed cache, enable encrypted serialization
+in FusionCache to provide transparent AES-256 encryption of cached values:
 
 ```csharp
-using Granit.Caching;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace MyApp.Caching;
 
-[CacheEncrypted]
 public sealed class PatientCacheItem
 {
     public Guid Id { get; set; }
@@ -204,13 +203,13 @@ public sealed class PatientCacheItem
 }
 ```
 
-The `ICacheService<PatientCacheItem>` automatically encrypts before writing to Redis
+FusionCache with the encrypted serializer automatically encrypts before writing to Redis
 and decrypts after reading. Even if the cache backend is compromised, the data is
 unreadable.
 
 ```csharp
 public sealed class PatientCacheService(
-    ICacheService<PatientCacheItem> cache,
+    IFusionCache cache,
     AppDbContext db)
 {
     public async Task<PatientCacheItem?> GetAsync(
@@ -219,27 +218,24 @@ public sealed class PatientCacheService(
     {
         var cacheKey = $"patient:{id}";
 
-        var cached = await cache.GetAsync(cacheKey, cancellationToken);
-        if (cached is not null)
-        {
-            return cached;
-        }
+        return await cache.GetOrSetAsync(
+            cacheKey,
+            async (ctx, ct) =>
+            {
+                var patient = await db.Patients.FindAsync([id], ct);
+                if (patient is null)
+                {
+                    return null;
+                }
 
-        var patient = await db.Patients.FindAsync([id], cancellationToken);
-        if (patient is null)
-        {
-            return null;
-        }
-
-        var item = new PatientCacheItem
-        {
-            Id = patient.Id,
-            FirstName = patient.FirstName,
-            LastName = patient.LastName
-        };
-
-        await cache.SetAsync(cacheKey, item, cancellationToken);
-        return item;
+                return new PatientCacheItem
+                {
+                    Id = patient.Id,
+                    FirstName = patient.FirstName,
+                    LastName = patient.LastName
+                };
+            },
+            token: cancellationToken);
     }
 }
 ```
@@ -272,7 +268,7 @@ public sealed class AppSettingDefinitionProvider : ISettingDefinitionProvider
 | Field-level (AES) | `IStringEncryptionService` | Individual entity properties | Passphrase via PBKDF2 |
 | Field-level (Vault Transit) | `ITransitEncryptionService` | Individual entity properties | Vault-managed, auto-rotation |
 | Field-level (Azure Key Vault) | `IStringEncryptionService` | Individual entity properties | Azure Key Vault RSA-OAEP-256 |
-| Cache | `[CacheEncrypted]` | Entire cached object | Local AES-256 key |
+| Cache | FusionCache encrypted serializer | Entire cached object | Local AES-256 key |
 | Settings | `IsEncrypted = true` | Setting values in database | `IStringEncryptionService` |
 
 ## Verify
