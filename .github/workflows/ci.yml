@@ -411,37 +411,26 @@ jobs:
           --skip-duplicate
 
   # ---------------------------------------------------------------------------
-  # CODE INDEX: generate and commit code-index.json to the branch.
-  # Consumed by the granit-mcp Worker via raw.githubusercontent.com URLs.
+  # CODE INDEX: validate that code-index.json is up to date.
+  # The file is generated locally via pre-commit hook and committed with code.
+  # This job fails the CI if someone forgot to regenerate after changing sources.
   # ---------------------------------------------------------------------------
   code-index:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
-    permissions:
-      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
+      - name: Regenerate code-index.json
+        run: python3 scripts/generate-code-index.py
 
-      - name: Generate code-index.json
-        run: node docs-site/scripts/generate-code-index.mjs
-
-      - name: Commit and push code-index.json
+      - name: Check for drift
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add code-index.json
-          if git diff --cached --quiet; then
-            echo "No changes to code-index.json"
-          else
-            git commit -m "chore: update code-index.json [skip ci]"
-            git push
+          if ! git diff --quiet code-index.json; then
+            echo "::error::code-index.json is out of date. Run 'python3 scripts/generate-code-index.py' and commit."
+            git diff code-index.json
+            exit 1
           fi
 
   # ---------------------------------------------------------------------------

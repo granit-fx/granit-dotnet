@@ -9,3 +9,9 @@ if [ -n "$STAGED_CS" ]; then
 fi
 
 gitleaks git --pre-commit --staged --no-banner
+
+# Regenerate code-index.json if any C# source or .csproj changed
+if git diff --cached --name-only | grep -qE '\.cs$|\.csproj$'; then
+  python3 scripts/generate-code-index.py
+  git add code-index.json
+fi
