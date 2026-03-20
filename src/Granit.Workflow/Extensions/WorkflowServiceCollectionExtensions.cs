@@ -1,3 +1,5 @@
+using Granit.Core.Diagnostics;
+using Granit.Workflow.Diagnostics;
 using Granit.Workflow.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -29,6 +31,11 @@ public static class WorkflowServiceCollectionExtensions
     public static IServiceCollection AddGranitWorkflow(this IServiceCollection services)
     {
         services.TryAddScoped<IWorkflowPermissionChecker, NullWorkflowPermissionChecker>();
+
+        // Diagnostics
+        services.TryAddSingleton<WorkflowMetrics>();
+        GranitActivitySourceRegistry.Register(WorkflowActivitySource.Name);
+
         return services;
     }
 

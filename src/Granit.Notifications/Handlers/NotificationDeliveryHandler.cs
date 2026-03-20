@@ -19,7 +19,8 @@ public sealed partial class NotificationDeliveryHandler(
     INotificationDeliveryWriter deliveryWriter,
     IGuidGenerator guidGenerator,
     IClock clock,
-    ILogger<NotificationDeliveryHandler> logger)
+    ILogger<NotificationDeliveryHandler> logger,
+    NotificationsMetrics metrics)
 {
     /// <summary>
     /// Routes delivery to the matching channel. Channels not registered are skipped
@@ -76,6 +77,11 @@ public sealed partial class NotificationDeliveryHandler(
                 IsSuccess = true,
             }, cancellationToken).ConfigureAwait(false);
 
+            metrics.RecordDeliverySucceeded(
+                command.TenantId?.ToString(), command.ChannelName, command.NotificationTypeName);
+            metrics.RecordDeliveryDuration(
+                command.TenantId?.ToString(), command.ChannelName, "success", stopwatch.Elapsed);
+
             LogNotificationDelivered(command.ChannelName, command.DeliveryId, command.NotificationId);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
@@ -98,6 +104,11 @@ public sealed partial class NotificationDeliveryHandler(
                 ErrorMessage = ex.Message,
                 IsSuccess = false,
             }, cancellationToken).ConfigureAwait(false);
+
+            metrics.RecordDeliveryFailed(
+                command.TenantId?.ToString(), command.ChannelName, command.NotificationTypeName);
+            metrics.RecordDeliveryDuration(
+                command.TenantId?.ToString(), command.ChannelName, "failure", stopwatch.Elapsed);
 
             LogNotificationDeliveryFailed(ex, command.ChannelName, command.DeliveryId, command.NotificationId);
 

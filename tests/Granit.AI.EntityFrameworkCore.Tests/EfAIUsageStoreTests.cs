@@ -1,5 +1,8 @@
+using System.Diagnostics.Metrics;
+using Granit.AI.Diagnostics;
 using Granit.AI.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 
 namespace Granit.AI.EntityFrameworkCore.Tests;
@@ -8,6 +11,7 @@ public sealed class EfAIUsageStoreTests : IAsyncDisposable
 {
     private readonly TestDbContextFactory _factory;
     private readonly EfAIUsageStore _store;
+    private readonly ServiceProvider _sp;
 
     public EfAIUsageStoreTests()
     {
@@ -15,14 +19,20 @@ public sealed class EfAIUsageStoreTests : IAsyncDisposable
             .UseInMemoryDatabase($"ai-usage-test-{Guid.NewGuid()}")
             .Options;
 
+        ServiceCollection services = new();
+        services.AddMetrics();
+        _sp = services.BuildServiceProvider();
+        AIMetrics metrics = new(_sp.GetRequiredService<IMeterFactory>());
+
         _factory = new TestDbContextFactory(options);
-        _store = new EfAIUsageStore(_factory);
+        _store = new EfAIUsageStore(_factory, metrics);
     }
 
     public async ValueTask DisposeAsync()
     {
         await using AIDbContext context = await _factory.CreateDbContextAsync();
         await context.Database.EnsureDeletedAsync();
+        await _sp.DisposeAsync().ConfigureAwait(false);
     }
 
     [Fact]

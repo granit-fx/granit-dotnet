@@ -1,4 +1,5 @@
 using Granit.Core.Events;
+using Granit.EventBus.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -20,7 +21,8 @@ namespace Granit.EventBus.Internal;
 /// </remarks>
 internal sealed partial class InProcessDistributedEventBus(
     IServiceProvider serviceProvider,
-    ILogger<InProcessDistributedEventBus> logger) : IDistributedEventBus
+    ILogger<InProcessDistributedEventBus> logger,
+    EventBusMetrics metrics) : IDistributedEventBus
 {
     private bool _warned;
 
@@ -36,6 +38,9 @@ internal sealed partial class InProcessDistributedEventBus(
             _warned = true;
         }
 
+        string eventType = typeof(TEvent).Name;
+        metrics.RecordEventPublished(null, "distributed", eventType);
+
         IEnumerable<IDistributedEventHandler<TEvent>> handlers =
             serviceProvider.GetServices<IDistributedEventHandler<TEvent>>();
 
@@ -44,9 +49,11 @@ internal sealed partial class InProcessDistributedEventBus(
             try
             {
                 await handler.HandleAsync(integrationEvent, cancellationToken).ConfigureAwait(false);
+                metrics.RecordHandlerExecuted(null, eventType, "success");
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
+                metrics.RecordHandlerExecuted(null, eventType, "error");
                 LogHandlerFailed(typeof(TEvent).Name, handler.GetType().Name, ex);
             }
         }

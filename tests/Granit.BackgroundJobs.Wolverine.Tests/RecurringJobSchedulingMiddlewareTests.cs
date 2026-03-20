@@ -1,5 +1,8 @@
+using System.Diagnostics.Metrics;
+using Granit.BackgroundJobs.Diagnostics;
 using Granit.BackgroundJobs.Domain;
 using Granit.Timing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Shouldly;
@@ -8,22 +11,31 @@ using Xunit;
 
 namespace Granit.BackgroundJobs.Wolverine.Tests;
 
-public sealed class RecurringJobSchedulingMiddlewareTests
+public sealed class RecurringJobSchedulingMiddlewareTests : IDisposable
 {
     private readonly IBackgroundJobStoreReader _storeReader = Substitute.For<IBackgroundJobStoreReader>();
     private readonly IBackgroundJobStoreWriter _storeWriter = Substitute.For<IBackgroundJobStoreWriter>();
     private readonly IClock _clock = Substitute.For<IClock>();
+    private readonly ServiceProvider _serviceProvider;
+    private readonly BackgroundJobsMetrics _metrics;
     private readonly ILogger<RecurringJobSchedulingMiddleware> _logger =
         Substitute.For<ILogger<RecurringJobSchedulingMiddleware>>();
 
     public RecurringJobSchedulingMiddlewareTests()
     {
+        _serviceProvider = new ServiceCollection()
+            .AddMetrics()
+            .BuildServiceProvider();
+        _metrics = new BackgroundJobsMetrics(_serviceProvider.GetRequiredService<IMeterFactory>());
+
         // Allow [LoggerMessage] generated code to execute both branches (IsEnabled check)
         _logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
     }
 
+    public void Dispose() => _serviceProvider.Dispose();
+
     private RecurringJobSchedulingMiddleware MakeSut() =>
-        new(_storeReader, _storeWriter, _clock, _logger);
+        new(_storeReader, _storeWriter, _clock, _metrics, _logger);
 
     private static BackgroundJobDefinition MakeJob(
         string name = "fake-daily-report",

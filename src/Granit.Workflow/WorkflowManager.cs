@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using Granit.Workflow.Diagnostics;
+
 namespace Granit.Workflow;
 
 /// <summary>
@@ -7,11 +10,13 @@ namespace Granit.Workflow;
 /// <typeparam name="TState">Enum type representing the workflow states.</typeparam>
 public sealed class WorkflowManager<TState>(
     IWorkflowDefinition<TState> definition,
-    IWorkflowPermissionChecker permissionChecker) : IWorkflowManager<TState>
+    IWorkflowPermissionChecker permissionChecker,
+    WorkflowMetrics metrics) : IWorkflowManager<TState>
     where TState : struct, Enum
 {
     private readonly IWorkflowDefinition<TState> _definition = definition;
     private readonly IWorkflowPermissionChecker _permissionChecker = permissionChecker;
+    private readonly WorkflowMetrics _metrics = metrics;
 
     /// <inheritdoc/>
     public async Task<IReadOnlyList<WorkflowTransition<TState>>> GetAllowedTransitionsAsync(
@@ -49,6 +54,15 @@ public sealed class WorkflowManager<TState>(
         TransitionContext? context = null,
         CancellationToken cancellationToken = default)
     {
+        long startTimestamp = Stopwatch.GetTimestamp();
+        using Activity? activity = WorkflowActivitySource.Source.StartActivity(WorkflowActivitySource.Transition);
+
+        string fromState = currentState.ToString();
+        string toState = targetState.ToString();
+
+        activity?.SetTag("workflow.from_state", fromState);
+        activity?.SetTag("workflow.to_state", toState);
+
         // Find the transition definition
         IReadOnlyList<WorkflowTransition<TState>> transitions = _definition.GetAllowedTransitions(currentState);
         WorkflowTransition<TState>? transition = transitions
@@ -56,6 +70,7 @@ public sealed class WorkflowManager<TState>(
 
         if (transition is null)
         {
+            RecordMetrics(fromState, toState, TransitionOutcome.InvalidTransition, startTimestamp, activity);
             return new TransitionResult<TState>
             {
                 Succeeded = false,
@@ -80,6 +95,8 @@ public sealed class WorkflowManager<TState>(
             {
                 if (transition.RequiresApproval)
                 {
+                    RecordMetrics(fromState, toState, TransitionOutcome.ApprovalRequested, startTimestamp, activity);
+
                     // Route to pending review — the caller is responsible for
                     // actually setting the entity state and publishing the domain event
                     return new TransitionResult<TState>
@@ -90,6 +107,7 @@ public sealed class WorkflowManager<TState>(
                     };
                 }
 
+                RecordMetrics(fromState, toState, TransitionOutcome.Denied, startTimestamp, activity);
                 return new TransitionResult<TState>
                 {
                     Succeeded = false,
@@ -99,6 +117,8 @@ public sealed class WorkflowManager<TState>(
             }
         }
 
+        RecordMetrics(fromState, toState, TransitionOutcome.Completed, startTimestamp, activity);
+
         // Transition approved — the caller sets the entity state
         return new TransitionResult<TState>
         {
@@ -106,6 +126,22 @@ public sealed class WorkflowManager<TState>(
             ResultingState = targetState,
             Outcome = TransitionOutcome.Completed,
         };
+    }
+
+    private void RecordMetrics(
+        string fromState,
+        string toState,
+        TransitionOutcome outcome,
+        long startTimestamp,
+        Activity? activity)
+    {
+        string outcomeTag = outcome.ToString();
+        TimeSpan elapsed = Stopwatch.GetElapsedTime(startTimestamp);
+
+        activity?.SetTag("workflow.outcome", outcomeTag);
+
+        _metrics.RecordTransitionCompleted(tenantId: null, outcomeTag, fromState, toState);
+        _metrics.RecordTransitionDuration(tenantId: null, outcomeTag, elapsed);
     }
 
     /// <summary>

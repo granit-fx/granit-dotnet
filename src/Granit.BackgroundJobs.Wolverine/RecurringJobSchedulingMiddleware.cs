@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Reflection;
 using Cronos;
+using Granit.BackgroundJobs.Diagnostics;
 using Granit.BackgroundJobs.Domain;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
@@ -32,8 +34,11 @@ public sealed partial class RecurringJobSchedulingMiddleware(
     IBackgroundJobStoreReader storeReader,
     IBackgroundJobStoreWriter storeWriter,
     IClock clock,
+    BackgroundJobsMetrics metrics,
     ILogger<RecurringJobSchedulingMiddleware> logger)
 {
+    private long _startTimestamp;
+
     /// <summary>
     /// Records the execution start and captures the <c>X-Triggered-By</c> header for ISO 27001 audit.
     /// </summary>
@@ -46,6 +51,8 @@ public sealed partial class RecurringJobSchedulingMiddleware(
         {
             return;
         }
+
+        _startTimestamp = Stopwatch.GetTimestamp();
 
         await storeWriter.RecordExecutionStartAsync(attr.Name, clock.Now, cancellationToken).ConfigureAwait(false);
 
@@ -69,6 +76,10 @@ public sealed partial class RecurringJobSchedulingMiddleware(
         {
             return;
         }
+
+        TimeSpan elapsed = Stopwatch.GetElapsedTime(_startTimestamp);
+        metrics.RecordExecutionCompleted(null, attr.Name, "success");
+        metrics.RecordExecutionDuration(null, attr.Name, "success", elapsed);
 
         BackgroundJobDefinition? job = await storeReader.FindAsync(attr.Name, cancellationToken).ConfigureAwait(false);
         if (job is not { IsEnabled: true })

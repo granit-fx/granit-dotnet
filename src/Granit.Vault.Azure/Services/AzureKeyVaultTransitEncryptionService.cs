@@ -1,7 +1,10 @@
+using System.Diagnostics;
 using System.Text;
 using Azure.Security.KeyVault.Keys.Cryptography;
+using Granit.Core.MultiTenancy;
 using Granit.Vault.Azure.Diagnostics;
 using Granit.Vault.Azure.Options;
+using Granit.Vault.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -13,8 +16,11 @@ namespace Granit.Vault.Azure.Services;
 internal sealed partial class AzureKeyVaultTransitEncryptionService(
     CryptographyClient cryptographyClient,
     IOptions<AzureKeyVaultOptions> options,
+    VaultMetrics metrics,
+    ICurrentTenant? currentTenant,
     ILogger<AzureKeyVaultTransitEncryptionService> logger) : ITransitEncryptionService
 {
+    private const string ProviderName = "azure";
     private readonly EncryptionAlgorithm _algorithm = MapAlgorithm(options.Value.EncryptionAlgorithm);
 
     /// <inheritdoc />
@@ -23,21 +29,38 @@ internal sealed partial class AzureKeyVaultTransitEncryptionService(
         string plaintext,
         CancellationToken cancellationToken = default)
     {
-        using System.Diagnostics.Activity? activity = VaultAzureActivitySource.Source.StartActivity(
+        using Activity? activity = VaultAzureActivitySource.Source.StartActivity(
             VaultAzureActivitySource.Operations.AkvEncrypt);
         activity?.SetTag(VaultAzureActivitySource.Tags.KeyName, keyName);
         activity?.SetTag(VaultAzureActivitySource.Tags.VaultUri, options.Value.VaultUri);
 
-        byte[] plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
+        var stopwatch = Stopwatch.StartNew();
+        string? tenantId = currentTenant?.IsAvailable == true ? currentTenant.Id?.ToString() : null;
 
-        EncryptResult result = await cryptographyClient
-            .EncryptAsync(_algorithm, plaintextBytes, cancellationToken)
-            .ConfigureAwait(false);
+        try
+        {
+            byte[] plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
 
-        string ciphertext = Convert.ToBase64String(result.Ciphertext);
+            EncryptResult result = await cryptographyClient
+                .EncryptAsync(_algorithm, plaintextBytes, cancellationToken)
+                .ConfigureAwait(false);
 
-        LogEncryptSuccess(keyName);
-        return ciphertext;
+            string ciphertext = Convert.ToBase64String(result.Ciphertext);
+
+            LogEncryptSuccess(keyName);
+            metrics.RecordOperationCompleted(tenantId, "encrypt", ProviderName, "success");
+            return ciphertext;
+        }
+        catch
+        {
+            metrics.RecordOperationError(tenantId, "encrypt", ProviderName);
+            throw;
+        }
+        finally
+        {
+            stopwatch.Stop();
+            metrics.RecordOperationDuration(tenantId, "encrypt", ProviderName, stopwatch.Elapsed);
+        }
     }
 
     /// <inheritdoc />
@@ -46,21 +69,38 @@ internal sealed partial class AzureKeyVaultTransitEncryptionService(
         string ciphertext,
         CancellationToken cancellationToken = default)
     {
-        using System.Diagnostics.Activity? activity = VaultAzureActivitySource.Source.StartActivity(
+        using Activity? activity = VaultAzureActivitySource.Source.StartActivity(
             VaultAzureActivitySource.Operations.AkvDecrypt);
         activity?.SetTag(VaultAzureActivitySource.Tags.KeyName, keyName);
         activity?.SetTag(VaultAzureActivitySource.Tags.VaultUri, options.Value.VaultUri);
 
-        byte[] ciphertextBytes = Convert.FromBase64String(ciphertext);
+        var stopwatch = Stopwatch.StartNew();
+        string? tenantId = currentTenant?.IsAvailable == true ? currentTenant.Id?.ToString() : null;
 
-        DecryptResult result = await cryptographyClient
-            .DecryptAsync(_algorithm, ciphertextBytes, cancellationToken)
-            .ConfigureAwait(false);
+        try
+        {
+            byte[] ciphertextBytes = Convert.FromBase64String(ciphertext);
 
-        string plaintext = Encoding.UTF8.GetString(result.Plaintext);
+            DecryptResult result = await cryptographyClient
+                .DecryptAsync(_algorithm, ciphertextBytes, cancellationToken)
+                .ConfigureAwait(false);
 
-        LogDecryptSuccess(keyName);
-        return plaintext;
+            string plaintext = Encoding.UTF8.GetString(result.Plaintext);
+
+            LogDecryptSuccess(keyName);
+            metrics.RecordOperationCompleted(tenantId, "decrypt", ProviderName, "success");
+            return plaintext;
+        }
+        catch
+        {
+            metrics.RecordOperationError(tenantId, "decrypt", ProviderName);
+            throw;
+        }
+        finally
+        {
+            stopwatch.Stop();
+            metrics.RecordOperationDuration(tenantId, "decrypt", ProviderName, stopwatch.Elapsed);
+        }
     }
 
     /// <inheritdoc />

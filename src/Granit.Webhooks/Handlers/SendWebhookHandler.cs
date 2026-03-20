@@ -46,7 +46,8 @@ public sealed partial class SendWebhookHandler(
     IWebhookSecretProtector secretProtector,
     IOptions<WebhooksOptions> options,
     ILogger<SendWebhookHandler> logger,
-    IClock clock)
+    IClock clock,
+    WebhooksMetrics metrics)
 {
     /// <summary>
     /// Executes the HTTP POST delivery. Throws <see cref="WebhookDeliveryException"/> on
@@ -94,6 +95,10 @@ public sealed partial class SendWebhookHandler(
             await deliveryWriter.RecordFailureAsync(
                 command, httpStatusCode: null, stopwatch.ElapsedMilliseconds, timeoutMessage, storedPayload, cancellationToken).ConfigureAwait(false);
 
+            string? tenant = command.Envelope.TenantId?.ToString();
+            metrics.RecordDeliveryFailed(tenant, command.Envelope.EventType, httpStatus: null);
+            metrics.RecordDeliveryDuration(tenant, command.Envelope.EventType, "timeout", stopwatch.Elapsed);
+
             activity?.SetStatus(ActivityStatusCode.Error, timeoutMessage);
             throw new WebhookDeliveryException(timeoutMessage, ex);
         }
@@ -111,12 +116,18 @@ public sealed partial class SendWebhookHandler(
                 command, statusCode, stopwatch.ElapsedMilliseconds,
                 $"Non-retriable HTTP {statusCode}", storedPayload, cancellationToken).ConfigureAwait(false);
 
+            string? nonRetriableTenant = command.Envelope.TenantId?.ToString();
+            metrics.RecordDeliveryFailed(nonRetriableTenant, command.Envelope.EventType, statusCode);
+            metrics.RecordDeliveryDuration(nonRetriableTenant, command.Envelope.EventType, "failed", stopwatch.Elapsed);
+
             if (ShouldSuspend(response.StatusCode))
             {
                 await deliveryWriter.SuspendSubscriptionAsync(
                     command.SubscriptionId,
                     $"Auto-suspended: HTTP {statusCode}",
                     cancellationToken).ConfigureAwait(false);
+
+                metrics.RecordSubscriptionSuspended(nonRetriableTenant, statusCode);
             }
 
             return; // Message considered processed — no retry.
@@ -131,6 +142,10 @@ public sealed partial class SendWebhookHandler(
             await deliveryWriter.RecordFailureAsync(
                 command, statusCode, stopwatch.ElapsedMilliseconds, retriableMessage, storedPayload, cancellationToken).ConfigureAwait(false);
 
+            string? retriableTenant = command.Envelope.TenantId?.ToString();
+            metrics.RecordDeliveryFailed(retriableTenant, command.Envelope.EventType, statusCode);
+            metrics.RecordDeliveryDuration(retriableTenant, command.Envelope.EventType, "failed", stopwatch.Elapsed);
+
             activity?.SetStatus(ActivityStatusCode.Error, retriableMessage);
             throw new WebhookDeliveryException(retriableMessage);
         }
@@ -140,6 +155,10 @@ public sealed partial class SendWebhookHandler(
 
         await deliveryWriter.RecordSuccessAsync(
             command, statusCode, stopwatch.ElapsedMilliseconds, payloadHash, storedPayload, cancellationToken).ConfigureAwait(false);
+
+        string? successTenant = command.Envelope.TenantId?.ToString();
+        metrics.RecordDeliverySucceeded(successTenant, command.Envelope.EventType);
+        metrics.RecordDeliveryDuration(successTenant, command.Envelope.EventType, "succeeded", stopwatch.Elapsed);
     }
 
     /// <summary>

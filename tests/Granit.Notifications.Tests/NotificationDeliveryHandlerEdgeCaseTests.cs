@@ -1,10 +1,13 @@
+using System.Diagnostics.Metrics;
 using System.Text.Json;
 using Granit.Guids;
 using Granit.Notifications.Abstractions;
+using Granit.Notifications.Diagnostics;
 using Granit.Notifications.Domain;
 using Granit.Notifications.Handlers;
 using Granit.Notifications.Messages;
 using Granit.Timing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
@@ -12,16 +15,26 @@ using Xunit;
 
 namespace Granit.Notifications.Tests;
 
-public sealed class NotificationDeliveryHandlerEdgeCaseTests
+public sealed class NotificationDeliveryHandlerEdgeCaseTests : IDisposable
 {
     private readonly INotificationDeliveryWriter _deliveryWriter = Substitute.For<INotificationDeliveryWriter>();
     private readonly IClock _clock;
+    private readonly ServiceProvider _sp;
+    private readonly NotificationsMetrics _metrics;
 
     public NotificationDeliveryHandlerEdgeCaseTests()
     {
+        ServiceCollection services = new();
+        services.AddMetrics();
+        _sp = services.BuildServiceProvider();
+        IMeterFactory meterFactory = _sp.GetRequiredService<IMeterFactory>();
+        _metrics = new NotificationsMetrics(meterFactory);
+
         _clock = Substitute.For<IClock>();
         _clock.Now.Returns(_ => DateTimeOffset.UtcNow);
     }
+
+    public void Dispose() => _sp.Dispose();
 
     [Fact]
     public async Task HandleAsync_OperationCanceledException_is_not_caught()
@@ -33,7 +46,7 @@ public sealed class NotificationDeliveryHandlerEdgeCaseTests
             .Returns<Task>(_ => throw new OperationCanceledException());
 
         NotificationDeliveryHandler handler = new(
-            [channel], _deliveryWriter, new SimpleGuidGenerator(), _clock, NullLogger<NotificationDeliveryHandler>.Instance);
+            [channel], _deliveryWriter, new SimpleGuidGenerator(), _clock, NullLogger<NotificationDeliveryHandler>.Instance, _metrics);
         DeliverNotificationCommand command = BuildCommand();
 
         // Act & Assert — should throw OperationCanceledException, NOT NotificationDeliveryException
@@ -62,7 +75,7 @@ public sealed class NotificationDeliveryHandlerEdgeCaseTests
             });
 
         NotificationDeliveryHandler handler = new(
-            [channel], _deliveryWriter, new SimpleGuidGenerator(), _clock, NullLogger<NotificationDeliveryHandler>.Instance);
+            [channel], _deliveryWriter, new SimpleGuidGenerator(), _clock, NullLogger<NotificationDeliveryHandler>.Instance, _metrics);
         DeliverNotificationCommand command = BuildCommand();
 
         // Act
@@ -96,7 +109,7 @@ public sealed class NotificationDeliveryHandlerEdgeCaseTests
             });
 
         NotificationDeliveryHandler handler = new(
-            [channel], _deliveryWriter, new SimpleGuidGenerator(), _clock, NullLogger<NotificationDeliveryHandler>.Instance);
+            [channel], _deliveryWriter, new SimpleGuidGenerator(), _clock, NullLogger<NotificationDeliveryHandler>.Instance, _metrics);
         DeliverNotificationCommand command = BuildCommand();
 
         // Act
@@ -131,7 +144,7 @@ public sealed class NotificationDeliveryHandlerEdgeCaseTests
             });
 
         NotificationDeliveryHandler handler = new(
-            [channel], _deliveryWriter, new SimpleGuidGenerator(), _clock, NullLogger<NotificationDeliveryHandler>.Instance);
+            [channel], _deliveryWriter, new SimpleGuidGenerator(), _clock, NullLogger<NotificationDeliveryHandler>.Instance, _metrics);
         EntityReference entity = new("Patient", "pat-1");
         DeliverNotificationCommand command = BuildCommand(relatedEntity: entity);
 
@@ -159,7 +172,7 @@ public sealed class NotificationDeliveryHandlerEdgeCaseTests
             });
 
         NotificationDeliveryHandler handler = new(
-            [channel], _deliveryWriter, new SimpleGuidGenerator(), _clock, NullLogger<NotificationDeliveryHandler>.Instance);
+            [channel], _deliveryWriter, new SimpleGuidGenerator(), _clock, NullLogger<NotificationDeliveryHandler>.Instance, _metrics);
         DeliverNotificationCommand command = BuildCommand(culture: "fr-BE");
 
         // Act
@@ -181,7 +194,7 @@ public sealed class NotificationDeliveryHandlerEdgeCaseTests
         email.Name.Returns(NotificationChannels.Email);
 
         NotificationDeliveryHandler handler = new(
-            [inApp, email], _deliveryWriter, new SimpleGuidGenerator(), _clock, NullLogger<NotificationDeliveryHandler>.Instance);
+            [inApp, email], _deliveryWriter, new SimpleGuidGenerator(), _clock, NullLogger<NotificationDeliveryHandler>.Instance, _metrics);
         DeliverNotificationCommand command = BuildCommand(channelName: NotificationChannels.Email);
 
         // Act

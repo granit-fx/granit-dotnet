@@ -1,4 +1,6 @@
+using System.Diagnostics.Metrics;
 using Granit.Core.Events;
+using Granit.EventBus.Diagnostics;
 using Granit.EventBus.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -7,7 +9,7 @@ using Xunit;
 
 namespace Granit.EventBus.Tests;
 
-public sealed class InProcessLocalEventBusAdditionalTests
+public sealed class InProcessLocalEventBusAdditionalTests : IDisposable
 {
     private sealed record TestEvent(string Value);
 
@@ -34,11 +36,24 @@ public sealed class InProcessLocalEventBusAdditionalTests
             => throw new OperationCanceledException("cancelled");
     }
 
+    private readonly ServiceProvider _metricsSp;
+    private readonly EventBusMetrics _metrics;
+
+    public InProcessLocalEventBusAdditionalTests()
+    {
+        ServiceCollection metricsServices = new();
+        metricsServices.AddMetrics();
+        _metricsSp = metricsServices.BuildServiceProvider();
+        _metrics = new EventBusMetrics(_metricsSp.GetRequiredService<IMeterFactory>());
+    }
+
+    public void Dispose() => _metricsSp.Dispose();
+
     [Fact]
     public async Task PublishAsync_NullEvent_ThrowsArgumentNullException()
     {
         ServiceProvider sp = new ServiceCollection().BuildServiceProvider();
-        InProcessLocalEventBus bus = new(sp, NullLogger<InProcessLocalEventBus>.Instance);
+        InProcessLocalEventBus bus = new(sp, NullLogger<InProcessLocalEventBus>.Instance, _metrics);
 
         await Should.ThrowAsync<ArgumentNullException>(() =>
             bus.PublishAsync<TestEvent>(null!, TestContext.Current.CancellationToken));
@@ -53,7 +68,7 @@ public sealed class InProcessLocalEventBusAdditionalTests
         services.AddSingleton<ILocalEventHandler<TestEvent>>(survivingHandler);
         ServiceProvider sp = services.BuildServiceProvider();
 
-        InProcessLocalEventBus bus = new(sp, NullLogger<InProcessLocalEventBus>.Instance);
+        InProcessLocalEventBus bus = new(sp, NullLogger<InProcessLocalEventBus>.Instance, _metrics);
 
         await bus.PublishAsync(new TestEvent("resilient"), TestContext.Current.CancellationToken);
 
@@ -68,7 +83,7 @@ public sealed class InProcessLocalEventBusAdditionalTests
         services.AddSingleton<ILocalEventHandler<TestEvent>>(new CancellingHandler());
         ServiceProvider sp = services.BuildServiceProvider();
 
-        InProcessLocalEventBus bus = new(sp, NullLogger<InProcessLocalEventBus>.Instance);
+        InProcessLocalEventBus bus = new(sp, NullLogger<InProcessLocalEventBus>.Instance, _metrics);
 
         await Should.ThrowAsync<OperationCanceledException>(() =>
             bus.PublishAsync(new TestEvent("cancel-me"), TestContext.Current.CancellationToken));

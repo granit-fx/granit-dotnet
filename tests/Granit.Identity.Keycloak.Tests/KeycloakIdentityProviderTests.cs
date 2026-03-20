@@ -1,11 +1,14 @@
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Net;
 using Granit.Identity;
+using Granit.Identity.Diagnostics;
 using Granit.Identity.Events;
 using Granit.Identity.Keycloak.Internal;
 using Granit.Identity.Keycloak.Options;
 using Granit.Identity.Models;
 using Granit.Timing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -30,6 +33,8 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
     private readonly KeycloakAdminTokenService _tokenService;
     private readonly KeycloakUserTokenExchangeService _tokenExchangeService;
     private readonly IIdentityEventPublisher _eventPublisher = Substitute.For<IIdentityEventPublisher>();
+    private readonly IdentityMetrics _metrics;
+    private readonly ServiceProvider _metricsServiceProvider;
     private readonly KeycloakIdentityProvider _provider;
 
     // Separate handler for token exchange responses (Account API user tokens).
@@ -75,6 +80,11 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
         IHttpClientFactory exchangeFactory = Substitute.For<IHttpClientFactory>();
         exchangeFactory.CreateClient("KeycloakAdmin").Returns(exchangeClient);
 
+        ServiceCollection metricsServices = new();
+        metricsServices.AddMetrics();
+        _metricsServiceProvider = metricsServices.BuildServiceProvider();
+        _metrics = new IdentityMetrics(_metricsServiceProvider.GetRequiredService<IMeterFactory>());
+
         _tokenExchangeService = new KeycloakUserTokenExchangeService(
             exchangeFactory,
             Microsoft.Extensions.Options.Options.Create(_options),
@@ -86,6 +96,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             _httpClientFactory,
             Microsoft.Extensions.Options.Options.Create(_options),
             _eventPublisher,
+            _metrics,
             NullLogger<KeycloakIdentityProvider>.Instance);
     }
 
@@ -553,6 +564,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             seqFactory,
             Microsoft.Extensions.Options.Options.Create(opts),
             Substitute.For<IIdentityEventPublisher>(),
+            _metrics,
             NullLogger<KeycloakIdentityProvider>.Instance);
 
         IReadOnlyList<IdentityDeviceActivity> result = await provider.GetUserDeviceActivityAsync(
@@ -951,6 +963,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             locationFactory,
             Microsoft.Extensions.Options.Options.Create(_options),
             Substitute.For<IIdentityEventPublisher>(),
+            _metrics,
             NullLogger<KeycloakIdentityProvider>.Instance);
 
         IdentityUserCreate newUser = new("alice", "alice@test.com", "Alice", "Doe");
@@ -1125,6 +1138,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             seqFactory,
             Microsoft.Extensions.Options.Options.Create(_options),
             Substitute.For<IIdentityEventPublisher>(),
+            _metrics,
             NullLogger<KeycloakIdentityProvider>.Instance);
 
         IdentityUserUpdate update = new(Email: "newalice@test.com", FirstName: "Alicia");
@@ -1192,6 +1206,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             factory,
             Microsoft.Extensions.Options.Options.Create(optionsWithDirect),
             Substitute.For<IIdentityEventPublisher>(),
+            _metrics,
             NullLogger<KeycloakIdentityProvider>.Instance);
 
         bool result = await provider.VerifyUserCredentialsAsync("admin", "password123",
@@ -1233,6 +1248,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             factory,
             Microsoft.Extensions.Options.Options.Create(optionsWithDirect),
             Substitute.For<IIdentityEventPublisher>(),
+            _metrics,
             NullLogger<KeycloakIdentityProvider>.Instance);
 
         bool result = await provider.VerifyUserCredentialsAsync("admin", "wrong-password",
@@ -1296,6 +1312,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
     {
         _activityListener.Dispose();
         _httpClient.Dispose();
+        _metricsServiceProvider.Dispose();
     }
 }
 

@@ -2,6 +2,7 @@ using System.Threading.Channels;
 using Granit.Core.Diagnostics;
 using Granit.Http.Resilience.Extensions;
 using Granit.Webhooks.Abstractions;
+using Granit.Webhooks.Diagnostics;
 using Granit.Webhooks.Endpoints;
 using Granit.Webhooks.Handlers;
 using Granit.Webhooks.Internal;
@@ -9,6 +10,7 @@ using Granit.Webhooks.Messages;
 using Granit.Webhooks.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -32,6 +34,7 @@ public static class WebhooksHostApplicationBuilderExtensions
         Action<WebhooksOptions>? configure = null)
     {
         GranitActivitySourceRegistry.Register(Diagnostics.WebhooksActivitySource.Name);
+        builder.Services.TryAddSingleton<WebhooksMetrics>();
 
         // Bind and validate options at startup.
         builder.Services

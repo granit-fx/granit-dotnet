@@ -1,6 +1,9 @@
+using System.Diagnostics;
 using System.Text;
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
+using Granit.Core.MultiTenancy;
+using Granit.Vault.Diagnostics;
 using Granit.Vault.GoogleCloud.Diagnostics;
 using Granit.Vault.GoogleCloud.Options;
 using Microsoft.Extensions.Logging;
@@ -14,8 +17,11 @@ namespace Granit.Vault.GoogleCloud.Services;
 internal sealed partial class CloudKmsTransitEncryptionService(
     KeyManagementServiceClient kmsClient,
     IOptions<GoogleCloudVaultOptions> options,
+    VaultMetrics metrics,
+    ICurrentTenant? currentTenant,
     ILogger<CloudKmsTransitEncryptionService> logger) : ITransitEncryptionService
 {
+    private const string ProviderName = "googlecloud";
     private readonly CryptoKeyName _keyName = new(
         options.Value.ProjectId,
         options.Value.Location,
@@ -28,21 +34,38 @@ internal sealed partial class CloudKmsTransitEncryptionService(
         string plaintext,
         CancellationToken cancellationToken = default)
     {
-        using System.Diagnostics.Activity? activity = VaultGoogleCloudActivitySource.Source.StartActivity(
+        using Activity? activity = VaultGoogleCloudActivitySource.Source.StartActivity(
             VaultGoogleCloudActivitySource.Operations.KmsEncrypt);
         activity?.SetTag(VaultGoogleCloudActivitySource.Tags.KeyName, keyName);
 
-        byte[] plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
+        var stopwatch = Stopwatch.StartNew();
+        string? tenantId = currentTenant?.IsAvailable == true ? currentTenant.Id?.ToString() : null;
 
-        EncryptResponse response = await kmsClient.EncryptAsync(
-            _keyName,
-            ByteString.CopyFrom(plaintextBytes),
-            cancellationToken).ConfigureAwait(false);
+        try
+        {
+            byte[] plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
 
-        string ciphertext = Convert.ToBase64String(response.Ciphertext.ToByteArray());
+            EncryptResponse response = await kmsClient.EncryptAsync(
+                _keyName,
+                ByteString.CopyFrom(plaintextBytes),
+                cancellationToken).ConfigureAwait(false);
 
-        LogEncryptSuccess(keyName);
-        return ciphertext;
+            string ciphertext = Convert.ToBase64String(response.Ciphertext.ToByteArray());
+
+            LogEncryptSuccess(keyName);
+            metrics.RecordOperationCompleted(tenantId, "encrypt", ProviderName, "success");
+            return ciphertext;
+        }
+        catch
+        {
+            metrics.RecordOperationError(tenantId, "encrypt", ProviderName);
+            throw;
+        }
+        finally
+        {
+            stopwatch.Stop();
+            metrics.RecordOperationDuration(tenantId, "encrypt", ProviderName, stopwatch.Elapsed);
+        }
     }
 
     /// <inheritdoc />
@@ -51,21 +74,38 @@ internal sealed partial class CloudKmsTransitEncryptionService(
         string ciphertext,
         CancellationToken cancellationToken = default)
     {
-        using System.Diagnostics.Activity? activity = VaultGoogleCloudActivitySource.Source.StartActivity(
+        using Activity? activity = VaultGoogleCloudActivitySource.Source.StartActivity(
             VaultGoogleCloudActivitySource.Operations.KmsDecrypt);
         activity?.SetTag(VaultGoogleCloudActivitySource.Tags.KeyName, keyName);
 
-        byte[] ciphertextBytes = Convert.FromBase64String(ciphertext);
+        var stopwatch = Stopwatch.StartNew();
+        string? tenantId = currentTenant?.IsAvailable == true ? currentTenant.Id?.ToString() : null;
 
-        DecryptResponse response = await kmsClient.DecryptAsync(
-            _keyName,
-            ByteString.CopyFrom(ciphertextBytes),
-            cancellationToken).ConfigureAwait(false);
+        try
+        {
+            byte[] ciphertextBytes = Convert.FromBase64String(ciphertext);
 
-        string result = Encoding.UTF8.GetString(response.Plaintext.ToByteArray());
+            DecryptResponse response = await kmsClient.DecryptAsync(
+                _keyName,
+                ByteString.CopyFrom(ciphertextBytes),
+                cancellationToken).ConfigureAwait(false);
 
-        LogDecryptSuccess(keyName);
-        return result;
+            string result = Encoding.UTF8.GetString(response.Plaintext.ToByteArray());
+
+            LogDecryptSuccess(keyName);
+            metrics.RecordOperationCompleted(tenantId, "decrypt", ProviderName, "success");
+            return result;
+        }
+        catch
+        {
+            metrics.RecordOperationError(tenantId, "decrypt", ProviderName);
+            throw;
+        }
+        finally
+        {
+            stopwatch.Stop();
+            metrics.RecordOperationDuration(tenantId, "decrypt", ProviderName, stopwatch.Elapsed);
+        }
     }
 
     /// <inheritdoc />

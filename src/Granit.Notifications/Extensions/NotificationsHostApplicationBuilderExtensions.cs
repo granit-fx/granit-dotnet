@@ -1,12 +1,14 @@
 using System.Threading.Channels;
 using Granit.Core.Diagnostics;
 using Granit.Notifications.Abstractions;
+using Granit.Notifications.Diagnostics;
 using Granit.Notifications.Handlers;
 using Granit.Notifications.Internal;
 using Granit.Notifications.Messages;
 using Granit.Notifications.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace Granit.Notifications.Extensions;
@@ -29,6 +31,7 @@ public static class NotificationsHostApplicationBuilderExtensions
         Action<NotificationsOptions>? configure = null)
     {
         GranitActivitySourceRegistry.Register(Diagnostics.NotificationsActivitySource.Name);
+        builder.Services.TryAddSingleton<NotificationsMetrics>();
 
         // Options
         builder.Services

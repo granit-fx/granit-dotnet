@@ -1,4 +1,5 @@
 using Granit.Core.Events;
+using Granit.EventBus.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -14,13 +15,17 @@ namespace Granit.EventBus.Internal;
 /// </remarks>
 internal sealed partial class InProcessLocalEventBus(
     IServiceProvider serviceProvider,
-    ILogger<InProcessLocalEventBus> logger) : ILocalEventBus
+    ILogger<InProcessLocalEventBus> logger,
+    EventBusMetrics metrics) : ILocalEventBus
 {
     /// <inheritdoc/>
     public async Task PublishAsync<TEvent>(TEvent localEvent, CancellationToken cancellationToken = default)
         where TEvent : class
     {
         ArgumentNullException.ThrowIfNull(localEvent);
+
+        string eventType = typeof(TEvent).Name;
+        metrics.RecordEventPublished(null, "local", eventType);
 
         IEnumerable<ILocalEventHandler<TEvent>> handlers =
             serviceProvider.GetServices<ILocalEventHandler<TEvent>>();
@@ -30,9 +35,11 @@ internal sealed partial class InProcessLocalEventBus(
             try
             {
                 await handler.HandleAsync(localEvent, cancellationToken).ConfigureAwait(false);
+                metrics.RecordHandlerExecuted(null, eventType, "success");
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
+                metrics.RecordHandlerExecuted(null, eventType, "error");
                 LogHandlerFailed(typeof(TEvent).Name, handler.GetType().Name, ex);
             }
         }

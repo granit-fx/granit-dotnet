@@ -1,12 +1,17 @@
+using System.Diagnostics.Metrics;
+using Granit.Workflow.Diagnostics;
 using Granit.Workflow.Domain;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
 namespace Granit.Workflow.Tests;
 
-public sealed class WorkflowManagerTests
+public sealed class WorkflowManagerTests : IDisposable
 {
+    private readonly ServiceProvider _sp;
+    private readonly WorkflowMetrics _metrics;
     private static readonly WorkflowDefinition<WorkflowLifecycleStatus> Definition =
         WorkflowDefinition<WorkflowLifecycleStatus>.Create(b => b
             .InitialState(WorkflowLifecycleStatus.Draft)
@@ -26,6 +31,17 @@ public sealed class WorkflowManagerTests
                 .RequiresPermission("workflow.archive")));
 
     private readonly IWorkflowPermissionChecker _permissionChecker = Substitute.For<IWorkflowPermissionChecker>();
+
+    public WorkflowManagerTests()
+    {
+        ServiceCollection services = new();
+        services.AddMetrics();
+        _sp = services.BuildServiceProvider();
+        IMeterFactory meterFactory = _sp.GetRequiredService<IMeterFactory>();
+        _metrics = new WorkflowMetrics(meterFactory);
+    }
+
+    public void Dispose() => _sp.Dispose();
 
     // ========================================================================
     // TransitionAsync — valid transitions
@@ -59,7 +75,7 @@ public sealed class WorkflowManagerTests
             WorkflowDefinition<WorkflowLifecycleStatus>.Create(b => b
                 .InitialState(WorkflowLifecycleStatus.Draft)
                 .Transition(WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.Published));
-        WorkflowManager<WorkflowLifecycleStatus> manager = new(openDefinition, _permissionChecker);
+        WorkflowManager<WorkflowLifecycleStatus> manager = new(openDefinition, _permissionChecker, _metrics);
 
         // Act
         TransitionResult<WorkflowLifecycleStatus> result = await manager.TransitionAsync(
@@ -233,5 +249,5 @@ public sealed class WorkflowManagerTests
     // ========================================================================
 
     private WorkflowManager<WorkflowLifecycleStatus> BuildManager() =>
-        new(Definition, _permissionChecker);
+        new(Definition, _permissionChecker, _metrics);
 }

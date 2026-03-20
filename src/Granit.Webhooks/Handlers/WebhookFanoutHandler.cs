@@ -27,7 +27,8 @@ namespace Granit.Webhooks.Handlers;
 public sealed class WebhookFanoutHandler(
     IWebhookSubscriptionReader subscriptionReader,
     ICurrentTenant currentTenant,
-    IGuidGenerator guidGenerator)
+    IGuidGenerator guidGenerator,
+    WebhooksMetrics metrics)
 {
     /// <summary>
     /// Resolves active subscribers and produces one <see cref="SendWebhookCommand"/> per subscriber.
@@ -65,6 +66,7 @@ public sealed class WebhookFanoutHandler(
         };
 
         activity?.SetTag("webhooks.subscriber_count", subscriptions.Count);
+        metrics.RecordFanoutTriggered(tenantId?.ToString(), trigger.EventType);
 
         return subscriptions.Select(sub => new SendWebhookCommand
         {

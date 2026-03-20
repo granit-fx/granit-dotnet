@@ -1,3 +1,4 @@
+using Granit.AI.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.AI.EntityFrameworkCore.Internal;
@@ -10,7 +11,8 @@ namespace Granit.AI.EntityFrameworkCore.Internal;
 /// Records are immutable after creation.
 /// </remarks>
 internal sealed class EfAIUsageStore(
-    IDbContextFactory<AIDbContext> contextFactory) : IAIUsageTracker
+    IDbContextFactory<AIDbContext> contextFactory,
+    AIMetrics metrics) : IAIUsageTracker
 {
     /// <inheritdoc/>
     public async Task RecordAsync(
@@ -21,5 +23,14 @@ internal sealed class EfAIUsageStore(
         var entity = AIUsageRecordEntity.FromRecord(record);
         context.UsageRecords.Add(entity);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        string? tenantId = record.TenantId?.ToString();
+        metrics.RecordRequestCompleted(tenantId, record.Model, record.Provider, "success");
+        metrics.RecordTokensUsed(tenantId, record.Model, record.Provider, record.InputTokens, record.OutputTokens);
+
+        if (record.Duration.HasValue)
+        {
+            metrics.RecordRequestDuration(tenantId, record.Model, record.Provider, record.Duration.Value);
+        }
     }
 }

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Granit.Identity.Diagnostics;
 using Granit.Identity.Events;
 using Granit.Identity.Keycloak.Diagnostics;
 using Granit.Identity.Keycloak.Options;
@@ -29,6 +30,7 @@ internal sealed partial class KeycloakIdentityProvider(
     IHttpClientFactory httpClientFactory,
     IOptions<KeycloakAdminOptions> options,
     IIdentityEventPublisher eventPublisher,
+    IdentityMetrics metrics,
     ILogger<KeycloakIdentityProvider> logger) : IIdentityProvider
 {
     /// <inheritdoc/>
@@ -69,6 +71,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         using Activity? activity = IdentityKeycloakActivitySource.Source.StartActivity(IdentityKeycloakActivitySource.GetUser);
         activity?.SetTag(IdentityKeycloakActivitySource.TagUserId, userId);
+        long startTimestamp = Stopwatch.GetTimestamp();
 
         try
         {
@@ -79,11 +82,15 @@ internal sealed partial class KeycloakIdentityProvider(
                 .GetFromJsonAsync<KeycloakUserRepresentation>(endpoint, cancellationToken)
                 .ConfigureAwait(false);
 
+            metrics.RecordOperationCompleted(null, "get_user", "keycloak", user is not null ? "found" : "not_found");
+            metrics.RecordOperationDuration(null, "get_user", "keycloak", Stopwatch.GetElapsedTime(startTimestamp));
+
             return user is not null ? ToIdentityUser(user) : null;
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            metrics.RecordOperationError(null, "get_user", "keycloak");
             LogKeycloakGetUserFailed(ex, userId);
             return null;
         }
@@ -177,6 +184,8 @@ internal sealed partial class KeycloakIdentityProvider(
         response.EnsureSuccessStatusCode();
 
         LogUserProfileUpdated(userId);
+
+        metrics.RecordOperationCompleted(null, "update_user", "keycloak", "updated");
 
         await eventPublisher.PublishAsync(new IdentityUserProfileUpdatedEvent(userId, update), cancellationToken).ConfigureAwait(false);
     }
@@ -379,6 +388,8 @@ internal sealed partial class KeycloakIdentityProvider(
 
         LogRoleAssigned(roleName, userId);
 
+        metrics.RecordOperationCompleted(null, "assign_role", "keycloak", "assigned");
+
         await eventPublisher.PublishAsync(new IdentityRoleAssignedEvent(userId, roleName), cancellationToken).ConfigureAwait(false);
     }
 
@@ -454,6 +465,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         using Activity? activity = IdentityKeycloakActivitySource.Source.StartActivity(IdentityKeycloakActivitySource.TerminateAllSessions);
         activity?.SetTag(IdentityKeycloakActivitySource.TagUserId, userId);
+        long startTimestamp = Stopwatch.GetTimestamp();
 
         HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
         string endpoint = options.Value.GetUserLogoutEndpoint(userId);
@@ -465,6 +477,9 @@ internal sealed partial class KeycloakIdentityProvider(
         response.EnsureSuccessStatusCode();
 
         LogAllSessionsTerminated(userId);
+
+        metrics.RecordOperationCompleted(null, "terminate_all_sessions", "keycloak", "terminated");
+        metrics.RecordOperationDuration(null, "terminate_all_sessions", "keycloak", Stopwatch.GetElapsedTime(startTimestamp));
 
         await eventPublisher.PublishAsync(new IdentitySessionsRevokedEvent(userId), cancellationToken).ConfigureAwait(false);
     }
@@ -532,6 +547,7 @@ internal sealed partial class KeycloakIdentityProvider(
         ArgumentNullException.ThrowIfNull(user);
 
         using Activity? activity = IdentityKeycloakActivitySource.Source.StartActivity(IdentityKeycloakActivitySource.CreateUser);
+        long startTimestamp = Stopwatch.GetTimestamp();
 
         HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
         string endpoint = options.Value.GetUsersEndpoint();
@@ -565,6 +581,9 @@ internal sealed partial class KeycloakIdentityProvider(
         }
 
         LogUserCreated(user.Username, createdUserId);
+
+        metrics.RecordOperationCompleted(null, "create_user", "keycloak", "created");
+        metrics.RecordOperationDuration(null, "create_user", "keycloak", Stopwatch.GetElapsedTime(startTimestamp));
 
         await eventPublisher.PublishAsync(new IdentityUserCreatedEvent(createdUserId, user.Username, user.Email), cancellationToken).ConfigureAwait(false);
 

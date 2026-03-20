@@ -97,6 +97,7 @@ public sealed class WorkflowServiceCollectionExtensionsTests
     {
         // Arrange
         ServiceCollection services = new();
+        services.AddMetrics();
         services.AddGranitWorkflow();
 
         var definition =

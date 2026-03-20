@@ -6,15 +6,18 @@
 // =============================================================================
 
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Net;
 using System.Text.Json;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;
+using Granit.Webhooks.Diagnostics;
 using Granit.Webhooks.Exceptions;
 using Granit.Webhooks.Handlers;
 using Granit.Webhooks.Internal;
 using Granit.Webhooks.Messages;
 using Granit.Webhooks.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -32,6 +35,8 @@ public sealed class SendWebhookHandlerTests : IDisposable
 
     private readonly IClock _clock;
     private readonly ActivityListener _activityListener;
+    private readonly ServiceProvider _sp;
+    private readonly WebhooksMetrics _metrics;
 
     public SendWebhookHandlerTests()
     {
@@ -42,11 +47,20 @@ public sealed class SendWebhookHandlerTests : IDisposable
         };
         ActivitySource.AddActivityListener(_activityListener);
 
+        ServiceCollection services = new();
+        services.AddMetrics();
+        _sp = services.BuildServiceProvider();
+        _metrics = new WebhooksMetrics(_sp.GetRequiredService<IMeterFactory>());
+
         _clock = Substitute.For<IClock>();
         _clock.Now.Returns(_ => DateTimeOffset.UtcNow);
     }
 
-    public void Dispose() => _activityListener.Dispose();
+    public void Dispose()
+    {
+        _activityListener.Dispose();
+        _sp.Dispose();
+    }
 
     // -------------------------------------------------------------------------
     // Success
@@ -228,7 +242,7 @@ public sealed class SendWebhookHandlerTests : IDisposable
         IHttpClientFactory factory = Substitute.For<IHttpClientFactory>();
         factory.CreateClient(Arg.Any<string>()).Returns(httpClient);
         IOptions<WebhooksOptions> opts = Microsoft.Extensions.Options.Options.Create(new WebhooksOptions { StorePayload = storePayload });
-        return new SendWebhookHandler(factory, _deliveryWriter, _secretProtector, opts, NullLogger<SendWebhookHandler>.Instance, _clock);
+        return new SendWebhookHandler(factory, _deliveryWriter, _secretProtector, opts, NullLogger<SendWebhookHandler>.Instance, _clock, _metrics);
     }
 
     private SendWebhookHandler BuildHandlerWithTimeout()
@@ -237,7 +251,7 @@ public sealed class SendWebhookHandlerTests : IDisposable
         IHttpClientFactory factory = Substitute.For<IHttpClientFactory>();
         factory.CreateClient(Arg.Any<string>()).Returns(httpClient);
         IOptions<WebhooksOptions> opts = Microsoft.Extensions.Options.Options.Create(new WebhooksOptions());
-        return new SendWebhookHandler(factory, _deliveryWriter, _secretProtector, opts, NullLogger<SendWebhookHandler>.Instance, _clock);
+        return new SendWebhookHandler(factory, _deliveryWriter, _secretProtector, opts, NullLogger<SendWebhookHandler>.Instance, _clock, _metrics);
     }
 
     private static SendWebhookCommand BuildCommand() => new()

@@ -7,12 +7,15 @@
 // =============================================================================
 
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Text.Json;
 using Granit.Core.MultiTenancy;
 using Granit.Guids;
 using Granit.Notifications.Abstractions;
+using Granit.Notifications.Diagnostics;
 using Granit.Notifications.Handlers;
 using Granit.Notifications.Messages;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -27,6 +30,7 @@ public sealed class NotificationFanoutHandlerTests : IDisposable
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly NotificationFanoutHandler _handler;
     private readonly ActivityListener _activityListener;
+    private readonly ServiceProvider _sp;
 
     public NotificationFanoutHandlerTests()
     {
@@ -37,16 +41,26 @@ public sealed class NotificationFanoutHandlerTests : IDisposable
         };
         ActivitySource.AddActivityListener(_activityListener);
 
+        ServiceCollection services = new();
+        services.AddMetrics();
+        _sp = services.BuildServiceProvider();
+        IMeterFactory meterFactory = _sp.GetRequiredService<IMeterFactory>();
+
         _currentTenant.IsAvailable.Returns(false);
         _handler = new NotificationFanoutHandler(
             _subscriptionReader,
             _preferenceReader,
             _definitionStore,
             new SimpleGuidGenerator(),
-            _currentTenant);
+            _currentTenant,
+            new NotificationsMetrics(meterFactory));
     }
 
-    public void Dispose() => _activityListener.Dispose();
+    public void Dispose()
+    {
+        _activityListener.Dispose();
+        _sp.Dispose();
+    }
 
     [Fact]
     public async Task HandleAsync_NoRecipients_NoSubscribers_ReturnsEmpty()

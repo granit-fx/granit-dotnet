@@ -1,4 +1,5 @@
 using Granit.Privacy.DataExport.Events;
+using Granit.Privacy.Diagnostics;
 using Granit.Privacy.Options;
 using Microsoft.Extensions.Options;
 using Wolverine;
@@ -58,11 +59,13 @@ public sealed class GdprExportSaga : Saga
         PersonalDataRequestedEto @event,
         IDataProviderRegistry registry,
         IOptions<GranitPrivacyOptions> options,
-        IMessageContext context)
+        IMessageContext context,
+        PrivacyMetrics metrics)
     {
         Id = @event.RequestId;
         UserId = @event.UserId;
         ExpectedCount = registry.Count;
+        metrics.RecordExportRequested(null);
         PendingProviders = [.. registry.GetAll()];
 
         if (ExpectedCount == 0)
@@ -82,10 +85,11 @@ public sealed class GdprExportSaga : Saga
     /// Handles a fragment prepared by a data provider.
     /// Completes the Saga if all expected fragments have been received.
     /// </summary>
-    public ExportCompletedEto? Handle(PersonalDataPreparedEto @event)
+    public ExportCompletedEto? Handle(PersonalDataPreparedEto @event, PrivacyMetrics metrics)
     {
         ReceivedFragments.Add(new ReceivedFragment(@event.ProviderName, @event.BlobReferenceId, @event.ContentType));
         PendingProviders.Remove(@event.ProviderName);
+        metrics.RecordFragmentReceived(null, @event.ProviderName);
 
         if (ReceivedFragments.Count < ExpectedCount)
         {
@@ -100,8 +104,9 @@ public sealed class GdprExportSaga : Saga
     /// Handles the timeout event.
     /// Publishes a partial <see cref="ExportCompletedEto"/> with whatever fragments arrived.
     /// </summary>
-    public ExportCompletedEto Handle(ExportTimedOutEvent @event)
+    public ExportCompletedEto Handle(ExportTimedOutEvent @event, PrivacyMetrics metrics)
     {
+        metrics.RecordExportCompleted(null, "timeout", TimeSpan.Zero);
         MarkCompleted();
         return new ExportCompletedEto(
             Id,

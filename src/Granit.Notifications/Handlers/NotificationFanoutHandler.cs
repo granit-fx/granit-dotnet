@@ -16,7 +16,8 @@ public sealed class NotificationFanoutHandler(
     INotificationPreferenceReader preferenceReader,
     INotificationDefinitionStore definitionStore,
     IGuidGenerator guidGenerator,
-    ICurrentTenant currentTenant)
+    ICurrentTenant currentTenant,
+    NotificationsMetrics metrics)
 {
     /// <summary>
     /// Resolves recipients, loads preferences, filters channels, and produces delivery commands.
@@ -95,6 +96,10 @@ public sealed class NotificationFanoutHandler(
 
         activity?.SetTag("notifications.recipient_count", recipientUserIds.Count);
         activity?.SetTag("notifications.delivery_count", commands.Count);
+
+        metrics.RecordFanoutTriggered(
+            currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null,
+            trigger.NotificationTypeName);
 
         return commands;
     }

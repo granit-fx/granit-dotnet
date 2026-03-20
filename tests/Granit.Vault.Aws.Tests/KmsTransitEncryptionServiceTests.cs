@@ -1,8 +1,11 @@
+using System.Diagnostics.Metrics;
 using System.Text;
 using Amazon.KeyManagementService;
 using Amazon.KeyManagementService.Model;
 using Granit.Vault.Aws.Options;
 using Granit.Vault.Aws.Services;
+using Granit.Vault.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
@@ -10,9 +13,10 @@ using Xunit;
 
 namespace Granit.Vault.Aws.Tests;
 
-public sealed class KmsTransitEncryptionServiceTests
+public sealed class KmsTransitEncryptionServiceTests : IDisposable
 {
     private readonly IAmazonKeyManagementService _kmsClient = Substitute.For<IAmazonKeyManagementService>();
+    private readonly ServiceProvider _sp;
     private readonly KmsTransitEncryptionService _sut;
 
     public KmsTransitEncryptionServiceTests()
@@ -23,11 +27,20 @@ public sealed class KmsTransitEncryptionServiceTests
             KmsKeyId = "alias/test-key",
         };
 
+        ServiceCollection services = new();
+        services.AddMetrics();
+        _sp = services.BuildServiceProvider();
+        var metrics = new VaultMetrics(_sp.GetRequiredService<IMeterFactory>());
+
         _sut = new KmsTransitEncryptionService(
             _kmsClient,
             Microsoft.Extensions.Options.Options.Create(options),
+            metrics,
+            null,
             NullLogger<KmsTransitEncryptionService>.Instance);
     }
+
+    public void Dispose() => _sp.Dispose();
 
     [Fact]
     public async Task EncryptAsync_EncodesPlaintextAndReturnsCiphertext()

@@ -6,14 +6,17 @@
 // =============================================================================
 
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Text.Json;
 using Granit.Core.MultiTenancy;
 using Granit.Guids;
 using Granit.Webhooks.Abstractions;
+using Granit.Webhooks.Diagnostics;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.Handlers;
 using Granit.Webhooks.Internal;
 using Granit.Webhooks.Messages;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -26,6 +29,7 @@ public sealed class WebhookFanoutHandlerTests : IDisposable
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly WebhookFanoutHandler _handler;
     private readonly ActivityListener _activityListener;
+    private readonly ServiceProvider _sp;
 
     public WebhookFanoutHandlerTests()
     {
@@ -36,11 +40,20 @@ public sealed class WebhookFanoutHandlerTests : IDisposable
         };
         ActivitySource.AddActivityListener(_activityListener);
 
+        ServiceCollection services = new();
+        services.AddMetrics();
+        _sp = services.BuildServiceProvider();
+        var metrics = new WebhooksMetrics(_sp.GetRequiredService<IMeterFactory>());
+
         _currentTenant.IsAvailable.Returns(false);
-        _handler = new WebhookFanoutHandler(_reader, _currentTenant, new SimpleGuidGenerator());
+        _handler = new WebhookFanoutHandler(_reader, _currentTenant, new SimpleGuidGenerator(), metrics);
     }
 
-    public void Dispose() => _activityListener.Dispose();
+    public void Dispose()
+    {
+        _activityListener.Dispose();
+        _sp.Dispose();
+    }
 
     [Fact]
     public async Task HandleAsync_NoSubscribers_ReturnsEmptyEnumerable()

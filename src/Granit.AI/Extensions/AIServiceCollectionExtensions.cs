@@ -44,6 +44,9 @@ public static class AIServiceCollectionExtensions
         builder.Services.TryAddSingleton<IAIChatClientFactory, DefaultAIChatClientFactory>();
         builder.Services.TryAddSingleton<IAIEmbeddingGeneratorFactory, DefaultAIEmbeddingGeneratorFactory>();
 
+        // Metrics
+        builder.Services.TryAddSingleton<AIMetrics>();
+
         // Usage tracking (no-op by default, overridden by EF Core package)
         builder.Services.TryAddSingleton<IAIUsageTracker, NullAIUsageTracker>();
 

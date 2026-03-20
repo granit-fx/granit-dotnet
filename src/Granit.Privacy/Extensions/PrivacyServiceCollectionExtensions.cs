@@ -1,5 +1,7 @@
+using Granit.Core.Diagnostics;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Internal;
+using Granit.Privacy.Diagnostics;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Internal;
 using Granit.Privacy.Options;
@@ -23,6 +25,9 @@ public static class PrivacyServiceCollectionExtensions
         Action<GranitPrivacyBuilder> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
+
+        GranitActivitySourceRegistry.Register(PrivacyActivitySource.Name);
+        services.TryAddSingleton<PrivacyMetrics>();
 
         services.AddOptions<GranitPrivacyOptions>()
             .BindConfiguration(GranitPrivacyOptions.SectionName)

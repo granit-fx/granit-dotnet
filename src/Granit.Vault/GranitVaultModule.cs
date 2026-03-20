@@ -1,5 +1,8 @@
 using Granit.Core.Modularity;
 using Granit.Encryption;
+using Granit.Vault.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Vault;
 
@@ -18,4 +21,10 @@ namespace Granit.Vault;
 /// <see cref="VaultLocalizationResource"/>.
 /// </remarks>
 [DependsOn(typeof(GranitEncryptionModule))]
-public sealed class GranitVaultModule : GranitModule;
+public sealed class GranitVaultModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddSingleton<VaultMetrics>();
+    }
+}

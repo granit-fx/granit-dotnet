@@ -1,12 +1,14 @@
 using System.Reflection;
 using System.Threading.Channels;
 using Granit.BackgroundJobs.Abstractions;
+using Granit.BackgroundJobs.Diagnostics;
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Internal;
 using Granit.BackgroundJobs.Options;
 using Granit.Core.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -42,7 +44,9 @@ public static class BackgroundJobsHostApplicationBuilderExtensions
         this IHostApplicationBuilder builder,
         IEnumerable<Assembly>? additionalAssemblies = null)
     {
-        GranitActivitySourceRegistry.Register(Diagnostics.BackgroundJobsActivitySource.Name);
+        GranitActivitySourceRegistry.Register(BackgroundJobsActivitySource.Name);
+
+        builder.Services.TryAddSingleton<BackgroundJobsMetrics>();
 
         // Bind and validate options at startup.
         builder.Services

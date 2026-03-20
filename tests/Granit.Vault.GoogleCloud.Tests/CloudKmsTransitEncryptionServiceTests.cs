@@ -1,8 +1,11 @@
+using System.Diagnostics.Metrics;
 using System.Text;
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
+using Granit.Vault.Diagnostics;
 using Granit.Vault.GoogleCloud.Options;
 using Granit.Vault.GoogleCloud.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
@@ -10,9 +13,10 @@ using Xunit;
 
 namespace Granit.Vault.GoogleCloud.Tests;
 
-public sealed class CloudKmsTransitEncryptionServiceTests
+public sealed class CloudKmsTransitEncryptionServiceTests : IDisposable
 {
     private readonly KeyManagementServiceClient _kmsClient = Substitute.For<KeyManagementServiceClient>();
+    private readonly ServiceProvider _sp;
     private readonly CloudKmsTransitEncryptionService _sut;
 
     public CloudKmsTransitEncryptionServiceTests()
@@ -25,11 +29,20 @@ public sealed class CloudKmsTransitEncryptionServiceTests
             CryptoKey = "granit-key",
         };
 
+        ServiceCollection services = new();
+        services.AddMetrics();
+        _sp = services.BuildServiceProvider();
+        var metrics = new VaultMetrics(_sp.GetRequiredService<IMeterFactory>());
+
         _sut = new CloudKmsTransitEncryptionService(
             _kmsClient,
             Microsoft.Extensions.Options.Options.Create(options),
+            metrics,
+            null,
             NullLogger<CloudKmsTransitEncryptionService>.Instance);
     }
+
+    public void Dispose() => _sp.Dispose();
 
     [Fact]
     public async Task EncryptAsync_EncodesPlaintextAndReturnsCiphertext()

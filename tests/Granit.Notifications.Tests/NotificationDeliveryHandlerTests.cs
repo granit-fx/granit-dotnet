@@ -6,14 +6,17 @@
 // =============================================================================
 
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Text.Json;
 using Granit.Guids;
 using Granit.Notifications.Abstractions;
+using Granit.Notifications.Diagnostics;
 using Granit.Notifications.Domain;
 using Granit.Notifications.Exceptions;
 using Granit.Notifications.Handlers;
 using Granit.Notifications.Messages;
 using Granit.Timing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -30,6 +33,8 @@ public sealed class NotificationDeliveryHandlerTests : IDisposable
     private readonly IClock _clock;
     private readonly ILogger<NotificationDeliveryHandler> _logger = NullLogger<NotificationDeliveryHandler>.Instance;
     private readonly ActivityListener _activityListener;
+    private readonly ServiceProvider _sp;
+    private readonly NotificationsMetrics _metrics;
 
     public NotificationDeliveryHandlerTests()
     {
@@ -40,11 +45,21 @@ public sealed class NotificationDeliveryHandlerTests : IDisposable
         };
         ActivitySource.AddActivityListener(_activityListener);
 
+        ServiceCollection services = new();
+        services.AddMetrics();
+        _sp = services.BuildServiceProvider();
+        IMeterFactory meterFactory = _sp.GetRequiredService<IMeterFactory>();
+        _metrics = new NotificationsMetrics(meterFactory);
+
         _clock = Substitute.For<IClock>();
         _clock.Now.Returns(_ => DateTimeOffset.UtcNow);
     }
 
-    public void Dispose() => _activityListener.Dispose();
+    public void Dispose()
+    {
+        _activityListener.Dispose();
+        _sp.Dispose();
+    }
 
     [Fact]
     public async Task HandleAsync_ChannelNotRegistered_LogsWarningAndReturns()
@@ -133,7 +148,7 @@ public sealed class NotificationDeliveryHandlerTests : IDisposable
     // -------------------------------------------------------------------------
 
     private NotificationDeliveryHandler BuildHandler(IReadOnlyList<INotificationChannel> channels) =>
-        new(channels, _deliveryWriter, new SimpleGuidGenerator(), _clock, _logger);
+        new(channels, _deliveryWriter, new SimpleGuidGenerator(), _clock, _logger, _metrics);
 
     private static DeliverNotificationCommand BuildCommand(string channelName = NotificationChannels.InApp) => new()
     {

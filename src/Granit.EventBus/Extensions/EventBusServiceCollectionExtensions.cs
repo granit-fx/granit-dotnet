@@ -1,4 +1,6 @@
+using Granit.Core.Diagnostics;
 using Granit.Core.Events;
+using Granit.EventBus.Diagnostics;
 using Granit.EventBus.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -21,8 +23,10 @@ public static class EventBusServiceCollectionExtensions
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddGranitEventBus(this IServiceCollection services)
     {
+        services.TryAddSingleton<EventBusMetrics>();
         services.TryAddScoped<ILocalEventBus, InProcessLocalEventBus>();
         services.TryAddScoped<IDistributedEventBus, InProcessDistributedEventBus>();
+        GranitActivitySourceRegistry.Register(EventBusActivitySource.Name);
         return services;
     }
 }

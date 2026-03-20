@@ -1,8 +1,11 @@
+using System.Diagnostics;
 using System.Text;
 using Amazon.KeyManagementService;
 using Amazon.KeyManagementService.Model;
+using Granit.Core.MultiTenancy;
 using Granit.Vault.Aws.Diagnostics;
 using Granit.Vault.Aws.Options;
+using Granit.Vault.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -14,8 +17,11 @@ namespace Granit.Vault.Aws.Services;
 internal sealed partial class KmsTransitEncryptionService(
     IAmazonKeyManagementService kmsClient,
     IOptions<AwsVaultOptions> options,
+    VaultMetrics metrics,
+    ICurrentTenant? currentTenant,
     ILogger<KmsTransitEncryptionService> logger) : ITransitEncryptionService
 {
+    private const string ProviderName = "aws";
     private readonly string _keyId = options.Value.KmsKeyId;
 
     /// <inheritdoc />
@@ -24,25 +30,42 @@ internal sealed partial class KmsTransitEncryptionService(
         string plaintext,
         CancellationToken cancellationToken = default)
     {
-        using System.Diagnostics.Activity? activity = VaultAwsActivitySource.Source.StartActivity(
+        using Activity? activity = VaultAwsActivitySource.Source.StartActivity(
             VaultAwsActivitySource.Operations.KmsEncrypt);
         activity?.SetTag(VaultAwsActivitySource.Tags.KeyName, keyName);
 
-        byte[] plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
+        var stopwatch = Stopwatch.StartNew();
+        string? tenantId = currentTenant?.IsAvailable == true ? currentTenant.Id?.ToString() : null;
 
-        EncryptRequest request = new()
+        try
         {
-            KeyId = _keyId,
-            Plaintext = new MemoryStream(plaintextBytes),
-        };
+            byte[] plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
 
-        EncryptResponse response = await kmsClient.EncryptAsync(request, cancellationToken)
-            .ConfigureAwait(false);
+            EncryptRequest request = new()
+            {
+                KeyId = _keyId,
+                Plaintext = new MemoryStream(plaintextBytes),
+            };
 
-        string ciphertext = Convert.ToBase64String(response.CiphertextBlob.ToArray());
+            EncryptResponse response = await kmsClient.EncryptAsync(request, cancellationToken)
+                .ConfigureAwait(false);
 
-        LogEncryptSuccess(keyName);
-        return ciphertext;
+            string ciphertext = Convert.ToBase64String(response.CiphertextBlob.ToArray());
+
+            LogEncryptSuccess(keyName);
+            metrics.RecordOperationCompleted(tenantId, "encrypt", ProviderName, "success");
+            return ciphertext;
+        }
+        catch
+        {
+            metrics.RecordOperationError(tenantId, "encrypt", ProviderName);
+            throw;
+        }
+        finally
+        {
+            stopwatch.Stop();
+            metrics.RecordOperationDuration(tenantId, "encrypt", ProviderName, stopwatch.Elapsed);
+        }
     }
 
     /// <inheritdoc />
@@ -51,24 +74,41 @@ internal sealed partial class KmsTransitEncryptionService(
         string ciphertext,
         CancellationToken cancellationToken = default)
     {
-        using System.Diagnostics.Activity? activity = VaultAwsActivitySource.Source.StartActivity(
+        using Activity? activity = VaultAwsActivitySource.Source.StartActivity(
             VaultAwsActivitySource.Operations.KmsDecrypt);
         activity?.SetTag(VaultAwsActivitySource.Tags.KeyName, keyName);
 
-        byte[] ciphertextBytes = Convert.FromBase64String(ciphertext);
+        var stopwatch = Stopwatch.StartNew();
+        string? tenantId = currentTenant?.IsAvailable == true ? currentTenant.Id?.ToString() : null;
 
-        DecryptRequest request = new()
+        try
         {
-            CiphertextBlob = new MemoryStream(ciphertextBytes),
-        };
+            byte[] ciphertextBytes = Convert.FromBase64String(ciphertext);
 
-        DecryptResponse response = await kmsClient.DecryptAsync(request, cancellationToken)
-            .ConfigureAwait(false);
+            DecryptRequest request = new()
+            {
+                CiphertextBlob = new MemoryStream(ciphertextBytes),
+            };
 
-        string result = Encoding.UTF8.GetString(response.Plaintext.ToArray());
+            DecryptResponse response = await kmsClient.DecryptAsync(request, cancellationToken)
+                .ConfigureAwait(false);
 
-        LogDecryptSuccess(keyName);
-        return result;
+            string result = Encoding.UTF8.GetString(response.Plaintext.ToArray());
+
+            LogDecryptSuccess(keyName);
+            metrics.RecordOperationCompleted(tenantId, "decrypt", ProviderName, "success");
+            return result;
+        }
+        catch
+        {
+            metrics.RecordOperationError(tenantId, "decrypt", ProviderName);
+            throw;
+        }
+        finally
+        {
+            stopwatch.Stop();
+            metrics.RecordOperationDuration(tenantId, "decrypt", ProviderName, stopwatch.Elapsed);
+        }
     }
 
     /// <inheritdoc />

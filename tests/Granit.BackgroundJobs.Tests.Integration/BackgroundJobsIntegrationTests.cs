@@ -1,10 +1,13 @@
+using System.Diagnostics.Metrics;
 using Granit.BackgroundJobs.Abstractions;
+using Granit.BackgroundJobs.Diagnostics;
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Internal;
 using Granit.BackgroundJobs.Wolverine;
 using Granit.Guids;
 using Granit.Security;
 using Granit.Timing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
@@ -50,8 +53,9 @@ public sealed class BackgroundJobsIntegrationTests
         clock.Now.Returns(now);
 
         IMessageContext context = Substitute.For<IMessageContext>();
+        BackgroundJobsMetrics metrics = new(new ServiceCollection().AddMetrics().BuildServiceProvider().GetRequiredService<IMeterFactory>());
         RecurringJobSchedulingMiddleware middleware = new(
-            store, store, clock, NullLogger<RecurringJobSchedulingMiddleware>.Instance);
+            store, store, clock, metrics, NullLogger<RecurringJobSchedulingMiddleware>.Instance);
         Envelope envelope = new(new FakeDailyReportMessage());
 
         // Act
@@ -81,8 +85,9 @@ public sealed class BackgroundJobsIntegrationTests
         clock.Now.Returns(new DateTimeOffset(2026, 3, 1, 7, 0, 0, TimeSpan.Zero));
 
         IMessageContext context = Substitute.For<IMessageContext>();
+        BackgroundJobsMetrics metrics = new(new ServiceCollection().AddMetrics().BuildServiceProvider().GetRequiredService<IMeterFactory>());
         RecurringJobSchedulingMiddleware middleware = new(
-            store, store, clock, NullLogger<RecurringJobSchedulingMiddleware>.Instance);
+            store, store, clock, metrics, NullLogger<RecurringJobSchedulingMiddleware>.Instance);
         Envelope envelope = new(new FakeDailyReportMessage());
 
         // Act
@@ -119,8 +124,9 @@ public sealed class BackgroundJobsIntegrationTests
 
         BackgroundJobManager manager = new(
             store, store, dispatcher, dlqInspector, clock, user, NullLogger<BackgroundJobManager>.Instance);
+        BackgroundJobsMetrics metrics = new(new ServiceCollection().AddMetrics().BuildServiceProvider().GetRequiredService<IMeterFactory>());
         RecurringJobSchedulingMiddleware middleware = new(
-            store, store, clock, NullLogger<RecurringJobSchedulingMiddleware>.Instance);
+            store, store, clock, metrics, NullLogger<RecurringJobSchedulingMiddleware>.Instance);
 
         // Act — TriggerNow injects X-Triggered-By into headers dict
         await manager.TriggerNowAsync("fake-daily-report", TestContext.Current.CancellationToken);

@@ -1,33 +1,45 @@
+using System.Diagnostics.Metrics;
 using System.Text.Json;
 using Granit.Core.MultiTenancy;
 using Granit.Guids;
 using Granit.Notifications.Abstractions;
+using Granit.Notifications.Diagnostics;
 using Granit.Notifications.Handlers;
 using Granit.Notifications.Messages;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
 namespace Granit.Notifications.Tests;
 
-public sealed class NotificationFanoutHandlerEdgeCaseTests
+public sealed class NotificationFanoutHandlerEdgeCaseTests : IDisposable
 {
     private readonly INotificationSubscriptionReader _subscriptionReader = Substitute.For<INotificationSubscriptionReader>();
     private readonly INotificationPreferenceReader _preferenceReader = Substitute.For<INotificationPreferenceReader>();
     private readonly INotificationDefinitionStore _definitionStore = Substitute.For<INotificationDefinitionStore>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly NotificationFanoutHandler _handler;
+    private readonly ServiceProvider _sp;
 
     public NotificationFanoutHandlerEdgeCaseTests()
     {
+        ServiceCollection services = new();
+        services.AddMetrics();
+        _sp = services.BuildServiceProvider();
+        IMeterFactory meterFactory = _sp.GetRequiredService<IMeterFactory>();
+
         _currentTenant.IsAvailable.Returns(false);
         _handler = new NotificationFanoutHandler(
             _subscriptionReader,
             _preferenceReader,
             _definitionStore,
             new SimpleGuidGenerator(),
-            _currentTenant);
+            _currentTenant,
+            new NotificationsMetrics(meterFactory));
     }
+
+    public void Dispose() => _sp.Dispose();
 
     [Fact]
     public async Task HandleAsync_definition_not_found_uses_InApp_default()
