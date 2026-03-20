@@ -691,7 +691,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )",
-          "WolverineFx": "[5.20.*, )"
+          "WolverineFx": "[5.21.*, )"
         }
       },
       "granit.privacy.ai": {
@@ -744,8 +744,8 @@
       "Microsoft.Extensions.AI.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.4.0",
-        "contentHash": "t3S2H4do4YeNheIfE3GEl3MnKIrnxpbLu7a88spfApYR3in9ddhIq/GMtxgMaFjn/PUMTCFv5YH7Y6Q91dsDXQ=="
+        "resolved": "10.4.1",
+        "contentHash": "ZxhU/wg9BOc3ohibhLl18toPLWm96ysQoE+3OhCgrZ0TUPZd7bsUmGteeatz08yweyuPIEhtyUzEZTF+3bMWEQ=="
       },
       "Microsoft.Extensions.Caching.Abstractions": {
         "type": "CentralTransitive",
@@ -838,9 +838,9 @@
       },
       "WolverineFx": {
         "type": "CentralTransitive",
-        "requested": "[5.20.*, )",
-        "resolved": "5.20.1",
-        "contentHash": "8wB+Y5BBzQTulHxpbzi6BCG55vM4yvgz/savFUAzWU+Vs6qFpL8joV/O8Gj0VMVVY0c9Isyx9+wLoGJPsYTrZw==",
+        "requested": "[5.21.*, )",
+        "resolved": "5.21.0",
+        "contentHash": "2FxtZ4o/STJnEz8DVPFkzvIchRJUvINKpIvDJXNlAikAR5p15Jtn+THknOXiKyEKdDHsJQ//Z4TFAZfn2UBOvQ==",
         "dependencies": {
           "JasperFx": "1.21.1",
           "JasperFx.Events": "1.24.0",

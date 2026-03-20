@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-03-19
+Dernière mise à jour : 2026-03-20
 
 ---
 
@@ -67,11 +67,12 @@ Dernière mise à jour : 2026-03-19
 | MailKit | 4.12.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
 | Microsoft.AspNetCore.SignalR.StackExchangeRedis | 10.0.3 | (c) Microsoft Corporation |
 | Microsoft.Extensions.Http | 10.0.3 | (c) Microsoft Corporation |
-| WolverineFx | 5.19.1 | JasperFx Contributors |
-| WolverineFx.EntityFrameworkCore | 5.19.1 | JasperFx Contributors |
-| WolverineFx.FluentValidation | 5.19.1 | JasperFx Contributors |
-| WolverineFx.Http.FluentValidation | 5.19.1 | JasperFx Contributors |
-| WolverineFx.Postgresql | 5.19.1 | JasperFx Contributors |
+| WolverineFx | 5.21.0 | JasperFx Contributors |
+| WolverineFx.EntityFrameworkCore | 5.21.0 | JasperFx Contributors |
+| WolverineFx.FluentValidation | 5.21.0 | JasperFx Contributors |
+| WolverineFx.Http.FluentValidation | 5.21.0 | JasperFx Contributors |
+| WolverineFx.Postgresql | 5.21.0 | JasperFx Contributors |
+| WolverineFx.SqlServer | 5.21.0 | JasperFx Contributors |
 
 ### Apache-2.0
 

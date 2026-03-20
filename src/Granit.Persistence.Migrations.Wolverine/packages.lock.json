@@ -10,9 +10,9 @@
       },
       "WolverineFx": {
         "type": "Direct",
-        "requested": "[5.20.*, )",
-        "resolved": "5.20.1",
-        "contentHash": "8wB+Y5BBzQTulHxpbzi6BCG55vM4yvgz/savFUAzWU+Vs6qFpL8joV/O8Gj0VMVVY0c9Isyx9+wLoGJPsYTrZw==",
+        "requested": "[5.21.*, )",
+        "resolved": "5.21.0",
+        "contentHash": "2FxtZ4o/STJnEz8DVPFkzvIchRJUvINKpIvDJXNlAikAR5p15Jtn+THknOXiKyEKdDHsJQ//Z4TFAZfn2UBOvQ==",
         "dependencies": {
           "JasperFx": "1.21.1",
           "JasperFx.Events": "1.24.0",
@@ -578,8 +578,8 @@
         "dependencies": {
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
-          "WolverineFx": "[5.20.*, )",
-          "WolverineFx.FluentValidation": "[5.20.*, )"
+          "WolverineFx": "[5.21.*, )",
+          "WolverineFx.FluentValidation": "[5.21.*, )"
         }
       },
       "FluentValidation": {
@@ -796,12 +796,12 @@
       },
       "WolverineFx.FluentValidation": {
         "type": "CentralTransitive",
-        "requested": "[5.20.*, )",
-        "resolved": "5.20.1",
-        "contentHash": "DhQ/mYbOOYZWNN5W5Q4GWk0hFrWeDnIio7FwwMWsnDOBubSViN1FCwWT7mYY/T+CGzTMDHKh9W+MFkfcxnTQ2g==",
+        "requested": "[5.21.*, )",
+        "resolved": "5.21.0",
+        "contentHash": "T0vdmTObXUZ3MjeUZ4WN4SrBtXI7mqLtPk1JDXy0NvzrHpZ3RKmSun/EZs63xeutExXdO6BhqQscd9PdFdKwgw==",
         "dependencies": {
           "FluentValidation": "12.0.0",
-          "WolverineFx": "5.20.1"
+          "WolverineFx": "5.21.0"
         }
       }
     }

@@ -941,11 +941,11 @@
       },
       "WolverineFx.RDBMS": {
         "type": "Transitive",
-        "resolved": "5.20.1",
-        "contentHash": "RHxsgLTqic3hcWDdS5ItiEugfYRGVQf+QIcvZejloKqxXLXwaT7+4Lnl425GdDi92RguZLTEPjmSBle3KC64sw==",
+        "resolved": "5.21.0",
+        "contentHash": "P5ENI94TzD8fmWsOijI8SVLHzrrYklcmD2VobPZehpMCjFf6O04cdXl55TB2WA7V7SpytuLz0thClnSN+O9g2g==",
         "dependencies": {
           "Weasel.Core": "8.9.0",
-          "WolverineFx": "5.20.1"
+          "WolverineFx": "5.21.0"
         }
       },
       "xunit.analyzers": {
@@ -1090,8 +1090,8 @@
         "dependencies": {
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
-          "WolverineFx": "[5.20.*, )",
-          "WolverineFx.FluentValidation": "[5.20.*, )"
+          "WolverineFx": "[5.21.*, )",
+          "WolverineFx.FluentValidation": "[5.21.*, )"
         }
       },
       "granit.wolverine.sqlserver": {
@@ -1103,8 +1103,8 @@
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )",
-          "WolverineFx.EntityFrameworkCore": "[5.20.*, )",
-          "WolverineFx.SqlServer": "[5.20.*, )"
+          "WolverineFx.EntityFrameworkCore": "[5.21.*, )",
+          "WolverineFx.SqlServer": "[5.21.*, )"
         }
       },
       "Azure.Identity": {
@@ -1320,9 +1320,9 @@
       },
       "WolverineFx": {
         "type": "CentralTransitive",
-        "requested": "[5.20.*, )",
-        "resolved": "5.20.1",
-        "contentHash": "8wB+Y5BBzQTulHxpbzi6BCG55vM4yvgz/savFUAzWU+Vs6qFpL8joV/O8Gj0VMVVY0c9Isyx9+wLoGJPsYTrZw==",
+        "requested": "[5.21.*, )",
+        "resolved": "5.21.0",
+        "contentHash": "2FxtZ4o/STJnEz8DVPFkzvIchRJUvINKpIvDJXNlAikAR5p15Jtn+THknOXiKyEKdDHsJQ//Z4TFAZfn2UBOvQ==",
         "dependencies": {
           "JasperFx": "1.21.1",
           "JasperFx.Events": "1.24.0",
@@ -1341,35 +1341,35 @@
       },
       "WolverineFx.EntityFrameworkCore": {
         "type": "CentralTransitive",
-        "requested": "[5.20.*, )",
-        "resolved": "5.20.1",
-        "contentHash": "QeQmhzs47WRo8al2Uw7aFrSKKupbJjR7PTXtGkyarhOpKI+Nq97pwheFkESLiEkDJzdYboG7kPGH5eeBu8br7A==",
+        "requested": "[5.21.*, )",
+        "resolved": "5.21.0",
+        "contentHash": "bbm5v5C9+g2x9tdnYD1dMZ0MnplTCRKCDSfMRjySewHM+2CvvUy1UesPLGD/tVF7XumXloHBW+41VdtpoNEfNQ==",
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "10.0.2",
           "Microsoft.EntityFrameworkCore.Design": "10.0.2",
           "Microsoft.EntityFrameworkCore.Relational": "10.0.2",
           "Weasel.EntityFrameworkCore": "8.9.0",
-          "WolverineFx.RDBMS": "5.20.1"
+          "WolverineFx.RDBMS": "5.21.0"
         }
       },
       "WolverineFx.FluentValidation": {
         "type": "CentralTransitive",
-        "requested": "[5.20.*, )",
-        "resolved": "5.20.1",
-        "contentHash": "DhQ/mYbOOYZWNN5W5Q4GWk0hFrWeDnIio7FwwMWsnDOBubSViN1FCwWT7mYY/T+CGzTMDHKh9W+MFkfcxnTQ2g==",
+        "requested": "[5.21.*, )",
+        "resolved": "5.21.0",
+        "contentHash": "T0vdmTObXUZ3MjeUZ4WN4SrBtXI7mqLtPk1JDXy0NvzrHpZ3RKmSun/EZs63xeutExXdO6BhqQscd9PdFdKwgw==",
         "dependencies": {
           "FluentValidation": "12.0.0",
-          "WolverineFx": "5.20.1"
+          "WolverineFx": "5.21.0"
         }
       },
       "WolverineFx.SqlServer": {
         "type": "CentralTransitive",
-        "requested": "[5.20.*, )",
-        "resolved": "5.20.1",
-        "contentHash": "l7HzYLhIUgdrJHucPitQeu23JNmCkoZB4gmvG7JwyLsXRRl/pDsbifcNycnEtFgSD2Es17uZ69ilnfpVGOWBMw==",
+        "requested": "[5.21.*, )",
+        "resolved": "5.21.0",
+        "contentHash": "hKSDNU7Zg2nMzk/+afbCHDnjUr7gFChrG4lj8n7RcHboX1TKX6vZIedvho9ExJdTiKVnYKoGKmDDML2mttXCDA==",
         "dependencies": {
           "Weasel.SqlServer": "8.9.0",
-          "WolverineFx.RDBMS": "5.20.1"
+          "WolverineFx.RDBMS": "5.21.0"
         }
       }
     }

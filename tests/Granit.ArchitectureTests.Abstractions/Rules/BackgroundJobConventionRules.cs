@@ -19,7 +19,7 @@ public static class BackgroundJobConventionRules
         Architecture architecture,
         string typePrefix)
     {
-        List<string> violations = architecture.Classes
+        var violations = architecture.Classes
             .Where(c => c.FullName.StartsWith(typePrefix, StringComparison.Ordinal)
                 && !c.IsAbstract.GetValueOrDefault()
                 && ImplementsInterface(c, "Granit.BackgroundJobs.IBackgroundJob"))
@@ -39,7 +39,7 @@ public static class BackgroundJobConventionRules
         Architecture architecture,
         string typePrefix)
     {
-        List<string> violations = architecture.Classes
+        var violations = architecture.Classes
             .Where(c => c.FullName.StartsWith(typePrefix, StringComparison.Ordinal)
                 && !c.IsAbstract.GetValueOrDefault()
                 && HasAttribute(c, "Granit.BackgroundJobs.RecurringJobAttribute"))
@@ -58,7 +58,5 @@ public static class BackgroundJobConventionRules
             && d is ArchUnitNET.Domain.Dependencies.ImplementsInterfaceDependency);
 
     private static bool HasAttribute(Class c, string attributeFullName) =>
-        c.Attributes.Any(a =>
-            a.FullName == attributeFullName
-            || a.Type.FullName == attributeFullName);
+        c.Attributes.Any(a => a.FullName == attributeFullName);
 }
