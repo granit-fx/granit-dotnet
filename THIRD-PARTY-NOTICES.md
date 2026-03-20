@@ -12,7 +12,7 @@ Dernière mise à jour : 2026-03-20
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 57                 |
+| MIT          | 61                 |
 | Apache-2.0   | 19                 |
 | BSD-3-Clause | 2                  |
 | BSD-2-Clause | 1                  |
@@ -42,6 +42,10 @@ Dernière mise à jour : 2026-03-20
 | Microsoft.EntityFrameworkCore.Relational | 10.0.3 | (c) Microsoft Corporation |
 | Microsoft.Extensions.Caching.Abstractions | 10.0.3 | (c) Microsoft Corporation |
 | Microsoft.Extensions.Caching.Hybrid | 10.3.0 | (c) Microsoft Corporation |
+| ZiggyCreatures.FusionCache | 2.6.0 | Copyright (c) Jody Donetti |
+| ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis | 2.6.0 | Copyright (c) Jody Donetti |
+| ZiggyCreatures.FusionCache.OpenTelemetry | 2.6.0 | Copyright (c) Jody Donetti |
+| ZiggyCreatures.FusionCache.Serialization.SystemTextJson | 2.6.0 | Copyright (c) Jody Donetti |
 | Microsoft.Extensions.Caching.Memory | 10.0.3 | (c) Microsoft Corporation |
 | Microsoft.Extensions.Caching.StackExchangeRedis | 10.0.3 | (c) Microsoft Corporation |
 | Microsoft.AspNetCore.OutputCaching.StackExchangeRedis | 10.0.3 | (c) Microsoft Corporation |
