@@ -5,7 +5,7 @@ using Granit.DataExchange.Endpoints.Internal;
 namespace Granit.DataExchange.Endpoints.Permissions;
 
 /// <summary>
-/// Declares the <c>DataExchange.Imports.Execute</c> and <c>DataExchange.Exports.Execute</c> permissions in the Granit RBAC system.
+/// Declares the <c>DataExchange.Imports.*</c> and <c>DataExchange.Exports.*</c> permissions in the Granit RBAC system.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -37,9 +37,19 @@ internal sealed class DataExchangePermissionDefinitionProvider : IPermissionDefi
                 "PermissionGroup:DataExchange"));
 
         group.AddPermission(
+            DataExchangePermissions.Imports.Read,
+            LocalizableString.Create<DataExchangeEndpointsLocalizationResource>(
+                "Permission:DataExchange.Imports.Read"));
+
+        group.AddPermission(
             DataExchangePermissions.Imports.Execute,
             LocalizableString.Create<DataExchangeEndpointsLocalizationResource>(
                 "Permission:DataExchange.Imports.Execute"));
+
+        group.AddPermission(
+            DataExchangePermissions.Exports.Read,
+            LocalizableString.Create<DataExchangeEndpointsLocalizationResource>(
+                "Permission:DataExchange.Exports.Read"));
 
         group.AddPermission(
             DataExchangePermissions.Exports.Execute,

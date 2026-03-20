@@ -1,6 +1,7 @@
 using FluentValidation;
 using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Granit.Validation;
+using Granit.Validation.Extensions;
 
 namespace Granit.Authentication.ApiKeys.Endpoints.Validators;
 
@@ -17,7 +18,7 @@ internal sealed class ApiKeyUpdateScopesRequestValidator : GranitValidator<ApiKe
         RuleFor(x => x.Permissions)
             .NotNull()
             .Must(p => p.Count <= MaxPermissions)
-            .WithMessage($"Maximum {MaxPermissions} permissions allowed.");
+            .WithErrorCodeAndMessage("Granit:Validation:MaxPermissions");
 
         RuleForEach(x => x.Permissions)
             .NotEmpty();
@@ -25,11 +26,11 @@ internal sealed class ApiKeyUpdateScopesRequestValidator : GranitValidator<ApiKe
         RuleFor(x => x.AllowedCidrs)
             .NotNull()
             .Must(c => c.Count <= MaxCidrs)
-            .WithMessage($"Maximum {MaxCidrs} CIDR ranges allowed.");
+            .WithErrorCodeAndMessage("Granit:Validation:MaxCidrRanges");
 
         RuleForEach(x => x.AllowedCidrs)
             .NotEmpty()
             .Must(CidrValidator.IsValidCidr)
-            .WithMessage("'{PropertyValue}' is not a valid CIDR notation.");
+            .WithErrorCodeAndMessage("Granit:Validation:InvalidCidrNotation");
     }
 }

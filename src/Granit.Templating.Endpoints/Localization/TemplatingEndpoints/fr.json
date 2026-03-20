@@ -2,6 +2,7 @@
   "culture": "fr",
   "texts": {
     "PermissionGroup:Templating": "Gestion des templates",
-    "Permission:Templates.Manage": "Gérer les templates (consulter, créer, modifier, supprimer, publier)"
+    "Permission:Templating.Templates.Read": "Consulter les templates (liste, détail, historique)",
+    "Permission:Templating.Templates.Manage": "Gérer les templates (consulter, créer, modifier, supprimer, publier)"
   }
 }

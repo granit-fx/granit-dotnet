@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using FluentValidation;
 using Granit.Templating.Endpoints.Dtos;
 using Granit.Validation;
+using Granit.Validation.Extensions;
 
 namespace Granit.Templating.Endpoints.Validators;
 
@@ -22,7 +23,7 @@ internal sealed partial class TemplatePreviewRequestValidator : GranitValidator<
         RuleFor(x => x.Culture)
             .MaximumLength(MaxCultureLength)
             .Matches(Bcp47Pattern())
-            .WithMessage("Culture must be a valid BCP 47 tag (e.g. 'fr', 'fr-BE').")
+            .WithErrorCodeAndMessage("Granit:Validation:InvalidBcp47LanguageTag")
             .When(x => x.Culture is not null);
     }
 }

@@ -2,6 +2,7 @@
   "culture": "ko",
   "texts": {
     "PermissionGroup:BackgroundJobs": "백그라운드 작업",
+    "Permission:BackgroundJobs.Jobs.Read": "백그라운드 작업 조회 (목록, 상세)",
     "Permission:BackgroundJobs.Jobs.Manage": "백그라운드 작업 관리 (목록, 일시중지, 재개, 수동 실행)"
   }
 }

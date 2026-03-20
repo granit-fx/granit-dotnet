@@ -18,4 +18,18 @@ public static class WorkflowPermissions
         /// </summary>
         public const string Read = "Workflow.History.Read";
     }
+
+    /// <summary>Permissions for workflow transition resource.</summary>
+    public static class Transitions
+    {
+        /// <summary>
+        /// Grants read access to query available workflow transitions for a given state.
+        /// </summary>
+        public const string Read = "Workflow.Transitions.Read";
+
+        /// <summary>
+        /// Grants permission to execute workflow state transitions.
+        /// </summary>
+        public const string Execute = "Workflow.Transitions.Execute";
+    }
 }

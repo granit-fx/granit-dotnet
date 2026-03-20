@@ -56,7 +56,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(TemplatingPermissions.Manage,
+            .AddPolicy(TemplatingPermissions.Templates.Manage,
                 policy => policy.RequireRole(ManageRole));
 
         builder.Services.AddSingleton(_storeReader);
@@ -1062,7 +1062,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(TemplatingPermissions.Manage,
+            .AddPolicy(TemplatingPermissions.Templates.Manage,
                 policy => policy.RequireRole(ManageRole));
         builder.Services.AddSingleton(_storeReader);
         builder.Services.AddSingleton(_storeWriter);
@@ -1409,7 +1409,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(TemplatingPermissions.Manage,
+            .AddPolicy(TemplatingPermissions.Templates.Manage,
                 policy => policy.RequireRole(ManageRole));
 
         IDocumentTemplateStoreReader storeReader = Substitute.For<IDocumentTemplateStoreReader>();
@@ -1459,7 +1459,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(TemplatingPermissions.Manage,
+            .AddPolicy(TemplatingPermissions.Templates.Manage,
                 policy => policy.RequireRole(ManageRole));
 
         builder.Services.AddSingleton(storeReader);
@@ -1485,7 +1485,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(TemplatingPermissions.Manage,
+            .AddPolicy(TemplatingPermissions.Templates.Manage,
                 policy => policy.RequireRole(ManageRole));
 
         WebApplication app = builder.Build();

@@ -1,5 +1,6 @@
 using FluentValidation;
 using Granit.AI.Endpoints.Dtos;
+using Granit.Validation.Extensions;
 
 namespace Granit.AI.Endpoints.Validators;
 
@@ -11,7 +12,7 @@ internal sealed class AIWorkspaceCreateRequestValidator : AbstractValidator<AIWo
             .NotEmpty()
             .MaximumLength(128)
             .Matches("^[a-z0-9][a-z0-9-]*$")
-            .WithMessage("Workspace name must be lowercase alphanumeric with optional hyphens.");
+            .WithErrorCodeAndMessage("Granit:Validation:InvalidWorkspaceName");
 
         RuleFor(x => x.Provider)
             .NotEmpty()

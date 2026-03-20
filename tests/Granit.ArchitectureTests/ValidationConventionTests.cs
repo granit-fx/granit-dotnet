@@ -27,11 +27,12 @@ public sealed partial class ValidationConventionTests
     {
         // Query/list requests with only optional filter params
         "ApiKeyListRequest",
-        "IdentityUserCacheListRequest",
         // Request with only a value that is validated in handler via IFeatureDefinitionStore
         "TemplatePreviewRequest",
         // Query-string binding wrapper — no body to validate
         "BindableQueryRequest",
+        // Single boolean field — no validation rules applicable
+        "IdentityUserSetEnabledRequest",
         // TODO: needs a validator (pre-existing gap, tracked separately)
         "MobilePushTokenRegisterRequest",
     };

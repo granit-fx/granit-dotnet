@@ -50,9 +50,9 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
         // Register the admin authorization policy (role-based fallback)
         if (options.AdminPolicyName is not null)
         {
-            IOptions<AuthorizationOptions>? authOptions =
-                endpoints.ServiceProvider.GetService<IOptions<AuthorizationOptions>>();
-            authOptions?.Value.AddPolicy(
+            IOptions<AuthorizationOptions> authOptions =
+                endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
+            authOptions.Value.AddPolicy(
                 options.AdminPolicyName,
                 policy => policy.RequireRole(options.RequiredRole));
         }

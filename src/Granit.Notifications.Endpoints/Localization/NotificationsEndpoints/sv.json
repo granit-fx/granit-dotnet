@@ -1,0 +1,8 @@
+{
+  "culture": "sv",
+  "texts": {
+    "PermissionGroup:Notifications": "Aviseringar",
+    "Permission:Notifications.Notifications.Read": "Visa aviseringar (inkorg, aktivitetsflöde)",
+    "Permission:Notifications.Notifications.Manage": "Hantera aviseringar (inställningar, prenumerationer, pushtoken)"
+  }
+}

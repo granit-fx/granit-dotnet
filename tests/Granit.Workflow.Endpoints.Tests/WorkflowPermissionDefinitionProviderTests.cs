@@ -67,7 +67,7 @@ public sealed class WorkflowPermissionDefinitionProviderTests
     }
 
     [Fact]
-    public void DefinePermissions_registers_exactly_one_permission()
+    public void DefinePermissions_adds_Transitions_Read_permission()
     {
         // Arrange
         PermissionGroup group = new(WorkflowPermissions.GroupName);
@@ -80,6 +80,40 @@ public sealed class WorkflowPermissionDefinitionProviderTests
         provider.DefinePermissions(context);
 
         // Assert
-        group.Permissions.Count.ShouldBe(1);
+        group.Permissions.ShouldContain(p => p.Name == WorkflowPermissions.Transitions.Read);
+    }
+
+    [Fact]
+    public void DefinePermissions_adds_Transitions_Execute_permission()
+    {
+        // Arrange
+        PermissionGroup group = new(WorkflowPermissions.GroupName);
+        IPermissionDefinitionContext context = Substitute.For<IPermissionDefinitionContext>();
+        context.AddGroup(WorkflowPermissions.GroupName, Arg.Any<LocalizableString>()).Returns(group);
+
+        WorkflowPermissionDefinitionProvider provider = new();
+
+        // Act
+        provider.DefinePermissions(context);
+
+        // Assert
+        group.Permissions.ShouldContain(p => p.Name == WorkflowPermissions.Transitions.Execute);
+    }
+
+    [Fact]
+    public void DefinePermissions_registers_exactly_three_permissions()
+    {
+        // Arrange
+        PermissionGroup group = new(WorkflowPermissions.GroupName);
+        IPermissionDefinitionContext context = Substitute.For<IPermissionDefinitionContext>();
+        context.AddGroup(WorkflowPermissions.GroupName, Arg.Any<LocalizableString>()).Returns(group);
+
+        WorkflowPermissionDefinitionProvider provider = new();
+
+        // Act
+        provider.DefinePermissions(context);
+
+        // Assert
+        group.Permissions.Count.ShouldBe(3);
     }
 }

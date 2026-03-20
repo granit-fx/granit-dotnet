@@ -43,6 +43,25 @@
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' är inte ett giltigt kreditkortsnummer.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' får inte ha fler än {ExpectedPrecision} siffror totalt, varav {ExpectedScale} decimaler.",
     "Granit:Validation:EmptyValidator": "'{PropertyName}' måste vara tomt.",
-    "Granit:Validation:NullValidator": "'{PropertyName}' måste vara tomt."
+    "Granit:Validation:NullValidator": "'{PropertyName}' måste vara tomt.",
+    "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' och 'Page' kan inte användas samtidigt.",
+    "Granit:Validation:MaxFilterEntries": "Högst 50 filterposter är tillåtna.",
+    "Granit:Validation:MaxQuickFilterEntries": "Högst 20 snabbfilter är tillåtna.",
+    "Granit:Validation:MaxPresetEntries": "Högst 20 förinställningar är tillåtna.",
+    "Granit:Validation:InvalidTemplateNamePattern": "Mallnamnet måste följa mönstret 'Domän.Namn' (t.ex. 'Billing.Invoice').",
+    "Granit:Validation:InvalidCidrNotation": "Värdet är inte en giltig CIDR-notation.",
+    "Granit:Validation:InvalidEnvironment": "Miljön måste vara 'live', 'test' eller 'dev'.",
+    "Granit:Validation:MaxPermissions": "Högst 100 behörigheter är tillåtna.",
+    "Granit:Validation:MaxCidrRanges": "Högst 50 CIDR-intervall är tillåtna.",
+    "Granit:Validation:ExpirationMustBeFuture": "Utgångsdatumet måste vara i framtiden.",
+    "Granit:Validation:InvalidContainerName": "Containernamnet måste bestå av gemena alfanumeriska tecken med valfria bindestreck.",
+    "Granit:Validation:InvalidMimeType": "Innehållstypen måste vara en giltig MIME-typ.",
+    "Granit:Validation:ValidToAfterValidFrom": "'Giltig till' måste vara efter 'Giltig från'.",
+    "Granit:Validation:InvalidWorkspaceName": "Arbetsytans namn måste bestå av gemena alfanumeriska tecken med valfria bindestreck.",
+    "Granit:Validation:InvalidChatRole": "Rollen måste vara 'user', 'assistant' eller 'system'.",
+    "Granit:Validation:MaxChatMessages": "Maximalt antal chattmeddelanden har överskridits.",
+    "Granit:Validation:MaxBatchSize": "Batchstorleken får inte överskrida det maximala antalet tillåtna objekt.",
+    "Granit:Validation:MaxEmbeddingInputs": "Maximalt antal embedding-indata har överskridits.",
+    "Granit:Validation:MaxCustomAttributes": "Det maximala antalet anpassade attribut har överskridits."
   }
 }

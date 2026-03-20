@@ -2,6 +2,7 @@
   "culture": "ko",
   "texts": {
     "PermissionGroup:Templating": "템플릿",
-    "Permission:Templates.Manage": "템플릿 관리 (보기, 생성, 편집, 삭제, 게시)"
+    "Permission:Templating.Templates.Read": "템플릿 조회 (목록, 상세, 이력)",
+    "Permission:Templating.Templates.Manage": "템플릿 관리 (보기, 생성, 편집, 삭제, 게시)"
   }
 }

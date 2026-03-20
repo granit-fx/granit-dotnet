@@ -2,6 +2,7 @@
   "culture": "es",
   "texts": {
     "PermissionGroup:Templating": "Gestión de plantillas",
-    "Permission:Templates.Manage": "Gestionar plantillas (ver, crear, editar, eliminar, publicar)"
+    "Permission:Templating.Templates.Read": "Ver plantillas (lista, detalle, historial)",
+    "Permission:Templating.Templates.Manage": "Gestionar plantillas (ver, crear, editar, eliminar, publicar)"
   }
 }

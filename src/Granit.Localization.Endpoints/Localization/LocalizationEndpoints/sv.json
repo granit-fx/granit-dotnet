@@ -2,6 +2,7 @@
   "culture": "sv",
   "texts": {
     "PermissionGroup:Localization": "Lokalisering",
+    "Permission:Localization.Overrides.Read": "Visa översättningsöverskridanden",
     "Permission:Localization.Overrides.Manage": "Hantera översättningsåsidosättningar (visa, skapa, redigera, radera)"
   }
 }

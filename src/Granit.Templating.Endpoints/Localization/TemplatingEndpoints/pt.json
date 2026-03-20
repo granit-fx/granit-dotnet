@@ -2,6 +2,7 @@
   "culture": "pt",
   "texts": {
     "PermissionGroup:Templating": "Gestão de modelos",
-    "Permission:Templates.Manage": "Gerir modelos (ver, criar, editar, eliminar, publicar)"
+    "Permission:Templating.Templates.Read": "Ver modelos (lista, detalhe, histórico)",
+    "Permission:Templating.Templates.Manage": "Gerir modelos (ver, criar, editar, eliminar, publicar)"
   }
 }

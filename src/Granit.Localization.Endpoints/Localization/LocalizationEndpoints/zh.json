@@ -2,6 +2,7 @@
   "culture": "zh",
   "texts": {
     "PermissionGroup:Localization": "本地化",
+    "Permission:Localization.Overrides.Read": "查看翻译覆盖",
     "Permission:Localization.Overrides.Manage": "管理翻译覆盖（查看、创建、编辑、删除）"
   }
 }

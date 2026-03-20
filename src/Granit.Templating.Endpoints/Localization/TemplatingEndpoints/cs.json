@@ -2,6 +2,7 @@
   "culture": "cs",
   "texts": {
     "PermissionGroup:Templating": "Šablony",
-    "Permission:Templates.Manage": "Správa šablon (zobrazení, vytvoření, úprava, smazání, publikování)"
+    "Permission:Templating.Templates.Read": "Zobrazit šablony (seznam, detail, historie)",
+    "Permission:Templating.Templates.Manage": "Správa šablon (zobrazení, vytvoření, úprava, smazání, publikování)"
   }
 }

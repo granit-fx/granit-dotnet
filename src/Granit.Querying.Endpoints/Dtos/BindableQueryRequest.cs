@@ -22,6 +22,12 @@ public sealed class BindableQueryRequest
     private BindableQueryRequest(QueryRequest value) => Value = value;
 
     /// <summary>
+    /// Creates a <see cref="BindableQueryRequest"/> from an existing <see cref="QueryRequest"/>.
+    /// Intended for unit testing only.
+    /// </summary>
+    internal static BindableQueryRequest FromQueryRequest(QueryRequest value) => new(value);
+
+    /// <summary>
     /// Binds a <see cref="BindableQueryRequest"/> from the HTTP context query string.
     /// This method is called automatically by ASP.NET Core Minimal API parameter binding.
     /// </summary>

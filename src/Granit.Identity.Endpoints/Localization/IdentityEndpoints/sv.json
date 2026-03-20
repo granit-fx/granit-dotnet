@@ -4,6 +4,15 @@
     "PermissionGroup:Identity": "Identitet",
     "Permission:Identity.UserCache.Read": "Visa användarcache (lista, sök, batch, statistik)",
     "Permission:Identity.UserCache.Sync": "Tvinga synkronisering av användarcache från identitetsleverantören",
-    "Permission:Identity.UserCache.Delete": "Radera eller pseudonymisera användarcacheposter (GDPR)"
+    "Permission:Identity.UserCache.Delete": "Radera eller pseudonymisera användarcacheposter (GDPR)",
+    "Permission:Identity.Users.Read": "Visa användare direkt från identitetsleverantören",
+    "Permission:Identity.Users.Manage": "Skapa, uppdatera och aktivera/inaktivera användare i identitetsleverantören",
+    "Permission:Identity.Roles.Read": "Visa roller, rolltilldelningar och rollmedlemmar",
+    "Permission:Identity.Roles.Manage": "Tilldela eller ta bort roller från användare",
+    "Permission:Identity.Groups.Read": "Visa grupper och gruppmedlemskap",
+    "Permission:Identity.Groups.Manage": "Lägg till eller ta bort användare från grupper",
+    "Permission:Identity.Sessions.Read": "Visa användarsessioner och enhetsaktivitet",
+    "Permission:Identity.Sessions.Manage": "Avsluta användarsessioner",
+    "Permission:Identity.Passwords.Manage": "Hantera användarlösenord (återställning, tillfälligt lösenord)"
   }
 }

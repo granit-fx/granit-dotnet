@@ -2,7 +2,9 @@
   "culture": "pt",
   "texts": {
     "PermissionGroup:DataExchange": "Troca de dados",
+    "Permission:DataExchange.Imports.Read": "Ver histórico e estado das importações",
     "Permission:DataExchange.Imports.Execute": "Executar importações de dados (upload, mapeamento, execução, relatórios)",
+    "Permission:DataExchange.Exports.Read": "Ver definições e histórico das exportações",
     "Permission:DataExchange.Exports.Execute": "Executar exportações de dados (definições, execução, download, presets)"
   }
 }

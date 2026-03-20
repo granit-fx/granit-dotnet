@@ -19,4 +19,11 @@ public sealed class DiagnosticsOptions
     /// Default: 10 seconds.
     /// </summary>
     public TimeSpan DefaultCacheDuration { get; set; } = TimeSpan.FromSeconds(10);
+
+    /// <summary>
+    /// Cache duration for the monitoring aggregator (<see cref="Abstractions.IHealthCheckAggregator"/>).
+    /// Aligns with the typical dashboard auto-refresh interval.
+    /// Default: 30 seconds.
+    /// </summary>
+    public TimeSpan MonitoringCacheDuration { get; set; } = TimeSpan.FromSeconds(30);
 }

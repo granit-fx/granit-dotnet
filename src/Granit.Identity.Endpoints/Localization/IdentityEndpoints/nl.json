@@ -4,6 +4,15 @@
     "PermissionGroup:Identity": "Identiteit",
     "Permission:Identity.UserCache.Read": "Gebruikerscache raadplegen (lijst, zoeken, batch, statistieken)",
     "Permission:Identity.UserCache.Sync": "Synchronisatie van de gebruikerscache forceren vanuit de identiteitsprovider",
-    "Permission:Identity.UserCache.Delete": "Gebruikerscache-items verwijderen of pseudonimiseren (AVG)"
+    "Permission:Identity.UserCache.Delete": "Gebruikerscache-items verwijderen of pseudonimiseren (AVG)",
+    "Permission:Identity.Users.Read": "Gebruikers rechtstreeks van de identiteitsprovider bekijken",
+    "Permission:Identity.Users.Manage": "Gebruikers aanmaken, bijwerken en in-/uitschakelen in de identiteitsprovider",
+    "Permission:Identity.Roles.Read": "Rollen, roltoewijzingen en rolleden bekijken",
+    "Permission:Identity.Roles.Manage": "Rollen toewijzen aan of verwijderen van gebruikers",
+    "Permission:Identity.Groups.Read": "Groepen en groepslidmaatschappen bekijken",
+    "Permission:Identity.Groups.Manage": "Gebruikers toevoegen aan of verwijderen uit groepen",
+    "Permission:Identity.Sessions.Read": "Gebruikerssessies en apparaatactiviteit bekijken",
+    "Permission:Identity.Sessions.Manage": "Gebruikerssessies beëindigen",
+    "Permission:Identity.Passwords.Manage": "Gebruikerswachtwoorden beheren (reset, tijdelijk wachtwoord)"
   }
 }

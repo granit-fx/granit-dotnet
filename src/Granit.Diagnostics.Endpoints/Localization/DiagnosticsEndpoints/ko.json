@@ -1,0 +1,7 @@
+{
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:Diagnostics": "진단",
+    "Permission:Diagnostics.Monitoring.Read": "시스템 상태 모니터링 대시보드 보기"
+  }
+}

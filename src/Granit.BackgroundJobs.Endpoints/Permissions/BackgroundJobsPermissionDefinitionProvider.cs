@@ -5,7 +5,7 @@ using Granit.Core.Localization;
 namespace Granit.BackgroundJobs.Endpoints.Permissions;
 
 /// <summary>
-/// Declares the <c>BackgroundJobs.Jobs.Manage</c> permission in the Granit RBAC system.
+/// Declares the <c>BackgroundJobs.Jobs.Read</c> and <c>BackgroundJobs.Jobs.Manage</c> permissions in the Granit RBAC system.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -35,6 +35,11 @@ internal sealed class BackgroundJobsPermissionDefinitionProvider : IPermissionDe
             BackgroundJobsPermissions.GroupName,
             LocalizableString.Create<BackgroundJobsEndpointsLocalizationResource>(
                 "PermissionGroup:BackgroundJobs"));
+
+        group.AddPermission(
+            BackgroundJobsPermissions.Jobs.Read,
+            LocalizableString.Create<BackgroundJobsEndpointsLocalizationResource>(
+                "Permission:BackgroundJobs.Jobs.Read"));
 
         group.AddPermission(
             BackgroundJobsPermissions.Jobs.Manage,

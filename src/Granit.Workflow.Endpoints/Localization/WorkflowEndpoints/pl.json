@@ -2,6 +2,8 @@
   "culture": "pl",
   "texts": {
     "PermissionGroup:Workflow": "Przepływ pracy",
-    "Permission:Workflow.History.Read": "Wyświetlanie historii przejść przepływu pracy (ścieżka audytu)"
+    "Permission:Workflow.History.Read": "Wyświetlanie historii przejść przepływu pracy (ścieżka audytu)",
+    "Permission:Workflow.Transitions.Read": "Wyświetl dostępne przejścia workflow",
+    "Permission:Workflow.Transitions.Execute": "Wykonaj przejścia stanów workflow"
   }
 }

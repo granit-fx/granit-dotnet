@@ -5,7 +5,7 @@ using Granit.Localization.Endpoints.Internal;
 namespace Granit.Localization.Endpoints.Permissions;
 
 /// <summary>
-/// Declares the <c>Localization.Overrides.Manage</c> permission in the Granit RBAC system.
+/// Declares the <c>Localization.Overrides.Read</c> and <c>Localization.Overrides.Manage</c> permissions in the Granit RBAC system.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -35,6 +35,11 @@ internal sealed class LocalizationOverridesPermissionDefinitionProvider : IPermi
             LocalizationOverridesPermissions.GroupName,
             LocalizableString.Create<LocalizationEndpointsLocalizationResource>(
                 "PermissionGroup:Localization"));
+
+        group.AddPermission(
+            LocalizationOverridesPermissions.Read,
+            LocalizableString.Create<LocalizationEndpointsLocalizationResource>(
+                "Permission:Localization.Overrides.Read"));
 
         group.AddPermission(
             LocalizationOverridesPermissions.Manage,

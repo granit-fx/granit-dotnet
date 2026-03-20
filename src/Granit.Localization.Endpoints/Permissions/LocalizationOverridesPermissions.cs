@@ -10,9 +10,12 @@ public static class LocalizationOverridesPermissions
     /// <summary>Permission group name used in <c>IPermissionDefinitionContext.AddGroup()</c>.</summary>
     public const string GroupName = "Localization";
 
+    /// <summary>Grants read-only access to view translation overrides.</summary>
+    public const string Read = "Localization.Overrides.Read";
+
     /// <summary>
-    /// Grants access to all localization override management endpoints
-    /// (list overrides, set override, remove override).
+    /// Grants management access to localization override endpoints
+    /// (set override, remove override).
     /// </summary>
     public const string Manage = "Localization.Overrides.Manage";
 }

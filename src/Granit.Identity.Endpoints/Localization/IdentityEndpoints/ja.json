@@ -4,6 +4,15 @@
     "PermissionGroup:Identity": "アイデンティティ",
     "Permission:Identity.UserCache.Read": "ユーザーキャッシュの表示（一覧、検索、一括、統計）",
     "Permission:Identity.UserCache.Sync": "ID プロバイダーからユーザーキャッシュを強制同期",
-    "Permission:Identity.UserCache.Delete": "ユーザーキャッシュエントリの削除または仮名化（GDPR）"
+    "Permission:Identity.UserCache.Delete": "ユーザーキャッシュエントリの削除または仮名化（GDPR）",
+    "Permission:Identity.Users.Read": "IDプロバイダーから直接ユーザーを表示",
+    "Permission:Identity.Users.Manage": "IDプロバイダーでユーザーの作成・更新・有効化/無効化",
+    "Permission:Identity.Roles.Read": "ロール、ロール割り当て、ロールメンバーを表示",
+    "Permission:Identity.Roles.Manage": "ユーザーにロールを割り当てまたは削除",
+    "Permission:Identity.Groups.Read": "グループとグループメンバーシップを表示",
+    "Permission:Identity.Groups.Manage": "グループにユーザーを追加または削除",
+    "Permission:Identity.Sessions.Read": "ユーザーセッションとデバイスアクティビティを表示",
+    "Permission:Identity.Sessions.Manage": "ユーザーセッションを終了",
+    "Permission:Identity.Passwords.Manage": "ユーザーパスワードの管理（リセット、一時パスワード）"
   }
 }

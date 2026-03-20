@@ -7,12 +7,13 @@ public static class WebhooksPermissions
 {
     public const string GroupName = "Webhooks";
 
+    /// <summary>Permissions for the webhook subscriptions resource.</summary>
     public static class Subscriptions
     {
-        public const string View = "Webhooks.Subscriptions.View";
-        public const string Create = "Webhooks.Subscriptions.Create";
-        public const string Update = "Webhooks.Subscriptions.Update";
-        public const string Delete = "Webhooks.Subscriptions.Delete";
+        /// <summary>Grants read-only access to view webhook subscriptions.</summary>
+        public const string Read = "Webhooks.Subscriptions.Read";
+
+        /// <summary>Grants management access to webhook subscriptions (create, update, delete).</summary>
         public const string Manage = "Webhooks.Subscriptions.Manage";
     }
 }

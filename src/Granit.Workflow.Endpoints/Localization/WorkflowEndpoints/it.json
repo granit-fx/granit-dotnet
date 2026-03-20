@@ -2,6 +2,8 @@
   "culture": "it",
   "texts": {
     "PermissionGroup:Workflow": "Flusso di lavoro",
-    "Permission:Workflow.History.Read": "Visualizzare la cronologia delle transizioni del flusso di lavoro (Pista di audit)"
+    "Permission:Workflow.History.Read": "Visualizzare la cronologia delle transizioni del flusso di lavoro (Pista di audit)",
+    "Permission:Workflow.Transitions.Read": "Visualizzare le transizioni workflow disponibili",
+    "Permission:Workflow.Transitions.Execute": "Eseguire le transizioni di stato del workflow"
   }
 }

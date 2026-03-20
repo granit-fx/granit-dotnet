@@ -66,8 +66,8 @@ public sealed class FeaturesEndpointTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy("Features.Read", p => p.RequireAuthenticatedUser())
-            .AddPolicy("Features.Manage", p => p.RequireAuthenticatedUser());
+            .AddPolicy("Features.Flags.Read", p => p.RequireAuthenticatedUser())
+            .AddPolicy("Features.Flags.Manage", p => p.RequireAuthenticatedUser());
 
         builder.Services.AddSingleton(_definitionStore);
         builder.Services.AddSingleton(_featureChecker);

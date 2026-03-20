@@ -1,0 +1,7 @@
+{
+  "culture": "pl",
+  "texts": {
+    "PermissionGroup:Diagnostics": "Diagnostyka",
+    "Permission:Diagnostics.Monitoring.Read": "Przeglądanie panelu monitorowania systemu"
+  }
+}

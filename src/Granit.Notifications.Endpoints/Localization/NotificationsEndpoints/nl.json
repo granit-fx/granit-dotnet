@@ -1,0 +1,8 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:Notifications": "Meldingen",
+    "Permission:Notifications.Notifications.Read": "Meldingen bekijken (inbox, activiteitenoverzicht)",
+    "Permission:Notifications.Notifications.Manage": "Meldingen beheren (voorkeuren, abonnementen, pushtokens)"
+  }
+}

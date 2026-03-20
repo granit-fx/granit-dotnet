@@ -1,6 +1,7 @@
 using Granit.Identity.Endpoints.Dtos;
 using Granit.Identity.Models;
 using Granit.Querying;
+using Granit.Querying.Endpoints.Dtos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -19,7 +20,7 @@ internal static class IdentityUserCacheReadEndpoints
         group.MapGet("/", SearchAsync)
             .WithName("SearchIdentityUserCache")
             .WithSummary("Searches the user cache by free-text term with pagination.")
-            .WithDescription("Performs a free-text search across cached user fields (name, email, etc.) with pagination. Only searches the local cache — does not query the identity provider. Use sync endpoints to refresh stale data.");
+            .WithDescription("Performs a free-text search across cached user fields (name, email, etc.) with pagination and sorting. Only searches the local cache — does not query the identity provider. Use sync endpoints to refresh stale data.");
 
         group.MapGet("/{userId}", GetByIdAsync)
             .WithName("GetIdentityUserById")
@@ -36,16 +37,17 @@ internal static class IdentityUserCacheReadEndpoints
 
     private static async Task<Ok<PagedResult<IdentityUser>>> SearchAsync(
         [FromServices] IUserLookupService lookupService,
-        [AsParameters] IdentityUserCacheListRequest request,
+        BindableQueryRequest request,
         CancellationToken cancellationToken)
     {
-        int clampedPage = Math.Max(request.Page, 1);
-        int clampedPageSize = Math.Clamp(request.PageSize, 1, QueryingDefaults.MaxPageSize);
+        QueryRequest query = request.Value;
+        int page = query.Page ?? 1;
+        int pageSize = Math.Clamp(query.PageSize ?? QueryingDefaults.DefaultPageSize, 1, QueryingDefaults.MaxPageSize);
 
         PagedResult<IdentityUser> result = await lookupService.SearchAsync(
-            request.Search ?? "",
-            clampedPage,
-            clampedPageSize,
+            query.Search ?? "",
+            page,
+            pageSize,
             cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Ok(result);

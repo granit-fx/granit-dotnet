@@ -1,0 +1,7 @@
+{
+  "culture": "de",
+  "texts": {
+    "PermissionGroup:Diagnostics": "Diagnose",
+    "Permission:Diagnostics.Monitoring.Read": "Systemzustands-Dashboard anzeigen"
+  }
+}

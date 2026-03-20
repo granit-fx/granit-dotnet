@@ -2,6 +2,7 @@
   "culture": "zh",
   "texts": {
     "PermissionGroup:Templating": "模板",
-    "Permission:Templates.Manage": "管理模板（查看、创建、编辑、删除、发布）"
+    "Permission:Templating.Templates.Read": "查看模板（列表、详情、历史）",
+    "Permission:Templating.Templates.Manage": "管理模板（查看、创建、编辑、删除、发布）"
   }
 }

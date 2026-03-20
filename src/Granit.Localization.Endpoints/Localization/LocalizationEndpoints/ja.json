@@ -2,6 +2,7 @@
   "culture": "ja",
   "texts": {
     "PermissionGroup:Localization": "ローカライゼーション",
+    "Permission:Localization.Overrides.Read": "翻訳オーバーライドの閲覧",
     "Permission:Localization.Overrides.Manage": "翻訳オーバーライドの管理（表示、作成、編集、削除）"
   }
 }

@@ -2,6 +2,7 @@
   "culture": "cs",
   "texts": {
     "PermissionGroup:Localization": "Lokalizace",
+    "Permission:Localization.Overrides.Read": "Zobrazit přepisy překladů",
     "Permission:Localization.Overrides.Manage": "Správa přepisů překladů (zobrazení, vytvoření, úprava, smazání)"
   }
 }

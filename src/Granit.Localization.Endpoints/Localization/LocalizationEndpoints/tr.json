@@ -2,6 +2,7 @@
   "culture": "tr",
   "texts": {
     "PermissionGroup:Localization": "Yerelleştirme",
+    "Permission:Localization.Overrides.Read": "Çeviri geçersiz kılmalarını görüntüle",
     "Permission:Localization.Overrides.Manage": "Çeviri geçersiz kılmalarını yönet (görüntüle, oluştur, düzenle, sil)"
   }
 }

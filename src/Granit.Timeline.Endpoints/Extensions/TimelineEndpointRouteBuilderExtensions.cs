@@ -56,9 +56,9 @@ public static class TimelineEndpointRouteBuilderExtensions
         TimelineEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        IOptions<AuthorizationOptions>? authOptions =
-            endpoints.ServiceProvider.GetService<IOptions<AuthorizationOptions>>();
-        authOptions?.Value.AddPolicy(
+        IOptions<AuthorizationOptions> authOptions =
+            endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
+        authOptions.Value.AddPolicy(
             TimelineAuthorizationPolicy.PolicyName,
             policy => policy.RequireRole(options.RequiredRole));
 

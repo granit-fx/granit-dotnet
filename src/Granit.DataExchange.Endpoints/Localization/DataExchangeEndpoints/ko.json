@@ -2,7 +2,9 @@
   "culture": "ko",
   "texts": {
     "PermissionGroup:DataExchange": "데이터 교환",
+    "Permission:DataExchange.Imports.Read": "가져오기 이력 및 상태 조회",
     "Permission:DataExchange.Imports.Execute": "데이터 가져오기 실행 (업로드, 매핑, 실행, 보고서)",
+    "Permission:DataExchange.Exports.Read": "내보내기 정의 및 이력 조회",
     "Permission:DataExchange.Exports.Execute": "데이터 내보내기 실행 (정의, 실행, 다운로드, 프리셋)"
   }
 }

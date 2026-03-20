@@ -1,5 +1,8 @@
+using Granit.Diagnostics.Abstractions;
+using Granit.Diagnostics.Internal;
 using Granit.Diagnostics.Options;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Diagnostics.Extensions;
 
@@ -17,6 +20,7 @@ public static class DiagnosticsServiceCollectionExtensions
         Action<DiagnosticsOptions>? configure = null)
     {
         services.AddHealthChecks();
+        services.TryAddSingleton<IHealthCheckAggregator, HealthCheckAggregator>();
 
         if (configure is not null)
         {

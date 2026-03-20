@@ -1,0 +1,7 @@
+{
+  "culture": "zh",
+  "texts": {
+    "PermissionGroup:Diagnostics": "诊断",
+    "Permission:Diagnostics.Monitoring.Read": "查看系统健康监控仪表板"
+  }
+}

@@ -18,13 +18,13 @@ internal sealed class FeaturesPermissionDefinitionProvider : IPermissionDefiniti
                 "PermissionGroup:Features"));
 
         group.AddPermission(
-            FeaturesPermissions.Read,
+            FeaturesPermissions.Flags.Read,
             LocalizableString.Create<FeaturesEndpointsLocalizationResource>(
-                "Permission:Features.Read"));
+                "Permission:Features.Flags.Read"));
 
         group.AddPermission(
-            FeaturesPermissions.Manage,
+            FeaturesPermissions.Flags.Manage,
             LocalizableString.Create<FeaturesEndpointsLocalizationResource>(
-                "Permission:Features.Manage"));
+                "Permission:Features.Flags.Manage"));
     }
 }

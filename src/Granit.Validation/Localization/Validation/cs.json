@@ -43,6 +43,25 @@
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' není platné číslo kreditní karty.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' nesmí mít celkem více než {ExpectedPrecision} číslic, z toho {ExpectedScale} desetinných míst.",
     "Granit:Validation:EmptyValidator": "'{PropertyName}' musí být prázdné.",
-    "Granit:Validation:NullValidator": "'{PropertyName}' musí být prázdné."
+    "Granit:Validation:NullValidator": "'{PropertyName}' musí být prázdné.",
+    "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' a 'Page' nelze použít současně.",
+    "Granit:Validation:MaxFilterEntries": "Je povoleno maximálně 50 položek filtru.",
+    "Granit:Validation:MaxQuickFilterEntries": "Je povoleno maximálně 20 rychlých filtrů.",
+    "Granit:Validation:MaxPresetEntries": "Je povoleno maximálně 20 předvoleb.",
+    "Granit:Validation:InvalidTemplateNamePattern": "Název šablony musí odpovídat vzoru 'Doména.Název' (např. 'Billing.Invoice').",
+    "Granit:Validation:InvalidCidrNotation": "Hodnota není platná notace CIDR.",
+    "Granit:Validation:InvalidEnvironment": "Prostředí musí být 'live', 'test' nebo 'dev'.",
+    "Granit:Validation:MaxPermissions": "Je povoleno maximálně 100 oprávnění.",
+    "Granit:Validation:MaxCidrRanges": "Je povoleno maximálně 50 rozsahů CIDR.",
+    "Granit:Validation:ExpirationMustBeFuture": "Datum vypršení musí být v budoucnosti.",
+    "Granit:Validation:InvalidContainerName": "Název kontejneru musí být malými alfanumerickými znaky, pomlčky jsou volitelné.",
+    "Granit:Validation:InvalidMimeType": "Typ obsahu musí být platný typ MIME.",
+    "Granit:Validation:ValidToAfterValidFrom": "'Platné do' musí být pozdější než 'Platné od'.",
+    "Granit:Validation:InvalidWorkspaceName": "Název pracovního prostoru musí být malými alfanumerickými znaky, pomlčky jsou volitelné.",
+    "Granit:Validation:InvalidChatRole": "Role musí být 'user', 'assistant' nebo 'system'.",
+    "Granit:Validation:MaxChatMessages": "Byl překročen maximální počet zpráv v chatu.",
+    "Granit:Validation:MaxBatchSize": "Velikost dávky nesmí překročit maximální povolený počet položek.",
+    "Granit:Validation:MaxEmbeddingInputs": "Byl překročen maximální počet vstupů embeddingu.",
+    "Granit:Validation:MaxCustomAttributes": "Byl překročen maximální počet vlastních atributů."
   }
 }

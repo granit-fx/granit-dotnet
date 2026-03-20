@@ -2,6 +2,7 @@
   "culture": "cs",
   "texts": {
     "PermissionGroup:BackgroundJobs": "Úlohy na pozadí",
+    "Permission:BackgroundJobs.Jobs.Read": "Zobrazit úlohy na pozadí (seznam, detail)",
     "Permission:BackgroundJobs.Jobs.Manage": "Správa úloh na pozadí (seznam, pozastavení, obnovení, ruční spuštění)"
   }
 }

@@ -43,6 +43,25 @@
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' n'est pas un numéro de carte bancaire valide.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' ne doit pas avoir plus de {ExpectedPrecision} chiffres au total, dont {ExpectedScale} décimaux.",
     "Granit:Validation:EmptyValidator": "'{PropertyName}' doit être vide.",
-    "Granit:Validation:NullValidator": "'{PropertyName}' doit être vide."
+    "Granit:Validation:NullValidator": "'{PropertyName}' doit être vide.",
+    "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' et 'Page' sont mutuellement exclusifs.",
+    "Granit:Validation:MaxFilterEntries": "50 entrées de filtre maximum sont autorisées.",
+    "Granit:Validation:MaxQuickFilterEntries": "20 filtres rapides maximum sont autorisés.",
+    "Granit:Validation:MaxPresetEntries": "20 entrées de préréglage maximum sont autorisées.",
+    "Granit:Validation:InvalidTemplateNamePattern": "Le nom du modèle doit suivre le format 'Domaine.Nom' (ex : 'Billing.Invoice').",
+    "Granit:Validation:InvalidCidrNotation": "La valeur n'est pas une notation CIDR valide.",
+    "Granit:Validation:InvalidEnvironment": "L'environnement doit être 'live', 'test' ou 'dev'.",
+    "Granit:Validation:MaxPermissions": "100 permissions maximum autorisées.",
+    "Granit:Validation:MaxCidrRanges": "50 plages CIDR maximum autorisées.",
+    "Granit:Validation:ExpirationMustBeFuture": "La date d'expiration doit être dans le futur.",
+    "Granit:Validation:InvalidContainerName": "Le nom du conteneur doit être en minuscules alphanumériques avec des tirets optionnels.",
+    "Granit:Validation:InvalidMimeType": "Le type de contenu doit être un type MIME valide.",
+    "Granit:Validation:ValidToAfterValidFrom": "'Valide jusqu'au' doit être postérieur à 'Valide à partir du'.",
+    "Granit:Validation:InvalidWorkspaceName": "Le nom de l'espace de travail doit être en minuscules alphanumériques avec des tirets optionnels.",
+    "Granit:Validation:InvalidChatRole": "Le rôle doit être 'user', 'assistant' ou 'system'.",
+    "Granit:Validation:MaxChatMessages": "Nombre maximum de messages de conversation dépassé.",
+    "Granit:Validation:MaxBatchSize": "La taille du lot ne doit pas dépasser le nombre maximum d'éléments autorisés.",
+    "Granit:Validation:MaxEmbeddingInputs": "Nombre maximum d'entrées d'embedding dépassé.",
+    "Granit:Validation:MaxCustomAttributes": "Le nombre maximum d'attributs personnalisés est dépassé."
   }
 }

@@ -50,13 +50,13 @@ public sealed class IdentityUserCacheRgpdEndpointsTests : IAsyncDisposable
 
     public async ValueTask DisposeAsync() => await _app.DisposeAsync();
 
-    // -- DELETE /{userId}/erase --
+    // -- DELETE /{userId} --
 
     [Fact]
     public async Task Erase_returns_204()
     {
         HttpResponseMessage response = await _adminClient.DeleteAsync(
-            $"{Prefix}/user-1/erase", TestContext.Current.CancellationToken);
+            $"{Prefix}/user-1", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         await _lookupService.Received(1).DeleteByIdAsync("user-1", Arg.Any<CancellationToken>());
@@ -66,17 +66,17 @@ public sealed class IdentityUserCacheRgpdEndpointsTests : IAsyncDisposable
     public async Task Erase_wrong_role_returns_403()
     {
         HttpResponseMessage response = await _userClient.DeleteAsync(
-            $"{Prefix}/user-1/erase", TestContext.Current.CancellationToken);
+            $"{Prefix}/user-1", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
-    // -- POST /{userId}/pseudonymize --
+    // -- PATCH /{userId}/pseudonymize --
 
     [Fact]
     public async Task Pseudonymize_returns_204()
     {
-        HttpResponseMessage response = await _adminClient.PostAsync(
+        HttpResponseMessage response = await _adminClient.PatchAsync(
             $"{Prefix}/user-1/pseudonymize", null, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
@@ -86,7 +86,7 @@ public sealed class IdentityUserCacheRgpdEndpointsTests : IAsyncDisposable
     [Fact]
     public async Task Pseudonymize_wrong_role_returns_403()
     {
-        HttpResponseMessage response = await _userClient.PostAsync(
+        HttpResponseMessage response = await _userClient.PatchAsync(
             $"{Prefix}/user-1/pseudonymize", null, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);

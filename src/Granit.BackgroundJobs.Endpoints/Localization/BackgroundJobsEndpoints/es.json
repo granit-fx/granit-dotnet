@@ -2,6 +2,7 @@
   "culture": "es",
   "texts": {
     "PermissionGroup:BackgroundJobs": "Tareas en segundo plano",
+    "Permission:BackgroundJobs.Jobs.Read": "Ver tareas en segundo plano (lista, detalle)",
     "Permission:BackgroundJobs.Jobs.Manage": "Administrar tareas en segundo plano (lista, pausa, reanudación, ejecución manual)"
   }
 }

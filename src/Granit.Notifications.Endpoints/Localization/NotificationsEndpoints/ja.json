@@ -1,0 +1,8 @@
+{
+  "culture": "ja",
+  "texts": {
+    "PermissionGroup:Notifications": "通知",
+    "Permission:Notifications.Notifications.Read": "通知の閲覧（受信トレイ、アクティビティフィード）",
+    "Permission:Notifications.Notifications.Manage": "通知の管理（設定、サブスクリプション、プッシュトークン）"
+  }
+}

@@ -1,6 +1,7 @@
 using FluentValidation;
 using Granit.Identity.Endpoints.Dtos;
 using Granit.Validation;
+using Granit.Validation.Extensions;
 
 namespace Granit.Identity.Endpoints.Validators;
 
@@ -20,7 +21,7 @@ internal sealed class IdentityUserCacheBatchRequestValidator : GranitValidator<I
         RuleFor(x => x.UserIds)
             .NotEmpty()
             .Must(ids => ids.Count <= MaxBatchSize)
-            .WithMessage($"Batch size must not exceed {MaxBatchSize} user IDs.");
+            .WithErrorCodeAndMessage("Granit:Validation:MaxBatchSize");
 
         RuleForEach(x => x.UserIds)
             .NotEmpty()

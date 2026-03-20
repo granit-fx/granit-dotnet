@@ -2,6 +2,7 @@
   "culture": "en",
   "texts": {
     "PermissionGroup:BackgroundJobs": "Background Jobs",
+    "Permission:BackgroundJobs.Jobs.Read": "View background jobs (list, detail)",
     "Permission:BackgroundJobs.Jobs.Manage": "Manage background jobs (list, pause, resume, manual trigger)"
   }
 }

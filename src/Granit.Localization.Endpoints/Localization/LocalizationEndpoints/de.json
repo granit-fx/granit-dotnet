@@ -2,6 +2,7 @@
   "culture": "de",
   "texts": {
     "PermissionGroup:Localization": "Lokalisierung",
+    "Permission:Localization.Overrides.Read": "Übersetzungsüberschreibungen anzeigen",
     "Permission:Localization.Overrides.Manage": "Übersetzungsüberschreibungen verwalten (anzeigen, erstellen, bearbeiten, löschen)"
   }
 }

@@ -4,6 +4,15 @@
     "PermissionGroup:Identity": "Tożsamość",
     "Permission:Identity.UserCache.Read": "Wyświetlanie pamięci podręcznej użytkowników (lista, wyszukiwanie, wsadowe, statystyki)",
     "Permission:Identity.UserCache.Sync": "Wymuszenie synchronizacji pamięci podręcznej użytkowników z dostawcy tożsamości",
-    "Permission:Identity.UserCache.Delete": "Usuwanie lub pseudonimizacja wpisów pamięci podręcznej użytkowników (RODO)"
+    "Permission:Identity.UserCache.Delete": "Usuwanie lub pseudonimizacja wpisów pamięci podręcznej użytkowników (RODO)",
+    "Permission:Identity.Users.Read": "Przeglądanie użytkowników bezpośrednio z dostawcy tożsamości",
+    "Permission:Identity.Users.Manage": "Tworzenie, aktualizowanie i włączanie/wyłączanie użytkowników w dostawcy tożsamości",
+    "Permission:Identity.Roles.Read": "Przeglądanie ról, przypisań ról i członków",
+    "Permission:Identity.Roles.Manage": "Przypisywanie lub usuwanie ról użytkowników",
+    "Permission:Identity.Groups.Read": "Przeglądanie grup i przynależności do grup",
+    "Permission:Identity.Groups.Manage": "Dodawanie lub usuwanie użytkowników z grup",
+    "Permission:Identity.Sessions.Read": "Przeglądanie sesji użytkowników i aktywności urządzeń",
+    "Permission:Identity.Sessions.Manage": "Kończenie sesji użytkowników",
+    "Permission:Identity.Passwords.Manage": "Zarządzanie hasłami użytkowników (resetowanie, hasło tymczasowe)"
   }
 }

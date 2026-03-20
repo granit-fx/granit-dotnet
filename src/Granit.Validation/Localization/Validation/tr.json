@@ -43,6 +43,25 @@
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' geçerli bir kredi kartı numarası değil.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' toplamda {ExpectedPrecision} basamaktan fazla olmamalı ve {ExpectedScale} ondalık basamağa izin verilmelidir.",
     "Granit:Validation:EmptyValidator": "'{PropertyName}' boş olmalıdır.",
-    "Granit:Validation:NullValidator": "'{PropertyName}' boş olmalıdır."
+    "Granit:Validation:NullValidator": "'{PropertyName}' boş olmalıdır.",
+    "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' ve 'Page' birlikte kullanılamaz.",
+    "Granit:Validation:MaxFilterEntries": "En fazla 50 filtre girişine izin verilir.",
+    "Granit:Validation:MaxQuickFilterEntries": "En fazla 20 hızlı filtreye izin verilir.",
+    "Granit:Validation:MaxPresetEntries": "En fazla 20 ön ayara izin verilir.",
+    "Granit:Validation:InvalidTemplateNamePattern": "Şablon adı 'Alan.Ad' desenini izlemelidir (ör. 'Billing.Invoice').",
+    "Granit:Validation:InvalidCidrNotation": "Değer geçerli bir CIDR gösterimi değil.",
+    "Granit:Validation:InvalidEnvironment": "Ortam 'live', 'test' veya 'dev' olmalıdır.",
+    "Granit:Validation:MaxPermissions": "En fazla 100 izne izin verilir.",
+    "Granit:Validation:MaxCidrRanges": "En fazla 50 CIDR aralığına izin verilir.",
+    "Granit:Validation:ExpirationMustBeFuture": "Son kullanma tarihi gelecekte olmalıdır.",
+    "Granit:Validation:InvalidContainerName": "Kapsayıcı adı küçük harfli alfanümerik olmalı, kısa çizgiler isteğe bağlıdır.",
+    "Granit:Validation:InvalidMimeType": "İçerik türü geçerli bir MIME türü olmalıdır.",
+    "Granit:Validation:ValidToAfterValidFrom": "'Geçerlilik bitiş tarihi', 'Geçerlilik başlangıç tarihi'nden sonra olmalıdır.",
+    "Granit:Validation:InvalidWorkspaceName": "Çalışma alanı adı küçük harfli alfanümerik olmalı, kısa çizgiler isteğe bağlıdır.",
+    "Granit:Validation:InvalidChatRole": "Rol 'user', 'assistant' veya 'system' olmalıdır.",
+    "Granit:Validation:MaxChatMessages": "Maksimum sohbet mesajı sayısı aşıldı.",
+    "Granit:Validation:MaxBatchSize": "Toplu iş boyutu izin verilen maksimum öğe sayısını aşmamalıdır.",
+    "Granit:Validation:MaxEmbeddingInputs": "Maksimum gömme girişi sayısı aşıldı.",
+    "Granit:Validation:MaxCustomAttributes": "Maksimum özel öznitelik sayısı aşıldı."
   }
 }

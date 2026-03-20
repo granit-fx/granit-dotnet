@@ -43,6 +43,25 @@
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' nie jest prawidłowym numerem karty kredytowej.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' nie może mieć więcej niż {ExpectedPrecision} cyfr łącznie, w tym {ExpectedScale} miejsc po przecinku.",
     "Granit:Validation:EmptyValidator": "'{PropertyName}' musi być puste.",
-    "Granit:Validation:NullValidator": "'{PropertyName}' musi być puste."
+    "Granit:Validation:NullValidator": "'{PropertyName}' musi być puste.",
+    "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' i 'Page' wykluczają się wzajemnie.",
+    "Granit:Validation:MaxFilterEntries": "Dozwolonych jest maksymalnie 50 wpisów filtrów.",
+    "Granit:Validation:MaxQuickFilterEntries": "Dozwolonych jest maksymalnie 20 szybkich filtrów.",
+    "Granit:Validation:MaxPresetEntries": "Dozwolonych jest maksymalnie 20 ustawień wstępnych.",
+    "Granit:Validation:InvalidTemplateNamePattern": "Nazwa szablonu musi odpowiadać wzorcowi 'Domena.Nazwa' (np. 'Billing.Invoice').",
+    "Granit:Validation:InvalidCidrNotation": "Wartość nie jest prawidłową notacją CIDR.",
+    "Granit:Validation:InvalidEnvironment": "Środowisko musi być 'live', 'test' lub 'dev'.",
+    "Granit:Validation:MaxPermissions": "Dozwolonych jest maksymalnie 100 uprawnień.",
+    "Granit:Validation:MaxCidrRanges": "Dozwolonych jest maksymalnie 50 zakresów CIDR.",
+    "Granit:Validation:ExpirationMustBeFuture": "Data wygaśnięcia musi być w przyszłości.",
+    "Granit:Validation:InvalidContainerName": "Nazwa kontenera musi składać się z małych liter i cyfr, myślniki są opcjonalne.",
+    "Granit:Validation:InvalidMimeType": "Typ zawartości musi być prawidłowym typem MIME.",
+    "Granit:Validation:ValidToAfterValidFrom": "'Ważne do' musi być późniejsze niż 'Ważne od'.",
+    "Granit:Validation:InvalidWorkspaceName": "Nazwa przestrzeni roboczej musi składać się z małych liter i cyfr, myślniki są opcjonalne.",
+    "Granit:Validation:InvalidChatRole": "Rola musi być 'user', 'assistant' lub 'system'.",
+    "Granit:Validation:MaxChatMessages": "Przekroczono maksymalną liczbę wiadomości czatu.",
+    "Granit:Validation:MaxBatchSize": "Rozmiar partii nie może przekraczać maksymalnej dozwolonej liczby elementów.",
+    "Granit:Validation:MaxEmbeddingInputs": "Przekroczono maksymalną liczbę wejść embeddingu.",
+    "Granit:Validation:MaxCustomAttributes": "Przekroczono maksymalną liczbę atrybutów niestandardowych."
   }
 }

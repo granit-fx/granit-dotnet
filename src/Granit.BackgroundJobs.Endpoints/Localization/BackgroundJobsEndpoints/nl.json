@@ -2,6 +2,7 @@
   "culture": "nl",
   "texts": {
     "PermissionGroup:BackgroundJobs": "Achtergrondtaken",
+    "Permission:BackgroundJobs.Jobs.Read": "Achtergrondtaken bekijken (lijst, detail)",
     "Permission:BackgroundJobs.Jobs.Manage": "Achtergrondtaken beheren (lijst, pauzeren, hervatten, handmatig starten)"
   }
 }

@@ -43,6 +43,25 @@
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' is not a valid credit card number.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' must not be more than {ExpectedPrecision} digits in total, with allowance for {ExpectedScale} decimals.",
     "Granit:Validation:EmptyValidator": "'{PropertyName}' must be empty.",
-    "Granit:Validation:NullValidator": "'{PropertyName}' must be empty."
+    "Granit:Validation:NullValidator": "'{PropertyName}' must be empty.",
+    "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' and 'Page' are mutually exclusive.",
+    "Granit:Validation:MaxFilterEntries": "At most 50 filter entries are allowed.",
+    "Granit:Validation:MaxQuickFilterEntries": "At most 20 quick filters are allowed.",
+    "Granit:Validation:MaxPresetEntries": "At most 20 preset entries are allowed.",
+    "Granit:Validation:InvalidTemplateNamePattern": "Template name must follow the 'Domain.Name' pattern (e.g. 'Billing.Invoice').",
+    "Granit:Validation:InvalidCidrNotation": "The value is not a valid CIDR notation.",
+    "Granit:Validation:InvalidEnvironment": "Environment must be 'live', 'test', or 'dev'.",
+    "Granit:Validation:MaxPermissions": "Maximum 100 permissions allowed.",
+    "Granit:Validation:MaxCidrRanges": "Maximum 50 CIDR ranges allowed.",
+    "Granit:Validation:ExpirationMustBeFuture": "Expiration date must be in the future.",
+    "Granit:Validation:InvalidContainerName": "Container name must be lowercase alphanumeric with optional hyphens.",
+    "Granit:Validation:InvalidMimeType": "Content type must be a valid MIME type.",
+    "Granit:Validation:ValidToAfterValidFrom": "'Valid to' must be after 'Valid from'.",
+    "Granit:Validation:InvalidWorkspaceName": "Workspace name must be lowercase alphanumeric with optional hyphens.",
+    "Granit:Validation:InvalidChatRole": "Role must be 'user', 'assistant', or 'system'.",
+    "Granit:Validation:MaxChatMessages": "Maximum number of chat messages exceeded.",
+    "Granit:Validation:MaxBatchSize": "Batch size must not exceed the maximum number of allowed items.",
+    "Granit:Validation:MaxEmbeddingInputs": "Maximum number of embedding inputs exceeded.",
+    "Granit:Validation:MaxCustomAttributes": "Maximum number of custom attributes exceeded."
   }
 }

@@ -87,7 +87,7 @@ public static partial class TemplatingEndpointRouteBuilderExtensions
 
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.RoutePrefix)
-            .RequireAuthorization(TemplatingPermissions.Manage)
+            .RequireAuthorization(TemplatingPermissions.Templates.Manage)
             .WithTags(options.TagName);
 
         group.MapGet("/", HandleListAsync)

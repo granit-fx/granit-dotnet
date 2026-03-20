@@ -4,6 +4,15 @@
     "PermissionGroup:Identity": "Identita",
     "Permission:Identity.UserCache.Read": "Zobrazit mezipaměť uživatelů (seznam, hledání, dávkově, statistiky)",
     "Permission:Identity.UserCache.Sync": "Vynutit synchronizaci mezipaměti uživatelů od poskytovatele identity",
-    "Permission:Identity.UserCache.Delete": "Smazat nebo pseudonymizovat záznamy mezipaměti uživatelů (GDPR)"
+    "Permission:Identity.UserCache.Delete": "Smazat nebo pseudonymizovat záznamy mezipaměti uživatelů (GDPR)",
+    "Permission:Identity.Users.Read": "Zobrazit uživatele přímo od poskytovatele identity",
+    "Permission:Identity.Users.Manage": "Vytvářet, aktualizovat a aktivovat/deaktivovat uživatele u poskytovatele identity",
+    "Permission:Identity.Roles.Read": "Zobrazit role, přiřazení rolí a členy rolí",
+    "Permission:Identity.Roles.Manage": "Přiřadit nebo odebrat role uživatelům",
+    "Permission:Identity.Groups.Read": "Zobrazit skupiny a členství ve skupinách",
+    "Permission:Identity.Groups.Manage": "Přidat nebo odebrat uživatele ze skupin",
+    "Permission:Identity.Sessions.Read": "Zobrazit uživatelské relace a aktivitu zařízení",
+    "Permission:Identity.Sessions.Manage": "Ukončit uživatelské relace",
+    "Permission:Identity.Passwords.Manage": "Spravovat uživatelská hesla (resetování, dočasné heslo)"
   }
 }

@@ -4,6 +4,15 @@
     "PermissionGroup:Identity": "Identité",
     "Permission:Identity.UserCache.Read": "Consulter le cache utilisateurs (liste, recherche, batch, stats)",
     "Permission:Identity.UserCache.Sync": "Forcer la synchronisation du cache depuis le fournisseur d'identité",
-    "Permission:Identity.UserCache.Delete": "Supprimer ou pseudonymiser des entrées du cache (RGPD)"
+    "Permission:Identity.UserCache.Delete": "Supprimer ou pseudonymiser des entrées du cache (RGPD)",
+    "Permission:Identity.Users.Read": "Consulter les utilisateurs directement depuis le fournisseur d'identité",
+    "Permission:Identity.Users.Manage": "Créer, modifier et activer/désactiver les utilisateurs du fournisseur d'identité",
+    "Permission:Identity.Roles.Read": "Consulter les rôles, les attributions et les membres",
+    "Permission:Identity.Roles.Manage": "Attribuer ou retirer des rôles aux utilisateurs",
+    "Permission:Identity.Groups.Read": "Consulter les groupes et les appartenances",
+    "Permission:Identity.Groups.Manage": "Ajouter ou retirer des utilisateurs de groupes",
+    "Permission:Identity.Sessions.Read": "Consulter les sessions utilisateurs et l'activité des appareils",
+    "Permission:Identity.Sessions.Manage": "Terminer les sessions utilisateurs",
+    "Permission:Identity.Passwords.Manage": "Gérer les mots de passe (réinitialisation, mot de passe temporaire)"
   }
 }

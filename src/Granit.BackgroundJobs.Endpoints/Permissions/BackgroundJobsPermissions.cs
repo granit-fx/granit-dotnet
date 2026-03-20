@@ -13,6 +13,9 @@ public static class BackgroundJobsPermissions
     /// <summary>Permissions for the background jobs resource.</summary>
     public static class Jobs
     {
+        /// <summary>Grants read-only access to list and view background jobs.</summary>
+        public const string Read = "BackgroundJobs.Jobs.Read";
+
         /// <summary>
         /// Grants full management access to all background jobs endpoints
         /// (list, detail, pause, resume, trigger).

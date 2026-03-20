@@ -2,6 +2,8 @@
   "culture": "cs",
   "texts": {
     "PermissionGroup:Workflow": "Pracovní postup",
-    "Permission:Workflow.History.Read": "Zobrazit historii přechodů pracovního postupu (auditní stopa)"
+    "Permission:Workflow.History.Read": "Zobrazit historii přechodů pracovního postupu (auditní stopa)",
+    "Permission:Workflow.Transitions.Read": "Zobrazit dostupné přechody workflow",
+    "Permission:Workflow.Transitions.Execute": "Provést přechody stavů workflow"
   }
 }

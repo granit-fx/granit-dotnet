@@ -1,0 +1,7 @@
+{
+  "culture": "cs",
+  "texts": {
+    "PermissionGroup:Diagnostics": "Diagnostika",
+    "Permission:Diagnostics.Monitoring.Read": "Zobrazit panel monitorování stavu systému"
+  }
+}

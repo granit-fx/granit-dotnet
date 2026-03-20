@@ -1,0 +1,8 @@
+{
+  "culture": "zh",
+  "texts": {
+    "PermissionGroup:Notifications": "通知",
+    "Permission:Notifications.Notifications.Read": "查看通知（收件箱、活动动态）",
+    "Permission:Notifications.Notifications.Manage": "管理通知（偏好设置、订阅、推送令牌）"
+  }
+}

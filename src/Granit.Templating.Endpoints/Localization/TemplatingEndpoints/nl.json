@@ -2,6 +2,7 @@
   "culture": "nl",
   "texts": {
     "PermissionGroup:Templating": "Sjabloonbeheer",
-    "Permission:Templates.Manage": "Sjablonen beheren (bekijken, aanmaken, bewerken, verwijderen, publiceren)"
+    "Permission:Templating.Templates.Read": "Templates bekijken (lijst, detail, geschiedenis)",
+    "Permission:Templating.Templates.Manage": "Sjablonen beheren (bekijken, aanmaken, bewerken, verwijderen, publiceren)"
   }
 }

@@ -2,7 +2,9 @@
   "culture": "zh",
   "texts": {
     "PermissionGroup:DataExchange": "数据交换",
+    "Permission:DataExchange.Imports.Read": "查看导入历史和状态",
     "Permission:DataExchange.Imports.Execute": "执行数据导入（上传、映射、执行、报告）",
+    "Permission:DataExchange.Exports.Read": "查看导出定义和历史",
     "Permission:DataExchange.Exports.Execute": "执行数据导出（定义、执行、下载、预设）"
   }
 }

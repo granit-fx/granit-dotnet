@@ -1,0 +1,8 @@
+{
+  "culture": "pl",
+  "texts": {
+    "PermissionGroup:Notifications": "Powiadomienia",
+    "Permission:Notifications.Notifications.Read": "Przeglądanie powiadomień (skrzynka odbiorcza, aktywność)",
+    "Permission:Notifications.Notifications.Manage": "Zarządzanie powiadomieniami (preferencje, subskrypcje, tokeny push)"
+  }
+}

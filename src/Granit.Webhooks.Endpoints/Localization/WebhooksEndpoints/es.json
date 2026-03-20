@@ -2,10 +2,7 @@
   "culture": "es",
   "texts": {
     "PermissionGroup:Webhooks": "Webhooks",
-    "Permission:Webhooks.Subscriptions.View": "Ver suscripciones de webhooks",
-    "Permission:Webhooks.Subscriptions.Create": "Crear suscripciones de webhooks",
-    "Permission:Webhooks.Subscriptions.Update": "Actualizar suscripciones de webhooks",
-    "Permission:Webhooks.Subscriptions.Delete": "Eliminar suscripciones de webhooks",
+    "Permission:Webhooks.Subscriptions.Read": "Ver suscripciones de webhooks",
     "Permission:Webhooks.Subscriptions.Manage": "Gestionar webhooks (ciclo de vida, rotación de secretos, ping de prueba, estadísticas)",
     "Granit:Validation:InvalidWebhookUrl": "La URL de destino debe ser una URL HTTPS válida",
     "Granit:Validation:WebhookUrlPrivateAddress": "Las direcciones IP privadas, locales o reservadas no están permitidas",

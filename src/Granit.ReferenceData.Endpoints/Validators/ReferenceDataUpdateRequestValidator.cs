@@ -1,6 +1,7 @@
 using FluentValidation;
 using Granit.ReferenceData.Endpoints.Dtos;
 using Granit.Validation;
+using Granit.Validation.Extensions;
 
 namespace Granit.ReferenceData.Endpoints.Validators;
 
@@ -40,7 +41,7 @@ internal sealed class ReferenceDataUpdateRequestValidator : GranitValidator<Refe
 
         RuleFor(x => x.ValidTo)
             .GreaterThan(x => x.ValidFrom)
-            .WithMessage("ValidTo must be after ValidFrom.")
+            .WithErrorCodeAndMessage("Granit:Validation:ValidToAfterValidFrom")
             .When(x => x.ValidFrom.HasValue && x.ValidTo.HasValue);
     }
 }

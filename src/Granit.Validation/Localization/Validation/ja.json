@@ -43,6 +43,25 @@
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' は有効なクレジットカード番号ではありません。",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' は合計 {ExpectedPrecision} 桁以内で、うち小数部は {ExpectedScale} 桁以内である必要があります。",
     "Granit:Validation:EmptyValidator": "'{PropertyName}' は空である必要があります。",
-    "Granit:Validation:NullValidator": "'{PropertyName}' は空である必要があります。"
+    "Granit:Validation:NullValidator": "'{PropertyName}' は空である必要があります。",
+    "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' と 'Page' は同時に使用できません。",
+    "Granit:Validation:MaxFilterEntries": "フィルター項目は最大50件までです。",
+    "Granit:Validation:MaxQuickFilterEntries": "クイックフィルターは最大20件までです。",
+    "Granit:Validation:MaxPresetEntries": "プリセット項目は最大20件までです。",
+    "Granit:Validation:InvalidTemplateNamePattern": "テンプレート名は 'Domain.Name' パターンに従う必要があります（例: 'Billing.Invoice'）。",
+    "Granit:Validation:InvalidCidrNotation": "値が有効な CIDR 表記ではありません。",
+    "Granit:Validation:InvalidEnvironment": "環境は 'live'、'test'、または 'dev' でなければなりません。",
+    "Granit:Validation:MaxPermissions": "権限は最大100件までです。",
+    "Granit:Validation:MaxCidrRanges": "CIDR 範囲は最大50件までです。",
+    "Granit:Validation:ExpirationMustBeFuture": "有効期限は未来の日付でなければなりません。",
+    "Granit:Validation:InvalidContainerName": "コンテナ名は小文字の英数字で、ハイフンは任意です。",
+    "Granit:Validation:InvalidMimeType": "コンテンツタイプは有効な MIME タイプでなければなりません。",
+    "Granit:Validation:ValidToAfterValidFrom": "'有効終了日' は '有効開始日' より後でなければなりません。",
+    "Granit:Validation:InvalidWorkspaceName": "ワークスペース名は小文字の英数字で、ハイフンは任意です。",
+    "Granit:Validation:InvalidChatRole": "ロールは 'user'、'assistant'、または 'system' でなければなりません。",
+    "Granit:Validation:MaxChatMessages": "チャットメッセージの最大数を超えました。",
+    "Granit:Validation:MaxBatchSize": "バッチサイズが許可される最大項目数を超えています。",
+    "Granit:Validation:MaxEmbeddingInputs": "エンベディング入力の最大数を超えました。",
+    "Granit:Validation:MaxCustomAttributes": "カスタム属性の最大数を超えました。"
   }
 }

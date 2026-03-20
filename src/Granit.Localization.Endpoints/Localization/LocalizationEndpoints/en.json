@@ -2,6 +2,7 @@
   "culture": "en",
   "texts": {
     "PermissionGroup:Localization": "Localization",
+    "Permission:Localization.Overrides.Read": "View translation overrides",
     "Permission:Localization.Overrides.Manage": "Manage translation overrides (view, create, edit, delete)"
   }
 }

@@ -4,6 +4,15 @@
     "PermissionGroup:Identity": "Identität",
     "Permission:Identity.UserCache.Read": "Benutzercache einsehen (Liste, Suche, Batch, Statistiken)",
     "Permission:Identity.UserCache.Sync": "Synchronisierung des Benutzercaches vom Identitätsanbieter erzwingen",
-    "Permission:Identity.UserCache.Delete": "Benutzercache-Einträge löschen oder pseudonymisieren (DSGVO)"
+    "Permission:Identity.UserCache.Delete": "Benutzercache-Einträge löschen oder pseudonymisieren (DSGVO)",
+    "Permission:Identity.Users.Read": "Benutzer direkt vom Identitätsanbieter anzeigen",
+    "Permission:Identity.Users.Manage": "Benutzer im Identitätsanbieter erstellen, aktualisieren und aktivieren/deaktivieren",
+    "Permission:Identity.Roles.Read": "Rollen, Rollenzuweisungen und Rollenmitglieder anzeigen",
+    "Permission:Identity.Roles.Manage": "Rollen an Benutzer zuweisen oder entfernen",
+    "Permission:Identity.Groups.Read": "Gruppen und Gruppenmitgliedschaften anzeigen",
+    "Permission:Identity.Groups.Manage": "Benutzer zu Gruppen hinzufügen oder entfernen",
+    "Permission:Identity.Sessions.Read": "Benutzersitzungen und Geräteaktivität anzeigen",
+    "Permission:Identity.Sessions.Manage": "Benutzersitzungen beenden",
+    "Permission:Identity.Passwords.Manage": "Benutzerpasswörter verwalten (Zurücksetzung, temporäres Passwort)"
   }
 }

@@ -1,0 +1,8 @@
+{
+  "culture": "pt",
+  "texts": {
+    "PermissionGroup:Notifications": "Notificações",
+    "Permission:Notifications.Notifications.Read": "Ver notificações (caixa de entrada, atividade)",
+    "Permission:Notifications.Notifications.Manage": "Gerir notificações (preferências, subscrições, tokens push)"
+  }
+}

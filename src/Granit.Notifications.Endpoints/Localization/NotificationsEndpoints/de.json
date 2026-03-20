@@ -1,0 +1,8 @@
+{
+  "culture": "de",
+  "texts": {
+    "PermissionGroup:Notifications": "Benachrichtigungen",
+    "Permission:Notifications.Notifications.Read": "Benachrichtigungen anzeigen (Posteingang, Aktivitätsfeed)",
+    "Permission:Notifications.Notifications.Manage": "Benachrichtigungen verwalten (Einstellungen, Abonnements, Push-Token)"
+  }
+}

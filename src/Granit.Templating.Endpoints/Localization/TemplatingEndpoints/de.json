@@ -2,6 +2,7 @@
   "culture": "de",
   "texts": {
     "PermissionGroup:Templating": "Vorlagenverwaltung",
-    "Permission:Templates.Manage": "Vorlagen verwalten (anzeigen, erstellen, bearbeiten, löschen, veröffentlichen)"
+    "Permission:Templating.Templates.Read": "Vorlagen anzeigen (Liste, Detail, Verlauf)",
+    "Permission:Templating.Templates.Manage": "Vorlagen verwalten (anzeigen, erstellen, bearbeiten, löschen, veröffentlichen)"
   }
 }

@@ -25,6 +25,21 @@ public sealed class BackgroundJobsPermissionDefinitionProviderTests
     }
 
     [Fact]
+    public void DefinePermissions_RegistersBackgroundJobsReadPermission()
+    {
+        // Arrange
+        FakePermissionDefinitionContext context = new();
+        BackgroundJobsPermissionDefinitionProvider provider = new();
+
+        // Act
+        provider.DefinePermissions(context);
+
+        // Assert — group and permission declared
+        PermissionGroup group = context.Groups.Single();
+        group.Permissions.ShouldContain(p => p.Name == BackgroundJobsPermissions.Jobs.Read);
+    }
+
+    [Fact]
     public void DefinePermissions_CalledTwice_DoesNotDuplicateGroup()
     {
         // Arrange — same context receives two calls (multi-provider scenario)

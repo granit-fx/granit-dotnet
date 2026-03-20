@@ -2,6 +2,7 @@
   "culture": "ja",
   "texts": {
     "PermissionGroup:Templating": "テンプレート",
-    "Permission:Templates.Manage": "テンプレートの管理（表示、作成、編集、削除、公開）"
+    "Permission:Templating.Templates.Read": "テンプレートの閲覧（一覧、詳細、履歴）",
+    "Permission:Templating.Templates.Manage": "テンプレートの管理（表示、作成、編集、削除、公開）"
   }
 }

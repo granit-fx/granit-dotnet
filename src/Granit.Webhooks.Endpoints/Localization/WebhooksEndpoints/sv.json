@@ -2,10 +2,7 @@
   "culture": "sv",
   "texts": {
     "PermissionGroup:Webhooks": "Webhooks",
-    "Permission:Webhooks.Subscriptions.View": "Visa webhook-prenumerationer",
-    "Permission:Webhooks.Subscriptions.Create": "Skapa webhook-prenumerationer",
-    "Permission:Webhooks.Subscriptions.Update": "Uppdatera webhook-prenumerationer",
-    "Permission:Webhooks.Subscriptions.Delete": "Ta bort webhook-prenumerationer",
+    "Permission:Webhooks.Subscriptions.Read": "Visa webhook-prenumerationer",
     "Permission:Webhooks.Subscriptions.Manage": "Hantera webhooks (livscykel, hemlighetsrotation, testping, statistik)",
     "Granit:Validation:InvalidWebhookUrl": "Mål-URL måste vara en giltig HTTPS-URL",
     "Granit:Validation:WebhookUrlPrivateAddress": "Privata, lokala eller reserverade IP-adresser är inte tillåtna",

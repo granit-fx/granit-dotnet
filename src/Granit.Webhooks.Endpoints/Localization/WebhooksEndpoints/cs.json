@@ -2,10 +2,7 @@
   "culture": "cs",
   "texts": {
     "PermissionGroup:Webhooks": "Webhooks",
-    "Permission:Webhooks.Subscriptions.View": "Zobrazit odběry webhooků",
-    "Permission:Webhooks.Subscriptions.Create": "Vytvořit odběry webhooků",
-    "Permission:Webhooks.Subscriptions.Update": "Aktualizovat odběry webhooků",
-    "Permission:Webhooks.Subscriptions.Delete": "Smazat odběry webhooků",
+    "Permission:Webhooks.Subscriptions.Read": "Zobrazit odběry webhooků",
     "Permission:Webhooks.Subscriptions.Manage": "Spravovat webhooky (životní cyklus, rotace tajných klíčů, testovací ping, statistiky)",
     "Granit:Validation:InvalidWebhookUrl": "Cílová URL musí být platná HTTPS URL",
     "Granit:Validation:WebhookUrlPrivateAddress": "Soukromé, místní nebo vyhrazené IP adresy nejsou povoleny",

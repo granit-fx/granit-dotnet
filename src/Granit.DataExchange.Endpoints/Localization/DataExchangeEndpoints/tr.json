@@ -2,7 +2,9 @@
   "culture": "tr",
   "texts": {
     "PermissionGroup:DataExchange": "Veri Alışverişi",
+    "Permission:DataExchange.Imports.Read": "İçe aktarma geçmişini ve durumunu görüntüle",
     "Permission:DataExchange.Imports.Execute": "Veri içe aktarmalarını çalıştır (yükleme, eşleme, yürütme, raporlar)",
+    "Permission:DataExchange.Exports.Read": "Dışa aktarma tanımlarını ve geçmişini görüntüle",
     "Permission:DataExchange.Exports.Execute": "Veri dışa aktarmalarını çalıştır (tanımlar, yürütme, indirme, ön ayarlar)"
   }
 }

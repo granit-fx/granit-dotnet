@@ -2,6 +2,7 @@
   "culture": "pl",
   "texts": {
     "PermissionGroup:Templating": "Szablony",
-    "Permission:Templates.Manage": "Zarządzanie szablonami (wyświetlanie, tworzenie, edycja, usuwanie, publikowanie)"
+    "Permission:Templating.Templates.Read": "Przeglądanie szablonów (lista, szczegóły, historia)",
+    "Permission:Templating.Templates.Manage": "Zarządzanie szablonami (wyświetlanie, tworzenie, edycja, usuwanie, publikowanie)"
   }
 }

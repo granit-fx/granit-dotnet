@@ -2,7 +2,9 @@
   "culture": "sv",
   "texts": {
     "PermissionGroup:DataExchange": "Datautbyte",
+    "Permission:DataExchange.Imports.Read": "Visa importhistorik och status",
     "Permission:DataExchange.Imports.Execute": "Utför dataimport (uppladdning, mappning, körning, rapporter)",
+    "Permission:DataExchange.Exports.Read": "Visa exportdefinitioner och historik",
     "Permission:DataExchange.Exports.Execute": "Utför dataexport (definitioner, körning, nedladdning, förinställningar)"
   }
 }

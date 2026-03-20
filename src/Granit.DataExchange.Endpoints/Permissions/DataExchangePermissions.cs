@@ -16,6 +16,9 @@ public static class DataExchangePermissions
     /// <summary>Permissions for the data import resource.</summary>
     public static class Imports
     {
+        /// <summary>Grants read-only access to view import job history and status.</summary>
+        public const string Read = "DataExchange.Imports.Read";
+
         /// <summary>
         /// Grants access to execute data imports
         /// (upload, preview, mappings, execute, dry-run, status, report, correction file).
@@ -26,6 +29,9 @@ public static class DataExchangePermissions
     /// <summary>Permissions for the data export resource.</summary>
     public static class Exports
     {
+        /// <summary>Grants read-only access to view export definitions and job history.</summary>
+        public const string Read = "DataExchange.Exports.Read";
+
         /// <summary>
         /// Grants access to execute data exports
         /// (definitions, field listing, export execution, download, presets).

@@ -2,6 +2,7 @@
   "culture": "fr",
   "texts": {
     "PermissionGroup:Localization": "Localisation",
+    "Permission:Localization.Overrides.Read": "Consulter les surcharges de traduction",
     "Permission:Localization.Overrides.Manage": "Gérer les surcharges de traduction (consulter, créer, modifier, supprimer)"
   }
 }

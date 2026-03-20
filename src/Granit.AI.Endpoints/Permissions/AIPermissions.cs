@@ -9,15 +9,15 @@ public static class AIPermissions
 
     public static class Workspaces
     {
-        public const string View = "AI.Workspaces.View";
-        public const string Create = "AI.Workspaces.Create";
-        public const string Update = "AI.Workspaces.Update";
-        public const string Delete = "AI.Workspaces.Delete";
+        public const string Read = "AI.Workspaces.Read";
+
+        /// <summary>Grants management access to AI workspaces (create, update, delete).</summary>
+        public const string Manage = "AI.Workspaces.Manage";
     }
 
     public static class Usage
     {
-        public const string View = "AI.Usage.View";
+        public const string Read = "AI.Usage.Read";
     }
 
     public static class Chat

@@ -151,6 +151,25 @@ Full standards: [`docs/guide/conventions/`](docs/guide/conventions/index.md)
 - **ActivitySource**: `internal static class {Module}ActivitySource` in same `Diagnostics/` folder
 - **Registration**: `GranitActivitySourceRegistry.Register(Name)` in `Add*()` extension
 
+### Permissions — naming convention (STRICT)
+
+All permission strings MUST follow the `[Group].[Resource].[Action]` format (three dot-separated
+segments). Enforced across all `*.Endpoints` modules.
+
+| Component | Convention | Example |
+| --------- | ---------- | ------- |
+| **Group** | `{Module}Permissions.GroupName` (PascalCase) | `"BackgroundJobs"`, `"BlobStorage"` |
+| **Resource** | Nested static class name (plural noun) | `Jobs`, `Blobs`, `Templates`, `Flags` |
+| **Action** | Verb describing the access level | `Read`, `Manage`, `Execute`, `Create` |
+
+- **Permission constant**: `public const string Read = "{Group}.{Resource}.Read";`
+- **Localization key (group)**: `PermissionGroup:{Group}` (e.g. `"PermissionGroup:BackgroundJobs"`)
+- **Localization key (permission)**: `Permission:{Group}.{Resource}.{Action}` (e.g. `"Permission:BackgroundJobs.Jobs.Read"`)
+- **Provider class**: `internal sealed class {Module}PermissionDefinitionProvider : IPermissionDefinitionProvider`
+- **Localization resource**: `internal sealed class {Module}EndpointsLocalizationResource` with `[LocalizationResourceName]`
+- **Auto-discovery**: providers are auto-discovered by `GranitAuthorizationModule` (no manual registration)
+- **Standard actions**: use `Read` for consultation (never `View`), `Manage` for grouped write operations, `Execute` for single actions
+
 ### Events — naming convention (STRICT)
 
 Two event categories with **mandatory suffixes** — enforced by architecture tests:
@@ -204,6 +223,12 @@ Single category with **mandatory suffix** — enforced by architecture tests:
   (maxLength, pattern, required, etc.) in the OpenAPI schema for frontend code generators
 - **Architecture tests**: `ValidationConventionTests` ensures all `*Request` types have
   validators and all route groups use `MapGranitGroup()`
+- **Localized messages — MANDATORY**: NEVER use hardcoded `.WithMessage("...")` strings in
+  validators. Built-in validators (NotEmpty, MaximumLength, etc.) are automatically converted
+  to error codes by `GranitErrorCodeLanguageManager`. For custom `.Must()` validators, use
+  `.WithErrorCodeAndMessage("Granit:Validation:XxxCode")` and add the corresponding key
+  to all 17 JSON files in `src/Granit.Validation/Localization/Validation/`. The frontend
+  resolves error codes to localized strings via `GET /api/granit/localization`.
 
 ### Isolated DbContext — MANDATORY for `*.EntityFrameworkCore` packages
 
@@ -296,6 +321,9 @@ Each package has `*.Tests` project (xUnit + Shouldly + NSubstitute + Bogus). Par
 - Public setters on aggregate roots → `private set` + behavior methods
 - Manual `IDomainEventSource` implementation → inherit from `AggregateRoot` (or variants)
 - `new XxxEntity { ... }` on aggregate roots → `XxxEntity.Create(...)` factory method
+- `.WithMessage("hardcoded string")` in validators → `.WithErrorCodeAndMessage("Granit:Validation:XxxCode")` + localization JSON
+- `View` action in permissions → `Read` (RBAC standard: `Read`, not `View`)
+- Two-segment permission names (`Features.Read`) → three-segment `Features.Flags.Read` (`[Group].[Resource].[Action]`)
 
 ### Architecture
 

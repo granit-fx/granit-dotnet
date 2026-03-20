@@ -2,6 +2,7 @@
   "culture": "tr",
   "texts": {
     "PermissionGroup:Templating": "Şablonlar",
-    "Permission:Templates.Manage": "Şablonları yönet (görüntüle, oluştur, düzenle, sil, yayınla)"
+    "Permission:Templating.Templates.Read": "Şablonları görüntüle (liste, detay, geçmiş)",
+    "Permission:Templating.Templates.Manage": "Şablonları yönet (görüntüle, oluştur, düzenle, sil, yayınla)"
   }
 }

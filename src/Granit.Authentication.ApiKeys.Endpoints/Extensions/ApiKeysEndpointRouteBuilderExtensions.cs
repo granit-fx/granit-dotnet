@@ -40,22 +40,22 @@ public static class ApiKeysEndpointRouteBuilderExtensions
         configure?.Invoke(options);
 
         // Register fallback authorization policies
-        IOptions<AuthorizationOptions>? authOptions =
-            endpoints.ServiceProvider.GetService<IOptions<AuthorizationOptions>>();
+        IOptions<AuthorizationOptions> authOptions =
+            endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
 
-        authOptions?.Value.AddPolicy(
+        authOptions.Value.AddPolicy(
             ApiKeyPermissions.Keys.Read,
             policy => policy.RequireRole(options.RequiredRole));
-        authOptions?.Value.AddPolicy(
+        authOptions.Value.AddPolicy(
             ApiKeyPermissions.Keys.Create,
             policy => policy.RequireRole(options.RequiredRole));
-        authOptions?.Value.AddPolicy(
+        authOptions.Value.AddPolicy(
             ApiKeyPermissions.Keys.Revoke,
             policy => policy.RequireRole(options.RequiredRole));
-        authOptions?.Value.AddPolicy(
+        authOptions.Value.AddPolicy(
             ApiKeyPermissions.Keys.Rotate,
             policy => policy.RequireRole(options.RequiredRole));
-        authOptions?.Value.AddPolicy(
+        authOptions.Value.AddPolicy(
             ApiKeyPermissions.Keys.UpdateScopes,
             policy => policy.RequireRole(options.RequiredRole));
 

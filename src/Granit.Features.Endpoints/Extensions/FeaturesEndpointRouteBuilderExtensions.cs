@@ -51,7 +51,7 @@ public static class FeaturesEndpointRouteBuilderExtensions
     private static void MapDefinitionEndpoints(RouteGroupBuilder group)
     {
         group.MapGet("/definitions", HandleGetDefinitionsAsync)
-             .RequireAuthorization(FeaturesPermissions.Read)
+             .RequireAuthorization(FeaturesPermissions.Flags.Read)
              .WithName("GetFeatureDefinitions")
              .WithSummary("Returns all feature definitions grouped by name prefix.")
              .WithDescription("Returns all declared feature definitions, grouped by name prefix (the segment before the first dot in the feature name, e.g. 'Acme' for 'Acme.VideoConference'). Each group contains the features, their value types, defaults, and constraints. Requires the Features.Read permission.")
@@ -85,7 +85,7 @@ public static class FeaturesEndpointRouteBuilderExtensions
     private static void MapOverrideEndpoints(RouteGroupBuilder group)
     {
         group.MapPut("/overrides/{name}", HandleSetOverrideAsync)
-             .RequireAuthorization(FeaturesPermissions.Manage)
+             .RequireAuthorization(FeaturesPermissions.Flags.Manage)
              .WithName("SetFeatureOverride")
              .WithSummary("Sets a tenant-level feature override.")
              .WithDescription("Creates or updates a tenant-level override for the specified feature. The value is validated against the feature's value type (Toggle: true/false, Numeric: min/max bounds, Selection: allowed values). Returns 404 if the feature is not declared. Requires the Features.Manage permission.")
@@ -94,7 +94,7 @@ public static class FeaturesEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
 
         group.MapDelete("/overrides/{name}", HandleDeleteOverrideAsync)
-             .RequireAuthorization(FeaturesPermissions.Manage)
+             .RequireAuthorization(FeaturesPermissions.Flags.Manage)
              .WithName("DeleteFeatureOverride")
              .WithSummary("Deletes a tenant-level feature override.")
              .WithDescription("Removes the tenant-level override for the specified feature, reverting to the Plan → Default cascade. Returns 404 if the feature is not declared. Requires the Features.Manage permission.")

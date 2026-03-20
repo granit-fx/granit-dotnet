@@ -2,6 +2,7 @@ using FluentValidation;
 using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Granit.Timing;
 using Granit.Validation;
+using Granit.Validation.Extensions;
 
 namespace Granit.Authentication.ApiKeys.Endpoints.Validators;
 
@@ -26,11 +27,11 @@ internal sealed class ApiKeyCreateRequestValidator : GranitValidator<ApiKeyCreat
         RuleFor(x => x.Environment)
             .NotEmpty()
             .Must(env => env is "live" or "test" or "dev")
-            .WithMessage("Environment must be 'live', 'test', or 'dev'.");
+            .WithErrorCodeAndMessage("Granit:Validation:InvalidEnvironment");
 
         RuleFor(x => x.Permissions)
             .Must(p => p is null || p.Count <= MaxPermissions)
-            .WithMessage($"Maximum {MaxPermissions} permissions allowed.");
+            .WithErrorCodeAndMessage("Granit:Validation:MaxPermissions");
 
         RuleForEach(x => x.Permissions)
             .NotEmpty()
@@ -38,18 +39,18 @@ internal sealed class ApiKeyCreateRequestValidator : GranitValidator<ApiKeyCreat
 
         RuleFor(x => x.AllowedCidrs)
             .Must(c => c is null || c.Count <= MaxCidrs)
-            .WithMessage($"Maximum {MaxCidrs} CIDR ranges allowed.");
+            .WithErrorCodeAndMessage("Granit:Validation:MaxCidrRanges");
 
         RuleForEach(x => x.AllowedCidrs)
             .NotEmpty()
             .Must(CidrValidator.IsValidCidr)
-            .WithMessage("'{PropertyValue}' is not a valid CIDR notation.")
+            .WithErrorCodeAndMessage("Granit:Validation:InvalidCidrNotation")
             .When(x => x.AllowedCidrs is { Count: > 0 });
 
         RuleFor(x => x.ExpiresAt)
             .Must(expiresAt => expiresAt > clock.Now)
             .When(x => x.ExpiresAt.HasValue)
-            .WithMessage("Expiration date must be in the future.");
+            .WithErrorCodeAndMessage("Granit:Validation:ExpirationMustBeFuture");
 
         RuleFor(x => x.CacheBehavior)
             .IsInEnum();

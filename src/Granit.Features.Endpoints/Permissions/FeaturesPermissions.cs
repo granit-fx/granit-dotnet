@@ -8,13 +8,13 @@ public static class FeaturesPermissions
     /// <summary>Permission group name used in <c>IPermissionDefinitionContext.AddGroup()</c>.</summary>
     public const string GroupName = "Features";
 
-    /// <summary>
-    /// Grants read access to feature definitions.
-    /// </summary>
-    public const string Read = "Features.Read";
+    /// <summary>Permissions for the feature flags resource.</summary>
+    public static class Flags
+    {
+        /// <summary>Grants read access to feature definitions.</summary>
+        public const string Read = "Features.Flags.Read";
 
-    /// <summary>
-    /// Grants write access to feature overrides (set, delete).
-    /// </summary>
-    public const string Manage = "Features.Manage";
+        /// <summary>Grants write access to feature overrides (set, delete).</summary>
+        public const string Manage = "Features.Flags.Manage";
+    }
 }

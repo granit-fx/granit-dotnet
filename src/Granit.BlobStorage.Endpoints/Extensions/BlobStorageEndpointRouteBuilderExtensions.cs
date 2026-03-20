@@ -44,9 +44,9 @@ public static class BlobStorageEndpointRouteBuilderExtensions
         BlobStorageEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        IOptions<AuthorizationOptions>? authOptions =
-            endpoints.ServiceProvider.GetService<IOptions<AuthorizationOptions>>();
-        authOptions?.Value.AddPolicy(
+        IOptions<AuthorizationOptions> authOptions =
+            endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
+        authOptions.Value.AddPolicy(
             BlobStorageAuthorizationPolicy.PolicyName,
             policy => policy.RequireRole(options.RequiredRole));
 

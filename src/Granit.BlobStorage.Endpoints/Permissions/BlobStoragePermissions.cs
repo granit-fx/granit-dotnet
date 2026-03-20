@@ -9,7 +9,7 @@ public static class BlobStoragePermissions
 
     public static class Blobs
     {
-        public const string View = "BlobStorage.Blobs.View";
+        public const string Read = "BlobStorage.Blobs.Read";
         public const string Upload = "BlobStorage.Blobs.Upload";
         public const string Download = "BlobStorage.Blobs.Download";
         public const string Delete = "BlobStorage.Blobs.Delete";

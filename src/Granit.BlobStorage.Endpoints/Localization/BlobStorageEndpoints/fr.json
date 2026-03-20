@@ -2,7 +2,7 @@
   "culture": "fr",
   "texts": {
     "PermissionGroup:BlobStorage": "Stockage de fichiers",
-    "Permission:BlobStorage.Blobs.View": "Consulter les descripteurs de fichiers",
+    "Permission:BlobStorage.Blobs.Read": "Consulter les descripteurs de fichiers",
     "Permission:BlobStorage.Blobs.Upload": "Téléverser des fichiers",
     "Permission:BlobStorage.Blobs.Download": "Télécharger des fichiers",
     "Permission:BlobStorage.Blobs.Delete": "Supprimer des fichiers",

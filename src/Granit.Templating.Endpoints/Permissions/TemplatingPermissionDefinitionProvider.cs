@@ -5,7 +5,7 @@ using Granit.Templating.Endpoints.Internal;
 namespace Granit.Templating.Endpoints.Permissions;
 
 /// <summary>
-/// Declares the <c>Templates.Manage</c> permission in the Granit RBAC system.
+/// Declares the <c>Templating.Templates.Read</c> and <c>Templating.Templates.Manage</c> permissions in the Granit RBAC system.
 /// </summary>
 /// <remarks>
 /// Registered automatically by <see cref="GranitTemplatingEndpointsModule"/>.
@@ -21,8 +21,13 @@ internal sealed class TemplatingPermissionDefinitionProvider : IPermissionDefini
                 "PermissionGroup:Templating"));
 
         group.AddPermission(
-            TemplatingPermissions.Manage,
+            TemplatingPermissions.Templates.Read,
             LocalizableString.Create<TemplatingEndpointsLocalizationResource>(
-                "Permission:Templates.Manage"));
+                "Permission:Templating.Templates.Read"));
+
+        group.AddPermission(
+            TemplatingPermissions.Templates.Manage,
+            LocalizableString.Create<TemplatingEndpointsLocalizationResource>(
+                "Permission:Templating.Templates.Manage"));
     }
 }

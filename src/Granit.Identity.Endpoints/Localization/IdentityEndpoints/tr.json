@@ -4,6 +4,15 @@
     "PermissionGroup:Identity": "Kimlik",
     "Permission:Identity.UserCache.Read": "Kullanıcı önbelleğini görüntüle (liste, arama, toplu, istatistikler)",
     "Permission:Identity.UserCache.Sync": "Kimlik sağlayıcısından kullanıcı önbelleği eşitlemesini zorla",
-    "Permission:Identity.UserCache.Delete": "Kullanıcı önbellek girdilerini sil veya takma adlandır (KVKK)"
+    "Permission:Identity.UserCache.Delete": "Kullanıcı önbellek girdilerini sil veya takma adlandır (KVKK)",
+    "Permission:Identity.Users.Read": "Kimlik sağlayıcısından doğrudan kullanıcıları görüntüle",
+    "Permission:Identity.Users.Manage": "Kimlik sağlayıcısında kullanıcı oluştur, güncelle ve etkinleştir/devre dışı bırak",
+    "Permission:Identity.Roles.Read": "Rolleri, rol atamalarını ve rol üyelerini görüntüle",
+    "Permission:Identity.Roles.Manage": "Kullanıcılara rol ata veya kaldır",
+    "Permission:Identity.Groups.Read": "Grupları ve grup üyeliklerini görüntüle",
+    "Permission:Identity.Groups.Manage": "Gruplara kullanıcı ekle veya kaldır",
+    "Permission:Identity.Sessions.Read": "Kullanıcı oturumlarını ve cihaz etkinliğini görüntüle",
+    "Permission:Identity.Sessions.Manage": "Kullanıcı oturumlarını sonlandır",
+    "Permission:Identity.Passwords.Manage": "Kullanıcı şifrelerini yönet (sıfırlama, geçici şifre)"
   }
 }

@@ -1,0 +1,7 @@
+{
+  "culture": "ja",
+  "texts": {
+    "PermissionGroup:Diagnostics": "診断",
+    "Permission:Diagnostics.Monitoring.Read": "システムヘルスモニタリングダッシュボードを表示"
+  }
+}

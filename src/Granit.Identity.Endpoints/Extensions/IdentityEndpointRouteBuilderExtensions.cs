@@ -41,16 +41,16 @@ public static class IdentityEndpointRouteBuilderExtensions
         configure?.Invoke(options);
 
         // Register fallback authorization policies
-        IOptions<AuthorizationOptions>? authOptions =
-            endpoints.ServiceProvider.GetService<IOptions<AuthorizationOptions>>();
+        IOptions<AuthorizationOptions> authOptions =
+            endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
 
-        authOptions?.Value.AddPolicy(
+        authOptions.Value.AddPolicy(
             IdentityUserCachePermissions.UserCache.Read,
             policy => policy.RequireRole(options.RequiredRole));
-        authOptions?.Value.AddPolicy(
+        authOptions.Value.AddPolicy(
             IdentityUserCachePermissions.UserCache.Sync,
             policy => policy.RequireRole(options.RequiredRole));
-        authOptions?.Value.AddPolicy(
+        authOptions.Value.AddPolicy(
             IdentityUserCachePermissions.UserCache.Delete,
             policy => policy.RequireRole(options.RequiredRole));
 

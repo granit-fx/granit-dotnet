@@ -43,12 +43,12 @@ public static class AIEndpointRouteBuilderExtensions
         AIEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        IOptions<AuthorizationOptions>? authOptions =
-            endpoints.ServiceProvider.GetService<IOptions<AuthorizationOptions>>();
-        authOptions?.Value.AddPolicy(
+        IOptions<AuthorizationOptions> authOptions =
+            endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
+        authOptions.Value.AddPolicy(
             AIAuthorizationPolicy.AdminPolicyName,
             policy => policy.RequireRole(options.AdminRole));
-        authOptions?.Value.AddPolicy(
+        authOptions.Value.AddPolicy(
             AIAuthorizationPolicy.UserPolicyName,
             policy => policy.RequireRole(options.UserRole));
 

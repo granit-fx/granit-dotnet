@@ -2,6 +2,7 @@
   "culture": "it",
   "texts": {
     "PermissionGroup:Templating": "Gestione modelli",
-    "Permission:Templates.Manage": "Gestire i modelli (visualizzare, creare, modificare, eliminare, pubblicare)"
+    "Permission:Templating.Templates.Read": "Visualizzare i template (elenco, dettaglio, cronologia)",
+    "Permission:Templating.Templates.Manage": "Gestire i modelli (visualizzare, creare, modificare, eliminare, pubblicare)"
   }
 }

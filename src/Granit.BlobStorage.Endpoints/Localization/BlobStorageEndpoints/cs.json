@@ -2,7 +2,7 @@
   "culture": "cs",
   "texts": {
     "PermissionGroup:BlobStorage": "Úložiště souborů",
-    "Permission:BlobStorage.Blobs.View": "Zobrazit popisovače souborů",
+    "Permission:BlobStorage.Blobs.Read": "Zobrazit popisovače souborů",
     "Permission:BlobStorage.Blobs.Upload": "Nahrát soubory",
     "Permission:BlobStorage.Blobs.Download": "Stáhnout soubory",
     "Permission:BlobStorage.Blobs.Delete": "Smazat soubory",

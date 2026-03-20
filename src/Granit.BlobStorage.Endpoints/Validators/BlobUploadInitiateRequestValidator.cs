@@ -1,5 +1,6 @@
 using FluentValidation;
 using Granit.BlobStorage.Endpoints.Dtos;
+using Granit.Validation.Extensions;
 
 namespace Granit.BlobStorage.Endpoints.Validators;
 
@@ -11,7 +12,7 @@ internal sealed class BlobUploadInitiateRequestValidator : AbstractValidator<Blo
             .NotEmpty()
             .MaximumLength(128)
             .Matches("^[a-z0-9][a-z0-9-]*$")
-            .WithMessage("Container name must be lowercase alphanumeric with optional hyphens.");
+            .WithErrorCodeAndMessage("Granit:Validation:InvalidContainerName");
 
         RuleFor(x => x.FileName)
             .NotEmpty()
@@ -21,7 +22,7 @@ internal sealed class BlobUploadInitiateRequestValidator : AbstractValidator<Blo
             .NotEmpty()
             .MaximumLength(256)
             .Matches("^[a-zA-Z0-9][a-zA-Z0-9!#$&\\-^_.+]*\\/[a-zA-Z0-9][a-zA-Z0-9!#$&\\-^_.+]*$")
-            .WithMessage("Content type must be a valid MIME type.");
+            .WithErrorCodeAndMessage("Granit:Validation:InvalidMimeType");
 
         RuleFor(x => x.SizeBytes)
             .GreaterThan(0);

@@ -2,6 +2,7 @@
   "culture": "sv",
   "texts": {
     "PermissionGroup:Templating": "Mallar",
-    "Permission:Templates.Manage": "Hantera mallar (visa, skapa, redigera, radera, publicera)"
+    "Permission:Templating.Templates.Read": "Visa mallar (lista, detalj, historik)",
+    "Permission:Templating.Templates.Manage": "Hantera mallar (visa, skapa, redigera, radera, publicera)"
   }
 }

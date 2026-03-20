@@ -1,0 +1,7 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:Diagnostics": "Diagnostiek",
+    "Permission:Diagnostics.Monitoring.Read": "Systeemgezondheidsmonitoring bekijken"
+  }
+}

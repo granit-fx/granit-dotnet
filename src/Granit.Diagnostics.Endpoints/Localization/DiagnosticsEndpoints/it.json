@@ -1,0 +1,7 @@
+{
+  "culture": "it",
+  "texts": {
+    "PermissionGroup:Diagnostics": "Diagnostica",
+    "Permission:Diagnostics.Monitoring.Read": "Visualizzare la dashboard di monitoraggio del sistema"
+  }
+}

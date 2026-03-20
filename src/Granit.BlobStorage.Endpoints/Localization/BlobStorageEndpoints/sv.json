@@ -2,7 +2,7 @@
   "culture": "sv",
   "texts": {
     "PermissionGroup:BlobStorage": "Fillagring",
-    "Permission:BlobStorage.Blobs.View": "Visa filbeskrivningar",
+    "Permission:BlobStorage.Blobs.Read": "Visa filbeskrivningar",
     "Permission:BlobStorage.Blobs.Upload": "Ladda upp filer",
     "Permission:BlobStorage.Blobs.Download": "Ladda ner filer",
     "Permission:BlobStorage.Blobs.Delete": "Ta bort filer",

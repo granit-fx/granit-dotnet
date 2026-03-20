@@ -68,12 +68,12 @@ public static class DataExchangeEndpointRouteBuilderExtensions
         // RequireAuthorization(PolicyName). This is safe to call here because
         // IOptions<AuthorizationOptions> is a singleton and is evaluated lazily
         // (before the first policy lookup at request time).
-        IOptions<AuthorizationOptions>? authOptions =
-            endpoints.ServiceProvider.GetService<IOptions<AuthorizationOptions>>();
-        authOptions?.Value.AddPolicy(
+        IOptions<AuthorizationOptions> authOptions =
+            endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
+        authOptions.Value.AddPolicy(
             ImportAuthorizationPolicy.PolicyName,
             policy => policy.RequireRole(options.RequiredRole));
-        authOptions?.Value.AddPolicy(
+        authOptions.Value.AddPolicy(
             ExportAuthorizationPolicy.PolicyName,
             policy => policy.RequireRole(options.RequiredRole));
 

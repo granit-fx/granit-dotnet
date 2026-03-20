@@ -2,7 +2,7 @@
   "culture": "en",
   "texts": {
     "PermissionGroup:BlobStorage": "Blob Storage",
-    "Permission:BlobStorage.Blobs.View": "View blob descriptors",
+    "Permission:BlobStorage.Blobs.Read": "View blob descriptors",
     "Permission:BlobStorage.Blobs.Upload": "Upload blobs",
     "Permission:BlobStorage.Blobs.Download": "Download blobs",
     "Permission:BlobStorage.Blobs.Delete": "Delete blobs",

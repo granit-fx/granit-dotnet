@@ -112,6 +112,40 @@ Two event categories with **mandatory suffixes**:
 - Handler in same `Jobs/` folder: `internal static partial class {Action}Handler`
 - Never use `*Command` suffix for jobs — commands are CQRS
 
+### Permission naming (STRICT)
+
+All permission strings follow the `[Group].[Resource].[Action]` format — three dot-separated
+segments, no exceptions.
+
+| Segment | Convention | Example |
+| ------- | ---------- | ------- |
+| **Group** | PascalCase module name (`{Module}Permissions.GroupName`) | `BackgroundJobs`, `BlobStorage` |
+| **Resource** | Nested static class (plural noun) | `Jobs`, `Blobs`, `Templates`, `Flags` |
+| **Action** | Verb describing the access level | `Read`, `Manage`, `Execute`, `Create` |
+
+**Standard actions:**
+
+| Action | Meaning | Usage |
+| ------ | ------- | ----- |
+| `Read` | Read-only consultation | Always use `Read`, never `View` |
+| `Manage` | Grouped write operations (create, update, delete) | Admin-level access |
+| `Execute` | Single action (import, export, trigger) | Operation-level access |
+| `Create` / `Update` / `Delete` | Granular CRUD (only when separate control is needed) | Fine-grained access |
+
+**File structure per module:**
+
+| File | Location |
+| ---- | -------- |
+| `{Module}Permissions.cs` | `Permissions/` |
+| `{Module}PermissionDefinitionProvider.cs` | `Permissions/` (internal sealed) |
+| `{Module}EndpointsLocalizationResource.cs` | `Internal/` |
+| `{culture}.json` (17 files) | `Localization/{Module}Endpoints/` |
+
+**Localization keys:**
+
+- Group: `PermissionGroup:{Group}` (e.g., `PermissionGroup:BackgroundJobs`)
+- Permission: `Permission:{Group}.{Resource}.{Action}` (e.g., `Permission:BackgroundJobs.Jobs.Read`)
+
 ### Metrics and diagnostics naming
 
 Every module with observable operations SHOULD expose OpenTelemetry metrics via

@@ -2,6 +2,8 @@
   "culture": "sv",
   "texts": {
     "PermissionGroup:Workflow": "Arbetsflöde",
-    "Permission:Workflow.History.Read": "Visa arbetsflödets övergångshistorik (revisionsspår)"
+    "Permission:Workflow.History.Read": "Visa arbetsflödets övergångshistorik (revisionsspår)",
+    "Permission:Workflow.Transitions.Read": "Visa tillgängliga arbetsflödesövergångar",
+    "Permission:Workflow.Transitions.Execute": "Utför arbetsflödesstatusövergångar"
   }
 }

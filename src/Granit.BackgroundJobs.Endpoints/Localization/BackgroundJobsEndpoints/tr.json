@@ -2,6 +2,7 @@
   "culture": "tr",
   "texts": {
     "PermissionGroup:BackgroundJobs": "Arka Plan Görevleri",
+    "Permission:BackgroundJobs.Jobs.Read": "Arka plan görevlerini görüntüle (liste, detay)",
     "Permission:BackgroundJobs.Jobs.Manage": "Arka plan görevlerini yönet (liste, duraklat, devam ettir, manuel tetikle)"
   }
 }

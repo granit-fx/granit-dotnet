@@ -2,6 +2,7 @@
   "culture": "pl",
   "texts": {
     "PermissionGroup:BackgroundJobs": "Zadania w tle",
+    "Permission:BackgroundJobs.Jobs.Read": "Przeglądanie zadań w tle (lista, szczegóły)",
     "Permission:BackgroundJobs.Jobs.Manage": "Zarządzanie zadaniami w tle (lista, wstrzymanie, wznowienie, ręczne uruchomienie)"
   }
 }

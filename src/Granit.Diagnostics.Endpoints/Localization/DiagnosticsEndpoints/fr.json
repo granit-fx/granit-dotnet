@@ -1,0 +1,7 @@
+{
+  "culture": "fr",
+  "texts": {
+    "PermissionGroup:Diagnostics": "Diagnostics",
+    "Permission:Diagnostics.Monitoring.Read": "Consulter le tableau de bord de surveillance"
+  }
+}
