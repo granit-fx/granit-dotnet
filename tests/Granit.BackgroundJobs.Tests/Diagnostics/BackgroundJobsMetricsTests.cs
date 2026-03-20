@@ -32,7 +32,7 @@ public sealed class BackgroundJobsMetricsTests : IDisposable
     public void RecordExecutionCompleted_increments_counter_with_tags()
     {
         // Arrange
-        var collector = new MetricCollector<long>(
+        using var collector = new MetricCollector<long>(
             _meterFactory, BackgroundJobsMetrics.MeterName, "granit.backgroundjobs.executions.completed");
 
         // Act
@@ -51,7 +51,7 @@ public sealed class BackgroundJobsMetricsTests : IDisposable
     public void RecordExecutionCompleted_null_tenantId_coalesces_to_global()
     {
         // Arrange
-        var collector = new MetricCollector<long>(
+        using var collector = new MetricCollector<long>(
             _meterFactory, BackgroundJobsMetrics.MeterName, "granit.backgroundjobs.executions.completed");
 
         // Act
@@ -68,7 +68,7 @@ public sealed class BackgroundJobsMetricsTests : IDisposable
     public void RecordExecutionDuration_records_histogram_with_tags()
     {
         // Arrange
-        var collector = new MetricCollector<double>(
+        using var collector = new MetricCollector<double>(
             _meterFactory, BackgroundJobsMetrics.MeterName, "granit.backgroundjobs.execution.duration");
         var duration = TimeSpan.FromSeconds(2.5);
 
@@ -88,7 +88,7 @@ public sealed class BackgroundJobsMetricsTests : IDisposable
     public void RecordExecutionDuration_null_tenantId_coalesces_to_global()
     {
         // Arrange
-        var collector = new MetricCollector<double>(
+        using var collector = new MetricCollector<double>(
             _meterFactory, BackgroundJobsMetrics.MeterName, "granit.backgroundjobs.execution.duration");
         var duration = TimeSpan.FromMilliseconds(150);
 
