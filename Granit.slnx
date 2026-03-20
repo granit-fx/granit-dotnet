@@ -243,6 +243,7 @@
     <Project Path="tests/Granit.Caching.FusionCache.Tests/Granit.Caching.FusionCache.Tests.csproj" />
     <Project Path="tests/Granit.Caching.StackExchangeRedis.Tests/Granit.Caching.StackExchangeRedis.Tests.csproj" />
     <Project Path="tests/Granit.Caching.Tests/Granit.Caching.Tests.csproj" />
+    <Project Path="tests/Granit.Caching.Tests.Integration/Granit.Caching.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Endpoints.Tests/Granit.Http.Cookies.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Klaro.Tests/Granit.Http.Cookies.Klaro.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Tests/Granit.Http.Cookies.Tests.csproj" />
