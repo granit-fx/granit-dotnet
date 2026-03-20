@@ -1,4 +1,6 @@
 using System.Threading.Channels;
+using Granit.Core.Diagnostics;
+using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Internal;
 using Granit.DataExchange.Export.Messages;
@@ -51,6 +53,10 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IImportJobWriter, NullImportJobStore>();
         services.TryAddScoped<IImportFileProvider, NullImportFileProvider>();
         services.TryAddScoped<IImportOrchestrator, ImportOrchestrator>();
+
+        // Diagnostics
+        services.TryAddSingleton<DataExchangeMetrics>();
+        GranitActivitySourceRegistry.Register(DataExchangeActivitySource.Name);
 
         // Event bus fallback (in-process default if not already registered)
         services.AddGranitEventBus();
@@ -111,6 +117,10 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IExportJobWriter, NullExportJobStore>();
         services.TryAddScoped<IExportPresetReader, NullExportPresetStore>();
         services.TryAddScoped<IExportPresetWriter, NullExportPresetStore>();
+
+        // Diagnostics
+        services.TryAddSingleton<DataExchangeMetrics>();
+        GranitActivitySourceRegistry.Register(DataExchangeActivitySource.Name);
 
         // Event bus fallback (in-process default if not already registered)
         services.AddGranitEventBus();

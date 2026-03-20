@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using Granit.Core.Events;
+using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Execution;
@@ -28,6 +29,7 @@ internal sealed class EfImportOrchestrator(
     IServiceProvider serviceProvider,
     IClock clock,
     ILocalEventBus eventBus,
+    DataExchangeMetrics metrics,
     IOptions<ImportOptions> options) : IImportOrchestrator
 {
     /// <inheritdoc/>
@@ -42,6 +44,10 @@ internal sealed class EfImportOrchestrator(
         job.MarkAsExecuting();
         await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
+        using Activity? activity = DataExchangeActivitySource.Source.StartActivity(
+            DataExchangeActivitySource.ImportExecute);
+        activity?.SetTag("data_exchange.definition", job.DefinitionName);
+
         var stopwatch = Stopwatch.StartNew();
 
         try
@@ -51,6 +57,8 @@ internal sealed class EfImportOrchestrator(
             stopwatch.Stop();
             job.Complete(report.FinalStatus, JsonSerializer.Serialize(report), clock.Now);
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
+
+            metrics.RecordImportCompleted(report, job);
 
             await eventBus.PublishAsync(new ImportJobCompletedEvent(
                 importJobId, job.DefinitionName, report.FinalStatus, job.CreatedBy,
@@ -80,6 +88,8 @@ internal sealed class EfImportOrchestrator(
 
             job.Complete(ImportJobStatus.Failed, JsonSerializer.Serialize(errorReport), clock.Now);
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
+
+            metrics.RecordImportCompleted(errorReport, job);
 
             await eventBus.PublishAsync(new ImportJobCompletedEvent(
                 importJobId, job.DefinitionName, ImportJobStatus.Failed, job.CreatedBy,

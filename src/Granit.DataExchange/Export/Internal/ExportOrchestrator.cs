@@ -1,6 +1,8 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Granit.Core.Events;
+using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Events;
 using Granit.DataExchange.Export.Messages;
@@ -31,6 +33,7 @@ internal sealed partial class ExportOrchestrator(
     IGuidGenerator guidGenerator,
     ILocalEventBus eventBus,
     IDistributedEventBus distributedEventBus,
+    DataExchangeMetrics metrics,
     ILogger<ExportOrchestrator> logger) : IExportOrchestrator
 {
     /// <inheritdoc/>
@@ -67,6 +70,12 @@ internal sealed partial class ExportOrchestrator(
             return;
         }
 
+        using Activity? activity = DataExchangeActivitySource.Source.StartActivity(
+            DataExchangeActivitySource.ExportExecute);
+        activity?.SetTag("data_exchange.definition", job.DefinitionName);
+
+        var stopwatch = Stopwatch.StartNew();
+
         try
         {
             job.MarkAsExporting();
@@ -91,8 +100,13 @@ internal sealed partial class ExportOrchestrator(
             string fileName = $"{SanitizeFileName(request.DefinitionName)}_{clock.Now:yyyy-MM-dd_HHmmss}{writer.FileExtension}";
             string blobReference = await fileProvider.SaveAsync(fileName, outputStream, cancellationToken).ConfigureAwait(false);
 
+            stopwatch.Stop();
             job.Complete(blobReference, fileName, rowCount, clock.Now);
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
+
+            metrics.RecordExportCompleted(
+                request.DefinitionName, request.Format, rowCount,
+                job.TenantId?.ToString(), stopwatch.Elapsed);
 
             await eventBus.PublishAsync(new ExportJobCompletedEvent(
                 jobId, request.DefinitionName, ExportJobStatus.Completed,
@@ -102,8 +116,12 @@ internal sealed partial class ExportOrchestrator(
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
+            stopwatch.Stop();
             job.Fail(ex.Message, clock.Now);
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
+
+            metrics.RecordExportFailed(
+                job.DefinitionName, job.Format, job.TenantId?.ToString(), stopwatch.Elapsed);
 
             await eventBus.PublishAsync(new ExportJobCompletedEvent(
                 jobId, job.DefinitionName, ExportJobStatus.Failed,

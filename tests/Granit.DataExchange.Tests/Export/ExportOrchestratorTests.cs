@@ -1,6 +1,8 @@
+using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Granit.Core.Events;
+using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Internal;
@@ -29,6 +31,7 @@ public sealed class ExportOrchestratorTests
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly ILocalEventBus _eventBus = Substitute.For<ILocalEventBus>();
     private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
+    private readonly DataExchangeMetrics _metrics = new(new ServiceCollection().AddMetrics().BuildServiceProvider().GetRequiredService<IMeterFactory>());
     private readonly DateTimeOffset _now = new(2026, 3, 3, 10, 0, 0, TimeSpan.Zero);
 
     public ExportOrchestratorTests()
@@ -524,6 +527,7 @@ public sealed class ExportOrchestratorTests
             new SimpleGuidGenerator(),
             _eventBus,
             _distributedEventBus,
+            _metrics,
             NullLogger<ExportOrchestrator>.Instance);
 
         // Act
@@ -633,6 +637,7 @@ public sealed class ExportOrchestratorTests
             new SimpleGuidGenerator(),
             _eventBus,
             _distributedEventBus,
+            _metrics,
             NullLogger<ExportOrchestrator>.Instance);
     }
 
@@ -660,6 +665,7 @@ public sealed class ExportOrchestratorTests
             new SimpleGuidGenerator(),
             _eventBus,
             _distributedEventBus,
+            _metrics,
             NullLogger<ExportOrchestrator>.Instance);
     }
 
