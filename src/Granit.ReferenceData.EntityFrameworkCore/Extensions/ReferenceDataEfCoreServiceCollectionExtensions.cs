@@ -4,6 +4,7 @@ using Granit.ReferenceData.EntityFrameworkCore.Internal;
 using Granit.ReferenceData.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.ReferenceData.EntityFrameworkCore.Extensions;
 
@@ -29,7 +30,7 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
         services.AddScoped<EfCoreReferenceDataStore<TEntity, TDbContext>>(sp =>
             new EfCoreReferenceDataStore<TEntity, TDbContext>(
                 sp.GetRequiredService<IServiceScopeFactory>(),
-                sp.GetRequiredService<Microsoft.Extensions.Caching.Memory.IMemoryCache>(),
+                sp.GetRequiredService<IFusionCache>(),
                 sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>()));
         services.AddScoped<IReferenceDataStoreReader<TEntity>>(sp =>
             sp.GetRequiredService<EfCoreReferenceDataStore<TEntity, TDbContext>>());

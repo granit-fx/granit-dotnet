@@ -1,11 +1,11 @@
 using Granit.Localization.Internal;
 using Granit.Localization.Options;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Localization.Tests;
 
@@ -26,14 +26,14 @@ public sealed class CachedLocalizationOverrideStoreTests
         services.AddKeyedScoped<ILocalizationOverrideStoreWriter>(
             CachedLocalizationOverrideStore.RawStoreKey, (_, _) => innerWriter);
 
-        IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
+        IFusionCache fusionCache = new FusionCache(new FusionCacheOptions());
         IOptions<LocalizationOverridesCacheOptions> options = Microsoft.Extensions.Options.Options.Create(
             new LocalizationOverridesCacheOptions { CacheTtl = cacheTtl ?? TimeSpan.FromMinutes(5) });
 
         ServiceProvider sp = services.BuildServiceProvider();
         IServiceScopeFactory scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
 
-        return new CachedLocalizationOverrideStore(memoryCache, options, scopeFactory, sp);
+        return new CachedLocalizationOverrideStore(fusionCache, options, scopeFactory, sp);
     }
 
     // -------------------------------------------------------------------------

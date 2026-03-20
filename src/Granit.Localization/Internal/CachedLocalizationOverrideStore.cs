@@ -1,8 +1,8 @@
 using Granit.Core.MultiTenancy;
 using Granit.Localization.Options;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Localization.Internal;
 
@@ -11,8 +11,8 @@ namespace Granit.Localization.Internal;
 /// </summary>
 /// <remarks>
 /// Wraps any inner store (typically EF Core, registered as keyed service <see cref="RawStoreKey"/>)
-/// with an <see cref="IMemoryCache"/> L1 cache, making read access synchronous-safe for use inside
-/// <c>IStringLocalizer</c>.
+/// with an <see cref="IFusionCache"/> (L1 + L2 + backplane), making read access synchronous-safe
+/// for use inside <c>IStringLocalizer</c>.
 /// <para>
 /// An <see cref="AsyncServiceScope"/> is created per DB operation so that the underlying store
 /// (Scoped) is resolved with its full dependency graph, including <c>AuditedEntityInterceptor</c>
@@ -24,7 +24,7 @@ namespace Granit.Localization.Internal;
 /// </para>
 /// </remarks>
 internal sealed class CachedLocalizationOverrideStore(
-    IMemoryCache memoryCache,
+    IFusionCache cache,
     IOptions<LocalizationOverridesCacheOptions> options,
     IServiceScopeFactory scopeFactory,
     IServiceProvider serviceProvider) : ILocalizationOverrideStoreReader, ILocalizationOverrideStoreWriter
@@ -43,9 +43,10 @@ internal sealed class CachedLocalizationOverrideStore(
     {
         string cacheKey = BuildCacheKey(resourceName, culture);
 
-        if (memoryCache.TryGetValue(cacheKey, out IReadOnlyDictionary<string, string>? cached) && cached is not null)
+        MaybeValue<IReadOnlyDictionary<string, string>> maybe = cache.TryGet<IReadOnlyDictionary<string, string>>(cacheKey, token: cancellationToken);
+        if (maybe.HasValue)
         {
-            return Task.FromResult(cached);
+            return Task.FromResult(maybe.Value);
         }
 
         return LoadAndCacheAsync(cacheKey, resourceName, culture, cancellationToken);
@@ -60,7 +61,7 @@ internal sealed class CachedLocalizationOverrideStore(
             scope.ServiceProvider.GetRequiredKeyedService<ILocalizationOverrideStoreWriter>(RawStoreKey);
 
         await inner.SetOverrideAsync(resourceName, culture, key, value, cancellationToken).ConfigureAwait(false);
-        memoryCache.Remove(BuildCacheKey(resourceName, culture));
+        cache.Expire(BuildCacheKey(resourceName, culture), token: cancellationToken);
     }
 
     /// <inheritdoc />
@@ -72,7 +73,7 @@ internal sealed class CachedLocalizationOverrideStore(
             scope.ServiceProvider.GetRequiredKeyedService<ILocalizationOverrideStoreWriter>(RawStoreKey);
 
         await inner.RemoveOverrideAsync(resourceName, culture, key, cancellationToken).ConfigureAwait(false);
-        memoryCache.Remove(BuildCacheKey(resourceName, culture));
+        cache.Expire(BuildCacheKey(resourceName, culture), token: cancellationToken);
     }
 
     private async Task<IReadOnlyDictionary<string, string>> LoadAndCacheAsync(
@@ -88,10 +89,7 @@ internal sealed class CachedLocalizationOverrideStore(
             ? await inner.GetOverridesAsync(resourceName, culture, cancellationToken).ConfigureAwait(false)
             : new Dictionary<string, string>(StringComparer.Ordinal);
 
-        MemoryCacheEntryOptions entryOptions = new MemoryCacheEntryOptions()
-            .SetAbsoluteExpiration(_options.CacheTtl);
-
-        memoryCache.Set(cacheKey, overrides, entryOptions);
+        cache.Set(cacheKey, overrides, new FusionCacheEntryOptions { Duration = _options.CacheTtl }, token: cancellationToken);
         return overrides;
     }
 

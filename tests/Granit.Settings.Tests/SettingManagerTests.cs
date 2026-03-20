@@ -1,11 +1,10 @@
 // =============================================================================
-// SettingManagerTests - Tests d'écriture et d'invalidation de cache
+// SettingManagerTests - Tests for writes and cache invalidation
 // =============================================================================
-// Vérifie que SettingManager écrit dans le store et invalide le cache pour
-// les portées Global, Tenant et User.
+// Verifies that SettingManager writes to the store and invalidates the cache for
+// the Global, Tenant and User scopes.
 // =============================================================================
 
-using Granit.Caching;
 using Granit.Core.Events;
 using Granit.Settings.Definitions;
 using Granit.Settings.Events;
@@ -16,6 +15,7 @@ using Granit.Settings.Values;
 using NSubstitute;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Settings.Tests;
 
@@ -35,11 +35,11 @@ public sealed class SettingManagerTests
         }
     }
 
-    private static (SettingManager manager, InMemorySettingStore store, ICacheService<SettingValue> cache, ILocalEventBus eventBus)
+    private static (SettingManager manager, InMemorySettingStore store, IFusionCache cache, ILocalEventBus eventBus)
         CreateManager(params SettingDefinition[] defs)
     {
         InMemorySettingStore store = new();
-        ICacheService<SettingValue> cache = Substitute.For<ICacheService<SettingValue>>();
+        IFusionCache cache = Substitute.For<IFusionCache>();
         ILocalEventBus eventBus = Substitute.For<ILocalEventBus>();
         SettingDefinitionManager defManager = ManagerWith(defs);
         SettingManager manager = new(store, store, cache, defManager, eventBus, TimeProvider.System);
@@ -68,12 +68,13 @@ public sealed class SettingManagerTests
     public async Task SetGlobalAsync_Invalidates_Cache()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, _, ICacheService<SettingValue> cache, _) = CreateManager(def);
+        (SettingManager manager, _, IFusionCache cache, _) = CreateManager(def);
 
         await manager.SetGlobalAsync("App.Theme", "light", TestContext.Current.CancellationToken);
 
-        await cache.Received(1).RemoveAsync(
+        await cache.Received(1).ExpireAsync(
             Arg.Is<string>(k => k.Contains('G') && k.Contains("App.Theme")),
+            Arg.Any<FusionCacheEntryOptions?>(),
             Arg.Any<CancellationToken>());
     }
 
@@ -110,13 +111,14 @@ public sealed class SettingManagerTests
     public async Task SetForTenantAsync_Invalidates_Cache_WithTenantKey()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, _, ICacheService<SettingValue> cache, _) = CreateManager(def);
+        (SettingManager manager, _, IFusionCache cache, _) = CreateManager(def);
         var tenantId = Guid.NewGuid();
 
         await manager.SetForTenantAsync(tenantId, "App.Theme", "blue", TestContext.Current.CancellationToken);
 
-        await cache.Received(1).RemoveAsync(
+        await cache.Received(1).ExpireAsync(
             Arg.Is<string>(k => k.Contains('T') && k.Contains(tenantId.ToString()) && k.Contains("App.Theme")),
+            Arg.Any<FusionCacheEntryOptions?>(),
             Arg.Any<CancellationToken>());
     }
 
@@ -156,19 +158,20 @@ public sealed class SettingManagerTests
     public async Task DeleteAsync_Removes_FromStore_And_Invalidates_Cache()
     {
         SettingDefinition def = new("App.Theme");
-        (SettingManager manager, InMemorySettingStore store, ICacheService<SettingValue> cache, _) = CreateManager(def);
+        (SettingManager manager, InMemorySettingStore store, IFusionCache cache, _) = CreateManager(def);
 
-        // Préalable : écrire une valeur
+        // Seed a value
         await store.SetAsync("App.Theme", "G", null, "light", TestContext.Current.CancellationToken);
 
         await manager.DeleteAsync("App.Theme", "G", null, TestContext.Current.CancellationToken);
 
         SettingValue? stored = await store.GetOrNullAsync(
             "App.Theme", "G", null, TestContext.Current.CancellationToken);
-        stored.ShouldBeNull("la suppression doit retirer l'entrée du store");
+        stored.ShouldBeNull("deletion must remove the entry from the store");
 
-        await cache.Received(1).RemoveAsync(
+        await cache.Received(1).ExpireAsync(
             Arg.Is<string>(k => k.Contains('G') && k.Contains("App.Theme")),
+            Arg.Any<FusionCacheEntryOptions?>(),
             Arg.Any<CancellationToken>());
     }
 

@@ -1,9 +1,9 @@
-using Granit.Caching;
 using Granit.Core.Events;
 using Granit.Settings.Definitions;
 using Granit.Settings.Events;
 using Granit.Settings.Providers;
 using Granit.Settings.Values;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Settings.Services;
 
@@ -14,14 +14,14 @@ namespace Granit.Settings.Services;
 public sealed class SettingManager(
     ISettingStoreWriter storeWriter,
     ISettingStoreReader storeReader,
-    ICacheService<SettingValue> cache,
+    IFusionCache cache,
     SettingDefinitionManager definitions,
     ILocalEventBus eventBus,
     TimeProvider timeProvider) : ISettingManager
 {
     private readonly ISettingStoreWriter _storeWriter = storeWriter;
     private readonly ISettingStoreReader _storeReader = storeReader;
-    private readonly ICacheService<SettingValue> _cache = cache;
+    private readonly IFusionCache _cache = cache;
     private readonly SettingDefinitionManager _definitions = definitions;
     private readonly ILocalEventBus _eventBus = eventBus;
     private readonly TimeProvider _timeProvider = timeProvider;
@@ -36,8 +36,8 @@ public sealed class SettingManager(
             .GetOrNullAsync(name, providerName, null, cancellationToken).ConfigureAwait(false);
 
         await _storeWriter.SetAsync(name, providerName, null, value, cancellationToken).ConfigureAwait(false);
-        await _cache.RemoveAsync(
-            SettingCacheKey.Build(providerName, null, name), cancellationToken).ConfigureAwait(false);
+        await _cache.ExpireAsync(
+            SettingCacheKey.Build(providerName, null, name), token: cancellationToken).ConfigureAwait(false);
 
         await _eventBus.PublishAsync(
             new SettingChangedEvent(name, providerName, null, oldValue?.Value, value, _timeProvider.GetUtcNow()),
@@ -55,8 +55,8 @@ public sealed class SettingManager(
             .GetOrNullAsync(name, providerName, tenantKey, cancellationToken).ConfigureAwait(false);
 
         await _storeWriter.SetAsync(name, providerName, tenantKey, value, cancellationToken).ConfigureAwait(false);
-        await _cache.RemoveAsync(
-            SettingCacheKey.Build(providerName, tenantKey, name), cancellationToken).ConfigureAwait(false);
+        await _cache.ExpireAsync(
+            SettingCacheKey.Build(providerName, tenantKey, name), token: cancellationToken).ConfigureAwait(false);
 
         await _eventBus.PublishAsync(
             new SettingChangedEvent(name, providerName, tenantKey, oldValue?.Value, value, _timeProvider.GetUtcNow()),
@@ -74,8 +74,8 @@ public sealed class SettingManager(
             .GetOrNullAsync(name, providerName, userId, cancellationToken).ConfigureAwait(false);
 
         await _storeWriter.SetAsync(name, providerName, userId, value, cancellationToken).ConfigureAwait(false);
-        await _cache.RemoveAsync(
-            SettingCacheKey.Build(providerName, userId, name), cancellationToken).ConfigureAwait(false);
+        await _cache.ExpireAsync(
+            SettingCacheKey.Build(providerName, userId, name), token: cancellationToken).ConfigureAwait(false);
 
         await _eventBus.PublishAsync(
             new SettingChangedEvent(name, providerName, userId, oldValue?.Value, value, _timeProvider.GetUtcNow()),
@@ -93,8 +93,8 @@ public sealed class SettingManager(
             .GetOrNullAsync(name, providerName, providerKey, cancellationToken).ConfigureAwait(false);
 
         await _storeWriter.DeleteAsync(name, providerName, providerKey, cancellationToken).ConfigureAwait(false);
-        await _cache.RemoveAsync(
-            SettingCacheKey.Build(providerName, providerKey, name), cancellationToken).ConfigureAwait(false);
+        await _cache.ExpireAsync(
+            SettingCacheKey.Build(providerName, providerKey, name), token: cancellationToken).ConfigureAwait(false);
 
         await _eventBus.PublishAsync(
             new SettingChangedEvent(name, providerName, providerKey, oldValue?.Value, null, _timeProvider.GetUtcNow()),

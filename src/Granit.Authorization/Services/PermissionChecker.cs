@@ -1,11 +1,10 @@
 using Granit.Authorization.Abstractions;
 using Granit.Authorization.Cache;
 using Granit.Authorization.Options;
-using Granit.Caching;
 using Granit.Core.MultiTenancy;
 using Granit.Security;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Authorization.Services;
 
@@ -25,7 +24,7 @@ internal sealed class PermissionChecker(
     ICurrentTenant currentTenant,
     IPermissionDefinitionManager definitionManager,
     IPermissionGrantStore grantStore,
-    ICacheService<PermissionGrantCacheItem> cache,
+    IFusionCache cache,
     IOptions<GranitAuthorizationOptions> options) : IPermissionChecker
 {
     /// <inheritdoc />
@@ -60,17 +59,14 @@ internal sealed class PermissionChecker(
 
         foreach (string role in roles)
         {
-            PermissionGrantCacheItem result = await cache.GetOrAddAsync(
+            PermissionGrantCacheItem result = await cache.GetOrSetAsync<PermissionGrantCacheItem>(
                 BuildCacheKey(tenantId, role, permissionName),
-                async cancellationToken => new PermissionGrantCacheItem
+                async (_, ct) => new PermissionGrantCacheItem
                 {
-                    IsGranted = await grantStore.IsGrantedAsync(role, permissionName, tenantId, cancellationToken)
+                    IsGranted = await grantStore.IsGrantedAsync(role, permissionName, tenantId, ct)
                 },
-                new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = opts.CacheDuration
-                },
-                cancellationToken).ConfigureAwait(false);
+                new FusionCacheEntryOptions { Duration = opts.CacheDuration },
+                token: cancellationToken).ConfigureAwait(false);
 
             if (result.IsGranted)
             {

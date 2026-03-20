@@ -1,5 +1,5 @@
 using System.Reflection;
-using Granit.Caching;
+using Granit.Caching.FusionCache;
 using Granit.Core.Modularity;
 using Granit.Encryption;
 using Granit.Security;
@@ -14,7 +14,7 @@ namespace Granit.Settings;
 /// Auto-discovers all <see cref="ISettingDefinitionProvider"/> implementations
 /// across loaded module assemblies.
 /// </summary>
-[DependsOn(typeof(GranitCachingModule))]
+[DependsOn(typeof(GranitCachingFusionCacheModule))]
 [DependsOn(typeof(GranitEncryptionModule))]
 [DependsOn(typeof(GranitSecurityModule))]
 public sealed class GranitSettingsModule : GranitModule

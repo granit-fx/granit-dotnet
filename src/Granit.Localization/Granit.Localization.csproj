@@ -15,13 +15,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="Microsoft.Extensions.Localization" />
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="SmartFormat" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Granit.Caching.FusionCache\Granit.Caching.FusionCache.csproj" />
     <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
     <!-- Optional at runtime: ICurrentTenant resolved via GetService for cache key scoping -->
   </ItemGroup>

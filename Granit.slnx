@@ -50,7 +50,7 @@
     <Project Path="src/Granit.BlobStorage.S3/Granit.BlobStorage.S3.csproj" />
     <Project Path="src/Granit.BlobStorage/Granit.BlobStorage.csproj" />
     <Project Path="src/Granit.Http.Bulkhead/Granit.Http.Bulkhead.csproj" />
-    <Project Path="src/Granit.Caching.Hybrid/Granit.Caching.Hybrid.csproj" />
+    <Project Path="src/Granit.Caching.FusionCache/Granit.Caching.FusionCache.csproj" />
     <Project Path="src/Granit.Caching.StackExchangeRedis/Granit.Caching.StackExchangeRedis.csproj" />
     <Project Path="src/Granit.Caching/Granit.Caching.csproj" />
     <Project Path="src/Granit.Http.Cookies.Endpoints/Granit.Http.Cookies.Endpoints.csproj" />
@@ -240,7 +240,7 @@
     <Project Path="tests/Granit.BlobStorage.Tests/Granit.BlobStorage.Tests.csproj" />
     <Project Path="tests/Granit.Http.Bulkhead.Tests/Granit.Http.Bulkhead.Tests.csproj" />
     <Project Path="tests/Granit.Bundle.Tests/Granit.Bundle.Tests.csproj" />
-    <Project Path="tests/Granit.Caching.Hybrid.Tests/Granit.Caching.Hybrid.Tests.csproj" />
+    <Project Path="tests/Granit.Caching.FusionCache.Tests/Granit.Caching.FusionCache.Tests.csproj" />
     <Project Path="tests/Granit.Caching.StackExchangeRedis.Tests/Granit.Caching.StackExchangeRedis.Tests.csproj" />
     <Project Path="tests/Granit.Caching.Tests/Granit.Caching.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Endpoints.Tests/Granit.Http.Cookies.Endpoints.Tests.csproj" />

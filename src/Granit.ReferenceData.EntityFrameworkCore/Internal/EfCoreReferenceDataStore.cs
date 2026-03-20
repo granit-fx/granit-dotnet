@@ -2,16 +2,16 @@ using Granit.Querying;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Options;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.ReferenceData.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// EF Core implementation of <see cref="IReferenceDataStoreReader{TEntity}"/> and <see cref="IReferenceDataStoreWriter{TEntity}"/>.
 /// Persists reference data in the host application's DbContext with built-in
-/// <see cref="IMemoryCache"/> for read-heavy workloads.
+/// <see cref="IFusionCache"/> for read-heavy workloads.
 /// </summary>
 /// <typeparam name="TEntity">The concrete reference data entity type.</typeparam>
 /// <typeparam name="TDbContext">The host application's DbContext.</typeparam>
@@ -21,7 +21,7 @@ namespace Granit.ReferenceData.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
     IServiceScopeFactory scopeFactory,
-    IMemoryCache cache,
+    IFusionCache cache,
     IOptions<ReferenceDataOptions> options) : IReferenceDataStoreReader<TEntity>, IReferenceDataStoreWriter<TEntity>
     where TEntity : ReferenceDataEntity
     where TDbContext : DbContext
@@ -31,7 +31,7 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
     private static string CodeCacheKey(string code) => $"refdata:{EntityName}:{code}";
 
     private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
-    private readonly IMemoryCache _cache = cache;
+    private readonly IFusionCache _cache = cache;
     private readonly ReferenceDataOptions _options = options.Value;
 
     /// <inheritdoc/>
@@ -103,9 +103,10 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
     {
         string cacheKey = CodeCacheKey(code);
 
-        if (_cache.TryGetValue(cacheKey, out TEntity? cached))
+        MaybeValue<TEntity?> maybe = await _cache.TryGetAsync<TEntity?>(cacheKey, token: cancellationToken).ConfigureAwait(false);
+        if (maybe.HasValue)
         {
-            return cached;
+            return maybe.Value;
         }
 
         await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
@@ -117,7 +118,7 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
 
         if (entity is not null)
         {
-            _cache.Set(cacheKey, entity, _options.CacheTimeToLive);
+            await _cache.SetAsync(cacheKey, entity, new FusionCacheEntryOptions { Duration = _options.CacheTimeToLive }, token: cancellationToken).ConfigureAwait(false);
         }
 
         return entity;
@@ -170,7 +171,7 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
 
     private void InvalidateCache(string code)
     {
-        _cache.Remove(CodeCacheKey(code));
-        _cache.Remove(AllCacheKey);
+        _cache.Expire(CodeCacheKey(code));
+        _cache.Expire(AllCacheKey);
     }
 }

@@ -1,3 +1,4 @@
+using Granit.Caching.FusionCache;
 using Granit.Core.Modularity;
 using Granit.Persistence;
 
@@ -18,6 +19,7 @@ namespace Granit.ReferenceData.EntityFrameworkCore;
 /// </para>
 /// </remarks>
 [DependsOn(
+    typeof(GranitCachingFusionCacheModule),
     typeof(GranitReferenceDataModule),
     typeof(GranitPersistenceModule))]
 public sealed class GranitReferenceDataEntityFrameworkCoreModule : GranitModule;

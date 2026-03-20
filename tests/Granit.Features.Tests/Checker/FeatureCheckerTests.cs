@@ -4,46 +4,20 @@ using Granit.Features.Exceptions;
 using Granit.Features.Internal;
 using Granit.Features.ValueProviders;
 using Granit.Features.ValueTypes;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Features.Tests.Checker;
 
 public sealed class FeatureCheckerTests
 {
-    // HybridCache test double: always calls the factory (no caching).
-    private sealed class NoopHybridCache : HybridCache
-    {
-        public override async ValueTask<T> GetOrCreateAsync<TState, T>(
-            string key,
-            TState state,
-            Func<TState, CancellationToken, ValueTask<T>> factory,
-            HybridCacheEntryOptions? options = null,
-            IEnumerable<string>? tags = null,
-            CancellationToken cancellationToken = default) =>
-            await factory(state, cancellationToken);
-
-        public override ValueTask SetAsync<T>(
-            string key,
-            T value,
-            HybridCacheEntryOptions? options = null,
-            IEnumerable<string>? tags = null,
-            CancellationToken cancellationToken = default) =>
-            ValueTask.CompletedTask;
-
-        public override ValueTask RemoveAsync(
-            string key,
-            CancellationToken cancellationToken = default) =>
-            ValueTask.CompletedTask;
-
-        public override ValueTask RemoveByTagAsync(
-            string tag,
-            CancellationToken cancellationToken = default) =>
-            ValueTask.CompletedTask;
-    }
+    /// <summary>
+    /// Creates a real in-memory FusionCache that acts as a pass-through (short TTL, no L2).
+    /// </summary>
+    private static FusionCache CreateNoopCache() => new(new FusionCacheOptions());
 
     private static ICurrentTenant NoTenant()
     {
@@ -78,7 +52,7 @@ public sealed class FeatureCheckerTests
         params IFeatureValueProvider[] providers)
     {
         ServiceProvider sp = BuildServiceProvider(currentTenant);
-        return new(store, providers, sp, new NoopHybridCache());
+        return new(store, providers, sp, CreateNoopCache());
     }
 
     // -------------------------------------------------------------------------
@@ -180,7 +154,7 @@ public sealed class FeatureCheckerTests
         FeatureChecker checker = new(store,
             [tenantProvider, new DefaultValueFeatureValueProvider()],
             sp,
-            new NoopHybridCache());
+            CreateNoopCache());
 
         bool result = await checker.IsEnabledAsync("App.VideoConsultation", TestContext.Current.CancellationToken);
 
@@ -201,7 +175,7 @@ public sealed class FeatureCheckerTests
         FeatureChecker checker = new(store,
             [tenantProvider, new DefaultValueFeatureValueProvider()],
             sp,
-            new NoopHybridCache());
+            CreateNoopCache());
 
         bool result = await checker.IsEnabledAsync("App.VideoConsultation", TestContext.Current.CancellationToken);
 
@@ -226,7 +200,7 @@ public sealed class FeatureCheckerTests
         FeatureChecker checker = new(store,
             [tenantProvider, new DefaultValueFeatureValueProvider()],
             sp,
-            new NoopHybridCache());
+            CreateNoopCache());
 
         bool result = await checker.IsEnabledAsync("App.VideoConsultation", TestContext.Current.CancellationToken);
 
@@ -251,7 +225,7 @@ public sealed class FeatureCheckerTests
         FeatureChecker checker = new(store,
             [tenantProvider, new DefaultValueFeatureValueProvider()],
             sp,
-            new NoopHybridCache());
+            CreateNoopCache());
 
         bool result = await checker.IsEnabledAsync("App.VideoConsultation", TestContext.Current.CancellationToken);
 

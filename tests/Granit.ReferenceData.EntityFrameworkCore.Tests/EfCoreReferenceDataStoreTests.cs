@@ -3,11 +3,11 @@ using Granit.ReferenceData.EntityFrameworkCore.Extensions;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;
 using Granit.ReferenceData.Options;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.ReferenceData.EntityFrameworkCore.Tests;
 
@@ -41,7 +41,7 @@ public sealed class EfCoreReferenceDataStoreTests
             options.UseInMemoryDatabase(dbName));
 
         ServiceProvider sp = services.BuildServiceProvider();
-        IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+        IFusionCache cache = new FusionCache(new FusionCacheOptions());
         IOptions<ReferenceDataOptions> options = Microsoft.Extensions.Options.Options.Create(new ReferenceDataOptions());
 
         return new EfCoreReferenceDataStore<TestEntity, TestDbContext>(
@@ -353,7 +353,7 @@ public sealed class EfCoreReferenceDataStoreTests
         string db = Guid.NewGuid().ToString();
 
         // Use shared cache to test invalidation
-        MemoryCache cache = new(new MemoryCacheOptions());
+        IFusionCache cache = new FusionCache(new FusionCacheOptions());
         IOptions<ReferenceDataOptions> opts = Microsoft.Extensions.Options.Options.Create(new ReferenceDataOptions());
 
         ServiceCollection services = new();

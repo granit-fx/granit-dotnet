@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Localization.Tests;
 
@@ -17,16 +18,24 @@ public sealed class GranitLocalizationModuleTests : IDisposable
     public void Dispose() =>
         CultureInfo.CurrentUICulture = _originalUICulture;
 
+    private static (ServiceConfigurationContext context, HostApplicationBuilder builder) CreateContext()
+    {
+        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+        // IFusionCache is a transitive dependency (via GranitCachingFusionCacheModule) — register manually for unit tests
+        builder.Services.AddSingleton<IFusionCache>(new FusionCache(new FusionCacheOptions()));
+        ServiceConfigurationContext context = new(
+            builder.Services,
+            builder.Configuration,
+            builder);
+        return (context, builder);
+    }
+
     [Fact]
     public void ConfigureServices_RegistersStringLocalizerFactory()
     {
         // Arrange
         GranitLocalizationModule module = new();
-        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        ServiceConfigurationContext context = new(
-            builder.Services,
-            builder.Configuration,
-            builder);
+        (ServiceConfigurationContext context, HostApplicationBuilder builder) = CreateContext();
 
         // Act
         module.ConfigureServices(context);
@@ -42,11 +51,7 @@ public sealed class GranitLocalizationModuleTests : IDisposable
     {
         // Arrange
         GranitLocalizationModule module = new();
-        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        ServiceConfigurationContext context = new(
-            builder.Services,
-            builder.Configuration,
-            builder);
+        (ServiceConfigurationContext context, HostApplicationBuilder builder) = CreateContext();
 
         // Act
         module.ConfigureServices(context);
@@ -63,11 +68,7 @@ public sealed class GranitLocalizationModuleTests : IDisposable
     {
         // Arrange
         GranitLocalizationModule module = new();
-        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        ServiceConfigurationContext context = new(
-            builder.Services,
-            builder.Configuration,
-            builder);
+        (ServiceConfigurationContext context, HostApplicationBuilder builder) = CreateContext();
 
         module.ConfigureServices(context);
         using ServiceProvider sp = builder.Services.BuildServiceProvider();
@@ -91,11 +92,7 @@ public sealed class GranitLocalizationModuleTests : IDisposable
     {
         // Arrange
         GranitLocalizationModule module = new();
-        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        ServiceConfigurationContext context = new(
-            builder.Services,
-            builder.Configuration,
-            builder);
+        (ServiceConfigurationContext context, HostApplicationBuilder builder) = CreateContext();
 
         module.ConfigureServices(context);
         using ServiceProvider sp = builder.Services.BuildServiceProvider();
@@ -119,11 +116,7 @@ public sealed class GranitLocalizationModuleTests : IDisposable
     {
         // Arrange
         GranitLocalizationModule module = new();
-        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        ServiceConfigurationContext context = new(
-            builder.Services,
-            builder.Configuration,
-            builder);
+        (ServiceConfigurationContext context, HostApplicationBuilder builder) = CreateContext();
 
         module.ConfigureServices(context);
         using ServiceProvider sp = builder.Services.BuildServiceProvider();
@@ -145,11 +138,7 @@ public sealed class GranitLocalizationModuleTests : IDisposable
     {
         // Arrange
         GranitLocalizationModule module = new();
-        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        ServiceConfigurationContext context = new(
-            builder.Services,
-            builder.Configuration,
-            builder);
+        (ServiceConfigurationContext context, HostApplicationBuilder builder) = CreateContext();
 
         module.ConfigureServices(context);
         using ServiceProvider sp = builder.Services.BuildServiceProvider();

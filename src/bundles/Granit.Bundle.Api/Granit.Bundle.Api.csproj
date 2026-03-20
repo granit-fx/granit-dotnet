@@ -13,7 +13,7 @@
     <ProjectReference Include="..\..\Granit.Http.Idempotency\Granit.Http.Idempotency.csproj" />
     <ProjectReference Include="..\..\Granit.Localization\Granit.Localization.csproj" />
     <ProjectReference Include="..\..\Granit.Localization.EntityFrameworkCore\Granit.Localization.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\Granit.Caching\Granit.Caching.csproj" />
+    <ProjectReference Include="..\..\Granit.Caching.FusionCache\Granit.Caching.FusionCache.csproj" />
   </ItemGroup>
 
 </Project>

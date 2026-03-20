@@ -5,18 +5,17 @@
 // and cache invalidation keyed by user ID.
 // =============================================================================
 
-using Granit.Caching;
 using Granit.Security;
 using Granit.Settings.Definitions;
 using Granit.Settings.Options;
 using Granit.Settings.Providers;
 using Granit.Settings.Stores;
 using Granit.Settings.Values;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Settings.Tests;
 
@@ -24,7 +23,7 @@ public sealed class UserSettingValueProviderTests
 {
     private const string UserId = "user-test-42";
 
-    private static (UserSettingValueProvider provider, InMemorySettingStore store, ICacheService<SettingValue> cache)
+    private static (UserSettingValueProvider provider, InMemorySettingStore store, IFusionCache cache)
         Create(bool authenticated = true, string? userId = UserId)
     {
         ICurrentUserService currentUser = Substitute.For<ICurrentUserService>();
@@ -32,16 +31,22 @@ public sealed class UserSettingValueProviderTests
         currentUser.UserId.Returns(authenticated ? userId : null);
 
         InMemorySettingStore store = new();
-        ICacheService<SettingValue> cache = Substitute.For<ICacheService<SettingValue>>();
-        // Simulate cache miss: invoke the factory directly
-        cache.GetOrAddAsync(
-                Arg.Any<string>(),
-                Arg.Any<Func<CancellationToken, Task<SettingValue>>>(),
-                Arg.Any<DistributedCacheEntryOptions?>(),
-                Arg.Any<CancellationToken>())
-            .Returns(callInfo =>
-                callInfo.ArgAt<Func<CancellationToken, Task<SettingValue>>>(1)(CancellationToken.None));
+        // Use a real in-memory FusionCache for read path
+        IFusionCache cache = new FusionCache(new FusionCacheOptions());
+        IOptions<SettingsOptions> options = Microsoft.Extensions.Options.Options.Create(new SettingsOptions());
+        UserSettingValueProvider provider = new(currentUser, store, store, cache, options);
+        return (provider, store, cache);
+    }
 
+    private static (UserSettingValueProvider provider, InMemorySettingStore store, IFusionCache cache)
+        CreateWithMockCache(bool authenticated = true, string? userId = UserId)
+    {
+        ICurrentUserService currentUser = Substitute.For<ICurrentUserService>();
+        currentUser.IsAuthenticated.Returns(authenticated);
+        currentUser.UserId.Returns(authenticated ? userId : null);
+
+        InMemorySettingStore store = new();
+        IFusionCache cache = Substitute.For<IFusionCache>();
         IOptions<SettingsOptions> options = Microsoft.Extensions.Options.Options.Create(new SettingsOptions());
         UserSettingValueProvider provider = new(currentUser, store, store, cache, options);
         return (provider, store, cache);
@@ -107,7 +112,7 @@ public sealed class UserSettingValueProviderTests
     [Fact]
     public async Task SetAsync_Authenticated_WritesToStore_WithUserId()
     {
-        (UserSettingValueProvider provider, InMemorySettingStore store, ICacheService<SettingValue> cache) = Create();
+        (UserSettingValueProvider provider, InMemorySettingStore store, IFusionCache cache) = CreateWithMockCache();
         SettingDefinition def = new("App.Theme");
 
         await provider.SetAsync(def, "red", TestContext.Current.CancellationToken);
@@ -116,8 +121,9 @@ public sealed class UserSettingValueProviderTests
             "App.Theme", "U", UserId, TestContext.Current.CancellationToken);
         stored!.Value.ShouldBe("red");
 
-        await cache.Received(1).RemoveAsync(
+        await cache.Received(1).ExpireAsync(
             Arg.Is<string>(k => k.Contains('U') && k.Contains(UserId) && k.Contains("App.Theme")),
+            Arg.Any<FusionCacheEntryOptions?>(),
             Arg.Any<CancellationToken>());
     }
 
@@ -135,7 +141,7 @@ public sealed class UserSettingValueProviderTests
     [Fact]
     public async Task ClearAsync_Authenticated_DeletesFromStore_And_InvalidatesCache()
     {
-        (UserSettingValueProvider provider, InMemorySettingStore store, ICacheService<SettingValue> cache) = Create();
+        (UserSettingValueProvider provider, InMemorySettingStore store, IFusionCache cache) = CreateWithMockCache();
         SettingDefinition def = new("App.Theme");
         await store.SetAsync("App.Theme", "U", UserId, "red", TestContext.Current.CancellationToken);
 
@@ -145,8 +151,9 @@ public sealed class UserSettingValueProviderTests
             "App.Theme", "U", UserId, TestContext.Current.CancellationToken);
         stored.ShouldBeNull();
 
-        await cache.Received(1).RemoveAsync(
+        await cache.Received(1).ExpireAsync(
             Arg.Is<string>(k => k.Contains('U') && k.Contains(UserId) && k.Contains("App.Theme")),
+            Arg.Any<FusionCacheEntryOptions?>(),
             Arg.Any<CancellationToken>());
     }
 

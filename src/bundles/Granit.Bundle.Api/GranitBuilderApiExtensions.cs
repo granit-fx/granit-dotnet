@@ -1,5 +1,5 @@
 using Granit.Bundle.Essentials;
-using Granit.Caching;
+using Granit.Caching.FusionCache;
 using Granit.Core.Modularity;
 using Granit.Http.ApiDocumentation;
 using Granit.Http.ApiVersioning;
@@ -26,7 +26,7 @@ public static class GranitBuilderApiExtensions
         builder.AddModule<GranitHttpCorsModule>();
         builder.AddModule<GranitIdempotencyModule>();
         builder.AddModule<GranitLocalizationModule>();
-        builder.AddModule<GranitCachingModule>();
+        builder.AddModule<GranitCachingFusionCacheModule>();
         return builder;
     }
 }

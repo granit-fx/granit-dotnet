@@ -1,11 +1,11 @@
 using Granit.Authorization.Events;
 using Granit.Authorization.Services;
-using Granit.Caching;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Authorization.Cache;
 
 /// <summary>
-/// Wolverine message handler — removes the stale <see cref="ICacheService{PermissionGrantCacheItem}"/>
+/// Wolverine message handler — expires the stale <see cref="IFusionCache"/>
 /// entry when a permission grant is created or revoked.
 /// </summary>
 /// <remarks>
@@ -17,15 +17,15 @@ namespace Granit.Authorization.Cache;
 public static class PermissionCacheInvalidationHandler
 {
     /// <summary>
-    /// Removes the cached permission grant entry for the changed role and tenant scope.
+    /// Expires the cached permission grant entry for the changed role and tenant scope.
     /// </summary>
     public static async Task HandleAsync(
         PermissionGrantChangedEvent @event,
-        ICacheService<PermissionGrantCacheItem> cache,
+        IFusionCache cache,
         CancellationToken cancellationToken)
     {
         string key = PermissionChecker.BuildCacheKey(
             @event.TenantId, @event.RoleName, @event.PermissionName);
-        await cache.RemoveAsync(key, cancellationToken).ConfigureAwait(false);
+        await cache.ExpireAsync(key, token: cancellationToken).ConfigureAwait(false);
     }
 }

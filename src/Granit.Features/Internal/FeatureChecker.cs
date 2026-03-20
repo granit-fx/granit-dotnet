@@ -3,26 +3,26 @@ using Granit.Features.Cache;
 using Granit.Features.Definitions;
 using Granit.Features.Exceptions;
 using Granit.Features.ValueProviders;
-using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.DependencyInjection;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Features.Internal;
 
 /// <summary>
 /// Resolves feature values using the Tenant → Plan → Default cascade,
-/// backed by <see cref="HybridCache"/> (L1 in-process + L2 Redis).
+/// backed by <see cref="IFusionCache"/> (L1 in-process + L2 Redis + backplane).
 /// </summary>
 internal sealed class FeatureChecker(
     IFeatureDefinitionStore definitionStore,
     IEnumerable<IFeatureValueProvider> valueProviders,
     IServiceProvider serviceProvider,
-    HybridCache hybridCache) : IFeatureChecker
+    IFusionCache cache) : IFeatureChecker
 {
     private readonly IFeatureDefinitionStore _definitionStore = definitionStore;
     private readonly IReadOnlyList<IFeatureValueProvider> _providers =
         [.. valueProviders.OrderBy(p => p.Order)];
     private readonly IServiceProvider _serviceProvider = serviceProvider;
-    private readonly HybridCache _hybridCache = hybridCache;
+    private readonly IFusionCache _cache = cache;
 
     /// <inheritdoc/>
     public async Task<bool> IsEnabledAsync(string featureName, CancellationToken cancellationToken = default)
@@ -46,14 +46,14 @@ internal sealed class FeatureChecker(
         Guid? tenantId = currentTenant?.IsAvailable == true ? currentTenant.Id : null;
         string cacheKey = FeatureCacheKey.Build(tenantId, featureName);
 
-        string resolved = await _hybridCache.GetOrCreateAsync<string>(
+        string resolved = await _cache.GetOrSetAsync<string>(
             cacheKey,
-            async innerCt =>
+            async (_, ct) =>
             {
-                string? value = await ResolveAsync(definition, innerCt).ConfigureAwait(false);
+                string? value = await ResolveAsync(definition, ct).ConfigureAwait(false);
                 return value ?? definition.DefaultValue;
             },
-            cancellationToken: cancellationToken);
+            token: cancellationToken).ConfigureAwait(false);
 
         return resolved;
     }

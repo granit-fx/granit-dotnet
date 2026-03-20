@@ -70,7 +70,7 @@
     <ProjectReference Include="..\..\src\Granit.BlobStorage.S3\Granit.BlobStorage.S3.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Bulkhead\Granit.Http.Bulkhead.csproj" />
     <ProjectReference Include="..\..\src\Granit.Caching\Granit.Caching.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Caching.Hybrid\Granit.Caching.Hybrid.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Caching.FusionCache\Granit.Caching.FusionCache.csproj" />
     <ProjectReference Include="..\..\src\Granit.Caching.StackExchangeRedis\Granit.Caching.StackExchangeRedis.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Cookies\Granit.Http.Cookies.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Cookies.Endpoints\Granit.Http.Cookies.Endpoints.csproj" />

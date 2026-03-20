@@ -1,14 +1,16 @@
 // =============================================================================
 // Tests - GranitCachingModule
 // =============================================================================
-// Vérifie que le module enregistre correctement :
-//   - ICacheService<T> → DistributedCacheService<T>
-//   - ICacheService<T, TKey> → TypedKeyCacheServiceAdapter<T, TKey>
-//   - ICacheValueEncryptor → NullCacheValueEncryptor (par défaut)
+// Verifies that the module registers:
+//   - CachingOptions (bound from configuration)
+//   - CacheEncryptionOptions (bound from configuration)
+//   - ICacheValueEncryptor → NullCacheValueEncryptor (default)
 // =============================================================================
 
+using Granit.Caching.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
@@ -30,25 +32,25 @@ public sealed class GranitCachingModuleTests
     }
 
     [Fact]
-    public void ConfigureServices_RegistersStringKeyCacheService()
+    public void ConfigureServices_RegistersCachingOptions()
     {
         // Arrange & Act
         ServiceProvider sp = BuildServiceProvider();
 
         // Assert
-        ICacheService<TestCacheItem> service = sp.GetRequiredService<ICacheService<TestCacheItem>>();
-        service.ShouldBeOfType<DistributedCacheService<TestCacheItem>>();
+        IOptions<CachingOptions> options = sp.GetRequiredService<IOptions<CachingOptions>>();
+        options.Value.ShouldNotBeNull();
     }
 
     [Fact]
-    public void ConfigureServices_RegistersTypedKeyCacheService()
+    public void ConfigureServices_RegistersCacheEncryptionOptions()
     {
         // Arrange & Act
         ServiceProvider sp = BuildServiceProvider();
 
         // Assert
-        ICacheService<TestCacheItem, Guid> service = sp.GetRequiredService<ICacheService<TestCacheItem, Guid>>();
-        service.ShouldNotBeNull();
+        IOptions<CacheEncryptionOptions> options = sp.GetRequiredService<IOptions<CacheEncryptionOptions>>();
+        options.Value.ShouldNotBeNull();
     }
 
     [Fact]
@@ -57,11 +59,8 @@ public sealed class GranitCachingModuleTests
         // Arrange & Act
         ServiceProvider sp = BuildServiceProvider();
 
-        // Assert — en l'absence de configuration EncryptValues, l'encrypteur no-op est utilisé
+        // Assert — in the absence of EncryptValues configuration, the no-op encryptor is used
         ICacheValueEncryptor encryptor = sp.GetRequiredService<ICacheValueEncryptor>();
         encryptor.ShouldBeOfType<NullCacheValueEncryptor>();
     }
-
-    // Type de test
-    private sealed class TestCacheItem { }
 }

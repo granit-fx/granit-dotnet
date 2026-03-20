@@ -1,9 +1,8 @@
-using Granit.Caching;
 using Granit.Settings.Definitions;
 using Granit.Settings.Options;
 using Granit.Settings.Values;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Settings.Providers;
 
@@ -14,7 +13,7 @@ namespace Granit.Settings.Providers;
 public sealed class GlobalSettingValueProvider(
     ISettingStoreReader storeReader,
     ISettingStoreWriter storeWriter,
-    ICacheService<SettingValue> cache,
+    IFusionCache cache,
     IOptions<SettingsOptions> options) : ISettingValueProvider
 {
     /// <summary>Global provider identifier.</summary>
@@ -22,7 +21,7 @@ public sealed class GlobalSettingValueProvider(
 
     private readonly ISettingStoreReader _storeReader = storeReader;
     private readonly ISettingStoreWriter _storeWriter = storeWriter;
-    private readonly ICacheService<SettingValue> _cache = cache;
+    private readonly IFusionCache _cache = cache;
     private readonly IOptions<SettingsOptions> _options = options;
 
     /// <inheritdoc/>
@@ -35,22 +34,19 @@ public sealed class GlobalSettingValueProvider(
     public async Task<SettingValue?> GetOrNullAsync(SettingDefinition definition, CancellationToken cancellationToken = default)
     {
         string cacheKey = SettingCacheKey.Build(ProviderName, null, definition.Name);
-        DistributedCacheEntryOptions cacheOptions = new()
-        {
-            AbsoluteExpirationRelativeToNow = _options.Value.CacheExpiration
-        };
+        var cacheOptions = new FusionCacheEntryOptions { Duration = _options.Value.CacheExpiration };
 
-        return await _cache.GetOrAddAsync(
+        return await _cache.GetOrSetAsync<SettingValue>(
             cacheKey,
-            async innerCt =>
+            async (_, ct) =>
             {
                 SettingValue? stored = await _storeReader.GetOrNullAsync(
-                    definition.Name, ProviderName, null, innerCt).ConfigureAwait(false);
+                    definition.Name, ProviderName, null, ct).ConfigureAwait(false);
                 // Sentinel to distinguish "stored null" from "absent from cache"
                 return stored ?? new SettingValue(definition.Name, ProviderName, null, null);
             },
             cacheOptions,
-            cancellationToken) is { Value: not null } hit
+            token: cancellationToken).ConfigureAwait(false) is { Value: not null } hit
             ? hit
             : null;
     }
@@ -59,13 +55,13 @@ public sealed class GlobalSettingValueProvider(
     public async Task SetAsync(SettingDefinition definition, string? value, CancellationToken cancellationToken = default)
     {
         await _storeWriter.SetAsync(definition.Name, ProviderName, null, value, cancellationToken).ConfigureAwait(false);
-        await _cache.RemoveAsync(SettingCacheKey.Build(ProviderName, null, definition.Name), cancellationToken).ConfigureAwait(false);
+        await _cache.ExpireAsync(SettingCacheKey.Build(ProviderName, null, definition.Name), token: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async Task ClearAsync(SettingDefinition definition, CancellationToken cancellationToken = default)
     {
         await _storeWriter.DeleteAsync(definition.Name, ProviderName, null, cancellationToken).ConfigureAwait(false);
-        await _cache.RemoveAsync(SettingCacheKey.Build(ProviderName, null, definition.Name), cancellationToken).ConfigureAwait(false);
+        await _cache.ExpireAsync(SettingCacheKey.Build(ProviderName, null, definition.Name), token: cancellationToken).ConfigureAwait(false);
     }
 }

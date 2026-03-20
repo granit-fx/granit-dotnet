@@ -1,0 +1,83 @@
+using Granit.Caching;
+using Granit.Caching.FusionCache.Internal;
+using Shouldly;
+using Xunit;
+using ZiggyCreatures.Caching.Fusion.Serialization;
+using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
+
+namespace Granit.Caching.FusionCache.Tests;
+
+public sealed class EncryptingFusionCacheSerializerTests
+{
+    private readonly FusionCacheSystemTextJsonSerializer _innerSerializer = new();
+    private readonly ICacheValueEncryptor _encryptor = new AesCacheValueEncryptor(
+        Microsoft.Extensions.Options.Options.Create(new Granit.Caching.Options.CacheEncryptionOptions
+        {
+            Key = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32))
+        }));
+
+    [Fact]
+    public void Serialize_WithEncryptionEnabled_EncryptsData()
+    {
+        var sut = new EncryptingFusionCacheSerializer(_innerSerializer, _encryptor, encrypt: true);
+        byte[] plain = _innerSerializer.Serialize("hello");
+
+        byte[] encrypted = sut.Serialize("hello");
+
+        encrypted.ShouldNotBe(plain);
+        encrypted.Length.ShouldBeGreaterThan(plain.Length); // IV + ciphertext overhead
+    }
+
+    [Fact]
+    public void Deserialize_WithEncryptionEnabled_DecryptsData()
+    {
+        var sut = new EncryptingFusionCacheSerializer(_innerSerializer, _encryptor, encrypt: true);
+
+        byte[] encrypted = sut.Serialize("hello");
+        string? result = sut.Deserialize<string>(encrypted);
+
+        result.ShouldBe("hello");
+    }
+
+    [Fact]
+    public void Serialize_WithEncryptionDisabled_PassesThrough()
+    {
+        var sut = new EncryptingFusionCacheSerializer(_innerSerializer, _encryptor, encrypt: false);
+        byte[] plain = _innerSerializer.Serialize("hello");
+
+        byte[] result = sut.Serialize("hello");
+
+        result.ShouldBe(plain);
+    }
+
+    [Fact]
+    public void RoundTrip_ComplexObject_PreservesData()
+    {
+        var sut = new EncryptingFusionCacheSerializer(_innerSerializer, _encryptor, encrypt: true);
+        var original = new TestCacheItem { Name = "test", Value = 42 };
+
+        byte[] encrypted = sut.Serialize(original);
+        TestCacheItem? deserialized = sut.Deserialize<TestCacheItem>(encrypted);
+
+        deserialized.ShouldNotBeNull();
+        deserialized.Name.ShouldBe("test");
+        deserialized.Value.ShouldBe(42);
+    }
+
+    [Fact]
+    public async Task SerializeAsync_WithEncryption_EncryptsData()
+    {
+        var sut = new EncryptingFusionCacheSerializer(_innerSerializer, _encryptor, encrypt: true);
+
+        byte[] encrypted = await sut.SerializeAsync("async-test", TestContext.Current.CancellationToken);
+        string? result = await sut.DeserializeAsync<string>(encrypted, TestContext.Current.CancellationToken);
+
+        result.ShouldBe("async-test");
+    }
+
+    private sealed class TestCacheItem
+    {
+        public string Name { get; set; } = string.Empty;
+        public int Value { get; set; }
+    }
+}

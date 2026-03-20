@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Localization.Endpoints.Tests;
 
@@ -26,6 +27,7 @@ public sealed class LocalizationEndpointTests : IAsyncDisposable
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
 
+        builder.Services.AddFusionCache();
         builder.Services.AddGranitLocalization(options =>
         {
             options.Resources
@@ -203,6 +205,7 @@ public sealed class LocalizationEndpointTests : IAsyncDisposable
         // Arrange
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
+        builder.Services.AddFusionCache();
         builder.Services.AddGranitLocalization(opts => opts.Resources.Add<TestResource>("fr"));
 
         WebApplication app = builder.Build();

@@ -1,4 +1,4 @@
-using Granit.Caching;
+using Granit.Caching.FusionCache;
 using Granit.Core.Modularity;
 using Granit.Features.Extensions;
 using Granit.Localization;
@@ -28,7 +28,7 @@ namespace Granit.Features;
 /// falls through Plan → Default with no DI error.
 /// </para>
 /// </remarks>
-[DependsOn(typeof(GranitCachingModule))]
+[DependsOn(typeof(GranitCachingFusionCacheModule))]
 [DependsOn(typeof(GranitLocalizationModule))]
 public sealed class GranitFeaturesModule : GranitModule
 {

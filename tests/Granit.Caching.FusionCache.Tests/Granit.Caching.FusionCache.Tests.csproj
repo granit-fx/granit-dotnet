@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.Caching.Hybrid\Granit.Caching.Hybrid.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Caching.FusionCache\Granit.Caching.FusionCache.csproj" />
   </ItemGroup>
 
 </Project>

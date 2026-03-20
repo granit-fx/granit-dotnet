@@ -1,10 +1,10 @@
 using Granit.Features.Events;
-using Microsoft.Extensions.Caching.Hybrid;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Features.Cache;
 
 /// <summary>
-/// Wolverine message handler — removes the stale <see cref="HybridCache"/> entry
+/// Wolverine message handler — expires the stale <see cref="IFusionCache"/> entry
 /// when a feature value override is created, updated, or deleted.
 /// </summary>
 /// <remarks>
@@ -16,14 +16,14 @@ namespace Granit.Features.Cache;
 public static class FeatureCacheInvalidationHandler
 {
     /// <summary>
-    /// Removes the resolved-value cache entry for the changed feature and tenant scope.
+    /// Expires the cached resolved-value entry for the changed feature and tenant scope.
     /// </summary>
     public static async Task HandleAsync(
         FeatureValueChangedEvent @event,
-        HybridCache hybridCache,
+        IFusionCache cache,
         CancellationToken cancellationToken)
     {
         string key = FeatureCacheKey.Build(@event.TenantId, @event.FeatureName);
-        await hybridCache.RemoveAsync(key, cancellationToken).ConfigureAwait(false);
+        await cache.ExpireAsync(key, token: cancellationToken).ConfigureAwait(false);
     }
 }

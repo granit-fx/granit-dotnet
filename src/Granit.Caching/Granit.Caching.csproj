@@ -2,18 +2,17 @@
 
   <PropertyGroup>
     <PackageId>Granit.Caching</PackageId>
-    <Description>Typed cache abstraction (ICacheService) with in-memory provider by default. Stampede protection via SemaphoreSlim in IMemoryCache. Opt-in AES-256-CBC encryption per type via [CacheEncrypted] for GDPR/ISO 27001 compliance. Designed to be replaced by GranitCachingRedisModule or GranitCachingHybridModule in production.</Description>
+    <Description>Cache configuration and AES-256-CBC encryption for Granit. Provides CachingOptions, CacheEncryptionOptions, ICacheValueEncryptor, and [CacheEncrypted] attribute for GDPR/ISO 27001 compliance. Provider-agnostic — see Granit.Caching.FusionCache for the production provider.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Caching.Tests" />
     <InternalsVisibleTo Include="Granit.Caching.StackExchangeRedis" />
-    <InternalsVisibleTo Include="Granit.Caching.Hybrid" />
+    <InternalsVisibleTo Include="Granit.Caching.FusionCache" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />

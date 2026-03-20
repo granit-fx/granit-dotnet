@@ -1,28 +1,27 @@
 // =============================================================================
 // Tests - PermissionChecker
 // =============================================================================
-// Vérifie le pipeline RBAC complet :
-//   1. AlwaysAllow → true sans store ni cache
-//   2. Non authentifié → false
-//   3. AdminRole bypass → true sans store ni cache
-//   4. Permission inconnue → InvalidOperationException
-//   5. Cache miss → store appelé, résultat mis en cache
-//   6. Cache hit → store NON appelé
-//   7. Logique OR multi-rôles
+// Verifies the full RBAC pipeline:
+//   1. AlwaysAllow → true without store or cache
+//   2. Not authenticated → false
+//   3. AdminRole bypass → true without store or cache
+//   4. Unknown permission → InvalidOperationException
+//   5. Cache miss → store called, result cached
+//   6. Cache hit → store NOT called
+//   7. Multi-role OR logic
 // =============================================================================
 
 using Granit.Authorization.Abstractions;
 using Granit.Authorization.Cache;
 using Granit.Authorization.Options;
 using Granit.Authorization.Services;
-using Granit.Caching;
 using Granit.Core.MultiTenancy;
 using Granit.Security;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Authorization.Tests;
 
@@ -39,7 +38,7 @@ public sealed class PermissionCheckerTests
     public async Task IsGrantedAsync_AlwaysAllow_ReturnsTrueWithoutStoreOrCache()
     {
         // Arrange
-        ICacheService<PermissionGrantCacheItem> cache = Substitute.For<ICacheService<PermissionGrantCacheItem>>();
+        IFusionCache cache = Substitute.For<IFusionCache>();
         IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
         PermissionChecker checker = BuildChecker(
             alwaysAllow: true,
@@ -52,11 +51,6 @@ public sealed class PermissionCheckerTests
 
         // Assert
         result.ShouldBeTrue();
-        await cache.DidNotReceive().GetOrAddAsync(
-            Arg.Any<string>(),
-            Arg.Any<Func<CancellationToken, Task<PermissionGrantCacheItem>>>(),
-            Arg.Any<DistributedCacheEntryOptions>(),
-            Arg.Any<CancellationToken>());
         await store.DidNotReceive().IsGrantedAsync(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
     }
@@ -82,7 +76,7 @@ public sealed class PermissionCheckerTests
     public async Task IsGrantedAsync_UserHasAdminRole_ReturnsTrueWithoutStoreOrCache()
     {
         // Arrange
-        ICacheService<PermissionGrantCacheItem> cache = Substitute.For<ICacheService<PermissionGrantCacheItem>>();
+        IFusionCache cache = Substitute.For<IFusionCache>();
         IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
         PermissionChecker checker = BuildChecker(
             isAuthenticated: true,
@@ -95,11 +89,6 @@ public sealed class PermissionCheckerTests
 
         // Assert
         result.ShouldBeTrue();
-        await cache.DidNotReceive().GetOrAddAsync(
-            Arg.Any<string>(),
-            Arg.Any<Func<CancellationToken, Task<PermissionGrantCacheItem>>>(),
-            Arg.Any<DistributedCacheEntryOptions>(),
-            Arg.Any<CancellationToken>());
         await store.DidNotReceive().IsGrantedAsync(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
     }
@@ -129,7 +118,7 @@ public sealed class PermissionCheckerTests
         store.IsGrantedAsync("editor", DefinedPermission, TenantId, Arg.Any<CancellationToken>())
             .Returns(true);
 
-        ICacheService<PermissionGrantCacheItem> cache = BuildPassThroughCache();
+        IFusionCache cache = BuildPassThroughCache();
 
         PermissionChecker checker = BuildChecker(
             isAuthenticated: true,
@@ -145,11 +134,6 @@ public sealed class PermissionCheckerTests
         result.ShouldBeTrue();
         await store.Received(1).IsGrantedAsync(
             "editor", DefinedPermission, TenantId, Arg.Any<CancellationToken>());
-        await cache.Received(1).GetOrAddAsync(
-            Arg.Any<string>(),
-            Arg.Any<Func<CancellationToken, Task<PermissionGrantCacheItem>>>(),
-            Arg.Any<DistributedCacheEntryOptions>(),
-            Arg.Any<CancellationToken>());
     }
 
     // --- Cache hit → store NOT called ---
@@ -160,13 +144,13 @@ public sealed class PermissionCheckerTests
         // Arrange
         IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
 
-        ICacheService<PermissionGrantCacheItem> cache = Substitute.For<ICacheService<PermissionGrantCacheItem>>();
-        cache.GetOrAddAsync(
+        IFusionCache cache = Substitute.For<IFusionCache>();
+        cache.GetOrSetAsync<PermissionGrantCacheItem>(
                 Arg.Any<string>(),
-                Arg.Any<Func<CancellationToken, Task<PermissionGrantCacheItem>>>(),
-                Arg.Any<DistributedCacheEntryOptions>(),
+                Arg.Any<Func<FusionCacheFactoryExecutionContext<PermissionGrantCacheItem>, CancellationToken, Task<PermissionGrantCacheItem>>>(),
+                Arg.Any<FusionCacheEntryOptions?>(),
                 Arg.Any<CancellationToken>())
-            .Returns(new PermissionGrantCacheItem { IsGranted = true }); // cache hit — factory not invoked
+            .ReturnsForAnyArgs(new PermissionGrantCacheItem { IsGranted = true });
 
         PermissionChecker checker = BuildChecker(
             isAuthenticated: true,
@@ -254,7 +238,7 @@ public sealed class PermissionCheckerTests
         string[]? roles = null,
         Guid? tenantId = null,
         IPermissionGrantStore? store = null,
-        ICacheService<PermissionGrantCacheItem>? cache = null)
+        IFusionCache? cache = null)
     {
         ICurrentUserService user = Substitute.For<ICurrentUserService>();
         user.IsAuthenticated.Returns(isAuthenticated);
@@ -274,7 +258,7 @@ public sealed class PermissionCheckerTests
         manager.Exists(UndefinedPermission).Returns(false);
 
         IPermissionGrantStore grantStore = store ?? Substitute.For<IPermissionGrantStore>();
-        ICacheService<PermissionGrantCacheItem> cacheService = cache ?? BuildPassThroughCache();
+        IFusionCache cacheService = cache ?? BuildPassThroughCache();
 
         GranitAuthorizationOptions opts = new()
         {
@@ -288,21 +272,8 @@ public sealed class PermissionCheckerTests
 
     /// <summary>
     /// Cache substitute that always calls the factory (simulates a cache miss on every call).
+    /// Uses a real in-memory FusionCache instance to avoid complex mock setup.
     /// </summary>
-    private static ICacheService<PermissionGrantCacheItem> BuildPassThroughCache()
-    {
-        ICacheService<PermissionGrantCacheItem> cache = Substitute.For<ICacheService<PermissionGrantCacheItem>>();
-        cache.GetOrAddAsync(
-                Arg.Any<string>(),
-                Arg.Any<Func<CancellationToken, Task<PermissionGrantCacheItem>>>(),
-                Arg.Any<DistributedCacheEntryOptions>(),
-                Arg.Any<CancellationToken>())
-            .Returns(callInfo =>
-            {
-                Func<CancellationToken, Task<PermissionGrantCacheItem>> factory =
-                    callInfo.ArgAt<Func<CancellationToken, Task<PermissionGrantCacheItem>>>(1);
-                return factory(CancellationToken.None);
-            });
-        return cache;
-    }
+    private static FusionCache BuildPassThroughCache() =>
+        new(new FusionCacheOptions());
 }

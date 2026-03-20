@@ -1,10 +1,9 @@
-using Granit.Caching;
 using Granit.Security;
 using Granit.Settings.Definitions;
 using Granit.Settings.Options;
 using Granit.Settings.Values;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Settings.Providers;
 
@@ -16,7 +15,7 @@ public sealed class UserSettingValueProvider(
     ICurrentUserService currentUser,
     ISettingStoreReader storeReader,
     ISettingStoreWriter storeWriter,
-    ICacheService<SettingValue> cache,
+    IFusionCache cache,
     IOptions<SettingsOptions> options) : ISettingValueProvider
 {
     /// <summary>User provider identifier.</summary>
@@ -25,7 +24,7 @@ public sealed class UserSettingValueProvider(
     private readonly ICurrentUserService _currentUser = currentUser;
     private readonly ISettingStoreReader _storeReader = storeReader;
     private readonly ISettingStoreWriter _storeWriter = storeWriter;
-    private readonly ICacheService<SettingValue> _cache = cache;
+    private readonly IFusionCache _cache = cache;
     private readonly IOptions<SettingsOptions> _options = options;
 
     /// <inheritdoc/>
@@ -44,21 +43,18 @@ public sealed class UserSettingValueProvider(
 
         string userId = _currentUser.UserId;
         string cacheKey = SettingCacheKey.Build(ProviderName, userId, definition.Name);
-        DistributedCacheEntryOptions cacheOptions = new()
-        {
-            AbsoluteExpirationRelativeToNow = _options.Value.CacheExpiration
-        };
+        var cacheOptions = new FusionCacheEntryOptions { Duration = _options.Value.CacheExpiration };
 
-        return await _cache.GetOrAddAsync(
+        return await _cache.GetOrSetAsync<SettingValue>(
             cacheKey,
-            async innerCt =>
+            async (_, ct) =>
             {
                 SettingValue? stored = await _storeReader.GetOrNullAsync(
-                    definition.Name, ProviderName, userId, innerCt).ConfigureAwait(false);
+                    definition.Name, ProviderName, userId, ct).ConfigureAwait(false);
                 return stored ?? new SettingValue(definition.Name, ProviderName, userId, null);
             },
             cacheOptions,
-            cancellationToken) is { Value: not null } hit
+            token: cancellationToken).ConfigureAwait(false) is { Value: not null } hit
             ? hit
             : null;
     }
@@ -73,7 +69,7 @@ public sealed class UserSettingValueProvider(
 
         string userId = _currentUser.UserId;
         await _storeWriter.SetAsync(definition.Name, ProviderName, userId, value, cancellationToken).ConfigureAwait(false);
-        await _cache.RemoveAsync(SettingCacheKey.Build(ProviderName, userId, definition.Name), cancellationToken).ConfigureAwait(false);
+        await _cache.ExpireAsync(SettingCacheKey.Build(ProviderName, userId, definition.Name), token: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -86,6 +82,6 @@ public sealed class UserSettingValueProvider(
 
         string userId = _currentUser.UserId;
         await _storeWriter.DeleteAsync(definition.Name, ProviderName, userId, cancellationToken).ConfigureAwait(false);
-        await _cache.RemoveAsync(SettingCacheKey.Build(ProviderName, userId, definition.Name), cancellationToken).ConfigureAwait(false);
+        await _cache.ExpireAsync(SettingCacheKey.Build(ProviderName, userId, definition.Name), token: cancellationToken).ConfigureAwait(false);
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Localization.Tests;
 
@@ -19,6 +20,7 @@ public sealed class LocalizationAutoDiscoveryTests
     private static ServiceProvider BuildProviderWithAutoDiscovery()
     {
         ServiceCollection services = new();
+        services.AddSingleton<IFusionCache>(new FusionCache(new FusionCacheOptions()));
         services.AddGranitLocalization(options =>
         {
             options.EnableAutoDiscovery = true;
@@ -89,6 +91,7 @@ public sealed class LocalizationAutoDiscoveryTests
     {
         // Arrange : enregistrement explicite avec une source JSON différente
         ServiceCollection services = new();
+        services.AddSingleton<IFusionCache>(new FusionCache(new FusionCacheOptions()));
         services.AddGranitLocalization(options =>
         {
             options.EnableAutoDiscovery = true;
