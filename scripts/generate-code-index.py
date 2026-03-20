@@ -27,7 +27,7 @@ from pathlib import Path
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate code-index.json")
     parser.add_argument("--src", default="src", help="Source root (default: src)")
-    parser.add_argument("--out", default="code-index.json", help="Output path")
+    parser.add_argument("--out", default=".mcp-code-index.json", help="Output path")
     return parser.parse_args()
 
 

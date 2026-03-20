@@ -411,7 +411,7 @@ jobs:
           --skip-duplicate
 
   # ---------------------------------------------------------------------------
-  # CODE INDEX: validate that code-index.json is up to date.
+  # CODE INDEX: validate that .mcp-code-index.json is up to date.
   # The file is generated locally via pre-commit hook and committed with code.
   # This job fails the CI if someone forgot to regenerate after changing sources.
   # ---------------------------------------------------------------------------
@@ -422,14 +422,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Regenerate code-index.json
+      - name: Regenerate .mcp-code-index.json
         run: python3 scripts/generate-code-index.py
 
       - name: Check for drift
         run: |
-          if ! git diff --quiet code-index.json; then
-            echo "::error::code-index.json is out of date. Run 'python3 scripts/generate-code-index.py' and commit."
-            git diff code-index.json
+          if ! git diff --quiet .mcp-code-index.json; then
+            echo "::error::.mcp-code-index.json is out of date. Run 'python3 scripts/generate-code-index.py' and commit."
+            git diff .mcp-code-index.json
             exit 1
           fi
 
