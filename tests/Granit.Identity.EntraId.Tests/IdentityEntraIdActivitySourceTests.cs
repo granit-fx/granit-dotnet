@@ -107,9 +107,11 @@ public sealed class IdentityEntraIdActivitySourceTests : IDisposable
 
         await _provider.GetUsersAsync(cancellationToken: TestContext.Current.CancellationToken);
 
-        Activity? activity = _activities.Find(a => a.OperationName == IdentityEntraIdActivitySource.GetUsers);
-        activity.ShouldNotBeNull();
-        activity.Status.ShouldBe(ActivityStatusCode.Error);
+        // Filter by both operation name AND status to avoid cross-contamination from parallel test classes
+        // (EntraIdIdentityProviderTests also calls GetUsersAsync with success, producing Unset activities).
+        _activities.ShouldContain(a =>
+            a.OperationName == IdentityEntraIdActivitySource.GetUsers
+            && a.Status == ActivityStatusCode.Error);
     }
 
     [Fact]
@@ -174,9 +176,11 @@ public sealed class IdentityEntraIdActivitySourceTests : IDisposable
 
         await _provider.GetRolesAsync(TestContext.Current.CancellationToken);
 
-        Activity? activity = _activities.Find(a => a.OperationName == IdentityEntraIdActivitySource.GetRoles);
-        activity.ShouldNotBeNull();
-        activity.Status.ShouldBe(ActivityStatusCode.Error);
+        // Filter by both operation name AND status to avoid cross-contamination from parallel test classes
+        // (EntraIdIdentityProviderAdditionalTests also calls GetRolesAsync with success, producing Unset activities).
+        _activities.ShouldContain(a =>
+            a.OperationName == IdentityEntraIdActivitySource.GetRoles
+            && a.Status == ActivityStatusCode.Error);
     }
 
     [Fact]

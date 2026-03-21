@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T13:53:18.209114+00:00",
+  "generatedAt": "2026-03-21T15:02:28.498558+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -996,6 +996,16 @@
       "deps": [
         "Granit.AI",
         "Granit.Privacy"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Privacy.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Http.ApiDocumentation",
+        "Granit.Privacy",
+        "Granit.Validation"
       ],
       "framework": "net10.0"
     },
@@ -18879,6 +18889,24 @@
       "members": []
     },
     {
+      "name": "ExportRequestState",
+      "fqn": "Granit.Privacy.DataExport.ExportRequestState",
+      "kind": "enum",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/ExportRequestState.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "ExportRequestStatus",
+      "fqn": "Granit.Privacy.DataExport.ExportRequestStatus",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/ExportRequestStatus.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "GdprExportSaga",
       "fqn": "Granit.Privacy.DataExport.GdprExportSaga",
       "kind": "class",
@@ -18951,6 +18979,50 @@
       ]
     },
     {
+      "name": "IExportRequestTrackerReader",
+      "fqn": "Granit.Privacy.DataExport.IExportRequestTrackerReader",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IExportRequestTrackerReader.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "GetStatusAsync",
+          "kind": "method",
+          "signature": "GetStatusAsync(Guid requestId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ExportRequestStatus?>"
+        },
+        {
+          "name": "GetByUserAsync",
+          "kind": "method",
+          "signature": "GetByUserAsync(Guid userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ExportRequestStatus>>"
+        }
+      ]
+    },
+    {
+      "name": "IExportRequestTrackerWriter",
+      "fqn": "Granit.Privacy.DataExport.IExportRequestTrackerWriter",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IExportRequestTrackerWriter.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "RecordRequestAsync",
+          "kind": "method",
+          "signature": "RecordRequestAsync(Guid requestId, Guid userId, DateTimeOffset requestedAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "MarkCompletedAsync",
+          "kind": "method",
+          "signature": "MarkCompletedAsync(Guid requestId, ExportRequestState state, string? archiveBlobReferenceId, IReadOnlyList<string>? missingProviders, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "ReceivedFragment",
       "fqn": "Granit.Privacy.DataExport.ReceivedFragment",
       "kind": "record",
@@ -18986,6 +19058,152 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "PrivacyAcceptAgreementRequest",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyAcceptAgreementRequest",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyAcceptAgreementRequest.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "PrivacyConsentStatusResponse",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyConsentStatusResponse",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyConsentStatusResponse.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "PrivacyDeletionRequest",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyDeletionRequest",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyDeletionRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportRequestResponse",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyExportRequestResponse",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyExportRequestResponse.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportStatusResponse",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyExportStatusResponse",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyExportStatusResponse.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "PrivacyLegalDocumentResponse",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyLegalDocumentResponse",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyLegalDocumentResponse.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "PrivacyUserAgreementResponse",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyUserAgreementResponse",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyUserAgreementResponse.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "PrivacyEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Privacy.Endpoints.Extensions.PrivacyEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Extensions/PrivacyEndpointRouteBuilderExtensions.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "MapGranitPrivacy",
+          "kind": "method",
+          "signature": "MapGranitPrivacy(this IEndpointRouteBuilder endpoints, Action<PrivacyEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitPrivacyEndpointsModule",
+      "fqn": "Granit.Privacy.Endpoints.GranitPrivacyEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/GranitPrivacyEndpointsModule.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "PrivacyEndpointsOptions",
+      "fqn": "Granit.Privacy.Endpoints.Options.PrivacyEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Options/PrivacyEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "Agreements",
+      "fqn": "Granit.Privacy.Endpoints.Permissions.Agreements",
+      "kind": "class",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "Deletion",
+      "fqn": "Granit.Privacy.Endpoints.Permissions.Deletion",
+      "kind": "class",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "Export",
+      "fqn": "Granit.Privacy.Endpoints.Permissions.Export",
+      "kind": "class",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "PrivacyPermissions",
+      "fqn": "Granit.Privacy.Endpoints.Permissions.PrivacyPermissions",
+      "kind": "class",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
+      "line": 7,
+      "members": []
     },
     {
       "name": "PrivacyServiceCollectionExtensions",
@@ -19124,6 +19342,12 @@
           "name": "RecordAsync",
           "kind": "method",
           "signature": "RecordAsync(LegalAgreementBase agreement, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RecordConsentAsync",
+          "kind": "method",
+          "signature": "RecordConsentAsync(Guid userId, string documentId, string version, string? ipAddress, DateTimeOffset acceptedAt, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
