@@ -1,0 +1,150 @@
+---
+title: "OIDC Server Configuration"
+description: OpenID Connect server setup — endpoints, flows, signing keys, reference tokens, and token lifetimes.
+sidebar:
+  order: 2
+  label: OIDC Server
+---
+
+## Endpoints
+
+The server exposes 8 standard endpoints, registered automatically by
+`AddGranitOpenIddictEntityFrameworkCore()`:
+
+| Endpoint | Path | Specification |
+|----------|------|---------------|
+| Authorization | `/connect/authorize` | RFC 6749 §3.1 |
+| Token | `/connect/token` | RFC 6749 §3.2 |
+| UserInfo | `/connect/userinfo` | OIDC Core §5.3 |
+| Introspection | `/connect/introspect` | RFC 7662 |
+| Revocation | `/connect/revoke` | RFC 7009 |
+| End Session | `/connect/logout` | OIDC RP-Initiated Logout |
+| Device Authorization | `/connect/device` | RFC 8628 |
+| End User Verification | `/connect/verify` | RFC 8628 §3.3 |
+
+Discovery is automatically available at `/.well-known/openid-configuration`.
+
+## Flows
+
+### Authorization Code + PKCE (recommended)
+
+The default flow for web and mobile applications. PKCE is **required** by default.
+
+```
+Client → /connect/authorize (code_challenge) → User login → Authorization code
+Client → /connect/token (code_verifier) → Access token + Refresh token
+```
+
+### Client Credentials
+
+For machine-to-machine (M2M) communication between services.
+
+```
+Client → /connect/token (client_id + client_secret) → Access token
+```
+
+### Refresh Token
+
+Obtain new access tokens without re-authentication.
+
+```
+Client → /connect/token (refresh_token) → New access token + New refresh token
+```
+
+### Device Authorization
+
+For devices with limited input capability (smart TV, CLI tools).
+
+```
+Device → /connect/device → User code + Verification URI
+User → /connect/verify (enters code) → Approval
+Device → /connect/token (device_code) → Access token
+```
+
+### Custom Grants
+
+Two custom grant types are registered for advanced scenarios:
+
+| Grant Type | Use Case |
+|------------|----------|
+| `urn:granit:grant_type:two_factor` | Stateless 2FA challenge/verify flow |
+| `urn:granit:grant_type:passkey` | WebAuthn/FIDO2 passkey authentication |
+
+## Signing and encryption
+
+By default, **ephemeral keys** are used (development only). The host application
+**must** configure production keys:
+
+```csharp
+builder.AddGranitOpenIddictEntityFrameworkCore(dbOptions => ...);
+
+// Then configure signing keys separately:
+builder.Services.AddOpenIddict()
+    .AddServer(options =>
+    {
+        options.AddSigningCertificate(certificate);
+        options.AddEncryptionCertificate(encryptionCertificate);
+    });
+```
+
+Access token encryption is **disabled** by default for compatibility with standard
+JWT libraries. Enable if required:
+
+```csharp
+// Remove this line from AddServer to enable encryption:
+// options.DisableAccessTokenEncryption();
+```
+
+## Reference tokens
+
+By default, the server issues **self-contained JWTs**. For regulated environments
+(banking, healthcare, SOC2), enable opaque reference tokens:
+
+```json
+{ "OpenIddict": { "UseReferenceTokens": true } }
+```
+
+| | JWT (default) | Reference Token |
+|---|---|---|
+| **Validation** | Offline (signature check) | DB lookup on every request |
+| **Revocation** | Wait for expiry | Instant |
+| **Performance** | No DB call | +1 round-trip per request |
+| **Use case** | Most applications | Strict compliance |
+
+## Token lifetimes
+
+Token lifetimes are **not hardcoded** — they are read from `Granit.Settings` at runtime,
+configurable per-tenant:
+
+| Setting | Default | Key |
+|---------|---------|-----|
+| Access token | 1 hour | `OpenIddict.AccessTokenLifetime` |
+| Refresh token | 14 days | `OpenIddict.RefreshTokenLifetime` |
+| Authorization code | 5 minutes | `OpenIddict.AuthCodeLifetime` |
+
+Override per-tenant via the Settings admin API at runtime — no redeployment needed.
+
+## Middleware order
+
+The middleware order is **critical** and must be:
+
+```csharp
+app.UseAuthentication();
+app.UseOpenIddict();      // ← AFTER auth, BEFORE authorization
+app.UseAuthorization();
+```
+
+`UseOpenIddict()` must be placed **before** `UseAuthorization()` because it handles
+the `/connect/*` endpoints and needs to process the request before authorization
+middleware rejects unauthenticated requests.
+
+## Scopes
+
+The following scopes are registered by default:
+
+- `email` — user email address
+- `profile` — user profile (name, etc.)
+- `roles` — user roles
+- `offline_access` — refresh token issuance
+
+Additional scopes can be registered via the admin API or declarative seeding.

@@ -1,0 +1,172 @@
+---
+title: "Configuration Reference"
+description: Complete configuration reference for all Granit.OpenIddict options — server, client, seeding, passkeys, and per-tenant settings.
+sidebar:
+  order: 6
+  label: Configuration
+---
+
+## Full configuration example
+
+```json
+{
+  "OpenIddict": {
+    "Issuer": "https://auth.example.com",
+    "UseReferenceTokens": false,
+    "EnableEntityCaching": false,
+
+    "Client": {
+      "AutoRegisterExternalUsers": true,
+      "Providers": [
+        {
+          "Name": "Google",
+          "ClientId": "xxx.apps.googleusercontent.com",
+          "ClientSecret": "GOCSPX-xxx",
+          "Scopes": ["openid", "profile", "email"]
+        },
+        {
+          "Name": "Microsoft",
+          "ClientId": "00000000-0000-0000-0000-000000000000",
+          "ClientSecret": "xxx",
+          "Scopes": ["openid", "profile", "email"]
+        },
+        {
+          "Name": "GitHub",
+          "ClientId": "Iv1.xxx",
+          "ClientSecret": "xxx",
+          "Scopes": ["openid", "user:email"]
+        }
+      ]
+    },
+
+    "Seeding": {
+      "Applications": [
+        {
+          "ClientId": "my-spa",
+          "ClientSecret": null,
+          "DisplayName": "My SPA (PKCE)",
+          "Permissions": [
+            "ept:authorization", "ept:token", "ept:logout",
+            "gt:authorization_code", "rst:code",
+            "scp:openid", "scp:profile", "scp:email", "scp:offline_access"
+          ],
+          "RedirectUris": ["https://app.example.com/callback"],
+          "PostLogoutRedirectUris": ["https://app.example.com"]
+        },
+        {
+          "ClientId": "my-api",
+          "ClientSecret": "super-secret-should-come-from-vault",
+          "DisplayName": "My API (Client Credentials)",
+          "Permissions": [
+            "ept:token", "gt:client_credentials", "scp:api"
+          ],
+          "RedirectUris": [],
+          "PostLogoutRedirectUris": []
+        }
+      ],
+      "Scopes": [
+        { "Name": "api", "DisplayName": "API Access", "Resources": ["my-api"] }
+      ]
+    },
+
+    "Passkeys": {
+      "ServerDomain": "example.com",
+      "AuthenticatorTimeout": "00:05:00",
+      "ChallengeSize": 32
+    }
+  }
+}
+```
+
+## GranitOpenIddictOptions
+
+Bound from `OpenIddict` section.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `Issuer` | `Uri?` | `null` | Explicit issuer URI. When null, inferred from request. Set for load-balanced deployments. |
+| `UseReferenceTokens` | `bool` | `false` | Issue opaque reference tokens (DB-validated) instead of self-contained JWTs. |
+| `EnableEntityCaching` | `bool` | `false` | Enable OpenIddict entity caching. **Disable in multi-tenant** (cross-tenant pollution risk). |
+
+## GranitOpenIddictClientOptions
+
+Bound from `OpenIddict:Client` section.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `AutoRegisterExternalUsers` | `bool` | `true` | Auto-create user on first external login. When `false`, returns 403. |
+| `Providers` | `ExternalProviderOptions[]` | `[]` | External login providers to configure. |
+
+### ExternalProviderOptions
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `Name` | `string` | `""` | Provider name: `"Google"`, `"Microsoft"`, `"GitHub"` |
+| `ClientId` | `string` | `""` | OAuth client ID |
+| `ClientSecret` | `string` | `""` | OAuth client secret. **Use Granit.Vault in production.** |
+| `Scopes` | `string[]` | `["openid", "profile", "email"]` | OAuth scopes to request |
+
+## GranitOpenIddictSeedingOptions
+
+Bound from `OpenIddict:Seeding` section.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `Applications` | `OidcApplicationSeedDescriptor[]` | `[]` | Applications to seed at startup (idempotent upsert) |
+| `Scopes` | `OidcScopeSeedDescriptor[]` | `[]` | Scopes to seed at startup (idempotent upsert) |
+
+## GranitPasskeyOptions
+
+Bound from `OpenIddict:Passkeys` section.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `ServerDomain` | `string` | `""` | WebAuthn Relying Party ID. **Required in non-dev environments.** |
+| `AuthenticatorTimeout` | `TimeSpan` | `5 min` | Timeout for WebAuthn operations |
+| `ChallengeSize` | `int` | `32` | Challenge size in bytes |
+
+## Per-tenant settings (Granit.Settings)
+
+These settings are configurable per-tenant at runtime via the Settings admin API:
+
+| Setting key | Type | Default | Description |
+|-------------|------|---------|-------------|
+| `OpenIddict.AccessTokenLifetime` | TimeSpan | `01:00:00` | Access token lifetime |
+| `OpenIddict.RefreshTokenLifetime` | TimeSpan | `14.00:00:00` | Refresh token lifetime |
+| `OpenIddict.AuthCodeLifetime` | TimeSpan | `00:05:00` | Authorization code lifetime |
+| `OpenIddict.MaxLoginAttempts` | int | `5` | Lockout after N failed attempts |
+| `OpenIddict.IdleSessionTimeout` | int | `0` | Idle timeout in minutes (0 = disabled) |
+
+## Feature flags (Granit.Features)
+
+Feature flags are configurable per-tenant via the Features admin API:
+
+| Feature key | Default | Description |
+|-------------|---------|-------------|
+| `OpenIddict.TwoFactor` | `true` | TOTP-based 2FA |
+| `OpenIddict.DeviceFlow` | `false` | Device Authorization Grant |
+| `OpenIddict.ExternalLogins` | `true` | External login providers |
+| `OpenIddict.PkceRequired` | `true` | PKCE requirement for auth code flow |
+| `OpenIddict.Passkeys` | `false` | WebAuthn/FIDO2 passkeys |
+
+## Database table prefix
+
+Configurable at startup via `GranitOpenIddictDbProperties`:
+
+```csharp
+GranitOpenIddictDbProperties.DbTablePrefix = "oidc_"; // default
+GranitOpenIddictDbProperties.DbSchema = null;           // provider default
+```
+
+Must be set **before** `ConfigureServices` completes (EF Core caches the model).
+
+## Permissions
+
+All 23 permissions follow the `[Group].[Resource].[Action]` format:
+
+- `OpenIddict.Users.{Read,Create,Manage,Delete,Impersonate}`
+- `OpenIddict.Roles.{Read,Create,Delete}`
+- `OpenIddict.Groups.{Read,Create,Manage,Delete}`
+- `OpenIddict.Applications.{Read,Create,Manage,Delete,Rotate}`
+- `OpenIddict.Scopes.{Read,Create,Manage,Delete}`
+- `OpenIddict.Authorizations.{Read,Revoke}`

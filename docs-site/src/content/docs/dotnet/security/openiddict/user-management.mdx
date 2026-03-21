@@ -1,0 +1,141 @@
+---
+title: "User Management"
+description: GranitUser entity, admin API for users/roles/groups, and the IIdentityProvider bridge over ASP.NET Core Identity.
+sidebar:
+  order: 3
+  label: User Management
+---
+
+## Entities
+
+### GranitUser
+
+Extends `IdentityUser<Guid>` with Granit multi-tenancy and audit support.
+
+```csharp
+public class GranitUser : IdentityUser<Guid>, IMultiTenant
+{
+    public string? FirstName { get; set; }       // max 256
+    public string? LastName { get; set; }         // max 256
+    public Guid? TenantId { get; set; }           // IMultiTenant
+    public bool IsDeleted { get; set; }           // manual soft-delete
+    public DateTimeOffset? DeletedAt { get; set; }
+    public string? DeletedBy { get; set; }
+    public string? CustomAttributesJson { get; set; }
+    // + CreatedAt, CreatedBy, ModifiedAt, ModifiedBy (audit)
+}
+```
+
+:::caution[Design decisions]
+- **No `ISoftDeletable`**: incompatible with `UserManager<T>` — uses manual `IsDeleted` field
+  with a named query filter that supports `IDataFilter.Disable<ISoftDeletable>()` bypass.
+- **No `IConcurrencyAware`**: ASP.NET Core Identity manages its own `ConcurrencyStamp`.
+:::
+
+### GranitRole
+
+Extends `IdentityRole<Guid>` with an optional description.
+
+### GranitUserGroup / GranitUserGroupMember
+
+Custom group entities (ASP.NET Identity has no native group concept). Multi-tenant, audited,
+with a unique constraint on `(TenantId, Name)`.
+
+## IIdentityProvider bridge
+
+`Granit.Identity.OpenIddict` registers `AspNetIdentityProvider` as the `IIdentityProvider`
+implementation, replacing the default `NullIdentityProvider`. It implements all 7 sub-interfaces:
+
+| Interface | Implementation |
+|-----------|----------------|
+| `IIdentityUserReader` | `UserManager.Users` queries |
+| `IIdentityUserWriter` | `UserManager.CreateAsync`, `UpdateAsync` |
+| `IIdentityRoleManager` | `RoleManager` queries |
+| `IIdentityGroupManager` | Direct EF Core on `GranitUserGroup` |
+| `IIdentitySessionManager` | No-op (`SupportsIndividualSessionTermination = false`) |
+| `IIdentityPasswordManager` | `UserManager.ResetPasswordAsync` |
+| `IIdentityCredentialVerifier` | `UserManager.CheckPasswordAsync` |
+
+:::caution
+Do **NOT** add `Granit.Identity.EntityFrameworkCore` alongside `Granit.Identity.OpenIddict` —
+it would create a redundant `UserCache` layer. `AspNetIdentityUserLookupService` queries
+`UserManager<GranitUser>` directly.
+:::
+
+## Admin API
+
+All endpoints are under `/api/admin` and require `OpenIddictPermissions.*` authorization.
+
+### Users (`/api/admin/users`)
+
+| Method | Path | Permission | Description |
+|--------|------|------------|-------------|
+| GET | `/` | `Users.Read` | Paginated list (?search, ?page, ?pageSize) |
+| GET | `/{userId}` | `Users.Read` | User detail |
+| POST | `/` | `Users.Create` | Create user |
+| DELETE | `/{userId}` | `Users.Delete` | Soft-delete |
+| POST | `/{userId}/impersonate` | `Users.Impersonate` | Impersonate user |
+
+### Roles (`/api/admin/roles`)
+
+| Method | Path | Permission | Description |
+|--------|------|------------|-------------|
+| GET | `/` | `Roles.Read` | List all roles |
+| POST | `/` | `Roles.Create` | Create role |
+| DELETE | `/{roleName}` | `Roles.Delete` | Delete role |
+| GET | `/{roleName}/members` | `Roles.Read` | List role members |
+
+### Groups (`/api/admin/groups`)
+
+| Method | Path | Permission | Description |
+|--------|------|------------|-------------|
+| GET | `/` | `Groups.Read` | List groups |
+| POST | `/` | `Groups.Create` | Create group |
+| DELETE | `/{groupId}` | `Groups.Delete` | Delete group |
+| POST | `/{groupId}/members` | `Groups.Manage` | Add member |
+| DELETE | `/{groupId}/members/{userId}` | `Groups.Manage` | Remove member |
+
+### OIDC Applications (`/api/admin/oidc/applications`)
+
+| Method | Path | Permission | Description |
+|--------|------|------------|-------------|
+| GET | `/` | `Applications.Read` | List applications |
+| POST | `/` | `Applications.Create` | Create application |
+| DELETE | `/{clientId}` | `Applications.Delete` | Delete application |
+| POST | `/{clientId}/rotate-secret` | `Applications.Rotate` | Rotate client secret |
+
+### OIDC Scopes (`/api/admin/oidc/scopes`)
+
+| Method | Path | Permission | Description |
+|--------|------|------------|-------------|
+| GET | `/` | `Scopes.Read` | List scopes |
+| POST | `/` | `Scopes.Create` | Create scope |
+| DELETE | `/{scopeName}` | `Scopes.Delete` | Delete scope |
+
+### OIDC Authorizations (`/api/admin/oidc/authorizations`)
+
+| Method | Path | Permission | Description |
+|--------|------|------------|-------------|
+| GET | `/` | `Authorizations.Read` | List (?userId, ?clientId) |
+| DELETE | `/{id}` | `Authorizations.Revoke` | Revoke authorization |
+| DELETE | `/user/{userId}` | `Authorizations.Revoke` | Revoke all for user |
+
+## Database tables
+
+All tables are prefixed with `oidc_` (configurable via `GranitOpenIddictDbProperties`):
+
+| Table | Entity |
+|-------|--------|
+| `oidc_users` | GranitUser |
+| `oidc_roles` | GranitRole |
+| `oidc_user_roles` | IdentityUserRole |
+| `oidc_user_claims` | IdentityUserClaim |
+| `oidc_user_logins` | IdentityUserLogin |
+| `oidc_user_tokens` | IdentityUserToken |
+| `oidc_role_claims` | IdentityRoleClaim |
+| `oidc_user_groups` | GranitUserGroup |
+| `oidc_user_group_members` | GranitUserGroupMember |
+| `oidc_applications` | GranitOpenIddictApplication |
+| `oidc_authorizations` | GranitOpenIddictAuthorization |
+| `oidc_scopes` | GranitOpenIddictScope |
+| `oidc_tokens` | GranitOpenIddictToken |

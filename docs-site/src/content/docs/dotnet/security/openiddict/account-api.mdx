@@ -1,0 +1,172 @@
+---
+title: "Account Self-service API"
+description: REST API for user registration, profile management, password flows, TOTP 2FA, external logins, passkeys, and GDPR account deletion.
+sidebar:
+  order: 4
+  label: Account API
+---
+
+The account self-service API is available at `/api/account`. All endpoints use
+`MapGranitGroup` with automatic FluentValidation.
+
+## Registration and email confirmation
+
+### Register
+
+```
+POST /api/account/register
+```
+
+Creates a new user account. Sends a confirmation email via `IEmailSender`.
+Publishes `UserRegisteredEto` via `IDistributedEventBus`.
+
+**Request:**
+
+```json
+{
+  "email": "alice@example.com",
+  "password": "MyStr0ng!Pass",
+  "firstName": "Alice",
+  "lastName": "Doe"
+}
+```
+
+**Responses:**
+- `201 Created` — `{ "userId": "...", "requiresEmailConfirmation": true }`
+- `409 Conflict` — email already taken
+- `422 Validation` — invalid email or weak password
+
+### Confirm email
+
+```
+GET /api/account/confirm-email?userId=...&token=...
+```
+
+Validates the token from the confirmation email. Returns `204` on success.
+
+## Profile
+
+```
+GET  /api/account/profile        → AccountProfileResponse
+PUT  /api/account/profile        → AccountProfileResponse
+```
+
+Returns and updates `firstName`, `lastName`. Also exposes `email`, `emailConfirmed`,
+`twoFactorEnabled`, `hasPassword`, `externalLogins[]`.
+
+## Password management
+
+| Endpoint | Auth | Description |
+|----------|------|-------------|
+| `POST /change-password` | Required | Validates current password, sets new one |
+| `POST /forgot-password` | Anonymous | Always returns 202 (prevents enumeration) |
+| `POST /reset-password` | Anonymous | Validates token from email, sets new password |
+
+## Two-factor authentication (TOTP)
+
+The 2FA flow is **stateless** (no cookies or server-side sessions):
+
+### Setup flow
+
+1. `GET /two-factor` — returns status (`isEnabled`, `hasAuthenticatorApp`, `recoveryCodesLeft`)
+2. `GET /two-factor/authenticator-key` — returns `sharedKey` + `qrCodeUri` for authenticator app
+3. `POST /two-factor/enable` — validates TOTP code, enables 2FA, returns recovery codes
+4. `POST /two-factor/disable` — disables 2FA
+5. `POST /two-factor/recovery-codes` — generates 10 new single-use recovery codes
+
+### Login flow with 2FA
+
+When a user with 2FA logs in via `POST /connect/token` (password grant):
+
+1. Server returns `202` + `challenge_token` (short-lived JWT, 5 min TTL)
+2. Client sends `POST /connect/token` with `grant_type=urn:granit:grant_type:two_factor`,
+   `challenge_token`, and `totp_code`
+3. Server validates TOTP code and issues standard access + refresh tokens
+
+Recovery codes can be used instead of TOTP codes during step 2.
+
+## External logins
+
+### List linked providers
+
+```
+GET /api/account/external-logins → [{ "loginProvider": "Google", ... }]
+```
+
+### Link a provider (OAuth challenge)
+
+```
+POST /api/account/external-logins/challenge/{provider}
+```
+
+Validates that the provider is configured in `GranitOpenIddictClientOptions`.
+The actual OAuth redirect is handled by the OpenIddict client middleware.
+
+### OAuth callback
+
+```
+GET /api/account/external-logins/callback?provider=Google
+```
+
+Processes the OAuth callback. Three scenarios:
+- **Existing user with linked provider** → authenticates
+- **Existing user with matching email** → links provider and authenticates
+- **No existing user** → auto-registers if `AutoRegisterExternalUsers = true`, otherwise 403
+
+### Unlink a provider
+
+```
+DELETE /api/account/external-logins/{provider}
+```
+
+Removes the provider link. Returns `400` if it's the last login method and no password is set.
+
+## Passkeys (WebAuthn / FIDO2)
+
+| Endpoint | Auth | Description |
+|----------|------|-------------|
+| `GET /passkeys` | Required | List registered passkeys |
+| `POST /passkeys/register/begin` | Required | WebAuthn registration challenge |
+| `POST /passkeys/register/complete` | Required | Complete registration |
+| `POST /passkeys/assertion/begin` | Anonymous | WebAuthn assertion challenge |
+| `PATCH /passkeys/{id}` | Required | Rename passkey |
+| `DELETE /passkeys/{id}` | Required | Delete passkey |
+
+Both `register/begin` and `assertion/begin` return options with `mediation: "conditional"`
+for browser-native passkey autofill (Conditional UI).
+
+Login via passkey uses `grant_type=urn:granit:grant_type:passkey` at the token endpoint.
+
+## Account deletion (GDPR)
+
+```
+POST /api/account/delete
+```
+
+Requires password confirmation. Triggers:
+1. Soft-delete (`IsDeleted = true`, `DeletedAt`, `DeletedBy`)
+2. Revokes all active tokens
+3. Publishes `AccountDeletedEto` via `IDistributedEventBus`
+4. Audit log entry
+
+Returns `202 Accepted` — downstream cleanup is asynchronous via event subscribers.
+
+## Session management
+
+### Heartbeat
+
+```
+POST /api/account/session/heartbeat
+```
+
+Updates `LastActivityAt` in the distributed cache for idle session tracking.
+No-op for sessions with `remember_me` claim.
+
+### Back to impersonator
+
+```
+POST /api/account/session/back-to-impersonator
+```
+
+Ends an impersonation session and returns fresh tokens for the original admin.
+Returns `400` if the current session is not an impersonation.

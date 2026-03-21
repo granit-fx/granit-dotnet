@@ -1,0 +1,154 @@
+---
+title: "Advanced Features"
+description: Multi-tenancy, impersonation, idle session timeout, background jobs, and declarative seeding for the OpenIddict module.
+sidebar:
+  order: 5
+  label: Advanced
+---
+
+## Multi-tenancy
+
+All OpenIddict entities implement `IMultiTenant`:
+
+- `GranitOpenIddictApplication`
+- `GranitOpenIddictAuthorization`
+- `GranitOpenIddictScope`
+- `GranitOpenIddictToken`
+
+Tenant filters are applied automatically by `ApplyGranitConventions` in the DbContext.
+Applications with `TenantId = null` are **global** (visible to all tenants).
+
+### Entity caching
+
+OpenIddict's built-in entity cache uses `ClientId` as the sole cache key. In multi-tenant
+setups, two tenants with the same `ClientId` would share cached data — a **security risk**.
+
+Entity caching is **disabled by default**. Enable only for single-tenant deployments:
+
+```json
+{ "OpenIddict": { "EnableEntityCaching": true } }
+```
+
+## Impersonation
+
+Administrators can act as another user without knowing their password.
+
+### Flow
+
+1. Admin calls `POST /api/admin/users/{userId}/impersonate`
+2. Server issues a short-lived token (max 1h) with `impersonator_id` and `impersonator_name` claims
+3. Admin uses the impersonation token for API calls
+4. When done, calls `POST /api/account/session/back-to-impersonator` to get fresh admin tokens
+
+### Security constraints
+
+- **No chaining**: an impersonated token cannot impersonate another user
+- **Duration**: max 1h, hardcoded, non-configurable
+- **Audit**: mandatory `IAuditLogWriter` entry on every impersonation
+- **Transparency (GDPR/SOC2)**: `UserImpersonatedEto` published via `IDistributedEventBus` —
+  `Granit.Notifications` sends a notification to the impersonated user
+
+### Detecting impersonation in code
+
+```csharp
+using Granit.OpenIddict.Extensions;
+
+if (httpContext.User.IsImpersonated())
+{
+    string? adminId = httpContext.User.FindImpersonatorUserId();
+    string? adminName = httpContext.User.FindImpersonatorName();
+}
+```
+
+## Idle session timeout
+
+Automatically revokes refresh tokens when a user session has been inactive longer
+than a configurable timeout. Disabled by default (`0` = off).
+
+### How it works
+
+1. **Frontend** calls `POST /api/account/session/heartbeat` periodically (e.g., every 5 min)
+2. **Heartbeat endpoint** writes `UserSessionActivity` to `IDistributedCache` with key
+   `session:{userId}:{jti}` and TTL = timeout + 5 min buffer
+3. **Background job** (`openiddict-idle-session-enforcement`, every 5 min) scans active
+   refresh tokens and checks if the cache entry still exists
+4. **Missing cache entry** = session idle → refresh token revoked
+
+### Configuration
+
+```json
+{ "OpenIddict": { "IdleSessionTimeout": "30" } }
+```
+
+The value is in **minutes** and configurable per-tenant at runtime via `Granit.Settings`.
+
+Sessions with `remember_me` claim are excluded from idle timeout.
+
+## Background jobs
+
+Two `[RecurringJob]` handlers are provided by `Granit.OpenIddict.BackgroundJobs`:
+
+| Job | Cron | Description |
+|-----|------|-------------|
+| `openiddict-token-cleanup` | `0 * * * *` (hourly) | Prunes expired tokens and orphaned authorizations |
+| `openiddict-idle-session-enforcement` | `*/5 * * * *` (every 5 min) | Revokes refresh tokens for idle sessions |
+
+Both are concurrency-safe via Wolverine Outbox. Cron schedules are overridable:
+
+```json
+{
+  "BackgroundJobs": {
+    "Jobs": {
+      "openiddict-token-cleanup": "0 */2 * * *",
+      "openiddict-idle-session-enforcement": "*/10 * * * *"
+    }
+  }
+}
+```
+
+Without `Granit.OpenIddict.BackgroundJobs`, expired tokens accumulate (acceptable in dev).
+
+## Declarative seeding
+
+OIDC applications and scopes can be seeded at startup via configuration:
+
+```json
+{
+  "OpenIddict": {
+    "Seeding": {
+      "Applications": [
+        {
+          "ClientId": "my-spa",
+          "ClientSecret": null,
+          "DisplayName": "My SPA",
+          "Permissions": [
+            "ept:authorization", "ept:token", "ept:logout",
+            "gt:authorization_code", "rst:code",
+            "scp:openid", "scp:profile", "scp:email", "scp:offline_access"
+          ],
+          "RedirectUris": ["https://localhost:5173/callback"],
+          "PostLogoutRedirectUris": ["https://localhost:5173"]
+        }
+      ],
+      "Scopes": [
+        { "Name": "api", "DisplayName": "API Access", "Resources": ["my-api"] }
+      ]
+    }
+  }
+}
+```
+
+The `OpenIddictSeedContributor` (IDataSeedContributor) performs **idempotent upserts**
+based on `ClientId` / `Name`. Running the application twice produces no duplicates.
+
+## Integration events
+
+Three integration events are published via `IDistributedEventBus`:
+
+| Event | When |
+|-------|------|
+| `UserRegisteredEto` | New user registers (self-service or external login) |
+| `AccountDeletedEto` | User deletes their account (GDPR) |
+| `UserImpersonatedEto` | Admin impersonates a user |
+
+In-process delivery by default; Wolverine Outbox ensures durability in production.
