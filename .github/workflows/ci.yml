@@ -427,9 +427,9 @@ jobs:
 
       - name: Check for drift
         run: |
-          if ! git diff --quiet .mcp-code-index.json; then
+          if ! git diff --quiet -I '"generatedAt"' .mcp-code-index.json; then
             echo "::error::.mcp-code-index.json is out of date. Run 'python3 scripts/generate-code-index.py' and commit."
-            git diff .mcp-code-index.json
+            git diff -I '"generatedAt"' .mcp-code-index.json
             exit 1
           fi
 
