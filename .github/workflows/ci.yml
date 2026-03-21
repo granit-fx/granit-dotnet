@@ -275,6 +275,7 @@ jobs:
             /d:sonar.issue.ignore.multicriteria.e3.resourceKey="**/Tests/**" \
             /d:sonar.issue.ignore.multicriteria.e4.ruleKey="csharpsquid:S3329" \
             /d:sonar.issue.ignore.multicriteria.e4.resourceKey="**/AesCacheValueEncryptor.cs" \
+            /d:sonar.python.version="3.12" \
             /d:sonar.qualitygate.wait="true"
           dotnet build -c $CONFIGURATION
           dotnet sonarscanner end /d:sonar.token="${SONAR_TOKEN}"
