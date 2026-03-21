@@ -404,6 +404,12 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 **Module:** `Granit.Webhooks.Endpoints`
 **Prefix:** `webhooks`
 
+### Module Config
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/config` | GetWebhooksConfig | `Webhooks.Subscriptions.Manage` |
+
 ### Event Types
 
 | Method | Route | Operation | Permission |
@@ -502,7 +508,7 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 | Templating | 16 | Permission-based |
 | Timeline | 3 | Permission-based |
 | Validation | 3 | Anonymous |
-| Webhooks | 15 | Permission-based |
+| Webhooks | 16 | Permission-based |
 | Workflow | 4 | Permission-based |
 | AI | 7 | Permission-based |
 | **Total** | **~150+** | |
