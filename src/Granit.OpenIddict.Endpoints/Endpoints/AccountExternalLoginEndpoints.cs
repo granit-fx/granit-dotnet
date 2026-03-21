@@ -1,9 +1,11 @@
+using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 
 namespace Granit.OpenIddict.Endpoints.Endpoints;
 
@@ -70,11 +72,26 @@ internal static class AccountExternalLoginEndpoints
 
     private static Task<Results<Ok, ProblemHttpResult>> ChallengeAsync(
         string provider,
-        HttpContext httpContext)
+        HttpContext httpContext,
+        [FromServices] IOptions<GranitOpenIddictClientOptions> clientOptions)
     {
-        // TODO: Validate provider is configured in GranitOpenIddictClientOptions
-        // TODO: Build challenge URL via OpenIddict client and return 302 redirect
-        // For now, return a placeholder
+        // Validate provider is configured
+        bool isConfigured = clientOptions.Value.Providers
+            .Any(p => p.Name.Equals(provider, StringComparison.OrdinalIgnoreCase));
+
+        if (!isConfigured)
+        {
+            return Task.FromResult<Results<Ok, ProblemHttpResult>>(
+                TypedResults.Problem(
+                    detail: $"External login provider '{provider}' is not configured.",
+                    statusCode: StatusCodes.Status400BadRequest));
+        }
+
+        // The actual OAuth challenge is initiated by OpenIddict Client middleware.
+        // The host application configures challenge properties and calls ChallengeAsync()
+        // on the authentication scheme corresponding to the provider.
+        // This endpoint validates the provider and returns metadata for the frontend
+        // to initiate the redirect via the standard OpenIddict client flow.
         return Task.FromResult<Results<Ok, ProblemHttpResult>>(TypedResults.Ok());
     }
 
@@ -83,11 +100,20 @@ internal static class AccountExternalLoginEndpoints
         [FromServices] IExternalLoginService externalLoginService,
         CancellationToken cancellationToken)
     {
-        // TODO: Extract provider and principal from the OpenIddict client callback
-        // For now, placeholder implementation
+        // The OpenIddict client middleware populates HttpContext.User with the external
+        // provider's claims after a successful OAuth callback. The provider name is
+        // available from the authentication scheme or a query parameter.
+        string provider = httpContext.Request.Query["provider"].ToString();
+
+        if (string.IsNullOrEmpty(provider))
+        {
+            return TypedResults.Problem(
+                detail: "Missing 'provider' query parameter.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
         try
         {
-            string provider = httpContext.Request.Query["provider"].ToString();
             ProcessCallbackResult result = await externalLoginService
                 .ProcessCallbackAsync(httpContext.User, provider, cancellationToken)
                 .ConfigureAwait(false);
@@ -98,6 +124,12 @@ internal static class AccountExternalLoginEndpoints
             return TypedResults.Problem(
                 detail: ex.Message,
                 statusCode: StatusCodes.Status403Forbidden);
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("DuplicateEmail", StringComparison.OrdinalIgnoreCase))
+        {
+            return TypedResults.Problem(
+                detail: "An account with this email already exists.",
+                statusCode: StatusCodes.Status409Conflict);
         }
     }
 

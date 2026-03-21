@@ -47,16 +47,42 @@ internal static partial class OpenIddictIdleSessionEnforcementHandler
 
         Log.IdleSessionEnforcementStarted(logger, timeoutMinutes);
 
-        // TODO: Iterate active refresh tokens via IOpenIddictTokenManager.ListAsync(),
-        // check if the corresponding cache key session:{userId}:{jti} still exists,
-        // and revoke tokens whose cache entry has expired.
-        // This requires OpenIddict's ListAsync with a filter for refresh tokens,
-        // which depends on the store implementation.
-        // For now, the cache TTL handles cleanup automatically —
-        // expired entries mean the heartbeat stopped, and the next token refresh
-        // will fail because the session is no longer tracked.
+        // Strategy: the heartbeat endpoint sets a cache key session:{userId}:{jti}
+        // with TTL = IdleSessionTimeout + 5 min. When the cache entry expires naturally
+        // (user stopped sending heartbeats), the session is considered idle.
+        //
+        // This job iterates active refresh tokens and checks whether their corresponding
+        // cache entry still exists. If not, the refresh token is revoked.
+        int revokedCount = 0;
 
-        Log.IdleSessionEnforcementCompleted(logger);
+        await foreach (object token in tokenManager.ListAsync(int.MaxValue, 0, cancellationToken))
+        {
+            string? tokenType = await tokenManager.GetTypeAsync(token, cancellationToken).ConfigureAwait(false);
+            if (tokenType != global::OpenIddict.Abstractions.OpenIddictConstants.TokenTypeHints.RefreshToken)
+            {
+                continue;
+            }
+
+            string? subject = await tokenManager.GetSubjectAsync(token, cancellationToken).ConfigureAwait(false);
+            string? tokenId = await tokenManager.GetIdAsync(token, cancellationToken).ConfigureAwait(false);
+            if (subject is null || tokenId is null)
+            {
+                continue;
+            }
+
+            // Check if session cache entry still exists
+            string cacheKey = $"session:{subject}:{tokenId}";
+            byte[]? cachedEntry = await cache.GetAsync(cacheKey, cancellationToken).ConfigureAwait(false);
+
+            if (cachedEntry is null)
+            {
+                // Cache entry expired → session idle → revoke refresh token
+                await tokenManager.TryRevokeAsync(token, cancellationToken).ConfigureAwait(false);
+                revokedCount++;
+            }
+        }
+
+        Log.IdleSessionEnforcementCompleted(logger, revokedCount);
     }
 
     private static partial class Log
@@ -67,7 +93,7 @@ internal static partial class OpenIddictIdleSessionEnforcementHandler
         [LoggerMessage(Level = LogLevel.Debug, Message = "Idle session enforcement started (timeout = {TimeoutMinutes} min).")]
         public static partial void IdleSessionEnforcementStarted(ILogger logger, int timeoutMinutes);
 
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Idle session enforcement completed.")]
-        public static partial void IdleSessionEnforcementCompleted(ILogger logger);
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Idle session enforcement completed. Revoked {RevokedCount} refresh tokens.")]
+        public static partial void IdleSessionEnforcementCompleted(ILogger logger, int revokedCount);
     }
 }

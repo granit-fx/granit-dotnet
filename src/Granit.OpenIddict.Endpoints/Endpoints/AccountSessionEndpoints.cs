@@ -66,18 +66,23 @@ internal static class AccountSessionEndpoints
         return TypedResults.NoContent();
     }
 
-    private static Task<Results<Ok, ProblemHttpResult>> BackToImpersonatorAsync(
-        HttpContext httpContext)
+    private static async Task<Results<Ok<ImpersonationResult>, ProblemHttpResult>> BackToImpersonatorAsync(
+        HttpContext httpContext,
+        [FromServices] IImpersonationService impersonationService,
+        CancellationToken cancellationToken = default)
     {
         if (!httpContext.User.IsImpersonated())
         {
-            return Task.FromResult<Results<Ok, ProblemHttpResult>>(
-                TypedResults.Problem(
-                    detail: "Current session is not an impersonation session.",
-                    statusCode: StatusCodes.Status400BadRequest));
+            return TypedResults.Problem(
+                detail: "Current session is not an impersonation session.",
+                statusCode: StatusCodes.Status400BadRequest);
         }
 
-        // TODO: Read impersonator_id, issue fresh admin tokens via OpenIddict, revoke impersonation refresh token
-        return Task.FromResult<Results<Ok, ProblemHttpResult>>(TypedResults.Ok());
+        string impersonatorId = httpContext.User.FindImpersonatorUserId()!;
+        ImpersonationResult result = await impersonationService
+            .BackToImpersonatorAsync(impersonatorId, cancellationToken)
+            .ConfigureAwait(false);
+
+        return TypedResults.Ok(result);
     }
 }

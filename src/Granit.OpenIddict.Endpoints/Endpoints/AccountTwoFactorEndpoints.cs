@@ -21,7 +21,7 @@ internal static class AccountTwoFactorEndpoints
             .Produces<AccountTwoFactorStatusResponse>()
             .RequireAuthorization();
 
-        group.MapGet("/two-factor/authenticator-key", GetAuthenticatorKeyAsync)
+        group.MapGet("/two-factor/authenticator-key", (Delegate)GetAuthenticatorKeyAsync)
             .WithName("GetAuthenticatorKey")
             .WithSummary("Returns the TOTP shared key and QR code URI.")
             .WithDescription(
@@ -61,45 +61,67 @@ internal static class AccountTwoFactorEndpoints
         return group;
     }
 
-    private static Task<Ok<AccountTwoFactorStatusResponse>> GetStatusAsync(
-        HttpContext httpContext)
-    {
-        // TODO: Resolve from UserManager<GranitUser>.GetTwoFactorEnabledAsync()
-        return Task.FromResult(TypedResults.Ok(new AccountTwoFactorStatusResponse(false, false, 0)));
-    }
-
-    private static Task<Ok<AccountAuthenticatorKeyResponse>> GetAuthenticatorKeyAsync(
+    private static async Task<Ok<AccountTwoFactorStatusResponse>> GetStatusAsync(
         HttpContext httpContext,
-[FromServices] ITotpService totpService)
+        [FromServices] ITwoFactorService twoFactorService,
+        CancellationToken cancellationToken)
     {
-        string sharedKey = totpService.GenerateSharedKey();
-        string? email = httpContext.User.FindFirst("email")?.Value ?? "user";
-        string qrCodeUri = totpService.GetQrCodeUri(email, sharedKey);
-
-        return Task.FromResult(TypedResults.Ok(new AccountAuthenticatorKeyResponse(sharedKey, qrCodeUri)));
+        string userId = httpContext.User.FindFirst("sub")!.Value;
+        TwoFactorStatus status = await twoFactorService
+            .GetStatusAsync(userId, cancellationToken).ConfigureAwait(false);
+        return TypedResults.Ok(new AccountTwoFactorStatusResponse(
+            status.IsEnabled, status.HasAuthenticatorApp, status.RecoveryCodesLeft));
     }
 
-    private static Task<Results<Ok<AccountTwoFactorEnableResponse>, ProblemHttpResult>> EnableAsync(
+    private static async Task<Ok<AccountAuthenticatorKeyResponse>> GetAuthenticatorKeyAsync(
+        HttpContext httpContext,
+        [FromServices] ITwoFactorService twoFactorService,
+        CancellationToken cancellationToken)
+    {
+        string userId = httpContext.User.FindFirst("sub")!.Value;
+        AuthenticatorKeyInfo keyInfo = await twoFactorService
+            .GetAuthenticatorKeyAsync(userId, cancellationToken).ConfigureAwait(false);
+        return TypedResults.Ok(new AccountAuthenticatorKeyResponse(keyInfo.SharedKey, keyInfo.QrCodeUri));
+    }
+
+    private static async Task<Results<Ok<AccountTwoFactorEnableResponse>, ProblemHttpResult>> EnableAsync(
         AccountTwoFactorEnableRequest request,
         HttpContext httpContext,
-[FromServices] ITotpService totpService)
+        [FromServices] ITwoFactorService twoFactorService,
+        CancellationToken cancellationToken)
     {
-        // TODO: Validate code against stored shared key via UserManager
-        // For now, placeholder implementation
-        return Task.FromResult<Results<Ok<AccountTwoFactorEnableResponse>, ProblemHttpResult>>(
-            TypedResults.Ok(new AccountTwoFactorEnableResponse([])));
+        string userId = httpContext.User.FindFirst("sub")!.Value;
+
+        try
+        {
+            IReadOnlyList<string> recoveryCodes = await twoFactorService
+                .EnableAsync(userId, request.Code, cancellationToken).ConfigureAwait(false);
+            return TypedResults.Ok(new AccountTwoFactorEnableResponse(recoveryCodes));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status400BadRequest);
+        }
     }
 
-    private static Task<NoContent> DisableAsync(HttpContext httpContext)
+    private static async Task<NoContent> DisableAsync(
+        HttpContext httpContext,
+        [FromServices] ITwoFactorService twoFactorService,
+        CancellationToken cancellationToken)
     {
-        // TODO: Disable via UserManager<GranitUser>.SetTwoFactorEnabledAsync(user, false)
-        return Task.FromResult(TypedResults.NoContent());
+        string userId = httpContext.User.FindFirst("sub")!.Value;
+        await twoFactorService.DisableAsync(userId, cancellationToken).ConfigureAwait(false);
+        return TypedResults.NoContent();
     }
 
-    private static Task<Ok<AccountRecoveryCodesResponse>> GenerateRecoveryCodesAsync(
-        HttpContext httpContext)
+    private static async Task<Ok<AccountRecoveryCodesResponse>> GenerateRecoveryCodesAsync(
+        HttpContext httpContext,
+        [FromServices] ITwoFactorService twoFactorService,
+        CancellationToken cancellationToken)
     {
-        // TODO: Generate via UserManager<GranitUser>.GenerateNewTwoFactorRecoveryCodesAsync(user, 10)
-        return Task.FromResult(TypedResults.Ok(new AccountRecoveryCodesResponse([])));
+        string userId = httpContext.User.FindFirst("sub")!.Value;
+        IReadOnlyList<string> codes = await twoFactorService
+            .GenerateRecoveryCodesAsync(userId, cancellationToken).ConfigureAwait(false);
+        return TypedResults.Ok(new AccountRecoveryCodesResponse(codes));
     }
 }
