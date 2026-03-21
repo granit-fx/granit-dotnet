@@ -1,0 +1,29 @@
+{
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:OpenIddict": "OpenIddict 인증",
+    "Permission:OpenIddict.Users.Read": "사용자 조회",
+    "Permission:OpenIddict.Users.Create": "사용자 생성",
+    "Permission:OpenIddict.Users.Manage": "사용자 관리 (조회, 수정, 활성화/비활성화)",
+    "Permission:OpenIddict.Users.Delete": "사용자 삭제",
+    "Permission:OpenIddict.Users.Impersonate": "사용자 대리 로그인",
+    "Permission:OpenIddict.Roles.Read": "역할 조회",
+    "Permission:OpenIddict.Roles.Create": "역할 생성",
+    "Permission:OpenIddict.Roles.Delete": "역할 삭제",
+    "Permission:OpenIddict.Groups.Read": "그룹 조회",
+    "Permission:OpenIddict.Groups.Create": "그룹 생성",
+    "Permission:OpenIddict.Groups.Manage": "그룹 관리 (조회, 멤버 수정)",
+    "Permission:OpenIddict.Groups.Delete": "그룹 삭제",
+    "Permission:OpenIddict.Applications.Read": "OIDC 애플리케이션 조회",
+    "Permission:OpenIddict.Applications.Create": "OIDC 애플리케이션 생성",
+    "Permission:OpenIddict.Applications.Manage": "OIDC 애플리케이션 관리 (조회, 수정)",
+    "Permission:OpenIddict.Applications.Delete": "OIDC 애플리케이션 삭제",
+    "Permission:OpenIddict.Applications.Rotate": "애플리케이션 비밀키 순환",
+    "Permission:OpenIddict.Scopes.Read": "OIDC 스코프 조회",
+    "Permission:OpenIddict.Scopes.Create": "OIDC 스코프 생성",
+    "Permission:OpenIddict.Scopes.Manage": "OIDC 스코프 관리 (조회, 수정)",
+    "Permission:OpenIddict.Scopes.Delete": "OIDC 스코프 삭제",
+    "Permission:OpenIddict.Authorizations.Read": "OIDC 인가 조회",
+    "Permission:OpenIddict.Authorizations.Revoke": "OIDC 인가 취소"
+  }
+}

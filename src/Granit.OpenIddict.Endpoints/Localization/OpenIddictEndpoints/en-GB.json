@@ -1,0 +1,7 @@
+{
+  "culture": "en-GB",
+  "texts": {
+    "Permission:OpenIddict.Authorizations.Revoke": "Revoke OIDC authorisations",
+    "Permission:OpenIddict.Authorizations.Read": "Read OIDC authorisations"
+  }
+}

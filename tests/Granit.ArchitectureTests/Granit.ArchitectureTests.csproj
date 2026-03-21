@@ -110,6 +110,7 @@
     <ProjectReference Include="..\..\src\Granit.Identity.GoogleCloud\Granit.Identity.GoogleCloud.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.EntraId\Granit.Identity.EntraId.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Keycloak\Granit.Identity.Keycloak.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.OpenIddict\Granit.Identity.OpenIddict.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging\Granit.Imaging.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging.AI\Granit.Imaging.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging.MagickNet\Granit.Imaging.MagickNet.csproj" />
@@ -143,6 +144,10 @@
     <ProjectReference Include="..\..\src\Granit.Notifications.Zulip\Granit.Notifications.Zulip.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.AI\Granit.Notifications.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.Wolverine\Granit.Notifications.Wolverine.csproj" />
+    <ProjectReference Include="..\..\src\Granit.OpenIddict\Granit.OpenIddict.csproj" />
+    <ProjectReference Include="..\..\src\Granit.OpenIddict.BackgroundJobs\Granit.OpenIddict.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\..\src\Granit.OpenIddict.Endpoints\Granit.OpenIddict.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.OpenIddict.EntityFrameworkCore\Granit.OpenIddict.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Observability\Granit.Observability.csproj" />
     <ProjectReference Include="..\..\src\Granit.Observability.AI\Granit.Observability.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence\Granit.Persistence.csproj" />

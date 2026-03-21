@@ -1,0 +1,29 @@
+{
+  "culture": "sv",
+  "texts": {
+    "PermissionGroup:OpenIddict": "OpenIddict Identitet",
+    "Permission:OpenIddict.Users.Read": "Visa användare",
+    "Permission:OpenIddict.Users.Create": "Skapa användare",
+    "Permission:OpenIddict.Users.Manage": "Hantera användare (visa, redigera, aktivera/inaktivera)",
+    "Permission:OpenIddict.Users.Delete": "Ta bort användare",
+    "Permission:OpenIddict.Users.Impersonate": "Agera som en användare",
+    "Permission:OpenIddict.Roles.Read": "Visa roller",
+    "Permission:OpenIddict.Roles.Create": "Skapa roller",
+    "Permission:OpenIddict.Roles.Delete": "Ta bort roller",
+    "Permission:OpenIddict.Groups.Read": "Visa grupper",
+    "Permission:OpenIddict.Groups.Create": "Skapa grupper",
+    "Permission:OpenIddict.Groups.Manage": "Hantera grupper (visa, redigera medlemmar)",
+    "Permission:OpenIddict.Groups.Delete": "Ta bort grupper",
+    "Permission:OpenIddict.Applications.Read": "Visa OIDC-applikationer",
+    "Permission:OpenIddict.Applications.Create": "Skapa OIDC-applikationer",
+    "Permission:OpenIddict.Applications.Manage": "Hantera OIDC-applikationer (visa, redigera)",
+    "Permission:OpenIddict.Applications.Delete": "Ta bort OIDC-applikationer",
+    "Permission:OpenIddict.Applications.Rotate": "Rotera applikationshemligheter",
+    "Permission:OpenIddict.Scopes.Read": "Visa OIDC-scopes",
+    "Permission:OpenIddict.Scopes.Create": "Skapa OIDC-scopes",
+    "Permission:OpenIddict.Scopes.Manage": "Hantera OIDC-scopes (visa, redigera)",
+    "Permission:OpenIddict.Scopes.Delete": "Ta bort OIDC-scopes",
+    "Permission:OpenIddict.Authorizations.Read": "Visa OIDC-auktoriseringar",
+    "Permission:OpenIddict.Authorizations.Revoke": "Återkalla OIDC-auktoriseringar"
+  }
+}

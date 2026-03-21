@@ -1,0 +1,29 @@
+{
+  "culture": "en",
+  "texts": {
+    "PermissionGroup:OpenIddict": "OpenIddict Identity",
+    "Permission:OpenIddict.Users.Read": "Read users",
+    "Permission:OpenIddict.Users.Create": "Create users",
+    "Permission:OpenIddict.Users.Manage": "Manage users (read, update, enable/disable)",
+    "Permission:OpenIddict.Users.Delete": "Delete users",
+    "Permission:OpenIddict.Users.Impersonate": "Impersonate users",
+    "Permission:OpenIddict.Roles.Read": "Read roles",
+    "Permission:OpenIddict.Roles.Create": "Create roles",
+    "Permission:OpenIddict.Roles.Delete": "Delete roles",
+    "Permission:OpenIddict.Groups.Read": "Read groups",
+    "Permission:OpenIddict.Groups.Create": "Create groups",
+    "Permission:OpenIddict.Groups.Manage": "Manage groups (read, update members)",
+    "Permission:OpenIddict.Groups.Delete": "Delete groups",
+    "Permission:OpenIddict.Applications.Read": "Read OIDC applications",
+    "Permission:OpenIddict.Applications.Create": "Create OIDC applications",
+    "Permission:OpenIddict.Applications.Manage": "Manage OIDC applications (read, update)",
+    "Permission:OpenIddict.Applications.Delete": "Delete OIDC applications",
+    "Permission:OpenIddict.Applications.Rotate": "Rotate application secrets",
+    "Permission:OpenIddict.Scopes.Read": "Read OIDC scopes",
+    "Permission:OpenIddict.Scopes.Create": "Create OIDC scopes",
+    "Permission:OpenIddict.Scopes.Manage": "Manage OIDC scopes (read, update)",
+    "Permission:OpenIddict.Scopes.Delete": "Delete OIDC scopes",
+    "Permission:OpenIddict.Authorizations.Read": "Read OIDC authorizations",
+    "Permission:OpenIddict.Authorizations.Revoke": "Revoke OIDC authorizations"
+  }
+}

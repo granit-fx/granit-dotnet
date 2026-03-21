@@ -8,6 +8,7 @@
     <Project Path="src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj" />
     <Project Path="src/Granit.Analyzers/Granit.Analyzers.csproj" />
     <Project Path="src/Granit.AI/Granit.AI.csproj" />
+    <Project Path="src/bundles/Granit.Bundle.OpenIddict/Granit.Bundle.OpenIddict.csproj" />
 
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
     <Project Path="src/Granit.AI.EntityFrameworkCore/Granit.AI.EntityFrameworkCore.csproj" />
@@ -87,6 +88,7 @@
     <Project Path="src/Granit.Identity.EntityFrameworkCore/Granit.Identity.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Identity.EntraId/Granit.Identity.EntraId.csproj" />
     <Project Path="src/Granit.Identity.Keycloak/Granit.Identity.Keycloak.csproj" />
+    <Project Path="src/Granit.Identity.OpenIddict/Granit.Identity.OpenIddict.csproj" />
     <Project Path="src/Granit.Identity/Granit.Identity.csproj" />
     <Project Path="src/Granit.Imaging.AI/Granit.Imaging.AI.csproj" />
     <Project Path="src/Granit.Imaging.MagickNet/Granit.Imaging.MagickNet.csproj" />
@@ -124,6 +126,10 @@
     <Project Path="src/Granit.Notifications/Granit.Notifications.csproj" />
     <Project Path="src/Granit.Observability/Granit.Observability.csproj" />
     <Project Path="src/Granit.Observability.AI/Granit.Observability.AI.csproj" />
+    <Project Path="src/Granit.OpenIddict.BackgroundJobs/Granit.OpenIddict.BackgroundJobs.csproj" />
+    <Project Path="src/Granit.OpenIddict.Endpoints/Granit.OpenIddict.Endpoints.csproj" />
+    <Project Path="src/Granit.OpenIddict.EntityFrameworkCore/Granit.OpenIddict.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.OpenIddict/Granit.OpenIddict.csproj" />
     <Project Path="src/Granit.Persistence.Hosting/Granit.Persistence.Hosting.csproj" />
     <Project Path="src/Granit.Persistence.Migrations.Wolverine/Granit.Persistence.Migrations.Wolverine.csproj" />
     <Project Path="src/Granit.Persistence.Migrations/Granit.Persistence.Migrations.csproj" />
@@ -280,6 +286,7 @@
     <Project Path="tests/Granit.Identity.EntityFrameworkCore.Tests/Granit.Identity.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Identity.EntraId.Tests/Granit.Identity.EntraId.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Keycloak.Tests/Granit.Identity.Keycloak.Tests.csproj" />
+    <Project Path="tests/Granit.Identity.OpenIddict.Tests/Granit.Identity.OpenIddict.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Tests/Granit.Identity.Tests.csproj" />
     <Project Path="tests/Granit.Imaging.AI.Tests/Granit.Imaging.AI.Tests.csproj" />
     <Project Path="tests/Granit.Imaging.MagickNet.Tests/Granit.Imaging.MagickNet.Tests.csproj" />
@@ -317,6 +324,10 @@
     <Project Path="tests/Granit.Notifications.Zulip.Tests/Granit.Notifications.Zulip.Tests.csproj" />
     <Project Path="tests/Granit.Observability.AI.Tests/Granit.Observability.AI.Tests.csproj" />
     <Project Path="tests/Granit.Observability.Tests/Granit.Observability.Tests.csproj" />
+    <Project Path="tests/Granit.OpenIddict.BackgroundJobs.Tests/Granit.OpenIddict.BackgroundJobs.Tests.csproj" />
+    <Project Path="tests/Granit.OpenIddict.Endpoints.Tests/Granit.OpenIddict.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.OpenIddict.EntityFrameworkCore.Tests/Granit.OpenIddict.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.OpenIddict.Tests/Granit.OpenIddict.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Hosting.Tests/Granit.Persistence.Hosting.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Migrations.Tests/Granit.Persistence.Migrations.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Postgres.Tests/Granit.Persistence.Postgres.Tests.csproj" />

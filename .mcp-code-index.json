@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T15:36:15.918018+00:00",
+  "generatedAt": "2026-03-21T17:06:12.789015+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -664,6 +664,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.OpenIddict",
+      "deps": [
+        "Granit.Identity",
+        "Granit.OpenIddict.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Imaging",
       "deps": [
         "Granit.Core"
@@ -958,13 +966,6 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.OpenIddict.Client",
-      "deps": [
-        "Granit.OpenIddict"
-      ],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.OpenIddict.Endpoints",
       "deps": [
         "Granit.Http.ApiDocumentation",
@@ -979,30 +980,6 @@
       "name": "Granit.OpenIddict.EntityFrameworkCore",
       "deps": [
         "Granit.MultiTenancy",
-        "Granit.OpenIddict",
-        "Granit.Persistence"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.OpenIddict.Identity",
-      "deps": [
-        "Granit.Identity",
-        "Granit.OpenIddict.EntityFrameworkCore"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.OpenIddict.Passkeys",
-      "deps": [
-        "Granit.OpenIddict",
-        "Granit.OpenIddict.EntityFrameworkCore"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.OpenIddict.Seeding",
-      "deps": [
         "Granit.OpenIddict",
         "Granit.Persistence"
       ],
@@ -14096,6 +14073,22 @@
       "members": []
     },
     {
+      "name": "GranitIdentityOpenIddictModule",
+      "fqn": "Granit.Identity.OpenIddict.GranitIdentityOpenIddictModule",
+      "kind": "class",
+      "project": "Granit.Identity.OpenIddict",
+      "file": "src/Granit.Identity.OpenIddict/GranitIdentityOpenIddictModule.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "ImagingAIHostApplicationBuilderExtensions",
       "fqn": "Granit.Imaging.AI.Extensions.ImagingAIHostApplicationBuilderExtensions",
       "kind": "class",
@@ -17929,103 +17922,19 @@
       "members": []
     },
     {
-      "name": "ExternalClaimsMapper",
-      "fqn": "Granit.OpenIddict.Client.ExternalClaimsMapper",
-      "kind": "class",
-      "project": "Granit.OpenIddict.Client",
-      "file": "src/Granit.OpenIddict.Client/ExternalClaimsMapper.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "MapToUserProperties",
-          "kind": "method",
-          "signature": "MapToUserProperties(ClaimsPrincipal principal, string provider)",
-          "returnType": "ExternalUserProperties"
-        }
-      ]
-    },
-    {
-      "name": "ExternalUserProperties",
-      "fqn": "Granit.OpenIddict.Client.ExternalUserProperties",
-      "kind": "class",
-      "project": "Granit.OpenIddict.Client",
-      "file": "src/Granit.OpenIddict.Client/ExternalClaimsMapper.cs",
-      "line": 42,
-      "members": []
-    },
-    {
-      "name": "GranitOpenIddictClientModule",
-      "fqn": "Granit.OpenIddict.Client.GranitOpenIddictClientModule",
-      "kind": "class",
-      "project": "Granit.OpenIddict.Client",
-      "file": "src/Granit.OpenIddict.Client/GranitOpenIddictClientModule.cs",
-      "line": 10,
-      "members": []
-    },
-    {
-      "name": "ExternalProviderOptions",
-      "fqn": "Granit.OpenIddict.Client.Options.ExternalProviderOptions",
-      "kind": "class",
-      "project": "Granit.OpenIddict.Client",
-      "file": "src/Granit.OpenIddict.Client/Options/GranitOpenIddictClientOptions.cs",
-      "line": 29,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ClientId",
-          "kind": "property",
-          "signature": "string ClientId",
-          "returnType": "string"
-        },
-        {
-          "name": "ClientSecret",
-          "kind": "property",
-          "signature": "string ClientSecret",
-          "returnType": "string"
-        },
-        {
-          "name": "Scopes",
-          "kind": "property",
-          "signature": "string[] Scopes",
-          "returnType": "string[]"
-        }
-      ]
-    },
-    {
-      "name": "GranitOpenIddictClientOptions",
-      "fqn": "Granit.OpenIddict.Client.Options.GranitOpenIddictClientOptions",
-      "kind": "class",
-      "project": "Granit.OpenIddict.Client",
-      "file": "src/Granit.OpenIddict.Client/Options/GranitOpenIddictClientOptions.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "AutoRegisterExternalUsers",
-          "kind": "property",
-          "signature": "bool AutoRegisterExternalUsers",
-          "returnType": "bool"
-        },
-        {
-          "name": "Providers",
-          "kind": "property",
-          "signature": "ExternalProviderOptions[] Providers",
-          "returnType": "ExternalProviderOptions[]"
-        }
-      ]
-    },
-    {
       "name": "OpenIddictMetrics",
       "fqn": "Granit.OpenIddict.Diagnostics.OpenIddictMetrics",
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Diagnostics/OpenIddictMetrics.cs",
-      "line": 10,
+      "line": 11,
       "members": [
+        {
+          "name": "RecordTokenIssued",
+          "kind": "method",
+          "signature": "RecordTokenIssued(string? tenantId, string grantType)",
+          "returnType": "void"
+        },
         {
           "name": "RecordTokenRevoked",
           "kind": "method",
@@ -18051,6 +17960,31 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "GranitUserGroup",
+      "fqn": "Granit.OpenIddict.Domain.GranitUserGroup",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Domain/GranitUserGroup.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitUserGroupMember",
+      "fqn": "Granit.OpenIddict.Domain.GranitUserGroupMember",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Domain/GranitUserGroupMember.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "AccountAuthenticatorKeyResponse",
@@ -18180,19 +18114,19 @@
     },
     {
       "name": "GranitRole",
-      "fqn": "Granit.OpenIddict.EntityFrameworkCore.Entities.GranitRole",
+      "fqn": "Granit.OpenIddict.Entities.GranitRole",
       "kind": "class",
-      "project": "Granit.OpenIddict.EntityFrameworkCore",
-      "file": "src/Granit.OpenIddict.EntityFrameworkCore/Entities/GranitRole.cs",
-      "line": 9,
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Entities/GranitRole.cs",
+      "line": 21,
       "members": []
     },
     {
       "name": "GranitUser",
-      "fqn": "Granit.OpenIddict.EntityFrameworkCore.Entities.GranitUser",
+      "fqn": "Granit.OpenIddict.Entities.GranitUser",
       "kind": "class",
-      "project": "Granit.OpenIddict.EntityFrameworkCore",
-      "file": "src/Granit.OpenIddict.EntityFrameworkCore/Entities/GranitUser.cs",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Entities/GranitUser.cs",
       "line": 21,
       "members": [
         {
@@ -18202,31 +18136,6 @@
           "returnType": "string?"
         }
       ]
-    },
-    {
-      "name": "GranitUserGroup",
-      "fqn": "Granit.OpenIddict.EntityFrameworkCore.Entities.GranitUserGroup",
-      "kind": "class",
-      "project": "Granit.OpenIddict.EntityFrameworkCore",
-      "file": "src/Granit.OpenIddict.EntityFrameworkCore/Entities/GranitUserGroup.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "GranitUserGroupMember",
-      "fqn": "Granit.OpenIddict.EntityFrameworkCore.Entities.GranitUserGroupMember",
-      "kind": "class",
-      "project": "Granit.OpenIddict.EntityFrameworkCore",
-      "file": "src/Granit.OpenIddict.EntityFrameworkCore/Entities/GranitUserGroupMember.cs",
-      "line": 8,
-      "members": []
     },
     {
       "name": "OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions",
@@ -18250,12 +18159,12 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictModelBuilderExtensions.cs",
-      "line": 10,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureOpenIddictModule",
           "kind": "method",
-          "signature": "ConfigureOpenIddictModule(this ModelBuilder modelBuilder)",
+          "signature": "ConfigureOpenIddictModule(this ModelBuilder modelBuilder, IDataFilter? dataFilter = null)",
           "returnType": "ModelBuilder"
         }
       ]
@@ -18282,8 +18191,15 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/GranitOpenIddictEntityFrameworkCoreModule.cs",
-      "line": 25,
-      "members": []
+      "line": 30,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "AccountDeletedEto",
@@ -18317,7 +18233,7 @@
       "fqn": "Granit.OpenIddict.Extensions.ClaimsPrincipalExtensions",
       "kind": "class",
       "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Extensions/CurrentUserServiceExtensions.cs",
+      "file": "src/Granit.OpenIddict/Extensions/ClaimsPrincipalExtensions.cs",
       "line": 9,
       "members": [
         {
@@ -18334,16 +18250,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 22,
-      "members": []
-    },
-    {
-      "name": "GranitOpenIddictIdentityModule",
-      "fqn": "Granit.OpenIddict.Identity.GranitOpenIddictIdentityModule",
-      "kind": "class",
-      "project": "Granit.OpenIddict.Identity",
-      "file": "src/Granit.OpenIddict.Identity/GranitOpenIddictIdentityModule.cs",
-      "line": 25,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",
@@ -18372,6 +18279,62 @@
       "members": []
     },
     {
+      "name": "ExternalProviderOptions",
+      "fqn": "Granit.OpenIddict.Options.ExternalProviderOptions",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Options/GranitOpenIddictClientOptions.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ClientId",
+          "kind": "property",
+          "signature": "string ClientId",
+          "returnType": "string"
+        },
+        {
+          "name": "ClientSecret",
+          "kind": "property",
+          "signature": "string ClientSecret",
+          "returnType": "string"
+        },
+        {
+          "name": "Scopes",
+          "kind": "property",
+          "signature": "string[] Scopes",
+          "returnType": "string[]"
+        }
+      ]
+    },
+    {
+      "name": "GranitOpenIddictClientOptions",
+      "fqn": "Granit.OpenIddict.Options.GranitOpenIddictClientOptions",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Options/GranitOpenIddictClientOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AutoRegisterExternalUsers",
+          "kind": "property",
+          "signature": "bool AutoRegisterExternalUsers",
+          "returnType": "bool"
+        },
+        {
+          "name": "Providers",
+          "kind": "property",
+          "signature": "ExternalProviderOptions[] Providers",
+          "returnType": "ExternalProviderOptions[]"
+        }
+      ]
+    },
+    {
       "name": "GranitOpenIddictOptions",
       "fqn": "Granit.OpenIddict.Options.GranitOpenIddictOptions",
       "kind": "class",
@@ -18381,27 +18344,33 @@
       "members": []
     },
     {
-      "name": "GranitOpenIddictPasskeysModule",
-      "fqn": "Granit.OpenIddict.Passkeys.GranitOpenIddictPasskeysModule",
+      "name": "GranitOpenIddictSeedingOptions",
+      "fqn": "Granit.OpenIddict.Options.GranitOpenIddictSeedingOptions",
       "kind": "class",
-      "project": "Granit.OpenIddict.Passkeys",
-      "file": "src/Granit.OpenIddict.Passkeys/GranitOpenIddictPasskeysModule.cs",
-      "line": 21,
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
+      "line": 6,
       "members": [
         {
-          "name": "OnApplicationInitialization",
-          "kind": "method",
-          "signature": "OnApplicationInitialization(ApplicationInitializationContext context)",
-          "returnType": "void"
+          "name": "Applications",
+          "kind": "property",
+          "signature": "OidcApplicationSeedDescriptor[] Applications",
+          "returnType": "OidcApplicationSeedDescriptor[]"
+        },
+        {
+          "name": "Scopes",
+          "kind": "property",
+          "signature": "OidcScopeSeedDescriptor[] Scopes",
+          "returnType": "OidcScopeSeedDescriptor[]"
         }
       ]
     },
     {
       "name": "GranitPasskeyOptions",
-      "fqn": "Granit.OpenIddict.Passkeys.Options.GranitPasskeyOptions",
+      "fqn": "Granit.OpenIddict.Options.GranitPasskeyOptions",
       "kind": "class",
-      "project": "Granit.OpenIddict.Passkeys",
-      "file": "src/Granit.OpenIddict.Passkeys/Options/GranitPasskeyOptions.cs",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Options/GranitPasskeyOptions.cs",
       "line": 6,
       "members": [
         {
@@ -18423,6 +18392,24 @@
           "returnType": "int"
         }
       ]
+    },
+    {
+      "name": "OidcApplicationSeedDescriptor",
+      "fqn": "Granit.OpenIddict.Options.OidcApplicationSeedDescriptor",
+      "kind": "record",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "OidcScopeSeedDescriptor",
+      "fqn": "Granit.OpenIddict.Options.OidcScopeSeedDescriptor",
+      "kind": "record",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
+      "line": 45,
+      "members": []
     },
     {
       "name": "Applications",
@@ -18488,60 +18475,20 @@
       "members": []
     },
     {
-      "name": "GranitOpenIddictSeedingModule",
-      "fqn": "Granit.OpenIddict.Seeding.GranitOpenIddictSeedingModule",
+      "name": "ExternalClaimsMapper",
+      "fqn": "Granit.OpenIddict.Services.ExternalClaimsMapper",
       "kind": "class",
-      "project": "Granit.OpenIddict.Seeding",
-      "file": "src/Granit.OpenIddict.Seeding/GranitOpenIddictSeedingModule.cs",
-      "line": 16,
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/ExternalClaimsMapper.cs",
+      "line": 13,
       "members": [
         {
-          "name": "ConfigureServices",
+          "name": "MapToUserProperties",
           "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
+          "signature": "MapToUserProperties(ClaimsPrincipal principal, string provider)",
+          "returnType": "ExternalUserProperties"
         }
       ]
-    },
-    {
-      "name": "GranitOpenIddictSeedingOptions",
-      "fqn": "Granit.OpenIddict.Seeding.Options.GranitOpenIddictSeedingOptions",
-      "kind": "class",
-      "project": "Granit.OpenIddict.Seeding",
-      "file": "src/Granit.OpenIddict.Seeding/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Applications",
-          "kind": "property",
-          "signature": "OidcApplicationSeedDescriptor[] Applications",
-          "returnType": "OidcApplicationSeedDescriptor[]"
-        },
-        {
-          "name": "Scopes",
-          "kind": "property",
-          "signature": "OidcScopeSeedDescriptor[] Scopes",
-          "returnType": "OidcScopeSeedDescriptor[]"
-        }
-      ]
-    },
-    {
-      "name": "OidcApplicationSeedDescriptor",
-      "fqn": "Granit.OpenIddict.Seeding.Options.OidcApplicationSeedDescriptor",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Seeding",
-      "file": "src/Granit.OpenIddict.Seeding/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 28,
-      "members": []
-    },
-    {
-      "name": "OidcScopeSeedDescriptor",
-      "fqn": "Granit.OpenIddict.Seeding.Options.OidcScopeSeedDescriptor",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Seeding",
-      "file": "src/Granit.OpenIddict.Seeding/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 42,
-      "members": []
     },
     {
       "name": "ExternalLoginInfo",
@@ -18550,6 +18497,15 @@
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Services/IExternalLoginService.cs",
       "line": 51,
+      "members": []
+    },
+    {
+      "name": "ExternalUserProperties",
+      "fqn": "Granit.OpenIddict.Services.ExternalUserProperties",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/ExternalClaimsMapper.cs",
+      "line": 42,
       "members": []
     },
     {

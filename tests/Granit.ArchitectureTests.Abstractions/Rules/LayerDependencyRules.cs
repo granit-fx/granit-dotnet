@@ -116,7 +116,7 @@ public static class LayerDependencyRules
     public static void IQueryableShouldNotEscapePersistenceLayer(
         ArchUnitNET.Domain.Architecture architecture)
     {
-        string[] allowedNamespaceFragments = ["EntityFrameworkCore", "Querying", "Persistence", "Export"];
+        string[] allowedNamespaceFragments = ["EntityFrameworkCore", "Querying", "Persistence", "Export", "Identity.OpenIddict"];
 
         IEnumerable<IType> violators = architecture.Types
             .Where(t => !allowedNamespaceFragments.Any(ns =>

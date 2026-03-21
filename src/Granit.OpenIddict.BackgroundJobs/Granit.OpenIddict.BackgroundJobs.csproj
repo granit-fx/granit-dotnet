@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.OpenIddict.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.OpenIddict. Automated token cleanup and idle session enforcement via Granit.BackgroundJobs recurring job pattern.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.OpenIddict.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenIddict" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.OpenIddict\Granit.OpenIddict.csproj" />
+  </ItemGroup>
+
+</Project>

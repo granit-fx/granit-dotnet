@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Bundle.OpenIddict</PackageId>
+    <Description>Meta-package for the complete Granit OpenIddict module family. Single NuGet reference for self-hosted identity provider with user management, account self-service, OIDC administration, external logins, seeding, background jobs, and passkeys.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Granit.OpenIddict\Granit.OpenIddict.csproj" />
+    <ProjectReference Include="..\..\Granit.OpenIddict.EntityFrameworkCore\Granit.OpenIddict.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\Granit.Identity.OpenIddict\Granit.Identity.OpenIddict.csproj" />
+    <ProjectReference Include="..\..\Granit.OpenIddict.Endpoints\Granit.OpenIddict.Endpoints.csproj" />
+    <ProjectReference Include="..\..\Granit.OpenIddict.BackgroundJobs\Granit.OpenIddict.BackgroundJobs.csproj" />
+  </ItemGroup>
+
+</Project>

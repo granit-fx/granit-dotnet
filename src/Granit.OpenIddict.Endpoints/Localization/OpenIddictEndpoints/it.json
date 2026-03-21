@@ -1,0 +1,29 @@
+{
+  "culture": "it",
+  "texts": {
+    "PermissionGroup:OpenIddict": "Identità OpenIddict",
+    "Permission:OpenIddict.Users.Read": "Consultare gli utenti",
+    "Permission:OpenIddict.Users.Create": "Creare utenti",
+    "Permission:OpenIddict.Users.Manage": "Gestire gli utenti (consultare, modificare, attivare/disattivare)",
+    "Permission:OpenIddict.Users.Delete": "Eliminare utenti",
+    "Permission:OpenIddict.Users.Impersonate": "Impersonare un utente",
+    "Permission:OpenIddict.Roles.Read": "Consultare i ruoli",
+    "Permission:OpenIddict.Roles.Create": "Creare ruoli",
+    "Permission:OpenIddict.Roles.Delete": "Eliminare ruoli",
+    "Permission:OpenIddict.Groups.Read": "Consultare i gruppi",
+    "Permission:OpenIddict.Groups.Create": "Creare gruppi",
+    "Permission:OpenIddict.Groups.Manage": "Gestire i gruppi (consultare, modificare i membri)",
+    "Permission:OpenIddict.Groups.Delete": "Eliminare gruppi",
+    "Permission:OpenIddict.Applications.Read": "Consultare le applicazioni OIDC",
+    "Permission:OpenIddict.Applications.Create": "Creare applicazioni OIDC",
+    "Permission:OpenIddict.Applications.Manage": "Gestire le applicazioni OIDC (consultare, modificare)",
+    "Permission:OpenIddict.Applications.Delete": "Eliminare applicazioni OIDC",
+    "Permission:OpenIddict.Applications.Rotate": "Ruotare i segreti dell'applicazione",
+    "Permission:OpenIddict.Scopes.Read": "Consultare gli scope OIDC",
+    "Permission:OpenIddict.Scopes.Create": "Creare scope OIDC",
+    "Permission:OpenIddict.Scopes.Manage": "Gestire gli scope OIDC (consultare, modificare)",
+    "Permission:OpenIddict.Scopes.Delete": "Eliminare scope OIDC",
+    "Permission:OpenIddict.Authorizations.Read": "Consultare le autorizzazioni OIDC",
+    "Permission:OpenIddict.Authorizations.Revoke": "Revocare le autorizzazioni OIDC"
+  }
+}

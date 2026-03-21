@@ -1,0 +1,28 @@
+{
+  "culture": "pt-BR",
+  "texts": {
+    "Permission:OpenIddict.Users.Read": "Consultar usuários",
+    "Permission:OpenIddict.Users.Create": "Criar usuários",
+    "Permission:OpenIddict.Users.Manage": "Gerenciar usuários (consultar, modificar, ativar/desativar)",
+    "Permission:OpenIddict.Users.Delete": "Excluir usuários",
+    "Permission:OpenIddict.Users.Impersonate": "Personificar um usuário",
+    "Permission:OpenIddict.Roles.Read": "Consultar funções",
+    "Permission:OpenIddict.Roles.Create": "Criar funções",
+    "Permission:OpenIddict.Roles.Delete": "Excluir funções",
+    "Permission:OpenIddict.Groups.Read": "Consultar grupos",
+    "Permission:OpenIddict.Groups.Create": "Criar grupos",
+    "Permission:OpenIddict.Groups.Manage": "Gerenciar grupos (consultar, modificar membros)",
+    "Permission:OpenIddict.Groups.Delete": "Excluir grupos",
+    "Permission:OpenIddict.Applications.Read": "Consultar aplicações OIDC",
+    "Permission:OpenIddict.Applications.Create": "Criar aplicações OIDC",
+    "Permission:OpenIddict.Applications.Manage": "Gerenciar aplicações OIDC (consultar, modificar)",
+    "Permission:OpenIddict.Applications.Delete": "Excluir aplicações OIDC",
+    "Permission:OpenIddict.Applications.Rotate": "Rotacionar segredos de aplicação",
+    "Permission:OpenIddict.Scopes.Read": "Consultar escopos OIDC",
+    "Permission:OpenIddict.Scopes.Create": "Criar escopos OIDC",
+    "Permission:OpenIddict.Scopes.Manage": "Gerenciar escopos OIDC (consultar, modificar)",
+    "Permission:OpenIddict.Scopes.Delete": "Excluir escopos OIDC",
+    "Permission:OpenIddict.Authorizations.Read": "Consultar autorizações OIDC",
+    "Permission:OpenIddict.Authorizations.Revoke": "Revogar autorizações OIDC"
+  }
+}

@@ -78,6 +78,13 @@
   <ItemGroup Label="Imaging">
     <PackageVersion Include="Magick.NET-Q8-AnyCPU" Version="14.*" />
   </ItemGroup>
+  <ItemGroup Label="OpenIddict">
+    <PackageVersion Include="OpenIddict" Version="6.*" />
+    <PackageVersion Include="OpenIddict.EntityFrameworkCore" Version="6.*" />
+  </ItemGroup>
+  <ItemGroup Label="Identity (ASP.NET Core)">
+    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.*" />
+  </ItemGroup>
   <ItemGroup Label="Identity (AWS Cognito)">
     <PackageVersion Include="AWSSDK.CognitoIdentityProvider" Version="4.*" />
   </ItemGroup>
