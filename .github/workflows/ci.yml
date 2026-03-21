@@ -61,8 +61,9 @@ jobs:
         run: dotnet format --verify-no-changes --no-restore
 
   # ---------------------------------------------------------------------------
-  # UNIT TESTS — 5 parallel shards aligned with architecture layers
+  # UNIT TESTS — 6 parallel shards aligned with architecture layers
   # Shard definitions: .github/test-shards.json
+  # Solution filters: .github/shard-filters/*.slnf (auto-generated)
   # ---------------------------------------------------------------------------
   test:
     needs: build
@@ -82,6 +83,8 @@ jobs:
             label: "Infrastructure"
           - name: security
             label: "Security & Compliance"
+          - name: architecture
+            label: "Architecture Tests"
     name: test (${{ matrix.shard.label }})
     steps:
       - uses: actions/checkout@v6
@@ -98,29 +101,21 @@ jobs:
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
           restore-keys: nuget-${{ runner.os }}-
 
-      - name: Build
-        run: dotnet build -c $CONFIGURATION -m:4 -p:SkipIntegrationTests=true
-
-      - name: Resolve shard projects
-        id: shard
-        run: |
-          PROJECTS=$(jq -r --arg shard "${{ matrix.shard.name }}" \
-            '.shards[] | select(.name == $shard) | .projects[]' \
-            .github/test-shards.json | while read -r dir; do
-              csproj="$dir/$(basename "$dir").csproj"
-              [ -f "$csproj" ] && echo "$csproj"
-            done | tr '\n' ' ')
-          echo "projects=$PROJECTS" >> "$GITHUB_OUTPUT"
+      - name: Build shard
+        run: >
+          dotnet build .github/shard-filters/${{ matrix.shard.name }}.slnf
+          -c $CONFIGURATION -m:4
+          -p:RunAnalyzers=false
+          -p:EnforceCodeStyleInBuild=false
 
       - name: Run unit tests
-        run: |
-          for proj in ${{ steps.shard.outputs.projects }}; do
-            dotnet test "$proj" -c $CONFIGURATION --no-build \
-              --logger "trx;LogFilePath=TestResults/results.trx" \
-              --collect:"XPlat Code Coverage" \
-              -- RunConfiguration.MaxCpuCount=4 \
-              DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover,cobertura
-          done
+        run: >
+          dotnet test .github/shard-filters/${{ matrix.shard.name }}.slnf
+          -c $CONFIGURATION --no-build
+          --logger "trx;LogFilePath=TestResults/results.trx"
+          --collect:"XPlat Code Coverage"
+          -- RunConfiguration.MaxCpuCount=4
+          DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover,cobertura
 
       - name: Upload test results
         if: always()
@@ -485,6 +480,24 @@ jobs:
           if ! git diff --quiet -I '"generatedAt"' .mcp-code-index.json; then
             echo "::error::.mcp-code-index.json is out of date. Run 'python3 scripts/generate-code-index.py' and commit."
             git diff -I '"generatedAt"' .mcp-code-index.json
+            exit 1
+          fi
+
+  shard-filters:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Regenerate shard filters
+        run: python3 scripts/generate-shard-filters.py
+
+      - name: Check for drift
+        run: |
+          if ! git diff --quiet .github/shard-filters/; then
+            echo "::error::Shard filters are out of date. Run 'python3 scripts/generate-shard-filters.py' and commit."
+            git diff .github/shard-filters/
             exit 1
           fi
 

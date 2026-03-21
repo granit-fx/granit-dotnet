@@ -338,11 +338,23 @@ Each package has `*.Tests` project (xUnit + Shouldly + NSubstitute + Bogus). Par
 
 ### CI test sharding — MANDATORY when adding test projects
 
-Unit tests run in **5 parallel shards** aligned with the architecture layers.
-Shard definitions: `.github/test-shards.json` (source of truth).
+Unit tests run in **6 parallel shards** aligned with the architecture layers.
+Each shard has a **solution filter** (`.slnf`) that builds only the required
+subset of projects — no full-solution rebuild per shard.
 
-**When creating a new test project**, add its directory to the correct shard in
-`test-shards.json`. Shard mapping:
+Shard definitions: `.github/test-shards.json` (source of truth).
+Solution filters: `.github/shard-filters/*.slnf` (auto-generated).
+
+**When creating a new test project:**
+
+1. Add its directory to the correct shard in `test-shards.json`
+2. Run `python3 scripts/generate-shard-filters.py` to regenerate `.slnf` files
+3. Commit both `test-shards.json` and `.github/shard-filters/*.slnf`
+
+The pre-commit hook auto-regenerates filters when `.csproj` or `test-shards.json`
+files change.
+
+Shard mapping:
 
 | Shard | Layer | Modules |
 | ----- | ----- | ------- |
@@ -351,6 +363,7 @@ Shard definitions: `.github/test-shards.json` (source of truth).
 | `api-data` | API & Http + Data | Http.*, BlobStorage, Persistence, Caching, Imaging, RateLimiting, Webhooks |
 | `infrastructure` | Infrastructure | Notifications, BackgroundJobs, Wolverine, Localization, Settings, Features, MultiTenancy, EventBus |
 | `security` | Security & Compliance | AuditLog, Authentication, Authorization, Identity, Vault, Encryption, Privacy, Security |
+| `architecture` | Architecture Tests | ArchitectureTests (references all src projects — isolated shard) |
 
 **NEVER** create a test project without adding it to a shard — the CI will silently skip it.
 

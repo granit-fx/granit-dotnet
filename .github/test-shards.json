@@ -14,7 +14,7 @@
         "tests/Granit.AI.VectorData.Tests",
         "tests/Granit.Analyzers.CodeFixes.Tests",
         "tests/Granit.Analyzers.Tests",
-        "tests/Granit.ArchitectureTests",
+
         "tests/Granit.Authorization.AI.Tests",
         "tests/Granit.BlobStorage.AI.Tests",
         "tests/Granit.Bundle.Tests",
@@ -225,6 +225,13 @@
         "tests/Granit.Vault.GoogleCloud.Tests",
         "tests/Granit.Vault.HashiCorp.Tests",
         "tests/Granit.Vault.Tests"
+      ]
+    },
+    {
+      "name": "architecture",
+      "label": "Architecture Tests",
+      "projects": [
+        "tests/Granit.ArchitectureTests"
       ]
     }
   ]

@@ -15,3 +15,9 @@ if git diff --cached --name-only | grep -qE '\.cs$|\.csproj$'; then
   python3 scripts/generate-code-index.py
   git add .mcp-code-index.json
 fi
+
+# Regenerate shard filters if test-shards.json or any .csproj changed
+if git diff --cached --name-only | grep -qE 'test-shards\.json$|\.csproj$'; then
+  python3 scripts/generate-shard-filters.py
+  git add .github/shard-filters/*.slnf
+fi

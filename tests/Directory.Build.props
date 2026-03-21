@@ -10,4 +10,11 @@
   <ItemGroup>
     <PackageReference Include="JunitXml.TestLogger" />
   </ItemGroup>
+
+  <!-- Shared xUnit v3 runner configuration (aggressive parallel scheduling) -->
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)xunit.runner.json"
+             CopyToOutputDirectory="PreserveNewest"
+             Link="xunit.runner.json" />
+  </ItemGroup>
 </Project>
