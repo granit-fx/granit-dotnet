@@ -473,7 +473,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Regenerate .mcp-code-index.json
         run: python3 scripts/generate-code-index.py
