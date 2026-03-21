@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Generate solution filter (.slnf) files per CI test shard.
+"""Generate solution filter (.slnf) files for CI.
 
-Reads .github/test-shards.json, resolves each test project's transitive
-ProjectReference dependencies, and writes one .slnf per shard into
-.github/shard-filters/.
+Generates two types of filters:
+- Per-shard filters for test jobs (from .github/test-shards.json)
+- A src-only filter for the build gate job (all src/ projects, no tests)
 
 No external dependencies — runs with Python 3.8+.
 
@@ -149,6 +149,7 @@ def main() -> None:
     print(f"Loaded {len(slnx_projects)} projects from {SLNX_PATH.name}")
     FILTERS_DIR.mkdir(parents=True, exist_ok=True)
 
+    # ── Shard filters (test jobs) ───────────────────────────────────────────
     for shard in shards:
         name = shard["name"]
         projects = shard["projects"]
@@ -161,7 +162,24 @@ def main() -> None:
         )
         print(f"  -> {out.relative_to(REPO_ROOT)} ({len(slnf['solution']['projects'])} projects)")
 
-    print(f"\nDone. Generated {len(shards)} solution filters in {FILTERS_DIR.relative_to(REPO_ROOT)}/")
+    # ── src-only filter (build gate job) ──────────────────────────────────
+    src_projects = sorted(p for p in slnx_projects if p.startswith("src/"))
+    src_slnf = {
+        "solution": {
+            "path": "../../Granit.slnx",
+            "projects": src_projects,
+        }
+    }
+    src_out = FILTERS_DIR / "src-only.slnf"
+    src_out.write_text(
+        json.dumps(src_slnf, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    print(f"Generating src-only.slnf...")
+    print(f"  -> {src_out.relative_to(REPO_ROOT)} ({len(src_projects)} projects)")
+
+    total = len(shards) + 1
+    print(f"\nDone. Generated {total} solution filters in {FILTERS_DIR.relative_to(REPO_ROOT)}/")
 
 
 if __name__ == "__main__":

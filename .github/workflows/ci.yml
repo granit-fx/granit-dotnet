@@ -54,11 +54,14 @@ jobs:
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
           restore-keys: nuget-${{ runner.os }}-
 
-      - name: Build
-        run: dotnet build -c $CONFIGURATION -m:4 -p:SkipIntegrationTests=true
+      - name: Build (src only)
+        run: >
+          dotnet build .github/shard-filters/src-only.slnf
+          -c $CONFIGURATION -m:4
+          -p:GenerateDocumentationFile=false
 
-      - name: Check formatting
-        run: dotnet format --verify-no-changes --no-restore
+      - name: Check formatting (src only)
+        run: dotnet format .github/shard-filters/src-only.slnf --verify-no-changes --no-restore
 
   # ---------------------------------------------------------------------------
   # UNIT TESTS — 6 parallel shards aligned with architecture layers
