@@ -99,16 +99,10 @@ internal static class CompositeCursorBuilder
     public static string EncodeCompositeCursor<T>(T lastItem, IReadOnlyList<SortField> sortFields)
         where T : class
     {
-        Dictionary<string, string> values = new(sortFields.Count, StringComparer.OrdinalIgnoreCase);
-
-        foreach (SortField field in sortFields)
-        {
-            object? value = field.Property.GetValue(lastItem);
-            if (value is not null)
-            {
-                values[field.Property.Name] = value.ToString()!;
-            }
-        }
+        var values = sortFields
+            .Select(field => (field.Property.Name, Value: field.Property.GetValue(lastItem)))
+            .Where(x => x.Value is not null)
+            .ToDictionary(x => x.Name, x => x.Value!.ToString()!, StringComparer.OrdinalIgnoreCase);
 
         return CursorEncoder.EncodeComposite(values);
     }
@@ -146,31 +140,39 @@ internal static class CompositeCursorBuilder
         }
 
         // Inequality condition for targetIndex field
+        Expression? inequality = BuildInequalityCondition(parameter, sortFields[targetIndex], cursorValues, logger);
+        if (inequality is null)
         {
-            SortField targetField = sortFields[targetIndex];
-            if (!cursorValues.TryGetValue(targetField.Property.Name, out string? rawValue))
-            {
-                return null;
-            }
-
-            Type propertyType = Nullable.GetUnderlyingType(targetField.Property.PropertyType) ?? targetField.Property.PropertyType;
-            object? converted = FilterExpressionBuilder.ConvertValue(rawValue, propertyType, logger, targetField.Property.Name);
-            if (converted is null)
-            {
-                return null;
-            }
-
-            MemberExpression member = Expression.Property(parameter, targetField.Property);
-            ConstantExpression constant = Expression.Constant(converted, targetField.Property.PropertyType);
-
-            // Descending sort → cursor moves backward (less than), ascending → forward (greater than)
-            BinaryExpression inequality = targetField.Descending
-                ? Expression.LessThan(member, constant)
-                : Expression.GreaterThan(member, constant);
-
-            branch = branch is null ? inequality : Expression.AndAlso(branch, inequality);
+            return null;
         }
 
-        return branch;
+        return branch is null ? inequality : Expression.AndAlso(branch, inequality);
+    }
+
+    private static BinaryExpression? BuildInequalityCondition(
+        ParameterExpression parameter,
+        SortField targetField,
+        Dictionary<string, string> cursorValues,
+        ILogger? logger)
+    {
+        if (!cursorValues.TryGetValue(targetField.Property.Name, out string? rawValue))
+        {
+            return null;
+        }
+
+        Type propertyType = Nullable.GetUnderlyingType(targetField.Property.PropertyType) ?? targetField.Property.PropertyType;
+        object? converted = FilterExpressionBuilder.ConvertValue(rawValue, propertyType, logger, targetField.Property.Name);
+        if (converted is null)
+        {
+            return null;
+        }
+
+        MemberExpression member = Expression.Property(parameter, targetField.Property);
+        ConstantExpression constant = Expression.Constant(converted, targetField.Property.PropertyType);
+
+        // Descending sort → cursor moves backward (less than), ascending → forward (greater than)
+        return targetField.Descending
+            ? Expression.LessThan(member, constant)
+            : Expression.GreaterThan(member, constant);
     }
 }

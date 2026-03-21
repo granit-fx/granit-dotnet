@@ -21,8 +21,6 @@ public sealed class FusionCachingOptionsTests
     }
 
     [Fact]
-    public void SectionName_IsCorrect()
-    {
+    public void SectionName_IsCorrect() =>
         FusionCachingOptions.SectionName.ShouldBe("Cache:FusionCache");
-    }
 }

@@ -67,14 +67,9 @@ public sealed class NotificationFanoutHandler(
         {
             foreach (string channelName in defaultChannels)
             {
-                if (allowOptOut)
+                if (allowOptOut && !await IsChannelEnabledAsync(userId, trigger, channelName, tenantId, cancellationToken).ConfigureAwait(false))
                 {
-                    bool isEnabled = await preferenceReader.IsChannelEnabledAsync(
-                        userId, trigger.NotificationTypeName, channelName, tenantId, cancellationToken).ConfigureAwait(false);
-                    if (!isEnabled)
-                    {
-                        continue;
-                    }
+                    continue;
                 }
 
                 commands.Add(new DeliverNotificationCommand
@@ -103,4 +98,13 @@ public sealed class NotificationFanoutHandler(
 
         return commands;
     }
+
+    private Task<bool> IsChannelEnabledAsync(
+        string userId,
+        NotificationTrigger trigger,
+        string channelName,
+        Guid? tenantId,
+        CancellationToken cancellationToken) =>
+        preferenceReader.IsChannelEnabledAsync(
+            userId, trigger.NotificationTypeName, channelName, tenantId, cancellationToken);
 }

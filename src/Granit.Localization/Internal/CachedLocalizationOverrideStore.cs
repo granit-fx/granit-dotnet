@@ -61,7 +61,7 @@ internal sealed class CachedLocalizationOverrideStore(
             scope.ServiceProvider.GetRequiredKeyedService<ILocalizationOverrideStoreWriter>(RawStoreKey);
 
         await inner.SetOverrideAsync(resourceName, culture, key, value, cancellationToken).ConfigureAwait(false);
-        cache.Expire(BuildCacheKey(resourceName, culture), token: cancellationToken);
+        await cache.ExpireAsync(BuildCacheKey(resourceName, culture), token: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -73,7 +73,7 @@ internal sealed class CachedLocalizationOverrideStore(
             scope.ServiceProvider.GetRequiredKeyedService<ILocalizationOverrideStoreWriter>(RawStoreKey);
 
         await inner.RemoveOverrideAsync(resourceName, culture, key, cancellationToken).ConfigureAwait(false);
-        cache.Expire(BuildCacheKey(resourceName, culture), token: cancellationToken);
+        await cache.ExpireAsync(BuildCacheKey(resourceName, culture), token: cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<IReadOnlyDictionary<string, string>> LoadAndCacheAsync(
@@ -89,7 +89,7 @@ internal sealed class CachedLocalizationOverrideStore(
             ? await inner.GetOverridesAsync(resourceName, culture, cancellationToken).ConfigureAwait(false)
             : new Dictionary<string, string>(StringComparer.Ordinal);
 
-        cache.Set(cacheKey, overrides, new FusionCacheEntryOptions { Duration = _options.CacheTtl }, token: cancellationToken);
+        await cache.SetAsync(cacheKey, overrides, new FusionCacheEntryOptions { Duration = _options.CacheTtl }, token: cancellationToken).ConfigureAwait(false);
         return overrides;
     }
 

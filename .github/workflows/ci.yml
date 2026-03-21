@@ -380,10 +380,12 @@ jobs:
           path: nupkgs
 
       - name: Push to GitHub Packages
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >
           dotnet nuget push "nupkgs/*.nupkg"
           --source "https://nuget.pkg.github.com/granit-fx/index.json"
-          --api-key ${{ secrets.GITHUB_TOKEN }}
+          --api-key "$NUGET_AUTH_TOKEN"
           --skip-duplicate
 
   # nuget.org — release packages on version tags
@@ -405,10 +407,12 @@ jobs:
           path: nupkgs
 
       - name: Push to nuget.org
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY }}
         run: >
           dotnet nuget push "nupkgs/*.nupkg"
           --source "https://api.nuget.org/v3/index.json"
-          --api-key ${{ secrets.NUGET_API_KEY }}
+          --api-key "$NUGET_AUTH_TOKEN"
           --skip-duplicate
 
   # ---------------------------------------------------------------------------

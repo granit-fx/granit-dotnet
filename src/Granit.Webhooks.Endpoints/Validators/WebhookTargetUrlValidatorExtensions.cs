@@ -76,59 +76,24 @@ public static class WebhookTargetUrlValidatorExtensions
             return true;
         }
 
-        if (ip.AddressFamily == AddressFamily.InterNetwork)
+        return ip.AddressFamily switch
         {
-            byte[] bytes = ip.GetAddressBytes();
-
-            // 0.0.0.0
-            if (bytes[0] == 0)
-            {
-                return true;
-            }
-
-            // 10.0.0.0/8
-            if (bytes[0] == 10)
-            {
-                return true;
-            }
-
-            // 172.16.0.0/12
-            if (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31)
-            {
-                return true;
-            }
-
-            // 192.168.0.0/16
-            if (bytes[0] == 192 && bytes[1] == 168)
-            {
-                return true;
-            }
-
-            // 169.254.0.0/16 (link-local / cloud metadata)
-            if (bytes[0] == 169 && bytes[1] == 254)
-            {
-                return true;
-            }
-        }
-        else if (ip.AddressFamily == AddressFamily.InterNetworkV6)
-        {
-            byte[] bytes = ip.GetAddressBytes();
-
-            // fe80::/10 (link-local)
-            if (bytes[0] == 0xfe && (bytes[1] & 0xc0) == 0x80)
-            {
-                return true;
-            }
-
-            // fc00::/7 (unique local)
-            if ((bytes[0] & 0xfe) == 0xfc)
-            {
-                return true;
-            }
-        }
-
-        return false;
+            AddressFamily.InterNetwork => IsBlockedIPv4(ip.GetAddressBytes()),
+            AddressFamily.InterNetworkV6 => IsBlockedIPv6(ip.GetAddressBytes()),
+            _ => false,
+        };
     }
+
+    private static bool IsBlockedIPv4(byte[] bytes) =>
+        bytes[0] == 0                                         // 0.0.0.0
+        || bytes[0] == 10                                     // 10.0.0.0/8
+        || (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31) // 172.16.0.0/12
+        || (bytes[0] == 192 && bytes[1] == 168)               // 192.168.0.0/16
+        || (bytes[0] == 169 && bytes[1] == 254);              // 169.254.0.0/16 (link-local / cloud metadata)
+
+    private static bool IsBlockedIPv6(byte[] bytes) =>
+        (bytes[0] == 0xfe && (bytes[1] & 0xc0) == 0x80)      // fe80::/10 (link-local)
+        || ((bytes[0] & 0xfe) == 0xfc);                       // fc00::/7 (unique local)
 
     private static bool NotUseBlockedTld(string url)
     {

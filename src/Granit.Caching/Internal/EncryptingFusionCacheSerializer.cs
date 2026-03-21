@@ -39,7 +39,7 @@ internal sealed class EncryptingFusionCacheSerializer(
     }
 
     /// <inheritdoc/>
-    public ValueTask<byte[]> SerializeAsync<T>(T? obj, CancellationToken cancellationToken = default)
+    public ValueTask<byte[]> SerializeAsync<T>(T? obj, CancellationToken token = default)
     {
         byte[] serialized = _inner.Serialize(obj);
         byte[] result = _encrypt ? _encryptor.Encrypt(serialized) : serialized;
@@ -47,7 +47,7 @@ internal sealed class EncryptingFusionCacheSerializer(
     }
 
     /// <inheritdoc/>
-    public ValueTask<T?> DeserializeAsync<T>(byte[] data, CancellationToken cancellationToken = default)
+    public ValueTask<T?> DeserializeAsync<T>(byte[] data, CancellationToken token = default)
     {
         byte[] plain = _encrypt ? _encryptor.Decrypt(data) : data;
         T? result = _inner.Deserialize<T>(plain);

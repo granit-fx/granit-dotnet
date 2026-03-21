@@ -14,16 +14,12 @@ public sealed class CoreServerValidatorContributorTests
     }
 
     [Fact]
-    public void GetValidators_Returns19Validators()
-    {
+    public void GetValidators_Returns19Validators() =>
         _validators.Count.ShouldBe(19);
-    }
 
     [Fact]
-    public void AllErrorCodes_AreUnique()
-    {
+    public void AllErrorCodes_AreUnique() =>
         _validators.Select(v => v.ErrorCode).Distinct().Count().ShouldBe(_validators.Count);
-    }
 
     [Theory]
     [InlineData("Granit:Validation:InvalidIban", "BE68539007547034", true)]

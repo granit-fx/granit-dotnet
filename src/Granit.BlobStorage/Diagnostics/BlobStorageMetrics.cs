@@ -11,6 +11,9 @@ public sealed class BlobStorageMetrics
 {
     public const string MeterName = "Granit.BlobStorage";
 
+    private const string TagTenantId = "tenant_id";
+    private const string DefaultTenant = "global";
+
     private readonly Counter<long> _uploadsInitiated;
     private readonly Counter<long> _validationsCompleted;
     private readonly Counter<long> _validationsFailed;
@@ -51,14 +54,14 @@ public sealed class BlobStorageMetrics
     public void RecordUploadInitiated(string? tenantId, string container) =>
         _uploadsInitiated.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "container", container },
         });
 
     public void RecordValidationCompleted(string? tenantId, string status, string container) =>
         _validationsCompleted.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "status", status },
             { "container", container },
         });
@@ -66,7 +69,7 @@ public sealed class BlobStorageMetrics
     public void RecordValidationFailed(string? tenantId, string reason, string container) =>
         _validationsFailed.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "reason", reason },
             { "container", container },
         });
@@ -74,20 +77,20 @@ public sealed class BlobStorageMetrics
     public void RecordDeleted(string? tenantId, string container) =>
         _blobsDeleted.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "container", container },
         });
 
     public void RecordOrphanCleaned(string? tenantId) =>
         _orphansCleaned.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 
     public void RecordConfirmDuration(string? tenantId, string status, string container, TimeSpan duration) =>
         _confirmDuration.Record(duration.TotalSeconds, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "status", status },
             { "container", container },
         });

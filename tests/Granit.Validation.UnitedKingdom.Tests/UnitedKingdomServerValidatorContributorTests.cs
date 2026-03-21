@@ -15,16 +15,12 @@ public sealed class UnitedKingdomServerValidatorContributorTests
     }
 
     [Fact]
-    public void GetValidators_Returns7Validators()
-    {
+    public void GetValidators_Returns7Validators() =>
         _validators.Count.ShouldBe(7);
-    }
 
     [Fact]
-    public void AllErrorCodes_AreUnique()
-    {
+    public void AllErrorCodes_AreUnique() =>
         _validators.Select(v => v.ErrorCode).Distinct().Count().ShouldBe(_validators.Count);
-    }
 
     [Theory]
     [InlineData("Granit:Validation:InvalidUkPostcode", "SW1A 1AA", true)]

@@ -26,8 +26,6 @@ namespace Granit.BlobStorage;
     typeof(GranitGuidsModule))]
 public sealed class GranitBlobStorageModule : GranitModule
 {
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.TryAddSingleton<BlobStorageMetrics>();
-    }
 }

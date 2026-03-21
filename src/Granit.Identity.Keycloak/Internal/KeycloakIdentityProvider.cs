@@ -33,6 +33,7 @@ internal sealed partial class KeycloakIdentityProvider(
     IdentityMetrics metrics,
     ILogger<KeycloakIdentityProvider> logger) : IIdentityProvider
 {
+    private const string ProviderName = "keycloak";
     /// <inheritdoc/>
     public async Task<IReadOnlyList<IdentityUser>> GetUsersAsync(
         string? search = null,
@@ -82,15 +83,15 @@ internal sealed partial class KeycloakIdentityProvider(
                 .GetFromJsonAsync<KeycloakUserRepresentation>(endpoint, cancellationToken)
                 .ConfigureAwait(false);
 
-            metrics.RecordOperationCompleted(null, "get_user", "keycloak", user is not null ? "found" : "not_found");
-            metrics.RecordOperationDuration(null, "get_user", "keycloak", Stopwatch.GetElapsedTime(startTimestamp));
+            metrics.RecordOperationCompleted(null, "get_user", ProviderName, user is not null ? "found" : "not_found");
+            metrics.RecordOperationDuration(null, "get_user", ProviderName, Stopwatch.GetElapsedTime(startTimestamp));
 
             return user is not null ? ToIdentityUser(user) : null;
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
-            metrics.RecordOperationError(null, "get_user", "keycloak");
+            metrics.RecordOperationError(null, "get_user", ProviderName);
             LogKeycloakGetUserFailed(ex, userId);
             return null;
         }
@@ -185,7 +186,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         LogUserProfileUpdated(userId);
 
-        metrics.RecordOperationCompleted(null, "update_user", "keycloak", "updated");
+        metrics.RecordOperationCompleted(null, "update_user", ProviderName, "updated");
 
         await eventPublisher.PublishAsync(new IdentityUserProfileUpdatedEvent(userId, update), cancellationToken).ConfigureAwait(false);
     }
@@ -388,7 +389,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         LogRoleAssigned(roleName, userId);
 
-        metrics.RecordOperationCompleted(null, "assign_role", "keycloak", "assigned");
+        metrics.RecordOperationCompleted(null, "assign_role", ProviderName, "assigned");
 
         await eventPublisher.PublishAsync(new IdentityRoleAssignedEvent(userId, roleName), cancellationToken).ConfigureAwait(false);
     }
@@ -478,8 +479,8 @@ internal sealed partial class KeycloakIdentityProvider(
 
         LogAllSessionsTerminated(userId);
 
-        metrics.RecordOperationCompleted(null, "terminate_all_sessions", "keycloak", "terminated");
-        metrics.RecordOperationDuration(null, "terminate_all_sessions", "keycloak", Stopwatch.GetElapsedTime(startTimestamp));
+        metrics.RecordOperationCompleted(null, "terminate_all_sessions", ProviderName, "terminated");
+        metrics.RecordOperationDuration(null, "terminate_all_sessions", ProviderName, Stopwatch.GetElapsedTime(startTimestamp));
 
         await eventPublisher.PublishAsync(new IdentitySessionsRevokedEvent(userId), cancellationToken).ConfigureAwait(false);
     }
@@ -582,8 +583,8 @@ internal sealed partial class KeycloakIdentityProvider(
 
         LogUserCreated(user.Username, createdUserId);
 
-        metrics.RecordOperationCompleted(null, "create_user", "keycloak", "created");
-        metrics.RecordOperationDuration(null, "create_user", "keycloak", Stopwatch.GetElapsedTime(startTimestamp));
+        metrics.RecordOperationCompleted(null, "create_user", ProviderName, "created");
+        metrics.RecordOperationDuration(null, "create_user", ProviderName, Stopwatch.GetElapsedTime(startTimestamp));
 
         await eventPublisher.PublishAsync(new IdentityUserCreatedEvent(createdUserId, user.Username, user.Email), cancellationToken).ConfigureAwait(false);
 

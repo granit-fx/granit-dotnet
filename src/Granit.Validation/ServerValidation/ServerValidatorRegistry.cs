@@ -22,18 +22,16 @@ public sealed class ServerValidatorRegistry
 
         Dictionary<string, IServerValidator> dict = new(StringComparer.Ordinal);
 
-        foreach (IServerValidatorContributor contributor in contributors)
+        IEnumerable<(IServerValidatorContributor Contributor, IServerValidator Validator)> duplicates = contributors
+            .SelectMany(c => c.GetValidators().Select(v => (Contributor: c, Validator: v)))
+            .Where(x => !dict.TryAdd(x.Validator.ErrorCode, x.Validator));
+
+        foreach ((IServerValidatorContributor contributor, IServerValidator validator) in duplicates)
         {
-            foreach (IServerValidator validator in contributor.GetValidators())
-            {
-                if (!dict.TryAdd(validator.ErrorCode, validator))
-                {
-                    logger.LogWarning(
-                        "Duplicate server validator for error code '{ErrorCode}' from {ContributorType}. Keeping the first registration.",
-                        validator.ErrorCode,
-                        contributor.GetType().Name);
-                }
-            }
+            logger.LogWarning(
+                "Duplicate server validator for error code '{ErrorCode}' from {ContributorType}. Keeping the first registration.",
+                validator.ErrorCode,
+                contributor.GetType().Name);
         }
 
         _validators = dict.ToFrozenDictionary(StringComparer.Ordinal);

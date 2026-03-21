@@ -15,16 +15,12 @@ public sealed class EuropeServerValidatorContributorTests
     }
 
     [Fact]
-    public void GetValidators_Returns34Validators()
-    {
+    public void GetValidators_Returns34Validators() =>
         _validators.Count.ShouldBe(34);
-    }
 
     [Fact]
-    public void AllErrorCodes_AreUnique()
-    {
+    public void AllErrorCodes_AreUnique() =>
         _validators.Select(v => v.ErrorCode).Distinct().Count().ShouldBe(_validators.Count);
-    }
 
     [Theory]
     [InlineData("Granit:Validation:InvalidFrenchSiren", "732829320", true)]

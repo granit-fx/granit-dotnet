@@ -55,10 +55,8 @@ internal static class QueryableFilterExtensions
         this IQueryable<TEntity> source,
         string searchTerm,
         QueryDefinitionBuilder<TEntity> builder)
-        where TEntity : class
-    {
-        return new ContainsSearchStrategy<TEntity>().ApplySearch(source, searchTerm, builder.GlobalSearchProperties);
-    }
+        where TEntity : class =>
+        new ContainsSearchStrategy<TEntity>().ApplySearch(source, searchTerm, builder.GlobalSearchProperties);
 
     /// <summary>
     /// Applies preset filters. OR within each group, AND between groups.

@@ -23,8 +23,6 @@ namespace Granit.Vault;
 [DependsOn(typeof(GranitEncryptionModule))]
 public sealed class GranitVaultModule : GranitModule
 {
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.TryAddSingleton<VaultMetrics>();
-    }
 }

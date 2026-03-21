@@ -97,42 +97,7 @@ internal static class QueryablePaginationExtensions
 
         if (!string.IsNullOrEmpty(cursor))
         {
-            // Try composite cursor first
-            Dictionary<string, string>? compositeValues = CursorEncoder.DecodeComposite(cursor, logger);
-
-            if (compositeValues is not null && sortFields.Count > 0)
-            {
-                // Composite cursor: build compound WHERE from sort fields
-                Expression<Func<T, bool>>? predicate = CompositeCursorBuilder.BuildCursorPredicate<T>(
-                    sortFields, compositeValues, logger);
-
-                if (predicate is not null)
-                {
-                    query = query.Where(predicate);
-                }
-            }
-            else
-            {
-                // Legacy single-field cursor: WHERE cursorProperty > cursorValue
-                string? cursorValue = CursorEncoder.Decode<string>(cursor, logger);
-                if (cursorValue is not null)
-                {
-                    object? converted = FilterExpressionBuilder.ConvertValue(
-                        cursorValue,
-                        Nullable.GetUnderlyingType(cursorProperty.PropertyType) ?? cursorProperty.PropertyType,
-                        logger, cursorPropertyName);
-
-                    if (converted is not null)
-                    {
-                        ParameterExpression parameter = Expression.Parameter(typeof(T), "e");
-                        MemberExpression member = Expression.Property(parameter, cursorProperty);
-                        ConstantExpression constant = Expression.Constant(converted, cursorProperty.PropertyType);
-                        BinaryExpression greaterThan = Expression.GreaterThan(member, constant);
-                        var predicate = Expression.Lambda<Func<T, bool>>(greaterThan, parameter);
-                        query = query.Where(predicate);
-                    }
-                }
-            }
+            query = ApplyCursorFilter(query, cursor, cursorProperty, cursorPropertyName, sortFields, logger);
         }
 
         // Take pageSize + 1 to determine if there are more pages
@@ -146,24 +111,78 @@ internal static class QueryablePaginationExtensions
         if (hasMore)
         {
             items.RemoveAt(items.Count - 1);
-            T lastItem = items[^1];
-
-            if (sortFields.Count > 0)
-            {
-                // Composite cursor: encode all sort field values
-                nextCursor = CompositeCursorBuilder.EncodeCompositeCursor(lastItem, sortFields);
-            }
-            else
-            {
-                // Legacy single-field cursor
-                object? lastValue = cursorProperty.GetValue(lastItem);
-                if (lastValue is not null)
-                {
-                    nextCursor = CursorEncoder.Encode(lastValue.ToString()!);
-                }
-            }
+            nextCursor = EncodeCursor(items[^1], cursorProperty, sortFields);
         }
 
         return new PagedResult<T>(items, TotalCount: null, HasMore: hasMore, NextCursor: nextCursor);
+    }
+
+    private static IQueryable<T> ApplyCursorFilter<T>(
+        IQueryable<T> query,
+        string cursor,
+        PropertyInfo cursorProperty,
+        string cursorPropertyName,
+        List<CompositeCursorBuilder.SortField> sortFields,
+        ILogger? logger)
+        where T : class
+    {
+        Dictionary<string, string>? compositeValues = CursorEncoder.DecodeComposite(cursor, logger);
+
+        if (compositeValues is not null && sortFields.Count > 0)
+        {
+            Expression<Func<T, bool>>? predicate = CompositeCursorBuilder.BuildCursorPredicate<T>(
+                sortFields, compositeValues, logger);
+
+            return predicate is not null ? query.Where(predicate) : query;
+        }
+
+        return ApplyLegacyCursorFilter(query, cursor, cursorProperty, cursorPropertyName, logger);
+    }
+
+    private static IQueryable<T> ApplyLegacyCursorFilter<T>(
+        IQueryable<T> query,
+        string cursor,
+        PropertyInfo cursorProperty,
+        string cursorPropertyName,
+        ILogger? logger)
+        where T : class
+    {
+        string? cursorValue = CursorEncoder.Decode<string>(cursor, logger);
+        if (cursorValue is null)
+        {
+            return query;
+        }
+
+        object? converted = FilterExpressionBuilder.ConvertValue(
+            cursorValue,
+            Nullable.GetUnderlyingType(cursorProperty.PropertyType) ?? cursorProperty.PropertyType,
+            logger, cursorPropertyName);
+
+        if (converted is null)
+        {
+            return query;
+        }
+
+        ParameterExpression parameter = Expression.Parameter(typeof(T), "e");
+        MemberExpression member = Expression.Property(parameter, cursorProperty);
+        ConstantExpression constant = Expression.Constant(converted, cursorProperty.PropertyType);
+        BinaryExpression greaterThan = Expression.GreaterThan(member, constant);
+        var predicate = Expression.Lambda<Func<T, bool>>(greaterThan, parameter);
+        return query.Where(predicate);
+    }
+
+    private static string? EncodeCursor<T>(
+        T lastItem,
+        PropertyInfo cursorProperty,
+        List<CompositeCursorBuilder.SortField> sortFields)
+        where T : class
+    {
+        if (sortFields.Count > 0)
+        {
+            return CompositeCursorBuilder.EncodeCompositeCursor(lastItem, sortFields);
+        }
+
+        object? lastValue = cursorProperty.GetValue(lastItem);
+        return lastValue is not null ? CursorEncoder.Encode(lastValue.ToString()!) : null;
     }
 }

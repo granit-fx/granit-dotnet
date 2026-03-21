@@ -29,6 +29,8 @@ internal sealed partial class DefaultBlobStorage(
     ILogger<DefaultBlobStorage> logger,
     IOptions<BlobStorageOptions> options) : IBlobStorage
 {
+    private const string ValidationOutcomeRejected = "rejected";
+
     private BlobStorageOptions Options => options.Value;
 
     /// <inheritdoc/>
@@ -153,9 +155,9 @@ internal sealed partial class DefaultBlobStorage(
             descriptor.MarkAsRejected("File not found in storage provider.");
             await writer.UpdateAsync(descriptor, cancellationToken).ConfigureAwait(false);
             string tenantStr = descriptor.TenantId?.ToString() ?? "global";
-            metrics.RecordValidationCompleted(tenantStr, "rejected", containerName);
+            metrics.RecordValidationCompleted(tenantStr, ValidationOutcomeRejected, containerName);
             metrics.RecordValidationFailed(tenantStr, "file_not_found", containerName);
-            metrics.RecordConfirmDuration(tenantStr, "rejected", containerName, stopwatch.Elapsed);
+            metrics.RecordConfirmDuration(tenantStr, ValidationOutcomeRejected, containerName, stopwatch.Elapsed);
             return new BlobConfirmationResult(false, BlobStatus.Rejected, null, null, "File not found in storage provider.");
         }
 
@@ -177,9 +179,9 @@ internal sealed partial class DefaultBlobStorage(
                 descriptor.MarkAsRejected(result.FailureReason!);
                 await writer.UpdateAsync(descriptor, cancellationToken).ConfigureAwait(false);
                 string tenantStr = descriptor.TenantId?.ToString() ?? "global";
-                metrics.RecordValidationCompleted(tenantStr, "rejected", containerName);
+                metrics.RecordValidationCompleted(tenantStr, ValidationOutcomeRejected, containerName);
                 metrics.RecordValidationFailed(tenantStr, result.FailureReason!, containerName);
-                metrics.RecordConfirmDuration(tenantStr, "rejected", containerName, stopwatch.Elapsed);
+                metrics.RecordConfirmDuration(tenantStr, ValidationOutcomeRejected, containerName, stopwatch.Elapsed);
                 return new BlobConfirmationResult(false, BlobStatus.Rejected, null, null, result.FailureReason);
             }
 

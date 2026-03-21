@@ -11,6 +11,9 @@ public sealed class NotificationsMetrics
 {
     public const string MeterName = "Granit.Notifications";
 
+    private const string TagTenantId = "tenant_id";
+    private const string DefaultTenant = "global";
+
     private readonly Counter<long> _fanoutTriggered;
     private readonly Counter<long> _deliveriesSucceeded;
     private readonly Counter<long> _deliveriesFailed;
@@ -41,14 +44,14 @@ public sealed class NotificationsMetrics
     public void RecordFanoutTriggered(string? tenantId, string notificationType) =>
         _fanoutTriggered.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "notification_type", notificationType },
         });
 
     public void RecordDeliverySucceeded(string? tenantId, string channel, string notificationType) =>
         _deliveriesSucceeded.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "channel", channel },
             { "notification_type", notificationType },
         });
@@ -56,7 +59,7 @@ public sealed class NotificationsMetrics
     public void RecordDeliveryFailed(string? tenantId, string channel, string notificationType) =>
         _deliveriesFailed.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "channel", channel },
             { "notification_type", notificationType },
         });
@@ -64,7 +67,7 @@ public sealed class NotificationsMetrics
     public void RecordDeliveryDuration(string? tenantId, string channel, string status, TimeSpan duration) =>
         _deliveryDuration.Record(duration.TotalSeconds, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "channel", channel },
             { "status", status },
         });

@@ -102,11 +102,17 @@ public static class ValidationEndpointRouteBuilderExtensions
         {
             IServerValidator? validator = registry.GetOrNull(field.ErrorCode);
 
-            ValidationFieldStatus status = validator is null
-                ? ValidationFieldStatus.ValidatorNotFound
-                : validator.Validate(field.Value)
+            ValidationFieldStatus status;
+            if (validator is null)
+            {
+                status = ValidationFieldStatus.ValidatorNotFound;
+            }
+            else
+            {
+                status = validator.Validate(field.Value)
                     ? ValidationFieldStatus.Valid
                     : ValidationFieldStatus.Invalid;
+            }
 
             results.Add(new ValidationFieldValidateResponse(field.ErrorCode, status));
         }

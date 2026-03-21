@@ -11,6 +11,9 @@ public sealed class PrivacyMetrics
 {
     public const string MeterName = "Granit.Privacy";
 
+    private const string TagTenantId = "tenant_id";
+    private const string DefaultTenant = "global";
+
     private readonly Counter<long> _exportRequests;
     private readonly Counter<long> _fragmentsReceived;
     private readonly Counter<long> _deletionRequests;
@@ -41,26 +44,26 @@ public sealed class PrivacyMetrics
     public void RecordExportRequested(string? tenantId) =>
         _exportRequests.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 
     public void RecordFragmentReceived(string? tenantId, string provider) =>
         _fragmentsReceived.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "provider", provider },
         });
 
     public void RecordDeletionRequested(string? tenantId) =>
         _deletionRequests.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 
     public void RecordExportCompleted(string? tenantId, string status, TimeSpan duration) =>
         _exportDuration.Record(duration.TotalSeconds, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "status", status },
         });
 }

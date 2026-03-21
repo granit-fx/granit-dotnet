@@ -15,16 +15,12 @@ public sealed class NorthAmericaServerValidatorContributorTests
     }
 
     [Fact]
-    public void GetValidators_Returns8Validators()
-    {
+    public void GetValidators_Returns8Validators() =>
         _validators.Count.ShouldBe(8);
-    }
 
     [Fact]
-    public void AllErrorCodes_AreUnique()
-    {
+    public void AllErrorCodes_AreUnique() =>
         _validators.Select(v => v.ErrorCode).Distinct().Count().ShouldBe(_validators.Count);
-    }
 
     [Theory]
     [InlineData("Granit:Validation:InvalidUsSsn", "078051120", true)]

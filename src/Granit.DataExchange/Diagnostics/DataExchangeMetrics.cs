@@ -13,6 +13,12 @@ public sealed class DataExchangeMetrics
 {
     public const string MeterName = "Granit.DataExchange";
 
+    private const string TagTenantId = "tenant_id";
+    private const string DefaultTenant = "global";
+    private const string TagStatus = "status";
+    private const string TagDefinition = "definition";
+    private const string TagResult = "result";
+
     // ──── Import instruments ────
 
     private readonly Counter<long> _importJobsCompleted;
@@ -66,16 +72,16 @@ public sealed class DataExchangeMetrics
     /// </summary>
     public void RecordImportCompleted(ImportReport report, ImportJob job)
     {
-        string tenantId = job.TenantId?.ToString() ?? "global";
+        string tenantId = job.TenantId?.ToString() ?? DefaultTenant;
         string status = report.FinalStatus.ToString();
         string definition = job.DefinitionName;
         string format = NormalizeFormat(job.MimeType);
 
         _importJobsCompleted.Add(1, new TagList
         {
-            { "tenant_id", tenantId },
-            { "status", status },
-            { "definition", definition },
+            { TagTenantId, tenantId },
+            { TagStatus, status },
+            { TagDefinition, definition },
             { "format", format },
         });
 
@@ -84,9 +90,9 @@ public sealed class DataExchangeMetrics
 
         _importDuration.Record(report.Duration.TotalSeconds, new TagList
         {
-            { "tenant_id", tenantId },
-            { "status", status },
-            { "definition", definition },
+            { TagTenantId, tenantId },
+            { TagStatus, status },
+            { TagDefinition, definition },
         });
     }
 
@@ -96,27 +102,27 @@ public sealed class DataExchangeMetrics
     public void RecordExportCompleted(
         string definitionName, string format, int rowCount, string? tenantId, TimeSpan duration)
     {
-        string tenant = tenantId ?? "global";
+        string tenant = tenantId ?? DefaultTenant;
 
         _exportJobsCompleted.Add(1, new TagList
         {
-            { "tenant_id", tenant },
-            { "status", "Completed" },
-            { "definition", definitionName },
+            { TagTenantId, tenant },
+            { TagStatus, "Completed" },
+            { TagDefinition, definitionName },
             { "format", format },
         });
 
         _exportRowsExported.Add(rowCount, new TagList
         {
-            { "tenant_id", tenant },
-            { "definition", definitionName },
+            { TagTenantId, tenant },
+            { TagDefinition, definitionName },
         });
 
         _exportDuration.Record(duration.TotalSeconds, new TagList
         {
-            { "tenant_id", tenant },
-            { "status", "Completed" },
-            { "definition", definitionName },
+            { TagTenantId, tenant },
+            { TagStatus, "Completed" },
+            { TagDefinition, definitionName },
         });
     }
 
@@ -126,21 +132,21 @@ public sealed class DataExchangeMetrics
     public void RecordExportFailed(
         string definitionName, string format, string? tenantId, TimeSpan duration)
     {
-        string tenant = tenantId ?? "global";
+        string tenant = tenantId ?? DefaultTenant;
 
         _exportJobsCompleted.Add(1, new TagList
         {
-            { "tenant_id", tenant },
-            { "status", "Failed" },
-            { "definition", definitionName },
+            { TagTenantId, tenant },
+            { TagStatus, "Failed" },
+            { TagDefinition, definitionName },
             { "format", format },
         });
 
         _exportDuration.Record(duration.TotalSeconds, new TagList
         {
-            { "tenant_id", tenant },
-            { "status", "Failed" },
-            { "definition", definitionName },
+            { TagTenantId, tenant },
+            { TagStatus, "Failed" },
+            { TagDefinition, definitionName },
         });
     }
 
@@ -150,8 +156,8 @@ public sealed class DataExchangeMetrics
         {
             _importRowsProcessed.Add(report.SucceededRows, new TagList
             {
-                { "tenant_id", tenantId },
-                { "result", "succeeded" },
+                { TagTenantId, tenantId },
+                { TagResult, "succeeded" },
             });
         }
 
@@ -159,8 +165,8 @@ public sealed class DataExchangeMetrics
         {
             _importRowsProcessed.Add(report.FailedRows, new TagList
             {
-                { "tenant_id", tenantId },
-                { "result", "failed" },
+                { TagTenantId, tenantId },
+                { TagResult, "failed" },
             });
         }
 
@@ -168,8 +174,8 @@ public sealed class DataExchangeMetrics
         {
             _importRowsProcessed.Add(report.SkippedRows, new TagList
             {
-                { "tenant_id", tenantId },
-                { "result", "skipped" },
+                { TagTenantId, tenantId },
+                { TagResult, "skipped" },
             });
         }
 
@@ -177,8 +183,8 @@ public sealed class DataExchangeMetrics
         {
             _importRowsProcessed.Add(report.InsertedRows, new TagList
             {
-                { "tenant_id", tenantId },
-                { "result", "inserted" },
+                { TagTenantId, tenantId },
+                { TagResult, "inserted" },
             });
         }
 
@@ -186,8 +192,8 @@ public sealed class DataExchangeMetrics
         {
             _importRowsProcessed.Add(report.UpdatedRows, new TagList
             {
-                { "tenant_id", tenantId },
-                { "result", "updated" },
+                { TagTenantId, tenantId },
+                { TagResult, "updated" },
             });
         }
     }
@@ -198,7 +204,7 @@ public sealed class DataExchangeMetrics
         {
             _importRowErrors.Add(group.Count(), new TagList
             {
-                { "tenant_id", tenantId },
+                { TagTenantId, tenantId },
                 { "error_kind", group.Key.ToString().ToLowerInvariant() },
             });
         }
