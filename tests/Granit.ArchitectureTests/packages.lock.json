@@ -2264,7 +2264,8 @@
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )"
+          "Granit.Timing": "[0.1.0-dev, )",
+          "OpenIddict.EntityFrameworkCore": "[7.*, )"
         }
       },
       "granit.openiddict.backgroundjobs": {
