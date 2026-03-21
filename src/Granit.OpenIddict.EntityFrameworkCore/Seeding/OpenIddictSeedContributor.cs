@@ -16,30 +16,47 @@ internal sealed partial class OpenIddictSeedContributor(
     IOptions<GranitOpenIddictSeedingOptions> options,
     ILogger<OpenIddictSeedContributor> logger) : IDataSeedContributor
 {
+    /// <summary>
+    /// Standard OIDC scopes seeded automatically on every startup.
+    /// These are the identity resources defined by the OpenID Connect specification.
+    /// </summary>
+    private static readonly OidcScopeSeedDescriptor[] StandardScopes =
+    [
+        new("openid", "OpenID (subject identifier)", []),
+        new("profile", "User profile (name, family_name, given_name, preferred_username)", []),
+        new("email", "Email address (email, email_verified)", []),
+        new("phone", "Phone number (phone_number, phone_number_verified)", []),
+        new("address", "Postal address", []),
+        new("roles", "User roles", []),
+        new("offline_access", "Refresh token (offline access)", []),
+    ];
+
     /// <inheritdoc/>
     public async Task SeedAsync(DataSeedContext context, CancellationToken cancellationToken = default)
     {
         GranitOpenIddictSeedingOptions seedOptions = options.Value;
 
-        if (seedOptions.Applications.Length == 0 && seedOptions.Scopes.Length == 0)
+        // 1. Always seed standard OIDC scopes
+        foreach (OidcScopeSeedDescriptor scope in StandardScopes)
         {
-            Log.NoSeedData(logger);
-            return;
+            await SeedScopeAsync(scope, cancellationToken).ConfigureAwait(false);
         }
 
-        Log.SeedingStarted(logger, seedOptions.Applications.Length, seedOptions.Scopes.Length);
-
+        // 2. Seed user-configured applications
         foreach (OidcApplicationSeedDescriptor app in seedOptions.Applications)
         {
             await SeedApplicationAsync(app, cancellationToken).ConfigureAwait(false);
         }
 
+        // 3. Seed user-configured scopes
         foreach (OidcScopeSeedDescriptor scope in seedOptions.Scopes)
         {
             await SeedScopeAsync(scope, cancellationToken).ConfigureAwait(false);
         }
 
-        Log.SeedingCompleted(logger);
+        Log.SeedingCompleted(logger,
+            StandardScopes.Length + seedOptions.Scopes.Length,
+            seedOptions.Applications.Length);
     }
 
     private async Task SeedApplicationAsync(
@@ -151,14 +168,8 @@ internal sealed partial class OpenIddictSeedContributor(
 
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Debug, Message = "No OpenIddict seed data configured — skipping.")]
-        public static partial void NoSeedData(ILogger logger);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "Seeding {ApplicationCount} OIDC application(s) and {ScopeCount} scope(s).")]
-        public static partial void SeedingStarted(ILogger logger, int applicationCount, int scopeCount);
-
-        [LoggerMessage(Level = LogLevel.Information, Message = "OpenIddict seeding completed.")]
-        public static partial void SeedingCompleted(ILogger logger);
+        [LoggerMessage(Level = LogLevel.Information, Message = "OpenIddict seeding completed: {ScopeCount} scope(s), {ApplicationCount} application(s).")]
+        public static partial void SeedingCompleted(ILogger logger, int scopeCount, int applicationCount);
 
         [LoggerMessage(Level = LogLevel.Debug, Message = "Created OIDC application '{ClientId}'.")]
         public static partial void ApplicationCreated(ILogger logger, string clientId);
