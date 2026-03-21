@@ -253,6 +253,34 @@ environment variables. Never commit secrets to source control.
 }
 ```
 
+## GranitKeyRotationOptions
+
+**Bound from:** `OpenIddict:KeyRotation` section
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `Enabled` | `bool` | `false` | Enable automatic key rotation. When disabled, ephemeral keys are used. |
+| `KeyLifetime` | `TimeSpan` | `90 days` | How long a signing key remains active before rotation. |
+| `GracePeriod` | `TimeSpan` | `14 days` | How long a retired key remains in JWKS for token verification. Should be >= max token lifetime. |
+| `RotationLeadTime` | `TimeSpan` | `7 days` | How far in advance a new key is generated before the active key expires. |
+| `RsaKeySize` | `int` | `2048` | RSA key size in bits. Use 4096 for higher security requirements. |
+| `SigningAlgorithm` | `string` | `RS256` | The JWT signing algorithm. |
+
+```json
+{
+  "OpenIddict": {
+    "KeyRotation": {
+      "Enabled": true,
+      "KeyLifetime": "90.00:00:00",
+      "GracePeriod": "14.00:00:00",
+      "RotationLeadTime": "7.00:00:00",
+      "RsaKeySize": 2048,
+      "SigningAlgorithm": "RS256"
+    }
+  }
+}
+```
+
 ## OpenIddictEndpointsOptions
 
 **Configured in:** `MapOpenIddictEndpoints()` lambda

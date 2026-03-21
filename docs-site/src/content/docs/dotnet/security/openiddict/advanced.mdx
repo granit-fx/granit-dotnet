@@ -248,6 +248,56 @@ conditional mediation to enable autofill suggestions.
 `ServerDomain` is the WebAuthn Relying Party ID and is required when passkeys are
 enabled. It must match the domain where the application is hosted.
 
+## Signing key rotation
+
+The module supports **automatic RSA key rotation** for signing and encryption keys,
+stored encrypted in the database via `IStringEncryptionService` (Granit.Encryption).
+
+### Key lifecycle
+
+```text
+[Generated] → [Active] → [Retired] → [Revoked] → [Pruned]
+              (90 days)   (14 days)   (immediate)  (30 days)
+```
+
+| State | Duration | JWKS visible | Signs new tokens | Validates old tokens |
+|-------|----------|:---:|:---:|:---:|
+| **Active** | 90 days (configurable) | Yes | Yes | Yes |
+| **Retired** | 14 days grace period | Yes | No | Yes |
+| **Revoked** | Until pruned | No | No | No |
+
+A new key is generated **7 days before** the active key expires (`RotationLeadTime`),
+ensuring zero-downtime rotation.
+
+### Configuration
+
+```json
+{
+  "OpenIddict": {
+    "KeyRotation": {
+      "Enabled": true,
+      "KeyLifetime": "90.00:00:00",
+      "GracePeriod": "14.00:00:00",
+      "RotationLeadTime": "7.00:00:00",
+      "RsaKeySize": 2048,
+      "SigningAlgorithm": "RS256"
+    }
+  }
+}
+```
+
+### Security
+
+- Key material is **encrypted at rest** via `IStringEncryptionService` (AES-256 / Vault key)
+- Private keys never appear in plaintext in the database
+- The `openiddict-key-rotation` job runs daily at 3 AM (concurrency-safe via Wolverine Outbox)
+- Revoked keys are pruned from the database after 30 days
+
+### Architecture
+
+The rotation logic lives in `KeyRotationService` (Granit.OpenIddict.EntityFrameworkCore).
+The background job (`OpenIddictKeyRotationJob`) only calls `IKeyRotationService.RotateAsync()`.
+
 ## Background jobs
 
 Two recurring background jobs are provided by `Granit.OpenIddict.BackgroundJobs`:
@@ -256,6 +306,7 @@ Two recurring background jobs are provided by `Granit.OpenIddict.BackgroundJobs`
 |----------|------|-------------|
 | `openiddict-token-cleanup` | `0 * * * *` (hourly) | Prunes expired tokens and orphaned authorizations via `IOpenIddictTokenManager.PruneAsync()` and `IOpenIddictAuthorizationManager.PruneAsync()` |
 | `openiddict-idle-session-enforcement` | `*/5 * * * *` (every 5 min) | Revokes refresh tokens for idle sessions (only active when `IdleSessionTimeout > 0`) |
+| `openiddict-key-rotation` | `0 3 * * *` (daily at 3 AM) | Generates new signing/encryption keys, retires expiring keys, revokes and prunes old keys |
 
 Both jobs implement `IBackgroundJob` with `[RecurringJob]` attribute and are
 concurrency-safe via Wolverine Outbox.
