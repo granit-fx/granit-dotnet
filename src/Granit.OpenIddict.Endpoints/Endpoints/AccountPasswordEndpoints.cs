@@ -80,32 +80,27 @@ internal static class AccountPasswordEndpoints
 
     private static async Task<Accepted<string>> ForgotPasswordAsync(
         AccountForgotPasswordRequest request,
-        [FromServices] IEmailConfirmationService emailConfirmation,
+        [FromServices] IPasswordResetService passwordResetService,
         CancellationToken cancellationToken)
     {
-        // Always return 202 regardless of whether the email exists (prevents enumeration)
-        try
-        {
-            await emailConfirmation.SendConfirmationEmailAsync(
-                request.Email, request.Email, cancellationToken).ConfigureAwait(false);
-        }
-        catch (InvalidOperationException)
-        {
-            // User not found — swallow, return 202 anyway
-        }
+        // Always return 202 regardless of whether the email exists (prevents enumeration).
+        // IPasswordResetService.RequestResetAsync publishes PasswordResetRequestedEto
+        // which a subscriber (Granit.Notifications or app-level) consumes to send the email.
+        await passwordResetService.RequestResetAsync(request.Email, cancellationToken)
+            .ConfigureAwait(false);
 
         return TypedResults.Accepted((string?)null, (string?)null);
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> ResetPasswordAsync(
         AccountPasswordResetRequest request,
-        [FromServices] IIdentityPasswordManager passwordManager,
+        [FromServices] IPasswordResetService passwordResetService,
         CancellationToken cancellationToken)
     {
         try
         {
-            await passwordManager.SetTemporaryPasswordAsync(
-                request.UserId, request.NewPassword, cancellationToken).ConfigureAwait(false);
+            await passwordResetService.ResetPasswordAsync(
+                request.UserId, request.Token, request.NewPassword, cancellationToken).ConfigureAwait(false);
             return TypedResults.NoContent();
         }
         catch (InvalidOperationException)

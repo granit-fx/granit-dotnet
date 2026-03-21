@@ -1,6 +1,9 @@
+using Granit.Core.Events;
 using Granit.Identity;
 using Granit.Identity.Models;
+using Granit.OpenIddict.Diagnostics;
 using Granit.OpenIddict.Endpoints.Dtos;
+using Granit.OpenIddict.Events;
 using Granit.OpenIddict.Permissions;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Builder;
@@ -128,6 +131,8 @@ internal static class AdminUserEndpoints
         Guid userId,
         HttpContext httpContext,
         [FromServices] IImpersonationService impersonationService,
+        [FromServices] IDistributedEventBus eventBus,
+        [FromServices] OpenIddictMetrics metrics,
         CancellationToken cancellationToken = default)
     {
         // Guard: cannot chain-impersonate
@@ -146,6 +151,13 @@ internal static class AdminUserEndpoints
         ImpersonationResult result = await impersonationService
             .ImpersonateAsync(userId.ToString(), adminId, adminName, cancellationToken)
             .ConfigureAwait(false);
+
+        // Publish transparency event (GDPR/SOC2 — subscriber sends notification to impersonated user)
+        await eventBus.PublishAsync(
+            new UserImpersonatedEto(userId, Guid.Parse(adminId), null, TimeProvider.System.GetUtcNow()),
+            cancellationToken).ConfigureAwait(false);
+
+        metrics.RecordImpersonation(null);
 
         return TypedResults.Ok(result);
     }

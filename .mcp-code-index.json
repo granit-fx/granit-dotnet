@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T20:22:04.637520+00:00",
+  "generatedAt": "2026-03-21T20:40:16.913325+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -18425,6 +18425,15 @@
       "members": []
     },
     {
+      "name": "PasswordResetRequestedEto",
+      "fqn": "Granit.OpenIddict.Events.PasswordResetRequestedEto",
+      "kind": "record",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Events/PasswordResetRequestedEto.cs",
+      "line": 19,
+      "members": []
+    },
+    {
       "name": "UserImpersonatedEto",
       "fqn": "Granit.OpenIddict.Events.UserImpersonatedEto",
       "kind": "record",
@@ -18980,6 +18989,28 @@
           "name": "DeleteAsync",
           "kind": "method",
           "signature": "DeleteAsync(string userId, Guid passkeyId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IPasswordResetService",
+      "fqn": "Granit.OpenIddict.Services.IPasswordResetService",
+      "kind": "interface",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/IPasswordResetService.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RequestResetAsync",
+          "kind": "method",
+          "signature": "RequestResetAsync(string email, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "ResetPasswordAsync",
+          "kind": "method",
+          "signature": "ResetPasswordAsync(string userId, string token, string newPassword, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
