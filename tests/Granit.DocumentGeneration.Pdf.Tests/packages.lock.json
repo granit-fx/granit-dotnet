@@ -397,13 +397,20 @@
           "Microsoft.Extensions.Primitives": "10.0.5"
         }
       },
+      "Microsoft.IO.RecyclableMemoryStream": {
+        "type": "CentralTransitive",
+        "requested": "[3.*, )",
+        "resolved": "3.0.1",
+        "contentHash": "s/s20YTVY9r9TPfTrN5g8zPF1YhwxyqO6PxUkrYTGI2B+OGPe9AdajWZrLhFqXIvqIW23fnUE4+ztrUWNU1+9g=="
+      },
       "PuppeteerSharp": {
         "type": "CentralTransitive",
         "requested": "[24.*, )",
-        "resolved": "24.39.0",
-        "contentHash": "T0Y6LiBa/c7Yk0O5i1A7FG0rSzgyJjGXtkGMCLwR9L7dZaXOjHj3/nq43KSlyzu98+loSKtVbFAnDpOM/Tc+zQ==",
+        "resolved": "24.40.0",
+        "contentHash": "vVvHFHCRW6772ptQmwzIxmc2CdkEv+F9kTlCncv4VFSGev1ev5mtlL9aVOPdHc6ss5ck6sArP4b2JtNy/7GzGA==",
         "dependencies": {
           "Microsoft.Extensions.Logging": "10.0.0",
+          "Microsoft.IO.RecyclableMemoryStream": "3.0.1",
           "WebDriverBiDi": "0.0.45"
         }
       }

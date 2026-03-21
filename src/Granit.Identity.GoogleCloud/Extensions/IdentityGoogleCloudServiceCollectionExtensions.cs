@@ -41,7 +41,8 @@ public static class IdentityGoogleCloudServiceCollectionExtensions
 
             if (!string.IsNullOrEmpty(opts.CredentialFilePath))
             {
-                appOptions.Credential = GoogleCredential.FromFile(opts.CredentialFilePath);
+                appOptions.Credential = CredentialFactory
+                    .FromFile(opts.CredentialFilePath, JsonCredentialParameters.ServiceAccountCredentialType);
             }
 
             var app = FirebaseApp.Create(appOptions);
