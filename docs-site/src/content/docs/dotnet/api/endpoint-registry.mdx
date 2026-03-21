@@ -93,9 +93,11 @@ api.MapGranitIdentityEndpoints();      // → /api/v1/identity/users/...
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/{id:guid}` | GetBlobDescriptor | `BlobStorage.Blobs.Manage` |
-| <Badge text="POST" variant="success" /> | `/` | UploadBlob | `BlobStorage.Blobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/upload` | InitiateBlobUpload | `BlobStorage.Blobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/{id:guid}/confirm` | ConfirmBlobUpload | `BlobStorage.Blobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/{id:guid}/download-url` | GenerateBlobDownloadUrl | `BlobStorage.Blobs.Manage` |
 | <Badge text="DELETE" variant="danger" /> | `/{id:guid}` | DeleteBlob | `BlobStorage.Blobs.Manage` |
-| <Badge text="POST" variant="success" /> | `/operations/validate-name` | ValidateBlobName | `BlobStorage.Blobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/cleanup-orphans` | CleanupOrphanedBlobs | `BlobStorage.Blobs.Manage` |
 
 ### Blob Proxy
 
@@ -178,23 +180,31 @@ api.MapGranitIdentityEndpoints();      // → /api/v1/identity/users/...
 
 ## Identity
 
-**Module:** `Granit.Identity.Endpoints`
-**Prefix:** `identity/users`
+Identity uses **two separate endpoint groups** with distinct prefixes.
 
-### User Cache
+### User Cache (`identity/users`)
+
+**Module:** `Granit.Identity.Endpoints` — `MapGranitIdentityEndpoints()`
+**Prefix:** `identity/users`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/search` | SearchIdentityUsers | `Identity.UserCache.Read` |
+| <Badge text="GET" variant="note" /> | `/` | SearchIdentityUsers | `Identity.UserCache.Read` |
 | <Badge text="GET" variant="note" /> | `/{userId}` | GetIdentityUser | `Identity.UserCache.Read` |
 | <Badge text="POST" variant="success" /> | `/batch` | BatchResolveIdentityUsers | `Identity.UserCache.Read` |
 | <Badge text="GET" variant="note" /> | `/stats` | GetIdentityUserCacheStats | `Identity.UserCache.Read` |
+| <Badge text="GET" variant="note" /> | `/capabilities` | GetCapabilities | `Identity.UserCache.Read` |
 | <Badge text="POST" variant="success" /> | `/sync` | SyncIdentityUsers | `Identity.UserCache.Sync` |
 | <Badge text="POST" variant="success" /> | `/sync-all` | SyncAllIdentityUsers | `Identity.UserCache.Sync` |
-| <Badge text="POST" variant="success" /> | `/erase` | EraseIdentityUserData | `Identity.UserCache.Delete` |
-| <Badge text="POST" variant="success" /> | `/pseudonymize` | PseudonymizeIdentityUser | `Identity.UserCache.Delete` |
+| <Badge text="POST" variant="success" /> | `/sync-stale` | SyncStaleIdentityUsers | `Identity.UserCache.Sync` |
+| <Badge text="DELETE" variant="danger" /> | `/{userId}` | EraseIdentityUserData | `Identity.UserCache.Delete` |
 
-### Provider Users
+### Identity Provider (`identity/provider`)
+
+**Module:** `Granit.Identity.Endpoints` — `MapGranitIdentityProviderEndpoints()`
+**Prefix:** `identity/provider`
+
+#### Users
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
@@ -202,39 +212,42 @@ api.MapGranitIdentityEndpoints();      // → /api/v1/identity/users/...
 | <Badge text="GET" variant="note" /> | `/users/{userId}` | GetProviderUser | `Identity.Users.Read` |
 | <Badge text="POST" variant="success" /> | `/users` | CreateProviderUser | `Identity.Users.Manage` |
 | <Badge text="PUT" variant="caution" /> | `/users/{userId}` | UpdateProviderUser | `Identity.Users.Manage` |
-| <Badge text="DELETE" variant="danger" /> | `/users/{userId}` | DeleteProviderUser | `Identity.Users.Manage` |
 
-### Roles
+#### Roles
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/roles` | ListProviderRoles | `Identity.Roles.Read` |
+| <Badge text="GET" variant="note" /> | `/roles/{roleName}/members` | GetRoleMembers | `Identity.Roles.Read` |
 | <Badge text="GET" variant="note" /> | `/users/{userId}/roles` | GetUserRoles | `Identity.Roles.Read` |
-| <Badge text="POST" variant="success" /> | `/users/{userId}/roles` | AssignUserRole | `Identity.Roles.Manage` |
-| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/roles/{roleId}` | RemoveUserRole | `Identity.Roles.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/users/{userId}/roles/{roleName}` | AssignUserRole | `Identity.Roles.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/roles/{roleName}` | RemoveUserRole | `Identity.Roles.Manage` |
 
-### Groups
+#### Groups
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/groups` | ListProviderGroups | `Identity.Groups.Read` |
 | <Badge text="GET" variant="note" /> | `/users/{userId}/groups` | GetUserGroups | `Identity.Groups.Read` |
-| <Badge text="POST" variant="success" /> | `/users/{userId}/groups` | AddUserToGroup | `Identity.Groups.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/users/{userId}/groups/{groupId}` | AddUserToGroup | `Identity.Groups.Manage` |
 | <Badge text="DELETE" variant="danger" /> | `/users/{userId}/groups/{groupId}` | RemoveUserFromGroup | `Identity.Groups.Manage` |
 
-### Sessions
+#### Sessions & Devices
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/users/{userId}/sessions` | ListUserSessions | `Identity.Sessions.Read` |
-| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/sessions/{sessionId}` | RevokeUserSession | `Identity.Sessions.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/sessions/{sessionId}` | TerminateSession | `Identity.Sessions.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/sessions` | TerminateAllSessions | `Identity.Sessions.Manage` |
+| <Badge text="GET" variant="note" /> | `/users/{userId}/devices` | GetUserDeviceActivity | `Identity.Sessions.Read` |
 
-### Passwords
+#### Passwords
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="POST" variant="success" /> | `/users/{userId}/password/reset` | ResetUserPassword | `Identity.Passwords.Manage` |
-| <Badge text="POST" variant="success" /> | `/users/{userId}/password/force-change` | ForcePasswordChange | `Identity.Passwords.Manage` |
+| <Badge text="GET" variant="note" /> | `/users/{userId}/password/changed-at` | GetPasswordChangedAt | `Identity.Passwords.Read` |
+| <Badge text="POST" variant="success" /> | `/users/{userId}/password/reset-email` | SendPasswordResetEmail | `Identity.Passwords.Manage` |
+| <Badge text="POST" variant="success" /> | `/users/{userId}/password/temporary` | SetTemporaryPassword | `Identity.Passwords.Manage` |
 
 ### Webhook
 
@@ -296,6 +309,36 @@ api.MapGranitIdentityEndpoints();      // → /api/v1/identity/users/...
 | <Badge text="POST" variant="success" /> | `/entity/{entityType}/{entityId}/follow` | FollowEntity | Authenticated |
 | <Badge text="DELETE" variant="danger" /> | `/entity/{entityType}/{entityId}/follow` | UnfollowEntity | Authenticated |
 | <Badge text="GET" variant="note" /> | `/entity/{entityType}/{entityId}/followers` | GetEntityFollowers | Authenticated |
+
+---
+
+## Privacy (GDPR)
+
+**Module:** `Granit.Privacy.Endpoints`
+**Prefix:** `privacy`
+
+### Data Export (Art. 15/20)
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="POST" variant="success" /> | `/export` | RequestPrivacyExport | `Privacy.Export.Execute` |
+| <Badge text="GET" variant="note" /> | `/export/{requestId}` | GetPrivacyExportStatus | `Privacy.Export.Read` |
+| <Badge text="GET" variant="note" /> | `/export` | ListPrivacyExports | `Privacy.Export.Read` |
+
+### Data Deletion (Art. 17)
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="POST" variant="success" /> | `/deletion` | RequestPrivacyDeletion | `Privacy.Deletion.Execute` |
+
+### Legal Agreements (Art. 7)
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/agreements/documents` | ListPrivacyLegalDocuments | `Privacy.Agreements.Read` |
+| <Badge text="GET" variant="note" /> | `/agreements/status` | GetPrivacyConsentStatus | `Privacy.Agreements.Read` |
+| <Badge text="GET" variant="note" /> | `/agreements/history` | ListPrivacyAgreementHistory | `Privacy.Agreements.Read` |
+| <Badge text="POST" variant="success" /> | `/agreements/accept` | AcceptPrivacyAgreement | `Privacy.Agreements.Create` |
 
 ---
 
@@ -415,7 +458,6 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/event-types` | GetWebhookEventTypes | `Webhooks.Subscriptions.Manage` |
-| <Badge text="POST" variant="success" /> | `/event-types/{eventTypeName}/discover` | DiscoverWebhookEventType | `Webhooks.Subscriptions.Manage` |
 
 ### Subscriptions — CRUD
 
@@ -458,10 +500,9 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/{entityType}/{entityId}/history` | GetWorkflowHistory | `Workflow.History` |
-| <Badge text="GET" variant="note" /> | `/{entityType}/{entityId}/status` | GetWorkflowStatus | `Workflow.History` |
+| <Badge text="GET" variant="note" /> | `/{entityType}/{entityId}/history` | GetTransitionHistory | `Workflow.History` |
 | <Badge text="GET" variant="note" /> | `/transitions` | GetAvailableTransitions | `Workflow.History` |
-| <Badge text="POST" variant="success" /> | `/transitions` | ExecuteWorkflowTransition | `Workflow.History` |
+| <Badge text="POST" variant="success" /> | `/transitions` | ExecuteTransition | `Workflow.History` |
 
 ---
 
@@ -489,26 +530,76 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 
 ---
 
+## Audit Log
+
+**Module:** `Granit.AuditLog.Endpoints`
+**Prefix:** `audit-log`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/` | GetAuditLogEntries | `AuditLog.Entries.Read` |
+| <Badge text="GET" variant="note" /> | `/{id:guid}` | GetAuditLogEntry | `AuditLog.Entries.Read` |
+| <Badge text="GET" variant="note" /> | `/entity/{entityType}/{entityId}` | GetAuditLogByEntity | `AuditLog.Entries.Read` |
+
+---
+
+## Diagnostics
+
+**Module:** `Granit.Diagnostics.Endpoints`
+**Prefix:** `diagnostics`
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="GET" variant="note" /> | `/health` | GetSystemHealth | Authenticated |
+
+---
+
+## Reference Data
+
+**Module:** `Granit.ReferenceData.Endpoints`
+**Prefix:** `reference-data`
+
+<Aside type="caution">
+Reference Data endpoints are registered per entity type by the **application**
+via `MapGranitReferenceDataEndpoints<T>()`. Each entity gets its own sub-group
+under the prefix.
+</Aside>
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/` | GetReferenceDataList | Read |
+| <Badge text="GET" variant="note" /> | `/{code}` | GetReferenceDataByCode | Read |
+| <Badge text="POST" variant="success" /> | `/` | CreateReferenceData | Admin |
+| <Badge text="PUT" variant="caution" /> | `/{code}` | UpdateReferenceData | Admin |
+| <Badge text="DELETE" variant="danger" /> | `/{code}` | DeactivateReferenceData | Admin |
+
+---
+
 ## Summary
 
 | Module | Endpoints | Auth model |
 |--------|-----------|------------|
 | API Keys | 6 | Permission-based |
+| Audit Log | 3 | Permission-based |
 | Authorization | 5 | Admin + Authenticated |
 | Background Jobs | 5 | Permission-based |
-| Blob Storage | 4 + 2 proxy | Permission + Token |
+| Blob Storage | 6 + 2 proxy | Permission + Token |
 | Cookie Consent | 1 | Anonymous |
 | Data Exchange | 19 | Permission-based |
+| Diagnostics | 1 | Authenticated |
 | Features | 5 | Permission + Authenticated |
-| Identity | 23 | Permission-based (7 groups) |
+| Identity — Cache | 9 | Permission-based |
+| Identity — Provider | 18 + webhook | Permission-based |
 | Localization | 4 | Anonymous + Permission |
 | Notifications | 14 | Authenticated |
+| Privacy (GDPR) | 8 | Permission-based |
 | Querying | 7 per entity | App-defined |
+| Reference Data | 5 per entity | App-defined |
 | Settings | 8 | Authenticated + Permission |
 | Templating | 16 | Permission-based |
 | Timeline | 3 | Permission-based |
 | Validation | 3 | Anonymous |
-| Webhooks | 16 | Permission-based |
-| Workflow | 4 | Permission-based |
+| Webhooks | 15 | Permission-based |
+| Workflow | 3 | Permission-based |
 | AI | 7 | Permission-based |
-| **Total** | **~150+** | |
+| **Total** | **~168+** | |
