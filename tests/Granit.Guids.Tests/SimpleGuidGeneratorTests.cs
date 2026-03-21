@@ -53,4 +53,39 @@ public sealed class SimpleGuidGeneratorTests
         // Assert
         guid.ShouldNotBe(Guid.Empty);
     }
+
+    [Fact]
+    public void Instance_ReturnsSameInstance()
+    {
+        // Act
+        SimpleGuidGenerator first = SimpleGuidGenerator.Instance;
+        SimpleGuidGenerator second = SimpleGuidGenerator.Instance;
+
+        // Assert
+        first.ShouldBeSameAs(second);
+    }
+
+    [Fact]
+    public void Instance_ImplementsIGuidGenerator()
+    {
+        // Assert
+        SimpleGuidGenerator.Instance.ShouldBeAssignableTo<IGuidGenerator>();
+    }
+
+    [Fact]
+    public void Create_Generates10000UniqueGuids()
+    {
+        // Arrange
+        SimpleGuidGenerator generator = SimpleGuidGenerator.Instance;
+        HashSet<Guid> guids = [];
+
+        // Act
+        for (int i = 0; i < 10_000; i++)
+        {
+            guids.Add(generator.Create());
+        }
+
+        // Assert
+        guids.Count.ShouldBe(10_000);
+    }
 }

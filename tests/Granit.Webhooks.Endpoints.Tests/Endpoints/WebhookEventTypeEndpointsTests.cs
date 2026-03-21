@@ -1,6 +1,8 @@
+using Granit.Core.Localization;
 using Granit.Webhooks.Definitions;
 using Granit.Webhooks.Endpoints.Dtos;
 using Granit.Webhooks.Endpoints.Endpoints;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using NSubstitute;
 using Shouldly;
@@ -15,8 +17,10 @@ public sealed class WebhookEventTypeEndpointsTests
     {
         IWebhookEventTypeRegistry registry = Substitute.For<IWebhookEventTypeRegistry>();
         registry.GetAll().Returns([]);
+        HttpContext httpContext = CreateHttpContext();
 
-        Ok<IReadOnlyList<WebhookEventTypeResponse>> result = WebhookEventTypeEndpoints.GetEventTypes(registry);
+        Ok<IReadOnlyList<WebhookEventTypeResponse>> result =
+            WebhookEventTypeEndpoints.GetEventTypes(registry, httpContext);
 
         result.Value.ShouldNotBeNull();
         result.Value.ShouldBeEmpty();
@@ -27,11 +31,21 @@ public sealed class WebhookEventTypeEndpointsTests
     {
         IWebhookEventTypeRegistry registry = Substitute.For<IWebhookEventTypeRegistry>();
         registry.GetAll().Returns([
-            new WebhookEventTypeDefinition("document.uploaded", "Document uploaded", "Fires on upload", "Documents"),
-            new WebhookEventTypeDefinition("patient.created", "Patient created", null, "Patients"),
+            new WebhookEventTypeDefinition(
+                "document.uploaded",
+                LocalizableString.Fixed("Document uploaded"),
+                LocalizableString.Fixed("Fires on upload"),
+                LocalizableString.Fixed("Documents")),
+            new WebhookEventTypeDefinition(
+                "patient.created",
+                LocalizableString.Fixed("Patient created"),
+                null,
+                LocalizableString.Fixed("Patients")),
         ]);
+        HttpContext httpContext = CreateHttpContext();
 
-        Ok<IReadOnlyList<WebhookEventTypeResponse>> result = WebhookEventTypeEndpoints.GetEventTypes(registry);
+        Ok<IReadOnlyList<WebhookEventTypeResponse>> result =
+            WebhookEventTypeEndpoints.GetEventTypes(registry, httpContext);
 
         result.Value.ShouldNotBeNull();
         result.Value.Count.ShouldBe(2);
@@ -45,5 +59,30 @@ public sealed class WebhookEventTypeEndpointsTests
         result.Value[1].DisplayName.ShouldBe("Patient created");
         result.Value[1].Description.ShouldBeNull();
         result.Value[1].Category.ShouldBe("Patients");
+    }
+
+    [Fact]
+    public void GetEventTypes_NullLocalizerFactory_FallsBackToKeys()
+    {
+        IWebhookEventTypeRegistry registry = Substitute.For<IWebhookEventTypeRegistry>();
+        registry.GetAll().Returns([
+            new WebhookEventTypeDefinition(
+                "order.created",
+                LocalizableString.Create<WebhookEventTypeEndpointsTests>("WebhookEventType:order.created")),
+        ]);
+        HttpContext httpContext = CreateHttpContext();
+
+        Ok<IReadOnlyList<WebhookEventTypeResponse>> result =
+            WebhookEventTypeEndpoints.GetEventTypes(registry, httpContext);
+
+        result.Value.ShouldNotBeNull();
+        result.Value[0].DisplayName.ShouldBe("WebhookEventType:order.created");
+    }
+
+    private static DefaultHttpContext CreateHttpContext()
+    {
+        DefaultHttpContext httpContext = new();
+        httpContext.RequestServices = Substitute.For<IServiceProvider>();
+        return httpContext;
     }
 }

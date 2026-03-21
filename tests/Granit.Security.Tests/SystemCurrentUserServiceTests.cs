@@ -14,10 +14,13 @@ public sealed class SystemCurrentUserServiceTests
     public void IsMachine_ReturnsTrue() => _sut.IsMachine.ShouldBeTrue();
 
     [Fact]
-    public void UserId_ReturnsSystem() => _sut.UserId.ShouldBe("system");
+    public void SystemUserId_Constant_IsSystem() => SystemCurrentUserService.SystemUserId.ShouldBe("system");
 
     [Fact]
-    public void UserName_ReturnsSystem() => _sut.UserName.ShouldBe("system");
+    public void UserId_ReturnsSystemUserId() => _sut.UserId.ShouldBe(SystemCurrentUserService.SystemUserId);
+
+    [Fact]
+    public void UserName_ReturnsSystemUserId() => _sut.UserName.ShouldBe(SystemCurrentUserService.SystemUserId);
 
     [Fact]
     public void IsAuthenticated_ReturnsFalse() => _sut.IsAuthenticated.ShouldBeFalse();

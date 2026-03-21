@@ -155,4 +155,131 @@ public sealed class AesStringEncryptionProviderTests
 
         result.ShouldBeNull("un ciphertext chiffré avec la clé A ne peut pas être déchiffré avec la clé B");
     }
+
+    [Fact]
+    public void Constructor_NullPassPhrase_Throws_InvalidOperationException()
+    {
+        IOptions<StringEncryptionOptions> options = Microsoft.Extensions.Options.Options.Create(new StringEncryptionOptions
+        {
+            PassPhrase = null!
+        });
+
+        Action act = () => _ = new AesStringEncryptionProvider(options);
+
+        Should.Throw<InvalidOperationException>(act).Message.ShouldContain("PassPhrase");
+    }
+
+    [Fact]
+    public void Encrypt_Decrypt_RoundTrip_LongString_Succeeds()
+    {
+        AesStringEncryptionProvider provider = CreateProvider();
+        string longText = new('A', 10_000);
+
+        string cipherText = provider.Encrypt(longText);
+        string? decrypted = provider.Decrypt(cipherText);
+
+        decrypted.ShouldBe(longText);
+    }
+
+    [Fact]
+    public void Decrypt_ValidBase64_ButTamperedHmac_Returns_Null()
+    {
+        AesStringEncryptionProvider provider = CreateProvider();
+        string cipherText = provider.Encrypt("test value");
+
+        // Tamper with the HMAC portion (last 32 bytes) — flip a byte in the middle
+        byte[] bytes = Convert.FromBase64String(cipherText);
+        bytes[^16] ^= 0xFF;
+        string tampered = Convert.ToBase64String(bytes);
+
+        string? result = provider.Decrypt(tampered);
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Decrypt_ValidBase64_ButTamperedIv_Returns_Null()
+    {
+        AesStringEncryptionProvider provider = CreateProvider();
+        string cipherText = provider.Encrypt("test value");
+
+        // Tamper with the IV portion (first 16 bytes)
+        byte[] bytes = Convert.FromBase64String(cipherText);
+        bytes[0] ^= 0xFF;
+        string tampered = Convert.ToBase64String(bytes);
+
+        string? result = provider.Decrypt(tampered);
+
+        // HMAC verification will fail because IV is part of the MAC input
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Decrypt_ExactlyMinimumLength_ButInvalid_Returns_Null()
+    {
+        AesStringEncryptionProvider provider = CreateProvider();
+        // Exactly 64 bytes: IV(16) + one AES block(16) + HMAC(32) — but random data
+        string exactMinimum = Convert.ToBase64String(new byte[64]);
+
+        string? result = provider.Decrypt(exactMinimum);
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Encrypt_Decrypt_RoundTrip_128BitKey_Succeeds()
+    {
+        IOptions<StringEncryptionOptions> options = Microsoft.Extensions.Options.Options.Create(new StringEncryptionOptions
+        {
+            PassPhrase = "TestPassPhrase128BitKey!",
+            KeySize = 128,
+            ProviderName = StringEncryptionOptions.AesProviderName
+        });
+        AesStringEncryptionProvider provider = new(options);
+
+        string cipherText = provider.Encrypt("hello 128-bit");
+        string? decrypted = provider.Decrypt(cipherText);
+
+        decrypted.ShouldBe("hello 128-bit");
+    }
+
+    [Fact]
+    public void Encrypt_Decrypt_RoundTrip_192BitKey_Succeeds()
+    {
+        IOptions<StringEncryptionOptions> options = Microsoft.Extensions.Options.Options.Create(new StringEncryptionOptions
+        {
+            PassPhrase = "TestPassPhrase192BitKey!",
+            KeySize = 192,
+            ProviderName = StringEncryptionOptions.AesProviderName
+        });
+        AesStringEncryptionProvider provider = new(options);
+
+        string cipherText = provider.Encrypt("hello 192-bit");
+        string? decrypted = provider.Decrypt(cipherText);
+
+        decrypted.ShouldBe("hello 192-bit");
+    }
+
+    [Fact]
+    public void Decrypt_DifferentKeySize_Returns_Null()
+    {
+        IOptions<StringEncryptionOptions> options256 = Microsoft.Extensions.Options.Options.Create(new StringEncryptionOptions
+        {
+            PassPhrase = "SamePassPhraseForBothKeys!",
+            KeySize = 256
+        });
+        IOptions<StringEncryptionOptions> options128 = Microsoft.Extensions.Options.Options.Create(new StringEncryptionOptions
+        {
+            PassPhrase = "SamePassPhraseForBothKeys!",
+            KeySize = 128
+        });
+
+        AesStringEncryptionProvider provider256 = new(options256);
+        AesStringEncryptionProvider provider128 = new(options128);
+
+        string cipherText = provider256.Encrypt("cross-key test");
+        string? result = provider128.Decrypt(cipherText);
+
+        result.ShouldBeNull();
+    }
 }

@@ -6,9 +6,10 @@
 //   - IExceptionHandler (GranitExceptionHandler) is registered
 //   - IExceptionStatusCodeMapper (DefaultExceptionStatusCodeMapper) is registered
 //   - ExceptionHandlingOptions is configurable
+//   - Custom mapper chain of responsibility
+//   - Fluent API returns the same IServiceCollection
 // =============================================================================
 
-using Granit.Http.ExceptionHandling;
 using Granit.Http.ExceptionHandling.Extensions;
 using Granit.Http.ExceptionHandling.Internal;
 using Granit.Http.ExceptionHandling.Options;
@@ -96,23 +97,49 @@ public sealed class ExceptionHandlingServiceCollectionExtensionsTests
         opts.ExposeInternalErrorDetails.ShouldBeTrue();
     }
 
+    [Fact]
+    public void AddGranitExceptionHandling_WithNullConfigure_DoesNotThrow()
+    {
+        ServiceCollection services = new();
+        services.AddLogging();
+        services.AddGranitExceptionHandling(configure: null);
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+
+        ExceptionHandlingOptions opts = sp.GetRequiredService<IOptions<ExceptionHandlingOptions>>().Value;
+        opts.ExposeInternalErrorDetails.ShouldBeFalse();
+    }
+
+    // -------------------------------------------------------------------------
+    // Fluent API
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void AddGranitExceptionHandling_ReturnsSameServiceCollection()
+    {
+        ServiceCollection services = new();
+        services.AddLogging();
+
+        IServiceCollection returned = services.AddGranitExceptionHandling();
+
+        returned.ShouldBeSameAs(services);
+    }
+
     // -------------------------------------------------------------------------
     // Custom mapper registration (chain of responsibility)
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void CustomMapper_RegisteredBeforeDefault_TakesPreference()
+    public void AddGranitExceptionHandling_CustomMapper_RegisteredAlongDefault_BothResolvable()
     {
         ServiceCollection services = new();
         services.AddLogging();
         services.AddGranitExceptionHandling();
-        // Additional mapper registered after — will be tried before the default (LIFO order in DI)
         services.AddSingleton<IExceptionStatusCodeMapper, CustomPriorityMapper>();
 
         using ServiceProvider sp = services.BuildServiceProvider();
 
-        System.Collections.Generic.IEnumerable<IExceptionStatusCodeMapper> mappers =
-            sp.GetServices<IExceptionStatusCodeMapper>();
+        IEnumerable<IExceptionStatusCodeMapper> mappers = sp.GetServices<IExceptionStatusCodeMapper>();
         mappers.Count().ShouldBe(2);
     }
 

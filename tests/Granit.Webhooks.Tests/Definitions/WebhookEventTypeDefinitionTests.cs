@@ -1,3 +1,4 @@
+using Granit.Core.Localization;
 using Granit.Webhooks.Definitions;
 using Shouldly;
 using Xunit;
@@ -9,13 +10,17 @@ public sealed class WebhookEventTypeDefinitionTests
     [Fact]
     public void Constructor_SetsAllProperties()
     {
+        var displayName = LocalizableString.Fixed("Document uploaded");
+        var description = LocalizableString.Fixed("Fires when a document is uploaded");
+        var category = LocalizableString.Fixed("Documents");
+
         var definition = new WebhookEventTypeDefinition(
-            "document.uploaded", "Document uploaded", "Fires when a document is uploaded", "Documents");
+            "document.uploaded", displayName, description, category);
 
         definition.Name.ShouldBe("document.uploaded");
-        definition.DisplayName.ShouldBe("Document uploaded");
-        definition.Description.ShouldBe("Fires when a document is uploaded");
-        definition.Category.ShouldBe("Documents");
+        definition.DisplayName.ShouldBe(displayName);
+        definition.Description.ShouldBe(description);
+        definition.Category.ShouldBe(category);
     }
 
     [Fact]
@@ -30,20 +35,23 @@ public sealed class WebhookEventTypeDefinitionTests
     }
 
     [Fact]
-    public void RecordEquality_SameValues_AreEqual()
+    public void LocalizableString_Fixed_ResolvesWithoutFactory()
     {
-        var a = new WebhookEventTypeDefinition("doc.uploaded", "Doc", "Desc", "Cat");
-        var b = new WebhookEventTypeDefinition("doc.uploaded", "Doc", "Desc", "Cat");
+        var displayName = LocalizableString.Fixed("My label");
 
-        a.ShouldBe(b);
+        var definition = new WebhookEventTypeDefinition("test.event", displayName);
+
+        definition.DisplayName!.Localize(null).ShouldBe("My label");
     }
 
     [Fact]
-    public void RecordEquality_DifferentNames_AreNotEqual()
+    public void LocalizableString_Create_FallsBackToKeyWithoutFactory()
     {
-        var a = new WebhookEventTypeDefinition("doc.uploaded");
-        var b = new WebhookEventTypeDefinition("doc.deleted");
+        var displayName = LocalizableString.Create<WebhookEventTypeDefinitionTests>(
+            "WebhookEventType:test.event");
 
-        a.ShouldNotBe(b);
+        var definition = new WebhookEventTypeDefinition("test.event", displayName);
+
+        definition.DisplayName!.Localize(null).ShouldBe("WebhookEventType:test.event");
     }
 }

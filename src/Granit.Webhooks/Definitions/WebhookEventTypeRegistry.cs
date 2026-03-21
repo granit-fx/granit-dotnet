@@ -21,8 +21,7 @@ internal sealed class WebhookEventTypeRegistry : IWebhookEventTypeRegistry
 
         _definitions = context.Build();
         _sorted = [.. _definitions.Values
-            .OrderBy(d => d.Category, StringComparer.OrdinalIgnoreCase)
-            .ThenBy(d => d.Name, StringComparer.OrdinalIgnoreCase)];
+            .OrderBy(d => d.Name, StringComparer.OrdinalIgnoreCase)];
     }
 
     /// <inheritdoc/>

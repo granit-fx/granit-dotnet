@@ -101,4 +101,53 @@ public sealed class TimingServiceCollectionExtensionsTests
         ClockOptions options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ClockOptions>>().Value;
         options.DefaultTimezone.ShouldBe("America/New_York");
     }
+
+    [Fact]
+    public void AddGranitTiming_WithoutConfigure_DoesNotRegisterOptions()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        services.AddGranitTiming();
+
+        // Assert - no IConfigureOptions<ClockOptions> registered
+        ServiceDescriptor? configureDescriptor = services.FirstOrDefault(
+            d => d.ServiceType == typeof(Microsoft.Extensions.Options.IConfigureOptions<ClockOptions>));
+        configureDescriptor.ShouldBeNull();
+    }
+
+    [Fact]
+    public void AddGranitTiming_CalledTwice_DoesNotDuplicateRegistrations()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        services.AddGranitTiming();
+        services.AddGranitTiming();
+
+        // Assert - TryAddSingleton should prevent duplicates
+        int clockCount = services.Count(d => d.ServiceType == typeof(IClock));
+        clockCount.ShouldBe(1);
+
+        int tzProviderCount = services.Count(d => d.ServiceType == typeof(ICurrentTimezoneProvider));
+        tzProviderCount.ShouldBe(1);
+
+        int timeProviderCount = services.Count(d => d.ServiceType == typeof(TimeProvider));
+        timeProviderCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void AddGranitTiming_ReturnsServiceCollection()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        IServiceCollection result = services.AddGranitTiming();
+
+        // Assert - fluent API returns same instance
+        result.ShouldBeSameAs(services);
+    }
 }

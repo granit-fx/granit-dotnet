@@ -66,4 +66,54 @@ public sealed class DiagnosticsServiceCollectionExtensionsTests
         // Assert
         returned.ShouldBeSameAs(services);
     }
+
+    [Fact]
+    public void AddGranitDiagnostics_RegistersHealthCheckAggregator_AsSingleton()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        services.AddGranitDiagnostics();
+
+        // Assert
+        ServiceDescriptor? descriptor = services.FirstOrDefault(
+            d => d.ServiceType == typeof(Granit.Diagnostics.Abstractions.IHealthCheckAggregator));
+        descriptor.ShouldNotBeNull("AddGranitDiagnostics must register IHealthCheckAggregator");
+        descriptor.Lifetime.ShouldBe(ServiceLifetime.Singleton);
+    }
+
+    [Fact]
+    public void AddGranitDiagnostics_DoesNotReplaceExistingAggregator()
+    {
+        // Arrange — register a custom aggregator first
+        ServiceCollection services = new();
+        Granit.Diagnostics.Abstractions.IHealthCheckAggregator custom =
+            NSubstitute.Substitute.For<Granit.Diagnostics.Abstractions.IHealthCheckAggregator>();
+        services.AddSingleton(custom);
+
+        // Act
+        services.AddGranitDiagnostics();
+
+        // Assert — TryAddSingleton should not overwrite
+        using ServiceProvider sp = services.BuildServiceProvider();
+        Granit.Diagnostics.Abstractions.IHealthCheckAggregator resolved =
+            sp.GetRequiredService<Granit.Diagnostics.Abstractions.IHealthCheckAggregator>();
+        resolved.ShouldBeSameAs(custom);
+    }
+
+    [Fact]
+    public void AddGranitDiagnostics_WithNullConfigure_DoesNotRegisterOptions()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act — pass null explicitly
+        services.AddGranitDiagnostics(configure: null);
+
+        // Assert — no IConfigureOptions<DiagnosticsOptions> registered
+        ServiceDescriptor? configureDescriptor = services.FirstOrDefault(
+            d => d.ServiceType == typeof(Microsoft.Extensions.Options.IConfigureOptions<DiagnosticsOptions>));
+        configureDescriptor.ShouldBeNull("Null configure should not register options configuration");
+    }
 }

@@ -2,13 +2,11 @@
 // Tests - DefaultExceptionStatusCodeMapper
 // =============================================================================
 // Verifies that each exception type is mapped to the expected HTTP status code.
-// Also verifies the chain-of-responsibility contract (returns null for unknown
-// exceptions is NOT the default behaviour — the default mapper always returns
-// a status code; null is for specialized mappers that don't handle an exception).
+// The default mapper always returns a non-null status code (it is the final
+// fallback in the chain of responsibility).
 // =============================================================================
 
 using Granit.Core.Exceptions;
-using Granit.Http.ExceptionHandling;
 using Granit.Http.ExceptionHandling.Internal;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
@@ -25,7 +23,7 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void EntityNotFoundException_Returns404()
+    public void TryGetStatusCode_EntityNotFoundException_Returns404()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
@@ -35,7 +33,7 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     [Fact]
-    public void NotFoundException_Returns404()
+    public void TryGetStatusCode_NotFoundException_Returns404()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
@@ -45,7 +43,7 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     [Fact]
-    public void SubclassOfNotFoundException_Returns404()
+    public void TryGetStatusCode_SubclassOfNotFoundException_Returns404()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
@@ -55,7 +53,7 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     [Fact]
-    public void ForbiddenException_Returns403()
+    public void TryGetStatusCode_ForbiddenException_Returns403()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
@@ -65,7 +63,17 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     [Fact]
-    public void BusinessException_Returns400()
+    public void TryGetStatusCode_ForbiddenExceptionWithMessage_Returns403()
+    {
+        DefaultExceptionStatusCodeMapper mapper = Create();
+
+        int? result = mapper.TryGetStatusCode(new ForbiddenException("Access denied to resource"));
+
+        result.ShouldBe(StatusCodes.Status403Forbidden);
+    }
+
+    [Fact]
+    public void TryGetStatusCode_BusinessException_Returns400()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
@@ -75,7 +83,7 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     [Fact]
-    public void BusinessRuleViolationException_Returns422()
+    public void TryGetStatusCode_BusinessRuleViolationException_Returns422()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
@@ -85,7 +93,7 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     [Fact]
-    public void BusinessRuleViolationException_TreatedAs422_NotInheritedAs400()
+    public void TryGetStatusCode_BusinessRuleViolationException_TreatedAs422_NotInheritedAs400()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
         BusinessException exception = new BusinessRuleViolationException("Appointment:SlotUnavailable");
@@ -96,7 +104,7 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     [Fact]
-    public void ConflictException_Returns409()
+    public void TryGetStatusCode_ConflictException_Returns409()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
@@ -106,7 +114,7 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     [Fact]
-    public void ValidationException_Returns422()
+    public void TryGetStatusCode_ValidationException_Returns422()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
         Dictionary<string, string[]> errors = new() { ["Field"] = ["Required"] };
@@ -120,7 +128,7 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void UnauthorizedAccessException_Returns403()
+    public void TryGetStatusCode_UnauthorizedAccessException_Returns403()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
@@ -130,7 +138,7 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     [Fact]
-    public void NotImplementedException_Returns501()
+    public void TryGetStatusCode_NotImplementedException_Returns501()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
@@ -140,7 +148,7 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     [Fact]
-    public void OperationCanceledException_Returns499()
+    public void TryGetStatusCode_OperationCanceledException_Returns499()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
@@ -150,7 +158,17 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     [Fact]
-    public void TimeoutException_Returns408()
+    public void TryGetStatusCode_TaskCanceledException_Returns499()
+    {
+        DefaultExceptionStatusCodeMapper mapper = Create();
+
+        int? result = mapper.TryGetStatusCode(new TaskCanceledException());
+
+        result.ShouldBe(499);
+    }
+
+    [Fact]
+    public void TryGetStatusCode_TimeoutException_Returns408()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
@@ -160,11 +178,11 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     // -------------------------------------------------------------------------
-    // Fallback: unknown exception → 500
+    // Fallback: unknown exception -> 500
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void UnknownException_Returns500()
+    public void TryGetStatusCode_UnknownException_Returns500()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
@@ -174,11 +192,31 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     [Fact]
-    public void ArithmeticException_Returns500()
+    public void TryGetStatusCode_ArithmeticException_Returns500()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
         int? result = mapper.TryGetStatusCode(new DivideByZeroException());
+
+        result.ShouldBe(StatusCodes.Status500InternalServerError);
+    }
+
+    [Fact]
+    public void TryGetStatusCode_ArgumentException_Returns500()
+    {
+        DefaultExceptionStatusCodeMapper mapper = Create();
+
+        int? result = mapper.TryGetStatusCode(new ArgumentException("bad arg"));
+
+        result.ShouldBe(StatusCodes.Status500InternalServerError);
+    }
+
+    [Fact]
+    public void TryGetStatusCode_StackOverflowLikeException_Returns500()
+    {
+        DefaultExceptionStatusCodeMapper mapper = Create();
+
+        int? result = mapper.TryGetStatusCode(new InsufficientMemoryException());
 
         result.ShouldBe(StatusCodes.Status500InternalServerError);
     }
@@ -188,7 +226,7 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void CustomExceptionImplementingIHasErrorCode_Returns400()
+    public void TryGetStatusCode_CustomExceptionImplementingIHasErrorCode_Returns400()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
@@ -198,7 +236,7 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     [Fact]
-    public void CustomExceptionImplementingIHasValidationErrors_Returns422()
+    public void TryGetStatusCode_CustomExceptionImplementingIHasValidationErrors_Returns422()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
@@ -212,13 +250,30 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void AlwaysReturnsNonNull()
+    public void TryGetStatusCode_AlwaysReturnsNonNull()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
         int? result = mapper.TryGetStatusCode(new InvalidOperationException("generic"));
 
         result.ShouldNotBeNull();
+    }
+
+    // -------------------------------------------------------------------------
+    // Pattern matching order: more specific types match first
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void TryGetStatusCode_EntityNotFoundExceptionBeforeNotFoundException_Returns404()
+    {
+        // EntityNotFoundException is a subclass of NotFoundException.
+        // The pattern match checks EntityNotFoundException first, ensuring the most
+        // specific type is matched.
+        DefaultExceptionStatusCodeMapper mapper = Create();
+
+        int? result = mapper.TryGetStatusCode(new EntityNotFoundException(typeof(string), "abc"));
+
+        result.ShouldBe(StatusCodes.Status404NotFound);
     }
 
     // -------------------------------------------------------------------------

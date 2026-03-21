@@ -170,6 +170,84 @@ public sealed class CachedHealthCheckTests
         secondResult.Status.ShouldBe(HealthStatus.Healthy);
     }
 
+    [Fact]
+    public async Task CheckHealthAsync_CachesUnhealthyResult()
+    {
+        IHealthCheck inner = Substitute.For<IHealthCheck>();
+        inner.CheckHealthAsync(Arg.Any<HealthCheckContext>(), Arg.Any<CancellationToken>())
+            .Returns(HealthCheckResult.Unhealthy("connection refused"));
+
+        CachedHealthCheck sut = new(inner, TimeSpan.FromSeconds(30), _clock);
+        HealthCheckContext context = BuildContext();
+
+        await sut.CheckHealthAsync(context, TestContext.Current.CancellationToken);
+        HealthCheckResult result = await sut.CheckHealthAsync(context, TestContext.Current.CancellationToken);
+
+        result.Status.ShouldBe(HealthStatus.Unhealthy);
+        result.Description.ShouldBe("connection refused");
+        await inner.Received(1).CheckHealthAsync(Arg.Any<HealthCheckContext>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CheckHealthAsync_UsesClockForExpiry_NotSystemTime()
+    {
+        DateTimeOffset fixedTime = new(2026, 3, 20, 12, 0, 0, TimeSpan.Zero);
+        IClock fakeClock = Substitute.For<IClock>();
+        fakeClock.Now.Returns(_ => fixedTime);
+
+        IHealthCheck inner = Substitute.For<IHealthCheck>();
+        inner.CheckHealthAsync(Arg.Any<HealthCheckContext>(), Arg.Any<CancellationToken>())
+            .Returns(HealthCheckResult.Healthy());
+
+        CachedHealthCheck sut = new(inner, TimeSpan.FromSeconds(10), fakeClock);
+        HealthCheckContext context = BuildContext();
+
+        // First call populates cache
+        await sut.CheckHealthAsync(context, TestContext.Current.CancellationToken);
+
+        // Still within cache window
+        fakeClock.Now.Returns(_ => fixedTime.AddSeconds(9));
+        await sut.CheckHealthAsync(context, TestContext.Current.CancellationToken);
+
+        await inner.Received(1).CheckHealthAsync(Arg.Any<HealthCheckContext>(), Arg.Any<CancellationToken>());
+
+        // After cache expiry
+        fakeClock.Now.Returns(_ => fixedTime.AddSeconds(11));
+        await sut.CheckHealthAsync(context, TestContext.Current.CancellationToken);
+
+        await inner.Received(2).CheckHealthAsync(Arg.Any<HealthCheckContext>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CheckHealthAsync_PreservesDescription_InCachedResult()
+    {
+        IHealthCheck inner = Substitute.For<IHealthCheck>();
+        inner.CheckHealthAsync(Arg.Any<HealthCheckContext>(), Arg.Any<CancellationToken>())
+            .Returns(HealthCheckResult.Degraded("pool exhausted"));
+
+        CachedHealthCheck sut = new(inner, TimeSpan.FromSeconds(30), _clock);
+        HealthCheckContext context = BuildContext();
+
+        await sut.CheckHealthAsync(context, TestContext.Current.CancellationToken);
+        HealthCheckResult cached = await sut.CheckHealthAsync(context, TestContext.Current.CancellationToken);
+
+        cached.Description.ShouldBe("pool exhausted");
+    }
+
+    [Fact]
+    public void Dispose_CanBeCalledMultipleTimes_WithoutThrowing()
+    {
+        IHealthCheck inner = Substitute.For<IHealthCheck>();
+        CachedHealthCheck sut = new(inner, TimeSpan.FromSeconds(10), _clock);
+
+        // First dispose should not throw
+        Should.NotThrow(sut.Dispose);
+
+        // Second dispose on an already disposed SemaphoreSlim should not throw either
+        // (SemaphoreSlim.Dispose is idempotent)
+        Should.NotThrow(sut.Dispose);
+    }
+
     private static HealthCheckContext BuildContext() =>
         new() { Registration = new HealthCheckRegistration("test", _ => Substitute.For<IHealthCheck>(), null, []) };
 }

@@ -62,4 +62,104 @@ public sealed class ObservabilityOptionsTests
 
     [Fact]
     public void SectionName_IsCorrect() => ObservabilityOptions.SectionName.ShouldBe("Observability");
+
+    [Fact]
+    public void SetServiceName_UpdatesValue()
+    {
+        ObservabilityOptions options = new() { ServiceName = "custom-api" };
+
+        options.ServiceName.ShouldBe("custom-api");
+    }
+
+    [Fact]
+    public void SetServiceVersion_UpdatesValue()
+    {
+        ObservabilityOptions options = new() { ServiceVersion = "3.1.0" };
+
+        options.ServiceVersion.ShouldBe("3.1.0");
+    }
+
+    [Fact]
+    public void SetOtlpEndpoint_UpdatesValue()
+    {
+        ObservabilityOptions options = new() { OtlpEndpoint = "http://remote:4317" };
+
+        options.OtlpEndpoint.ShouldBe("http://remote:4317");
+    }
+
+    [Fact]
+    public void SetServiceNamespace_UpdatesValue()
+    {
+        ObservabilityOptions options = new() { ServiceNamespace = "digital-dynamics" };
+
+        options.ServiceNamespace.ShouldBe("digital-dynamics");
+    }
+
+    [Fact]
+    public void SetEnvironment_UpdatesValue()
+    {
+        ObservabilityOptions options = new() { Environment = "staging" };
+
+        options.Environment.ShouldBe("staging");
+    }
+
+    [Fact]
+    public void SetEnableTracing_ToFalse_UpdatesValue()
+    {
+        ObservabilityOptions options = new() { EnableTracing = false };
+
+        options.EnableTracing.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void SetEnableMetrics_ToFalse_UpdatesValue()
+    {
+        ObservabilityOptions options = new() { EnableMetrics = false };
+
+        options.EnableMetrics.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Binding_PartialConfiguration_KeepsDefaults()
+    {
+        // Arrange — only set ServiceName, leave everything else at defaults
+        IConfigurationRoot config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                [$"{ObservabilityOptions.SectionName}:ServiceName"] = "partial-service"
+            })
+            .Build();
+
+        // Act
+        ObservabilityOptions? options = config.GetSection(ObservabilityOptions.SectionName)
+            .Get<ObservabilityOptions>();
+
+        // Assert
+        options.ShouldNotBeNull();
+        options!.ServiceName.ShouldBe("partial-service");
+        options.ServiceVersion.ShouldBe("0.0.0");
+        options.OtlpEndpoint.ShouldBe("http://localhost:4317");
+        options.ServiceNamespace.ShouldBe("my-company");
+        options.Environment.ShouldBe("development");
+        options.EnableTracing.ShouldBeTrue();
+        options.EnableMetrics.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Binding_EmptySection_ReturnsDefaults()
+    {
+        // Arrange — section exists but is empty
+        IConfigurationRoot config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>())
+            .Build();
+
+        // Act
+        ObservabilityOptions options = new();
+        config.GetSection(ObservabilityOptions.SectionName).Bind(options);
+
+        // Assert — all defaults preserved
+        options.ServiceName.ShouldBe("unknown-service");
+        options.ServiceVersion.ShouldBe("0.0.0");
+        options.Environment.ShouldBe("development");
+    }
 }

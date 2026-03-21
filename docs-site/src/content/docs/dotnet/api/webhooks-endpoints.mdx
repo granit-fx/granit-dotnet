@@ -64,7 +64,8 @@ Configuration section: `WebhooksEndpoints`.
 
 Returns the full list of event types declared by application modules via
 `IWebhookEventTypeDefinitionProvider`. Each entry includes the event type name,
-optional display name, description, and category for UI grouping. Requires
+localized display name, description, and category for UI grouping. Labels are
+resolved based on the `Accept-Language` header. Requires
 `Webhooks.Subscriptions.Read` permission.
 
 ### Read

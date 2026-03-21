@@ -152,6 +152,100 @@ public sealed class DefaultReEncryptionJobTests
         }
     }
 
+    [Fact]
+    public async Task ReEncryptAsync_EmptyTable_CompletesWithoutError()
+    {
+        using SqliteConnection connection = new("DataSource=:memory:");
+        connection.Open();
+
+        DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        using (TestDbContext ctx = new(options, _encryption))
+        {
+            ctx.Database.EnsureCreated();
+        }
+
+        _encryption.ClearReceivedCalls();
+
+        IDbContextFactory<TestDbContext> factory = new InlineDbContextFactory(options, _encryption);
+        DefaultReEncryptionJob<TestDbContext> sut = new(factory);
+
+        // Should complete without errors on an empty table
+        await sut.ReEncryptAsync<PatientEntity>(cancellationToken: TestContext.Current.CancellationToken);
+
+        _encryption.DidNotReceiveWithAnyArgs().Encrypt(default!);
+    }
+
+    [Fact]
+    public async Task ReEncryptAsync_SingleBatch_ProcessesAllEntities()
+    {
+        using SqliteConnection connection = new("DataSource=:memory:");
+        connection.Open();
+
+        DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        using (TestDbContext ctx = new(options, _encryption))
+        {
+            ctx.Database.EnsureCreated();
+            for (int i = 1; i <= 3; i++)
+            {
+                ctx.Patients.Add(new PatientEntity { Id = i, Ssn = $"SSN-{i}", Name = $"P{i}" });
+            }
+
+            ctx.SaveChanges();
+        }
+
+        IDbContextFactory<TestDbContext> factory = new InlineDbContextFactory(options, _encryption);
+        DefaultReEncryptionJob<TestDbContext> sut = new(factory);
+
+        // batchSize=500 (default) > 3 rows — single batch
+        await sut.ReEncryptAsync<PatientEntity>(cancellationToken: TestContext.Current.CancellationToken);
+
+        using TestDbContext verify = new(options, _encryption);
+        var all = verify.Patients.OrderBy(p => p.Id).ToList();
+        all.Count.ShouldBe(3);
+        all[0].Ssn.ShouldBe("SSN-1");
+        all[1].Ssn.ShouldBe("SSN-2");
+        all[2].Ssn.ShouldBe("SSN-3");
+    }
+
+    [Fact]
+    public async Task ReEncryptAsync_ExactBatchSize_ProcessesCorrectly()
+    {
+        using SqliteConnection connection = new("DataSource=:memory:");
+        connection.Open();
+
+        DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        using (TestDbContext ctx = new(options, _encryption))
+        {
+            ctx.Database.EnsureCreated();
+            // Exactly 3 entities with batchSize=3 — boundary case
+            for (int i = 1; i <= 3; i++)
+            {
+                ctx.Patients.Add(new PatientEntity { Id = i, Ssn = $"SSN-{i}", Name = $"P{i}" });
+            }
+
+            ctx.SaveChanges();
+        }
+
+        IDbContextFactory<TestDbContext> factory = new InlineDbContextFactory(options, _encryption);
+        DefaultReEncryptionJob<TestDbContext> sut = new(factory);
+
+        // batchSize == row count — triggers the do-while boundary condition
+        await sut.ReEncryptAsync<PatientEntity>(batchSize: 3, cancellationToken: TestContext.Current.CancellationToken);
+
+        using TestDbContext verify = new(options, _encryption);
+        var all = verify.Patients.OrderBy(p => p.Id).ToList();
+        all.Count.ShouldBe(3);
+    }
+
     // --- Test fixtures ---
 
     private sealed class PatientEntity

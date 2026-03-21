@@ -1,0 +1,117 @@
+using Granit.DataExchange.Endpoints.Dtos.Export;
+using Granit.DataExchange.Export;
+using Granit.DataExchange.Export.Domain;
+using NSubstitute;
+using Shouldly;
+using Xunit;
+
+namespace Granit.DataExchange.Endpoints.Tests.Dtos.Export;
+
+public sealed class ExportDtoMappingTests
+{
+    // ── ExportFieldResponse ──────────────────────────────────────
+
+    [Fact]
+    public void ExportFieldResponse_FromDescriptor_MapsAllProperties()
+    {
+        ExportFieldDescriptor descriptor = new(
+            PropertyPath: "Email",
+            ClrTypeName: "String",
+            Header: "Courriel",
+            Format: null,
+            Order: 3,
+            IsNavigation: false);
+
+        var response = ExportFieldResponse.FromDescriptor(descriptor);
+
+        response.PropertyPath.ShouldBe("Email");
+        response.ClrTypeName.ShouldBe("String");
+        response.Header.ShouldBe("Courriel");
+        response.Format.ShouldBeNull();
+        response.Order.ShouldBe(3);
+        response.IsNavigation.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void ExportFieldResponse_FromDescriptor_NavigationField()
+    {
+        ExportFieldDescriptor descriptor = new(
+            PropertyPath: "Company.Name",
+            ClrTypeName: "String",
+            Header: "Société",
+            Format: null,
+            Order: 5,
+            IsNavigation: true);
+
+        var response = ExportFieldResponse.FromDescriptor(descriptor);
+
+        response.PropertyPath.ShouldBe("Company.Name");
+        response.IsNavigation.ShouldBeTrue();
+        response.Header.ShouldBe("Société");
+    }
+
+    // ── ExportDefinitionResponse ─────────────────────────────────
+
+    [Fact]
+    public void ExportDefinitionResponse_FromDescriptor_MapsCorrectly()
+    {
+        IExportDefinitionDescriptor descriptor = Substitute.For<IExportDefinitionDescriptor>();
+        descriptor.Name.Returns("Acme.PatientExport");
+        descriptor.EntityType.Returns(typeof(TestEntity));
+        descriptor.SupportedFormats.Returns(new List<string> { "xlsx", "csv" });
+
+        var response = ExportDefinitionResponse.FromDescriptor(descriptor);
+
+        response.Name.ShouldBe("Acme.PatientExport");
+        response.EntityType.ShouldBe("TestEntity");
+        response.SupportedFormats.ShouldBe(["xlsx", "csv"]);
+    }
+
+    // ── ExportPresetResponse ─────────────────────────────────────
+
+    [Fact]
+    public void ExportPresetResponse_FromPreset_MapsAllProperties()
+    {
+        ExportPreset preset = new(
+            "Acme.PatientExport",
+            "Monthly Report",
+            ["Name", "Email"],
+            "csv",
+            IncludeIdForImport: true);
+
+        var response = ExportPresetResponse.FromPreset(preset);
+
+        response.DefinitionName.ShouldBe("Acme.PatientExport");
+        response.PresetName.ShouldBe("Monthly Report");
+        response.SelectedFields.ShouldBe(["Name", "Email"]);
+        response.Format.ShouldBe("csv");
+        response.IncludeIdForImport.ShouldBeTrue();
+    }
+
+    // ── ExportJobResponse ────────────────────────────────────────
+
+    [Fact]
+    public void ExportJobResponse_FromJob_MapsAllProperties()
+    {
+        var job = ExportJob.Create(
+            Guid.NewGuid(), "Acme.Export", "xlsx", "{}");
+
+        var response = ExportJobResponse.FromJob(job);
+
+        response.Id.ShouldBe(job.Id);
+        response.DefinitionName.ShouldBe("Acme.Export");
+        response.Format.ShouldBe("xlsx");
+        response.Status.ShouldBe(ExportJobStatus.Queued);
+        response.RowCount.ShouldBeNull();
+        response.FileName.ShouldBeNull();
+        response.ErrorMessage.ShouldBeNull();
+        response.CompletedAt.ShouldBeNull();
+    }
+
+    // ── Test helpers ─────────────────────────────────────────────
+
+    private sealed class TestEntity
+    {
+        public string Name { get; set; } = string.Empty;
+    }
+}

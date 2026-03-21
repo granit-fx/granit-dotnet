@@ -89,20 +89,37 @@ internal sealed class AppWebhookEventTypeProvider : IWebhookEventTypeDefinitionP
 {
     public void Define(IWebhookEventTypeDefinitionContext context)
     {
-        context.Add("order.created", "Order created",
-            "Fired when a new order is placed.", "Orders");
-        context.Add("order.shipped", "Order shipped",
-            "Fired when an order ships.", "Orders");
-        context.Add("invoice.created", "Invoice created",
-            "Fired when an invoice is generated.", "Billing");
+        // Convention-based: localization keys derived automatically
+        context.Add<AppLocalizationResource>("order.created", category: "Orders");
+        context.Add<AppLocalizationResource>("order.shipped", category: "Orders");
+        context.Add<AppLocalizationResource>("invoice.created", category: "Billing");
     }
+}
+```
+
+Then add the corresponding keys to your localization JSON files (all 17 cultures):
+
+```json
+{
+  "culture": "en",
+  "texts": {
+    "WebhookEventType:order.created": "Order created",
+    "WebhookEventType:order.created:Description": "Fired when a new order is placed.",
+    "WebhookEventType:order.shipped": "Order shipped",
+    "WebhookEventType:order.shipped:Description": "Fired when an order ships.",
+    "WebhookEventType:invoice.created": "Invoice created",
+    "WebhookEventType:invoice.created:Description": "Fired when an invoice is generated.",
+    "WebhookEventTypeCategory:Orders": "Orders",
+    "WebhookEventTypeCategory:Billing": "Billing"
+  }
 }
 ```
 
 At startup, all providers are aggregated into an immutable `IWebhookEventTypeRegistry`.
 This registry powers two features:
 
-- **Discovery endpoint** — `GET /event-types` returns the list for admin UIs
+- **Discovery endpoint** — `GET /event-types` returns localized labels based on
+  `Accept-Language` header
 - **Subscription validation** — creating a subscription with an unknown event type
   is rejected with `Granit:Validation:UnknownWebhookEventType`
 

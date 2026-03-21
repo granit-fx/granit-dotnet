@@ -47,4 +47,33 @@ public sealed class LegalDocumentRegistryTests
 
         _sut.GetAll().Count.ShouldBe(2);
     }
+
+    [Fact]
+    public void Register_NullDefinition_ThrowsArgumentNullException()
+    {
+        Action act = () => _sut.Register(null!);
+
+        Should.Throw<ArgumentNullException>(act);
+    }
+
+    [Fact]
+    public void GetAll_Empty_ReturnsEmptyList()
+    {
+        IReadOnlyList<LegalDocumentDefinition> result = _sut.GetAll();
+
+        result.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void GetDefinition_ReturnsCorrectDefinition()
+    {
+        LegalDocumentDefinition definition = new("privacy-policy", "2.1.0", "Privacy Policy v2.1");
+        _sut.Register(definition);
+
+        LegalDocumentDefinition? result = _sut.GetDefinition("privacy-policy");
+
+        result.ShouldNotBeNull();
+        result!.CurrentVersion.ShouldBe("2.1.0");
+        result.DisplayName.ShouldBe("Privacy Policy v2.1");
+    }
 }

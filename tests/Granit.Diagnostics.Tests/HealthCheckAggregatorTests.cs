@@ -160,6 +160,113 @@ public sealed class HealthCheckAggregatorTests : IDisposable
         result.Services.Count.ShouldBe(3);
     }
 
+    [Fact]
+    public async Task CheckAll_Formats_SingleWord_DisplayName()
+    {
+        SetupReport(("postgresql", HealthStatus.Healthy, 1.0));
+
+        MonitoringHealthResponse result = await _sut.CheckAllAsync(TestContext.Current.CancellationToken);
+
+        result.Services[0].Name.ShouldBe("Postgresql");
+    }
+
+    [Fact]
+    public async Task CheckAll_Formats_Underscore_DisplayName()
+    {
+        SetupReport(("blob_storage", HealthStatus.Healthy, 1.0));
+
+        MonitoringHealthResponse result = await _sut.CheckAllAsync(TestContext.Current.CancellationToken);
+
+        result.Services[0].Name.ShouldBe("Blob Storage");
+    }
+
+    [Fact]
+    public async Task CheckAll_Passes_Description_Through()
+    {
+        HealthReportEntry entry = new(
+            HealthStatus.Degraded,
+            description: "Connection pool exhausted",
+            duration: TimeSpan.FromMilliseconds(50),
+            exception: null,
+            data: null,
+            tags: []);
+
+        HealthReport report = new(
+            new Dictionary<string, HealthReportEntry> { ["redis"] = entry },
+            totalDuration: TimeSpan.FromMilliseconds(50));
+
+        _healthCheckService.CheckHealthAsync(Arg.Any<CancellationToken>())
+            .Returns(report);
+
+        MonitoringHealthResponse result = await _sut.CheckAllAsync(TestContext.Current.CancellationToken);
+
+        result.Services[0].Description.ShouldBe("Connection pool exhausted");
+    }
+
+    [Fact]
+    public async Task CheckAll_Returns_Null_Description_WhenNotProvided()
+    {
+        SetupReport(("postgresql", HealthStatus.Healthy, 1.0));
+
+        MonitoringHealthResponse result = await _sut.CheckAllAsync(TestContext.Current.CancellationToken);
+
+        result.Services[0].Description.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task CheckAll_DoubleCheckLock_ReturnsCachedResult_WhenSecondCallerEntersAfterCachePopulated()
+    {
+        SemaphoreSlim firstCallerStarted = new(0, 1);
+        SemaphoreSlim firstCallerCanContinue = new(0, 1);
+        int callCount = 0;
+
+        _healthCheckService.CheckHealthAsync(Arg.Any<CancellationToken>())
+            .Returns(async _ =>
+            {
+                Interlocked.Increment(ref callCount);
+                firstCallerStarted.Release();
+                await firstCallerCanContinue.WaitAsync();
+
+                return new HealthReport(
+                    new Dictionary<string, HealthReportEntry>
+                    {
+                        ["test"] = new(HealthStatus.Healthy, null, TimeSpan.FromMilliseconds(1), null, null, [])
+                    },
+                    totalDuration: TimeSpan.FromMilliseconds(1));
+            });
+
+        Task<MonitoringHealthResponse> firstCall = _sut.CheckAllAsync(TestContext.Current.CancellationToken);
+        await firstCallerStarted.WaitAsync(TestContext.Current.CancellationToken);
+
+        Task<MonitoringHealthResponse> secondCall = _sut.CheckAllAsync(TestContext.Current.CancellationToken);
+        firstCallerCanContinue.Release();
+
+        MonitoringHealthResponse firstResult = await firstCall;
+        MonitoringHealthResponse secondResult = await secondCall;
+
+        callCount.ShouldBe(1);
+        firstResult.ShouldBeSameAs(secondResult);
+    }
+
+    [Fact]
+    public async Task CheckAll_Rounds_ResponseTimeMs_ToOneDecimal()
+    {
+        SetupReport(("db", HealthStatus.Healthy, 12.789));
+
+        MonitoringHealthResponse result = await _sut.CheckAllAsync(TestContext.Current.CancellationToken);
+
+        result.Services[0].ResponseTimeMs.ShouldBe(12.8);
+    }
+
+    [Fact]
+    public void Dispose_DoesNotThrow_WhenCalledMultipleTimes()
+    {
+        IOptions<DiagnosticsOptions> options = Microsoft.Extensions.Options.Options.Create(new DiagnosticsOptions());
+        HealthCheckAggregator aggregator = new(_healthCheckService, _clock, options);
+
+        Should.NotThrow(aggregator.Dispose);
+    }
+
     private void SetupReport(params (string Name, HealthStatus Status, double DurationMs)[] entries)
     {
         Dictionary<string, HealthReportEntry> dict = new(entries.Length);

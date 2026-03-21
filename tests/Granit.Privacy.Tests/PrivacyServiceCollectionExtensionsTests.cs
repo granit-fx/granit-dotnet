@@ -74,4 +74,57 @@ public sealed class PrivacyServiceCollectionExtensionsTests
 
         Should.Throw<ArgumentNullException>(act);
     }
+
+    [Fact]
+    public void AddGranitPrivacy_WithoutLegalAgreementStore_DoesNotRegisterChecker()
+    {
+        ServiceCollection services = new();
+        services.AddGranitPrivacy(privacy =>
+        {
+            privacy.RegisterDocument("privacy-policy", "1.0.0", "Privacy Policy");
+        });
+
+        ServiceProvider provider = services.BuildServiceProvider();
+
+        provider.GetService<ILegalAgreementChecker>().ShouldBeNull();
+    }
+
+    [Fact]
+    public void AddGranitPrivacy_WithNoProvidersOrDocuments_RegistersCoreServices()
+    {
+        ServiceCollection services = new();
+        services.AddGranitPrivacy(_ => { });
+
+        ServiceProvider provider = services.BuildServiceProvider();
+
+        provider.GetService<IDataProviderRegistry>().ShouldNotBeNull();
+        provider.GetService<ILegalDocumentRegistry>().ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void AddGranitPrivacy_RegistersPrivacyMetrics()
+    {
+        ServiceCollection services = new();
+        services.AddMetrics();
+        services.AddGranitPrivacy(_ => { });
+
+        ServiceProvider provider = services.BuildServiceProvider();
+
+        provider.GetService<Granit.Privacy.Diagnostics.PrivacyMetrics>().ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void AddGranitPrivacy_CalledTwice_DoesNotDuplicateSingletons()
+    {
+        ServiceCollection services = new();
+        services.AddGranitPrivacy(p => p.RegisterDataProvider("a"));
+        services.AddGranitPrivacy(p => p.RegisterDataProvider("b"));
+
+        ServiceProvider provider = services.BuildServiceProvider();
+
+        // TryAddSingleton ensures only the first registration wins
+        IDataProviderRegistry registry = provider.GetRequiredService<IDataProviderRegistry>();
+        registry.Count.ShouldBe(1);
+        registry.GetAll().ShouldContain("a");
+    }
 }

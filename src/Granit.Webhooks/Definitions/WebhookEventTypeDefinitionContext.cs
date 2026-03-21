@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Granit.Core.Localization;
 
 namespace Granit.Webhooks.Definitions;
 
@@ -11,10 +12,27 @@ internal sealed class WebhookEventTypeDefinitionContext : IWebhookEventTypeDefin
     private readonly Dictionary<string, WebhookEventTypeDefinition> _definitions = [];
 
     /// <inheritdoc/>
-    public void Add(string name, string? displayName = null, string? description = null, string? category = null)
+    public void Add<TResource>(string name, string? category = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        _definitions[name] = new WebhookEventTypeDefinition(name, displayName, description, category);
+
+        var definition = new WebhookEventTypeDefinition(
+            name,
+            DisplayName: LocalizableString.Create<TResource>($"WebhookEventType:{name}"),
+            Description: LocalizableString.Create<TResource>($"WebhookEventType:{name}:Description"),
+            Category: category is not null
+                ? LocalizableString.Create<TResource>($"WebhookEventTypeCategory:{category}")
+                : null);
+
+        _definitions[name] = definition;
+    }
+
+    /// <inheritdoc/>
+    public void Add(WebhookEventTypeDefinition definition)
+    {
+        ArgumentNullException.ThrowIfNull(definition);
+        ArgumentException.ThrowIfNullOrWhiteSpace(definition.Name);
+        _definitions[definition.Name] = definition;
     }
 
     /// <inheritdoc/>

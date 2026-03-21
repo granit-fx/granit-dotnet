@@ -96,27 +96,56 @@ internal sealed class OrderWebhookEventTypeProvider : IWebhookEventTypeDefinitio
 {
     public void Define(IWebhookEventTypeDefinitionContext context)
     {
-        context.Add("order.created", "Order created",
-            "Fired when a new order is placed.", "Orders");
-        context.Add("order.shipped", "Order shipped",
-            "Fired when an order is marked as shipped.", "Orders");
-        context.Add("order.cancelled", "Order cancelled",
-            "Fired when an order is cancelled by the customer or an admin.", "Orders");
+        // Convention-based: keys derived from the localization resource type
+        context.Add<OrderLocalizationResource>("order.created", category: "Orders");
+        context.Add<OrderLocalizationResource>("order.shipped", category: "Orders");
+        context.Add<OrderLocalizationResource>("order.cancelled", category: "Orders");
     }
 }
 ```
 
 The definitions are collected into an immutable `IWebhookEventTypeRegistry` singleton,
-pre-sorted by category then name. The registry serves two purposes:
+sorted by name. The registry serves two purposes:
 
 1. **Discovery** — the `GET /event-types` endpoint exposes the full list for admin UIs
 2. **Validation** — creating a subscription rejects unknown event types at request time
 
-:::tip
-Each `WebhookEventTypeDefinition` accepts an optional `DisplayName`, `Description`,
-and `Category`. Providing all three enables richer UI experiences — category-based
-grouping and human-readable labels in dropdown menus.
-:::
+### Localization convention
+
+Display names, descriptions, and categories are **localized** via `LocalizableString`.
+The `Add<TResource>()` method derives localization keys automatically:
+
+| Field | Key pattern | Example |
+|-------|-------------|---------|
+| Display name | `WebhookEventType:{name}` | `WebhookEventType:order.created` |
+| Description | `WebhookEventType:{name}:Description` | `WebhookEventType:order.created:Description` |
+| Category | `WebhookEventTypeCategory:{category}` | `WebhookEventTypeCategory:Orders` |
+
+Add these keys to your module's localization JSON files (all 17 cultures):
+
+```json
+{
+  "culture": "en",
+  "texts": {
+    "WebhookEventType:order.created": "Order created",
+    "WebhookEventType:order.created:Description": "Fired when a new order is placed.",
+    "WebhookEventTypeCategory:Orders": "Orders"
+  }
+}
+```
+
+The `GET /event-types` endpoint resolves these keys based on the `Accept-Language`
+header. If no localizer is available, the raw key is returned as fallback.
+
+For non-localizable labels, use `LocalizableString.Fixed("value")` with the explicit
+`Add(WebhookEventTypeDefinition)` overload:
+
+```csharp
+context.Add(new WebhookEventTypeDefinition(
+    "system.healthcheck",
+    DisplayName: LocalizableString.Fixed("Health check"),
+    Category: LocalizableString.Fixed("System")));
+```
 
 ## Publishing a webhook
 

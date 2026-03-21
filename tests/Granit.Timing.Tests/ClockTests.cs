@@ -169,4 +169,73 @@ public sealed class ClockTests
         // Assert
         result.ShouldBe(utcTime);
     }
+
+    [Fact]
+    public void ConvertToUserTime_WithWhitespaceTimezone_ReturnsUnchanged()
+    {
+        // Arrange
+        _timezoneProvider.Timezone.Returns("   ");
+        var utcTime = new DateTimeOffset(2026, 6, 15, 12, 0, 0, TimeSpan.Zero);
+
+        // Act
+        DateTimeOffset userTime = _clock.ConvertToUserTime(utcTime);
+
+        // Assert
+        userTime.ShouldBe(utcTime);
+    }
+
+    [Fact]
+    public void ConvertToUserTime_WithInvalidTimezone_ThrowsTimeZoneNotFoundException()
+    {
+        // Arrange
+        _timezoneProvider.Timezone.Returns("Invalid/Timezone");
+        var utcTime = new DateTimeOffset(2026, 6, 15, 12, 0, 0, TimeSpan.Zero);
+
+        // Act & Assert
+        Should.Throw<TimeZoneNotFoundException>(() => _clock.ConvertToUserTime(utcTime));
+    }
+
+    [Fact]
+    public void ConvertToUserTime_WithNegativeOffsetTimezone_ConvertsCorrectly()
+    {
+        // Arrange
+        _timezoneProvider.Timezone.Returns("America/New_York");
+        var utcTime = new DateTimeOffset(2026, 1, 15, 12, 0, 0, TimeSpan.Zero);
+
+        // Act
+        DateTimeOffset userTime = _clock.ConvertToUserTime(utcTime);
+
+        // Assert - New York is UTC-5 in winter (EST)
+        userTime.Offset.ShouldBe(TimeSpan.FromHours(-5));
+        userTime.DateTime.Hour.ShouldBe(7);
+    }
+
+    [Fact]
+    public void ConvertToUtc_ConvertsNegativeOffsetToUtc()
+    {
+        // Arrange - DateTimeOffset with offset -05:00
+        var localTime = new DateTimeOffset(2026, 6, 15, 7, 0, 0, TimeSpan.FromHours(-5));
+
+        // Act
+        DateTimeOffset utcTime = _clock.ConvertToUtc(localTime);
+
+        // Assert
+        utcTime.Offset.ShouldBe(TimeSpan.Zero);
+        utcTime.ShouldBe(new DateTimeOffset(2026, 6, 15, 12, 0, 0, TimeSpan.Zero));
+    }
+
+    [Fact]
+    public void ConvertToUserTime_WithUtcTimezone_ReturnsUtc()
+    {
+        // Arrange
+        _timezoneProvider.Timezone.Returns("UTC");
+        var utcTime = new DateTimeOffset(2026, 6, 15, 12, 0, 0, TimeSpan.Zero);
+
+        // Act
+        DateTimeOffset userTime = _clock.ConvertToUserTime(utcTime);
+
+        // Assert
+        userTime.Offset.ShouldBe(TimeSpan.Zero);
+        userTime.ShouldBe(utcTime);
+    }
 }

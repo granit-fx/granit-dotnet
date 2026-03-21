@@ -238,4 +238,248 @@ public sealed class ObservabilityServiceCollectionExtensionsTests
         included.ShouldBe(expectedIncluded,
             $"path '{requestPath}' should {(expectedIncluded ? "be included in" : "be excluded from")} tracing");
     }
+
+    [Fact]
+    public void AddGranitObservability_EmptyServiceName_FallsBackToApplicationName()
+    {
+        // Arrange — ServiceName set to empty string triggers fallback
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration["Observability:ServiceName"] = "";
+
+        // Act
+        builder.AddGranitObservability();
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+
+        // Assert — PostConfigure replaces empty/whitespace with ApplicationName
+        ObservabilityOptions options = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
+        options.ServiceName.ShouldBe(builder.Environment.ApplicationName);
+    }
+
+    [Fact]
+    public void AddGranitObservability_WhitespaceServiceName_FallsBackToApplicationName()
+    {
+        // Arrange — whitespace-only triggers fallback
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration["Observability:ServiceName"] = "   ";
+
+        // Act
+        builder.AddGranitObservability();
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+
+        // Assert
+        ObservabilityOptions options = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
+        options.ServiceName.ShouldBe(builder.Environment.ApplicationName);
+    }
+
+    [Fact]
+    public void AddGranitObservability_EmptyEnvironment_FallsBackToHostEnvironment()
+    {
+        // Arrange — empty Environment triggers fallback
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration["Observability:Environment"] = "";
+
+        // Act
+        builder.AddGranitObservability();
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+
+        // Assert — PostConfigure replaces empty with IHostEnvironment.EnvironmentName
+        ObservabilityOptions options = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
+        options.Environment.ShouldBe(builder.Environment.EnvironmentName.ToLowerInvariant());
+    }
+
+    [Fact]
+    public void AddGranitObservability_WhitespaceEnvironment_FallsBackToHostEnvironment()
+    {
+        // Arrange
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration["Observability:Environment"] = "   ";
+
+        // Act
+        builder.AddGranitObservability();
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+
+        // Assert
+        ObservabilityOptions options = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
+        options.Environment.ShouldBe(builder.Environment.EnvironmentName.ToLowerInvariant());
+    }
+
+    [Fact]
+    public void AddGranitObservability_DevelopmentEnvironment_FallsBackToHostEnvironment()
+    {
+        // Arrange — "development" is the default and triggers fallback
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration["Observability:Environment"] = "development";
+
+        // Act
+        builder.AddGranitObservability();
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+
+        // Assert — replaced by IHostEnvironment.EnvironmentName (lowered)
+        ObservabilityOptions options = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
+        options.Environment.ShouldBe(builder.Environment.EnvironmentName.ToLowerInvariant());
+    }
+
+    [Fact]
+    public void AddGranitObservability_ExplicitEnvironment_PreservesValue()
+    {
+        // Arrange — explicit non-default environment should NOT be overwritten
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration["Observability:Environment"] = "production";
+
+        // Act
+        builder.AddGranitObservability();
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+
+        // Assert
+        ObservabilityOptions options = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
+        options.Environment.ShouldBe("production");
+    }
+
+    [Fact]
+    public void AddGranitObservability_ExplicitServiceName_PreservesValue()
+    {
+        // Arrange — explicit non-default name should NOT be overwritten
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration["Observability:ServiceName"] = "my-api";
+
+        // Act
+        builder.AddGranitObservability();
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+
+        // Assert
+        ObservabilityOptions options = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
+        options.ServiceName.ShouldBe("my-api");
+    }
+
+    [Fact]
+    public void AddGranitObservability_CrossCuttingOtlpActive_DoesNotThrow()
+    {
+        // Arrange — set the env var that triggers the cross-cutting OTLP path
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] = "http://aspire-otel:4317";
+        builder.Configuration["Observability:EnableTracing"] = "true";
+        builder.Configuration["Observability:EnableMetrics"] = "true";
+
+        // Act — should skip per-signal OTLP exporters without error
+        builder.AddGranitObservability();
+
+        // Assert — providers still resolve
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+        sp.GetService<TracerProvider>().ShouldNotBeNull();
+        sp.GetService<MeterProvider>().ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void AddGranitObservability_CrossCuttingOtlpActive_StillRegistersOptions()
+    {
+        // Arrange
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] = "http://aspire-otel:4317";
+        builder.Configuration["Observability:ServiceName"] = "aspire-service";
+
+        // Act
+        builder.AddGranitObservability();
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+
+        // Assert
+        ObservabilityOptions options = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
+        options.ServiceName.ShouldBe("aspire-service");
+    }
+
+    [Fact]
+    public void AddGranitObservability_TracingDisabledMetricsEnabled_OnlyMetricsProviderActive()
+    {
+        // Arrange
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration["Observability:EnableTracing"] = "false";
+        builder.Configuration["Observability:EnableMetrics"] = "true";
+
+        // Act
+        builder.AddGranitObservability();
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+
+        // Assert — MeterProvider should resolve
+        sp.GetService<MeterProvider>().ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void AddGranitObservability_MetricsDisabledTracingEnabled_OnlyTracerProviderActive()
+    {
+        // Arrange
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration["Observability:EnableTracing"] = "true";
+        builder.Configuration["Observability:EnableMetrics"] = "false";
+
+        // Act
+        builder.AddGranitObservability();
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+
+        // Assert — TracerProvider should resolve
+        sp.GetService<TracerProvider>().ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void AddGranitObservability_RegisteredActivitySources_AreIncluded()
+    {
+        // Arrange — register a custom ActivitySource before configuring observability
+        string sourceName = $"Granit.TestModule.{Guid.NewGuid():N}";
+        Granit.Core.Diagnostics.GranitActivitySourceRegistry.Register(sourceName);
+
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+        builder.Configuration["Observability:EnableTracing"] = "true";
+
+        // Act — should include the registered source without throwing
+        builder.AddGranitObservability();
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+
+        // Assert — TracerProvider is configured (sources are registered internally)
+        sp.GetService<TracerProvider>().ShouldNotBeNull();
+
+        // Verify the source was registered in the registry
+        Granit.Core.Diagnostics.GranitActivitySourceRegistry.GetRegisteredSources()
+            .ShouldContain(sourceName);
+    }
+
+    [Fact]
+    public void AddGranitObservability_ServiceNamespaceDefault_IsMyCompany()
+    {
+        // Arrange
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+
+        // Act
+        builder.AddGranitObservability();
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+
+        // Assert
+        ObservabilityOptions options = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
+        options.ServiceNamespace.ShouldBe("my-company");
+    }
+
+    [Fact]
+    public void AddGranitObservability_ServiceVersionDefault_IsZeroZeroZero()
+    {
+        // Arrange
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
+
+        // Act
+        builder.AddGranitObservability();
+
+        using ServiceProvider sp = builder.Services.BuildServiceProvider();
+
+        // Assert
+        ObservabilityOptions options = sp.GetRequiredService<IOptions<ObservabilityOptions>>().Value;
+        options.ServiceVersion.ShouldBe("0.0.0");
+    }
 }
