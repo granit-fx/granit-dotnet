@@ -158,6 +158,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Notifications": "[0.1.0-dev, )",
+          "Granit.Templating": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
@@ -167,6 +168,12 @@
         "type": "Project",
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )"
+        }
+      },
+      "granit.templating": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Timing": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {
