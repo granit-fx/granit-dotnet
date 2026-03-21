@@ -1,0 +1,58 @@
+using Granit.OpenIddict.Endpoints.Dtos;
+using Granit.OpenIddict.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+
+namespace Granit.OpenIddict.Endpoints.Endpoints;
+
+internal static class AccountDeletionEndpoints
+{
+    internal static RouteGroupBuilder MapAccountDeletionEndpoints(this RouteGroupBuilder group)
+    {
+        group.MapPost("/delete", DeleteAccountAsync)
+            .WithName("DeleteAccount")
+            .WithSummary("Deletes the authenticated user's account.")
+            .WithDescription(
+                "Initiates account deletion (GDPR Article 17 — right to erasure). "
+                + "Requires password confirmation. Triggers soft-delete, token revocation, "
+                + "and publishes AccountDeletedEto for downstream cleanup. Returns 202 "
+                + "as deletion is asynchronous.")
+            .Produces(StatusCodes.Status202Accepted)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesValidationProblem()
+            .RequireAuthorization();
+
+        return group;
+    }
+
+    private static async Task<Results<Accepted<string>, ProblemHttpResult>> DeleteAccountAsync(
+        AccountDeleteRequest request,
+        HttpContext httpContext,
+[FromServices] Granit.Identity.IIdentityCredentialVerifier credentialVerifier,
+[FromServices] IAccountDeletionService deletionService,
+        CancellationToken cancellationToken)
+    {
+        string userId = httpContext.User.FindFirst("sub")!.Value;
+        string? username = httpContext.User.FindFirst("preferred_username")?.Value
+                           ?? httpContext.User.FindFirst("name")?.Value;
+
+        // Verify password before deletion
+        bool isValid = await credentialVerifier
+            .VerifyUserCredentialsAsync(username ?? string.Empty, request.Password, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!isValid)
+        {
+            return TypedResults.Problem(
+                detail: "Password is incorrect.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        await deletionService.InitiateAsync(userId, cancellationToken).ConfigureAwait(false);
+
+        return TypedResults.Accepted((string?)null, (string?)null);
+    }
+}
