@@ -501,23 +501,57 @@ public sealed record UserImpersonatedEto(
 
 ### Subscribing to events
 
+Handlers are Wolverine message handlers, auto-discovered at startup:
+
 ```csharp
 // In your module (Wolverine handler — auto-discovered)
 public static class UserRegisteredHandler
 {
     public static async Task HandleAsync(
         UserRegisteredEto evt,
-        IEmailSender emailSender,
+        INotificationPublisher publisher,
         CancellationToken ct)
     {
-        await emailSender.SendAsync(new EmailMessage
-        {
-            To = evt.Email,
-            Subject = "Welcome!",
-            Body = $"Your account has been created.",
-        }, ct);
+        await publisher.PublishAsync(
+            new WelcomeNotification(),
+            new WelcomeData(evt.Email),
+            [evt.UserId.ToString()],
+            ct);
     }
 }
+```
+
+### Email template rendering
+
+`EmailNotificationChannel` automatically renders Scriban templates when available:
+
+1. Looks for a template named `{NotificationTypeName}` (e.g., `Security.Welcome`)
+   via any registered `ITemplateResolver`
+2. If found, renders with Scriban using the notification data as `{{ model.* }}`
+3. If not found, falls back to a generic notification email
+
+To provide templates, add embedded resources to your module:
+
+```
+Templates/
+  Security.Welcome.html       ← English (fallback)
+  Security.Welcome.fr.html    ← French
+  Security.PasswordReset.html
+  Security.PasswordReset.fr.html
+```
+
+Register in your module:
+
+```csharp
+context.Services.AddEmbeddedTemplates(typeof(MyModule).Assembly);
+```
+
+Templates use Scriban syntax with `{{ model.* }}` for data access:
+
+```html
+<h1>Welcome!</h1>
+<p>Your account has been created with the email
+   <strong>{{ model.email }}</strong>.</p>
 ```
 
 Events are delivered in-process by default (`Granit.EventBus`). For durable delivery
