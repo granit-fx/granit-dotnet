@@ -1,0 +1,35 @@
+using Granit.OpenIddict.Entities;
+
+namespace Granit.OpenIddict.Services;
+
+/// <summary>
+/// Store for persisted signing and encryption keys.
+/// </summary>
+public interface ISigningKeyStore
+{
+    /// <summary>
+    /// Returns all keys with the specified statuses, ordered by creation date descending.
+    /// </summary>
+    Task<IReadOnlyList<SigningKey>> GetKeysAsync(
+        params SigningKeyStatus[] statuses);
+
+    /// <summary>
+    /// Returns the currently active key for the specified type, or null if none exists.
+    /// </summary>
+    Task<SigningKey?> GetActiveKeyAsync(string keyType, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Persists a new key.
+    /// </summary>
+    Task CreateAsync(SigningKey key, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Updates an existing key (e.g., status change on rotation).
+    /// </summary>
+    Task UpdateAsync(SigningKey key, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deletes keys older than the specified cutoff (cleanup of revoked keys).
+    /// </summary>
+    Task<int> PruneRevokedAsync(DateTimeOffset olderThan, CancellationToken cancellationToken = default);
+}

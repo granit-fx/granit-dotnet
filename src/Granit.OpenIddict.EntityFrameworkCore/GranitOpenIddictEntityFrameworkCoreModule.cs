@@ -48,5 +48,11 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
         context.Services.TryAddScoped<ExternalClaimsMapper>();
         context.Services.TryAddScoped<IExternalLoginService, AspNetExternalLoginService>();
         context.Services.TryAddScoped<ITwoFactorService, AspNetTwoFactorService>();
+        context.Services.TryAddScoped<ISigningKeyStore, EfSigningKeyStore>();
+        context.Services.TryAddScoped<IKeyRotationService, KeyRotationService>();
+
+        context.Services
+            .AddOptions<GranitKeyRotationOptions>()
+            .BindConfiguration(GranitKeyRotationOptions.SectionName);
     }
 }

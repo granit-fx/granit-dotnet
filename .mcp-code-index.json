@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T18:56:33.708476+00:00",
+  "generatedAt": "2026-03-21T19:13:40.844357+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -980,6 +980,7 @@
     {
       "name": "Granit.OpenIddict.EntityFrameworkCore",
       "deps": [
+        "Granit.Encryption",
         "Granit.MultiTenancy",
         "Granit.OpenIddict",
         "Granit.Persistence"
@@ -17907,6 +17908,15 @@
       "members": []
     },
     {
+      "name": "OpenIddictKeyRotationJob",
+      "fqn": "Granit.OpenIddict.BackgroundJobs.Jobs.OpenIddictKeyRotationJob",
+      "kind": "record",
+      "project": "Granit.OpenIddict.BackgroundJobs",
+      "file": "src/Granit.OpenIddict.BackgroundJobs/Jobs/OpenIddictKeyRotationJob.cs",
+      "line": 18,
+      "members": []
+    },
+    {
       "name": "OpenIddictTokenCleanupJob",
       "fqn": "Granit.OpenIddict.BackgroundJobs.Jobs.OpenIddictTokenCleanupJob",
       "kind": "record",
@@ -18245,6 +18255,61 @@
       "members": []
     },
     {
+      "name": "SigningKey",
+      "fqn": "Granit.OpenIddict.Entities.SigningKey",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Entities/SigningKey.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "KeyId",
+          "kind": "property",
+          "signature": "string KeyId",
+          "returnType": "string"
+        },
+        {
+          "name": "KeyType",
+          "kind": "property",
+          "signature": "string KeyType",
+          "returnType": "string"
+        },
+        {
+          "name": "Algorithm",
+          "kind": "property",
+          "signature": "string Algorithm",
+          "returnType": "string"
+        },
+        {
+          "name": "EncryptedKeyMaterial",
+          "kind": "property",
+          "signature": "string EncryptedKeyMaterial",
+          "returnType": "string"
+        },
+        {
+          "name": "Status",
+          "kind": "property",
+          "signature": "SigningKeyStatus Status",
+          "returnType": "SigningKeyStatus"
+        },
+        {
+          "name": "ActivatedAt",
+          "kind": "property",
+          "signature": "DateTimeOffset ActivatedAt",
+          "returnType": "DateTimeOffset"
+        }
+      ]
+    },
+    {
+      "name": "SigningKeyStatus",
+      "fqn": "Granit.OpenIddict.Entities.SigningKeyStatus",
+      "kind": "enum",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Entities/SigningKey.cs",
+      "line": 55,
+      "members": []
+    },
+    {
       "name": "OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.OpenIddict.EntityFrameworkCore.Extensions.OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -18416,6 +18481,46 @@
           "kind": "property",
           "signature": "string[] Scopes",
           "returnType": "string[]"
+        }
+      ]
+    },
+    {
+      "name": "GranitKeyRotationOptions",
+      "fqn": "Granit.OpenIddict.Options.GranitKeyRotationOptions",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Options/GranitKeyRotationOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(90)",
+          "returnType": "bool Enabled { get; set; } public TimeSpan KeyLifetime { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(14)",
+          "returnType": "TimeSpan GracePeriod { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(7)",
+          "returnType": "TimeSpan RotationLeadTime { get; set; } = TimeSpan."
+        },
+        {
+          "name": "RsaKeySize",
+          "kind": "property",
+          "signature": "int RsaKeySize",
+          "returnType": "int"
+        },
+        {
+          "name": "SigningAlgorithm",
+          "kind": "property",
+          "signature": "string SigningAlgorithm",
+          "returnType": "string"
         }
       ]
     },
@@ -18719,6 +18824,22 @@
       ]
     },
     {
+      "name": "IKeyRotationService",
+      "fqn": "Granit.OpenIddict.Services.IKeyRotationService",
+      "kind": "interface",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/IKeyRotationService.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "RotateAsync",
+          "kind": "method",
+          "signature": "RotateAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<KeyRotationResult>"
+        }
+      ]
+    },
+    {
       "name": "IPasskeyService",
       "fqn": "Granit.OpenIddict.Services.IPasskeyService",
       "kind": "interface",
@@ -18761,6 +18882,46 @@
           "kind": "method",
           "signature": "DeleteAsync(string userId, Guid passkeyId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ISigningKeyStore",
+      "fqn": "Granit.OpenIddict.Services.ISigningKeyStore",
+      "kind": "interface",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/ISigningKeyStore.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "GetKeysAsync",
+          "kind": "method",
+          "signature": "GetKeysAsync(params SigningKeyStatus[] statuses)",
+          "returnType": "Task<IReadOnlyList<SigningKey>>"
+        },
+        {
+          "name": "GetActiveKeyAsync",
+          "kind": "method",
+          "signature": "GetActiveKeyAsync(string keyType, CancellationToken cancellationToken = default)",
+          "returnType": "Task<SigningKey?>"
+        },
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(SigningKey key, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(SigningKey key, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "PruneRevokedAsync",
+          "kind": "method",
+          "signature": "PruneRevokedAsync(DateTimeOffset olderThan, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
         }
       ]
     },
@@ -18845,6 +19006,15 @@
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Services/IImpersonationService.cs",
       "line": 56,
+      "members": []
+    },
+    {
+      "name": "KeyRotationResult",
+      "fqn": "Granit.OpenIddict.Services.KeyRotationResult",
+      "kind": "record",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/IKeyRotationService.cs",
+      "line": 29,
       "members": []
     },
     {

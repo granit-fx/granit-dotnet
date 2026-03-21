@@ -31,6 +31,9 @@ internal sealed class OpenIddictDbContext(
     /// <summary>Gets the user group members set.</summary>
     public DbSet<GranitUserGroupMember> UserGroupMembers => Set<GranitUserGroupMember>();
 
+    /// <summary>Gets the signing keys set.</summary>
+    public DbSet<SigningKey> SigningKeys => Set<SigningKey>();
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

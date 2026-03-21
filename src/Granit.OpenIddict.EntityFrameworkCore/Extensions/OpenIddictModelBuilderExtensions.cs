@@ -114,6 +114,25 @@ public static class OpenIddictModelBuilderExtensions
                 .HasDatabaseName($"ix_{prefix}user_group_members_user_id");
         });
 
+        // ──── Signing key table ────
+
+        modelBuilder.Entity<SigningKey>(b =>
+        {
+            b.ToTable(prefix + "signing_keys", schema);
+            b.Property(k => k.KeyId).HasMaxLength(128).IsRequired();
+            b.Property(k => k.KeyType).HasMaxLength(32).IsRequired();
+            b.Property(k => k.Algorithm).HasMaxLength(32).IsRequired();
+            b.Property(k => k.EncryptedKeyMaterial).IsRequired();
+            b.Property(k => k.CreatedBy).HasMaxLength(256);
+
+            b.HasIndex(k => k.KeyId)
+                .IsUnique()
+                .HasDatabaseName($"uq_{prefix}signing_keys_key_id");
+
+            b.HasIndex(k => new { k.KeyType, k.Status })
+                .HasDatabaseName($"ix_{prefix}signing_keys_type_status");
+        });
+
         return modelBuilder;
     }
 
