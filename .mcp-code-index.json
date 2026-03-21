@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T18:01:23.132703+00:00",
+  "generatedAt": "2026-03-21T18:08:21.946324+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -18270,7 +18270,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/GranitOpenIddictEntityFrameworkCoreModule.cs",
-      "line": 30,
+      "line": 33,
       "members": [
         {
           "name": "ConfigureServices",

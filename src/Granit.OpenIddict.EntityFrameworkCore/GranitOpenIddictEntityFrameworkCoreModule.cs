@@ -1,10 +1,13 @@
 using Granit.Core.Modularity;
 using Granit.MultiTenancy;
+using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.EntityFrameworkCore.Seeding;
 using Granit.OpenIddict.Options;
+using Granit.OpenIddict.Services;
 using Granit.Persistence;
 using Granit.Persistence.DataSeeding;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.OpenIddict.EntityFrameworkCore;
 
@@ -41,5 +44,8 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
             .BindConfiguration(GranitPasskeyOptions.SectionName);
 
         context.Services.AddTransient<IDataSeedContributor, OpenIddictSeedContributor>();
+
+        context.Services.TryAddScoped<ExternalClaimsMapper>();
+        context.Services.TryAddScoped<IExternalLoginService, AspNetExternalLoginService>();
     }
 }

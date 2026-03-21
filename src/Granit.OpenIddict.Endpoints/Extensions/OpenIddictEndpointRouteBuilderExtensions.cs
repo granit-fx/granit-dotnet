@@ -32,6 +32,7 @@ public static class OpenIddictEndpointRouteBuilderExtensions
         accountGroup.MapAccountProfileEndpoints();
         accountGroup.MapAccountPasswordEndpoints();
         accountGroup.MapAccountTwoFactorEndpoints();
+        accountGroup.MapAccountExternalLoginEndpoints();
         accountGroup.MapAccountDeletionEndpoints();
         accountGroup.MapAccountSessionEndpoints();
 
