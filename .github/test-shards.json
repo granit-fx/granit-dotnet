@@ -121,7 +121,15 @@
         "tests/Granit.Webhooks.Endpoints.Tests",
         "tests/Granit.Webhooks.EntityFrameworkCore.Tests",
         "tests/Granit.Webhooks.Tests",
-        "tests/Granit.Webhooks.Wolverine.Tests"
+        "tests/Granit.Webhooks.Wolverine.Tests",
+        "tests/Granit.ApiDocumentation.Tests",
+        "tests/Granit.ApiVersioning.Tests",
+        "tests/Granit.Bulkhead.Tests",
+        "tests/Granit.Cookies.Endpoints.Tests",
+        "tests/Granit.Cookies.Klaro.Tests",
+        "tests/Granit.Cookies.Tests",
+        "tests/Granit.Cors.Tests",
+        "tests/Granit.Idempotency.Tests"
       ]
     },
     {

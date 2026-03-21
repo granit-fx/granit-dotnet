@@ -326,6 +326,24 @@ Reference: [ADR-017](docs-site/src/content/docs/dotnet/architecture/adr/017-ddd-
 
 Each package has `*.Tests` project (xUnit + Shouldly + NSubstitute + Bogus). Part of DoD.
 
+### CI test sharding — MANDATORY when adding test projects
+
+Unit tests run in **5 parallel shards** aligned with the architecture layers.
+Shard definitions: `.github/test-shards.json` (source of truth).
+
+**When creating a new test project**, add its directory to the correct shard in
+`test-shards.json`. Shard mapping:
+
+| Shard | Layer | Modules |
+| ----- | ----- | ------- |
+| `core-ai` | Core + AI | Core, Validation, Analyzers, Diagnostics, Observability, Timing, Guids, Testing, AI.* |
+| `business` | Business Features | Workflow, DataExchange, Templating, DocumentGeneration, Timeline, Querying, ReferenceData |
+| `api-data` | API & Http + Data | Http.*, BlobStorage, Persistence, Caching, Imaging, RateLimiting, Webhooks |
+| `infrastructure` | Infrastructure | Notifications, BackgroundJobs, Wolverine, Localization, Settings, Features, MultiTenancy, EventBus |
+| `security` | Security & Compliance | AuditLog, Authentication, Authorization, Identity, Vault, Encryption, Privacy, Security |
+
+**NEVER** create a test project without adding it to a shard — the CI will silently skip it.
+
 ## Anti-patterns — NEVER do this
 
 ### Code
