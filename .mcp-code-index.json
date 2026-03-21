@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T07:29:19.122383+00:00",
+  "generatedAt": "2026-03-21T10:32:15.445057+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -24883,6 +24883,81 @@
       "members": []
     },
     {
+      "name": "IWebhookEventTypeDefinitionContext",
+      "fqn": "Granit.Webhooks.Definitions.IWebhookEventTypeDefinitionContext",
+      "kind": "interface",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Definitions/IWebhookEventTypeDefinitionContext.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Add",
+          "kind": "method",
+          "signature": "Add(string name, string? displayName = null, string? description = null, string? category = null)",
+          "returnType": "void"
+        },
+        {
+          "name": "GetOrNull",
+          "kind": "method",
+          "signature": "GetOrNull(string name)",
+          "returnType": "WebhookEventTypeDefinition?"
+        }
+      ]
+    },
+    {
+      "name": "IWebhookEventTypeDefinitionProvider",
+      "fqn": "Granit.Webhooks.Definitions.IWebhookEventTypeDefinitionProvider",
+      "kind": "interface",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Definitions/IWebhookEventTypeDefinitionProvider.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Define",
+          "kind": "method",
+          "signature": "Define(IWebhookEventTypeDefinitionContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IWebhookEventTypeRegistry",
+      "fqn": "Granit.Webhooks.Definitions.IWebhookEventTypeRegistry",
+      "kind": "interface",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Definitions/IWebhookEventTypeRegistry.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "GetAll",
+          "kind": "method",
+          "signature": "GetAll()",
+          "returnType": "IReadOnlyList<WebhookEventTypeDefinition>"
+        },
+        {
+          "name": "GetOrNull",
+          "kind": "method",
+          "signature": "GetOrNull(string eventTypeName)",
+          "returnType": "WebhookEventTypeDefinition?"
+        },
+        {
+          "name": "Exists",
+          "kind": "method",
+          "signature": "Exists(string eventTypeName)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "WebhookEventTypeDefinition",
+      "fqn": "Granit.Webhooks.Definitions.WebhookEventTypeDefinition",
+      "kind": "record",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Definitions/WebhookEventTypeDefinition.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "WebhooksMetrics",
       "fqn": "Granit.Webhooks.Diagnostics.WebhooksMetrics",
       "kind": "class",
@@ -25021,6 +25096,15 @@
       "kind": "record",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Dtos/WebhookModuleConfigResponse.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "WebhookEventTypeResponse",
+      "fqn": "Granit.Webhooks.Endpoints.Dtos.WebhookEventTypeResponse",
+      "kind": "record",
+      "project": "Granit.Webhooks.Endpoints",
+      "file": "src/Granit.Webhooks.Endpoints/Dtos/WebhookEventTypeResponse.cs",
       "line": 6,
       "members": []
     },
@@ -25341,7 +25425,7 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Extensions/WebhooksHostApplicationBuilderExtensions.cs",
-      "line": 22,
+      "line": 23,
       "members": [
         {
           "name": "AddGranitWebhooks",
@@ -25357,7 +25441,7 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/GranitWebhooksModule.cs",
-      "line": 20,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",

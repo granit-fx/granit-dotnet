@@ -6,6 +6,7 @@
     "Permission:Webhooks.Subscriptions.Manage": "Spravovat webhooky (životní cyklus, rotace tajných klíčů, testovací ping, statistiky)",
     "Granit:Validation:InvalidWebhookUrl": "Cílová URL musí být platná HTTPS URL",
     "Granit:Validation:WebhookUrlPrivateAddress": "Soukromé, místní nebo vyhrazené IP adresy nejsou povoleny",
-    "Granit:Validation:WebhookUrlBlockedTld": "Interní doménová jména (.local, .internal, .localhost, .onion) nejsou povolena"
+    "Granit:Validation:WebhookUrlBlockedTld": "Interní doménová jména (.local, .internal, .localhost, .onion) nejsou povolena",
+    "Granit:Validation:UnknownWebhookEventType": "Zadaný typ události není registrován. Použijte GET /event-types pro dostupné typy."
   }
 }

@@ -56,6 +56,17 @@ Configuration section: `WebhooksEndpoints`.
 
 ## Endpoints
 
+### Discovery
+
+| Method | Route | Description |
+| ------ | ----- | ----------- |
+| `GET` | `/event-types` | List all registered webhook event types |
+
+Returns the full list of event types declared by application modules via
+`IWebhookEventTypeDefinitionProvider`. Each entry includes the event type name,
+optional display name, description, and category for UI grouping. Requires
+`Webhooks.Subscriptions.Read` permission.
+
 ### Read
 
 | Method | Route | Description |
@@ -108,6 +119,7 @@ When `Granit.Webhooks.EntityFrameworkCore` is registered, query endpoints are av
 
 | DTO | Direction | Used by |
 | --- | --------- | ------- |
+| `WebhookEventTypeResponse` | Output | GET event-types |
 | `WebhookSubscriptionCreateRequest` | Input | POST subscriptions |
 | `WebhookSubscriptionCreatedResponse` | Output | POST subscriptions (includes signing secret) |
 | `WebhookSubscriptionUpdateRequest` | Input | PUT subscriptions |
@@ -119,16 +131,13 @@ When `Granit.Webhooks.EntityFrameworkCore` is registered, query endpoints are av
 
 ## Permissions
 
-All endpoints require the `Webhooks.Admin` authorization policy. Granular permissions
+All endpoints require the `Webhooks.Admin` authorization policy. Permissions
 are defined in `WebhooksPermissions`:
 
 | Permission | Description |
 | ---------- | ----------- |
-| `Webhooks.Subscriptions.View` | View subscription details |
-| `Webhooks.Subscriptions.Create` | Create subscriptions |
-| `Webhooks.Subscriptions.Update` | Update target URL, lifecycle transitions |
-| `Webhooks.Subscriptions.Delete` | Delete subscriptions |
-| `Webhooks.Subscriptions.Manage` | Rotate secrets, test pings, view stats |
+| `Webhooks.Subscriptions.Read` | View subscriptions, list event types |
+| `Webhooks.Subscriptions.Manage` | Create, update, delete, lifecycle transitions, rotate secrets, test pings, stats |
 
 ## Validation
 
@@ -137,8 +146,14 @@ All request DTOs are automatically validated via `FluentValidation` through
 
 - **Target URL**: HTTPS only, absolute URI, max 2048 chars
 - **SSRF protection**: blocks private IP ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16), localhost, link-local IPv6, and blocked TLDs (.local, .internal, .onion)
-- **Event type**: non-empty, max 200 chars
+- **Event type**: non-empty, max 200 chars, **must exist in the event type registry**
 - **Deactivation reason**: non-empty, max 1000 chars
+
+:::note
+When creating a subscription, the event type is validated against `IWebhookEventTypeRegistry`.
+Unknown event types are rejected with the `Granit:Validation:UnknownWebhookEventType` error
+code. Call `GET /event-types` to discover valid values.
+:::
 
 :::caution
 The signing secret is returned **only once** during subscription creation and secret

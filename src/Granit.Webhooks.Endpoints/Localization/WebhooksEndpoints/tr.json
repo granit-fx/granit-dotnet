@@ -6,6 +6,7 @@
     "Permission:Webhooks.Subscriptions.Manage": "Webhookları yönet (yaşam döngüsü, gizli anahtar rotasyonu, test ping, istatistikler)",
     "Granit:Validation:InvalidWebhookUrl": "Hedef URL geçerli bir HTTPS URL olmalıdır",
     "Granit:Validation:WebhookUrlPrivateAddress": "Özel, yerel veya ayrılmış IP adreslerine izin verilmez",
-    "Granit:Validation:WebhookUrlBlockedTld": "Dahili alan adlarına (.local, .internal, .localhost, .onion) izin verilmez"
+    "Granit:Validation:WebhookUrlBlockedTld": "Dahili alan adlarına (.local, .internal, .localhost, .onion) izin verilmez",
+    "Granit:Validation:UnknownWebhookEventType": "Belirtilen olay türü kayıtlı değil. Kullanılabilir türler için GET /event-types kullanın."
   }
 }

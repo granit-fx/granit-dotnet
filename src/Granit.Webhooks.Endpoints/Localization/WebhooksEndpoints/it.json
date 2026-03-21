@@ -6,6 +6,7 @@
     "Permission:Webhooks.Subscriptions.Manage": "Gestire i webhooks (ciclo di vita, rotazione dei segreti, ping di test, statistiche)",
     "Granit:Validation:InvalidWebhookUrl": "L'URL di destinazione deve essere un URL HTTPS valido",
     "Granit:Validation:WebhookUrlPrivateAddress": "Gli indirizzi IP privati, locali o riservati non sono consentiti",
-    "Granit:Validation:WebhookUrlBlockedTld": "I nomi di dominio interni (.local, .internal, .localhost, .onion) non sono consentiti"
+    "Granit:Validation:WebhookUrlBlockedTld": "I nomi di dominio interni (.local, .internal, .localhost, .onion) non sono consentiti",
+    "Granit:Validation:UnknownWebhookEventType": "Il tipo di evento specificato non è registrato. Usare GET /event-types per i tipi disponibili."
   }
 }

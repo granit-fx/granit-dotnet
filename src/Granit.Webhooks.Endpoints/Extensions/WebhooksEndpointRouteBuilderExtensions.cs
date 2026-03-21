@@ -60,6 +60,7 @@ public static class WebhooksEndpointRouteBuilderExtensions
             .WithTags(options.TagName)
             .RequireAuthorization(WebhooksAuthorizationPolicy.PolicyName);
 
+        group.MapEventTypeEndpoints();
         group.MapReadEndpoints();
         group.MapWriteEndpoints();
         group.MapLifecycleEndpoints();

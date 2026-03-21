@@ -6,6 +6,7 @@
     "Permission:Webhooks.Subscriptions.Manage": "Webhooks を管理（ライフサイクル、シークレットローテーション、テスト Ping、統計）",
     "Granit:Validation:InvalidWebhookUrl": "ターゲット URL は有効な HTTPS URL である必要があります",
     "Granit:Validation:WebhookUrlPrivateAddress": "プライベート、ローカル、または予約済みの IP アドレスは許可されていません",
-    "Granit:Validation:WebhookUrlBlockedTld": "内部ドメイン名（.local、.internal、.localhost、.onion）は許可されていません"
+    "Granit:Validation:WebhookUrlBlockedTld": "内部ドメイン名（.local、.internal、.localhost、.onion）は許可されていません",
+    "Granit:Validation:UnknownWebhookEventType": "指定されたイベントタイプは登録されていません。GET /event-types で利用可能なタイプを確認してください。"
   }
 }

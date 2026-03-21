@@ -83,6 +83,41 @@ EF Core persists subscriptions and delivery attempts for ISO 27001 audit.
 </TabItem>
 </Tabs>
 
+## Event type registry
+
+Modules declare the webhook event types they support by implementing
+`IWebhookEventTypeDefinitionProvider`. Providers are **auto-discovered** across
+all loaded module assemblies at startup — no manual DI registration required.
+
+```csharp
+using Granit.Webhooks.Definitions;
+
+internal sealed class OrderWebhookEventTypeProvider : IWebhookEventTypeDefinitionProvider
+{
+    public void Define(IWebhookEventTypeDefinitionContext context)
+    {
+        context.Add("order.created", "Order created",
+            "Fired when a new order is placed.", "Orders");
+        context.Add("order.shipped", "Order shipped",
+            "Fired when an order is marked as shipped.", "Orders");
+        context.Add("order.cancelled", "Order cancelled",
+            "Fired when an order is cancelled by the customer or an admin.", "Orders");
+    }
+}
+```
+
+The definitions are collected into an immutable `IWebhookEventTypeRegistry` singleton,
+pre-sorted by category then name. The registry serves two purposes:
+
+1. **Discovery** — the `GET /event-types` endpoint exposes the full list for admin UIs
+2. **Validation** — creating a subscription rejects unknown event types at request time
+
+:::tip
+Each `WebhookEventTypeDefinition` accepts an optional `DisplayName`, `Description`,
+and `Category`. Providing all three enables richer UI experiences — category-based
+grouping and human-readable labels in dropdown menus.
+:::
+
 ## Publishing a webhook
 
 Inject `IWebhookPublisher` and call `PublishAsync` with a logical event type and payload:
@@ -204,6 +239,7 @@ against GDPR data-minimization requirements.
 |----------|-----------|---------|
 | Modules | `GranitWebhooksModule`, `GranitWebhooksEntityFrameworkCoreModule`, `GranitWebhooksWolverineModule` | Webhooks |
 | Publisher | `IWebhookPublisher` (`PublishAsync<TPayload>`) | `Granit.Webhooks` |
+| Event types | `IWebhookEventTypeDefinitionProvider`, `IWebhookEventTypeRegistry`, `WebhookEventTypeDefinition` | `Granit.Webhooks` |
 | Subscriptions | `IWebhookSubscriptionReader`, `IWebhookSubscriptionWriter`, `WebhookSubscription` | `Granit.Webhooks` |
 | Delivery | `WebhookDeliveryAttempt`, `WebhookEnvelope`, `IWebhookDeliveryReader`, `IWebhookDeliveryWriter` | `Granit.Webhooks` |
 | Events | `WebhookSubscriptionSuspendedEvent`, `WebhookSubscriptionDeactivatedEvent` | `Granit.Webhooks` |

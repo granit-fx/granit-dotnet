@@ -2,6 +2,7 @@ using System.Threading.Channels;
 using Granit.Core.Diagnostics;
 using Granit.Http.Resilience.Extensions;
 using Granit.Webhooks.Abstractions;
+using Granit.Webhooks.Definitions;
 using Granit.Webhooks.Diagnostics;
 using Granit.Webhooks.Endpoints;
 using Granit.Webhooks.Handlers;
@@ -87,6 +88,9 @@ public static class WebhooksHostApplicationBuilderExtensions
         builder.Services.AddScoped<IWebhookTestPingService, WebhookTestPingService>();
         builder.Services.AddSingleton<IWebhookStatsReader, NullWebhookStatsReader>();
         builder.Services.AddSingleton<IWebhookQueryableProvider, NullWebhookQueryableProvider>();
+
+        // Event type registry — immutable singleton, pre-sorted at startup.
+        builder.Services.TryAddSingleton<IWebhookEventTypeRegistry, WebhookEventTypeRegistry>();
 
         return builder;
     }
