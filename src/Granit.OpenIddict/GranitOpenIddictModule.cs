@@ -5,6 +5,7 @@ using Granit.Guids;
 using Granit.Identity;
 using Granit.OpenIddict.Diagnostics;
 using Granit.OpenIddict.Options;
+using Granit.OpenIddict.Services;
 using Granit.Querying;
 using Granit.Security;
 using Granit.Timing;
@@ -47,5 +48,7 @@ public sealed class GranitOpenIddictModule : GranitModule
         context.Services
             .AddOptions<GranitOpenIddictSeedingOptions>()
             .BindConfiguration(GranitOpenIddictSeedingOptions.SectionName);
+
+        context.Services.TryAddScoped<IClaimsDestinationProvider, DefaultClaimsDestinationProvider>();
     }
 }

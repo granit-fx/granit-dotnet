@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T19:13:40.844357+00:00",
+  "generatedAt": "2026-03-21T19:21:46.414008+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -18401,6 +18401,22 @@
       "members": []
     },
     {
+      "name": "ClaimsPrincipalDestinationExtensions",
+      "fqn": "Granit.OpenIddict.Extensions.ClaimsPrincipalDestinationExtensions",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Extensions/ClaimsPrincipalDestinationExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "SetDestinations",
+          "kind": "method",
+          "signature": "SetDestinations(this ClaimsPrincipal principal, IClaimsDestinationProvider destinationProvider)",
+          "returnType": "ClaimsPrincipal"
+        }
+      ]
+    },
+    {
       "name": "ClaimsPrincipalExtensions",
       "fqn": "Granit.OpenIddict.Extensions.ClaimsPrincipalExtensions",
       "kind": "class",
@@ -18422,7 +18438,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 27,
+      "line": 28,
       "members": [
         {
           "name": "ConfigureServices",
@@ -18696,6 +18712,31 @@
       "members": []
     },
     {
+      "name": "ClaimsDestinations",
+      "fqn": "Granit.OpenIddict.Services.ClaimsDestinations",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/IClaimsDestinationProvider.cs",
+      "line": 38,
+      "members": []
+    },
+    {
+      "name": "DefaultClaimsDestinationProvider",
+      "fqn": "Granit.OpenIddict.Services.DefaultClaimsDestinationProvider",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/DefaultClaimsDestinationProvider.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "GetDestinations",
+          "kind": "method",
+          "signature": "GetDestinations(Claim claim, ClaimsPrincipal principal)",
+          "returnType": "IEnumerable<string>"
+        }
+      ]
+    },
+    {
       "name": "ExternalClaimsMapper",
       "fqn": "Granit.OpenIddict.Services.ExternalClaimsMapper",
       "kind": "class",
@@ -18742,6 +18783,22 @@
           "kind": "method",
           "signature": "InitiateAsync(string userId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IClaimsDestinationProvider",
+      "fqn": "Granit.OpenIddict.Services.IClaimsDestinationProvider",
+      "kind": "interface",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/IClaimsDestinationProvider.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "GetDestinations",
+          "kind": "method",
+          "signature": "GetDestinations(Claim claim, ClaimsPrincipal principal)",
+          "returnType": "IEnumerable<string>"
         }
       ]
     },
