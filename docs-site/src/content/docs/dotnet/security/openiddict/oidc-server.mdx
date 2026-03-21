@@ -89,18 +89,51 @@ the standard OAuth 2.0 token endpoint pattern.
 
 ## Scopes
 
-The following scopes are registered by default:
+The following 7 standard OIDC scopes are **seeded automatically** on every startup
+(idempotent — no duplicates):
 
-| Scope | Claims included |
-|-------|----------------|
-| `openid` | `sub` (subject identifier) |
-| `email` | `email`, `email_verified` |
-| `profile` | `name`, `given_name`, `family_name` |
-| `roles` | `role` (user roles) |
-| `offline_access` | Enables refresh token issuance |
+| Scope | Claims included | Spec |
+|-------|----------------|------|
+| `openid` | `sub` (subject identifier) | OIDC Core |
+| `profile` | `name`, `given_name`, `family_name`, `preferred_username` | OIDC Core |
+| `email` | `email`, `email_verified` | OIDC Core |
+| `phone` | `phone_number`, `phone_number_verified` | OIDC Core |
+| `address` | Postal address | OIDC Core |
+| `roles` | `role` (user roles) | Custom |
+| `offline_access` | Enables refresh token issuance | OAuth 2.0 |
 
 Additional scopes can be registered via the [admin API](./user-management/#oidc-scopes-apiadminoidcscopes)
 or [declarative seeding](./configuration/#seeding-options).
+
+## Claims destination provider
+
+OpenIddict requires every claim on the `ClaimsPrincipal` to have a destination
+(access\_token, id\_token, or both). Claims without destinations are silently excluded.
+
+`DefaultClaimsDestinationProvider` implements scope-based routing:
+
+| Claim type | Destination | Condition |
+|------------|-------------|-----------|
+| `sub` | access\_token + id\_token | Always |
+| `name`, `given_name`, `family_name` | access\_token + id\_token | `profile` scope granted |
+| `email`, `email_verified` | access\_token + id\_token | `email` scope granted |
+| `role` | access\_token + id\_token | `roles` scope granted |
+| `phone_number` | access\_token + id\_token | `phone` scope granted |
+| `security_stamp` | Excluded | Always |
+| `impersonator_id`, `impersonator_name` | access\_token only | Always |
+| All others | access\_token only | Always |
+
+Override by registering a custom `IClaimsDestinationProvider`:
+
+```csharp
+services.Replace(ServiceDescriptor.Scoped<IClaimsDestinationProvider, MyProvider>());
+```
+
+Apply destinations before issuing tokens:
+
+```csharp
+principal.SetDestinations(claimsDestinationProvider);
+```
 
 ## Signing and encryption
 

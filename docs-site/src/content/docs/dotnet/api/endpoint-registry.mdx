@@ -3,7 +3,7 @@ title: "Endpoint Registry — All API Routes"
 description: Complete inventory of all HTTP endpoints exposed by Granit framework modules — routes, methods, operation IDs, permissions, and authentication requirements.
 sidebar:
   label: Endpoint Registry
-  order: 1
+  order: 99
 ---
 
 import { Aside, Badge } from "@astrojs/starlight/components";
@@ -309,6 +309,138 @@ Identity uses **two separate endpoint groups** with distinct prefixes.
 | <Badge text="POST" variant="success" /> | `/entity/{entityType}/{entityId}/follow` | FollowEntity | Authenticated |
 | <Badge text="DELETE" variant="danger" /> | `/entity/{entityType}/{entityId}/follow` | UnfollowEntity | Authenticated |
 | <Badge text="GET" variant="note" /> | `/entity/{entityType}/{entityId}/followers` | GetEntityFollowers | Authenticated |
+
+---
+
+## OpenIddict
+
+OpenIddict uses **two endpoint groups**: account self-service (anonymous + authenticated)
+and admin management (permission-protected).
+
+### Account Self-Service (`account`)
+
+**Module:** `Granit.OpenIddict.Endpoints` — `MapOpenIddictEndpoints()`
+**Prefix:** `account`
+
+#### Registration & Email
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="POST" variant="success" /> | `/register` | RegisterAccount | Anonymous |
+| <Badge text="GET" variant="note" /> | `/confirm-email` | ConfirmEmail | Anonymous |
+| <Badge text="POST" variant="success" /> | `/resend-confirmation-email` | ResendConfirmationEmail | Authenticated |
+
+#### Profile
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="GET" variant="note" /> | `/profile` | GetAccountProfile | Authenticated |
+| <Badge text="PUT" variant="caution" /> | `/profile` | UpdateAccountProfile | Authenticated |
+
+#### Password
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="POST" variant="success" /> | `/change-password` | ChangePassword | Authenticated |
+| <Badge text="POST" variant="success" /> | `/forgot-password` | ForgotPassword | Anonymous |
+| <Badge text="POST" variant="success" /> | `/reset-password` | ResetPassword | Anonymous |
+
+#### Two-Factor Authentication
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="GET" variant="note" /> | `/two-factor` | GetTwoFactorStatus | Authenticated |
+| <Badge text="GET" variant="note" /> | `/two-factor/authenticator-key` | GetAuthenticatorKey | Authenticated |
+| <Badge text="POST" variant="success" /> | `/two-factor/enable` | EnableTwoFactor | Authenticated |
+| <Badge text="POST" variant="success" /> | `/two-factor/disable` | DisableTwoFactor | Authenticated |
+| <Badge text="POST" variant="success" /> | `/two-factor/recovery-codes` | GenerateRecoveryCodes | Authenticated |
+
+#### External Logins
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="GET" variant="note" /> | `/external-logins` | ListExternalLogins | Authenticated |
+| <Badge text="POST" variant="success" /> | `/external-logins/challenge/{provider}` | ChallengeExternalLogin | Anonymous |
+| <Badge text="GET" variant="note" /> | `/external-logins/callback` | ExternalLoginCallback | Anonymous |
+| <Badge text="DELETE" variant="danger" /> | `/external-logins/{provider}` | UnlinkExternalLogin | Authenticated |
+
+#### Passkeys (WebAuthn)
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="GET" variant="note" /> | `/passkeys` | ListPasskeys | Authenticated |
+| <Badge text="POST" variant="success" /> | `/passkeys/register/begin` | BeginPasskeyRegistration | Authenticated |
+| <Badge text="POST" variant="success" /> | `/passkeys/register/complete` | CompletePasskeyRegistration | Authenticated |
+| <Badge text="POST" variant="success" /> | `/passkeys/assertion/begin` | BeginPasskeyAssertion | Anonymous |
+| <Badge text="PATCH" variant="caution" /> | `/passkeys/{id}` | RenamePasskey | Authenticated |
+| <Badge text="DELETE" variant="danger" /> | `/passkeys/{id}` | DeletePasskey | Authenticated |
+
+#### Account & Session
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="POST" variant="success" /> | `/delete` | DeleteAccount | Authenticated |
+| <Badge text="POST" variant="success" /> | `/session/heartbeat` | SessionHeartbeat | Authenticated |
+| <Badge text="POST" variant="success" /> | `/session/back-to-impersonator` | BackToImpersonator | Authenticated |
+
+### Admin Management (`admin`)
+
+**Module:** `Granit.OpenIddict.Endpoints` — `MapOpenIddictEndpoints()`
+**Prefix:** `admin`
+
+#### Users
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/users` | ListUsers | `OpenIddict.Users.Read` |
+| <Badge text="GET" variant="note" /> | `/users/{userId}` | GetUser | `OpenIddict.Users.Read` |
+| <Badge text="POST" variant="success" /> | `/users` | CreateUser | `OpenIddict.Users.Create` |
+| <Badge text="DELETE" variant="danger" /> | `/users/{userId}` | DeleteUser | `OpenIddict.Users.Delete` |
+| <Badge text="POST" variant="success" /> | `/users/{userId}/impersonate` | ImpersonateUser | `OpenIddict.Users.Impersonate` |
+
+#### Roles
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/roles` | ListRoles | `OpenIddict.Roles.Read` |
+| <Badge text="POST" variant="success" /> | `/roles` | CreateRole | `OpenIddict.Roles.Create` |
+| <Badge text="DELETE" variant="danger" /> | `/roles/{roleName}` | DeleteRole | `OpenIddict.Roles.Delete` |
+| <Badge text="GET" variant="note" /> | `/roles/{roleName}/members` | GetRoleMembers | `OpenIddict.Roles.Read` |
+
+#### Groups
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/groups` | ListGroups | `OpenIddict.Groups.Read` |
+| <Badge text="POST" variant="success" /> | `/groups` | CreateGroup | `OpenIddict.Groups.Create` |
+| <Badge text="DELETE" variant="danger" /> | `/groups/{groupId}` | DeleteGroup | `OpenIddict.Groups.Delete` |
+| <Badge text="POST" variant="success" /> | `/groups/{groupId}/members` | AddGroupMember | `OpenIddict.Groups.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/groups/{groupId}/members/{userId}` | RemoveGroupMember | `OpenIddict.Groups.Manage` |
+
+#### OIDC Applications
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/oidc/applications` | ListOidcApplications | `OpenIddict.Applications.Read` |
+| <Badge text="POST" variant="success" /> | `/oidc/applications` | CreateOidcApplication | `OpenIddict.Applications.Create` |
+| <Badge text="DELETE" variant="danger" /> | `/oidc/applications/{clientId}` | DeleteOidcApplication | `OpenIddict.Applications.Delete` |
+| <Badge text="POST" variant="success" /> | `/oidc/applications/{clientId}/rotate-secret` | RotateOidcApplicationSecret | `OpenIddict.Applications.Rotate` |
+
+#### OIDC Scopes
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/oidc/scopes` | ListOidcScopes | `OpenIddict.Scopes.Read` |
+| <Badge text="POST" variant="success" /> | `/oidc/scopes` | CreateOidcScope | `OpenIddict.Scopes.Create` |
+| <Badge text="DELETE" variant="danger" /> | `/oidc/scopes/{scopeName}` | DeleteOidcScope | `OpenIddict.Scopes.Delete` |
+
+#### OIDC Authorizations
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/oidc/authorizations` | ListOidcAuthorizations | `OpenIddict.Authorizations.Read` |
+| <Badge text="DELETE" variant="danger" /> | `/oidc/authorizations/{id}` | RevokeOidcAuthorization | `OpenIddict.Authorizations.Revoke` |
+| <Badge text="DELETE" variant="danger" /> | `/oidc/authorizations/user/{userId}` | RevokeUserOidcAuthorizations | `OpenIddict.Authorizations.Revoke` |
 
 ---
 
