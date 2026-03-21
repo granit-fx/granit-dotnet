@@ -27,7 +27,7 @@ public sealed class DictionarySchemaExampleOperationTransformerTests
     [Fact]
     public async Task TransformAsync_EmptyResponses_DoesNotThrow()
     {
-        OpenApiOperation operation = new() { Responses = new OpenApiResponses() };
+        OpenApiOperation operation = new() { Responses = [] };
 
         await _sut.TransformAsync(operation, BuildContext(), TestContext.Current.CancellationToken);
 
