@@ -1,0 +1,485 @@
+---
+title: "Endpoint Registry — All API Routes"
+description: Complete inventory of all HTTP endpoints exposed by Granit framework modules — routes, methods, operation IDs, permissions, and authentication requirements.
+sidebar:
+  label: Endpoint Registry
+  order: 1
+---
+
+import { Aside, Badge } from "@astrojs/starlight/components";
+
+Complete inventory of all HTTP endpoints exposed by Granit framework modules.
+All route prefixes are **configurable** via each module's `*EndpointsOptions` class —
+the values below are the defaults.
+
+<Aside type="tip">
+Use this page to verify that your frontend API client matches the backend routes.
+The OpenAPI schema (available at `/openapi/v1.json`) is the authoritative source
+for request/response types — this page focuses on **routes, methods, and permissions**.
+</Aside>
+
+## Conventions
+
+- **Default prefix:** `/api/granit/\{module-kebab-case\}`
+- **Permissions:** follow `[Group].[Resource].[Action]` (three segments)
+- **Error responses:** all endpoints return RFC 7807 Problem Details on errors
+- **Query endpoints** (`MapQueryEndpoints<T>`) are registered by the **application**,
+  not the framework — the route pattern is app-defined
+
+---
+
+## Authentication & API Keys
+
+**Module:** `Granit.Authentication.ApiKeys.Endpoints`
+**Prefix:** `/api/granit/api-keys`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/` | ListApiKeys | `ApiKeys.Keys.Read` |
+| <Badge text="GET" variant="note" /> | `/{id:guid}` | GetApiKeyById | `ApiKeys.Keys.Read` |
+| <Badge text="POST" variant="success" /> | `/` | CreateApiKey | `ApiKeys.Keys.Create` |
+| <Badge text="POST" variant="success" /> | `/{id:guid}/revoke` | RevokeApiKey | `ApiKeys.Keys.Revoke` |
+| <Badge text="POST" variant="success" /> | `/{id:guid}/rotate` | RotateApiKey | `ApiKeys.Keys.Rotate` |
+| <Badge text="PUT" variant="caution" /> | `/{id:guid}/scopes` | UpdateApiKeyScopes | `ApiKeys.Keys.UpdateScopes` |
+
+---
+
+## Authorization
+
+**Module:** `Granit.Authorization.Endpoints`
+**Prefix:** `/api/granit/authorization`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/me` | GetMyPermissions | Authenticated |
+| <Badge text="GET" variant="note" /> | `/definitions` | GetPermissionDefinitions | Admin |
+| <Badge text="GET" variant="note" /> | `/roles/{roleName}` | GetRolePermissions | Admin |
+| <Badge text="PUT" variant="caution" /> | `/roles/{roleName}/{permissionName}` | GrantPermission | Admin |
+| <Badge text="DELETE" variant="danger" /> | `/roles/{roleName}/{permissionName}` | RevokePermission | Admin |
+
+---
+
+## Background Jobs
+
+**Module:** `Granit.BackgroundJobs.Endpoints`
+**Prefix:** `/api/granit/background-jobs`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/` | GetAllBackgroundJobs | `BackgroundJobs.Jobs.Manage` |
+| <Badge text="GET" variant="note" /> | `/{name}` | GetBackgroundJobByName | `BackgroundJobs.Jobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/{name}/pause` | PauseBackgroundJob | `BackgroundJobs.Jobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/{name}/resume` | ResumeBackgroundJob | `BackgroundJobs.Jobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/{name}/trigger` | TriggerBackgroundJob | `BackgroundJobs.Jobs.Manage` |
+
+---
+
+## Blob Storage
+
+**Module:** `Granit.BlobStorage.Endpoints`
+**Prefix:** `/api/granit/blobs`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/{id:guid}` | GetBlobDescriptor | `BlobStorage.Blobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/` | UploadBlob | `BlobStorage.Blobs.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/{id:guid}` | DeleteBlob | `BlobStorage.Blobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/operations/validate-name` | ValidateBlobName | `BlobStorage.Blobs.Manage` |
+
+### Blob Proxy
+
+**Module:** `Granit.BlobStorage.Proxy`
+**Prefix:** `/api/granit/blobs/proxy`
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="PUT" variant="caution" /> | `/upload/{token}` | BlobProxyUpload | Token-based |
+| <Badge text="GET" variant="note" /> | `/download/{token}` | BlobProxyDownload | Token-based |
+
+---
+
+## Cookie Consent
+
+**Module:** `Granit.Http.Cookies.Endpoints`
+**Prefix:** `/api/granit`
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="GET" variant="note" /> | `/cookies/config` | GetCookieConsentConfig | Anonymous |
+
+---
+
+## Data Exchange
+
+**Module:** `Granit.DataExchange.Endpoints`
+**Prefix:** `/api/granit/data-exchange`
+
+### Import
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/jobs` | ListImportJobs | `DataExchange.Import.*` |
+| <Badge text="POST" variant="success" /> | `/` | CreateImportJob | `DataExchange.Import.*` |
+| <Badge text="POST" variant="success" /> | `/{jobId}/preview` | PreviewImportJob | `DataExchange.Import.*` |
+| <Badge text="PUT" variant="caution" /> | `/{jobId}/mappings` | ConfirmImportMappings | `DataExchange.Import.*` |
+| <Badge text="POST" variant="success" /> | `/{jobId}/execute` | ExecuteImportJob | `DataExchange.Import.*` |
+| <Badge text="POST" variant="success" /> | `/{jobId}/dry-run` | DryRunImportJob | `DataExchange.Import.*` |
+| <Badge text="GET" variant="note" /> | `/{jobId}` | GetImportJob | `DataExchange.Import.*` |
+| <Badge text="DELETE" variant="danger" /> | `/{jobId}` | DeleteImportJob | `DataExchange.Import.*` |
+| <Badge text="GET" variant="note" /> | `/{jobId}/report` | GetImportReport | `DataExchange.Import.*` |
+| <Badge text="GET" variant="note" /> | `/{jobId}/correction-file` | DownloadImportCorrectionFile | `DataExchange.Import.*` |
+
+### Export
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/export/jobs` | ListExportJobs | `DataExchange.Export.*` |
+| <Badge text="POST" variant="success" /> | `/export/jobs` | CreateExportJob | `DataExchange.Export.*` |
+| <Badge text="GET" variant="note" /> | `/export/jobs/{id}` | GetExportJob | `DataExchange.Export.*` |
+| <Badge text="GET" variant="note" /> | `/export/jobs/{id}/download` | DownloadExportFile | `DataExchange.Export.*` |
+
+### Metadata
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/metadata/definitions` | GetExportDefinitions | `DataExchange.Export.*` |
+| <Badge text="GET" variant="note" /> | `/metadata/definitions/{name}/fields` | GetExportDefinitionFields | `DataExchange.Export.*` |
+| <Badge text="GET" variant="note" /> | `/metadata/presets/{definitionName}` | ListExportPresets | `DataExchange.Export.*` |
+| <Badge text="POST" variant="success" /> | `/metadata/presets` | SaveExportPreset | `DataExchange.Export.*` |
+| <Badge text="DELETE" variant="danger" /> | `/metadata/presets/{definitionName}/{presetName}` | DeleteExportPreset | `DataExchange.Export.*` |
+
+---
+
+## Features
+
+**Module:** `Granit.Features.Endpoints`
+**Prefix:** `/api/granit/features`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/definitions` | GetFeatureDefinitions | `Features.Flags.Read` |
+| <Badge text="GET" variant="note" /> | `/values` | GetAllFeatureValues | Authenticated |
+| <Badge text="GET" variant="note" /> | `/values/{name}` | GetFeatureValue | Authenticated |
+| <Badge text="PUT" variant="caution" /> | `/overrides/{name}` | SetFeatureOverride | `Features.Flags.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/overrides/{name}` | DeleteFeatureOverride | `Features.Flags.Manage` |
+
+---
+
+## Identity
+
+**Module:** `Granit.Identity.Endpoints`
+**Prefix:** `/api/granit/identity`
+
+### User Cache
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/search` | SearchIdentityUsers | `Identity.UserCache.Read` |
+| <Badge text="GET" variant="note" /> | `/{userId}` | GetIdentityUser | `Identity.UserCache.Read` |
+| <Badge text="POST" variant="success" /> | `/batch` | BatchResolveIdentityUsers | `Identity.UserCache.Read` |
+| <Badge text="GET" variant="note" /> | `/stats` | GetIdentityUserCacheStats | `Identity.UserCache.Read` |
+| <Badge text="POST" variant="success" /> | `/sync` | SyncIdentityUsers | `Identity.UserCache.Sync` |
+| <Badge text="POST" variant="success" /> | `/sync-all` | SyncAllIdentityUsers | `Identity.UserCache.Sync` |
+| <Badge text="POST" variant="success" /> | `/erase` | EraseIdentityUserData | `Identity.UserCache.Delete` |
+| <Badge text="POST" variant="success" /> | `/pseudonymize` | PseudonymizeIdentityUser | `Identity.UserCache.Delete` |
+
+### Provider Users
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/users` | ListProviderUsers | `Identity.Users.Read` |
+| <Badge text="GET" variant="note" /> | `/users/{userId}` | GetProviderUser | `Identity.Users.Read` |
+| <Badge text="POST" variant="success" /> | `/users` | CreateProviderUser | `Identity.Users.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/users/{userId}` | UpdateProviderUser | `Identity.Users.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/users/{userId}` | DeleteProviderUser | `Identity.Users.Manage` |
+
+### Roles
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/roles` | ListProviderRoles | `Identity.Roles.Read` |
+| <Badge text="GET" variant="note" /> | `/users/{userId}/roles` | GetUserRoles | `Identity.Roles.Read` |
+| <Badge text="POST" variant="success" /> | `/users/{userId}/roles` | AssignUserRole | `Identity.Roles.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/roles/{roleId}` | RemoveUserRole | `Identity.Roles.Manage` |
+
+### Groups
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/groups` | ListProviderGroups | `Identity.Groups.Read` |
+| <Badge text="GET" variant="note" /> | `/users/{userId}/groups` | GetUserGroups | `Identity.Groups.Read` |
+| <Badge text="POST" variant="success" /> | `/users/{userId}/groups` | AddUserToGroup | `Identity.Groups.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/groups/{groupId}` | RemoveUserFromGroup | `Identity.Groups.Manage` |
+
+### Sessions
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/users/{userId}/sessions` | ListUserSessions | `Identity.Sessions.Read` |
+| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/sessions/{sessionId}` | RevokeUserSession | `Identity.Sessions.Manage` |
+
+### Passwords
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="POST" variant="success" /> | `/users/{userId}/password/reset` | ResetUserPassword | `Identity.Passwords.Manage` |
+| <Badge text="POST" variant="success" /> | `/users/{userId}/password/force-change` | ForcePasswordChange | `Identity.Passwords.Manage` |
+
+### Webhook
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="POST" variant="success" /> | `/webhook` | IdentityWebhook | Signature-validated |
+
+---
+
+## Localization
+
+**Module:** `Granit.Localization.Endpoints`
+**Prefix:** `/api/granit`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/localization` | GetGranitLocalization | Anonymous |
+| <Badge text="GET" variant="note" /> | `/localization/overrides` | GetLocalizationOverrides | `Localization.Overrides.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/localization/overrides/{resourceName}/{cultureName}/{key}` | PutLocalizationOverride | `Localization.Overrides.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/localization/overrides/{resourceName}/{cultureName}/{key}` | DeleteLocalizationOverride | `Localization.Overrides.Manage` |
+
+---
+
+## Notifications
+
+**Module:** `Granit.Notifications.Endpoints`
+**Prefix:** `/api/granit/notifications`
+
+### Inbox
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="GET" variant="note" /> | `/` | GetNotifications | Authenticated |
+| <Badge text="GET" variant="note" /> | `/unread/count` | GetUnreadCount | Authenticated |
+| <Badge text="POST" variant="success" /> | `/{id:guid}/read` | MarkAsRead | Authenticated |
+| <Badge text="POST" variant="success" /> | `/read-all` | MarkAllAsRead | Authenticated |
+
+### Activity Feed
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="GET" variant="note" /> | `/entity/{entityType}/{entityId}` | GetEntityActivityFeed | Authenticated |
+
+### Preferences & Subscriptions
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="GET" variant="note" /> | `/preferences` | GetPreferences | Authenticated |
+| <Badge text="PUT" variant="caution" /> | `/preferences` | UpdatePreference | Authenticated |
+| <Badge text="GET" variant="note" /> | `/types` | GetNotificationTypes | Authenticated |
+| <Badge text="GET" variant="note" /> | `/subscriptions` | GetSubscriptions | Authenticated |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{typeName}` | Subscribe | Authenticated |
+| <Badge text="DELETE" variant="danger" /> | `/subscriptions/{typeName}` | Unsubscribe | Authenticated |
+
+### Entity Followers
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="POST" variant="success" /> | `/entity/{entityType}/{entityId}/follow` | FollowEntity | Authenticated |
+| <Badge text="DELETE" variant="danger" /> | `/entity/{entityType}/{entityId}/follow` | UnfollowEntity | Authenticated |
+| <Badge text="GET" variant="note" /> | `/entity/{entityType}/{entityId}/followers` | GetEntityFollowers | Authenticated |
+
+---
+
+## Querying
+
+**Module:** `Granit.Querying.Endpoints`
+**Prefix:** app-defined via `MapQueryEndpoints<T>(pattern)`
+
+<Aside type="caution">
+Querying endpoints are registered by the **application**, not the framework.
+The route pattern is passed to `MapQueryEndpoints<T>()`. For consistency,
+use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrides`).
+</Aside>
+
+| Method | Route | Operation |
+|--------|-------|-----------|
+| <Badge text="GET" variant="note" /> | `/{pattern}` | Query\{EntityName\} |
+| <Badge text="GET" variant="note" /> | `/{pattern}/meta` | Get\{EntityName\}Meta |
+| <Badge text="GET" variant="note" /> | `/{pattern}/saved-views` | GetSavedViews |
+| <Badge text="POST" variant="success" /> | `/{pattern}/saved-views` | CreateSavedView |
+| <Badge text="PUT" variant="caution" /> | `/{pattern}/saved-views/{id}` | UpdateSavedView |
+| <Badge text="DELETE" variant="danger" /> | `/{pattern}/saved-views/{id}` | DeleteSavedView |
+| <Badge text="POST" variant="success" /> | `/{pattern}/saved-views/{id}/set-default` | SetDefaultSavedView |
+
+---
+
+## Settings
+
+**Module:** `Granit.Settings.Endpoints`
+**Prefix:** `/api/granit/settings`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/user` | GetAllUserSettings | Authenticated |
+| <Badge text="GET" variant="note" /> | `/user/{name}` | GetUserSetting | Authenticated |
+| <Badge text="PUT" variant="caution" /> | `/user/{name}` | UpdateUserSetting | Authenticated |
+| <Badge text="DELETE" variant="danger" /> | `/user/{name}` | DeleteUserSetting | Authenticated |
+| <Badge text="GET" variant="note" /> | `/tenant` | GetAllTenantSettings | `Settings.Tenant.Read` |
+| <Badge text="PUT" variant="caution" /> | `/tenant/{name}` | UpdateTenantSetting | `Settings.Tenant.Manage` |
+| <Badge text="GET" variant="note" /> | `/global` | GetAllGlobalSettings | `Settings.Global.Read` |
+| <Badge text="PUT" variant="caution" /> | `/global/{name}` | UpdateGlobalSetting | `Settings.Global.Manage` |
+
+---
+
+## Templating
+
+**Module:** `Granit.Templating.Endpoints`
+**Prefix:** `/api/granit/templates`
+
+### Templates
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/` | ListTemplates | `Templates.Templates.Manage` |
+| <Badge text="GET" variant="note" /> | `/{name}` | GetTemplateDetail | `Templates.Templates.Manage` |
+| <Badge text="POST" variant="success" /> | `/` | CreateTemplateDraft | `Templates.Templates.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/{name}` | UpdateTemplateDraft | `Templates.Templates.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/{name}/draft` | DeleteTemplateDraft | `Templates.Templates.Manage` |
+| <Badge text="POST" variant="success" /> | `/{name}/publish` | PublishTemplate | `Templates.Templates.Manage` |
+| <Badge text="POST" variant="success" /> | `/{name}/unpublish` | UnpublishTemplate | `Templates.Templates.Manage` |
+| <Badge text="GET" variant="note" /> | `/{name}/lifecycle` | GetTemplateLifecycle | `Templates.Templates.Manage` |
+| <Badge text="POST" variant="success" /> | `/{name}/preview` | PreviewTemplate | `Templates.Templates.Manage` |
+| <Badge text="GET" variant="note" /> | `/{name}/variables` | GetTemplateVariables | `Templates.Templates.Manage` |
+| <Badge text="GET" variant="note" /> | `/{name}/history` | GetTemplateHistory | `Templates.Templates.Manage` |
+| <Badge text="GET" variant="note" /> | `/{name}/history/{revisionId:guid}` | GetTemplateRevisionDetail | `Templates.Templates.Manage` |
+
+### Categories
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/categories` | ListTemplateCategories | `Templates.Templates.Manage` |
+| <Badge text="POST" variant="success" /> | `/categories` | CreateTemplateCategory | `Templates.Templates.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/categories/{id}` | UpdateTemplateCategory | `Templates.Templates.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/categories/{id}` | DeleteTemplateCategory | `Templates.Templates.Manage` |
+
+---
+
+## Timeline
+
+**Module:** `Granit.Timeline.Endpoints`
+**Prefix:** `/api/granit/timeline`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/{entityType}/{entityId}/history` | GetEntityStream | `Timeline.Entries.Read` |
+| <Badge text="POST" variant="success" /> | `/{entityType}/{entityId}/entries` | PostTimelineEntry | `Timeline.Entries.Read` |
+| <Badge text="DELETE" variant="danger" /> | `/{entityType}/{entityId}/entries/{id}` | DeleteTimelineEntry | `Timeline.Entries.Read` |
+
+---
+
+## Validation
+
+**Module:** `Granit.Validation.Endpoints`
+**Prefix:** `/api/granit/validation`
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="POST" variant="success" /> | `/validate` | ValidateField | Anonymous |
+| <Badge text="POST" variant="success" /> | `/validate-batch` | ValidateFieldBatch | Anonymous |
+| <Badge text="GET" variant="note" /> | `/validators` | GetRegisteredValidators | Anonymous |
+
+---
+
+## Webhooks
+
+**Module:** `Granit.Webhooks.Endpoints`
+**Prefix:** `/api/granit/webhooks`
+
+### Event Types
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/event-types` | GetWebhookEventTypes | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/event-types/{eventTypeName}/discover` | DiscoverWebhookEventType | `Webhooks.Subscriptions.Manage` |
+
+### Subscriptions
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/subscriptions` | ListWebhookSubscriptions | `Webhooks.Subscriptions.Manage` |
+| <Badge text="GET" variant="note" /> | `/subscriptions/{id}` | GetWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions` | CreateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/subscriptions/{id}` | UpdateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/subscriptions/{id}` | DeleteWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/activate` | ActivateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/deactivate` | DeactivateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/test` | TestWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+
+### Delivery Attempts
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/deliveries/query` | QueryWebhookDeliveries | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/retry` | RetryWebhookDelivery | `Webhooks.Subscriptions.Manage` |
+
+---
+
+## Workflow
+
+**Module:** `Granit.Workflow.Endpoints`
+**Prefix:** `/api/granit/workflow`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/{entityType}/{entityId}/history` | GetWorkflowHistory | `Workflow.History` |
+| <Badge text="GET" variant="note" /> | `/{entityType}/{entityId}/status` | GetWorkflowStatus | `Workflow.History` |
+| <Badge text="GET" variant="note" /> | `/transitions` | GetAvailableTransitions | `Workflow.History` |
+| <Badge text="POST" variant="success" /> | `/transitions` | ExecuteWorkflowTransition | `Workflow.History` |
+
+---
+
+## AI
+
+**Module:** `Granit.AI.Endpoints`
+**Prefix:** `/api/granit/ai`
+
+### Workspaces (Admin)
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/workspaces` | ListAIWorkspaces | `AI.Workspaces.*` |
+| <Badge text="POST" variant="success" /> | `/workspaces` | CreateAIWorkspace | `AI.Workspaces.*` |
+| <Badge text="PUT" variant="caution" /> | `/workspaces/{id}` | UpdateAIWorkspace | `AI.Workspaces.*` |
+| <Badge text="DELETE" variant="danger" /> | `/workspaces/{id}` | DeleteAIWorkspace | `AI.Workspaces.*` |
+
+### Chat & Embeddings
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="POST" variant="success" /> | `/chat/completions` | CreateChatCompletion | `AI.Chat.Execute` |
+| <Badge text="POST" variant="success" /> | `/chat/stream` | StreamChatCompletion | `AI.Chat.Execute` |
+| <Badge text="POST" variant="success" /> | `/embeddings` | GenerateEmbedding | `AI.Embedding.Generate` |
+
+---
+
+## Summary
+
+| Module | Endpoints | Auth model |
+|--------|-----------|------------|
+| API Keys | 6 | Permission-based |
+| Authorization | 5 | Admin + Authenticated |
+| Background Jobs | 5 | Permission-based |
+| Blob Storage | 4 + 2 proxy | Permission + Token |
+| Cookie Consent | 1 | Anonymous |
+| Data Exchange | 19 | Permission-based |
+| Features | 5 | Permission + Authenticated |
+| Identity | 23 | Permission-based (7 groups) |
+| Localization | 4 | Anonymous + Permission |
+| Notifications | 14 | Authenticated |
+| Querying | 7 per entity | App-defined |
+| Settings | 8 | Authenticated + Permission |
+| Templating | 16 | Permission-based |
+| Timeline | 3 | Permission-based |
+| Validation | 3 | Anonymous |
+| Webhooks | 12 | Permission-based |
+| Workflow | 4 | Permission-based |
+| AI | 7 | Permission-based |
+| **Total** | **~150+** | |
