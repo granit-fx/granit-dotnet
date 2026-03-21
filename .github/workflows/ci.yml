@@ -34,11 +34,11 @@ env:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # BUILD + TEST (single job — avoids 750 MB artifact transfer)
+  # BUILD + FORMAT CHECK (shared gate — fails fast before tests)
   # ---------------------------------------------------------------------------
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
 
@@ -60,26 +60,73 @@ jobs:
       - name: Check formatting
         run: dotnet format --verify-no-changes --no-restore
 
-      - name: Run unit tests
-        run: >
-          dotnet test -c $CONFIGURATION --no-build
-          -p:SkipIntegrationTests=true -p:SkipArchitectureTests=true
-          --logger "trx;LogFilePath=TestResults/results.trx"
-          --collect:"XPlat Code Coverage"
-          -- RunConfiguration.MaxCpuCount=4
-          DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover,cobertura
+  # ---------------------------------------------------------------------------
+  # UNIT TESTS — 5 parallel shards aligned with architecture layers
+  # Shard definitions: .github/test-shards.json
+  # ---------------------------------------------------------------------------
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - name: core-ai
+            label: "Core + AI"
+          - name: business
+            label: "Business Features"
+          - name: api-data
+            label: "API & Http + Data"
+          - name: infrastructure
+            label: "Infrastructure"
+          - name: security
+            label: "Security & Compliance"
+    name: test (${{ matrix.shard.label }})
+    steps:
+      - uses: actions/checkout@v6
 
-      - name: Run architecture tests
-        run: >
-          dotnet test tests/Granit.ArchitectureTests/Granit.ArchitectureTests.csproj
-          -c $CONFIGURATION --no-build
-          --logger "trx;LogFilePath=TestResults/results.trx"
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: NuGet cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Build
+        run: dotnet build -c $CONFIGURATION -m:4 -p:SkipIntegrationTests=true
+
+      - name: Resolve shard projects
+        id: shard
+        run: |
+          PROJECTS=$(jq -r --arg shard "${{ matrix.shard.name }}" \
+            '.shards[] | select(.name == $shard) | .projects[]' \
+            .github/test-shards.json | while read -r dir; do
+              csproj="$dir/$(basename "$dir").csproj"
+              [ -f "$csproj" ] && echo "$csproj"
+            done | tr '\n' ' ')
+          echo "projects=$PROJECTS" >> "$GITHUB_OUTPUT"
+
+      - name: Run unit tests
+        run: |
+          for proj in ${{ steps.shard.outputs.projects }}; do
+            dotnet test "$proj" -c $CONFIGURATION --no-build \
+              --logger "trx;LogFilePath=TestResults/results.trx" \
+              --collect:"XPlat Code Coverage" \
+              -- RunConfiguration.MaxCpuCount=4 \
+              DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover,cobertura
+          done
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: test-results
+          name: test-results-${{ matrix.shard.name }}
           path: "**/TestResults/"
           retention-days: 7
 
@@ -87,7 +134,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: coverage
+          name: coverage-${{ matrix.shard.name }}
           path: "**/coverage.opencover.xml"
           retention-days: 7
 
@@ -211,7 +258,7 @@ jobs:
   # ANALYSIS
   # ---------------------------------------------------------------------------
   sonarcloud:
-    needs: build-and-test
+    needs: test
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     continue-on-error: true
@@ -248,7 +295,8 @@ jobs:
       - name: Download coverage
         uses: actions/download-artifact@v8
         with:
-          name: coverage
+          pattern: coverage-*
+          merge-multiple: true
 
       - name: Install SonarScanner
         run: dotnet tool install --global dotnet-sonarscanner
@@ -316,7 +364,7 @@ jobs:
   # PACK
   # ---------------------------------------------------------------------------
   pack:
-    needs: build-and-test
+    needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     steps:
@@ -421,7 +469,7 @@ jobs:
   # This job fails the CI if someone forgot to regenerate after changing sources.
   # ---------------------------------------------------------------------------
   code-index:
-    needs: build-and-test
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
