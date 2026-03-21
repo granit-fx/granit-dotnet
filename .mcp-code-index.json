@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T15:04:58.833243+00:00",
+  "generatedAt": "2026-03-21T15:15:16.521902+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -933,6 +933,19 @@
       "deps": [
         "Granit.AI",
         "Granit.Observability"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.OpenIddict",
+      "deps": [
+        "Granit.Core",
+        "Granit.EventBus",
+        "Granit.Guids",
+        "Granit.Identity",
+        "Granit.Querying",
+        "Granit.Security",
+        "Granit.Timing"
       ],
       "framework": "net10.0"
     },
@@ -17828,6 +17841,266 @@
           "returnType": "bool"
         }
       ]
+    },
+    {
+      "name": "AccountDeletedEto",
+      "fqn": "Granit.OpenIddict.Events.AccountDeletedEto",
+      "kind": "record",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Events/AccountDeletedEto.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "UserImpersonatedEto",
+      "fqn": "Granit.OpenIddict.Events.UserImpersonatedEto",
+      "kind": "record",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Events/UserImpersonatedEto.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "UserRegisteredEto",
+      "fqn": "Granit.OpenIddict.Events.UserRegisteredEto",
+      "kind": "record",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Events/UserRegisteredEto.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "CurrentUserServiceExtensions",
+      "fqn": "Granit.OpenIddict.Extensions.CurrentUserServiceExtensions",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Extensions/CurrentUserServiceExtensions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "IsImpersonated",
+          "kind": "method",
+          "signature": "IsImpersonated(this ICurrentUserService user)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "GranitOpenIddictModule",
+      "fqn": "Granit.OpenIddict.GranitOpenIddictModule",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "OpenIddictFeatureNames",
+      "fqn": "Granit.OpenIddict.OpenIddictFeatureNames",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/OpenIddictFeatureNames.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "OpenIddictSettingNames",
+      "fqn": "Granit.OpenIddict.OpenIddictSettingNames",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/OpenIddictSettingNames.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "GranitOpenIddictOptions",
+      "fqn": "Granit.OpenIddict.Options.GranitOpenIddictOptions",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Options/GranitOpenIddictOptions.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "Applications",
+      "fqn": "Granit.OpenIddict.Permissions.Applications",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
+      "line": 65,
+      "members": []
+    },
+    {
+      "name": "Authorizations",
+      "fqn": "Granit.OpenIddict.Permissions.Authorizations",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
+      "line": 100,
+      "members": []
+    },
+    {
+      "name": "Groups",
+      "fqn": "Granit.OpenIddict.Permissions.Groups",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
+      "line": 49,
+      "members": []
+    },
+    {
+      "name": "OpenIddictPermissions",
+      "fqn": "Granit.OpenIddict.Permissions.OpenIddictPermissions",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "Roles",
+      "fqn": "Granit.OpenIddict.Permissions.Roles",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
+      "line": 36,
+      "members": []
+    },
+    {
+      "name": "Scopes",
+      "fqn": "Granit.OpenIddict.Permissions.Scopes",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
+      "line": 84,
+      "members": []
+    },
+    {
+      "name": "Users",
+      "fqn": "Granit.OpenIddict.Permissions.Users",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "ExternalLoginInfo",
+      "fqn": "Granit.OpenIddict.Services.ExternalLoginInfo",
+      "kind": "record",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/IExternalLoginService.cs",
+      "line": 51,
+      "members": []
+    },
+    {
+      "name": "IAccountDeletionService",
+      "fqn": "Granit.OpenIddict.Services.IAccountDeletionService",
+      "kind": "interface",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/IAccountDeletionService.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "InitiateAsync",
+          "kind": "method",
+          "signature": "InitiateAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IEmailConfirmationService",
+      "fqn": "Granit.OpenIddict.Services.IEmailConfirmationService",
+      "kind": "interface",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/IEmailConfirmationService.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "SendConfirmationEmailAsync",
+          "kind": "method",
+          "signature": "SendConfirmationEmailAsync(string userId, string email, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ConfirmAsync",
+          "kind": "method",
+          "signature": "ConfirmAsync(string userId, string token, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "IExternalLoginService",
+      "fqn": "Granit.OpenIddict.Services.IExternalLoginService",
+      "kind": "interface",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/IExternalLoginService.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "GetLoginsAsync",
+          "kind": "method",
+          "signature": "GetLoginsAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ExternalLoginInfo>>"
+        },
+        {
+          "name": "AddLoginAsync",
+          "kind": "method",
+          "signature": "AddLoginAsync(string userId, ExternalLoginInfo info, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RemoveLoginAsync",
+          "kind": "method",
+          "signature": "RemoveLoginAsync(string userId, string provider, string providerKey, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ProcessCallbackAsync",
+          "kind": "method",
+          "signature": "ProcessCallbackAsync(ClaimsPrincipal principal, string provider, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ProcessCallbackResult>"
+        }
+      ]
+    },
+    {
+      "name": "ITotpService",
+      "fqn": "Granit.OpenIddict.Services.ITotpService",
+      "kind": "interface",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/ITotpService.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "GenerateSharedKey",
+          "kind": "method",
+          "signature": "GenerateSharedKey()",
+          "returnType": "string"
+        },
+        {
+          "name": "GetQrCodeUri",
+          "kind": "method",
+          "signature": "GetQrCodeUri(string email, string sharedKey)",
+          "returnType": "string"
+        },
+        {
+          "name": "ValidateCode",
+          "kind": "method",
+          "signature": "ValidateCode(string sharedKey, string code)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ProcessCallbackResult",
+      "fqn": "Granit.OpenIddict.Services.ProcessCallbackResult",
+      "kind": "record",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/IExternalLoginService.cs",
+      "line": 58,
+      "members": []
     },
     {
       "name": "DataSeedContext",
