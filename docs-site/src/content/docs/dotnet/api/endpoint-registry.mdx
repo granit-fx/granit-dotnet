@@ -516,17 +516,18 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/workspaces` | ListAIWorkspaces | `AI.Workspaces.*` |
+| <Badge text="GET" variant="note" /> | `/workspaces/{name}` | GetAIWorkspace | `AI.Workspaces.*` |
 | <Badge text="POST" variant="success" /> | `/workspaces` | CreateAIWorkspace | `AI.Workspaces.*` |
-| <Badge text="PUT" variant="caution" /> | `/workspaces/{id}` | UpdateAIWorkspace | `AI.Workspaces.*` |
-| <Badge text="DELETE" variant="danger" /> | `/workspaces/{id}` | DeleteAIWorkspace | `AI.Workspaces.*` |
+| <Badge text="PUT" variant="caution" /> | `/workspaces/{name}` | UpdateAIWorkspace | `AI.Workspaces.*` |
+| <Badge text="DELETE" variant="danger" /> | `/workspaces/{name}` | DeleteAIWorkspace | `AI.Workspaces.*` |
 
 ### Chat & Embeddings
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="POST" variant="success" /> | `/chat/completions` | CreateChatCompletion | `AI.Chat.Execute` |
-| <Badge text="POST" variant="success" /> | `/chat/stream` | StreamChatCompletion | `AI.Chat.Execute` |
-| <Badge text="POST" variant="success" /> | `/embeddings` | GenerateEmbedding | `AI.Embedding.Generate` |
+| <Badge text="POST" variant="success" /> | `/chat/{workspaceName}` | CreateChatCompletion | `AI.Chat.Execute` |
+| <Badge text="POST" variant="success" /> | `/chat/{workspaceName}/stream` | StreamChatCompletion | `AI.Chat.Execute` |
+| <Badge text="POST" variant="success" /> | `/embeddings/{workspaceName}` | GenerateEmbedding | `AI.Embedding.Generate` |
 
 ---
 
@@ -601,5 +602,5 @@ under the prefix.
 | Validation | 3 | Anonymous |
 | Webhooks | 15 | Permission-based |
 | Workflow | 3 | Permission-based |
-| AI | 7 | Permission-based |
+| AI | 8 | Permission-based |
 | **Total** | **~168+** | |
