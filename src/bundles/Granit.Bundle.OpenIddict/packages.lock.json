@@ -498,6 +498,15 @@
       "granit.core": {
         "type": "Project"
       },
+      "granit.encryption": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+        }
+      },
       "granit.eventbus": {
         "type": "Project",
         "dependencies": {
@@ -585,6 +594,8 @@
         "dependencies": {
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.OpenIddict": "[0.1.0-dev, )",
+          "Granit.Settings": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Caching.Abstractions": "[10.*, )",
           "OpenIddict": "[7.*, )"
         }
       },
@@ -637,6 +648,15 @@
         "type": "Project",
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )"
+        }
+      },
+      "granit.settings": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Encryption": "[0.1.0-dev, )",
+          "Granit.EventBus": "[0.1.0-dev, )",
+          "Granit.Security": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {

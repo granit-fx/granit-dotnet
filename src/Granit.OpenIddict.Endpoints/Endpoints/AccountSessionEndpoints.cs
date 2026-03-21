@@ -1,8 +1,12 @@
+using System.Text.Json;
 using Granit.OpenIddict.Extensions;
+using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Granit.OpenIddict.Endpoints.Endpoints;
 
@@ -14,9 +18,8 @@ internal static class AccountSessionEndpoints
             .WithName("SessionHeartbeat")
             .WithSummary("Resets the idle session timer.")
             .WithDescription(
-                "Updates LastActivityAt in the session cache. Returns 204 if the session "
-                + "is still active. The idle session enforcement job uses this timestamp "
-                + "to determine whether to revoke refresh tokens.")
+                "Updates LastActivityAt in the distributed cache. Returns 204 if the session "
+                + "is still active. No-op for sessions with remember_me claim.")
             .Produces(StatusCodes.Status204NoContent)
             .RequireAuthorization();
 
@@ -34,11 +37,33 @@ internal static class AccountSessionEndpoints
         return group;
     }
 
-    private static Task<NoContent> HeartbeatAsync(HttpContext httpContext)
+    private static async Task<NoContent> HeartbeatAsync(
+        HttpContext httpContext,
+        [FromServices] IDistributedCache cache,
+        [FromServices] TimeProvider timeProvider)
     {
-        // TODO: Update ICacheService<UserSessionActivity> with key session:{userId}:{jti}
-        // Cache TTL = IdleSessionTimeout + 5 min
-        return Task.FromResult(TypedResults.NoContent());
+        string? userId = httpContext.User.FindFirst("sub")?.Value;
+        string? jti = httpContext.User.FindFirst("jti")?.Value;
+
+        // Skip if remember_me or missing claims
+        if (userId is null || jti is null
+            || httpContext.User.FindFirst("remember_me")?.Value is "true")
+        {
+            return TypedResults.NoContent();
+        }
+
+        string cacheKey = $"session:{userId}:{jti}";
+        UserSessionActivity activity = new(userId, jti, timeProvider.GetUtcNow());
+
+        byte[] serialized = JsonSerializer.SerializeToUtf8Bytes(activity);
+        await cache.SetAsync(cacheKey, serialized, new DistributedCacheEntryOptions
+        {
+            // Default: 35 min (30 min timeout + 5 min buffer).
+            // Actual TTL adjusted by enforcement job based on per-tenant IdleSessionTimeout setting.
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(35),
+        }).ConfigureAwait(false);
+
+        return TypedResults.NoContent();
     }
 
     private static Task<Results<Ok, ProblemHttpResult>> BackToImpersonatorAsync(
@@ -52,7 +77,7 @@ internal static class AccountSessionEndpoints
                     statusCode: StatusCodes.Status400BadRequest));
         }
 
-        // TODO: Read impersonator_id, issue fresh admin tokens, revoke impersonation refresh token
+        // TODO: Read impersonator_id, issue fresh admin tokens via OpenIddict, revoke impersonation refresh token
         return Task.FromResult<Results<Ok, ProblemHttpResult>>(TypedResults.Ok());
     }
 }
