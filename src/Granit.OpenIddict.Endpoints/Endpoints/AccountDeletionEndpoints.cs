@@ -1,3 +1,4 @@
+using Granit.OpenIddict.Diagnostics;
 using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Builder;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.OpenIddict.Endpoints.Endpoints;
 
@@ -53,6 +55,7 @@ internal static class AccountDeletionEndpoints
 
         await deletionService.InitiateAsync(userId, cancellationToken).ConfigureAwait(false);
 
+        httpContext.RequestServices.GetService<OpenIddictMetrics>()?.RecordAccountDeletion(null);
         return TypedResults.Accepted((string?)null, (string?)null);
     }
 }

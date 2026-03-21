@@ -7,69 +7,113 @@ namespace Granit.OpenIddict.Diagnostics;
 /// OpenTelemetry metrics for the OpenIddict module.
 /// Meter: <c>Granit.OpenIddict</c>.
 /// </summary>
-/// <param name="meterFactory">The meter factory for creating instruments.</param>
-public sealed class OpenIddictMetrics(IMeterFactory meterFactory)
+/// <remarks>
+/// All metrics follow the <c>granit.openiddict.{entity}.{action}</c> naming convention
+/// and include <c>tenant_id</c> (coalesced to <c>"global"</c>) via <see cref="TagList"/>.
+/// </remarks>
+#pragma warning disable GRSEC003 // Metric name constants, not secrets
+public sealed class OpenIddictMetrics
 {
     /// <summary>The meter name for this module.</summary>
     public const string MeterName = "Granit.OpenIddict";
 
-    private readonly Counter<long> _tokensIssued = meterFactory.Create(MeterName).CreateCounter<long>(
-        "granit.openiddict.tokens.issued",
-        description: "Number of tokens issued.");
+    private readonly Counter<long> _tokensIssued;
+    private readonly Counter<long> _tokensRevoked;
+    private readonly Counter<long> _authenticationFailures;
+    private readonly Counter<long> _authenticationSuccesses;
+    private readonly Counter<long> _registrations;
+    private readonly Counter<long> _passwordChanges;
+    private readonly Counter<long> _passwordResets;
+    private readonly Counter<long> _accountDeletions;
+    private readonly Counter<long> _impersonations;
+    private readonly Counter<long> _twoFactorEvents;
+    private readonly Counter<long> _externalLogins;
+    private readonly Counter<long> _keyRotations;
+    private readonly Histogram<double> _tokenIssuanceDuration;
 
-    private readonly Counter<long> _tokensRevoked = meterFactory.Create(MeterName).CreateCounter<long>(
-        "granit.openiddict.tokens.revoked",
-        description: "Number of tokens revoked.");
+    /// <summary>Initializes a new instance of the <see cref="OpenIddictMetrics"/> class.</summary>
+    public OpenIddictMetrics(IMeterFactory meterFactory)
+    {
+        Meter meter = meterFactory.Create(MeterName);
 
-    private readonly Counter<long> _authenticationFailures = meterFactory.Create(MeterName).CreateCounter<long>(
-        "granit.openiddict.authentication.failures",
-        description: "Number of failed authentication attempts.");
-
-    private readonly Counter<long> _registrations = meterFactory.Create(MeterName).CreateCounter<long>(
-        "granit.openiddict.registrations",
-        description: "Number of user registrations.");
-
-    private readonly Histogram<double> _tokenIssuanceDuration = meterFactory.Create(MeterName).CreateHistogram<double>(
-        "granit.openiddict.token.issuance.duration",
-        unit: "s",
-        description: "Duration of token issuance in seconds.");
+        _tokensIssued = meter.CreateCounter<long>("granit.openiddict.tokens.issued",
+            description: "Number of tokens issued.");
+        _tokensRevoked = meter.CreateCounter<long>("granit.openiddict.tokens.revoked",
+            description: "Number of tokens revoked.");
+        _authenticationSuccesses = meter.CreateCounter<long>("granit.openiddict.authentication.successes",
+            description: "Number of successful authentications.");
+        _authenticationFailures = meter.CreateCounter<long>("granit.openiddict.authentication.failures",
+            description: "Number of failed authentication attempts.");
+        _registrations = meter.CreateCounter<long>("granit.openiddict.registrations",
+            description: "Number of user registrations.");
+        _passwordChanges = meter.CreateCounter<long>("granit.openiddict.password.changes",
+            description: "Number of password changes.");
+        _passwordResets = meter.CreateCounter<long>("granit.openiddict.password.resets",
+            description: "Number of password resets.");
+        _accountDeletions = meter.CreateCounter<long>("granit.openiddict.account.deletions",
+            description: "Number of account deletions (GDPR).");
+        _impersonations = meter.CreateCounter<long>("granit.openiddict.impersonations",
+            description: "Number of user impersonations.");
+        _twoFactorEvents = meter.CreateCounter<long>("granit.openiddict.twofactor.events",
+            description: "Number of 2FA events (enable, disable, verify).");
+        _externalLogins = meter.CreateCounter<long>("granit.openiddict.external.logins",
+            description: "Number of external login events.");
+        _keyRotations = meter.CreateCounter<long>("granit.openiddict.key.rotations",
+            description: "Number of key rotation cycles.");
+        _tokenIssuanceDuration = meter.CreateHistogram<double>("granit.openiddict.token.issuance.duration",
+            unit: "s", description: "Duration of token issuance in seconds.");
+    }
 
     /// <summary>Records a token issuance.</summary>
     public void RecordTokenIssued(string? tenantId, string grantType) =>
-        _tokensIssued.Add(1, new TagList
-        {
-            { "tenant_id", tenantId ?? "global" },
-            { "grant_type", grantType },
-        });
+        _tokensIssued.Add(1, new TagList { { "tenant_id", tenantId ?? "global" }, { "grant_type", grantType } });
 
     /// <summary>Records a token revocation.</summary>
     public void RecordTokenRevoked(string? tenantId, string reason) =>
-        _tokensRevoked.Add(1, new TagList
-        {
-            { "tenant_id", tenantId ?? "global" },
-            { "reason", reason },
-        });
+        _tokensRevoked.Add(1, new TagList { { "tenant_id", tenantId ?? "global" }, { "reason", reason } });
+
+    /// <summary>Records a successful authentication.</summary>
+    public void RecordAuthenticationSuccess(string? tenantId, string grantType) =>
+        _authenticationSuccesses.Add(1, new TagList { { "tenant_id", tenantId ?? "global" }, { "grant_type", grantType } });
 
     /// <summary>Records a failed authentication attempt.</summary>
     public void RecordAuthenticationFailure(string? tenantId, string reason) =>
-        _authenticationFailures.Add(1, new TagList
-        {
-            { "tenant_id", tenantId ?? "global" },
-            { "reason", reason },
-        });
+        _authenticationFailures.Add(1, new TagList { { "tenant_id", tenantId ?? "global" }, { "reason", reason } });
 
     /// <summary>Records a user registration.</summary>
     public void RecordRegistration(string? tenantId) =>
-        _registrations.Add(1, new TagList
-        {
-            { "tenant_id", tenantId ?? "global" },
-        });
+        _registrations.Add(1, new TagList { { "tenant_id", tenantId ?? "global" } });
+
+    /// <summary>Records a password change.</summary>
+    public void RecordPasswordChange(string? tenantId) =>
+        _passwordChanges.Add(1, new TagList { { "tenant_id", tenantId ?? "global" } });
+
+    /// <summary>Records a password reset (forgot password flow).</summary>
+    public void RecordPasswordReset(string? tenantId) =>
+        _passwordResets.Add(1, new TagList { { "tenant_id", tenantId ?? "global" } });
+
+    /// <summary>Records an account deletion (GDPR).</summary>
+    public void RecordAccountDeletion(string? tenantId) =>
+        _accountDeletions.Add(1, new TagList { { "tenant_id", tenantId ?? "global" } });
+
+    /// <summary>Records an impersonation event.</summary>
+    public void RecordImpersonation(string? tenantId) =>
+        _impersonations.Add(1, new TagList { { "tenant_id", tenantId ?? "global" } });
+
+    /// <summary>Records a 2FA event (enable, disable, verify).</summary>
+    public void RecordTwoFactorEvent(string? tenantId, string action) =>
+        _twoFactorEvents.Add(1, new TagList { { "tenant_id", tenantId ?? "global" }, { "action", action } });
+
+    /// <summary>Records an external login event.</summary>
+    public void RecordExternalLogin(string? tenantId, string provider, bool isNewUser) =>
+        _externalLogins.Add(1, new TagList { { "tenant_id", tenantId ?? "global" }, { "provider", provider }, { "is_new_user", isNewUser } });
+
+    /// <summary>Records a key rotation cycle.</summary>
+    public void RecordKeyRotation(int keysGenerated, int keysRetired, int keysRevoked) =>
+        _keyRotations.Add(1, new TagList { { "keys_generated", keysGenerated }, { "keys_retired", keysRetired }, { "keys_revoked", keysRevoked } });
 
     /// <summary>Records the duration of a token issuance.</summary>
     public void RecordTokenIssuanceDuration(string? tenantId, string grantType, TimeSpan duration) =>
-        _tokenIssuanceDuration.Record(duration.TotalSeconds, new TagList
-        {
-            { "tenant_id", tenantId ?? "global" },
-            { "grant_type", grantType },
-        });
+        _tokenIssuanceDuration.Record(duration.TotalSeconds, new TagList { { "tenant_id", tenantId ?? "global" }, { "grant_type", grantType } });
 }
+#pragma warning restore GRSEC003

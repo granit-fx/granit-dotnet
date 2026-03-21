@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T19:31:17.270122+00:00",
+  "generatedAt": "2026-03-21T19:38:32.400181+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -17931,18 +17931,18 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Diagnostics/OpenIddictMetrics.cs",
-      "line": 11,
+      "line": 15,
       "members": [
-        {
-          "name": "RecordTokenIssued",
-          "kind": "method",
-          "signature": "RecordTokenIssued(string? tenantId, string grantType)",
-          "returnType": "void"
-        },
         {
           "name": "RecordTokenRevoked",
           "kind": "method",
           "signature": "RecordTokenRevoked(string? tenantId, string reason)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAuthenticationSuccess",
+          "kind": "method",
+          "signature": "RecordAuthenticationSuccess(string? tenantId, string grantType)",
           "returnType": "void"
         },
         {
@@ -17955,6 +17955,48 @@
           "name": "RecordRegistration",
           "kind": "method",
           "signature": "RecordRegistration(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordPasswordChange",
+          "kind": "method",
+          "signature": "RecordPasswordChange(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordPasswordReset",
+          "kind": "method",
+          "signature": "RecordPasswordReset(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAccountDeletion",
+          "kind": "method",
+          "signature": "RecordAccountDeletion(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordImpersonation",
+          "kind": "method",
+          "signature": "RecordImpersonation(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordTwoFactorEvent",
+          "kind": "method",
+          "signature": "RecordTwoFactorEvent(string? tenantId, string action)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordExternalLogin",
+          "kind": "method",
+          "signature": "RecordExternalLogin(string? tenantId, string provider, bool isNewUser)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordKeyRotation",
+          "kind": "method",
+          "signature": "RecordKeyRotation(int keysGenerated, int keysRetired, int keysRevoked)",
           "returnType": "void"
         },
         {
