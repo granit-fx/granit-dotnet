@@ -1,9 +1,7 @@
-using Granit.Identity;
 using Granit.OpenIddict.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.OpenIddict.Endpoints.Endpoints;
@@ -55,21 +53,18 @@ internal static class AdminGroupEndpoints
         return group;
     }
 
-    private static Task<Ok> ListGroupsAsync([FromServices] IIdentityGroupManager groupManager) =>
+    private static Task<Ok> ListGroupsAsync() =>
         Task.FromResult(TypedResults.Ok());
 
-    private static Task<Created> CreateGroupAsync([FromServices] IIdentityGroupManager groupManager) =>
+    private static Task<Created> CreateGroupAsync() =>
         Task.FromResult(TypedResults.Created("/api/admin/groups/{id}"));
 
-    private static Task<Results<NoContent, NotFound>> DeleteGroupAsync(
-        Guid groupId, [FromServices] IIdentityGroupManager groupManager) =>
+    private static Task<Results<NoContent, NotFound>> DeleteGroupAsync() =>
         Task.FromResult<Results<NoContent, NotFound>>(TypedResults.NoContent());
 
-    private static Task<NoContent> AddMemberAsync(
-        Guid groupId, [FromServices] IIdentityGroupManager groupManager) =>
+    private static Task<NoContent> AddMemberAsync() =>
         Task.FromResult(TypedResults.NoContent());
 
-    private static Task<NoContent> RemoveMemberAsync(
-        Guid groupId, Guid userId, [FromServices] IIdentityGroupManager groupManager) =>
+    private static Task<NoContent> RemoveMemberAsync() =>
         Task.FromResult(TypedResults.NoContent());
 }

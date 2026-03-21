@@ -35,23 +35,23 @@ internal sealed class OpenIddictDbContext(
     public DbSet<SigningKey> SigningKeys => Set<SigningKey>();
 
     /// <inheritdoc/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        ArgumentNullException.ThrowIfNull(modelBuilder);
+        ArgumentNullException.ThrowIfNull(builder);
 
         // 1. ASP.NET Identity conventions (default table names, keys, indexes)
-        base.OnModelCreating(modelBuilder);
+        base.OnModelCreating(builder);
 
         // 2. OpenIddict conventions with custom multi-tenant entities
-        modelBuilder.UseOpenIddict<GranitOpenIddictApplication, GranitOpenIddictAuthorization,
+        builder.UseOpenIddict<GranitOpenIddictApplication, GranitOpenIddictAuthorization,
             GranitOpenIddictScope, GranitOpenIddictToken, Guid>();
 
         // 3. Granit OpenIddict conventions (oidc_* table prefix, column constraints, manual filters)
-        modelBuilder.ConfigureOpenIddictModule(dataFilter);
+        builder.ConfigureOpenIddictModule(dataFilter);
 
         // 4. Granit cross-cutting conventions (IMultiTenant, ISoftDeletable, IActive, etc.)
         // This automatically adds multi-tenant filters for IMultiTenant entities
         // (GranitOpenIddictApplication, GranitOpenIddictAuthorization, etc.)
-        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
+        builder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

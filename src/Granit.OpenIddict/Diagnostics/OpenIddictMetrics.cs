@@ -17,6 +17,9 @@ public sealed class OpenIddictMetrics
     /// <summary>The meter name for this module.</summary>
     public const string MeterName = "Granit.OpenIddict";
 
+    private const string TenantIdTag = "tenant_id";
+    private const string GlobalTenantId = "global";
+
     private readonly Counter<long> _tokensIssued;
     private readonly Counter<long> _tokensRevoked;
     private readonly Counter<long> _authenticationFailures;
@@ -66,47 +69,47 @@ public sealed class OpenIddictMetrics
 
     /// <summary>Records a token issuance.</summary>
     public void RecordTokenIssued(string? tenantId, string grantType) =>
-        _tokensIssued.Add(1, new TagList { { "tenant_id", tenantId ?? "global" }, { "grant_type", grantType } });
+        _tokensIssued.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "grant_type", grantType } });
 
     /// <summary>Records a token revocation.</summary>
     public void RecordTokenRevoked(string? tenantId, string reason) =>
-        _tokensRevoked.Add(1, new TagList { { "tenant_id", tenantId ?? "global" }, { "reason", reason } });
+        _tokensRevoked.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "reason", reason } });
 
     /// <summary>Records a successful authentication.</summary>
     public void RecordAuthenticationSuccess(string? tenantId, string grantType) =>
-        _authenticationSuccesses.Add(1, new TagList { { "tenant_id", tenantId ?? "global" }, { "grant_type", grantType } });
+        _authenticationSuccesses.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "grant_type", grantType } });
 
     /// <summary>Records a failed authentication attempt.</summary>
     public void RecordAuthenticationFailure(string? tenantId, string reason) =>
-        _authenticationFailures.Add(1, new TagList { { "tenant_id", tenantId ?? "global" }, { "reason", reason } });
+        _authenticationFailures.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "reason", reason } });
 
     /// <summary>Records a user registration.</summary>
     public void RecordRegistration(string? tenantId) =>
-        _registrations.Add(1, new TagList { { "tenant_id", tenantId ?? "global" } });
+        _registrations.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId } });
 
     /// <summary>Records a password change.</summary>
     public void RecordPasswordChange(string? tenantId) =>
-        _passwordChanges.Add(1, new TagList { { "tenant_id", tenantId ?? "global" } });
+        _passwordChanges.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId } });
 
     /// <summary>Records a password reset (forgot password flow).</summary>
     public void RecordPasswordReset(string? tenantId) =>
-        _passwordResets.Add(1, new TagList { { "tenant_id", tenantId ?? "global" } });
+        _passwordResets.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId } });
 
     /// <summary>Records an account deletion (GDPR).</summary>
     public void RecordAccountDeletion(string? tenantId) =>
-        _accountDeletions.Add(1, new TagList { { "tenant_id", tenantId ?? "global" } });
+        _accountDeletions.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId } });
 
     /// <summary>Records an impersonation event.</summary>
     public void RecordImpersonation(string? tenantId) =>
-        _impersonations.Add(1, new TagList { { "tenant_id", tenantId ?? "global" } });
+        _impersonations.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId } });
 
     /// <summary>Records a 2FA event (enable, disable, verify).</summary>
     public void RecordTwoFactorEvent(string? tenantId, string action) =>
-        _twoFactorEvents.Add(1, new TagList { { "tenant_id", tenantId ?? "global" }, { "action", action } });
+        _twoFactorEvents.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "action", action } });
 
     /// <summary>Records an external login event.</summary>
     public void RecordExternalLogin(string? tenantId, string provider, bool isNewUser) =>
-        _externalLogins.Add(1, new TagList { { "tenant_id", tenantId ?? "global" }, { "provider", provider }, { "is_new_user", isNewUser } });
+        _externalLogins.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "provider", provider }, { "is_new_user", isNewUser } });
 
     /// <summary>Records a key rotation cycle.</summary>
     public void RecordKeyRotation(int keysGenerated, int keysRetired, int keysRevoked) =>
@@ -114,6 +117,6 @@ public sealed class OpenIddictMetrics
 
     /// <summary>Records the duration of a token issuance.</summary>
     public void RecordTokenIssuanceDuration(string? tenantId, string grantType, TimeSpan duration) =>
-        _tokenIssuanceDuration.Record(duration.TotalSeconds, new TagList { { "tenant_id", tenantId ?? "global" }, { "grant_type", grantType } });
+        _tokenIssuanceDuration.Record(duration.TotalSeconds, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "grant_type", grantType } });
 }
 #pragma warning restore GRSEC003

@@ -47,10 +47,10 @@ internal sealed partial class EmailNotificationChannel(
         }
 
         // Try to render a Scriban template for this notification type
-        string? renderedHtml = await TryRenderTemplateAsync(context, cancellationToken).ConfigureAwait(false);
+        RenderedEmail? rendered = await TryRenderTemplateAsync(context, cancellationToken).ConfigureAwait(false);
 
-        string subject = context.NotificationTypeName.Replace('.', ' ');
-        string htmlBody = renderedHtml
+        string subject = rendered?.Subject ?? context.NotificationTypeName.Replace('.', ' ');
+        string htmlBody = rendered?.Html
             ?? $"<p>You have a new notification of type <strong>{context.NotificationTypeName}</strong>.</p>";
 
         await sender.SendAsync(new EmailMessage
@@ -64,9 +64,10 @@ internal sealed partial class EmailNotificationChannel(
 
     /// <summary>
     /// Attempts to resolve and render a Scriban template named after the notification type.
+    /// Extracts the subject from the HTML <c>&lt;title&gt;</c> tag if present.
     /// Returns <see langword="null"/> if no template is found or templating is not configured.
     /// </summary>
-    private async Task<string?> TryRenderTemplateAsync(
+    private async Task<RenderedEmail?> TryRenderTemplateAsync(
         NotificationDeliveryContext context, CancellationToken cancellationToken)
     {
         // Resolve ITemplateResolver chain (optional — not all apps have Granit.Templating)
@@ -119,7 +120,8 @@ internal sealed partial class EmailNotificationChannel(
             if (rendered is TextRenderedContent textResult)
             {
                 Log.TemplateRendered(logger, context.NotificationTypeName, context.Culture);
-                return textResult.Html;
+                string? subject = ExtractTitleFromHtml(textResult.Html);
+                return new RenderedEmail(textResult.Html, subject);
             }
         }
         catch (Exception ex)
@@ -153,6 +155,32 @@ internal sealed partial class EmailNotificationChannel(
 
         return dict;
     }
+
+    /// <summary>
+    /// Extracts the content of the <c>&lt;title&gt;</c> tag from rendered HTML, if present.
+    /// Used as the email subject when a Scriban template provides it.
+    /// </summary>
+    private static string? ExtractTitleFromHtml(string html)
+    {
+        int start = html.IndexOf("<title>", StringComparison.OrdinalIgnoreCase);
+        if (start < 0)
+        {
+            return null;
+        }
+
+        start += "<title>".Length;
+        int end = html.IndexOf("</title>", start, StringComparison.OrdinalIgnoreCase);
+        if (end < 0)
+        {
+            return null;
+        }
+
+        string title = html[start..end].Trim();
+        return string.IsNullOrEmpty(title) ? null : title;
+    }
+
+    /// <summary>Result of rendering a Scriban email template.</summary>
+    private sealed record RenderedEmail(string Html, string? Subject);
 
     private static partial class Log
     {

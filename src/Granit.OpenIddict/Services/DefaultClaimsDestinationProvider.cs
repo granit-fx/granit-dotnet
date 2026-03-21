@@ -71,6 +71,11 @@ public class DefaultClaimsDestinationProvider : IClaimsDestinationProvider
         ArgumentNullException.ThrowIfNull(claim);
         ArgumentNullException.ThrowIfNull(principal);
 
+        return GetDestinationsCore(claim, principal);
+    }
+
+    private static IEnumerable<string> GetDestinationsCore(Claim claim, ClaimsPrincipal principal)
+    {
         // Excluded claims — never in any token
         if (ExcludedClaims.Contains(claim.Type))
         {

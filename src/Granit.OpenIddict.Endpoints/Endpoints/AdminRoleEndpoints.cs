@@ -1,9 +1,7 @@
-using Granit.Identity;
 using Granit.OpenIddict.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.OpenIddict.Endpoints.Endpoints;
@@ -47,17 +45,15 @@ internal static class AdminRoleEndpoints
         return group;
     }
 
-    private static Task<Ok> ListRolesAsync([FromServices] IIdentityRoleManager roleManager) =>
+    private static Task<Ok> ListRolesAsync() =>
         Task.FromResult(TypedResults.Ok());
 
-    private static Task<Created> CreateRoleAsync([FromServices] IIdentityRoleManager roleManager) =>
+    private static Task<Created> CreateRoleAsync() =>
         Task.FromResult(TypedResults.Created("/api/admin/roles/{name}"));
 
-    private static Task<Results<NoContent, ProblemHttpResult>> DeleteRoleAsync(
-        string roleName, [FromServices] IIdentityRoleManager roleManager) =>
+    private static Task<Results<NoContent, ProblemHttpResult>> DeleteRoleAsync() =>
         Task.FromResult<Results<NoContent, ProblemHttpResult>>(TypedResults.NoContent());
 
-    private static Task<Ok> GetRoleMembersAsync(
-        string roleName, [FromServices] IIdentityRoleManager roleManager) =>
+    private static Task<Ok> GetRoleMembersAsync() =>
         Task.FromResult(TypedResults.Ok());
 }

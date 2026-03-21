@@ -72,7 +72,6 @@ internal static class AccountExternalLoginEndpoints
 
     private static Task<Results<Ok, ProblemHttpResult>> ChallengeAsync(
         string provider,
-        HttpContext httpContext,
         [FromServices] IOptions<GranitOpenIddictClientOptions> clientOptions)
     {
         // Validate provider is configured
