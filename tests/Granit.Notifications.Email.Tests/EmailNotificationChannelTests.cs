@@ -11,6 +11,7 @@ using Granit.Notifications.Email;
 using Granit.Notifications.Email.Internal;
 using Granit.Notifications.Email.Options;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
@@ -37,7 +38,11 @@ public sealed class EmailNotificationChannelTests
         _serviceProvider.GetRequiredKeyedService(typeof(IEmailSender), "Smtp")
             .Returns(_emailSender);
 
-        _channel = new EmailNotificationChannel(_serviceProvider, _options, _recipientResolver);
+        _channel = new EmailNotificationChannel(
+            _serviceProvider,
+            _options,
+            _recipientResolver,
+            Substitute.For<ILogger<EmailNotificationChannel>>());
     }
 
     [Fact]
@@ -51,7 +56,7 @@ public sealed class EmailNotificationChannelTests
         await _emailSender.Received(1).SendAsync(
             Arg.Is<EmailMessage>(m =>
                 m.To == "user@test.com" &&
-                m.Subject == "Notification: test.notification" &&
+                m.Subject == "test notification" &&
                 m.HtmlBody.Contains("test.notification")),
             Arg.Any<CancellationToken>());
     }
