@@ -150,7 +150,7 @@ public sealed class ObservabilityOptionsTests
     {
         // Arrange — section exists but is empty
         IConfigurationRoot config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>())
+            .AddInMemoryCollection([])
             .Build();
 
         // Act

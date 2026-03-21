@@ -92,7 +92,7 @@ public sealed class CompositeCursorBuilderTests
     public void BuildCursorPredicate_returns_null_when_no_sort_fields()
     {
         Expression<Func<TestProduct, bool>>? result = CompositeCursorBuilder.BuildCursorPredicate<TestProduct>(
-            [], new Dictionary<string, string>());
+            [], []);
 
         result.ShouldBeNull();
     }
@@ -104,7 +104,7 @@ public sealed class CompositeCursorBuilderTests
             CompositeCursorBuilder.ParseSortFields<TestProduct>("Price");
 
         Expression<Func<TestProduct, bool>>? result = CompositeCursorBuilder.BuildCursorPredicate<TestProduct>(
-            fields, new Dictionary<string, string>());
+            fields, []);
 
         result.ShouldBeNull();
     }

@@ -58,7 +58,7 @@ public sealed class ExportDtoMappingTests
         IExportDefinitionDescriptor descriptor = Substitute.For<IExportDefinitionDescriptor>();
         descriptor.Name.Returns("Acme.PatientExport");
         descriptor.EntityType.Returns(typeof(TestEntity));
-        descriptor.SupportedFormats.Returns(new List<string> { "xlsx", "csv" });
+        descriptor.SupportedFormats.Returns(["xlsx", "csv"]);
 
         var response = ExportDefinitionResponse.FromDescriptor(descriptor);
 
