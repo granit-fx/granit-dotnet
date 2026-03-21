@@ -1,0 +1,11 @@
+{
+  "culture": "de",
+  "texts": {
+    "PermissionGroup:Privacy": "Datenschutz (DSGVO)",
+    "Permission:Privacy.Export.Execute": "Export personenbezogener Daten anfordern",
+    "Permission:Privacy.Export.Read": "Status des Datenexports anzeigen",
+    "Permission:Privacy.Deletion.Execute": "Löschung personenbezogener Daten anfordern",
+    "Permission:Privacy.Agreements.Read": "Rechtliche Dokumente und Einwilligungsstatus anzeigen",
+    "Permission:Privacy.Agreements.Create": "Einer rechtlichen Vereinbarung zustimmen"
+  }
+}

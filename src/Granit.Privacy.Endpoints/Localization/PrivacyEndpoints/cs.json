@@ -1,0 +1,11 @@
+{
+  "culture": "cs",
+  "texts": {
+    "PermissionGroup:Privacy": "Soukromí (GDPR)",
+    "Permission:Privacy.Export.Execute": "Požádat o export osobních údajů",
+    "Permission:Privacy.Export.Read": "Zobrazit stav exportu osobních údajů",
+    "Permission:Privacy.Deletion.Execute": "Požádat o smazání osobních údajů",
+    "Permission:Privacy.Agreements.Read": "Zobrazit právní dokumenty a stav souhlasu",
+    "Permission:Privacy.Agreements.Create": "Přijmout právní smlouvu"
+  }
+}

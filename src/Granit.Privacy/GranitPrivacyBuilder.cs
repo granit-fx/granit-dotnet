@@ -53,4 +53,24 @@ public sealed class GranitPrivacyBuilder(IServiceCollection services)
         Services.AddScoped<ILegalAgreementStoreWriter>(sp => sp.GetRequiredService<TStore>());
         return this;
     }
+
+    /// <summary>
+    /// Registers the export request tracker implementation (provided by the application).
+    /// The concrete type is registered once, then forwarded to both
+    /// <see cref="IExportRequestTrackerReader"/> and <see cref="IExportRequestTrackerWriter"/>.
+    /// </summary>
+    /// <remarks>
+    /// Required for the <c>GET /privacy/export</c> endpoints to query export status.
+    /// The application must also wire an <see cref="Events.ExportCompletedEto"/> handler
+    /// that calls <see cref="IExportRequestTrackerWriter.MarkCompletedAsync"/> to update
+    /// the read model when the scatter-gather saga finishes.
+    /// </remarks>
+    public GranitPrivacyBuilder UseExportRequestTracker<TStore>()
+        where TStore : class, IExportRequestTrackerReader, IExportRequestTrackerWriter
+    {
+        Services.AddScoped<TStore>();
+        Services.AddScoped<IExportRequestTrackerReader>(sp => sp.GetRequiredService<TStore>());
+        Services.AddScoped<IExportRequestTrackerWriter>(sp => sp.GetRequiredService<TStore>());
+        return this;
+    }
 }

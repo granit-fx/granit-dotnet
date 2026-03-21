@@ -1,0 +1,11 @@
+{
+  "culture": "en",
+  "texts": {
+    "PermissionGroup:Privacy": "Privacy (GDPR)",
+    "Permission:Privacy.Export.Execute": "Request personal data export",
+    "Permission:Privacy.Export.Read": "View personal data export status",
+    "Permission:Privacy.Deletion.Execute": "Request personal data deletion",
+    "Permission:Privacy.Agreements.Read": "View legal documents and consent status",
+    "Permission:Privacy.Agreements.Create": "Accept a legal agreement"
+  }
+}

@@ -6,7 +6,7 @@ sidebar:
   label: Privacy
 ---
 
-import { FileTree } from "@astrojs/starlight/components";
+import { Aside, Badge, FileTree } from "@astrojs/starlight/components";
 
 ## Why a privacy module?
 
@@ -27,11 +27,15 @@ compliance during an audit without building a custom consent system.
 
 <FileTree>
 - Granit.Privacy GDPR data export saga, legal agreements, data provider registry
+  - Granit.Privacy.Endpoints Minimal API endpoints for export, deletion, consent
+  - Granit.Privacy.AI AI-powered PII detection in free-text fields
 </FileTree>
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
 | `Granit.Privacy` | GDPR data export/deletion orchestration, legal agreements | `Granit.Core` |
+| `Granit.Privacy.Endpoints` | HTTP endpoints for GDPR Art. 7/15/17/20 | `Granit.Privacy`, `Granit.Authorization`, `Granit.Validation` |
+| `Granit.Privacy.AI` | LLM-powered PII detection (`IAIPiiDetector`) | `Granit.Privacy`, `Granit.AI` |
 
 ## Setup
 
@@ -121,6 +125,76 @@ privacy.UseLegalAgreementStore<EfCoreLegalAgreementStore>();
 document — useful for middleware that blocks access until consent is renewed after
 a policy update.
 
+## Endpoints
+
+`Granit.Privacy.Endpoints` exposes GDPR operations as a Minimal API surface.
+Mount the endpoints via `MapGranitPrivacy()`:
+
+```csharp
+RouteGroupBuilder api = app.MapGroup("api/v{version:apiVersion}");
+api.MapGranitPrivacy(); // → /api/v1/privacy/...
+```
+
+### Data export (Art. 15/20)
+
+| Method | Route | Operation | Permission |
+| ------ | ----- | --------- | ---------- |
+| <Badge text="POST" variant="success" /> | `/export` | RequestPrivacyExport | `Privacy.Export.Execute` |
+| <Badge text="GET" variant="note" /> | `/export/{requestId}` | GetPrivacyExportStatus | `Privacy.Export.Read` |
+| <Badge text="GET" variant="note" /> | `/export` | ListPrivacyExports | `Privacy.Export.Read` |
+
+The POST endpoint triggers the scatter-gather saga. Each registered data provider
+prepares its fragment asynchronously. Poll the status endpoint or wire a
+`Granit.Notifications` handler on `ExportCompletedEto` to notify the user.
+
+When the export is ready, `ArchiveBlobReferenceId` in the response references the
+archive blob. Use the BlobStorage download endpoint to obtain a pre-signed URL.
+
+<Aside type="tip">
+The application must provide an `IExportRequestTrackerReader` / `IExportRequestTrackerWriter`
+implementation via `builder.UseExportRequestTracker<T>()`. This read model decouples
+the HTTP surface from the internal Wolverine saga state.
+</Aside>
+
+### Data deletion (Art. 17)
+
+| Method | Route | Operation | Permission |
+| ------ | ----- | --------- | ---------- |
+| <Badge text="POST" variant="success" /> | `/deletion` | RequestPrivacyDeletion | `Privacy.Deletion.Execute` |
+
+Publishes `PersonalDataDeletionRequestedEto`. Each module handles its own data:
+physical delete, soft delete, anonymization, or retention with legal justification.
+The operation is asynchronous — modules report completion via `PersonalDataDeletedEto`.
+
+### Legal agreements (Art. 7)
+
+| Method | Route | Operation | Permission |
+| ------ | ----- | --------- | ---------- |
+| <Badge text="GET" variant="note" /> | `/agreements/documents` | ListPrivacyLegalDocuments | `Privacy.Agreements.Read` |
+| <Badge text="GET" variant="note" /> | `/agreements/status` | GetPrivacyConsentStatus | `Privacy.Agreements.Read` |
+| <Badge text="GET" variant="note" /> | `/agreements/history` | ListPrivacyAgreementHistory | `Privacy.Agreements.Read` |
+| <Badge text="POST" variant="success" /> | `/agreements/accept` | AcceptPrivacyAgreement | `Privacy.Agreements.Create` |
+
+The accept endpoint validates that the submitted version matches the current version
+(rejects stale consent with 422), checks for duplicate acceptance (409), captures and
+pseudonymizes the client IP for the GDPR Art. 7 audit trail.
+
+<Aside type="caution">
+The consent endpoint reads `RemoteIpAddress` from `HttpContext.Connection`. When
+running behind a reverse proxy (Aspire, Docker, Nginx), enable
+`ForwardedHeadersMiddleware` to capture the real client IP.
+</Aside>
+
+### Permissions summary
+
+| Permission | Scope |
+| ---------- | ----- |
+| `Privacy.Export.Execute` | Request personal data export |
+| `Privacy.Export.Read` | View export status and history |
+| `Privacy.Deletion.Execute` | Request personal data deletion |
+| `Privacy.Agreements.Read` | View legal documents and consent status |
+| `Privacy.Agreements.Create` | Accept a legal agreement |
+
 ## Configuration reference
 
 ```json
@@ -136,10 +210,12 @@ a policy update.
 
 | Category | Key types | Package |
 | -------- | --------- | ------- |
-| Module | `GranitPrivacyModule` | -- |
+| Module | `GranitPrivacyModule`, `GranitPrivacyEndpointsModule` | -- |
 | Registry | `IDataProviderRegistry`, `ILegalDocumentRegistry`, `ILegalAgreementChecker` | `Granit.Privacy` |
 | Builder | `GranitPrivacyBuilder`, `GranitPrivacyOptions` | `Granit.Privacy` |
+| Export tracker | `IExportRequestTrackerReader`, `IExportRequestTrackerWriter`, `ExportRequestStatus` | `Granit.Privacy` |
 | Events | `PersonalDataRequestedEto`, `PersonalDataDeletionRequestedEto`, `ExportCompletedEto`, `ExportTimedOutEvent` | `Granit.Privacy` |
+| Endpoints | `MapGranitPrivacy()`, `PrivacyEndpointsOptions`, `PrivacyPermissions` | `Granit.Privacy.Endpoints` |
 | Extensions | `AddGranitPrivacy()` | `Granit.Privacy` |
 
 ## See also

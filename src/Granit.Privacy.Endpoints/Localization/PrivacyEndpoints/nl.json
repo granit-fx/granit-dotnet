@@ -1,0 +1,11 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:Privacy": "Privacy (AVG)",
+    "Permission:Privacy.Export.Execute": "Export van persoonsgegevens aanvragen",
+    "Permission:Privacy.Export.Read": "Status van persoonsgegevensexport bekijken",
+    "Permission:Privacy.Deletion.Execute": "Verwijdering van persoonsgegevens aanvragen",
+    "Permission:Privacy.Agreements.Read": "Juridische documenten en toestemmingsstatus bekijken",
+    "Permission:Privacy.Agreements.Create": "Een juridische overeenkomst accepteren"
+  }
+}

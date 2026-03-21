@@ -132,6 +132,7 @@
     <Project Path="src/Granit.Persistence/Granit.Persistence.csproj" />
     <Project Path="src/Granit.Privacy/Granit.Privacy.csproj" />
     <Project Path="src/Granit.Privacy.AI/Granit.Privacy.AI.csproj" />
+    <Project Path="src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj" />
     <Project Path="src/Granit.Querying.Endpoints/Granit.Querying.Endpoints.csproj" />
     <Project Path="src/Granit.Querying.EntityFrameworkCore/Granit.Querying.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Querying/Granit.Querying.csproj" />
@@ -324,6 +325,7 @@
     <Project Path="tests/Granit.Persistence.Tests/Granit.Persistence.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Tests/Granit.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.AI.Tests/Granit.Privacy.AI.Tests.csproj" />
+    <Project Path="tests/Granit.Privacy.Endpoints.Tests/Granit.Privacy.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Querying.Endpoints.Tests.Integration/Granit.Querying.Endpoints.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Querying.Endpoints.Tests/Granit.Querying.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Querying.AI.Tests/Granit.Querying.AI.Tests.csproj" />

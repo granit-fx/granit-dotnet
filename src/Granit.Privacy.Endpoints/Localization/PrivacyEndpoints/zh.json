@@ -1,0 +1,11 @@
+{
+  "culture": "zh",
+  "texts": {
+    "PermissionGroup:Privacy": "隐私 (GDPR)",
+    "Permission:Privacy.Export.Execute": "请求导出个人数据",
+    "Permission:Privacy.Export.Read": "查看个人数据导出状态",
+    "Permission:Privacy.Deletion.Execute": "请求删除个人数据",
+    "Permission:Privacy.Agreements.Read": "查看法律文件和同意状态",
+    "Permission:Privacy.Agreements.Create": "接受法律协议"
+  }
+}

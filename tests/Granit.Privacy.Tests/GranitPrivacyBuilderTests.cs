@@ -157,5 +157,8 @@ public sealed class GranitPrivacyBuilderTests
 
         public Task RecordAsync(LegalAgreementBase agreement, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
+
+        public Task RecordConsentAsync(Guid userId, string documentId, string version, string? ipAddress, DateTimeOffset acceptedAt, CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
     }
 }

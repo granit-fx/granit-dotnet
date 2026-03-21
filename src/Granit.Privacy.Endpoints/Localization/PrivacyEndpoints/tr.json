@@ -1,0 +1,11 @@
+{
+  "culture": "tr",
+  "texts": {
+    "PermissionGroup:Privacy": "Gizlilik (KVKK)",
+    "Permission:Privacy.Export.Execute": "Kişisel veri dışa aktarımı talep et",
+    "Permission:Privacy.Export.Read": "Kişisel veri dışa aktarım durumunu görüntüle",
+    "Permission:Privacy.Deletion.Execute": "Kişisel veri silme talep et",
+    "Permission:Privacy.Agreements.Read": "Yasal belgeleri ve onay durumunu görüntüle",
+    "Permission:Privacy.Agreements.Create": "Yasal sözleşmeyi kabul et"
+  }
+}
