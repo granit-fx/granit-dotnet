@@ -1,4 +1,5 @@
 using Granit.Core.Modularity;
+using Granit.Encryption;
 using Granit.MultiTenancy;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.EntityFrameworkCore.Seeding;
@@ -25,10 +26,12 @@ namespace Granit.OpenIddict.EntityFrameworkCore;
 /// </para>
 /// <para>
 /// Depends on <see cref="GranitMultiTenancyModule"/> for GDPR-strict tenant isolation
-/// in OpenIddict stores.
+/// in OpenIddict stores, and <see cref="GranitEncryptionModule"/> for signing key
+/// material encryption at rest.
 /// </para>
 /// </remarks>
 [DependsOn(
+    typeof(GranitEncryptionModule),
     typeof(GranitMultiTenancyModule),
     typeof(GranitOpenIddictModule),
     typeof(GranitPersistenceModule))]

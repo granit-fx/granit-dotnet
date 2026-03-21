@@ -1,6 +1,7 @@
 {
   "culture": "pt-BR",
   "texts": {
+    "PermissionGroup:OpenIddict": "OpenIddict — Provedor de Identidade",
     "Permission:OpenIddict.Users.Read": "Consultar usuários",
     "Permission:OpenIddict.Users.Create": "Criar usuários",
     "Permission:OpenIddict.Users.Manage": "Gerenciar usuários (consultar, modificar, ativar/desativar)",

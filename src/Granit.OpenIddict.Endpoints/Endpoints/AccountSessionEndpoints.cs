@@ -30,7 +30,7 @@ internal static class AccountSessionEndpoints
                 "Reads the impersonator_id claim from the current (impersonated) token "
                 + "and issues a fresh token set for the original admin user. "
                 + "Returns 400 if the current token is not an impersonation token.")
-            .Produces(StatusCodes.Status200OK)
+            .Produces<ImpersonationResult>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .RequireAuthorization();
 

@@ -1,5 +1,5 @@
 using FluentValidation;
-using Granit.OpenIddict.Endpoints.Endpoints;
+using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.Validation;
 
 namespace Granit.OpenIddict.Endpoints.Validators;

@@ -1,13 +1,15 @@
 using Granit.BackgroundJobs;
 using Granit.Core.Modularity;
+using Granit.Settings;
 
 namespace Granit.OpenIddict.BackgroundJobs;
 
 /// <summary>
 /// Granit module that registers background jobs for OpenIddict:
-/// token cleanup and idle session enforcement.
+/// token cleanup, idle session enforcement, and signing key rotation.
 /// </summary>
 [DependsOn(
     typeof(GranitBackgroundJobsModule),
-    typeof(GranitOpenIddictModule))]
+    typeof(GranitOpenIddictModule),
+    typeof(GranitSettingsModule))]
 public sealed class GranitOpenIddictBackgroundJobsModule : GranitModule;

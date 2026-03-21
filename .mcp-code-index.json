@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T20:12:33.679384+00:00",
+  "generatedAt": "2026-03-21T20:22:04.637520+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -17895,7 +17895,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.BackgroundJobs",
       "file": "src/Granit.OpenIddict.BackgroundJobs/GranitOpenIddictBackgroundJobsModule.cs",
-      "line": 13,
+      "line": 15,
       "members": []
     },
     {
@@ -18206,29 +18206,29 @@
     },
     {
       "name": "AdminUserCreateRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Endpoints.AdminUserCreateRequest",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminUserCreateRequest",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Endpoints/AdminUserEndpoints.cs",
-      "line": 159,
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminUserCreateRequest.cs",
+      "line": 9,
       "members": []
     },
     {
       "name": "PasskeyRegistrationRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Endpoints.PasskeyRegistrationRequest",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.PasskeyRegistrationRequest",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Endpoints/AccountPasskeyEndpoints.cs",
-      "line": 156,
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/PasskeyRequests.cs",
+      "line": 6,
       "members": []
     },
     {
       "name": "PasskeyRenameRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Endpoints.PasskeyRenameRequest",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.PasskeyRenameRequest",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Endpoints/AccountPasskeyEndpoints.cs",
-      "line": 160,
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/PasskeyRequests.cs",
+      "line": 10,
       "members": []
     },
     {
@@ -18405,7 +18405,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/GranitOpenIddictEntityFrameworkCoreModule.cs",
-      "line": 35,
+      "line": 38,
       "members": [
         {
           "name": "ConfigureServices",
