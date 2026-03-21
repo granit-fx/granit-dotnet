@@ -419,28 +419,61 @@ and admin management (permission-protected).
 
 #### OIDC Applications
 
-| Method | Route | Operation | Permission |
-|--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/oidc/applications` | ListOidcApplications | `OpenIddict.Applications.Read` |
-| <Badge text="POST" variant="success" /> | `/oidc/applications` | CreateOidcApplication | `OpenIddict.Applications.Create` |
-| <Badge text="DELETE" variant="danger" /> | `/oidc/applications/{clientId}` | DeleteOidcApplication | `OpenIddict.Applications.Delete` |
-| <Badge text="POST" variant="success" /> | `/oidc/applications/{clientId}/rotate-secret` | RotateOidcApplicationSecret | `OpenIddict.Applications.Rotate` |
+| Method | Route | Operation | Permission | Response |
+|--------|-------|-----------|------------|----------|
+| <Badge text="GET" variant="note" /> | `/oidc/applications` | ListOidcApplications | `OpenIddict.Applications.Read` | `OidcApplicationResponse[]` |
+| <Badge text="POST" variant="success" /> | `/oidc/applications` | CreateOidcApplication | `OpenIddict.Applications.Create` | 201 / 409 |
+| <Badge text="DELETE" variant="danger" /> | `/oidc/applications/{clientId}` | DeleteOidcApplication | `OpenIddict.Applications.Delete` | 204 / 404 |
+| <Badge text="POST" variant="success" /> | `/oidc/applications/{clientId}/rotate-secret` | RotateOidcApplicationSecret | `OpenIddict.Applications.Rotate` | `OidcSecretRotationResponse` / 404 |
+
+**Response types:**
+
+```typescript
+interface OidcApplicationResponse {
+  id: string;
+  clientId: string;
+  displayName: string;
+  type: string; // "public" | "confidential"
+}
+
+interface OidcSecretRotationResponse {
+  clientId: string;
+  newSecret: string; // ⚠ Shown ONCE — display in a copyable modal
+}
+```
 
 #### OIDC Scopes
 
-| Method | Route | Operation | Permission |
-|--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/oidc/scopes` | ListOidcScopes | `OpenIddict.Scopes.Read` |
-| <Badge text="POST" variant="success" /> | `/oidc/scopes` | CreateOidcScope | `OpenIddict.Scopes.Create` |
-| <Badge text="DELETE" variant="danger" /> | `/oidc/scopes/{scopeName}` | DeleteOidcScope | `OpenIddict.Scopes.Delete` |
+| Method | Route | Operation | Permission | Response |
+|--------|-------|-----------|------------|----------|
+| <Badge text="GET" variant="note" /> | `/oidc/scopes` | ListOidcScopes | `OpenIddict.Scopes.Read` | `OidcScopeResponse[]` |
+| <Badge text="POST" variant="success" /> | `/oidc/scopes` | CreateOidcScope | `OpenIddict.Scopes.Create` | 201 / 409 |
+| <Badge text="DELETE" variant="danger" /> | `/oidc/scopes/{scopeName}` | DeleteOidcScope | `OpenIddict.Scopes.Delete` | 204 / 404 |
+
+```typescript
+interface OidcScopeResponse {
+  id: string;
+  name: string;
+  displayName: string;
+}
+```
 
 #### OIDC Authorizations
 
-| Method | Route | Operation | Permission |
-|--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/oidc/authorizations` | ListOidcAuthorizations | `OpenIddict.Authorizations.Read` |
-| <Badge text="DELETE" variant="danger" /> | `/oidc/authorizations/{id}` | RevokeOidcAuthorization | `OpenIddict.Authorizations.Revoke` |
-| <Badge text="DELETE" variant="danger" /> | `/oidc/authorizations/user/{userId}` | RevokeUserOidcAuthorizations | `OpenIddict.Authorizations.Revoke` |
+| Method | Route | Operation | Permission | Response |
+|--------|-------|-----------|------------|----------|
+| <Badge text="GET" variant="note" /> | `/oidc/authorizations` | ListOidcAuthorizations | `OpenIddict.Authorizations.Read` | `OidcAuthorizationResponse[]` |
+| <Badge text="DELETE" variant="danger" /> | `/oidc/authorizations/{id}` | RevokeOidcAuthorization | `OpenIddict.Authorizations.Revoke` | 204 / 404 |
+| <Badge text="DELETE" variant="danger" /> | `/oidc/authorizations/user/{userId}` | RevokeUserOidcAuthorizations | `OpenIddict.Authorizations.Revoke` | 204 |
+
+```typescript
+interface OidcAuthorizationResponse {
+  id: string;
+  subject: string; // userId
+  status: string;  // "valid" | "revoked"
+  type: string;    // "permanent" | "ad-hoc"
+}
+```
 
 ---
 

@@ -223,21 +223,52 @@ All permission strings follow the `[Group].[Resource].[Action]` convention
 | `DELETE` | `/{clientId}` | `Applications.Delete` | Delete app + authorizations + tokens |
 | `POST` | `/{clientId}/rotate-secret` | `Applications.Rotate` | Rotate client secret (returns plaintext once) |
 
+**Create application request:**
+
+```json
+{
+  "clientId": "my-spa",
+  "clientSecret": null,
+  "displayName": "My SPA (PKCE)",
+  "permissions": ["ept:authorization", "ept:token", "gt:authorization_code"],
+  "redirectUris": ["https://app.example.com/callback"],
+  "postLogoutRedirectUris": ["https://app.example.com"]
+}
+```
+
+**Application response:** `{ id, clientId, displayName, type }`
+
+**Secret rotation response:** `{ clientId, newSecret }` — the new secret is returned
+**once only** in the response. It is hashed before storage and cannot be retrieved later.
+
 ### OIDC Scopes (`/api/admin/oidc/scopes`)
 
 | Method | Path | Permission | Description |
 |--------|------|------------|-------------|
 | `GET` | `/` | `Scopes.Read` | List all scopes with resources |
-| `POST` | `/` | `Scopes.Create` | Register a new scope |
-| `DELETE` | `/{scopeName}` | `Scopes.Delete` | Delete scope |
+| `POST` | `/` | `Scopes.Create` | Register a new scope (409 if name exists) |
+| `DELETE` | `/{scopeName}` | `Scopes.Delete` | Delete scope (404 if not found) |
+
+**Create scope request:**
+
+```json
+{ "name": "api", "displayName": "API Access", "resources": ["my-api"] }
+```
+
+**Scope response:** `{ id, name, displayName }`
 
 ### OIDC Authorizations (`/api/admin/oidc/authorizations`)
 
 | Method | Path | Permission | Description |
 |--------|------|------------|-------------|
-| `GET` | `/` | `Authorizations.Read` | List authorizations (`?userId`, `?clientId`) |
-| `DELETE` | `/{authorizationId}` | `Authorizations.Revoke` | Revoke authorization + tokens |
-| `DELETE` | `/user/{userId}` | `Authorizations.Revoke` | Revoke all for user (GDPR / security) |
+| `GET` | `/?userId=&clientId=` | `Authorizations.Read` | List authorizations (filterable) |
+| `DELETE` | `/{authorizationId}` | `Authorizations.Revoke` | Revoke single authorization + tokens |
+| `DELETE` | `/user/{userId}` | `Authorizations.Revoke` | Revoke all for user (GDPR / security incident) |
+
+**Authorization response:** `{ id, subject, status, type }`
+
+The `DELETE /user/{userId}` endpoint iterates all authorizations for the subject and
+revokes each one — used for GDPR erasure requests and security incident response.
 
 ## Database tables
 
