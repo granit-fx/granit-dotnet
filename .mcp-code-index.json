@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T17:31:32.819407+00:00",
+  "generatedAt": "2026-03-21T17:57:13.007804+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -8553,15 +8553,8 @@
       "kind": "class",
       "project": "Granit.DataExchange.EntityFrameworkCore",
       "file": "src/Granit.DataExchange.EntityFrameworkCore/GranitDataExchangeEntityFrameworkCoreModule.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "OnApplicationInitializationAsync",
-          "kind": "method",
-          "signature": "OnApplicationInitializationAsync(ApplicationInitializationContext context)",
-          "returnType": "Task"
-        }
-      ]
+      "line": 15,
+      "members": []
     },
     {
       "name": "ServiceCollectionExtensions",
@@ -18104,6 +18097,22 @@
       "members": []
     },
     {
+      "name": "OpenIddictEndpointRouteBuilderExtensions",
+      "fqn": "Granit.OpenIddict.Endpoints.Extensions.OpenIddictEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Extensions/OpenIddictEndpointRouteBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "MapOpenIddictEndpoints",
+          "kind": "method",
+          "signature": "MapOpenIddictEndpoints(this IEndpointRouteBuilder endpoints, Action<OpenIddictEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
       "name": "GranitOpenIddictEndpointsModule",
       "fqn": "Granit.OpenIddict.Endpoints.GranitOpenIddictEndpointsModule",
       "kind": "class",
@@ -18111,6 +18120,40 @@
       "file": "src/Granit.OpenIddict.Endpoints/GranitOpenIddictEndpointsModule.cs",
       "line": 27,
       "members": []
+    },
+    {
+      "name": "OpenIddictEndpointsOptions",
+      "fqn": "Granit.OpenIddict.Endpoints.Options.OpenIddictEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Options/OpenIddictEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AccountRoutePrefix",
+          "kind": "property",
+          "signature": "string AccountRoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "AdminRoutePrefix",
+          "kind": "property",
+          "signature": "string AdminRoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "AccountTagName",
+          "kind": "property",
+          "signature": "string AccountTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "AdminTagName",
+          "kind": "property",
+          "signature": "string AdminTagName",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "GranitRole",
