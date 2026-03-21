@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T18:16:00.350291+00:00",
+  "generatedAt": "2026-03-21T18:21:27.317752+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -18098,6 +18098,15 @@
       "members": []
     },
     {
+      "name": "AdminUserCreateRequest",
+      "fqn": "Granit.OpenIddict.Endpoints.Endpoints.AdminUserCreateRequest",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Endpoints/AdminUserEndpoints.cs",
+      "line": 159,
+      "members": []
+    },
+    {
       "name": "PasskeyRegistrationRequest",
       "fqn": "Granit.OpenIddict.Endpoints.Endpoints.PasskeyRegistrationRequest",
       "kind": "record",
@@ -18573,6 +18582,15 @@
       "members": []
     },
     {
+      "name": "AuthenticatorKeyInfo",
+      "fqn": "Granit.OpenIddict.Services.AuthenticatorKeyInfo",
+      "kind": "record",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/ITwoFactorService.cs",
+      "line": 41,
+      "members": []
+    },
+    {
       "name": "ExternalClaimsMapper",
       "fqn": "Granit.OpenIddict.Services.ExternalClaimsMapper",
       "kind": "class",
@@ -18775,6 +18793,52 @@
       ]
     },
     {
+      "name": "ITwoFactorService",
+      "fqn": "Granit.OpenIddict.Services.ITwoFactorService",
+      "kind": "interface",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/ITwoFactorService.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "GetStatusAsync",
+          "kind": "method",
+          "signature": "GetStatusAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TwoFactorStatus>"
+        },
+        {
+          "name": "GetAuthenticatorKeyAsync",
+          "kind": "method",
+          "signature": "GetAuthenticatorKeyAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<AuthenticatorKeyInfo>"
+        },
+        {
+          "name": "EnableAsync",
+          "kind": "method",
+          "signature": "EnableAsync(string userId, string code, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
+        },
+        {
+          "name": "DisableAsync",
+          "kind": "method",
+          "signature": "DisableAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ResetAuthenticatorAsync",
+          "kind": "method",
+          "signature": "ResetAuthenticatorAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GenerateRecoveryCodesAsync",
+          "kind": "method",
+          "signature": "GenerateRecoveryCodesAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
+        }
+      ]
+    },
+    {
       "name": "ImpersonationResult",
       "fqn": "Granit.OpenIddict.Services.ImpersonationResult",
       "kind": "record",
@@ -18799,6 +18863,15 @@
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Services/IExternalLoginService.cs",
       "line": 58,
+      "members": []
+    },
+    {
+      "name": "TwoFactorStatus",
+      "fqn": "Granit.OpenIddict.Services.TwoFactorStatus",
+      "kind": "record",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Services/ITwoFactorService.cs",
+      "line": 35,
       "members": []
     },
     {

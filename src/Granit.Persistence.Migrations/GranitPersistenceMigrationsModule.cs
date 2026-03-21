@@ -16,7 +16,7 @@ namespace Granit.Persistence.Migrations;
 /// <para>
 /// Registers provider-independent services: <see cref="IMigrationCycleRegistry"/>,
 /// the default <see cref="ITenantDbIsolator"/> (no-op), and the Channel-based
-/// <see cref="IMigrationBatchDispatcher"/> with its <see cref="MigrationBatchWorker"/>.
+/// <see cref="IMigrationBatchDispatcher"/>.
 /// </para>
 /// <para>
 /// Install <c>Granit.Persistence.Migrations.Wolverine</c> to replace the Channel-based
@@ -44,7 +44,5 @@ public sealed class GranitPersistenceMigrationsModule : GranitModule
         // Channel-based dispatch (default). Replaced by Granit.Persistence.Migrations.Wolverine if installed.
         context.Services.TryAddSingleton(Channel.CreateUnbounded<RunMigrationBatchCommand>());
         context.Services.TryAddSingleton<IMigrationBatchDispatcher, ChannelBatchDispatcher>();
-        context.Services.AddScoped<MigrationBatchExecutor>();
-        context.Services.AddHostedService<MigrationBatchWorker>();
     }
 }

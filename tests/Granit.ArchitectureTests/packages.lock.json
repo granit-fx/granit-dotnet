@@ -2273,6 +2273,7 @@
         "dependencies": {
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.OpenIddict": "[0.1.0-dev, )",
+          "Granit.Settings": "[0.1.0-dev, )",
           "OpenIddict": "[7.*, )"
         }
       },
