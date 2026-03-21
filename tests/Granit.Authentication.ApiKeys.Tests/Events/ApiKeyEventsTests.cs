@@ -7,10 +7,10 @@ namespace Granit.Authentication.ApiKeys.Tests.Events;
 public sealed class ApiKeyEventsTests
 {
     [Fact]
-    public void ApiKeyCreatedEvent_HasCorrectProperties()
+    public void ApiKeyCreatedEto_HasCorrectProperties()
     {
         var id = Guid.NewGuid();
-        ApiKeyCreatedEvent evt = new(id, "My Key", ApiKeyType.Secret);
+        ApiKeyCreatedEto evt = new(id, "My Key", ApiKeyType.Secret);
 
         evt.ApiKeyId.ShouldBe(id);
         evt.Name.ShouldBe("My Key");
@@ -18,11 +18,11 @@ public sealed class ApiKeyEventsTests
     }
 
     [Fact]
-    public void ApiKeyCreatedEvent_Equality_Works()
+    public void ApiKeyCreatedEto_Equality_Works()
     {
         var id = Guid.NewGuid();
-        ApiKeyCreatedEvent a = new(id, "Key", ApiKeyType.Secret);
-        ApiKeyCreatedEvent b = new(id, "Key", ApiKeyType.Secret);
+        ApiKeyCreatedEto a = new(id, "Key", ApiKeyType.Secret);
+        ApiKeyCreatedEto b = new(id, "Key", ApiKeyType.Secret);
 
         a.ShouldBe(b);
     }
@@ -38,21 +38,21 @@ public sealed class ApiKeyEventsTests
     }
 
     [Fact]
-    public void ApiKeyScopesUpdatedEvent_HasCorrectProperties()
+    public void ApiKeyScopesUpdatedEto_HasCorrectProperties()
     {
         var id = Guid.NewGuid();
-        ApiKeyScopesUpdatedEvent evt = new(id, "hash-xyz");
+        ApiKeyScopesUpdatedEto evt = new(id, "hash-xyz");
 
         evt.ApiKeyId.ShouldBe(id);
         evt.HashedKey.ShouldBe("hash-xyz");
     }
 
     [Fact]
-    public void ApiKeyRotatedEvent_HasCorrectProperties()
+    public void ApiKeyRotatedEto_HasCorrectProperties()
     {
         var oldId = Guid.NewGuid();
         var newId = Guid.NewGuid();
-        ApiKeyRotatedEvent evt = new(oldId, newId, "old-hash");
+        ApiKeyRotatedEto evt = new(oldId, newId, "old-hash");
 
         evt.OldApiKeyId.ShouldBe(oldId);
         evt.NewApiKeyId.ShouldBe(newId);
@@ -60,10 +60,10 @@ public sealed class ApiKeyEventsTests
     }
 
     [Fact]
-    public void ApiKeyRotatedEvent_Equality_DifferentIds_AreNotEqual()
+    public void ApiKeyRotatedEto_Equality_DifferentIds_AreNotEqual()
     {
-        ApiKeyRotatedEvent a = new(Guid.NewGuid(), Guid.NewGuid(), "hash");
-        ApiKeyRotatedEvent b = new(Guid.NewGuid(), Guid.NewGuid(), "hash");
+        ApiKeyRotatedEto a = new(Guid.NewGuid(), Guid.NewGuid(), "hash");
+        ApiKeyRotatedEto b = new(Guid.NewGuid(), Guid.NewGuid(), "hash");
 
         a.ShouldNotBe(b);
     }

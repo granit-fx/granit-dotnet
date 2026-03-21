@@ -1,5 +1,6 @@
 using Azure.Communication.Sms;
 using Azure.Identity;
+using Granit.Core.Diagnostics;
 using Granit.Notifications.Sms.AzureCommunicationServices.Diagnostics;
 using Granit.Notifications.Sms.AzureCommunicationServices.HealthChecks;
 using Granit.Notifications.Sms.AzureCommunicationServices.Internal;
@@ -42,7 +43,7 @@ public static class AcsSmsServiceCollectionExtensions
 
         services.AddKeyedSingleton<ISmsSender, AcsSmsSender>("AzureCommunicationServices");
 
-        _ = NotificationsSmsAcsActivitySource.Source; // ensure static init
+        GranitActivitySourceRegistry.Register(NotificationsSmsAcsActivitySource.Name);
 
         return services;
     }

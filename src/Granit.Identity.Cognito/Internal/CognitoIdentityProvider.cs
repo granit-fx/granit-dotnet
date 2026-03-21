@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
+using Granit.Core.Events;
 using Granit.Identity.Cognito.Diagnostics;
 using Granit.Identity.Cognito.Options;
 using Granit.Identity.Models;
@@ -17,7 +18,7 @@ namespace Granit.Identity.Cognito.Internal;
 internal sealed partial class CognitoIdentityProvider(
     IAmazonCognitoIdentityProvider cognitoClient,
     IOptions<CognitoAdminOptions> options,
-    IIdentityEventPublisher eventPublisher,
+    IDistributedEventBus distributedEventBus,
     ILogger<CognitoIdentityProvider> logger) : IIdentityProvider
 {
     private const string EmailAttribute = "email";
@@ -129,8 +130,8 @@ internal sealed partial class CognitoIdentityProvider(
                 cancellationToken).ConfigureAwait(false);
         }
 
-        await eventPublisher.PublishAsync(
-            new Events.IdentityUserEnabledChangedEvent(userId, enabled),
+        await distributedEventBus.PublishAsync(
+            new Events.IdentityUserEnabledChangedEto(userId, enabled),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -187,8 +188,8 @@ internal sealed partial class CognitoIdentityProvider(
                 .ConfigureAwait(false);
         }
 
-        await eventPublisher.PublishAsync(
-            new Events.IdentityUserProfileUpdatedEvent(userId, update),
+        await distributedEventBus.PublishAsync(
+            new Events.IdentityUserProfileUpdatedEto(userId, update),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -237,8 +238,8 @@ internal sealed partial class CognitoIdentityProvider(
             await SetUserEnabledAsync(createdUser.Id, false, cancellationToken).ConfigureAwait(false);
         }
 
-        await eventPublisher.PublishAsync(
-            new Events.IdentityUserCreatedEvent(createdUser.Id, createdUser.Username ?? user.Username, createdUser.Email),
+        await distributedEventBus.PublishAsync(
+            new Events.IdentityUserCreatedEto(createdUser.Id, createdUser.Username ?? user.Username, createdUser.Email),
             cancellationToken).ConfigureAwait(false);
 
         return createdUser;
@@ -385,8 +386,8 @@ internal sealed partial class CognitoIdentityProvider(
             .AdminAddUserToGroupAsync(request, cancellationToken)
             .ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(
-            new Events.IdentityGroupMembershipChangedEvent(userId, groupId, true),
+        await distributedEventBus.PublishAsync(
+            new Events.IdentityGroupMembershipChangedEto(userId, groupId, true),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -411,8 +412,8 @@ internal sealed partial class CognitoIdentityProvider(
             .AdminRemoveUserFromGroupAsync(request, cancellationToken)
             .ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(
-            new Events.IdentityGroupMembershipChangedEvent(userId, groupId, false),
+        await distributedEventBus.PublishAsync(
+            new Events.IdentityGroupMembershipChangedEto(userId, groupId, false),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -465,8 +466,8 @@ internal sealed partial class CognitoIdentityProvider(
             .AdminUserGlobalSignOutAsync(request, cancellationToken)
             .ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(
-            new Events.IdentitySessionsRevokedEvent(userId),
+        await distributedEventBus.PublishAsync(
+            new Events.IdentitySessionsRevokedEto(userId),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -498,8 +499,8 @@ internal sealed partial class CognitoIdentityProvider(
             .AdminResetUserPasswordAsync(request, cancellationToken)
             .ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(
-            new Events.IdentityPasswordResetEvent(userId),
+        await distributedEventBus.PublishAsync(
+            new Events.IdentityPasswordResetEto(userId),
             cancellationToken).ConfigureAwait(false);
     }
 

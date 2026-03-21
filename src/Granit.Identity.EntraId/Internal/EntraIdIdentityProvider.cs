@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
+using Granit.Core.Events;
 using Granit.Identity.EntraId.Diagnostics;
 using Granit.Identity.EntraId.Options;
 using Granit.Identity.Events;
@@ -31,7 +32,7 @@ internal sealed partial class EntraIdIdentityProvider(
     IHttpClientFactory httpClientFactory,
     IOptions<EntraIdAdminOptions> options,
     IPasswordResetNotifier passwordResetNotifier,
-    IIdentityEventPublisher eventPublisher,
+    IDistributedEventBus distributedEventBus,
     ILogger<EntraIdIdentityProvider> logger) : IIdentityProvider
 {
     /// <inheritdoc/>
@@ -110,7 +111,7 @@ internal sealed partial class EntraIdIdentityProvider(
 
         response.EnsureSuccessStatusCode();
 
-        await eventPublisher.PublishAsync(new IdentityUserEnabledChangedEvent(userId, enabled), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityUserEnabledChangedEto(userId, enabled), cancellationToken).ConfigureAwait(false);
 
         LogUserEnabledChanged(userId, enabled ? "enabled" : "disabled");
     }
@@ -158,7 +159,7 @@ internal sealed partial class EntraIdIdentityProvider(
 
         response.EnsureSuccessStatusCode();
 
-        await eventPublisher.PublishAsync(new IdentityUserProfileUpdatedEvent(userId, update), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityUserProfileUpdatedEto(userId, update), cancellationToken).ConfigureAwait(false);
 
         LogUserProfileUpdated(userId);
     }
@@ -444,7 +445,7 @@ internal sealed partial class EntraIdIdentityProvider(
 
         response.EnsureSuccessStatusCode();
 
-        await eventPublisher.PublishAsync(new IdentityRoleAssignedEvent(userId, roleName), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityRoleAssignedEto(userId, roleName), cancellationToken).ConfigureAwait(false);
 
         LogRoleAssigned(roleName, userId);
     }
@@ -490,7 +491,7 @@ internal sealed partial class EntraIdIdentityProvider(
 
         response.EnsureSuccessStatusCode();
 
-        await eventPublisher.PublishAsync(new IdentityRoleRemovedEvent(userId, roleName), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityRoleRemovedEto(userId, roleName), cancellationToken).ConfigureAwait(false);
 
         LogRoleRemoved(roleName, userId);
     }
@@ -515,7 +516,7 @@ internal sealed partial class EntraIdIdentityProvider(
 
         await TerminateAllSessionsAsync(userId, cancellationToken).ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(new IdentitySessionsRevokedEvent(userId), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentitySessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -537,7 +538,7 @@ internal sealed partial class EntraIdIdentityProvider(
 
         response.EnsureSuccessStatusCode();
 
-        await eventPublisher.PublishAsync(new IdentitySessionsRevokedEvent(userId), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentitySessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
 
         LogAllSessionsTerminated(userId);
     }
@@ -561,7 +562,7 @@ internal sealed partial class EntraIdIdentityProvider(
         await SetTemporaryPasswordAsync(userId, temporaryPassword, cancellationToken).ConfigureAwait(false);
         await passwordResetNotifier.NotifyAsync(userId, temporaryPassword, cancellationToken).ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(new IdentityPasswordResetEvent(userId), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityPasswordResetEto(userId), cancellationToken).ConfigureAwait(false);
 
         LogPasswordResetWithNotifier(userId);
     }
@@ -595,7 +596,7 @@ internal sealed partial class EntraIdIdentityProvider(
 
         response.EnsureSuccessStatusCode();
 
-        await eventPublisher.PublishAsync(new IdentityPasswordResetEvent(userId), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityPasswordResetEto(userId), cancellationToken).ConfigureAwait(false);
 
         LogTemporaryPasswordSet(userId);
     }
@@ -664,7 +665,7 @@ internal sealed partial class EntraIdIdentityProvider(
             user.LastName,
             user.Enabled);
 
-        await eventPublisher.PublishAsync(new IdentityUserCreatedEvent(createdIdentityUser.Id, createdIdentityUser.Username, createdIdentityUser.Email), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityUserCreatedEto(createdIdentityUser.Id, createdIdentityUser.Username, createdIdentityUser.Email), cancellationToken).ConfigureAwait(false);
 
         return createdIdentityUser;
     }
@@ -748,7 +749,7 @@ internal sealed partial class EntraIdIdentityProvider(
 
         response.EnsureSuccessStatusCode();
 
-        await eventPublisher.PublishAsync(new IdentityGroupMembershipChangedEvent(userId, groupId, Added: true), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityGroupMembershipChangedEto(userId, groupId, Added: true), cancellationToken).ConfigureAwait(false);
 
         LogUserAddedToGroup(userId, groupId);
     }
@@ -775,7 +776,7 @@ internal sealed partial class EntraIdIdentityProvider(
 
         response.EnsureSuccessStatusCode();
 
-        await eventPublisher.PublishAsync(new IdentityGroupMembershipChangedEvent(userId, groupId, Added: false), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityGroupMembershipChangedEto(userId, groupId, Added: false), cancellationToken).ConfigureAwait(false);
 
         LogUserRemovedFromGroup(userId, groupId);
     }

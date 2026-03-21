@@ -70,34 +70,42 @@ internal sealed class EfBackgroundJobStore(
     public async Task RecordExecutionStartAsync(string jobName, DateTimeOffset startedAt, CancellationToken cancellationToken = default)
     {
         await using BackgroundJobsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        await context.Jobs
-            .Where(j => j.JobName == jobName)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(j => j.LastExecutedAt, startedAt)
-                .SetProperty(j => j.LastErrorMessage, (string?)null)
-                .SetProperty(j => j.ConsecutiveFailureCount, 0)
-                .SetProperty(j => j.TriggeredBy, (string?)null), cancellationToken).ConfigureAwait(false);
+        BackgroundJobDefinition? job = await context.Jobs.FirstOrDefaultAsync(j => j.JobName == jobName, cancellationToken).ConfigureAwait(false);
+        if (job is null)
+        {
+            return;
+        }
+
+        job.RecordExecutionStart(startedAt);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async Task RecordNextExecutionAsync(string jobName, DateTimeOffset nextExecution, CancellationToken cancellationToken = default)
     {
         await using BackgroundJobsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        await context.Jobs
-            .Where(j => j.JobName == jobName)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(j => j.NextExecutionAt, nextExecution), cancellationToken).ConfigureAwait(false);
+        BackgroundJobDefinition? job = await context.Jobs.FirstOrDefaultAsync(j => j.JobName == jobName, cancellationToken).ConfigureAwait(false);
+        if (job is null)
+        {
+            return;
+        }
+
+        job.ScheduleNext(nextExecution);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async Task RecordExecutionFailureAsync(string jobName, string errorMessage, CancellationToken cancellationToken = default)
     {
         await using BackgroundJobsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        await context.Jobs
-            .Where(j => j.JobName == jobName)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(j => j.ConsecutiveFailureCount, j => j.ConsecutiveFailureCount + 1)
-                .SetProperty(j => j.LastErrorMessage, errorMessage), cancellationToken).ConfigureAwait(false);
+        BackgroundJobDefinition? job = await context.Jobs.FirstOrDefaultAsync(j => j.JobName == jobName, cancellationToken).ConfigureAwait(false);
+        if (job is null)
+        {
+            return;
+        }
+
+        job.RecordFailure(errorMessage);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -125,9 +133,13 @@ internal sealed class EfBackgroundJobStore(
     public async Task SetTriggeredByAsync(string jobName, string? triggeredBy, CancellationToken cancellationToken = default)
     {
         await using BackgroundJobsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        await context.Jobs
-            .Where(j => j.JobName == jobName)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(j => j.TriggeredBy, triggeredBy), cancellationToken).ConfigureAwait(false);
+        BackgroundJobDefinition? job = await context.Jobs.FirstOrDefaultAsync(j => j.JobName == jobName, cancellationToken).ConfigureAwait(false);
+        if (job is null)
+        {
+            return;
+        }
+
+        job.SetTriggeredBy(triggeredBy);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 }

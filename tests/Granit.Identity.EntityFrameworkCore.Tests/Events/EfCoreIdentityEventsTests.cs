@@ -7,58 +7,58 @@ namespace Granit.Identity.EntityFrameworkCore.Tests.Events;
 
 public sealed class EfCoreIdentityEventsTests
 {
-    // ──── IdentityUserUpdatedEvent ────
+    // ──── IdentityUserUpdatedEto ────
 
     [Fact]
-    public void IdentityUserUpdatedEvent_SetsUserId()
+    public void IdentityUserUpdatedEto_SetsUserId()
     {
-        var evt = new IdentityUserUpdatedEvent("user-1");
+        var evt = new IdentityUserUpdatedEto("user-1");
 
         evt.UserId.ShouldBe("user-1");
     }
 
     [Fact]
-    public void IdentityUserUpdatedEvent_SupportsRecordEquality()
+    public void IdentityUserUpdatedEto_SupportsRecordEquality()
     {
-        var evt1 = new IdentityUserUpdatedEvent("user-1");
-        var evt2 = new IdentityUserUpdatedEvent("user-1");
+        var evt1 = new IdentityUserUpdatedEto("user-1");
+        var evt2 = new IdentityUserUpdatedEto("user-1");
 
         evt1.ShouldBe(evt2);
     }
 
-    // ──── IdentityUserDeletedEvent ────
+    // ──── IdentityUserDeletedEto ────
 
     [Fact]
-    public void IdentityUserDeletedEvent_SetsUserId()
+    public void IdentityUserDeletedEto_SetsUserId()
     {
-        var evt = new IdentityUserDeletedEvent("user-1");
+        var evt = new IdentityUserDeletedEto("user-1");
 
         evt.UserId.ShouldBe("user-1");
     }
 
     [Fact]
-    public void IdentityUserDeletedEvent_TenantIdDefaultsToNull()
+    public void IdentityUserDeletedEto_TenantIdDefaultsToNull()
     {
-        var evt = new IdentityUserDeletedEvent("user-1");
+        var evt = new IdentityUserDeletedEto("user-1");
 
         evt.TenantId.ShouldBeNull();
     }
 
     [Fact]
-    public void IdentityUserDeletedEvent_AcceptsTenantId()
+    public void IdentityUserDeletedEto_AcceptsTenantId()
     {
         var tenantId = Guid.NewGuid();
-        var evt = new IdentityUserDeletedEvent("user-1", tenantId);
+        var evt = new IdentityUserDeletedEto("user-1", tenantId);
 
         evt.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
-    public void IdentityUserDeletedEvent_SupportsRecordEquality()
+    public void IdentityUserDeletedEto_SupportsRecordEquality()
     {
         var tenantId = Guid.NewGuid();
-        var evt1 = new IdentityUserDeletedEvent("user-1", tenantId);
-        var evt2 = new IdentityUserDeletedEvent("user-1", tenantId);
+        var evt1 = new IdentityUserDeletedEto("user-1", tenantId);
+        var evt2 = new IdentityUserDeletedEto("user-1", tenantId);
 
         evt1.ShouldBe(evt2);
     }

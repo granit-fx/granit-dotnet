@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T11:39:14.693948+00:00",
+  "generatedAt": "2026-03-21T13:49:07.649838+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -3458,12 +3458,6 @@
           "returnType": "ApiKeyEntry"
         },
         {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
           "name": "Type",
           "kind": "property",
           "signature": "ApiKeyType Type",
@@ -3498,12 +3492,6 @@
           "kind": "property",
           "signature": "List<string> AllowedCidrs",
           "returnType": "List<string>"
-        },
-        {
-          "name": "UpdateAllowedCidrs",
-          "kind": "method",
-          "signature": "UpdateAllowedCidrs(List<string> cidrs)",
-          "returnType": "void"
         },
         {
           "name": "SetExpiration",
@@ -3715,12 +3703,12 @@
       "members": []
     },
     {
-      "name": "ApiKeyCreatedEvent",
-      "fqn": "Granit.Authentication.ApiKeys.Events.ApiKeyCreatedEvent",
+      "name": "ApiKeyCreatedEto",
+      "fqn": "Granit.Authentication.ApiKeys.Events.ApiKeyCreatedEto",
       "kind": "record",
       "project": "Granit.Authentication.ApiKeys",
       "file": "src/Granit.Authentication.ApiKeys/Events/ApiKeyCreatedEvent.cs",
-      "line": 10,
+      "line": 12,
       "members": []
     },
     {
@@ -3738,25 +3726,25 @@
       "kind": "record",
       "project": "Granit.Authentication.ApiKeys",
       "file": "src/Granit.Authentication.ApiKeys/Events/ApiKeyRevokedEvent.cs",
-      "line": 9,
+      "line": 11,
       "members": []
     },
     {
-      "name": "ApiKeyRotatedEvent",
-      "fqn": "Granit.Authentication.ApiKeys.Events.ApiKeyRotatedEvent",
+      "name": "ApiKeyRotatedEto",
+      "fqn": "Granit.Authentication.ApiKeys.Events.ApiKeyRotatedEto",
       "kind": "record",
       "project": "Granit.Authentication.ApiKeys",
       "file": "src/Granit.Authentication.ApiKeys/Events/ApiKeyRotatedEvent.cs",
-      "line": 10,
+      "line": 12,
       "members": []
     },
     {
-      "name": "ApiKeyScopesUpdatedEvent",
-      "fqn": "Granit.Authentication.ApiKeys.Events.ApiKeyScopesUpdatedEvent",
+      "name": "ApiKeyScopesUpdatedEto",
+      "fqn": "Granit.Authentication.ApiKeys.Events.ApiKeyScopesUpdatedEto",
       "kind": "record",
       "project": "Granit.Authentication.ApiKeys",
       "file": "src/Granit.Authentication.ApiKeys/Events/ApiKeyScopesUpdatedEvent.cs",
-      "line": 9,
+      "line": 11,
       "members": []
     },
     {
@@ -8933,12 +8921,12 @@
       "members": []
     },
     {
-      "name": "ExportJobCompletedEvent",
-      "fqn": "Granit.DataExchange.Export.Messages.ExportJobCompletedEvent",
+      "name": "ExportJobCompletedEto",
+      "fqn": "Granit.DataExchange.Export.Messages.ExportJobCompletedEto",
       "kind": "record",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/Messages/ExportJobCompletedEvent.cs",
-      "line": 17,
+      "line": 19,
       "members": []
     },
     {
@@ -9477,12 +9465,12 @@
       "members": []
     },
     {
-      "name": "ImportJobCompletedEvent",
-      "fqn": "Granit.DataExchange.Import.Messages.ImportJobCompletedEvent",
+      "name": "ImportJobCompletedEto",
+      "fqn": "Granit.DataExchange.Import.Messages.ImportJobCompletedEto",
       "kind": "record",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Import/Messages/ImportJobCompletedEvent.cs",
-      "line": 24,
+      "line": 25,
       "members": []
     },
     {
@@ -13198,21 +13186,21 @@
       ]
     },
     {
-      "name": "IdentityUserDeletedEvent",
-      "fqn": "Granit.Identity.EntityFrameworkCore.Events.IdentityUserDeletedEvent",
+      "name": "IdentityUserDeletedEto",
+      "fqn": "Granit.Identity.EntityFrameworkCore.Events.IdentityUserDeletedEto",
       "kind": "record",
       "project": "Granit.Identity.EntityFrameworkCore",
       "file": "src/Granit.Identity.EntityFrameworkCore/Events/IdentityUserDeletedEvent.cs",
-      "line": 11,
+      "line": 13,
       "members": []
     },
     {
-      "name": "IdentityUserUpdatedEvent",
-      "fqn": "Granit.Identity.EntityFrameworkCore.Events.IdentityUserUpdatedEvent",
+      "name": "IdentityUserUpdatedEto",
+      "fqn": "Granit.Identity.EntityFrameworkCore.Events.IdentityUserUpdatedEto",
       "kind": "record",
       "project": "Granit.Identity.EntityFrameworkCore",
       "file": "src/Granit.Identity.EntityFrameworkCore/Events/IdentityUserUpdatedEvent.cs",
-      "line": 9,
+      "line": 11,
       "members": []
     },
     {
@@ -13403,75 +13391,75 @@
       ]
     },
     {
-      "name": "IdentityGroupMembershipChangedEvent",
-      "fqn": "Granit.Identity.Events.IdentityGroupMembershipChangedEvent",
+      "name": "IdentityGroupMembershipChangedEto",
+      "fqn": "Granit.Identity.Events.IdentityGroupMembershipChangedEto",
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 47,
+      "line": 48,
       "members": []
     },
     {
-      "name": "IdentityPasswordResetEvent",
-      "fqn": "Granit.Identity.Events.IdentityPasswordResetEvent",
+      "name": "IdentityPasswordResetEto",
+      "fqn": "Granit.Identity.Events.IdentityPasswordResetEto",
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 53,
+      "line": 54,
       "members": []
     },
     {
-      "name": "IdentityRoleAssignedEvent",
-      "fqn": "Granit.Identity.Events.IdentityRoleAssignedEvent",
+      "name": "IdentityRoleAssignedEto",
+      "fqn": "Granit.Identity.Events.IdentityRoleAssignedEto",
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 32,
+      "line": 33,
       "members": []
     },
     {
-      "name": "IdentityRoleRemovedEvent",
-      "fqn": "Granit.Identity.Events.IdentityRoleRemovedEvent",
+      "name": "IdentityRoleRemovedEto",
+      "fqn": "Granit.Identity.Events.IdentityRoleRemovedEto",
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 39,
+      "line": 40,
       "members": []
     },
     {
-      "name": "IdentitySessionsRevokedEvent",
-      "fqn": "Granit.Identity.Events.IdentitySessionsRevokedEvent",
+      "name": "IdentitySessionsRevokedEto",
+      "fqn": "Granit.Identity.Events.IdentitySessionsRevokedEto",
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 59,
+      "line": 60,
       "members": []
     },
     {
-      "name": "IdentityUserCreatedEvent",
-      "fqn": "Granit.Identity.Events.IdentityUserCreatedEvent",
+      "name": "IdentityUserCreatedEto",
+      "fqn": "Granit.Identity.Events.IdentityUserCreatedEto",
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 11,
+      "line": 12,
       "members": []
     },
     {
-      "name": "IdentityUserEnabledChangedEvent",
-      "fqn": "Granit.Identity.Events.IdentityUserEnabledChangedEvent",
+      "name": "IdentityUserEnabledChangedEto",
+      "fqn": "Granit.Identity.Events.IdentityUserEnabledChangedEto",
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 25,
+      "line": 26,
       "members": []
     },
     {
-      "name": "IdentityUserProfileUpdatedEvent",
-      "fqn": "Granit.Identity.Events.IdentityUserProfileUpdatedEvent",
+      "name": "IdentityUserProfileUpdatedEto",
+      "fqn": "Granit.Identity.Events.IdentityUserProfileUpdatedEto",
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 18,
+      "line": 19,
       "members": []
     },
     {
@@ -13597,7 +13585,7 @@
       "kind": "interface",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/IIdentityEventPublisher.cs",
-      "line": 17,
+      "line": 15,
       "members": []
     },
     {
@@ -14514,6 +14502,15 @@
       "project": "Granit.Localization.Endpoints",
       "file": "src/Granit.Localization.Endpoints/Permissions/LocalizationOverridesPermissions.cs",
       "line": 8,
+      "members": []
+    },
+    {
+      "name": "Overrides",
+      "fqn": "Granit.Localization.Endpoints.Permissions.Overrides",
+      "kind": "class",
+      "project": "Granit.Localization.Endpoints",
+      "file": "src/Granit.Localization.Endpoints/Permissions/LocalizationOverridesPermissions.cs",
+      "line": 16,
       "members": []
     },
     {
@@ -15679,7 +15676,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Email.AwsSes",
       "file": "src/Granit.Notifications.Email.AwsSes/Extensions/SesEmailServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitNotificationsEmailAwsSes",
@@ -15733,7 +15730,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Email.AzureCommunicationServices",
       "file": "src/Granit.Notifications.Email.AzureCommunicationServices/Extensions/AcsEmailServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitNotificationsEmailAcs",
@@ -15865,7 +15862,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Email.Scaleway",
       "file": "src/Granit.Notifications.Email.Scaleway/Extensions/ScalewayEmailServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitNotificationsEmailScaleway",
@@ -15949,7 +15946,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Email.SendGrid",
       "file": "src/Granit.Notifications.Email.SendGrid/Extensions/SendGridEmailServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitNotificationsEmailSendGrid",
@@ -16465,7 +16462,7 @@
       "kind": "class",
       "project": "Granit.Notifications.MobilePush.AwsSns",
       "file": "src/Granit.Notifications.MobilePush.AwsSns/Extensions/AwsSnsMobilePushServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitNotificationsMobilePushAwsSns",
@@ -16525,7 +16522,7 @@
       "kind": "class",
       "project": "Granit.Notifications.MobilePush.AzureNotificationHubs",
       "file": "src/Granit.Notifications.MobilePush.AzureNotificationHubs/Extensions/AzureNotificationHubsServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitNotificationsMobilePushAzureNotificationHubs",
@@ -16959,7 +16956,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Sms.AwsSns",
       "file": "src/Granit.Notifications.Sms.AwsSns/Extensions/SnsSmsServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitNotificationsSmsAwsSns",
@@ -17019,7 +17016,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Sms.AzureCommunicationServices",
       "file": "src/Granit.Notifications.Sms.AzureCommunicationServices/Extensions/AcsSmsServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitNotificationsSmsAcs",
@@ -19431,7 +19428,7 @@
       "kind": "class",
       "project": "Granit.Querying.EntityFrameworkCore",
       "file": "src/Granit.Querying.EntityFrameworkCore/GranitQueryingEntityFrameworkCoreModule.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -20964,12 +20961,30 @@
       ]
     },
     {
+      "name": "Global",
+      "fqn": "Granit.Settings.Endpoints.Permissions.Global",
+      "kind": "class",
+      "project": "Granit.Settings.Endpoints",
+      "file": "src/Granit.Settings.Endpoints/Permissions/SettingsPermissions.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "SettingsPermissions",
       "fqn": "Granit.Settings.Endpoints.Permissions.SettingsPermissions",
       "kind": "class",
       "project": "Granit.Settings.Endpoints",
       "file": "src/Granit.Settings.Endpoints/Permissions/SettingsPermissions.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "Tenant",
+      "fqn": "Granit.Settings.Endpoints.Permissions.Tenant",
+      "kind": "class",
+      "project": "Granit.Settings.Endpoints",
+      "file": "src/Granit.Settings.Endpoints/Permissions/SettingsPermissions.cs",
+      "line": 24,
       "members": []
     },
     {
@@ -24056,7 +24071,7 @@
       "kind": "class",
       "project": "Granit.Vault.Aws",
       "file": "src/Granit.Vault.Aws/Extensions/AwsVaultServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitVaultAws",
@@ -24128,7 +24143,7 @@
       "kind": "class",
       "project": "Granit.Vault.Azure",
       "file": "src/Granit.Vault.Azure/Extensions/AzureKeyVaultServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitVaultAzure",
@@ -24250,7 +24265,7 @@
       "kind": "class",
       "project": "Granit.Vault.GoogleCloud",
       "file": "src/Granit.Vault.GoogleCloud/Extensions/GoogleCloudVaultServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitVaultGoogleCloud",

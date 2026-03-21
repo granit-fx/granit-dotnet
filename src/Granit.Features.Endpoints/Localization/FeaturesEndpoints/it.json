@@ -1,0 +1,8 @@
+{
+  "culture": "it",
+  "texts": {
+    "PermissionGroup:Features": "Funzionalità",
+    "Permission:Features.Flags.Read": "Visualizzare le definizioni delle funzionalità",
+    "Permission:Features.Flags.Manage": "Gestire le sostituzioni delle funzionalità (impostare, eliminare)"
+  }
+}

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Net;
+using Granit.Core.Events;
 using Granit.Identity;
 using Granit.Identity.Diagnostics;
 using Granit.Identity.Events;
@@ -32,7 +33,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
 
     private readonly KeycloakAdminTokenService _tokenService;
     private readonly KeycloakUserTokenExchangeService _tokenExchangeService;
-    private readonly IIdentityEventPublisher _eventPublisher = Substitute.For<IIdentityEventPublisher>();
+    private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
     private readonly IdentityMetrics _metrics;
     private readonly ServiceProvider _metricsServiceProvider;
     private readonly KeycloakIdentityProvider _provider;
@@ -95,7 +96,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             _tokenExchangeService,
             _httpClientFactory,
             Microsoft.Extensions.Options.Options.Create(_options),
-            _eventPublisher,
+            _distributedEventBus,
             _metrics,
             NullLogger<KeycloakIdentityProvider>.Instance);
     }
@@ -563,7 +564,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             exchangeSvc,
             seqFactory,
             Microsoft.Extensions.Options.Options.Create(opts),
-            Substitute.For<IIdentityEventPublisher>(),
+            Substitute.For<IDistributedEventBus>(),
             _metrics,
             NullLogger<KeycloakIdentityProvider>.Instance);
 
@@ -962,7 +963,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             _tokenExchangeService,
             locationFactory,
             Microsoft.Extensions.Options.Options.Create(_options),
-            Substitute.For<IIdentityEventPublisher>(),
+            Substitute.For<IDistributedEventBus>(),
             _metrics,
             NullLogger<KeycloakIdentityProvider>.Instance);
 
@@ -1137,7 +1138,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             _tokenExchangeService,
             seqFactory,
             Microsoft.Extensions.Options.Options.Create(_options),
-            Substitute.For<IIdentityEventPublisher>(),
+            Substitute.For<IDistributedEventBus>(),
             _metrics,
             NullLogger<KeycloakIdentityProvider>.Instance);
 
@@ -1205,7 +1206,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             _tokenExchangeService,
             factory,
             Microsoft.Extensions.Options.Options.Create(optionsWithDirect),
-            Substitute.For<IIdentityEventPublisher>(),
+            Substitute.For<IDistributedEventBus>(),
             _metrics,
             NullLogger<KeycloakIdentityProvider>.Instance);
 
@@ -1247,7 +1248,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             _tokenExchangeService,
             factory,
             Microsoft.Extensions.Options.Options.Create(optionsWithDirect),
-            Substitute.For<IIdentityEventPublisher>(),
+            Substitute.For<IDistributedEventBus>(),
             _metrics,
             NullLogger<KeycloakIdentityProvider>.Instance);
 
@@ -1291,8 +1292,8 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
 
         await _provider.SetUserEnabledAsync("u1", true, TestContext.Current.CancellationToken);
 
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentityUserEnabledChangedEvent>(e => e.UserId == "u1" && e.Enabled),
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentityUserEnabledChangedEto>(e => e.UserId == "u1" && e.Enabled),
             Arg.Any<CancellationToken>());
     }
 
@@ -1303,8 +1304,8 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
 
         await _provider.AssignRoleAsync("u1", "editor", TestContext.Current.CancellationToken);
 
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentityRoleAssignedEvent>(e => e.UserId == "u1" && e.RoleName == "editor"),
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentityRoleAssignedEto>(e => e.UserId == "u1" && e.RoleName == "editor"),
             Arg.Any<CancellationToken>());
     }
 

@@ -44,7 +44,7 @@ public sealed class LocalizationOverridesPermissionDefinitionProviderTests
         provider.DefinePermissions(context);
 
         // Assert
-        group.Permissions.ShouldContain(p => p.Name == LocalizationOverridesPermissions.Read);
+        group.Permissions.ShouldContain(p => p.Name == LocalizationOverridesPermissions.Overrides.Read);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public sealed class LocalizationOverridesPermissionDefinitionProviderTests
         provider.DefinePermissions(context);
 
         // Assert
-        group.Permissions.ShouldContain(p => p.Name == LocalizationOverridesPermissions.Manage);
+        group.Permissions.ShouldContain(p => p.Name == LocalizationOverridesPermissions.Overrides.Manage);
     }
 
     [Fact]

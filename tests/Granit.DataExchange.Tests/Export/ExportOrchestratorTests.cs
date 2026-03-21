@@ -402,7 +402,7 @@ public sealed class ExportOrchestratorTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_completed_publishes_ExportJobCompletedEvent()
+    public async Task ExecuteAsync_completed_publishes_ExportJobCompletedEto()
     {
         // Arrange
         ExportOrchestrator sut = CreateOrchestrator();
@@ -416,7 +416,7 @@ public sealed class ExportOrchestratorTests
 
         // Assert
         await _eventBus.Received(1).PublishAsync(
-            Arg.Is<ExportJobCompletedEvent>(e =>
+            Arg.Is<ExportJobCompletedEto>(e =>
                 e.ExportJobId == jobId &&
                 e.DefinitionName == "Test.Export" &&
                 e.Status == ExportJobStatus.Completed &&
@@ -427,7 +427,7 @@ public sealed class ExportOrchestratorTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_failed_publishes_ExportJobCompletedEvent_with_error()
+    public async Task ExecuteAsync_failed_publishes_ExportJobCompletedEto_with_error()
     {
         // Arrange
         var jobId = Guid.NewGuid();
@@ -454,7 +454,7 @@ public sealed class ExportOrchestratorTests
             () => sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken));
 
         await _eventBus.Received(1).PublishAsync(
-            Arg.Is<ExportJobCompletedEvent>(e =>
+            Arg.Is<ExportJobCompletedEto>(e =>
                 e.ExportJobId == jobId &&
                 e.Status == ExportJobStatus.Failed &&
                 e.UserId == "user-99" &&

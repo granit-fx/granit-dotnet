@@ -8,9 +8,9 @@ namespace Granit.Identity.Tests.Events;
 public sealed class IdentityEventsTests
 {
     [Fact]
-    public void IdentityUserCreatedEvent_SetsAllProperties()
+    public void IdentityUserCreatedEto_SetsAllProperties()
     {
-        var evt = new IdentityUserCreatedEvent("u1", "alice", "alice@test.com");
+        var evt = new IdentityUserCreatedEto("u1", "alice", "alice@test.com");
 
         evt.UserId.ShouldBe("u1");
         evt.Username.ShouldBe("alice");
@@ -18,63 +18,63 @@ public sealed class IdentityEventsTests
     }
 
     [Fact]
-    public void IdentityUserCreatedEvent_AllowsNullOptionalFields()
+    public void IdentityUserCreatedEto_AllowsNullOptionalFields()
     {
-        var evt = new IdentityUserCreatedEvent("u1", null, null);
+        var evt = new IdentityUserCreatedEto("u1", null, null);
 
         evt.Username.ShouldBeNull();
         evt.Email.ShouldBeNull();
     }
 
     [Fact]
-    public void IdentityUserProfileUpdatedEvent_SetsAllProperties()
+    public void IdentityUserProfileUpdatedEto_SetsAllProperties()
     {
         IdentityUserUpdate update = new("new@test.com", "Alice", "Doe");
-        var evt = new IdentityUserProfileUpdatedEvent("u1", update);
+        var evt = new IdentityUserProfileUpdatedEto("u1", update);
 
         evt.UserId.ShouldBe("u1");
         evt.Update.ShouldBe(update);
     }
 
     [Fact]
-    public void IdentityUserEnabledChangedEvent_SetsAllProperties()
+    public void IdentityUserEnabledChangedEto_SetsAllProperties()
     {
-        var evt = new IdentityUserEnabledChangedEvent("u1", true);
+        var evt = new IdentityUserEnabledChangedEto("u1", true);
 
         evt.UserId.ShouldBe("u1");
         evt.Enabled.ShouldBeTrue();
     }
 
     [Fact]
-    public void IdentityUserEnabledChangedEvent_DisabledState()
+    public void IdentityUserEnabledChangedEto_DisabledState()
     {
-        var evt = new IdentityUserEnabledChangedEvent("u1", false);
+        var evt = new IdentityUserEnabledChangedEto("u1", false);
 
         evt.Enabled.ShouldBeFalse();
     }
 
     [Fact]
-    public void IdentityRoleAssignedEvent_SetsAllProperties()
+    public void IdentityRoleAssignedEto_SetsAllProperties()
     {
-        var evt = new IdentityRoleAssignedEvent("u1", "admin");
+        var evt = new IdentityRoleAssignedEto("u1", "admin");
 
         evt.UserId.ShouldBe("u1");
         evt.RoleName.ShouldBe("admin");
     }
 
     [Fact]
-    public void IdentityRoleRemovedEvent_SetsAllProperties()
+    public void IdentityRoleRemovedEto_SetsAllProperties()
     {
-        var evt = new IdentityRoleRemovedEvent("u1", "editor");
+        var evt = new IdentityRoleRemovedEto("u1", "editor");
 
         evt.UserId.ShouldBe("u1");
         evt.RoleName.ShouldBe("editor");
     }
 
     [Fact]
-    public void IdentityGroupMembershipChangedEvent_Added()
+    public void IdentityGroupMembershipChangedEto_Added()
     {
-        var evt = new IdentityGroupMembershipChangedEvent("u1", "group-1", true);
+        var evt = new IdentityGroupMembershipChangedEto("u1", "group-1", true);
 
         evt.UserId.ShouldBe("u1");
         evt.GroupId.ShouldBe("group-1");
@@ -82,25 +82,25 @@ public sealed class IdentityEventsTests
     }
 
     [Fact]
-    public void IdentityGroupMembershipChangedEvent_Removed()
+    public void IdentityGroupMembershipChangedEto_Removed()
     {
-        var evt = new IdentityGroupMembershipChangedEvent("u1", "group-1", false);
+        var evt = new IdentityGroupMembershipChangedEto("u1", "group-1", false);
 
         evt.Added.ShouldBeFalse();
     }
 
     [Fact]
-    public void IdentityPasswordResetEvent_SetsUserId()
+    public void IdentityPasswordResetEto_SetsUserId()
     {
-        var evt = new IdentityPasswordResetEvent("u1");
+        var evt = new IdentityPasswordResetEto("u1");
 
         evt.UserId.ShouldBe("u1");
     }
 
     [Fact]
-    public void IdentitySessionsRevokedEvent_SetsUserId()
+    public void IdentitySessionsRevokedEto_SetsUserId()
     {
-        var evt = new IdentitySessionsRevokedEvent("u1");
+        var evt = new IdentitySessionsRevokedEto("u1");
 
         evt.UserId.ShouldBe("u1");
     }
@@ -108,8 +108,8 @@ public sealed class IdentityEventsTests
     [Fact]
     public void AllEvents_SupportRecordEquality()
     {
-        var evt1 = new IdentityRoleAssignedEvent("u1", "admin");
-        var evt2 = new IdentityRoleAssignedEvent("u1", "admin");
+        var evt1 = new IdentityRoleAssignedEto("u1", "admin");
+        var evt2 = new IdentityRoleAssignedEto("u1", "admin");
 
         evt1.ShouldBe(evt2);
     }
@@ -117,8 +117,8 @@ public sealed class IdentityEventsTests
     [Fact]
     public void AllEvents_SupportRecordInequality()
     {
-        var evt1 = new IdentityRoleAssignedEvent("u1", "admin");
-        var evt2 = new IdentityRoleAssignedEvent("u1", "editor");
+        var evt1 = new IdentityRoleAssignedEto("u1", "admin");
+        var evt2 = new IdentityRoleAssignedEto("u1", "editor");
 
         evt1.ShouldNotBe(evt2);
     }

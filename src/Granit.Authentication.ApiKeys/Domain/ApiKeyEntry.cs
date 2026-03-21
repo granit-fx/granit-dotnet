@@ -23,7 +23,9 @@ public sealed class ApiKeyEntry : FullAuditedAggregateRoot, IMultiTenant
         string hashedKey,
         string prefix,
         string lastFourChars,
-        Guid? tenantId = null) => new()
+        Guid? tenantId = null)
+    {
+        var entry = new ApiKeyEntry
         {
             Id = id,
             Name = name,
@@ -34,6 +36,10 @@ public sealed class ApiKeyEntry : FullAuditedAggregateRoot, IMultiTenant
             LastFourChars = lastFourChars,
             TenantId = tenantId,
         };
+
+        entry.AddDistributedEvent(new ApiKeyCreatedEto(entry.Id, entry.Name, entry.Type));
+        return entry;
+    }
 
     /// <summary>Display name of the API key (e.g., "Partenaire Labo X").</summary>
     public string Name { get; private set; } = string.Empty;
@@ -83,10 +89,13 @@ public sealed class ApiKeyEntry : FullAuditedAggregateRoot, IMultiTenant
     }
 
     /// <summary>
-    /// Revokes the API key.
+    /// Revokes the API key and emits an <see cref="ApiKeyRevokedEvent"/> domain event.
     /// </summary>
-    public void Revoke(DateTimeOffset revokedAt) =>
+    public void Revoke(DateTimeOffset revokedAt)
+    {
         RevokedAt = revokedAt;
+        AddDomainEvent(new ApiKeyRevokedEvent(Id, HashedKey));
+    }
 
     /// <summary>
     /// Records that this key was used for an API call.
@@ -114,8 +123,11 @@ public sealed class ApiKeyEntry : FullAuditedAggregateRoot, IMultiTenant
     /// <summary>
     /// Updates the permissions granted to this key.
     /// </summary>
-    public void UpdatePermissions(List<string> permissions) =>
+    public void UpdatePermissions(List<string> permissions)
+    {
         Permissions = permissions;
+        AddDistributedEvent(new ApiKeyScopesUpdatedEto(Id, HashedKey));
+    }
 
     /// <summary>
     /// Updates the allowed CIDR ranges for IP whitelisting.

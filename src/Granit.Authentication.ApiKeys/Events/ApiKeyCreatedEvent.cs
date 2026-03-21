@@ -1,3 +1,5 @@
+using Granit.Core.Events;
+
 namespace Granit.Authentication.ApiKeys.Events;
 
 /// <summary>
@@ -7,4 +9,4 @@ namespace Granit.Authentication.ApiKeys.Events;
 /// <param name="ApiKeyId">The unique identifier of the new key.</param>
 /// <param name="Name">Display name of the key.</param>
 /// <param name="Type">The key type.</param>
-public sealed record ApiKeyCreatedEvent(Guid ApiKeyId, string Name, ApiKeyType Type);
+public sealed record ApiKeyCreatedEto(Guid ApiKeyId, string Name, ApiKeyType Type) : IIntegrationEvent;

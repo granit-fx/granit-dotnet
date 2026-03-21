@@ -1,5 +1,6 @@
 using Azure.Communication.Email;
 using Azure.Identity;
+using Granit.Core.Diagnostics;
 using Granit.Notifications.Email.AzureCommunicationServices.Diagnostics;
 using Granit.Notifications.Email.AzureCommunicationServices.HealthChecks;
 using Granit.Notifications.Email.AzureCommunicationServices.Internal;
@@ -45,7 +46,7 @@ public static class AcsEmailServiceCollectionExtensions
 
         services.AddKeyedSingleton<IEmailSender, AcsEmailSender>("AzureCommunicationServices");
 
-        _ = NotificationsEmailAcsActivitySource.Source; // ensure static init
+        GranitActivitySourceRegistry.Register(NotificationsEmailAcsActivitySource.Name);
 
         return services;
     }

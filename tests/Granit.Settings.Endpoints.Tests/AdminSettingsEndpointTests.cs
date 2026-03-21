@@ -55,13 +55,13 @@ public sealed class AdminSettingsEndpointTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(SettingsPermissions.GlobalRead,
+            .AddPolicy(SettingsPermissions.Global.Read,
                 policy => policy.RequireRole(GlobalReadRole))
-            .AddPolicy(SettingsPermissions.GlobalManage,
+            .AddPolicy(SettingsPermissions.Global.Manage,
                 policy => policy.RequireRole(GlobalManageRole))
-            .AddPolicy(SettingsPermissions.TenantRead,
+            .AddPolicy(SettingsPermissions.Tenant.Read,
                 policy => policy.RequireRole(TenantReadRole))
-            .AddPolicy(SettingsPermissions.TenantManage,
+            .AddPolicy(SettingsPermissions.Tenant.Manage,
                 policy => policy.RequireRole(TenantManageRole));
 
         builder.Services.AddSingleton(_settingProvider);

@@ -42,12 +42,20 @@ public static class BlobStorageProxyEndpointRouteBuilderExtensions
         group.MapPut("/upload/{token}", ProxyEndpoints.HandleUploadAsync)
             .WithName("BlobProxyUpload")
             .WithSummary("Proxied blob upload via ephemeral token.")
+            .WithDescription("Uploads a blob using an ephemeral pre-signed token. The token IS the authorization (no bearer token required), mirroring the S3 pre-signed URL model. Returns 403 if the token is invalid or expired, 413 if the payload exceeds the configured size limit, and 415 if the content type is not allowed.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status413PayloadTooLarge)
+            .ProducesProblem(StatusCodes.Status415UnsupportedMediaType)
             .AllowAnonymous()
             .DisableAntiforgery();
 
         group.MapGet("/download/{token}", ProxyEndpoints.HandleDownloadAsync)
             .WithName("BlobProxyDownload")
             .WithSummary("Proxied blob download via ephemeral token.")
+            .WithDescription("Downloads a blob using an ephemeral pre-signed token. The token IS the authorization (no bearer token required). Returns the blob content as a binary stream with the appropriate content type. Returns 403 if the token is invalid or expired.")
+            .Produces(StatusCodes.Status200OK, contentType: "application/octet-stream")
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .AllowAnonymous();
 
         return endpoints;

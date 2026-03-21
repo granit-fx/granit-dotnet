@@ -1,3 +1,4 @@
+using Granit.Core.Events;
 using Granit.DataExchange.Import.Domain;
 
 namespace Granit.DataExchange.Import.Messages;
@@ -21,7 +22,7 @@ namespace Granit.DataExchange.Import.Messages;
 /// <param name="InsertedRows">New records inserted.</param>
 /// <param name="UpdatedRows">Existing records updated.</param>
 /// <param name="SkippedRows">Rows skipped (e.g. empty rows).</param>
-public sealed record ImportJobCompletedEvent(
+public sealed record ImportJobCompletedEto(
     Guid ImportJobId,
     string DefinitionName,
     ImportJobStatus Status,
@@ -31,4 +32,4 @@ public sealed record ImportJobCompletedEvent(
     int FailedRows,
     int InsertedRows,
     int UpdatedRows,
-    int SkippedRows);
+    int SkippedRows) : IIntegrationEvent;

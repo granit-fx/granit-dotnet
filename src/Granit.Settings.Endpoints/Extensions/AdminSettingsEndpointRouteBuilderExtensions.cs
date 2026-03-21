@@ -37,14 +37,14 @@ public static class AdminSettingsEndpointRouteBuilderExtensions
             .WithTags(options.TagName);
 
         group.MapGet("", HandleGetAllGlobalSettingsAsync)
-             .RequireAuthorization(SettingsPermissions.GlobalRead)
+             .RequireAuthorization(SettingsPermissions.Global.Read)
              .WithName("GetAllGlobalSettings")
              .WithSummary("Returns all settings at the global scope.")
              .WithDescription("Returns all settings defined at the global (application-wide) scope as a key-value dictionary. Global settings serve as the base layer in the cascading resolution chain (User → Tenant → Global). Requires the Settings.Global.Read permission.")
              .Produces<IReadOnlyDictionary<string, string?>>();
 
         group.MapPut("/{name}", HandlePutGlobalSettingAsync)
-             .RequireAuthorization(SettingsPermissions.GlobalManage)
+             .RequireAuthorization(SettingsPermissions.Global.Manage)
              .WithName("UpdateGlobalSetting")
              .WithSummary("Sets a global-level setting value.")
              .WithDescription("Sets or clears a global-level setting value. Pass null to remove the override and revert to the definition's default. The setting name must match a registered setting definition (returns 404 otherwise). Requires the Settings.Global.Manage permission.")
@@ -72,7 +72,7 @@ public static class AdminSettingsEndpointRouteBuilderExtensions
             .WithTags(options.TagName);
 
         group.MapGet("", HandleGetAllTenantSettingsAsync)
-             .RequireAuthorization(SettingsPermissions.TenantRead)
+             .RequireAuthorization(SettingsPermissions.Tenant.Read)
              .WithName("GetAllTenantSettings")
              .WithSummary("Returns all settings at the current tenant scope.")
              .WithDescription("Returns all settings defined at the tenant scope for the current tenant. Tenant settings override global values in the cascading resolution chain. Requires the Settings.Tenant.Read permission. Returns 400 if no tenant context is available.")
@@ -80,7 +80,7 @@ public static class AdminSettingsEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapPut("/{name}", HandlePutTenantSettingAsync)
-             .RequireAuthorization(SettingsPermissions.TenantManage)
+             .RequireAuthorization(SettingsPermissions.Tenant.Manage)
              .WithName("UpdateTenantSetting")
              .WithSummary("Sets a tenant-level setting value.")
              .WithDescription("Sets or clears a tenant-level setting value for the current tenant. Pass null to remove the tenant override and fall back to the global value. The setting name must match a registered setting definition (returns 404 otherwise). Requires the Settings.Tenant.Manage permission.")

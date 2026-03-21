@@ -1,3 +1,4 @@
+using Granit.Core.Diagnostics;
 using Granit.Notifications.MobilePush.AzureNotificationHubs.Diagnostics;
 using Granit.Notifications.MobilePush.AzureNotificationHubs.HealthChecks;
 using Granit.Notifications.MobilePush.AzureNotificationHubs.Internal;
@@ -33,7 +34,7 @@ public static class AzureNotificationHubsServiceCollectionExtensions
         services.AddSingleton<IAzureNotificationHubsTransport, AzureNotificationHubsTransport>();
         services.AddKeyedSingleton<IMobilePushSender, AzureNotificationHubsPushSender>("AzureNotificationHubs");
 
-        _ = NotificationsMobilePushAnhActivitySource.Source; // ensure static init
+        GranitActivitySourceRegistry.Register(NotificationsMobilePushAnhActivitySource.Name);
 
         return services;
     }

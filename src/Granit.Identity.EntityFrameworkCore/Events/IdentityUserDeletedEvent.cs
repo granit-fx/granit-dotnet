@@ -1,3 +1,5 @@
+using Granit.Core.Events;
+
 namespace Granit.Identity.EntityFrameworkCore.Events;
 
 /// <summary>
@@ -8,4 +10,4 @@ namespace Granit.Identity.EntityFrameworkCore.Events;
 /// </summary>
 /// <param name="UserId">The external user ID in the identity provider.</param>
 /// <param name="TenantId">Optional tenant scope for the deletion. Null deletes across all tenants.</param>
-public sealed record IdentityUserDeletedEvent(string UserId, Guid? TenantId = null);
+public sealed record IdentityUserDeletedEto(string UserId, Guid? TenantId = null) : IIntegrationEvent;

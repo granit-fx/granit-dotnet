@@ -108,7 +108,7 @@ internal sealed partial class ExportOrchestrator(
                 request.DefinitionName, request.Format, rowCount,
                 job.TenantId?.ToString(), stopwatch.Elapsed);
 
-            await eventBus.PublishAsync(new ExportJobCompletedEvent(
+            await eventBus.PublishAsync(new ExportJobCompletedEto(
                 jobId, request.DefinitionName, ExportJobStatus.Completed,
                 job.CreatedBy, rowCount, ErrorMessage: null), cancellationToken).ConfigureAwait(false);
 
@@ -123,7 +123,7 @@ internal sealed partial class ExportOrchestrator(
             metrics.RecordExportFailed(
                 job.DefinitionName, job.Format, job.TenantId?.ToString(), stopwatch.Elapsed);
 
-            await eventBus.PublishAsync(new ExportJobCompletedEvent(
+            await eventBus.PublishAsync(new ExportJobCompletedEto(
                 jobId, job.DefinitionName, ExportJobStatus.Failed,
                 job.CreatedBy, RowCount: null, ex.Message), cancellationToken).ConfigureAwait(false);
 

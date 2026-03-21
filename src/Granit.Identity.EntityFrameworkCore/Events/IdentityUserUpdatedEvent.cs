@@ -1,3 +1,5 @@
+using Granit.Core.Events;
+
 namespace Granit.Identity.EntityFrameworkCore.Events;
 
 /// <summary>
@@ -6,4 +8,4 @@ namespace Granit.Identity.EntityFrameworkCore.Events;
 /// (Keycloak admin events, Entra ID change notifications, etc.) into this event.
 /// </summary>
 /// <param name="UserId">The external user ID in the identity provider.</param>
-public sealed record IdentityUserUpdatedEvent(string UserId);
+public sealed record IdentityUserUpdatedEto(string UserId) : IIntegrationEvent;

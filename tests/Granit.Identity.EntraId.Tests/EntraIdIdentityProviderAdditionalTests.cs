@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net;
+using Granit.Core.Events;
 using Granit.Identity;
 using Granit.Identity.EntraId.Internal;
 using Granit.Identity.EntraId.Options;
@@ -28,7 +29,7 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
 
     private readonly EntraIdAdminTokenService _tokenService;
     private readonly IPasswordResetNotifier _passwordResetNotifier = Substitute.For<IPasswordResetNotifier>();
-    private readonly IIdentityEventPublisher _eventPublisher = Substitute.For<IIdentityEventPublisher>();
+    private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
     private readonly EntraIdIdentityProvider _provider;
     private readonly ActivityListener _activityListener;
 
@@ -66,7 +67,7 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
             _httpClientFactory,
             Microsoft.Extensions.Options.Options.Create(_options),
             _passwordResetNotifier,
-            _eventPublisher,
+            _distributedEventBus,
             NullLogger<EntraIdIdentityProvider>.Instance);
     }
 
@@ -124,8 +125,8 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
 
         await _provider.UpdateUserAsync("user-1", update, TestContext.Current.CancellationToken);
 
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentityUserProfileUpdatedEvent>(e =>
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentityUserProfileUpdatedEto>(e =>
                 e.UserId == "user-1" && e.Update == update),
             Arg.Any<CancellationToken>());
     }
@@ -319,7 +320,7 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
             sequenceFactory,
             Microsoft.Extensions.Options.Options.Create(_options),
             _passwordResetNotifier,
-            _eventPublisher,
+            _distributedEventBus,
             NullLogger<EntraIdIdentityProvider>.Instance);
 
         IReadOnlyList<IdentityRole> result = await provider.GetUserRolesAsync(
@@ -354,8 +355,8 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
 
         await _provider.TerminateAllSessionsAsync("user-1", TestContext.Current.CancellationToken);
 
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentitySessionsRevokedEvent>(e => e.UserId == "user-1"),
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentitySessionsRevokedEto>(e => e.UserId == "user-1"),
             Arg.Any<CancellationToken>());
     }
 
@@ -387,8 +388,8 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
         await _provider.SetTemporaryPasswordAsync(
             "user-1", "TempPass123!", TestContext.Current.CancellationToken);
 
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentityPasswordResetEvent>(e => e.UserId == "user-1"),
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentityPasswordResetEto>(e => e.UserId == "user-1"),
             Arg.Any<CancellationToken>());
     }
 
@@ -420,8 +421,8 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
 
         await _provider.SendPasswordResetEmailAsync("user-1", TestContext.Current.CancellationToken);
 
-        await _eventPublisher.Received().PublishAsync(
-            Arg.Is<IdentityPasswordResetEvent>(e => e.UserId == "user-1"),
+        await _distributedEventBus.Received().PublishAsync(
+            Arg.Is<IdentityPasswordResetEto>(e => e.UserId == "user-1"),
             Arg.Any<CancellationToken>());
     }
 
@@ -476,8 +477,8 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
 
         await _provider.AddUserToGroupAsync("user-1", "grp-1", TestContext.Current.CancellationToken);
 
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentityGroupMembershipChangedEvent>(e =>
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentityGroupMembershipChangedEto>(e =>
                 e.UserId == "user-1" && e.GroupId == "grp-1" && e.Added),
             Arg.Any<CancellationToken>());
     }
@@ -505,8 +506,8 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
 
         await _provider.RemoveUserFromGroupAsync("user-1", "grp-1", TestContext.Current.CancellationToken);
 
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentityGroupMembershipChangedEvent>(e =>
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentityGroupMembershipChangedEto>(e =>
                 e.UserId == "user-1" && e.GroupId == "grp-1" && !e.Added),
             Arg.Any<CancellationToken>());
     }

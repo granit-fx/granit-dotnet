@@ -24,7 +24,6 @@ public static class IdentityServiceCollectionExtensions
         RegisterFineGrainedInterfaces(services);
 
         services.TryAddScoped<IIdentityProviderCapabilities, NullIdentityProviderCapabilities>();
-        services.TryAddScoped<IIdentityEventPublisher, NullIdentityEventPublisher>();
         services.TryAddScoped<IUserLookupService, NullUserLookupService>();
         services.TryAddScoped<IUserCacheStats, NullUserCacheStats>();
         return services;

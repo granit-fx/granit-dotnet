@@ -1,3 +1,5 @@
+using Granit.Core.Events;
+
 namespace Granit.Authentication.ApiKeys.Events;
 
 /// <summary>
@@ -6,4 +8,4 @@ namespace Granit.Authentication.ApiKeys.Events;
 /// </summary>
 /// <param name="ApiKeyId">The identifier of the updated key.</param>
 /// <param name="HashedKey">The hash of the key for cache eviction.</param>
-public sealed record ApiKeyScopesUpdatedEvent(Guid ApiKeyId, string HashedKey);
+public sealed record ApiKeyScopesUpdatedEto(Guid ApiKeyId, string HashedKey) : IIntegrationEvent;

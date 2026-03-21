@@ -2,6 +2,7 @@ using Azure.Identity;
 using Azure.Security.KeyVault.Keys;
 using Azure.Security.KeyVault.Keys.Cryptography;
 using Azure.Security.KeyVault.Secrets;
+using Granit.Core.Diagnostics;
 using Granit.Encryption;
 using Granit.Vault.Azure.Diagnostics;
 using Granit.Vault.Azure.HealthChecks;
@@ -61,7 +62,7 @@ public static class AzureKeyVaultServiceCollectionExtensions
             sp.GetRequiredService<AzureSecretsCredentialProvider>());
         services.AddHostedService(sp => sp.GetRequiredService<AzureSecretsCredentialProvider>());
 
-        _ = VaultAzureActivitySource.Source; // ensure static init
+        GranitActivitySourceRegistry.Register(VaultAzureActivitySource.Name);
 
         return services;
     }

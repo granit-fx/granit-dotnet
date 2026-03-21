@@ -1,6 +1,7 @@
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Runtime;
+using Granit.Core.Events;
 using Granit.Identity.Cognito.Internal;
 using Granit.Identity.Cognito.Options;
 using Granit.Identity.Models;
@@ -15,7 +16,7 @@ namespace Granit.Identity.Cognito.Tests;
 public sealed class CognitoIdentityProviderTests
 {
     private readonly IAmazonCognitoIdentityProvider _cognitoClient = Substitute.For<IAmazonCognitoIdentityProvider>();
-    private readonly IIdentityEventPublisher _eventPublisher = Substitute.For<IIdentityEventPublisher>();
+    private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
     private readonly CognitoIdentityProvider _sut;
 
     public CognitoIdentityProviderTests()
@@ -30,7 +31,7 @@ public sealed class CognitoIdentityProviderTests
         _sut = new CognitoIdentityProvider(
             _cognitoClient,
             Microsoft.Extensions.Options.Options.Create(options),
-            _eventPublisher,
+            _distributedEventBus,
             NullLogger<CognitoIdentityProvider>.Instance);
     }
 
@@ -179,8 +180,8 @@ public sealed class CognitoIdentityProviderTests
             Arg.Is<AdminAddUserToGroupRequest>(r => r.Username == "user1" && r.GroupName == "admin"),
             Arg.Any<CancellationToken>());
 
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Any<Events.IdentityGroupMembershipChangedEvent>(),
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Any<Events.IdentityGroupMembershipChangedEto>(),
             Arg.Any<CancellationToken>());
     }
 

@@ -47,7 +47,7 @@ public sealed class SettingsPermissionDefinitionProviderTests
 
         provider.DefinePermissions(context);
 
-        group.Permissions.ShouldContain(p => p.Name == SettingsPermissions.GlobalRead);
+        group.Permissions.ShouldContain(p => p.Name == SettingsPermissions.Global.Read);
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public sealed class SettingsPermissionDefinitionProviderTests
 
         provider.DefinePermissions(context);
 
-        group.Permissions.ShouldContain(p => p.Name == SettingsPermissions.GlobalManage);
+        group.Permissions.ShouldContain(p => p.Name == SettingsPermissions.Global.Manage);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public sealed class SettingsPermissionDefinitionProviderTests
 
         provider.DefinePermissions(context);
 
-        group.Permissions.ShouldContain(p => p.Name == SettingsPermissions.TenantRead);
+        group.Permissions.ShouldContain(p => p.Name == SettingsPermissions.Tenant.Read);
     }
 
     [Fact]
@@ -86,6 +86,6 @@ public sealed class SettingsPermissionDefinitionProviderTests
 
         provider.DefinePermissions(context);
 
-        group.Permissions.ShouldContain(p => p.Name == SettingsPermissions.TenantManage);
+        group.Permissions.ShouldContain(p => p.Name == SettingsPermissions.Tenant.Manage);
     }
 }

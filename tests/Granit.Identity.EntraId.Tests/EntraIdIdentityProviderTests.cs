@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net;
+using Granit.Core.Events;
 using Granit.Identity;
 using Granit.Identity.EntraId.Internal;
 using Granit.Identity.EntraId.Options;
@@ -29,7 +30,7 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
 
     private readonly EntraIdAdminTokenService _tokenService;
     private readonly IPasswordResetNotifier _passwordResetNotifier = Substitute.For<IPasswordResetNotifier>();
-    private readonly IIdentityEventPublisher _eventPublisher = Substitute.For<IIdentityEventPublisher>();
+    private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
     private readonly EntraIdIdentityProvider _provider;
     private readonly ActivityListener _activityListener;
 
@@ -68,7 +69,7 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
             _httpClientFactory,
             Microsoft.Extensions.Options.Options.Create(_options),
             _passwordResetNotifier,
-            _eventPublisher,
+            _distributedEventBus,
             NullLogger<EntraIdIdentityProvider>.Instance);
     }
 
@@ -226,7 +227,7 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
             factory,
             Microsoft.Extensions.Options.Options.Create(optionsWithRopc),
             _passwordResetNotifier,
-            _eventPublisher,
+            _distributedEventBus,
             NullLogger<EntraIdIdentityProvider>.Instance);
 
         bool result = await provider.VerifyUserCredentialsAsync("admin", "password123",
@@ -267,7 +268,7 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
             factory,
             Microsoft.Extensions.Options.Options.Create(optionsWithRopc),
             _passwordResetNotifier,
-            _eventPublisher,
+            _distributedEventBus,
             NullLogger<EntraIdIdentityProvider>.Instance);
 
         bool result = await provider.VerifyUserCredentialsAsync("admin", "wrong-password",
@@ -294,8 +295,8 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
 
         await _provider.SetUserEnabledAsync("u1", true, TestContext.Current.CancellationToken);
 
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentityUserEnabledChangedEvent>(e => e.UserId == "u1" && e.Enabled),
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentityUserEnabledChangedEto>(e => e.UserId == "u1" && e.Enabled),
             Arg.Any<CancellationToken>());
     }
 
@@ -320,22 +321,22 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
         IHttpClientFactory factory = Substitute.For<IHttpClientFactory>();
         factory.CreateClient("MicrosoftGraph").Returns(client);
 
-        IIdentityEventPublisher eventPublisher = Substitute.For<IIdentityEventPublisher>();
+        IDistributedEventBus distributedEventBus = Substitute.For<IDistributedEventBus>();
 
         EntraIdIdentityProvider provider = new(
             _tokenService,
             factory,
             Microsoft.Extensions.Options.Options.Create(optionsWithDomain),
             _passwordResetNotifier,
-            eventPublisher,
+            distributedEventBus,
             NullLogger<EntraIdIdentityProvider>.Instance);
 
         IdentityUserCreate newUser = new("alice", "alice@test.com", "Alice", "Doe");
 
         await provider.CreateUserAsync(newUser, TestContext.Current.CancellationToken);
 
-        await eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentityUserCreatedEvent>(e =>
+        await distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentityUserCreatedEto>(e =>
                 e.UserId == "new-user-id" &&
                 e.Username == "alice" &&
                 e.Email == "alice@test.com"),

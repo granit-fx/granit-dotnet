@@ -23,7 +23,7 @@ internal sealed partial class IdentityUserEventHandler(
     /// Handles a user created/updated event (from webhook) by fetching the user from
     /// the identity provider and upserting the cache entry.
     /// </summary>
-    public async Task HandleAsync(IdentityUserUpdatedEvent @event, CancellationToken cancellationToken)
+    public async Task HandleAsync(IdentityUserUpdatedEto @event, CancellationToken cancellationToken)
     {
         await SyncUserCacheAsync(@event.UserId, cancellationToken).ConfigureAwait(false);
         LogUserCacheUpdated(@event.UserId, "webhook");
@@ -32,7 +32,7 @@ internal sealed partial class IdentityUserEventHandler(
     /// <summary>
     /// Handles a user deleted event by hard-deleting the cache entry (RGPD Art. 17).
     /// </summary>
-    public async Task HandleAsync(IdentityUserDeletedEvent @event, CancellationToken cancellationToken)
+    public async Task HandleAsync(IdentityUserDeletedEto @event, CancellationToken cancellationToken)
     {
         await store.DeleteByExternalIdAsync(@event.UserId, @event.TenantId, cancellationToken)
             .ConfigureAwait(false);
@@ -49,7 +49,7 @@ internal sealed partial class IdentityUserEventHandler(
     /// <summary>
     /// Handles a user created event by syncing the new user into the local cache.
     /// </summary>
-    public async Task HandleAsync(IdentityUserCreatedEvent @event, CancellationToken cancellationToken)
+    public async Task HandleAsync(IdentityUserCreatedEto @event, CancellationToken cancellationToken)
     {
         await SyncUserCacheAsync(@event.UserId, cancellationToken).ConfigureAwait(false);
         LogUserCacheUpdated(@event.UserId, "create");
@@ -58,7 +58,7 @@ internal sealed partial class IdentityUserEventHandler(
     /// <summary>
     /// Handles a user profile updated event by refreshing the cache entry.
     /// </summary>
-    public async Task HandleAsync(IdentityUserProfileUpdatedEvent @event, CancellationToken cancellationToken)
+    public async Task HandleAsync(IdentityUserProfileUpdatedEto @event, CancellationToken cancellationToken)
     {
         await SyncUserCacheAsync(@event.UserId, cancellationToken).ConfigureAwait(false);
         LogUserCacheUpdated(@event.UserId, "profile-update");
@@ -67,7 +67,7 @@ internal sealed partial class IdentityUserEventHandler(
     /// <summary>
     /// Handles a user enabled/disabled event by refreshing the cache entry.
     /// </summary>
-    public async Task HandleAsync(IdentityUserEnabledChangedEvent @event, CancellationToken cancellationToken)
+    public async Task HandleAsync(IdentityUserEnabledChangedEto @event, CancellationToken cancellationToken)
     {
         await SyncUserCacheAsync(@event.UserId, cancellationToken).ConfigureAwait(false);
         LogUserCacheUpdated(@event.UserId, "enabled-change");

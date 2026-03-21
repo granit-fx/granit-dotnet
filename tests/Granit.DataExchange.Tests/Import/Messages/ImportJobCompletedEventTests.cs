@@ -5,14 +5,14 @@ using Xunit;
 
 namespace Granit.DataExchange.Tests.Import.Messages;
 
-public sealed class ImportJobCompletedEventTests
+public sealed class ImportJobCompletedEtoTests
 {
     [Fact]
     public void Constructor_SetsAllProperties()
     {
         var jobId = Guid.NewGuid();
 
-        var sut = new ImportJobCompletedEvent(
+        var sut = new ImportJobCompletedEto(
             jobId,
             "CustomerImport",
             ImportJobStatus.Completed,
@@ -43,7 +43,7 @@ public sealed class ImportJobCompletedEventTests
     [InlineData(ImportJobStatus.Cancelled)]
     public void Constructor_AcceptsTerminalStatuses(ImportJobStatus status)
     {
-        var sut = new ImportJobCompletedEvent(
+        var sut = new ImportJobCompletedEto(
             Guid.NewGuid(), "def", status, "user", 10, 5, 5, 3, 2, 0);
 
         sut.Status.ShouldBe(status);
@@ -54,8 +54,8 @@ public sealed class ImportJobCompletedEventTests
     {
         var jobId = Guid.NewGuid();
 
-        var a = new ImportJobCompletedEvent(jobId, "d", ImportJobStatus.Completed, "u", 1, 1, 0, 1, 0, 0);
-        var b = new ImportJobCompletedEvent(jobId, "d", ImportJobStatus.Completed, "u", 1, 1, 0, 1, 0, 0);
+        var a = new ImportJobCompletedEto(jobId, "d", ImportJobStatus.Completed, "u", 1, 1, 0, 1, 0, 0);
+        var b = new ImportJobCompletedEto(jobId, "d", ImportJobStatus.Completed, "u", 1, 1, 0, 1, 0, 0);
 
         a.ShouldBe(b);
     }

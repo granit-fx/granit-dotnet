@@ -1,3 +1,5 @@
+using Granit.Core.Events;
+
 namespace Granit.Authentication.ApiKeys.Events;
 
 /// <summary>
@@ -6,4 +8,4 @@ namespace Granit.Authentication.ApiKeys.Events;
 /// </summary>
 /// <param name="ApiKeyId">The unique identifier of the revoked key.</param>
 /// <param name="HashedKey">The SHA-256 hash of the key for cache eviction.</param>
-public sealed record ApiKeyRevokedEvent(Guid ApiKeyId, string HashedKey);
+public sealed record ApiKeyRevokedEvent(Guid ApiKeyId, string HashedKey) : IDomainEvent;

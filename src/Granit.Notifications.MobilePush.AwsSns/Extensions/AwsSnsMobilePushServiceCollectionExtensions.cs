@@ -1,6 +1,7 @@
 using Amazon;
 using Amazon.Runtime;
 using Amazon.SimpleNotificationService;
+using Granit.Core.Diagnostics;
 using Granit.Notifications.MobilePush.AwsSns.Diagnostics;
 using Granit.Notifications.MobilePush.AwsSns.HealthChecks;
 using Granit.Notifications.MobilePush.AwsSns.Internal;
@@ -45,7 +46,7 @@ public static class AwsSnsMobilePushServiceCollectionExtensions
 
         services.AddKeyedSingleton<IMobilePushSender, AwsSnsMobilePushSender>("AwsSns");
 
-        _ = NotificationsMobilePushAwsSnsActivitySource.Source; // ensure static init
+        GranitActivitySourceRegistry.Register(NotificationsMobilePushAwsSnsActivitySource.Name);
 
         return services;
     }

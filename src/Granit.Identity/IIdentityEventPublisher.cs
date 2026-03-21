@@ -1,3 +1,5 @@
+using Granit.Core.Events;
+
 namespace Granit.Identity;
 
 /// <summary>
@@ -5,15 +7,11 @@ namespace Granit.Identity;
 /// </summary>
 /// <remarks>
 /// <para>
-/// A <c>NullIdentityEventPublisher</c> (no-op) is registered by default.
-/// To enable event-driven cache synchronization and audit trail, register an implementation
-/// backed by a message bus (e.g. Wolverine <c>IMessageBus</c>).
-/// </para>
-/// <para>
-/// Events are defined as records in <see cref="Granit.Identity.Events"/> and are published
-/// by identity providers after each successful write operation.
+/// This interface is obsolete. Identity providers now use <see cref="IDistributedEventBus"/>
+/// directly to publish integration events (<c>*Eto</c> records implementing <see cref="IIntegrationEvent"/>).
 /// </para>
 /// </remarks>
+[Obsolete("Use IDistributedEventBus from Granit.Core.Events instead. Identity events are now IIntegrationEvent records (*Eto suffix).")]
 public interface IIdentityEventPublisher
 {
     /// <summary>

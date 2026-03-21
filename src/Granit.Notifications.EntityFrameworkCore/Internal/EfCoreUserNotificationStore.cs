@@ -60,22 +60,34 @@ internal sealed class EfCoreUserNotificationStore(IDbContextFactory<Notification
     public async Task MarkAsReadAsync(Guid id, DateTimeOffset readAt, CancellationToken cancellationToken = default)
     {
         await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        await db.UserNotifications
-            .Where(n => n.Id == id)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(n => n.State, UserNotificationState.Read)
-                .SetProperty(n => n.ReadAt, readAt), cancellationToken).ConfigureAwait(false);
+
+        UserNotification? notification = await db.UserNotifications
+            .FirstOrDefaultAsync(n => n.Id == id, cancellationToken).ConfigureAwait(false);
+
+        if (notification is null)
+        {
+            return;
+        }
+
+        notification.MarkAsRead(readAt);
+        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async Task MarkAllAsReadAsync(string recipientUserId, Guid? tenantId, DateTimeOffset readAt, CancellationToken cancellationToken = default)
     {
         await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        await db.UserNotifications
+
+        List<UserNotification> unread = await db.UserNotifications
             .Where(n => n.RecipientUserId == recipientUserId && n.TenantId == tenantId && n.State == UserNotificationState.Unread)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(n => n.State, UserNotificationState.Read)
-                .SetProperty(n => n.ReadAt, readAt), cancellationToken).ConfigureAwait(false);
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+        foreach (UserNotification notification in unread)
+        {
+            notification.MarkAsRead(readAt);
+        }
+
+        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

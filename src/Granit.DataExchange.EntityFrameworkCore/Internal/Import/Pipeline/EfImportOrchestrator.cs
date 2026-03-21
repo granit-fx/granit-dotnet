@@ -60,7 +60,7 @@ internal sealed class EfImportOrchestrator(
 
             metrics.RecordImportCompleted(report, job);
 
-            await eventBus.PublishAsync(new ImportJobCompletedEvent(
+            await eventBus.PublishAsync(new ImportJobCompletedEto(
                 importJobId, job.DefinitionName, report.FinalStatus, job.CreatedBy,
                 report.TotalRows, report.SucceededRows, report.FailedRows,
                 report.InsertedRows, report.UpdatedRows, report.SkippedRows), cancellationToken).ConfigureAwait(false);
@@ -91,7 +91,7 @@ internal sealed class EfImportOrchestrator(
 
             metrics.RecordImportCompleted(errorReport, job);
 
-            await eventBus.PublishAsync(new ImportJobCompletedEvent(
+            await eventBus.PublishAsync(new ImportJobCompletedEto(
                 importJobId, job.DefinitionName, ImportJobStatus.Failed, job.CreatedBy,
                 errorReport.TotalRows, errorReport.SucceededRows, errorReport.FailedRows,
                 errorReport.InsertedRows, errorReport.UpdatedRows, errorReport.SkippedRows), cancellationToken).ConfigureAwait(false);

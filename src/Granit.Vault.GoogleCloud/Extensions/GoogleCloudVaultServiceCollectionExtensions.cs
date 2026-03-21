@@ -1,6 +1,7 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Kms.V1;
 using Google.Cloud.SecretManager.V1;
+using Granit.Core.Diagnostics;
 using Granit.Encryption;
 using Granit.Vault.GoogleCloud.Diagnostics;
 using Granit.Vault.GoogleCloud.HealthChecks;
@@ -74,7 +75,7 @@ public static class GoogleCloudVaultServiceCollectionExtensions
             sp.GetRequiredService<SecretManagerCredentialProvider>());
         services.AddHostedService(sp => sp.GetRequiredService<SecretManagerCredentialProvider>());
 
-        _ = VaultGoogleCloudActivitySource.Source; // ensure static init
+        GranitActivitySourceRegistry.Register(VaultGoogleCloudActivitySource.Name);
 
         return services;
     }

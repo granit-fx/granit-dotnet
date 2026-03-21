@@ -1,4 +1,5 @@
 using Amazon.CognitoIdentityProvider;
+using Granit.Core.Events;
 using Granit.Identity.Cognito.Extensions;
 using Granit.Identity.Cognito.Internal;
 using Granit.Identity.Cognito.Options;
@@ -6,6 +7,7 @@ using Granit.Identity.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -28,6 +30,7 @@ public sealed class IdentityCognitoServiceCollectionExtensionsTests
         ServiceCollection services = new();
         services.AddSingleton(configuration);
         services.AddLogging();
+        services.AddSingleton(Substitute.For<IDistributedEventBus>());
         services.AddGranitIdentity();
         services.AddGranitIdentityCognito();
         return services.BuildServiceProvider();

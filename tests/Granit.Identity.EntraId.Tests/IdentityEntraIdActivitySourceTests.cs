@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net;
+using Granit.Core.Events;
 using Granit.Identity;
 using Granit.Identity.EntraId.Diagnostics;
 using Granit.Identity.EntraId.Internal;
@@ -23,7 +24,7 @@ public sealed class IdentityEntraIdActivitySourceTests : IDisposable
     private readonly IHttpClientFactory _httpClientFactory = Substitute.For<IHttpClientFactory>();
     private readonly EntraIdAdminTokenService _tokenService;
     private readonly IPasswordResetNotifier _passwordResetNotifier = Substitute.For<IPasswordResetNotifier>();
-    private readonly IIdentityEventPublisher _eventPublisher = Substitute.For<IIdentityEventPublisher>();
+    private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
     private readonly EntraIdIdentityProvider _provider;
 
     public IdentityEntraIdActivitySourceTests()
@@ -71,7 +72,7 @@ public sealed class IdentityEntraIdActivitySourceTests : IDisposable
             _httpClientFactory,
             MsOptions.Create(options),
             _passwordResetNotifier,
-            _eventPublisher,
+            _distributedEventBus,
             NullLogger<EntraIdIdentityProvider>.Instance);
     }
 

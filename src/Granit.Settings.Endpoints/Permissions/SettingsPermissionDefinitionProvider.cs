@@ -18,22 +18,22 @@ internal sealed class SettingsPermissionDefinitionProvider : IPermissionDefiniti
                 "PermissionGroup:Settings"));
 
         group.AddPermission(
-            SettingsPermissions.GlobalRead,
+            SettingsPermissions.Global.Read,
             LocalizableString.Create<SettingsEndpointsLocalizationResource>(
                 "Permission:Settings.Global.Read"));
 
         group.AddPermission(
-            SettingsPermissions.GlobalManage,
+            SettingsPermissions.Global.Manage,
             LocalizableString.Create<SettingsEndpointsLocalizationResource>(
                 "Permission:Settings.Global.Manage"));
 
         group.AddPermission(
-            SettingsPermissions.TenantRead,
+            SettingsPermissions.Tenant.Read,
             LocalizableString.Create<SettingsEndpointsLocalizationResource>(
                 "Permission:Settings.Tenant.Read"));
 
         group.AddPermission(
-            SettingsPermissions.TenantManage,
+            SettingsPermissions.Tenant.Manage,
             LocalizableString.Create<SettingsEndpointsLocalizationResource>(
                 "Permission:Settings.Tenant.Manage"));
     }

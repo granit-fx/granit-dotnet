@@ -1,6 +1,7 @@
 using Amazon;
 using Amazon.Runtime;
 using Amazon.SimpleEmailV2;
+using Granit.Core.Diagnostics;
 using Granit.Notifications.Email.AwsSes.Diagnostics;
 using Granit.Notifications.Email.AwsSes.HealthChecks;
 using Granit.Notifications.Email.AwsSes.Internal;
@@ -52,7 +53,7 @@ public static class SesEmailServiceCollectionExtensions
 
         services.AddKeyedSingleton<IEmailSender, AwsSesEmailSender>("AwsSes");
 
-        _ = NotificationsEmailAwsSesActivitySource.Source; // ensure static init
+        GranitActivitySourceRegistry.Register(NotificationsEmailAwsSesActivitySource.Name);
 
         return services;
     }

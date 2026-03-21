@@ -87,14 +87,19 @@ internal sealed class EfCoreApiKeyAdminStore(
         await using ApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        int updated = await db.ApiKeys
-            .Where(k => k.Id == id && k.RevokedAt == null)
-            .ExecuteUpdateAsync(
-                s => s.SetProperty(k => k.RevokedAt, revokedAt),
-                cancellationToken)
+        ApiKeyEntry? entry = await db.ApiKeys
+            .FirstOrDefaultAsync(k => k.Id == id && k.RevokedAt == null, cancellationToken)
             .ConfigureAwait(false);
 
-        return updated > 0;
+        if (entry is null)
+        {
+            return false;
+        }
+
+        entry.Revoke(revokedAt);
+        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        return true;
     }
 
     /// <inheritdoc/>

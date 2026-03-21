@@ -1,3 +1,4 @@
+using Granit.Core.Events;
 using Granit.Identity.GoogleCloud.Extensions;
 using Granit.Identity.GoogleCloud.Internal;
 using Granit.Identity.GoogleCloud.Options;
@@ -24,7 +25,7 @@ public sealed class IdentityGoogleCloudServiceCollectionExtensionsTests
         services.AddLogging();
 
         // Register identity abstractions that AddGranitIdentityGoogleCloud expects
-        services.AddSingleton(NSubstitute.Substitute.For<IIdentityEventPublisher>());
+        services.AddSingleton(NSubstitute.Substitute.For<IDistributedEventBus>());
 
         return services;
     }

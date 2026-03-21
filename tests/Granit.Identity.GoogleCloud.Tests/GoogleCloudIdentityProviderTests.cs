@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using FirebaseAdmin.Auth;
+using Granit.Core.Events;
 using Granit.Identity.Events;
 using Granit.Identity.GoogleCloud.Internal;
 using Granit.Identity.GoogleCloud.Options;
@@ -15,7 +16,7 @@ namespace Granit.Identity.GoogleCloud.Tests;
 public sealed class GoogleCloudIdentityProviderTests
 {
     private readonly IFirebaseAuthTransport _transport = Substitute.For<IFirebaseAuthTransport>();
-    private readonly IIdentityEventPublisher _eventPublisher = Substitute.For<IIdentityEventPublisher>();
+    private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
     private readonly GoogleCloudIdentityOptions _options = new() { ProjectId = "test-project", RolesClaimKey = "roles" };
     private readonly GoogleCloudIdentityProvider _sut;
 
@@ -24,7 +25,7 @@ public sealed class GoogleCloudIdentityProviderTests
         _sut = new GoogleCloudIdentityProvider(
             _transport,
             Microsoft.Extensions.Options.Options.Create(_options),
-            _eventPublisher,
+            _distributedEventBus,
             NullLogger<GoogleCloudIdentityProvider>.Instance);
     }
 
@@ -68,8 +69,8 @@ public sealed class GoogleCloudIdentityProviderTests
         await _transport.Received(1).UpdateUserAsync(
             Arg.Is<UserRecordArgs>(a => a.Uid == "uid-1" && a.Disabled == !enabled),
             Arg.Any<CancellationToken>());
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentityUserEnabledChangedEvent>(e => e.UserId == "uid-1" && e.Enabled == enabled),
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentityUserEnabledChangedEto>(e => e.UserId == "uid-1" && e.Enabled == enabled),
             Arg.Any<CancellationToken>());
     }
 
@@ -85,8 +86,8 @@ public sealed class GoogleCloudIdentityProviderTests
         await _transport.Received(1).UpdateUserAsync(
             Arg.Is<UserRecordArgs>(a => a.Uid == "uid-1" && a.Email == "new@example.com" && a.DisplayName == "Jane Smith"),
             Arg.Any<CancellationToken>());
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentityUserProfileUpdatedEvent>(e => e.UserId == "uid-1"),
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentityUserProfileUpdatedEto>(e => e.UserId == "uid-1"),
             Arg.Any<CancellationToken>());
     }
 
@@ -117,8 +118,8 @@ public sealed class GoogleCloudIdentityProviderTests
                 a.Disabled == false &&
                 a.Password == "TempPass123!"),
             Arg.Any<CancellationToken>());
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentityUserCreatedEvent>(e => e.UserId == "new-uid"),
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentityUserCreatedEto>(e => e.UserId == "new-uid"),
             Arg.Any<CancellationToken>());
     }
 
@@ -180,8 +181,8 @@ public sealed class GoogleCloudIdentityProviderTests
             "uid-1",
             Arg.Any<IReadOnlyDictionary<string, object>>(),
             Arg.Any<CancellationToken>());
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentityRoleAssignedEvent>(e => e.UserId == "uid-1" && e.RoleName == "admin"),
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentityRoleAssignedEto>(e => e.UserId == "uid-1" && e.RoleName == "admin"),
             Arg.Any<CancellationToken>());
     }
 
@@ -198,8 +199,8 @@ public sealed class GoogleCloudIdentityProviderTests
             "uid-1",
             Arg.Any<IReadOnlyDictionary<string, object>>(),
             Arg.Any<CancellationToken>());
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentityRoleRemovedEvent>(e => e.UserId == "uid-1" && e.RoleName == "admin"),
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentityRoleRemovedEto>(e => e.UserId == "uid-1" && e.RoleName == "admin"),
             Arg.Any<CancellationToken>());
     }
 
@@ -242,8 +243,8 @@ public sealed class GoogleCloudIdentityProviderTests
         await _sut.TerminateAllSessionsAsync("uid-1", TestContext.Current.CancellationToken);
 
         await _transport.Received(1).RevokeRefreshTokensAsync("uid-1", Arg.Any<CancellationToken>());
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentitySessionsRevokedEvent>(e => e.UserId == "uid-1"),
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentitySessionsRevokedEto>(e => e.UserId == "uid-1"),
             Arg.Any<CancellationToken>());
     }
 
@@ -260,8 +261,8 @@ public sealed class GoogleCloudIdentityProviderTests
         await _sut.SendPasswordResetEmailAsync("uid-1", TestContext.Current.CancellationToken);
 
         await _transport.Received(1).GeneratePasswordResetLinkAsync("john@example.com", Arg.Any<CancellationToken>());
-        await _eventPublisher.Received(1).PublishAsync(
-            Arg.Is<IdentityPasswordResetEvent>(e => e.UserId == "uid-1"),
+        await _distributedEventBus.Received(1).PublishAsync(
+            Arg.Is<IdentityPasswordResetEto>(e => e.UserId == "uid-1"),
             Arg.Any<CancellationToken>());
     }
 

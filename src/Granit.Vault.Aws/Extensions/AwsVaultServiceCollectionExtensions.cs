@@ -2,6 +2,7 @@ using Amazon;
 using Amazon.KeyManagementService;
 using Amazon.Runtime;
 using Amazon.SecretsManager;
+using Granit.Core.Diagnostics;
 using Granit.Encryption;
 using Granit.Vault.Aws.Diagnostics;
 using Granit.Vault.Aws.HealthChecks;
@@ -71,7 +72,7 @@ public static class AwsVaultServiceCollectionExtensions
             sp.GetRequiredService<AwsSecretsCredentialProvider>());
         services.AddHostedService(sp => sp.GetRequiredService<AwsSecretsCredentialProvider>());
 
-        _ = VaultAwsActivitySource.Source; // ensure static init
+        GranitActivitySourceRegistry.Register(VaultAwsActivitySource.Name);
 
         return services;
     }

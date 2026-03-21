@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Granit.Core.Events;
 using Granit.Identity.Diagnostics;
 using Granit.Identity.Events;
 using Granit.Identity.Keycloak.Diagnostics;
@@ -29,7 +30,7 @@ internal sealed partial class KeycloakIdentityProvider(
     KeycloakUserTokenExchangeService tokenExchangeService,
     IHttpClientFactory httpClientFactory,
     IOptions<KeycloakAdminOptions> options,
-    IIdentityEventPublisher eventPublisher,
+    IDistributedEventBus distributedEventBus,
     IdentityMetrics metrics,
     ILogger<KeycloakIdentityProvider> logger) : IIdentityProvider
 {
@@ -119,7 +120,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         LogUserEnabledChanged(userId, enabled ? "enabled" : "disabled");
 
-        await eventPublisher.PublishAsync(new IdentityUserEnabledChangedEvent(userId, enabled), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityUserEnabledChangedEto(userId, enabled), cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -188,7 +189,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         metrics.RecordOperationCompleted(null, "update_user", ProviderName, "updated");
 
-        await eventPublisher.PublishAsync(new IdentityUserProfileUpdatedEvent(userId, update), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityUserProfileUpdatedEto(userId, update), cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -391,7 +392,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         metrics.RecordOperationCompleted(null, "assign_role", ProviderName, "assigned");
 
-        await eventPublisher.PublishAsync(new IdentityRoleAssignedEvent(userId, roleName), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityRoleAssignedEto(userId, roleName), cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -426,7 +427,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         LogRoleRemoved(roleName, userId);
 
-        await eventPublisher.PublishAsync(new IdentityRoleRemovedEvent(userId, roleName), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityRoleRemovedEto(userId, roleName), cancellationToken).ConfigureAwait(false);
     }
 
     // ──── Feature 2: Session termination ────
@@ -454,7 +455,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         LogSessionTerminated(sessionId, userId);
 
-        await eventPublisher.PublishAsync(new IdentitySessionsRevokedEvent(userId), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentitySessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -482,7 +483,7 @@ internal sealed partial class KeycloakIdentityProvider(
         metrics.RecordOperationCompleted(null, "terminate_all_sessions", ProviderName, "terminated");
         metrics.RecordOperationDuration(null, "terminate_all_sessions", ProviderName, Stopwatch.GetElapsedTime(startTimestamp));
 
-        await eventPublisher.PublishAsync(new IdentitySessionsRevokedEvent(userId), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentitySessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
     }
 
     // ──── Feature 3: Password reset ────
@@ -508,7 +509,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         LogPasswordResetEmailSent(userId);
 
-        await eventPublisher.PublishAsync(new IdentityPasswordResetEvent(userId), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityPasswordResetEto(userId), cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -535,7 +536,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         LogTemporaryPasswordSet(userId);
 
-        await eventPublisher.PublishAsync(new IdentityPasswordResetEvent(userId), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityPasswordResetEto(userId), cancellationToken).ConfigureAwait(false);
     }
 
     // ──── Feature 4: User creation ────
@@ -586,7 +587,7 @@ internal sealed partial class KeycloakIdentityProvider(
         metrics.RecordOperationCompleted(null, "create_user", ProviderName, "created");
         metrics.RecordOperationDuration(null, "create_user", ProviderName, Stopwatch.GetElapsedTime(startTimestamp));
 
-        await eventPublisher.PublishAsync(new IdentityUserCreatedEvent(createdUserId, user.Username, user.Email), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityUserCreatedEto(createdUserId, user.Username, user.Email), cancellationToken).ConfigureAwait(false);
 
         return new IdentityUser(
             createdUserId,
@@ -677,7 +678,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         LogUserAddedToGroup(userId, groupId);
 
-        await eventPublisher.PublishAsync(new IdentityGroupMembershipChangedEvent(userId, groupId, Added: true), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityGroupMembershipChangedEto(userId, groupId, Added: true), cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -704,7 +705,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         LogUserRemovedFromGroup(userId, groupId);
 
-        await eventPublisher.PublishAsync(new IdentityGroupMembershipChangedEvent(userId, groupId, Added: false), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityGroupMembershipChangedEto(userId, groupId, Added: false), cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<IReadOnlyList<IdentityDeviceActivity>> GetDeviceActivityViaAccountApiAsync(

@@ -44,7 +44,7 @@ public sealed class LocalizationOverridesEndpointTests : IAsyncDisposable
 
         // Register a role-based policy for the permission name so the TestAuthHandler can resolve it.
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(LocalizationOverridesPermissions.Manage,
+            .AddPolicy(LocalizationOverridesPermissions.Overrides.Manage,
                 policy => policy.RequireRole(ManageRole));
 
         builder.Services.AddSingleton(_storeReader);
@@ -418,7 +418,7 @@ public sealed class LocalizationOverridesEndpointTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(LocalizationOverridesPermissions.Manage,
+            .AddPolicy(LocalizationOverridesPermissions.Overrides.Manage,
                 policy => policy.RequireRole(ManageRole));
         builder.Services.AddSingleton(_storeReader);
         builder.Services.AddSingleton(_storeWriter);
@@ -466,7 +466,7 @@ public sealed class LocalizationOverridesEndpointTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
-            .AddPolicy(LocalizationOverridesPermissions.Manage,
+            .AddPolicy(LocalizationOverridesPermissions.Overrides.Manage,
                 policy => policy.RequireRole(ManageRole));
 
         WebApplication app = builder.Build();

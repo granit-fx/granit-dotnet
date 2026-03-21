@@ -1,3 +1,4 @@
+using Granit.Core.Diagnostics;
 using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.Email.Scaleway.Diagnostics;
 using Granit.Notifications.Email.Scaleway.HealthChecks;
@@ -43,7 +44,7 @@ public static class ScalewayEmailServiceCollectionExtensions
         services.AddKeyedSingleton<IEmailSender>(
             ProviderKey, (sp, _) => sp.GetRequiredService<ScalewayEmailSender>());
 
-        _ = NotificationsEmailScalewayActivitySource.Source; // ensure static init
+        GranitActivitySourceRegistry.Register(NotificationsEmailScalewayActivitySource.Name);
 
         return services;
     }

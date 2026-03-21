@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using FirebaseAdmin.Auth;
+using Granit.Core.Events;
 using Granit.Identity.Events;
 using Granit.Identity.GoogleCloud.Diagnostics;
 using Granit.Identity.GoogleCloud.Options;
@@ -19,7 +20,7 @@ namespace Granit.Identity.GoogleCloud.Internal;
 internal sealed partial class GoogleCloudIdentityProvider(
     IFirebaseAuthTransport transport,
     IOptions<GoogleCloudIdentityOptions> options,
-    IIdentityEventPublisher eventPublisher,
+    IDistributedEventBus distributedEventBus,
     ILogger<GoogleCloudIdentityProvider> logger) : IIdentityProvider
 {
     private readonly GoogleCloudIdentityOptions _options = options.Value;
@@ -103,7 +104,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
         UserRecordArgs args = new() { Uid = userId, Disabled = !enabled };
         await transport.UpdateUserAsync(args, cancellationToken).ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(new IdentityUserEnabledChangedEvent(userId, enabled), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityUserEnabledChangedEto(userId, enabled), cancellationToken).ConfigureAwait(false);
     }
 
     public async Task UpdateUserAsync(string userId, IdentityUserUpdate update, CancellationToken cancellationToken = default)
@@ -127,7 +128,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
 
         await transport.UpdateUserAsync(args, cancellationToken).ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(new IdentityUserProfileUpdatedEvent(userId, update), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityUserProfileUpdatedEto(userId, update), cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<IdentityUser> CreateUserAsync(IdentityUserCreate user, CancellationToken cancellationToken = default)
@@ -149,7 +150,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
 
         UserRecord created = await transport.CreateUserAsync(args, cancellationToken).ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(new IdentityUserCreatedEvent(created.Uid, user.Username, user.Email), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityUserCreatedEto(created.Uid, user.Username, user.Email), cancellationToken).ConfigureAwait(false);
 
         return new IdentityUser(
             Id: created.Uid,
@@ -205,7 +206,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
 
         await transport.SetCustomUserClaimsAsync(userId, claims, cancellationToken).ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(new IdentityRoleAssignedEvent(userId, roleName), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityRoleAssignedEto(userId, roleName), cancellationToken).ConfigureAwait(false);
     }
 
     public async Task RemoveRoleAsync(string userId, string roleName, CancellationToken cancellationToken = default)
@@ -225,7 +226,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
 
         await transport.SetCustomUserClaimsAsync(userId, claims, cancellationToken).ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(new IdentityRoleRemovedEvent(userId, roleName), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityRoleRemovedEto(userId, roleName), cancellationToken).ConfigureAwait(false);
     }
 
     // ── Groups (not supported by Firebase Auth) ───────────────────────
@@ -261,7 +262,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
 
         await transport.RevokeRefreshTokensAsync(userId, cancellationToken).ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(new IdentitySessionsRevokedEvent(userId), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentitySessionsRevokedEto(userId), cancellationToken).ConfigureAwait(false);
     }
 
     // ── Password ──────────────────────────────────────────────────────
@@ -284,7 +285,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
 
         await transport.GeneratePasswordResetLinkAsync(user.Email, cancellationToken).ConfigureAwait(false);
 
-        await eventPublisher.PublishAsync(new IdentityPasswordResetEvent(userId), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityPasswordResetEto(userId), cancellationToken).ConfigureAwait(false);
     }
 
     public async Task SetTemporaryPasswordAsync(string userId, string temporaryPassword, CancellationToken cancellationToken = default)

@@ -12,34 +12,34 @@ public sealed class LocalizationOverridesPermissionsTests
     [Fact]
     public void Read_FollowsThreeSegmentConvention()
     {
-        string[] segments = LocalizationOverridesPermissions.Read.Split('.');
+        string[] segments = LocalizationOverridesPermissions.Overrides.Read.Split('.');
         segments.Length.ShouldBe(3);
     }
 
     [Fact]
     public void Read_StartsWithGroupName()
     {
-        LocalizationOverridesPermissions.Read.ShouldStartWith(
+        LocalizationOverridesPermissions.Overrides.Read.ShouldStartWith(
             LocalizationOverridesPermissions.GroupName + ".");
     }
 
     [Fact]
-    public void Read_HasCorrectValue() => LocalizationOverridesPermissions.Read.ShouldBe("Localization.Overrides.Read");
+    public void Read_HasCorrectValue() => LocalizationOverridesPermissions.Overrides.Read.ShouldBe("Localization.Overrides.Read");
 
     [Fact]
     public void Manage_FollowsThreeSegmentConvention()
     {
-        string[] segments = LocalizationOverridesPermissions.Manage.Split('.');
+        string[] segments = LocalizationOverridesPermissions.Overrides.Manage.Split('.');
         segments.Length.ShouldBe(3);
     }
 
     [Fact]
     public void Manage_StartsWithGroupName()
     {
-        LocalizationOverridesPermissions.Manage.ShouldStartWith(
+        LocalizationOverridesPermissions.Overrides.Manage.ShouldStartWith(
             LocalizationOverridesPermissions.GroupName + ".");
     }
 
     [Fact]
-    public void Manage_HasCorrectValue() => LocalizationOverridesPermissions.Manage.ShouldBe("Localization.Overrides.Manage");
+    public void Manage_HasCorrectValue() => LocalizationOverridesPermissions.Overrides.Manage.ShouldBe("Localization.Overrides.Manage");
 }

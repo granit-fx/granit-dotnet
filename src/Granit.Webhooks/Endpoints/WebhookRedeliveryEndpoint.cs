@@ -24,6 +24,7 @@ public static class WebhookRedeliveryEndpoint
             .WithName("RetryWebhookDelivery")
             .WithTags("Webhooks")
             .WithSummary("Retries a previously failed webhook delivery attempt.")
+            .WithDescription("Enqueues a manual redelivery for a previously failed webhook delivery attempt. Returns 404 if the delivery does not exist, 409 if the delivery is not in a retryable state (e.g., already succeeded or retry in progress), and 400 for other validation errors.")
             .Produces(StatusCodes.Status202Accepted)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)

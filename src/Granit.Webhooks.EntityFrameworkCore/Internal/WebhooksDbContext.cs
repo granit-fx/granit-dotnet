@@ -27,8 +27,10 @@ internal sealed class WebhooksDbContext(
     public DbSet<WebhookDeliveryAttempt> WebhookDeliveryAttempts => Set<WebhookDeliveryAttempt>();
 
     /// <inheritdoc/>
+    /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.ConfigureWebhooksModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }

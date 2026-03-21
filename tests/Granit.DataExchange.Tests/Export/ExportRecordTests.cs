@@ -132,14 +132,14 @@ public sealed class ExportRecordTests
         a.ShouldBe(b);
     }
 
-    // ── ExportJobCompletedEvent ──────────────────────────────────
+    // ── ExportJobCompletedEto ──────────────────────────────────
 
     [Fact]
-    public void ExportJobCompletedEvent_Constructor_SetsAllProperties()
+    public void ExportJobCompletedEto_Constructor_SetsAllProperties()
     {
         var jobId = Guid.NewGuid();
 
-        ExportJobCompletedEvent evt = new(
+        ExportJobCompletedEto evt = new(
             jobId, "Acme.Export", ExportJobStatus.Completed, "user-123", 500, null);
 
         evt.ExportJobId.ShouldBe(jobId);
@@ -151,9 +151,9 @@ public sealed class ExportRecordTests
     }
 
     [Fact]
-    public void ExportJobCompletedEvent_FailedWithError()
+    public void ExportJobCompletedEto_FailedWithError()
     {
-        ExportJobCompletedEvent evt = new(
+        ExportJobCompletedEto evt = new(
             Guid.NewGuid(), "def", ExportJobStatus.Failed, "user", null, "Connection refused");
 
         evt.Status.ShouldBe(ExportJobStatus.Failed);

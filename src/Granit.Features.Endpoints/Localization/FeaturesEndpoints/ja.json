@@ -1,0 +1,8 @@
+{
+  "culture": "ja",
+  "texts": {
+    "PermissionGroup:Features": "機能管理",
+    "Permission:Features.Flags.Read": "機能定義を表示する",
+    "Permission:Features.Flags.Manage": "機能オーバーライドを管理する（設定、削除）"
+  }
+}

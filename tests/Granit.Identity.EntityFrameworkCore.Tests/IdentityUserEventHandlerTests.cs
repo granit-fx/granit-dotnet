@@ -37,7 +37,7 @@ public sealed class IdentityUserEventHandlerTests
 
         IdentityUserEventHandler handler = CreateHandler();
         await handler.HandleAsync(
-            new IdentityUserUpdatedEvent("user-1"), TestContext.Current.CancellationToken);
+            new IdentityUserUpdatedEto("user-1"), TestContext.Current.CancellationToken);
 
         await _store.Received(1).UpsertAsync(
             Arg.Is<UserCacheEntry>(e => e.ExternalUserId == "user-1" && e.Username == "jdoe"),
@@ -52,7 +52,7 @@ public sealed class IdentityUserEventHandlerTests
 
         IdentityUserEventHandler handler = CreateHandler();
         await handler.HandleAsync(
-            new IdentityUserUpdatedEvent("user-1"), TestContext.Current.CancellationToken);
+            new IdentityUserUpdatedEto("user-1"), TestContext.Current.CancellationToken);
 
         await _store.DidNotReceive().UpsertAsync(
             Arg.Any<UserCacheEntry>(), Arg.Any<CancellationToken>());
@@ -65,7 +65,7 @@ public sealed class IdentityUserEventHandlerTests
         IdentityUserEventHandler handler = CreateHandler();
 
         await handler.HandleAsync(
-            new IdentityUserDeletedEvent("user-1", tenantId), TestContext.Current.CancellationToken);
+            new IdentityUserDeletedEto("user-1", tenantId), TestContext.Current.CancellationToken);
 
         await _store.Received(1).DeleteByExternalIdAsync("user-1", tenantId, Arg.Any<CancellationToken>());
     }

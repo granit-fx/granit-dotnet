@@ -1,3 +1,4 @@
+using Granit.Core.Diagnostics;
 using Granit.Http.Resilience.Extensions;
 using Granit.Notifications.Email.SendGrid.Diagnostics;
 using Granit.Notifications.Email.SendGrid.HealthChecks;
@@ -42,7 +43,7 @@ public static class SendGridEmailServiceCollectionExtensions
         services.AddKeyedSingleton<IEmailSender>(
             ProviderKey, (sp, _) => sp.GetRequiredService<SendGridEmailSender>());
 
-        _ = NotificationsEmailSendGridActivitySource.Source; // ensure static init
+        GranitActivitySourceRegistry.Register(NotificationsEmailSendGridActivitySource.Name);
 
         return services;
     }

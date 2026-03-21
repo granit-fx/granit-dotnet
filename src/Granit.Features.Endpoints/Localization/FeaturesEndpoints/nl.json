@@ -1,0 +1,8 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:Features": "Functionaliteiten",
+    "Permission:Features.Flags.Read": "Functiedefinities bekijken",
+    "Permission:Features.Flags.Manage": "Functie-overschrijvingen beheren (instellen, verwijderen)"
+  }
+}

@@ -168,20 +168,30 @@ segments). Enforced across all `*.Endpoints` modules.
 - **Provider class**: `internal sealed class {Module}PermissionDefinitionProvider : IPermissionDefinitionProvider`
 - **Localization resource**: `internal sealed class {Module}EndpointsLocalizationResource` with `[LocalizationResourceName]`
 - **Auto-discovery**: providers are auto-discovered by `GranitAuthorizationModule` (no manual registration)
-- **Standard actions**: use `Read` for consultation (never `View`), `Manage` for grouped write operations, `Execute` for single actions
+- **Standard actions**: `Read` (consultation, never `View`), `Manage` (grouped writes),
+  `Execute` (single actions), `Create` (resource creation). Domain-specific actions
+  (`Upload`, `Download`, `Delete`, `Revoke`, `Rotate`, `Sync`) are allowed when
+  `Manage` would be too coarse for least-privilege (ISO 27001 A.9.4)
+
 ### Events — naming convention (STRICT)
 
-Two event categories with **mandatory suffixes** — enforced by architecture tests:
+Two suffixes, three dispatch mechanisms — enforced by architecture tests:
 
-| Scope | Interface | Suffix | Example | Dispatched |
-| ----- | --------- | ------ | ------- | ---------- |
-| Domain (local, in-process) | `IDomainEvent` | `*Event` | `BlobValidatedEvent` | After commit (`SavedChanges`) |
-| Integration (distributed, outbox) | `IIntegrationEvent` | `*Eto` | `PersonalDataDeletedEto` | Before commit (`SavingChanges`) for Wolverine outbox |
+| Suffix | Interface | Dispatch | Example |
+| ------ | --------- | -------- | ------- |
+| `*Event` | `IDomainEvent` | `AddDomainEvent()` on aggregate root → after commit | `BlobValidatedEvent` |
+| `*Event` | _(none)_ | `ILocalEventBus.PublishAsync()` in services → explicit call | `SettingChangedEvent` |
+| `*Eto` | `IIntegrationEvent` | `AddDistributedEvent()` on aggregate root → Wolverine outbox | `PersonalDataDeletedEto` |
+| `*Eto` | `IIntegrationEvent` | `IDistributedEventBus.PublishAsync()` in services → outbox | `IdentityUserCreatedEto` |
 
-- **`*Event`**: raised via `AddDomainEvent()` — synchronous, same transaction, handlers
-  run after commit. Past-tense verb + `Event` suffix.
-- **`*Eto`** (Event Transfer Object): raised via `AddDistributedEvent()` — durable,
-  persisted in Wolverine outbox atomically. Past-tense verb + `Eto` suffix.
+- **`*Event`** (local, in-process): either raised via `AddDomainEvent()` on an aggregate
+  root (dispatched after commit by `SavedChanges` interceptor), or published explicitly
+  via `ILocalEventBus.PublishAsync()` in service classes that operate on plain entities
+  without DDD behavior (Settings, Features, Authorization). Past-tense verb + `Event` suffix.
+- **`*Eto`** (Event Transfer Object, distributed): either raised via `AddDistributedEvent()`
+  on an aggregate root (persisted atomically in Wolverine outbox), or published explicitly
+  via `IDistributedEventBus.PublishAsync()` in services (at-least-once delivery, survives
+  pod crashes). Must implement `IIntegrationEvent`. Past-tense verb + `Eto` suffix.
 - **Generic lifecycle**: `EntityCreatedEvent<T>`, `EntityCreatedEto<T>` — automatic via
   `IEmitEntityLifecycleEvents` marker interface.
 - **NEVER** use bare past-tense names without suffix (`BlobValidated` is wrong,

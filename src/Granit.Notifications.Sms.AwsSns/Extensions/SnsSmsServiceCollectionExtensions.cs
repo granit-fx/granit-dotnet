@@ -1,6 +1,7 @@
 using Amazon;
 using Amazon.Runtime;
 using Amazon.SimpleNotificationService;
+using Granit.Core.Diagnostics;
 using Granit.Notifications.Sms.AwsSns.Diagnostics;
 using Granit.Notifications.Sms.AwsSns.HealthChecks;
 using Granit.Notifications.Sms.AwsSns.Internal;
@@ -45,7 +46,7 @@ public static class SnsSmsServiceCollectionExtensions
 
         services.AddKeyedSingleton<ISmsSender, AwsSnsSmsSender>("AwsSns");
 
-        _ = NotificationsSmsAwsSnsActivitySource.Source; // ensure static init
+        GranitActivitySourceRegistry.Register(NotificationsSmsAwsSnsActivitySource.Name);
 
         return services;
     }

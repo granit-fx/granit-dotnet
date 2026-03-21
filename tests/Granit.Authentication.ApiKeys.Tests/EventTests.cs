@@ -6,13 +6,13 @@ using Xunit;
 
 namespace Granit.Authentication.ApiKeys.Tests;
 
-public sealed class ApiKeyCreatedEventTests
+public sealed class ApiKeyCreatedEtoTests
 {
     [Fact]
     public void Properties_AreSetFromConstructor()
     {
         var id = Guid.NewGuid();
-        var evt = new ApiKeyCreatedEvent(id, "Partner Key", ApiKeyType.Secret);
+        var evt = new ApiKeyCreatedEto(id, "Partner Key", ApiKeyType.Secret);
 
         evt.ApiKeyId.ShouldBe(id);
         evt.Name.ShouldBe("Partner Key");
@@ -23,8 +23,8 @@ public sealed class ApiKeyCreatedEventTests
     public void RecordEquality_WorksCorrectly()
     {
         var id = Guid.NewGuid();
-        var evt1 = new ApiKeyCreatedEvent(id, "Key A", ApiKeyType.Publishable);
-        var evt2 = new ApiKeyCreatedEvent(id, "Key A", ApiKeyType.Publishable);
+        var evt1 = new ApiKeyCreatedEto(id, "Key A", ApiKeyType.Publishable);
+        var evt2 = new ApiKeyCreatedEto(id, "Key A", ApiKeyType.Publishable);
 
         evt1.ShouldBe(evt2);
     }
@@ -33,8 +33,8 @@ public sealed class ApiKeyCreatedEventTests
     public void RecordInequality_DifferentType()
     {
         var id = Guid.NewGuid();
-        var evt1 = new ApiKeyCreatedEvent(id, "Key A", ApiKeyType.Secret);
-        var evt2 = new ApiKeyCreatedEvent(id, "Key A", ApiKeyType.Publishable);
+        var evt1 = new ApiKeyCreatedEto(id, "Key A", ApiKeyType.Secret);
+        var evt2 = new ApiKeyCreatedEto(id, "Key A", ApiKeyType.Publishable);
 
         evt1.ShouldNotBe(evt2);
     }
@@ -63,14 +63,14 @@ public sealed class ApiKeyRevokedEventTests
     }
 }
 
-public sealed class ApiKeyRotatedEventTests
+public sealed class ApiKeyRotatedEtoTests
 {
     [Fact]
     public void Properties_AreSetFromConstructor()
     {
         var oldId = Guid.NewGuid();
         var newId = Guid.NewGuid();
-        var evt = new ApiKeyRotatedEvent(oldId, newId, "oldhash");
+        var evt = new ApiKeyRotatedEto(oldId, newId, "oldhash");
 
         evt.OldApiKeyId.ShouldBe(oldId);
         evt.NewApiKeyId.ShouldBe(newId);
@@ -82,20 +82,20 @@ public sealed class ApiKeyRotatedEventTests
     {
         var oldId = Guid.NewGuid();
         var newId = Guid.NewGuid();
-        var evt1 = new ApiKeyRotatedEvent(oldId, newId, "hash");
-        var evt2 = new ApiKeyRotatedEvent(oldId, newId, "hash");
+        var evt1 = new ApiKeyRotatedEto(oldId, newId, "hash");
+        var evt2 = new ApiKeyRotatedEto(oldId, newId, "hash");
 
         evt1.ShouldBe(evt2);
     }
 }
 
-public sealed class ApiKeyScopesUpdatedEventTests
+public sealed class ApiKeyScopesUpdatedEtoTests
 {
     [Fact]
     public void Properties_AreSetFromConstructor()
     {
         var id = Guid.NewGuid();
-        var evt = new ApiKeyScopesUpdatedEvent(id, "scopehash");
+        var evt = new ApiKeyScopesUpdatedEto(id, "scopehash");
 
         evt.ApiKeyId.ShouldBe(id);
         evt.HashedKey.ShouldBe("scopehash");
@@ -105,8 +105,8 @@ public sealed class ApiKeyScopesUpdatedEventTests
     public void RecordEquality_WorksCorrectly()
     {
         var id = Guid.NewGuid();
-        var evt1 = new ApiKeyScopesUpdatedEvent(id, "hash");
-        var evt2 = new ApiKeyScopesUpdatedEvent(id, "hash");
+        var evt1 = new ApiKeyScopesUpdatedEto(id, "hash");
+        var evt2 = new ApiKeyScopesUpdatedEto(id, "hash");
 
         evt1.ShouldBe(evt2);
     }
@@ -129,8 +129,8 @@ public sealed class ApiKeyUsedEtoTests
 
         entry.RecordUsage(usedAt);
 
-        IIntegrationEvent integrationEvent = entry.IntegrationEvents.ShouldHaveSingleItem();
-        ApiKeyUsedEto eto = integrationEvent.ShouldBeOfType<ApiKeyUsedEto>();
+        entry.IntegrationEvents.Count.ShouldBe(2); // ApiKeyCreatedEto + ApiKeyUsedEto
+        ApiKeyUsedEto eto = entry.IntegrationEvents.OfType<ApiKeyUsedEto>().ShouldHaveSingleItem();
         eto.ApiKeyId.ShouldBe(entry.Id);
         eto.Prefix.ShouldBe("gk_live_sk_");
         eto.UsedAt.ShouldBe(usedAt);

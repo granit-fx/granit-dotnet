@@ -1,3 +1,4 @@
+using Granit.Core.Diagnostics;
 using Granit.Core.Modularity;
 using Granit.Persistence;
 using Granit.Querying.EntityFrameworkCore.Diagnostics;
@@ -17,6 +18,9 @@ namespace Granit.Querying.EntityFrameworkCore;
 public sealed class GranitQueryingEntityFrameworkCoreModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.TryAddSingleton<QueryingEfCoreMetrics>();
+        GranitActivitySourceRegistry.Register(QueryingEfCoreActivitySource.Name);
+    }
 }
