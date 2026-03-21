@@ -66,8 +66,7 @@
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Core": "[0.1.0-dev, )",
-          "SmartFormat": "[3.*, )",
-          "ZiggyCreatures.FusionCache": "[2.*, )"
+          "SmartFormat": "[3.*, )"
         }
       },
       "granit.timing": {

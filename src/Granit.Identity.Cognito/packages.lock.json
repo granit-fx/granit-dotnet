@@ -5,10 +5,10 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "Direct",
         "requested": "[4.*, )",
-        "resolved": "4.0.6.2",
-        "contentHash": "MOhL6nl78bYJh1AmoMNq9nJIM4dFjDO/FsLYMYj8IrWCqmfujGeHe8EnNEOM+Bxc8t5CLkil91awpS0TguzT+g==",
+        "resolved": "4.0.6.3",
+        "contentHash": "jgs58BUUO1v/6thtWUYQbuIZD0LotMsbk8bpZ+qYsfMo3HOO89xEmsojs6BgwIKZe7++mltD7eSB8P7VhLSGeg==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.17, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.19, 5.0.0)"
         }
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
@@ -32,8 +32,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.3.17",
-        "contentHash": "Ab24kVquQ8kvuQKNe5MK/SvaXR4uoxPkAlTPALDEImaHcwsBg+UWfRVcNzLEx4dRR2y1mDFFh+zZ9TVMXGY6Jg=="
+        "resolved": "4.0.3.19",
+        "contentHash": "8zIzN59+J6arYSyFuhnSxPepr8ff4p6li+MxKUUnqCgwZqQ+icEGJK/23c1USIEALqZZ5gdiITuH2sOZWQom+Q=="
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",

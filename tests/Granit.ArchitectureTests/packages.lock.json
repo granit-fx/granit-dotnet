@@ -2193,6 +2193,15 @@
           "Granit.Privacy": "[0.1.0-dev, )"
         }
       },
+      "granit.privacy.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Privacy": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
       "granit.querying": {
         "type": "Project",
         "dependencies": {
@@ -3157,8 +3166,8 @@
       "Sep": {
         "type": "CentralTransitive",
         "requested": "[0.*, )",
-        "resolved": "0.12.2",
-        "contentHash": "6zIz3NiZn2VLlzr28BcWMfCrTxeLQvNKHj8C2+7pXe3/QrCczAYLs0yc1c7MemSjkBN7zYOknL5utwWKG+tIyQ==",
+        "resolved": "0.12.3",
+        "contentHash": "xuQjdQ4c7A3yfJz6vzOy8T9KirByt8nmmVouhLDi9JYvoSQg4kOUdw9kQfThPOJ0N2MbTokSqF0Xr20RqeDQFQ==",
         "dependencies": {
           "csFastFloat": "4.1.5"
         }
