@@ -8,6 +8,8 @@ using Granit.Persistence;
 using Granit.Persistence.DataSeeding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
+using OpenIddict.Server;
 
 namespace Granit.OpenIddict.EntityFrameworkCore;
 
@@ -54,5 +56,9 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
         context.Services
             .AddOptions<GranitKeyRotationOptions>()
             .BindConfiguration(GranitKeyRotationOptions.SectionName);
+
+        // Load signing/encryption keys from DB at startup (replaces ephemeral keys)
+        context.Services.AddSingleton<IPostConfigureOptions<OpenIddictServerOptions>,
+            DatabaseSigningKeyPostConfigure>();
     }
 }
