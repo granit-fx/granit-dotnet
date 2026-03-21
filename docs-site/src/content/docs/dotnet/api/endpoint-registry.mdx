@@ -9,8 +9,6 @@ sidebar:
 import { Aside, Badge } from "@astrojs/starlight/components";
 
 Complete inventory of all HTTP endpoints exposed by Granit framework modules.
-All route prefixes are **configurable** via each module's `*EndpointsOptions` class —
-the values below are the defaults.
 
 <Aside type="tip">
 Use this page to verify that your frontend API client matches the backend routes.
@@ -20,18 +18,31 @@ for request/response types — this page focuses on **routes, methods, and permi
 
 ## Conventions
 
-- **Default prefix:** `/api/granit/\{module-kebab-case\}`
+- **Route prefixes are relative** — each module defines a short prefix (e.g., `"templates"`,
+  `"blobs"`, `"identity/users"`) via its `*EndpointsOptions` class. The **application**
+  composes the full path by mounting modules under a versioned group:
+
+```csharp
+// Application startup (e.g., Program.cs)
+RouteGroupBuilder api = app.MapGroup("api/v{version:apiVersion}");
+
+api.MapGranitBlobStorageEndpoints();   // → /api/v1/blobs/...
+api.MapGranitTemplatingEndpoints();    // → /api/v1/templates/...
+api.MapGranitIdentityEndpoints();      // → /api/v1/identity/users/...
+```
+
 - **Permissions:** follow `[Group].[Resource].[Action]` (three segments)
 - **Error responses:** all endpoints return RFC 7807 Problem Details on errors
 - **Query endpoints** (`MapQueryEndpoints<T>`) are registered by the **application**,
   not the framework — the route pattern is app-defined
+- **Routes below** show only the module-relative path (without the app prefix)
 
 ---
 
 ## Authentication & API Keys
 
 **Module:** `Granit.Authentication.ApiKeys.Endpoints`
-**Prefix:** `/api/granit/api-keys`
+**Prefix:** `api-keys`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
@@ -47,7 +58,7 @@ for request/response types — this page focuses on **routes, methods, and permi
 ## Authorization
 
 **Module:** `Granit.Authorization.Endpoints`
-**Prefix:** `/api/granit/authorization`
+**Prefix:** `auth`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
@@ -62,7 +73,7 @@ for request/response types — this page focuses on **routes, methods, and permi
 ## Background Jobs
 
 **Module:** `Granit.BackgroundJobs.Endpoints`
-**Prefix:** `/api/granit/background-jobs`
+**Prefix:** `background-jobs`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
@@ -77,7 +88,7 @@ for request/response types — this page focuses on **routes, methods, and permi
 ## Blob Storage
 
 **Module:** `Granit.BlobStorage.Endpoints`
-**Prefix:** `/api/granit/blobs`
+**Prefix:** `blobs`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
@@ -89,7 +100,7 @@ for request/response types — this page focuses on **routes, methods, and permi
 ### Blob Proxy
 
 **Module:** `Granit.BlobStorage.Proxy`
-**Prefix:** `/api/granit/blobs/proxy`
+**Prefix:** `blobs/proxy`
 
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
@@ -101,7 +112,7 @@ for request/response types — this page focuses on **routes, methods, and permi
 ## Cookie Consent
 
 **Module:** `Granit.Http.Cookies.Endpoints`
-**Prefix:** `/api/granit`
+**Prefix:** _(root — mounted directly on the app group)_
 
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
@@ -112,7 +123,7 @@ for request/response types — this page focuses on **routes, methods, and permi
 ## Data Exchange
 
 **Module:** `Granit.DataExchange.Endpoints`
-**Prefix:** `/api/granit/data-exchange`
+**Prefix:** `data-exchange`
 
 ### Import
 
@@ -153,7 +164,7 @@ for request/response types — this page focuses on **routes, methods, and permi
 ## Features
 
 **Module:** `Granit.Features.Endpoints`
-**Prefix:** `/api/granit/features`
+**Prefix:** `features`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
@@ -168,7 +179,7 @@ for request/response types — this page focuses on **routes, methods, and permi
 ## Identity
 
 **Module:** `Granit.Identity.Endpoints`
-**Prefix:** `/api/granit/identity`
+**Prefix:** `identity/users`
 
 ### User Cache
 
@@ -236,7 +247,7 @@ for request/response types — this page focuses on **routes, methods, and permi
 ## Localization
 
 **Module:** `Granit.Localization.Endpoints`
-**Prefix:** `/api/granit`
+**Prefix:** _(root — mounted directly on the app group)_
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
@@ -250,7 +261,7 @@ for request/response types — this page focuses on **routes, methods, and permi
 ## Notifications
 
 **Module:** `Granit.Notifications.Endpoints`
-**Prefix:** `/api/granit/notifications`
+**Prefix:** `notifications`
 
 ### Inbox
 
@@ -314,7 +325,7 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 ## Settings
 
 **Module:** `Granit.Settings.Endpoints`
-**Prefix:** `/api/granit/settings`
+**Prefix:** `settings`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
@@ -332,7 +343,7 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 ## Templating
 
 **Module:** `Granit.Templating.Endpoints`
-**Prefix:** `/api/granit/templates`
+**Prefix:** `templates`
 
 ### Templates
 
@@ -365,7 +376,7 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 ## Timeline
 
 **Module:** `Granit.Timeline.Endpoints`
-**Prefix:** `/api/granit/timeline`
+**Prefix:** `timeline`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
@@ -378,7 +389,7 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 ## Validation
 
 **Module:** `Granit.Validation.Endpoints`
-**Prefix:** `/api/granit/validation`
+**Prefix:** `validation`
 
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
@@ -391,7 +402,7 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 ## Webhooks
 
 **Module:** `Granit.Webhooks.Endpoints`
-**Prefix:** `/api/granit/webhooks`
+**Prefix:** `webhooks`
 
 ### Event Types
 
@@ -400,32 +411,44 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 | <Badge text="GET" variant="note" /> | `/event-types` | GetWebhookEventTypes | `Webhooks.Subscriptions.Manage` |
 | <Badge text="POST" variant="success" /> | `/event-types/{eventTypeName}/discover` | DiscoverWebhookEventType | `Webhooks.Subscriptions.Manage` |
 
-### Subscriptions
+### Subscriptions — CRUD
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/subscriptions` | ListWebhookSubscriptions | `Webhooks.Subscriptions.Manage` |
 | <Badge text="GET" variant="note" /> | `/subscriptions/{id}` | GetWebhookSubscription | `Webhooks.Subscriptions.Manage` |
 | <Badge text="POST" variant="success" /> | `/subscriptions` | CreateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
 | <Badge text="PUT" variant="caution" /> | `/subscriptions/{id}` | UpdateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
 | <Badge text="DELETE" variant="danger" /> | `/subscriptions/{id}` | DeleteWebhookSubscription | `Webhooks.Subscriptions.Manage` |
-| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/activate` | ActivateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
-| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/deactivate` | DeactivateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
-| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/test` | TestWebhookSubscription | `Webhooks.Subscriptions.Manage` |
 
-### Delivery Attempts
+### Subscriptions — Lifecycle
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/activate` | ActivateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/suspend` | SuspendWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/deactivate` | DeactivateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+
+### Subscriptions — Operations
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/rotate-secret` | RotateWebhookSecret | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/test-ping` | TestWebhookPing | `Webhooks.Subscriptions.Manage` |
+
+### Statistics & Deliveries
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/stats` | GetWebhookStats | `Webhooks.Subscriptions.Manage` |
 | <Badge text="GET" variant="note" /> | `/deliveries/query` | QueryWebhookDeliveries | `Webhooks.Subscriptions.Manage` |
-| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/retry` | RetryWebhookDelivery | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/deliveries/{deliveryId}/retry` | RetryWebhookDelivery | `Webhooks.Subscriptions.Manage` |
 
 ---
 
 ## Workflow
 
 **Module:** `Granit.Workflow.Endpoints`
-**Prefix:** `/api/granit/workflow`
+**Prefix:** `workflow`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
@@ -439,7 +462,7 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 ## AI
 
 **Module:** `Granit.AI.Endpoints`
-**Prefix:** `/api/granit/ai`
+**Prefix:** `ai`
 
 ### Workspaces (Admin)
 
@@ -479,7 +502,7 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 | Templating | 16 | Permission-based |
 | Timeline | 3 | Permission-based |
 | Validation | 3 | Anonymous |
-| Webhooks | 12 | Permission-based |
+| Webhooks | 15 | Permission-based |
 | Workflow | 4 | Permission-based |
 | AI | 7 | Permission-based |
 | **Total** | **~150+** | |
