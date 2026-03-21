@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T17:06:12.789015+00:00",
+  "generatedAt": "2026-03-21T17:23:44.919714+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -18143,7 +18143,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 18,
+      "line": 21,
       "members": [
         {
           "name": "AddGranitOpenIddictEntityFrameworkCore",

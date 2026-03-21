@@ -39,5 +39,13 @@ public sealed class GranitOpenIddictModule : GranitModule
         context.Services
             .AddOptions<GranitOpenIddictClientOptions>()
             .BindConfiguration(GranitOpenIddictClientOptions.SectionName);
+
+        context.Services
+            .AddOptions<GranitPasskeyOptions>()
+            .BindConfiguration(GranitPasskeyOptions.SectionName);
+
+        context.Services
+            .AddOptions<GranitOpenIddictSeedingOptions>()
+            .BindConfiguration(GranitOpenIddictSeedingOptions.SectionName);
     }
 }

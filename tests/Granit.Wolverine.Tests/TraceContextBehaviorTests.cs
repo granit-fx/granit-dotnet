@@ -86,9 +86,8 @@ public sealed class TraceContextBehaviorTests : IDisposable
     [Fact]
     public void Before_WithValidTraceParent_SetsMessagingTags()
     {
-        var messageId = Guid.NewGuid();
         TraceContextBehavior behavior = new(_logger);
-        Envelope envelope = new() { Id = messageId, MessageType = "MyApp.OrderPlaced" };
+        Envelope envelope = new() { MessageType = "MyApp.OrderPlaced" };
         envelope.Headers[OutgoingContextMiddleware.TraceParentHeader] = ValidTraceParent;
 
         behavior.Before(envelope);
@@ -96,7 +95,7 @@ public sealed class TraceContextBehaviorTests : IDisposable
         Activity started = _capturedActivities[0];
         started.GetTagItem("messaging.system").ShouldBe("wolverine");
         started.GetTagItem("messaging.operation").ShouldBe("process");
-        started.GetTagItem("messaging.message_id").ShouldBe(messageId.ToString());
+        started.GetTagItem("messaging.message_id").ShouldBe(envelope.Id.ToString());
         started.GetTagItem("messaging.message_type").ShouldBe("MyApp.OrderPlaced");
 
         behavior.After();

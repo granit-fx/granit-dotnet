@@ -23,7 +23,7 @@ public sealed class GranitOpenIddictSeedingOptions
 /// Describes an OIDC application to seed.
 /// </summary>
 /// <param name="ClientId">The client identifier (unique key for upsert).</param>
-/// <param name="ClientSecret">The client secret (encrypted before persistence). Null for public clients.</param>
+/// <param name="ClientSecret">The client secret (encrypted before persistence). Null for public clients. Use Vault in production.</param>
 /// <param name="DisplayName">A human-readable display name.</param>
 /// <param name="Permissions">OpenIddict permissions (e.g., <c>ept:token</c>, <c>gt:authorization_code</c>).</param>
 /// <param name="RedirectUris">Allowed redirect URIs.</param>

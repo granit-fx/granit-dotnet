@@ -9,7 +9,6 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.OpenIddict.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="Granit.Identity.OpenIddict" />
-    <InternalsVisibleTo Include="Granit.OpenIddict.Passkeys" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
@@ -21,7 +20,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="OpenIddict" />
     <PackageReference Include="OpenIddict.EntityFrameworkCore" />
+    <PackageReference Include="OpenIddict.Server.AspNetCore" />
+    <PackageReference Include="OpenIddict.Validation.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup>

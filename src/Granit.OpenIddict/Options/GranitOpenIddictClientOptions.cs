@@ -37,7 +37,13 @@ public sealed class ExternalProviderOptions
     /// <summary>Gets or sets the OAuth client ID.</summary>
     public string ClientId { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets the OAuth client secret. Source from Vault in production.</summary>
+    /// <summary>
+    /// Gets or sets the OAuth client secret.
+    /// </summary>
+    /// <remarks>
+    /// <b>Security:</b> NEVER store in <c>appsettings.json</c> in production.
+    /// Use <c>Granit.Vault</c> secret injection or environment variables.
+    /// </remarks>
     public string ClientSecret { get; set; } = string.Empty;
 
     /// <summary>Gets or sets the OAuth scopes to request.</summary>
