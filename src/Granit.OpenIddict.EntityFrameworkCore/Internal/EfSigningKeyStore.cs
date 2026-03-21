@@ -1,4 +1,4 @@
-using Granit.OpenIddict.Entities;
+using Granit.OpenIddict.Domain;
 using Granit.OpenIddict.Services;
 using Microsoft.EntityFrameworkCore;
 

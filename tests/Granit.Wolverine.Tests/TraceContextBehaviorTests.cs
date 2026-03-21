@@ -17,6 +17,7 @@ using Xunit;
 
 namespace Granit.Wolverine.Tests;
 
+[Collection("TraceContext")]
 public sealed class TraceContextBehaviorTests : IDisposable
 {
     // Valid W3C traceparent: version(00)-traceId(32 hex)-parentId(16 hex)-flags(01)

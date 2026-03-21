@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using Granit.Encryption;
-using Granit.OpenIddict.Entities;
+using Granit.OpenIddict.Domain;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Services;
 using Microsoft.Extensions.Logging;

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T19:38:32.400181+00:00",
+  "generatedAt": "2026-03-21T20:12:33.679384+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -18033,6 +18033,61 @@
       "members": []
     },
     {
+      "name": "SigningKey",
+      "fqn": "Granit.OpenIddict.Domain.SigningKey",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Domain/SigningKey.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "KeyId",
+          "kind": "property",
+          "signature": "string KeyId",
+          "returnType": "string"
+        },
+        {
+          "name": "KeyType",
+          "kind": "property",
+          "signature": "string KeyType",
+          "returnType": "string"
+        },
+        {
+          "name": "Algorithm",
+          "kind": "property",
+          "signature": "string Algorithm",
+          "returnType": "string"
+        },
+        {
+          "name": "EncryptedKeyMaterial",
+          "kind": "property",
+          "signature": "string EncryptedKeyMaterial",
+          "returnType": "string"
+        },
+        {
+          "name": "Status",
+          "kind": "property",
+          "signature": "SigningKeyStatus Status",
+          "returnType": "SigningKeyStatus"
+        },
+        {
+          "name": "ActivatedAt",
+          "kind": "property",
+          "signature": "DateTimeOffset ActivatedAt",
+          "returnType": "DateTimeOffset"
+        }
+      ]
+    },
+    {
+      "name": "SigningKeyStatus",
+      "fqn": "Granit.OpenIddict.Domain.SigningKeyStatus",
+      "kind": "enum",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Domain/SigningKey.cs",
+      "line": 55,
+      "members": []
+    },
+    {
       "name": "AccountAuthenticatorKeyResponse",
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountAuthenticatorKeyResponse",
       "kind": "record",
@@ -18294,61 +18349,6 @@
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Entities/OpenIddict/GranitOpenIddictToken.cs",
       "line": 9,
-      "members": []
-    },
-    {
-      "name": "SigningKey",
-      "fqn": "Granit.OpenIddict.Entities.SigningKey",
-      "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Entities/SigningKey.cs",
-      "line": 20,
-      "members": [
-        {
-          "name": "KeyId",
-          "kind": "property",
-          "signature": "string KeyId",
-          "returnType": "string"
-        },
-        {
-          "name": "KeyType",
-          "kind": "property",
-          "signature": "string KeyType",
-          "returnType": "string"
-        },
-        {
-          "name": "Algorithm",
-          "kind": "property",
-          "signature": "string Algorithm",
-          "returnType": "string"
-        },
-        {
-          "name": "EncryptedKeyMaterial",
-          "kind": "property",
-          "signature": "string EncryptedKeyMaterial",
-          "returnType": "string"
-        },
-        {
-          "name": "Status",
-          "kind": "property",
-          "signature": "SigningKeyStatus Status",
-          "returnType": "SigningKeyStatus"
-        },
-        {
-          "name": "ActivatedAt",
-          "kind": "property",
-          "signature": "DateTimeOffset ActivatedAt",
-          "returnType": "DateTimeOffset"
-        }
-      ]
-    },
-    {
-      "name": "SigningKeyStatus",
-      "fqn": "Granit.OpenIddict.Entities.SigningKeyStatus",
-      "kind": "enum",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Entities/SigningKey.cs",
-      "line": 55,
       "members": []
     },
     {

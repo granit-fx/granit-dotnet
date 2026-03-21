@@ -1,6 +1,6 @@
 using Granit.Core.Domain;
 
-namespace Granit.OpenIddict.Entities;
+namespace Granit.OpenIddict.Domain;
 
 /// <summary>
 /// Persisted signing or encryption key for the OpenIddict server.
