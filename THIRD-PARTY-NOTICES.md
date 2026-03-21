@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-03-20
+Dernière mise à jour : 2026-03-21
 
 ---
 
@@ -12,8 +12,8 @@ Dernière mise à jour : 2026-03-20
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 61                 |
-| Apache-2.0   | 19                 |
+| MIT          | 62                 |
+| Apache-2.0   | 23                 |
 | BSD-3-Clause | 2                  |
 | BSD-2-Clause | 1                  |
 | PostgreSQL   | 1                  |
@@ -37,6 +37,7 @@ Dernière mise à jour : 2026-03-20
 | Cronos | 0.11.1 | Copyright (c) 2016-2025 Hangfire OU |
 | Lib.Net.Http.WebPush | 3.3.1 | Copyright (c) Tomasz Pęczek |
 | Microsoft.AspNetCore.Authentication.JwtBearer | 10.0.3 | (c) Microsoft Corporation |
+| Microsoft.AspNetCore.Identity.EntityFrameworkCore | 10.0.3 | (c) Microsoft Corporation |
 | Microsoft.AspNetCore.OpenApi | 10.0.3 | (c) Microsoft Corporation |
 | Microsoft.EntityFrameworkCore | 10.0.3 | (c) Microsoft Corporation |
 | Microsoft.EntityFrameworkCore.Relational | 10.0.3 | (c) Microsoft Corporation |
@@ -89,6 +90,10 @@ Dernière mise à jour : 2026-03-20
 | AWSSDK.SimpleEmailV2 | 4.0.12.2 | Amazon Web Services, Inc. |
 | FluentValidation | 12.1.1 | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
 | Magick.NET-Q8-AnyCPU | 14.10.3 | Copyright 2013-2026 Dirk Lemstra |
+| OpenIddict | 7.4.0 | Copyright (c) Kévin Chalet |
+| OpenIddict.EntityFrameworkCore | 7.4.0 | Copyright (c) Kévin Chalet |
+| OpenIddict.Server.AspNetCore | 7.4.0 | Copyright (c) Kévin Chalet |
+| OpenIddict.Validation.AspNetCore | 7.4.0 | Copyright (c) Kévin Chalet |
 | OpenTelemetry | 1.15.0 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Api | 1.15.0 | Copyright The OpenTelemetry Authors |
 | OpenTelemetry.Exporter.OpenTelemetryProtocol | 1.15.0 | Copyright The OpenTelemetry Authors |
