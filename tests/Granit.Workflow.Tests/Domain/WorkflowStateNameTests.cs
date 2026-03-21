@@ -41,25 +41,19 @@ public sealed class WorkflowStateNameTests
     // ========================================================================
 
     [Fact]
-    public void Create_WithNull_ShouldThrowArgumentException()
-    {
+    public void Create_WithNull_ShouldThrowArgumentException() =>
         // Act & Assert
         Should.Throw<ArgumentException>(() => WorkflowStateName.Create(null!));
-    }
 
     [Fact]
-    public void Create_WithEmptyString_ShouldThrowArgumentException()
-    {
+    public void Create_WithEmptyString_ShouldThrowArgumentException() =>
         // Act & Assert
         Should.Throw<ArgumentException>(() => WorkflowStateName.Create(string.Empty));
-    }
 
     [Fact]
-    public void Create_WithWhitespace_ShouldThrowArgumentException()
-    {
+    public void Create_WithWhitespace_ShouldThrowArgumentException() =>
         // Act & Assert
         Should.Throw<ArgumentException>(() => WorkflowStateName.Create("   "));
-    }
 
     [Fact]
     public void Create_ExceedingMaxLength_ShouldThrowArgumentException()

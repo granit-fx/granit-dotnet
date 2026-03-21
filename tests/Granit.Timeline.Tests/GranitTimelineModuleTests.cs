@@ -59,14 +59,8 @@ public sealed class GranitTimelineModuleTests
     }
 
     [Fact]
-    public void Module_IsSealed()
-    {
-        typeof(GranitTimelineModule).IsSealed.ShouldBeTrue();
-    }
+    public void Module_IsSealed() => typeof(GranitTimelineModule).IsSealed.ShouldBeTrue();
 
     [Fact]
-    public void Module_InheritsGranitModule()
-    {
-        typeof(GranitTimelineModule).IsSubclassOf(typeof(GranitModule)).ShouldBeTrue();
-    }
+    public void Module_InheritsGranitModule() => typeof(GranitTimelineModule).IsSubclassOf(typeof(GranitModule)).ShouldBeTrue();
 }

@@ -7,10 +7,7 @@ namespace Granit.Settings.Tests;
 public sealed class SettingsOptionsTests
 {
     [Fact]
-    public void SectionName_IsSettings()
-    {
-        SettingsOptions.SectionName.ShouldBe("Settings");
-    }
+    public void SectionName_IsSettings() => SettingsOptions.SectionName.ShouldBe("Settings");
 
     [Fact]
     public void CacheExpiration_DefaultIs30Minutes()

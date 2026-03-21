@@ -28,28 +28,16 @@ public sealed class RateLimitingMetricsTests : IDisposable
         RateLimitingMetrics.MeterName.ShouldBe("Granit.RateLimiting");
 
     [Fact]
-    public void RecordAllowed_WithTenantId_DoesNotThrow()
-    {
-        Should.NotThrow(() => _metrics.RecordAllowed("api", "tenant-123"));
-    }
+    public void RecordAllowed_WithTenantId_DoesNotThrow() => Should.NotThrow(() => _metrics.RecordAllowed("api", "tenant-123"));
 
     [Fact]
-    public void RecordAllowed_WithNullTenantId_DoesNotThrow()
-    {
-        Should.NotThrow(() => _metrics.RecordAllowed("api", null));
-    }
+    public void RecordAllowed_WithNullTenantId_DoesNotThrow() => Should.NotThrow(() => _metrics.RecordAllowed("api", null));
 
     [Fact]
-    public void RecordRejected_WithTenantId_DoesNotThrow()
-    {
-        Should.NotThrow(() => _metrics.RecordRejected("api", "tenant-123"));
-    }
+    public void RecordRejected_WithTenantId_DoesNotThrow() => Should.NotThrow(() => _metrics.RecordRejected("api", "tenant-123"));
 
     [Fact]
-    public void RecordRejected_WithNullTenantId_DoesNotThrow()
-    {
-        Should.NotThrow(() => _metrics.RecordRejected("api", null));
-    }
+    public void RecordRejected_WithNullTenantId_DoesNotThrow() => Should.NotThrow(() => _metrics.RecordRejected("api", null));
 
     [Fact]
     public void RecordAllowed_IncrementsCounter()

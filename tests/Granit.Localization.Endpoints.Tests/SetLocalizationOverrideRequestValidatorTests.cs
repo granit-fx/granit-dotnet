@@ -65,8 +65,5 @@ public sealed class SetLocalizationOverrideRequestValidatorTests
     }
 
     [Fact]
-    public void MaxValueLength_Is4000()
-    {
-        SetLocalizationOverrideRequestValidator.MaxValueLength.ShouldBe(4000);
-    }
+    public void MaxValueLength_Is4000() => SetLocalizationOverrideRequestValidator.MaxValueLength.ShouldBe(4000);
 }

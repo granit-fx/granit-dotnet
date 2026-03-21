@@ -31,11 +31,9 @@ public sealed class TransitionResultTests
     [InlineData(TransitionOutcome.ApprovalRequested)]
     [InlineData(TransitionOutcome.Denied)]
     [InlineData(TransitionOutcome.InvalidTransition)]
-    public void TransitionOutcome_AllValues_ShouldBeValid(TransitionOutcome outcome)
-    {
+    public void TransitionOutcome_AllValues_ShouldBeValid(TransitionOutcome outcome) =>
         // Assert
         Enum.IsDefined(outcome).ShouldBeTrue();
-    }
 
     [Fact]
     public void TransitionOutcome_ShouldHaveExactlyFourValues()

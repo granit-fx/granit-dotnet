@@ -9,10 +9,7 @@ public sealed class AuditPersistenceModeTests
     [Theory]
     [InlineData(AuditPersistenceMode.Async, 0)]
     [InlineData(AuditPersistenceMode.Strict, 1)]
-    public void Values_HaveExpectedNumericValues(AuditPersistenceMode mode, int expectedValue)
-    {
-        ((int)mode).ShouldBe(expectedValue);
-    }
+    public void Values_HaveExpectedNumericValues(AuditPersistenceMode mode, int expectedValue) => ((int)mode).ShouldBe(expectedValue);
 
     [Fact]
     public void HasTwoValues()

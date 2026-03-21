@@ -21,8 +21,5 @@ public sealed class DatePeriodTests
     [InlineData(DatePeriod.ThisQuarter, 4)]
     [InlineData(DatePeriod.ThisYear, 5)]
     [InlineData(DatePeriod.Custom, 6)]
-    public void Enum_values_have_expected_ordinals(DatePeriod period, int expectedOrdinal)
-    {
-        ((int)period).ShouldBe(expectedOrdinal);
-    }
+    public void Enum_values_have_expected_ordinals(DatePeriod period, int expectedOrdinal) => ((int)period).ShouldBe(expectedOrdinal);
 }

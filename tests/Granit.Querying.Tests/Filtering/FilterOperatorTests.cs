@@ -25,8 +25,5 @@ public sealed class FilterOperatorTests
     [InlineData(FilterOperator.Lte, 7)]
     [InlineData(FilterOperator.In, 8)]
     [InlineData(FilterOperator.Between, 9)]
-    public void Values_have_expected_ordinals(FilterOperator op, int expected)
-    {
-        ((int)op).ShouldBe(expected);
-    }
+    public void Values_have_expected_ordinals(FilterOperator op, int expected) => ((int)op).ShouldBe(expected);
 }

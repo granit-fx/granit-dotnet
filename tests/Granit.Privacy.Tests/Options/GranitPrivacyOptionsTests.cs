@@ -7,10 +7,7 @@ namespace Granit.Privacy.Tests.Options;
 public sealed class GranitPrivacyOptionsTests
 {
     [Fact]
-    public void SectionName_IsPrivacy()
-    {
-        GranitPrivacyOptions.SectionName.ShouldBe("Privacy");
-    }
+    public void SectionName_IsPrivacy() => GranitPrivacyOptions.SectionName.ShouldBe("Privacy");
 
     [Fact]
     public void ExportTimeoutMinutes_DefaultValue_IsFive()

@@ -7,10 +7,7 @@ namespace Granit.BlobStorage.Endpoints.Tests.Options;
 public sealed class BlobStorageEndpointsOptionsTests
 {
     [Fact]
-    public void SectionName_IsExpected()
-    {
-        BlobStorageEndpointsOptions.SectionName.ShouldBe("BlobStorageEndpoints");
-    }
+    public void SectionName_IsExpected() => BlobStorageEndpointsOptions.SectionName.ShouldBe("BlobStorageEndpoints");
 
     [Fact]
     public void DefaultRoutePrefix_IsBlobs()

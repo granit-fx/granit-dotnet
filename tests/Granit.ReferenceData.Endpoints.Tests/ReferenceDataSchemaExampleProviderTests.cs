@@ -12,10 +12,7 @@ public sealed class ReferenceDataSchemaExampleProviderTests
     private readonly ReferenceDataSchemaExampleProvider _provider = new();
 
     [Fact]
-    public void Implements_ISchemaExampleProvider()
-    {
-        _provider.ShouldBeAssignableTo<ISchemaExampleProvider>();
-    }
+    public void Implements_ISchemaExampleProvider() => _provider.ShouldBeAssignableTo<ISchemaExampleProvider>();
 
     [Fact]
     public void GetExamples_ContainsCreateRequestExample()

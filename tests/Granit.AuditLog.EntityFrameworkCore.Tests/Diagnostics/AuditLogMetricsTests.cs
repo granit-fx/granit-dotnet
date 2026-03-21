@@ -36,10 +36,7 @@ public sealed class AuditLogMetricsTests : IDisposable
     }
 
     [Fact]
-    public void MeterName_IsCorrect()
-    {
-        AuditLogMetrics.MeterName.ShouldBe("Granit.AuditLog");
-    }
+    public void MeterName_IsCorrect() => AuditLogMetrics.MeterName.ShouldBe("Granit.AuditLog");
 
     [Fact]
     public void RecordPersisted_RecordsCounter()

@@ -26,8 +26,5 @@ public sealed class MigrationStatusTests
     [InlineData(MigrationStatus.InProgress, 1)]
     [InlineData(MigrationStatus.Completed, 2)]
     [InlineData(MigrationStatus.Failed, 3)]
-    public void Values_HaveExpectedUnderlyingValues(MigrationStatus status, int expected)
-    {
-        ((int)status).ShouldBe(expected);
-    }
+    public void Values_HaveExpectedUnderlyingValues(MigrationStatus status, int expected) => ((int)status).ShouldBe(expected);
 }

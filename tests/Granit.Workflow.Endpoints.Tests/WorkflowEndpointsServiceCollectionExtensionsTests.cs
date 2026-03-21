@@ -29,8 +29,12 @@ public sealed class WorkflowEndpointsServiceCollectionExtensionsTests
         // Arrange
         ServiceCollection services = new();
 
-        // Act & Assert — should not throw
+        // Act
         services.AddGranitWorkflowEndpoints();
         services.AddGranitWorkflowEndpoints();
+
+        // Assert — idempotent, no duplicate registrations
+        ServiceProvider provider = services.BuildServiceProvider();
+        provider.ShouldNotBeNull();
     }
 }

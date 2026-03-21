@@ -7,10 +7,7 @@ namespace Granit.Timeline.AI.Tests;
 public sealed class TimelineAIOptionsTests
 {
     [Fact]
-    public void SectionName_is_AI_Timeline()
-    {
-        TimelineAIOptions.SectionName.ShouldBe("AI:Timeline");
-    }
+    public void SectionName_is_AI_Timeline() => TimelineAIOptions.SectionName.ShouldBe("AI:Timeline");
 
     [Fact]
     public void Default_WorkspaceName_IsNull()

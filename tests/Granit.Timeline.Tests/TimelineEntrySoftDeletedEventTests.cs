@@ -20,8 +20,5 @@ public sealed class TimelineEntrySoftDeletedEventTests
     }
 
     [Fact]
-    public void ImplementsIDomainEvent()
-    {
-        typeof(TimelineEntrySoftDeletedEvent).GetInterfaces().ShouldContain(typeof(IDomainEvent));
-    }
+    public void ImplementsIDomainEvent() => typeof(TimelineEntrySoftDeletedEvent).GetInterfaces().ShouldContain(typeof(IDomainEvent));
 }

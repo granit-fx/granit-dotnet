@@ -27,38 +27,20 @@ public sealed class BulkheadMetricsTests : IDisposable
         BulkheadMetrics.MeterName.ShouldBe("Granit.Http.Bulkhead");
 
     [Fact]
-    public void RecordAcquired_DoesNotThrow()
-    {
-        Should.NotThrow(() => _sut.RecordAcquired("api", "tenant-1"));
-    }
+    public void RecordAcquired_DoesNotThrow() => Should.NotThrow(() => _sut.RecordAcquired("api", "tenant-1"));
 
     [Fact]
-    public void RecordAcquired_NullTenantId_DoesNotThrow()
-    {
-        Should.NotThrow(() => _sut.RecordAcquired("api", null));
-    }
+    public void RecordAcquired_NullTenantId_DoesNotThrow() => Should.NotThrow(() => _sut.RecordAcquired("api", null));
 
     [Fact]
-    public void RecordReleased_DoesNotThrow()
-    {
-        Should.NotThrow(() => _sut.RecordReleased("api", "tenant-1"));
-    }
+    public void RecordReleased_DoesNotThrow() => Should.NotThrow(() => _sut.RecordReleased("api", "tenant-1"));
 
     [Fact]
-    public void RecordReleased_NullTenantId_DoesNotThrow()
-    {
-        Should.NotThrow(() => _sut.RecordReleased("api", null));
-    }
+    public void RecordReleased_NullTenantId_DoesNotThrow() => Should.NotThrow(() => _sut.RecordReleased("api", null));
 
     [Fact]
-    public void RecordRejected_DoesNotThrow()
-    {
-        Should.NotThrow(() => _sut.RecordRejected("api", "tenant-1"));
-    }
+    public void RecordRejected_DoesNotThrow() => Should.NotThrow(() => _sut.RecordRejected("api", "tenant-1"));
 
     [Fact]
-    public void RecordRejected_NullTenantId_DoesNotThrow()
-    {
-        Should.NotThrow(() => _sut.RecordRejected("api", null));
-    }
+    public void RecordRejected_NullTenantId_DoesNotThrow() => Should.NotThrow(() => _sut.RecordRejected("api", null));
 }

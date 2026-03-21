@@ -7,10 +7,7 @@ namespace Granit.BlobStorage.AI.Tests;
 public sealed class BlobStorageAIOptionsTests
 {
     [Fact]
-    public void SectionName_IsExpected()
-    {
-        BlobStorageAIOptions.SectionName.ShouldBe("AI:BlobStorage");
-    }
+    public void SectionName_IsExpected() => BlobStorageAIOptions.SectionName.ShouldBe("AI:BlobStorage");
 
     [Fact]
     public void DefaultWorkspaceName_IsNull()

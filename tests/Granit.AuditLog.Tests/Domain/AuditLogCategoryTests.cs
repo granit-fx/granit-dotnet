@@ -11,10 +11,7 @@ public sealed class AuditLogCategoryTests
     [InlineData(AuditLogCategory.ConfigurationChange, 1)]
     [InlineData(AuditLogCategory.DataAccess, 2)]
     [InlineData(AuditLogCategory.AccessDenied, 3)]
-    public void Values_HaveExpectedNumericValues(AuditLogCategory category, int expectedValue)
-    {
-        ((int)category).ShouldBe(expectedValue);
-    }
+    public void Values_HaveExpectedNumericValues(AuditLogCategory category, int expectedValue) => ((int)category).ShouldBe(expectedValue);
 
     [Fact]
     public void HasFourValues()
@@ -28,8 +25,5 @@ public sealed class AuditLogCategoryTests
     [InlineData(AuditLogCategory.ConfigurationChange, "ConfigurationChange")]
     [InlineData(AuditLogCategory.DataAccess, "DataAccess")]
     [InlineData(AuditLogCategory.AccessDenied, "AccessDenied")]
-    public void ToString_ReturnsExpectedName(AuditLogCategory category, string expected)
-    {
-        category.ToString().ShouldBe(expected);
-    }
+    public void ToString_ReturnsExpectedName(AuditLogCategory category, string expected) => category.ToString().ShouldBe(expected);
 }

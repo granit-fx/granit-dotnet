@@ -7,10 +7,7 @@ namespace Granit.Authorization.Tests;
 public sealed class GranitAuthorizationOptionsTests
 {
     [Fact]
-    public void SectionName_IsAuthorization()
-    {
-        GranitAuthorizationOptions.SectionName.ShouldBe("Authorization");
-    }
+    public void SectionName_IsAuthorization() => GranitAuthorizationOptions.SectionName.ShouldBe("Authorization");
 
     [Fact]
     public void AdminRoles_Default_ContainsAdmin()

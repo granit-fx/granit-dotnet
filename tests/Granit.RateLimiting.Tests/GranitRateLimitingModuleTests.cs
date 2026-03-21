@@ -27,10 +27,7 @@ public sealed class GranitRateLimitingModuleTests
     }
 
     [Fact]
-    public void Module_IsSealed()
-    {
-        typeof(GranitRateLimitingModule).IsSealed.ShouldBeTrue();
-    }
+    public void Module_IsSealed() => typeof(GranitRateLimitingModule).IsSealed.ShouldBeTrue();
 
     [Fact]
     public void Module_DependsOnExceptionHandling()

@@ -6,10 +6,7 @@ namespace Granit.Localization.AI.Tests;
 public sealed class LocalizationAIOptionsTests
 {
     [Fact]
-    public void SectionName_IsExpected()
-    {
-        LocalizationAIOptions.SectionName.ShouldBe("AI:Localization");
-    }
+    public void SectionName_IsExpected() => LocalizationAIOptions.SectionName.ShouldBe("AI:Localization");
 
     [Fact]
     public void WorkspaceName_DefaultsToDefault()

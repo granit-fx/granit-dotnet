@@ -16,10 +16,7 @@ public sealed class EntraIdAdminOptionsAdditionalTests
     };
 
     [Fact]
-    public void SectionName_IsEntraIdAdmin()
-    {
-        EntraIdAdminOptions.SectionName.ShouldBe("EntraIdAdmin");
-    }
+    public void SectionName_IsEntraIdAdmin() => EntraIdAdminOptions.SectionName.ShouldBe("EntraIdAdmin");
 
     [Fact]
     public void DefaultValues_AreEmptyStrings()
@@ -117,10 +114,7 @@ public sealed class EntraIdAdminOptionsAdditionalTests
     }
 
     [Fact]
-    public void GroupsEndpoint_IsCorrect()
-    {
-        EntraIdAdminOptions.GroupsEndpoint.ShouldBe("/v1.0/groups?$select=id,displayName,description");
-    }
+    public void GroupsEndpoint_IsCorrect() => EntraIdAdminOptions.GroupsEndpoint.ShouldBe("/v1.0/groups?$select=id,displayName,description");
 
     [Fact]
     public void GetUserGroupsEndpoint_ReturnsCorrectUrl()

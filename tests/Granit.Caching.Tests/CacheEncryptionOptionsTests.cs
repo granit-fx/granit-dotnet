@@ -7,10 +7,7 @@ namespace Granit.Caching.Tests;
 public sealed class CacheEncryptionOptionsTests
 {
     [Fact]
-    public void SectionName_IsCacheEncryption()
-    {
-        CacheEncryptionOptions.SectionName.ShouldBe("Cache:Encryption");
-    }
+    public void SectionName_IsCacheEncryption() => CacheEncryptionOptions.SectionName.ShouldBe("Cache:Encryption");
 
     [Fact]
     public void Defaults_Key_IsNull()

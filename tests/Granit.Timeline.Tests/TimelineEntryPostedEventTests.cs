@@ -23,8 +23,5 @@ public sealed class TimelineEntryPostedEventTests
     }
 
     [Fact]
-    public void ImplementsIDomainEvent()
-    {
-        typeof(TimelineEntryPostedEvent).GetInterfaces().ShouldContain(typeof(IDomainEvent));
-    }
+    public void ImplementsIDomainEvent() => typeof(TimelineEntryPostedEvent).GetInterfaces().ShouldContain(typeof(IDomainEvent));
 }

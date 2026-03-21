@@ -11,10 +11,7 @@ public sealed class IdempotencyOptionsTests
     // =========================================================================
 
     [Fact]
-    public void SectionName_IsIdempotency()
-    {
-        IdempotencyOptions.SectionName.ShouldBe("Idempotency");
-    }
+    public void SectionName_IsIdempotency() => IdempotencyOptions.SectionName.ShouldBe("Idempotency");
 
     [Fact]
     public void DefaultHeaderName_IsIdempotencyKey()

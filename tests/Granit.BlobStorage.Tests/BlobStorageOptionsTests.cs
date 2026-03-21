@@ -7,10 +7,7 @@ namespace Granit.BlobStorage.Tests;
 public sealed class BlobStorageOptionsTests
 {
     [Fact]
-    public void SectionName_IsBlobStorage()
-    {
-        BlobStorageOptions.SectionName.ShouldBe("BlobStorage");
-    }
+    public void SectionName_IsBlobStorage() => BlobStorageOptions.SectionName.ShouldBe("BlobStorage");
 
     [Fact]
     public void DefaultUploadUrlExpiry_Is15Minutes()

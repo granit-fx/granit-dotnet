@@ -8,10 +8,7 @@ namespace Granit.AuditLog.Tests.Options;
 public sealed class AuditLogOptionsAdditionalTests
 {
     [Fact]
-    public void SectionName_IsAuditLog()
-    {
-        AuditLogOptions.SectionName.ShouldBe("AuditLog");
-    }
+    public void SectionName_IsAuditLog() => AuditLogOptions.SectionName.ShouldBe("AuditLog");
 
     [Fact]
     public void CacheEntryTtl_DefaultIs30Minutes()

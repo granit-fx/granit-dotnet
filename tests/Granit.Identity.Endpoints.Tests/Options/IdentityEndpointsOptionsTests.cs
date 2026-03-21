@@ -7,10 +7,7 @@ namespace Granit.Identity.Endpoints.Tests.Options;
 public sealed class IdentityEndpointsOptionsTests
 {
     [Fact]
-    public void SectionName_IsIdentityEndpoints()
-    {
-        IdentityEndpointsOptions.SectionName.ShouldBe("IdentityEndpoints");
-    }
+    public void SectionName_IsIdentityEndpoints() => IdentityEndpointsOptions.SectionName.ShouldBe("IdentityEndpoints");
 
     [Fact]
     public void Defaults_RoutePrefixIsIdentityUsers()

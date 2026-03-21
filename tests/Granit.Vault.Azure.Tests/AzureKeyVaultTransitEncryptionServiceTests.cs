@@ -172,14 +172,8 @@ public sealed class AzureKeyVaultTransitEncryptionServiceTests : IDisposable
     }
 
     [Fact]
-    public void Class_Implements_ITransitEncryptionService()
-    {
-        _sut.ShouldBeAssignableTo<ITransitEncryptionService>();
-    }
+    public void Class_Implements_ITransitEncryptionService() => _sut.ShouldBeAssignableTo<ITransitEncryptionService>();
 
     [Fact]
-    public void Class_IsInternal()
-    {
-        typeof(AzureKeyVaultTransitEncryptionService).IsNotPublic.ShouldBeTrue();
-    }
+    public void Class_IsInternal() => typeof(AzureKeyVaultTransitEncryptionService).IsNotPublic.ShouldBeTrue();
 }

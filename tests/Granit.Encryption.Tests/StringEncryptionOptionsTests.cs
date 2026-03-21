@@ -7,22 +7,13 @@ namespace Granit.Encryption.Tests;
 public sealed class StringEncryptionOptionsTests
 {
     [Fact]
-    public void SectionName_IsEncryption()
-    {
-        StringEncryptionOptions.SectionName.ShouldBe("Encryption");
-    }
+    public void SectionName_IsEncryption() => StringEncryptionOptions.SectionName.ShouldBe("Encryption");
 
     [Fact]
-    public void AesProviderName_IsAes()
-    {
-        StringEncryptionOptions.AesProviderName.ShouldBe("Aes");
-    }
+    public void AesProviderName_IsAes() => StringEncryptionOptions.AesProviderName.ShouldBe("Aes");
 
     [Fact]
-    public void VaultProviderName_IsVault()
-    {
-        StringEncryptionOptions.VaultProviderName.ShouldBe("Vault");
-    }
+    public void VaultProviderName_IsVault() => StringEncryptionOptions.VaultProviderName.ShouldBe("Vault");
 
     [Fact]
     public void Defaults_PassPhrase_IsEmpty()

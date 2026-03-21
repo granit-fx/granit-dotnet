@@ -7,28 +7,16 @@ namespace Granit.Templating.Tests.Store;
 public sealed class TemplateLifecycleStatusTests
 {
     [Fact]
-    public void Draft_HasValue0()
-    {
-        ((int)TemplateLifecycleStatus.Draft).ShouldBe(0);
-    }
+    public void Draft_HasValue0() => ((int)TemplateLifecycleStatus.Draft).ShouldBe(0);
 
     [Fact]
-    public void PendingReview_HasValue1()
-    {
-        ((int)TemplateLifecycleStatus.PendingReview).ShouldBe(1);
-    }
+    public void PendingReview_HasValue1() => ((int)TemplateLifecycleStatus.PendingReview).ShouldBe(1);
 
     [Fact]
-    public void Published_HasValue2()
-    {
-        ((int)TemplateLifecycleStatus.Published).ShouldBe(2);
-    }
+    public void Published_HasValue2() => ((int)TemplateLifecycleStatus.Published).ShouldBe(2);
 
     [Fact]
-    public void Archived_HasValue3()
-    {
-        ((int)TemplateLifecycleStatus.Archived).ShouldBe(3);
-    }
+    public void Archived_HasValue3() => ((int)TemplateLifecycleStatus.Archived).ShouldBe(3);
 
     [Fact]
     public void AllValues_AreFour()

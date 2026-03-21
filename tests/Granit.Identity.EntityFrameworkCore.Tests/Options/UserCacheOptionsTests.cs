@@ -7,10 +7,7 @@ namespace Granit.Identity.EntityFrameworkCore.Tests.Options;
 public sealed class UserCacheOptionsTests
 {
     [Fact]
-    public void SectionName_IsIdentityUserCache()
-    {
-        UserCacheOptions.SectionName.ShouldBe("IdentityUserCache");
-    }
+    public void SectionName_IsIdentityUserCache() => UserCacheOptions.SectionName.ShouldBe("IdentityUserCache");
 
     [Fact]
     public void Defaults_StalenessThresholdIs24Hours()

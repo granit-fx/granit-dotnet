@@ -16,32 +16,17 @@ public sealed class TimelineMentionNotificationTypeTests
     }
 
     [Fact]
-    public void Name_is_timeline_user_mentioned()
-    {
-        TimelineMentionNotificationType.Instance.Name.ShouldBe("timeline.user_mentioned");
-    }
+    public void Name_is_timeline_user_mentioned() => TimelineMentionNotificationType.Instance.Name.ShouldBe("timeline.user_mentioned");
 
     [Fact]
-    public void DefaultChannels_Contains_InApp()
-    {
-        TimelineMentionNotificationType.Instance.DefaultChannels.ShouldContain(NotificationChannels.InApp);
-    }
+    public void DefaultChannels_Contains_InApp() => TimelineMentionNotificationType.Instance.DefaultChannels.ShouldContain(NotificationChannels.InApp);
 
     [Fact]
-    public void DefaultChannels_Contains_SignalR()
-    {
-        TimelineMentionNotificationType.Instance.DefaultChannels.ShouldContain(NotificationChannels.SignalR);
-    }
+    public void DefaultChannels_Contains_SignalR() => TimelineMentionNotificationType.Instance.DefaultChannels.ShouldContain(NotificationChannels.SignalR);
 
     [Fact]
-    public void DefaultChannels_Contains_Email()
-    {
-        TimelineMentionNotificationType.Instance.DefaultChannels.ShouldContain(NotificationChannels.Email);
-    }
+    public void DefaultChannels_Contains_Email() => TimelineMentionNotificationType.Instance.DefaultChannels.ShouldContain(NotificationChannels.Email);
 
     [Fact]
-    public void DefaultChannels_HasExactlyThree()
-    {
-        TimelineMentionNotificationType.Instance.DefaultChannels.Count.ShouldBe(3);
-    }
+    public void DefaultChannels_HasExactlyThree() => TimelineMentionNotificationType.Instance.DefaultChannels.Count.ShouldBe(3);
 }

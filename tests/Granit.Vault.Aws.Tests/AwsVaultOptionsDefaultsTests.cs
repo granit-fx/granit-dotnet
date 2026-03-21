@@ -7,10 +7,7 @@ namespace Granit.Vault.Aws.Tests;
 public sealed class AwsVaultOptionsDefaultsTests
 {
     [Fact]
-    public void SectionName_IsVaultAws()
-    {
-        AwsVaultOptions.SectionName.ShouldBe("Vault:Aws");
-    }
+    public void SectionName_IsVaultAws() => AwsVaultOptions.SectionName.ShouldBe("Vault:Aws");
 
     [Fact]
     public void Region_DefaultsToEmpty()

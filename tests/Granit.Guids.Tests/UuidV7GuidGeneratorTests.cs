@@ -56,11 +56,9 @@ public sealed class UuidV7GuidGeneratorTests
     }
 
     [Fact]
-    public void Create_ImplementsIGuidGenerator()
-    {
+    public void Create_ImplementsIGuidGenerator() =>
         // Assert
         _sut.ShouldBeAssignableTo<IGuidGenerator>();
-    }
 
     [Fact]
     public void Create_Generates10000UniqueGuids()

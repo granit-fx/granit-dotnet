@@ -7,10 +7,7 @@ namespace Granit.Querying.AI.Tests.Options;
 public sealed class QueryingAIOptionsTests
 {
     [Fact]
-    public void SectionName_is_AI_Querying()
-    {
-        QueryingAIOptions.SectionName.ShouldBe("AI:Querying");
-    }
+    public void SectionName_is_AI_Querying() => QueryingAIOptions.SectionName.ShouldBe("AI:Querying");
 
     [Fact]
     public void WorkspaceName_defaults_to_default()

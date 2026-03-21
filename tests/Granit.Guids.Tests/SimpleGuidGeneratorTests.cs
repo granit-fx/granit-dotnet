@@ -66,11 +66,9 @@ public sealed class SimpleGuidGeneratorTests
     }
 
     [Fact]
-    public void Instance_ImplementsIGuidGenerator()
-    {
+    public void Instance_ImplementsIGuidGenerator() =>
         // Assert
         SimpleGuidGenerator.Instance.ShouldBeAssignableTo<IGuidGenerator>();
-    }
 
     [Fact]
     public void Create_Generates10000UniqueGuids()

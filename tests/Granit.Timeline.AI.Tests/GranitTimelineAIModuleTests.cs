@@ -8,16 +8,10 @@ namespace Granit.Timeline.AI.Tests;
 public sealed class GranitTimelineAIModuleTests
 {
     [Fact]
-    public void Module_IsSealed()
-    {
-        typeof(GranitTimelineAIModule).IsSealed.ShouldBeTrue();
-    }
+    public void Module_IsSealed() => typeof(GranitTimelineAIModule).IsSealed.ShouldBeTrue();
 
     [Fact]
-    public void Module_InheritsGranitModule()
-    {
-        typeof(GranitTimelineAIModule).IsSubclassOf(typeof(GranitModule)).ShouldBeTrue();
-    }
+    public void Module_InheritsGranitModule() => typeof(GranitTimelineAIModule).IsSubclassOf(typeof(GranitModule)).ShouldBeTrue();
 
     [Fact]
     public void Module_DependsOn_GranitAIModule()

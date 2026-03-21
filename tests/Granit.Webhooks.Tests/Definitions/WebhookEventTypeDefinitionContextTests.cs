@@ -43,10 +43,7 @@ public sealed class WebhookEventTypeDefinitionContextTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void AddGeneric_NullOrWhitespaceName_Throws(string? name)
-    {
-        Should.Throw<ArgumentException>(() => _context.Add<TestLocalizationResource>(name!));
-    }
+    public void AddGeneric_NullOrWhitespaceName_Throws(string? name) => Should.Throw<ArgumentException>(() => _context.Add<TestLocalizationResource>(name!));
 
     // -------------------------------------------------------------------------
     // Add(WebhookEventTypeDefinition) (explicit)
@@ -70,10 +67,7 @@ public sealed class WebhookEventTypeDefinitionContextTests
     }
 
     [Fact]
-    public void AddExplicit_NullDefinition_Throws()
-    {
-        Should.Throw<ArgumentNullException>(() => _context.Add(null!));
-    }
+    public void AddExplicit_NullDefinition_Throws() => Should.Throw<ArgumentNullException>(() => _context.Add(null!));
 
     [Fact]
     public void AddExplicit_WhitespaceName_Throws()
@@ -107,10 +101,7 @@ public sealed class WebhookEventTypeDefinitionContextTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void GetOrNull_UnknownName_ReturnsNull()
-    {
-        _context.GetOrNull("unknown.event").ShouldBeNull();
-    }
+    public void GetOrNull_UnknownName_ReturnsNull() => _context.GetOrNull("unknown.event").ShouldBeNull();
 
     [Fact]
     public void Build_ReturnsImmutableDictionary()

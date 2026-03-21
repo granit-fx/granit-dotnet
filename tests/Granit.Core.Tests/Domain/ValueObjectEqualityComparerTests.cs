@@ -80,7 +80,7 @@ public sealed class ValueObjectEqualityComparerTests
     {
         Money a = new() { Amount = 100m, Currency = "EUR" };
 
-        a.Equals("not a value object").ShouldBeFalse();
+        a.Equals((object)"not a value object").ShouldBeFalse();
     }
 
     [Fact]

@@ -26,8 +26,5 @@ public sealed class TenantIsolationStrategyTests
     [InlineData(TenantIsolationStrategy.SharedDatabase)]
     [InlineData(TenantIsolationStrategy.DatabasePerTenant)]
     [InlineData(TenantIsolationStrategy.SchemaPerTenant)]
-    public void Values_AreDefined(TenantIsolationStrategy strategy)
-    {
-        Enum.IsDefined(strategy).ShouldBeTrue();
-    }
+    public void Values_AreDefined(TenantIsolationStrategy strategy) => Enum.IsDefined(strategy).ShouldBeTrue();
 }

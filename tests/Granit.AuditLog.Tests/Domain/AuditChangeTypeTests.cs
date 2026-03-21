@@ -11,10 +11,7 @@ public sealed class AuditChangeTypeTests
     [InlineData(AuditChangeType.Modified, 1)]
     [InlineData(AuditChangeType.Deleted, 2)]
     [InlineData(AuditChangeType.SoftDeleted, 3)]
-    public void Values_HaveExpectedNumericValues(AuditChangeType changeType, int expectedValue)
-    {
-        ((int)changeType).ShouldBe(expectedValue);
-    }
+    public void Values_HaveExpectedNumericValues(AuditChangeType changeType, int expectedValue) => ((int)changeType).ShouldBe(expectedValue);
 
     [Fact]
     public void HasFourValues()
@@ -28,8 +25,5 @@ public sealed class AuditChangeTypeTests
     [InlineData(AuditChangeType.Modified, "Modified")]
     [InlineData(AuditChangeType.Deleted, "Deleted")]
     [InlineData(AuditChangeType.SoftDeleted, "SoftDeleted")]
-    public void ToString_ReturnsExpectedName(AuditChangeType changeType, string expected)
-    {
-        changeType.ToString().ShouldBe(expected);
-    }
+    public void ToString_ReturnsExpectedName(AuditChangeType changeType, string expected) => changeType.ToString().ShouldBe(expected);
 }

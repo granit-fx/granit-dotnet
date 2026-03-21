@@ -7,10 +7,7 @@ namespace Granit.ReferenceData.Tests;
 public sealed class ReferenceDataOptionsTests
 {
     [Fact]
-    public void SectionName_Is_ReferenceData()
-    {
-        ReferenceDataOptions.SectionName.ShouldBe("ReferenceData");
-    }
+    public void SectionName_Is_ReferenceData() => ReferenceDataOptions.SectionName.ShouldBe("ReferenceData");
 
     [Fact]
     public void Default_CacheTimeToLive_Is_OneHour()

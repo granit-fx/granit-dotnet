@@ -7,10 +7,7 @@ namespace Granit.Settings.Endpoints.Tests;
 public sealed class SettingsPermissionsTests
 {
     [Fact]
-    public void GroupName_IsSettings()
-    {
-        SettingsPermissions.GroupName.ShouldBe("Settings");
-    }
+    public void GroupName_IsSettings() => SettingsPermissions.GroupName.ShouldBe("Settings");
 
     [Fact]
     public void GlobalRead_FollowsThreeSegmentFormat()

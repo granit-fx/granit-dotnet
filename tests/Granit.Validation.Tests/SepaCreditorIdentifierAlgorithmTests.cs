@@ -11,10 +11,7 @@ public sealed class SepaCreditorIdentifierAlgorithmTests
     [InlineData("FR20ZZZ123456")]
     [InlineData("be46zzz000000000")]                     // Lowercase
     [InlineData("BE 46 ZZZ 000000000")]                  // With spaces
-    public void IsValid_ValidSci_ReturnsTrue(string sci)
-    {
-        SepaCreditorIdentifierAlgorithm.IsValid(sci).ShouldBeTrue();
-    }
+    public void IsValid_ValidSci_ReturnsTrue(string sci) => SepaCreditorIdentifierAlgorithm.IsValid(sci).ShouldBeTrue();
 
     [Theory]
     [InlineData(null)]
@@ -24,8 +21,5 @@ public sealed class SepaCreditorIdentifierAlgorithmTests
     [InlineData("BE92")]                                 // Too short
     [InlineData("1234ZZZ000000000")]                     // Country code not alpha
     [InlineData("BEAAZZZ000000000")]                     // Check not digits
-    public void IsValid_InvalidSci_ReturnsFalse(string? sci)
-    {
-        SepaCreditorIdentifierAlgorithm.IsValid(sci).ShouldBeFalse();
-    }
+    public void IsValid_InvalidSci_ReturnsFalse(string? sci) => SepaCreditorIdentifierAlgorithm.IsValid(sci).ShouldBeFalse();
 }

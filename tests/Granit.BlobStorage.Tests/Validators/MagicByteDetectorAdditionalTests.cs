@@ -67,8 +67,5 @@ public sealed class MagicByteDetectorAdditionalTests
     }
 
     [Fact]
-    public void RequiredByteCount_Is261()
-    {
-        MagicByteDetector.RequiredByteCount.ShouldBe(261);
-    }
+    public void RequiredByteCount_Is261() => MagicByteDetector.RequiredByteCount.ShouldBe(261);
 }

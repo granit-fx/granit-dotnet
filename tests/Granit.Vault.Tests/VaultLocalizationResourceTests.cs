@@ -34,8 +34,5 @@ public sealed class VaultLocalizationResourceTests
     }
 
     [Fact]
-    public void Class_IsSealed()
-    {
-        typeof(VaultLocalizationResource).IsSealed.ShouldBeTrue();
-    }
+    public void Class_IsSealed() => typeof(VaultLocalizationResource).IsSealed.ShouldBeTrue();
 }

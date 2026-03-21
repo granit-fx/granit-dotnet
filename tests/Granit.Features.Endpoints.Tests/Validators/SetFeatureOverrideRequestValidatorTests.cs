@@ -65,8 +65,5 @@ public sealed class SetFeatureOverrideRequestValidatorTests
     }
 
     [Fact]
-    public void MaxValueLength_Is2000()
-    {
-        SetFeatureOverrideRequestValidator.MaxValueLength.ShouldBe(2000);
-    }
+    public void MaxValueLength_Is2000() => SetFeatureOverrideRequestValidator.MaxValueLength.ShouldBe(2000);
 }

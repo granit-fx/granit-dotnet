@@ -204,10 +204,7 @@ public sealed class InMemoryIdempotencyStoreTests
     }
 
     [Fact]
-    public async Task DeleteAsync_NonExistentKey_DoesNotThrow()
-    {
-        await Should.NotThrowAsync(() => _store.DeleteAsync("nonexistent", CancellationToken.None));
-    }
+    public async Task DeleteAsync_NonExistentKey_DoesNotThrow() => await Should.NotThrowAsync(() => _store.DeleteAsync("nonexistent", CancellationToken.None));
 
     // =========================================================================
     // Cleanup (called during TryAcquireAsync)

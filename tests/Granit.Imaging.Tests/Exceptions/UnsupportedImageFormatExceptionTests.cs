@@ -32,10 +32,7 @@ public sealed class UnsupportedImageFormatExceptionTests
     }
 
     [Fact]
-    public void Type_IsSealed()
-    {
-        typeof(UnsupportedImageFormatException).IsSealed.ShouldBeTrue();
-    }
+    public void Type_IsSealed() => typeof(UnsupportedImageFormatException).IsSealed.ShouldBeTrue();
 
     [Fact]
     public void Constructor_EmptyFormat_StillSetsProperty()

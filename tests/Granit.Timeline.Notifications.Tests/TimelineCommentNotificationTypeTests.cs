@@ -16,32 +16,17 @@ public sealed class TimelineCommentNotificationTypeTests
     }
 
     [Fact]
-    public void Name_is_timeline_comment_posted()
-    {
-        TimelineCommentNotificationType.Instance.Name.ShouldBe("timeline.comment_posted");
-    }
+    public void Name_is_timeline_comment_posted() => TimelineCommentNotificationType.Instance.Name.ShouldBe("timeline.comment_posted");
 
     [Fact]
-    public void DefaultChannels_Contains_InApp()
-    {
-        TimelineCommentNotificationType.Instance.DefaultChannels.ShouldContain(NotificationChannels.InApp);
-    }
+    public void DefaultChannels_Contains_InApp() => TimelineCommentNotificationType.Instance.DefaultChannels.ShouldContain(NotificationChannels.InApp);
 
     [Fact]
-    public void DefaultChannels_Contains_SignalR()
-    {
-        TimelineCommentNotificationType.Instance.DefaultChannels.ShouldContain(NotificationChannels.SignalR);
-    }
+    public void DefaultChannels_Contains_SignalR() => TimelineCommentNotificationType.Instance.DefaultChannels.ShouldContain(NotificationChannels.SignalR);
 
     [Fact]
-    public void DefaultChannels_DoesNotContain_Email()
-    {
-        TimelineCommentNotificationType.Instance.DefaultChannels.ShouldNotContain(NotificationChannels.Email);
-    }
+    public void DefaultChannels_DoesNotContain_Email() => TimelineCommentNotificationType.Instance.DefaultChannels.ShouldNotContain(NotificationChannels.Email);
 
     [Fact]
-    public void DefaultChannels_HasExactlyTwo()
-    {
-        TimelineCommentNotificationType.Instance.DefaultChannels.Count.ShouldBe(2);
-    }
+    public void DefaultChannels_HasExactlyTwo() => TimelineCommentNotificationType.Instance.DefaultChannels.Count.ShouldBe(2);
 }

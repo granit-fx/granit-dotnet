@@ -7,22 +7,13 @@ namespace Granit.Authorization.Endpoints.Tests;
 public sealed class AuthorizationEndpointsPermissionsTests
 {
     [Fact]
-    public void GroupName_IsAuthorization()
-    {
-        AuthorizationEndpointsPermissions.GroupName.ShouldBe("Authorization");
-    }
+    public void GroupName_IsAuthorization() => AuthorizationEndpointsPermissions.GroupName.ShouldBe("Authorization");
 
     [Fact]
-    public void Definitions_Read_FollowsThreeSegmentConvention()
-    {
-        AuthorizationEndpointsPermissions.Definitions.Read.ShouldBe("Authorization.Definitions.Read");
-    }
+    public void Definitions_Read_FollowsThreeSegmentConvention() => AuthorizationEndpointsPermissions.Definitions.Read.ShouldBe("Authorization.Definitions.Read");
 
     [Fact]
-    public void Grants_Manage_FollowsThreeSegmentConvention()
-    {
-        AuthorizationEndpointsPermissions.Grants.Manage.ShouldBe("Authorization.Grants.Manage");
-    }
+    public void Grants_Manage_FollowsThreeSegmentConvention() => AuthorizationEndpointsPermissions.Grants.Manage.ShouldBe("Authorization.Grants.Manage");
 
     [Fact]
     public void Definitions_Read_StartsWithGroupName()

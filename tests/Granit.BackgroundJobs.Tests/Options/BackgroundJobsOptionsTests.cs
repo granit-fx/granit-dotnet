@@ -8,10 +8,7 @@ namespace Granit.BackgroundJobs.Tests.Options;
 public sealed class BackgroundJobsOptionsTests
 {
     [Fact]
-    public void SectionName_IsBackgroundJobs()
-    {
-        BackgroundJobsOptions.SectionName.ShouldBe("BackgroundJobs");
-    }
+    public void SectionName_IsBackgroundJobs() => BackgroundJobsOptions.SectionName.ShouldBe("BackgroundJobs");
 
     [Fact]
     public void Mode_Default_IsInMemory()

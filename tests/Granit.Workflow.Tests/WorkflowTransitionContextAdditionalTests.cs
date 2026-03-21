@@ -65,9 +65,7 @@ public sealed class WorkflowTransitionContextAdditionalTests
     }
 
     [Fact]
-    public void Current_WithoutScope_ShouldBeNull()
-    {
+    public void Current_WithoutScope_ShouldBeNull() =>
         // Ensure clean state
         WorkflowTransitionContext.Current.ShouldBeNull();
-    }
 }

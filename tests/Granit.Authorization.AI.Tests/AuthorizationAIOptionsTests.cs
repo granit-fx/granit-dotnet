@@ -6,10 +6,7 @@ namespace Granit.Authorization.AI.Tests;
 public sealed class AuthorizationAIOptionsTests
 {
     [Fact]
-    public void SectionName_IsAIAuthorization()
-    {
-        AuthorizationAIOptions.SectionName.ShouldBe("AI:Authorization");
-    }
+    public void SectionName_IsAIAuthorization() => AuthorizationAIOptions.SectionName.ShouldBe("AI:Authorization");
 
     [Fact]
     public void WorkspaceName_Default_IsDefault()

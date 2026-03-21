@@ -21,16 +21,10 @@ public sealed class GranitAuditLogDbPropertiesTests : IDisposable
     }
 
     [Fact]
-    public void DbTablePrefix_Default_IsAuditUnderscore()
-    {
-        GranitAuditLogDbProperties.DbTablePrefix.ShouldBe("audit_");
-    }
+    public void DbTablePrefix_Default_IsAuditUnderscore() => GranitAuditLogDbProperties.DbTablePrefix.ShouldBe("audit_");
 
     [Fact]
-    public void DbSchema_Default_IsNull()
-    {
-        GranitAuditLogDbProperties.DbSchema.ShouldBeNull();
-    }
+    public void DbSchema_Default_IsNull() => GranitAuditLogDbProperties.DbSchema.ShouldBeNull();
 
     [Fact]
     public void DbTablePrefix_CanBeSet()

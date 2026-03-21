@@ -7,10 +7,7 @@ namespace Granit.Persistence.Tests.MultiTenancy;
 public sealed class TenantSchemaOptionsTests
 {
     [Fact]
-    public void SectionName_HasExpectedValue()
-    {
-        TenantSchemaOptions.SectionName.ShouldBe("TenantSchema");
-    }
+    public void SectionName_HasExpectedValue() => TenantSchemaOptions.SectionName.ShouldBe("TenantSchema");
 
     [Fact]
     public void Default_NamingConvention_IsTenantId()

@@ -20,8 +20,5 @@ public sealed class AggregateFunctionTests
     [InlineData(AggregateFunction.Avg, 2)]
     [InlineData(AggregateFunction.Min, 3)]
     [InlineData(AggregateFunction.Max, 4)]
-    public void Values_have_expected_ordinals(AggregateFunction function, int expected)
-    {
-        ((int)function).ShouldBe(expected);
-    }
+    public void Values_have_expected_ordinals(AggregateFunction function, int expected) => ((int)function).ShouldBe(expected);
 }

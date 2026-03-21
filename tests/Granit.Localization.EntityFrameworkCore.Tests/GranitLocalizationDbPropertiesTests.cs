@@ -6,16 +6,10 @@ namespace Granit.Localization.EntityFrameworkCore.Tests;
 public sealed class GranitLocalizationDbPropertiesTests
 {
     [Fact]
-    public void DbTablePrefix_DefaultsToLocalization()
-    {
-        GranitLocalizationDbProperties.DbTablePrefix.ShouldBe("localization_");
-    }
+    public void DbTablePrefix_DefaultsToLocalization() => GranitLocalizationDbProperties.DbTablePrefix.ShouldBe("localization_");
 
     [Fact]
-    public void DbSchema_DefaultsToNull()
-    {
-        GranitLocalizationDbProperties.DbSchema.ShouldBeNull();
-    }
+    public void DbSchema_DefaultsToNull() => GranitLocalizationDbProperties.DbSchema.ShouldBeNull();
 
     [Fact]
     public void DbTablePrefix_CanBeChanged()

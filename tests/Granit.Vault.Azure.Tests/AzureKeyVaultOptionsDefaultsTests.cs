@@ -7,10 +7,7 @@ namespace Granit.Vault.Azure.Tests;
 public sealed class AzureKeyVaultOptionsDefaultsTests
 {
     [Fact]
-    public void SectionName_IsVaultAzure()
-    {
-        AzureKeyVaultOptions.SectionName.ShouldBe("Vault:Azure");
-    }
+    public void SectionName_IsVaultAzure() => AzureKeyVaultOptions.SectionName.ShouldBe("Vault:Azure");
 
     [Fact]
     public void VaultUri_DefaultsToEmpty()

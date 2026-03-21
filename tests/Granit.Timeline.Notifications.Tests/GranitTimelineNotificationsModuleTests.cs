@@ -8,16 +8,10 @@ namespace Granit.Timeline.Notifications.Tests;
 public sealed class GranitTimelineNotificationsModuleTests
 {
     [Fact]
-    public void Module_IsSealed()
-    {
-        typeof(GranitTimelineNotificationsModule).IsSealed.ShouldBeTrue();
-    }
+    public void Module_IsSealed() => typeof(GranitTimelineNotificationsModule).IsSealed.ShouldBeTrue();
 
     [Fact]
-    public void Module_InheritsGranitModule()
-    {
-        typeof(GranitTimelineNotificationsModule).IsSubclassOf(typeof(GranitModule)).ShouldBeTrue();
-    }
+    public void Module_InheritsGranitModule() => typeof(GranitTimelineNotificationsModule).IsSubclassOf(typeof(GranitModule)).ShouldBeTrue();
 
     [Fact]
     public void Module_DependsOn_GranitNotificationsModule()

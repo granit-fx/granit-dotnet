@@ -7,10 +7,7 @@ namespace Granit.Caching.Tests;
 public sealed class CachingOptionsTests
 {
     [Fact]
-    public void SectionName_IsCache()
-    {
-        CachingOptions.SectionName.ShouldBe("Cache");
-    }
+    public void SectionName_IsCache() => CachingOptions.SectionName.ShouldBe("Cache");
 
     [Fact]
     public void Defaults_KeyPrefix_IsDd()

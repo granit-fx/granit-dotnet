@@ -7,10 +7,7 @@ namespace Granit.Validation.AI.Tests;
 public sealed class ValidationAIOptionsTests
 {
     [Fact]
-    public void SectionName_IsCorrect()
-    {
-        ValidationAIOptions.SectionName.ShouldBe("AI:Validation");
-    }
+    public void SectionName_IsCorrect() => ValidationAIOptions.SectionName.ShouldBe("AI:Validation");
 
     [Fact]
     public void WorkspaceName_DefaultValue_IsDefault()

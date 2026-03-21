@@ -25,8 +25,5 @@ public sealed class MigrationPhaseTests
     [InlineData(MigrationPhase.Expand, 0)]
     [InlineData(MigrationPhase.Migrate, 1)]
     [InlineData(MigrationPhase.Contract, 2)]
-    public void Values_HaveExpectedUnderlyingValues(MigrationPhase phase, int expected)
-    {
-        ((int)phase).ShouldBe(expected);
-    }
+    public void Values_HaveExpectedUnderlyingValues(MigrationPhase phase, int expected) => ((int)phase).ShouldBe(expected);
 }

@@ -7,10 +7,7 @@ namespace Granit.Caching.StackExchangeRedis.Tests;
 public sealed class RedisCachingOptionsTests
 {
     [Fact]
-    public void SectionName_IsCacheRedis()
-    {
-        RedisCachingOptions.SectionName.ShouldBe("Cache:Redis");
-    }
+    public void SectionName_IsCacheRedis() => RedisCachingOptions.SectionName.ShouldBe("Cache:Redis");
 
     [Fact]
     public void Defaults_IsEnabled_IsTrue()

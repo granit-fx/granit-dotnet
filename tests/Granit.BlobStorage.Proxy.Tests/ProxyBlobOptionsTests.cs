@@ -7,10 +7,7 @@ namespace Granit.BlobStorage.Proxy.Tests;
 public sealed class ProxyBlobOptionsTests
 {
     [Fact]
-    public void SectionName_IsExpected()
-    {
-        ProxyBlobOptions.SectionName.ShouldBe("BlobStorage:Proxy");
-    }
+    public void SectionName_IsExpected() => ProxyBlobOptions.SectionName.ShouldBe("BlobStorage:Proxy");
 
     [Fact]
     public void DefaultBaseUrl_IsEmpty()

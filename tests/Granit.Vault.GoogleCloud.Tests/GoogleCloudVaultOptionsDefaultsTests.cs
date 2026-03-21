@@ -7,10 +7,7 @@ namespace Granit.Vault.GoogleCloud.Tests;
 public sealed class GoogleCloudVaultOptionsDefaultsTests
 {
     [Fact]
-    public void SectionName_IsVaultGoogleCloud()
-    {
-        GoogleCloudVaultOptions.SectionName.ShouldBe("Vault:GoogleCloud");
-    }
+    public void SectionName_IsVaultGoogleCloud() => GoogleCloudVaultOptions.SectionName.ShouldBe("Vault:GoogleCloud");
 
     [Fact]
     public void ProjectId_DefaultsToEmpty()

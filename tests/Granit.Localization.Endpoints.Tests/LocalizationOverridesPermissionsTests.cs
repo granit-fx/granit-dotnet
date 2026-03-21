@@ -7,10 +7,7 @@ namespace Granit.Localization.Endpoints.Tests;
 public sealed class LocalizationOverridesPermissionsTests
 {
     [Fact]
-    public void GroupName_IsLocalization()
-    {
-        LocalizationOverridesPermissions.GroupName.ShouldBe("Localization");
-    }
+    public void GroupName_IsLocalization() => LocalizationOverridesPermissions.GroupName.ShouldBe("Localization");
 
     [Fact]
     public void Read_FollowsThreeSegmentConvention()
@@ -27,10 +24,7 @@ public sealed class LocalizationOverridesPermissionsTests
     }
 
     [Fact]
-    public void Read_HasCorrectValue()
-    {
-        LocalizationOverridesPermissions.Read.ShouldBe("Localization.Overrides.Read");
-    }
+    public void Read_HasCorrectValue() => LocalizationOverridesPermissions.Read.ShouldBe("Localization.Overrides.Read");
 
     [Fact]
     public void Manage_FollowsThreeSegmentConvention()
@@ -47,8 +41,5 @@ public sealed class LocalizationOverridesPermissionsTests
     }
 
     [Fact]
-    public void Manage_HasCorrectValue()
-    {
-        LocalizationOverridesPermissions.Manage.ShouldBe("Localization.Overrides.Manage");
-    }
+    public void Manage_HasCorrectValue() => LocalizationOverridesPermissions.Manage.ShouldBe("Localization.Overrides.Manage");
 }

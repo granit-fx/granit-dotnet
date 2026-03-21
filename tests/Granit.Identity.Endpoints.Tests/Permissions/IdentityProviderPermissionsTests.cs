@@ -7,64 +7,34 @@ namespace Granit.Identity.Endpoints.Tests.Permissions;
 public sealed class IdentityProviderPermissionsTests
 {
     [Fact]
-    public void GroupName_IsIdentity()
-    {
-        IdentityProviderPermissions.GroupName.ShouldBe("Identity");
-    }
+    public void GroupName_IsIdentity() => IdentityProviderPermissions.GroupName.ShouldBe("Identity");
 
     [Fact]
-    public void Users_Read_FollowsThreeSegmentConvention()
-    {
-        IdentityProviderPermissions.Users.Read.ShouldBe("Identity.Users.Read");
-    }
+    public void Users_Read_FollowsThreeSegmentConvention() => IdentityProviderPermissions.Users.Read.ShouldBe("Identity.Users.Read");
 
     [Fact]
-    public void Users_Manage_FollowsThreeSegmentConvention()
-    {
-        IdentityProviderPermissions.Users.Manage.ShouldBe("Identity.Users.Manage");
-    }
+    public void Users_Manage_FollowsThreeSegmentConvention() => IdentityProviderPermissions.Users.Manage.ShouldBe("Identity.Users.Manage");
 
     [Fact]
-    public void Roles_Read_FollowsThreeSegmentConvention()
-    {
-        IdentityProviderPermissions.Roles.Read.ShouldBe("Identity.Roles.Read");
-    }
+    public void Roles_Read_FollowsThreeSegmentConvention() => IdentityProviderPermissions.Roles.Read.ShouldBe("Identity.Roles.Read");
 
     [Fact]
-    public void Roles_Manage_FollowsThreeSegmentConvention()
-    {
-        IdentityProviderPermissions.Roles.Manage.ShouldBe("Identity.Roles.Manage");
-    }
+    public void Roles_Manage_FollowsThreeSegmentConvention() => IdentityProviderPermissions.Roles.Manage.ShouldBe("Identity.Roles.Manage");
 
     [Fact]
-    public void Groups_Read_FollowsThreeSegmentConvention()
-    {
-        IdentityProviderPermissions.Groups.Read.ShouldBe("Identity.Groups.Read");
-    }
+    public void Groups_Read_FollowsThreeSegmentConvention() => IdentityProviderPermissions.Groups.Read.ShouldBe("Identity.Groups.Read");
 
     [Fact]
-    public void Groups_Manage_FollowsThreeSegmentConvention()
-    {
-        IdentityProviderPermissions.Groups.Manage.ShouldBe("Identity.Groups.Manage");
-    }
+    public void Groups_Manage_FollowsThreeSegmentConvention() => IdentityProviderPermissions.Groups.Manage.ShouldBe("Identity.Groups.Manage");
 
     [Fact]
-    public void Sessions_Read_FollowsThreeSegmentConvention()
-    {
-        IdentityProviderPermissions.Sessions.Read.ShouldBe("Identity.Sessions.Read");
-    }
+    public void Sessions_Read_FollowsThreeSegmentConvention() => IdentityProviderPermissions.Sessions.Read.ShouldBe("Identity.Sessions.Read");
 
     [Fact]
-    public void Sessions_Manage_FollowsThreeSegmentConvention()
-    {
-        IdentityProviderPermissions.Sessions.Manage.ShouldBe("Identity.Sessions.Manage");
-    }
+    public void Sessions_Manage_FollowsThreeSegmentConvention() => IdentityProviderPermissions.Sessions.Manage.ShouldBe("Identity.Sessions.Manage");
 
     [Fact]
-    public void Passwords_Manage_FollowsThreeSegmentConvention()
-    {
-        IdentityProviderPermissions.Passwords.Manage.ShouldBe("Identity.Passwords.Manage");
-    }
+    public void Passwords_Manage_FollowsThreeSegmentConvention() => IdentityProviderPermissions.Passwords.Manage.ShouldBe("Identity.Passwords.Manage");
 
     [Theory]
     [InlineData("Identity.Users.Read")]

@@ -7,10 +7,7 @@ namespace Granit.Vault.HashiCorp.Tests;
 public sealed class HashiCorpVaultOptionsTests
 {
     [Fact]
-    public void SectionName_IsVault()
-    {
-        HashiCorpVaultOptions.SectionName.ShouldBe("Vault");
-    }
+    public void SectionName_IsVault() => HashiCorpVaultOptions.SectionName.ShouldBe("Vault");
 
     [Fact]
     public void Address_DefaultsToEmpty()

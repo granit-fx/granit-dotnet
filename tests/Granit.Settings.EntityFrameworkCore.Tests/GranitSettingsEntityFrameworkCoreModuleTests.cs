@@ -30,10 +30,7 @@ public sealed class GranitSettingsEntityFrameworkCoreModuleTests
     }
 
     [Fact]
-    public void Module_IsSealed()
-    {
-        typeof(GranitSettingsEntityFrameworkCoreModule).IsSealed.ShouldBeTrue();
-    }
+    public void Module_IsSealed() => typeof(GranitSettingsEntityFrameworkCoreModule).IsSealed.ShouldBeTrue();
 
     [Fact]
     public void Module_InheritsFromGranitModule()

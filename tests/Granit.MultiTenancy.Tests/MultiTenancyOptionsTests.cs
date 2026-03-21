@@ -11,10 +11,7 @@ namespace Granit.MultiTenancy.Tests;
 public sealed class MultiTenancyOptionsTests
 {
     [Fact]
-    public void SectionName_IsMultiTenancy()
-    {
-        MultiTenancyOptions.SectionName.ShouldBe("MultiTenancy");
-    }
+    public void SectionName_IsMultiTenancy() => MultiTenancyOptions.SectionName.ShouldBe("MultiTenancy");
 
     [Fact]
     public void IsEnabled_DefaultsToTrue()

@@ -54,7 +54,7 @@ public sealed class AuditLogSchemaExampleProviderTests
         JsonNode detailExample = examples[typeof(AuditLogEntryDetailResponse)];
         JsonObject obj = detailExample.AsObject();
 
-        JsonArray? entityChanges = obj["entityChanges"]?.AsArray();
+        JsonArray entityChanges = obj["entityChanges"]!.AsArray();
         entityChanges.ShouldNotBeNull();
         entityChanges.Count.ShouldBeGreaterThan(0);
 

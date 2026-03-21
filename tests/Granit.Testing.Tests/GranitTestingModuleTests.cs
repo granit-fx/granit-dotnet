@@ -14,8 +14,5 @@ public sealed class GranitTestingModuleTests
     }
 
     [Fact]
-    public void Module_Is_Sealed()
-    {
-        typeof(GranitTestingModule).IsSealed.ShouldBeTrue();
-    }
+    public void Module_Is_Sealed() => typeof(GranitTestingModule).IsSealed.ShouldBeTrue();
 }

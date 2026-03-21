@@ -43,10 +43,7 @@ public sealed class ContentTypeTests
     [InlineData("text")]
     [InlineData("/html")]
     [InlineData("text/")]
-    public void Create_InvalidMimeFormat_Throws(string invalidType)
-    {
-        Should.Throw<ArgumentException>(() => ContentType.Create(invalidType));
-    }
+    public void Create_InvalidMimeFormat_Throws(string invalidType) => Should.Throw<ArgumentException>(() => ContentType.Create(invalidType));
 
     // -------------------------------------------------------------------------
     // Implicit conversions

@@ -14,10 +14,7 @@ public sealed class GranitTestingEntityFrameworkCoreModuleTests
     }
 
     [Fact]
-    public void Module_Is_Sealed()
-    {
-        typeof(GranitTestingEntityFrameworkCoreModule).IsSealed.ShouldBeTrue();
-    }
+    public void Module_Is_Sealed() => typeof(GranitTestingEntityFrameworkCoreModule).IsSealed.ShouldBeTrue();
 
     [Fact]
     public void Module_Has_DependsOn_PersistenceModule()

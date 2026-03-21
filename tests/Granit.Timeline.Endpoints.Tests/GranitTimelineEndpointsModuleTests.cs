@@ -9,16 +9,10 @@ namespace Granit.Timeline.Endpoints.Tests;
 public sealed class GranitTimelineEndpointsModuleTests
 {
     [Fact]
-    public void Module_IsSealed()
-    {
-        typeof(GranitTimelineEndpointsModule).IsSealed.ShouldBeTrue();
-    }
+    public void Module_IsSealed() => typeof(GranitTimelineEndpointsModule).IsSealed.ShouldBeTrue();
 
     [Fact]
-    public void Module_InheritsGranitModule()
-    {
-        typeof(GranitTimelineEndpointsModule).IsSubclassOf(typeof(GranitModule)).ShouldBeTrue();
-    }
+    public void Module_InheritsGranitModule() => typeof(GranitTimelineEndpointsModule).IsSubclassOf(typeof(GranitModule)).ShouldBeTrue();
 
     [Fact]
     public void Module_DependsOn_GranitAuthorizationModule()

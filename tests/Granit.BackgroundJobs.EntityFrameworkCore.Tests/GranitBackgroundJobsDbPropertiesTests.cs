@@ -7,14 +7,8 @@ namespace Granit.BackgroundJobs.EntityFrameworkCore.Tests;
 public sealed class GranitBackgroundJobsDbPropertiesTests
 {
     [Fact]
-    public void DbTablePrefix_Default_IsSchedulingUnderscore()
-    {
-        GranitBackgroundJobsDbProperties.DbTablePrefix.ShouldBe("scheduling_");
-    }
+    public void DbTablePrefix_Default_IsSchedulingUnderscore() => GranitBackgroundJobsDbProperties.DbTablePrefix.ShouldBe("scheduling_");
 
     [Fact]
-    public void DbSchema_Default_IsNull()
-    {
-        GranitBackgroundJobsDbProperties.DbSchema.ShouldBeNull();
-    }
+    public void DbSchema_Default_IsNull() => GranitBackgroundJobsDbProperties.DbSchema.ShouldBeNull();
 }

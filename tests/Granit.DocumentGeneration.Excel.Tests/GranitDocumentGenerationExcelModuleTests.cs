@@ -42,10 +42,7 @@ public sealed class GranitDocumentGenerationExcelModuleTests
     }
 
     [Fact]
-    public void Module_IsSealed()
-    {
-        typeof(GranitDocumentGenerationExcelModule).IsSealed.ShouldBeTrue();
-    }
+    public void Module_IsSealed() => typeof(GranitDocumentGenerationExcelModule).IsSealed.ShouldBeTrue();
 
     [Fact]
     public void Module_InheritsGranitModule()
