@@ -45,16 +45,13 @@ internal sealed partial class KeyRotationService(
         IReadOnlyList<SigningKey> retiredKeys = await keyStore
             .GetKeysAsync(SigningKeyStatus.Retired).ConfigureAwait(false);
 
-        foreach (SigningKey retiredKey in retiredKeys)
+        foreach (SigningKey retiredKey in retiredKeys.Where(k =>
+            k.RetiredAt.HasValue && now - k.RetiredAt.Value > options.GracePeriod))
         {
-            if (retiredKey.RetiredAt.HasValue
-                && now - retiredKey.RetiredAt.Value > options.GracePeriod)
-            {
-                retiredKey.Status = SigningKeyStatus.Revoked;
-                await keyStore.UpdateAsync(retiredKey, cancellationToken).ConfigureAwait(false);
-                Log.KeyRevoked(logger, retiredKey.KeyId);
-                revoked++;
-            }
+            retiredKey.Status = SigningKeyStatus.Revoked;
+            await keyStore.UpdateAsync(retiredKey, cancellationToken).ConfigureAwait(false);
+            Log.KeyRevoked(logger, retiredKey.KeyId);
+            revoked++;
         }
 
         // 4. Prune revoked keys older than 30 days
