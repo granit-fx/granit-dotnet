@@ -438,32 +438,51 @@ on update.
 
 ## Integration events
 
-Three integration events are published via `IDistributedEventBus` (Wolverine outbox,
-at-least-once delivery):
+Four integration events are published via `IDistributedEventBus` (Wolverine outbox,
+at-least-once delivery). The OpenIddict module **never sends emails directly** — it
+publishes events and lets subscribers decide the delivery channel.
 
 ### UserRegisteredEto
 
-Published when a new user registers (self-service or external login).
+Published when a new user registers (self-service or external login auto-registration).
 
 ```csharp
 public sealed record UserRegisteredEto(
-    Guid UserId,
-    string Email,
-    Guid? TenantId) : IIntegrationEvent;
+    Guid UserId, string Email, Guid? TenantId) : IIntegrationEvent;
 ```
+
+**Published by:** `AccountRegistrationEndpoints`, `AspNetExternalLoginService`
+
+**Typical subscriber:** Send welcome email, create onboarding workflow, sync to CRM.
+
+### PasswordResetRequestedEto
+
+Published when a user requests a password reset (`POST /api/account/forgot-password`).
+
+```csharp
+public sealed record PasswordResetRequestedEto(
+    Guid UserId, string Email, string ResetToken, Guid? TenantId) : IIntegrationEvent;
+```
+
+**Published by:** `AspNetPasswordResetService`
+
+**Typical subscriber:** Send password reset email with a link containing the `ResetToken`.
+The subscriber builds the URL (e.g., `https://app.example.com/reset-password?userId={UserId}&token={ResetToken}`)
+and sends it via `Granit.Notifications.Email`.
 
 ### AccountDeletedEto
 
-Published when a user deletes their account (GDPR Article 17).
+Published when a user deletes their account (GDPR Article 17 — right to erasure).
 
 ```csharp
 public sealed record AccountDeletedEto(
-    Guid UserId,
-    Guid? TenantId) : IIntegrationEvent;
+    Guid UserId, Guid? TenantId) : IIntegrationEvent;
 ```
 
-Subscribe to this event in other modules to clean up user-specific data (blob storage,
-audit logs, notification preferences, etc.).
+**Published by:** `AspNetAccountDeletionService`
+
+**Typical subscriber:** Clean up user-specific data across all modules (blob storage,
+audit logs, notification preferences, timeline entries, workflow assignments).
 
 ### UserImpersonatedEto
 
@@ -471,14 +490,38 @@ Published when an administrator impersonates a user.
 
 ```csharp
 public sealed record UserImpersonatedEto(
-    Guid TargetUserId,
-    Guid ImpersonatorId,
-    Guid? TenantId,
-    DateTimeOffset OccurredAt) : IIntegrationEvent;
+    Guid TargetUserId, Guid ImpersonatorId,
+    Guid? TenantId, DateTimeOffset OccurredAt) : IIntegrationEvent;
 ```
 
-Consumed by `Granit.Notifications` to send a transparency notification to the
-impersonated user (GDPR / SOC2 compliance requirement).
+**Published by:** `AdminUserEndpoints.ImpersonateAsync`
+
+**Typical subscriber:** Send transparency notification to the impersonated user
+("An administrator accessed your account on {date}") — GDPR / SOC2 compliance.
+
+### Subscribing to events
+
+```csharp
+// In your module (Wolverine handler — auto-discovered)
+public static class UserRegisteredHandler
+{
+    public static async Task HandleAsync(
+        UserRegisteredEto evt,
+        IEmailSender emailSender,
+        CancellationToken ct)
+    {
+        await emailSender.SendAsync(new EmailMessage
+        {
+            To = evt.Email,
+            Subject = "Welcome!",
+            Body = $"Your account has been created.",
+        }, ct);
+    }
+}
+```
+
+Events are delivered in-process by default (`Granit.EventBus`). For durable delivery
+across pod crashes, use `Granit.EventBus.Wolverine` with the Outbox pattern.
 
 ## Related pages
 
