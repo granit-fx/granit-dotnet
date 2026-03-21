@@ -2290,6 +2290,7 @@
       "granit.openiddict.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
+          "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )",
           "Granit.OpenIddict": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",

@@ -478,6 +478,12 @@
       "granit.core": {
         "type": "Project"
       },
+      "granit.encryption": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )"
+        }
+      },
       "granit.eventbus": {
         "type": "Project",
         "dependencies": {
@@ -532,6 +538,7 @@
       "granit.openiddict.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
+          "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )",
           "Granit.OpenIddict": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",
