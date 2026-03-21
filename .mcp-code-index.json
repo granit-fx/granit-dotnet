@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T17:23:44.919714+00:00",
+  "generatedAt": "2026-03-21T17:31:32.819407+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -18138,12 +18138,48 @@
       ]
     },
     {
+      "name": "GranitOpenIddictApplication",
+      "fqn": "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictApplication",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Entities/OpenIddict/GranitOpenIddictApplication.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "GranitOpenIddictAuthorization",
+      "fqn": "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictAuthorization",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Entities/OpenIddict/GranitOpenIddictAuthorization.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "GranitOpenIddictScope",
+      "fqn": "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictScope",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Entities/OpenIddict/GranitOpenIddictScope.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "GranitOpenIddictToken",
+      "fqn": "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictToken",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Entities/OpenIddict/GranitOpenIddictToken.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.OpenIddict.EntityFrameworkCore.Extensions.OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 21,
+      "line": 23,
       "members": [
         {
           "name": "AddGranitOpenIddictEntityFrameworkCore",
