@@ -12,7 +12,7 @@ Part of the [granit](https://granit-fx.dev) framework.
 | `Granit.OpenIddict` | Abstractions, interfaces, options |
 | `Granit.OpenIddict.Server` | OIDC server configuration |
 | `Granit.OpenIddict.EntityFrameworkCore` | Entities, DbContext, tenant-isolated stores |
-| `Granit.Identity.OpenIddict` | `IIdentityProvider` bridge |
+| `Granit.Identity.Local.AspNetCore` | `IIdentityProvider` bridge |
 | `Granit.Authentication.OpenIddict` | Authentication handler configuration |
 | `Granit.OpenIddict.Endpoints` | Account and admin REST API |
 | `Granit.OpenIddict.BackgroundJobs` | Token cleanup, idle session enforcement |
