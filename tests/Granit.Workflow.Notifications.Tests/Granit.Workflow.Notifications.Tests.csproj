@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.Workflow.Notifications\Granit.Workflow.Notifications.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.Federated\Granit.Identity.Federated.csproj" />
   </ItemGroup>
 
 </Project>

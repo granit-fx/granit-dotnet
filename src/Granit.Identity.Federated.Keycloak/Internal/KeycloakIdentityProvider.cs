@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using Granit.Core.Events;
 using Granit.Identity.Diagnostics;
 using Granit.Identity.Events;
+using Granit.Identity.Federated;
 using Granit.Identity.Federated.Keycloak.Diagnostics;
 using Granit.Identity.Federated.Keycloak.Options;
 using Granit.Identity.Models;

@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.Identity.Endpoints\Granit.Identity.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.Federated\Granit.Identity.Federated.csproj" />
   </ItemGroup>
 
 </Project>

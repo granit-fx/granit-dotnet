@@ -351,16 +351,6 @@
           "OpenIddict.Validation": "7.4.0"
         }
       },
-      "OpenIddict.Validation.SystemNetHttp": {
-        "type": "Transitive",
-        "resolved": "7.4.0",
-        "contentHash": "zBkL9kx6Z5PDnZjFUrkUnT/9jt2kjNVPoh9zw41BBkP8NKRPGjZk3y7av0qR51IgN1V+ZRQqmc1fQoK4qeOtjg==",
-        "dependencies": {
-          "Microsoft.Extensions.Http.Polly": "10.0.3",
-          "Microsoft.Extensions.Http.Resilience": "10.3.0",
-          "OpenIddict.Validation": "7.4.0"
-        }
-      },
       "Polly": {
         "type": "Transitive",
         "resolved": "7.2.4",
@@ -634,6 +624,17 @@
           "Microsoft.EntityFrameworkCore.Relational": "10.0.3",
           "OpenIddict.Core": "7.4.0",
           "OpenIddict.EntityFrameworkCore.Models": "7.4.0"
+        }
+      },
+      "OpenIddict.Validation.SystemNetHttp": {
+        "type": "CentralTransitive",
+        "requested": "[7.*, )",
+        "resolved": "7.4.0",
+        "contentHash": "zBkL9kx6Z5PDnZjFUrkUnT/9jt2kjNVPoh9zw41BBkP8NKRPGjZk3y7av0qR51IgN1V+ZRQqmc1fQoK4qeOtjg==",
+        "dependencies": {
+          "Microsoft.Extensions.Http.Polly": "10.0.3",
+          "Microsoft.Extensions.Http.Resilience": "10.3.0",
+          "OpenIddict.Validation": "7.4.0"
         }
       },
       "OpenTelemetry.Api": {

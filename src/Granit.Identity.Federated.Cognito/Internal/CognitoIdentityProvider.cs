@@ -2,12 +2,12 @@ using System.Diagnostics;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Granit.Core.Events;
+using Granit.Identity.Federated;
 using Granit.Identity.Federated.Cognito.Diagnostics;
 using Granit.Identity.Federated.Cognito.Options;
 using Granit.Identity.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Granit.Identity.Federated.Cognito.Internal;

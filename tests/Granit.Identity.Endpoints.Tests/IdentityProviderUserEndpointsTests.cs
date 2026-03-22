@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Granit.Identity.Endpoints.Extensions;
+using Granit.Identity.Federated;
 using Granit.Identity.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;

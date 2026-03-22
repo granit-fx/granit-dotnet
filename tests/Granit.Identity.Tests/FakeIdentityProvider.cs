@@ -1,3 +1,4 @@
+using Granit.Identity.Federated;
 using Granit.Identity.Models;
 
 namespace Granit.Identity.Tests;
