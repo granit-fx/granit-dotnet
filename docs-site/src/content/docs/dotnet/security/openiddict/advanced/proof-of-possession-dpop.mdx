@@ -252,7 +252,7 @@ compromise the server-side session store to extract both.
 
 DPoP is **mandatory** in the
 [FAPI 2.0 Security Profile](https://openid.net/specs/fapi-2_0-security-profile.html)
-alongside [PAR](/dotnet/security/openiddict/advanced/par/) and PKCE. The three
+alongside [PAR](/dotnet/security/openiddict/advanced/pushed-authorization-requests/) and PKCE. The three
 mechanisms work together:
 
 | Mechanism | Protects | RFC |
@@ -281,7 +281,7 @@ PKCE is enforced by default (`RequireProofKeyForCodeExchange`).
 
 ## See also
 
-- [PAR (Pushed Authorization Requests)](/dotnet/security/openiddict/advanced/par/) — move parameters to back-channel
+- [PAR (Pushed Authorization Requests)](/dotnet/security/openiddict/advanced/pushed-authorization-requests/) — move parameters to back-channel
 - [OIDC Server Configuration](/dotnet/security/openiddict/oidc-server/) — endpoints and flows overview
-- [BFF Security](/dotnet/security/bff/security/) — token storage and encryption at rest
+- [BFF Security](/dotnet/security/bff/token-security/) — token storage and encryption at rest
 - [BFF Configuration](/dotnet/security/bff/configuration/) — frontend options reference

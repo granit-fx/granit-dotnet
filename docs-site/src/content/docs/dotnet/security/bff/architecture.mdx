@@ -295,7 +295,7 @@ The default `DistributedCacheBffTokenStore` uses `IDistributedCache` directly.
 For production deployments, enable Redis TLS and consider integrating
 [`Granit.Caching`](/dotnet/data/caching/) with `ICacheValueEncryptor`
 (AES-256-CBC) for encryption at rest. See the
-[Security](/dotnet/security/bff/security/) page for details.
+[Security](/dotnet/security/bff/token-security/) page for details.
 </Aside>
 
 ## Request pipeline
@@ -322,5 +322,5 @@ flowchart TD
 ## Next steps
 
 - **[Getting Started](/dotnet/security/bff/getting-started/)** — set up a working BFF in 15 minutes
-- **[Security](/dotnet/security/bff/security/)** — deep dive into cookie hardening, CSRF, and session management
-- **[YARP Proxy](/dotnet/security/bff/yarp-proxy/)** — route configuration and multi-service proxying
+- **[Security](/dotnet/security/bff/token-security/)** — deep dive into cookie hardening, CSRF, and session management
+- **[YARP Proxy](/dotnet/security/bff/reverse-proxy-yarp/)** — route configuration and multi-service proxying

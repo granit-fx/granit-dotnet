@@ -90,14 +90,14 @@ the standard OAuth 2.0 token endpoint pattern.
 
 ### Pushed Authorization Requests (PAR)
 
-The server supports [Pushed Authorization Requests (RFC 9126)](/dotnet/security/openiddict/advanced/par/)
+The server supports [Pushed Authorization Requests (RFC 9126)](/dotnet/security/openiddict/advanced/pushed-authorization-requests/)
 — moving authorization parameters from the browser URL to a back-channel POST.
 The `/connect/par` endpoint is always available. Set `RequirePar: true` to enforce
 PAR for all authorization code flows. Required for **FAPI 2.0**.
 
 ### DPoP (Proof-of-Possession)
 
-The server supports [DPoP (RFC 9449)](/dotnet/security/openiddict/advanced/dpop/)
+The server supports [DPoP (RFC 9449)](/dotnet/security/openiddict/advanced/proof-of-possession-dpop/)
 — binding access tokens to a cryptographic key held by the client. Even if a token
 leaks, it cannot be replayed without the private key. OpenIddict validates DPoP proofs
 automatically. Set `UseDPoP: true` on a BFF frontend to enable. Required for **FAPI 2.0**.
