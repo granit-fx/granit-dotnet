@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Querying.EntityFrameworkCore.Internal;
 
@@ -46,6 +47,18 @@ internal static class QueryableSortExtensions
                 continue;
             }
 
+            // Check for shadow property first
+            ColumnDescriptor? shadowCol = builder.Columns
+                .FirstOrDefault(c => c.IsShadowProperty
+                    && string.Equals(c.PropertyName, fieldName, StringComparison.OrdinalIgnoreCase));
+
+            if (shadowCol is not null)
+            {
+                source = ApplyOrderByShadow(source, fieldName, shadowCol.ClrType, descending, isFirst);
+                isFirst = false;
+                continue;
+            }
+
             PropertyInfo? property = typeof(TEntity).GetProperty(
                 fieldName,
                 BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
@@ -60,6 +73,42 @@ internal static class QueryableSortExtensions
         }
 
         return source;
+    }
+
+    private static IQueryable<TEntity> ApplyOrderByShadow<TEntity>(
+        IQueryable<TEntity> source,
+        string propertyName,
+        Type clrType,
+        bool descending,
+        bool isFirst)
+        where TEntity : class
+    {
+        ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "e");
+
+        // EF.Property<T>(e, "PropertyName")
+        MethodInfo efPropertyMethod = typeof(EF)
+            .GetMethod(nameof(EF.Property))!
+            .MakeGenericMethod(clrType);
+
+        MethodCallExpression member = Expression.Call(efPropertyMethod, parameter, Expression.Constant(propertyName));
+        LambdaExpression keySelector = Expression.Lambda(member, parameter);
+
+        string methodName = (isFirst, descending) switch
+        {
+            (true, false) => nameof(Queryable.OrderBy),
+            (true, true) => nameof(Queryable.OrderByDescending),
+            (false, false) => nameof(Queryable.ThenBy),
+            (false, true) => nameof(Queryable.ThenByDescending),
+        };
+
+        MethodCallExpression call = Expression.Call(
+            typeof(Queryable),
+            methodName,
+            [typeof(TEntity), clrType],
+            source.Expression,
+            Expression.Quote(keySelector));
+
+        return source.Provider.CreateQuery<TEntity>(call);
     }
 
     private static IQueryable<TEntity> ApplyOrderBy<TEntity>(

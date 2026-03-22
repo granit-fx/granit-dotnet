@@ -4,8 +4,8 @@ using Granit.OpenIddict.Domain;
 using Granit.OpenIddict.Entities;
 using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.EntityFrameworkCore.Extensions;
-using Granit.OpenIddict.Options;
 using Granit.Persistence.Extensions;
+using Granit.Persistence.ExtraProperties;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -25,7 +25,7 @@ internal sealed class OpenIddictDbContext(
     DbContextOptions<OpenIddictDbContext> options,
     ICurrentTenant? currentTenant = null,
     IDataFilter? dataFilter = null,
-    IOptions<GranitUserExtensionOptions>? extensionOptions = null)
+    IOptions<ExtraPropertyMappingOptions<GranitUser>>? extensionOptions = null)
     : IdentityDbContext<GranitUser, GranitRole, Guid>(options)
 {
     /// <summary>Gets the user groups set.</summary>

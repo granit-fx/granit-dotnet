@@ -69,6 +69,38 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     }
 
     /// <summary>
+    /// Declares a Shadow Property column (EF Core-only, no CLR property).
+    /// Shadow columns are accessed via <c>EF.Property&lt;T&gt;(entity, name)</c> and
+    /// support filtering and sorting when declared as such.
+    /// </summary>
+    /// <typeparam name="TProp">The CLR type of the shadow property.</typeparam>
+    /// <param name="propertyName">The shadow property name (as declared in the EF model).</param>
+    /// <param name="configure">Optional fluent configuration.</param>
+    public QueryDefinitionBuilder<TEntity> ShadowColumn<TProp>(
+        string propertyName,
+        Action<ColumnBuilder<TEntity>>? configure = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
+        ColumnBuilder<TEntity> builder = new();
+        configure?.Invoke(builder);
+
+        Columns.Add(new ColumnDescriptor
+        {
+            PropertyName = propertyName,
+            ClrType = typeof(TProp),
+            Label = builder.LabelValue,
+            Order = builder.OrderValue,
+            IsSortable = builder.IsSortableValue,
+            IsFilterable = builder.IsFilterableValue,
+            IsVisible = builder.IsVisibleValue,
+            Format = builder.FormatValue,
+            IsShadowProperty = true,
+        });
+
+        return this;
+    }
+
+    /// <summary>
     /// Declares properties to include in global free-text search.
     /// </summary>
     /// <param name="properties">Expressions selecting string properties.</param>

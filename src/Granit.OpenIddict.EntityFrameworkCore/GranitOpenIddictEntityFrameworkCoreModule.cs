@@ -1,12 +1,14 @@
 using Granit.Core.Modularity;
 using Granit.Encryption;
 using Granit.MultiTenancy;
+using Granit.OpenIddict.Entities;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.EntityFrameworkCore.Seeding;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Services;
 using Granit.Persistence;
 using Granit.Persistence.DataSeeding;
+using Granit.Persistence.ExtraProperties;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -64,12 +66,10 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
             .AddOptions<GranitKeyRotationOptions>()
             .BindConfiguration(GranitKeyRotationOptions.SectionName);
 
-        context.Services
-            .AddOptions<GranitUserExtensionOptions>()
-            .BindConfiguration(GranitUserExtensionOptions.SectionName);
-
-        // Sync ExtraProperties ↔ Shadow Properties at save time
-        context.Services.TryAddSingleton<Interceptors.ExtraPropertySyncInterceptor>();
+        // GranitUser implements IHasExtraProperties — apps can extend with:
+        // services.AddExtraPropertyMappings<GranitUser>(o => o.MapProperty<string>("JobTitle", maxLength: 128));
+        // The generic ExtraPropertySyncInterceptor in Granit.Persistence handles sync automatically.
+        context.Services.AddExtraPropertyInfrastructure();
 
         // Load signing/encryption keys from DB at startup (replaces ephemeral keys)
         context.Services.AddSingleton<IPostConfigureOptions<OpenIddictServerOptions>,

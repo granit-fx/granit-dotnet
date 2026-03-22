@@ -208,6 +208,7 @@
         "tests/Granit.Identity.Endpoints.Tests",
         "tests/Granit.Identity.Federated.Cognito.Tests",
         "tests/Granit.Identity.Federated.EntityFrameworkCore.Tests",
+        "tests/Granit.Identity.Federated.Tests",
         "tests/Granit.Identity.Federated.EntraId.Tests",
         "tests/Granit.Identity.Federated.GoogleCloud.Tests",
         "tests/Granit.Identity.Federated.Keycloak.Tests",

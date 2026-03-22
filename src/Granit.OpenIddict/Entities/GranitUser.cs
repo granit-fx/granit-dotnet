@@ -20,8 +20,13 @@ namespace Granit.OpenIddict.Entities;
 /// Does NOT implement <c>IConcurrencyAware</c> — ASP.NET Core Identity manages its own
 /// <see cref="IdentityUser{TKey}.ConcurrencyStamp"/> property.
 /// </para>
+/// <para>
+/// Implements <see cref="IHasExtraProperties"/> via explicit interface mapping to
+/// <see cref="CustomAttributesJson"/>. The generic <c>ExtraPropertySyncInterceptor</c>
+/// in <c>Granit.Persistence</c> handles Shadow Property synchronization.
+/// </para>
 /// </remarks>
-public class GranitUser : IdentityUser<Guid>, IMultiTenant, IIdentityUser
+public class GranitUser : IdentityUser<Guid>, IMultiTenant, IIdentityUser, IHasExtraProperties
 {
     private IReadOnlyDictionary<string, string>? _parsedExtraProperties;
 
@@ -80,35 +85,31 @@ public class GranitUser : IdentityUser<Guid>, IMultiTenant, IIdentityUser
     IReadOnlyDictionary<string, string> IIdentityUser.ExtraProperties =>
         _parsedExtraProperties ??= DeserializeExtraProperties();
 
+    // ──── IHasExtraProperties (explicit — maps to CustomAttributesJson) ────
+
+    /// <inheritdoc/>
+    string? IHasExtraProperties.ExtraPropertiesJson
+    {
+        get => CustomAttributesJson;
+        set
+        {
+            CustomAttributesJson = value;
+            _parsedExtraProperties = null;
+        }
+    }
+
     // ──── ExtraProperties helpers ────
 
     /// <summary>Sets an extra property. Pass <see langword="null"/> to remove.</summary>
     public void SetExtraProperty(string name, string? value)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        Dictionary<string, string> props = string.IsNullOrWhiteSpace(CustomAttributesJson)
-            ? []
-            : JsonSerializer.Deserialize<Dictionary<string, string>>(CustomAttributesJson) ?? [];
-
-        if (value is null)
-        {
-            props.Remove(name);
-        }
-        else
-        {
-            props[name] = value;
-        }
-
-        CustomAttributesJson = props.Count > 0 ? JsonSerializer.Serialize(props) : null;
+        ((IHasExtraProperties)this).SetExtraProperty(name, value);
         _parsedExtraProperties = null;
     }
 
     /// <summary>Gets an extra property by name.</summary>
-    public string? GetExtraProperty(string name)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        return ((IIdentityUser)this).ExtraProperties.GetValueOrDefault(name);
-    }
+    public string? GetExtraProperty(string name) =>
+        ((IHasExtraProperties)this).GetExtraProperty(name);
 
     private ReadOnlyDictionary<string, string> DeserializeExtraProperties()
     {

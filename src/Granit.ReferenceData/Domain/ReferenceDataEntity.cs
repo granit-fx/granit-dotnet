@@ -23,8 +23,13 @@ namespace Granit.ReferenceData.Domain;
 /// Soft activation/deactivation is controlled by <see cref="IsActive"/>. Deactivated entries
 /// are filtered out by the EF Core global query filter unless explicitly disabled.
 /// </para>
+/// <para>
+/// Implements <see cref="IHasExtraProperties"/> to support application-level extensibility
+/// via a JSON property bag. Properties can be promoted to real SQL columns via
+/// <c>ExtraPropertyMappingOptions&lt;T&gt;.MapProperty()</c> for indexing and querying.
+/// </para>
 /// </remarks>
-public abstract class ReferenceDataEntity : AuditedEntity, IActive, IEmitEntityLifecycleEvents
+public abstract class ReferenceDataEntity : AuditedEntity, IActive, IHasExtraProperties, IEmitEntityLifecycleEvents
 {
     /// <summary>
     /// Unique business key for the reference data entry (e.g., "BE", "EUR", "fr").
@@ -123,4 +128,13 @@ public abstract class ReferenceDataEntity : AuditedEntity, IActive, IEmitEntityL
     /// Optional end date for the validity period. <c>null</c> means valid indefinitely.
     /// </summary>
     public DateTimeOffset? ValidTo { get; set; }
+
+    /// <inheritdoc/>
+    public string? ExtraPropertiesJson { get; set; }
+
+    /// <summary>
+    /// Optional parent code for hierarchical reference data (e.g., regions → countries).
+    /// <c>null</c> means the entry is a root node.
+    /// </summary>
+    public string? ParentCode { get; set; }
 }

@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Granit.Querying.EntityFrameworkCore.Diagnostics;
 using Granit.Querying.Filtering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Querying.EntityFrameworkCore.Internal;
@@ -28,16 +29,39 @@ internal static class FilterExpressionBuilder
     /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <param name="criteria">The filter criterion.</param>
     /// <param name="logger">Optional logger for diagnosing conversion failures.</param>
+    /// <param name="shadowColumns">
+    /// Optional dictionary of shadow property columns (name → descriptor) from the
+    /// <see cref="QueryDefinitionBuilder{TEntity}"/>. When a field is not found via
+    /// CLR reflection, this dictionary is checked for EF Core Shadow Properties.
+    /// </param>
     /// <returns>A predicate expression, or <c>null</c> if the property is not found.</returns>
     public static Expression<Func<TEntity, bool>>? Build<TEntity>(
-        FilterCriteria criteria, ILogger? logger = null)
+        FilterCriteria criteria,
+        ILogger? logger = null,
+        IReadOnlyDictionary<string, ColumnDescriptor>? shadowColumns = null)
         where TEntity : class
     {
         PropertyInfo? property = typeof(TEntity).GetProperty(
             criteria.Field,
             BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 
-        if (property is null)
+        ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "e");
+        Expression member;
+        Type propertyType;
+
+        if (property is not null)
+        {
+            member = Expression.Property(parameter, property);
+            propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+        }
+        else if (shadowColumns is not null
+                 && shadowColumns.TryGetValue(criteria.Field, out ColumnDescriptor? shadowCol))
+        {
+            // EF.Property<T>(entity, "Name") — translates to SQL column access
+            member = BuildEfPropertyAccess(parameter, criteria.Field, shadowCol.ClrType);
+            propertyType = Nullable.GetUnderlyingType(shadowCol.ClrType) ?? shadowCol.ClrType;
+        }
+        else
         {
             if (logger is not null)
             {
@@ -46,10 +70,6 @@ internal static class FilterExpressionBuilder
 
             return null;
         }
-
-        ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "e");
-        MemberExpression member = Expression.Property(parameter, property);
-        Type propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
 
         Expression? body = criteria.Operator switch
         {
@@ -75,7 +95,7 @@ internal static class FilterExpressionBuilder
     }
 
     private static BinaryExpression? BuildEqualsExpression(
-        MemberExpression member, string value, Type propertyType,
+        Expression member, string value, Type propertyType,
         ILogger? logger = null, string? field = null)
     {
         object? converted = ConvertValue(value, propertyType, logger, field);
@@ -89,7 +109,7 @@ internal static class FilterExpressionBuilder
     }
 
     private static BinaryExpression? BuildStringMethodExpression(
-        MemberExpression member, string value, MethodInfo method)
+        Expression member, string value, MethodInfo method)
     {
         if (member.Type != typeof(string))
         {
@@ -103,7 +123,7 @@ internal static class FilterExpressionBuilder
     }
 
     private static BinaryExpression? BuildComparisonExpression(
-        MemberExpression member, string value, Type propertyType,
+        Expression member, string value, Type propertyType,
         Func<Expression, Expression, BinaryExpression> comparison,
         ILogger? logger = null, string? field = null)
     {
@@ -129,7 +149,7 @@ internal static class FilterExpressionBuilder
     }
 
     private static Expression? BuildInExpression(
-        MemberExpression member, string value, Type propertyType,
+        Expression member, string value, Type propertyType,
         ILogger? logger = null, string? field = null)
     {
         string[] parts = value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -173,7 +193,7 @@ internal static class FilterExpressionBuilder
     }
 
     private static BinaryExpression? BuildBetweenExpression(
-        MemberExpression member, string value, Type propertyType,
+        Expression member, string value, Type propertyType,
         ILogger? logger = null, string? field = null)
     {
         string[] parts = value.Split(',', StringSplitOptions.TrimEntries);
@@ -209,6 +229,20 @@ internal static class FilterExpressionBuilder
         return Expression.AndAlso(
             Expression.GreaterThanOrEqual(left, lowerExpr),
             Expression.LessThanOrEqual(left, upperExpr));
+    }
+
+    /// <summary>
+    /// Builds an <c>EF.Property&lt;T&gt;(entity, name)</c> expression for a Shadow Property.
+    /// </summary>
+    private static MethodCallExpression BuildEfPropertyAccess(
+        ParameterExpression parameter, string propertyName, Type clrType)
+    {
+        // EF.Property<T>(entity, "PropertyName")
+        MethodInfo efPropertyMethod = typeof(EF)
+            .GetMethod(nameof(EF.Property))!
+            .MakeGenericMethod(clrType);
+
+        return Expression.Call(efPropertyMethod, parameter, Expression.Constant(propertyName));
     }
 
     internal static object? ConvertValue(

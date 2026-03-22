@@ -96,6 +96,14 @@ public abstract class ReferenceDataEntityTypeConfiguration<TEntity>
         builder.Property(e => e.ValidFrom);
         builder.Property(e => e.ValidTo);
 
+        // ExtraProperties — JSON property bag for application-level extensibility
+        builder.Property(e => e.ExtraPropertiesJson)
+               .HasColumnName("extra_properties_json");
+
+        // ParentCode — optional self-referencing hierarchy
+        builder.Property(e => e.ParentCode)
+               .HasMaxLength(50);
+
         // ISO 27001 audit columns — populated by AuditedEntityInterceptor
         builder.Property(e => e.CreatedAt)
                .IsRequired();

@@ -28,4 +28,11 @@ public sealed class ColumnDescriptor
 
     /// <summary>Display format hint (e.g. <c>"dd/MM/yyyy"</c>), or <c>null</c>.</summary>
     public string? Format { get; init; }
+
+    /// <summary>
+    /// Whether this column maps to an EF Core Shadow Property (not a CLR property).
+    /// Shadow columns are accessed via <c>EF.Property&lt;T&gt;(entity, name)</c> instead of
+    /// direct member access.
+    /// </summary>
+    public bool IsShadowProperty { get; init; }
 }

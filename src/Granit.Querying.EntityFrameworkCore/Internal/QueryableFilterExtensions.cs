@@ -25,6 +25,14 @@ internal static class QueryableFilterExtensions
             .Select(c => c.PropertyName)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
+        // Build a lookup for shadow columns (name → descriptor) for FilterExpressionBuilder
+        Dictionary<string, ColumnDescriptor>? shadowColumns = null;
+        var shadows = builder.Columns.Where(c => c.IsShadowProperty && c.IsFilterable).ToList();
+        if (shadows.Count > 0)
+        {
+            shadowColumns = shadows.ToDictionary(c => c.PropertyName, StringComparer.OrdinalIgnoreCase);
+        }
+
         IQueryable<TEntity> query = source;
 
         foreach (FilterCriteria criterion in criteria)
@@ -35,7 +43,7 @@ internal static class QueryableFilterExtensions
             }
 
             Expression<Func<TEntity, bool>>? predicate =
-                FilterExpressionBuilder.Build<TEntity>(criterion, logger);
+                FilterExpressionBuilder.Build<TEntity>(criterion, logger, shadowColumns);
 
             if (predicate is not null)
             {

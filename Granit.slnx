@@ -288,6 +288,7 @@
     <Project Path="tests/Granit.Identity.Federated.EntraId.Tests/Granit.Identity.Federated.EntraId.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.GoogleCloud.Tests/Granit.Identity.Federated.GoogleCloud.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Keycloak.Tests/Granit.Identity.Federated.Keycloak.Tests.csproj" />
+    <Project Path="tests/Granit.Identity.Federated.Tests/Granit.Identity.Federated.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.AspNetCore.Tests/Granit.Identity.Local.AspNetCore.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Tests/Granit.Identity.Tests.csproj" />
     <Project Path="tests/Granit.Imaging.AI.Tests/Granit.Imaging.AI.Tests.csproj" />
