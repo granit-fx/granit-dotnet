@@ -20,6 +20,6 @@ namespace Granit.ReferenceData.EntityFrameworkCore;
 /// </remarks>
 [DependsOn(
     typeof(GranitCachingModule),
-    typeof(GranitReferenceDataModule),
-    typeof(GranitPersistenceModule))]
+    typeof(GranitPersistenceModule),
+    typeof(GranitReferenceDataModule))]
 public sealed class GranitReferenceDataEntityFrameworkCoreModule : GranitModule;

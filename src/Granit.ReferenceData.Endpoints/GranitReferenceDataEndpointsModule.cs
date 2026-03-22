@@ -16,8 +16,8 @@ namespace Granit.ReferenceData.Endpoints;
 /// <para>Validators are auto-discovered by <c>GranitValidationModule</c>.</para>
 /// </remarks>
 [DependsOn(
-    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitGuidsModule),
+    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitReferenceDataModule),
     typeof(GranitValidationModule))]
 public sealed class GranitReferenceDataEndpointsModule : GranitModule;

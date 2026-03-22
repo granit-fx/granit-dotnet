@@ -3,6 +3,7 @@ using Granit.Guids;
 using Granit.Querying;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Endpoints.Dtos;
+using Granit.ReferenceData.Endpoints.Internal;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -28,14 +29,14 @@ internal static class ReferenceDataDynamicEndpoints
             .WithName($"GetAll{typeName}")
             .WithSummary($"Returns a filtered, paginated list of {typeName} entries.")
             .WithDescription($"Lists {typeName} reference data entries with support for filtering, sorting, and pagination.")
-            .Produces<PagedResult<DynamicReferenceDataEntity>>()
+            .Produces<PagedResult<ReferenceDataResponse>>()
             .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
         group.MapGet("/{code}", GetByCodeAsync)
             .WithName($"Get{typeName}ByCode")
             .WithSummary($"Returns a single {typeName} entry by code.")
             .WithDescription($"Returns the full {typeName} entry identified by its unique code. Returns 404 if not found.")
-            .Produces<DynamicReferenceDataEntity>()
+            .Produces<ReferenceDataResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
@@ -43,7 +44,7 @@ internal static class ReferenceDataDynamicEndpoints
             .WithName($"Get{typeName}Children")
             .WithSummary($"Returns direct children of a {typeName} entry.")
             .WithDescription($"Returns all active direct children ordered by sort order. Returns 404 if the parent does not exist.")
-            .Produces<IReadOnlyList<DynamicReferenceDataEntity>>()
+            .Produces<IReadOnlyList<ReferenceDataResponse>>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
@@ -75,7 +76,7 @@ internal static class ReferenceDataDynamicEndpoints
         adminGroup.MapPut("/{code}", UpdateAsync)
             .WithName($"Update{typeName}")
             .WithSummary($"Updates an existing {typeName} entry.")
-            .WithDescription($"Updates labels, sort order, active status, and validity dates. Returns 404 if not found.")
+            .WithDescription($"Updates labels, sort order, active status, and validity dates. ExtraProperties use merge semantics: properties in the request are added or updated, properties not in the request are preserved. Returns 404 if not found.")
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
@@ -97,7 +98,7 @@ internal static class ReferenceDataDynamicEndpoints
         httpContext.GetEndpoint()?.Metadata.GetMetadata<ReferenceDataTypeNameMetadata>()?.TypeName
         ?? throw new InvalidOperationException("ReferenceDataTypeNameMetadata not found on endpoint.");
 
-    private static async Task<Ok<PagedResult<DynamicReferenceDataEntity>>> GetAllAsync(
+    private static async Task<Ok<PagedResult<ReferenceDataResponse>>> GetAllAsync(
         [AsParameters] ReferenceDataQueryParameters parameters,
         HttpContext httpContext,
         CancellationToken cancellationToken)
@@ -117,10 +118,15 @@ internal static class ReferenceDataDynamicEndpoints
         PagedResult<DynamicReferenceDataEntity> result = await reader
             .GetAllAsync(query, cancellationToken).ConfigureAwait(false);
 
-        return TypedResults.Ok(result);
+        PagedResult<ReferenceDataResponse> mapped = new(
+            result.Items.Select(ReferenceDataMapper.ToResponse).ToList(),
+            result.TotalCount,
+            result.HasMore);
+
+        return TypedResults.Ok(mapped);
     }
 
-    private static async Task<Results<Ok<DynamicReferenceDataEntity>, NotFound>> GetByCodeAsync(
+    private static async Task<Results<Ok<ReferenceDataResponse>, NotFound>> GetByCodeAsync(
         string code,
         HttpContext httpContext,
         CancellationToken cancellationToken)
@@ -137,10 +143,10 @@ internal static class ReferenceDataDynamicEndpoints
             return TypedResults.NotFound();
         }
 
-        return TypedResults.Ok(entity);
+        return TypedResults.Ok(ReferenceDataMapper.ToResponse(entity));
     }
 
-    private static async Task<Results<Ok<IReadOnlyList<DynamicReferenceDataEntity>>, NotFound>> GetChildrenAsync(
+    private static async Task<Results<Ok<IReadOnlyList<ReferenceDataResponse>>, NotFound>> GetChildrenAsync(
         string code,
         HttpContext httpContext,
         CancellationToken cancellationToken)
@@ -160,7 +166,10 @@ internal static class ReferenceDataDynamicEndpoints
         IReadOnlyList<DynamicReferenceDataEntity> children = await reader
             .GetChildrenAsync(code, cancellationToken).ConfigureAwait(false);
 
-        return TypedResults.Ok(children);
+        IReadOnlyList<ReferenceDataResponse> mapped = children
+            .Select(ReferenceDataMapper.ToResponse).ToList();
+
+        return TypedResults.Ok(mapped);
     }
 
     private static async Task<Created> CreateAsync(

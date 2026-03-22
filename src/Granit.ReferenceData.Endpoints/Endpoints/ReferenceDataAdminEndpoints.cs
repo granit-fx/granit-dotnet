@@ -39,7 +39,7 @@ internal static class ReferenceDataAdminEndpoints
         adminGroup.MapPut("/{code}", UpdateAsync<TEntity>)
             .WithName($"Update{typeof(TEntity).Name}")
             .WithSummary($"Updates an existing {typeof(TEntity).Name} entry.")
-            .WithDescription($"Updates the labels, sort order, active status, and validity dates of an existing {typeof(TEntity).Name} entry. The code is immutable and cannot be changed. Returns 404 if no entry matches the code.")
+            .WithDescription($"Updates the labels, sort order, active status, and validity dates of an existing {typeof(TEntity).Name} entry. The code is immutable and cannot be changed. ExtraProperties use merge semantics: properties in the request are added or updated, properties not in the request are preserved. Returns 404 if no entry matches the code.")
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound);
 

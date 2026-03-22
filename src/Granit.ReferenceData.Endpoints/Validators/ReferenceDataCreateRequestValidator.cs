@@ -51,5 +51,21 @@ internal sealed class ReferenceDataCreateRequestValidator : GranitValidator<Refe
             .GreaterThan(x => x.ValidFrom)
             .WithErrorCodeAndMessage("Granit:Validation:ValidToAfterValidFrom")
             .When(x => x.ValidFrom.HasValue && x.ValidTo.HasValue);
+
+        RuleFor(x => x.ParentCode)
+            .MaximumLength(MaxCodeLength)
+            .When(x => x.ParentCode is not null);
+
+        RuleForEach(x => x.ExtraProperties)
+            .ChildRules(kvp =>
+            {
+                kvp.RuleFor(x => x.Key)
+                    .NotEmpty()
+                    .MaximumLength(MaxCodeLength);
+
+                kvp.RuleFor(x => x.Value)
+                    .MaximumLength(4000);
+            })
+            .When(x => x.ExtraProperties is { Count: > 0 });
     }
 }
