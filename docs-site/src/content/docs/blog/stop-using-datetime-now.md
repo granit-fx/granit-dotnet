@@ -1,6 +1,8 @@
 ---
 title: "Stop Using DateTime.Now — Inject TimeProvider Instead"
 date: 2026-02-14
+sidebar:
+  order: 2
 authors:
   - jfmeyers
 tags:

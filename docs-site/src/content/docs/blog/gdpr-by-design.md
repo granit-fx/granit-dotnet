@@ -1,6 +1,8 @@
 ---
 title: "GDPR by Design: Privacy Patterns in a .NET Framework"
 date: 2026-02-25
+sidebar:
+  order: 5
 authors:
   - jfmeyers
 tags:

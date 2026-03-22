@@ -1,6 +1,8 @@
 ---
 title: "From Zero to CRUD in 10 Minutes with Granit"
 date: 2026-03-07
+sidebar:
+  order: 8
 authors:
   - jfmeyers
 tags:

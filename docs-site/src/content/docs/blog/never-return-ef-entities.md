@@ -1,6 +1,8 @@
 ---
 title: "Never Return Your EF Entities From an API"
 date: 2026-03-14
+sidebar:
+  order: 10
 authors:
   - jfmeyers
 tags:

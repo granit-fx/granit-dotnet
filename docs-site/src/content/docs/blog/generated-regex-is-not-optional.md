@@ -1,6 +1,8 @@
 ---
 title: "[GeneratedRegex] Is Not Optional — Compiled Regex Is Dead"
 date: 2026-02-21
+sidebar:
+  order: 4
 authors:
   - jfmeyers
 tags:

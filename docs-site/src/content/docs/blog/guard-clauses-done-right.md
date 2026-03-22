@@ -1,6 +1,8 @@
 ---
 title: "Guard Clauses Done Right"
 date: 2026-02-28
+sidebar:
+  order: 6
 authors:
   - jfmeyers
 tags:

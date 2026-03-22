@@ -1,6 +1,8 @@
 ---
 title: "Isolated DbContext Per Module: Why and How"
 date: 2026-02-18
+sidebar:
+  order: 3
 authors:
   - jfmeyers
 tags:
