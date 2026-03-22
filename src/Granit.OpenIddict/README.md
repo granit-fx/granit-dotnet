@@ -1,7 +1,15 @@
 # Granit.OpenIddict
 
-Abstractions and core types for the Granit OpenIddict module family — a self-hosted OpenID Connect
-authorization server built on [OpenIddict](https://openiddict.com/) and ASP.NET Core Identity.
+Abstractions and core types for the Granit OpenIddict module — a self-hosted
+OpenID Connect authorization server built on OpenIddict and ASP.NET Core Identity.
+
+Part of the [granit](https://granit-fx.dev) framework.
+
+## Installation
+
+```bash
+dotnet add package Granit.OpenIddict
+```
 
 ## What's in this package
 
@@ -18,13 +26,25 @@ authorization server built on [OpenIddict](https://openiddict.com/) and ASP.NET 
 ## Related packages
 
 | Package | Purpose |
-|---------|---------|
+| --- | --- |
+| `Granit.OpenIddict.Server` | OIDC server configuration |
 | `Granit.OpenIddict.EntityFrameworkCore` | Entities, DbContext, tenant-isolated stores |
-| `Granit.OpenIddict.Identity` | `IIdentityProvider` bridge over ASP.NET Core Identity |
-| `Granit.OpenIddict.Endpoints` | Account self-service API |
-| `Granit.OpenIddict.Admin.Endpoints` | Admin user/role/OIDC management API |
-| `Granit.OpenIddict.Client` | External login providers (Google, Microsoft, GitHub) |
-| `Granit.OpenIddict.Seeding` | Declarative OIDC application/scope seeding |
+| `Granit.Identity.OpenIddict` | `IIdentityProvider` bridge over ASP.NET Core Identity |
+| `Granit.Authentication.OpenIddict` | Authentication handler configuration |
+| `Granit.OpenIddict.Endpoints` | Account self-service and admin API |
 | `Granit.OpenIddict.BackgroundJobs` | Token cleanup + idle session enforcement |
-| `Granit.OpenIddict.Passkeys` | WebAuthn/FIDO2 passwordless authentication |
 | `Granit.Bundle.OpenIddict` | Meta-package pulling all of the above |
+
+## Dependencies
+
+- `Granit.Core`
+- `Granit.EventBus`
+- `Granit.Guids`
+- `Granit.Identity`
+- `Granit.Querying`
+- `Granit.Security`
+- `Granit.Timing`
+
+## Documentation
+
+See the [full documentation](https://granit-fx.dev).

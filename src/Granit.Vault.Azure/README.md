@@ -2,7 +2,7 @@
 
 Azure Key Vault provider for Granit applications: transit encryption, database credential rotation, and string encryption.
 
-Part of the [Granit](https://granit-fx.dev) framework.
+Part of the [granit](https://granit-fx.dev) framework.
 
 ## Installation
 

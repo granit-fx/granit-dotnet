@@ -2,7 +2,7 @@
 
 HashiCorp Vault provider for Granit applications: Transit encryption, dynamic database credentials, and string encryption.
 
-Part of the [Granit](https://granit-fx.dev) framework.
+Part of the [granit](https://granit-fx.dev) framework.
 
 ## Installation
 

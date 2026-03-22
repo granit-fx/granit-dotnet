@@ -2,7 +2,7 @@
 
 SendGrid provider for `Granit.Notifications.Email`. Registered as Keyed Service with key `"SendGrid"` for multi-provider resolution.
 
-Part of the [Granit](https://github.com/granit-fx/granit-dotnet) framework.
+Part of the [granit](https://granit-fx.dev) framework.
 
 ## Installation
 
@@ -32,4 +32,4 @@ Never commit it to source control.
 
 ## Documentation
 
-See the [full documentation](https://github.com/granit-fx/granit-dotnet).
+See the [full documentation](https://granit-fx.dev).

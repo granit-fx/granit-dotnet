@@ -3,7 +3,7 @@
 Meta-package grouping Granit modules for multi-tenant SaaS applications:
 tenant isolation, feature flags per commercial plan, and rate limiting.
 
-Part of the [Granit](https://granit-fx.dev) framework.
+Part of the [granit](https://granit-fx.dev) framework.
 
 ## Included packages
 

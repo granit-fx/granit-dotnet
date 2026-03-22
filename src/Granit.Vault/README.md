@@ -2,7 +2,7 @@
 
 Vault abstractions for Granit applications: transit encryption, dynamic database credentials, and string encryption interfaces.
 
-Part of the [Granit](https://granit-fx.dev) framework.
+Part of the [granit](https://granit-fx.dev) framework.
 
 ## Installation
 

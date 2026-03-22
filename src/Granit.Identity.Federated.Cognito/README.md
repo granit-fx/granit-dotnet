@@ -5,7 +5,7 @@ user CRUD, group management (Cognito groups serve as both roles and groups), ses
 revocation via global sign-out, password reset, temporary password assignment, and
 credential verification via `ADMIN_USER_PASSWORD_AUTH` flow.
 
-Part of the [granit](https://github.com/granit-fx/granit-dotnet) framework.
+Part of the [granit](https://granit-fx.dev) framework.
 
 ## Installation
 
@@ -15,4 +15,4 @@ dotnet add package Granit.Identity.Federated.Cognito
 
 ## Documentation
 
-See the [full documentation](https://github.com/granit-fx/granit-dotnet/blob/develop/docs/framework/security/identity.md).
+See the [full documentation](https://granit-fx.dev).
