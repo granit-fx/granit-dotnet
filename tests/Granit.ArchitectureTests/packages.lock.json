@@ -1588,6 +1588,28 @@
           "WolverineFx": "[5.21.*, )"
         }
       },
+      "granit.bff": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Granit.Security": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
+      "granit.bff.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Bff": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.bff.yarp": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Bff": "[0.1.0-dev, )",
+          "Yarp.ReverseProxy": "[2.*, )"
+        }
+      },
       "granit.blobstorage": {
         "type": "Project",
         "dependencies": {
@@ -3575,6 +3597,15 @@
         "dependencies": {
           "Weasel.SqlServer": "8.9.0",
           "WolverineFx.RDBMS": "5.21.0"
+        }
+      },
+      "Yarp.ReverseProxy": {
+        "type": "CentralTransitive",
+        "requested": "[2.*, )",
+        "resolved": "2.3.0",
+        "contentHash": "gxtkN3a+9biu9V9Zd5NaTO6VZWXAnS2mhQ0R/VXmSPoTuiQNZsakKikrKpDtKxrL5nUYzbRsHtl40WNq+ZBKKg==",
+        "dependencies": {
+          "System.IO.Hashing": "8.0.0"
         }
       },
       "ZiggyCreatures.FusionCache": {
