@@ -18,23 +18,28 @@ public sealed partial class ValidationConventionTests
     private static readonly string RepoRoot = FindRepoRoot();
 
     /// <summary>
+    /// Property types that have no meaningful FluentValidation rules.
+    /// A <c>*Request</c> whose public properties are ALL of these types is auto-exempted.
+    /// </summary>
+    private static readonly HashSet<Type> ValidationFreeTypes = [typeof(bool)];
+
+    /// <summary>
     /// Known exemptions from the validator requirement.
     /// These <c>*Request</c> types intentionally have no validator because they contain
     /// no user-supplied fields requiring validation (e.g. query/filter DTOs with only
     /// optional parameters, or types validated entirely in the handler).
     /// </summary>
+    /// <remarks>
+    /// Before adding an exemption here, check whether the type can be auto-exempted:
+    /// <list type="bullet">
+    /// <item>Types with only <see cref="ValidationFreeTypes"/> properties are auto-skipped</item>
+    /// <item>Types with a static <c>BindAsync</c> method (custom binding wrappers) are auto-skipped</item>
+    /// </list>
+    /// </remarks>
     private static readonly HashSet<string> ValidatorExemptions = new(StringComparer.Ordinal)
     {
-        // Query/list requests with only optional filter params
-        "ApiKeyListRequest",
-        // Request with only a value that is validated in handler via IFeatureDefinitionStore
+        // Request with only optional fields validated in handler via IFeatureDefinitionStore
         "TemplatePreviewRequest",
-        // Query-string binding wrapper — no body to validate
-        "BindableQueryRequest",
-        // Single boolean field — no validation rules applicable
-        "IdentityUserSetEnabledRequest",
-        // TODO: needs a validator (pre-existing gap, tracked separately)
-        "MobilePushTokenRegisterRequest",
         // Nested sub-type validated via ChildRules in AIChatRequestValidator — never sent as direct body
         "AIChatMessageRequest",
     };
@@ -75,7 +80,9 @@ public sealed partial class ValidationConventionTests
                     && t.IsPublic
                     && !t.IsAbstract
                     && !t.IsInterface
-                    && !ValidatorExemptions.Contains(t.Name))
+                    && !ValidatorExemptions.Contains(t.Name)
+                    && !IsCustomBindingType(t)
+                    && !HasOnlyValidationFreeProperties(t))
                 .ToArray();
 
             foreach (Type requestType in requestTypes)
@@ -171,6 +178,26 @@ public sealed partial class ValidationConventionTests
 
             yield return csFile;
         }
+    }
+
+    /// <summary>
+    /// Returns <c>true</c> when the type declares a static <c>BindAsync</c> method,
+    /// which means it is a custom binding wrapper (query-string binding) — not a JSON body
+    /// and therefore not a candidate for FluentValidation.
+    /// </summary>
+    private static bool IsCustomBindingType(Type type) =>
+        type.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+            .Any(m => m.Name == "BindAsync");
+
+    /// <summary>
+    /// Returns <c>true</c> when every public instance property of the type is a
+    /// <see cref="ValidationFreeTypes">validation-free type</see> (e.g. <c>bool</c>).
+    /// Such types have no meaningful FluentValidation rules and are auto-exempted.
+    /// </summary>
+    private static bool HasOnlyValidationFreeProperties(Type type)
+    {
+        PropertyInfo[] props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        return props.Length > 0 && props.All(p => ValidationFreeTypes.Contains(p.PropertyType));
     }
 
     private static string FindRepoRoot()

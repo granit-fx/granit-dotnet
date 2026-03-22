@@ -395,6 +395,16 @@ Wolverine__RetryDelays__1=00:00:30
 | **Package** | -- | `Granit.ReferenceData` | |
 | `CacheTimeToLive` | `TimeSpan` | `01:00:00` | In-memory cache TTL for reference data. |
 
+### Reference data extension -- `ReferenceDataExtensionOptions`
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| **Section** | -- | *(configured in code via fluent API)* | |
+| **Package** | -- | `Granit.ReferenceData` | |
+| `TableName` | `string` | `"ref_data"` | Database table name for the dynamic type. |
+| `IsHierarchical` | `bool` | `false` | Enable parent-child hierarchy via `ParentCode`. |
+| `PropertyMappings` | `List<...>` | `[]` | Dynamic SQL column mappings via `MapProperty<T>()`. |
+
 ### Reference data endpoints -- `ReferenceDataEndpointsOptions`
 
 | Key | Type | Default | Description |

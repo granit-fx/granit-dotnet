@@ -1,54 +1,47 @@
 ---
 title: "Reference Data \u2014 Lookup Tables & Enums"
-description: Multilingual lookup table management for countries, currencies, and custom statuses — 17-culture i18n labels, automatic culture resolution, EF Core seeding, and generic CRUD endpoints.
+description: Multilingual lookup table management for countries, currencies, and custom statuses — 17-culture i18n labels, ExtraProperties extensibility, hierarchical types, EF Core seeding, and generic CRUD endpoints.
 sidebar:
   label: Reference Data
   order: 5
 ---
 
-import { FileTree } from "@astrojs/starlight/components";
+import { FileTree, Tabs, TabItem } from "@astrojs/starlight/components";
 
 `ReferenceDataEntity` is an abstract base class for i18n lookup tables (countries,
-currencies, document types). Each entity has a unique `Code`, 14 language labels, and
-automatic label resolution based on `CurrentUICulture`.
+currencies, document types). Each entity has a unique `Code`, 14 language labels,
+automatic label resolution based on `CurrentUICulture`, and an extensible
+`ExtraProperties` JSON bag for application-specific fields.
 
 ## Package structure
 
 <FileTree>
 
-- Granit.ReferenceData/ i18n reference data entity and store abstractions
-  - Granit.ReferenceData.EntityFrameworkCore EF Core store + seeding
-  - Granit.ReferenceData.Endpoints Generic CRUD endpoints
+- Granit.ReferenceData/ i18n entity, store abstractions, registry, fluent builder
+  - Granit.ReferenceData.EntityFrameworkCore EF Core store, seeding, QueryDefinition
+  - Granit.ReferenceData.Endpoints Generic + dynamic CRUD endpoints
 
 </FileTree>
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.ReferenceData` | `IReferenceDataStoreReader/Writer<T>`, `ReferenceDataEntity` | `Granit.Core` |
-| `Granit.ReferenceData.EntityFrameworkCore` + `Endpoints` | EF Core store, seeding, generic CRUD endpoints | `Granit.ReferenceData`, `Granit.Persistence` |
+| `Granit.ReferenceData` | `IReferenceDataStoreReader/Writer<T>`, `ReferenceDataEntity`, `ReferenceDataRegistry` | `Granit.Core`, `Granit.Querying` |
+| `Granit.ReferenceData.EntityFrameworkCore` | EF Core store, seeding, dynamic column mapping, `QueryDefinition` | `Granit.ReferenceData`, `Granit.Persistence`, `Granit.Caching` |
+| `Granit.ReferenceData.Endpoints` | Generic + dynamic CRUD endpoints, hierarchical children endpoint | `Granit.ReferenceData`, `Granit.Validation`, `Granit.Guids` |
 
 ## Entity structure
 
 ```csharp
-public abstract class ReferenceDataEntity : AuditedEntity, IActive
+public abstract class ReferenceDataEntity
+    : AuditedEntity, IActive, IHasExtraProperties, IEmitEntityLifecycleEvents
 {
     public string Code { get; set; }
 
     // 14 language labels
     public string LabelEn { get; set; }
     public string LabelFr { get; set; }
-    public string LabelNl { get; set; }
-    public string LabelDe { get; set; }
-    public string LabelEs { get; set; }
-    public string LabelIt { get; set; }
-    public string LabelPt { get; set; }
-    public string LabelZh { get; set; }
-    public string LabelJa { get; set; }
-    public string LabelPl { get; set; }
-    public string LabelTr { get; set; }
-    public string LabelKo { get; set; }
-    public string LabelSv { get; set; }
-    public string LabelCs { get; set; }
+    // ... LabelNl, LabelDe, LabelEs, LabelIt, LabelPt,
+    //     LabelZh, LabelJa, LabelPl, LabelTr, LabelKo, LabelSv, LabelCs
 
     // Resolved at runtime via CurrentUICulture (not mapped to DB)
     public virtual string Label { get; }
@@ -57,6 +50,12 @@ public abstract class ReferenceDataEntity : AuditedEntity, IActive
     public int SortOrder { get; set; }
     public DateTimeOffset? ValidFrom { get; set; }
     public DateTimeOffset? ValidTo { get; set; }
+
+    // ExtraProperties — JSON property bag for application-level extensibility
+    public string? ExtraPropertiesJson { get; set; }
+
+    // Optional parent code for hierarchical reference data
+    public string? ParentCode { get; set; }
 }
 ```
 
@@ -65,10 +64,136 @@ The `Label` property resolves the appropriate label based on
 the translation is empty. Regional variants use the base language fallback
 (fr-CA uses `LabelFr`, en-GB uses `LabelEn`, pt-BR uses `LabelPt`).
 
-## Defining a reference data entity
+## Two registration modes
+
+Granit.ReferenceData supports two registration approaches:
+
+<Tabs>
+<TabItem label="Strongly-typed (subclass)">
+
+For reference data types with domain-specific properties as CLR fields.
+Full compile-time type safety.
 
 ```csharp
-public sealed class Country : ReferenceDataEntity { }
+// 1. Define entity
+public sealed class Country : ReferenceDataEntity
+{
+    public string Alpha3Code { get; set; } = string.Empty;
+}
+
+// 2. Configure EF Core
+public sealed class CountryConfiguration
+    : ReferenceDataEntityTypeConfiguration<Country>
+{
+    public CountryConfiguration() : base("ref_countries") { }
+
+    protected override void ConfigureEntity(EntityTypeBuilder<Country> builder)
+    {
+        builder.Property(e => e.Alpha3Code).HasMaxLength(3).IsRequired();
+    }
+}
+
+// 3. Register store + endpoints
+services.AddReferenceDataStore<Country, AppDbContext>();
+app.MapReferenceDataEndpoints<Country>();
+```
+
+</TabItem>
+<TabItem label="Dynamic (no subclass)">
+
+For simple reference data types that only need custom properties without
+creating a C# class. Properties are stored in the JSON bag or promoted to
+real SQL columns via `MapProperty<T>()`.
+
+```csharp
+// 1. Register in one fluent call — no entity subclass needed
+services.AddReferenceData<AppDbContext>(rd =>
+{
+    rd.Add("Countries", opts => opts
+        .Table("ref_countries")
+        .MapProperty<string>("Alpha3Code", maxLength: 3, isFilterable: true)
+        .MapProperty<string>("Region", maxLength: 100, isFilterable: true)
+        .MapProperty<bool>("IsEuMember", isFilterable: true));
+
+    rd.Add("DocumentTypes", opts => opts.Table("ref_document_types"));
+
+    rd.Add("Categories", opts => opts
+        .Table("ref_categories")
+        .Hierarchical());
+});
+
+// 2. Map all registered types in one call
+app.MapAllReferenceDataEndpoints();
+```
+
+</TabItem>
+</Tabs>
+
+## ExtraProperties — application-level extensibility
+
+Every `ReferenceDataEntity` implements `IHasExtraProperties`. This provides a
+JSON property bag (`ExtraPropertiesJson` column) for attaching custom metadata
+without schema changes.
+
+```csharp
+// Write extra properties
+country.SetExtraProperty("Continent", "Europe");
+country.SetExtraProperty("Population", "11500000");
+
+// Read extra properties
+string? continent = country.GetExtraProperty("Continent");
+int? population = country.GetExtraProperty<int>("Population");
+bool hasContinent = country.HasExtraProperty("Continent");
+
+// Remove an extra property
+country.SetExtraProperty("Continent", null);
+```
+
+### Promoting properties to SQL columns
+
+Properties that need SQL indexes or query filtering can be promoted to real
+columns via `MapProperty<T>()`. These become EF Core Shadow Properties —
+indexable and queryable, while remaining accessible through `GetExtraProperty()`.
+
+```csharp
+services.AddReferenceData<AppDbContext>(rd =>
+{
+    rd.Add("Countries", opts => opts
+        .Table("ref_countries")
+        .MapProperty<string>("Alpha3Code", maxLength: 3, isFilterable: true));
+});
+```
+
+:::note
+The `ExtraPropertySyncInterceptor` automatically moves mapped property values
+from the JSON bag to their SQL columns at save time, preventing data duplication.
+:::
+
+## Hierarchical reference data
+
+Reference data types can support parent-child relationships via `ParentCode`.
+Enable hierarchy with `.Hierarchical()` in the dynamic registration API.
+
+```csharp
+rd.Add("Categories", opts => opts
+    .Table("ref_categories")
+    .Hierarchical());
+```
+
+This exposes an additional endpoint:
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| `GET` | `/{prefix}/{entity}/{code}/children` | Direct children of a parent entry |
+
+```csharp
+// In code, use the reader
+IReadOnlyList<Category> children = await storeReader
+    .GetChildrenAsync("ELECTRONICS", cancellationToken);
+
+// Get root entries (no parent)
+IReadOnlyList<Category> roots = await storeReader
+    .GetChildrenAsync(null, cancellationToken);
 ```
 
 ## Store abstractions
@@ -82,8 +207,10 @@ public interface IReferenceDataStoreReader<TEntity>
         CancellationToken cancellationToken = default);
 
     Task<TEntity?> GetByCodeAsync(
-        string code,
-        CancellationToken cancellationToken = default);
+        string code, CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<TEntity>> GetChildrenAsync(
+        string? parentCode, CancellationToken cancellationToken = default);
 }
 
 public interface IReferenceDataStoreWriter<in TEntity>
@@ -95,38 +222,41 @@ public interface IReferenceDataStoreWriter<in TEntity>
 }
 ```
 
-## Registration
+## Endpoints
 
-Reference data stores use **manual registration** per entity type, binding to the host
-application's `DbContext`:
+### Read (authenticated)
 
-```csharp
-// Program.cs or module ConfigureServices
-services.AddReferenceDataStore<Country, AppDbContext>();
-services.AddReferenceDataStore<Currency, AppDbContext>();
-```
+| Method | Route | Description |
+|--------|-------|-------------|
+| `GET` | `/{prefix}/{entity}` | Filtered, paginated list |
+| `GET` | `/{prefix}/{entity}/{code}` | Single entry by code |
+| `GET` | `/{prefix}/{entity}/{code}/children` | Direct children (hierarchical types) |
 
-This registers `IReferenceDataStoreReader<Country>`, `IReferenceDataStoreWriter<Country>`,
-and a `IDataSeedContributor` bridge for seeding.
+Query parameters: `activeOnly` (default `true`), `search`, `sortBy`, `descending`,
+`page`, `pageSize`.
 
-## Mapping endpoints
+### Admin (protected by `ReferenceData.Admin` policy)
 
-```csharp
-// Program.cs
-app.MapReferenceDataEndpoints<Country>();
-app.MapReferenceDataEndpoints<Currency>(opts =>
-    opts.AdminPolicyName = "Custom.Policy");
-```
+| Method | Route | Description |
+|--------|-------|-------------|
+| `POST` | `/{prefix}/{entity}` | Create an entry |
+| `PUT` | `/{prefix}/{entity}/{code}` | Update an entry |
+| `DELETE` | `/{prefix}/{entity}/{code}` | Deactivate (soft delete) |
 
-The entity type name is converted to a kebab-case route segment:
+Create and update requests accept `ExtraProperties` (dictionary) and `ParentCode`.
 
-| Method | Route | Access |
-|--------|-------|--------|
-| `GET` | `/reference-data/country` | Authenticated |
-| `GET` | `/reference-data/country/{code}` | Authenticated |
-| `POST` | `/reference-data/country` | Admin policy |
-| `PUT` | `/reference-data/country/{code}` | Admin policy |
-| `DELETE` | `/reference-data/country/{code}` | Admin policy |
+## Querying integration
+
+Dynamic reference data types automatically generate a `QueryDefinition` that declares:
+
+- Base columns: `Code`, `LabelEn`, `LabelFr`, `LabelNl`, `LabelDe`, `IsActive`, `SortOrder`, `ValidFrom`, `ValidTo`
+- Shadow property columns declared via `MapProperty<T>()` with `isFilterable` / `isSortable`
+- Global search on `Code`, `LabelEn`, `LabelFr`
+- Default sort by `SortOrder`, then `Code`
+
+Shadow properties use `EF.Property<T>()` expressions for SQL-level filtering and
+sorting — the `FilterExpressionBuilder` and `QueryableSortExtensions` handle them
+transparently.
 
 ## Seeding reference data
 
@@ -136,27 +266,25 @@ bridge invokes seeders during application startup.
 ```csharp
 public sealed class CountrySeeder : IReferenceDataSeeder<Country>
 {
-    public IEnumerable<Country> GetSeedData()
-    {
-        yield return new Country
-        {
-            Code = "BE",
-            LabelEn = "Belgium",
-            LabelFr = "Belgique",
-            LabelNl = "Belgie",
-            LabelDe = "Belgien",
-            SortOrder = 1
-        };
+    public int Order => 1;
 
-        yield return new Country
+    public async Task SeedAsync(
+        IReferenceDataStoreReader<Country> storeReader,
+        IReferenceDataStoreWriter<Country> storeWriter,
+        CancellationToken cancellationToken)
+    {
+        if (await storeReader.GetByCodeAsync("BE", cancellationToken) is null)
         {
-            Code = "FR",
-            LabelEn = "France",
-            LabelFr = "France",
-            LabelNl = "Frankrijk",
-            LabelDe = "Frankreich",
-            SortOrder = 2
-        };
+            await storeWriter.CreateAsync(new Country
+            {
+                Code = "BE",
+                LabelEn = "Belgium",
+                LabelFr = "Belgique",
+                LabelNl = "België",
+                Alpha3Code = "BEL",
+                SortOrder = 1
+            }, cancellationToken);
+        }
     }
 }
 ```
@@ -165,10 +293,16 @@ public sealed class CountrySeeder : IReferenceDataSeeder<Country>
 
 | Category | Key types | Package |
 |----------|-----------|---------|
-| Abstractions | `ReferenceDataEntity`, `IReferenceDataStoreReader<T>`, `IReferenceDataStoreWriter<T>` | `Granit.ReferenceData` |
-| Registration | `AddReferenceDataStore<TEntity, TDbContext>()`, `MapReferenceDataEndpoints<TEntity>()` | `Granit.ReferenceData.EntityFrameworkCore`, `Granit.ReferenceData.Endpoints` |
+| Entity | `ReferenceDataEntity`, `DynamicReferenceDataEntity`, `IHasExtraProperties` | `Granit.ReferenceData`, `Granit.Core` |
+| Store | `IReferenceDataStoreReader<T>`, `IReferenceDataStoreWriter<T>`, `IReferenceDataSeeder<T>` | `Granit.ReferenceData` |
+| Registration | `AddReferenceDataStore<T, TDb>()`, `AddReferenceData<TDb>()`, `ReferenceDataBuilder` | `Granit.ReferenceData.EntityFrameworkCore` |
+| Endpoints | `MapReferenceDataEndpoints<T>()`, `MapAllReferenceDataEndpoints()` | `Granit.ReferenceData.Endpoints` |
+| Registry | `ReferenceDataRegistry`, `ReferenceDataTypeRegistration` | `Granit.ReferenceData` |
+| ExtraProperties | `ExtraPropertyExtensions`, `ExtraPropertyMappingOptions<T>` | `Granit.Core`, `Granit.Persistence` |
 
 ## See also
 
+- [Use Reference Data guide](/dotnet/guides/use-reference-data/) -- step-by-step walkthrough
 - [Localization](/dotnet/infrastructure/localization/) -- i18n for UI strings and error messages
 - [Persistence](/dotnet/data/persistence/) -- isolated DbContext pattern for all EF Core stores
+- [ExtraProperties](/dotnet/core/extra-properties/) -- JSON property bag for entity extensibility

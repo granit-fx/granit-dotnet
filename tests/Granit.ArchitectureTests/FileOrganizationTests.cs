@@ -566,6 +566,62 @@ public sealed partial class FileOrganizationTests
             $"Violators: {string.Join(", ", violations)}");
     }
 
+    /// <summary>
+    /// Metrics classes (<c>*Metrics.cs</c>) must reside in a <c>Diagnostics/</c> subfolder.
+    /// Per CLAUDE.md: "Directory: <c>Diagnostics/</c> folder in the base module project".
+    /// </summary>
+    [Fact]
+    public void Metrics_classes_should_reside_in_Diagnostics_folder()
+    {
+        List<string> violations = [];
+
+        foreach (string csFile in GetSrcCsFiles())
+        {
+            string fileName = Path.GetFileName(csFile);
+            if (!fileName.EndsWith("Metrics.cs", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (!IsInFolder(csFile, "Diagnostics"))
+            {
+                violations.Add(Path.GetRelativePath(SrcRoot, csFile));
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Metrics classes (*Metrics.cs) must reside in a Diagnostics/ subfolder. " +
+            $"Violators: {string.Join(", ", violations)}");
+    }
+
+    /// <summary>
+    /// ActivitySource classes (<c>*ActivitySource.cs</c>) must reside in a <c>Diagnostics/</c> subfolder.
+    /// Per CLAUDE.md: "<c>internal static class {Module}ActivitySource</c> in same <c>Diagnostics/</c> folder".
+    /// </summary>
+    [Fact]
+    public void ActivitySource_classes_should_reside_in_Diagnostics_folder()
+    {
+        List<string> violations = [];
+
+        foreach (string csFile in GetSrcCsFiles())
+        {
+            string fileName = Path.GetFileName(csFile);
+            if (!fileName.EndsWith("ActivitySource.cs", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (!IsInFolder(csFile, "Diagnostics"))
+            {
+                violations.Add(Path.GetRelativePath(SrcRoot, csFile));
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "ActivitySource classes (*ActivitySource.cs) must reside in a Diagnostics/ subfolder. " +
+            $"Violators: {string.Join(", ", violations)}");
+    }
+
     private static bool ContainsInternalTypeDeclaration(string filePath)
     {
         foreach (string line in File.ReadLines(filePath))
