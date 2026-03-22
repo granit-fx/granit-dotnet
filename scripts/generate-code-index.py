@@ -17,7 +17,7 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timezone
+
 from pathlib import Path
 
 
@@ -395,7 +395,6 @@ def main() -> None:
     symbols = sorted(by_fqn.values(), key=lambda s: s["fqn"])
 
     index = {
-        "generatedAt": datetime.now(timezone.utc).isoformat(),
         "repo": "granit-dotnet",
         "projectGraph": project_graph,
         "symbols": symbols,
