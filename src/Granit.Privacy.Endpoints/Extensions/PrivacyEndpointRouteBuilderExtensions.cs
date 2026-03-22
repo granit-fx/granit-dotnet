@@ -282,6 +282,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
         PrivacyDeletionRequest body,
         [FromServices] ICurrentUserService currentUser,
         [FromServices] IDistributedEventBus eventBus,
+        [FromServices] IDeletionRequestTrackerReader deletionTracker,
         [FromServices] PrivacyMetrics metrics,
         [FromServices] TimeProvider timeProvider,
         [FromServices] ICurrentTenant currentTenant,
@@ -291,6 +292,17 @@ public static class PrivacyEndpointRouteBuilderExtensions
         if (!TryGetUserId(currentUser, out Guid userId))
         {
             return UserNotAuthenticated();
+        }
+
+        IReadOnlyList<DeletionRequestStatus> existing = await deletionTracker
+            .GetByUserAsync(userId, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (existing.Any(r => r.State == DeletionRequestState.Deferred))
+        {
+            return TypedResults.Problem(
+                detail: "A deferred deletion request is already in progress. Cancel it before submitting a new one.",
+                statusCode: StatusCodes.Status409Conflict);
         }
 
         var requestId = Guid.CreateVersion7();

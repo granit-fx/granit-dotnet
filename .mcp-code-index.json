@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T11:07:46.089511+00:00",
+  "generatedAt": "2026-03-22T11:55:53.197694+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -13766,7 +13766,7 @@
           "name": "GetRoleMembersAsync",
           "kind": "method",
           "signature": "GetRoleMembersAsync(string roleName, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<IdentityUser>>"
+          "returnType": "Task<IReadOnlyList<IIdentityUser>>"
         },
         {
           "name": "GetUserRolesAsync",
@@ -13837,19 +13837,19 @@
       "kind": "interface",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/IIdentityUserReader.cs",
-      "line": 8,
+      "line": 6,
       "members": [
         {
           "name": "GetUsersAsync",
           "kind": "method",
           "signature": "GetUsersAsync(string? search = null, int? first = null, int? max = null, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<IdentityUser>>"
+          "returnType": "Task<IReadOnlyList<IIdentityUser>>"
         },
         {
           "name": "GetUserAsync",
           "kind": "method",
           "signature": "GetUserAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IdentityUser?>"
+          "returnType": "Task<IIdentityUser?>"
         }
       ]
     },
@@ -13877,7 +13877,7 @@
           "name": "CreateUserAsync",
           "kind": "method",
           "signature": "CreateUserAsync(IdentityUserCreate user, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IdentityUser>"
+          "returnType": "Task<IIdentityUser>"
         }
       ]
     },
@@ -13909,31 +13909,31 @@
       "kind": "interface",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/IUserLookupService.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "FindByIdAsync",
           "kind": "method",
           "signature": "FindByIdAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IdentityUser?>"
+          "returnType": "Task<IIdentityUser?>"
         },
         {
           "name": "FindByIdsAsync",
           "kind": "method",
           "signature": "FindByIdsAsync(IReadOnlyCollection<string> userIds, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<IdentityUser>>"
+          "returnType": "Task<IReadOnlyList<IIdentityUser>>"
         },
         {
           "name": "SearchAsync",
           "kind": "method",
           "signature": "SearchAsync(string searchTerm, int page = 1, int pageSize = QueryingDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
-          "returnType": "Task<PagedResult<IdentityUser>>"
+          "returnType": "Task<PagedResult<IIdentityUser>>"
         },
         {
           "name": "RefreshByIdAsync",
           "kind": "method",
           "signature": "RefreshByIdAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IdentityUser?>"
+          "returnType": "Task<IIdentityUser?>"
         },
         {
           "name": "RefreshAllAsync",
