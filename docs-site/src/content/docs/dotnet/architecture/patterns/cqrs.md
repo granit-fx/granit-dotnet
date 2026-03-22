@@ -10,7 +10,7 @@ sidebar:
 CQRS is one of Granit's foundational design principles —
 every data module enforces it. For the "why" (compliance,
 least privilege, mental model), see the
-[CQRS concept page](/dotnet/concepts/cqrs/).
+[CQRS concept page](/dotnet/concepts/cqrs-command-query-separation/).
 This page focuses on implementation details and inventory.
 :::
 
@@ -187,7 +187,7 @@ These are the most common regressions caught by architecture tests:
 
 ## Further reading
 
-- [CQRS concept](/dotnet/concepts/cqrs/) — mental model, compliance benefits, and
+- [CQRS concept](/dotnet/concepts/cqrs-command-query-separation/) — mental model, compliance benefits, and
   common mistakes
 - [CQRS pattern -- Microsoft Cloud Design Patterns](https://learn.microsoft.com/en-us/azure/dotnet/architecture/patterns/cqrs)
 - [CQRS -- Martin Fowler](https://martinfowler.com/bliki/CQRS.html)
