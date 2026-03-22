@@ -326,12 +326,6 @@
           "Granit.Querying": "[0.1.0-dev, )"
         }
       },
-      "granit.identity.federated": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Identity": "[0.1.0-dev, )"
-        }
-      },
       "granit.querying": {
         "type": "Project",
         "dependencies": {
