@@ -169,6 +169,25 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         InvalidateCache(code);
     }
 
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<TEntity>> GetChildrenAsync(
+        string? parentCode,
+        CancellationToken cancellationToken = default)
+    {
+        await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
+        TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+
+        List<TEntity> children = await context.Set<TEntity>()
+            .AsNoTracking()
+            .Where(e => e.ParentCode == parentCode && e.IsActive)
+            .OrderBy(e => e.SortOrder)
+            .ThenBy(e => e.Code)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return children;
+    }
+
     private void InvalidateCache(string code)
     {
         _cache.Expire(CodeCacheKey(code));

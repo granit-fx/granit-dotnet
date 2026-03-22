@@ -26,4 +26,16 @@ public interface IReferenceDataStoreReader<TEntity> where TEntity : ReferenceDat
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The matching entity, or <c>null</c> if not found.</returns>
     Task<TEntity?> GetByCodeAsync(string code, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves all direct children of a parent entry in a hierarchical reference data type.
+    /// </summary>
+    /// <param name="parentCode">
+    /// The parent's <see cref="ReferenceDataEntity.Code"/>. Pass <c>null</c> to get root entries.
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A list of child entries, ordered by <see cref="ReferenceDataEntity.SortOrder"/>.</returns>
+    Task<IReadOnlyList<TEntity>> GetChildrenAsync(
+        string? parentCode,
+        CancellationToken cancellationToken = default);
 }

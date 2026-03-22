@@ -34,6 +34,13 @@ internal static class ReferenceDataReadEndpoints
             .Produces<TEntity>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
+        group.MapGet("/{code}/children", GetChildrenAsync<TEntity>)
+            .WithName($"Get{typeof(TEntity).Name}Children")
+            .WithSummary($"Returns direct children of a {typeof(TEntity).Name} entry.")
+            .WithDescription($"Returns all active direct children of the {typeof(TEntity).Name} entry identified by its code, ordered by sort order then code. For hierarchical reference data types that use ParentCode. Returns 404 if the parent entry does not exist.")
+            .Produces<IReadOnlyList<TEntity>>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         return group;
     }
 
@@ -70,5 +77,24 @@ internal static class ReferenceDataReadEndpoints
         }
 
         return TypedResults.Ok(entity);
+    }
+
+    private static async Task<Results<Ok<IReadOnlyList<TEntity>>, NotFound>> GetChildrenAsync<TEntity>(
+        string code,
+        [FromServices] IReferenceDataStoreReader<TEntity> storeReader,
+        CancellationToken cancellationToken = default)
+        where TEntity : ReferenceDataEntity
+    {
+        // Verify parent exists
+        TEntity? parent = await storeReader.GetByCodeAsync(code, cancellationToken).ConfigureAwait(false);
+        if (parent is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        IReadOnlyList<TEntity> children = await storeReader
+            .GetChildrenAsync(code, cancellationToken).ConfigureAwait(false);
+
+        return TypedResults.Ok(children);
     }
 }

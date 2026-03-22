@@ -39,6 +39,14 @@ internal static class ReferenceDataDynamicEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
+        group.MapGet("/{code}/children", GetChildrenAsync)
+            .WithName($"Get{typeName}Children")
+            .WithSummary($"Returns direct children of a {typeName} entry.")
+            .WithDescription($"Returns all active direct children ordered by sort order. Returns 404 if the parent does not exist.")
+            .Produces<IReadOnlyList<DynamicReferenceDataEntity>>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
+
         return group;
     }
 
@@ -130,6 +138,29 @@ internal static class ReferenceDataDynamicEndpoints
         }
 
         return TypedResults.Ok(entity);
+    }
+
+    private static async Task<Results<Ok<IReadOnlyList<DynamicReferenceDataEntity>>, NotFound>> GetChildrenAsync(
+        string code,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
+    {
+        string typeName = ResolveTypeName(httpContext);
+        IReferenceDataStoreReader<DynamicReferenceDataEntity> reader =
+            httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreReader<DynamicReferenceDataEntity>>(typeName);
+
+        DynamicReferenceDataEntity? parent = await reader
+            .GetByCodeAsync(code, cancellationToken).ConfigureAwait(false);
+
+        if (parent is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        IReadOnlyList<DynamicReferenceDataEntity> children = await reader
+            .GetChildrenAsync(code, cancellationToken).ConfigureAwait(false);
+
+        return TypedResults.Ok(children);
     }
 
     private static async Task<Created> CreateAsync(

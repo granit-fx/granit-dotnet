@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T15:31:08.838809+00:00",
+  "generatedAt": "2026-03-22T15:43:03.939718+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -22679,6 +22679,12 @@
           "kind": "method",
           "signature": "GetByCodeAsync(string code, CancellationToken cancellationToken = default)",
           "returnType": "Task<TEntity?>"
+        },
+        {
+          "name": "GetChildrenAsync",
+          "kind": "method",
+          "signature": "GetChildrenAsync(string? parentCode, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<TEntity>>"
         }
       ]
     },
