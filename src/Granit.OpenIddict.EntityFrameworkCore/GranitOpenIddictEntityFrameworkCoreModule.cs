@@ -67,9 +67,9 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
             .AddOptions<GranitKeyRotationOptions>()
             .BindConfiguration(GranitKeyRotationOptions.SectionName);
 
-        // GranitUser implements IHasExtraProperties — apps can extend with:
-        // services.AddExtraPropertyMappings<GranitUser>(o => o.MapProperty<string>("JobTitle", maxLength: 128));
-        // The generic ExtraPropertySyncInterceptor in Granit.Persistence handles sync automatically.
+        // GranitUser implements IHasExtraProperties — apps can extend user properties
+        // by calling AddExtraPropertyMappings<GranitUser> in their own module.
+        // The ExtraPropertySyncInterceptor in Granit.Persistence handles sync automatically.
         context.Services.AddExtraPropertyInfrastructure();
 
         // Load signing/encryption keys from DB at startup (replaces ephemeral keys)

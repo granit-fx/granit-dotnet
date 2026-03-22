@@ -51,9 +51,11 @@ internal static class AdminRoleEndpoints
     private static Task<Created> CreateRoleAsync() =>
         Task.FromResult(TypedResults.Created("/api/admin/roles/{name}"));
 
+#pragma warning disable S1172 // Route-bound parameters required for minimal API binding
     private static Task<Results<NoContent, ProblemHttpResult>> DeleteRoleAsync(string roleName) =>
         Task.FromResult<Results<NoContent, ProblemHttpResult>>(TypedResults.NoContent());
 
     private static Task<Ok> GetRoleMembersAsync(string roleName) =>
         Task.FromResult(TypedResults.Ok());
+#pragma warning restore S1172
 }

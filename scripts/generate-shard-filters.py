@@ -94,7 +94,7 @@ def to_slnx_path(csproj: Path) -> str:
 
 
 def generate_filter(
-    shard_name: str, project_dirs: list[str], slnx_projects: set[str]
+    project_dirs: list[str], slnx_projects: set[str]
 ) -> dict:
     """Generate a .slnf structure for a shard."""
     all_projects: set[Path] = set()
@@ -116,13 +116,11 @@ def generate_filter(
     # Convert to slnx-relative paths and filter to only include projects
     # that are actually listed in the .slnx solution file.
     paths: list[str] = []
-    excluded = 0
     for p in all_projects:
         slnx_path = to_slnx_path(p)
         if slnx_path in slnx_projects:
             paths.append(slnx_path)
         else:
-            excluded += 1
             print(f"  INFO: {slnx_path} not in .slnx, excluded from filter", file=sys.stderr)
 
     paths.sort()
@@ -154,7 +152,7 @@ def main() -> None:
         name = shard["name"]
         projects = shard["projects"]
         print(f"Generating {name}.slnf ({len(projects)} test projects)...")
-        slnf = generate_filter(name, projects, slnx_projects)
+        slnf = generate_filter(projects, slnx_projects)
         out = FILTERS_DIR / f"{name}.slnf"
         out.write_text(
             json.dumps(slnf, indent=2, ensure_ascii=False) + "\n",
@@ -175,7 +173,7 @@ def main() -> None:
         json.dumps(src_slnf, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
-    print(f"Generating src-only.slnf...")
+    print("Generating src-only.slnf...")
     print(f"  -> {src_out.relative_to(REPO_ROOT)} ({len(src_projects)} projects)")
 
     total = len(shards) + 1

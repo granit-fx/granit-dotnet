@@ -206,7 +206,7 @@ public sealed class GdprDeletionSagaTests : IDisposable
             new DeletionCancelledEto(saga.Id, saga.UserId, DateTimeOffset.UtcNow),
             _tracker, _metrics);
 
-        // Saga should be completed — no deletion events returned from HandleAsync
-        // (the method returns void/Task, not an event array)
+        await _tracker.DidNotReceive().MarkExecutedAsync(
+            Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>());
     }
 }

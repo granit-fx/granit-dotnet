@@ -28,7 +28,9 @@ namespace Granit.Persistence.ExtraProperties;
 /// });
 /// </code>
 /// </example>
+#pragma warning disable S2326 // TEntity is an Options-pattern discriminator (Configure<ExtraPropertyMappingOptions<T>>)
 public sealed class ExtraPropertyMappingOptions<TEntity>
+#pragma warning restore S2326
     where TEntity : class, IHasExtraProperties
 {
     /// <summary>

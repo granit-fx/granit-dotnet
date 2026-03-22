@@ -59,6 +59,7 @@ internal static class AdminGroupEndpoints
     private static Task<Created> CreateGroupAsync() =>
         Task.FromResult(TypedResults.Created("/api/admin/groups/{id}"));
 
+#pragma warning disable S1172 // Route-bound parameters required for minimal API binding
     private static Task<Results<NoContent, NotFound>> DeleteGroupAsync(Guid groupId) =>
         Task.FromResult<Results<NoContent, NotFound>>(TypedResults.NoContent());
 
@@ -67,4 +68,5 @@ internal static class AdminGroupEndpoints
 
     private static Task<NoContent> RemoveMemberAsync(Guid groupId, Guid userId) =>
         Task.FromResult(TypedResults.NoContent());
+#pragma warning restore S1172
 }

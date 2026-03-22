@@ -109,6 +109,7 @@ internal static class AdminOidcEndpoints
     private static Task<Created> CreateApplicationAsync() =>
         Task.FromResult(TypedResults.Created("/api/admin/oidc/applications/{clientId}"));
 
+#pragma warning disable S1172 // Route-bound parameters required for minimal API binding
     private static Task<Results<NoContent, NotFound>> DeleteApplicationAsync(string clientId) =>
         Task.FromResult<Results<NoContent, NotFound>>(TypedResults.NoContent());
 
@@ -135,4 +136,5 @@ internal static class AdminOidcEndpoints
 
     private static Task<NoContent> RevokeUserAuthorizationsAsync(Guid userId) =>
         Task.FromResult(TypedResults.NoContent());
+#pragma warning restore S1172
 }

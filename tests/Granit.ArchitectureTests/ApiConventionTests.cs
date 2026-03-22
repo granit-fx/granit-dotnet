@@ -139,6 +139,119 @@ public sealed partial class ApiConventionTests
     }
 
     /// <summary>
+    /// Every endpoint registration (<c>.MapGet()</c>, <c>.MapPost()</c>, etc.) in
+    /// <c>*.Endpoints</c> packages must declare all mandatory OpenAPI metadata:
+    /// <c>.WithName()</c>, <c>.WithSummary()</c>, <c>.WithDescription()</c>,
+    /// and at least one <c>.Produces()</c> variant.
+    /// </summary>
+    [Fact]
+    public void Endpoint_registrations_should_have_complete_OpenAPI_metadata()
+    {
+        string srcDir = Path.Combine(RepoRoot, "src");
+
+        List<string> violations = [];
+
+        foreach (string csFile in GetEndpointPackageSourceFiles(srcDir))
+        {
+            string content = File.ReadAllText(csFile);
+            string relativePath = Path.GetRelativePath(RepoRoot, csFile);
+
+            foreach (Match match in EndpointRegistration().Matches(content))
+            {
+                int lineNumber = content[..match.Index].Count(c => c == '\n') + 1;
+                string chain = ExtractFluentChain(content, match.Index);
+
+                List<string> missing = [];
+                if (!chain.Contains(".WithName(", StringComparison.Ordinal))
+                {
+                    missing.Add("WithName");
+                }
+
+                if (!chain.Contains(".WithSummary(", StringComparison.Ordinal))
+                {
+                    missing.Add("WithSummary");
+                }
+
+                if (!chain.Contains(".WithDescription(", StringComparison.Ordinal))
+                {
+                    missing.Add("WithDescription");
+                }
+
+                if (!chain.Contains(".Produces", StringComparison.Ordinal))
+                {
+                    missing.Add("Produces");
+                }
+
+                if (missing.Count > 0)
+                {
+                    string verb = match.Groups[1].Value;
+                    violations.Add(
+                        $"{relativePath}:{lineNumber} (.Map{verb}) missing: {string.Join(", ", missing)}");
+                }
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Every endpoint registration must declare WithName, WithSummary, WithDescription, " +
+            "and at least one Produces variant for OpenAPI documentation. " +
+            $"Violators: {string.Join("; ", violations)}");
+    }
+
+    /// <summary>
+    /// Extracts the fluent method chain starting at <paramref name="startIndex"/>
+    /// until the terminating semicolon, tracking brace/parenthesis depth to skip
+    /// nested lambdas.
+    /// </summary>
+    private static string ExtractFluentChain(string content, int startIndex)
+    {
+        int depth = 0;
+        for (int i = startIndex; i < content.Length; i++)
+        {
+            char c = content[i];
+            switch (c)
+            {
+                case '(' or '{':
+                    depth++;
+                    break;
+                case ')' or '}':
+                    depth--;
+                    break;
+                case ';' when depth <= 0:
+                    return content[startIndex..i];
+            }
+        }
+
+        return content[startIndex..];
+    }
+
+    /// <summary>
+    /// Enumerates C# source files in <c>Granit.*.Endpoints</c> packages only.
+    /// Used by the OpenAPI metadata test to focus on user-facing API endpoints
+    /// (excludes infrastructure endpoints in Core, Validation, Features, etc.).
+    /// </summary>
+    private static IEnumerable<string> GetEndpointPackageSourceFiles(string srcDir)
+    {
+        foreach (string csFile in Directory.GetFiles(srcDir, "*.cs", SearchOption.AllDirectories))
+        {
+            if (csFile.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar)
+                || csFile.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar))
+            {
+                continue;
+            }
+
+            string relativePath = Path.GetRelativePath(srcDir, csFile);
+            string moduleName = relativePath.Split(Path.DirectorySeparatorChar)[0];
+
+            if (!moduleName.EndsWith(".Endpoints", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            yield return csFile;
+        }
+    }
+
+    /// <summary>
     /// Enumerates all C# source files in endpoint-related directories under <paramref name="srcDir"/>.
     /// </summary>
     private static IEnumerable<string> GetEndpointSourceFiles(string srcDir)
@@ -270,4 +383,12 @@ public sealed partial class ApiConventionTests
     /// </summary>
     [GeneratedRegex(@"Results<((?:[^<>]|<[^<>]*>)+)>\s*>\s+\w+", RegexOptions.Multiline)]
     private static partial Regex ResultsUnionType();
+
+    /// <summary>
+    /// Matches endpoint registration calls: <c>.MapGet(</c>, <c>.MapPost(</c>,
+    /// <c>.MapPut(</c>, <c>.MapDelete(</c>, <c>.MapPatch(</c>.
+    /// Captures the HTTP verb (group 1).
+    /// </summary>
+    [GeneratedRegex(@"\.Map(Get|Post|Put|Delete|Patch)\s*\(", RegexOptions.Multiline)]
+    private static partial Regex EndpointRegistration();
 }

@@ -9,10 +9,8 @@ public sealed class AIUsageRecordQueryDefinitionTests
     private readonly AIUsageRecordQueryDefinition _definition = new();
 
     [Fact]
-    public void Name_is_AI_UsageRecords()
-    {
+    public void Name_is_AI_UsageRecords() =>
         _definition.Name.ShouldBe("AI.UsageRecords");
-    }
 
     [Fact]
     public void Declares_expected_columns()
@@ -50,14 +48,10 @@ public sealed class AIUsageRecordQueryDefinitionTests
     }
 
     [Fact]
-    public void Default_sort_is_descending_timestamp()
-    {
+    public void Default_sort_is_descending_timestamp() =>
         _definition.GetDefaultSort().ShouldBe("-timestamp");
-    }
 
     [Fact]
-    public void Default_page_size_is_25()
-    {
+    public void Default_page_size_is_25() =>
         _definition.GetDefaultPageSize().ShouldBe(25);
-    }
 }
