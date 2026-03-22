@@ -35,6 +35,8 @@ public sealed partial class ValidationConventionTests
         "IdentityUserSetEnabledRequest",
         // TODO: needs a validator (pre-existing gap, tracked separately)
         "MobilePushTokenRegisterRequest",
+        // Nested sub-type validated via ChildRules in AIChatRequestValidator — never sent as direct body
+        "AIChatMessageRequest",
     };
 
     // -------------------------------------------------------------------------
