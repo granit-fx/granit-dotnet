@@ -1,14 +1,20 @@
 ---
 title: "Use Reference Data \u2014 Lookup Tables Guide"
-description: Manage multilingual lookup tables (countries, currencies, document types) with generic EF Core CRUD endpoints, in-memory caching, seeding, ISO 27001 audit trail, and 17-culture i18n labels.
+description: Manage multilingual lookup tables (countries, currencies, document types) with generic EF Core CRUD endpoints, ExtraProperties extensibility, hierarchical types, in-memory caching, seeding, ISO 27001 audit trail, and 17-culture i18n labels.
 sidebar:
   order: 18
   label: Use reference data
 ---
 
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
 Granit.ReferenceData provides a generic framework for managing lookup tables
 (countries, currencies, document types) with built-in i18n support for 14 languages,
 ISO 27001 audit trail, automatic inactive-entry filtering, and in-memory caching.
+
+Two registration modes are available: **strongly-typed** (subclass `ReferenceDataEntity`)
+for domain-specific CLR properties, and **dynamic** (no subclass) for simple types
+extended via `ExtraProperties` and `MapProperty<T>()`.
 
 ## Prerequisites
 
@@ -24,24 +30,18 @@ dotnet add package Granit.ReferenceData.EntityFrameworkCore
 dotnet add package Granit.ReferenceData.Endpoints
 ```
 
-## Step 2 -- Define a reference data entity
+## Step 2 -- Define your reference data
 
-Every reference data type inherits from `ReferenceDataEntity`, which provides:
+<Tabs>
+<TabItem label="Strongly-typed (subclass)">
 
-- `Code` -- unique business key (e.g., `"BE"`, `"EUR"`)
-- 14 label properties (`LabelEn`, `LabelFr`, `LabelNl`, `LabelDe`, `LabelEs`,
-  `LabelIt`, `LabelPt`, `LabelZh`, `LabelJa`, `LabelPl`, `LabelTr`, `LabelKo`,
-  `LabelSv`, `LabelCs`)
-- `Label` -- virtual `[NotMapped]` property that resolves automatically based on
-  `CultureInfo.CurrentUICulture`, falling back to `LabelEn`
-- `IsActive`, `SortOrder`, `ValidFrom`, `ValidTo`
-- Full audit columns (`CreatedAt`, `CreatedBy`, `ModifiedAt`, `ModifiedBy`)
+Every reference data type inherits from `ReferenceDataEntity`, which provides
+`Code`, 14 label properties, `Label` (culture-resolved), `IsActive`, `SortOrder`,
+`ValidFrom`, `ValidTo`, `ExtraPropertiesJson`, and `ParentCode`.
 
 Add domain-specific properties to the subclass:
 
 ```csharp
-using Granit.ReferenceData;
-
 namespace MyApp.Domain;
 
 public sealed class Country : ReferenceDataEntity
@@ -50,6 +50,17 @@ public sealed class Country : ReferenceDataEntity
     public string CallingCode { get; set; } = string.Empty;
 }
 ```
+
+</TabItem>
+<TabItem label="Dynamic (no subclass)">
+
+For simple types, skip the subclass entirely. Custom properties are declared via the
+fluent API and stored as EF Core Shadow Properties (real SQL columns) or in the JSON bag.
+
+No entity class to create — proceed directly to Step 3.
+
+</TabItem>
+</Tabs>
 
 :::note[Good to know]
 Translation properties are optional. An application using only French and English can
@@ -60,15 +71,14 @@ fallback: fr-CA resolves to `LabelFr`, en-GB to `LabelEn`, pt-BR to `LabelPt`.
 
 ## Step 3 -- Configure EF Core persistence
 
+<Tabs>
+<TabItem label="Strongly-typed">
+
 Create a configuration class inheriting from `ReferenceDataEntityTypeConfiguration<T>`.
 The base class configures the primary key, unique index on `Code`, label columns,
 audit columns, and the `IsActive` filter.
 
 ```csharp
-using Granit.ReferenceData.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using MyApp.Domain;
-
 namespace MyApp.Persistence;
 
 public sealed class CountryConfiguration
@@ -96,26 +106,65 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
     base.OnModelCreating(modelBuilder);
 
     modelBuilder.ConfigureReferenceData(new CountryConfiguration());
-    modelBuilder.ConfigureReferenceData(new CurrencyConfiguration());
-
     modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
 }
 ```
 
-## Step 4 -- Register the store
+</TabItem>
+<TabItem label="Dynamic">
 
-Register the EF Core store for each reference data type. This replaces the in-memory
-default and adds cache-aside behavior:
+No EF configuration class needed. The table name and column mappings are declared
+in the fluent API (next step). EF Core Shadow Properties are created automatically.
+
+</TabItem>
+</Tabs>
+
+## Step 4 -- Register stores and services
+
+<Tabs>
+<TabItem label="Strongly-typed">
 
 ```csharp
 services.AddReferenceDataStore<Country, AppDbContext>();
 services.AddReferenceDataStore<Currency, AppDbContext>();
 ```
 
-This registers:
+This registers `IReferenceDataStoreReader<Country>`, `IReferenceDataStoreWriter<Country>`,
+and a `IDataSeedContributor` bridge for seeding.
 
-- `IReferenceDataStoreReader<T>` / `IReferenceDataStoreWriter<T>` (Scoped) -- EF Core store with memory cache
-- `IDataSeedContributor` -- bridge for typed seeders
+</TabItem>
+<TabItem label="Dynamic">
+
+```csharp
+services.AddReferenceData<AppDbContext>(rd =>
+{
+    rd.Add("Countries", opts => opts
+        .Table("ref_countries")
+        .MapProperty<string>("Alpha3Code", maxLength: 3, isFilterable: true)
+        .MapProperty<string>("Region", maxLength: 100, isFilterable: true)
+        .MapProperty<bool>("IsEuMember", isFilterable: true));
+
+    rd.Add("DocumentTypes", opts => opts.Table("ref_document_types"));
+
+    rd.Add("Categories", opts => opts
+        .Table("ref_categories")
+        .Hierarchical());
+});
+```
+
+This registers keyed `IReferenceDataStoreReader<DynamicReferenceDataEntity>` and
+`IReferenceDataStoreWriter<DynamicReferenceDataEntity>` per type name, an
+`ExtraPropertySyncInterceptor` for Shadow Property synchronization, and a
+`QueryDefinition` for advanced querying.
+
+:::tip[MapProperty vs ExtraProperties]
+`MapProperty<T>()` creates a real SQL column (indexable, filterable via Querying).
+Properties not declared via `MapProperty` are stored in the `ExtraPropertiesJson`
+JSON column — flexible but not queryable at SQL level.
+:::
+
+</TabItem>
+</Tabs>
 
 ## Step 5 -- Seed initial data
 
@@ -123,11 +172,6 @@ Implement `IReferenceDataSeeder<T>` for idempotent data seeding. Seeders are ord
 by the `Order` property and executed via the `IDataSeedContributor` pipeline:
 
 ```csharp
-using Granit.ReferenceData;
-using MyApp.Domain;
-
-namespace MyApp.Persistence;
-
 public sealed class CountrySeeder : IReferenceDataSeeder<Country>
 {
     public int Order => 1;
@@ -137,20 +181,18 @@ public sealed class CountrySeeder : IReferenceDataSeeder<Country>
         IReferenceDataStoreWriter<Country> storeWriter,
         CancellationToken cancellationToken)
     {
-        var existing = await storeReader.GetByCodeAsync(
-            "BE", cancellationToken);
-
-        if (existing is null)
+        if (await storeReader.GetByCodeAsync("BE", cancellationToken) is null)
         {
             await storeWriter.CreateAsync(new Country
             {
                 Code = "BE",
                 LabelEn = "Belgium",
                 LabelFr = "Belgique",
-                LabelNl = "Belgi\u00eb",
+                LabelNl = "België",
                 LabelDe = "Belgien",
                 Alpha3Code = "BEL",
-                CallingCode = "+32"
+                CallingCode = "+32",
+                SortOrder = 1
             }, cancellationToken);
         }
     }
@@ -163,10 +205,10 @@ Register the seeder:
 services.AddTransient<IReferenceDataSeeder<Country>, CountrySeeder>();
 ```
 
-## Step 6 -- Map CRUD endpoints
+## Step 6 -- Map endpoints
 
-`Granit.ReferenceData.Endpoints` exposes Minimal API endpoints for reading and
-administering reference data:
+<Tabs>
+<TabItem label="Strongly-typed">
 
 ```csharp
 app.MapReferenceDataEndpoints<Country>();
@@ -177,20 +219,34 @@ app.MapReferenceDataEndpoints<Currency>(opts =>
 });
 ```
 
-The entity name is converted to kebab-case for the route segment:
-`Country` becomes `/reference-data/country`.
+</TabItem>
+<TabItem label="Dynamic">
+
+```csharp
+// Map all registered dynamic types in one call
+app.MapAllReferenceDataEndpoints();
+
+// Or map selectively
+app.MapReferenceDataEndpoints("Countries");
+app.MapReferenceDataEndpoints("Categories", opts =>
+    opts.AdminPolicyName = "Admin.Categories");
+```
+
+</TabItem>
+</Tabs>
 
 ### Available endpoints
 
-**Read (public):**
+**Read (authenticated):**
 
 | Method | Route | Description |
 |--------|-------|-------------|
-| `GET` | `/{prefix}/{entity}` | Filtered and paginated list |
+| `GET` | `/{prefix}/{entity}` | Filtered, paginated list |
 | `GET` | `/{prefix}/{entity}/{code}` | Single entry by code |
+| `GET` | `/{prefix}/{entity}/{code}/children` | Direct children (hierarchical types) |
 
 Query parameters: `activeOnly` (default `true`), `search`, `sortBy`, `descending`,
-`skip`, `take`.
+`page`, `pageSize`.
 
 **Admin (protected by `ReferenceData.Admin` policy):**
 
@@ -198,22 +254,45 @@ Query parameters: `activeOnly` (default `true`), `search`, `sortBy`, `descending
 |--------|-------|-------------|
 | `POST` | `/{prefix}/{entity}` | Create an entry |
 | `PUT` | `/{prefix}/{entity}/{code}` | Update an entry |
-| `DELETE` | `/{prefix}/{entity}/{code}` | Deactivate an entry |
+| `DELETE` | `/{prefix}/{entity}/{code}` | Deactivate (soft delete) |
 
-## Step 7 -- Query reference data in code
+Create and update requests accept optional `ExtraProperties` (dictionary) and `ParentCode`.
 
-Use `IReferenceDataStoreReader<T>` to query reference data with filtering and pagination:
+## Step 7 -- Use ExtraProperties
+
+Every reference data entity supports a JSON property bag for custom metadata:
 
 ```csharp
-using Granit.ReferenceData;
-using MyApp.Domain;
+// Write
+country.SetExtraProperty("Continent", "Europe");
+country.SetExtraProperty("Population", "11500000");
 
-namespace MyApp.Services;
+// Read (string)
+string? continent = country.GetExtraProperty("Continent");
 
+// Read (typed — uses IParsable<T>)
+int? population = country.GetExtraProperty<int>("Population");
+
+// Check existence
+bool hasPop = country.HasExtraProperty("Population");
+
+// Remove
+country.SetExtraProperty("Continent", null);
+```
+
+:::caution
+Properties promoted via `MapProperty<T>()` are automatically excluded from the JSON
+bag at save time by the `ExtraPropertySyncInterceptor`. Do not write them manually
+via `SetExtraProperty` — use the SQL column instead.
+:::
+
+## Step 8 -- Query in code
+
+```csharp
 public sealed class CountryService(
     IReferenceDataStoreReader<Country> storeReader)
 {
-    public async Task<ReferenceDataResult<Country>> SearchAsync(
+    public async Task<PagedResult<Country>> SearchAsync(
         string? searchTerm,
         CancellationToken cancellationToken) =>
         await storeReader.GetAllAsync(
@@ -221,14 +300,15 @@ public sealed class CountryService(
                 ActiveOnly: true,
                 SearchTerm: searchTerm,
                 SortBy: "Code",
-                Skip: 0,
-                Take: 25),
-            cancellationToken);
+                Page: 1,
+                PageSize: 25),
+            cancellationToken).ConfigureAwait(false);
 
-    public async Task<Country?> GetByCodeAsync(
-        string code,
+    public async Task<IReadOnlyList<Country>> GetChildrenAsync(
+        string parentCode,
         CancellationToken cancellationToken) =>
-        await storeReader.GetByCodeAsync(code, cancellationToken);
+        await storeReader.GetChildrenAsync(parentCode, cancellationToken)
+            .ConfigureAwait(false);
 }
 ```
 
@@ -240,6 +320,7 @@ Configure the TTL via `ReferenceData:CacheTimeToLive` in `appsettings.json`.
 
 ## Next steps
 
+- [Reference Data module reference](/dotnet/business/reference-data/) -- full API surface and architecture
 - [Manage application settings](/dotnet/guides/manage-application-settings/) -- dynamic settings with cascading resolution
 - [Implement the audit timeline](/dotnet/guides/implement-audit-timeline/) -- track changes to reference data
 - [Create a module](/dotnet/guides/create-a-module/) -- package reference data types into a reusable module

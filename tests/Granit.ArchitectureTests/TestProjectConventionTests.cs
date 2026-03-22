@@ -16,21 +16,13 @@ public sealed class TestProjectConventionTests
         string srcDir = Path.Combine(RepoRoot, "src");
         string testsDir = Path.Combine(RepoRoot, "tests");
 
-        // Packages excluded: Analyzers/SourceGenerator target netstandard2.0,
-        // ArchitectureTests.Abstractions is test infrastructure (not a deliverable package).
-        HashSet<string> excluded =
-        [
-            "Granit.Analyzers",
-            "Granit.Analyzers.CodeFixes",
-            "Granit.ArchitectureTests.Abstractions",
-            "Granit.Localization.SourceGenerator",
-        ];
-
+        // Auto-exclude analyzers and source generators (target netstandard2.0,
+        // cannot reference net10.0 test infrastructure)
         IEnumerable<string> srcPackages = Directory.GetDirectories(srcDir)
             .Select(Path.GetFileName)
             .Where(name => name!.StartsWith("Granit.", StringComparison.Ordinal))
             .Where(name => File.Exists(Path.Combine(srcDir, name!, $"{name}.csproj")))
-            .Where(name => !excluded.Contains(name!))
+            .Where(name => !TargetsNetStandard(Path.Combine(srcDir, name!, $"{name}.csproj")))
             .Cast<string>();
 
         List<string> missing = [];
@@ -74,6 +66,16 @@ public sealed class TestProjectConventionTests
         missing.ShouldBeEmpty(
             "Every src package must have a README.md. " +
             $"Missing: {string.Join(", ", missing)}");
+    }
+
+    /// <summary>
+    /// Returns <c>true</c> when the csproj targets <c>netstandard*</c> — these are
+    /// analyzers/source generators that cannot have standard test projects.
+    /// </summary>
+    private static bool TargetsNetStandard(string csprojPath)
+    {
+        string content = File.ReadAllText(csprojPath);
+        return content.Contains("<TargetFramework>netstandard", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string FindRepoRoot()
