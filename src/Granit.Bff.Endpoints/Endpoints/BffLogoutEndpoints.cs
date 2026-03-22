@@ -13,13 +13,20 @@ namespace Granit.Bff.Endpoints.Endpoints;
 
 /// <summary>
 /// BFF logout endpoint. Clears the session and redirects to the OIDC end_session_endpoint.
+/// Registered per-frontend under <c>/{pathPrefix}/bff/logout</c>.
 /// </summary>
 internal static partial class BffLogoutEndpoints
 {
-    internal static RouteGroupBuilder MapLogoutEndpoints(this RouteGroupBuilder group)
+    internal static RouteGroupBuilder MapLogoutEndpoints(this RouteGroupBuilder group, BffFrontendOptions frontend)
     {
-        group.MapGet("/logout", HandleLogoutAsync)
-            .WithName("BffLogout")
+        group.MapGet("/logout", (HttpContext httpContext,
+                [FromServices] IOptions<GranitBffOptions> options,
+                [FromServices] IBffTokenStore tokenStore,
+                [FromServices] BffMetrics metrics,
+                [FromServices] ILoggerFactory loggerFactory,
+                CancellationToken cancellationToken) =>
+                HandleLogoutAsync(httpContext, frontend, options, tokenStore, metrics, loggerFactory, cancellationToken))
+            .WithName($"BffLogout_{frontend.Name}")
             .WithSummary("Logs out the user, clears the session, and redirects to the OIDC end_session_endpoint.")
             .WithDescription(
                 "Removes the token set from the distributed cache, deletes the session cookie, "
@@ -31,12 +38,14 @@ internal static partial class BffLogoutEndpoints
         return group;
     }
 
+#pragma warning disable GRAPI003 // Private handler — not a direct endpoint delegate; services are resolved via lambda
     private static async Task<RedirectHttpResult> HandleLogoutAsync(
         HttpContext httpContext,
-        [FromServices] IOptions<GranitBffOptions> options,
-        [FromServices] IBffTokenStore tokenStore,
-        [FromServices] BffMetrics metrics,
-        [FromServices] ILoggerFactory loggerFactory,
+        BffFrontendOptions frontend,
+        IOptions<GranitBffOptions> options,
+        IBffTokenStore tokenStore,
+        BffMetrics metrics,
+        ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
         ILogger logger = loggerFactory.CreateLogger("Granit.Bff.Endpoints.BffLogoutEndpoints");
@@ -44,25 +53,25 @@ internal static partial class BffLogoutEndpoints
         using IDisposable? activityScope = activity;
 
         GranitBffOptions bffOptions = options.Value;
-        string? sessionId = httpContext.Request.Cookies[bffOptions.SessionCookieName];
+        string? sessionId = httpContext.Request.Cookies[frontend.SessionCookieName];
 
         string? idTokenHint = null;
 
         if (!string.IsNullOrEmpty(sessionId))
         {
 #pragma warning disable GRSEC003 // Variable handles tokens — server-side only
-            BffTokenSet? tokens = await tokenStore.GetAsync(sessionId, cancellationToken)
+            BffTokenSet? tokens = await tokenStore.GetAsync(frontend.Name, sessionId, cancellationToken)
                 .ConfigureAwait(false);
             idTokenHint = tokens?.IdToken;
 #pragma warning restore GRSEC003
 
-            await tokenStore.RemoveAsync(sessionId, cancellationToken).ConfigureAwait(false);
+            await tokenStore.RemoveAsync(frontend.Name, sessionId, cancellationToken).ConfigureAwait(false);
             metrics.RecordLogout(null);
-            LogLogout(logger, sessionId);
+            LogLogout(logger, sessionId, frontend.Name);
         }
 
-        // Clear session cookie
-        httpContext.Response.Cookies.Delete(bffOptions.SessionCookieName, new CookieOptions
+        // Clear frontend-specific session cookie
+        httpContext.Response.Cookies.Delete(frontend.SessionCookieName, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
@@ -71,10 +80,12 @@ internal static partial class BffLogoutEndpoints
         });
 
         // Build end_session URL
-        string postLogoutRedirectUri = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{bffOptions.PostLogoutRedirectPath}";
+#pragma warning disable GRSEC003 // Building OIDC end_session URL with client credentials
+        string postLogoutRedirectUri = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{frontend.EffectivePostLogoutRedirectPath}";
         string endSessionUrl = $"{bffOptions.Authority.ToString().TrimEnd('/')}/connect/endsession"
             + $"?post_logout_redirect_uri={Uri.EscapeDataString(postLogoutRedirectUri)}"
-            + $"&client_id={Uri.EscapeDataString(bffOptions.ClientId)}";
+            + $"&client_id={Uri.EscapeDataString(frontend.ClientId)}";
+#pragma warning restore GRSEC003
 
         if (!string.IsNullOrEmpty(idTokenHint))
         {
@@ -85,9 +96,10 @@ internal static partial class BffLogoutEndpoints
 
         return TypedResults.Redirect(endSessionUrl);
     }
+#pragma warning restore GRAPI003
 
     // ──── Source-generated log messages ────
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "BFF logout: session {SessionId} cleared")]
-    private static partial void LogLogout(ILogger logger, string sessionId);
+    [LoggerMessage(Level = LogLevel.Information, Message = "BFF logout: session {SessionId} cleared for frontend {FrontendName}")]
+    private static partial void LogLogout(ILogger logger, string sessionId, string frontendName);
 }

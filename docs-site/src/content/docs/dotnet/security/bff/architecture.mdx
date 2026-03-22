@@ -1,0 +1,326 @@
+---
+title: "Architecture"
+description: Detailed architecture of the BFF security proxy — component responsibilities, login flow with PKCE, API call proxying, automatic token refresh, and RP-Initiated Logout sequence.
+sidebar:
+  order: 2
+  label: Architecture
+---
+
+import { Tabs, TabItem, Badge, Aside } from "@astrojs/starlight/components";
+
+## High-level architecture
+
+The BFF sits between the SPA and all backend services. It handles all OIDC
+interactions and proxies API calls with Bearer token injection. The SPA never
+communicates directly with the identity provider or backend APIs.
+
+```mermaid
+graph LR
+    SPA["SPA<br/>(React / Vue / Angular)"]
+    BFF["BFF Server<br/>(Granit.Bff + YARP)"]
+    IDP["Identity Provider<br/>(OpenIddict / Keycloak)"]
+    API1["API Service 1"]
+    API2["API Service 2"]
+    REDIS["Redis<br/>(Session Store)"]
+
+    SPA -->|"Cookie<br/>(__Host-granit-bff)"| BFF
+    BFF -->|"OIDC<br/>(Authorization Code + PKCE)"| IDP
+    BFF -->|"Bearer token<br/>(injected by YARP)"| API1
+    BFF -->|"Bearer token<br/>(injected by YARP)"| API2
+    BFF -->|"Store/retrieve<br/>tokens"| REDIS
+
+    style BFF fill:#4a9eff,color:#fff,stroke-width:2px
+    style REDIS fill:#dc382d,color:#fff
+    style IDP fill:#f5a623,color:#fff
+```
+
+## Component responsibilities
+
+| Component | Responsibility | Package |
+|-----------|---------------|---------|
+| `GranitBffModule` | Registers `IBffTokenStore`, `IBffCsrfTokenGenerator`, `BffMetrics`, `BffActivitySource` | `Granit.Bff` |
+| `GranitBffOptions` | Central configuration: authority, client credentials, session duration, cookie name | `Granit.Bff` |
+| `IBffTokenStore` | Store, retrieve, and remove `BffTokenSet` by session ID in `IDistributedCache` | `Granit.Bff` |
+| `IBffCsrfTokenGenerator` | Generate and validate HMAC-SHA256 CSRF tokens bound to sessions | `Granit.Bff` |
+| `BffLoginEndpoints` | OIDC authorization code flow with PKCE: `/bff/login` + `/bff/callback` | `Granit.Bff.Endpoints` |
+| `BffLogoutEndpoints` | Session cleanup + RP-Initiated Logout: `/bff/logout` | `Granit.Bff.Endpoints` |
+| `BffUserEndpoints` | Filtered user claims for the SPA: `/bff/user` | `Granit.Bff.Endpoints` |
+| `BffCsrfEndpoints` | CSRF token generation: `/bff/csrf-token` | `Granit.Bff.Endpoints` |
+| `BffSecurityHeadersMiddleware` | `X-Frame-Options: DENY` + CSP `frame-ancestors 'none'` on login/callback | `Granit.Bff.Endpoints` |
+| `BffTokenInjectionTransform` | YARP transform: load tokens, silent refresh, inject `Authorization: Bearer` | `Granit.Bff.Yarp` |
+| `BffCsrfValidationTransform` | YARP transform: validate `X-CSRF-Token` on POST/PUT/DELETE/PATCH | `Granit.Bff.Yarp` |
+
+## Login flow
+
+The login flow implements the full OAuth 2.0 Authorization Code flow with PKCE.
+The BFF acts as a confidential client — it has a `client_secret` that is never
+exposed to the browser.
+
+```mermaid
+sequenceDiagram
+    participant User as User (Browser)
+    participant SPA as SPA
+    participant BFF as BFF Server
+    participant Cache as Redis Cache
+    participant IdP as Identity Provider
+
+    User->>SPA: Click "Login"
+    SPA->>BFF: GET /bff/login
+
+    Note over BFF: Generate PKCE pair:<br/>code_verifier (64 bytes, base64url)<br/>code_challenge = SHA256(code_verifier)
+
+    Note over BFF: Generate state parameter<br/>(32 random bytes, base64)
+
+    BFF->>Cache: Store {code_verifier, state}<br/>key: bff:pkce:{state}<br/>TTL: 10 minutes
+
+    BFF->>User: 302 Redirect to IdP<br/>/connect/authorize?<br/>client_id=...&<br/>response_type=code&<br/>code_challenge=...&<br/>code_challenge_method=S256&<br/>state=...&<br/>scope=openid profile email roles offline_access
+
+    User->>IdP: Follow redirect
+    IdP->>User: Login page
+    User->>IdP: Enter credentials
+    IdP->>User: Consent (if required)
+
+    IdP->>BFF: 302 Redirect to /bff/callback?code=...&state=...
+
+    BFF->>Cache: Get + remove bff:pkce:{state}
+    Cache->>BFF: {code_verifier, state}
+
+    BFF->>IdP: POST /connect/token<br/>grant_type=authorization_code&<br/>code=...&<br/>client_id=...&<br/>client_secret=...&<br/>code_verifier=...&<br/>redirect_uri=.../bff/callback
+
+    IdP->>BFF: {access_token, refresh_token, id_token, expires_in}
+
+    Note over BFF: Generate session ID<br/>(Guid, no dashes)
+
+    BFF->>Cache: Store BffTokenSet<br/>key: bff:session:{sessionId}<br/>TTL: SessionDuration (8h default)
+
+    BFF->>User: 302 Redirect to PostLoginRedirectPath<br/>Set-Cookie: __Host-granit-bff={sessionId};<br/>HttpOnly; Secure; SameSite=Strict; Path=/
+
+    Note over User: Cookie stored automatically<br/>by the browser. Invisible<br/>to JavaScript.
+
+    BFF->>BFF: RecordLogin metric
+```
+
+### PKCE details
+
+PKCE (Proof Key for Code Exchange) prevents authorization code interception attacks.
+Even though the BFF is a confidential client, PKCE provides defense-in-depth:
+
+| Parameter | Value |
+|-----------|-------|
+| `code_verifier` | 64 random bytes, base64url-encoded |
+| `code_challenge` | `BASE64URL(SHA256(code_verifier))` |
+| `code_challenge_method` | `S256` |
+| Storage | Distributed cache, 10-minute TTL |
+
+The `code_verifier` is generated server-side and never sent to the browser.
+After the callback, it is consumed (get + delete) to prevent replay attacks.
+
+## API call flow
+
+When the SPA makes an API call, the browser automatically attaches the session
+cookie. The YARP reverse proxy intercepts the request, loads the tokens from
+Redis, and injects the `Authorization: Bearer` header before forwarding.
+
+```mermaid
+sequenceDiagram
+    participant SPA as SPA
+    participant BFF as BFF Server (YARP)
+    participant Cache as Redis Cache
+    participant API as Backend API
+
+    SPA->>BFF: GET /api/products<br/>Cookie: __Host-granit-bff={sessionId}<br/>X-CSRF-Token: {csrfToken} (if mutating)
+
+    Note over BFF: BffCsrfValidationTransform<br/>(only for POST/PUT/DELETE/PATCH)
+
+    Note over BFF: BffTokenInjectionTransform
+
+    BFF->>BFF: Read session cookie
+    BFF->>Cache: Get bff:session:{sessionId}
+    Cache->>BFF: BffTokenSet {accessToken, refreshToken, idToken, expiresAt}
+
+    alt Token valid (not expiring soon)
+        BFF->>API: GET /api/products<br/>Authorization: Bearer {accessToken}
+        API->>BFF: 200 OK {data}
+        BFF->>SPA: 200 OK {data}
+    else Token expiring within grace period
+        Note over BFF: See Token Refresh Flow
+    end
+
+    BFF->>BFF: RecordProxyRequest metric
+```
+
+### Route metadata
+
+Not all YARP routes require authentication. The `Granit.Bff.RequireAuth` metadata
+key controls which routes trigger token injection and CSRF validation:
+
+```json
+{
+  "Routes": {
+    "api-route": {
+      "ClusterId": "backend",
+      "Match": { "Path": "/api/{**catch-all}" },
+      "Metadata": {
+        "Granit.Bff.RequireAuth": "true"
+      }
+    },
+    "public-route": {
+      "ClusterId": "backend",
+      "Match": { "Path": "/public/{**catch-all}" }
+    }
+  }
+}
+```
+
+Routes without the metadata key (or with `"false"`) pass through without
+authentication — useful for public endpoints, health checks, or OpenAPI specs.
+
+## Token refresh flow
+
+When the access token is about to expire (within the configurable `RefreshGracePeriod`,
+default 1 minute), the YARP token injection transform automatically performs a
+silent refresh. This is invisible to both the SPA and the end user.
+
+```mermaid
+sequenceDiagram
+    participant SPA as SPA
+    participant BFF as BFF Server (YARP)
+    participant Cache as Redis Cache
+    participant IdP as Identity Provider
+    participant API as Backend API
+
+    SPA->>BFF: GET /api/orders<br/>Cookie: __Host-granit-bff={sessionId}
+
+    BFF->>Cache: Get bff:session:{sessionId}
+    Cache->>BFF: BffTokenSet {expiresAt: 11:59:30}
+
+    Note over BFF: Current time: 11:59:00<br/>Grace period: 1 minute<br/>Token expires in 30s → REFRESH
+
+    BFF->>IdP: POST /connect/token<br/>grant_type=refresh_token&<br/>refresh_token=...&<br/>client_id=...&<br/>client_secret=...
+
+    IdP->>BFF: {access_token (new), refresh_token (new), expires_in: 3600}
+
+    BFF->>Cache: Update bff:session:{sessionId}<br/>with new BffTokenSet
+
+    BFF->>BFF: RecordTokenRefresh metric
+
+    BFF->>API: GET /api/orders<br/>Authorization: Bearer {new_access_token}
+    API->>BFF: 200 OK {data}
+
+    BFF->>SPA: 200 OK {data}<br/>X-Bff-Session-Refreshed: true
+```
+
+### Refresh failure handling
+
+If the refresh token is expired or revoked by the identity provider:
+
+```mermaid
+stateDiagram-v2
+    [*] --> CheckExpiry: Proxy request received
+    CheckExpiry --> InjectToken: Token still valid
+    CheckExpiry --> TryRefresh: Token expiring soon
+    TryRefresh --> InjectToken: Refresh succeeded
+    TryRefresh --> Return401: Refresh failed
+    InjectToken --> ForwardRequest: Bearer header set
+    ForwardRequest --> [*]: Response returned
+    Return401 --> [*]: SPA redirects to /bff/login
+```
+
+When refresh fails, the BFF returns `401 Unauthorized`. The SPA should detect this
+and redirect the user to `/bff/login` to start a new authentication flow.
+
+<Aside type="tip" title="X-Bff-Session-Refreshed header">
+When a silent refresh succeeds, the BFF adds the `X-Bff-Session-Refreshed: true`
+response header. The SPA can use this to update the session expiry displayed in the
+UI without making a separate `/bff/user` call.
+</Aside>
+
+## Logout flow
+
+Logout involves three steps: clearing the server-side session, deleting the browser
+cookie, and notifying the identity provider via RP-Initiated Logout.
+
+```mermaid
+sequenceDiagram
+    participant SPA as SPA
+    participant BFF as BFF Server
+    participant Cache as Redis Cache
+    participant IdP as Identity Provider
+
+    SPA->>BFF: GET /bff/logout
+
+    BFF->>BFF: Read session cookie
+
+    alt Session exists
+        BFF->>Cache: Get bff:session:{sessionId}
+        Cache->>BFF: BffTokenSet (extract id_token)
+        BFF->>Cache: Remove bff:session:{sessionId}
+        BFF->>BFF: RecordLogout metric
+    end
+
+    BFF->>SPA: Delete __Host-granit-bff cookie<br/>(Set-Cookie with MaxAge=0)
+
+    BFF->>SPA: 302 Redirect to IdP<br/>/connect/endsession?<br/>post_logout_redirect_uri=...&<br/>client_id=...&<br/>id_token_hint=... (if available)
+
+    SPA->>IdP: Follow redirect
+    IdP->>IdP: End session
+    IdP->>SPA: 302 Redirect to post_logout_redirect_uri
+
+    Note over SPA: User is logged out<br/>everywhere
+```
+
+### Why `id_token_hint`?
+
+The `id_token_hint` parameter tells the identity provider which session to
+terminate without prompting the user for confirmation. If the ID token is
+available in the session store, the BFF includes it automatically. If the
+session has already expired, logout still works — the user is simply shown
+the IdP's logout confirmation page.
+
+## Where tokens live
+
+A clear picture of where each piece of sensitive data resides:
+
+| Data | Location | Format | Lifetime | Accessible to JS |
+|------|----------|--------|----------|------------------|
+| **Access token** | Redis (`bff:session:{id}`) | JSON (serialized `BffTokenSet`) | `SessionDuration` (default 8h) | No |
+| **Refresh token** | Redis (`bff:session:{id}`) | JSON (serialized `BffTokenSet`) | `SessionDuration` (default 8h) | No |
+| **ID token** | Redis (`bff:session:{id}`) | JSON (serialized `BffTokenSet`) | `SessionDuration` (default 8h) | No |
+| **Session ID** | Browser cookie (`__Host-granit-bff`) | GUID (32 hex chars) | `SessionDuration` | No (`HttpOnly`) |
+| **CSRF token** | SPA memory (from `/bff/csrf-token`) | `{timestamp}:{hmac-hex}` | 24h sliding window | Yes (intentional) |
+| **PKCE code_verifier** | Redis (`bff:pkce:{state}`) | JSON | 10 minutes | No |
+
+<Aside type="caution" title="Encryption at rest">
+The default `DistributedCacheBffTokenStore` uses `IDistributedCache` directly.
+For production deployments, enable Redis TLS and consider integrating
+[`Granit.Caching`](/dotnet/infrastructure/caching/) with `ICacheValueEncryptor`
+(AES-256-CBC) for encryption at rest. See the
+[Security](/dotnet/security/bff/security/) page for details.
+</Aside>
+
+## Request pipeline
+
+The middleware and transform order is critical for correct behavior:
+
+```mermaid
+flowchart TD
+    A[Incoming Request] --> B{Path starts with /bff/?}
+    B -->|Yes| C[BffSecurityHeadersMiddleware<br/>X-Frame-Options + CSP on login/callback]
+    C --> D[BFF Endpoints<br/>login / callback / logout / user / csrf-token]
+    B -->|No| E{YARP route match?}
+    E -->|Yes| F[BffCsrfValidationTransform<br/>Validate X-CSRF-Token on mutating methods]
+    F --> G{CSRF valid?}
+    G -->|No| H[403 Forbidden]
+    G -->|Yes| I[BffTokenInjectionTransform<br/>Load session → refresh if needed → inject Bearer]
+    I --> J{Session valid?}
+    J -->|No| K[401 Unauthorized]
+    J -->|Yes| L[Forward to upstream API]
+    L --> M[Response to SPA]
+    E -->|No| N[Static files / SPA fallback]
+```
+
+## Next steps
+
+- **[Getting Started](/dotnet/security/bff/getting-started/)** — set up a working BFF in 15 minutes
+- **[Security](/dotnet/security/bff/security/)** — deep dive into cookie hardening, CSRF, and session management
+- **[YARP Proxy](/dotnet/security/bff/yarp-proxy/)** — route configuration and multi-service proxying

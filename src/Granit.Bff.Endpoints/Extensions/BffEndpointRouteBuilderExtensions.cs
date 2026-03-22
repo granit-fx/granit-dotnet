@@ -1,7 +1,12 @@
 using Granit.Bff.Endpoints.Endpoints;
+using Granit.Bff.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Bff.Endpoints.Extensions;
 
@@ -11,24 +16,107 @@ namespace Granit.Bff.Endpoints.Extensions;
 public static class BffEndpointRouteBuilderExtensions
 {
     /// <summary>
-    /// Maps BFF authentication endpoints under <c>/bff</c>: login, callback, logout,
-    /// user claims, and CSRF token generation.
+    /// Maps BFF authentication endpoints for each configured frontend.
+    /// Each frontend gets its own route group under <c>/{pathPrefix}/bff</c> with
+    /// login, callback, logout, user claims, and CSRF token generation endpoints.
+    /// Also registers static file serving and SPA fallback per frontend.
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
-    /// <returns>The route group builder for further chaining.</returns>
-    public static RouteGroupBuilder MapGranitBffEndpoints(this IEndpointRouteBuilder endpoints)
+    /// <returns>The endpoint route builder for further chaining.</returns>
+    public static IEndpointRouteBuilder MapGranitBffEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        RouteGroupBuilder group = endpoints
-            .MapGroup("/bff")
-            .WithTags("BFF");
+        GranitBffOptions options = endpoints.ServiceProvider
+            .GetRequiredService<IOptions<GranitBffOptions>>().Value;
 
-        group.MapLoginEndpoints();
-        group.MapLogoutEndpoints();
-        group.MapUserEndpoints();
-        group.MapCsrfEndpoints();
+        foreach (BffFrontendOptions frontend in options.Frontends)
+        {
+            MapFrontendEndpoints(endpoints, frontend);
+            MapFrontendStaticFiles(endpoints, frontend);
+        }
 
-        return group;
+        return endpoints;
     }
+
+    private static void MapFrontendEndpoints(IEndpointRouteBuilder endpoints, BffFrontendOptions frontend)
+    {
+        string groupPrefix = string.IsNullOrEmpty(frontend.PathPrefix)
+            ? "/bff"
+            : $"{frontend.PathPrefix}/bff";
+
+        RouteGroupBuilder group = endpoints
+            .MapGroup(groupPrefix)
+            .WithTags($"BFF ({frontend.Name})");
+
+        group.MapLoginEndpoints(frontend);
+        group.MapLogoutEndpoints(frontend);
+        group.MapUserEndpoints(frontend);
+        group.MapCsrfEndpoints(frontend);
+    }
+
+    private static void MapFrontendStaticFiles(IEndpointRouteBuilder endpoints, BffFrontendOptions frontend)
+    {
+        if (string.IsNullOrEmpty(frontend.StaticFilesPath))
+        {
+            return;
+        }
+
+        string requestPath = string.IsNullOrEmpty(frontend.PathPrefix) ? "" : frontend.PathPrefix;
+
+        if (!Directory.Exists(frontend.StaticFilesPath))
+        {
+            return;
+        }
+
+        PhysicalFileProvider fileProvider = new(Path.GetFullPath(frontend.StaticFilesPath));
+
+        // Serve static files for this frontend
+        endpoints.MapGet($"{requestPath}/{{**path}}", IResult (HttpContext context) =>
+        {
+            string path = context.Request.RouteValues["path"]?.ToString() ?? "index.html";
+
+            // Skip BFF API routes — they are handled by the endpoint group
+            if (path.StartsWith("bff/", StringComparison.OrdinalIgnoreCase))
+            {
+                return TypedResults.NotFound();
+            }
+
+            IFileInfo fileInfo = fileProvider.GetFileInfo(path);
+            if (fileInfo.Exists && !fileInfo.IsDirectory)
+            {
+                return TypedResults.Stream(fileInfo.CreateReadStream(), GetContentType(path));
+            }
+
+            // SPA fallback: serve index.html for client-side routing
+            IFileInfo indexFile = fileProvider.GetFileInfo("index.html");
+            if (indexFile.Exists)
+            {
+                return TypedResults.Stream(indexFile.CreateReadStream(), "text/html");
+            }
+
+            return TypedResults.NotFound();
+        })
+        .WithName($"BffStaticFiles_{frontend.Name}")
+        .ExcludeFromDescription();
+    }
+
+    private static string GetContentType(string path) =>
+        Path.GetExtension(path).ToLowerInvariant() switch
+        {
+            ".html" => "text/html",
+            ".css" => "text/css",
+            ".js" => "application/javascript",
+            ".json" => "application/json",
+            ".png" => "image/png",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".gif" => "image/gif",
+            ".svg" => "image/svg+xml",
+            ".ico" => "image/x-icon",
+            ".woff" => "font/woff",
+            ".woff2" => "font/woff2",
+            ".ttf" => "font/ttf",
+            ".map" => "application/json",
+            _ => "application/octet-stream",
+        };
 }
 
 /// <summary>
@@ -42,8 +130,9 @@ public sealed class BffSecurityHeadersMiddleware(RequestDelegate next)
     {
         string path = context.Request.Path.Value ?? string.Empty;
 
-        if (path.StartsWith("/bff/login", StringComparison.OrdinalIgnoreCase)
-            || path.StartsWith("/bff/callback", StringComparison.OrdinalIgnoreCase))
+        // Match any frontend's /bff/login or /bff/callback path
+        if (path.Contains("/bff/login", StringComparison.OrdinalIgnoreCase)
+            || path.Contains("/bff/callback", StringComparison.OrdinalIgnoreCase))
         {
             context.Response.Headers["X-Frame-Options"] = "DENY";
             context.Response.Headers["Content-Security-Policy"] = "frame-ancestors 'none'";

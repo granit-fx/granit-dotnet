@@ -7,19 +7,22 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Options;
 
 namespace Granit.Bff.Endpoints.Endpoints;
 
 /// <summary>
 /// BFF user endpoint. Returns filtered claims from the ID token for the SPA.
+/// Registered per-frontend under <c>/{pathPrefix}/bff/user</c>.
 /// </summary>
 internal static class BffUserEndpoints
 {
-    internal static RouteGroupBuilder MapUserEndpoints(this RouteGroupBuilder group)
+    internal static RouteGroupBuilder MapUserEndpoints(this RouteGroupBuilder group, BffFrontendOptions frontend)
     {
-        group.MapGet("/user", HandleGetUserAsync)
-            .WithName("BffGetUser")
+        group.MapGet("/user", (HttpContext httpContext,
+                [FromServices] IBffTokenStore tokenStore,
+                CancellationToken cancellationToken) =>
+                HandleGetUserAsync(httpContext, frontend, tokenStore, cancellationToken))
+            .WithName($"BffGetUser_{frontend.Name}")
             .WithSummary("Returns the current user's claims for the SPA.")
             .WithDescription(
                 "Reads the session cookie, loads the ID token from the token store, decodes "
@@ -32,17 +35,17 @@ internal static class BffUserEndpoints
         return group;
     }
 
+#pragma warning disable GRAPI003 // Private handler — not a direct endpoint delegate; services are resolved via lambda
     private static async Task<Ok<object>> HandleGetUserAsync(
         HttpContext httpContext,
-        [FromServices] IOptions<GranitBffOptions> options,
-        [FromServices] IBffTokenStore tokenStore,
+        BffFrontendOptions frontend,
+        IBffTokenStore tokenStore,
         CancellationToken cancellationToken)
     {
         Activity? activity = BffActivitySource.Source.StartActivity(BffActivitySource.User);
         using IDisposable? activityScope = activity;
 
-        GranitBffOptions bffOptions = options.Value;
-        string? sessionId = httpContext.Request.Cookies[bffOptions.SessionCookieName];
+        string? sessionId = httpContext.Request.Cookies[frontend.SessionCookieName];
 
         if (string.IsNullOrEmpty(sessionId))
         {
@@ -50,7 +53,7 @@ internal static class BffUserEndpoints
         }
 
 #pragma warning disable GRSEC003 // Reading tokens — server-side only, never returned
-        BffTokenSet? tokens = await tokenStore.GetAsync(sessionId, cancellationToken)
+        BffTokenSet? tokens = await tokenStore.GetAsync(frontend.Name, sessionId, cancellationToken)
             .ConfigureAwait(false);
 #pragma warning restore GRSEC003
 
@@ -76,6 +79,7 @@ internal static class BffUserEndpoints
 
         return TypedResults.Ok<object>(response);
     }
+#pragma warning restore GRAPI003
 
     /// <summary>
     /// Decodes the payload of a JWT without validation (the token was already validated

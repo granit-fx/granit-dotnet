@@ -16,6 +16,7 @@ namespace Granit.Bff.Yarp.Internal;
 /// <see cref="IBffTokenStore"/>, and injects an <c>Authorization: Bearer</c> header.
 /// Routes with <c>Granit.Bff.RequireAuth = true</c> metadata require a valid session;
 /// unauthenticated requests receive a 401 response.
+/// Uses <c>Granit.Bff.Frontend</c> metadata to determine which frontend's token to inject.
 /// Includes automatic silent refresh when the token is about to expire.
 /// </summary>
 #pragma warning disable GRSEC003 // Class handles token injection — server-side only
@@ -28,6 +29,7 @@ internal sealed partial class BffTokenInjectionTransform(
     ILogger<BffTokenInjectionTransform> logger) : RequestTransform
 {
     private const string RequireAuthMetadataKey = "Granit.Bff.RequireAuth";
+    private const string FrontendMetadataKey = "Granit.Bff.Frontend";
 
     public override async ValueTask ApplyAsync(RequestTransformContext transformContext)
     {
@@ -35,11 +37,16 @@ internal sealed partial class BffTokenInjectionTransform(
 
         // Check if route requires BFF auth via YARP feature
         bool requiresAuth = false;
+        string? frontendName = null;
         IReverseProxyFeature? proxyFeature = httpContext.Features.Get<IReverseProxyFeature>();
-        if (proxyFeature?.Route.Config.Metadata is { } metadata
-            && metadata.TryGetValue(RequireAuthMetadataKey, out string? requireAuthValue))
+        if (proxyFeature?.Route.Config.Metadata is { } metadata)
         {
-            requiresAuth = string.Equals(requireAuthValue, "true", StringComparison.OrdinalIgnoreCase);
+            if (metadata.TryGetValue(RequireAuthMetadataKey, out string? requireAuthValue))
+            {
+                requiresAuth = string.Equals(requireAuthValue, "true", StringComparison.OrdinalIgnoreCase);
+            }
+
+            metadata.TryGetValue(FrontendMetadataKey, out frontendName);
         }
 
         if (!requiresAuth)
@@ -51,22 +58,33 @@ internal sealed partial class BffTokenInjectionTransform(
         metrics.RecordProxyRequest(null);
 
         GranitBffOptions bffOptions = options.Value;
-        string? sessionId = httpContext.Request.Cookies[bffOptions.SessionCookieName];
+
+        // Resolve frontend options from metadata
+        BffFrontendOptions? frontend = ResolveFrontend(bffOptions, frontendName);
+        if (frontend is null)
+        {
+            LogUnknownFrontend(logger, frontendName ?? "(null)");
+            metrics.RecordProxyError(null, "unknown_frontend");
+            httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return;
+        }
+
+        string? sessionId = httpContext.Request.Cookies[frontend.SessionCookieName];
 
         if (string.IsNullOrEmpty(sessionId))
         {
-            LogMissingSession(logger);
+            LogMissingSession(logger, frontend.Name);
             metrics.RecordProxyError(null, "missing_session");
             httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;
         }
 
-        BffTokenSet? tokens = await tokenStore.GetAsync(sessionId, httpContext.RequestAborted)
+        BffTokenSet? tokens = await tokenStore.GetAsync(frontend.Name, sessionId, httpContext.RequestAborted)
             .ConfigureAwait(false);
 
         if (tokens is null)
         {
-            LogExpiredSession(logger, sessionId);
+            LogExpiredSession(logger, sessionId, frontend.Name);
             metrics.RecordProxyError(null, "expired_session");
             httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;
@@ -77,24 +95,24 @@ internal sealed partial class BffTokenInjectionTransform(
             && tokens.ExpiresAt - clock.Now < bffOptions.RefreshGracePeriod)
         {
             BffTokenSet? refreshed = await TryRefreshTokensAsync(
-                bffOptions, tokens.RefreshToken, httpContext.RequestAborted)
+                bffOptions, frontend, tokens.RefreshToken, httpContext.RequestAborted)
                 .ConfigureAwait(false);
 
             if (refreshed is not null)
             {
                 tokens = refreshed;
-                await tokenStore.StoreAsync(sessionId, tokens, httpContext.RequestAborted)
+                await tokenStore.StoreAsync(frontend.Name, sessionId, tokens, httpContext.RequestAborted)
                     .ConfigureAwait(false);
 
                 metrics.RecordTokenRefresh(null);
-                LogTokenRefreshed(logger, sessionId);
+                LogTokenRefreshed(logger, sessionId, frontend.Name);
 
                 // Signal to the SPA that the session was refreshed
                 httpContext.Response.Headers["X-Bff-Session-Refreshed"] = "true";
             }
             else
             {
-                LogTokenRefreshFailed(logger, sessionId);
+                LogTokenRefreshFailed(logger, sessionId, frontend.Name);
                 metrics.RecordProxyError(null, "refresh_failed");
                 httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
@@ -106,8 +124,21 @@ internal sealed partial class BffTokenInjectionTransform(
             new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
     }
 
+    private static BffFrontendOptions? ResolveFrontend(GranitBffOptions options, string? frontendName)
+    {
+        if (string.IsNullOrEmpty(frontendName))
+        {
+            // Fall back to the first frontend if only one is configured
+            return options.Frontends.Count == 1 ? options.Frontends[0] : null;
+        }
+
+        return options.Frontends.Find(f =>
+            string.Equals(f.Name, frontendName, StringComparison.OrdinalIgnoreCase));
+    }
+
     private async Task<BffTokenSet?> TryRefreshTokensAsync(
         GranitBffOptions bffOptions,
+        BffFrontendOptions frontend,
         string refreshToken,
         CancellationToken cancellationToken)
     {
@@ -120,8 +151,8 @@ internal sealed partial class BffTokenInjectionTransform(
             {
                 ["grant_type"] = "refresh_token",
                 ["refresh_token"] = refreshToken,
-                ["client_id"] = bffOptions.ClientId,
-                ["client_secret"] = bffOptions.ClientSecret,
+                ["client_id"] = frontend.ClientId,
+                ["client_secret"] = frontend.ClientSecret,
             };
 
             using FormUrlEncodedContent content = new(parameters);
@@ -162,16 +193,19 @@ internal sealed partial class BffTokenInjectionTransform(
 
     // ──── Source-generated log messages ────
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF proxy: no session cookie present")]
-    private static partial void LogMissingSession(ILogger logger);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF proxy: unknown frontend {FrontendName} in YARP route metadata")]
+    private static partial void LogUnknownFrontend(ILogger logger, string frontendName);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF proxy: session {SessionId} expired or not found")]
-    private static partial void LogExpiredSession(ILogger logger, string sessionId);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF proxy: no session cookie present for frontend {FrontendName}")]
+    private static partial void LogMissingSession(ILogger logger, string frontendName);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "BFF proxy: token refreshed for session {SessionId}")]
-    private static partial void LogTokenRefreshed(ILogger logger, string sessionId);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF proxy: session {SessionId} expired or not found for frontend {FrontendName}")]
+    private static partial void LogExpiredSession(ILogger logger, string sessionId, string frontendName);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF proxy: token refresh failed for session {SessionId}")]
-    private static partial void LogTokenRefreshFailed(ILogger logger, string sessionId);
+    [LoggerMessage(Level = LogLevel.Information, Message = "BFF proxy: token refreshed for session {SessionId} on frontend {FrontendName}")]
+    private static partial void LogTokenRefreshed(ILogger logger, string sessionId, string frontendName);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF proxy: token refresh failed for session {SessionId} on frontend {FrontendName}")]
+    private static partial void LogTokenRefreshFailed(ILogger logger, string sessionId, string frontendName);
 }
 #pragma warning restore GRSEC003

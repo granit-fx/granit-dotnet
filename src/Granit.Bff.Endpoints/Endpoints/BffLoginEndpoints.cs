@@ -18,16 +18,22 @@ namespace Granit.Bff.Endpoints.Endpoints;
 
 /// <summary>
 /// BFF login and callback endpoints. Implements OIDC authorization code flow with PKCE.
+/// Registered per-frontend under <c>/{pathPrefix}/bff/login</c>.
 /// </summary>
 internal static partial class BffLoginEndpoints
 {
     private const string PkceKeyPrefix = "bff:pkce:";
     private const int CodeVerifierLength = 64;
 
-    internal static RouteGroupBuilder MapLoginEndpoints(this RouteGroupBuilder group)
+    internal static RouteGroupBuilder MapLoginEndpoints(this RouteGroupBuilder group, BffFrontendOptions frontend)
     {
-        group.MapGet("/login", HandleLoginAsync)
-            .WithName("BffLogin")
+        group.MapGet("/login", (HttpContext httpContext,
+                [FromServices] IOptions<GranitBffOptions> options,
+                [FromServices] IDistributedCache cache,
+                [FromServices] IClock clock,
+                [FromServices] ILoggerFactory loggerFactory) =>
+                HandleLoginAsync(httpContext, frontend, options, cache, clock, loggerFactory))
+            .WithName($"BffLogin_{frontend.Name}")
             .WithSummary("Initiates OIDC login with PKCE and redirects to the authority.")
             .WithDescription(
                 "Generates a PKCE code verifier and challenge, stores the verifier in the "
@@ -36,8 +42,21 @@ internal static partial class BffLoginEndpoints
             .Produces(StatusCodes.Status302Found)
             .ExcludeFromDescription();
 
-        group.MapGet("/callback", HandleCallbackAsync)
-            .WithName("BffCallback")
+        group.MapGet("/callback", (HttpContext httpContext,
+                [FromQuery] string? code,
+                [FromQuery] string? state,
+                [FromQuery] string? error,
+                [FromServices] IOptions<GranitBffOptions> options,
+                [FromServices] IDistributedCache cache,
+                [FromServices] IBffTokenStore tokenStore,
+                [FromServices] BffMetrics metrics,
+                [FromServices] IClock clock,
+                [FromServices] IHttpClientFactory httpClientFactory,
+                [FromServices] ILoggerFactory loggerFactory,
+                CancellationToken cancellationToken) =>
+                HandleCallbackAsync(httpContext, frontend, code, state, error, options, cache,
+                    tokenStore, metrics, clock, httpClientFactory, loggerFactory, cancellationToken))
+            .WithName($"BffCallback_{frontend.Name}")
             .WithSummary("Handles the OIDC callback, exchanges the code for tokens, and sets the session cookie.")
             .WithDescription(
                 "Receives the authorization code from the OIDC provider, exchanges it for tokens "
@@ -51,12 +70,14 @@ internal static partial class BffLoginEndpoints
         return group;
     }
 
+#pragma warning disable GRAPI003 // Private handler — not a direct endpoint delegate; services are resolved via lambda
     private static async Task<Results<RedirectHttpResult, ProblemHttpResult>> HandleLoginAsync(
         HttpContext httpContext,
-        [FromServices] IOptions<GranitBffOptions> options,
-        [FromServices] IDistributedCache cache,
-        [FromServices] IClock clock,
-        [FromServices] ILoggerFactory loggerFactory)
+        BffFrontendOptions frontend,
+        IOptions<GranitBffOptions> options,
+        IDistributedCache cache,
+        IClock clock,
+        ILoggerFactory loggerFactory)
     {
         ILogger logger = loggerFactory.CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
         Activity? activity = BffActivitySource.Source.StartActivity(BffActivitySource.Login);
@@ -71,8 +92,8 @@ internal static partial class BffLoginEndpoints
         // Generate state parameter to correlate callback
         string state = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
 
-        // Store code_verifier + state in distributed cache (short TTL for the auth round-trip)
-        PkceState pkceData = new(codeVerifier, state);
+        // Store code_verifier + state + frontend name in distributed cache (short TTL for the auth round-trip)
+        PkceState pkceData = new(codeVerifier, state, frontend.Name);
         byte[] json = JsonSerializer.SerializeToUtf8Bytes(pkceData);
         DistributedCacheEntryOptions cacheOptions = new()
         {
@@ -83,34 +104,38 @@ internal static partial class BffLoginEndpoints
             .ConfigureAwait(false);
 
         // Build authorization URL
-        string scopes = string.Join(" ", bffOptions.Scopes);
-        string callbackUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/bff/callback";
+#pragma warning disable GRSEC003 // Building OIDC authorize URL with client credentials
+        string scopes = string.Join(" ", frontend.Scopes);
+        string pathPrefix = string.IsNullOrEmpty(frontend.PathPrefix) ? "" : frontend.PathPrefix;
+        string callbackUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{pathPrefix}/bff/callback";
         string authorizeUrl = $"{bffOptions.Authority.ToString().TrimEnd('/')}/connect/authorize"
-            + $"?client_id={Uri.EscapeDataString(bffOptions.ClientId)}"
+            + $"?client_id={Uri.EscapeDataString(frontend.ClientId)}"
             + $"&response_type=code"
             + $"&redirect_uri={Uri.EscapeDataString(callbackUrl)}"
             + $"&scope={Uri.EscapeDataString(scopes)}"
             + $"&state={Uri.EscapeDataString(state)}"
             + $"&code_challenge={Uri.EscapeDataString(codeChallenge)}"
             + $"&code_challenge_method=S256";
+#pragma warning restore GRSEC003
 
-        LogLoginRedirect(logger, bffOptions.Authority.ToString());
+        LogLoginRedirect(logger, bffOptions.Authority.ToString(), frontend.Name);
 
         return TypedResults.Redirect(authorizeUrl);
     }
 
     private static async Task<Results<RedirectHttpResult, ProblemHttpResult>> HandleCallbackAsync(
         HttpContext httpContext,
-        [FromQuery] string? code,
-        [FromQuery] string? state,
-        [FromQuery] string? error,
-        [FromServices] IOptions<GranitBffOptions> options,
-        [FromServices] IDistributedCache cache,
-        [FromServices] IBffTokenStore tokenStore,
-        [FromServices] BffMetrics metrics,
-        [FromServices] IClock clock,
-        [FromServices] IHttpClientFactory httpClientFactory,
-        [FromServices] ILoggerFactory loggerFactory,
+        BffFrontendOptions frontend,
+        string? code,
+        string? state,
+        string? error,
+        IOptions<GranitBffOptions> options,
+        IDistributedCache cache,
+        IBffTokenStore tokenStore,
+        BffMetrics metrics,
+        IClock clock,
+        IHttpClientFactory httpClientFactory,
+        ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
         ILogger logger = loggerFactory.CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
@@ -119,7 +144,7 @@ internal static partial class BffLoginEndpoints
 
         if (!string.IsNullOrEmpty(error))
         {
-            LogCallbackError(logger, error);
+            LogCallbackError(logger, error, frontend.Name);
             return TypedResults.Problem(
                 detail: $"OIDC authorization error: {error}",
                 statusCode: StatusCodes.Status400BadRequest);
@@ -155,14 +180,15 @@ internal static partial class BffLoginEndpoints
         }
 
         // Exchange authorization code for tokens
-        string callbackUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}/bff/callback";
+        string pathPrefix = string.IsNullOrEmpty(frontend.PathPrefix) ? "" : frontend.PathPrefix;
+        string callbackUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{pathPrefix}/bff/callback";
         BffTokenSet? tokens = await ExchangeCodeForTokensAsync(
-            httpClientFactory, bffOptions, code, pkceState.CodeVerifier, callbackUrl, clock, cancellationToken)
+            httpClientFactory, bffOptions, frontend, code, pkceState.CodeVerifier, callbackUrl, clock, cancellationToken)
             .ConfigureAwait(false);
 
         if (tokens is null)
         {
-            LogTokenExchangeFailed(logger);
+            LogTokenExchangeFailed(logger, frontend.Name);
             return TypedResults.Problem(
                 detail: "Failed to exchange authorization code for tokens.",
                 statusCode: StatusCodes.Status400BadRequest);
@@ -172,10 +198,10 @@ internal static partial class BffLoginEndpoints
 #pragma warning disable GRSEC002 // Session IDs are ephemeral cache keys, not clustered index values
         string sessionId = Guid.NewGuid().ToString("N");
 #pragma warning restore GRSEC002
-        await tokenStore.StoreAsync(sessionId, tokens, cancellationToken).ConfigureAwait(false);
+        await tokenStore.StoreAsync(frontend.Name, sessionId, tokens, cancellationToken).ConfigureAwait(false);
 
-        // Set session cookie
-        httpContext.Response.Cookies.Append(bffOptions.SessionCookieName, sessionId, new CookieOptions
+        // Set frontend-specific session cookie
+        httpContext.Response.Cookies.Append(frontend.SessionCookieName, sessionId, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
@@ -186,15 +212,17 @@ internal static partial class BffLoginEndpoints
         });
 
         metrics.RecordLogin(null);
-        LogLoginSuccess(logger, sessionId);
+        LogLoginSuccess(logger, sessionId, frontend.Name);
 
-        return TypedResults.Redirect(bffOptions.PostLoginRedirectPath);
+        return TypedResults.Redirect(frontend.EffectivePostLoginRedirectPath);
     }
+#pragma warning restore GRAPI003
 
 #pragma warning disable GRSEC003 // Method handles tokens — server-side only
     private static async Task<BffTokenSet?> ExchangeCodeForTokensAsync(
         IHttpClientFactory httpClientFactory,
         GranitBffOptions options,
+        BffFrontendOptions frontend,
         string code,
         string codeVerifier,
         string redirectUri,
@@ -209,8 +237,8 @@ internal static partial class BffLoginEndpoints
             ["grant_type"] = "authorization_code",
             ["code"] = code,
             ["redirect_uri"] = redirectUri,
-            ["client_id"] = options.ClientId,
-            ["client_secret"] = options.ClientSecret,
+            ["client_id"] = frontend.ClientId,
+            ["client_secret"] = frontend.ClientSecret,
             ["code_verifier"] = codeVerifier,
         };
 
@@ -261,19 +289,19 @@ internal static partial class BffLoginEndpoints
             .TrimEnd('=');
     }
 
-    private sealed record PkceState(string CodeVerifier, string State);
+    private sealed record PkceState(string CodeVerifier, string State, string FrontendName);
 
     // ──── Source-generated log messages ────
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "BFF login: redirecting to authority {Authority}")]
-    private static partial void LogLoginRedirect(ILogger logger, string authority);
+    [LoggerMessage(Level = LogLevel.Information, Message = "BFF login: redirecting to authority {Authority} for frontend {FrontendName}")]
+    private static partial void LogLoginRedirect(ILogger logger, string authority, string frontendName);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF callback received OIDC error: {Error}")]
-    private static partial void LogCallbackError(ILogger logger, string error);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF callback received OIDC error: {Error} for frontend {FrontendName}")]
+    private static partial void LogCallbackError(ILogger logger, string error, string frontendName);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "BFF callback: token exchange failed")]
-    private static partial void LogTokenExchangeFailed(ILogger logger);
+    [LoggerMessage(Level = LogLevel.Error, Message = "BFF callback: token exchange failed for frontend {FrontendName}")]
+    private static partial void LogTokenExchangeFailed(ILogger logger, string frontendName);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "BFF login successful, session {SessionId} created")]
-    private static partial void LogLoginSuccess(ILogger logger, string sessionId);
+    [LoggerMessage(Level = LogLevel.Information, Message = "BFF login successful, session {SessionId} created for frontend {FrontendName}")]
+    private static partial void LogLoginSuccess(ILogger logger, string sessionId, string frontendName);
 }

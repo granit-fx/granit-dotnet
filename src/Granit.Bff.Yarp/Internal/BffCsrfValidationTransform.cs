@@ -11,6 +11,7 @@ namespace Granit.Bff.Yarp.Internal;
 /// <summary>
 /// YARP request transform that validates the <c>X-CSRF-Token</c> header on mutating
 /// HTTP methods (POST, PUT, DELETE, PATCH) before proxying the request.
+/// Uses <c>Granit.Bff.Frontend</c> metadata to determine which frontend's session to validate.
 /// Returns 403 Forbidden if the token is missing or invalid.
 /// </summary>
 internal sealed partial class BffCsrfValidationTransform(
@@ -21,6 +22,7 @@ internal sealed partial class BffCsrfValidationTransform(
 {
     private const string CsrfHeaderName = "X-CSRF-Token";
     private const string RequireAuthMetadataKey = "Granit.Bff.RequireAuth";
+    private const string FrontendMetadataKey = "Granit.Bff.Frontend";
 
     private static readonly HashSet<string> MutatingMethods = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -36,11 +38,16 @@ internal sealed partial class BffCsrfValidationTransform(
 
         // Only validate on routes with RequireAuth metadata
         bool requiresAuth = false;
+        string? frontendName = null;
         IReverseProxyFeature? proxyFeature = httpContext.Features.Get<IReverseProxyFeature>();
-        if (proxyFeature?.Route.Config.Metadata is { } metadata
-            && metadata.TryGetValue(RequireAuthMetadataKey, out string? requireAuthValue))
+        if (proxyFeature?.Route.Config.Metadata is { } metadata)
         {
-            requiresAuth = string.Equals(requireAuthValue, "true", StringComparison.OrdinalIgnoreCase);
+            if (metadata.TryGetValue(RequireAuthMetadataKey, out string? requireAuthValue))
+            {
+                requiresAuth = string.Equals(requireAuthValue, "true", StringComparison.OrdinalIgnoreCase);
+            }
+
+            metadata.TryGetValue(FrontendMetadataKey, out frontendName);
         }
 
         if (!requiresAuth)
@@ -55,7 +62,16 @@ internal sealed partial class BffCsrfValidationTransform(
         }
 
         GranitBffOptions bffOptions = options.Value;
-        string? sessionId = httpContext.Request.Cookies[bffOptions.SessionCookieName];
+
+        // Resolve frontend to get the correct session cookie name
+        BffFrontendOptions? frontend = ResolveFrontend(bffOptions, frontendName);
+        if (frontend is null)
+        {
+            // Token injection transform will handle unknown frontend — skip CSRF validation
+            return ValueTask.CompletedTask;
+        }
+
+        string? sessionId = httpContext.Request.Cookies[frontend.SessionCookieName];
 
         if (string.IsNullOrEmpty(sessionId))
         {
@@ -67,7 +83,7 @@ internal sealed partial class BffCsrfValidationTransform(
 
         if (string.IsNullOrEmpty(csrfToken) || !csrfGenerator.Validate(sessionId, csrfToken))
         {
-            LogCsrfRejection(logger, httpContext.Request.Method, httpContext.Request.Path);
+            LogCsrfRejection(logger, httpContext.Request.Method, httpContext.Request.Path, frontend.Name);
             metrics.RecordCsrfRejection(null);
             httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
         }
@@ -75,8 +91,20 @@ internal sealed partial class BffCsrfValidationTransform(
         return ValueTask.CompletedTask;
     }
 
+    private static BffFrontendOptions? ResolveFrontend(GranitBffOptions options, string? frontendName)
+    {
+        if (string.IsNullOrEmpty(frontendName))
+        {
+            // Fall back to the first frontend if only one is configured
+            return options.Frontends.Count == 1 ? options.Frontends[0] : null;
+        }
+
+        return options.Frontends.Find(f =>
+            string.Equals(f.Name, frontendName, StringComparison.OrdinalIgnoreCase));
+    }
+
     // ──── Source-generated log messages ────
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF CSRF validation failed: {Method} {Path}")]
-    private static partial void LogCsrfRejection(ILogger logger, string method, string path);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF CSRF validation failed: {Method} {Path} for frontend {FrontendName}")]
+    private static partial void LogCsrfRejection(ILogger logger, string method, string path, string frontendName);
 }

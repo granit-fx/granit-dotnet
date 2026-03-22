@@ -8,7 +8,7 @@ namespace Granit.Bff.Internal;
 
 /// <summary>
 /// <see cref="IBffTokenStore"/> implementation backed by <see cref="IDistributedCache"/>.
-/// Keys follow the pattern <c>bff:session:{sessionId}</c>.
+/// Keys follow the pattern <c>bff:session:{frontendName}:{sessionId}</c>.
 /// </summary>
 internal sealed class DistributedCacheBffTokenStore(
     IDistributedCache cache,
@@ -22,8 +22,9 @@ internal sealed class DistributedCacheBffTokenStore(
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
 
-    public async Task StoreAsync(string sessionId, BffTokenSet tokens, CancellationToken cancellationToken = default)
+    public async Task StoreAsync(string frontendName, string sessionId, BffTokenSet tokens, CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(frontendName);
         ArgumentException.ThrowIfNullOrWhiteSpace(sessionId);
         ArgumentNullException.ThrowIfNull(tokens);
 
@@ -33,15 +34,16 @@ internal sealed class DistributedCacheBffTokenStore(
             AbsoluteExpiration = clock.Now.Add(options.Value.SessionDuration),
         };
 
-        await cache.SetAsync(BuildKey(sessionId), json, cacheOptions, cancellationToken)
+        await cache.SetAsync(BuildKey(frontendName, sessionId), json, cacheOptions, cancellationToken)
             .ConfigureAwait(false);
     }
 
-    public async Task<BffTokenSet?> GetAsync(string sessionId, CancellationToken cancellationToken = default)
+    public async Task<BffTokenSet?> GetAsync(string frontendName, string sessionId, CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(frontendName);
         ArgumentException.ThrowIfNullOrWhiteSpace(sessionId);
 
-        byte[]? bytes = await cache.GetAsync(BuildKey(sessionId), cancellationToken)
+        byte[]? bytes = await cache.GetAsync(BuildKey(frontendName, sessionId), cancellationToken)
             .ConfigureAwait(false);
 
         if (bytes is null or { Length: 0 })
@@ -52,13 +54,14 @@ internal sealed class DistributedCacheBffTokenStore(
         return JsonSerializer.Deserialize<BffTokenSet>(bytes, JsonOptions);
     }
 
-    public async Task RemoveAsync(string sessionId, CancellationToken cancellationToken = default)
+    public async Task RemoveAsync(string frontendName, string sessionId, CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(frontendName);
         ArgumentException.ThrowIfNullOrWhiteSpace(sessionId);
 
-        await cache.RemoveAsync(BuildKey(sessionId), cancellationToken)
+        await cache.RemoveAsync(BuildKey(frontendName, sessionId), cancellationToken)
             .ConfigureAwait(false);
     }
 
-    private static string BuildKey(string sessionId) => $"{KeyPrefix}{sessionId}";
+    private static string BuildKey(string frontendName, string sessionId) => $"{KeyPrefix}{frontendName}:{sessionId}";
 }
