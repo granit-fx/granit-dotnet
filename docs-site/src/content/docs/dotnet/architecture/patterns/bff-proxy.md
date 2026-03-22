@@ -1,12 +1,12 @@
 ---
-title: "BFF Proxy Pattern — Backend For Frontend Security"
+title: "Backends For Frontends (BFF) Pattern — Secure Token Proxy for SPAs"
 description: "Move OIDC token handling from the browser to the server. SPAs never see tokens — the BFF manages cookies, CSRF, and automatic token refresh via YARP reverse proxy."
 sidebar:
-  label: BFF Proxy
+  label: Backends For Frontends (BFF)
   order: 60
 ---
 
-## Definition
+## Backends For Frontends (BFF) Pattern
 
 The Backend For Frontend (BFF) pattern inserts a server-side proxy between a
 Single Page Application (SPA) and the identity provider. The proxy performs
