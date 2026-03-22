@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Granit.Bff.Diagnostics;
+using Granit.Bff.DPoP;
 using Granit.Bff.Options;
 using Granit.Timing;
 using Microsoft.AspNetCore.Http;
@@ -24,6 +25,7 @@ internal sealed partial class BffTokenInjectionTransform(
     IBffTokenStore tokenStore,
     IOptions<GranitBffOptions> options,
     IHttpClientFactory httpClientFactory,
+    IBffDPoPService dpopService,
     BffMetrics metrics,
     IClock clock,
     ILogger<BffTokenInjectionTransform> logger) : RequestTransform
@@ -95,7 +97,7 @@ internal sealed partial class BffTokenInjectionTransform(
             && tokens.ExpiresAt - clock.Now < bffOptions.RefreshGracePeriod)
         {
             BffTokenSet? refreshed = await TryRefreshTokensAsync(
-                bffOptions, frontend, tokens.RefreshToken, httpContext.RequestAborted)
+                bffOptions, frontend, tokens, httpContext.RequestAborted)
                 .ConfigureAwait(false);
 
             if (refreshed is not null)
@@ -119,9 +121,24 @@ internal sealed partial class BffTokenInjectionTransform(
             }
         }
 
-        // Inject Bearer token
-        transformContext.ProxyRequest.Headers.Authorization =
-            new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+        // Inject token — DPoP-bound or Bearer depending on session key
+        if (!string.IsNullOrEmpty(tokens.DPoPPrivateKeyJwk))
+        {
+            string targetUri = transformContext.ProxyRequest.RequestUri?.GetLeftPart(UriPartial.Path)
+                ?? transformContext.HttpContext.Request.Path.Value ?? "/";
+            string httpMethod = transformContext.HttpContext.Request.Method;
+
+            string dpopProof = dpopService.CreateProof(tokens.DPoPPrivateKeyJwk, httpMethod, targetUri);
+
+            transformContext.ProxyRequest.Headers.Authorization =
+                new AuthenticationHeaderValue("DPoP", tokens.AccessToken);
+            transformContext.ProxyRequest.Headers.TryAddWithoutValidation("DPoP", dpopProof);
+        }
+        else
+        {
+            transformContext.ProxyRequest.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+        }
     }
 
     private static BffFrontendOptions? ResolveFrontend(GranitBffOptions options, string? frontendName)
@@ -139,7 +156,7 @@ internal sealed partial class BffTokenInjectionTransform(
     private async Task<BffTokenSet?> TryRefreshTokensAsync(
         GranitBffOptions bffOptions,
         BffFrontendOptions frontend,
-        string refreshToken,
+        BffTokenSet currentTokens,
         CancellationToken cancellationToken)
     {
         try
@@ -150,14 +167,23 @@ internal sealed partial class BffTokenInjectionTransform(
             Dictionary<string, string> parameters = new()
             {
                 ["grant_type"] = "refresh_token",
-                ["refresh_token"] = refreshToken,
+                ["refresh_token"] = currentTokens.RefreshToken!,
                 ["client_id"] = frontend.ClientId,
                 ["client_secret"] = frontend.ClientSecret,
             };
 
             using FormUrlEncodedContent content = new(parameters);
+            using var request = new HttpRequestMessage(HttpMethod.Post, tokenEndpoint) { Content = content };
+
+            // Attach DPoP proof for token refresh (RFC 9449 §5)
+            if (!string.IsNullOrEmpty(currentTokens.DPoPPrivateKeyJwk))
+            {
+                string dpopProof = dpopService.CreateProof(currentTokens.DPoPPrivateKeyJwk, "POST", tokenEndpoint);
+                request.Headers.TryAddWithoutValidation("DPoP", dpopProof);
+            }
+
             using HttpResponseMessage response = await httpClient
-                .PostAsync(tokenEndpoint, content, cancellationToken)
+                .SendAsync(request, cancellationToken)
                 .ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
@@ -174,7 +200,7 @@ internal sealed partial class BffTokenInjectionTransform(
 
             string accessToken = tokenResponse.GetProperty("access_token").GetString()!;
             string? newRefreshToken = tokenResponse.TryGetProperty("refresh_token", out JsonElement rt)
-                ? rt.GetString() : refreshToken;
+                ? rt.GetString() : currentTokens.RefreshToken;
             string? idToken = tokenResponse.TryGetProperty("id_token", out JsonElement it) ? it.GetString() : null;
             int expiresIn = tokenResponse.TryGetProperty("expires_in", out JsonElement ei)
                 ? ei.GetInt32() : 3600;
@@ -183,7 +209,10 @@ internal sealed partial class BffTokenInjectionTransform(
                 accessToken,
                 newRefreshToken,
                 idToken,
-                clock.Now.AddSeconds(expiresIn));
+                clock.Now.AddSeconds(expiresIn))
+            {
+                DPoPPrivateKeyJwk = currentTokens.DPoPPrivateKeyJwk,
+            };
         }
         catch (OperationCanceledException)
         {

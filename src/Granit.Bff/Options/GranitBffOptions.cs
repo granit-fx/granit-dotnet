@@ -100,5 +100,18 @@ public sealed class BffFrontendOptions
     /// Default: <see langword="false"/>.
     /// </remarks>
     public bool UsePushedAuthorizationRequests { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the BFF should use DPoP
+    /// (Demonstrating Proof-of-Possession, RFC 9449) to bind tokens to a
+    /// cryptographic key, preventing token replay attacks.
+    /// </summary>
+    /// <remarks>
+    /// When <see langword="true"/>, the BFF generates an EC P-256 key pair per session,
+    /// includes DPoP proofs in token requests and proxied API calls, and uses the
+    /// <c>DPoP</c> token scheme instead of <c>Bearer</c>.
+    /// Default: <see langword="false"/>.
+    /// </remarks>
+    public bool UseDPoP { get; set; }
 }
 #pragma warning restore GRSEC003

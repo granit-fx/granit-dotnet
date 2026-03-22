@@ -131,6 +131,46 @@ When using the BFF module, enable PAR on the frontend configuration:
 PAR is required by the **FAPI 2.0 Security Profile** for open banking,
 healthcare, and other high-security industries.
 
+### DPoP (Proof-of-Possession)
+
+The server supports DPoP (Demonstrating Proof-of-Possession, RFC 9449). DPoP binds
+access tokens to a cryptographic key held by the client — even if a token leaks, it
+cannot be replayed without the private key.
+
+```text
+Client generates EC P-256 key pair (once per session)
+Client --> POST /connect/token + DPoP: <proof JWT signed with private key>
+  <-- Access token with cnf claim (JWK thumbprint binding)
+Client --> GET /api/resource
+           Authorization: DPoP <access-token>
+           DPoP: <fresh proof JWT for this request>
+```
+
+OpenIddict validates DPoP proofs automatically when present. No server-side
+configuration is needed — DPoP is purely client-driven.
+
+When using the BFF module, enable DPoP on the frontend configuration:
+
+```json
+{
+  "Bff": {
+    "Frontends": [
+      {
+        "Name": "main",
+        "UseDPoP": true
+      }
+    ]
+  }
+}
+```
+
+The BFF generates an EC P-256 key pair per session, stores the private key
+server-side (never exposed to the browser), and attaches DPoP proofs to
+every token request and proxied API call.
+
+DPoP is required by the **FAPI 2.0 Security Profile** and recommended by
+**ISO 27001 A.14** for token theft mitigation.
+
 ## Scopes
 
 The following 7 standard OIDC scopes are **seeded automatically** on every startup

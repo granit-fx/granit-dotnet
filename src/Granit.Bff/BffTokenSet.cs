@@ -9,5 +9,12 @@ public sealed record BffTokenSet(
     string AccessToken,
     string? RefreshToken,
     string? IdToken,
-    DateTimeOffset ExpiresAt);
+    DateTimeOffset ExpiresAt)
+{
+    /// <summary>
+    /// DPoP private key as JWK JSON. Stored server-side only, never exposed to the browser.
+    /// When present, the BFF uses DPoP token binding (RFC 9449) for this session.
+    /// </summary>
+    public string? DPoPPrivateKeyJwk { get; init; }
+}
 #pragma warning restore GRSEC003

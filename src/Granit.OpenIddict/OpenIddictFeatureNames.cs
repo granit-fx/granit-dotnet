@@ -39,4 +39,10 @@ public static class OpenIddictFeatureNames
     /// Default: <see langword="false"/>.
     /// </summary>
     public const string ParRequired = "OpenIddict.ParRequired";
+
+    /// <summary>
+    /// Enables DPoP (Demonstrating Proof-of-Possession, RFC 9449) for token binding.
+    /// Default: <see langword="false"/>.
+    /// </summary>
+    public const string DPoP = "OpenIddict.DPoP";
 }

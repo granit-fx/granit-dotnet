@@ -5744,6 +5744,28 @@
       "members": []
     },
     {
+      "name": "IBffDPoPService",
+      "fqn": "Granit.Bff.DPoP.IBffDPoPService",
+      "kind": "interface",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/DPoP/IBffDPoPService.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "GenerateKeyPair",
+          "kind": "method",
+          "signature": "GenerateKeyPair()",
+          "returnType": "string"
+        },
+        {
+          "name": "CreateProof",
+          "kind": "method",
+          "signature": "CreateProof(string privateKeyJwk, string httpMethod, string httpUri)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "BffMetrics",
       "fqn": "Granit.Bff.Diagnostics.BffMetrics",
       "kind": "class",
@@ -5830,7 +5852,7 @@
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/GranitBffModule.cs",
-      "line": 25,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",

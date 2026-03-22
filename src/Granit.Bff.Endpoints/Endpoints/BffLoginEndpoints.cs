@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Granit.Bff.Diagnostics;
+using Granit.Bff.DPoP;
 using Granit.Bff.Options;
 using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
@@ -32,8 +33,9 @@ internal static partial class BffLoginEndpoints
                 [FromServices] IDistributedCache cache,
                 [FromServices] IClock clock,
                 [FromServices] IHttpClientFactory httpClientFactory,
+                [FromServices] IBffDPoPService dpopService,
                 [FromServices] ILoggerFactory loggerFactory) =>
-                HandleLoginAsync(httpContext, frontend, options, cache, clock, httpClientFactory, loggerFactory))
+                HandleLoginAsync(httpContext, frontend, options, cache, clock, httpClientFactory, dpopService, loggerFactory))
             .WithName($"BffLogin_{frontend.Name}")
             .WithSummary("Initiates OIDC login with PKCE and redirects to the authority.")
             .WithDescription(
@@ -53,10 +55,11 @@ internal static partial class BffLoginEndpoints
                 [FromServices] BffMetrics metrics,
                 [FromServices] IClock clock,
                 [FromServices] IHttpClientFactory httpClientFactory,
+                [FromServices] IBffDPoPService dpopService,
                 [FromServices] ILoggerFactory loggerFactory,
                 CancellationToken cancellationToken) =>
                 HandleCallbackAsync(httpContext, frontend, code, state, error, options, cache,
-                    tokenStore, metrics, clock, httpClientFactory, loggerFactory, cancellationToken))
+                    tokenStore, metrics, clock, httpClientFactory, dpopService, loggerFactory, cancellationToken))
             .WithName($"BffCallback_{frontend.Name}")
             .WithSummary("Handles the OIDC callback, exchanges the code for tokens, and sets the session cookie.")
             .WithDescription(
@@ -79,6 +82,7 @@ internal static partial class BffLoginEndpoints
         [FromServices] IDistributedCache cache,
         [FromServices] IClock clock,
         [FromServices] IHttpClientFactory httpClientFactory,
+        [FromServices] IBffDPoPService dpopService,
         [FromServices] ILoggerFactory loggerFactory)
     {
         ILogger logger = loggerFactory.CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
@@ -94,8 +98,11 @@ internal static partial class BffLoginEndpoints
         // Generate state parameter to correlate callback
         string state = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
 
-        // Store code_verifier + state + frontend name in distributed cache (short TTL for the auth round-trip)
-        PkceState pkceData = new(codeVerifier, state, frontend.Name);
+        // Generate DPoP key pair if enabled (stored alongside PKCE state, used during token exchange)
+        string? dpopPrivateKeyJwk = frontend.UseDPoP ? dpopService.GenerateKeyPair() : null;
+
+        // Store code_verifier + state + frontend name + DPoP key in distributed cache (short TTL for the auth round-trip)
+        PkceState pkceData = new(codeVerifier, state, frontend.Name, dpopPrivateKeyJwk);
         byte[] json = JsonSerializer.SerializeToUtf8Bytes(pkceData);
         DistributedCacheEntryOptions cacheOptions = new()
         {
@@ -159,6 +166,7 @@ internal static partial class BffLoginEndpoints
         [FromServices] BffMetrics metrics,
         [FromServices] IClock clock,
         [FromServices] IHttpClientFactory httpClientFactory,
+        [FromServices] IBffDPoPService dpopService,
         [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
@@ -207,7 +215,8 @@ internal static partial class BffLoginEndpoints
         string pathPrefix = string.IsNullOrEmpty(frontend.PathPrefix) ? "" : frontend.PathPrefix;
         string callbackUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{pathPrefix}/bff/callback";
         BffTokenSet? tokens = await ExchangeCodeForTokensAsync(
-            httpClientFactory, bffOptions, frontend, code, pkceState.CodeVerifier, callbackUrl, clock, cancellationToken)
+            httpClientFactory, bffOptions, frontend, code, pkceState.CodeVerifier, callbackUrl,
+            pkceState.DPoPPrivateKeyJwk, dpopService, clock, cancellationToken)
             .ConfigureAwait(false);
 
         if (tokens is null)
@@ -250,6 +259,8 @@ internal static partial class BffLoginEndpoints
         string code,
         string codeVerifier,
         string redirectUri,
+        string? dpopPrivateKeyJwk,
+        IBffDPoPService dpopService,
         IClock clock,
         CancellationToken cancellationToken)
     {
@@ -267,8 +278,17 @@ internal static partial class BffLoginEndpoints
         };
 
         using FormUrlEncodedContent content = new(parameters);
+        using var request = new HttpRequestMessage(HttpMethod.Post, tokenEndpoint) { Content = content };
+
+        // Attach DPoP proof if key is available (RFC 9449 §4)
+        if (!string.IsNullOrEmpty(dpopPrivateKeyJwk))
+        {
+            string dpopProof = dpopService.CreateProof(dpopPrivateKeyJwk, "POST", tokenEndpoint);
+            request.Headers.TryAddWithoutValidation("DPoP", dpopProof);
+        }
+
         using HttpResponseMessage response = await httpClient
-            .PostAsync(tokenEndpoint, content, cancellationToken)
+            .SendAsync(request, cancellationToken)
             .ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)
@@ -291,7 +311,10 @@ internal static partial class BffLoginEndpoints
             accessToken,
             refreshToken,
             idToken,
-            clock.Now.AddSeconds(expiresIn));
+            clock.Now.AddSeconds(expiresIn))
+        {
+            DPoPPrivateKeyJwk = dpopPrivateKeyJwk,
+        };
     }
 #pragma warning restore GRSEC003
 
@@ -394,7 +417,7 @@ internal static partial class BffLoginEndpoints
             .TrimEnd('=');
     }
 
-    private sealed record PkceState(string CodeVerifier, string State, string FrontendName);
+    private sealed record PkceState(string CodeVerifier, string State, string FrontendName, string? DPoPPrivateKeyJwk = null);
 
     // ──── Source-generated log messages ────
 
