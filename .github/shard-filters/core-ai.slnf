@@ -3,6 +3,7 @@
     "path": "../../Granit.slnx",
     "projects": [
       "src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj",
+      "src/Granit.AI.Endpoints/Granit.AI.Endpoints.csproj",
       "src/Granit.AI.EntityFrameworkCore/Granit.AI.EntityFrameworkCore.csproj",
       "src/Granit.AI.Extraction/Granit.AI.Extraction.csproj",
       "src/Granit.AI.Ollama/Granit.AI.Ollama.csproj",
@@ -85,6 +86,7 @@
       "src/bundles/Granit.Bundle.Notifications/Granit.Bundle.Notifications.csproj",
       "src/bundles/Granit.Bundle.SaaS/Granit.Bundle.SaaS.csproj",
       "tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj",
+      "tests/Granit.AI.Endpoints.Tests/Granit.AI.Endpoints.Tests.csproj",
       "tests/Granit.AI.EntityFrameworkCore.Tests/Granit.AI.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.AI.Extraction.Tests/Granit.AI.Extraction.Tests.csproj",
       "tests/Granit.AI.Ollama.Tests/Granit.AI.Ollama.Tests.csproj",

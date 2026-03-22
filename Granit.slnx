@@ -16,6 +16,7 @@
     <Project Path="src/Granit.AI.Ollama/Granit.AI.Ollama.csproj" />
     <Project Path="src/Granit.AI.OpenAI/Granit.AI.OpenAI.csproj" />
     <Project Path="src/Granit.AI.VectorData/Granit.AI.VectorData.csproj" />
+    <Project Path="src/Granit.AI.Endpoints/Granit.AI.Endpoints.csproj" />
     <Project Path="src/Granit.Http.ApiDocumentation/Granit.Http.ApiDocumentation.csproj" />
     <Project Path="src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj" />
     <Project Path="src/Granit.Authentication.ApiKeys.Endpoints/Granit.Authentication.ApiKeys.Endpoints.csproj" />
@@ -26,6 +27,7 @@
     <Project Path="src/Granit.Authentication.GoogleCloud/Granit.Authentication.GoogleCloud.csproj" />
     <Project Path="src/Granit.Authentication.JwtBearer/Granit.Authentication.JwtBearer.csproj" />
     <Project Path="src/Granit.Authentication.Keycloak/Granit.Authentication.Keycloak.csproj" />
+    <Project Path="src/Granit.Authentication.OpenIddict/Granit.Authentication.OpenIddict.csproj" />
     <Project Path="src/Granit.Authorization.AI/Granit.Authorization.AI.csproj" />
     <Project Path="src/Granit.Authorization.Endpoints/Granit.Authorization.Endpoints.csproj" />
     <Project Path="src/Granit.Authorization.EntityFrameworkCore/Granit.Authorization.EntityFrameworkCore.csproj" />
@@ -131,6 +133,7 @@
     <Project Path="src/Granit.OpenIddict.Endpoints/Granit.OpenIddict.Endpoints.csproj" />
     <Project Path="src/Granit.OpenIddict.EntityFrameworkCore/Granit.OpenIddict.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.OpenIddict/Granit.OpenIddict.csproj" />
+    <Project Path="src/Granit.OpenIddict.Server/Granit.OpenIddict.Server.csproj" />
     <Project Path="src/Granit.Persistence.Hosting/Granit.Persistence.Hosting.csproj" />
     <Project Path="src/Granit.Persistence.Migrations.Wolverine/Granit.Persistence.Migrations.Wolverine.csproj" />
     <Project Path="src/Granit.Persistence.Migrations/Granit.Persistence.Migrations.csproj" />
@@ -213,6 +216,7 @@
     <Project Path="tests/Granit.AI.Extraction.Tests/Granit.AI.Extraction.Tests.csproj" />
     <Project Path="tests/Granit.AI.Ollama.Tests/Granit.AI.Ollama.Tests.csproj" />
     <Project Path="tests/Granit.AI.VectorData.Tests/Granit.AI.VectorData.Tests.csproj" />
+    <Project Path="tests/Granit.AI.Endpoints.Tests/Granit.AI.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.AI.OpenAI.Tests/Granit.AI.OpenAI.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.ApiKeys.Endpoints.Tests/Granit.Authentication.ApiKeys.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests/Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests.csproj" />
@@ -222,6 +226,7 @@
     <Project Path="tests/Granit.Authentication.GoogleCloud.Tests/Granit.Authentication.GoogleCloud.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.JwtBearer.Tests/Granit.Authentication.JwtBearer.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.Keycloak.Tests/Granit.Authentication.Keycloak.Tests.csproj" />
+    <Project Path="tests/Granit.Authentication.OpenIddict.Tests/Granit.Authentication.OpenIddict.Tests.csproj" />
     <Project Path="tests/Granit.Authorization.Endpoints.Tests/Granit.Authorization.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Authorization.AI.Tests/Granit.Authorization.AI.Tests.csproj" />
     <Project Path="tests/Granit.Authorization.EntityFrameworkCore.Tests/Granit.Authorization.EntityFrameworkCore.Tests.csproj" />
@@ -331,6 +336,7 @@
     <Project Path="tests/Granit.OpenIddict.Endpoints.Tests/Granit.OpenIddict.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.EntityFrameworkCore.Tests/Granit.OpenIddict.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.Tests/Granit.OpenIddict.Tests.csproj" />
+    <Project Path="tests/Granit.OpenIddict.Server.Tests/Granit.OpenIddict.Server.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Hosting.Tests/Granit.Persistence.Hosting.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Migrations.Tests/Granit.Persistence.Migrations.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Postgres.Tests/Granit.Persistence.Postgres.Tests.csproj" />
