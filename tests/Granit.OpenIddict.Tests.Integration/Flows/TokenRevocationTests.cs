@@ -59,6 +59,6 @@ public sealed class TokenRevocationTests(OpenIddictTestApplication app)
             OpenIddictTestApplication.TestClientId,
             "wrong-secret");
 
-        revokeResponse.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        revokeResponse.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 }

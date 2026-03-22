@@ -1,4 +1,5 @@
 using System.Diagnostics.Metrics;
+using System.Security.Claims;
 using Granit.Core.Events;
 using Granit.Core.MultiTenancy;
 using Granit.Identity;
@@ -11,7 +12,9 @@ using Granit.OpenIddict.EntityFrameworkCore.Extensions;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.Services;
 using Granit.OpenIddict.Tests.Integration.Helpers;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NSubstitute;
 using OpenIddict.Abstractions;
+using OpenIddict.Server.AspNetCore;
 using Xunit;
 
 namespace Granit.OpenIddict.Tests.Integration.Fixtures;
@@ -36,6 +40,7 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
     internal const string TestClientSecret = "test-secret-K8s!2024#Strong";
     internal const string TestUserEmail = "testuser@example.com";
     internal const string TestUserPassword = "P@ssw0rd!Strong2024";
+    internal const string TestIssuer = "http://localhost";
 
     public async ValueTask InitializeAsync()
     {
@@ -44,9 +49,16 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
 
+        // Explicit issuer — TestServer has no real URL for OpenIddict to auto-detect
+        builder.Configuration["OpenIddict:Issuer"] = TestIssuer;
+
         // 1. Register OpenIddict EF Core + Server + Identity
         builder.AddGranitOpenIddictEntityFrameworkCore(
             options => options.UseNpgsql(_postgres.ConnectionString));
+
+        // Disable HTTPS requirement — TestServer runs over HTTP in-memory
+        builder.Services.AddOpenIddict()
+            .AddServer(options => options.UseAspNetCore().DisableTransportSecurityRequirement());
 
         // 2. Register ASP.NET Identity-backed IIdentityProvider
         builder.Services.AddGranitIdentity();
@@ -88,6 +100,10 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
         _app.UseAuthentication();
         _app.UseAuthorization();
 
+        // OIDC protocol handler — OpenIddict validates requests via UseAuthentication(),
+        // then passes through to ASP.NET Core for token issuance (client_credentials).
+        _app.MapPost("/connect/token", HandleTokenAsync);
+
         _app.MapOpenIddictEndpoints();
 
         // 6. EnsureCreated + seed
@@ -121,6 +137,36 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
 
     /// <summary>Creates an <see cref="OidcTestClient"/> wrapping the test server's HttpClient.</summary>
     public OidcTestClient CreateOidcClient() => new(CreateHttpClient());
+
+    /// <summary>
+    /// Minimal token endpoint handler for integration tests.
+    /// OpenIddict validates the OIDC request (via passthrough), then this handler
+    /// builds a ClaimsPrincipal and signs in to issue the access token.
+    /// </summary>
+#pragma warning disable GRAPI001 // Test code — SignIn/Forbid have no TypedResults equivalent
+    private static IResult HandleTokenAsync(HttpContext context)
+    {
+        OpenIddictRequest request = context.GetOpenIddictServerRequest()
+            ?? throw new InvalidOperationException("OpenIddict server request not available.");
+
+        if (request.IsClientCredentialsGrantType())
+        {
+            var identity = new ClaimsIdentity(
+                OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+
+            identity.AddClaim(OpenIddictConstants.Claims.Subject, request.ClientId!);
+            identity.SetScopes(request.GetScopes());
+            identity.SetDestinations(static _ => [OpenIddictConstants.Destinations.AccessToken]);
+
+            return Results.SignIn(
+                new ClaimsPrincipal(identity),
+                authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        }
+
+        return Results.Forbid(
+            authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
+    }
+#pragma warning restore GRAPI001
 
     private static async Task SeedTestDataAsync(IServiceProvider services)
     {

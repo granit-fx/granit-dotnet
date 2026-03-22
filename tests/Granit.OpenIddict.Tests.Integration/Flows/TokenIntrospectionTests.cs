@@ -52,6 +52,6 @@ public sealed class TokenIntrospectionTests(OpenIddictTestApplication app)
             OpenIddictTestApplication.TestClientId,
             "wrong-secret");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 }

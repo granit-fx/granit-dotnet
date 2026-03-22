@@ -5788,13 +5788,13 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 11,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitBffEndpoints",
           "kind": "method",
           "signature": "MapGranitBffEndpoints(this IEndpointRouteBuilder endpoints)",
-          "returnType": "RouteGroupBuilder"
+          "returnType": "IEndpointRouteBuilder"
         }
       ]
     },
@@ -5804,7 +5804,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 38,
+      "line": 126,
       "members": [
         {
           "name": "InvokeAsync",
@@ -5872,36 +5872,36 @@
         {
           "name": "StoreAsync",
           "kind": "method",
-          "signature": "StoreAsync(string sessionId, BffTokenSet tokens, CancellationToken cancellationToken = default)",
+          "signature": "StoreAsync(string frontendName, string sessionId, BffTokenSet tokens, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {
           "name": "GetAsync",
           "kind": "method",
-          "signature": "GetAsync(string sessionId, CancellationToken cancellationToken = default)",
+          "signature": "GetAsync(string frontendName, string sessionId, CancellationToken cancellationToken = default)",
           "returnType": "Task<BffTokenSet?>"
         },
         {
           "name": "RemoveAsync",
           "kind": "method",
-          "signature": "RemoveAsync(string sessionId, CancellationToken cancellationToken = default)",
+          "signature": "RemoveAsync(string frontendName, string sessionId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
     },
     {
-      "name": "GranitBffOptions",
-      "fqn": "Granit.Bff.Options.GranitBffOptions",
+      "name": "BffFrontendOptions",
+      "fqn": "Granit.Bff.Options.BffFrontendOptions",
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/Options/GranitBffOptions.cs",
-      "line": 7,
+      "line": 40,
       "members": [
         {
-          "name": "Authority",
+          "name": "Name",
           "kind": "property",
-          "signature": "Uri Authority",
-          "returnType": "Uri"
+          "signature": "string Name",
+          "returnType": "string"
         },
         {
           "name": "ClientId",
@@ -5922,10 +5922,50 @@
           "returnType": "string[]"
         },
         {
-          "name": "SessionCookieName",
+          "name": "PathPrefix",
           "kind": "property",
-          "signature": "string SessionCookieName",
+          "signature": "string PathPrefix",
           "returnType": "string"
+        },
+        {
+          "name": "StaticFilesPath",
+          "kind": "property",
+          "signature": "string StaticFilesPath",
+          "returnType": "string"
+        },
+        {
+          "name": "PostLoginRedirectPath",
+          "kind": "property",
+          "signature": "string? PostLoginRedirectPath",
+          "returnType": "string?"
+        },
+        {
+          "name": "EffectivePostLoginRedirectPath",
+          "kind": "property",
+          "signature": "string EffectivePostLoginRedirectPath",
+          "returnType": "string"
+        },
+        {
+          "name": "EffectivePostLogoutRedirectPath",
+          "kind": "property",
+          "signature": "string EffectivePostLogoutRedirectPath",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitBffOptions",
+      "fqn": "Granit.Bff.Options.GranitBffOptions",
+      "kind": "class",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/Options/GranitBffOptions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Authority",
+          "kind": "property",
+          "signature": "Uri Authority",
+          "returnType": "Uri"
         },
         {
           "name": "FromHours",
@@ -5940,16 +5980,10 @@
           "returnType": "TimeSpan RefreshGracePeriod { get; set; } = TimeSpan."
         },
         {
-          "name": "PostLoginRedirectPath",
+          "name": "Frontends",
           "kind": "property",
-          "signature": "string PostLoginRedirectPath",
-          "returnType": "string"
-        },
-        {
-          "name": "PostLogoutRedirectPath",
-          "kind": "property",
-          "signature": "string PostLogoutRedirectPath",
-          "returnType": "string"
+          "signature": "List<BffFrontendOptions> Frontends",
+          "returnType": "List<BffFrontendOptions>"
         }
       ]
     },

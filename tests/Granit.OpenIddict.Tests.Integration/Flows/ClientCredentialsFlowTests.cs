@@ -45,7 +45,7 @@ public sealed class ClientCredentialsFlowTests(OpenIddictTestApplication app)
             OpenIddictTestApplication.TestClientId,
             "wrong-secret");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public sealed class ClientCredentialsFlowTests(OpenIddictTestApplication app)
             "nonexistent-client",
             "irrelevant-secret");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
