@@ -24,7 +24,7 @@ internal static class IdentityProviderRoleEndpoints
             .WithName("GetIdentityProviderRoleMembers")
             .WithSummary("Lists all users assigned to a specific role.")
             .WithDescription("Returns users who have the specified role assigned.")
-            .Produces<IReadOnlyList<IdentityUser>>();
+            .Produces<IReadOnlyList<IIdentityUser>>();
 
         return group;
     }
@@ -68,12 +68,12 @@ internal static class IdentityProviderRoleEndpoints
         return TypedResults.Ok(roles);
     }
 
-    private static async Task<Ok<IReadOnlyList<IdentityUser>>> GetRoleMembersAsync(
+    private static async Task<Ok<IReadOnlyList<IIdentityUser>>> GetRoleMembersAsync(
         string roleName,
         [FromServices] IIdentityRoleManager roleManager,
         CancellationToken cancellationToken)
     {
-        IReadOnlyList<IdentityUser> members = await roleManager
+        IReadOnlyList<IIdentityUser> members = await roleManager
             .GetRoleMembersAsync(roleName, cancellationToken)
             .ConfigureAwait(false);
 

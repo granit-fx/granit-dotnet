@@ -1,4 +1,3 @@
-using Granit.Identity.Models;
 using Granit.Querying;
 
 namespace Granit.Identity;
@@ -28,7 +27,7 @@ public interface IUserLookupService
     /// <param name="userId">The user ID in the identity provider.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The user, or <c>null</c> if not found in cache or provider.</returns>
-    Task<IdentityUser?> FindByIdAsync(string userId, CancellationToken cancellationToken = default);
+    Task<IIdentityUser?> FindByIdAsync(string userId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Resolves multiple users by their external identity provider IDs.
@@ -36,7 +35,7 @@ public interface IUserLookupService
     /// <param name="userIds">The user IDs to resolve.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Resolved users (may contain fewer items than requested if some users are unknown).</returns>
-    Task<IReadOnlyList<IdentityUser>> FindByIdsAsync(
+    Task<IReadOnlyList<IIdentityUser>> FindByIdsAsync(
         IReadOnlyCollection<string> userIds,
         CancellationToken cancellationToken = default);
 
@@ -49,7 +48,7 @@ public interface IUserLookupService
     /// <param name="pageSize">Number of items per page.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A paginated result with matching users and total count.</returns>
-    Task<PagedResult<IdentityUser>> SearchAsync(
+    Task<PagedResult<IIdentityUser>> SearchAsync(
         string searchTerm,
         int page = 1,
         int pageSize = QueryingDefaults.DefaultPageSize,
@@ -63,7 +62,7 @@ public interface IUserLookupService
     /// <param name="userId">The user ID to refresh.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The refreshed user, or <c>null</c> if the provider cannot resolve the user.</returns>
-    Task<IdentityUser?> RefreshByIdAsync(string userId, CancellationToken cancellationToken = default);
+    Task<IIdentityUser?> RefreshByIdAsync(string userId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Performs a full sync of all users from the identity provider into the cache.

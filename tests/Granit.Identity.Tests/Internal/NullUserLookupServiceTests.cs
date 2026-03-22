@@ -17,7 +17,7 @@ public sealed class NullUserLookupServiceTests
     [Fact]
     public async Task FindByIdAsync_ReturnsNull()
     {
-        IdentityUser? result = await _service.FindByIdAsync(
+        IIdentityUser? result = await _service.FindByIdAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
@@ -26,7 +26,7 @@ public sealed class NullUserLookupServiceTests
     [Fact]
     public async Task FindByIdsAsync_ReturnsEmptyList()
     {
-        IReadOnlyList<IdentityUser> result = await _service.FindByIdsAsync(
+        IReadOnlyList<IIdentityUser> result = await _service.FindByIdsAsync(
             ["user-1", "user-2"], TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
@@ -35,7 +35,7 @@ public sealed class NullUserLookupServiceTests
     [Fact]
     public async Task SearchAsync_ReturnsEmptyPagedResult()
     {
-        PagedResult<IdentityUser> result = await _service.SearchAsync(
+        PagedResult<IIdentityUser> result = await _service.SearchAsync(
             "alice", cancellationToken: TestContext.Current.CancellationToken);
 
         result.Items.ShouldBeEmpty();
@@ -50,7 +50,7 @@ public sealed class NullUserLookupServiceTests
     [Fact]
     public async Task RefreshByIdAsync_ReturnsNull()
     {
-        IdentityUser? result = await _service.RefreshByIdAsync(
+        IIdentityUser? result = await _service.RefreshByIdAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();

@@ -41,7 +41,7 @@ public sealed class IdentityProviderRoleEndpointsTests : IAsyncDisposable
             .Returns([new IdentityRole("role-1", "admin", null)]);
 
         _roleManager.GetRoleMembersAsync("admin", Arg.Any<CancellationToken>())
-            .Returns([new IdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)]);
+            .Returns((IReadOnlyList<IIdentityUser>)[new FederatedIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)]);
 
         _roleManager.GetUserRolesAsync("user-1", Arg.Any<CancellationToken>())
             .Returns([new IdentityRole("role-1", "admin", null)]);
@@ -103,8 +103,8 @@ public sealed class IdentityProviderRoleEndpointsTests : IAsyncDisposable
             $"{Prefix}/roles/admin/members", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        List<IdentityUser>? members = await response.Content
-            .ReadFromJsonAsync<List<IdentityUser>>(TestContext.Current.CancellationToken);
+        List<FederatedIdentityUser>? members = await response.Content
+            .ReadFromJsonAsync<List<FederatedIdentityUser>>(TestContext.Current.CancellationToken);
         members.ShouldNotBeNull();
         members.Count.ShouldBe(1);
         members[0].Username.ShouldBe("jdoe");

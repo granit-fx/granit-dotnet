@@ -61,7 +61,7 @@ internal static class AccountRegistrationEndpoints
     {
         try
         {
-            IdentityUser user = await identityProvider.CreateUserAsync(
+            IIdentityUser user = await identityProvider.CreateUserAsync(
                 new IdentityUserCreate(
                     request.Email,
                     request.Email,
@@ -72,17 +72,17 @@ internal static class AccountRegistrationEndpoints
                 cancellationToken).ConfigureAwait(false);
 
             await emailConfirmation.SendConfirmationEmailAsync(
-                user.Id, request.Email, cancellationToken).ConfigureAwait(false);
+                user.UserId, request.Email, cancellationToken).ConfigureAwait(false);
 
             await eventBus.PublishAsync(
-                new UserRegisteredEto(Guid.Parse(user.Id), request.Email, null),
+                new UserRegisteredEto(Guid.Parse(user.UserId), request.Email, null),
                 cancellationToken).ConfigureAwait(false);
 
             metrics.RecordRegistration(null);
 
             return TypedResults.Created(
                 $"/api/account/profile",
-                new AccountRegisterResponse(Guid.Parse(user.Id), true));
+                new AccountRegisterResponse(Guid.Parse(user.UserId), true));
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("DuplicateEmail", StringComparison.OrdinalIgnoreCase)
             || ex.Message.Contains("DuplicateUserName", StringComparison.OrdinalIgnoreCase))

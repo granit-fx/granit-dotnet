@@ -1,7 +1,6 @@
 using Granit.Core.MultiTenancy;
 using Granit.Identity.EntityFrameworkCore.Entities;
 using Granit.Identity.EntityFrameworkCore.Options;
-using Granit.Identity.Models;
 using Granit.Querying;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,7 +23,7 @@ internal sealed partial class CachedUserLookupService(
 
     // -- Read (cache-aside) --
 
-    public async Task<IdentityUser?> FindByIdAsync(
+    public async Task<IIdentityUser?> FindByIdAsync(
         string userId, CancellationToken cancellationToken = default)
     {
         // Tenant-scoped or host-context lookup
@@ -34,13 +33,13 @@ internal sealed partial class CachedUserLookupService(
 
         if (entry is not null && IsFresh(entry))
         {
-            return ToIdentityUser(entry);
+            return entry;
         }
 
         // Cache miss or stale — fetch from identity provider
         try
         {
-            IdentityUser? providerUser = await identityProvider.GetUserAsync(userId, cancellationToken)
+            IIdentityUser? providerUser = await identityProvider.GetUserAsync(userId, cancellationToken)
                 .ConfigureAwait(false);
 
             if (providerUser is not null)
@@ -51,17 +50,17 @@ internal sealed partial class CachedUserLookupService(
             }
 
             // Provider returned null — user doesn't exist in provider
-            return entry is not null ? ToIdentityUser(entry) : null;
+            return entry;
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             // Graceful degradation: provider down, return stale data if available
             LogProviderError(ex, userId);
-            return entry is not null ? ToIdentityUser(entry) : null;
+            return entry;
         }
     }
 
-    public async Task<IReadOnlyList<IdentityUser>> FindByIdsAsync(
+    public async Task<IReadOnlyList<IIdentityUser>> FindByIdsAsync(
         IReadOnlyCollection<string> userIds, CancellationToken cancellationToken = default)
     {
         if (userIds.Count == 0)
@@ -73,7 +72,7 @@ internal sealed partial class CachedUserLookupService(
         IReadOnlyList<UserCacheEntry> cached = await store.FindByExternalIdsAsync(userIds, tenantId, cancellationToken)
             .ConfigureAwait(false);
 
-        var result = new List<IdentityUser>(userIds.Count);
+        var result = new List<IIdentityUser>(userIds.Count);
         var cachedDict = cached.ToDictionary(e => e.ExternalUserId);
         List<string> toFetch = [];
 
@@ -81,7 +80,7 @@ internal sealed partial class CachedUserLookupService(
         {
             if (cachedDict.TryGetValue(id, out UserCacheEntry? entry) && IsFresh(entry))
             {
-                result.Add(ToIdentityUser(entry));
+                result.Add(entry);
             }
             else
             {
@@ -100,14 +99,14 @@ internal sealed partial class CachedUserLookupService(
     private async Task FetchMissingUsersAsync(
         List<string> toFetch,
         Dictionary<string, UserCacheEntry> cachedDict,
-        List<IdentityUser> result,
+        List<IIdentityUser> result,
         CancellationToken cancellationToken)
     {
         try
         {
             foreach (string id in toFetch)
             {
-                IdentityUser? providerUser = await identityProvider.GetUserAsync(id, cancellationToken)
+                IIdentityUser? providerUser = await identityProvider.GetUserAsync(id, cancellationToken)
                     .ConfigureAwait(false);
 
                 if (providerUser is not null)
@@ -118,7 +117,7 @@ internal sealed partial class CachedUserLookupService(
                 }
                 else if (cachedDict.TryGetValue(id, out UserCacheEntry? staleEntry))
                 {
-                    result.Add(ToIdentityUser(staleEntry));
+                    result.Add(staleEntry);
                 }
             }
         }
@@ -132,19 +131,19 @@ internal sealed partial class CachedUserLookupService(
     private static void AddStaleEntries(
         List<string> ids,
         Dictionary<string, UserCacheEntry> cachedDict,
-        List<IdentityUser> result)
+        List<IIdentityUser> result)
     {
         foreach (string id in ids)
         {
             if (cachedDict.TryGetValue(id, out UserCacheEntry? staleEntry)
-                && !result.Any(u => u.Id == id))
+                && !result.Any(u => u.UserId == id))
             {
-                result.Add(ToIdentityUser(staleEntry));
+                result.Add(staleEntry);
             }
         }
     }
 
-    public async Task<PagedResult<IdentityUser>> SearchAsync(
+    public async Task<PagedResult<IIdentityUser>> SearchAsync(
         string searchTerm, int page = 1, int pageSize = QueryingDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
@@ -153,17 +152,17 @@ internal sealed partial class CachedUserLookupService(
             .SearchAsync(searchTerm, tenantId, page, pageSize, cancellationToken)
             .ConfigureAwait(false);
 
-        var items = entries.Select(ToIdentityUser).ToList();
+        var items = entries.Cast<IIdentityUser>().ToList();
         int skip = (Math.Max(page, 1) - 1) * Math.Clamp(pageSize, 1, QueryingDefaults.MaxPageSize);
-        return new PagedResult<IdentityUser>(items, totalCount, HasMore: skip + items.Count < totalCount);
+        return new PagedResult<IIdentityUser>(items, totalCount, HasMore: skip + items.Count < totalCount);
     }
 
     // -- Sync --
 
-    public async Task<IdentityUser?> RefreshByIdAsync(
+    public async Task<IIdentityUser?> RefreshByIdAsync(
         string userId, CancellationToken cancellationToken = default)
     {
-        IdentityUser? providerUser = await identityProvider.GetUserAsync(userId, cancellationToken)
+        IIdentityUser? providerUser = await identityProvider.GetUserAsync(userId, cancellationToken)
             .ConfigureAwait(false);
 
         if (providerUser is null)
@@ -184,7 +183,7 @@ internal sealed partial class CachedUserLookupService(
 
         while (true)
         {
-            IReadOnlyList<IdentityUser> page = await identityProvider.GetUsersAsync(
+            IReadOnlyList<IIdentityUser> page = await identityProvider.GetUsersAsync(
                 search: null, first: offset, max: pageSize, cancellationToken).ConfigureAwait(false);
 
             if (page.Count == 0)
@@ -220,7 +219,7 @@ internal sealed partial class CachedUserLookupService(
 
         foreach (string userId in staleIds)
         {
-            IdentityUser? providerUser = await identityProvider.GetUserAsync(userId, cancellationToken)
+            IIdentityUser? providerUser = await identityProvider.GetUserAsync(userId, cancellationToken)
                 .ConfigureAwait(false);
 
             if (providerUser is not null)
@@ -256,9 +255,9 @@ internal sealed partial class CachedUserLookupService(
     private bool IsFresh(UserCacheEntry entry) =>
         timeProvider.GetUtcNow() - entry.LastSyncedAt < _options.StalenessThreshold;
 
-    private UserCacheEntry ToCacheEntry(IdentityUser user) => new()
+    private UserCacheEntry ToCacheEntry(IIdentityUser user) => new()
     {
-        ExternalUserId = user.Id,
+        ExternalUserId = user.UserId,
         Username = user.Username,
         Email = user.Email,
         FirstName = user.FirstName,
@@ -267,14 +266,6 @@ internal sealed partial class CachedUserLookupService(
         LastSyncedAt = timeProvider.GetUtcNow(),
         TenantId = currentTenant.IsAvailable ? currentTenant.Id : null
     };
-
-    private static IdentityUser ToIdentityUser(UserCacheEntry entry) => new(
-        Id: entry.ExternalUserId,
-        Username: entry.Username,
-        Email: entry.Email,
-        FirstName: entry.FirstName,
-        LastName: entry.LastName,
-        Enabled: entry.Enabled);
 
     // -- Source-generated log messages --
 

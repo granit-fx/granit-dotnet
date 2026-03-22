@@ -80,17 +80,17 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
     {
         _handler.ResponseBody = """{"value":[{"id":"user-1","userPrincipalName":"alice@contoso.com","mail":"alice@test.com","givenName":"Alice","surname":"Doe","accountEnabled":true},{"id":"user-2","userPrincipalName":"bob@contoso.com","mail":null,"givenName":null,"surname":null,"accountEnabled":true}]}""";
 
-        IReadOnlyList<IdentityUser> result = await _provider.GetUsersAsync(
+        IReadOnlyList<IIdentityUser> result = await _provider.GetUsersAsync(
             cancellationToken: TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(2);
-        result[0].Id.ShouldBe("user-1");
+        result[0].UserId.ShouldBe("user-1");
         result[0].Username.ShouldBe("alice@contoso.com");
         result[0].Email.ShouldBe("alice@test.com");
         result[0].FirstName.ShouldBe("Alice");
         result[0].LastName.ShouldBe("Doe");
         result[0].Enabled.ShouldBeTrue();
-        result[1].Id.ShouldBe("user-2");
+        result[1].UserId.ShouldBe("user-2");
         result[1].Username.ShouldBe("bob@contoso.com");
     }
 
@@ -100,7 +100,7 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
         _handler.ResponseStatusCode = HttpStatusCode.ServiceUnavailable;
         _handler.ResponseBody = string.Empty;
 
-        IReadOnlyList<IdentityUser> result = await _provider.GetUsersAsync(
+        IReadOnlyList<IIdentityUser> result = await _provider.GetUsersAsync(
             cancellationToken: TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
@@ -113,11 +113,11 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
     {
         _handler.ResponseBody = """{"id":"user-1","userPrincipalName":"alice@contoso.com","mail":"alice@test.com","givenName":"Alice","surname":"Doe","accountEnabled":true}""";
 
-        IdentityUser? result = await _provider.GetUserAsync(
+        IIdentityUser? result = await _provider.GetUserAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.Id.ShouldBe("user-1");
+        result.UserId.ShouldBe("user-1");
         result.Username.ShouldBe("alice@contoso.com");
         result.Email.ShouldBe("alice@test.com");
         result.FirstName.ShouldBe("Alice");
@@ -131,7 +131,7 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
         _handler.ResponseStatusCode = HttpStatusCode.NotFound;
         _handler.ResponseBody = string.Empty;
 
-        IdentityUser? result = await _provider.GetUserAsync(
+        IIdentityUser? result = await _provider.GetUserAsync(
             "unknown", TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();

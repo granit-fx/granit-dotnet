@@ -19,7 +19,7 @@ internal static class IdentityProviderUserWriteEndpoints
             .WithName("CreateIdentityProviderUser")
             .WithSummary("Creates a new user in the identity provider.")
             .WithDescription("Creates a user in the upstream identity provider (Keycloak, Cognito, etc.). Returns the created user with its provider-assigned ID. Returns 501 if the provider does not support user creation.")
-            .Produces<IdentityUser>(StatusCodes.Status201Created)
+            .Produces<IIdentityUser>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status501NotImplemented);
 
         group.MapPut("/{userId}", UpdateUserAsync)
@@ -37,7 +37,7 @@ internal static class IdentityProviderUserWriteEndpoints
         return group;
     }
 
-    private static async Task<Results<Created<IdentityUser>, ProblemHttpResult>> CreateUserAsync(
+    private static async Task<Results<Created<IIdentityUser>, ProblemHttpResult>> CreateUserAsync(
         IdentityUserCreateRequest request,
         [FromServices] IIdentityUserWriter userWriter,
         [FromServices] IIdentityProviderCapabilities capabilities,
@@ -58,11 +58,11 @@ internal static class IdentityProviderUserWriteEndpoints
             request.Enabled,
             request.TemporaryPassword);
 
-        IdentityUser created = await userWriter
+        IIdentityUser created = await userWriter
             .CreateUserAsync(model, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Created($"/identity/provider/users/{created.Id}", created);
+        return TypedResults.Created($"/identity/provider/users/{created.UserId}", created);
     }
 
     private static async Task<NoContent> UpdateUserAsync(

@@ -3,14 +3,11 @@ using Granit.Identity.Models;
 using Granit.OpenIddict.Domain;
 using Granit.OpenIddict.Entities;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
-using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using GranitIdentityGroup = Granit.Identity.Models.IdentityGroup;
 using GranitIdentityRole = Granit.Identity.Models.IdentityRole;
-using GranitIdentityUser = Granit.Identity.Models.IdentityUser;
-
 #pragma warning disable EF1001 // OpenIddictDbContext is internal but accessible via InternalsVisibleTo
 
 namespace Granit.Identity.OpenIddict.Internal;
@@ -29,13 +26,12 @@ internal sealed partial class AspNetIdentityProvider(
     UserManager<GranitUser> _userManager,
     RoleManager<GranitRole> _roleManager,
     IDbContextFactory<OpenIddictDbContext> _dbFactory,
-    IClock _clock,
     ILogger<AspNetIdentityProvider> _logger) : IIdentityProvider
 {
     // ──── IIdentityUserReader ────
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<GranitIdentityUser>> GetUsersAsync(
+    public async Task<IReadOnlyList<IIdentityUser>> GetUsersAsync(
         string? search = null, int? first = null, int? max = null,
         CancellationToken cancellationToken = default)
     {
@@ -61,21 +57,21 @@ internal sealed partial class AspNetIdentityProvider(
         }
 
         List<GranitUser> users = await query.ToListAsync(cancellationToken).ConfigureAwait(false);
-        return users.Select(MapToIdentityUser).ToList();
+        return users.Cast<IIdentityUser>().ToList();
     }
 
     /// <inheritdoc/>
-    public async Task<GranitIdentityUser?> GetUserAsync(
+    public async Task<IIdentityUser?> GetUserAsync(
         string userId, CancellationToken cancellationToken = default)
     {
         GranitUser? user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
-        return user is null ? null : MapToIdentityUser(user);
+        return user;
     }
 
     // ──── IIdentityUserWriter ────
 
     /// <inheritdoc/>
-    public async Task<GranitIdentityUser> CreateUserAsync(
+    public async Task<IIdentityUser> CreateUserAsync(
         IdentityUserCreate user, CancellationToken cancellationToken = default)
     {
         GranitUser entity = new()
@@ -102,7 +98,7 @@ internal sealed partial class AspNetIdentityProvider(
             await _userManager.SetLockoutEndDateAsync(entity, DateTimeOffset.MaxValue).ConfigureAwait(false);
         }
 
-        return MapToIdentityUser(entity);
+        return entity;
     }
 
     /// <inheritdoc/>
@@ -165,11 +161,11 @@ internal sealed partial class AspNetIdentityProvider(
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<GranitIdentityUser>> GetRoleMembersAsync(
+    public async Task<IReadOnlyList<IIdentityUser>> GetRoleMembersAsync(
         string roleName, CancellationToken cancellationToken = default)
     {
         IList<GranitUser> users = await _userManager.GetUsersInRoleAsync(roleName).ConfigureAwait(false);
-        return users.Select(MapToIdentityUser).ToList();
+        return users.Cast<IIdentityUser>().ToList();
     }
 
     /// <inheritdoc/>
@@ -355,17 +351,6 @@ internal sealed partial class AspNetIdentityProvider(
         return await _userManager.CheckPasswordAsync(user, password).ConfigureAwait(false);
     }
 #pragma warning restore GRSEC003
-
-    // ──── Mapping ────
-
-    private GranitIdentityUser MapToIdentityUser(GranitUser user) =>
-        new(
-            user.Id.ToString(),
-            user.UserName,
-            user.Email,
-            user.FirstName,
-            user.LastName,
-            user.LockoutEnd is null || user.LockoutEnd <= _clock.Now);
 
     private static partial class Log
     {

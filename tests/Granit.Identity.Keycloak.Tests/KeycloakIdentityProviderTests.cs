@@ -106,14 +106,14 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
     {
         _handler.ResponseBody = """[{"id":"user-1","username":"alice","email":"alice@test.com","firstName":"Alice","lastName":"Doe","enabled":true},{"id":"user-2","username":"bob","email":null,"firstName":null,"lastName":null,"enabled":true}]""";
 
-        IReadOnlyList<IdentityUser> result = await _provider.GetRoleMembersAsync(
+        IReadOnlyList<IIdentityUser> result = await _provider.GetRoleMembersAsync(
             "editor", TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(2);
-        result[0].Id.ShouldBe("user-1");
+        result[0].UserId.ShouldBe("user-1");
         result[0].Username.ShouldBe("alice");
         result[0].Email.ShouldBe("alice@test.com");
-        result[1].Id.ShouldBe("user-2");
+        result[1].UserId.ShouldBe("user-2");
         result[1].Username.ShouldBe("bob");
     }
 
@@ -122,7 +122,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
     {
         _handler.ResponseBody = "[]";
 
-        IReadOnlyList<IdentityUser> result = await _provider.GetRoleMembersAsync(
+        IReadOnlyList<IIdentityUser> result = await _provider.GetRoleMembersAsync(
             "editor", TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
@@ -134,7 +134,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
         _handler.ResponseStatusCode = HttpStatusCode.ServiceUnavailable;
         _handler.ResponseBody = string.Empty;
 
-        IReadOnlyList<IdentityUser> result = await _provider.GetRoleMembersAsync(
+        IReadOnlyList<IIdentityUser> result = await _provider.GetRoleMembersAsync(
             "editor", TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
@@ -156,7 +156,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
     {
         _handler.ResponseBody = """[{"id":"user-1","username":"alice","email":"alice@test.com","firstName":"Alice","lastName":"Doe","enabled":true}]""";
 
-        IReadOnlyList<IdentityUser> result = await _provider.GetUsersAsync(
+        IReadOnlyList<IIdentityUser> result = await _provider.GetUsersAsync(
             search: "alice", first: 0, max: 10,
             cancellationToken: TestContext.Current.CancellationToken);
 
@@ -172,11 +172,11 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
     {
         _handler.ResponseBody = """{"id":"user-1","username":"alice","email":"alice@test.com","firstName":"Alice","lastName":"Doe","enabled":true}""";
 
-        IdentityUser? result = await _provider.GetUserAsync(
+        IIdentityUser? result = await _provider.GetUserAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.Id.ShouldBe("user-1");
+        result.UserId.ShouldBe("user-1");
         result.Username.ShouldBe("alice");
     }
 
@@ -186,7 +186,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
         _handler.ResponseStatusCode = HttpStatusCode.NotFound;
         _handler.ResponseBody = string.Empty;
 
-        IdentityUser? result = await _provider.GetUserAsync(
+        IIdentityUser? result = await _provider.GetUserAsync(
             "unknown", TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
@@ -310,11 +310,11 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
     {
         _handler.ResponseBody = """{"id":"user-1","username":"alice","email":"alice@test.com","firstName":"Alice","lastName":"Doe","enabled":true}""";
 
-        IdentityUser? result = await _provider.GetUserAsync(
+        IIdentityUser? result = await _provider.GetUserAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.Id.ShouldBe("user-1");
+        result.UserId.ShouldBe("user-1");
         result.Username.ShouldBe("alice");
         result.Email.ShouldBe("alice@test.com");
         result.FirstName.ShouldBe("Alice");
@@ -327,7 +327,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
     {
         _handler.ResponseBody = """{"id":"user-1","username":"bob","email":"bob@test.com","firstName":"Bob","lastName":"Smith","enabled":false}""";
 
-        IdentityUser? result = await _provider.GetUserAsync(
+        IIdentityUser? result = await _provider.GetUserAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
@@ -377,7 +377,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
         _handler.ResponseStatusCode = HttpStatusCode.ServiceUnavailable;
         _handler.ResponseBody = string.Empty;
 
-        IReadOnlyList<IdentityUser> result = await _provider.GetUsersAsync(
+        IReadOnlyList<IIdentityUser> result = await _provider.GetUsersAsync(
             cancellationToken: TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
@@ -674,14 +674,13 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
     {
         _handler.ResponseBody = """{"id":"user-1","username":"alice","email":"alice@test.com","firstName":"Alice","lastName":"Doe","enabled":true,"attributes":{"license":["MD-12345"],"department":["Cardiology"]}}""";
 
-        IdentityUser? result = await _provider.GetUserAsync(
+        IIdentityUser? result = await _provider.GetUserAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.Attributes.ShouldNotBeNull();
-        result.Attributes!.Count.ShouldBe(2);
-        result.Attributes["license"].ShouldBe("MD-12345");
-        result.Attributes["department"].ShouldBe("Cardiology");
+        result.ExtraProperties.Count.ShouldBe(2);
+        result.ExtraProperties["license"].ShouldBe("MD-12345");
+        result.ExtraProperties["department"].ShouldBe("Cardiology");
     }
 
     [Fact]
@@ -689,36 +688,35 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
     {
         _handler.ResponseBody = """{"id":"user-1","username":"alice","email":"alice@test.com","firstName":"Alice","lastName":"Doe","enabled":true,"attributes":{"roles":["admin","user"]}}""";
 
-        IdentityUser? result = await _provider.GetUserAsync(
+        IIdentityUser? result = await _provider.GetUserAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.Attributes.ShouldNotBeNull();
-        result.Attributes!["roles"].ShouldBe("admin");
+        result.ExtraProperties["roles"].ShouldBe("admin");
     }
 
     [Fact]
-    public async Task GetUserAsync_WithoutAttributes_AttributesAreNull()
+    public async Task GetUserAsync_WithoutAttributes_ExtraPropertiesAreEmpty()
     {
         _handler.ResponseBody = """{"id":"user-1","username":"alice","email":"alice@test.com","firstName":"Alice","lastName":"Doe","enabled":true}""";
 
-        IdentityUser? result = await _provider.GetUserAsync(
+        IIdentityUser? result = await _provider.GetUserAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.Attributes.ShouldBeNull();
+        result.ExtraProperties.ShouldBeEmpty();
     }
 
     [Fact]
-    public async Task GetUserAsync_WithEmptyAttributes_AttributesAreNull()
+    public async Task GetUserAsync_WithEmptyAttributes_ExtraPropertiesAreEmpty()
     {
         _handler.ResponseBody = """{"id":"user-1","username":"alice","email":"alice@test.com","firstName":"Alice","lastName":"Doe","enabled":true,"attributes":{}}""";
 
-        IdentityUser? result = await _provider.GetUserAsync(
+        IIdentityUser? result = await _provider.GetUserAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.Attributes.ShouldBeNull();
+        result.ExtraProperties.ShouldBeEmpty();
     }
 
     [Fact]
@@ -726,13 +724,12 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
     {
         _handler.ResponseBody = """[{"id":"user-1","username":"alice","email":"alice@test.com","firstName":"Alice","lastName":"Doe","enabled":true,"attributes":{"dept":["IT"]}},{"id":"user-2","username":"bob","email":null,"firstName":null,"lastName":null,"enabled":true}]""";
 
-        IReadOnlyList<IdentityUser> result = await _provider.GetUsersAsync(
+        IReadOnlyList<IIdentityUser> result = await _provider.GetUsersAsync(
             cancellationToken: TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(2);
-        result[0].Attributes.ShouldNotBeNull();
-        result[0].Attributes!["dept"].ShouldBe("IT");
-        result[1].Attributes.ShouldBeNull();
+        result[0].ExtraProperties["dept"].ShouldBe("IT");
+        result[1].ExtraProperties.ShouldBeEmpty();
     }
 
     // --- Feature 1: GetUserRolesAsync tests ---
@@ -969,9 +966,9 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
 
         IdentityUserCreate newUser = new("alice", "alice@test.com", "Alice", "Doe");
 
-        IdentityUser result = await provider.CreateUserAsync(newUser, TestContext.Current.CancellationToken);
+        IIdentityUser result = await provider.CreateUserAsync(newUser, TestContext.Current.CancellationToken);
 
-        result.Id.ShouldBe("new-user-id");
+        result.UserId.ShouldBe("new-user-id");
         result.Username.ShouldBe("alice");
         result.Email.ShouldBe("alice@test.com");
         result.FirstName.ShouldBe("Alice");

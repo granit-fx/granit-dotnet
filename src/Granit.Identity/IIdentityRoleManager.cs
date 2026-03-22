@@ -12,7 +12,7 @@ public interface IIdentityRoleManager
         CancellationToken cancellationToken = default);
 
     /// <inheritdoc cref="IIdentityProvider.GetRoleMembersAsync"/>
-    Task<IReadOnlyList<IdentityUser>> GetRoleMembersAsync(
+    Task<IReadOnlyList<IIdentityUser>> GetRoleMembersAsync(
         string roleName,
         CancellationToken cancellationToken = default);
 

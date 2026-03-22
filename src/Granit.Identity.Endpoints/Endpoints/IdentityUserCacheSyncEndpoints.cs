@@ -1,5 +1,4 @@
 using Granit.Identity.Endpoints.Dtos;
-using Granit.Identity.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -19,7 +18,7 @@ internal static class IdentityUserCacheSyncEndpoints
             .WithName("SyncIdentityUsers")
             .WithSummary("Forces refresh of specific users from the identity provider.")
             .WithDescription("Fetches the latest data for the specified user IDs from the identity provider and updates the cache. Returns the refreshed user records. Users not found in the provider are silently skipped.")
-            .Produces<IReadOnlyList<IdentityUser>>();
+            .Produces<IReadOnlyList<IIdentityUser>>();
 
         group.MapPost("/sync-all", SyncAllAsync)
             .WithName("SyncAllIdentityUsers")
@@ -36,16 +35,16 @@ internal static class IdentityUserCacheSyncEndpoints
         return group;
     }
 
-    private static async Task<Ok<IReadOnlyList<IdentityUser>>> SyncAsync(
+    private static async Task<Ok<IReadOnlyList<IIdentityUser>>> SyncAsync(
         IdentityUserCacheSyncRequest request,
         [FromServices] IUserLookupService lookupService,
         CancellationToken cancellationToken)
     {
-        var results = new List<IdentityUser>();
+        var results = new List<IIdentityUser>();
 
         foreach (string userId in request.UserIds)
         {
-            IdentityUser? refreshed = await lookupService.RefreshByIdAsync(userId, cancellationToken)
+            IIdentityUser? refreshed = await lookupService.RefreshByIdAsync(userId, cancellationToken)
                 .ConfigureAwait(false);
 
             if (refreshed is not null)
@@ -54,7 +53,7 @@ internal static class IdentityUserCacheSyncEndpoints
             }
         }
 
-        return TypedResults.Ok<IReadOnlyList<IdentityUser>>(results);
+        return TypedResults.Ok<IReadOnlyList<IIdentityUser>>(results);
     }
 
     private static async Task<Ok<IdentityUserCacheSyncAllResponse>> SyncAllAsync(

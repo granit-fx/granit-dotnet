@@ -24,14 +24,14 @@ internal static class AdminUserEndpoints
             .WithName("ListUsers")
             .WithSummary("Returns a paginated list of users.")
             .WithDescription("Supports search, pagination, and tenant filtering.")
-            .Produces<IReadOnlyList<IdentityUser>>()
+            .Produces<IReadOnlyList<IIdentityUser>>()
             .RequireAuthorization(OpenIddictPermissions.Users.Read);
 
         users.MapGet("/{userId:guid}", GetUserAsync)
             .WithName("GetUser")
             .WithSummary("Returns a user by ID.")
             .WithDescription("Returns the full user detail including roles and groups.")
-            .Produces<IdentityUser>()
+            .Produces<IIdentityUser>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(OpenIddictPermissions.Users.Read);
 
@@ -39,7 +39,7 @@ internal static class AdminUserEndpoints
             .WithName("CreateUser")
             .WithSummary("Creates a new user.")
             .WithDescription("Admin-initiated user creation. No email confirmation required.")
-            .Produces<IdentityUser>(StatusCodes.Status201Created)
+            .Produces<IIdentityUser>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .RequireAuthorization(OpenIddictPermissions.Users.Create);
 
@@ -65,23 +65,23 @@ internal static class AdminUserEndpoints
         return group;
     }
 
-    private static async Task<Ok<IReadOnlyList<IdentityUser>>> ListUsersAsync(
+    private static async Task<Ok<IReadOnlyList<IIdentityUser>>> ListUsersAsync(
         [FromServices] IIdentityUserReader userReader,
         string? search = null, int page = 0, int pageSize = 20,
         CancellationToken cancellationToken = default)
     {
-        IReadOnlyList<IdentityUser> users = await userReader
+        IReadOnlyList<IIdentityUser> users = await userReader
             .GetUsersAsync(search, page * pageSize, pageSize, cancellationToken)
             .ConfigureAwait(false);
         return TypedResults.Ok(users);
     }
 
-    private static async Task<Results<Ok<IdentityUser>, NotFound>> GetUserAsync(
+    private static async Task<Results<Ok<IIdentityUser>, NotFound>> GetUserAsync(
         Guid userId,
         [FromServices] IIdentityUserReader userReader,
         CancellationToken cancellationToken = default)
     {
-        IdentityUser? user = await userReader
+        IIdentityUser? user = await userReader
             .GetUserAsync(userId.ToString(), cancellationToken)
             .ConfigureAwait(false);
 
@@ -90,12 +90,12 @@ internal static class AdminUserEndpoints
             : TypedResults.Ok(user);
     }
 
-    private static async Task<Created<IdentityUser>> CreateUserAsync(
+    private static async Task<Created<IIdentityUser>> CreateUserAsync(
         AdminUserCreateRequest request,
         [FromServices] IIdentityProvider identityProvider,
         CancellationToken cancellationToken = default)
     {
-        IdentityUser user = await identityProvider.CreateUserAsync(
+        IIdentityUser user = await identityProvider.CreateUserAsync(
             new IdentityUserCreate(
                 request.Email,
                 request.Email,
@@ -105,7 +105,7 @@ internal static class AdminUserEndpoints
                 request.TemporaryPassword),
             cancellationToken).ConfigureAwait(false);
 
-        return TypedResults.Created($"/api/admin/users/{user.Id}", user);
+        return TypedResults.Created($"/api/admin/users/{user.UserId}", user);
     }
 
     private static async Task<Results<NoContent, NotFound>> DeleteUserAsync(
@@ -114,7 +114,7 @@ internal static class AdminUserEndpoints
         [FromServices] IAccountDeletionService deletionService,
         CancellationToken cancellationToken = default)
     {
-        IdentityUser? user = await userReader
+        IIdentityUser? user = await userReader
             .GetUserAsync(userId.ToString(), cancellationToken)
             .ConfigureAwait(false);
 

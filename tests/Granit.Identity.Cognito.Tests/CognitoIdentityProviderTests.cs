@@ -2,6 +2,7 @@ using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Runtime;
 using Granit.Core.Events;
+using Granit.Identity;
 using Granit.Identity.Cognito.Internal;
 using Granit.Identity.Cognito.Options;
 using Granit.Identity.Models;
@@ -49,7 +50,7 @@ public sealed class CognitoIdentityProviderTests
                 ],
             });
 
-        IReadOnlyList<IdentityUser> result = await _sut.GetUsersAsync(
+        IReadOnlyList<IIdentityUser> result = await _sut.GetUsersAsync(
             cancellationToken: TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(1);
@@ -63,7 +64,7 @@ public sealed class CognitoIdentityProviderTests
         _cognitoClient.ListUsersAsync(Arg.Any<ListUsersRequest>(), Arg.Any<CancellationToken>())
             .ThrowsAsync(new AmazonServiceException("timeout"));
 
-        IReadOnlyList<IdentityUser> result = await _sut.GetUsersAsync(
+        IReadOnlyList<IIdentityUser> result = await _sut.GetUsersAsync(
             cancellationToken: TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
@@ -87,7 +88,7 @@ public sealed class CognitoIdentityProviderTests
                 ],
             });
 
-        IdentityUser? result = await _sut.GetUserAsync("user1", TestContext.Current.CancellationToken);
+        IIdentityUser? result = await _sut.GetUserAsync("user1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.Username.ShouldBe("user1");
@@ -103,7 +104,7 @@ public sealed class CognitoIdentityProviderTests
         _cognitoClient.AdminGetUserAsync(Arg.Any<AdminGetUserRequest>(), Arg.Any<CancellationToken>())
             .ThrowsAsync(new UserNotFoundException("not found"));
 
-        IdentityUser? result = await _sut.GetUserAsync("unknown", TestContext.Current.CancellationToken);
+        IIdentityUser? result = await _sut.GetUserAsync("unknown", TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -143,7 +144,7 @@ public sealed class CognitoIdentityProviderTests
 
         IdentityUserCreate createRequest = new("newuser", "new@test.com", "Jane", "Smith");
 
-        IdentityUser result = await _sut.CreateUserAsync(createRequest, TestContext.Current.CancellationToken);
+        IIdentityUser result = await _sut.CreateUserAsync(createRequest, TestContext.Current.CancellationToken);
 
         result.Username.ShouldBe("newuser");
         result.Email.ShouldBe("new@test.com");

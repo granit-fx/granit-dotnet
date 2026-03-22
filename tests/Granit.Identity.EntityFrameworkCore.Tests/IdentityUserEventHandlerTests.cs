@@ -31,9 +31,9 @@ public sealed class IdentityUserEventHandlerTests
     [Fact]
     public async Task HandleUpdated_FetchesAndUpsertsCache()
     {
-        var user = new IdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true);
+        var user = new FederatedIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true);
         _provider.GetUserAsync("user-1", Arg.Any<CancellationToken>())
-            .Returns(user);
+            .Returns(Task.FromResult<IIdentityUser?>(user));
 
         IdentityUserEventHandler handler = CreateHandler();
         await handler.HandleAsync(
@@ -48,7 +48,7 @@ public sealed class IdentityUserEventHandlerTests
     public async Task HandleUpdated_DoesNotUpsert_WhenProviderReturnsNull()
     {
         _provider.GetUserAsync("user-1", Arg.Any<CancellationToken>())
-            .Returns((IdentityUser?)null);
+            .Returns(Task.FromResult<IIdentityUser?>(null));
 
         IdentityUserEventHandler handler = CreateHandler();
         await handler.HandleAsync(

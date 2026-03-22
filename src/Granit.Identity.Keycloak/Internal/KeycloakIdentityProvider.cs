@@ -36,7 +36,7 @@ internal sealed partial class KeycloakIdentityProvider(
 {
     private const string ProviderName = "keycloak";
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<IdentityUser>> GetUsersAsync(
+    public async Task<IReadOnlyList<IIdentityUser>> GetUsersAsync(
         string? search = null,
         int? first = null,
         int? max = null,
@@ -65,7 +65,7 @@ internal sealed partial class KeycloakIdentityProvider(
     }
 
     /// <inheritdoc/>
-    public async Task<IdentityUser?> GetUserAsync(
+    public async Task<IIdentityUser?> GetUserAsync(
         string userId,
         CancellationToken cancellationToken = default)
     {
@@ -305,7 +305,7 @@ internal sealed partial class KeycloakIdentityProvider(
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<IdentityUser>> GetRoleMembersAsync(
+    public async Task<IReadOnlyList<IIdentityUser>> GetRoleMembersAsync(
         string roleName,
         CancellationToken cancellationToken = default)
     {
@@ -542,7 +542,7 @@ internal sealed partial class KeycloakIdentityProvider(
     // ──── Feature 4: User creation ────
 
     /// <inheritdoc/>
-    public async Task<IdentityUser> CreateUserAsync(
+    public async Task<IIdentityUser> CreateUserAsync(
         IdentityUserCreate user,
         CancellationToken cancellationToken = default)
     {
@@ -589,7 +589,7 @@ internal sealed partial class KeycloakIdentityProvider(
 
         await distributedEventBus.PublishAsync(new IdentityUserCreatedEto(createdUserId, user.Username, user.Email), cancellationToken).ConfigureAwait(false);
 
-        return new IdentityUser(
+        return new FederatedIdentityUser(
             createdUserId,
             user.Username,
             user.Email,
@@ -756,7 +756,7 @@ internal sealed partial class KeycloakIdentityProvider(
         return client;
     }
 
-    private static IdentityUser ToIdentityUser(KeycloakUserRepresentation user) =>
+    private static FederatedIdentityUser ToIdentityUser(KeycloakUserRepresentation user) =>
         new(user.Id, user.Username, user.Email, user.FirstName, user.LastName, user.Enabled,
             FlattenAttributes(user.Attributes));
 

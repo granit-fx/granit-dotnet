@@ -30,7 +30,7 @@ internal sealed partial class CognitoIdentityProvider(
     // ── IIdentityUserReader ────────────────────────────────────────────────
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<IdentityUser>> GetUsersAsync(
+    public async Task<IReadOnlyList<IIdentityUser>> GetUsersAsync(
         string? search = null,
         int? first = null,
         int? max = null,
@@ -69,7 +69,7 @@ internal sealed partial class CognitoIdentityProvider(
     }
 
     /// <inheritdoc/>
-    public async Task<IdentityUser?> GetUserAsync(
+    public async Task<IIdentityUser?> GetUserAsync(
         string userId,
         CancellationToken cancellationToken = default)
     {
@@ -194,7 +194,7 @@ internal sealed partial class CognitoIdentityProvider(
     }
 
     /// <inheritdoc/>
-    public async Task<IdentityUser> CreateUserAsync(
+    public async Task<IIdentityUser> CreateUserAsync(
         IdentityUserCreate user,
         CancellationToken cancellationToken = default)
     {
@@ -231,15 +231,15 @@ internal sealed partial class CognitoIdentityProvider(
             .AdminCreateUserAsync(request, cancellationToken)
             .ConfigureAwait(false);
 
-        IdentityUser createdUser = ToIdentityUser(response.User);
+        FederatedIdentityUser createdUser = ToIdentityUser(response.User);
 
         if (!user.Enabled)
         {
-            await SetUserEnabledAsync(createdUser.Id, false, cancellationToken).ConfigureAwait(false);
+            await SetUserEnabledAsync(createdUser.UserId, false, cancellationToken).ConfigureAwait(false);
         }
 
         await distributedEventBus.PublishAsync(
-            new Events.IdentityUserCreatedEto(createdUser.Id, createdUser.Username ?? user.Username, createdUser.Email),
+            new Events.IdentityUserCreatedEto(createdUser.UserId, createdUser.Username ?? user.Username, createdUser.Email),
             cancellationToken).ConfigureAwait(false);
 
         return createdUser;
@@ -258,7 +258,7 @@ internal sealed partial class CognitoIdentityProvider(
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<IdentityUser>> GetRoleMembersAsync(
+    public async Task<IReadOnlyList<IIdentityUser>> GetRoleMembersAsync(
         string roleName,
         CancellationToken cancellationToken = default)
     {
@@ -581,35 +581,35 @@ internal sealed partial class CognitoIdentityProvider(
 
     // ── Mapping helpers ────────────────────────────────────────────────────
 
-    private static IdentityUser ToIdentityUser(UserType user)
+    private static FederatedIdentityUser ToIdentityUser(UserType user)
     {
         var attributes = user.Attributes
             .ToDictionary(a => a.Name, a => a.Value);
 
-        return new IdentityUser(
-            Id: user.Username,
+        return new FederatedIdentityUser(
+            UserId: user.Username,
             Username: user.Username,
             Email: attributes.GetValueOrDefault(EmailAttribute),
             FirstName: attributes.GetValueOrDefault(GivenNameAttribute),
             LastName: attributes.GetValueOrDefault(FamilyNameAttribute),
             Enabled: user.Enabled == true,
-            Attributes: attributes.Where(a => a.Key.StartsWith("custom:", StringComparison.Ordinal))
+            ExtraProperties: attributes.Where(a => a.Key.StartsWith("custom:", StringComparison.Ordinal))
                 .ToDictionary(a => a.Key, a => a.Value));
     }
 
-    private static IdentityUser ToIdentityUser(AdminGetUserResponse response)
+    private static FederatedIdentityUser ToIdentityUser(AdminGetUserResponse response)
     {
         var attributes = response.UserAttributes
             .ToDictionary(a => a.Name, a => a.Value);
 
-        return new IdentityUser(
-            Id: response.Username,
+        return new FederatedIdentityUser(
+            UserId: response.Username,
             Username: response.Username,
             Email: attributes.GetValueOrDefault(EmailAttribute),
             FirstName: attributes.GetValueOrDefault(GivenNameAttribute),
             LastName: attributes.GetValueOrDefault(FamilyNameAttribute),
             Enabled: response.Enabled == true,
-            Attributes: attributes.Where(a => a.Key.StartsWith("custom:", StringComparison.Ordinal))
+            ExtraProperties: attributes.Where(a => a.Key.StartsWith("custom:", StringComparison.Ordinal))
                 .ToDictionary(a => a.Key, a => a.Value));
     }
 

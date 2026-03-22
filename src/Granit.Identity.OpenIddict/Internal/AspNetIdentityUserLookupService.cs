@@ -1,11 +1,8 @@
 using Granit.Identity;
 using Granit.OpenIddict.Entities;
 using Granit.Querying;
-using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using GranitIdentityUser = Granit.Identity.Models.IdentityUser;
-
 namespace Granit.Identity.OpenIddict.Internal;
 
 /// <summary>
@@ -13,30 +10,29 @@ namespace Granit.Identity.OpenIddict.Internal;
 /// bypassing any redundant cache layer.
 /// </summary>
 internal sealed class AspNetIdentityUserLookupService(
-    UserManager<GranitUser> _userManager,
-    IClock _clock) : IUserLookupService
+    UserManager<GranitUser> _userManager) : IUserLookupService
 {
     /// <inheritdoc/>
-    public async Task<GranitIdentityUser?> FindByIdAsync(
+    public async Task<IIdentityUser?> FindByIdAsync(
         string userId, CancellationToken cancellationToken = default)
     {
         GranitUser? user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
-        return user is null ? null : MapToIdentityUser(user);
+        return user;
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<GranitIdentityUser>> FindByIdsAsync(
+    public async Task<IReadOnlyList<IIdentityUser>> FindByIdsAsync(
         IReadOnlyCollection<string> userIds, CancellationToken cancellationToken = default)
     {
         var guidIds = userIds.Select(Guid.Parse).ToList();
         List<GranitUser> users = await _userManager.Users.AsNoTracking()
             .Where(u => guidIds.Contains(u.Id))
             .ToListAsync(cancellationToken).ConfigureAwait(false);
-        return users.Select(MapToIdentityUser).ToList();
+        return users.Cast<IIdentityUser>().ToList();
     }
 
     /// <inheritdoc/>
-    public async Task<PagedResult<GranitIdentityUser>> SearchAsync(
+    public async Task<PagedResult<IIdentityUser>> SearchAsync(
         string searchTerm, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
     {
         IQueryable<GranitUser> query = _userManager.Users.AsNoTracking();
@@ -57,15 +53,15 @@ internal sealed class AspNetIdentityUserLookupService(
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
         bool hasMore = ((page * pageSize) + items.Count) < totalCount;
-        return new PagedResult<GranitIdentityUser>(
-            items.Select(MapToIdentityUser).ToList(),
+        return new PagedResult<IIdentityUser>(
+            items.Cast<IIdentityUser>().ToList(),
             totalCount,
             hasMore,
             null);
     }
 
     /// <inheritdoc/>
-    public Task<GranitIdentityUser?> RefreshByIdAsync(
+    public Task<IIdentityUser?> RefreshByIdAsync(
         string userId, CancellationToken cancellationToken = default) =>
         FindByIdAsync(userId, cancellationToken);
 
@@ -85,12 +81,4 @@ internal sealed class AspNetIdentityUserLookupService(
     public Task PseudonymizeByIdAsync(string userId, CancellationToken cancellationToken = default) =>
         Task.CompletedTask;
 
-    private GranitIdentityUser MapToIdentityUser(GranitUser user) =>
-        new(
-            user.Id.ToString(),
-            user.UserName,
-            user.Email,
-            user.FirstName,
-            user.LastName,
-            user.LockoutEnd is null || user.LockoutEnd <= _clock.Now);
 }

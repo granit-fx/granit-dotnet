@@ -40,7 +40,7 @@ internal static class AccountProfileEndpoints
         CancellationToken cancellationToken)
     {
         string userId = httpContext.User.FindFirst("sub")!.Value;
-        Granit.Identity.Models.IdentityUser? user = await userReader
+        IIdentityUser? user = await userReader
             .GetUserAsync(userId, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Ok(MapToProfile(user!, userId));
@@ -64,14 +64,14 @@ internal static class AccountProfileEndpoints
             },
             cancellationToken).ConfigureAwait(false);
 
-        Granit.Identity.Models.IdentityUser? updated = await userReader
+        IIdentityUser? updated = await userReader
             .GetUserAsync(userId, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Ok(MapToProfile(updated!, userId));
     }
 
     private static AccountProfileResponse MapToProfile(
-        Granit.Identity.Models.IdentityUser user, string userId) =>
+        IIdentityUser user, string userId) =>
         new(
             Guid.Parse(userId),
             user.Email ?? string.Empty,

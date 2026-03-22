@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using FirebaseAdmin.Auth;
 using Granit.Core.Events;
+using Granit.Identity;
 using Granit.Identity.Events;
 using Granit.Identity.GoogleCloud.Internal;
 using Granit.Identity.GoogleCloud.Options;
@@ -37,10 +38,10 @@ public sealed class GoogleCloudIdentityProviderTests
         UserRecord user = CreateUserRecord("uid-1", "john@example.com", "John Doe");
         _transport.GetUserAsync("uid-1", Arg.Any<CancellationToken>()).Returns(user);
 
-        IdentityUser? result = await _sut.GetUserAsync("uid-1", TestContext.Current.CancellationToken);
+        IIdentityUser? result = await _sut.GetUserAsync("uid-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.Id.ShouldBe("uid-1");
+        result.UserId.ShouldBe("uid-1");
         result.Email.ShouldBe("john@example.com");
         result.FirstName.ShouldBe("John");
         result.LastName.ShouldBe("Doe");
@@ -52,7 +53,7 @@ public sealed class GoogleCloudIdentityProviderTests
         _transport.GetUserAsync("uid-1", Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("transport error"));
 
-        IdentityUser? result = await _sut.GetUserAsync("uid-1", TestContext.Current.CancellationToken);
+        IIdentityUser? result = await _sut.GetUserAsync("uid-1", TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -107,9 +108,9 @@ public sealed class GoogleCloudIdentityProviderTests
         UserRecord createdRecord = CreateUserRecord("new-uid", "new@example.com", "New User");
         _transport.CreateUserAsync(Arg.Any<UserRecordArgs>(), Arg.Any<CancellationToken>()).Returns(createdRecord);
 
-        IdentityUser result = await _sut.CreateUserAsync(create, TestContext.Current.CancellationToken);
+        IIdentityUser result = await _sut.CreateUserAsync(create, TestContext.Current.CancellationToken);
 
-        result.Id.ShouldBe("new-uid");
+        result.UserId.ShouldBe("new-uid");
         result.Email.ShouldBe("new@example.com");
         await _transport.Received(1).CreateUserAsync(
             Arg.Is<UserRecordArgs>(a =>

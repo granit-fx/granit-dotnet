@@ -59,15 +59,15 @@ public sealed class IdentityUserCacheReadEndpointsTests : IAsyncDisposable
     public async Task Search_returns_200_with_results()
     {
         _lookupService.SearchAsync("john", 1, 20, Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<IdentityUser>(
-                [new("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)], 1, HasMore: false));
+            .Returns(Task.FromResult(new PagedResult<IIdentityUser>(
+                [new FederatedIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)], 1, HasMore: false)));
 
         HttpResponseMessage response = await _adminClient.GetAsync(
             $"{Prefix}?search=john", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        PagedResult<IdentityUser>? result = await response.Content
-            .ReadFromJsonAsync<PagedResult<IdentityUser>>(TestContext.Current.CancellationToken);
+        PagedResult<FederatedIdentityUser>? result = await response.Content
+            .ReadFromJsonAsync<PagedResult<FederatedIdentityUser>>(TestContext.Current.CancellationToken);
         result.ShouldNotBeNull();
         result.Items.Count.ShouldBe(1);
         result.TotalCount.ShouldBe(1);
@@ -89,23 +89,23 @@ public sealed class IdentityUserCacheReadEndpointsTests : IAsyncDisposable
     public async Task GetById_existing_user_returns_200()
     {
         _lookupService.FindByIdAsync("user-1", Arg.Any<CancellationToken>())
-            .Returns(new IdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true));
+            .Returns(Task.FromResult<IIdentityUser?>(new FederatedIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)));
 
         HttpResponseMessage response = await _adminClient.GetAsync(
             $"{Prefix}/user-1", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        IdentityUser? user = await response.Content
-            .ReadFromJsonAsync<IdentityUser>(TestContext.Current.CancellationToken);
+        FederatedIdentityUser? user = await response.Content
+            .ReadFromJsonAsync<FederatedIdentityUser>(TestContext.Current.CancellationToken);
         user.ShouldNotBeNull();
-        user.Id.ShouldBe("user-1");
+        user.UserId.ShouldBe("user-1");
     }
 
     [Fact]
     public async Task GetById_unknown_user_returns_404()
     {
         _lookupService.FindByIdAsync("nonexistent", Arg.Any<CancellationToken>())
-            .Returns((IdentityUser?)null);
+            .Returns(Task.FromResult<IIdentityUser?>(null));
 
         HttpResponseMessage response = await _adminClient.GetAsync(
             $"{Prefix}/nonexistent", TestContext.Current.CancellationToken);
@@ -119,9 +119,9 @@ public sealed class IdentityUserCacheReadEndpointsTests : IAsyncDisposable
     public async Task BatchResolve_returns_200_with_results()
     {
         _lookupService.FindByIdsAsync(Arg.Any<IReadOnlyCollection<string>>(), Arg.Any<CancellationToken>())
-            .Returns([
-                new("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true),
-                new("user-2", "jane", "jane@test.com", "Jane", "Smith", true),
+            .Returns((IReadOnlyList<IIdentityUser>)[
+                new FederatedIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true),
+                new FederatedIdentityUser("user-2", "jane", "jane@test.com", "Jane", "Smith", true),
             ]);
 
         HttpResponseMessage response = await _adminClient.PostAsJsonAsync(
@@ -130,8 +130,8 @@ public sealed class IdentityUserCacheReadEndpointsTests : IAsyncDisposable
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        List<IdentityUser>? users = await response.Content
-            .ReadFromJsonAsync<List<IdentityUser>>(TestContext.Current.CancellationToken);
+        List<FederatedIdentityUser>? users = await response.Content
+            .ReadFromJsonAsync<List<FederatedIdentityUser>>(TestContext.Current.CancellationToken);
         users.ShouldNotBeNull();
         users.Count.ShouldBe(2);
     }

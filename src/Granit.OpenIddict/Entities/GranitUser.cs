@@ -1,4 +1,7 @@
+using System.Collections.ObjectModel;
+using System.Text.Json;
 using Granit.Core.Domain;
+using Granit.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace Granit.OpenIddict.Entities;
@@ -18,8 +21,10 @@ namespace Granit.OpenIddict.Entities;
 /// <see cref="IdentityUser{TKey}.ConcurrencyStamp"/> property.
 /// </para>
 /// </remarks>
-public class GranitUser : IdentityUser<Guid>, IMultiTenant
+public class GranitUser : IdentityUser<Guid>, IMultiTenant, IIdentityUser
 {
+    private IReadOnlyDictionary<string, string>? _parsedExtraProperties;
+
     /// <summary>Gets or sets the user's first name.</summary>
     public string? FirstName { get; set; }
 
@@ -54,4 +59,69 @@ public class GranitUser : IdentityUser<Guid>, IMultiTenant
 
     /// <summary>Identifier of the user who last modified the entity.</summary>
     public string? ModifiedBy { get; set; }
+
+    // ──── IIdentityUser (explicit implementation — zero mapping) ────
+
+    /// <inheritdoc/>
+    string IIdentityUser.UserId => Id.ToString();
+
+    /// <inheritdoc/>
+    string? IIdentityUser.Username => UserName;
+
+    /// <inheritdoc/>
+    string? IIdentityUser.Email => Email;
+
+    /// <inheritdoc/>
+#pragma warning disable GRSEC001 // Entity has no IClock access — LockoutEnd comparison needs current time
+    bool IIdentityUser.Enabled => LockoutEnd is null || LockoutEnd <= DateTimeOffset.UtcNow;
+#pragma warning restore GRSEC001
+
+    /// <inheritdoc/>
+    IReadOnlyDictionary<string, string> IIdentityUser.ExtraProperties =>
+        _parsedExtraProperties ??= DeserializeExtraProperties();
+
+    // ──── ExtraProperties helpers ────
+
+    /// <summary>Sets an extra property. Pass <see langword="null"/> to remove.</summary>
+    public void SetExtraProperty(string name, string? value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        Dictionary<string, string> props = string.IsNullOrWhiteSpace(CustomAttributesJson)
+            ? []
+            : JsonSerializer.Deserialize<Dictionary<string, string>>(CustomAttributesJson) ?? [];
+
+        if (value is null)
+        {
+            props.Remove(name);
+        }
+        else
+        {
+            props[name] = value;
+        }
+
+        CustomAttributesJson = props.Count > 0 ? JsonSerializer.Serialize(props) : null;
+        _parsedExtraProperties = null;
+    }
+
+    /// <summary>Gets an extra property by name.</summary>
+    public string? GetExtraProperty(string name)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        return ((IIdentityUser)this).ExtraProperties.GetValueOrDefault(name);
+    }
+
+    private ReadOnlyDictionary<string, string> DeserializeExtraProperties()
+    {
+        if (string.IsNullOrWhiteSpace(CustomAttributesJson))
+        {
+            return ReadOnlyDictionary<string, string>.Empty;
+        }
+
+        Dictionary<string, string>? parsed =
+            JsonSerializer.Deserialize<Dictionary<string, string>>(CustomAttributesJson);
+
+        return parsed is { Count: > 0 }
+            ? new ReadOnlyDictionary<string, string>(parsed)
+            : ReadOnlyDictionary<string, string>.Empty;
+    }
 }

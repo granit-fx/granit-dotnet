@@ -1,4 +1,3 @@
-using Granit.Identity.Models;
 using Granit.Querying;
 
 namespace Granit.Identity.Internal;
@@ -11,26 +10,26 @@ namespace Granit.Identity.Internal;
 internal sealed class NullUserLookupService : IUserLookupService
 {
     /// <inheritdoc/>
-    public Task<IdentityUser?> FindByIdAsync(string userId, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IdentityUser?>(null);
+    public Task<IIdentityUser?> FindByIdAsync(string userId, CancellationToken cancellationToken = default) =>
+        Task.FromResult<IIdentityUser?>(null);
 
     /// <inheritdoc/>
-    public Task<IReadOnlyList<IdentityUser>> FindByIdsAsync(
+    public Task<IReadOnlyList<IIdentityUser>> FindByIdsAsync(
         IReadOnlyCollection<string> userIds,
         CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<IdentityUser>>([]);
+        Task.FromResult<IReadOnlyList<IIdentityUser>>([]);
 
     /// <inheritdoc/>
-    public Task<PagedResult<IdentityUser>> SearchAsync(
+    public Task<PagedResult<IIdentityUser>> SearchAsync(
         string searchTerm,
         int page = 1,
         int pageSize = QueryingDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default) =>
-        Task.FromResult(new PagedResult<IdentityUser>([], 0, HasMore: false));
+        Task.FromResult(new PagedResult<IIdentityUser>([], 0, HasMore: false));
 
     /// <inheritdoc/>
-    public Task<IdentityUser?> RefreshByIdAsync(string userId, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IdentityUser?>(null);
+    public Task<IIdentityUser?> RefreshByIdAsync(string userId, CancellationToken cancellationToken = default) =>
+        Task.FromResult<IIdentityUser?>(null);
 
     /// <inheritdoc/>
     public Task<int> RefreshAllAsync(CancellationToken cancellationToken = default) =>

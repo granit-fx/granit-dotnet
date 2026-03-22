@@ -3,7 +3,6 @@ using Granit.Identity.EntityFrameworkCore.Entities;
 using Granit.Identity.EntityFrameworkCore.Events;
 using Granit.Identity.EntityFrameworkCore.Internal;
 using Granit.Identity.Events;
-using Granit.Identity.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Identity.EntityFrameworkCore.Handlers;
@@ -77,7 +76,7 @@ internal sealed partial class IdentityUserEventHandler(
 
     private async Task SyncUserCacheAsync(string userId, CancellationToken cancellationToken)
     {
-        IdentityUser? user = await identityProvider.GetUserAsync(userId, cancellationToken)
+        IIdentityUser? user = await identityProvider.GetUserAsync(userId, cancellationToken)
             .ConfigureAwait(false);
 
         if (user is null)
@@ -88,7 +87,7 @@ internal sealed partial class IdentityUserEventHandler(
 
         var entry = new UserCacheEntry
         {
-            ExternalUserId = user.Id,
+            ExternalUserId = user.UserId,
             Username = user.Username,
             Email = user.Email,
             FirstName = user.FirstName,
@@ -100,7 +99,7 @@ internal sealed partial class IdentityUserEventHandler(
         await store.UpsertAsync(entry, cancellationToken).ConfigureAwait(false);
 
         await distributedEventBus.PublishAsync(
-            new UserCacheSyncedEto(user.Id, entry.TenantId, entry.LastSyncedAt), cancellationToken)
+            new UserCacheSyncedEto(user.UserId, entry.TenantId, entry.LastSyncedAt), cancellationToken)
             .ConfigureAwait(false);
     }
 

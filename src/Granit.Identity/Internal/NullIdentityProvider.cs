@@ -10,15 +10,15 @@ namespace Granit.Identity.Internal;
 internal sealed class NullIdentityProvider : IIdentityProvider
 {
     /// <inheritdoc/>
-    public Task<IReadOnlyList<IdentityUser>> GetUsersAsync(
+    public Task<IReadOnlyList<IIdentityUser>> GetUsersAsync(
         string? search = null, int? first = null, int? max = null,
         CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<IdentityUser>>([]);
+        Task.FromResult<IReadOnlyList<IIdentityUser>>([]);
 
     /// <inheritdoc/>
-    public Task<IdentityUser?> GetUserAsync(
+    public Task<IIdentityUser?> GetUserAsync(
         string userId, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IdentityUser?>(null);
+        Task.FromResult<IIdentityUser?>(null);
 
     /// <inheritdoc/>
     public Task SetUserEnabledAsync(
@@ -51,9 +51,9 @@ internal sealed class NullIdentityProvider : IIdentityProvider
         Task.FromResult<IReadOnlyList<IdentityRole>>([]);
 
     /// <inheritdoc/>
-    public Task<IReadOnlyList<IdentityUser>> GetRoleMembersAsync(
+    public Task<IReadOnlyList<IIdentityUser>> GetRoleMembersAsync(
         string roleName, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<IdentityUser>>([]);
+        Task.FromResult<IReadOnlyList<IIdentityUser>>([]);
 
     /// <inheritdoc/>
     public Task<IReadOnlyList<IdentityRole>> GetUserRolesAsync(
@@ -91,9 +91,9 @@ internal sealed class NullIdentityProvider : IIdentityProvider
         Task.CompletedTask;
 
     /// <inheritdoc/>
-    public Task<IdentityUser> CreateUserAsync(
+    public Task<IIdentityUser> CreateUserAsync(
         IdentityUserCreate user, CancellationToken cancellationToken = default) =>
-        Task.FromResult(new IdentityUser(string.Empty, user.Username, user.Email,
+        Task.FromResult<IIdentityUser>(new FederatedIdentityUser(string.Empty, user.Username, user.Email,
             user.FirstName, user.LastName, user.Enabled));
 
     /// <inheritdoc/>

@@ -7,14 +7,14 @@ namespace Granit.Identity.Tests;
 /// </summary>
 internal sealed class FakeIdentityProvider : IIdentityProvider
 {
-    public Task<IReadOnlyList<IdentityUser>> GetUsersAsync(
+    public Task<IReadOnlyList<IIdentityUser>> GetUsersAsync(
         string? search = null, int? first = null, int? max = null,
         CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<IdentityUser>>([]);
+        Task.FromResult<IReadOnlyList<IIdentityUser>>([]);
 
-    public Task<IdentityUser?> GetUserAsync(
+    public Task<IIdentityUser?> GetUserAsync(
         string userId, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IdentityUser?>(null);
+        Task.FromResult<IIdentityUser?>(null);
 
     public Task SetUserEnabledAsync(
         string userId, bool enabled, CancellationToken cancellationToken = default) =>
@@ -40,9 +40,9 @@ internal sealed class FakeIdentityProvider : IIdentityProvider
         CancellationToken cancellationToken = default) =>
         Task.FromResult<IReadOnlyList<IdentityRole>>([]);
 
-    public Task<IReadOnlyList<IdentityUser>> GetRoleMembersAsync(
+    public Task<IReadOnlyList<IIdentityUser>> GetRoleMembersAsync(
         string roleName, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IReadOnlyList<IdentityUser>>([]);
+        Task.FromResult<IReadOnlyList<IIdentityUser>>([]);
 
     public Task<IReadOnlyList<IdentityRole>> GetUserRolesAsync(
         string userId, CancellationToken cancellationToken = default) =>
@@ -72,9 +72,9 @@ internal sealed class FakeIdentityProvider : IIdentityProvider
         string userId, string temporaryPassword, CancellationToken cancellationToken = default) =>
         Task.CompletedTask;
 
-    public Task<IdentityUser> CreateUserAsync(
+    public Task<IIdentityUser> CreateUserAsync(
         IdentityUserCreate user, CancellationToken cancellationToken = default) =>
-        Task.FromResult(new IdentityUser(string.Empty, user.Username, user.Email,
+        Task.FromResult<IIdentityUser>(new FederatedIdentityUser(string.Empty, user.Username, user.Email,
             user.FirstName, user.LastName, user.Enabled));
 
     public Task<IReadOnlyList<IdentityGroup>> GetGroupsAsync(

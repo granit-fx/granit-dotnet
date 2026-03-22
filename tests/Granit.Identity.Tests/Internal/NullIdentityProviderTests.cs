@@ -16,7 +16,7 @@ public sealed class NullIdentityProviderTests
     [Fact]
     public async Task GetUsersAsync_ReturnsEmptyList()
     {
-        IReadOnlyList<IdentityUser> result = await _provider.GetUsersAsync(
+        IReadOnlyList<IIdentityUser> result = await _provider.GetUsersAsync(
             cancellationToken: TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();
@@ -25,7 +25,7 @@ public sealed class NullIdentityProviderTests
     [Fact]
     public async Task GetUsersAsync_WithSearch_ReturnsEmptyList()
     {
-        IReadOnlyList<IdentityUser> result = await _provider.GetUsersAsync(
+        IReadOnlyList<IIdentityUser> result = await _provider.GetUsersAsync(
             search: "alice", first: 0, max: 10,
             cancellationToken: TestContext.Current.CancellationToken);
 
@@ -35,7 +35,7 @@ public sealed class NullIdentityProviderTests
     [Fact]
     public async Task GetUserAsync_ReturnsNull()
     {
-        IdentityUser? result = await _provider.GetUserAsync(
+        IIdentityUser? result = await _provider.GetUserAsync(
             "any-user-id", TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
@@ -79,7 +79,7 @@ public sealed class NullIdentityProviderTests
     {
         IdentityUserCreate create = new("alice", "alice@test.com", "Alice", "Doe");
 
-        IdentityUser result = await _provider.CreateUserAsync(
+        IIdentityUser result = await _provider.CreateUserAsync(
             create, TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
@@ -88,7 +88,7 @@ public sealed class NullIdentityProviderTests
         result.FirstName.ShouldBe("Alice");
         result.LastName.ShouldBe("Doe");
         result.Enabled.ShouldBeTrue();
-        result.Id.ShouldBe(string.Empty);
+        result.UserId.ShouldBe(string.Empty);
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public sealed class NullIdentityProviderTests
     {
         IdentityUserCreate create = new("bob", "bob@test.com", Enabled: false);
 
-        IdentityUser result = await _provider.CreateUserAsync(
+        IIdentityUser result = await _provider.CreateUserAsync(
             create, TestContext.Current.CancellationToken);
 
         result.Enabled.ShouldBeFalse();
@@ -158,7 +158,7 @@ public sealed class NullIdentityProviderTests
     [Fact]
     public async Task GetRoleMembersAsync_ReturnsEmptyList()
     {
-        IReadOnlyList<IdentityUser> result = await _provider.GetRoleMembersAsync(
+        IReadOnlyList<IIdentityUser> result = await _provider.GetRoleMembersAsync(
             "admin", TestContext.Current.CancellationToken);
 
         result.ShouldBeEmpty();

@@ -58,9 +58,9 @@ public sealed class IdentityUserCacheSyncEndpointsTests : IAsyncDisposable
     public async Task Sync_returns_200_with_refreshed_users()
     {
         _lookupService.RefreshByIdAsync("user-1", Arg.Any<CancellationToken>())
-            .Returns(new IdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true));
+            .Returns(Task.FromResult<IIdentityUser?>(new FederatedIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)));
         _lookupService.RefreshByIdAsync("user-2", Arg.Any<CancellationToken>())
-            .Returns((IdentityUser?)null);
+            .Returns(Task.FromResult<IIdentityUser?>(null));
 
         HttpResponseMessage response = await _adminClient.PostAsJsonAsync(
             $"{Prefix}/sync",
@@ -68,8 +68,8 @@ public sealed class IdentityUserCacheSyncEndpointsTests : IAsyncDisposable
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        List<IdentityUser>? users = await response.Content
-            .ReadFromJsonAsync<List<IdentityUser>>(TestContext.Current.CancellationToken);
+        List<FederatedIdentityUser>? users = await response.Content
+            .ReadFromJsonAsync<List<FederatedIdentityUser>>(TestContext.Current.CancellationToken);
         users.ShouldNotBeNull();
         users.Count.ShouldBe(1);
     }

@@ -20,7 +20,7 @@ public interface IIdentityUserWriter
         CancellationToken cancellationToken = default);
 
     /// <inheritdoc cref="IIdentityProvider.CreateUserAsync"/>
-    Task<IdentityUser> CreateUserAsync(
+    Task<IIdentityUser> CreateUserAsync(
         IdentityUserCreate user,
         CancellationToken cancellationToken = default);
 }

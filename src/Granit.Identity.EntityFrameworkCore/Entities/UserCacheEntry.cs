@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+using System.Text.Json;
 using Granit.Core.Domain;
 
 namespace Granit.Identity.EntityFrameworkCore.Entities;
@@ -17,8 +19,9 @@ namespace Granit.Identity.EntityFrameworkCore.Entities;
 /// The audit fields on <see cref="AuditedEntity"/> satisfy ISO 27001 requirements for the cache entry itself.
 /// </para>
 /// </remarks>
-public sealed class UserCacheEntry : AuditedEntity, IMultiTenant
+public sealed class UserCacheEntry : AuditedEntity, IMultiTenant, IIdentityUser
 {
+    private IReadOnlyDictionary<string, string>? _parsedExtraProperties;
     /// <summary>User identifier in the external identity provider (e.g. Keycloak sub). Max 256 characters.</summary>
     public string ExternalUserId { get; set; } = string.Empty;
 
@@ -42,4 +45,40 @@ public sealed class UserCacheEntry : AuditedEntity, IMultiTenant
 
     /// <inheritdoc />
     public Guid? TenantId { get; set; }
+
+    /// <summary>JSON column for extra properties from the federated provider.</summary>
+    public string? ExtraPropertiesJson { get; set; }
+
+    // ──── IIdentityUser (explicit implementation) ────
+
+    /// <inheritdoc/>
+    string IIdentityUser.UserId => ExternalUserId;
+
+    /// <inheritdoc/>
+    string? IIdentityUser.Username => Username;
+
+    /// <inheritdoc/>
+    string? IIdentityUser.Email => Email;
+
+    /// <inheritdoc/>
+    bool IIdentityUser.Enabled => Enabled;
+
+    /// <inheritdoc/>
+    IReadOnlyDictionary<string, string> IIdentityUser.ExtraProperties =>
+        _parsedExtraProperties ??= DeserializeExtraProperties();
+
+    private ReadOnlyDictionary<string, string> DeserializeExtraProperties()
+    {
+        if (string.IsNullOrWhiteSpace(ExtraPropertiesJson))
+        {
+            return ReadOnlyDictionary<string, string>.Empty;
+        }
+
+        Dictionary<string, string>? parsed =
+            JsonSerializer.Deserialize<Dictionary<string, string>>(ExtraPropertiesJson);
+
+        return parsed is { Count: > 0 }
+            ? new ReadOnlyDictionary<string, string>(parsed)
+            : ReadOnlyDictionary<string, string>.Empty;
+    }
 }

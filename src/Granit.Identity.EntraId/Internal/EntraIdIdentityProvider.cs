@@ -36,7 +36,7 @@ internal sealed partial class EntraIdIdentityProvider(
     ILogger<EntraIdIdentityProvider> logger) : IIdentityProvider
 {
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<IdentityUser>> GetUsersAsync(
+    public async Task<IReadOnlyList<IIdentityUser>> GetUsersAsync(
         string? search = null,
         int? first = null,
         int? max = null,
@@ -64,7 +64,7 @@ internal sealed partial class EntraIdIdentityProvider(
     }
 
     /// <inheritdoc/>
-    public async Task<IdentityUser?> GetUserAsync(
+    public async Task<IIdentityUser?> GetUserAsync(
         string userId,
         CancellationToken cancellationToken = default)
     {
@@ -312,7 +312,7 @@ internal sealed partial class EntraIdIdentityProvider(
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<IdentityUser>> GetRoleMembersAsync(
+    public async Task<IReadOnlyList<IIdentityUser>> GetRoleMembersAsync(
         string roleName,
         CancellationToken cancellationToken = default)
     {
@@ -345,10 +345,10 @@ internal sealed partial class EntraIdIdentityProvider(
                 .Select(a => a.PrincipalId)
                 .ToList() ?? [];
 
-            List<IdentityUser> users = [];
+            List<IIdentityUser> users = [];
             foreach (string uid in userIds)
             {
-                IdentityUser? user = await GetUserAsync(uid, cancellationToken).ConfigureAwait(false);
+                IIdentityUser? user = await GetUserAsync(uid, cancellationToken).ConfigureAwait(false);
                 if (user is not null)
                 {
                     users.Add(user);
@@ -604,7 +604,7 @@ internal sealed partial class EntraIdIdentityProvider(
     // ──── User creation ────
 
     /// <inheritdoc/>
-    public async Task<IdentityUser> CreateUserAsync(
+    public async Task<IIdentityUser> CreateUserAsync(
         IdentityUserCreate user,
         CancellationToken cancellationToken = default)
     {
@@ -657,7 +657,7 @@ internal sealed partial class EntraIdIdentityProvider(
         activity?.SetTag(IdentityEntraIdActivitySource.TagUserId, createdUserId);
         LogUserCreated(user.Username, createdUserId);
 
-        var createdIdentityUser = new IdentityUser(
+        var createdIdentityUser = new FederatedIdentityUser(
             createdUserId,
             user.Username,
             user.Email,
@@ -665,7 +665,7 @@ internal sealed partial class EntraIdIdentityProvider(
             user.LastName,
             user.Enabled);
 
-        await distributedEventBus.PublishAsync(new IdentityUserCreatedEto(createdIdentityUser.Id, createdIdentityUser.Username, createdIdentityUser.Email), cancellationToken).ConfigureAwait(false);
+        await distributedEventBus.PublishAsync(new IdentityUserCreatedEto(createdIdentityUser.UserId, createdIdentityUser.Username, createdIdentityUser.Email), cancellationToken).ConfigureAwait(false);
 
         return createdIdentityUser;
     }
@@ -838,7 +838,7 @@ internal sealed partial class EntraIdIdentityProvider(
         return client;
     }
 
-    private static IdentityUser ToIdentityUser(GraphUserRepresentation user) =>
+    private static FederatedIdentityUser ToIdentityUser(GraphUserRepresentation user) =>
         new(user.Id, user.UserPrincipalName, user.Mail, user.GivenName, user.Surname, user.AccountEnabled,
             ExtractExtensionAttributes(user.ExtensionAttributes));
 

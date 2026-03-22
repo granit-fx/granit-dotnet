@@ -1,7 +1,7 @@
 using Granit.Authorization.Abstractions;
 using Granit.Core.MultiTenancy;
 using Granit.Identity;
-using Granit.Identity.Models;
+
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Workflow.Notifications.Internal;
@@ -51,12 +51,12 @@ internal sealed partial class IdentityApproverResolver(
 
         foreach (string role in roles)
         {
-            IReadOnlyList<IdentityUser> members = await identityProvider.GetRoleMembersAsync(
+            IReadOnlyList<IIdentityUser> members = await identityProvider.GetRoleMembersAsync(
                 role, cancellationToken).ConfigureAwait(false);
 
-            foreach (IdentityUser user in members)
+            foreach (IIdentityUser user in members)
             {
-                userIds.Add(user.Id);
+                userIds.Add(user.UserId);
             }
         }
 

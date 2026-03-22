@@ -35,10 +35,10 @@ public sealed class IdentityApproverResolverTests
             .Returns((IReadOnlyList<string>)["editor"]);
 
         _identityProvider.GetRoleMembersAsync("editor", Arg.Any<CancellationToken>())
-            .Returns((IReadOnlyList<IdentityUser>)
+            .Returns((IReadOnlyList<IIdentityUser>)
             [
-                new IdentityUser("user-1", "alice", "alice@test.com", "Alice", "Doe", true),
-                new IdentityUser("user-2", "bob", null, null, null, true),
+                new FederatedIdentityUser("user-1", "alice", "alice@test.com", "Alice", "Doe", true),
+                new FederatedIdentityUser("user-2", "bob", null, null, null, true),
             ]);
 
         IReadOnlyList<string> result = await _resolver.ResolveApproversAsync(
@@ -68,7 +68,7 @@ public sealed class IdentityApproverResolverTests
             .Returns((IReadOnlyList<string>)["editor"]);
 
         _identityProvider.GetRoleMembersAsync("editor", Arg.Any<CancellationToken>())
-            .Returns((IReadOnlyList<IdentityUser>)[]);
+            .Returns((IReadOnlyList<IIdentityUser>)[]);
 
         IReadOnlyList<string> result = await _resolver.ResolveApproversAsync(
             "workflow.publish", TestContext.Current.CancellationToken);
@@ -83,17 +83,17 @@ public sealed class IdentityApproverResolverTests
             .Returns((IReadOnlyList<string>)["editor", "admin"]);
 
         _identityProvider.GetRoleMembersAsync("editor", Arg.Any<CancellationToken>())
-            .Returns((IReadOnlyList<IdentityUser>)
+            .Returns((IReadOnlyList<IIdentityUser>)
             [
-                new IdentityUser("shared-user", "shared", null, null, null, true),
-                new IdentityUser("editor-user", "editor", null, null, null, true),
+                new FederatedIdentityUser("shared-user", "shared", null, null, null, true),
+                new FederatedIdentityUser("editor-user", "editor", null, null, null, true),
             ]);
 
         _identityProvider.GetRoleMembersAsync("admin", Arg.Any<CancellationToken>())
-            .Returns((IReadOnlyList<IdentityUser>)
+            .Returns((IReadOnlyList<IIdentityUser>)
             [
-                new IdentityUser("shared-user", "shared", null, null, null, true),
-                new IdentityUser("admin-user", "admin", null, null, null, true),
+                new FederatedIdentityUser("shared-user", "shared", null, null, null, true),
+                new FederatedIdentityUser("admin-user", "admin", null, null, null, true),
             ]);
 
         IReadOnlyList<string> result = await _resolver.ResolveApproversAsync(
@@ -116,9 +116,9 @@ public sealed class IdentityApproverResolverTests
             .Returns((IReadOnlyList<string>)["editor"]);
 
         _identityProvider.GetRoleMembersAsync("editor", Arg.Any<CancellationToken>())
-            .Returns((IReadOnlyList<IdentityUser>)
+            .Returns((IReadOnlyList<IIdentityUser>)
             [
-                new IdentityUser("user-1", "alice", null, null, null, true),
+                new FederatedIdentityUser("user-1", "alice", null, null, null, true),
             ]);
 
         IReadOnlyList<string> result = await _resolver.ResolveApproversAsync(

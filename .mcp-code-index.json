@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T11:55:53.197694+00:00",
+  "generatedAt": "2026-03-22T12:32:24.572575+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -13233,7 +13233,7 @@
       "kind": "class",
       "project": "Granit.Identity.EntityFrameworkCore",
       "file": "src/Granit.Identity.EntityFrameworkCore/Entities/UserCacheEntry.cs",
-      "line": 20,
+      "line": 22,
       "members": [
         {
           "name": "ExternalUserId",
@@ -13246,6 +13246,12 @@
           "kind": "property",
           "signature": "string? Username",
           "returnType": "string?"
+        },
+        {
+          "name": "LastSyncedAt",
+          "kind": "property",
+          "signature": "DateTimeOffset LastSyncedAt",
+          "returnType": "DateTimeOffset"
         }
       ]
     },
@@ -18349,13 +18355,25 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Entities/GranitUser.cs",
-      "line": 21,
+      "line": 24,
       "members": [
         {
           "name": "FirstName",
           "kind": "property",
           "signature": "string? FirstName",
           "returnType": "string?"
+        },
+        {
+          "name": "ToString",
+          "kind": "method",
+          "signature": "ToString()",
+          "returnType": "DateTimeOffset? ModifiedAt { get; set; } public string? ModifiedBy { get; set; } string IIdentityUser.UserId => Id."
+        },
+        {
+          "name": "SetExtraProperty",
+          "kind": "method",
+          "signature": "SetExtraProperty(string name, string? value)",
+          "returnType": "void"
         }
       ]
     },

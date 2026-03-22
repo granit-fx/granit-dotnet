@@ -27,7 +27,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
 
     // ── Users ─────────────────────────────────────────────────────────
 
-    public async Task<IReadOnlyList<IdentityUser>> GetUsersAsync(
+    public async Task<IReadOnlyList<IIdentityUser>> GetUsersAsync(
         string? search = null, int? first = null, int? max = null,
         CancellationToken cancellationToken = default)
     {
@@ -37,7 +37,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
         try
         {
             IReadOnlyList<ExportedUserRecord> records = await transport.ListUsersAsync(cancellationToken).ConfigureAwait(false);
-            List<IdentityUser> users = [];
+            List<FederatedIdentityUser> users = [];
 
             foreach (ExportedUserRecord user in records)
             {
@@ -51,7 +51,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
                 users.Add(MapUser(user));
             }
 
-            IEnumerable<IdentityUser> result = users.AsEnumerable();
+            IEnumerable<FederatedIdentityUser> result = users.AsEnumerable();
             if (first.HasValue)
             {
                 result = result.Skip(first.Value);
@@ -71,7 +71,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
         }
     }
 
-    public async Task<IdentityUser?> GetUserAsync(string userId, CancellationToken cancellationToken = default)
+    public async Task<IIdentityUser?> GetUserAsync(string userId, CancellationToken cancellationToken = default)
     {
         using Activity? activity = IdentityGoogleCloudActivitySource.Source.StartActivity(
             IdentityGoogleCloudActivitySource.Operations.GetUser);
@@ -131,7 +131,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
         await distributedEventBus.PublishAsync(new IdentityUserProfileUpdatedEto(userId, update), cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<IdentityUser> CreateUserAsync(IdentityUserCreate user, CancellationToken cancellationToken = default)
+    public async Task<IIdentityUser> CreateUserAsync(IdentityUserCreate user, CancellationToken cancellationToken = default)
     {
         using Activity? activity = IdentityGoogleCloudActivitySource.Source.StartActivity(
             IdentityGoogleCloudActivitySource.Operations.CreateUser);
@@ -152,8 +152,8 @@ internal sealed partial class GoogleCloudIdentityProvider(
 
         await distributedEventBus.PublishAsync(new IdentityUserCreatedEto(created.Uid, user.Username, user.Email), cancellationToken).ConfigureAwait(false);
 
-        return new IdentityUser(
-            Id: created.Uid,
+        return new FederatedIdentityUser(
+            UserId: created.Uid,
             Username: created.DisplayName ?? created.Email ?? created.Uid,
             Email: created.Email ?? string.Empty,
             FirstName: ExtractFirstName(created.DisplayName),
@@ -166,9 +166,9 @@ internal sealed partial class GoogleCloudIdentityProvider(
     public Task<IReadOnlyList<IdentityRole>> GetRolesAsync(CancellationToken cancellationToken = default) =>
         Task.FromResult<IReadOnlyList<IdentityRole>>([]);
 
-    public Task<IReadOnlyList<IdentityUser>> GetRoleMembersAsync(string roleName, CancellationToken cancellationToken = default) =>
+    public Task<IReadOnlyList<IIdentityUser>> GetRoleMembersAsync(string roleName, CancellationToken cancellationToken = default) =>
         // Not efficiently queryable in Firebase Auth. Return empty.
-        Task.FromResult<IReadOnlyList<IdentityUser>>([]);
+        Task.FromResult<IReadOnlyList<IIdentityUser>>([]);
 
     public async Task<IReadOnlyList<IdentityRole>> GetUserRolesAsync(string userId, CancellationToken cancellationToken = default)
     {
@@ -310,15 +310,15 @@ internal sealed partial class GoogleCloudIdentityProvider(
 
     // ── Helpers ───────────────────────────────────────────────────────
 
-    private static IdentityUser MapUser(UserRecord user) =>
+    private static FederatedIdentityUser MapUser(UserRecord user) =>
         new(
-            Id: user.Uid,
+            UserId: user.Uid,
             Username: user.DisplayName ?? user.Email ?? user.Uid,
             Email: user.Email ?? string.Empty,
             FirstName: ExtractFirstName(user.DisplayName),
             LastName: ExtractLastName(user.DisplayName),
             Enabled: !user.Disabled,
-            Attributes: user.CustomClaims?.ToDictionary(kv => kv.Key, kv => kv.Value?.ToString() ?? string.Empty));
+            ExtraProperties: user.CustomClaims?.ToDictionary(kv => kv.Key, kv => kv.Value?.ToString() ?? string.Empty));
 
     private List<string> ExtractRoleNames(IReadOnlyDictionary<string, object>? customClaims)
     {

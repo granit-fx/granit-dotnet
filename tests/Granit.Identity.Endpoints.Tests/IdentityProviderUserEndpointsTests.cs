@@ -40,7 +40,7 @@ public sealed class IdentityProviderUserEndpointsTests : IAsyncDisposable
         _capabilities.MaxCustomAttributes.Returns(50);
 
         _userWriter.CreateUserAsync(Arg.Any<IdentityUserCreate>(), Arg.Any<CancellationToken>())
-            .Returns(new IdentityUser("new-id", "newuser", "new@test.com", "New", "User", true));
+            .Returns(Task.FromResult<IIdentityUser>(new FederatedIdentityUser("new-id", "newuser", "new@test.com", "New", "User", true)));
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
@@ -73,14 +73,14 @@ public sealed class IdentityProviderUserEndpointsTests : IAsyncDisposable
     public async Task GetUsers_returns_200_with_list()
     {
         _userReader.GetUsersAsync(null, null, null, Arg.Any<CancellationToken>())
-            .Returns([new("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)]);
+            .Returns((IReadOnlyList<IIdentityUser>)[new FederatedIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)]);
 
         HttpResponseMessage response = await _adminClient.GetAsync(
             $"{Prefix}/users", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        List<IdentityUser>? users = await response.Content
-            .ReadFromJsonAsync<List<IdentityUser>>(TestContext.Current.CancellationToken);
+        List<FederatedIdentityUser>? users = await response.Content
+            .ReadFromJsonAsync<List<FederatedIdentityUser>>(TestContext.Current.CancellationToken);
         users.ShouldNotBeNull();
         users.Count.ShouldBe(1);
         users[0].Username.ShouldBe("jdoe");
@@ -101,23 +101,23 @@ public sealed class IdentityProviderUserEndpointsTests : IAsyncDisposable
     public async Task GetUser_existing_returns_200()
     {
         _userReader.GetUserAsync("user-1", Arg.Any<CancellationToken>())
-            .Returns(new IdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true));
+            .Returns(Task.FromResult<IIdentityUser?>(new FederatedIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)));
 
         HttpResponseMessage response = await _adminClient.GetAsync(
             $"{Prefix}/users/user-1", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        IdentityUser? user = await response.Content
-            .ReadFromJsonAsync<IdentityUser>(TestContext.Current.CancellationToken);
+        FederatedIdentityUser? user = await response.Content
+            .ReadFromJsonAsync<FederatedIdentityUser>(TestContext.Current.CancellationToken);
         user.ShouldNotBeNull();
-        user.Id.ShouldBe("user-1");
+        user.UserId.ShouldBe("user-1");
     }
 
     [Fact]
     public async Task GetUser_unknown_returns_404()
     {
         _userReader.GetUserAsync("nonexistent", Arg.Any<CancellationToken>())
-            .Returns((IdentityUser?)null);
+            .Returns(Task.FromResult<IIdentityUser?>(null));
 
         HttpResponseMessage response = await _adminClient.GetAsync(
             $"{Prefix}/users/nonexistent", TestContext.Current.CancellationToken);
@@ -136,10 +136,10 @@ public sealed class IdentityProviderUserEndpointsTests : IAsyncDisposable
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
-        IdentityUser? created = await response.Content
-            .ReadFromJsonAsync<IdentityUser>(TestContext.Current.CancellationToken);
+        FederatedIdentityUser? created = await response.Content
+            .ReadFromJsonAsync<FederatedIdentityUser>(TestContext.Current.CancellationToken);
         created.ShouldNotBeNull();
-        created.Id.ShouldBe("new-id");
+        created.UserId.ShouldBe("new-id");
     }
 
     [Fact]
