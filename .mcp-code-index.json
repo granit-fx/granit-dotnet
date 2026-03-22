@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T13:11:45.926272+00:00",
+  "generatedAt": "2026-03-22T13:26:07.087253+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -14120,15 +14120,6 @@
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Models/IdentitySession.cs",
       "line": 12,
-      "members": []
-    },
-    {
-      "name": "IdentityUser",
-      "fqn": "Granit.Identity.Models.IdentityUser",
-      "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Models/IdentityUser.cs",
-      "line": 17,
       "members": []
     },
     {
