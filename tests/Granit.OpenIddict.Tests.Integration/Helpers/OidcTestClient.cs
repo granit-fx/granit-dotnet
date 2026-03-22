@@ -1,0 +1,115 @@
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text.Json;
+
+namespace Granit.OpenIddict.Tests.Integration.Helpers;
+
+/// <summary>
+/// Wraps <see cref="HttpClient"/> with helpers for OIDC token operations.
+/// </summary>
+public sealed class OidcTestClient(HttpClient client)
+{
+    // ──── Token endpoint ────
+
+    public async Task<JsonDocument> ClientCredentialsAsync(
+        string clientId, string clientSecret, string? scope = null)
+    {
+        HttpResponseMessage response = await RawClientCredentialsAsync(clientId, clientSecret, scope);
+        response.EnsureSuccessStatusCode();
+        string json = await response.Content.ReadAsStringAsync();
+        return JsonDocument.Parse(json);
+    }
+
+    public Task<HttpResponseMessage> RawClientCredentialsAsync(
+        string clientId, string clientSecret, string? scope = null)
+    {
+        var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["grant_type"] = "client_credentials",
+            ["client_id"] = clientId,
+            ["client_secret"] = clientSecret,
+            ["scope"] = scope ?? "openid",
+        });
+
+        return client.PostAsync("/connect/token", content);
+    }
+
+    // ──── Introspection endpoint ────
+
+    public async Task<JsonDocument> IntrospectAsync(
+        string token, string clientId, string clientSecret)
+    {
+        HttpResponseMessage response = await RawIntrospectAsync(token, clientId, clientSecret);
+        string json = await response.Content.ReadAsStringAsync();
+        return JsonDocument.Parse(json);
+    }
+
+    public Task<HttpResponseMessage> RawIntrospectAsync(
+        string token, string clientId, string clientSecret)
+    {
+        var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["token"] = token,
+            ["client_id"] = clientId,
+            ["client_secret"] = clientSecret,
+        });
+
+        return client.PostAsync("/connect/introspect", content);
+    }
+
+    // ──── Revocation endpoint ────
+
+    public Task<HttpResponseMessage> RevokeAsync(
+        string token, string clientId, string clientSecret)
+    {
+        var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["token"] = token,
+            ["client_id"] = clientId,
+            ["client_secret"] = clientSecret,
+        });
+
+        return client.PostAsync("/connect/revoke", content);
+    }
+
+    // ──── Account endpoints ────
+
+    public Task<HttpResponseMessage> RegisterAsync(
+        string email, string password, string? firstName = null, string? lastName = null)
+    {
+        var payload = new
+        {
+            email,
+            password,
+            firstName,
+            lastName,
+        };
+
+        return client.PostAsync(
+            "/api/account/register",
+            new StringContent(
+                JsonSerializer.Serialize(payload),
+                System.Text.Encoding.UTF8,
+                "application/json"));
+    }
+
+    public Task<HttpResponseMessage> GetProfileAsync(string accessToken)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/account/profile");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        return client.SendAsync(request);
+    }
+
+    // ──── Discovery ────
+
+    public async Task<JsonDocument> GetDiscoveryDocumentAsync()
+    {
+        HttpResponseMessage response = await client.GetAsync("/.well-known/openid-configuration");
+        response.EnsureSuccessStatusCode();
+        string json = await response.Content.ReadAsStringAsync();
+        return JsonDocument.Parse(json);
+    }
+
+    public Task<HttpResponseMessage> RawGetDiscoveryAsync() =>
+        client.GetAsync("/.well-known/openid-configuration");
+}

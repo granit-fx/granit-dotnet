@@ -55,6 +55,13 @@ function parseFrontmatter(raw) {
     if (kv) meta[kv[1]] = kv[2];
   }
 
+  // Decode YAML unicode escapes (\uXXXX) that appear in double-quoted strings
+  for (const key of Object.keys(meta)) {
+    meta[key] = meta[key].replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) =>
+      String.fromCodePoint(parseInt(hex, 16)),
+    );
+  }
+
   return { meta, content: match[2] };
 }
 

@@ -337,6 +337,7 @@
     <Project Path="tests/Granit.OpenIddict.EntityFrameworkCore.Tests/Granit.OpenIddict.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.Tests/Granit.OpenIddict.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.Server.Tests/Granit.OpenIddict.Server.Tests.csproj" />
+    <Project Path="tests/Granit.OpenIddict.Tests.Integration/Granit.OpenIddict.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Persistence.Hosting.Tests/Granit.Persistence.Hosting.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Migrations.Tests/Granit.Persistence.Migrations.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Postgres.Tests/Granit.Persistence.Postgres.Tests.csproj" />

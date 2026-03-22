@@ -97,6 +97,7 @@
       "tests/Granit.OpenIddict.Endpoints.Tests/Granit.OpenIddict.Endpoints.Tests.csproj",
       "tests/Granit.OpenIddict.EntityFrameworkCore.Tests/Granit.OpenIddict.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.OpenIddict.Server.Tests/Granit.OpenIddict.Server.Tests.csproj",
+      "tests/Granit.OpenIddict.Tests.Integration/Granit.OpenIddict.Tests.Integration.csproj",
       "tests/Granit.OpenIddict.Tests/Granit.OpenIddict.Tests.csproj",
       "tests/Granit.Privacy.Endpoints.Tests/Granit.Privacy.Endpoints.Tests.csproj",
       "tests/Granit.Privacy.Notifications.Tests/Granit.Privacy.Notifications.Tests.csproj",
