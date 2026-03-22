@@ -5,6 +5,7 @@ using Granit.OpenIddict.Entities;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.EntityFrameworkCore.Seeding;
 using Granit.OpenIddict.Options;
+using Granit.OpenIddict.Server;
 using Granit.OpenIddict.Services;
 using Granit.Persistence;
 using Granit.Persistence.DataSeeding;
@@ -35,7 +36,7 @@ namespace Granit.OpenIddict.EntityFrameworkCore;
 [DependsOn(
     typeof(GranitEncryptionModule),
     typeof(GranitMultiTenancyModule),
-    typeof(GranitOpenIddictModule),
+    typeof(GranitOpenIddictServerModule),
     typeof(GranitPersistenceModule))]
 public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
 {

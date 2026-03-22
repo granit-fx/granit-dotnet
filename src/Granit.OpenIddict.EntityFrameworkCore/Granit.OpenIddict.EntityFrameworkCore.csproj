@@ -22,14 +22,12 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
     <PackageReference Include="OpenIddict" />
     <PackageReference Include="OpenIddict.EntityFrameworkCore" />
-    <PackageReference Include="OpenIddict.Server.AspNetCore" />
-    <PackageReference Include="OpenIddict.Validation.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Encryption\Granit.Encryption.csproj" />
     <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
-    <ProjectReference Include="..\Granit.OpenIddict\Granit.OpenIddict.csproj" />
+    <ProjectReference Include="..\Granit.OpenIddict.Server\Granit.OpenIddict.Server.csproj" />
     <ProjectReference Include="..\Granit.Persistence\Granit.Persistence.csproj" />
   </ItemGroup>
 

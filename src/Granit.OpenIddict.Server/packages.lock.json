@@ -2,39 +2,11 @@
   "version": 2,
   "dependencies": {
     "net10.0": {
-      "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
-        "type": "Direct",
-        "requested": "[10.*, )",
-        "resolved": "10.0.5",
-        "contentHash": "oo1uauTwgcnhYgituZ2nI3wJ8XN9z76ggu2zkOJu1BCfOOsqr+g08Kr4MOiMuXEhwySkpIV+MVoC25hC1288NA==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.5"
-        }
-      },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
         "type": "Direct",
         "requested": "[3.*, )",
         "resolved": "3.3.4",
         "contentHash": "0k2Jwpc8eq0hjOtX6TxRkHm9clkJ2PAQ3heEHgqIJZcsfdFosC/iyz18nsgTVDDWpID80rC7aiYK7ripx+Qndg=="
-      },
-      "Microsoft.EntityFrameworkCore": {
-        "type": "Direct",
-        "requested": "[10.*, )",
-        "resolved": "10.0.5",
-        "contentHash": "9tNBmK3EpYVGRQLiqP+bqK2m+TD0Gv//4vCzR7ZOgl4FWzCFyOpYdIVka13M4kcBdPdSJcs3wbHr3rmzOqbIMA==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Abstractions": "10.0.5",
-          "Microsoft.EntityFrameworkCore.Analyzers": "10.0.5"
-        }
-      },
-      "Microsoft.EntityFrameworkCore.Relational": {
-        "type": "Direct",
-        "requested": "[10.*, )",
-        "resolved": "10.0.5",
-        "contentHash": "uxmFjZEAB/KbsgWFSS4lLqkEHCfXxB2x0UcbiO4e5fCRpFFeTMSx/me6009nYJLu5IKlDwO1POh++P6RilFTDw==",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore": "10.0.5"
-        }
       },
       "OpenIddict": {
         "type": "Direct",
@@ -54,26 +26,33 @@
           "OpenIddict.Validation.SystemNetHttp": "7.4.0"
         }
       },
-      "OpenIddict.EntityFrameworkCore": {
+      "OpenIddict.Server.AspNetCore": {
         "type": "Direct",
         "requested": "[7.*, )",
         "resolved": "7.4.0",
-        "contentHash": "dXjiwpamjYRHlyIS1rZKS9kaP4kfnc/r/e/Lokvl9y7u62J7uYXRE06IQ37K7ytQn710YAj7G+NXPAchLzA4RQ==",
+        "contentHash": "zqftzqo2j/+tf6rGZMbcTz9wUcXZNqwtG9G+hg5qUG0F8nsDyt6dC608pB6ikJtW0xO1p+OmP3q0UmpNMhsBug==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.3",
-          "OpenIddict.Core": "7.4.0",
-          "OpenIddict.EntityFrameworkCore.Models": "7.4.0"
+          "OpenIddict.Server": "7.4.0"
+        }
+      },
+      "OpenIddict.Validation.AspNetCore": {
+        "type": "Direct",
+        "requested": "[7.*, )",
+        "resolved": "7.4.0",
+        "contentHash": "KQkDiHFUrTkCt6+kB51sVkTAlpia3Mz04lFFPvUL3nunro0aqysk4I5DhI7qjRyKIVrQGafjSVQcf+0V77t6ww==",
+        "dependencies": {
+          "OpenIddict.Validation": "7.4.0"
         }
       },
       "Microsoft.EntityFrameworkCore.Abstractions": {
         "type": "Transitive",
-        "resolved": "10.0.5",
-        "contentHash": "32c58Rnm47Qvhimawf67KO9PytgPz3QoWye7Abapt0Yocw/JnzMiSNj/pRoIKyn8Jxypkv86zxKD4Q/zNTc0Ag=="
+        "resolved": "10.0.3",
+        "contentHash": "c7Uoz381xnMHNBRB8eHRhGgzUtXbgddlbODhwZRrTSzZWDharp3RkJsFwhxyESbeXhCqmML7VdvjMQ7uu+HreA=="
       },
       "Microsoft.EntityFrameworkCore.Analyzers": {
         "type": "Transitive",
-        "resolved": "10.0.5",
-        "contentHash": "ipC4u1VojgEfoIZhtbS2Sx5IluJTP/Jf1hz3yGsxGBgSukYY/CquI6rAjxn5H58CZgVn36qcuPPtNMwZ0AUzMg=="
+        "resolved": "10.0.3",
+        "contentHash": "lVABgJTyTUNE7Bi0bSu4dWHiCHIXEGzTh/kLh0N07IgU/tIKwTeBPp8tgV4x2iKj4h7iPLo8oXzyHmLDGtAE1g=="
       },
       "Microsoft.Extensions.AmbientMetadata.Application": {
         "type": "Transitive",
@@ -301,12 +280,6 @@
       "granit.core": {
         "type": "Project"
       },
-      "granit.encryption": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
-        }
-      },
       "granit.eventbus": {
         "type": "Project",
         "dependencies": {
@@ -319,23 +292,11 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
-      "granit.http.exceptionhandling": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
-        }
-      },
       "granit.identity": {
         "type": "Project",
         "dependencies": {
           "Granit.Core": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )"
-        }
-      },
-      "granit.multitenancy": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
         }
       },
       "granit.openiddict": {
@@ -349,27 +310,6 @@
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "OpenIddict.EntityFrameworkCore": "[7.*, )"
-        }
-      },
-      "granit.openiddict.server": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.OpenIddict": "[0.1.0-dev, )",
-          "OpenIddict": "[7.*, )",
-          "OpenIddict.Server.AspNetCore": "[7.*, )",
-          "OpenIddict.Validation.AspNetCore": "[7.*, )"
-        }
-      },
-      "granit.persistence": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore": "[10.*, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
-          "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": "[10.*, )"
         }
       },
       "granit.querying": {
@@ -390,13 +330,23 @@
           "Granit.Core": "[0.1.0-dev, )"
         }
       },
-      "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": {
+      "Microsoft.EntityFrameworkCore": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.5",
-        "contentHash": "RtNhAwrnZcUZgi3SUMvaDVF405ZtKVR7l/6OHcqFj6JY5nT7QOdBxxULnby9dUQ6Jhnfl7cdDlMjsexfASNyjg==",
+        "resolved": "10.0.3",
+        "contentHash": "CDEImwD4A7BseABJMCpLZnhfFjmPY/bHwhhS70elc6gLI/bYUEOhxWt7PmaNGYGhIEzOnStlCy5QcVb+8dod5Q==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.5"
+          "Microsoft.EntityFrameworkCore.Abstractions": "10.0.3",
+          "Microsoft.EntityFrameworkCore.Analyzers": "10.0.3"
+        }
+      },
+      "Microsoft.EntityFrameworkCore.Relational": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.3",
+        "contentHash": "Pmh60OK9neVr/M0FJwm9hlzm2bD4Kd65SID8E6SP5c90tExNgXwORrlEWl0oGU/ig9ifpNN4PSpIrnHNozlT5w==",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "10.0.3"
         }
       },
       "Microsoft.Extensions.Http.Resilience": {
@@ -409,22 +359,15 @@
           "Microsoft.Extensions.Resilience": "10.3.0"
         }
       },
-      "OpenIddict.Server.AspNetCore": {
+      "OpenIddict.EntityFrameworkCore": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
         "resolved": "7.4.0",
-        "contentHash": "zqftzqo2j/+tf6rGZMbcTz9wUcXZNqwtG9G+hg5qUG0F8nsDyt6dC608pB6ikJtW0xO1p+OmP3q0UmpNMhsBug==",
+        "contentHash": "dXjiwpamjYRHlyIS1rZKS9kaP4kfnc/r/e/Lokvl9y7u62J7uYXRE06IQ37K7ytQn710YAj7G+NXPAchLzA4RQ==",
         "dependencies": {
-          "OpenIddict.Server": "7.4.0"
-        }
-      },
-      "OpenIddict.Validation.AspNetCore": {
-        "type": "CentralTransitive",
-        "requested": "[7.*, )",
-        "resolved": "7.4.0",
-        "contentHash": "KQkDiHFUrTkCt6+kB51sVkTAlpia3Mz04lFFPvUL3nunro0aqysk4I5DhI7qjRyKIVrQGafjSVQcf+0V77t6ww==",
-        "dependencies": {
-          "OpenIddict.Validation": "7.4.0"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.3",
+          "OpenIddict.Core": "7.4.0",
+          "OpenIddict.EntityFrameworkCore.Models": "7.4.0"
         }
       },
       "OpenIddict.Validation.SystemNetHttp": {

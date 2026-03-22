@@ -3,16 +3,13 @@ using Granit.OpenIddict.Entities;
 using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.Options;
+using Granit.OpenIddict.Server.Extensions;
 using Granit.Persistence.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using OpenIddict.Abstractions;
-
-#pragma warning disable GRSEC003 // OpenIddict permission/grant type constants, not secrets
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Extensions;
 
@@ -55,107 +52,29 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
             .AddEntityFrameworkStores<OpenIddictDbContext>()
             .AddDefaultTokenProviders();
 
-        // 3. Register OpenIddict
-        OpenIddictBuilder openIddict = builder.Services.AddOpenIddict();
-
-        // 3a. Core — EF Core stores
-        openIddict.AddCore(options =>
-        {
-            options.UseEntityFrameworkCore()
-                .UseDbContext<OpenIddictDbContext>()
-                .ReplaceDefaultEntities<GranitOpenIddictApplication,
-                    GranitOpenIddictAuthorization,
-                    GranitOpenIddictScope,
-                    GranitOpenIddictToken, Guid>();
-
-            // Disable entity caching unless explicitly opted in (single-tenant deployments).
-            // Our custom entities implement IMultiTenant — the cache uses ClientId as sole
-            // key, which would bypass tenant filters.
-            if (!granitOptions.EnableEntityCaching)
+        // 3. Register OpenIddict Core — EF Core stores
+        builder.Services.AddOpenIddict()
+            .AddCore(options =>
             {
-                options.DisableEntityCaching();
-            }
-        });
+                options.UseEntityFrameworkCore()
+                    .UseDbContext<OpenIddictDbContext>()
+                    .ReplaceDefaultEntities<GranitOpenIddictApplication,
+                        GranitOpenIddictAuthorization,
+                        GranitOpenIddictScope,
+                        GranitOpenIddictToken, Guid>();
 
-        // 3b. Server — OIDC authorization server
-        openIddict.AddServer(options =>
-        {
-            // ──── Endpoints ────
-            options
-                .SetAuthorizationEndpointUris("/connect/authorize")
-                .SetTokenEndpointUris("/connect/token")
-                .SetUserInfoEndpointUris("/connect/userinfo")
-                .SetIntrospectionEndpointUris("/connect/introspect")
-                .SetRevocationEndpointUris("/connect/revoke")
-                .SetEndSessionEndpointUris("/connect/logout")
-                .SetDeviceAuthorizationEndpointUris("/connect/device")
-                .SetEndUserVerificationEndpointUris("/connect/verify");
+                // Disable entity caching unless explicitly opted in (single-tenant deployments).
+                // Our custom entities implement IMultiTenant — the cache uses ClientId as sole
+                // key, which would bypass tenant filters.
+                if (!granitOptions.EnableEntityCaching)
+                {
+                    options.DisableEntityCaching();
+                }
+            });
 
-            // ──── Flows ────
-            options
-                .AllowAuthorizationCodeFlow()
-                .AllowClientCredentialsFlow()
-                .AllowRefreshTokenFlow()
-                .AllowDeviceAuthorizationFlow();
-
-            // PKCE required by default (can be relaxed per-application)
-            options.RequireProofKeyForCodeExchange();
-
-            // ──── Signing & encryption ────
-            // Development keys — host application MUST replace with production keys
-            // via options.AddSigningCertificate() / options.AddEncryptionCertificate()
-            options
-                .AddEphemeralEncryptionKey()
-                .AddEphemeralSigningKey();
-
-            // ──── Issuer ────
-            if (granitOptions.Issuer is not null)
-            {
-                options.SetIssuer(granitOptions.Issuer);
-            }
-
-            // ──── Token formats ────
-            options.DisableAccessTokenEncryption();
-
-            // Reference tokens: opaque tokens validated against DB on every request.
-            // Enables instant revocation at the cost of +1 DB round-trip per API call.
-            if (granitOptions.UseReferenceTokens)
-            {
-                options.UseReferenceAccessTokens();
-                options.UseReferenceRefreshTokens();
-            }
-
-            // ──── ASP.NET Core integration ────
-            options
-                .UseAspNetCore()
-                .EnableAuthorizationEndpointPassthrough()
-                .EnableTokenEndpointPassthrough()
-                .EnableUserInfoEndpointPassthrough()
-                .EnableEndSessionEndpointPassthrough()
-                .EnableEndUserVerificationEndpointPassthrough()
-                .EnableStatusCodePagesIntegration();
-
-            // ──── Custom grant types ────
-            options.AllowCustomFlow("urn:granit:grant_type:two_factor");
-            options.AllowCustomFlow("urn:granit:grant_type:passkey");
-
-            // ──── Scopes ────
-            options.RegisterScopes(
-                OpenIddictConstants.Scopes.Email,
-                OpenIddictConstants.Scopes.Profile,
-                OpenIddictConstants.Scopes.Roles,
-                "offline_access");
-        });
-
-        // 3c. Validation — token validation for resource servers
-        openIddict.AddValidation(options =>
-        {
-            options.UseLocalServer();
-            options.UseAspNetCore();
-        });
+        // 4. Register OpenIddict Server + Validation (delegated to Granit.OpenIddict.Server)
+        builder.AddGranitOpenIddictServer();
 
         return builder;
     }
 }
-
-#pragma warning restore GRSEC003
