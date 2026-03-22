@@ -29,8 +29,17 @@ internal sealed class UserCacheSyncMiddleware(RequestDelegate next)
         ICurrentTenant currentTenant,
         IUserCacheStore store,
         TimeProvider timeProvider,
-        IOptions<UserCacheOptions> options)
+        IOptions<UserCacheOptions> options,
+        IIdentityProviderCapabilities capabilities)
     {
+        // Skip sync when users are stored locally (OpenIddict / ASP.NET Core Identity).
+        // GranitUser IS the source of truth — no cache needed.
+        if (capabilities.IsLocalStore)
+        {
+            await next(httpContext).ConfigureAwait(false);
+            return;
+        }
+
         if (options.Value.EnableLoginTimeSync
             && currentUserService.IsAuthenticated
             && currentUserService.UserId is { Length: > 0 } userId)

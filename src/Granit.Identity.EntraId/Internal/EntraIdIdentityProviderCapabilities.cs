@@ -42,4 +42,7 @@ internal sealed class EntraIdIdentityProviderCapabilities : IIdentityProviderCap
 
     /// <inheritdoc/>
     public bool SupportsUserCreation => true;
+
+    /// <inheritdoc/>
+    public bool IsLocalStore => false;
 }

@@ -33,4 +33,15 @@ public interface IIdentityProviderCapabilities
 
     /// <summary>Whether the provider supports creating new user accounts.</summary>
     bool SupportsUserCreation { get; }
+
+    /// <summary>
+    /// Whether users are stored locally in the application database.
+    /// </summary>
+    /// <remarks>
+    /// When <see langword="true"/> (e.g., ASP.NET Core Identity / OpenIddict), the user cache
+    /// (<c>UserCacheEntry</c>) and sync middleware (<c>UserCacheSyncMiddleware</c>) are unnecessary
+    /// because users are already queryable via SQL. When <see langword="false"/> (e.g., Keycloak,
+    /// Entra ID), the cache is required for local queries.
+    /// </remarks>
+    bool IsLocalStore { get; }
 }

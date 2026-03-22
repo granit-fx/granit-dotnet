@@ -30,4 +30,7 @@ internal sealed class AspNetIdentityProviderCapabilities : IIdentityProviderCapa
 
     /// <inheritdoc/>
     public bool SupportsUserCreation => true;
+
+    /// <inheritdoc/>
+    public bool IsLocalStore => true;
 }

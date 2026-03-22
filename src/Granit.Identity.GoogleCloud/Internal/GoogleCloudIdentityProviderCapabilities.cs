@@ -28,4 +28,7 @@ internal sealed class GoogleCloudIdentityProviderCapabilities : IIdentityProvide
 
     /// <inheritdoc />
     public bool SupportsUserCreation => true;
+
+    /// <inheritdoc />
+    public bool IsLocalStore => false;
 }
