@@ -1,0 +1,20 @@
+using Granit.Core.Modularity;
+using Granit.Identity.Federated;
+using Granit.Persistence;
+
+namespace Granit.Identity.Federated.EntityFrameworkCore;
+
+/// <summary>
+/// Granit module for EF Core identity user cache persistence.
+/// Provides <see cref="Entities.UserCacheEntry"/> entity, <see cref="DbContext.IUserCacheDbContext"/>,
+/// and <see cref="IUserLookupService"/> with cache-aside strategy and login-time sync.
+/// </summary>
+/// <remarks>
+/// Registration of the generic store requires the application DbContext type. Call
+/// <c>services.AddGranitIdentityEntityFrameworkCore&lt;TContext&gt;()</c>
+/// in the host application's module or startup code.
+/// </remarks>
+[DependsOn(
+    typeof(GranitIdentityFederatedModule),
+    typeof(GranitPersistenceModule))]
+public sealed class GranitIdentityFederatedEntityFrameworkCoreModule : GranitModule;

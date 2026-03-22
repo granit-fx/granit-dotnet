@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T12:32:24.572575+00:00",
+  "generatedAt": "2026-03-22T13:04:34.576281+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -611,13 +611,6 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Identity.Cognito",
-      "deps": [
-        "Granit.Identity"
-      ],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.Identity.Endpoints",
       "deps": [
         "Granit.Http.ApiDocumentation",
@@ -630,41 +623,55 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Identity.EntityFrameworkCore",
-      "deps": [
-        "Granit.Identity",
-        "Granit.Persistence",
-        "Granit.Security"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Identity.EntraId",
-      "deps": [
-        "Granit.Http.Resilience",
-        "Granit.Identity",
-        "Granit.Timing"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Identity.GoogleCloud",
+      "name": "Granit.Identity.Federated",
       "deps": [
         "Granit.Identity"
       ],
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Identity.Keycloak",
+      "name": "Granit.Identity.Federated.Cognito",
+      "deps": [
+        "Granit.Identity.Federated"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Identity.Federated.EntityFrameworkCore",
+      "deps": [
+        "Granit.Identity.Federated",
+        "Granit.Persistence",
+        "Granit.Security"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Identity.Federated.EntraId",
       "deps": [
         "Granit.Http.Resilience",
-        "Granit.Identity",
+        "Granit.Identity.Federated",
         "Granit.Timing"
       ],
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Identity.OpenIddict",
+      "name": "Granit.Identity.Federated.GoogleCloud",
+      "deps": [
+        "Granit.Identity.Federated"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Identity.Federated.Keycloak",
+      "deps": [
+        "Granit.Http.Resilience",
+        "Granit.Identity.Federated",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Identity.Local.AspNetCore",
       "deps": [
         "Granit.Identity",
         "Granit.OpenIddict.EntityFrameworkCore"
@@ -12824,66 +12831,6 @@
       ]
     },
     {
-      "name": "IdentityCognitoServiceCollectionExtensions",
-      "fqn": "Granit.Identity.Cognito.Extensions.IdentityCognitoServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Identity.Cognito",
-      "file": "src/Granit.Identity.Cognito/Extensions/IdentityCognitoServiceCollectionExtensions.cs",
-      "line": 17,
-      "members": [
-        {
-          "name": "AddGranitIdentityCognito",
-          "kind": "method",
-          "signature": "AddGranitIdentityCognito(this IServiceCollection services)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitIdentityCognitoModule",
-      "fqn": "Granit.Identity.Cognito.GranitIdentityCognitoModule",
-      "kind": "class",
-      "project": "Granit.Identity.Cognito",
-      "file": "src/Granit.Identity.Cognito/GranitIdentityCognitoModule.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "CognitoAdminOptions",
-      "fqn": "Granit.Identity.Cognito.Options.CognitoAdminOptions",
-      "kind": "class",
-      "project": "Granit.Identity.Cognito",
-      "file": "src/Granit.Identity.Cognito/Options/CognitoAdminOptions.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "Region",
-          "kind": "property",
-          "signature": "string Region",
-          "returnType": "string"
-        },
-        {
-          "name": "UserPoolId",
-          "kind": "property",
-          "signature": "string UserPoolId",
-          "returnType": "string"
-        },
-        {
-          "name": "AppClientId",
-          "kind": "property",
-          "signature": "string? AppClientId",
-          "returnType": "string?"
-        }
-      ]
-    },
-    {
       "name": "IdentityMetrics",
       "fqn": "Granit.Identity.Diagnostics.IdentityMetrics",
       "kind": "class",
@@ -13203,264 +13150,6 @@
       "members": []
     },
     {
-      "name": "IUserCacheDbContext",
-      "fqn": "Granit.Identity.EntityFrameworkCore.DbContext.IUserCacheDbContext",
-      "kind": "interface",
-      "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/DbContext/IUserCacheDbContext.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "UserCacheModelBuilderExtensions",
-      "fqn": "Granit.Identity.EntityFrameworkCore.DbContext.UserCacheModelBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/DbContext/UserCacheModelBuilderExtensions.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "ConfigureIdentityModule",
-          "kind": "method",
-          "signature": "ConfigureIdentityModule(this ModelBuilder builder)",
-          "returnType": "ModelBuilder"
-        }
-      ]
-    },
-    {
-      "name": "UserCacheEntry",
-      "fqn": "Granit.Identity.EntityFrameworkCore.Entities.UserCacheEntry",
-      "kind": "class",
-      "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/Entities/UserCacheEntry.cs",
-      "line": 22,
-      "members": [
-        {
-          "name": "ExternalUserId",
-          "kind": "property",
-          "signature": "string ExternalUserId",
-          "returnType": "string"
-        },
-        {
-          "name": "Username",
-          "kind": "property",
-          "signature": "string? Username",
-          "returnType": "string?"
-        },
-        {
-          "name": "LastSyncedAt",
-          "kind": "property",
-          "signature": "DateTimeOffset LastSyncedAt",
-          "returnType": "DateTimeOffset"
-        }
-      ]
-    },
-    {
-      "name": "IdentityUserDeletedEto",
-      "fqn": "Granit.Identity.EntityFrameworkCore.Events.IdentityUserDeletedEto",
-      "kind": "record",
-      "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/Events/IdentityUserDeletedEvent.cs",
-      "line": 13,
-      "members": []
-    },
-    {
-      "name": "IdentityUserUpdatedEto",
-      "fqn": "Granit.Identity.EntityFrameworkCore.Events.IdentityUserUpdatedEto",
-      "kind": "record",
-      "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/Events/IdentityUserUpdatedEvent.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "UserCacheEntryErasedEvent",
-      "fqn": "Granit.Identity.EntityFrameworkCore.Events.UserCacheEntryErasedEvent",
-      "kind": "record",
-      "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/Events/UserCacheEntryErasedEvent.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "IdentityEfCoreApplicationBuilderExtensions",
-      "fqn": "Granit.Identity.EntityFrameworkCore.Extensions.IdentityEfCoreApplicationBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/Extensions/IdentityEfCoreApplicationBuilderExtensions.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "UseGranitIdentityUserCacheSync",
-          "kind": "method",
-          "signature": "UseGranitIdentityUserCacheSync(this IApplicationBuilder app)",
-          "returnType": "IApplicationBuilder"
-        }
-      ]
-    },
-    {
-      "name": "IdentityEfCoreServiceCollectionExtensions",
-      "fqn": "Granit.Identity.EntityFrameworkCore.Extensions.IdentityEfCoreServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/Extensions/IdentityEfCoreServiceCollectionExtensions.cs",
-      "line": 13,
-      "members": []
-    },
-    {
-      "name": "GranitIdentityDbProperties",
-      "fqn": "Granit.Identity.EntityFrameworkCore.GranitIdentityDbProperties",
-      "kind": "class",
-      "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/GranitIdentityDbProperties.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "DbTablePrefix",
-          "kind": "property",
-          "signature": "string DbTablePrefix",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "GranitIdentityEntityFrameworkCoreModule",
-      "fqn": "Granit.Identity.EntityFrameworkCore.GranitIdentityEntityFrameworkCoreModule",
-      "kind": "class",
-      "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/GranitIdentityEntityFrameworkCoreModule.cs",
-      "line": 20,
-      "members": []
-    },
-    {
-      "name": "UserCacheOptions",
-      "fqn": "Granit.Identity.EntityFrameworkCore.Options.UserCacheOptions",
-      "kind": "class",
-      "project": "Granit.Identity.EntityFrameworkCore",
-      "file": "src/Granit.Identity.EntityFrameworkCore/Options/UserCacheOptions.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "FromHours",
-          "kind": "method",
-          "signature": "FromHours(24)",
-          "returnType": "TimeSpan StalenessThreshold { get; set; } = TimeSpan."
-        },
-        {
-          "name": "EnableLoginTimeSync",
-          "kind": "property",
-          "signature": "bool EnableLoginTimeSync",
-          "returnType": "bool"
-        },
-        {
-          "name": "IncrementalSyncBatchSize",
-          "kind": "property",
-          "signature": "int IncrementalSyncBatchSize",
-          "returnType": "int"
-        }
-      ]
-    },
-    {
-      "name": "IdentityEntraIdServiceCollectionExtensions",
-      "fqn": "Granit.Identity.EntraId.Extensions.IdentityEntraIdServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Identity.EntraId",
-      "file": "src/Granit.Identity.EntraId/Extensions/IdentityEntraIdServiceCollectionExtensions.cs",
-      "line": 17,
-      "members": [
-        {
-          "name": "AddGranitIdentityEntraId",
-          "kind": "method",
-          "signature": "AddGranitIdentityEntraId(this IServiceCollection services)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitIdentityEntraIdModule",
-      "fqn": "Granit.Identity.EntraId.GranitIdentityEntraIdModule",
-      "kind": "class",
-      "project": "Granit.Identity.EntraId",
-      "file": "src/Granit.Identity.EntraId/GranitIdentityEntraIdModule.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "IPasswordResetNotifier",
-      "fqn": "Granit.Identity.EntraId.IPasswordResetNotifier",
-      "kind": "interface",
-      "project": "Granit.Identity.EntraId",
-      "file": "src/Granit.Identity.EntraId/IPasswordResetNotifier.cs",
-      "line": 20,
-      "members": [
-        {
-          "name": "NotifyAsync",
-          "kind": "method",
-          "signature": "NotifyAsync(string userId, string temporaryPassword, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "EntraIdAdminOptions",
-      "fqn": "Granit.Identity.EntraId.Options.EntraIdAdminOptions",
-      "kind": "class",
-      "project": "Granit.Identity.EntraId",
-      "file": "src/Granit.Identity.EntraId/Options/EntraIdAdminOptions.cs",
-      "line": 24,
-      "members": [
-        {
-          "name": "TenantId",
-          "kind": "property",
-          "signature": "string TenantId",
-          "returnType": "string"
-        },
-        {
-          "name": "ClientId",
-          "kind": "property",
-          "signature": "string ClientId",
-          "returnType": "string"
-        },
-        {
-          "name": "ClientSecret",
-          "kind": "property",
-          "signature": "string ClientSecret",
-          "returnType": "string"
-        },
-        {
-          "name": "ServicePrincipalObjectId",
-          "kind": "property",
-          "signature": "string ServicePrincipalObjectId",
-          "returnType": "string"
-        },
-        {
-          "name": "DefaultDomain",
-          "kind": "property",
-          "signature": "string? DefaultDomain",
-          "returnType": "string?"
-        },
-        {
-          "name": "GraphBaseUrl",
-          "kind": "property",
-          "signature": "string GraphBaseUrl",
-          "returnType": "string"
-        },
-        {
-          "name": "GetTokenEndpoint",
-          "kind": "method",
-          "signature": "GetTokenEndpoint()",
-          "returnType": "string? RopcClientId { get; set; } internal string"
-        }
-      ]
-    },
-    {
       "name": "IdentityGroupMembershipChangedEto",
       "fqn": "Granit.Identity.Events.IdentityGroupMembershipChangedEto",
       "kind": "record",
@@ -13574,11 +13263,329 @@
       ]
     },
     {
-      "name": "IdentityGoogleCloudServiceCollectionExtensions",
-      "fqn": "Granit.Identity.GoogleCloud.Extensions.IdentityGoogleCloudServiceCollectionExtensions",
+      "name": "IdentityCognitoServiceCollectionExtensions",
+      "fqn": "Granit.Identity.Federated.Cognito.Extensions.IdentityCognitoServiceCollectionExtensions",
       "kind": "class",
-      "project": "Granit.Identity.GoogleCloud",
-      "file": "src/Granit.Identity.GoogleCloud/Extensions/IdentityGoogleCloudServiceCollectionExtensions.cs",
+      "project": "Granit.Identity.Federated.Cognito",
+      "file": "src/Granit.Identity.Federated.Cognito/Extensions/IdentityCognitoServiceCollectionExtensions.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "AddGranitIdentityCognito",
+          "kind": "method",
+          "signature": "AddGranitIdentityCognito(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitIdentityFederatedCognitoModule",
+      "fqn": "Granit.Identity.Federated.Cognito.GranitIdentityFederatedCognitoModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Cognito",
+      "file": "src/Granit.Identity.Federated.Cognito/GranitIdentityFederatedCognitoModule.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "CognitoAdminOptions",
+      "fqn": "Granit.Identity.Federated.Cognito.Options.CognitoAdminOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Cognito",
+      "file": "src/Granit.Identity.Federated.Cognito/Options/CognitoAdminOptions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Region",
+          "kind": "property",
+          "signature": "string Region",
+          "returnType": "string"
+        },
+        {
+          "name": "UserPoolId",
+          "kind": "property",
+          "signature": "string UserPoolId",
+          "returnType": "string"
+        },
+        {
+          "name": "AppClientId",
+          "kind": "property",
+          "signature": "string? AppClientId",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "IUserCacheDbContext",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.DbContext.IUserCacheDbContext",
+      "kind": "interface",
+      "project": "Granit.Identity.Federated.EntityFrameworkCore",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/DbContext/IUserCacheDbContext.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "UserCacheModelBuilderExtensions",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.DbContext.UserCacheModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntityFrameworkCore",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/DbContext/UserCacheModelBuilderExtensions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ConfigureIdentityModule",
+          "kind": "method",
+          "signature": "ConfigureIdentityModule(this ModelBuilder builder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "UserCacheEntry",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Entities.UserCacheEntry",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntityFrameworkCore",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Entities/UserCacheEntry.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "ExternalUserId",
+          "kind": "property",
+          "signature": "string ExternalUserId",
+          "returnType": "string"
+        },
+        {
+          "name": "Username",
+          "kind": "property",
+          "signature": "string? Username",
+          "returnType": "string?"
+        },
+        {
+          "name": "LastSyncedAt",
+          "kind": "property",
+          "signature": "DateTimeOffset LastSyncedAt",
+          "returnType": "DateTimeOffset"
+        }
+      ]
+    },
+    {
+      "name": "IdentityUserDeletedEto",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Events.IdentityUserDeletedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.EntityFrameworkCore",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Events/IdentityUserDeletedEvent.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "IdentityUserUpdatedEto",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Events.IdentityUserUpdatedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.EntityFrameworkCore",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Events/IdentityUserUpdatedEvent.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "UserCacheEntryErasedEvent",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Events.UserCacheEntryErasedEvent",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.EntityFrameworkCore",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Events/UserCacheEntryErasedEvent.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "IdentityEfCoreApplicationBuilderExtensions",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Extensions.IdentityEfCoreApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntityFrameworkCore",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Extensions/IdentityEfCoreApplicationBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "UseGranitIdentityUserCacheSync",
+          "kind": "method",
+          "signature": "UseGranitIdentityUserCacheSync(this IApplicationBuilder app)",
+          "returnType": "IApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "IdentityEfCoreServiceCollectionExtensions",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Extensions.IdentityEfCoreServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntityFrameworkCore",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Extensions/IdentityEfCoreServiceCollectionExtensions.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "GranitIdentityDbProperties",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.GranitIdentityDbProperties",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntityFrameworkCore",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/GranitIdentityDbProperties.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitIdentityFederatedEntityFrameworkCoreModule",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.GranitIdentityFederatedEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntityFrameworkCore",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/GranitIdentityFederatedEntityFrameworkCoreModule.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "UserCacheOptions",
+      "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Options.UserCacheOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntityFrameworkCore",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Options/UserCacheOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "FromHours",
+          "kind": "method",
+          "signature": "FromHours(24)",
+          "returnType": "TimeSpan StalenessThreshold { get; set; } = TimeSpan."
+        },
+        {
+          "name": "EnableLoginTimeSync",
+          "kind": "property",
+          "signature": "bool EnableLoginTimeSync",
+          "returnType": "bool"
+        },
+        {
+          "name": "IncrementalSyncBatchSize",
+          "kind": "property",
+          "signature": "int IncrementalSyncBatchSize",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "IdentityEntraIdServiceCollectionExtensions",
+      "fqn": "Granit.Identity.Federated.EntraId.Extensions.IdentityEntraIdServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntraId",
+      "file": "src/Granit.Identity.Federated.EntraId/Extensions/IdentityEntraIdServiceCollectionExtensions.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "AddGranitIdentityEntraId",
+          "kind": "method",
+          "signature": "AddGranitIdentityEntraId(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitIdentityFederatedEntraIdModule",
+      "fqn": "Granit.Identity.Federated.EntraId.GranitIdentityFederatedEntraIdModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntraId",
+      "file": "src/Granit.Identity.Federated.EntraId/GranitIdentityFederatedEntraIdModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IPasswordResetNotifier",
+      "fqn": "Granit.Identity.Federated.EntraId.IPasswordResetNotifier",
+      "kind": "interface",
+      "project": "Granit.Identity.Federated.EntraId",
+      "file": "src/Granit.Identity.Federated.EntraId/IPasswordResetNotifier.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "NotifyAsync",
+          "kind": "method",
+          "signature": "NotifyAsync(string userId, string temporaryPassword, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "EntraIdAdminOptions",
+      "fqn": "Granit.Identity.Federated.EntraId.Options.EntraIdAdminOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntraId",
+      "file": "src/Granit.Identity.Federated.EntraId/Options/EntraIdAdminOptions.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "string TenantId",
+          "returnType": "string"
+        },
+        {
+          "name": "ClientId",
+          "kind": "property",
+          "signature": "string ClientId",
+          "returnType": "string"
+        },
+        {
+          "name": "ClientSecret",
+          "kind": "property",
+          "signature": "string ClientSecret",
+          "returnType": "string"
+        },
+        {
+          "name": "ServicePrincipalObjectId",
+          "kind": "property",
+          "signature": "string ServicePrincipalObjectId",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultDomain",
+          "kind": "property",
+          "signature": "string? DefaultDomain",
+          "returnType": "string?"
+        },
+        {
+          "name": "GraphBaseUrl",
+          "kind": "property",
+          "signature": "string GraphBaseUrl",
+          "returnType": "string"
+        },
+        {
+          "name": "GetTokenEndpoint",
+          "kind": "method",
+          "signature": "GetTokenEndpoint()",
+          "returnType": "string? RopcClientId { get; set; } internal string"
+        }
+      ]
+    },
+    {
+      "name": "IdentityGoogleCloudServiceCollectionExtensions",
+      "fqn": "Granit.Identity.Federated.GoogleCloud.Extensions.IdentityGoogleCloudServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.GoogleCloud",
+      "file": "src/Granit.Identity.Federated.GoogleCloud/Extensions/IdentityGoogleCloudServiceCollectionExtensions.cs",
       "line": 17,
       "members": [
         {
@@ -13590,11 +13597,11 @@
       ]
     },
     {
-      "name": "GranitIdentityGoogleCloudModule",
-      "fqn": "Granit.Identity.GoogleCloud.GranitIdentityGoogleCloudModule",
+      "name": "GranitIdentityFederatedGoogleCloudModule",
+      "fqn": "Granit.Identity.Federated.GoogleCloud.GranitIdentityFederatedGoogleCloudModule",
       "kind": "class",
-      "project": "Granit.Identity.GoogleCloud",
-      "file": "src/Granit.Identity.GoogleCloud/GranitIdentityGoogleCloudModule.cs",
+      "project": "Granit.Identity.Federated.GoogleCloud",
+      "file": "src/Granit.Identity.Federated.GoogleCloud/GranitIdentityFederatedGoogleCloudModule.cs",
       "line": 11,
       "members": [
         {
@@ -13607,10 +13614,10 @@
     },
     {
       "name": "GoogleCloudIdentityOptions",
-      "fqn": "Granit.Identity.GoogleCloud.Options.GoogleCloudIdentityOptions",
+      "fqn": "Granit.Identity.Federated.GoogleCloud.Options.GoogleCloudIdentityOptions",
       "kind": "class",
-      "project": "Granit.Identity.GoogleCloud",
-      "file": "src/Granit.Identity.GoogleCloud/Options/GoogleCloudIdentityOptions.cs",
+      "project": "Granit.Identity.Federated.GoogleCloud",
+      "file": "src/Granit.Identity.Federated.GoogleCloud/Options/GoogleCloudIdentityOptions.cs",
       "line": 6,
       "members": [
         {
@@ -13630,6 +13637,93 @@
           "kind": "property",
           "signature": "int TimeoutSeconds",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "GranitIdentityFederatedModule",
+      "fqn": "Granit.Identity.Federated.GranitIdentityFederatedModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/GranitIdentityFederatedModule.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "IdentityKeycloakServiceCollectionExtensions",
+      "fqn": "Granit.Identity.Federated.Keycloak.Extensions.IdentityKeycloakServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Keycloak",
+      "file": "src/Granit.Identity.Federated.Keycloak/Extensions/IdentityKeycloakServiceCollectionExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "AddGranitIdentityKeycloak",
+          "kind": "method",
+          "signature": "AddGranitIdentityKeycloak(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitIdentityFederatedKeycloakModule",
+      "fqn": "Granit.Identity.Federated.Keycloak.GranitIdentityFederatedKeycloakModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Keycloak",
+      "file": "src/Granit.Identity.Federated.Keycloak/GranitIdentityFederatedKeycloakModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "KeycloakAdminOptions",
+      "fqn": "Granit.Identity.Federated.Keycloak.Options.KeycloakAdminOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Keycloak",
+      "file": "src/Granit.Identity.Federated.Keycloak/Options/KeycloakAdminOptions.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "BaseUrl",
+          "kind": "property",
+          "signature": "string BaseUrl",
+          "returnType": "string"
+        },
+        {
+          "name": "Realm",
+          "kind": "property",
+          "signature": "string Realm",
+          "returnType": "string"
+        },
+        {
+          "name": "ClientId",
+          "kind": "property",
+          "signature": "string ClientId",
+          "returnType": "string"
+        },
+        {
+          "name": "ClientSecret",
+          "kind": "property",
+          "signature": "string ClientSecret",
+          "returnType": "string"
+        },
+        {
+          "name": "UseTokenExchangeForDeviceActivity",
+          "kind": "property",
+          "signature": "bool UseTokenExchangeForDeviceActivity",
+          "returnType": "bool"
+        },
+        {
+          "name": "GetTokenEndpoint",
+          "kind": "method",
+          "signature": "GetTokenEndpoint()",
+          "returnType": "string? DirectAccessClientId { get; set; } internal string"
         }
       ]
     },
@@ -13968,80 +14062,18 @@
       ]
     },
     {
-      "name": "IdentityKeycloakServiceCollectionExtensions",
-      "fqn": "Granit.Identity.Keycloak.Extensions.IdentityKeycloakServiceCollectionExtensions",
+      "name": "GranitIdentityLocalAspNetCoreModule",
+      "fqn": "Granit.Identity.Local.AspNetCore.GranitIdentityLocalAspNetCoreModule",
       "kind": "class",
-      "project": "Granit.Identity.Keycloak",
-      "file": "src/Granit.Identity.Keycloak/Extensions/IdentityKeycloakServiceCollectionExtensions.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "AddGranitIdentityKeycloak",
-          "kind": "method",
-          "signature": "AddGranitIdentityKeycloak(this IServiceCollection services)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "GranitIdentityKeycloakModule",
-      "fqn": "Granit.Identity.Keycloak.GranitIdentityKeycloakModule",
-      "kind": "class",
-      "project": "Granit.Identity.Keycloak",
-      "file": "src/Granit.Identity.Keycloak/GranitIdentityKeycloakModule.cs",
-      "line": 16,
+      "project": "Granit.Identity.Local.AspNetCore",
+      "file": "src/Granit.Identity.Local.AspNetCore/GranitIdentityLocalAspNetCoreModule.cs",
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "KeycloakAdminOptions",
-      "fqn": "Granit.Identity.Keycloak.Options.KeycloakAdminOptions",
-      "kind": "class",
-      "project": "Granit.Identity.Keycloak",
-      "file": "src/Granit.Identity.Keycloak/Options/KeycloakAdminOptions.cs",
-      "line": 24,
-      "members": [
-        {
-          "name": "BaseUrl",
-          "kind": "property",
-          "signature": "string BaseUrl",
-          "returnType": "string"
-        },
-        {
-          "name": "Realm",
-          "kind": "property",
-          "signature": "string Realm",
-          "returnType": "string"
-        },
-        {
-          "name": "ClientId",
-          "kind": "property",
-          "signature": "string ClientId",
-          "returnType": "string"
-        },
-        {
-          "name": "ClientSecret",
-          "kind": "property",
-          "signature": "string ClientSecret",
-          "returnType": "string"
-        },
-        {
-          "name": "UseTokenExchangeForDeviceActivity",
-          "kind": "property",
-          "signature": "bool UseTokenExchangeForDeviceActivity",
-          "returnType": "bool"
-        },
-        {
-          "name": "GetTokenEndpoint",
-          "kind": "method",
-          "signature": "GetTokenEndpoint()",
-          "returnType": "string? DirectAccessClientId { get; set; } internal string"
         }
       ]
     },
@@ -14116,22 +14148,6 @@
       "file": "src/Granit.Identity/Models/IdentityUserUpdate.cs",
       "line": 14,
       "members": []
-    },
-    {
-      "name": "GranitIdentityOpenIddictModule",
-      "fqn": "Granit.Identity.OpenIddict.GranitIdentityOpenIddictModule",
-      "kind": "class",
-      "project": "Granit.Identity.OpenIddict",
-      "file": "src/Granit.Identity.OpenIddict/GranitIdentityOpenIddictModule.cs",
-      "line": 27,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
     },
     {
       "name": "ImagingAIHostApplicationBuilderExtensions",

@@ -4,8 +4,8 @@ using Granit.Authorization;
 using Granit.Core.Modularity;
 using Granit.Identity;
 using Granit.Identity.Endpoints;
-using Granit.Identity.EntityFrameworkCore;
-using Granit.Identity.Keycloak;
+using Granit.Identity.Federated.EntityFrameworkCore;
+using Granit.Identity.Federated.Keycloak;
 using Granit.Persistence.Migrations;
 
 namespace GranitApiFull;
@@ -20,8 +20,8 @@ namespace GranitApiFull;
     typeof(GranitKeycloakModule),
     typeof(GranitAuthorizationModule),
     typeof(GranitIdentityModule),
-    typeof(GranitIdentityKeycloakModule),
-    typeof(GranitIdentityEntityFrameworkCoreModule),
+    typeof(GranitIdentityFederatedKeycloakModule),
+    typeof(GranitIdentityFederatedEntityFrameworkCoreModule),
     typeof(GranitIdentityEndpointsModule),
     typeof(GranitPersistenceMigrationsModule))]
 public sealed class AppHostModule : GranitModule;

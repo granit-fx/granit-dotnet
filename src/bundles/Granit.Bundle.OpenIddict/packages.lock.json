@@ -553,7 +553,7 @@
           "Granit.Querying": "[0.1.0-dev, )"
         }
       },
-      "granit.identity.openiddict": {
+      "granit.identity.local.aspnetcore": {
         "type": "Project",
         "dependencies": {
           "Granit.Identity": "[0.1.0-dev, )",

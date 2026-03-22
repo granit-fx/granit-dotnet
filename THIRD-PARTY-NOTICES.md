@@ -169,7 +169,7 @@ package `Granit.Notifications.Email.AwsSes` comme alternative au canal SMTP.
 
 ### AWSSDK.CognitoIdentityProvider
 
-Ce SDK est utilisé par le package `Granit.Identity.Cognito` pour l'administration
+Ce SDK est utilisé par le package `Granit.Identity.Federated.Cognito` pour l'administration
 des utilisateurs AWS Cognito User Pools (CRUD, groupes, sessions, mots de passe)
 comme alternative au provider Keycloak.
 

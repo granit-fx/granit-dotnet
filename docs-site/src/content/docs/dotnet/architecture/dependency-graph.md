@@ -259,11 +259,13 @@ flowchart TD
 | Package | Depends on |
 |---------|------------|
 | `Granit.Identity` | `Querying` |
-| `Granit.Identity.Keycloak` | `Identity` |
-| `Granit.Identity.EntraId` | `Identity`, `Timing` |
-| `Granit.Identity.Cognito` | `Identity` |
-| `Granit.Identity.GoogleCloud` | `Identity` |
-| `Granit.Identity.EntityFrameworkCore` | `Identity`, `Persistence`, `Security` |
+| `Granit.Identity.Federated` | `Identity` |
+| `Granit.Identity.Federated.Keycloak` | `Identity.Federated` |
+| `Granit.Identity.Federated.EntraId` | `Identity.Federated`, `Timing` |
+| `Granit.Identity.Federated.Cognito` | `Identity.Federated` |
+| `Granit.Identity.Federated.GoogleCloud` | `Identity.Federated` |
+| `Granit.Identity.Federated.EntityFrameworkCore` | `Identity.Federated`, `Persistence`, `Security` |
+| `Granit.Identity.Local.AspNetCore` | `Identity`, `OpenIddict.EntityFrameworkCore` |
 | `Granit.Identity.Endpoints` | `Identity`, `Authorization` |
 
 ### Localization

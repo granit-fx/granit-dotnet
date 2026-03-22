@@ -1931,13 +1931,6 @@
           "Granit.Querying": "[0.1.0-dev, )"
         }
       },
-      "granit.identity.cognito": {
-        "type": "Project",
-        "dependencies": {
-          "AWSSDK.CognitoIdentityProvider": "[4.*, )",
-          "Granit.Identity": "[0.1.0-dev, )"
-        }
-      },
       "granit.identity.endpoints": {
         "type": "Project",
         "dependencies": {
@@ -1949,39 +1942,52 @@
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
-      "granit.identity.entityframeworkcore": {
+      "granit.identity.federated": {
         "type": "Project",
         "dependencies": {
-          "Granit.Identity": "[0.1.0-dev, )",
+          "Granit.Identity": "[0.1.0-dev, )"
+        }
+      },
+      "granit.identity.federated.cognito": {
+        "type": "Project",
+        "dependencies": {
+          "AWSSDK.CognitoIdentityProvider": "[4.*, )",
+          "Granit.Identity.Federated": "[0.1.0-dev, )"
+        }
+      },
+      "granit.identity.federated.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Identity.Federated": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore": "[10.*, )"
         }
       },
-      "granit.identity.entraid": {
+      "granit.identity.federated.entraid": {
         "type": "Project",
         "dependencies": {
           "Granit.Http.Resilience": "[0.1.0-dev, )",
-          "Granit.Identity": "[0.1.0-dev, )",
+          "Granit.Identity.Federated": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
-      "granit.identity.googlecloud": {
+      "granit.identity.federated.googlecloud": {
         "type": "Project",
         "dependencies": {
           "FirebaseAdmin": "[3.*, )",
-          "Granit.Identity": "[0.1.0-dev, )"
+          "Granit.Identity.Federated": "[0.1.0-dev, )"
         }
       },
-      "granit.identity.keycloak": {
+      "granit.identity.federated.keycloak": {
         "type": "Project",
         "dependencies": {
           "Granit.Http.Resilience": "[0.1.0-dev, )",
-          "Granit.Identity": "[0.1.0-dev, )",
+          "Granit.Identity.Federated": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
-      "granit.identity.openiddict": {
+      "granit.identity.local.aspnetcore": {
         "type": "Project",
         "dependencies": {
           "Granit.Identity": "[0.1.0-dev, )",

@@ -5,7 +5,7 @@ namespace Granit.Identity;
 /// </summary>
 /// <remarks>
 /// A null-object implementation is registered by default (returns zeroes).
-/// Install <c>Granit.Identity.EntityFrameworkCore</c> to enable real statistics.
+/// Install <c>Granit.Identity.Federated.EntityFrameworkCore</c> to enable real statistics.
 /// </remarks>
 public interface IUserCacheStats
 {

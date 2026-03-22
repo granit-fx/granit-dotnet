@@ -35,7 +35,7 @@ flowchart TD
 
 | Component | File | Role |
 |-----------|------|------|
-| `KeycloakAdminTokenService` | `src/Granit.Identity.Keycloak/Internal/KeycloakAdminTokenService.cs` | Keycloak token acquisition with double-check locking |
+| `KeycloakAdminTokenService` | `src/Granit.Identity.Federated.Keycloak/Internal/KeycloakAdminTokenService.cs` | Keycloak token acquisition with double-check locking |
 
 > **Note:** Cache stampede protection was previously implemented via manual
 > double-check locking in `DistributedCacheService`. With the migration to

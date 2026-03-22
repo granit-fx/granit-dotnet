@@ -40,7 +40,7 @@ users exclusively through `IUserLookupService`. Two implementations exist:
 | Local provider | `AspNetIdentityUserLookupService` | `GranitUser` (direct SQL) |
 
 The active implementation is determined by which identity provider package is
-registered (`Granit.Identity.Keycloak` vs `Granit.Identity.OpenIddict`).
+registered (`Granit.Identity.Federated.Keycloak` vs `Granit.Identity.Local.AspNetCore`).
 
 ### `IIdentityProviderCapabilities.IsLocalStore`
 
@@ -48,14 +48,14 @@ A new `IsLocalStore` property on `IIdentityProviderCapabilities` indicates
 whether users are stored locally. This property drives:
 
 - **`UserCacheSyncMiddleware`** — short-circuits when `IsLocalStore = true`
-- **`Granit.Identity.EntityFrameworkCore`** — not required when `IsLocalStore = true`
+- **`Granit.Identity.Federated.EntityFrameworkCore`** — not required when `IsLocalStore = true`
 
 ### `UserCacheEntry` is a caching concern
 
 `UserCacheEntry` is an **implementation detail** of `CachedUserLookupService`,
 not a first-class domain concept:
 
-- No module outside `Granit.Identity.EntityFrameworkCore` references it directly.
+- No module outside `Granit.Identity.Federated.EntityFrameworkCore` references it directly.
 - It is not created when the identity provider is local (OpenIddict).
 - It exists solely to enable SQL queries against external provider user data.
 

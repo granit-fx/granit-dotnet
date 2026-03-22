@@ -8,7 +8,7 @@ namespace Granit.Identity;
 /// <remarks>
 /// <para>
 /// A <see cref="NullUserLookupService"/> is registered by default (returns null / empty lists / no-ops).
-/// Install <c>Granit.Identity.EntityFrameworkCore</c> to enable EF Core–backed caching with
+/// Install <c>Granit.Identity.Federated.EntityFrameworkCore</c> to enable EF Core–backed caching with
 /// on-demand, login-time, and webhook sync strategies.
 /// </para>
 /// <para>

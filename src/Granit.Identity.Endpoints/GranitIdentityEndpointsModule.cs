@@ -12,7 +12,7 @@ namespace Granit.Identity.Endpoints;
 /// <para>
 /// Depends only on <see cref="GranitIdentityModule"/> (abstractions) and
 /// <see cref="GranitAuthorizationModule"/> (permission policy enforcement).
-/// Does <b>not</b> depend on <c>Granit.Identity.EntityFrameworkCore</c> —
+/// Does <b>not</b> depend on <c>Granit.Identity.Federated.EntityFrameworkCore</c> —
 /// the host application is responsible for registering the EF Core implementation.
 /// </para>
 /// <para>

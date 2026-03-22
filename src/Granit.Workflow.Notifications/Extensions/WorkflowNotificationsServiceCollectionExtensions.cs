@@ -56,7 +56,7 @@ public static class WorkflowNotificationsServiceCollectionExtensions
     /// <remarks>
     /// Requires both <c>Granit.Authorization</c> (for <c>IPermissionManagerReader</c>) and an
     /// <see cref="Granit.Identity.IIdentityProvider"/> implementation (e.g.
-    /// <c>Granit.Identity.Keycloak</c>) to be registered.
+    /// <c>Granit.Identity.Federated.Keycloak</c>) to be registered.
     /// </remarks>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>

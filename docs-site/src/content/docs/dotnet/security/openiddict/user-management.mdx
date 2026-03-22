@@ -103,7 +103,7 @@ Applications and scopes with `TenantId == null` are global (visible to all tenan
 
 ## IIdentityProvider bridge
 
-`Granit.Identity.OpenIddict` registers `AspNetIdentityProvider` as the
+`Granit.Identity.Local.AspNetCore` registers `AspNetIdentityProvider` as the
 `IIdentityProvider` implementation, replacing the default `NullIdentityProvider`.
 It implements all 7 sub-interfaces of the Granit.Identity abstraction layer:
 
@@ -133,7 +133,7 @@ SupportsUserCreation = true
 ```
 
 :::caution
-Do **NOT** add `Granit.Identity.EntityFrameworkCore` alongside `Granit.Identity.OpenIddict`.
+Do **NOT** add `Granit.Identity.Federated.EntityFrameworkCore` alongside `Granit.Identity.Local.AspNetCore`.
 It would create a redundant `UserCache` layer. `AspNetIdentityUserLookupService` queries
 `UserManager<GranitUser>` directly.
 :::

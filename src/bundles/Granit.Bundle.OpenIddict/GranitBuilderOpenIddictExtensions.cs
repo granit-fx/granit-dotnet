@@ -1,5 +1,5 @@
 using Granit.Core.Modularity;
-using Granit.Identity.OpenIddict;
+using Granit.Identity.Local.AspNetCore;
 using Granit.OpenIddict;
 using Granit.OpenIddict.BackgroundJobs;
 using Granit.OpenIddict.Endpoints;
@@ -20,7 +20,7 @@ public static class GranitBuilderOpenIddictExtensions
     {
         builder.AddModule<GranitOpenIddictModule>();
         builder.AddModule<GranitOpenIddictEntityFrameworkCoreModule>();
-        builder.AddModule<GranitIdentityOpenIddictModule>();
+        builder.AddModule<GranitIdentityLocalAspNetCoreModule>();
         builder.AddModule<GranitOpenIddictEndpointsModule>();
         builder.AddModule<GranitOpenIddictBackgroundJobsModule>();
         return builder;

@@ -52,7 +52,7 @@ development scenarios but lacks support for some features used by Granit (e.g.,
 | Granit.Authorization.EntityFrameworkCore | Supported | Compatible | Compatible |
 | Granit.Settings.EntityFrameworkCore | Supported | Compatible | Compatible |
 | Granit.Features.EntityFrameworkCore | Supported | Compatible | Compatible |
-| Granit.Identity.EntityFrameworkCore | Supported | Compatible | Compatible |
+| Granit.Identity.Federated.EntityFrameworkCore | Supported | Compatible | Compatible |
 | Granit.Localization.EntityFrameworkCore | Supported | Compatible | Compatible |
 | Granit.ReferenceData.EntityFrameworkCore | Supported | Compatible | Compatible |
 | Granit.BlobStorage.EntityFrameworkCore | Supported | Compatible | Compatible |
@@ -138,10 +138,10 @@ There is no local filesystem provider. For local development, use MinIO in a con
 | Granit.Authentication.Cognito | AWS Cognito | Supported |
 | Granit.Authentication.GoogleCloud | Google Cloud Identity Platform (Firebase Auth) | Supported |
 | Granit.Authentication.JwtBearer | Any OIDC/JWT issuer | Supported (base layer) |
-| Granit.Identity.Keycloak | Keycloak Admin API | Supported |
-| Granit.Identity.EntraId | Microsoft Graph API | Supported |
-| Granit.Identity.Cognito | AWS Cognito User Pool API | Supported |
-| Granit.Identity.GoogleCloud | Firebase Admin SDK | Supported |
+| Granit.Identity.Federated.Keycloak | Keycloak Admin API | Supported |
+| Granit.Identity.Federated.EntraId | Microsoft Graph API | Supported |
+| Granit.Identity.Federated.Cognito | AWS Cognito User Pool API | Supported |
+| Granit.Identity.Federated.GoogleCloud | Firebase Admin SDK | Supported |
 | Granit.Identity (abstractions) | Custom via `IIdentityProvider` | Implement your own |
 
 ### Authentication vs. identity

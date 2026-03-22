@@ -5,7 +5,7 @@ namespace Granit.Identity.Internal;
 /// <summary>
 /// Null-object implementation of <see cref="IUserLookupService"/>.
 /// Returns <c>null</c> / empty lists / no-ops for all operations.
-/// Replaced by <c>CachedUserLookupService</c> when <c>Granit.Identity.EntityFrameworkCore</c> is installed.
+/// Replaced by <c>CachedUserLookupService</c> when <c>Granit.Identity.Federated.EntityFrameworkCore</c> is installed.
 /// </summary>
 internal sealed class NullUserLookupService : IUserLookupService
 {

@@ -35,7 +35,7 @@ Granit.OpenIddict is the alternative: **your application IS the identity provide
 <FileTree>
 - Granit.OpenIddict/ Abstractions, entities, options, permissions, events
   - Granit.OpenIddict.EntityFrameworkCore/ DbContext, OpenIddict server, seeding
-  - Granit.Identity.OpenIddict/ IIdentityProvider bridge (AspNetIdentityProvider)
+  - Granit.Identity.Local.AspNetCore/ IIdentityProvider bridge (AspNetIdentityProvider)
   - Granit.OpenIddict.Endpoints/ Account self-service + admin REST API
   - Granit.OpenIddict.BackgroundJobs/ Token cleanup + idle session enforcement
   - Granit.Bundle.OpenIddict/ Meta-package (pulls all packages)
@@ -45,7 +45,7 @@ Granit.OpenIddict is the alternative: **your application IS the identity provide
 |---------|----------------|
 | `Granit.OpenIddict` | Abstractions, entities, options, permissions, integration events, diagnostics |
 | `Granit.OpenIddict.EntityFrameworkCore` | `OpenIddictDbContext`, server configuration, seed contributor, host builder extension |
-| `Granit.Identity.OpenIddict` | `AspNetIdentityProvider` implementing all 7 `IIdentityProvider` sub-interfaces |
+| `Granit.Identity.Local.AspNetCore` | `AspNetIdentityProvider` implementing all 7 `IIdentityProvider` sub-interfaces |
 | `Granit.OpenIddict.Endpoints` | 40+ REST endpoints (account self-service + admin management) |
 | `Granit.OpenIddict.BackgroundJobs` | `[RecurringJob]` for token cleanup and idle session enforcement |
 | `Granit.Bundle.OpenIddict` | `GranitBuilder.AddOpenIddict()` convenience meta-package |
@@ -65,7 +65,7 @@ graph TD
     EFC --> PER[Granit.Persistence]
     EFC --> MT[Granit.MultiTenancy]
 
-    IOID[Granit.Identity.OpenIddict] --> IDEN
+    IOID[Granit.Identity.Local.AspNetCore] --> IDEN
     IOID --> EFC
 
     EP[Granit.OpenIddict.Endpoints] --> OID
@@ -98,7 +98,7 @@ dotnet add package Granit.Identity.OpenIddict
 
 ```csharp
 [DependsOn(
-    typeof(GranitIdentityOpenIddictModule),
+    typeof(GranitIdentityLocalAspNetCoreModule),
     typeof(GranitOpenIddictBackgroundJobsModule),
     typeof(GranitOpenIddictEndpointsModule),
     typeof(GranitOpenIddictEntityFrameworkCoreModule))]
@@ -207,9 +207,9 @@ modules sharing the same database.
 tenants so that a single RBAC matrix applies platform-wide. Tenant-specific access
 is enforced at the permission/policy level, not at the role definition level.
 
-### Do NOT add Granit.Identity.EntityFrameworkCore
+### Do NOT add Granit.Identity.Federated.EntityFrameworkCore
 
-When using `Granit.Identity.OpenIddict`, **do not add** `Granit.Identity.EntityFrameworkCore`.
+When using `Granit.Identity.Local.AspNetCore`, **do not add** `Granit.Identity.Federated.EntityFrameworkCore`.
 `GranitUser` is the source of truth — `UserCacheEntry` and `UserCacheSyncMiddleware` are
 unnecessary and create data duplication risk. A warning is logged at startup if both
 packages are detected. See [ADR-019](/dotnet/architecture/adr/019-user-lookup-dual-mode/)

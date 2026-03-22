@@ -226,7 +226,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `KeycloakAdmin` | |
-| **Package** | -- | `Granit.Identity.Keycloak` | |
+| **Package** | -- | `Granit.Identity.Federated.Keycloak` | |
 | `BaseUrl` | `string` | `""` | Keycloak server base URL. |
 | `Realm` | `string` | `""` | Realm name. |
 | `ClientId` | `string` | `""` | Service account client ID. |
@@ -240,7 +240,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `EntraIdAdmin` | |
-| **Package** | -- | `Granit.Identity.EntraId` | |
+| **Package** | -- | `Granit.Identity.Federated.EntraId` | |
 | `TenantId` | `string` | `""` | Azure AD tenant ID. |
 | `ClientId` | `string` | `""` | Service principal client ID. |
 | `ClientSecret` | `string` | `""` | Service principal secret (from Vault). |
@@ -255,7 +255,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `CognitoAdmin` | |
-| **Package** | -- | `Granit.Identity.Cognito` | |
+| **Package** | -- | `Granit.Identity.Federated.Cognito` | |
 | `UserPoolId` | `string` | `""` | Cognito User Pool ID. |
 | `Region` | `string` | `""` | AWS region (e.g. `eu-west-1`). |
 | `AccessKeyId` | `string?` | `null` | AWS access key (optional — uses default credential chain if omitted). |
@@ -267,7 +267,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `IdentityUserCache` | |
-| **Package** | -- | `Granit.Identity.EntityFrameworkCore` | |
+| **Package** | -- | `Granit.Identity.Federated.EntityFrameworkCore` | |
 | `StalenessThreshold` | `TimeSpan` | `1.00:00:00` | Duration before a cached user is stale. |
 | `EnableLoginTimeSync` | `bool` | `true` | Auto-sync user from JWT on each request. |
 | `IncrementalSyncBatchSize` | `int` | `50` | Max stale entries per incremental sync batch. |

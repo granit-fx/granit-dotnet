@@ -61,8 +61,8 @@ for Kubernetes probes.
 | `Granit.Caching.StackExchangeRedis` | `AddGranitRedisHealthCheck()` | Redis `PING` with latency threshold | readiness, startup |
 | `Granit.Vault` | `AddGranitVaultHealthCheck()` | Vault seal status + auth | readiness, startup |
 | `Granit.Vault.Aws` | `AddGranitKmsHealthCheck()` | KMS `DescribeKey` (Degraded on PendingDeletion) | readiness, startup |
-| `Granit.Identity.Keycloak` | `AddGranitKeycloakHealthCheck()` | `client_credentials` token request | readiness, startup |
-| `Granit.Identity.EntraId` | `AddGranitEntraIdHealthCheck()` | `client_credentials` token request | readiness, startup |
+| `Granit.Identity.Federated.Keycloak` | `AddGranitKeycloakHealthCheck()` | `client_credentials` token request | readiness, startup |
+| `Granit.Identity.Federated.EntraId` | `AddGranitEntraIdHealthCheck()` | `client_credentials` token request | readiness, startup |
 | `Granit.BlobStorage.S3` | `AddGranitS3HealthCheck()` | `ListObjectsV2(MaxKeys=1)` | readiness, startup |
 | `Granit.Notifications.Email.Smtp` | `AddGranitSmtpHealthCheck()` | EHLO handshake via MailKit | readiness |
 | `Granit.Notifications.Email.AwsSes` | `AddGranitAwsSesHealthCheck()` | `GetAccount()` (Degraded if sending paused) | readiness, startup |

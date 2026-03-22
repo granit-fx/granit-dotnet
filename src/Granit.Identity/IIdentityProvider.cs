@@ -7,7 +7,7 @@ namespace Granit.Identity;
 /// <remarks>
 /// <para>
 /// A <c>NullIdentityProvider</c> is registered by default (returns empty lists / no-ops).
-/// Install a provider package (e.g. <c>Granit.Identity.Keycloak</c>) to connect
+/// Install a provider package (e.g. <c>Granit.Identity.Federated.Keycloak</c>) to connect
 /// to a real identity system.
 /// </para>
 /// <para>

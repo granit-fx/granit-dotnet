@@ -18,21 +18,25 @@ with GDPR erasure and pseudonymization built in.
 
 <FileTree>
 - Granit.Identity/ Abstractions (7 interfaces), null defaults
-  - Granit.Identity.Keycloak Keycloak Admin API implementation
-  - Granit.Identity.Cognito AWS Cognito User Pool API implementation
-  - Granit.Identity.GoogleCloud Google Cloud Identity Platform (Firebase Auth) implementation
-  - Granit.Identity.EntityFrameworkCore User cache (cache-aside, login-time sync)
+  - Granit.Identity.Federated/ Federated identity abstractions
+    - Granit.Identity.Federated.Keycloak Keycloak Admin API implementation
+    - Granit.Identity.Federated.Cognito AWS Cognito User Pool API implementation
+    - Granit.Identity.Federated.GoogleCloud Google Cloud Identity Platform (Firebase Auth) implementation
+    - Granit.Identity.Federated.EntityFrameworkCore User cache (cache-aside, login-time sync)
+  - Granit.Identity.Local.AspNetCore IIdentityProvider bridge for OpenIddict (local store)
   - Granit.Identity.Endpoints Minimal API endpoints (CRUD, sync, GDPR, webhook)
 </FileTree>
 
 | Package | Role | Depends on |
 |---------|------|------------|
 | `Granit.Identity` | Abstractions, null defaults | — |
-| `Granit.Identity.Keycloak` | Keycloak Admin API implementation | `Granit.Identity` |
-| `Granit.Identity.Cognito` | AWS Cognito User Pool API implementation | `Granit.Identity` |
-| `Granit.Identity.GoogleCloud` | Firebase Auth implementation (Firebase Admin SDK) | `Granit.Identity` |
+| `Granit.Identity.Federated` | Federated identity abstractions | `Granit.Identity` |
+| `Granit.Identity.Federated.Keycloak` | Keycloak Admin API implementation | `Granit.Identity.Federated` |
+| `Granit.Identity.Federated.Cognito` | AWS Cognito User Pool API implementation | `Granit.Identity.Federated` |
+| `Granit.Identity.Federated.GoogleCloud` | Firebase Auth implementation (Firebase Admin SDK) | `Granit.Identity.Federated` |
 | `Granit.Authentication.GoogleCloud` | JWT Bearer for Firebase Auth + claims transformation | `Granit.Authentication.JwtBearer` |
-| `Granit.Identity.EntityFrameworkCore` | EF Core user cache | `Granit.Identity`, `Granit.Persistence` |
+| `Granit.Identity.Federated.EntityFrameworkCore` | EF Core user cache | `Granit.Identity.Federated`, `Granit.Persistence` |
+| `Granit.Identity.Local.AspNetCore` | IIdentityProvider bridge for OpenIddict (local store) | `Granit.Identity`, `Granit.OpenIddict.EntityFrameworkCore` |
 | `Granit.Identity.Endpoints` | REST endpoints for user cache | `Granit.Identity`, `Granit.Authorization` |
 
 ## Dependency graph
@@ -40,12 +44,14 @@ with GDPR erasure and pseudonymization built in.
 ```mermaid
 graph TD
     I[Granit.Identity] --> C[Granit.Core]
-    IK[Granit.Identity.Keycloak] --> I
-    IC[Granit.Identity.Cognito] --> I
-    IGC[Granit.Identity.GoogleCloud] --> I
+    IF[Granit.Identity.Federated] --> I
+    IK[Granit.Identity.Federated.Keycloak] --> IF
+    IC[Granit.Identity.Federated.Cognito] --> IF
+    IGC[Granit.Identity.Federated.GoogleCloud] --> IF
     AGC[Granit.Authentication.GoogleCloud] --> JB[Granit.Authentication.JwtBearer]
-    IEF[Granit.Identity.EntityFrameworkCore] --> I
+    IEF[Granit.Identity.Federated.EntityFrameworkCore] --> IF
     IEF --> P[Granit.Persistence]
+    ILA[Granit.Identity.Local.AspNetCore] --> I
     IE[Granit.Identity.Endpoints] --> I
     IE --> AZ[Granit.Authorization]
 ```
@@ -56,8 +62,8 @@ graph TD
 <TabItem label="Keycloak + User cache">
 
 ```csharp
-[DependsOn(typeof(GranitIdentityKeycloakModule))]
-[DependsOn(typeof(GranitIdentityEntityFrameworkCoreModule))]
+[DependsOn(typeof(GranitIdentityFederatedKeycloakModule))]
+[DependsOn(typeof(GranitIdentityFederatedEntityFrameworkCoreModule))]
 [DependsOn(typeof(GranitIdentityEndpointsModule))]
 public class AppModule : GranitModule
 {
@@ -78,8 +84,8 @@ public class AppModule : GranitModule
 <TabItem label="Cognito + User cache">
 
 ```csharp
-[DependsOn(typeof(GranitIdentityCognitoModule))]
-[DependsOn(typeof(GranitIdentityEntityFrameworkCoreModule))]
+[DependsOn(typeof(GranitIdentityFederatedCognitoModule))]
+[DependsOn(typeof(GranitIdentityFederatedEntityFrameworkCoreModule))]
 [DependsOn(typeof(GranitIdentityEndpointsModule))]
 public class AppModule : GranitModule
 {
@@ -100,9 +106,9 @@ public class AppModule : GranitModule
 <TabItem label="Google Cloud (Firebase Auth)">
 
 ```csharp
-[DependsOn(typeof(GranitIdentityGoogleCloudModule))]
+[DependsOn(typeof(GranitIdentityFederatedGoogleCloudModule))]
 [DependsOn(typeof(GranitAuthenticationGoogleCloudModule))]
-[DependsOn(typeof(GranitIdentityEntityFrameworkCoreModule))]
+[DependsOn(typeof(GranitIdentityFederatedEntityFrameworkCoreModule))]
 [DependsOn(typeof(GranitIdentityEndpointsModule))]
 public class AppModule : GranitModule
 {
@@ -195,7 +201,7 @@ public class SessionService(
 
 ## User cache (cache-aside)
 
-`Granit.Identity.EntityFrameworkCore` maintains a local cache of user data from the
+`Granit.Identity.Federated.EntityFrameworkCore` maintains a local cache of user data from the
 identity provider. This avoids hitting Keycloak on every "who is this user?" query.
 
 ### IUserLookupService
@@ -285,7 +291,7 @@ authenticates. This ensures the cache stays fresh without polling.
 
 ## Keycloak provider
 
-`Granit.Identity.Keycloak` implements the full `IIdentityProvider` against the
+`Granit.Identity.Federated.Keycloak` implements the full `IIdentityProvider` against the
 Keycloak Admin REST API.
 
 ### Configuration
@@ -325,7 +331,7 @@ Activity names follow the pattern `Granit.Identity.Keycloak.{Operation}`.
 
 ## Cognito provider
 
-`Granit.Identity.Cognito` implements the full `IIdentityProvider` against the
+`Granit.Identity.Federated.Cognito` implements the full `IIdentityProvider` against the
 AWS Cognito User Pool API via `AWSSDK.CognitoIdentityProvider`.
 
 ### Configuration
@@ -361,7 +367,7 @@ Activity names follow the pattern `cognito.{operation}`.
 
 ## Google Cloud Identity Platform provider
 
-`Granit.Identity.GoogleCloud` implements the full `IIdentityProvider` against the
+`Granit.Identity.Federated.GoogleCloud` implements the full `IIdentityProvider` against the
 Firebase Auth API via Firebase Admin SDK v3.
 
 ### Configuration
@@ -492,15 +498,15 @@ Both operations emit Wolverine domain events (`IdentityUserDeletedEvent`,
 
 | Category | Key types | Package |
 |----------|-----------|---------|
-| Module | `GranitIdentityModule`, `GranitIdentityKeycloakModule`, `GranitIdentityCognitoModule`, `GranitIdentityGoogleCloudModule`, `GranitAuthenticationGoogleCloudModule`, `GranitIdentityEntityFrameworkCoreModule`, `GranitIdentityEndpointsModule` | — |
+| Module | `GranitIdentityModule`, `GranitIdentityFederatedModule`, `GranitIdentityFederatedKeycloakModule`, `GranitIdentityFederatedCognitoModule`, `GranitIdentityFederatedGoogleCloudModule`, `GranitAuthenticationGoogleCloudModule`, `GranitIdentityFederatedEntityFrameworkCoreModule`, `GranitIdentityEndpointsModule`, `GranitIdentityLocalAspNetCoreModule` | — |
 | Abstractions | `IIdentityProvider`, `IIdentityUserReader`, `IIdentityUserWriter`, `IIdentityRoleManager`, `IIdentityGroupManager`, `IIdentitySessionManager`, `IIdentityPasswordManager`, `IIdentityCredentialVerifier` | `Granit.Identity` |
 | Lookup | `IUserLookupService`, `IUserCacheStats`, `IIdentityProviderCapabilities` | `Granit.Identity` |
 | Models | `IdentityUser`, `IdentityUserCreate`, `IdentityUserUpdate`, `IdentityRole`, `IdentityGroup`, `IdentitySession`, `IdentityDeviceActivity` | `Granit.Identity` |
-| Keycloak | `KeycloakIdentityProvider`, `KeycloakAdminOptions` | `Granit.Identity.Keycloak` |
-| Cognito | `CognitoIdentityProvider`, `CognitoAdminOptions` | `Granit.Identity.Cognito` |
-| Google Cloud | `GoogleCloudIdentityProvider`, `GoogleCloudIdentityOptions` | `Granit.Identity.GoogleCloud` |
+| Keycloak | `KeycloakIdentityProvider`, `KeycloakAdminOptions` | `Granit.Identity.Federated.Keycloak` |
+| Cognito | `CognitoIdentityProvider`, `CognitoAdminOptions` | `Granit.Identity.Federated.Cognito` |
+| Google Cloud | `GoogleCloudIdentityProvider`, `GoogleCloudIdentityOptions` | `Granit.Identity.Federated.GoogleCloud` |
 | Google Cloud Auth | `GoogleCloudClaimsTransformation`, `GoogleCloudAuthenticationOptions` | `Granit.Authentication.GoogleCloud` |
-| EF Core | `UserCacheEntry`, `IUserCacheDbContext`, `UserCacheOptions` | `Granit.Identity.EntityFrameworkCore` |
+| EF Core | `UserCacheEntry`, `IUserCacheDbContext`, `UserCacheOptions` | `Granit.Identity.Federated.EntityFrameworkCore` |
 | Endpoints | `IdentityEndpointsOptions`, `IdentityWebhookOptions` | `Granit.Identity.Endpoints` |
 | Extensions | `AddGranitIdentity()`, `AddIdentityProvider<T>()`, `AddGranitIdentityKeycloak()`, `AddGranitIdentityCognito()`, `AddGranitIdentityGoogleCloud()`, `AddGranitGoogleCloudAuthentication()`, `AddGranitIdentityEntityFrameworkCore<T>()`, `AddGranitIdentityEndpoints()`, `MapIdentityUserCacheEndpoints()` | — |
 

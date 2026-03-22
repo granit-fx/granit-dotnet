@@ -13,8 +13,8 @@
     <PackageReference Include="Granit.Authentication.Keycloak" Version="0.1.*" />
     <PackageReference Include="Granit.Authorization" Version="0.1.*" />
     <PackageReference Include="Granit.Identity" Version="0.1.*" />
-    <PackageReference Include="Granit.Identity.Keycloak" Version="0.1.*" />
-    <PackageReference Include="Granit.Identity.EntityFrameworkCore" Version="0.1.*" />
+    <PackageReference Include="Granit.Identity.Federated.Keycloak" Version="0.1.*" />
+    <PackageReference Include="Granit.Identity.Federated.EntityFrameworkCore" Version="0.1.*" />
     <PackageReference Include="Granit.Identity.Endpoints" Version="0.1.*" />
     <PackageReference Include="Granit.Bundle.Notifications" Version="0.1.*" />
     <PackageReference Include="Granit.Persistence.Migrations" Version="0.1.*" />
