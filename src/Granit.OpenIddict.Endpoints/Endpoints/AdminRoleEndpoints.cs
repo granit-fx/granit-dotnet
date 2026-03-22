@@ -51,9 +51,9 @@ internal static class AdminRoleEndpoints
     private static Task<Created> CreateRoleAsync() =>
         Task.FromResult(TypedResults.Created("/api/admin/roles/{name}"));
 
-    private static Task<Results<NoContent, ProblemHttpResult>> DeleteRoleAsync() =>
+    private static Task<Results<NoContent, ProblemHttpResult>> DeleteRoleAsync(string roleName) =>
         Task.FromResult<Results<NoContent, ProblemHttpResult>>(TypedResults.NoContent());
 
-    private static Task<Ok> GetRoleMembersAsync() =>
+    private static Task<Ok> GetRoleMembersAsync(string roleName) =>
         Task.FromResult(TypedResults.Ok());
 }

@@ -418,7 +418,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
 
     private static bool TryGetUserId(ICurrentUserService currentUser, out Guid userId)
     {
-        userId = default;
+        userId = Guid.Empty;
 
         if (!currentUser.IsAuthenticated || currentUser.UserId is null)
         {

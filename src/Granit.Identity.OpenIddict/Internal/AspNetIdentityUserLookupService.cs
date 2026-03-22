@@ -37,17 +37,17 @@ internal sealed class AspNetIdentityUserLookupService(
 
     /// <inheritdoc/>
     public async Task<PagedResult<GranitIdentityUser>> SearchAsync(
-        string search, int page, int pageSize, CancellationToken cancellationToken = default)
+        string searchTerm, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
     {
         IQueryable<GranitUser> query = _userManager.Users.AsNoTracking();
 
-        if (!string.IsNullOrWhiteSpace(search))
+        if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             query = query.Where(u =>
-                (u.UserName != null && u.UserName.Contains(search)) ||
-                (u.Email != null && u.Email.Contains(search)) ||
-                (u.FirstName != null && u.FirstName.Contains(search)) ||
-                (u.LastName != null && u.LastName.Contains(search)));
+                (u.UserName != null && u.UserName.Contains(searchTerm)) ||
+                (u.Email != null && u.Email.Contains(searchTerm)) ||
+                (u.FirstName != null && u.FirstName.Contains(searchTerm)) ||
+                (u.LastName != null && u.LastName.Contains(searchTerm)));
         }
 
         int totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);

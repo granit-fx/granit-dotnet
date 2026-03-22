@@ -76,19 +76,19 @@ internal sealed partial class AspNetIdentityProvider(
 
     /// <inheritdoc/>
     public async Task<GranitIdentityUser> CreateUserAsync(
-        IdentityUserCreate create, CancellationToken cancellationToken = default)
+        IdentityUserCreate user, CancellationToken cancellationToken = default)
     {
-        GranitUser user = new()
+        GranitUser entity = new()
         {
-            UserName = create.Username,
-            Email = create.Email,
-            FirstName = create.FirstName,
-            LastName = create.LastName,
+            UserName = user.Username,
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
         };
 
-        IdentityResult result = string.IsNullOrEmpty(create.TemporaryPassword)
-            ? await _userManager.CreateAsync(user).ConfigureAwait(false)
-            : await _userManager.CreateAsync(user, create.TemporaryPassword).ConfigureAwait(false);
+        IdentityResult result = string.IsNullOrEmpty(user.TemporaryPassword)
+            ? await _userManager.CreateAsync(entity).ConfigureAwait(false)
+            : await _userManager.CreateAsync(entity, user.TemporaryPassword).ConfigureAwait(false);
 
         if (!result.Succeeded)
         {
@@ -97,12 +97,12 @@ internal sealed partial class AspNetIdentityProvider(
             throw new InvalidOperationException($"User creation failed: {errors}");
         }
 
-        if (!create.Enabled)
+        if (!user.Enabled)
         {
-            await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue).ConfigureAwait(false);
+            await _userManager.SetLockoutEndDateAsync(entity, DateTimeOffset.MaxValue).ConfigureAwait(false);
         }
 
-        return MapToIdentityUser(user);
+        return MapToIdentityUser(entity);
     }
 
     /// <inheritdoc/>
