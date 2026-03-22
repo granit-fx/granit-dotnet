@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Security.Cryptography;
 using Granit.Core.Events;
 using Granit.Identity.Events;
+using Granit.Identity.Federated;
 using Granit.Identity.Federated.EntraId.Diagnostics;
 using Granit.Identity.Federated.EntraId.Options;
 using Granit.Identity.Models;

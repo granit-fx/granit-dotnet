@@ -1,8 +1,9 @@
+using Granit.Identity.Federated;
 using Granit.Identity.Models;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Identity.Tests;
+namespace Granit.Identity.Federated.Tests;
 
 public sealed class FederatedIdentityUserTests
 {

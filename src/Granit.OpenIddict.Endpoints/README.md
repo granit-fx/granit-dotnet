@@ -1,11 +1,20 @@
 # Granit.OpenIddict.Endpoints
 
-REST API for Granit.OpenIddict: account self-service and admin management.
+REST API for the Granit OpenIddict module. Provides account self-service,
+two-factor authentication, and admin management endpoints.
+
+Part of the [granit](https://granit-fx.dev) framework.
+
+## Installation
+
+```bash
+dotnet add package Granit.OpenIddict.Endpoints
+```
 
 ## Account self-service (`/api/account`)
 
 | Method | Path | Auth | Description |
-|--------|------|------|-------------|
+| --- | --- | --- | --- |
 | POST | `/api/account/register` | Anonymous | User registration |
 | GET | `/api/account/profile` | Authenticated | Get current user profile |
 | PUT | `/api/account/profile` | Authenticated | Update profile |
@@ -28,20 +37,20 @@ REST API for Granit.OpenIddict: account self-service and admin management.
 
 ## Admin management (`/api/admin`)
 
-### Users, Roles, Groups
-
 Full CRUD on `/api/admin/users`, `/api/admin/roles`, `/api/admin/groups` with role/group
 assignment and user impersonation. All protected by `OpenIddictPermissions.*`.
-
-### OIDC Administration
 
 CRUD on `/api/admin/oidc/applications`, `/api/admin/oidc/scopes`, `/api/admin/oidc/authorizations`
 with secret rotation and per-user authorization revocation.
 
-## Middleware order (mandatory)
+## Dependencies
 
-```csharp
-app.UseAuthentication();
-app.UseOpenIddict();      // ← BEFORE UseAuthorization
-app.UseAuthorization();
-```
+- `Granit.Authorization`
+- `Granit.Http.ApiDocumentation`
+- `Granit.OpenIddict`
+- `Granit.Querying`
+- `Granit.Validation`
+
+## Documentation
+
+See the [full documentation](https://granit-fx.dev).

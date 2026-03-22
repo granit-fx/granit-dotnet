@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Granit.Identity.Endpoints.Extensions;
 using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Models;
+using Granit.Tests.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -58,7 +59,7 @@ public sealed class IdentityUserCacheSyncEndpointsTests : IAsyncDisposable
     public async Task Sync_returns_200_with_refreshed_users()
     {
         _lookupService.RefreshByIdAsync("user-1", Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IIdentityUser?>(new FederatedIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)));
+            .Returns(Task.FromResult<IIdentityUser?>(new FakeIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)));
         _lookupService.RefreshByIdAsync("user-2", Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IIdentityUser?>(null));
 
@@ -68,8 +69,8 @@ public sealed class IdentityUserCacheSyncEndpointsTests : IAsyncDisposable
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        List<FederatedIdentityUser>? users = await response.Content
-            .ReadFromJsonAsync<List<FederatedIdentityUser>>(TestContext.Current.CancellationToken);
+        List<FakeIdentityUser>? users = await response.Content
+            .ReadFromJsonAsync<List<FakeIdentityUser>>(TestContext.Current.CancellationToken);
         users.ShouldNotBeNull();
         users.Count.ShouldBe(1);
     }

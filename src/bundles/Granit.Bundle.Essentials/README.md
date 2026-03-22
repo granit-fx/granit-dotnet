@@ -3,7 +3,7 @@
 Meta-package grouping the essential Granit modules for a minimal API.
 Install this single package instead of adding 9 individual references.
 
-Part of the [Granit](https://granit-fx.dev) framework.
+Part of the [granit](https://granit-fx.dev) framework.
 
 ## Included packages
 

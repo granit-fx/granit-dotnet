@@ -18,4 +18,8 @@
     <ProjectReference Include="..\..\src\Granit.Workflow.Notifications\Granit.Workflow.Notifications.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\Shared\FakeIdentityUser.cs" Link="Shared\FakeIdentityUser.cs" />
+  </ItemGroup>
+
 </Project>

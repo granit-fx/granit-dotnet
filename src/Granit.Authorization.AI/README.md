@@ -20,4 +20,4 @@ dotnet add package Granit.Authorization.AI
 
 ## Documentation
 
-See the [full documentation](https://granit-fx.dev/-/tree/develop/docs/framework/authorization).
+See the [full documentation](https://granit-fx.dev).

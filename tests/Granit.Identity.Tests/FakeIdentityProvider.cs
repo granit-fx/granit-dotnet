@@ -1,4 +1,5 @@
 using Granit.Identity.Models;
+using Granit.Tests.Shared;
 
 namespace Granit.Identity.Tests;
 
@@ -74,7 +75,7 @@ internal sealed class FakeIdentityProvider : IIdentityProvider
 
     public Task<IIdentityUser> CreateUserAsync(
         IdentityUserCreate user, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IIdentityUser>(new FederatedIdentityUser(string.Empty, user.Username, user.Email,
+        Task.FromResult<IIdentityUser>(new FakeIdentityUser(string.Empty, user.Username, user.Email,
             user.FirstName, user.LastName, user.Enabled));
 
     public Task<IReadOnlyList<IdentityGroup>> GetGroupsAsync(

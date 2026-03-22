@@ -1,6 +1,15 @@
 # Granit.OpenIddict.EntityFrameworkCore
 
-EF Core persistence layer for the Granit OpenIddict module family.
+EF Core persistence layer for the Granit OpenIddict module. Provides the isolated
+`OpenIddictDbContext`, Identity entities, and tenant-isolated stores.
+
+Part of the [granit](https://granit-fx.dev) framework.
+
+## Installation
+
+```bash
+dotnet add package Granit.OpenIddict.EntityFrameworkCore
+```
 
 ## What's in this package
 
@@ -11,24 +20,20 @@ EF Core persistence layer for the Granit OpenIddict module family.
 - **ASP.NET Core Identity** — fully configured with `AddIdentity<GranitUser, GranitRole>()`
 - **OpenIddict Core** — EF Core stores with `DisableEntityCaching()` (multi-tenant safe)
 
-## Usage
-
-```csharp
-builder.AddGranitOpenIddictEntityFrameworkCore(options =>
-    options.UseNpgsql(connectionString));
-```
-
-## Migrations
-
-Migrations are the host application's responsibility:
-
-```bash
-dotnet ef migrations add Initial --context OpenIddictDbContext
-```
-
 ## Key constraints
 
 - `GranitUser` does NOT implement `ISoftDeletable` — uses manual `IsDeleted` + named query filter
 - `GranitUser` does NOT implement `IConcurrencyAware` — Identity manages its own `ConcurrencyStamp`
 - `DisableEntityCaching()` is mandatory in multi-tenant setups (prevents cross-tenant cache pollution)
 - All tables are prefixed with `oidc_` by default (configurable via `GranitOpenIddictDbProperties`)
+
+## Dependencies
+
+- `Granit.Encryption`
+- `Granit.MultiTenancy`
+- `Granit.OpenIddict.Server`
+- `Granit.Persistence`
+
+## Documentation
+
+See the [full documentation](https://granit-fx.dev).

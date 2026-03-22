@@ -1,7 +1,7 @@
 using Granit.Authorization.Abstractions;
 using Granit.Core.MultiTenancy;
 using Granit.Identity;
-using Granit.Identity.Models;
+using Granit.Tests.Shared;
 using Granit.Workflow.Notifications.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -37,8 +37,8 @@ public sealed class IdentityApproverResolverTests
         _identityProvider.GetRoleMembersAsync("editor", Arg.Any<CancellationToken>())
             .Returns((IReadOnlyList<IIdentityUser>)
             [
-                new FederatedIdentityUser("user-1", "alice", "alice@test.com", "Alice", "Doe", true),
-                new FederatedIdentityUser("user-2", "bob", null, null, null, true),
+                new FakeIdentityUser("user-1", "alice", "alice@test.com", "Alice", "Doe", true),
+                new FakeIdentityUser("user-2", "bob", null, null, null, true),
             ]);
 
         IReadOnlyList<string> result = await _resolver.ResolveApproversAsync(
@@ -85,15 +85,15 @@ public sealed class IdentityApproverResolverTests
         _identityProvider.GetRoleMembersAsync("editor", Arg.Any<CancellationToken>())
             .Returns((IReadOnlyList<IIdentityUser>)
             [
-                new FederatedIdentityUser("shared-user", "shared", null, null, null, true),
-                new FederatedIdentityUser("editor-user", "editor", null, null, null, true),
+                new FakeIdentityUser("shared-user", "shared", null, null, null, true),
+                new FakeIdentityUser("editor-user", "editor", null, null, null, true),
             ]);
 
         _identityProvider.GetRoleMembersAsync("admin", Arg.Any<CancellationToken>())
             .Returns((IReadOnlyList<IIdentityUser>)
             [
-                new FederatedIdentityUser("shared-user", "shared", null, null, null, true),
-                new FederatedIdentityUser("admin-user", "admin", null, null, null, true),
+                new FakeIdentityUser("shared-user", "shared", null, null, null, true),
+                new FakeIdentityUser("admin-user", "admin", null, null, null, true),
             ]);
 
         IReadOnlyList<string> result = await _resolver.ResolveApproversAsync(
@@ -118,7 +118,7 @@ public sealed class IdentityApproverResolverTests
         _identityProvider.GetRoleMembersAsync("editor", Arg.Any<CancellationToken>())
             .Returns((IReadOnlyList<IIdentityUser>)
             [
-                new FederatedIdentityUser("user-1", "alice", null, null, null, true),
+                new FakeIdentityUser("user-1", "alice", null, null, null, true),
             ]);
 
         IReadOnlyList<string> result = await _resolver.ResolveApproversAsync(

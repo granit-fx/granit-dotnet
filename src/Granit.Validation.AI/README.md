@@ -20,4 +20,4 @@ dotnet add package Granit.Validation.AI
 
 ## Documentation
 
-See the [full documentation](https://granit-fx.dev/-/tree/develop/docs/framework/validation).
+See the [full documentation](https://granit-fx.dev).

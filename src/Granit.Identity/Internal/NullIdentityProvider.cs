@@ -93,7 +93,7 @@ internal sealed class NullIdentityProvider : IIdentityProvider
     /// <inheritdoc/>
     public Task<IIdentityUser> CreateUserAsync(
         IdentityUserCreate user, CancellationToken cancellationToken = default) =>
-        Task.FromResult<IIdentityUser>(new FederatedIdentityUser(string.Empty, user.Username, user.Email,
+        Task.FromResult<IIdentityUser>(new NullIdentityUser(string.Empty, user.Username, user.Email,
             user.FirstName, user.LastName, user.Enabled));
 
     /// <inheritdoc/>
@@ -120,4 +120,15 @@ internal sealed class NullIdentityProvider : IIdentityProvider
     public Task<bool> VerifyUserCredentialsAsync(
         string username, string password, CancellationToken cancellationToken = default) =>
         Task.FromResult(false);
+
+    /// <summary>
+    /// Minimal <see cref="IIdentityUser"/> for the null provider.
+    /// </summary>
+    private sealed record NullIdentityUser(
+        string UserId, string? Username, string? Email,
+        string? FirstName, string? LastName, bool Enabled) : IIdentityUser
+    {
+        public IReadOnlyDictionary<string, string> ExtraProperties { get; } =
+            System.Collections.ObjectModel.ReadOnlyDictionary<string, string>.Empty;
+    }
 }

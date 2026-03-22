@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace Granit.Identity.Models;
+namespace Granit.Identity.Federated;
 
 /// <summary>
 /// Immutable snapshot of user data returned by federated identity providers

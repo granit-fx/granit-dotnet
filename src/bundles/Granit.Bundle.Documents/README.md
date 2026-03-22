@@ -3,7 +3,7 @@
 Meta-package grouping Granit templating and document generation modules
 for HTML-to-PDF rendering, Excel generation, and Scriban template management.
 
-Part of the [Granit](https://granit-fx.dev) framework.
+Part of the [granit](https://granit-fx.dev) framework.
 
 ## Included packages
 

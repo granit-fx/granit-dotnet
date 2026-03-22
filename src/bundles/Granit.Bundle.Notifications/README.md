@@ -3,7 +3,7 @@
 Meta-package grouping Granit notification modules for multi-channel delivery
 (InApp, Email, SignalR real-time).
 
-Part of the [Granit](https://granit-fx.dev) framework.
+Part of the [granit](https://granit-fx.dev) framework.
 
 ## Included packages
 

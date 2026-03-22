@@ -19,4 +19,8 @@
     <ProjectReference Include="..\..\src\Granit.Identity.Endpoints\Granit.Identity.Endpoints.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\Shared\FakeIdentityUser.cs" Link="Shared\FakeIdentityUser.cs" />
+  </ItemGroup>
+
 </Project>

@@ -3,7 +3,7 @@
 Meta-package for building a complete REST API with Granit.
 Includes everything from `Granit.Bundle.Essentials` plus API-specific modules.
 
-Part of the [Granit](https://granit-fx.dev) framework.
+Part of the [granit](https://granit-fx.dev) framework.
 
 ## Included packages
 

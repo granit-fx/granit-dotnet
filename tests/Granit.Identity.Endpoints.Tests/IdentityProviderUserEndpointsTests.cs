@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Granit.Identity.Endpoints.Extensions;
 using Granit.Identity.Models;
+using Granit.Tests.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -40,7 +41,7 @@ public sealed class IdentityProviderUserEndpointsTests : IAsyncDisposable
         _capabilities.MaxCustomAttributes.Returns(50);
 
         _userWriter.CreateUserAsync(Arg.Any<IdentityUserCreate>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IIdentityUser>(new FederatedIdentityUser("new-id", "newuser", "new@test.com", "New", "User", true)));
+            .Returns(Task.FromResult<IIdentityUser>(new FakeIdentityUser("new-id", "newuser", "new@test.com", "New", "User", true)));
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
@@ -73,14 +74,14 @@ public sealed class IdentityProviderUserEndpointsTests : IAsyncDisposable
     public async Task GetUsers_returns_200_with_list()
     {
         _userReader.GetUsersAsync(null, null, null, Arg.Any<CancellationToken>())
-            .Returns((IReadOnlyList<IIdentityUser>)[new FederatedIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)]);
+            .Returns((IReadOnlyList<IIdentityUser>)[new FakeIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)]);
 
         HttpResponseMessage response = await _adminClient.GetAsync(
             $"{Prefix}/users", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        List<FederatedIdentityUser>? users = await response.Content
-            .ReadFromJsonAsync<List<FederatedIdentityUser>>(TestContext.Current.CancellationToken);
+        List<FakeIdentityUser>? users = await response.Content
+            .ReadFromJsonAsync<List<FakeIdentityUser>>(TestContext.Current.CancellationToken);
         users.ShouldNotBeNull();
         users.Count.ShouldBe(1);
         users[0].Username.ShouldBe("jdoe");
@@ -101,14 +102,14 @@ public sealed class IdentityProviderUserEndpointsTests : IAsyncDisposable
     public async Task GetUser_existing_returns_200()
     {
         _userReader.GetUserAsync("user-1", Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IIdentityUser?>(new FederatedIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)));
+            .Returns(Task.FromResult<IIdentityUser?>(new FakeIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)));
 
         HttpResponseMessage response = await _adminClient.GetAsync(
             $"{Prefix}/users/user-1", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        FederatedIdentityUser? user = await response.Content
-            .ReadFromJsonAsync<FederatedIdentityUser>(TestContext.Current.CancellationToken);
+        FakeIdentityUser? user = await response.Content
+            .ReadFromJsonAsync<FakeIdentityUser>(TestContext.Current.CancellationToken);
         user.ShouldNotBeNull();
         user.UserId.ShouldBe("user-1");
     }
@@ -136,8 +137,8 @@ public sealed class IdentityProviderUserEndpointsTests : IAsyncDisposable
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
-        FederatedIdentityUser? created = await response.Content
-            .ReadFromJsonAsync<FederatedIdentityUser>(TestContext.Current.CancellationToken);
+        FakeIdentityUser? created = await response.Content
+            .ReadFromJsonAsync<FakeIdentityUser>(TestContext.Current.CancellationToken);
         created.ShouldNotBeNull();
         created.UserId.ShouldBe("new-id");
     }

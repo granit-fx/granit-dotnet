@@ -2,6 +2,7 @@ using System.Diagnostics;
 using FirebaseAdmin.Auth;
 using Granit.Core.Events;
 using Granit.Identity.Events;
+using Granit.Identity.Federated;
 using Granit.Identity.Federated.GoogleCloud.Diagnostics;
 using Granit.Identity.Federated.GoogleCloud.Options;
 using Granit.Identity.Models;

@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Granit.Identity.Endpoints.Extensions;
 using Granit.Identity.Models;
+using Granit.Tests.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -41,7 +42,7 @@ public sealed class IdentityProviderRoleEndpointsTests : IAsyncDisposable
             .Returns([new IdentityRole("role-1", "admin", null)]);
 
         _roleManager.GetRoleMembersAsync("admin", Arg.Any<CancellationToken>())
-            .Returns((IReadOnlyList<IIdentityUser>)[new FederatedIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)]);
+            .Returns((IReadOnlyList<IIdentityUser>)[new FakeIdentityUser("user-1", "jdoe", "jdoe@test.com", "John", "Doe", true)]);
 
         _roleManager.GetUserRolesAsync("user-1", Arg.Any<CancellationToken>())
             .Returns([new IdentityRole("role-1", "admin", null)]);
@@ -103,8 +104,8 @@ public sealed class IdentityProviderRoleEndpointsTests : IAsyncDisposable
             $"{Prefix}/roles/admin/members", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        List<FederatedIdentityUser>? members = await response.Content
-            .ReadFromJsonAsync<List<FederatedIdentityUser>>(TestContext.Current.CancellationToken);
+        List<FakeIdentityUser>? members = await response.Content
+            .ReadFromJsonAsync<List<FakeIdentityUser>>(TestContext.Current.CancellationToken);
         members.ShouldNotBeNull();
         members.Count.ShouldBe(1);
         members[0].Username.ShouldBe("jdoe");

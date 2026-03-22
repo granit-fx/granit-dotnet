@@ -22,4 +22,4 @@ dotnet add package Granit.Authentication.ApiKeys.Endpoints
 
 ## Documentation
 
-See the [full documentation](https://granit-fx.dev/-/tree/develop/docs/framework/security/api-keys.md).
+See the [full documentation](https://granit-fx.dev).

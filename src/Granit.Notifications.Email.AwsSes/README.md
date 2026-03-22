@@ -2,7 +2,7 @@
 
 Amazon SES v2 provider for `Granit.Notifications.Email`. Registered as Keyed Service with key `"AwsSes"` for multi-provider resolution.
 
-Part of the [Granit](https://github.com/granit-fx/granit-dotnet) framework.
+Part of the [granit](https://granit-fx.dev) framework.
 
 ## Installation
 
@@ -32,4 +32,4 @@ For local development, set `AccessKeyId` and `SecretAccessKey` or use `aws confi
 
 ## Documentation
 
-See the [full documentation](https://github.com/granit-fx/granit-dotnet).
+See the [full documentation](https://granit-fx.dev).

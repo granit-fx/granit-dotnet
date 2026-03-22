@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T14:12:10.196058+00:00",
+  "generatedAt": "2026-03-22T15:02:57.221379+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -13638,6 +13638,15 @@
       ]
     },
     {
+      "name": "FederatedIdentityUser",
+      "fqn": "Granit.Identity.Federated.FederatedIdentityUser",
+      "kind": "record",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/FederatedIdentityUser.cs",
+      "line": 23,
+      "members": []
+    },
+    {
       "name": "IdentityGoogleCloudServiceCollectionExtensions",
       "fqn": "Granit.Identity.Federated.GoogleCloud.Extensions.IdentityGoogleCloudServiceCollectionExtensions",
       "kind": "class",
@@ -14133,15 +14142,6 @@
           "returnType": "void"
         }
       ]
-    },
-    {
-      "name": "FederatedIdentityUser",
-      "fqn": "Granit.Identity.Models.FederatedIdentityUser",
-      "kind": "record",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Models/FederatedIdentityUser.cs",
-      "line": 23,
-      "members": []
     },
     {
       "name": "IdentityDeviceActivity",
