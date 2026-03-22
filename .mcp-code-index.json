@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T16:16:56.559455+00:00",
+  "generatedAt": "2026-03-22T16:20:26.378937+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -13824,15 +13824,6 @@
           "returnType": "Task<bool>"
         }
       ]
-    },
-    {
-      "name": "IIdentityEventPublisher",
-      "fqn": "Granit.Identity.IIdentityEventPublisher",
-      "kind": "interface",
-      "project": "Granit.Identity",
-      "file": "src/Granit.Identity/IIdentityEventPublisher.cs",
-      "line": 15,
-      "members": []
     },
     {
       "name": "IIdentityGroupManager",
