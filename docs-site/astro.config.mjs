@@ -414,6 +414,7 @@ export default defineConfig({
         starlightImageZoom(),
         starlightLlmsTxt(),
         starlightKbd({
+          globalPicker: false,
           types: [
             {
               id: "mac",

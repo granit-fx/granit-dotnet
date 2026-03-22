@@ -94,7 +94,7 @@ fields are added automatically -- no manual instrumentation required.
 
 Useful queries for production troubleshooting in Grafana:
 
-```logql
+```text title="LogQL"
 # Errors in the last 24 hours for a service
 {service_name="my-backend"} | json | Level = "Error"
 
