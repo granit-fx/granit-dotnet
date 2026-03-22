@@ -1372,6 +1372,15 @@
           "Microsoft.Extensions.AI.OpenAI": "[10.*, )"
         }
       },
+      "granit.ai.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Querying.Endpoints": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
       "granit.ai.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
@@ -1740,6 +1749,15 @@
         "type": "Project",
         "dependencies": {
           "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
+      "granit.diagnostics.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Diagnostics": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
         }
       },
       "granit.documentgeneration": {
@@ -2623,6 +2641,13 @@
           "Granit.AI": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
+        }
+      },
+      "granit.validation.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
         }
       },
       "granit.validation.europe": {

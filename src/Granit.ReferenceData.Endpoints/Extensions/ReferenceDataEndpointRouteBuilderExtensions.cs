@@ -69,6 +69,69 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
         return group;
     }
 
+    /// <summary>
+    /// Maps reference data endpoints for all dynamically registered types in the
+    /// <see cref="ReferenceDataRegistry"/>.
+    /// </summary>
+    /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="configure">Optional delegate to customize options for all types.</param>
+    /// <returns>The endpoint route builder for chaining.</returns>
+    public static IEndpointRouteBuilder MapAllReferenceDataEndpoints(
+        this IEndpointRouteBuilder endpoints,
+        Action<ReferenceDataEndpointsOptions>? configure = null)
+    {
+        ReferenceDataRegistry registry = endpoints.ServiceProvider.GetRequiredService<ReferenceDataRegistry>();
+
+        foreach (ReferenceDataTypeRegistration registration in registry.Types)
+        {
+            endpoints.MapReferenceDataEndpoints(registration.TypeName, configure);
+        }
+
+        return endpoints;
+    }
+
+    /// <summary>
+    /// Maps reference data endpoints for a single dynamically registered type by name.
+    /// </summary>
+    /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="typeName">
+    /// The logical type name (e.g., <c>"Countries"</c>) as declared in
+    /// <c>AddReferenceData&lt;TDbContext&gt;()</c>.
+    /// </param>
+    /// <param name="configure">Optional delegate to customize <see cref="ReferenceDataEndpointsOptions"/>.</param>
+    /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
+    public static RouteGroupBuilder MapReferenceDataEndpoints(
+        this IEndpointRouteBuilder endpoints,
+        string typeName,
+        Action<ReferenceDataEndpointsOptions>? configure = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(typeName);
+
+        ReferenceDataEndpointsOptions options = new();
+        configure?.Invoke(options);
+
+        // Register the admin authorization policy (role-based fallback)
+        if (options.AdminPolicyName is not null)
+        {
+            IOptions<AuthorizationOptions> authOptions =
+                endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
+            authOptions.Value.AddPolicy(
+                options.AdminPolicyName,
+                policy => policy.RequireRole(options.RequiredRole));
+        }
+
+        string entitySegment = ToKebabCase(typeName);
+
+        RouteGroupBuilder group = endpoints
+            .MapGranitGroup($"{options.RoutePrefix}/{entitySegment}")
+            .WithTags(options.TagName);
+
+        group.MapDynamicReadEndpoints(typeName);
+        group.MapDynamicAdminEndpoints(typeName, options.AdminPolicyName);
+
+        return group;
+    }
+
     private static string ToKebabCase(string typeName)
     {
         System.Text.StringBuilder sb = new();

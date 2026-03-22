@@ -31,6 +31,7 @@
        (excludes Analyzers/CodeFixes/SourceGenerator which target netstandard2.0) -->
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.AI\Granit.AI.csproj" />
+    <ProjectReference Include="..\..\src\Granit.AI.Endpoints\Granit.AI.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.AzureOpenAI\Granit.AI.AzureOpenAI.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.EntityFrameworkCore\Granit.AI.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.Extraction\Granit.AI.Extraction.csproj" />
@@ -85,6 +86,7 @@
     <ProjectReference Include="..\..\src\Granit.BackgroundJobs.Wolverine\Granit.BackgroundJobs.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.DataExchange.Wolverine\Granit.DataExchange.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Diagnostics\Granit.Diagnostics.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Diagnostics.Endpoints\Granit.Diagnostics.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.DocumentGeneration\Granit.DocumentGeneration.csproj" />
     <ProjectReference Include="..\..\src\Granit.DocumentGeneration.Excel\Granit.DocumentGeneration.Excel.csproj" />
     <ProjectReference Include="..\..\src\Granit.DocumentGeneration.Pdf\Granit.DocumentGeneration.Pdf.csproj" />
@@ -188,6 +190,7 @@
     <ProjectReference Include="..\..\src\Granit.Testing.EntityFrameworkCore\Granit.Testing.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Timing\Granit.Timing.csproj" />
     <ProjectReference Include="..\..\src\Granit.Validation\Granit.Validation.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Validation.Endpoints\Granit.Validation.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Validation.AI\Granit.Validation.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Validation.Europe\Granit.Validation.Europe.csproj" />
     <ProjectReference Include="..\..\src\Granit.Validation.NorthAmerica\Granit.Validation.NorthAmerica.csproj" />

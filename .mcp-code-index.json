@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T13:48:21.141876+00:00",
+  "generatedAt": "2026-03-22T13:54:07.805926+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -22304,6 +22304,15 @@
       ]
     },
     {
+      "name": "DynamicReferenceDataEntity",
+      "fqn": "Granit.ReferenceData.Domain.DynamicReferenceDataEntity",
+      "kind": "class",
+      "project": "Granit.ReferenceData",
+      "file": "src/Granit.ReferenceData/Domain/DynamicReferenceDataEntity.cs",
+      "line": 12,
+      "members": []
+    },
+    {
       "name": "ReferenceDataEntity",
       "fqn": "Granit.ReferenceData.Domain.ReferenceDataEntity",
       "kind": "class",
@@ -22500,7 +22509,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData.EntityFrameworkCore",
       "file": "src/Granit.ReferenceData.EntityFrameworkCore/Extensions/ReferenceDataEfCoreServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": []
     },
     {
@@ -22673,11 +22682,52 @@
       "members": []
     },
     {
+      "name": "ReferenceDataBuilder",
+      "fqn": "Granit.ReferenceData.ReferenceDataBuilder",
+      "kind": "class",
+      "project": "Granit.ReferenceData",
+      "file": "src/Granit.ReferenceData/ReferenceDataBuilder.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "Add",
+          "kind": "method",
+          "signature": "Add(string typeName, Action<ReferenceDataExtensionOptions>? configure = null)",
+          "returnType": "ReferenceDataBuilder"
+        }
+      ]
+    },
+    {
       "name": "ReferenceDataQuery",
       "fqn": "Granit.ReferenceData.ReferenceDataQuery",
       "kind": "record",
       "project": "Granit.ReferenceData",
       "file": "src/Granit.ReferenceData/ReferenceDataQuery.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "ReferenceDataRegistry",
+      "fqn": "Granit.ReferenceData.ReferenceDataRegistry",
+      "kind": "class",
+      "project": "Granit.ReferenceData",
+      "file": "src/Granit.ReferenceData/ReferenceDataRegistry.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Types",
+          "kind": "property",
+          "signature": "IReadOnlyCollection<ReferenceDataTypeRegistration> Types",
+          "returnType": "IReadOnlyCollection<ReferenceDataTypeRegistration>"
+        }
+      ]
+    },
+    {
+      "name": "ReferenceDataTypeRegistration",
+      "fqn": "Granit.ReferenceData.ReferenceDataTypeRegistration",
+      "kind": "record",
+      "project": "Granit.ReferenceData",
+      "file": "src/Granit.ReferenceData/ReferenceDataTypeRegistration.cs",
       "line": 14,
       "members": []
     },
