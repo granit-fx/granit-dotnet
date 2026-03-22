@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Threading.Channels;
+using Granit.Guids;
 
 namespace Granit.Notifications.Sse.Internal;
 
@@ -7,7 +8,7 @@ namespace Granit.Notifications.Sse.Internal;
 /// Thread-safe connection manager backed by <see cref="Channel{T}"/> per connection
 /// and <see cref="ConcurrentDictionary{TKey,TValue}"/> for user-to-connections mapping.
 /// </summary>
-internal sealed class SseConnectionManager : ISseConnectionManager, IDisposable
+internal sealed class SseConnectionManager(IGuidGenerator guidGenerator) : ISseConnectionManager, IDisposable
 {
     private readonly ConcurrentDictionary<string, ConcurrentDictionary<Guid, SseConnection>> _connections = new();
 
@@ -19,7 +20,7 @@ internal sealed class SseConnectionManager : ISseConnectionManager, IDisposable
         var channel = Channel.CreateUnbounded<SseNotificationMessage>(
             new UnboundedChannelOptions { SingleWriter = false, SingleReader = true });
 
-        SseConnection connection = new(Guid.CreateVersion7(), userId, channel);
+        SseConnection connection = new(guidGenerator.Create(), userId, channel);
 
         ConcurrentDictionary<Guid, SseConnection> userConnections =
             _connections.GetOrAdd(userId, _ => new ConcurrentDictionary<Guid, SseConnection>());

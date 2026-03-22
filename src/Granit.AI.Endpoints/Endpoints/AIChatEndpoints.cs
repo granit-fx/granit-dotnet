@@ -4,6 +4,7 @@ using Granit.AI.Endpoints.Dtos;
 using Granit.AI.Endpoints.Internal;
 using Granit.AI.Exceptions;
 using Granit.AI.Workspaces;
+using Granit.Guids;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -49,6 +50,7 @@ internal static class AIChatEndpoints
         [FromServices] IAIWorkspaceProvider workspaceProvider,
         [FromServices] IAIUsageTracker usageTracker,
         [FromServices] TimeProvider timeProvider,
+        [FromServices] IGuidGenerator guidGenerator,
         CancellationToken cancellationToken)
     {
         AIWorkspace? workspace = await workspaceProvider
@@ -105,7 +107,7 @@ internal static class AIChatEndpoints
 
             await usageTracker.RecordAsync(new AIUsageRecord
             {
-                Id = Guid.CreateVersion7(),
+                Id = guidGenerator.Create(),
                 WorkspaceName = workspaceName,
                 Provider = workspace.Provider,
                 Model = workspace.Model,

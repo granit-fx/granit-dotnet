@@ -1,5 +1,6 @@
 using Granit.Core.Events;
 using Granit.Core.MultiTenancy;
+using Granit.Guids;
 using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;
 using Granit.Privacy.DataExport;
@@ -208,6 +209,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
         [FromServices] PrivacyMetrics metrics,
         [FromServices] TimeProvider timeProvider,
         [FromServices] ICurrentTenant currentTenant,
+        [FromServices] IGuidGenerator guidGenerator,
         CancellationToken cancellationToken)
     {
         if (!TryGetUserId(currentUser, out Guid userId))
@@ -215,7 +217,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
             return UserNotAuthenticated();
         }
 
-        var requestId = Guid.CreateVersion7();
+        Guid requestId = guidGenerator.Create();
         DateTimeOffset now = timeProvider.GetUtcNow();
         string? tenantId = ResolveTenantId(currentTenant);
 
@@ -287,6 +289,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
         [FromServices] TimeProvider timeProvider,
         [FromServices] ICurrentTenant currentTenant,
         [FromServices] IOptions<GranitPrivacyOptions> privacyOptions,
+        [FromServices] IGuidGenerator guidGenerator,
         CancellationToken cancellationToken)
     {
         if (!TryGetUserId(currentUser, out Guid userId))
@@ -305,7 +308,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
                 statusCode: StatusCodes.Status409Conflict);
         }
 
-        var requestId = Guid.CreateVersion7();
+        Guid requestId = guidGenerator.Create();
         DateTimeOffset now = timeProvider.GetUtcNow();
         string? tenantId = ResolveTenantId(currentTenant);
         string requestedBy = currentUser.Email ?? "unknown";

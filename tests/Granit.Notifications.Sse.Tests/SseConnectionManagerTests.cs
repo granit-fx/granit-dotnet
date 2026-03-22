@@ -5,6 +5,7 @@
 // disconnect cleanup, and graceful handling of completed channels.
 // =============================================================================
 
+using Granit.Guids;
 using Granit.Notifications.Sse.Internal;
 using Shouldly;
 using Xunit;
@@ -13,7 +14,7 @@ namespace Granit.Notifications.Sse.Tests;
 
 public sealed class SseConnectionManagerTests : IDisposable
 {
-    private readonly SseConnectionManager _manager = new();
+    private readonly SseConnectionManager _manager = new(SimpleGuidGenerator.Instance);
 
     [Fact]
     public void Connect_ReturnsConnectionWithUserId()

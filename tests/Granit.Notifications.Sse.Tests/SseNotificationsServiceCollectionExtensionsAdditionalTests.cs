@@ -1,3 +1,4 @@
+using Granit.Guids;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Sse.Extensions;
 using Granit.Notifications.Sse.Options;
@@ -16,6 +17,7 @@ public sealed class SseNotificationsServiceCollectionExtensionsAdditionalTests
     {
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IGuidGenerator>(SimpleGuidGenerator.Instance);
         services.AddGranitNotificationsSse();
 
         using ServiceProvider sp = services.BuildServiceProvider();
@@ -29,6 +31,7 @@ public sealed class SseNotificationsServiceCollectionExtensionsAdditionalTests
     {
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IGuidGenerator>(SimpleGuidGenerator.Instance);
         services.AddGranitNotificationsSse();
 
         using ServiceProvider sp = services.BuildServiceProvider();
