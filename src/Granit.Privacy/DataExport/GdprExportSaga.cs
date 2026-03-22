@@ -7,7 +7,7 @@ using Wolverine;
 namespace Granit.Privacy.DataExport;
 
 /// <summary>
-/// Wolverine Stateful Saga implementing the GDPR export scatter-gather pattern (RGPD Art. 15/20).
+/// Stateful Saga implementing the GDPR export scatter-gather pattern (RGPD Art. 15/20).
 /// </summary>
 /// <remarks>
 /// <para>

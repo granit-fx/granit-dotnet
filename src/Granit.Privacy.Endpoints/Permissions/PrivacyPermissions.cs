@@ -22,7 +22,7 @@ public static class PrivacyPermissions
     /// <summary>Permissions for personal data deletion (GDPR Art. 17).</summary>
     public static class Deletion
     {
-        /// <summary>Request personal data erasure.</summary>
+        /// <summary>Request, view, and cancel personal data erasure.</summary>
         public const string Execute = "Privacy.Deletion.Execute";
     }
 

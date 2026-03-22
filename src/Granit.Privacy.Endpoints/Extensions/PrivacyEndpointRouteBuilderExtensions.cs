@@ -1,5 +1,6 @@
 using Granit.Core.Events;
 using Granit.Core.MultiTenancy;
+using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
@@ -9,6 +10,7 @@ using Granit.Privacy.Endpoints.Options;
 using Granit.Privacy.Endpoints.Permissions;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Events;
+using Granit.Privacy.Options;
 using Granit.Security;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -16,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Privacy.Endpoints.Extensions;
 
@@ -102,11 +105,43 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .WithSummary("Requests personal data deletion for the current user.")
              .WithDescription(
                  "Publishes a distributed deletion event (GDPR Art. 17 — right to erasure). "
-                 + "Each module handles its own data: physical delete, soft delete, anonymization, "
-                 + "or retention with legal justification. The operation is asynchronous — "
-                 + "modules report completion via PersonalDataDeletedEto events.")
-             .Produces(StatusCodes.Status202Accepted)
+                 + "When Defer is false, deletion is immediate. When Defer is true, a cooling-off "
+                 + "period starts — the user receives a reminder email before the "
+                 + "deadline and can cancel via POST /deletion/{requestId}/cancel. "
+                 + "A confirmation email is sent in both cases after deletion is executed.")
+             .Produces<PrivacyDeletionRequestResponse>(StatusCodes.Status202Accepted)
              .ProducesValidationProblem();
+
+        group.MapPost("/deletion/{requestId:guid}/cancel", HandleCancelDeletionAsync)
+             .RequireAuthorization(PrivacyPermissions.Deletion.Execute)
+             .WithName("CancelPrivacyDeletion")
+             .WithSummary("Cancels a deferred deletion request during the grace period.")
+             .WithDescription(
+                 "Cancels a deferred deletion request. Only requests in Deferred state can be "
+                 + "cancelled. Returns 404 if the request is not found, 409 if already executed or cancelled.")
+             .Produces(StatusCodes.Status200OK)
+             .ProducesProblem(StatusCodes.Status404NotFound)
+             .ProducesProblem(StatusCodes.Status409Conflict);
+
+        group.MapGet("/deletion/{requestId:guid}", HandleGetDeletionStatusAsync)
+             .RequireAuthorization(PrivacyPermissions.Deletion.Execute)
+             .WithName("GetPrivacyDeletionStatus")
+             .WithSummary("Returns the status of a deferred deletion request.")
+             .WithDescription(
+                 "Queries the deletion request tracker for the specified request ID. "
+                 + "Returns the current state (Deferred, Executed, Cancelled), scheduled deletion date, "
+                 + "and timestamps. Returns 404 if the request is not found.")
+             .Produces<PrivacyDeletionStatusResponse>()
+             .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapGet("/deletion", HandleGetMyDeletionsAsync)
+             .RequireAuthorization(PrivacyPermissions.Deletion.Execute)
+             .WithName("ListPrivacyDeletions")
+             .WithSummary("Lists all deletion requests for the current user.")
+             .WithDescription(
+                 "Returns all deferred deletion requests submitted by the current user, "
+                 + "ordered by most recent first. Immediate deletions are not tracked.")
+             .Produces<IReadOnlyList<PrivacyDeletionStatusResponse>>();
     }
 
     // -------------------------------------------------------------------------
@@ -243,13 +278,14 @@ public static class PrivacyEndpointRouteBuilderExtensions
     // Deletion handlers
     // -------------------------------------------------------------------------
 
-    private static async Task<Results<Accepted, ProblemHttpResult>> HandleRequestDeletionAsync(
+    private static async Task<Results<Accepted<PrivacyDeletionRequestResponse>, Accepted, ProblemHttpResult>> HandleRequestDeletionAsync(
         PrivacyDeletionRequest body,
         [FromServices] ICurrentUserService currentUser,
         [FromServices] IDistributedEventBus eventBus,
         [FromServices] PrivacyMetrics metrics,
         [FromServices] TimeProvider timeProvider,
         [FromServices] ICurrentTenant currentTenant,
+        [FromServices] IOptions<GranitPrivacyOptions> privacyOptions,
         CancellationToken cancellationToken)
     {
         if (!TryGetUserId(currentUser, out Guid userId))
@@ -260,21 +296,132 @@ public static class PrivacyEndpointRouteBuilderExtensions
         var requestId = Guid.CreateVersion7();
         DateTimeOffset now = timeProvider.GetUtcNow();
         string? tenantId = ResolveTenantId(currentTenant);
+        string requestedBy = currentUser.Email ?? "unknown";
+
+        if (body.Defer)
+        {
+            int graceDays = privacyOptions.Value.DefaultGracePeriodDays;
+            DateTimeOffset scheduledDeletionAt = now.AddDays(graceDays);
+
+            await eventBus
+                .PublishAsync(
+                    new DeletionDeferredEto(requestId, userId, requestedBy, now, body.Reason, scheduledDeletionAt),
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            metrics.RecordDeletionDeferred(tenantId);
+
+            return TypedResults.Accepted(
+                $"/privacy/deletion/{requestId}",
+                new PrivacyDeletionRequestResponse(requestId, scheduledDeletionAt));
+        }
+
+        // Immediate deletion (existing behavior) + confirmation event
+        await eventBus
+            .PublishAsync(
+                new PersonalDataDeletionRequestedEto(requestId, userId, requestedBy, now, body.Reason),
+                cancellationToken)
+            .ConfigureAwait(false);
 
         await eventBus
             .PublishAsync(
-                new PersonalDataDeletionRequestedEto(
-                    requestId,
-                    userId,
-                    currentUser.Email ?? "unknown",
-                    now,
-                    body.Reason),
+                new DeletionExecutedEto(requestId, userId, now),
                 cancellationToken)
             .ConfigureAwait(false);
 
         metrics.RecordDeletionRequested(tenantId);
+        metrics.RecordDeletionExecuted(tenantId);
 
         return TypedResults.Accepted((string?)null);
+    }
+
+    private static async Task<Results<Ok, ProblemHttpResult>> HandleCancelDeletionAsync(
+        Guid requestId,
+        [FromServices] ICurrentUserService currentUser,
+        [FromServices] IDeletionRequestTrackerReader tracker,
+        [FromServices] IDistributedEventBus eventBus,
+        [FromServices] TimeProvider timeProvider,
+        CancellationToken cancellationToken)
+    {
+        if (!TryGetUserId(currentUser, out Guid userId))
+        {
+            return UserNotAuthenticated();
+        }
+
+        DeletionRequestStatus? status = await tracker
+            .GetStatusAsync(requestId, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (status is null)
+        {
+            return TypedResults.Problem(
+                detail: $"Deletion request '{requestId}' not found.",
+                statusCode: StatusCodes.Status404NotFound);
+        }
+
+        if (status.UserId != userId)
+        {
+            return TypedResults.Problem(
+                detail: $"Deletion request '{requestId}' not found.",
+                statusCode: StatusCodes.Status404NotFound);
+        }
+
+        if (status.State != DeletionRequestState.Deferred)
+        {
+            return TypedResults.Problem(
+                detail: $"Deletion request '{requestId}' is already {status.State} and cannot be cancelled.",
+                statusCode: StatusCodes.Status409Conflict);
+        }
+
+        DateTimeOffset now = timeProvider.GetUtcNow();
+
+        await eventBus
+            .PublishAsync(
+                new DeletionCancelledEto(requestId, userId, now),
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        return TypedResults.Ok();
+    }
+
+    private static async Task<Results<Ok<PrivacyDeletionStatusResponse>, ProblemHttpResult>> HandleGetDeletionStatusAsync(
+        Guid requestId,
+        [FromServices] IDeletionRequestTrackerReader tracker,
+        CancellationToken cancellationToken)
+    {
+        DeletionRequestStatus? status = await tracker
+            .GetStatusAsync(requestId, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (status is null)
+        {
+            return TypedResults.Problem(
+                detail: $"Deletion request '{requestId}' not found.",
+                statusCode: StatusCodes.Status404NotFound);
+        }
+
+        return TypedResults.Ok(MapDeletionStatus(status));
+    }
+
+    private static async Task<Results<Ok<IReadOnlyList<PrivacyDeletionStatusResponse>>, ProblemHttpResult>> HandleGetMyDeletionsAsync(
+        [FromServices] ICurrentUserService currentUser,
+        [FromServices] IDeletionRequestTrackerReader tracker,
+        CancellationToken cancellationToken)
+    {
+        if (!TryGetUserId(currentUser, out Guid userId))
+        {
+            return UserNotAuthenticated();
+        }
+
+        IReadOnlyList<DeletionRequestStatus> statuses = await tracker
+            .GetByUserAsync(userId, cancellationToken)
+            .ConfigureAwait(false);
+
+        IReadOnlyList<PrivacyDeletionStatusResponse> result = statuses
+            .Select(MapDeletionStatus)
+            .ToList();
+
+        return TypedResults.Ok(result);
     }
 
     // -------------------------------------------------------------------------
@@ -444,6 +591,16 @@ public static class PrivacyEndpointRouteBuilderExtensions
             status.CompletedAt,
             status.ArchiveBlobReferenceId,
             status.MissingProviders);
+
+    private static PrivacyDeletionStatusResponse MapDeletionStatus(DeletionRequestStatus status) =>
+        new(
+            status.RequestId,
+            status.State.ToString(),
+            status.Reason,
+            status.RequestedAt,
+            status.ScheduledDeletionAt,
+            status.CancelledAt,
+            status.ExecutedAt);
 
     /// <summary>
     /// Pseudonymizes an IP address by masking the last octet (IPv4) or last group (IPv6).

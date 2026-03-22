@@ -1,11 +1,11 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:Privacy": "プライバシー (GDPR)",
+    "Permission:Privacy.Agreements.Create": "法的合意に同意",
+    "Permission:Privacy.Agreements.Read": "法的文書と同意ステータスを表示",
+    "Permission:Privacy.Deletion.Execute": "個人データの削除を要求",
     "Permission:Privacy.Export.Execute": "個人データのエクスポートを要求",
     "Permission:Privacy.Export.Read": "個人データエクスポートのステータスを表示",
-    "Permission:Privacy.Deletion.Execute": "個人データの削除を要求",
-    "Permission:Privacy.Agreements.Read": "法的文書と同意ステータスを表示",
-    "Permission:Privacy.Agreements.Create": "法的合意に同意"
+    "PermissionGroup:Privacy": "プライバシー (GDPR)"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-21T21:30:32.349471+00:00",
+  "generatedAt": "2026-03-22T10:43:49.371565+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -1039,6 +1039,7 @@
     {
       "name": "Granit.Privacy",
       "deps": [
+        "Granit.BackgroundJobs",
         "Granit.Core"
       ],
       "framework": "net10.0"
@@ -1058,6 +1059,14 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Privacy",
         "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Privacy.Notifications",
+      "deps": [
+        "Granit.Privacy",
+        "Granit.Notifications"
       ],
       "framework": "net10.0"
     },
@@ -20190,6 +20199,78 @@
       "members": []
     },
     {
+      "name": "DeletionRequestState",
+      "fqn": "Granit.Privacy.DataDeletion.DeletionRequestState",
+      "kind": "enum",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/DeletionRequestState.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "DeletionRequestStatus",
+      "fqn": "Granit.Privacy.DataDeletion.DeletionRequestStatus",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/DeletionRequestStatus.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "DeletionCancelledEto",
+      "fqn": "Granit.Privacy.DataDeletion.Events.DeletionCancelledEto",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/Events/DeletionCancelledEto.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "DeletionDeadlineReachedEvent",
+      "fqn": "Granit.Privacy.DataDeletion.Events.DeletionDeadlineReachedEvent",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/Events/DeletionDeadlineReachedEvent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "DeletionDeferredEto",
+      "fqn": "Granit.Privacy.DataDeletion.Events.DeletionDeferredEto",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/Events/DeletionDeferredEto.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "DeletionExecutedEto",
+      "fqn": "Granit.Privacy.DataDeletion.Events.DeletionExecutedEto",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/Events/DeletionExecutedEto.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "DeletionReminderDueEto",
+      "fqn": "Granit.Privacy.DataDeletion.Events.DeletionReminderDueEto",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/Events/DeletionReminderDueEto.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "DeletionReminderDueEvent",
+      "fqn": "Granit.Privacy.DataDeletion.Events.DeletionReminderDueEvent",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/Events/DeletionReminderDueEvent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "PersonalDataDeletedEto",
       "fqn": "Granit.Privacy.DataDeletion.Events.PersonalDataDeletedEto",
       "kind": "record",
@@ -20206,6 +20287,90 @@
       "file": "src/Granit.Privacy/DataDeletion/Events/PersonalDataDeletionRequestedEto.cs",
       "line": 9,
       "members": []
+    },
+    {
+      "name": "GdprDeletionSaga",
+      "fqn": "Granit.Privacy.DataDeletion.GdprDeletionSaga",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/GdprDeletionSaga.cs",
+      "line": 31,
+      "members": [
+        {
+          "name": "Id",
+          "kind": "property",
+          "signature": "Guid Id",
+          "returnType": "Guid"
+        },
+        {
+          "name": "Reason",
+          "kind": "property",
+          "signature": "string Reason",
+          "returnType": "string"
+        },
+        {
+          "name": "StartAsync",
+          "kind": "method",
+          "signature": "StartAsync(DeletionDeferredEto @event, IOptions<GranitPrivacyOptions> options, IMessageContext context, IDeletionRequestTrackerWriter tracker, PrivacyMetrics metrics)",
+          "returnType": "DateTimeOffset RequestedAt { get; set; } public DateTimeOffset ScheduledDeletionAt { get; set; } public bool ReminderSent { get; set; } public Task"
+        }
+      ]
+    },
+    {
+      "name": "IDeletionRequestTrackerReader",
+      "fqn": "Granit.Privacy.DataDeletion.IDeletionRequestTrackerReader",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/IDeletionRequestTrackerReader.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "GetStatusAsync",
+          "kind": "method",
+          "signature": "GetStatusAsync(Guid requestId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DeletionRequestStatus?>"
+        },
+        {
+          "name": "GetByUserAsync",
+          "kind": "method",
+          "signature": "GetByUserAsync(Guid userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<DeletionRequestStatus>>"
+        },
+        {
+          "name": "GetExpiredDeferredAsync",
+          "kind": "method",
+          "signature": "GetExpiredDeferredAsync(DateTimeOffset now, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<DeletionRequestStatus>>"
+        }
+      ]
+    },
+    {
+      "name": "IDeletionRequestTrackerWriter",
+      "fqn": "Granit.Privacy.DataDeletion.IDeletionRequestTrackerWriter",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/IDeletionRequestTrackerWriter.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "RecordDeferredAsync",
+          "kind": "method",
+          "signature": "RecordDeferredAsync(Guid requestId, Guid userId, string reason, DateTimeOffset requestedAt, DateTimeOffset scheduledDeletionAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "MarkExecutedAsync",
+          "kind": "method",
+          "signature": "MarkExecutedAsync(Guid requestId, DateTimeOffset executedAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "MarkCancelledAsync",
+          "kind": "method",
+          "signature": "MarkCancelledAsync(Guid requestId, DateTimeOffset cancelledAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "ExportCompletedEto",
@@ -20407,6 +20572,30 @@
           "returnType": "void"
         },
         {
+          "name": "RecordDeletionDeferred",
+          "kind": "method",
+          "signature": "RecordDeletionDeferred(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordDeletionCancelled",
+          "kind": "method",
+          "signature": "RecordDeletionCancelled(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordDeletionExecuted",
+          "kind": "method",
+          "signature": "RecordDeletionExecuted(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordDeletionReminderSent",
+          "kind": "method",
+          "signature": "RecordDeletionReminderSent(string? tenantId)",
+          "returnType": "void"
+        },
+        {
           "name": "RecordExportCompleted",
           "kind": "method",
           "signature": "RecordExportCompleted(string? tenantId, string status, TimeSpan duration)",
@@ -20438,7 +20627,25 @@
       "kind": "record",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyDeletionRequest.cs",
-      "line": 7,
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "PrivacyDeletionRequestResponse",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyDeletionRequestResponse",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyDeletionRequestResponse.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "PrivacyDeletionStatusResponse",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyDeletionStatusResponse",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyDeletionStatusResponse.cs",
+      "line": 13,
       "members": []
     },
     {
@@ -20483,7 +20690,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Extensions/PrivacyEndpointRouteBuilderExtensions.cs",
-      "line": 25,
+      "line": 28,
       "members": [
         {
           "name": "MapGranitPrivacy",
@@ -20582,7 +20789,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/GranitPrivacyBuilder.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "RegisterDataProvider",
@@ -20598,6 +20805,15 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/GranitPrivacyModule.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "DeletionDeadlineEnforcerJob",
+      "fqn": "Granit.Privacy.Jobs.DeletionDeadlineEnforcerJob",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/Jobs/DeletionDeadlineEnforcerJob.cs",
       "line": 11,
       "members": []
     },
@@ -20739,6 +20955,83 @@
       "members": []
     },
     {
+      "name": "GranitPrivacyNotificationsModule",
+      "fqn": "Granit.Privacy.Notifications.GranitPrivacyNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/GranitPrivacyNotificationsModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "PrivacyDeletionConfirmationNotificationData",
+      "fqn": "Granit.Privacy.Notifications.PrivacyDeletionConfirmationNotificationData",
+      "kind": "record",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyDeletionConfirmationNotificationType.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "PrivacyDeletionConfirmationNotificationType",
+      "fqn": "Granit.Privacy.Notifications.PrivacyDeletionConfirmationNotificationType",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyDeletionConfirmationNotificationType.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyDeletionConfirmationNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyDeletionReminderNotificationData",
+      "fqn": "Granit.Privacy.Notifications.PrivacyDeletionReminderNotificationData",
+      "kind": "record",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyDeletionReminderNotificationType.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "PrivacyDeletionReminderNotificationType",
+      "fqn": "Granit.Privacy.Notifications.PrivacyDeletionReminderNotificationType",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyDeletionReminderNotificationType.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyDeletionReminderNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
       "name": "GranitPrivacyOptions",
       "fqn": "Granit.Privacy.Options.GranitPrivacyOptions",
       "kind": "class",
@@ -20756,6 +21049,24 @@
           "name": "ExportMaxSizeMb",
           "kind": "property",
           "signature": "int ExportMaxSizeMb",
+          "returnType": "int"
+        },
+        {
+          "name": "DefaultGracePeriodDays",
+          "kind": "property",
+          "signature": "int DefaultGracePeriodDays",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxGracePeriodDays",
+          "kind": "property",
+          "signature": "int MaxGracePeriodDays",
+          "returnType": "int"
+        },
+        {
+          "name": "ReminderDaysBefore",
+          "kind": "property",
+          "signature": "int ReminderDaysBefore",
           "returnType": "int"
         }
       ]

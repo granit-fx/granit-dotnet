@@ -240,6 +240,16 @@
           "Granit.Security": "[0.1.0-dev, )"
         }
       },
+      "granit.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Cronos": "[0.11.*, )",
+          "Granit.Core": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Security": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
       "granit.caching": {
         "type": "Project",
         "dependencies": {
@@ -252,6 +262,12 @@
       },
       "granit.core": {
         "type": "Project"
+      },
+      "granit.guids": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
       },
       "granit.http.apidocumentation": {
         "type": "Project",
@@ -287,6 +303,7 @@
       "granit.privacy": {
         "type": "Project",
         "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.Core": "[0.1.0-dev, )",
           "WolverineFx": "[5.21.*, )"
         }
@@ -330,6 +347,12 @@
         "dependencies": {
           "Asp.Versioning.Mvc": "10.0.0-preview.2"
         }
+      },
+      "Cronos": {
+        "type": "CentralTransitive",
+        "requested": "[0.11.*, )",
+        "resolved": "0.11.1",
+        "contentHash": "5Ug+giPQITSAdTp/METAsofRSSUi3I5p7t4dlcXnzUgUzwZb4HkOBcYfpHuPwAHrnKJjmyW8amVzLD6mfLpaBg=="
       },
       "FluentValidation": {
         "type": "CentralTransitive",

@@ -21,4 +21,6 @@ internal static class PrivacyActivitySource
 
     internal const string ExportExecute = "privacy.export.execute";
     internal const string DeletionExecute = "privacy.deletion.execute";
+    internal const string DeletionDefer = "privacy.deletion.defer";
+    internal const string DeletionCancel = "privacy.deletion.cancel";
 }

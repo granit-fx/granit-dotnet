@@ -134,6 +134,7 @@
       "src/Granit.Persistence/Granit.Persistence.csproj",
       "src/Granit.Privacy.AI/Granit.Privacy.AI.csproj",
       "src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj",
+      "src/Granit.Privacy.Notifications/Granit.Privacy.Notifications.csproj",
       "src/Granit.Privacy/Granit.Privacy.csproj",
       "src/Granit.Querying.AI/Granit.Querying.AI.csproj",
       "src/Granit.Querying.Endpoints/Granit.Querying.Endpoints.csproj",

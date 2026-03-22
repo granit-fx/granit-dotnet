@@ -495,6 +495,9 @@ interface OidcAuthorizationResponse {
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="POST" variant="success" /> | `/deletion` | RequestPrivacyDeletion | `Privacy.Deletion.Execute` |
+| <Badge text="POST" variant="success" /> | `/deletion/{requestId}/cancel` | CancelPrivacyDeletion | `Privacy.Deletion.Execute` |
+| <Badge text="GET" variant="note" /> | `/deletion/{requestId}` | GetPrivacyDeletionStatus | `Privacy.Deletion.Execute` |
+| <Badge text="GET" variant="note" /> | `/deletion` | ListPrivacyDeletions | `Privacy.Deletion.Execute` |
 
 ### Legal Agreements (Art. 7)
 

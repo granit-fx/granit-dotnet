@@ -159,6 +159,7 @@
     <ProjectReference Include="..\..\src\Granit.Privacy\Granit.Privacy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.AI\Granit.Privacy.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.Endpoints\Granit.Privacy.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Privacy.Notifications\Granit.Privacy.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.Querying\Granit.Querying.csproj" />
     <ProjectReference Include="..\..\src\Granit.RateLimiting\Granit.RateLimiting.csproj" />
     <ProjectReference Include="..\..\src\Granit.Querying.AI\Granit.Querying.AI.csproj" />

@@ -2356,6 +2356,7 @@
       "granit.privacy": {
         "type": "Project",
         "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.Core": "[0.1.0-dev, )",
           "WolverineFx": "[5.21.*, )"
         }
@@ -2374,6 +2375,13 @@
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Privacy": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.privacy.notifications": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Notifications": "[0.1.0-dev, )",
+          "Granit.Privacy": "[0.1.0-dev, )"
         }
       },
       "granit.querying": {

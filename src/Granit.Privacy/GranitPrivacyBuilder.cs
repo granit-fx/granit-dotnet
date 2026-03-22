@@ -1,3 +1,4 @@
+using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Internal;
 using Granit.Privacy.LegalAgreements;
@@ -51,6 +52,19 @@ public sealed class GranitPrivacyBuilder(IServiceCollection services)
         Services.AddScoped<TStore>();
         Services.AddScoped<ILegalAgreementStoreReader>(sp => sp.GetRequiredService<TStore>());
         Services.AddScoped<ILegalAgreementStoreWriter>(sp => sp.GetRequiredService<TStore>());
+        return this;
+    }
+
+    /// <summary>
+    /// Registers the deletion request tracker implementation (provided by the application).
+    /// Required for deferred deletion (cooling-off period) to persist request state.
+    /// </summary>
+    public GranitPrivacyBuilder UseDeletionRequestTracker<TStore>()
+        where TStore : class, IDeletionRequestTrackerReader, IDeletionRequestTrackerWriter
+    {
+        Services.AddScoped<TStore>();
+        Services.AddScoped<IDeletionRequestTrackerReader>(sp => sp.GetRequiredService<TStore>());
+        Services.AddScoped<IDeletionRequestTrackerWriter>(sp => sp.GetRequiredService<TStore>());
         return this;
     }
 

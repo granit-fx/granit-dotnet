@@ -1,8 +1,8 @@
 # Granit.Privacy
 
 Reusable PIMS abstractions for GDPR/ISO 27001 user rights management. Provides Data Subject Export
-via Wolverine Saga (scatter-gather), Data Subject Deletion via domain events, Legal Agreements
-versioning, and `IDataProviderRegistry`. GDPR/ISO 27001 compliant.
+via scatter-gather saga, Data Subject Deletion via domain events with opt-in cooling-off period,
+Legal Agreements versioning, and `IDataProviderRegistry`. GDPR/ISO 27001 compliant.
 
 Part of the [granit](https://granit-fx.dev) framework.
 

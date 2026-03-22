@@ -40,4 +40,30 @@ public sealed class GranitPrivacyOptionsTests
 
         options.ExportMaxSizeMb.ShouldBe(500);
     }
+
+    // ── Deletion cooling-off ─────────────────────────────────────────────────
+
+    [Fact]
+    public void DefaultGracePeriodDays_DefaultValue_IsThirty()
+    {
+        GranitPrivacyOptions options = new();
+
+        options.DefaultGracePeriodDays.ShouldBe(30);
+    }
+
+    [Fact]
+    public void MaxGracePeriodDays_DefaultValue_IsNinety()
+    {
+        GranitPrivacyOptions options = new();
+
+        options.MaxGracePeriodDays.ShouldBe(90);
+    }
+
+    [Fact]
+    public void ReminderDaysBefore_DefaultValue_IsThree()
+    {
+        GranitPrivacyOptions options = new();
+
+        options.ReminderDaysBefore.ShouldBe(3);
+    }
 }

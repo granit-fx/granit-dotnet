@@ -17,6 +17,10 @@ public sealed class PrivacyMetrics
     private readonly Counter<long> _exportRequests;
     private readonly Counter<long> _fragmentsReceived;
     private readonly Counter<long> _deletionRequests;
+    private readonly Counter<long> _deletionDeferred;
+    private readonly Counter<long> _deletionCancelled;
+    private readonly Counter<long> _deletionExecuted;
+    private readonly Counter<long> _deletionReminders;
     private readonly Histogram<double> _exportDuration;
 
     public PrivacyMetrics(IMeterFactory meterFactory)
@@ -34,6 +38,22 @@ public sealed class PrivacyMetrics
         _deletionRequests = meter.CreateCounter<long>(
             "granit.privacy.deletion.requests",
             description: "Number of personal data deletion requests initiated.");
+
+        _deletionDeferred = meter.CreateCounter<long>(
+            "granit.privacy.deletion.deferred",
+            description: "Number of personal data deletion requests deferred with a grace period.");
+
+        _deletionCancelled = meter.CreateCounter<long>(
+            "granit.privacy.deletion.cancelled",
+            description: "Number of deferred deletion requests cancelled during the grace period.");
+
+        _deletionExecuted = meter.CreateCounter<long>(
+            "granit.privacy.deletion.executed",
+            description: "Number of personal data deletions executed (immediate or after grace period).");
+
+        _deletionReminders = meter.CreateCounter<long>(
+            "granit.privacy.deletion.reminders",
+            description: "Number of deletion reminder notifications sent.");
 
         _exportDuration = meter.CreateHistogram<double>(
             "granit.privacy.export.duration",
@@ -56,6 +76,30 @@ public sealed class PrivacyMetrics
 
     public void RecordDeletionRequested(string? tenantId) =>
         _deletionRequests.Add(1, new TagList
+        {
+            { TagTenantId, tenantId ?? DefaultTenant },
+        });
+
+    public void RecordDeletionDeferred(string? tenantId) =>
+        _deletionDeferred.Add(1, new TagList
+        {
+            { TagTenantId, tenantId ?? DefaultTenant },
+        });
+
+    public void RecordDeletionCancelled(string? tenantId) =>
+        _deletionCancelled.Add(1, new TagList
+        {
+            { TagTenantId, tenantId ?? DefaultTenant },
+        });
+
+    public void RecordDeletionExecuted(string? tenantId) =>
+        _deletionExecuted.Add(1, new TagList
+        {
+            { TagTenantId, tenantId ?? DefaultTenant },
+        });
+
+    public void RecordDeletionReminderSent(string? tenantId) =>
+        _deletionReminders.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
         });

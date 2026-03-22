@@ -1,11 +1,11 @@
 {
   "culture": "pt",
   "texts": {
-    "PermissionGroup:Privacy": "Privacidade (RGPD)",
+    "Permission:Privacy.Agreements.Create": "Aceitar um acordo legal",
+    "Permission:Privacy.Agreements.Read": "Ver documentos legais e estado de consentimento",
+    "Permission:Privacy.Deletion.Execute": "Solicitar eliminação de dados pessoais",
     "Permission:Privacy.Export.Execute": "Solicitar exportação de dados pessoais",
     "Permission:Privacy.Export.Read": "Ver estado da exportação de dados pessoais",
-    "Permission:Privacy.Deletion.Execute": "Solicitar eliminação de dados pessoais",
-    "Permission:Privacy.Agreements.Read": "Ver documentos legais e estado de consentimento",
-    "Permission:Privacy.Agreements.Create": "Aceitar um acordo legal"
+    "PermissionGroup:Privacy": "Privacidade (RGPD)"
   }
 }

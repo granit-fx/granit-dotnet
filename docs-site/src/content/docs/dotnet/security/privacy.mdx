@@ -26,15 +26,17 @@ compliance during an audit without building a custom consent system.
 ## Package structure
 
 <FileTree>
-- Granit.Privacy GDPR data export saga, legal agreements, data provider registry
+- Granit.Privacy GDPR data export saga, deletion with cooling-off, legal agreements
   - Granit.Privacy.Endpoints Minimal API endpoints for export, deletion, consent
+  - Granit.Privacy.Notifications Deletion reminder and confirmation emails
   - Granit.Privacy.AI AI-powered PII detection in free-text fields
 </FileTree>
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.Privacy` | GDPR data export/deletion orchestration, legal agreements | `Granit.Core` |
+| `Granit.Privacy` | GDPR data export/deletion orchestration, legal agreements | `Granit.Core`, `Granit.BackgroundJobs` |
 | `Granit.Privacy.Endpoints` | HTTP endpoints for GDPR Art. 7/15/17/20 | `Granit.Privacy`, `Granit.Authorization`, `Granit.Validation` |
+| `Granit.Privacy.Notifications` | Deletion reminder and confirmation notification bridge | `Granit.Privacy`, `Granit.Notifications` |
 | `Granit.Privacy.AI` | LLM-powered PII detection (`IAIPiiDetector`) | `Granit.Privacy`, `Granit.AI` |
 
 ## Setup
@@ -89,22 +91,51 @@ export package.
 
 ## GDPR deletion
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant API
-    participant Saga
-    participant Identity
-    participant BlobStorage
-    participant Notifications
+Two modes are supported — **immediate** (default) and **deferred** with an opt-in
+cooling-off period:
 
-    User->>API: DELETE /privacy/my-data
-    API->>Saga: PersonalDataDeletionRequestedEto
-    Saga->>Identity: DeleteByIdAsync (hard delete)
-    Saga->>BlobStorage: Delete user blobs
-    Saga->>Notifications: Delete delivery records
-    Identity-->>Saga: IdentityUserDeletedEvent
-    Saga->>User: Acknowledgment notification
+```mermaid
+flowchart TD
+    A["POST /privacy/deletion"] --> B{defer?}
+    B -->|false| C[PersonalDataDeletionRequestedEto]
+    C --> D[Providers delete immediately]
+    D --> E[DeletionExecutedEto]
+    E --> F["Confirmation email"]
+    B -->|true| G[DeletionDeferredEto]
+    G --> H["GdprDeletionSaga starts"]
+    H --> I["Schedule reminder"]
+    H --> J["Schedule deadline"]
+    I --> K["Reminder email"]
+    J --> L{Cancelled?}
+    L -->|No| M[PersonalDataDeletionRequestedEto]
+    M --> N["Confirmation email"]
+    L -->|Yes| O["Saga completed, data preserved"]
+```
+
+### Cooling-off period
+
+When the user sets `defer: true`, the deletion is postponed for a configurable
+grace period. During this period the user can cancel via
+`POST /privacy/deletion/{requestId}/cancel`. A reminder email is sent a few days
+before the deadline. A daily safety-net job (`DeletionDeadlineEnforcerJob`) catches
+any requests that the saga might have missed.
+
+Configuration in `appsettings.json`:
+
+```json
+{
+  "Privacy": {
+    "DefaultGracePeriodDays": 30,
+    "MaxGracePeriodDays": 90,
+    "ReminderDaysBefore": 3
+  }
+}
+```
+
+Applications must provide a tracker implementation for deferred deletion state:
+
+```csharp
+privacy.UseDeletionRequestTracker<EfCoreDeletionRequestTracker>();
 ```
 
 ## Legal agreements
@@ -161,10 +192,15 @@ the HTTP surface from the internal Wolverine saga state.
 | Method | Route | Operation | Permission |
 | ------ | ----- | --------- | ---------- |
 | <Badge text="POST" variant="success" /> | `/deletion` | RequestPrivacyDeletion | `Privacy.Deletion.Execute` |
+| <Badge text="POST" variant="success" /> | `/deletion/{requestId}/cancel` | CancelPrivacyDeletion | `Privacy.Deletion.Cancel` |
+| <Badge text="GET" variant="note" /> | `/deletion/{requestId}` | GetPrivacyDeletionStatus | `Privacy.Deletion.Read` |
+| <Badge text="GET" variant="note" /> | `/deletion` | ListPrivacyDeletions | `Privacy.Deletion.Read` |
 
-Publishes `PersonalDataDeletionRequestedEto`. Each module handles its own data:
-physical delete, soft delete, anonymization, or retention with legal justification.
-The operation is asynchronous — modules report completion via `PersonalDataDeletedEto`.
+When `defer` is false (default), publishes `PersonalDataDeletionRequestedEto`
+immediately. When `defer` is true, starts the `GdprDeletionSaga` with a cooling-off
+period. Each module handles its own data: physical delete, soft delete,
+anonymization, or retention with legal justification. A confirmation email is sent
+in both cases via `DeletionExecutedEto`.
 
 ### Legal agreements (Art. 7)
 
@@ -191,7 +227,7 @@ running behind a reverse proxy (Aspire, Docker, Nginx), enable
 | ---------- | ----- |
 | `Privacy.Export.Execute` | Request personal data export |
 | `Privacy.Export.Read` | View export status and history |
-| `Privacy.Deletion.Execute` | Request personal data deletion |
+| `Privacy.Deletion.Execute` | Request, view, and cancel personal data deletion |
 | `Privacy.Agreements.Read` | View legal documents and consent status |
 | `Privacy.Agreements.Create` | Accept a legal agreement |
 

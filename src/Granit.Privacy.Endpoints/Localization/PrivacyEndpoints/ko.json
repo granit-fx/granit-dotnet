@@ -1,11 +1,11 @@
 {
   "culture": "ko",
   "texts": {
-    "PermissionGroup:Privacy": "개인정보 (GDPR)",
+    "Permission:Privacy.Agreements.Create": "법적 계약 수락",
+    "Permission:Privacy.Agreements.Read": "법적 문서 및 동의 상태 조회",
+    "Permission:Privacy.Deletion.Execute": "개인 데이터 삭제 요청",
     "Permission:Privacy.Export.Execute": "개인 데이터 내보내기 요청",
     "Permission:Privacy.Export.Read": "개인 데이터 내보내기 상태 조회",
-    "Permission:Privacy.Deletion.Execute": "개인 데이터 삭제 요청",
-    "Permission:Privacy.Agreements.Read": "법적 문서 및 동의 상태 조회",
-    "Permission:Privacy.Agreements.Create": "법적 계약 수락"
+    "PermissionGroup:Privacy": "개인정보 (GDPR)"
   }
 }

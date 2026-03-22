@@ -20,4 +20,24 @@ public sealed class GranitPrivacyOptions
     /// Default: 100 MB.
     /// </summary>
     public int ExportMaxSizeMb { get; set; } = 100;
+
+    // ── Deletion cooling-off period ──────────────────────────────────────────
+
+    /// <summary>
+    /// Default grace period in days when a user defers deletion.
+    /// Default: 30 days.
+    /// </summary>
+    public int DefaultGracePeriodDays { get; set; } = 30;
+
+    /// <summary>
+    /// Maximum allowed grace period in days (CNIL guidance: "reasonable delay").
+    /// Default: 90 days.
+    /// </summary>
+    public int MaxGracePeriodDays { get; set; } = 90;
+
+    /// <summary>
+    /// Number of days before the deletion deadline to send a reminder notification.
+    /// Default: 3 days. Set to 0 to disable reminders.
+    /// </summary>
+    public int ReminderDaysBefore { get; set; } = 3;
 }
