@@ -11,6 +11,7 @@ namespace Granit.ArchitectureTests;
 /// <list type="bullet">
 /// <item>Every <c>*Request</c> type in <c>.Endpoints</c> assemblies must have a registered <c>IValidator&lt;T&gt;</c></item>
 /// <item>Top-level route groups must use <c>MapGranitGroup</c> instead of <c>MapGroup</c></item>
+/// <item>Validators must not use hardcoded <c>.WithMessage("...")</c> strings</item>
 /// </list>
 /// </summary>
 public sealed partial class ValidationConventionTests
@@ -144,6 +145,50 @@ public sealed partial class ValidationConventionTests
     }
 
     // -------------------------------------------------------------------------
+    // Test C — Source scanning: no hardcoded .WithMessage() in validators
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Validator classes must not use <c>.WithMessage("hardcoded string")</c>.
+    /// Built-in validators are auto-converted to error codes by <c>GranitErrorCodeLanguageManager</c>.
+    /// Custom <c>.Must()</c> validators must use <c>.WithErrorCodeAndMessage("Granit:Validation:XxxCode")</c>.
+    /// </summary>
+    [Fact]
+    public void Validators_should_not_use_hardcoded_WithMessage()
+    {
+        string srcDir = Path.Combine(RepoRoot, "src");
+
+        List<string> violations = [];
+
+        foreach (string csFile in GetValidatorFiles(srcDir))
+        {
+            string content = File.ReadAllText(csFile);
+            string relativePath = Path.GetRelativePath(RepoRoot, csFile);
+
+            foreach (Match match in HardcodedWithMessage().Matches(content))
+            {
+                string message = match.Groups[1].Value;
+
+                // Error codes starting with "Granit:" are acceptable (used with WithMessage
+                // as a transitional pattern before WithErrorCodeAndMessage)
+                if (message.StartsWith("Granit:", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                int lineNumber = content[..match.Index].Count(c => c == '\n') + 1;
+                violations.Add($"{relativePath}:{lineNumber} .WithMessage(\"{message}\")");
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Validators must not use hardcoded .WithMessage(\"...\") strings. " +
+            "Use .WithErrorCodeAndMessage(\"Granit:Validation:XxxCode\") and add the key " +
+            "to the localization JSON files in src/Granit.Validation/Localization/Validation/. " +
+            $"Violators: {string.Join("; ", violations)}");
+    }
+
+    // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 
@@ -172,6 +217,31 @@ public sealed partial class ValidationConventionTests
             if (!csFile.Contains("EndpointRouteBuilder", StringComparison.Ordinal)
                 && !csFile.Contains("Endpoints" + Path.DirectorySeparatorChar + "Endpoints", StringComparison.Ordinal)
                 && !Path.GetFileName(csFile).EndsWith("Endpoints.cs", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            yield return csFile;
+        }
+    }
+
+    /// <summary>
+    /// Enumerates all <c>*Validator.cs</c> files in <c>*.Endpoints</c> packages.
+    /// </summary>
+    private static IEnumerable<string> GetValidatorFiles(string srcDir)
+    {
+        foreach (string csFile in Directory.GetFiles(srcDir, "*Validator.cs", SearchOption.AllDirectories))
+        {
+            if (csFile.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar)
+                || csFile.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar))
+            {
+                continue;
+            }
+
+            string relativePath = Path.GetRelativePath(srcDir, csFile);
+            string moduleName = relativePath.Split(Path.DirectorySeparatorChar)[0];
+
+            if (!moduleName.EndsWith(".Endpoints", StringComparison.Ordinal))
             {
                 continue;
             }
@@ -223,4 +293,11 @@ public sealed partial class ValidationConventionTests
     /// </summary>
     [GeneratedRegex(@"endpoints\s*\.\s*MapGroup\s*\(", RegexOptions.Multiline)]
     private static partial Regex TopLevelMapGroupCall();
+
+    /// <summary>
+    /// Matches <c>.WithMessage("literal string")</c> calls in validator source code.
+    /// Captures the string value (group 1).
+    /// </summary>
+    [GeneratedRegex(@"\.WithMessage\(\s*""([^""]+)""\s*\)", RegexOptions.Multiline)]
+    private static partial Regex HardcodedWithMessage();
 }

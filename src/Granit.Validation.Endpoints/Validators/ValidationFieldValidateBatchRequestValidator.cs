@@ -1,5 +1,6 @@
 using FluentValidation;
 using Granit.Validation.Endpoints.Dtos;
+using Granit.Validation.Extensions;
 
 namespace Granit.Validation.Endpoints.Validators;
 
@@ -14,7 +15,7 @@ internal sealed class ValidationFieldValidateBatchRequestValidator
         RuleFor(x => x.Fields)
             .NotEmpty()
             .Must(fields => fields.Count <= 20)
-            .WithMessage("A maximum of 20 fields can be validated in a single batch request.");
+            .WithErrorCodeAndMessage("Granit:Validation:MaxBatchSize");
 
         RuleForEach(x => x.Fields)
             .SetValidator(new ValidationFieldValidateRequestValidator());
