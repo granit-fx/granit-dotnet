@@ -1,3 +1,5 @@
+using Granit.Core.Diagnostics;
+using Granit.Encryption.Diagnostics;
 using Granit.Encryption.Options;
 using Granit.Encryption.Providers;
 using Granit.Encryption.Services;
@@ -26,6 +28,13 @@ public static class EncryptionServiceCollectionExtensions
         services.AddSingleton<IStringEncryptionProvider, AesStringEncryptionProvider>();
 
         services.TryAddSingleton<IStringEncryptionService, DefaultStringEncryptionService>();
+
+        // Crypto-shredding (requires IEntityEncryptionKeyStore to be registered by a Vault provider)
+        services.TryAddScoped<ICryptoShredder, DefaultCryptoShredder>();
+
+        // Diagnostics
+        services.TryAddSingleton<EncryptionMetrics>();
+        GranitActivitySourceRegistry.Register(EncryptionActivitySource.Name);
 
         return services;
     }

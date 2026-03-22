@@ -1,7 +1,9 @@
+using Granit.Encryption;
 using Granit.Vault.HashiCorp.HealthChecks;
 using Granit.Vault.HashiCorp.Options;
 using Granit.Vault.HashiCorp.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using VaultSharp;
 
@@ -34,6 +36,9 @@ public static class HashiCorpVaultServiceCollectionExtensions
         services.AddHostedService(sp => sp.GetRequiredService<VaultCredentialLeaseManager>());
 
         services.AddScoped<ITransitEncryptionService, HashiCorpTransitEncryptionService>();
+
+        // Per-entity key isolation for crypto-shredding (GDPR Art. 17)
+        services.TryAddScoped<IEntityEncryptionKeyStore, HashiCorpEntityEncryptionKeyStore>();
 
         return services;
     }

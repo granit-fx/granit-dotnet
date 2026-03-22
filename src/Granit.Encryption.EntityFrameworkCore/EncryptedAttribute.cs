@@ -8,6 +8,11 @@ namespace Granit.Encryption.EntityFrameworkCore;
 /// <c>OnModelCreating</c>, transparently calling <see cref="IStringEncryptionService"/>
 /// on every read and write.
 /// </para>
+/// <para>
+/// When <see cref="KeyIsolation"/> is <c>true</c>, each entity instance gets its own
+/// encryption key (stored in Vault KV), enabling crypto-shredding (GDPR Art. 17)
+/// by deleting the per-entity key via <see cref="ICryptoShredder"/>.
+/// </para>
 /// </summary>
 /// <example>
 /// <code>
@@ -16,10 +21,18 @@ namespace Granit.Encryption.EntityFrameworkCore;
 ///     [Encrypted]
 ///     public string Ssn { get; set; } = string.Empty;
 ///
-///     [Encrypted]
+///     [Encrypted(KeyIsolation = true)]
 ///     public string? MedicalNotes { get; set; }
 /// }
 /// </code>
 /// </example>
 [AttributeUsage(AttributeTargets.Property)]
-public sealed class EncryptedAttribute : Attribute;
+public sealed class EncryptedAttribute : Attribute
+{
+    /// <summary>
+    /// When <c>true</c>, each entity instance gets its own encryption key,
+    /// enabling crypto-shredding (GDPR Art. 17) by deleting the per-entity key.
+    /// Default: <c>false</c> (shared key ring via <see cref="IStringEncryptionService"/>).
+    /// </summary>
+    public bool KeyIsolation { get; set; }
+}

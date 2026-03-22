@@ -22,10 +22,13 @@ public sealed class DeletionActionTests
     public void Mixed_HasValue_Four() => ((int)DeletionAction.Mixed).ShouldBe(4);
 
     [Fact]
+    public void CryptoShredding_HasValue_Five() => ((int)DeletionAction.CryptoShredding).ShouldBe(5);
+
+    [Fact]
     public void AllValues_AreDefined()
     {
         DeletionAction[] values = Enum.GetValues<DeletionAction>();
 
-        values.Length.ShouldBe(5);
+        values.Length.ShouldBe(6);
     }
 }

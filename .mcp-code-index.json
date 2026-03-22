@@ -10708,12 +10708,50 @@
       ]
     },
     {
+      "name": "ICryptoShreddingAuditRecorder",
+      "fqn": "Granit.Encryption.CryptoShredding.ICryptoShreddingAuditRecorder",
+      "kind": "interface",
+      "project": "Granit.Encryption",
+      "file": "src/Granit.Encryption/CryptoShredding/ICryptoShreddingAuditRecorder.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "RecordAsync",
+          "kind": "method",
+          "signature": "RecordAsync(string entityType, string entityId, DateTimeOffset shreddedAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "EncryptionMetrics",
+      "fqn": "Granit.Encryption.Diagnostics.EncryptionMetrics",
+      "kind": "class",
+      "project": "Granit.Encryption",
+      "file": "src/Granit.Encryption/Diagnostics/EncryptionMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordKeyShredded",
+          "kind": "method",
+          "signature": "RecordKeyShredded(string? tenantId, string entityType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordShreddingError",
+          "kind": "method",
+          "signature": "RecordShreddingError(string? tenantId, string entityType)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "EncryptedAttribute",
       "fqn": "Granit.Encryption.EntityFrameworkCore.EncryptedAttribute",
       "kind": "class",
       "project": "Granit.Encryption.EntityFrameworkCore",
       "file": "src/Granit.Encryption.EntityFrameworkCore/EncryptedAttribute.cs",
-      "line": 25,
+      "line": 30,
       "members": []
     },
     {
@@ -10724,6 +10762,22 @@
       "file": "src/Granit.Encryption.EntityFrameworkCore/EncryptedStringConverter.cs",
       "line": 15,
       "members": []
+    },
+    {
+      "name": "EncryptionDbContextOptionsBuilderExtensions",
+      "fqn": "Granit.Encryption.EntityFrameworkCore.Extensions.EncryptionDbContextOptionsBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Encryption.EntityFrameworkCore",
+      "file": "src/Granit.Encryption.EntityFrameworkCore/Extensions/EncryptionDbContextOptionsBuilderExtensions.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "UseGranitEncryptionInterceptors",
+          "kind": "method",
+          "signature": "UseGranitEncryptionInterceptors(this DbContextOptionsBuilder options, IServiceProvider serviceProvider)",
+          "returnType": "DbContextOptionsBuilder"
+        }
+      ]
     },
     {
       "name": "ModelBuilderEncryptionExtensions",
@@ -10747,7 +10801,55 @@
       "kind": "class",
       "project": "Granit.Encryption.EntityFrameworkCore",
       "file": "src/Granit.Encryption.EntityFrameworkCore/GranitEncryptionEntityFrameworkCoreModule.cs",
-      "line": 14,
+      "line": 22,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "EncryptionIsolationMaterializationInterceptor",
+      "fqn": "Granit.Encryption.EntityFrameworkCore.Interceptors.EncryptionIsolationMaterializationInterceptor",
+      "kind": "class",
+      "project": "Granit.Encryption.EntityFrameworkCore",
+      "file": "src/Granit.Encryption.EntityFrameworkCore/Interceptors/EncryptionIsolationMaterializationInterceptor.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "InitializedInstance",
+          "kind": "method",
+          "signature": "InitializedInstance(MaterializationInterceptionData materializationData, object entity)",
+          "returnType": "object"
+        }
+      ]
+    },
+    {
+      "name": "EncryptionIsolationSaveChangesInterceptor",
+      "fqn": "Granit.Encryption.EntityFrameworkCore.Interceptors.EncryptionIsolationSaveChangesInterceptor",
+      "kind": "class",
+      "project": "Granit.Encryption.EntityFrameworkCore",
+      "file": "src/Granit.Encryption.EntityFrameworkCore/Interceptors/EncryptionIsolationSaveChangesInterceptor.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "SavingChanges",
+          "kind": "method",
+          "signature": "SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)",
+          "returnType": "InterceptionResult<int>"
+        }
+      ]
+    },
+    {
+      "name": "CryptoShreddedEvent",
+      "fqn": "Granit.Encryption.Events.CryptoShreddedEvent",
+      "kind": "record",
+      "project": "Granit.Encryption",
+      "file": "src/Granit.Encryption/Events/CryptoShreddedEvent.cs",
+      "line": 13,
       "members": []
     },
     {
@@ -10756,7 +10858,7 @@
       "kind": "class",
       "project": "Granit.Encryption",
       "file": "src/Granit.Encryption/Extensions/EncryptionServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitEncryption",
@@ -10779,6 +10881,62 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ICryptoShredder",
+      "fqn": "Granit.Encryption.ICryptoShredder",
+      "kind": "interface",
+      "project": "Granit.Encryption",
+      "file": "src/Granit.Encryption/ICryptoShredder.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ShredAsync",
+          "kind": "method",
+          "signature": "ShredAsync(string entityType, string entityId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ShredBatchAsync",
+          "kind": "method",
+          "signature": "ShredBatchAsync(string entityType, IEnumerable<string> entityIds, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IEntityEncryptionKeyStore",
+      "fqn": "Granit.Encryption.IEntityEncryptionKeyStore",
+      "kind": "interface",
+      "project": "Granit.Encryption",
+      "file": "src/Granit.Encryption/IEntityEncryptionKeyStore.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "GetOrCreateKeyAsync",
+          "kind": "method",
+          "signature": "GetOrCreateKeyAsync(string entityType, string entityId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<byte[]>"
+        },
+        {
+          "name": "GetKeyAsync",
+          "kind": "method",
+          "signature": "GetKeyAsync(string entityType, string entityId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<byte[]?>"
+        },
+        {
+          "name": "DeleteKeyAsync",
+          "kind": "method",
+          "signature": "DeleteKeyAsync(string entityType, string entityId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "KeyExistsAsync",
+          "kind": "method",
+          "signature": "KeyExistsAsync(string entityType, string entityId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
     },
@@ -10911,6 +11069,22 @@
       "file": "src/Granit.Encryption.ReEncryption/IReEncryptionJob.cs",
       "line": 12,
       "members": []
+    },
+    {
+      "name": "DefaultCryptoShredder",
+      "fqn": "Granit.Encryption.Services.DefaultCryptoShredder",
+      "kind": "class",
+      "project": "Granit.Encryption",
+      "file": "src/Granit.Encryption/Services/DefaultCryptoShredder.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ShredAsync",
+          "kind": "method",
+          "signature": "ShredAsync(string entityType, string entityId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "DefaultStringEncryptionService",
@@ -26891,7 +27065,7 @@
       "kind": "class",
       "project": "Granit.Vault.HashiCorp",
       "file": "src/Granit.Vault.HashiCorp/Extensions/HashiCorpVaultServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitVaultHashiCorp",
@@ -26974,6 +27148,12 @@
           "returnType": "string"
         },
         {
+          "name": "KvMountPoint",
+          "kind": "property",
+          "signature": "string KvMountPoint",
+          "returnType": "string"
+        },
+        {
           "name": "LeaseRenewalThreshold",
           "kind": "property",
           "signature": "double LeaseRenewalThreshold",
@@ -27006,6 +27186,22 @@
           "kind": "method",
           "signature": "Decrypt(string cipherText)",
           "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "HashiCorpEntityEncryptionKeyStore",
+      "fqn": "Granit.Vault.HashiCorp.Services.HashiCorpEntityEncryptionKeyStore",
+      "kind": "class",
+      "project": "Granit.Vault.HashiCorp",
+      "file": "src/Granit.Vault.HashiCorp/Services/HashiCorpEntityEncryptionKeyStore.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "GetOrCreateKeyAsync",
+          "kind": "method",
+          "signature": "GetOrCreateKeyAsync(string entityType, string entityId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<byte[]>"
         }
       ]
     },

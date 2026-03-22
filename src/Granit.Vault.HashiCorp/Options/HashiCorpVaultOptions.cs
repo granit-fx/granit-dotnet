@@ -34,6 +34,9 @@ public sealed class HashiCorpVaultOptions
     /// <summary>Mount point for the Transit engine. Default: "transit".</summary>
     public string TransitMountPoint { get; set; } = "transit";
 
+    /// <summary>Mount point for the KV v2 secrets engine used by per-entity key isolation. Default: "secret".</summary>
+    public string KvMountPoint { get; set; } = "secret";
+
     /// <summary>Lease renewal interval (percentage of TTL). Default: 0.75 (75%).</summary>
     public double LeaseRenewalThreshold { get; set; } = 0.75;
 }

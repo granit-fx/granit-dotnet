@@ -19,5 +19,8 @@ public enum DeletionAction
     Retained = 3,
 
     /// <summary>Combination of multiple actions (e.g., PII anonymized + medical data retained).</summary>
-    Mixed = 4
+    Mixed = 4,
+
+    /// <summary>Per-entity encryption key was permanently destroyed — ciphertext is mathematically unreadable (GDPR Art. 17 crypto-shredding).</summary>
+    CryptoShredding = 5
 }

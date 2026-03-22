@@ -9,9 +9,21 @@ namespace Granit.Encryption.EntityFrameworkCore.Extensions;
 public static class ModelBuilderEncryptionExtensions
 {
     /// <summary>
+    /// Annotation key applied to properties with <c>[Encrypted(KeyIsolation = true)]</c>.
+    /// Used by interceptors to quickly identify isolated properties without re-reflecting.
+    /// </summary>
+    internal const string IsolatedAnnotation = "Granit:EncryptionIsolated";
+
+    /// <summary>
     /// Scans all entity types registered in the model and applies
     /// <see cref="EncryptedStringConverter"/> to every <c>string</c> property
     /// annotated with <see cref="EncryptedAttribute"/>.
+    /// <para>
+    /// Properties with <see cref="EncryptedAttribute.KeyIsolation"/> set to <c>true</c>
+    /// are skipped (no converter applied) — they are handled by
+    /// <c>EncryptionIsolationSaveChangesInterceptor</c> and
+    /// <c>EncryptionIsolationMaterializationInterceptor</c> instead.
+    /// </para>
     /// <para>
     /// Call this method at the end of <c>OnModelCreating</c>, after
     /// <c>modelBuilder.ApplyGranitConventions()</c>:
@@ -45,8 +57,17 @@ public static class ModelBuilderEncryptionExtensions
                     continue;
                 }
 
-                if (property.PropertyInfo?.GetCustomAttribute<EncryptedAttribute>() is null)
+                EncryptedAttribute? attr = property.PropertyInfo?.GetCustomAttribute<EncryptedAttribute>();
+                if (attr is null)
                 {
+                    continue;
+                }
+
+                if (attr.KeyIsolation)
+                {
+                    // Per-entity key isolation: handled by interceptors, not converter.
+                    // Annotate so interceptors can identify these properties from metadata.
+                    property.SetAnnotation(IsolatedAnnotation, true);
                     continue;
                 }
 
