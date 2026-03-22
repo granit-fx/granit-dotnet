@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T13:54:07.805926+00:00",
+  "generatedAt": "2026-03-22T14:12:10.196058+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -162,6 +162,13 @@
       "name": "Granit.Authentication.Keycloak",
       "deps": [
         "Granit.Authentication.JwtBearer"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Authentication.OpenIddict",
+      "deps": [
+        "Granit.Security"
       ],
       "framework": "net10.0"
     },
@@ -990,8 +997,15 @@
       "deps": [
         "Granit.Encryption",
         "Granit.MultiTenancy",
-        "Granit.OpenIddict",
+        "Granit.OpenIddict.Server",
         "Granit.Persistence"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.OpenIddict.Server",
+      "deps": [
+        "Granit.OpenIddict"
       ],
       "framework": "net10.0"
     },
@@ -4538,6 +4552,40 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "OpenIddictValidationHostApplicationBuilderExtensions",
+      "fqn": "Granit.Authentication.OpenIddict.Extensions.OpenIddictValidationHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Authentication.OpenIddict",
+      "file": "src/Granit.Authentication.OpenIddict/Extensions/OpenIddictValidationHostApplicationBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitOpenIddictAuthentication",
+          "kind": "method",
+          "signature": "AddGranitOpenIddictAuthentication(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitAuthenticationOpenIddictModule",
+      "fqn": "Granit.Authentication.OpenIddict.GranitAuthenticationOpenIddictModule",
+      "kind": "class",
+      "project": "Granit.Authentication.OpenIddict",
+      "file": "src/Granit.Authentication.OpenIddict/GranitAuthenticationOpenIddictModule.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "GranitOpenIddictValidationOptions",
+      "fqn": "Granit.Authentication.OpenIddict.Options.GranitOpenIddictValidationOptions",
+      "kind": "class",
+      "project": "Granit.Authentication.OpenIddict",
+      "file": "src/Granit.Authentication.OpenIddict/Options/GranitOpenIddictValidationOptions.cs",
+      "line": 6,
+      "members": []
     },
     {
       "name": "AccessRiskScore",
@@ -18429,7 +18477,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 23,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitOpenIddictEntityFrameworkCore",
@@ -18477,7 +18525,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/GranitOpenIddictEntityFrameworkCoreModule.cs",
-      "line": 40,
+      "line": 41,
       "members": [
         {
           "name": "ConfigureServices",
@@ -18823,6 +18871,31 @@
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
       "line": 17,
+      "members": []
+    },
+    {
+      "name": "OpenIddictServerHostApplicationBuilderExtensions",
+      "fqn": "Granit.OpenIddict.Server.Extensions.OpenIddictServerHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Server",
+      "file": "src/Granit.OpenIddict.Server/Extensions/OpenIddictServerHostApplicationBuilderExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "AddGranitOpenIddictServer",
+          "kind": "method",
+          "signature": "AddGranitOpenIddictServer(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitOpenIddictServerModule",
+      "fqn": "Granit.OpenIddict.Server.GranitOpenIddictServerModule",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Server",
+      "file": "src/Granit.OpenIddict.Server/GranitOpenIddictServerModule.cs",
+      "line": 10,
       "members": []
     },
     {
