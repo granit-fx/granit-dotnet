@@ -1,3 +1,4 @@
+using Granit.Core.Domain;
 using Granit.Guids;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Endpoints.Dtos;
@@ -80,8 +81,17 @@ internal static class ReferenceDataAdminEndpoints
             SortOrder = request.SortOrder,
             ValidFrom = request.ValidFrom,
             ValidTo = request.ValidTo,
+            ParentCode = request.ParentCode,
             IsActive = true,
         };
+
+        if (request.ExtraProperties is { Count: > 0 })
+        {
+            foreach ((string key, string value) in request.ExtraProperties)
+            {
+                entity.SetExtraProperty(key, value);
+            }
+        }
 
         await storeWriter.CreateAsync(entity, cancellationToken).ConfigureAwait(false);
 
@@ -120,6 +130,15 @@ internal static class ReferenceDataAdminEndpoints
         existing.IsActive = request.IsActive;
         existing.ValidFrom = request.ValidFrom;
         existing.ValidTo = request.ValidTo;
+        existing.ParentCode = request.ParentCode;
+
+        if (request.ExtraProperties is not null)
+        {
+            foreach ((string key, string value) in request.ExtraProperties)
+            {
+                existing.SetExtraProperty(key, value);
+            }
+        }
 
         await storeWriter.UpdateAsync(existing, cancellationToken).ConfigureAwait(false);
 

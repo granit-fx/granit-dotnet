@@ -21,6 +21,8 @@ namespace Granit.ReferenceData.Endpoints.Dtos;
 /// <param name="IsActive">Updated active status.</param>
 /// <param name="ValidFrom">Updated start of validity period.</param>
 /// <param name="ValidTo">Updated end of validity period.</param>
+/// <param name="ParentCode">Updated parent code for hierarchical reference data.</param>
+/// <param name="ExtraProperties">Updated extra properties (key-value pairs stored in JSON bag).</param>
 public sealed record ReferenceDataUpdateRequest(
     string LabelEn,
     string LabelFr = "",
@@ -39,4 +41,6 @@ public sealed record ReferenceDataUpdateRequest(
     int SortOrder = 0,
     bool IsActive = true,
     DateTimeOffset? ValidFrom = null,
-    DateTimeOffset? ValidTo = null);
+    DateTimeOffset? ValidTo = null,
+    string? ParentCode = null,
+    Dictionary<string, string>? ExtraProperties = null);

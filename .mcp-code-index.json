@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T15:12:10.085179+00:00",
+  "generatedAt": "2026-03-22T15:16:36.181513+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -22503,7 +22503,16 @@
       "kind": "record",
       "project": "Granit.ReferenceData.Endpoints",
       "file": "src/Granit.ReferenceData.Endpoints/Dtos/ReferenceDataCreateRequest.cs",
-      "line": 24,
+      "line": 26,
+      "members": []
+    },
+    {
+      "name": "ReferenceDataResponse",
+      "fqn": "Granit.ReferenceData.Endpoints.Dtos.ReferenceDataResponse",
+      "kind": "record",
+      "project": "Granit.ReferenceData.Endpoints",
+      "file": "src/Granit.ReferenceData.Endpoints/Dtos/ReferenceDataResponse.cs",
+      "line": 29,
       "members": []
     },
     {
@@ -22512,7 +22521,7 @@
       "kind": "record",
       "project": "Granit.ReferenceData.Endpoints",
       "file": "src/Granit.ReferenceData.Endpoints/Dtos/ReferenceDataUpdateRequest.cs",
-      "line": 24,
+      "line": 26,
       "members": []
     },
     {

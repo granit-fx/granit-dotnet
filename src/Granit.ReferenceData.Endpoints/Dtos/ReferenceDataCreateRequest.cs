@@ -21,6 +21,8 @@ namespace Granit.ReferenceData.Endpoints.Dtos;
 /// <param name="SortOrder">Display order (lower values first).</param>
 /// <param name="ValidFrom">Optional start of validity period.</param>
 /// <param name="ValidTo">Optional end of validity period.</param>
+/// <param name="ParentCode">Optional parent code for hierarchical reference data.</param>
+/// <param name="ExtraProperties">Optional extra properties (key-value pairs stored in JSON bag).</param>
 public sealed record ReferenceDataCreateRequest(
     string Code,
     string LabelEn,
@@ -39,4 +41,6 @@ public sealed record ReferenceDataCreateRequest(
     string LabelCs = "",
     int SortOrder = 0,
     DateTimeOffset? ValidFrom = null,
-    DateTimeOffset? ValidTo = null);
+    DateTimeOffset? ValidTo = null,
+    string? ParentCode = null,
+    Dictionary<string, string>? ExtraProperties = null);

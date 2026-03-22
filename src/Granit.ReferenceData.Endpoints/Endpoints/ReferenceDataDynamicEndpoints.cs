@@ -1,3 +1,4 @@
+using Granit.Core.Domain;
 using Granit.Guids;
 using Granit.Querying;
 using Granit.ReferenceData.Domain;
@@ -162,8 +163,17 @@ internal static class ReferenceDataDynamicEndpoints
             SortOrder = request.SortOrder,
             ValidFrom = request.ValidFrom,
             ValidTo = request.ValidTo,
+            ParentCode = request.ParentCode,
             IsActive = true,
         };
+
+        if (request.ExtraProperties is { Count: > 0 })
+        {
+            foreach ((string key, string value) in request.ExtraProperties)
+            {
+                entity.SetExtraProperty(key, value);
+            }
+        }
 
         await writer.CreateAsync(entity, cancellationToken).ConfigureAwait(false);
         return TypedResults.Created($"{request.Code}");
@@ -207,6 +217,15 @@ internal static class ReferenceDataDynamicEndpoints
         existing.IsActive = request.IsActive;
         existing.ValidFrom = request.ValidFrom;
         existing.ValidTo = request.ValidTo;
+        existing.ParentCode = request.ParentCode;
+
+        if (request.ExtraProperties is not null)
+        {
+            foreach ((string key, string value) in request.ExtraProperties)
+            {
+                existing.SetExtraProperty(key, value);
+            }
+        }
 
         await writer.UpdateAsync(existing, cancellationToken).ConfigureAwait(false);
         return TypedResults.Ok();
