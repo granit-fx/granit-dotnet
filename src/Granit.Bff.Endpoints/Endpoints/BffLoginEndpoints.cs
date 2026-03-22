@@ -74,10 +74,10 @@ internal static partial class BffLoginEndpoints
     private static async Task<Results<RedirectHttpResult, ProblemHttpResult>> HandleLoginAsync(
         HttpContext httpContext,
         BffFrontendOptions frontend,
-        IOptions<GranitBffOptions> options,
-        IDistributedCache cache,
-        IClock clock,
-        ILoggerFactory loggerFactory)
+        [FromServices] IOptions<GranitBffOptions> options,
+        [FromServices] IDistributedCache cache,
+        [FromServices] IClock clock,
+        [FromServices] ILoggerFactory loggerFactory)
     {
         ILogger logger = loggerFactory.CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
         Activity? activity = BffActivitySource.Source.StartActivity(BffActivitySource.Login);
@@ -129,13 +129,13 @@ internal static partial class BffLoginEndpoints
         string? code,
         string? state,
         string? error,
-        IOptions<GranitBffOptions> options,
-        IDistributedCache cache,
-        IBffTokenStore tokenStore,
-        BffMetrics metrics,
-        IClock clock,
-        IHttpClientFactory httpClientFactory,
-        ILoggerFactory loggerFactory,
+        [FromServices] IOptions<GranitBffOptions> options,
+        [FromServices] IDistributedCache cache,
+        [FromServices] IBffTokenStore tokenStore,
+        [FromServices] BffMetrics metrics,
+        [FromServices] IClock clock,
+        [FromServices] IHttpClientFactory httpClientFactory,
+        [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
         ILogger logger = loggerFactory.CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");

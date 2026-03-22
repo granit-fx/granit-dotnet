@@ -1,5 +1,6 @@
 using Granit.Bff.Endpoints.Endpoints;
 using Granit.Bff.Options;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -44,7 +45,7 @@ public static class BffEndpointRouteBuilderExtensions
             : $"{frontend.PathPrefix}/bff";
 
         RouteGroupBuilder group = endpoints
-            .MapGroup(groupPrefix)
+            .MapGranitGroup(groupPrefix)
             .WithTags($"BFF ({frontend.Name})");
 
         group.MapLoginEndpoints(frontend);
@@ -96,6 +97,13 @@ public static class BffEndpointRouteBuilderExtensions
             return TypedResults.NotFound();
         })
         .WithName($"BffStaticFiles_{frontend.Name}")
+        .WithSummary("Serves static files and SPA fallback for the BFF frontend.")
+        .WithDescription(
+            "Serves static assets from the configured static files path. If the requested "
+            + "file is not found, falls back to index.html for client-side routing. "
+            + "BFF API routes under /bff/ are skipped and handled by the endpoint group.")
+        .Produces(StatusCodes.Status200OK, contentType: "application/octet-stream")
+        .ProducesProblem(StatusCodes.Status404NotFound)
         .ExcludeFromDescription();
     }
 

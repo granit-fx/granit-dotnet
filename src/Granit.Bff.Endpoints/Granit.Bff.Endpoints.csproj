@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.Bff\Granit.Bff.csproj" />
     <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
+    <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
   </ItemGroup>
 
 </Project>

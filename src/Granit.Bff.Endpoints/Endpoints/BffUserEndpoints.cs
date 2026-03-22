@@ -39,7 +39,7 @@ internal static class BffUserEndpoints
     private static async Task<Ok<object>> HandleGetUserAsync(
         HttpContext httpContext,
         BffFrontendOptions frontend,
-        IBffTokenStore tokenStore,
+        [FromServices] IBffTokenStore tokenStore,
         CancellationToken cancellationToken)
     {
         Activity? activity = BffActivitySource.Source.StartActivity(BffActivitySource.User);

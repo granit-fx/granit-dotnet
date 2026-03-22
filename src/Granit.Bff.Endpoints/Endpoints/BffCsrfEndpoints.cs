@@ -36,7 +36,7 @@ internal static class BffCsrfEndpoints
     private static Task<Results<Ok<BffCsrfTokenResponse>, ProblemHttpResult>> HandleGenerateCsrfTokenAsync(
         HttpContext httpContext,
         BffFrontendOptions frontend,
-        IBffCsrfTokenGenerator csrfGenerator)
+        [FromServices] IBffCsrfTokenGenerator csrfGenerator)
     {
         string? sessionId = httpContext.Request.Cookies[frontend.SessionCookieName];
 
