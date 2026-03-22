@@ -122,7 +122,11 @@ internal static class BffUserEndpoints
 
             return result;
         }
-        catch (Exception)
+        catch (FormatException)
+        {
+            return null;
+        }
+        catch (JsonException)
         {
             return null;
         }
@@ -155,7 +159,7 @@ internal static class BffUserEndpoints
             // Single value — wrap in array
             return [doc.RootElement.GetString()!];
         }
-        catch (Exception)
+        catch (JsonException)
         {
             // Plain string value
             return string.IsNullOrEmpty(value) ? [] : [value];

@@ -10,6 +10,8 @@ useDefault = true
   ]
 
   # False positive: example signing secret in webhooks doc (not a real secret)
+  # False positive: example JWT placeholders in BFF security doc (replaced with safe placeholders)
   commits = [
     "a83201b043e0491bdd45401cd3eec3332d6dedfa",
+    "85128252fabe251fc2191b31dc47599a223f7498",
   ]

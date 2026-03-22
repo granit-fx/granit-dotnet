@@ -65,7 +65,7 @@ public sealed class ClientCredentialsFlowTests(OpenIddictTestApplication app)
     {
         HttpClient httpClient = app.CreateHttpClient();
 
-        var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["client_id"] = OpenIddictTestApplication.TestClientId,
             ["client_secret"] = OpenIddictTestApplication.TestClientSecret,

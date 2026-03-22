@@ -20,10 +20,10 @@ public sealed class OidcTestClient(HttpClient client)
         return JsonDocument.Parse(json);
     }
 
-    public Task<HttpResponseMessage> RawClientCredentialsAsync(
+    public async Task<HttpResponseMessage> RawClientCredentialsAsync(
         string clientId, string clientSecret, string? scope = null)
     {
-        var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["grant_type"] = "client_credentials",
             ["client_id"] = clientId,
@@ -31,7 +31,7 @@ public sealed class OidcTestClient(HttpClient client)
             ["scope"] = scope ?? "openid",
         });
 
-        return client.PostAsync("/connect/token", content);
+        return await client.PostAsync("/connect/token", content);
     }
 
     // ──── Introspection endpoint ────
@@ -44,37 +44,37 @@ public sealed class OidcTestClient(HttpClient client)
         return JsonDocument.Parse(json);
     }
 
-    public Task<HttpResponseMessage> RawIntrospectAsync(
+    public async Task<HttpResponseMessage> RawIntrospectAsync(
         string token, string clientId, string clientSecret)
     {
-        var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["token"] = token,
             ["client_id"] = clientId,
             ["client_secret"] = clientSecret,
         });
 
-        return client.PostAsync("/connect/introspect", content);
+        return await client.PostAsync("/connect/introspect", content);
     }
 
     // ──── Revocation endpoint ────
 
-    public Task<HttpResponseMessage> RevokeAsync(
+    public async Task<HttpResponseMessage> RevokeAsync(
         string token, string clientId, string clientSecret)
     {
-        var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["token"] = token,
             ["client_id"] = clientId,
             ["client_secret"] = clientSecret,
         });
 
-        return client.PostAsync("/connect/revoke", content);
+        return await client.PostAsync("/connect/revoke", content);
     }
 
     // ──── Account endpoints ────
 
-    public Task<HttpResponseMessage> RegisterAsync(
+    public async Task<HttpResponseMessage> RegisterAsync(
         string email, string password, string? firstName = null, string? lastName = null)
     {
         var payload = new
@@ -85,19 +85,19 @@ public sealed class OidcTestClient(HttpClient client)
             lastName,
         };
 
-        return client.PostAsync(
-            "/api/account/register",
-            new StringContent(
-                JsonSerializer.Serialize(payload),
-                System.Text.Encoding.UTF8,
-                "application/json"));
+        using var content = new StringContent(
+            JsonSerializer.Serialize(payload),
+            System.Text.Encoding.UTF8,
+            "application/json");
+
+        return await client.PostAsync("/api/account/register", content);
     }
 
-    public Task<HttpResponseMessage> GetProfileAsync(string accessToken)
+    public async Task<HttpResponseMessage> GetProfileAsync(string accessToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, "/api/account/profile");
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/api/account/profile");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-        return client.SendAsync(request);
+        return await client.SendAsync(request);
     }
 
     // ──── Discovery ────

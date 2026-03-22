@@ -185,8 +185,13 @@ internal sealed partial class BffTokenInjectionTransform(
                 idToken,
                 clock.Now.AddSeconds(expiresIn));
         }
-        catch (Exception)
+        catch (OperationCanceledException)
         {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            LogTokenRefreshException(logger, ex, frontend.Name);
             return null;
         }
     }
@@ -207,5 +212,8 @@ internal sealed partial class BffTokenInjectionTransform(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "BFF proxy: token refresh failed for session {SessionId} on frontend {FrontendName}")]
     private static partial void LogTokenRefreshFailed(ILogger logger, string sessionId, string frontendName);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "BFF proxy: token refresh failed with exception for frontend {FrontendName}")]
+    private static partial void LogTokenRefreshException(ILogger logger, Exception exception, string frontendName);
 }
 #pragma warning restore GRSEC003

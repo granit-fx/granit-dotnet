@@ -5789,7 +5789,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "MapGranitBffEndpoints",
@@ -5805,7 +5805,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 134,
+      "line": 140,
       "members": [
         {
           "name": "InvokeAsync",

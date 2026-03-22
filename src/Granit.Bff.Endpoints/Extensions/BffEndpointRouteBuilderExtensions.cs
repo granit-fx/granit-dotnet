@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Bff.Endpoints.Extensions;
@@ -69,6 +70,11 @@ public static class BffEndpointRouteBuilderExtensions
         }
 
         PhysicalFileProvider fileProvider = new(Path.GetFullPath(frontend.StaticFilesPath));
+
+        // Register disposal when the application shuts down (file provider is captured by the
+        // endpoint lambda and lives for the application lifetime).
+        endpoints.ServiceProvider.GetService<IHostApplicationLifetime>()
+            ?.ApplicationStopping.Register(fileProvider.Dispose);
 
         // Serve static files for this frontend
         endpoints.MapGet($"{requestPath}/{{**path}}", IResult (HttpContext context) =>
