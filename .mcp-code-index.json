@@ -242,6 +242,30 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Bff",
+      "deps": [
+        "Granit.Core",
+        "Granit.Security",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Bff.Endpoints",
+      "deps": [
+        "Granit.Bff",
+        "Granit.Http.ApiDocumentation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Bff.Yarp",
+      "deps": [
+        "Granit.Bff"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.BlobStorage",
       "deps": [
         "Granit.BackgroundJobs",
@@ -5708,6 +5732,267 @@
           "returnType": "Task"
         }
       ]
+    },
+    {
+      "name": "BffTokenSet",
+      "fqn": "Granit.Bff.BffTokenSet",
+      "kind": "record",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/BffTokenSet.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "BffMetrics",
+      "fqn": "Granit.Bff.Diagnostics.BffMetrics",
+      "kind": "class",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/Diagnostics/BffMetrics.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "RecordLogout",
+          "kind": "method",
+          "signature": "RecordLogout(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordTokenRefresh",
+          "kind": "method",
+          "signature": "RecordTokenRefresh(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordProxyRequest",
+          "kind": "method",
+          "signature": "RecordProxyRequest(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordProxyError",
+          "kind": "method",
+          "signature": "RecordProxyError(string? tenantId, string reason)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCsrfRejection",
+          "kind": "method",
+          "signature": "RecordCsrfRejection(string? tenantId)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "BffEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Bff.Endpoints.Extensions.BffEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Bff.Endpoints",
+      "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "MapGranitBffEndpoints",
+          "kind": "method",
+          "signature": "MapGranitBffEndpoints(this IEndpointRouteBuilder endpoints)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "BffSecurityHeadersMiddleware",
+      "fqn": "Granit.Bff.Endpoints.Extensions.BffSecurityHeadersMiddleware",
+      "kind": "class",
+      "project": "Granit.Bff.Endpoints",
+      "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
+      "line": 38,
+      "members": [
+        {
+          "name": "InvokeAsync",
+          "kind": "method",
+          "signature": "InvokeAsync(HttpContext context)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitBffEndpointsModule",
+      "fqn": "Granit.Bff.Endpoints.GranitBffEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Bff.Endpoints",
+      "file": "src/Granit.Bff.Endpoints/GranitBffEndpointsModule.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "GranitBffModule",
+      "fqn": "Granit.Bff.GranitBffModule",
+      "kind": "class",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/GranitBffModule.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IBffCsrfTokenGenerator",
+      "fqn": "Granit.Bff.IBffCsrfTokenGenerator",
+      "kind": "interface",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/IBffCsrfTokenGenerator.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Generate",
+          "kind": "method",
+          "signature": "Generate(string sessionId)",
+          "returnType": "string"
+        },
+        {
+          "name": "Validate",
+          "kind": "method",
+          "signature": "Validate(string sessionId, string token)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "IBffTokenStore",
+      "fqn": "Granit.Bff.IBffTokenStore",
+      "kind": "interface",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/IBffTokenStore.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "StoreAsync",
+          "kind": "method",
+          "signature": "StoreAsync(string sessionId, BffTokenSet tokens, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(string sessionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<BffTokenSet?>"
+        },
+        {
+          "name": "RemoveAsync",
+          "kind": "method",
+          "signature": "RemoveAsync(string sessionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitBffOptions",
+      "fqn": "Granit.Bff.Options.GranitBffOptions",
+      "kind": "class",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/Options/GranitBffOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Authority",
+          "kind": "property",
+          "signature": "Uri Authority",
+          "returnType": "Uri"
+        },
+        {
+          "name": "ClientId",
+          "kind": "property",
+          "signature": "string ClientId",
+          "returnType": "string"
+        },
+        {
+          "name": "ClientSecret",
+          "kind": "property",
+          "signature": "string ClientSecret",
+          "returnType": "string"
+        },
+        {
+          "name": "Scopes",
+          "kind": "property",
+          "signature": "string[] Scopes",
+          "returnType": "string[]"
+        },
+        {
+          "name": "SessionCookieName",
+          "kind": "property",
+          "signature": "string SessionCookieName",
+          "returnType": "string"
+        },
+        {
+          "name": "FromHours",
+          "kind": "method",
+          "signature": "FromHours(8)",
+          "returnType": "TimeSpan SessionDuration { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(1)",
+          "returnType": "TimeSpan RefreshGracePeriod { get; set; } = TimeSpan."
+        },
+        {
+          "name": "PostLoginRedirectPath",
+          "kind": "property",
+          "signature": "string PostLoginRedirectPath",
+          "returnType": "string"
+        },
+        {
+          "name": "PostLogoutRedirectPath",
+          "kind": "property",
+          "signature": "string PostLogoutRedirectPath",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "BffYarpApplicationBuilderExtensions",
+      "fqn": "Granit.Bff.Yarp.Extensions.BffYarpApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Bff.Yarp",
+      "file": "src/Granit.Bff.Yarp/Extensions/BffYarpApplicationBuilderExtensions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "UseGranitBffYarp",
+          "kind": "method",
+          "signature": "UseGranitBffYarp(this WebApplication app)",
+          "returnType": "WebApplication"
+        }
+      ]
+    },
+    {
+      "name": "BffYarpHostApplicationBuilderExtensions",
+      "fqn": "Granit.Bff.Yarp.Extensions.BffYarpHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Bff.Yarp",
+      "file": "src/Granit.Bff.Yarp/Extensions/BffYarpHostApplicationBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitBffYarp",
+          "kind": "method",
+          "signature": "AddGranitBffYarp(this WebApplicationBuilder builder)",
+          "returnType": "WebApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitBffYarpModule",
+      "fqn": "Granit.Bff.Yarp.GranitBffYarpModule",
+      "kind": "class",
+      "project": "Granit.Bff.Yarp",
+      "file": "src/Granit.Bff.Yarp/GranitBffYarpModule.cs",
+      "line": 11,
+      "members": []
     },
     {
       "name": "BlobClassification",

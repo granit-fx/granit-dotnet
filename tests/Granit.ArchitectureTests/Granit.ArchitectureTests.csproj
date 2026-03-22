@@ -59,6 +59,9 @@
     <ProjectReference Include="..\..\src\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.BackgroundJobs.Endpoints\Granit.BackgroundJobs.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.BackgroundJobs.EntityFrameworkCore\Granit.BackgroundJobs.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Bff\Granit.Bff.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Bff.Endpoints\Granit.Bff.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Bff.Yarp\Granit.Bff.Yarp.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage\Granit.BlobStorage.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.AI\Granit.BlobStorage.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.AzureBlob\Granit.BlobStorage.AzureBlob.csproj" />

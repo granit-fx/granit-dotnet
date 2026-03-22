@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Bff</PackageId>
+    <Description>Backend For Frontend security proxy for Granit applications. Token management, session cookies, CSRF protection, and distributed cache storage.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Bff.Tests" />
+    <InternalsVisibleTo Include="Granit.Bff.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Bff.Yarp" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
+    <ProjectReference Include="..\Granit.Security\Granit.Security.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+  </ItemGroup>
+
+</Project>

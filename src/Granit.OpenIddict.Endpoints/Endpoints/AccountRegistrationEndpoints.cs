@@ -23,9 +23,11 @@ internal static class AccountRegistrationEndpoints
             .WithDescription(
                 "Creates a new user with the provided email and password. "
                 + "Sends a confirmation email if email confirmation is required. "
-                + "Returns 409 if the email is already taken.")
+                + "Returns 409 if the email is already taken. "
+                + "Returns 422 if the password does not meet policy requirements.")
             .Produces<AccountRegisterResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesValidationProblem()
             .AllowAnonymous();
 
@@ -84,12 +86,17 @@ internal static class AccountRegistrationEndpoints
                 $"/api/account/profile",
                 new AccountRegisterResponse(Guid.Parse(user.UserId), true));
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("DuplicateEmail", StringComparison.OrdinalIgnoreCase)
-            || ex.Message.Contains("DuplicateUserName", StringComparison.OrdinalIgnoreCase))
+        catch (InvalidOperationException ex) when (ex.Message.Contains("already taken", StringComparison.OrdinalIgnoreCase))
         {
             return TypedResults.Problem(
                 detail: "An account with this email already exists.",
                 statusCode: StatusCodes.Status409Conflict);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.Problem(
+                detail: ex.Message,
+                statusCode: StatusCodes.Status422UnprocessableEntity);
         }
     }
 

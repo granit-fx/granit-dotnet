@@ -82,6 +82,9 @@
       "name": "api-data",
       "label": "API & Http + Data",
       "projects": [
+        "tests/Granit.Bff.Endpoints.Tests",
+        "tests/Granit.Bff.Tests",
+        "tests/Granit.Bff.Yarp.Tests",
         "tests/Granit.BlobStorage.AzureBlob.Tests",
         "tests/Granit.BlobStorage.Database.Tests",
         "tests/Granit.BlobStorage.DbStore.Tests",

@@ -85,6 +85,9 @@
     <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="7.*" />
     <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="7.*" />
   </ItemGroup>
+  <ItemGroup Label="BFF (YARP)">
+    <PackageVersion Include="Yarp.ReverseProxy" Version="2.*" />
+  </ItemGroup>
   <ItemGroup Label="Identity (ASP.NET Core)">
     <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.*" />
   </ItemGroup>
