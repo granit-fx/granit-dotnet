@@ -1,5 +1,6 @@
 using Granit.Persistence.DataSeeding;
 using Granit.Persistence.ExtraProperties;
+using Granit.Querying;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;
 using Granit.ReferenceData.Options;
@@ -145,7 +146,12 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
                 });
             }
 
-            // 3. Register in the singleton registry (deferred to hosted service start)
+            // 3. Register QueryDefinition + IQueryEngine (keyed by type name)
+            services.AddKeyedSingleton<QueryDefinition<DynamicReferenceDataEntity>>(
+                registration.TypeName,
+                (_, _) => new ReferenceDataQueryDefinition(registration.TypeName, registration.Options));
+
+            // 4. Register in the singleton registry (deferred to hosted service start)
             services.AddSingleton<IReferenceDataRegistryContributor>(
                 new ReferenceDataRegistryContributor(registration));
         }

@@ -101,6 +101,39 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     }
 
     /// <summary>
+    /// Declares a Shadow Property column with a runtime CLR type.
+    /// Use this overload when the type is only known at runtime (e.g., from configuration).
+    /// </summary>
+    /// <param name="propertyName">The shadow property name (as declared in the EF model).</param>
+    /// <param name="clrType">The CLR type of the shadow property.</param>
+    /// <param name="configure">Optional fluent configuration.</param>
+    public QueryDefinitionBuilder<TEntity> ShadowColumn(
+        string propertyName,
+        Type clrType,
+        Action<ColumnBuilder<TEntity>>? configure = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
+        ArgumentNullException.ThrowIfNull(clrType);
+        ColumnBuilder<TEntity> builder = new();
+        configure?.Invoke(builder);
+
+        Columns.Add(new ColumnDescriptor
+        {
+            PropertyName = propertyName,
+            ClrType = clrType,
+            Label = builder.LabelValue,
+            Order = builder.OrderValue,
+            IsSortable = builder.IsSortableValue,
+            IsFilterable = builder.IsFilterableValue,
+            IsVisible = builder.IsVisibleValue,
+            Format = builder.FormatValue,
+            IsShadowProperty = true,
+        });
+
+        return this;
+    }
+
+    /// <summary>
     /// Declares properties to include in global free-text search.
     /// </summary>
     /// <param name="properties">Expressions selecting string properties.</param>

@@ -5,6 +5,10 @@ namespace Granit.ReferenceData;
 /// <summary>
 /// Query parameters for filtering, sorting, and paginating reference data entries.
 /// </summary>
+/// <remarks>
+/// For advanced querying (operators, shadow properties, cursor pagination),
+/// use <see cref="QueryRequest"/> with <c>IQueryEngine&lt;T&gt;</c> instead.
+/// </remarks>
 /// <param name="ActiveOnly">When <c>true</c> (default), only active entries are returned.</param>
 /// <param name="SearchTerm">Optional text to filter by Code or Label (case-insensitive contains).</param>
 /// <param name="SortBy">Property name to sort by (e.g., "Code", "Label", "SortOrder"). Default is "SortOrder".</param>

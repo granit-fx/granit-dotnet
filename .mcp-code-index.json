@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T15:06:49.070669+00:00",
+  "generatedAt": "2026-03-22T15:12:10.085179+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -22582,7 +22582,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData.EntityFrameworkCore",
       "file": "src/Granit.ReferenceData.EntityFrameworkCore/Extensions/ReferenceDataEfCoreServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": []
     },
     {
@@ -22776,7 +22776,7 @@
       "kind": "record",
       "project": "Granit.ReferenceData",
       "file": "src/Granit.ReferenceData/ReferenceDataQuery.cs",
-      "line": 14,
+      "line": 18,
       "members": []
     },
     {
