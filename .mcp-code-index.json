@@ -254,7 +254,8 @@
       "name": "Granit.Bff.Endpoints",
       "deps": [
         "Granit.Bff",
-        "Granit.Http.ApiDocumentation"
+        "Granit.Http.ApiDocumentation",
+        "Granit.Validation"
       ],
       "framework": "net10.0"
     },
@@ -5788,7 +5789,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "MapGranitBffEndpoints",
@@ -5804,7 +5805,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 126,
+      "line": 134,
       "members": [
         {
           "name": "InvokeAsync",

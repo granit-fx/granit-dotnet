@@ -59,6 +59,11 @@ internal sealed partial class GranitExceptionHandler(
 
         ProblemDetails problemDetails = BuildProblemDetails(httpContext, exception, statusCode);
 
+        // Explicitly set the HTTP status code before writing the response body.
+        // ExceptionHandlerMiddleware resets it to 500; ProblemDetailsService may not
+        // propagate ProblemDetails.Status back to Response.StatusCode in all scenarios.
+        httpContext.Response.StatusCode = statusCode;
+
         return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = httpContext,

@@ -2,8 +2,8 @@
 // Tests - DefaultExceptionStatusCodeMapper
 // =============================================================================
 // Verifies that each exception type is mapped to the expected HTTP status code.
-// The default mapper always returns a non-null status code (it is the final
-// fallback in the chain of responsibility).
+// The default mapper returns null for unrecognized exceptions, delegating to
+// downstream mappers or the handler's own fallback (500).
 // =============================================================================
 
 using Granit.Core.Exceptions;
@@ -178,47 +178,47 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     // -------------------------------------------------------------------------
-    // Fallback: unknown exception -> 500
+    // Fallback: unknown exception -> null (delegates to next mapper or handler)
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void TryGetStatusCode_UnknownException_Returns500()
+    public void TryGetStatusCode_UnknownException_ReturnsNull()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
         int? result = mapper.TryGetStatusCode(new InvalidOperationException("Something went wrong"));
 
-        result.ShouldBe(StatusCodes.Status500InternalServerError);
+        result.ShouldBeNull("unknown exceptions must delegate to downstream mappers");
     }
 
     [Fact]
-    public void TryGetStatusCode_ArithmeticException_Returns500()
+    public void TryGetStatusCode_ArithmeticException_ReturnsNull()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
         int? result = mapper.TryGetStatusCode(new DivideByZeroException());
 
-        result.ShouldBe(StatusCodes.Status500InternalServerError);
+        result.ShouldBeNull();
     }
 
     [Fact]
-    public void TryGetStatusCode_ArgumentException_Returns500()
+    public void TryGetStatusCode_ArgumentException_ReturnsNull()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
         int? result = mapper.TryGetStatusCode(new ArgumentException("bad arg"));
 
-        result.ShouldBe(StatusCodes.Status500InternalServerError);
+        result.ShouldBeNull();
     }
 
     [Fact]
-    public void TryGetStatusCode_StackOverflowLikeException_Returns500()
+    public void TryGetStatusCode_StackOverflowLikeException_ReturnsNull()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
         int? result = mapper.TryGetStatusCode(new InsufficientMemoryException());
 
-        result.ShouldBe(StatusCodes.Status500InternalServerError);
+        result.ShouldBeNull();
     }
 
     // -------------------------------------------------------------------------
@@ -246,15 +246,15 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     }
 
     // -------------------------------------------------------------------------
-    // Return value is always non-null (default mapper is the final fallback)
+    // Known exceptions always return non-null
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void TryGetStatusCode_AlwaysReturnsNonNull()
+    public void TryGetStatusCode_KnownExceptionType_ReturnsNonNull()
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
 
-        int? result = mapper.TryGetStatusCode(new InvalidOperationException("generic"));
+        int? result = mapper.TryGetStatusCode(new BusinessException("Test:Error"));
 
         result.ShouldNotBeNull();
     }
