@@ -12,6 +12,7 @@ namespace Granit.ReferenceData.Endpoints.Endpoints;
 
 /// <summary>
 /// Endpoints for dynamically registered reference data types (non-generic, keyed services).
+/// Stores the type name in endpoint metadata and resolves keyed services at request time.
 /// </summary>
 internal static class ReferenceDataDynamicEndpoints
 {
@@ -22,55 +23,20 @@ internal static class ReferenceDataDynamicEndpoints
         this RouteGroupBuilder group,
         string typeName)
     {
-        group.MapGet("/", async (
-            HttpContext httpContext,
-            CancellationToken cancellationToken) =>
-        {
-            IReferenceDataStoreReader<DynamicReferenceDataEntity> reader =
-                httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreReader<DynamicReferenceDataEntity>>(typeName);
+        group.MapGet("/", GetAllAsync)
+            .WithName($"GetAll{typeName}")
+            .WithSummary($"Returns a filtered, paginated list of {typeName} entries.")
+            .WithDescription($"Lists {typeName} reference data entries with support for filtering, sorting, and pagination.")
+            .Produces<PagedResult<DynamicReferenceDataEntity>>()
+            .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
-            ReferenceDataQueryParameters parameters = new();
-            ReferenceDataQuery query = new(
-                ActiveOnly: parameters.ActiveOnly,
-                SearchTerm: parameters.Search,
-                SortBy: parameters.SortBy,
-                Descending: parameters.Descending,
-                Page: parameters.Page,
-                PageSize: parameters.PageSize);
-
-            PagedResult<DynamicReferenceDataEntity> result = await reader.GetAllAsync(query, cancellationToken)
-                .ConfigureAwait(false);
-
-            return TypedResults.Ok(result);
-        })
-        .WithName($"GetAll{typeName}")
-        .WithSummary($"Returns a filtered, paginated list of {typeName} entries.")
-        .WithDescription($"Lists {typeName} reference data entries with support for filtering (active-only, search term), sorting, and pagination.")
-        .Produces<PagedResult<DynamicReferenceDataEntity>>();
-
-        group.MapGet("/{code}", async (
-            string code,
-            HttpContext httpContext,
-            CancellationToken cancellationToken) =>
-        {
-            IReferenceDataStoreReader<DynamicReferenceDataEntity> reader =
-                httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreReader<DynamicReferenceDataEntity>>(typeName);
-
-            DynamicReferenceDataEntity? entity = await reader.GetByCodeAsync(code, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (entity is null)
-            {
-                return TypedResults.NotFound();
-            }
-
-            return TypedResults.Ok(entity);
-        })
-        .WithName($"Get{typeName}ByCode")
-        .WithSummary($"Returns a single {typeName} entry by code.")
-        .WithDescription($"Returns the full {typeName} entry identified by its unique code. Returns 404 if not found.")
-        .Produces<DynamicReferenceDataEntity>()
-        .ProducesProblem(StatusCodes.Status404NotFound);
+        group.MapGet("/{code}", GetByCodeAsync)
+            .WithName($"Get{typeName}ByCode")
+            .WithSummary($"Returns a single {typeName} entry by code.")
+            .WithDescription($"Returns the full {typeName} entry identified by its unique code. Returns 404 if not found.")
+            .Produces<DynamicReferenceDataEntity>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
         return group;
     }
@@ -90,121 +56,188 @@ internal static class ReferenceDataDynamicEndpoints
             adminGroup.RequireAuthorization(adminPolicyName);
         }
 
-        adminGroup.MapPost("/", async (
-            ReferenceDataCreateRequest request,
-            HttpContext httpContext,
-            CancellationToken cancellationToken) =>
-        {
-            IReferenceDataStoreWriter<DynamicReferenceDataEntity> writer =
-                httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreWriter<DynamicReferenceDataEntity>>(typeName);
-            IGuidGenerator guidGenerator = httpContext.RequestServices.GetRequiredService<IGuidGenerator>();
+        adminGroup.MapPost("/", CreateAsync)
+            .WithName($"Create{typeName}")
+            .WithSummary($"Creates a new {typeName} entry.")
+            .WithDescription($"Creates a new {typeName} reference data entry with a unique code and localized labels.")
+            .Produces(StatusCodes.Status201Created)
+            .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
-            DynamicReferenceDataEntity entity = new()
-            {
-                Id = guidGenerator.Create(),
-                Code = request.Code,
-                LabelEn = request.LabelEn,
-                LabelFr = request.LabelFr,
-                LabelNl = request.LabelNl,
-                LabelDe = request.LabelDe,
-                LabelEs = request.LabelEs,
-                LabelIt = request.LabelIt,
-                LabelPt = request.LabelPt,
-                LabelZh = request.LabelZh,
-                LabelJa = request.LabelJa,
-                LabelPl = request.LabelPl,
-                LabelTr = request.LabelTr,
-                LabelKo = request.LabelKo,
-                LabelSv = request.LabelSv,
-                LabelCs = request.LabelCs,
-                SortOrder = request.SortOrder,
-                ValidFrom = request.ValidFrom,
-                ValidTo = request.ValidTo,
-                IsActive = true,
-            };
+        adminGroup.MapPut("/{code}", UpdateAsync)
+            .WithName($"Update{typeName}")
+            .WithSummary($"Updates an existing {typeName} entry.")
+            .WithDescription($"Updates labels, sort order, active status, and validity dates. Returns 404 if not found.")
+            .Produces(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
-            await writer.CreateAsync(entity, cancellationToken).ConfigureAwait(false);
-            return TypedResults.Created($"{request.Code}");
-        })
-        .WithName($"Create{typeName}")
-        .WithSummary($"Creates a new {typeName} entry.")
-        .WithDescription($"Creates a new {typeName} reference data entry with a unique code and localized labels.")
-        .Produces(StatusCodes.Status201Created);
-
-        adminGroup.MapPut("/{code}", async (
-            string code,
-            ReferenceDataUpdateRequest request,
-            HttpContext httpContext,
-            CancellationToken cancellationToken) =>
-        {
-            IReferenceDataStoreReader<DynamicReferenceDataEntity> reader =
-                httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreReader<DynamicReferenceDataEntity>>(typeName);
-            IReferenceDataStoreWriter<DynamicReferenceDataEntity> writer =
-                httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreWriter<DynamicReferenceDataEntity>>(typeName);
-
-            DynamicReferenceDataEntity? existing = await reader.GetByCodeAsync(code, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (existing is null)
-            {
-                return TypedResults.NotFound();
-            }
-
-            existing.LabelEn = request.LabelEn;
-            existing.LabelFr = request.LabelFr;
-            existing.LabelNl = request.LabelNl;
-            existing.LabelDe = request.LabelDe;
-            existing.LabelEs = request.LabelEs;
-            existing.LabelIt = request.LabelIt;
-            existing.LabelPt = request.LabelPt;
-            existing.LabelZh = request.LabelZh;
-            existing.LabelJa = request.LabelJa;
-            existing.LabelPl = request.LabelPl;
-            existing.LabelTr = request.LabelTr;
-            existing.LabelKo = request.LabelKo;
-            existing.LabelSv = request.LabelSv;
-            existing.LabelCs = request.LabelCs;
-            existing.SortOrder = request.SortOrder;
-            existing.IsActive = request.IsActive;
-            existing.ValidFrom = request.ValidFrom;
-            existing.ValidTo = request.ValidTo;
-
-            await writer.UpdateAsync(existing, cancellationToken).ConfigureAwait(false);
-            return TypedResults.Ok();
-        })
-        .WithName($"Update{typeName}")
-        .WithSummary($"Updates an existing {typeName} entry.")
-        .WithDescription($"Updates labels, sort order, active status, and validity dates. Returns 404 if not found.")
-        .Produces(StatusCodes.Status200OK)
-        .ProducesProblem(StatusCodes.Status404NotFound);
-
-        adminGroup.MapDelete("/{code}", async (
-            string code,
-            HttpContext httpContext,
-            CancellationToken cancellationToken) =>
-        {
-            IReferenceDataStoreReader<DynamicReferenceDataEntity> reader =
-                httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreReader<DynamicReferenceDataEntity>>(typeName);
-            IReferenceDataStoreWriter<DynamicReferenceDataEntity> writer =
-                httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreWriter<DynamicReferenceDataEntity>>(typeName);
-
-            DynamicReferenceDataEntity? existing = await reader.GetByCodeAsync(code, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (existing is null)
-            {
-                return TypedResults.NotFound();
-            }
-
-            await writer.SetActiveAsync(code, false, cancellationToken).ConfigureAwait(false);
-            return TypedResults.NoContent();
-        })
-        .WithName($"Deactivate{typeName}")
-        .WithSummary($"Deactivates a {typeName} entry (soft delete).")
-        .WithDescription($"Sets the entry's active flag to false. Returns 404 if not found.")
-        .Produces(StatusCodes.Status204NoContent)
-        .ProducesProblem(StatusCodes.Status404NotFound);
+        adminGroup.MapDelete("/{code}", DeactivateAsync)
+            .WithName($"Deactivate{typeName}")
+            .WithSummary($"Deactivates a {typeName} entry (soft delete).")
+            .WithDescription($"Sets the entry's active flag to false. Returns 404 if not found.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
         return group;
     }
+
+    // ──── Handlers ────
+
+    private static string ResolveTypeName(HttpContext httpContext) =>
+        httpContext.GetEndpoint()?.Metadata.GetMetadata<ReferenceDataTypeNameMetadata>()?.TypeName
+        ?? throw new InvalidOperationException("ReferenceDataTypeNameMetadata not found on endpoint.");
+
+    private static async Task<Ok<PagedResult<DynamicReferenceDataEntity>>> GetAllAsync(
+        [AsParameters] ReferenceDataQueryParameters parameters,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
+    {
+        string typeName = ResolveTypeName(httpContext);
+        IReferenceDataStoreReader<DynamicReferenceDataEntity> reader =
+            httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreReader<DynamicReferenceDataEntity>>(typeName);
+
+        ReferenceDataQuery query = new(
+            ActiveOnly: parameters.ActiveOnly,
+            SearchTerm: parameters.Search,
+            SortBy: parameters.SortBy,
+            Descending: parameters.Descending,
+            Page: parameters.Page,
+            PageSize: parameters.PageSize);
+
+        PagedResult<DynamicReferenceDataEntity> result = await reader
+            .GetAllAsync(query, cancellationToken).ConfigureAwait(false);
+
+        return TypedResults.Ok(result);
+    }
+
+    private static async Task<Results<Ok<DynamicReferenceDataEntity>, NotFound>> GetByCodeAsync(
+        string code,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
+    {
+        string typeName = ResolveTypeName(httpContext);
+        IReferenceDataStoreReader<DynamicReferenceDataEntity> reader =
+            httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreReader<DynamicReferenceDataEntity>>(typeName);
+
+        DynamicReferenceDataEntity? entity = await reader
+            .GetByCodeAsync(code, cancellationToken).ConfigureAwait(false);
+
+        if (entity is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        return TypedResults.Ok(entity);
+    }
+
+    private static async Task<Created> CreateAsync(
+        ReferenceDataCreateRequest request,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
+    {
+        string typeName = ResolveTypeName(httpContext);
+        IReferenceDataStoreWriter<DynamicReferenceDataEntity> writer =
+            httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreWriter<DynamicReferenceDataEntity>>(typeName);
+        IGuidGenerator guidGenerator = httpContext.RequestServices.GetRequiredService<IGuidGenerator>();
+
+        DynamicReferenceDataEntity entity = new()
+        {
+            Id = guidGenerator.Create(),
+            Code = request.Code,
+            LabelEn = request.LabelEn,
+            LabelFr = request.LabelFr,
+            LabelNl = request.LabelNl,
+            LabelDe = request.LabelDe,
+            LabelEs = request.LabelEs,
+            LabelIt = request.LabelIt,
+            LabelPt = request.LabelPt,
+            LabelZh = request.LabelZh,
+            LabelJa = request.LabelJa,
+            LabelPl = request.LabelPl,
+            LabelTr = request.LabelTr,
+            LabelKo = request.LabelKo,
+            LabelSv = request.LabelSv,
+            LabelCs = request.LabelCs,
+            SortOrder = request.SortOrder,
+            ValidFrom = request.ValidFrom,
+            ValidTo = request.ValidTo,
+            IsActive = true,
+        };
+
+        await writer.CreateAsync(entity, cancellationToken).ConfigureAwait(false);
+        return TypedResults.Created($"{request.Code}");
+    }
+
+    private static async Task<Results<Ok, NotFound>> UpdateAsync(
+        string code,
+        ReferenceDataUpdateRequest request,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
+    {
+        string typeName = ResolveTypeName(httpContext);
+        IReferenceDataStoreReader<DynamicReferenceDataEntity> reader =
+            httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreReader<DynamicReferenceDataEntity>>(typeName);
+        IReferenceDataStoreWriter<DynamicReferenceDataEntity> writer =
+            httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreWriter<DynamicReferenceDataEntity>>(typeName);
+
+        DynamicReferenceDataEntity? existing = await reader
+            .GetByCodeAsync(code, cancellationToken).ConfigureAwait(false);
+
+        if (existing is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        existing.LabelEn = request.LabelEn;
+        existing.LabelFr = request.LabelFr;
+        existing.LabelNl = request.LabelNl;
+        existing.LabelDe = request.LabelDe;
+        existing.LabelEs = request.LabelEs;
+        existing.LabelIt = request.LabelIt;
+        existing.LabelPt = request.LabelPt;
+        existing.LabelZh = request.LabelZh;
+        existing.LabelJa = request.LabelJa;
+        existing.LabelPl = request.LabelPl;
+        existing.LabelTr = request.LabelTr;
+        existing.LabelKo = request.LabelKo;
+        existing.LabelSv = request.LabelSv;
+        existing.LabelCs = request.LabelCs;
+        existing.SortOrder = request.SortOrder;
+        existing.IsActive = request.IsActive;
+        existing.ValidFrom = request.ValidFrom;
+        existing.ValidTo = request.ValidTo;
+
+        await writer.UpdateAsync(existing, cancellationToken).ConfigureAwait(false);
+        return TypedResults.Ok();
+    }
+
+    private static async Task<Results<NoContent, NotFound>> DeactivateAsync(
+        string code,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
+    {
+        string typeName = ResolveTypeName(httpContext);
+        IReferenceDataStoreReader<DynamicReferenceDataEntity> reader =
+            httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreReader<DynamicReferenceDataEntity>>(typeName);
+        IReferenceDataStoreWriter<DynamicReferenceDataEntity> writer =
+            httpContext.RequestServices.GetRequiredKeyedService<IReferenceDataStoreWriter<DynamicReferenceDataEntity>>(typeName);
+
+        DynamicReferenceDataEntity? existing = await reader
+            .GetByCodeAsync(code, cancellationToken).ConfigureAwait(false);
+
+        if (existing is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        await writer.SetActiveAsync(code, false, cancellationToken).ConfigureAwait(false);
+        return TypedResults.NoContent();
+    }
 }
+
+/// <summary>
+/// Endpoint metadata that stores the reference data type name for keyed service resolution.
+/// </summary>
+/// <param name="TypeName">The logical type name (e.g., <c>"Countries"</c>).</param>
+internal sealed record ReferenceDataTypeNameMetadata(string TypeName);
