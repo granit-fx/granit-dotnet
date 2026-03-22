@@ -28,4 +28,7 @@ internal sealed class KeycloakIdentityProviderCapabilities : IIdentityProviderCa
 
     /// <inheritdoc/>
     public bool SupportsUserCreation => true;
+
+    /// <inheritdoc/>
+    public bool IsLocalStore => false;
 }

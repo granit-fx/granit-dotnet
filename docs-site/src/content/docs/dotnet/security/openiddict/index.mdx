@@ -207,6 +207,14 @@ modules sharing the same database.
 tenants so that a single RBAC matrix applies platform-wide. Tenant-specific access
 is enforced at the permission/policy level, not at the role definition level.
 
+### Do NOT add Granit.Identity.EntityFrameworkCore
+
+When using `Granit.Identity.OpenIddict`, **do not add** `Granit.Identity.EntityFrameworkCore`.
+`GranitUser` is the source of truth — `UserCacheEntry` and `UserCacheSyncMiddleware` are
+unnecessary and create data duplication risk. A warning is logged at startup if both
+packages are detected. See [ADR-019](/dotnet/architecture/adr/019-user-lookup-dual-mode/)
+for the full rationale.
+
 ## Integration events
 
 The module publishes three integration events via `IDistributedEventBus` (Wolverine outbox):

@@ -297,7 +297,7 @@ POST /api/orders (12ms)
 
 Filter logs by `TraceId` to see all log entries from a single operation:
 
-```logql
+```text title="LogQL"
 {service_name="my-backend"} | json | TraceId = "abc-123"
 ```
 

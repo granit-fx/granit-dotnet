@@ -109,10 +109,10 @@ internal static class AdminOidcEndpoints
     private static Task<Created> CreateApplicationAsync() =>
         Task.FromResult(TypedResults.Created("/api/admin/oidc/applications/{clientId}"));
 
-    private static Task<Results<NoContent, NotFound>> DeleteApplicationAsync() =>
+    private static Task<Results<NoContent, NotFound>> DeleteApplicationAsync(string clientId) =>
         Task.FromResult<Results<NoContent, NotFound>>(TypedResults.NoContent());
 
-    private static Task<Results<Ok, NotFound>> RotateSecretAsync() =>
+    private static Task<Results<Ok, NotFound>> RotateSecretAsync(string clientId) =>
         Task.FromResult<Results<Ok, NotFound>>(TypedResults.Ok());
 
     // ──── Scope handlers ────
@@ -122,7 +122,7 @@ internal static class AdminOidcEndpoints
     private static Task<Created> CreateScopeAsync() =>
         Task.FromResult(TypedResults.Created("/api/admin/oidc/scopes/{name}"));
 
-    private static Task<Results<NoContent, NotFound>> DeleteScopeAsync() =>
+    private static Task<Results<NoContent, NotFound>> DeleteScopeAsync(string scopeName) =>
         Task.FromResult<Results<NoContent, NotFound>>(TypedResults.NoContent());
 
     // ──── Authorization handlers ────
@@ -130,9 +130,9 @@ internal static class AdminOidcEndpoints
     private static Task<Ok> ListAuthorizationsAsync() =>
         Task.FromResult(TypedResults.Ok());
 
-    private static Task<Results<NoContent, NotFound>> RevokeAuthorizationAsync() =>
+    private static Task<Results<NoContent, NotFound>> RevokeAuthorizationAsync(Guid authorizationId) =>
         Task.FromResult<Results<NoContent, NotFound>>(TypedResults.NoContent());
 
-    private static Task<NoContent> RevokeUserAuthorizationsAsync() =>
+    private static Task<NoContent> RevokeUserAuthorizationsAsync(Guid userId) =>
         Task.FromResult(TypedResults.NoContent());
 }

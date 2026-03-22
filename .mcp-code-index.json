@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T10:43:49.371565+00:00",
+  "generatedAt": "2026-03-22T11:07:46.089511+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -13552,6 +13552,22 @@
       ]
     },
     {
+      "name": "IdentityUserExtraPropertyExtensions",
+      "fqn": "Granit.Identity.Extensions.IdentityUserExtraPropertyExtensions",
+      "kind": "class",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/Extensions/IdentityUserExtraPropertyExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "GetExtraProperty",
+          "kind": "method",
+          "signature": "GetExtraProperty(this IIdentityUser user, string name)",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
       "name": "IdentityGoogleCloudServiceCollectionExtensions",
       "fqn": "Granit.Identity.GoogleCloud.Extensions.IdentityGoogleCloudServiceCollectionExtensions",
       "kind": "class",
@@ -13807,6 +13823,15 @@
       ]
     },
     {
+      "name": "IIdentityUser",
+      "fqn": "Granit.Identity.IIdentityUser",
+      "kind": "interface",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/IIdentityUser.cs",
+      "line": 20,
+      "members": []
+    },
+    {
       "name": "IIdentityUserReader",
       "fqn": "Granit.Identity.IIdentityUserReader",
       "kind": "interface",
@@ -14015,6 +14040,15 @@
       ]
     },
     {
+      "name": "FederatedIdentityUser",
+      "fqn": "Granit.Identity.Models.FederatedIdentityUser",
+      "kind": "record",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/Models/FederatedIdentityUser.cs",
+      "line": 23,
+      "members": []
+    },
+    {
       "name": "IdentityDeviceActivity",
       "fqn": "Granit.Identity.Models.IdentityDeviceActivity",
       "kind": "record",
@@ -14083,7 +14117,7 @@
       "kind": "class",
       "project": "Granit.Identity.OpenIddict",
       "file": "src/Granit.Identity.OpenIddict/GranitIdentityOpenIddictModule.cs",
-      "line": 25,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",

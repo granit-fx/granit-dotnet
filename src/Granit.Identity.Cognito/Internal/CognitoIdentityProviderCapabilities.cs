@@ -34,4 +34,7 @@ internal sealed class CognitoIdentityProviderCapabilities : IIdentityProviderCap
 
     /// <inheritdoc/>
     public bool SupportsUserCreation => true;
+
+    /// <inheritdoc/>
+    public bool IsLocalStore => false;
 }

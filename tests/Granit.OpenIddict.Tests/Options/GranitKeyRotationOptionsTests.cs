@@ -7,10 +7,8 @@ namespace Granit.OpenIddict.Tests.Options;
 public sealed class GranitKeyRotationOptionsTests
 {
     [Fact]
-    public void SectionName_Is_OpenIddict_KeyRotation()
-    {
+    public void SectionName_Is_OpenIddict_KeyRotation() =>
         GranitKeyRotationOptions.SectionName.ShouldBe("OpenIddict:KeyRotation");
-    }
 
     [Fact]
     public void Enabled_Default_Is_False()

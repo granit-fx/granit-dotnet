@@ -29,4 +29,7 @@ internal sealed class NullIdentityProviderCapabilities : IIdentityProviderCapabi
 
     /// <inheritdoc/>
     public bool SupportsUserCreation => false;
+
+    /// <inheritdoc/>
+    public bool IsLocalStore => false;
 }

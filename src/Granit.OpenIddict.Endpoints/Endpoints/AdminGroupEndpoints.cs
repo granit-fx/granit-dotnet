@@ -59,12 +59,12 @@ internal static class AdminGroupEndpoints
     private static Task<Created> CreateGroupAsync() =>
         Task.FromResult(TypedResults.Created("/api/admin/groups/{id}"));
 
-    private static Task<Results<NoContent, NotFound>> DeleteGroupAsync() =>
+    private static Task<Results<NoContent, NotFound>> DeleteGroupAsync(Guid groupId) =>
         Task.FromResult<Results<NoContent, NotFound>>(TypedResults.NoContent());
 
-    private static Task<NoContent> AddMemberAsync() =>
+    private static Task<NoContent> AddMemberAsync(Guid groupId) =>
         Task.FromResult(TypedResults.NoContent());
 
-    private static Task<NoContent> RemoveMemberAsync() =>
+    private static Task<NoContent> RemoveMemberAsync(Guid groupId, Guid userId) =>
         Task.FromResult(TypedResults.NoContent());
 }

@@ -26,6 +26,17 @@ public static class ClaimsPrincipalExtensions
     }
 
     /// <summary>
+    /// Returns <see langword="true"/> if the current HTTP request is an impersonation session.
+    /// </summary>
+    /// <param name="httpContext">The HTTP context.</param>
+    /// <returns><see langword="true"/> if an <c>impersonator_id</c> claim is present.</returns>
+    public static bool IsImpersonated(this HttpContext httpContext)
+    {
+        ArgumentNullException.ThrowIfNull(httpContext);
+        return httpContext.User.IsImpersonated();
+    }
+
+    /// <summary>
     /// Returns the impersonator's user ID, or <see langword="null"/> if not impersonating.
     /// </summary>
     /// <param name="principal">The claims principal.</param>
@@ -45,16 +56,5 @@ public static class ClaimsPrincipalExtensions
     {
         ArgumentNullException.ThrowIfNull(principal);
         return principal.FindFirst(ImpersonatorNameClaimType)?.Value;
-    }
-
-    /// <summary>
-    /// Returns <see langword="true"/> if the current HTTP request is an impersonation session.
-    /// </summary>
-    /// <param name="httpContext">The HTTP context.</param>
-    /// <returns><see langword="true"/> if an <c>impersonator_id</c> claim is present.</returns>
-    public static bool IsImpersonated(this HttpContext httpContext)
-    {
-        ArgumentNullException.ThrowIfNull(httpContext);
-        return httpContext.User.IsImpersonated();
     }
 }

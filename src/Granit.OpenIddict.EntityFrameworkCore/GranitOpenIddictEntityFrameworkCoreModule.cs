@@ -57,6 +57,8 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
         context.Services.TryAddScoped<IPasswordResetService, AspNetPasswordResetService>();
         context.Services.TryAddScoped<ISigningKeyStore, EfSigningKeyStore>();
         context.Services.TryAddScoped<IKeyRotationService, KeyRotationService>();
+        context.Services.TryAddScoped<IPasskeyService, AspNetPasskeyService>();
+        context.Services.TryAddScoped<IImpersonationService, AspNetImpersonationService>();
 
         context.Services
             .AddOptions<GranitKeyRotationOptions>()
