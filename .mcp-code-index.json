@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-22T13:04:34.576281+00:00",
+  "generatedAt": "2026-03-22T13:11:45.926272+00:00",
   "repo": "granit-dotnet",
   "projectGraph": [
     {
@@ -18451,12 +18451,12 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictModelBuilderExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureOpenIddictModule",
           "kind": "method",
-          "signature": "ConfigureOpenIddictModule(this ModelBuilder modelBuilder, IDataFilter? dataFilter = null)",
+          "signature": "ConfigureOpenIddictModule(this ModelBuilder modelBuilder, IDataFilter? dataFilter = null, GranitUserExtensionOptions? extensionOptions = null)",
           "returnType": "ModelBuilder"
         }
       ]
@@ -18751,6 +18751,22 @@
       ]
     },
     {
+      "name": "GranitUserExtensionOptions",
+      "fqn": "Granit.OpenIddict.Options.GranitUserExtensionOptions",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Options/GranitUserExtensionOptions.cs",
+      "line": 31,
+      "members": [
+        {
+          "name": "Mappings",
+          "kind": "property",
+          "signature": "List<UserPropertyMapping> Mappings",
+          "returnType": "List<UserPropertyMapping>"
+        }
+      ]
+    },
+    {
       "name": "OidcApplicationSeedDescriptor",
       "fqn": "Granit.OpenIddict.Options.OidcApplicationSeedDescriptor",
       "kind": "record",
@@ -18766,6 +18782,15 @@
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
       "line": 45,
+      "members": []
+    },
+    {
+      "name": "UserPropertyMapping",
+      "fqn": "Granit.OpenIddict.Options.UserPropertyMapping",
+      "kind": "record",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Options/GranitUserExtensionOptions.cs",
+      "line": 62,
       "members": []
     },
     {

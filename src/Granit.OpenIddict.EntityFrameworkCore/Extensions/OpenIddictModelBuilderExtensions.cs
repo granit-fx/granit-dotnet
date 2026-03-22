@@ -3,6 +3,7 @@ using Granit.Core.DataFiltering;
 using Granit.Core.Domain;
 using Granit.OpenIddict.Domain;
 using Granit.OpenIddict.Entities;
+using Granit.OpenIddict.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,9 +38,14 @@ public static class OpenIddictModelBuilderExtensions
     /// Data filter service for service-level bypass. If <c>null</c>, the soft-delete filter
     /// is always applied (no bypass possible except via <c>IgnoreQueryFilters</c>).
     /// </param>
+    /// <param name="extensionOptions">
+    /// Dynamic user extension options. If provided, adds Shadow Properties as SQL columns
+    /// on the <c>oidc_users</c> table for each mapped property.
+    /// </param>
     public static ModelBuilder ConfigureOpenIddictModule(
         this ModelBuilder modelBuilder,
-        IDataFilter? dataFilter = null)
+        IDataFilter? dataFilter = null,
+        GranitUserExtensionOptions? extensionOptions = null)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
 
@@ -132,6 +138,30 @@ public static class OpenIddictModelBuilderExtensions
             b.HasIndex(k => new { k.KeyType, k.Status })
                 .HasDatabaseName($"ix_{prefix}signing_keys_type_status");
         });
+
+        // ──── Dynamic user extension columns ────
+
+        if (extensionOptions is { Mappings.Count: > 0 })
+        {
+            modelBuilder.Entity<GranitUser>(b =>
+            {
+                foreach (UserPropertyMapping mapping in extensionOptions.Mappings)
+                {
+                    Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder prop =
+                        b.Property(mapping.ClrType, mapping.Name);
+
+                    if (mapping.MaxLength.HasValue)
+                    {
+                        prop.HasMaxLength(mapping.MaxLength.Value);
+                    }
+
+                    if (mapping.IsRequired)
+                    {
+                        prop.IsRequired();
+                    }
+                }
+            });
+        }
 
         return modelBuilder;
     }

@@ -64,6 +64,13 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
             .AddOptions<GranitKeyRotationOptions>()
             .BindConfiguration(GranitKeyRotationOptions.SectionName);
 
+        context.Services
+            .AddOptions<GranitUserExtensionOptions>()
+            .BindConfiguration(GranitUserExtensionOptions.SectionName);
+
+        // Sync ExtraProperties ↔ Shadow Properties at save time
+        context.Services.TryAddSingleton<Interceptors.ExtraPropertySyncInterceptor>();
+
         // Load signing/encryption keys from DB at startup (replaces ephemeral keys)
         context.Services.AddSingleton<IPostConfigureOptions<OpenIddictServerOptions>,
             DatabaseSigningKeyPostConfigure>();
