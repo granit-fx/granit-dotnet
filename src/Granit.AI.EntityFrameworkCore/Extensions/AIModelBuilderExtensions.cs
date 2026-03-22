@@ -7,6 +7,7 @@ namespace Granit.AI.EntityFrameworkCore.Extensions;
 /// <see cref="ModelBuilder"/> extensions for including Granit AI entity
 /// configurations in a host-owned <see cref="DbContext"/>.
 /// </summary>
+/// <remarks>Not dead code — called in <c>AIDbContext.OnModelCreating</c> to apply entity configurations.</remarks>
 public static class AIModelBuilderExtensions
 {
     /// <summary>

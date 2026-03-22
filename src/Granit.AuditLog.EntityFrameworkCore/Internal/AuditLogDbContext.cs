@@ -30,9 +30,11 @@ internal sealed class AuditLogDbContext(
     public DbSet<AuditLogEntry> AuditLogEntries => Set<AuditLogEntry>();
 
     /// <summary>Entity-level changes within audit entries.</summary>
+    /// <remarks>Not dead code — EF Core requires this property for model discovery and table generation.</remarks>
     public DbSet<AuditEntityChange> AuditEntityChanges => Set<AuditEntityChange>();
 
     /// <summary>Property-level changes within entity changes.</summary>
+    /// <remarks>Not dead code — EF Core requires this property for model discovery and table generation.</remarks>
     public DbSet<AuditPropertyChange> AuditPropertyChanges => Set<AuditPropertyChange>();
 
     /// <inheritdoc/>

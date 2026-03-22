@@ -11,6 +11,7 @@ namespace Granit.AI.EntityFrameworkCore.Extensions;
 /// <summary>
 /// Extension methods for registering EF Core persistence for Granit AI.
 /// </summary>
+/// <remarks>Not dead code — called by host applications to wire EF Core persistence for the AI module.</remarks>
 [ExcludeFromCodeCoverage]
 public static class AIEntityFrameworkCoreHostApplicationBuilderExtensions
 {

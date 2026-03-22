@@ -1846,7 +1846,7 @@
       "kind": "class",
       "project": "Granit.AI.EntityFrameworkCore",
       "file": "src/Granit.AI.EntityFrameworkCore/Extensions/AIEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitAIEntityFrameworkCore",
@@ -1862,7 +1862,7 @@
       "kind": "class",
       "project": "Granit.AI.EntityFrameworkCore",
       "file": "src/Granit.AI.EntityFrameworkCore/Extensions/AIModelBuilderExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "ConfigureAIModule",
@@ -1894,7 +1894,7 @@
       "kind": "class",
       "project": "Granit.AI.EntityFrameworkCore",
       "file": "src/Granit.AI.EntityFrameworkCore/GranitAIEntityFrameworkCoreModule.cs",
-      "line": 16,
+      "line": 17,
       "members": []
     },
     {
@@ -1921,7 +1921,7 @@
       "kind": "class",
       "project": "Granit.AI",
       "file": "src/Granit.AI/Extensions/AIServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitAI",

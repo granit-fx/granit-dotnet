@@ -215,7 +215,6 @@
         "tests/Granit.Identity.Local.AspNetCore.Tests",
         "tests/Granit.Identity.Tests",
         "tests/Granit.Authentication.OpenIddict.Tests",
-        "tests/Granit.OpenIddict.Tests.Integration",
         "tests/Granit.OpenIddict.BackgroundJobs.Tests",
         "tests/Granit.OpenIddict.Endpoints.Tests",
         "tests/Granit.OpenIddict.EntityFrameworkCore.Tests",

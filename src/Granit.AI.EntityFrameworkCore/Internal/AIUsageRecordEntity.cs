@@ -25,21 +25,6 @@ internal sealed class AIUsageRecordEntity : CreationAuditedEntity, IMultiTenant
 
     public TimeSpan? Duration { get; set; }
 
-    public AIUsageRecord ToRecord() => new()
-    {
-        Id = Id,
-        TenantId = TenantId,
-        UserId = UserId,
-        WorkspaceName = WorkspaceName,
-        Provider = Provider,
-        Model = Model,
-        InputTokens = InputTokens,
-        OutputTokens = OutputTokens,
-        EstimatedCostUsd = EstimatedCostUsd,
-        Timestamp = CreatedAt,
-        Duration = Duration,
-    };
-
     public static AIUsageRecordEntity FromRecord(AIUsageRecord record) => new()
     {
         Id = record.Id,

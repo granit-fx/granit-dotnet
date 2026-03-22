@@ -13,6 +13,7 @@ namespace Granit.AI.Extensions;
 /// <summary>
 /// Extension methods for registering Granit AI core services.
 /// </summary>
+/// <remarks>Not dead code — called by host applications to register AI core services.</remarks>
 [ExcludeFromCodeCoverage]
 public static class AIServiceCollectionExtensions
 {
