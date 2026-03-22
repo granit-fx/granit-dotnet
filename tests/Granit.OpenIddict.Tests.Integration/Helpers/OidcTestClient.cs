@@ -100,6 +100,25 @@ public sealed class OidcTestClient(HttpClient client)
         return await client.SendAsync(request);
     }
 
+    // ──── Pushed Authorization Requests ────
+
+    public async Task<HttpResponseMessage> RawPushedAuthorizationRequestAsync(
+        string clientId, string clientSecret, string redirectUri, string? scope = null)
+    {
+        using var content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["client_id"] = clientId,
+            ["client_secret"] = clientSecret,
+            ["response_type"] = "code",
+            ["redirect_uri"] = redirectUri,
+            ["scope"] = scope ?? "openid",
+            ["code_challenge"] = "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+            ["code_challenge_method"] = "S256",
+        });
+
+        return await client.PostAsync("/connect/par", content);
+    }
+
     // ──── Discovery ────
 
     public async Task<JsonDocument> GetDiscoveryDocumentAsync()

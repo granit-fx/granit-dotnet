@@ -33,4 +33,10 @@ public static class OpenIddictFeatureNames
     /// Enables passwordless authentication via WebAuthn/FIDO2 passkeys. Default: <see langword="false"/>.
     /// </summary>
     public const string Passkeys = "OpenIddict.Passkeys";
+
+    /// <summary>
+    /// Requires Pushed Authorization Requests (RFC 9126) for authorization code flows.
+    /// Default: <see langword="false"/>.
+    /// </summary>
+    public const string ParRequired = "OpenIddict.ParRequired";
 }

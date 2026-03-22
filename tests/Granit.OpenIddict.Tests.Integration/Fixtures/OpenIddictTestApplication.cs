@@ -185,12 +185,18 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
             };
 
             descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
+            descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Authorization);
             descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Introspection);
             descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Revocation);
+            descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.PushedAuthorization);
+            descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
             descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials);
             descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.RefreshToken);
+            descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Code);
             descriptor.Permissions.Add(OpenIddictConstants.Permissions.Scopes.Profile);
             descriptor.Permissions.Add(OpenIddictConstants.Permissions.Prefixes.Scope + "openid");
+
+            descriptor.RedirectUris.Add(new Uri("http://localhost/callback"));
 
             await appManager.CreateAsync(descriptor);
         }

@@ -82,6 +82,7 @@ Bind from the `Bff` configuration section. Section name constant: `GranitBffOpti
 | `RefreshGracePeriod` | `TimeSpan` | `00:01:00` (1 minute) | Access token is refreshed this long before expiry. |
 | `PostLoginRedirectPath` | `string` | `"/"` | Path to redirect to after successful login. |
 | `PostLogoutRedirectPath` | `string` | `"/"` | Path to redirect to after logout. |
+| `UsePushedAuthorizationRequests` | `bool` | `false` | Use Pushed Authorization Requests (RFC 9126). When `true`, the BFF posts authorization parameters to `/connect/par` and redirects with only the `request_uri`. Requires the OIDC server to support PAR. |
 
 ### Configuration binding
 

@@ -52,4 +52,21 @@ public sealed class GranitOpenIddictOptions
     /// </para>
     /// </remarks>
     public bool UseReferenceTokens { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the server requires Pushed Authorization Requests
+    /// (RFC 9126) for all authorization code flows.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The PAR endpoint (<c>/connect/par</c>) is always registered. When this option is
+    /// <see langword="true"/>, the server rejects direct authorization requests that do not
+    /// include a <c>request_uri</c> obtained from the PAR endpoint.
+    /// </para>
+    /// <para>
+    /// Required for FAPI 2.0 Security Profile compliance.
+    /// Default: <see langword="false"/> (PAR available but not enforced).
+    /// </para>
+    /// </remarks>
+    public bool RequirePar { get; set; }
 }

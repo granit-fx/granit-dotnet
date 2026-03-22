@@ -31,8 +31,9 @@ internal static partial class BffLoginEndpoints
                 [FromServices] IOptions<GranitBffOptions> options,
                 [FromServices] IDistributedCache cache,
                 [FromServices] IClock clock,
+                [FromServices] IHttpClientFactory httpClientFactory,
                 [FromServices] ILoggerFactory loggerFactory) =>
-                HandleLoginAsync(httpContext, frontend, options, cache, clock, loggerFactory))
+                HandleLoginAsync(httpContext, frontend, options, cache, clock, httpClientFactory, loggerFactory))
             .WithName($"BffLogin_{frontend.Name}")
             .WithSummary("Initiates OIDC login with PKCE and redirects to the authority.")
             .WithDescription(
@@ -77,6 +78,7 @@ internal static partial class BffLoginEndpoints
         [FromServices] IOptions<GranitBffOptions> options,
         [FromServices] IDistributedCache cache,
         [FromServices] IClock clock,
+        [FromServices] IHttpClientFactory httpClientFactory,
         [FromServices] ILoggerFactory loggerFactory)
     {
         ILogger logger = loggerFactory.CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
@@ -108,14 +110,36 @@ internal static partial class BffLoginEndpoints
         string scopes = string.Join(" ", frontend.Scopes);
         string pathPrefix = string.IsNullOrEmpty(frontend.PathPrefix) ? "" : frontend.PathPrefix;
         string callbackUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{pathPrefix}/bff/callback";
-        string authorizeUrl = $"{bffOptions.Authority.ToString().TrimEnd('/')}/connect/authorize"
-            + $"?client_id={Uri.EscapeDataString(frontend.ClientId)}"
-            + $"&response_type=code"
-            + $"&redirect_uri={Uri.EscapeDataString(callbackUrl)}"
-            + $"&scope={Uri.EscapeDataString(scopes)}"
-            + $"&state={Uri.EscapeDataString(state)}"
-            + $"&code_challenge={Uri.EscapeDataString(codeChallenge)}"
-            + $"&code_challenge_method=S256";
+        string authorityBase = bffOptions.Authority.ToString().TrimEnd('/');
+
+        string authorizeUrl;
+
+        if (frontend.UsePushedAuthorizationRequests)
+        {
+            // PAR: push parameters to /connect/par, then redirect with request_uri only
+            string? requestUri = await PushAuthorizationRequestAsync(
+                httpClientFactory, authorityBase, frontend, callbackUrl, scopes, state,
+                codeChallenge, logger).ConfigureAwait(false);
+
+            if (requestUri is not null)
+            {
+                authorizeUrl = $"{authorityBase}/connect/authorize"
+                    + $"?client_id={Uri.EscapeDataString(frontend.ClientId)}"
+                    + $"&request_uri={Uri.EscapeDataString(requestUri)}";
+            }
+            else
+            {
+                // PAR failed — fall back to direct parameters
+                LogParFallback(logger, frontend.Name);
+                authorizeUrl = BuildDirectAuthorizeUrl(
+                    authorityBase, frontend.ClientId, callbackUrl, scopes, state, codeChallenge);
+            }
+        }
+        else
+        {
+            authorizeUrl = BuildDirectAuthorizeUrl(
+                authorityBase, frontend.ClientId, callbackUrl, scopes, state, codeChallenge);
+        }
 #pragma warning restore GRSEC003
 
         LogLoginRedirect(logger, bffOptions.Authority.ToString(), frontend.Name);
@@ -271,6 +295,87 @@ internal static partial class BffLoginEndpoints
     }
 #pragma warning restore GRSEC003
 
+    private static string BuildDirectAuthorizeUrl(
+        string authorityBase, string clientId, string callbackUrl,
+        string scopes, string state, string codeChallenge) =>
+        $"{authorityBase}/connect/authorize"
+            + $"?client_id={Uri.EscapeDataString(clientId)}"
+            + $"&response_type=code"
+            + $"&redirect_uri={Uri.EscapeDataString(callbackUrl)}"
+            + $"&scope={Uri.EscapeDataString(scopes)}"
+            + $"&state={Uri.EscapeDataString(state)}"
+            + $"&code_challenge={Uri.EscapeDataString(codeChallenge)}"
+            + $"&code_challenge_method=S256";
+
+#pragma warning disable GRSEC003 // Method handles client credentials for PAR — server-side only
+    private static async Task<string?> PushAuthorizationRequestAsync(
+        IHttpClientFactory httpClientFactory,
+        string authorityBase,
+        BffFrontendOptions frontend,
+        string callbackUrl,
+        string scopes,
+        string state,
+        string codeChallenge,
+        ILogger logger)
+    {
+        try
+        {
+            using HttpClient httpClient = httpClientFactory.CreateClient("Granit.Bff");
+            string parEndpoint = $"{authorityBase}/connect/par";
+
+            Dictionary<string, string> parameters = new()
+            {
+                ["client_id"] = frontend.ClientId,
+                ["client_secret"] = frontend.ClientSecret,
+                ["response_type"] = "code",
+                ["redirect_uri"] = callbackUrl,
+                ["scope"] = scopes,
+                ["state"] = state,
+                ["code_challenge"] = codeChallenge,
+                ["code_challenge_method"] = "S256",
+            };
+
+            using FormUrlEncodedContent content = new(parameters);
+            using HttpResponseMessage response = await httpClient
+                .PostAsync(parEndpoint, content)
+                .ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                LogParRequestFailed(logger, (int)response.StatusCode, frontend.Name);
+                return null;
+            }
+
+            using Stream stream = await response.Content.ReadAsStreamAsync()
+                .ConfigureAwait(false);
+
+            JsonElement parResponse = await JsonSerializer.DeserializeAsync<JsonElement>(stream)
+                .ConfigureAwait(false);
+
+            string? requestUri = parResponse.TryGetProperty("request_uri", out JsonElement ru)
+                ? ru.GetString() : null;
+
+            if (string.IsNullOrEmpty(requestUri))
+            {
+                LogParMissingRequestUri(logger, frontend.Name);
+                return null;
+            }
+
+            LogParSuccess(logger, frontend.Name);
+            return requestUri;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            LogParException(logger, ex, frontend.Name);
+            return null;
+        }
+    }
+#pragma warning restore GRSEC003
+
     private static string GenerateCodeVerifier()
     {
         byte[] bytes = RandomNumberGenerator.GetBytes(CodeVerifierLength);
@@ -304,4 +409,19 @@ internal static partial class BffLoginEndpoints
 
     [LoggerMessage(Level = LogLevel.Information, Message = "BFF login successful, session {SessionId} created for frontend {FrontendName}")]
     private static partial void LogLoginSuccess(ILogger logger, string sessionId, string frontendName);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "BFF PAR: pushed authorization request accepted for frontend {FrontendName}")]
+    private static partial void LogParSuccess(ILogger logger, string frontendName);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF PAR: request failed with status {StatusCode} for frontend {FrontendName}, falling back to direct parameters")]
+    private static partial void LogParRequestFailed(ILogger logger, int statusCode, string frontendName);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF PAR: response missing request_uri for frontend {FrontendName}")]
+    private static partial void LogParMissingRequestUri(ILogger logger, string frontendName);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF PAR: falling back to direct parameters for frontend {FrontendName}")]
+    private static partial void LogParFallback(ILogger logger, string frontendName);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "BFF PAR: exception during pushed authorization request for frontend {FrontendName}")]
+    private static partial void LogParException(ILogger logger, Exception exception, string frontendName);
 }

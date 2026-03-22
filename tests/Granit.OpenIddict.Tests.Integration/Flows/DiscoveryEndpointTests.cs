@@ -51,6 +51,20 @@ public sealed class DiscoveryEndpointTests(OpenIddictTestApplication app)
     }
 
     [Fact]
+    public async Task Should_expose_pushed_authorization_request_endpoint()
+    {
+        OidcTestClient client = app.CreateOidcClient();
+
+        JsonDocument discovery = await client.GetDiscoveryDocumentAsync();
+
+        string? parEndpoint = discovery.RootElement
+            .GetProperty("pushed_authorization_request_endpoint").GetString();
+
+        parEndpoint.ShouldNotBeNullOrEmpty();
+        parEndpoint.ShouldEndWith("/connect/par");
+    }
+
+    [Fact]
     public async Task Should_advertise_supported_grant_types()
     {
         OidcTestClient client = app.CreateOidcClient();

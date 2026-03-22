@@ -88,5 +88,17 @@ public sealed class BffFrontendOptions
     /// </summary>
     public string EffectivePostLogoutRedirectPath =>
         PostLogoutRedirectPath ?? (string.IsNullOrEmpty(PathPrefix) ? "/" : $"{PathPrefix}/");
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the BFF should use Pushed Authorization
+    /// Requests (RFC 9126) when initiating the OIDC login flow.
+    /// </summary>
+    /// <remarks>
+    /// When <see langword="true"/>, the BFF posts authorization parameters to the
+    /// <c>/connect/par</c> endpoint and redirects the user with only the
+    /// <c>request_uri</c>. Requires the OIDC server to support PAR.
+    /// Default: <see langword="false"/>.
+    /// </remarks>
+    public bool UsePushedAuthorizationRequests { get; set; }
 }
 #pragma warning restore GRSEC003

@@ -44,7 +44,8 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
                 .SetRevocationEndpointUris("/connect/revoke")
                 .SetEndSessionEndpointUris("/connect/logout")
                 .SetDeviceAuthorizationEndpointUris("/connect/device")
-                .SetEndUserVerificationEndpointUris("/connect/verify");
+                .SetEndUserVerificationEndpointUris("/connect/verify")
+                .SetPushedAuthorizationEndpointUris("/connect/par");
 
             // ──── Flows ────
             options
@@ -55,6 +56,12 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
 
             // PKCE required by default (can be relaxed per-application)
             options.RequireProofKeyForCodeExchange();
+
+            // PAR enforcement (optional — endpoint is always available via SetPushedAuthorizationEndpointUris)
+            if (granitOptions.RequirePar)
+            {
+                options.RequirePushedAuthorizationRequests();
+            }
 
             // ──── Signing & encryption ────
             // Development keys — host application MUST replace with production keys

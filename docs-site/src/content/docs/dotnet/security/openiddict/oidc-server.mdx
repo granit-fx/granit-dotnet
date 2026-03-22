@@ -14,13 +14,14 @@ the supported flows, endpoints, token formats, and signing key management.
 
 ## Endpoints
 
-The server exposes 8 standard endpoints, registered automatically by
+The server exposes 9 standard endpoints, registered automatically by
 `AddGranitOpenIddictEntityFrameworkCore()`:
 
 | Endpoint | Path | Specification | Passthrough |
 |----------|------|---------------|-------------|
 | Authorization | `/connect/authorize` | RFC 6749 S3.1 | Yes |
 | Token | `/connect/token` | RFC 6749 S3.2 | Yes |
+| Pushed Authorization | `/connect/par` | RFC 9126 | No |
 | UserInfo | `/connect/userinfo` | OIDC Core S5.3 | Yes |
 | Introspection | `/connect/introspect` | RFC 7662 | No |
 | Revocation | `/connect/revoke` | RFC 7009 | No |
@@ -86,6 +87,49 @@ Two custom grant types are registered for advanced authentication scenarios:
 
 These grants are processed by custom handlers in the host application and follow
 the standard OAuth 2.0 token endpoint pattern.
+
+### Pushed Authorization Requests (PAR)
+
+The server supports Pushed Authorization Requests (RFC 9126). PAR moves
+authorization parameters from the browser URL to a back-channel POST request,
+preventing parameter tampering and PII leakage in URLs.
+
+```text
+Client --> POST /connect/par (client_id, client_secret, all auth params)
+  <-- 201 Created { request_uri, expires_in }
+Client --> GET /connect/authorize?client_id=...&request_uri=...
+  --> Standard authorization code flow continues
+```
+
+The `/connect/par` endpoint is **always available** — clients can use it without
+any additional configuration. To **require** PAR for all authorization requests
+(rejecting direct requests without a `request_uri`), set `RequirePar`:
+
+```json
+{
+  "OpenIddict": {
+    "RequirePar": true
+  }
+}
+```
+
+When using the BFF module, enable PAR on the frontend configuration:
+
+```json
+{
+  "Bff": {
+    "Frontends": [
+      {
+        "Name": "main",
+        "UsePushedAuthorizationRequests": true
+      }
+    ]
+  }
+}
+```
+
+PAR is required by the **FAPI 2.0 Security Profile** for open banking,
+healthcare, and other high-security industries.
 
 ## Scopes
 

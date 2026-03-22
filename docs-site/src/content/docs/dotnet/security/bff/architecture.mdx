@@ -293,7 +293,7 @@ A clear picture of where each piece of sensitive data resides:
 <Aside type="caution" title="Encryption at rest">
 The default `DistributedCacheBffTokenStore` uses `IDistributedCache` directly.
 For production deployments, enable Redis TLS and consider integrating
-[`Granit.Caching`](/dotnet/infrastructure/caching/) with `ICacheValueEncryptor`
+[`Granit.Caching`](/dotnet/data/caching/) with `ICacheValueEncryptor`
 (AES-256-CBC) for encryption at rest. See the
 [Security](/dotnet/security/bff/security/) page for details.
 </Aside>

@@ -16,6 +16,7 @@ import { Tabs, TabItem, Badge } from "@astrojs/starlight/components";
     "Issuer": "https://auth.example.com",
     "UseReferenceTokens": false,
     "EnableEntityCaching": false,
+    "RequirePar": false,
 
     "Client": {
       "AutoRegisterExternalUsers": true,
@@ -101,6 +102,7 @@ environment variables. Never commit secrets to source control.
 | `Issuer` | `Uri?` | `null` | Explicit OIDC issuer URI. When `null`, the issuer is inferred from the incoming request URL. Set explicitly for multi-node deployments behind a load balancer. |
 | `UseReferenceTokens` | `bool` | `false` | Issue opaque reference tokens instead of self-contained JWTs. Reference tokens are validated against the database on every API request, enabling instant revocation. Required for SOC2 / ISO 27001 strict compliance. Trade-off: +1 DB round-trip per API call. |
 | `EnableEntityCaching` | `bool` | `false` | Enable OpenIddict's built-in entity caching. **Disable in multi-tenant deployments** -- the cache uses `ClientId` as the sole key, which causes cross-tenant pollution when two tenants have the same `ClientId`. |
+| `RequirePar` | `bool` | `false` | Require Pushed Authorization Requests (RFC 9126) for all authorization code flows. The `/connect/par` endpoint is always available; when `true`, direct authorization requests without a `request_uri` are rejected. Required for FAPI 2.0 compliance. |
 
 **Example:**
 
@@ -109,7 +111,8 @@ environment variables. Never commit secrets to source control.
   "OpenIddict": {
     "Issuer": "https://auth.example.com",
     "UseReferenceTokens": false,
-    "EnableEntityCaching": false
+    "EnableEntityCaching": false,
+    "RequirePar": false
   }
 }
 ```
