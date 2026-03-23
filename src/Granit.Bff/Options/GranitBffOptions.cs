@@ -41,6 +41,20 @@ public sealed class GranitBffOptions
     public TimeSpan RefreshGracePeriod { get; set; } = TimeSpan.FromMinutes(1);
 
     /// <summary>
+    /// Gets or sets whether the session uses sliding expiration. When <see langword="true"/>,
+    /// each proxied request past the halfway point extends the session.
+    /// Default: <see langword="true"/>.
+    /// </summary>
+    public bool UseSessionSlidingExpiration { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the absolute maximum session duration, even with sliding expiration.
+    /// Prevents indefinite sessions (ISO 27001 A.9.4.2).
+    /// Default: 8 hours.
+    /// </summary>
+    public TimeSpan SessionAbsoluteMaxDuration { get; set; } = TimeSpan.FromHours(8);
+
+    /// <summary>
     /// Gets or sets whether the BFF validates the <c>iss</c> parameter in authorization
     /// responses (RFC 9207). Prevents IdP mix-up attacks.
     /// Default: <see langword="true"/>.

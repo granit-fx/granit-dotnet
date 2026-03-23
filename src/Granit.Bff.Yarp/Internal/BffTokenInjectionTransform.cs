@@ -141,6 +141,23 @@ internal sealed partial class BffTokenInjectionTransform(
             transformContext.ProxyRequest.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
         }
+
+        // Sliding session expiration — extend session if past halfway point
+        if (bffOptions.UseSessionSlidingExpiration && !string.IsNullOrEmpty(sessionId))
+        {
+            DateTimeOffset now = clock.Now;
+            DateTimeOffset halfwayPoint = tokens.SessionCreatedAt + (bffOptions.SessionDuration / 2);
+            DateTimeOffset absoluteMax = tokens.SessionCreatedAt + bffOptions.SessionAbsoluteMaxDuration;
+
+            // Only extend if past halfway and within absolute max
+            if (now >= halfwayPoint && now < absoluteMax)
+            {
+                // Re-store resets the distributed cache TTL to SessionDuration
+                await tokenStore.StoreAsync(
+                    frontend.Name, sessionId, tokens, httpContext.RequestAborted)
+                    .ConfigureAwait(false);
+            }
+        }
     }
 
     private static BffFrontendOptions? ResolveFrontend(GranitBffOptions options, string? frontendName)

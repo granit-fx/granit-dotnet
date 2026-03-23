@@ -18,6 +18,12 @@ public sealed record BffTokenSet(
     public string? DPoPPrivateKeyJwk { get; init; }
 
     /// <summary>
+    /// Timestamp when the session was first created. Used to enforce
+    /// <see cref="Options.GranitBffOptions.SessionAbsoluteMaxDuration"/>.
+    /// </summary>
+    public DateTimeOffset SessionCreatedAt { get; init; }
+
+    /// <summary>
     /// Server-provided DPoP nonce for replay protection (RFC 9449 §8).
     /// Included in subsequent DPoP proof JWTs as the <c>nonce</c> claim.
     /// Updated when the server returns a new <c>DPoP-Nonce</c> header.

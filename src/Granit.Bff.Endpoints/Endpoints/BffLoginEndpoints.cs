@@ -360,6 +360,7 @@ internal static partial class BffLoginEndpoints
                 idToken,
                 clock.Now.AddSeconds(expiresIn))
             {
+                SessionCreatedAt = clock.Now,
                 DPoPPrivateKeyJwk = dpopPrivateKeyJwk,
                 DPoPNonce = dpopNonce,
             };
