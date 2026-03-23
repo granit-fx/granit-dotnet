@@ -248,6 +248,40 @@ compromise the server-side session store to extract both.
 | **Proof lifetime** | 30 seconds per proof JWT |
 | **Proof uniqueness** | `jti` claim (random GUID per proof) |
 
+## Nonce support (§8) — replay protection
+
+RFC 9449 §8 defines server-provided nonces for additional replay protection.
+When a server requires a nonce, the flow becomes:
+
+```mermaid
+sequenceDiagram
+    participant BFF
+    participant AS as Authorization Server
+
+    BFF->>AS: POST /connect/token + DPoP proof (no nonce)
+    AS-->>BFF: 400 use_dpop_nonce + DPoP-Nonce: abc123
+    BFF->>AS: POST /connect/token + DPoP proof (nonce: abc123)
+    AS-->>BFF: 200 OK + access_token + DPoP-Nonce: def456
+    Note over BFF: Stores "def456" for next request
+```
+
+The BFF handles this automatically:
+
+1. **First request** — sends a DPoP proof without nonce
+2. **`use_dpop_nonce` error** — server returns 400 with a `DPoP-Nonce` header
+3. **Single retry** — BFF rebuilds the proof with the server-provided nonce and retries
+4. **Success** — nonce is stored in `BffTokenSet.DPoPNonce` (distributed cache)
+5. **Subsequent requests** — stored nonce is included in all DPoP proofs (proxy + refresh)
+
+The nonce is updated whenever the server returns a new `DPoP-Nonce` header in
+token refresh responses.
+
+:::note
+Server-side nonce issuance is not yet implemented in `Granit.OpenIddict`.
+The BFF client-side support is ready and will work with any OIDC server that
+issues `DPoP-Nonce` headers (e.g., Duende IdentityServer, Auth0, Keycloak).
+:::
+
 ## FAPI 2.0 compliance
 
 DPoP is **mandatory** in the
