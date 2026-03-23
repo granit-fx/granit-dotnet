@@ -1,8 +1,10 @@
 using System.Diagnostics;
-using Granit.Bff.ClientAssertion;
+using Granit.Authentication.Oidc.ClientAuthentication;
+using Granit.Authentication.Oidc.ClientAuthentication.Internal;
+using Granit.Authentication.Oidc.DPoP;
 using Granit.Bff.Diagnostics;
-using Granit.Bff.DPoP;
 using Granit.Bff.Options;
+using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -25,13 +27,13 @@ internal static partial class BffLogoutEndpoints
                 [FromServices] IOptions<GranitBffOptions> options,
                 [FromServices] IBffTokenStore tokenStore,
                 [FromServices] IHttpClientFactory httpClientFactory,
-                [FromServices] IBffClientAssertionService assertionService,
-                [FromServices] IBffDPoPService dpopService,
+                [FromServices] IDPoPProofService dpopService,
+                [FromServices] IClock clock,
                 [FromServices] BffMetrics metrics,
                 [FromServices] ILoggerFactory loggerFactory,
                 CancellationToken cancellationToken) =>
                 HandleLogoutAsync(httpContext, frontend, options, tokenStore, httpClientFactory,
-                    assertionService, dpopService, metrics, loggerFactory, cancellationToken))
+                    dpopService, clock, metrics, loggerFactory, cancellationToken))
             .WithName($"BffLogout_{frontend.Name}")
             .WithSummary("Logs out the user, clears the session, and redirects to the OIDC end_session_endpoint.")
             .WithDescription(
@@ -51,8 +53,8 @@ internal static partial class BffLogoutEndpoints
         IOptions<GranitBffOptions> options,
         IBffTokenStore tokenStore,
         IHttpClientFactory httpClientFactory,
-        IBffClientAssertionService assertionService,
-        IBffDPoPService dpopService,
+        IDPoPProofService dpopService,
+        IClock clock,
         BffMetrics metrics,
         ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
@@ -78,7 +80,7 @@ internal static partial class BffLogoutEndpoints
             {
                 await RevokeTokensAsync(
                     httpClientFactory, bffOptions, frontend, tokens,
-                    assertionService, dpopService, logger, cancellationToken).ConfigureAwait(false);
+                    clock, dpopService, logger, cancellationToken).ConfigureAwait(false);
             }
 #pragma warning restore GRSEC003
 
@@ -125,8 +127,8 @@ internal static partial class BffLogoutEndpoints
         GranitBffOptions bffOptions,
         BffFrontendOptions frontend,
         BffTokenSet tokens,
-        IBffClientAssertionService assertionService,
-        IBffDPoPService dpopService,
+        IClock clock,
+        IDPoPProofService dpopService,
         ILogger logger,
         CancellationToken cancellationToken)
     {
@@ -140,13 +142,13 @@ internal static partial class BffLogoutEndpoints
             {
                 await RevokeTokenAsync(
                     httpClient, revokeEndpoint, tokens.RefreshToken, "refresh_token",
-                    frontend, tokens, assertionService, dpopService, cancellationToken).ConfigureAwait(false);
+                    frontend, tokens, clock, dpopService, cancellationToken).ConfigureAwait(false);
             }
 
             // Explicitly revoke access token as well (defense in depth)
             await RevokeTokenAsync(
                 httpClient, revokeEndpoint, tokens.AccessToken, "access_token",
-                frontend, tokens, assertionService, dpopService, cancellationToken).ConfigureAwait(false);
+                frontend, tokens, clock, dpopService, cancellationToken).ConfigureAwait(false);
 
             LogTokensRevoked(logger, frontend.Name);
         }
@@ -168,8 +170,8 @@ internal static partial class BffLogoutEndpoints
         string tokenTypeHint,
         BffFrontendOptions frontend,
         BffTokenSet tokens,
-        IBffClientAssertionService assertionService,
-        IBffDPoPService dpopService,
+        IClock clock,
+        IDPoPProofService dpopService,
         CancellationToken cancellationToken)
     {
         Dictionary<string, string> parameters = new()
@@ -179,7 +181,7 @@ internal static partial class BffLogoutEndpoints
             ["client_id"] = frontend.ClientId,
         };
 
-        BffClientAuthentication.Apply(parameters, frontend, revokeEndpoint, assertionService);
+        ResolveClientAuth(frontend, clock).Apply(parameters, frontend.ClientId, revokeEndpoint);
 
         using FormUrlEncodedContent content = new(parameters);
         using var request = new HttpRequestMessage(HttpMethod.Post, revokeEndpoint) { Content = content };
@@ -195,6 +197,11 @@ internal static partial class BffLogoutEndpoints
         // RFC 7009: server returns 200 on success, any other status is logged but not fatal
     }
 #pragma warning restore GRSEC003
+
+    private static IClientAuthenticationStrategy ResolveClientAuth(BffFrontendOptions frontend, IClock clock) =>
+        frontend.ClientAuthenticationMethod == BffClientAuthenticationMethod.PrivateKeyJwt
+            ? new PrivateKeyJwtStrategy(frontend.ClientSigningKeyJwk!, clock)
+            : new ClientSecretPostStrategy(frontend.ClientSecret);
 
     // ──── Source-generated log messages ────
 

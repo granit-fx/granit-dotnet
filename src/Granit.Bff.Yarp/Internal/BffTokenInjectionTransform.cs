@@ -1,8 +1,9 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
-using Granit.Bff.ClientAssertion;
+using Granit.Authentication.Oidc.ClientAuthentication;
+using Granit.Authentication.Oidc.ClientAuthentication.Internal;
+using Granit.Authentication.Oidc.DPoP;
 using Granit.Bff.Diagnostics;
-using Granit.Bff.DPoP;
 using Granit.Bff.Options;
 using Granit.Timing;
 using Microsoft.AspNetCore.Http;
@@ -26,8 +27,7 @@ internal sealed partial class BffTokenInjectionTransform(
     IBffTokenStore tokenStore,
     IOptions<GranitBffOptions> options,
     IHttpClientFactory httpClientFactory,
-    IBffDPoPService dpopService,
-    IBffClientAssertionService assertionService,
+    IDPoPProofService dpopService,
     BffMetrics metrics,
     IClock clock,
     ILogger<BffTokenInjectionTransform> logger) : RequestTransform
@@ -190,7 +190,7 @@ internal sealed partial class BffTokenInjectionTransform(
                 ["client_id"] = frontend.ClientId,
             };
 
-            BffClientAuthentication.Apply(parameters, frontend, tokenEndpoint, assertionService);
+            ResolveClientAuth(frontend).Apply(parameters, frontend.ClientId, tokenEndpoint);
 
             using FormUrlEncodedContent content = new(parameters);
             using var request = new HttpRequestMessage(HttpMethod.Post, tokenEndpoint) { Content = content };
@@ -253,6 +253,11 @@ internal sealed partial class BffTokenInjectionTransform(
             return null;
         }
     }
+
+    private IClientAuthenticationStrategy ResolveClientAuth(BffFrontendOptions frontend) =>
+        frontend.ClientAuthenticationMethod == BffClientAuthenticationMethod.PrivateKeyJwt
+            ? new PrivateKeyJwtStrategy(frontend.ClientSigningKeyJwk!, clock)
+            : new ClientSecretPostStrategy(frontend.ClientSecret);
 
     // ──── Source-generated log messages ────
 

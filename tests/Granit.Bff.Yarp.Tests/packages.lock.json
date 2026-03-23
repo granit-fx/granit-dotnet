@@ -265,9 +265,17 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
+      "granit.authentication.oidc": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
       "granit.bff": {
         "type": "Project",
         "dependencies": {
+          "Granit.Authentication.Oidc": "[0.1.0-dev, )",
           "Granit.Core": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
@@ -276,6 +284,7 @@
       "granit.bff.yarp": {
         "type": "Project",
         "dependencies": {
+          "Granit.Authentication.Oidc": "[0.1.0-dev, )",
           "Granit.Bff": "[0.1.0-dev, )",
           "Yarp.ReverseProxy": "[2.*, )"
         }

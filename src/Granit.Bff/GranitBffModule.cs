@@ -1,6 +1,5 @@
-using Granit.Bff.ClientAssertion;
+using Granit.Authentication.Oidc;
 using Granit.Bff.Diagnostics;
-using Granit.Bff.DPoP;
 using Granit.Bff.Internal;
 using Granit.Core.Diagnostics;
 using Granit.Core.Modularity;
@@ -22,6 +21,7 @@ namespace Granit.Bff;
 /// <c>Granit.Bff.Yarp</c> for reverse proxy token injection.
 /// </remarks>
 [DependsOn(
+    typeof(GranitAuthenticationOidcModule),
     typeof(GranitSecurityModule),
     typeof(GranitTimingModule))]
 public sealed class GranitBffModule : GranitModule
@@ -31,8 +31,6 @@ public sealed class GranitBffModule : GranitModule
         context.Services.TryAddSingleton<BffMetrics>();
         context.Services.TryAddScoped<IBffTokenStore, DistributedCacheBffTokenStore>();
         context.Services.TryAddSingleton<IBffCsrfTokenGenerator, HmacBffCsrfTokenGenerator>();
-        context.Services.TryAddSingleton<IBffDPoPService, DefaultBffDPoPService>();
-        context.Services.TryAddSingleton<IBffClientAssertionService, DefaultBffClientAssertionService>();
 
         GranitActivitySourceRegistry.Register(BffActivitySource.Name);
     }

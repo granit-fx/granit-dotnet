@@ -2,9 +2,10 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using Granit.Bff.ClientAssertion;
+using Granit.Authentication.Oidc.ClientAuthentication;
+using Granit.Authentication.Oidc.ClientAuthentication.Internal;
+using Granit.Authentication.Oidc.DPoP;
 using Granit.Bff.Diagnostics;
-using Granit.Bff.DPoP;
 using Granit.Bff.Options;
 using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
@@ -34,10 +35,9 @@ internal static partial class BffLoginEndpoints
                 [FromServices] IDistributedCache cache,
                 [FromServices] IClock clock,
                 [FromServices] IHttpClientFactory httpClientFactory,
-                [FromServices] IBffDPoPService dpopService,
-                [FromServices] IBffClientAssertionService assertionService,
+                [FromServices] IDPoPProofService dpopService,
                 [FromServices] ILoggerFactory loggerFactory) =>
-                HandleLoginAsync(httpContext, frontend, options, cache, clock, httpClientFactory, dpopService, assertionService, loggerFactory))
+                HandleLoginAsync(httpContext, frontend, options, cache, clock, httpClientFactory, dpopService, loggerFactory))
             .WithName($"BffLogin_{frontend.Name}")
             .WithSummary("Initiates OIDC login with PKCE and redirects to the authority.")
             .WithDescription(
@@ -58,12 +58,11 @@ internal static partial class BffLoginEndpoints
                 [FromServices] BffMetrics metrics,
                 [FromServices] IClock clock,
                 [FromServices] IHttpClientFactory httpClientFactory,
-                [FromServices] IBffDPoPService dpopService,
-                [FromServices] IBffClientAssertionService assertionService,
+                [FromServices] IDPoPProofService dpopService,
                 [FromServices] ILoggerFactory loggerFactory,
                 CancellationToken cancellationToken) =>
                 HandleCallbackAsync(httpContext, frontend, code, state, error, iss, options, cache,
-                    tokenStore, metrics, clock, httpClientFactory, dpopService, assertionService, loggerFactory, cancellationToken))
+                    tokenStore, metrics, clock, httpClientFactory, dpopService, loggerFactory, cancellationToken))
             .WithName($"BffCallback_{frontend.Name}")
             .WithSummary("Handles the OIDC callback, exchanges the code for tokens, and sets the session cookie.")
             .WithDescription(
@@ -86,8 +85,7 @@ internal static partial class BffLoginEndpoints
         [FromServices] IDistributedCache cache,
         [FromServices] IClock clock,
         [FromServices] IHttpClientFactory httpClientFactory,
-        [FromServices] IBffDPoPService dpopService,
-        [FromServices] IBffClientAssertionService assertionService,
+        [FromServices] IDPoPProofService dpopService,
         [FromServices] ILoggerFactory loggerFactory)
     {
         ILogger logger = loggerFactory.CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
@@ -131,7 +129,7 @@ internal static partial class BffLoginEndpoints
             // PAR: push parameters to /connect/par, then redirect with request_uri only
             string? requestUri = await PushAuthorizationRequestAsync(
                 httpClientFactory, authorityBase, frontend, callbackUrl, scopes, state,
-                codeChallenge, assertionService, logger, httpContext.RequestAborted).ConfigureAwait(false);
+                codeChallenge, clock, logger, httpContext.RequestAborted).ConfigureAwait(false);
 
             if (requestUri is not null)
             {
@@ -172,8 +170,7 @@ internal static partial class BffLoginEndpoints
         [FromServices] BffMetrics metrics,
         [FromServices] IClock clock,
         [FromServices] IHttpClientFactory httpClientFactory,
-        [FromServices] IBffDPoPService dpopService,
-        [FromServices] IBffClientAssertionService assertionService,
+        [FromServices] IDPoPProofService dpopService,
         [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
@@ -245,7 +242,7 @@ internal static partial class BffLoginEndpoints
         string callbackUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{pathPrefix}/bff/callback";
         BffTokenSet? tokens = await ExchangeCodeForTokensAsync(
             httpClientFactory, bffOptions, frontend, code, pkceState.CodeVerifier, callbackUrl,
-            pkceState.DPoPPrivateKeyJwk, dpopService, assertionService, clock, cancellationToken)
+            pkceState.DPoPPrivateKeyJwk, dpopService, clock, cancellationToken)
             .ConfigureAwait(false);
 
         if (tokens is null)
@@ -298,8 +295,7 @@ internal static partial class BffLoginEndpoints
         string codeVerifier,
         string redirectUri,
         string? dpopPrivateKeyJwk,
-        IBffDPoPService dpopService,
-        IBffClientAssertionService assertionService,
+        IDPoPProofService dpopService,
         IClock clock,
         CancellationToken cancellationToken)
     {
@@ -315,7 +311,7 @@ internal static partial class BffLoginEndpoints
             ["code_verifier"] = codeVerifier,
         };
 
-        BffClientAuthentication.Apply(parameters, frontend, tokenEndpoint, assertionService);
+        ResolveClientAuth(frontend, clock).Apply(parameters, frontend.ClientId, tokenEndpoint);
 
         HttpResponseMessage response = await SendTokenRequestAsync(
             httpClient, tokenEndpoint, parameters, dpopPrivateKeyJwk, null, dpopService, cancellationToken)
@@ -398,7 +394,7 @@ internal static partial class BffLoginEndpoints
         string scopes,
         string state,
         string codeChallenge,
-        IBffClientAssertionService assertionService,
+        IClock clock,
         ILogger logger,
         CancellationToken cancellationToken)
     {
@@ -418,7 +414,7 @@ internal static partial class BffLoginEndpoints
                 ["code_challenge_method"] = "S256",
             };
 
-            BffClientAuthentication.Apply(parameters, frontend, parEndpoint, assertionService);
+            ResolveClientAuth(frontend, clock).Apply(parameters, frontend.ClientId, parEndpoint);
 
             using FormUrlEncodedContent content = new(parameters);
             using HttpResponseMessage response = await httpClient
@@ -468,7 +464,7 @@ internal static partial class BffLoginEndpoints
         Dictionary<string, string> parameters,
         string? dpopPrivateKeyJwk,
         string? dpopNonce,
-        IBffDPoPService dpopService,
+        IDPoPProofService dpopService,
         CancellationToken cancellationToken)
     {
         using FormUrlEncodedContent content = new(parameters);
@@ -562,6 +558,11 @@ internal static partial class BffLoginEndpoints
     }
 
     private sealed record PkceState(string CodeVerifier, string State, string FrontendName, string? DPoPPrivateKeyJwk = null);
+
+    private static IClientAuthenticationStrategy ResolveClientAuth(BffFrontendOptions frontend, IClock clock) =>
+        frontend.ClientAuthenticationMethod == BffClientAuthenticationMethod.PrivateKeyJwt
+            ? new PrivateKeyJwtStrategy(frontend.ClientSigningKeyJwk!, clock)
+            : new ClientSecretPostStrategy(frontend.ClientSecret);
 
     // ──── Source-generated log messages ────
 

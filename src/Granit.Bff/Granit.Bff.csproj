@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Granit.Authentication.Oidc\Granit.Authentication.Oidc.csproj" />
     <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
     <ProjectReference Include="..\Granit.Security\Granit.Security.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />

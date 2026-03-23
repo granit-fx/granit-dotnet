@@ -271,6 +271,7 @@
     {
       "name": "Granit.Bff.Endpoints",
       "deps": [
+        "Granit.Authentication.Oidc",
         "Granit.Bff",
         "Granit.Http.ApiDocumentation",
         "Granit.Validation"
@@ -290,6 +291,7 @@
     {
       "name": "Granit.Bff.Yarp",
       "deps": [
+        "Granit.Authentication.Oidc",
         "Granit.Bff"
       ],
       "framework": "net10.0"
@@ -3238,7 +3240,7 @@
       "kind": "class",
       "project": "Granit.AuditLog.Endpoints",
       "file": "src/Granit.AuditLog.Endpoints/GranitAuditLogEndpointsModule.cs",
-      "line": 19,
+      "line": 21,
       "members": []
     },
     {
@@ -3286,7 +3288,7 @@
         {
           "name": "RecordPurged",
           "kind": "method",
-          "signature": "RecordPurged(long count, string category)",
+          "signature": "RecordPurged(long count, string category, string? tenantId)",
           "returnType": "void"
         },
         {
@@ -3303,7 +3305,7 @@
       "kind": "class",
       "project": "Granit.AuditLog.EntityFrameworkCore",
       "file": "src/Granit.AuditLog.EntityFrameworkCore/Extensions/AuditLogEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitAuditLogEntityFrameworkCore",
@@ -3451,7 +3453,7 @@
       "kind": "class",
       "project": "Granit.AuditLog",
       "file": "src/Granit.AuditLog/Options/AuditLogOptions.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "PersistenceMode",
@@ -6315,60 +6317,6 @@
       "file": "src/Granit.Bff/BffTokenSet.cs",
       "line": 8,
       "members": []
-    },
-    {
-      "name": "BffClientAuthentication",
-      "fqn": "Granit.Bff.ClientAssertion.BffClientAuthentication",
-      "kind": "class",
-      "project": "Granit.Bff",
-      "file": "src/Granit.Bff/ClientAssertion/BffClientAuthentication.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "Apply",
-          "kind": "method",
-          "signature": "Apply(Dictionary<string, string> parameters, BffFrontendOptions frontend, string tokenEndpoint, IBffClientAssertionService assertionService)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "IBffClientAssertionService",
-      "fqn": "Granit.Bff.ClientAssertion.IBffClientAssertionService",
-      "kind": "interface",
-      "project": "Granit.Bff",
-      "file": "src/Granit.Bff/ClientAssertion/IBffClientAssertionService.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "CreateAssertion",
-          "kind": "method",
-          "signature": "CreateAssertion(string privateKeyJwk, string clientId, string tokenEndpoint)",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "IBffDPoPService",
-      "fqn": "Granit.Bff.DPoP.IBffDPoPService",
-      "kind": "interface",
-      "project": "Granit.Bff",
-      "file": "src/Granit.Bff/DPoP/IBffDPoPService.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "GenerateKeyPair",
-          "kind": "method",
-          "signature": "GenerateKeyPair()",
-          "returnType": "string"
-        },
-        {
-          "name": "CreateProof",
-          "kind": "method",
-          "signature": "CreateProof(string privateKeyJwk, string httpMethod, string httpUri, string? nonce = null)",
-          "returnType": "string"
-        }
-      ]
     },
     {
       "name": "BffMetrics",

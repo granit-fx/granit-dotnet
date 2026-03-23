@@ -18,6 +18,8 @@ namespace Granit.AI.AzureOpenAI.Internal;
 /// </remarks>
 internal sealed class AzureOpenAIProviderFactory(IOptions<AzureOpenAIProviderOptions> options) : IAIProviderFactory
 {
+    private readonly AzureOpenAIProviderOptions _options = options.Value;
+
     /// <inheritdoc/>
     public string ProviderName => "AzureOpenAI";
 
@@ -25,7 +27,7 @@ internal sealed class AzureOpenAIProviderFactory(IOptions<AzureOpenAIProviderOpt
     public IChatClient CreateChatClient(AIWorkspace workspace)
     {
         AzureOpenAIClient client = CreateClient();
-        string deployment = workspace.Model ?? options.Value.DefaultDeployment;
+        string deployment = workspace.Model ?? _options.DefaultDeployment;
 
         return client.GetChatClient(deployment).AsIChatClient();
     }
@@ -34,19 +36,18 @@ internal sealed class AzureOpenAIProviderFactory(IOptions<AzureOpenAIProviderOpt
     public IEmbeddingGenerator<string, Embedding<float>>? CreateEmbeddingGenerator(AIWorkspace workspace)
     {
         AzureOpenAIClient client = CreateClient();
-        string deployment = options.Value.DefaultEmbeddingDeployment;
+        string deployment = _options.DefaultEmbeddingDeployment;
 
         return client.GetEmbeddingClient(deployment).AsIEmbeddingGenerator();
     }
 
     private AzureOpenAIClient CreateClient()
     {
-        AzureOpenAIProviderOptions opts = options.Value;
-        Uri endpoint = new(opts.Endpoint);
+        Uri endpoint = new(_options.Endpoint);
 
-        if (!string.IsNullOrWhiteSpace(opts.ApiKey))
+        if (!string.IsNullOrWhiteSpace(_options.ApiKey))
         {
-            return new AzureOpenAIClient(endpoint, new ApiKeyCredential(opts.ApiKey));
+            return new AzureOpenAIClient(endpoint, new ApiKeyCredential(_options.ApiKey));
         }
 
         return new AzureOpenAIClient(endpoint, new DefaultAzureCredential());

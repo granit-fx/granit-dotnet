@@ -1513,6 +1513,13 @@
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[10.*, )"
         }
       },
+      "granit.authentication.oidc": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
       "granit.authentication.openiddict": {
         "type": "Project",
         "dependencies": {
@@ -1591,6 +1598,7 @@
       "granit.bff": {
         "type": "Project",
         "dependencies": {
+          "Granit.Authentication.Oidc": "[0.1.0-dev, )",
           "Granit.Core": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
@@ -1599,6 +1607,7 @@
       "granit.bff.endpoints": {
         "type": "Project",
         "dependencies": {
+          "Granit.Authentication.Oidc": "[0.1.0-dev, )",
           "Granit.Bff": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
@@ -1607,6 +1616,7 @@
       "granit.bff.yarp": {
         "type": "Project",
         "dependencies": {
+          "Granit.Authentication.Oidc": "[0.1.0-dev, )",
           "Granit.Bff": "[0.1.0-dev, )",
           "Yarp.ReverseProxy": "[2.*, )"
         }

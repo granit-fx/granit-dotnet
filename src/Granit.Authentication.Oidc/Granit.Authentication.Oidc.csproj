@@ -10,6 +10,8 @@
     <InternalsVisibleTo Include="Granit.Authentication.Oidc.Tests" />
     <InternalsVisibleTo Include="Granit.Authentication.TokenManagement" />
     <InternalsVisibleTo Include="Granit.Bff" />
+    <InternalsVisibleTo Include="Granit.Bff.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Bff.Yarp" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

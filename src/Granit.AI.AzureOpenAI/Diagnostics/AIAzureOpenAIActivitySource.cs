@@ -7,7 +7,7 @@ namespace Granit.AI.AzureOpenAI.Diagnostics;
 /// </summary>
 internal static class AIAzureOpenAIActivitySource
 {
-    public const string Name = "Granit.AI.AzureOpenAI";
+    internal const string Name = "Granit.AI.AzureOpenAI";
 
-    internal static readonly ActivitySource Instance = new(Name);
+    internal static readonly ActivitySource Source = new(Name);
 }
