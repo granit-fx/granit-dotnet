@@ -28,6 +28,7 @@
     <Project Path="src/Granit.Authentication.JwtBearer/Granit.Authentication.JwtBearer.csproj" />
     <Project Path="src/Granit.Authentication.Keycloak/Granit.Authentication.Keycloak.csproj" />
     <Project Path="src/Granit.Authentication.Oidc/Granit.Authentication.Oidc.csproj" />
+    <Project Path="src/Granit.Authentication.DPoP/Granit.Authentication.DPoP.csproj" />
     <Project Path="src/Granit.Authentication.OpenIddict/Granit.Authentication.OpenIddict.csproj" />
     <Project Path="src/Granit.Authentication.TokenManagement/Granit.Authentication.TokenManagement.csproj" />
     <Project Path="src/Granit.Authorization.AI/Granit.Authorization.AI.csproj" />
@@ -44,6 +45,7 @@
     <Project Path="src/Granit.BackgroundJobs.EntityFrameworkCore/Granit.BackgroundJobs.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.BackgroundJobs.Wolverine/Granit.BackgroundJobs.Wolverine.csproj" />
     <Project Path="src/Granit.BackgroundJobs/Granit.BackgroundJobs.csproj" />
+    <Project Path="src/Granit.Bff.EntityFrameworkCore/Granit.Bff.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Bff.Endpoints/Granit.Bff.Endpoints.csproj" />
     <Project Path="src/Granit.Bff.Yarp/Granit.Bff.Yarp.csproj" />
     <Project Path="src/Granit.Bff/Granit.Bff.csproj" />
@@ -232,6 +234,7 @@
     <Project Path="tests/Granit.Authentication.JwtBearer.Tests/Granit.Authentication.JwtBearer.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.Keycloak.Tests/Granit.Authentication.Keycloak.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.Oidc.Tests/Granit.Authentication.Oidc.Tests.csproj" />
+    <Project Path="tests/Granit.Authentication.DPoP.Tests/Granit.Authentication.DPoP.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.OpenIddict.Tests/Granit.Authentication.OpenIddict.Tests.csproj" />
     <Project Path="tests/Granit.Authorization.Endpoints.Tests/Granit.Authorization.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.TokenManagement.Tests/Granit.Authentication.TokenManagement.Tests.csproj" />
@@ -249,6 +252,7 @@
     <Project Path="tests/Granit.BackgroundJobs.Tests.Integration/Granit.BackgroundJobs.Tests.Integration.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.Tests/Granit.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.Wolverine.Tests/Granit.BackgroundJobs.Wolverine.Tests.csproj" />
+    <Project Path="tests/Granit.Bff.EntityFrameworkCore.Tests/Granit.Bff.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Bff.Endpoints.Tests/Granit.Bff.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Bff.Tests/Granit.Bff.Tests.csproj" />
     <Project Path="tests/Granit.Bff.Yarp.Tests/Granit.Bff.Yarp.Tests.csproj" />
