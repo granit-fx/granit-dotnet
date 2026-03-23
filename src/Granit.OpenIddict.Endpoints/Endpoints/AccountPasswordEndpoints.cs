@@ -74,7 +74,8 @@ internal static class AccountPasswordEndpoints
         await passwordManager.SetTemporaryPasswordAsync(userId, request.NewPassword, cancellationToken)
             .ConfigureAwait(false);
 
-        httpContext.RequestServices.GetService<OpenIddictMetrics>()?.RecordPasswordChange(null);
+        string? tenantId = httpContext.User.FindFirst("tenant_id")?.Value;
+        httpContext.RequestServices.GetService<OpenIddictMetrics>()?.RecordPasswordChange(tenantId);
         return TypedResults.NoContent();
     }
 

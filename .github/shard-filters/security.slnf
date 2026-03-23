@@ -21,6 +21,7 @@
       "src/Granit.Authorization.EntityFrameworkCore/Granit.Authorization.EntityFrameworkCore.csproj",
       "src/Granit.Authorization/Granit.Authorization.csproj",
       "src/Granit.BackgroundJobs/Granit.BackgroundJobs.csproj",
+      "src/Granit.Bff/Granit.Bff.csproj",
       "src/Granit.Caching/Granit.Caching.csproj",
       "src/Granit.Core/Granit.Core.csproj",
       "src/Granit.Encryption.EntityFrameworkCore/Granit.Encryption.EntityFrameworkCore.csproj",

@@ -52,11 +52,11 @@ internal static partial class BffBackChannelLogoutEndpoints
     private static async Task<Results<Ok, ProblemHttpResult>> HandleBackChannelLogoutAsync(
         HttpContext httpContext,
         BffFrontendOptions frontend,
-        IOptions<GranitBffOptions> options,
-        IBffTokenStore tokenStore,
-        IDistributedCache cache,
-        BffMetrics metrics,
-        ILoggerFactory loggerFactory,
+        [FromServices] IOptions<GranitBffOptions> options,
+        [FromServices] IBffTokenStore tokenStore,
+        [FromServices] IDistributedCache cache,
+        [FromServices] BffMetrics metrics,
+        [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
         ILogger logger = loggerFactory.CreateLogger("Granit.Bff.Endpoints.BffBackChannelLogoutEndpoints");

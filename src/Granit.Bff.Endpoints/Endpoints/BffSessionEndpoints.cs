@@ -71,8 +71,8 @@ internal static partial class BffSessionEndpoints
     private static async Task<Results<Ok<BffSessionListResponse>, ProblemHttpResult>> HandleListSessionsAsync(
         HttpContext httpContext,
         BffFrontendOptions frontend,
-        IBffTokenStore tokenStore,
-        ILoggerFactory loggerFactory,
+        [FromServices] IBffTokenStore tokenStore,
+        [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
         string? currentSessionId = httpContext.Request.Cookies[frontend.SessionCookieName];
@@ -119,9 +119,9 @@ internal static partial class BffSessionEndpoints
         HttpContext httpContext,
         BffFrontendOptions frontend,
         string targetSessionId,
-        IBffTokenStore tokenStore,
-        BffMetrics metrics,
-        ILoggerFactory loggerFactory,
+        [FromServices] IBffTokenStore tokenStore,
+        [FromServices] BffMetrics metrics,
+        [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
         ILogger logger = loggerFactory.CreateLogger("Granit.Bff.Endpoints.BffSessionEndpoints");
@@ -160,9 +160,9 @@ internal static partial class BffSessionEndpoints
     private static async Task<Results<NoContent, ProblemHttpResult>> HandleRevokeAllOtherSessionsAsync(
         HttpContext httpContext,
         BffFrontendOptions frontend,
-        IBffTokenStore tokenStore,
-        BffMetrics metrics,
-        ILoggerFactory loggerFactory,
+        [FromServices] IBffTokenStore tokenStore,
+        [FromServices] BffMetrics metrics,
+        [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
         ILogger logger = loggerFactory.CreateLogger("Granit.Bff.Endpoints.BffSessionEndpoints");

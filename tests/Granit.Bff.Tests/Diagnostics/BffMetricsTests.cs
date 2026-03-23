@@ -38,7 +38,7 @@ public sealed class BffMetricsTests : IDisposable
     public void RecordLogin_IncrementsWithTenantTag()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, BffMetrics.MeterName, "granit.bff.logins");
+            _meterFactory, BffMetrics.MeterName, "granit.bff.session.login");
 
         _metrics.RecordLogin("tenant-42");
 
@@ -52,7 +52,7 @@ public sealed class BffMetricsTests : IDisposable
     public void RecordLogin_NullTenant_UsesGlobal()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, BffMetrics.MeterName, "granit.bff.logins");
+            _meterFactory, BffMetrics.MeterName, "granit.bff.session.login");
 
         _metrics.RecordLogin(null);
 
@@ -65,7 +65,7 @@ public sealed class BffMetricsTests : IDisposable
     public void RecordLogout_IncrementsWithTenantTag()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, BffMetrics.MeterName, "granit.bff.logouts");
+            _meterFactory, BffMetrics.MeterName, "granit.bff.session.logout");
 
         _metrics.RecordLogout("tenant-1");
 
@@ -79,7 +79,7 @@ public sealed class BffMetricsTests : IDisposable
     public void RecordLogout_NullTenant_UsesGlobal()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, BffMetrics.MeterName, "granit.bff.logouts");
+            _meterFactory, BffMetrics.MeterName, "granit.bff.session.logout");
 
         _metrics.RecordLogout(null);
 

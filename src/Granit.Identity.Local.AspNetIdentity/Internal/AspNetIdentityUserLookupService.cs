@@ -3,6 +3,7 @@ using Granit.OpenIddict.Entities;
 using Granit.Querying;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
 namespace Granit.Identity.Local.AspNetIdentity.Internal;
 
 /// <summary>
@@ -33,7 +34,7 @@ internal sealed class AspNetIdentityUserLookupService(
 
     /// <inheritdoc/>
     public async Task<PagedResult<IIdentityUser>> SearchAsync(
-        string searchTerm, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
+        string searchTerm, int page = 1, int pageSize = QueryingDefaults.DefaultPageSize, CancellationToken cancellationToken = default)
     {
         IQueryable<GranitUser> query = _userManager.Users.AsNoTracking();
 
@@ -47,12 +48,13 @@ internal sealed class AspNetIdentityUserLookupService(
         }
 
         int totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+        int skip = (page - 1) * pageSize;
         List<GranitUser> items = await query
-            .Skip(page * pageSize)
+            .Skip(skip)
             .Take(pageSize)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-        bool hasMore = ((page * pageSize) + items.Count) < totalCount;
+        bool hasMore = (skip + items.Count) < totalCount;
         return new PagedResult<IIdentityUser>(
             items.Cast<IIdentityUser>().ToList(),
             totalCount,

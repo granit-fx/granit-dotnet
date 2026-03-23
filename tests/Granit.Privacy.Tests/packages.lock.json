@@ -62,11 +62,11 @@
       },
       "WolverineFx": {
         "type": "Direct",
-        "requested": "[5.21.*, )",
-        "resolved": "5.21.0",
-        "contentHash": "2FxtZ4o/STJnEz8DVPFkzvIchRJUvINKpIvDJXNlAikAR5p15Jtn+THknOXiKyEKdDHsJQ//Z4TFAZfn2UBOvQ==",
+        "requested": "[5.*, )",
+        "resolved": "5.22.0",
+        "contentHash": "Lj21RgjRxTz2cxNGN45DWzMCTsZIKr2dSYH6UwXq4P2raRnjyCW0qUIPjSk3Xg97lDDt9+HkKx+aTRlWBIfA7g==",
         "dependencies": {
-          "JasperFx": "1.21.1",
+          "JasperFx": "1.21.2",
           "JasperFx.Events": "1.24.0",
           "JasperFx.RuntimeCompiler": "4.4.0",
           "Microsoft.Extensions.Caching.Memory": "10.0.0",
@@ -135,8 +135,8 @@
       },
       "JasperFx": {
         "type": "Transitive",
-        "resolved": "1.21.1",
-        "contentHash": "oEswL6IWlSsSw+3vylT1fh+aZhiG1LVv/fJxC+E7dtxw80M8jW1cbSh2QaXDMyvYsxWrlwkA8TvCYPuvN5NMVA==",
+        "resolved": "1.21.2",
+        "contentHash": "iX6hOaDBjU+PlywN6Q7iVHV0e+Qv6mF4joJglU/kdjdxUxEIGmboLzdmCs+AN7YE81ZZu3/SOkVBvGPRG0rYSw==",
         "dependencies": {
           "FastExpressionCompiler": "5.3.0",
           "ImTools": "4.0.0",
@@ -746,7 +746,7 @@
         "dependencies": {
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.Core": "[0.1.0-dev, )",
-          "WolverineFx": "[5.21.*, )"
+          "WolverineFx": "[5.*, )"
         }
       },
       "granit.security": {

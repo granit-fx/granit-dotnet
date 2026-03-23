@@ -80,7 +80,6 @@ public sealed class OidcTestClient(HttpClient client)
 
         string header = JsonSerializer.Serialize(new Dictionary<string, string>
         {
-            ["typ"] = "client-authentication+jwt",
             ["alg"] = "ES256",
         });
 

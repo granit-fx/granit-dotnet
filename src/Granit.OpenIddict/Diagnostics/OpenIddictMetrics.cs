@@ -12,7 +12,7 @@ namespace Granit.OpenIddict.Diagnostics;
 /// and include <c>tenant_id</c> (coalesced to <c>"global"</c>) via <see cref="TagList"/>.
 /// </remarks>
 #pragma warning disable GRSEC003 // Metric name constants, not secrets
-public sealed class OpenIddictMetrics
+public sealed class OpenIddictMetrics(IMeterFactory meterFactory)
 {
     /// <summary>The meter name for this module.</summary>
     public const string MeterName = "Granit.OpenIddict";
@@ -20,52 +20,57 @@ public sealed class OpenIddictMetrics
     private const string TenantIdTag = "tenant_id";
     private const string GlobalTenantId = "global";
 
-    private readonly Counter<long> _tokensIssued;
-    private readonly Counter<long> _tokensRevoked;
-    private readonly Counter<long> _authenticationFailures;
-    private readonly Counter<long> _authenticationSuccesses;
-    private readonly Counter<long> _registrations;
-    private readonly Counter<long> _passwordChanges;
-    private readonly Counter<long> _passwordResets;
-    private readonly Counter<long> _accountDeletions;
-    private readonly Counter<long> _impersonations;
-    private readonly Counter<long> _twoFactorEvents;
-    private readonly Counter<long> _externalLogins;
-    private readonly Counter<long> _keyRotations;
-    private readonly Histogram<double> _tokenIssuanceDuration;
+    private readonly Counter<long> _tokensIssued = meterFactory.Create(MeterName).CreateCounter<long>(
+        "granit.openiddict.tokens.issued",
+        description: "Number of tokens issued.");
 
-    /// <summary>Initializes a new instance of the <see cref="OpenIddictMetrics"/> class.</summary>
-    public OpenIddictMetrics(IMeterFactory meterFactory)
-    {
-        Meter meter = meterFactory.Create(MeterName);
+    private readonly Counter<long> _tokensRevoked = meterFactory.Create(MeterName).CreateCounter<long>(
+        "granit.openiddict.tokens.revoked",
+        description: "Number of tokens revoked.");
 
-        _tokensIssued = meter.CreateCounter<long>("granit.openiddict.tokens.issued",
-            description: "Number of tokens issued.");
-        _tokensRevoked = meter.CreateCounter<long>("granit.openiddict.tokens.revoked",
-            description: "Number of tokens revoked.");
-        _authenticationSuccesses = meter.CreateCounter<long>("granit.openiddict.authentication.successes",
-            description: "Number of successful authentications.");
-        _authenticationFailures = meter.CreateCounter<long>("granit.openiddict.authentication.failures",
-            description: "Number of failed authentication attempts.");
-        _registrations = meter.CreateCounter<long>("granit.openiddict.registrations",
-            description: "Number of user registrations.");
-        _passwordChanges = meter.CreateCounter<long>("granit.openiddict.password.changes",
-            description: "Number of password changes.");
-        _passwordResets = meter.CreateCounter<long>("granit.openiddict.password.resets",
-            description: "Number of password resets.");
-        _accountDeletions = meter.CreateCounter<long>("granit.openiddict.account.deletions",
-            description: "Number of account deletions (GDPR).");
-        _impersonations = meter.CreateCounter<long>("granit.openiddict.impersonations",
-            description: "Number of user impersonations.");
-        _twoFactorEvents = meter.CreateCounter<long>("granit.openiddict.twofactor.events",
-            description: "Number of 2FA events (enable, disable, verify).");
-        _externalLogins = meter.CreateCounter<long>("granit.openiddict.external.logins",
-            description: "Number of external login events.");
-        _keyRotations = meter.CreateCounter<long>("granit.openiddict.key.rotations",
-            description: "Number of key rotation cycles.");
-        _tokenIssuanceDuration = meter.CreateHistogram<double>("granit.openiddict.token.issuance.duration",
-            unit: "s", description: "Duration of token issuance in seconds.");
-    }
+    private readonly Counter<long> _authenticationSuccesses = meterFactory.Create(MeterName).CreateCounter<long>(
+        "granit.openiddict.authentication.successes",
+        description: "Number of successful authentications.");
+
+    private readonly Counter<long> _authenticationFailures = meterFactory.Create(MeterName).CreateCounter<long>(
+        "granit.openiddict.authentication.failures",
+        description: "Number of failed authentication attempts.");
+
+    private readonly Counter<long> _registrations = meterFactory.Create(MeterName).CreateCounter<long>(
+        "granit.openiddict.users.registered",
+        description: "Number of user registrations.");
+
+    private readonly Counter<long> _passwordChanges = meterFactory.Create(MeterName).CreateCounter<long>(
+        "granit.openiddict.password.changes",
+        description: "Number of password changes.");
+
+    private readonly Counter<long> _passwordResets = meterFactory.Create(MeterName).CreateCounter<long>(
+        "granit.openiddict.password.resets",
+        description: "Number of password resets.");
+
+    private readonly Counter<long> _accountDeletions = meterFactory.Create(MeterName).CreateCounter<long>(
+        "granit.openiddict.account.deletions",
+        description: "Number of account deletions (GDPR).");
+
+    private readonly Counter<long> _impersonations = meterFactory.Create(MeterName).CreateCounter<long>(
+        "granit.openiddict.users.impersonated",
+        description: "Number of user impersonations.");
+
+    private readonly Counter<long> _twoFactorEvents = meterFactory.Create(MeterName).CreateCounter<long>(
+        "granit.openiddict.twofactor.events",
+        description: "Number of 2FA events (enable, disable, verify).");
+
+    private readonly Counter<long> _externalLogins = meterFactory.Create(MeterName).CreateCounter<long>(
+        "granit.openiddict.external.logins",
+        description: "Number of external login events.");
+
+    private readonly Counter<long> _keyRotations = meterFactory.Create(MeterName).CreateCounter<long>(
+        "granit.openiddict.keys.rotated",
+        description: "Number of key rotation cycles.");
+
+    private readonly Histogram<double> _tokenIssuanceDuration = meterFactory.Create(MeterName).CreateHistogram<double>(
+        "granit.openiddict.token.issuance.duration",
+        unit: "s", description: "Duration of token issuance in seconds.");
 
     /// <summary>Records a token issuance.</summary>
     public void RecordTokenIssued(string? tenantId, string grantType) =>
@@ -112,8 +117,8 @@ public sealed class OpenIddictMetrics
         _externalLogins.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "provider", provider }, { "is_new_user", isNewUser } });
 
     /// <summary>Records a key rotation cycle.</summary>
-    public void RecordKeyRotation(int keysGenerated, int keysRetired, int keysRevoked) =>
-        _keyRotations.Add(1, new TagList { { "keys_generated", keysGenerated }, { "keys_retired", keysRetired }, { "keys_revoked", keysRevoked } });
+    public void RecordKeyRotation(string? tenantId, int keysGenerated, int keysRetired, int keysRevoked) =>
+        _keyRotations.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "keys_generated", keysGenerated }, { "keys_retired", keysRetired }, { "keys_revoked", keysRevoked } });
 
     /// <summary>Records the duration of a token issuance.</summary>
     public void RecordTokenIssuanceDuration(string? tenantId, string grantType, TimeSpan duration) =>

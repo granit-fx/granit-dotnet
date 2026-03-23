@@ -14,7 +14,7 @@
   <ItemGroup Label="Templating">
     <PackageVersion Include="ClosedXML" Version="0.105.*" />
     <PackageVersion Include="PuppeteerSharp" Version="24.*" />
-    <PackageVersion Include="Scriban" Version="6.6.0" />
+    <PackageVersion Include="Scriban" Version="7.*" />
   </ItemGroup>
   <ItemGroup Label="AI">
     <PackageVersion Include="Anthropic" Version="12.*" />
@@ -58,12 +58,12 @@
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.*" />
   </ItemGroup>
   <ItemGroup Label="Wolverine">
-    <PackageVersion Include="WolverineFx" Version="5.21.*" />
-    <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="5.21.*" />
-    <PackageVersion Include="WolverineFx.Postgresql" Version="5.21.*" />
-    <PackageVersion Include="WolverineFx.SqlServer" Version="5.21.*" />
-    <PackageVersion Include="WolverineFx.FluentValidation" Version="5.21.*" />
-    <PackageVersion Include="WolverineFx.Http.FluentValidation" Version="5.21.*" />
+    <PackageVersion Include="WolverineFx" Version="5.*" />
+    <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="5.*" />
+    <PackageVersion Include="WolverineFx.Postgresql" Version="5.*" />
+    <PackageVersion Include="WolverineFx.SqlServer" Version="5.*" />
+    <PackageVersion Include="WolverineFx.FluentValidation" Version="5.*" />
+    <PackageVersion Include="WolverineFx.Http.FluentValidation" Version="5.*" />
   </ItemGroup>
   <ItemGroup Label="Blob Storage">
     <PackageVersion Include="AWSSDK.S3" Version="4.*" />

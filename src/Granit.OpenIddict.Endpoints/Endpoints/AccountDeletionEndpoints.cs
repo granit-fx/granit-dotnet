@@ -55,7 +55,8 @@ internal static class AccountDeletionEndpoints
 
         await deletionService.InitiateAsync(userId, cancellationToken).ConfigureAwait(false);
 
-        httpContext.RequestServices.GetService<OpenIddictMetrics>()?.RecordAccountDeletion(null);
+        string? tenantId = httpContext.User.FindFirst("tenant_id")?.Value;
+        httpContext.RequestServices.GetService<OpenIddictMetrics>()?.RecordAccountDeletion(tenantId);
         return TypedResults.Accepted((string?)null, (string?)null);
     }
 }

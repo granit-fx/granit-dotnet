@@ -16,7 +16,7 @@ namespace Granit.OpenIddict.Tests.Integration.Flows;
 [Collection("openiddict-integration")]
 public sealed class PrivateKeyJwtAuthenticationTests(OpenIddictTestApplication app)
 {
-    [Fact]
+    [Fact(Skip = "Requires OpenIddict 7.5+ for client assertion type detection")]
     public async Task Should_issue_token_with_valid_private_key_jwt_assertion()
     {
         OidcTestClient client = app.CreateOidcClient();

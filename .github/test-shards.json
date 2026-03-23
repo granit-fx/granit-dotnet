@@ -205,6 +205,7 @@
         "tests/Granit.Authorization.Endpoints.Tests",
         "tests/Granit.Authorization.EntityFrameworkCore.Tests",
         "tests/Granit.Authorization.Tests",
+        "tests/Granit.Bff.EntityFrameworkCore.Tests",
         "tests/Granit.Encryption.EntityFrameworkCore.Tests",
         "tests/Granit.Encryption.ReEncryption.Tests",
         "tests/Granit.Encryption.Tests",

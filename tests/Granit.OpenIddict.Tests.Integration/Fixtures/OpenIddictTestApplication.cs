@@ -226,6 +226,7 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
             {
                 ClientId = TestPkjwtClientId,
                 DisplayName = "Test Application (private_key_jwt)",
+                ClientType = OpenIddictConstants.ClientTypes.Confidential,
             };
 
             pkjwtDescriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);

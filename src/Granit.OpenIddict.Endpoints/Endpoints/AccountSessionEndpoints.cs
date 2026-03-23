@@ -40,7 +40,8 @@ internal static class AccountSessionEndpoints
     private static async Task<NoContent> HeartbeatAsync(
         HttpContext httpContext,
         [FromServices] IDistributedCache cache,
-        [FromServices] TimeProvider timeProvider)
+        [FromServices] TimeProvider timeProvider,
+        CancellationToken cancellationToken)
     {
         string? userId = httpContext.User.FindFirst("sub")?.Value;
         string? jti = httpContext.User.FindFirst("jti")?.Value;
@@ -61,7 +62,7 @@ internal static class AccountSessionEndpoints
             // Default: 35 min (30 min timeout + 5 min buffer).
             // Actual TTL adjusted by enforcement job based on per-tenant IdleSessionTimeout setting.
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(35),
-        }).ConfigureAwait(false);
+        }, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.NoContent();
     }

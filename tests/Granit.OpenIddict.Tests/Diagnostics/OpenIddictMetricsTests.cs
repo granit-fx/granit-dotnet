@@ -91,7 +91,7 @@ public sealed class OpenIddictMetricsTests : IDisposable
 
     [Fact]
     public void RecordKeyRotation_DoesNotThrow() =>
-        Should.NotThrow(() => _metrics.RecordKeyRotation(1, 2, 0));
+        Should.NotThrow(() => _metrics.RecordKeyRotation("tenant-1", 1, 2, 0));
 
     [Fact]
     public void RecordTokenIssuanceDuration_DoesNotThrow() =>

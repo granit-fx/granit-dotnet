@@ -1,13 +1,19 @@
-using Granit.Bff.EntityFrameworkCore.Internal;
+using Granit.Core.DataFiltering;
+using Granit.Core.MultiTenancy;
+using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 
-namespace Granit.Bff.EntityFrameworkCore;
+namespace Granit.Bff.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// Isolated DbContext for BFF session persistence. Stores encrypted token sets
-/// as an alternative to <see cref="IDistributedCache"/>-backed storage.
+/// as an alternative to <c>IDistributedCache</c>-backed storage.
 /// </summary>
-public sealed class BffDbContext(DbContextOptions<BffDbContext> options) : DbContext(options)
+internal sealed class BffDbContext(
+    DbContextOptions<BffDbContext> options,
+    ICurrentTenant? currentTenant = null,
+    IDataFilter? dataFilter = null)
+    : DbContext(options)
 {
     /// <summary>BFF sessions.</summary>
     public DbSet<BffSessionEntity> Sessions => Set<BffSessionEntity>();
@@ -33,5 +39,7 @@ public sealed class BffDbContext(DbContextOptions<BffDbContext> options) : DbCon
             b.HasIndex(e => new { e.FrontendName, e.UserId });
             b.HasIndex(e => e.ExpiresAt); // For cleanup job
         });
+
+        modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

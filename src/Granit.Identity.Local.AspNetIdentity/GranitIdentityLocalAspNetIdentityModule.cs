@@ -24,7 +24,7 @@ namespace Granit.Identity.Local.AspNetIdentity;
 [DependsOn(
     typeof(GranitIdentityModule),
     typeof(GranitOpenIddictEntityFrameworkCoreModule))]
-public sealed class GranitIdentityLocalAspNetIdentityModule : GranitModule
+public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -51,11 +51,18 @@ public sealed class GranitIdentityLocalAspNetIdentityModule : GranitModule
             ILogger<GranitIdentityLocalAspNetIdentityModule> logger = context.ServiceProvider
                 .GetRequiredService<ILogger<GranitIdentityLocalAspNetIdentityModule>>();
 
-            logger.LogWarning(
-                "Granit.Identity.Federated.EntityFrameworkCore is loaded alongside Granit.Identity.Local.AspNetIdentity. " +
-                "UserCacheEntry is redundant when the identity provider stores users locally (GranitUser). " +
-                "Remove the Granit.Identity.Federated.EntityFrameworkCore package reference to avoid an unnecessary " +
-                "database table and per-request cache sync overhead.");
+            Log.RedundantFederatedModuleDetected(logger);
         }
+    }
+
+    private static partial class Log
+    {
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message = "Granit.Identity.Federated.EntityFrameworkCore is loaded alongside "
+                + "Granit.Identity.Local.AspNetIdentity. UserCacheEntry is redundant when the "
+                + "identity provider stores users locally (GranitUser). Remove the "
+                + "Granit.Identity.Federated.EntityFrameworkCore package reference to avoid an "
+                + "unnecessary database table and per-request cache sync overhead.")]
+        public static partial void RedundantFederatedModuleDetected(ILogger logger);
     }
 }
