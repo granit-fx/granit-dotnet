@@ -3862,7 +3862,7 @@
       "fqn": "Granit.Authentication.ApiKeys.Events.ApiKeyCreatedEto",
       "kind": "record",
       "project": "Granit.Authentication.ApiKeys",
-      "file": "src/Granit.Authentication.ApiKeys/Events/ApiKeyCreatedEvent.cs",
+      "file": "src/Granit.Authentication.ApiKeys/Events/ApiKeyCreatedEto.cs",
       "line": 12,
       "members": []
     },
@@ -3876,11 +3876,11 @@
       "members": []
     },
     {
-      "name": "ApiKeyRevokedEvent",
-      "fqn": "Granit.Authentication.ApiKeys.Events.ApiKeyRevokedEvent",
+      "name": "ApiKeyRevokedEto",
+      "fqn": "Granit.Authentication.ApiKeys.Events.ApiKeyRevokedEto",
       "kind": "record",
       "project": "Granit.Authentication.ApiKeys",
-      "file": "src/Granit.Authentication.ApiKeys/Events/ApiKeyRevokedEvent.cs",
+      "file": "src/Granit.Authentication.ApiKeys/Events/ApiKeyRevokedEto.cs",
       "line": 11,
       "members": []
     },
@@ -3889,7 +3889,7 @@
       "fqn": "Granit.Authentication.ApiKeys.Events.ApiKeyRotatedEto",
       "kind": "record",
       "project": "Granit.Authentication.ApiKeys",
-      "file": "src/Granit.Authentication.ApiKeys/Events/ApiKeyRotatedEvent.cs",
+      "file": "src/Granit.Authentication.ApiKeys/Events/ApiKeyRotatedEto.cs",
       "line": 12,
       "members": []
     },
@@ -4169,7 +4169,7 @@
       "kind": "class",
       "project": "Granit.Authentication.DPoP",
       "file": "src/Granit.Authentication.DPoP/GranitAuthenticationDPoPModule.cs",
-      "line": 13,
+      "line": 16,
       "members": [
         {
           "name": "ConfigureServices",
@@ -7248,7 +7248,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/GranitBlobStorageEndpointsModule.cs",
-      "line": 14,
+      "line": 16,
       "members": []
     },
     {

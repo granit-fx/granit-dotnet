@@ -183,6 +183,7 @@ environment variables. Never commit secrets to source control.
 | `Permissions` | `string[]` | OpenIddict permissions (e.g., `ept:token`, `gt:authorization_code`, `scp:openid`). |
 | `RedirectUris` | `string[]` | Allowed redirect URIs after authorization. |
 | `PostLogoutRedirectUris` | `string[]` | Allowed redirect URIs after logout. |
+| `SigningKeyJwk` | `string?` | JWK Set containing the client's public key for `private_key_jwt` authentication (RFC 7523). |
 
 ### OidcScopeSeedDescriptor
 
@@ -366,6 +367,7 @@ by `GranitFeaturesModule`). Resolution order: Tenant > Plan > Default.
 | `OpenIddict.ExternalLogins` | `true` | External login providers (Google, Microsoft, GitHub). |
 | `OpenIddict.PkceRequired` | `true` | PKCE requirement for all authorization code flows. |
 | `OpenIddict.Passkeys` | `false` | WebAuthn/FIDO2 passwordless authentication. |
+| `OpenIddict.JarRequired` | `false` | Require JWT-Secured Authorization Requests (RFC 9101). |
 
 Feature constants are defined in `OpenIddictFeatureNames`:
 
@@ -377,6 +379,7 @@ public static class OpenIddictFeatureNames
     public const string ExternalLogins = "OpenIddict.ExternalLogins";
     public const string PkceRequired = "OpenIddict.PkceRequired";
     public const string Passkeys = "OpenIddict.Passkeys";
+    public const string JarRequired = "OpenIddict.JarRequired";
 }
 ```
 
@@ -456,7 +459,7 @@ These are build-time defaults. The `MaxLoginAttempts` runtime setting
 ## Related pages
 
 - [Overview](./index/)
-- [OIDC server configuration](./oidc-server/)
+- [OIDC server configuration](./openid-connect-server/)
 - [User management](./user-management/)
-- [Account API](./account-api/)
+- [Account API](./account-management-api/)
 - [Advanced features](./advanced/)

@@ -23,6 +23,9 @@ resolution, authorization checks.
 | You manage user accounts (CRUD, sync) | [Identity](/dotnet/security/identity/) | When your API owns user lifecycle (registration, deactivation, profile sync) |
 | Users can request data export or deletion | [Privacy](/dotnet/security/privacy/) | GDPR Art. 15–18 — any app handling EU personal data |
 | Your SPA uses cookie-based auth with consent | [Cookies](/dotnet/security/cookies/) | Browser-based apps with GDPR cookie consent requirements |
+| Your SPA should never touch tokens | [BFF](/dotnet/security/bff/) | SPAs where tokens must stay server-side (XSS mitigation, OAuth BCP) |
+| You self-host your identity provider | [OpenIddict](/dotnet/security/openiddict/) | When you need full control over OIDC flows, token issuance, and user management |
+| You need FAPI 2.0 financial-grade security | [FAPI 2.0](/dotnet/security/openiddict/advanced/fapi-2-security-profile/) | Banking, PSD2, or any high-security API requiring PAR + DPoP + private_key_jwt |
 
 :::tip[Minimum security stack]
 **Authentication** (pick one provider) + **Authorization** + **Exception Handling**
@@ -83,15 +86,22 @@ graph TD
     KC[Granit.Authentication.Keycloak] --> JWT
     EID[Granit.Authentication.EntraId] --> JWT
     CG[Granit.Authentication.Cognito] --> JWT
+    GC[Granit.Authentication.GoogleCloud] --> JWT
+    DPOP[Granit.Authentication.DPoP] --> JWT
     AZ[Granit.Authorization] --> S
     AZ --> CA[Granit.Caching]
     AZEF[Granit.Authorization.EntityFrameworkCore] --> AZ
     AZEF --> P[Granit.Persistence]
+    BFF[Granit.Bff] --> S
+    BFFE[Granit.Bff.Endpoints] --> BFF
+    BFFY[Granit.Bff.Yarp] --> BFF
 ```
 
 ## See also
 
-- [Authentication](/dotnet/security/authentication/) -- JWT Bearer, Keycloak, Entra ID, Cognito
+- [Authentication](/dotnet/security/authentication/) -- JWT Bearer, Keycloak, Entra ID, Cognito, Google Cloud, DPoP
+- [BFF](/dotnet/security/bff/) -- Backend For Frontend pattern for SPAs, session management, YARP proxy
+- [OpenIddict](/dotnet/security/openiddict/) -- self-hosted OIDC server, user management, FAPI 2.0
 - [Authorization](/dotnet/security/authorization/) -- RBAC permissions, dynamic policy provider
 - [Identity](/dotnet/security/identity/) -- user management, Keycloak Admin API, user cache
 - [Privacy](/dotnet/security/privacy/) -- GDPR compliance, right to erasure

@@ -195,6 +195,11 @@ All endpoints are grouped under `/bff`:
 | `GET` | `/bff/user` | Return filtered user claims for the SPA | No (returns `authenticated: false`) |
 | `POST` | `/bff/csrf-token` | Generate a CSRF token for the session | Yes (session cookie) |
 
+:::note[Multi-frontend]
+With multi-frontend enabled, all paths become `/{pathPrefix}/bff/...` (e.g., `/admin/bff/login`).
+See [Configuration](/dotnet/security/bff/configuration/) for details.
+:::
+
 ## Next steps
 
 - **[Architecture](/dotnet/security/bff/architecture/)** — detailed flow diagrams for login, API calls, token refresh, and logout
@@ -202,3 +207,12 @@ All endpoints are grouped under `/bff`:
 - **[Security](/dotnet/security/bff/token-security/)** — cookie hardening, CSRF protection, clickjacking, session management
 - **[YARP Proxy](/dotnet/security/bff/reverse-proxy-yarp/)** — route configuration, token injection pipeline, multi-service routing
 - **[Configuration](/dotnet/security/bff/configuration/)** — full `appsettings.json` reference, metrics, and tracing
+
+### Advanced security features
+
+The BFF supports FAPI 2.0 security features configured per-frontend:
+
+- **[Pushed Authorization Requests (PAR)](/dotnet/security/openiddict/advanced/pushed-authorization-requests/)** — move authorization parameters to back-channel
+- **[DPoP (Proof-of-Possession)](/dotnet/security/openiddict/advanced/proof-of-possession-dpop/)** — bind tokens to cryptographic keys
+- **[Private Key JWT](/dotnet/security/openiddict/advanced/private-key-jwt-authentication/)** — eliminate shared secrets for client authentication
+- **[FAPI 2.0 Security Profile](/dotnet/security/openiddict/advanced/fapi-2-security-profile/)** — one-switch financial-grade conformance

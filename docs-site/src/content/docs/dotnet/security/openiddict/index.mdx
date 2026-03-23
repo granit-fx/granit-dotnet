@@ -168,6 +168,14 @@ dotnet ef database update --context OpenIddictDbContext
 | Token Revocation (RFC 7009) | <Badge text="Full" variant="success" /> |
 | RP-Initiated Logout | <Badge text="Full" variant="success" /> |
 | Discovery (`/.well-known/openid-configuration`) | <Badge text="Full" variant="success" /> |
+| Pushed Authorization Requests (RFC 9126) | <Badge text="Full" variant="success" /> |
+| DPoP — Proof-of-Possession (RFC 9449) | <Badge text="Full" variant="success" /> |
+| JWT-Secured Authorization Requests (RFC 9101) | <Badge text="Full" variant="success" /> |
+| Token Exchange (RFC 8693) | <Badge text="Opt-in" variant="note" /> |
+| private_key_jwt (RFC 7523) | <Badge text="Full" variant="success" /> |
+| Authorization Response Issuer Verification (RFC 9207) | <Badge text="Full" variant="success" /> |
+| Back-Channel Logout (OIDC) | <Badge text="Full" variant="success" /> |
+| FAPI 2.0 Security Profile | <Badge text="Full" variant="success" /> |
 | Reference Tokens | <Badge text="Opt-in" variant="note" /> |
 | Passkeys / WebAuthn (FIDO2) | <Badge text="Custom grant" variant="note" /> |
 | TOTP Two-Factor | <Badge text="Custom grant" variant="note" /> |
@@ -227,8 +235,8 @@ The module publishes three integration events via `IDistributedEventBus` (Wolver
 
 ## Next steps
 
-- [OIDC Server Configuration](./oidc-server/) -- flows, endpoints, signing keys
+- [OIDC Server Configuration](./openid-connect-server/) -- flows, endpoints, signing keys
 - [User Management](./user-management/) -- entities, admin API, IIdentityProvider bridge
-- [Account Self-service API](./account-api/) -- registration, 2FA, GDPR
+- [Account Self-service API](./account-management-api/) -- registration, 2FA, GDPR
 - [Advanced Features](./advanced/) -- multi-tenancy, impersonation, passkeys, idle sessions
 - [Configuration Reference](./configuration/) -- all options with JSON examples

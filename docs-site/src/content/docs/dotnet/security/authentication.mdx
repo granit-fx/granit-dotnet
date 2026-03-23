@@ -1,5 +1,5 @@
 ---
-title: "Authentication \u2014 Keycloak, EntraID & JWT"
+title: "Authentication — Keycloak, EntraID & JWT"
 description: Plug-and-play JWT Bearer authentication for Keycloak, Entra ID, and AWS Cognito — provider-specific claims transformation, back-channel logout, and unified ICurrentUserService.
 sidebar:
   order: 1
@@ -30,6 +30,8 @@ rejects the token immediately instead of waiting for expiry.
   - Granit.Authentication.Keycloak Keycloak claims transformation
   - Granit.Authentication.EntraId Entra ID roles parsing
   - Granit.Authentication.Cognito Cognito groups → roles
+  - Granit.Authentication.GoogleCloud Google Cloud Identity Platform claims
+- Granit.Authentication.OpenIddict/ Built-in token validation (OpenIddict as IdP)
 - Granit.Authentication.DPoP/ DPoP proof validation (any IdP)
 
 </FileTree>
@@ -40,6 +42,8 @@ rejects the token immediately instead of waiting for expiry.
 | `Granit.Authentication.Keycloak` | Keycloak claims transformation | `Granit.Authentication.JwtBearer` |
 | `Granit.Authentication.EntraId` | Entra ID roles parsing | `Granit.Authentication.JwtBearer` |
 | `Granit.Authentication.Cognito` | Cognito groups → roles | `Granit.Authentication.JwtBearer` |
+| `Granit.Authentication.GoogleCloud` | Google Cloud Identity Platform claims | `Granit.Authentication.JwtBearer` |
+| `Granit.Authentication.OpenIddict` | Built-in token validation for OpenIddict IdP | `Granit.Security` |
 | `Granit.Authentication.DPoP` | IdP-agnostic DPoP proof validation (RFC 9449) | `Granit.Core`, `Granit.Timing` |
 
 ## Setup
@@ -101,6 +105,54 @@ public class AppModule : GranitModule { }
     "UserPoolId": "eu-west-1_XXXXXXXXX",
     "ClientId": "my-client-id",
     "Region": "eu-west-1"
+  }
+}
+```
+
+</TabItem>
+<TabItem label="Google Cloud / Firebase">
+
+```csharp
+[DependsOn(typeof(GranitAuthenticationGoogleCloudModule))]
+public class AppModule : GranitModule { }
+```
+
+```json
+{
+  "Authentication": {
+    "Authority": "https://securetoken.google.com/{project-id}",
+    "Audience": "{project-id}"
+  },
+  "GoogleCloud": {
+    "ProjectId": "my-gcp-project"
+  }
+}
+```
+
+The module validates JWTs issued by Firebase Auth / Google Cloud Identity Platform and
+extracts custom claims into standard `ClaimTypes.Role`. See
+[Identity](/dotnet/security/identity/) for full Google Cloud identity configuration.
+
+</TabItem>
+<TabItem label="OpenIddict (self-hosted)">
+
+When the API is behind an OpenIddict-based identity server (see the
+[OpenIddict module](/dotnet/security/openiddict/)), use the built-in token validation
+package. It leverages OpenIddict's native validation handler instead of generic JWT Bearer,
+supporting both self-contained JWTs and reference tokens.
+
+```csharp
+[DependsOn(typeof(GranitAuthenticationOpenIddictModule))]
+public class AppModule : GranitModule { }
+```
+
+```json
+{
+  "Authentication": {
+    "OpenIddict": {
+      "Issuer": "https://auth.example.com",
+      "Audience": "my-api"
+    }
   }
 }
 ```
@@ -305,12 +357,13 @@ Enabling it while some clients still use plain Bearer tokens will lock those cli
 
 | Category | Key types | Package |
 |----------|-----------|---------|
-| Modules | `GranitJwtBearerModule`, `GranitAuthenticationKeycloakModule`, `GranitAuthenticationEntraIdModule`, `GranitAuthenticationCognitoModule` | — |
+| Modules | `GranitJwtBearerModule`, `GranitAuthenticationKeycloakModule`, `GranitAuthenticationEntraIdModule`, `GranitAuthenticationCognitoModule`, `GranitAuthenticationGoogleCloudModule`, `GranitAuthenticationOpenIddictModule` | — |
 | Abstractions | `CurrentUserService`, `IRevokedSessionStore`, `BackChannelLogoutTokenValidator` | `Granit.Authentication.JwtBearer` |
 | Claims | `KeycloakClaimsTransformation` | `Granit.Authentication.Keycloak` |
 | Claims | `EntraIdClaimsTransformation` | `Granit.Authentication.EntraId` |
 | Claims | `CognitoClaimsTransformation` | `Granit.Authentication.Cognito` |
-| Options | `JwtBearerAuthOptions`, `KeycloakOptions`, `CognitoOptions` | — |
+| Claims | `GoogleCloudClaimsTransformation` | `Granit.Authentication.GoogleCloud` |
+| Options | `JwtBearerAuthOptions`, `KeycloakOptions`, `CognitoOptions`, `GoogleCloudOptions` | — |
 | DPoP | `IDPoPProofValidator`, `JwkThumbprintCalculator`, `DPoPValidationMiddleware` | `Granit.Authentication.DPoP` |
 | Extensions | `AddGranitJwtBearer()`, `AddGranitKeycloak()`, `AddGranitCognito()`, `MapBackChannelLogout()`, `UseGranitDPoPValidation()` | — |
 
@@ -321,3 +374,4 @@ Enabling it while some clients still use plain Bearer tokens will lock those cli
 - [Authorization](/dotnet/security/authorization/) -- RBAC permissions, dynamic policy provider
 - [Security](/dotnet/security/security-overview/) -- core abstractions (ICurrentUserService, ActorKind)
 - [Identity](/dotnet/security/identity/) -- user management, Keycloak Admin API, user cache
+- [OpenIddict](/dotnet/security/openiddict/) -- self-hosted OIDC server with OpenIddict

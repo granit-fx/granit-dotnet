@@ -302,8 +302,27 @@ sequenceDiagram
 
 **Why PostConfigure instead of a separate auth scheme?** ASP.NET Core's default authentication scheme is the one that runs on `[Authorize]`. If the Keycloak module registered its own scheme, every endpoint would need `[Authorize(AuthenticationSchemes = "Keycloak")]`. PostConfigure modifies the default JWT Bearer scheme in place, so `[Authorize]` just works.
 
+## BFF pattern and advanced security
+
+For single-page applications, the **Backend For Frontend (BFF)** pattern moves all token
+handling to the server. The SPA never sees or stores access tokens — it only uses an
+HTTP-only cookie for session binding. This eliminates the XSS token theft attack surface
+entirely. See [BFF](/dotnet/security/bff/) for the full architecture.
+
+Granit also supports **FAPI 2.0** financial-grade security features: **DPoP** (sender-constrained
+tokens — prevents token replay), **PAR** (pushed authorization — prevents parameter tampering),
+and **private_key_jwt** (asymmetric client authentication — eliminates shared secrets).
+These are configured per BFF frontend and work with any OIDC provider.
+
+For self-hosted identity, **OpenIddict** provides a full OIDC server embedded in your
+application, with user management, account API, and all FAPI 2.0 features built in.
+See [OpenIddict](/dotnet/security/openiddict/).
+
 ## Next steps
 
 - [Security reference](/dotnet/security/authentication/) -- full API surface, configuration tables, EF Core permission store
-- [Compliance concept](./compliance/) -- how the security model supports GDPR and ISO 27001
+- [BFF](/dotnet/security/bff/) -- Backend For Frontend security proxy for SPAs
+- [OpenIddict](/dotnet/security/openiddict/) -- self-hosted OIDC server
+- [FAPI 2.0](/dotnet/security/openiddict/advanced/fapi-2-security-profile/) -- financial-grade conformance
+- [Compliance concept](/dotnet/concepts/compliance/) -- how the security model supports GDPR and ISO 27001
 - [Identity reference](/dotnet/security/identity/) -- user management via Keycloak Admin API or Cognito User Pool API

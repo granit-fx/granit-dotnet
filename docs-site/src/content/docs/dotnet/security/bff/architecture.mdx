@@ -297,6 +297,11 @@ and removes all matching sessions for the subject from the token store. This ens
 server-side session cleanup even when the user closes the browser without calling
 `/bff/logout`.
 
+:::note[BFF vs API back-channel logout]
+`/{prefix}/bff/backchannel-logout` invalidates **BFF cookie sessions** (this module).
+`/auth/back-channel-logout` (documented in [Authentication](/dotnet/security/authentication/)) handles **API-level token revocation** for JWT Bearer resource servers. They serve different purposes and can coexist.
+:::
+
 ## Session management
 
 The BFF provides endpoints for listing and revoking active sessions per user:
