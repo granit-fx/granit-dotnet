@@ -65,6 +65,7 @@
       "src/Granit.Wolverine/Granit.Wolverine.csproj",
       "tests/Granit.BackgroundJobs.Endpoints.Tests/Granit.BackgroundJobs.Endpoints.Tests.csproj",
       "tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests.csproj",
+      "tests/Granit.BackgroundJobs.Tests.Integration/Granit.BackgroundJobs.Tests.Integration.csproj",
       "tests/Granit.BackgroundJobs.Tests/Granit.BackgroundJobs.Tests.csproj",
       "tests/Granit.BackgroundJobs.Wolverine.Tests/Granit.BackgroundJobs.Wolverine.Tests.csproj",
       "tests/Granit.EventBus.Tests/Granit.EventBus.Tests.csproj",

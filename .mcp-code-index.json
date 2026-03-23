@@ -137,6 +137,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Authentication.DPoP",
+      "deps": [
+        "Granit.Core",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Authentication.EntraId",
       "deps": [
         "Granit.Authentication.JwtBearer"
@@ -4140,6 +4148,97 @@
       ]
     },
     {
+      "name": "DPoPJwtBearerExtensions",
+      "fqn": "Granit.Authentication.DPoP.Extensions.DPoPJwtBearerExtensions",
+      "kind": "class",
+      "project": "Granit.Authentication.DPoP",
+      "file": "src/Granit.Authentication.DPoP/Extensions/DPoPJwtBearerExtensions.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "AddGranitDPoPValidation",
+          "kind": "method",
+          "signature": "AddGranitDPoPValidation(this IServiceCollection services, Action<DPoPValidationOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitAuthenticationDPoPModule",
+      "fqn": "Granit.Authentication.DPoP.GranitAuthenticationDPoPModule",
+      "kind": "class",
+      "project": "Granit.Authentication.DPoP",
+      "file": "src/Granit.Authentication.DPoP/GranitAuthenticationDPoPModule.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "DPoPValidationOptions",
+      "fqn": "Granit.Authentication.DPoP.Options.DPoPValidationOptions",
+      "kind": "class",
+      "project": "Granit.Authentication.DPoP",
+      "file": "src/Granit.Authentication.DPoP/Options/DPoPValidationOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RequireDPoP",
+          "kind": "property",
+          "signature": "bool RequireDPoP",
+          "returnType": "bool"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan ClockSkew { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan MaxProofLifetime { get; set; } = TimeSpan."
+        },
+        {
+          "name": "EnableReplayProtection",
+          "kind": "property",
+          "signature": "bool EnableReplayProtection",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "DPoPValidationResult",
+      "fqn": "Granit.Authentication.DPoP.Validation.DPoPValidationResult",
+      "kind": "record",
+      "project": "Granit.Authentication.DPoP",
+      "file": "src/Granit.Authentication.DPoP/Validation/IDPoPProofValidator.cs",
+      "line": 32,
+      "members": []
+    },
+    {
+      "name": "IDPoPProofValidator",
+      "fqn": "Granit.Authentication.DPoP.Validation.IDPoPProofValidator",
+      "kind": "interface",
+      "project": "Granit.Authentication.DPoP",
+      "file": "src/Granit.Authentication.DPoP/Validation/IDPoPProofValidator.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "ValidateAsync",
+          "kind": "method",
+          "signature": "ValidateAsync(string proofJwt, string httpMethod, string httpUri, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DPoPValidationResult>"
+        }
+      ]
+    },
+    {
       "name": "EntraIdClaimsTransformation",
       "fqn": "Granit.Authentication.EntraId.Authentication.EntraIdClaimsTransformation",
       "kind": "class",
@@ -5921,7 +6020,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs.Endpoints",
       "file": "src/Granit.BackgroundJobs.Endpoints/GranitBackgroundJobsEndpointsModule.cs",
-      "line": 21,
+      "line": 23,
       "members": []
     },
     {
