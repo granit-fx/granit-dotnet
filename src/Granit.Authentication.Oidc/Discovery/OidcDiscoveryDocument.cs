@@ -103,17 +103,11 @@ public sealed record OidcDiscoveryDocument
             return [];
         }
 
-        var items = new List<string>(element.GetArrayLength());
-
-        foreach (JsonElement item in element.EnumerateArray())
-        {
-            string? value = item.GetString();
-            if (value is not null)
-            {
-                items.Add(value);
-            }
-        }
-
-        return items;
+        return element
+            .EnumerateArray()
+            .Select(item => item.GetString())
+            .Where(value => value is not null)
+            .Select(value => value!)
+            .ToList();
     }
 }
