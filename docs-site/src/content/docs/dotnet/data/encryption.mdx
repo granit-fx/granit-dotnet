@@ -2,8 +2,8 @@
 title: "Field-Level Encryption \u2014 AES & Vault Keys"
 description: Transparent EF Core field-level AES encryption via [Encrypted] attribute, ApplyEncryptionConventions, and a background re-encryption job for seamless key rotation — GDPR Art. 32 compliant.
 sidebar:
-  order: 8
-  label: Field-level Encryption
+  order: 5
+  label: Encryption
 ---
 
 import { Tabs, TabItem, FileTree, Steps, Badge } from "@astrojs/starlight/components";
@@ -74,7 +74,7 @@ all marked fields in batch without downtime.
    }
    ```
 
-   See [Vault & Encryption](/dotnet/security/vault-encryption/) for full provider configuration.
+   See [Vault & Encryption](/dotnet/data/vault-encryption/) for full provider configuration.
 
 </Steps>
 
@@ -224,7 +224,7 @@ producing a new ciphertext encrypted with the current key version. The job is
 :::tip
 Use the `RewrapAsync` method on `ITransitEncryptionService` when you need
 **server-side** re-encryption (Vault Transit rewraps without the plaintext
-ever leaving Vault). See [Vault key rotation](/dotnet/security/vault-encryption/#key-rotation).
+ever leaving Vault). See [Vault key rotation](/dotnet/data/vault-encryption/#key-rotation).
 :::
 
 ### Blocking retired key versions
@@ -413,8 +413,8 @@ public async Task Encrypted_field_is_not_stored_as_plaintext()
 
 ## See also
 
-- [Crypto-Shredding](/dotnet/security/crypto-shredding/) — per-entity key isolation, GDPR erasure by key destruction
+- [Crypto-Shredding](/dotnet/compliance/crypto-shredding/) — per-entity key isolation, GDPR erasure by key destruction
 - [Encrypt sensitive data guide](/dotnet/guides/encrypt-sensitive-data/) — step-by-step walkthrough
-- [Vault & Encryption](/dotnet/security/vault-encryption/) — provider configuration, key rotation, `ITransitEncryptionService`
-- [Privacy module](/dotnet/security/privacy/) — GDPR erasure patterns
+- [Vault & Encryption](/dotnet/data/vault-encryption/) — provider configuration, key rotation, `ITransitEncryptionService`
+- [Privacy module](/dotnet/compliance/privacy/) — GDPR erasure patterns
 - [Persistence module](/dotnet/data/persistence/) — isolated `DbContext`, `ApplyGranitConventions`

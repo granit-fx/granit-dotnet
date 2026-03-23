@@ -180,7 +180,7 @@ Skip it when:
 
 ## Further reading
 
-- [Crypto-Shredding module reference](/dotnet/security/crypto-shredding/) — setup, API reference, Vault KV structure
-- [Field-level Encryption](/dotnet/security/encryption/) — shared key encryption, `[Encrypted]` attribute, key rotation
-- [Privacy module](/dotnet/security/privacy/) — GDPR deletion saga, cooling-off period, `DeletionAction`
+- [Crypto-Shredding module reference](/dotnet/compliance/crypto-shredding/) — setup, API reference, Vault KV structure
+- [Field-level Encryption](/dotnet/data/encryption/) — shared key encryption, `[Encrypted]` attribute, key rotation
+- [Privacy module](/dotnet/compliance/privacy/) — GDPR deletion saga, cooling-off period, `DeletionAction`
 - [GDPR by Design](/blog/gdpr-by-design/) — broader privacy patterns in Granit

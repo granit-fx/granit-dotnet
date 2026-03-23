@@ -5651,7 +5651,7 @@
       "kind": "class",
       "project": "Granit.Authorization.Endpoints",
       "file": "src/Granit.Authorization.Endpoints/GranitAuthorizationEndpointsModule.cs",
-      "line": 21,
+      "line": 23,
       "members": []
     },
     {
@@ -6501,7 +6501,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/GranitBffEndpointsModule.cs",
-      "line": 12,
+      "line": 14,
       "members": []
     },
     {
@@ -9737,7 +9737,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.EntityFrameworkCore",
       "file": "src/Granit.DataExchange.EntityFrameworkCore/GranitDataExchangeEntityFrameworkCoreModule.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {
@@ -10161,7 +10161,7 @@
       "fqn": "Granit.DataExchange.Export.Messages.ExportJobCompletedEto",
       "kind": "record",
       "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Export/Messages/ExportJobCompletedEvent.cs",
+      "file": "src/Granit.DataExchange/Export/Messages/ExportJobCompletedEto.cs",
       "line": 19,
       "members": []
     },
@@ -10187,7 +10187,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/GranitDataExchangeModule.cs",
-      "line": 35,
+      "line": 37,
       "members": [
         {
           "name": "ConfigureServices",
@@ -10705,7 +10705,7 @@
       "fqn": "Granit.DataExchange.Import.Messages.ImportJobCompletedEto",
       "kind": "record",
       "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Import/Messages/ImportJobCompletedEvent.cs",
+      "file": "src/Granit.DataExchange/Import/Messages/ImportJobCompletedEto.cs",
       "line": 25,
       "members": []
     },

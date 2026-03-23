@@ -183,8 +183,13 @@ export default defineConfig({
                   collapsed: true,
                 },
                 {
-                  label: "Security & Compliance",
+                  label: "Security",
                   autogenerate: { directory: "dotnet/security" },
+                  collapsed: true,
+                },
+                {
+                  label: "Compliance",
+                  autogenerate: { directory: "dotnet/compliance" },
                   collapsed: true,
                 },
                 {

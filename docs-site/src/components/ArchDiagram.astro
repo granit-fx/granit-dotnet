@@ -67,7 +67,6 @@ const layers: Layer[] = [
       { name: "ExceptionHandling",pkg:"Granit.ExceptionHandling",href: "/dotnet/api/exception-handling/",tip: "RFC 7807 Problem Details, global error mapping" },
       { name: "Webhooks",        pkg: "Granit.Webhooks",        href: "/dotnet/api/webhooks/",          tip: "HMAC-signed outbound webhook delivery with retry" },
       { name: "ResponseCompression", pkg: "Granit.ResponseCompression", href: "/dotnet/api/response-compression/", tip: "Brotli + gzip with safe HTTPS defaults, SSE exclusion" },
-      { name: "Cookies",         pkg: "Granit.Http.Cookies",         href: "/dotnet/security/cookies/",         tip: "Cookie consent management (Klaro) — GDPR/ePrivacy" },
     ],
   },
   {
@@ -85,20 +84,31 @@ const layers: Layer[] = [
     ],
   },
   {
-    id: "security",
-    label: "Security & Compliance",
+    id: "compliance",
+    label: "Compliance",
     sublabel: "GDPR · ISO 27001",
+    color: "compliance",
+    modules: [
+      { name: "Privacy",         pkg: "Granit.Privacy",         href: "/dotnet/compliance/privacy/",         tip: "GDPR: erasure, data provider registry, consent" },
+      { name: "AuditLog",        pkg: "Granit.AuditLog",        href: "/dotnet/compliance/audit-log/",       tip: "Hierarchical audit trail: auto-capture, querying, retention (ISO 27001)" },
+      { name: "CryptoShredding", pkg: "Granit.Privacy.CryptoShredding", href: "/dotnet/compliance/crypto-shredding/", tip: "GDPR erasure via per-entity key destruction" },
+      { name: "Cookies",         pkg: "Granit.Http.Cookies",    href: "/dotnet/compliance/cookies/",         tip: "Cookie consent management (Klaro) — GDPR/ePrivacy" },
+    ],
+  },
+  {
+    id: "security",
+    label: "Security",
     color: "security",
     modules: [
-      { name: "AuditLog",        pkg: "Granit.AuditLog",        href: "/dotnet/security/audit-log/",       tip: "Hierarchical audit trail: auto-capture, querying, retention (ISO 27001)" },
+      { name: "Authentication",  pkg: "Granit.Authentication",  href: "/dotnet/security/authentication/",  tip: "JWT Bearer, Keycloak, Entra ID, Cognito, Google Cloud" },
       { name: "Authorization",   pkg: "Granit.Authorization",   href: "/dotnet/security/authorization/",   tip: "RBAC, permission checker, policy builder" },
-      { name: "Authentication",  pkg: "Granit.Authentication",  href: "/dotnet/security/authentication/",  tip: "JWT Bearer, API key, refresh token pipeline" },
       { name: "Identity",        pkg: "Granit.Identity",        href: "/dotnet/security/identity/",        tip: "Keycloak / EntraID / Cognito, user cache" },
-      { name: "Security",        pkg: "Granit.Security",        href: "/dotnet/security/security-overview/",        tip: "Headers, rate limiting, CORS hardening" },
-      { name: "Privacy",         pkg: "Granit.Privacy",         href: "/dotnet/security/privacy/",         tip: "GDPR: erasure, data provider registry" },
-      { name: "Vault",           pkg: "Granit.Vault",           href: "/dotnet/security/vault-encryption/",           tip: "HashiCorp Vault integration, secret rotation" },
-      { name: "Encryption",      pkg: "Granit.Encryption",      href: "/dotnet/security/encryption/",      tip: "Field-level AES-256-GCM encryption" },
+      { name: "Oidc",            pkg: "Granit.Authentication.Oidc", href: "/dotnet/security/authentication-oidc/", tip: "OIDC client primitives: discovery, DPoP, PKCE, typed requests" },
+      { name: "TokenMgmt",       pkg: "Granit.Authentication.TokenManagement", href: "/dotnet/security/token-management/", tip: "Token lifecycle: client credentials caching, DelegatingHandler" },
+      { name: "DPoP",            pkg: "Granit.Authentication.DPoP", href: "/dotnet/security/openiddict/advanced/dpop-resource-server-validation/", tip: "IdP-agnostic DPoP proof validation (RFC 9449)" },
       { name: "OpenIddict",     pkg: "Granit.OpenIddict",      href: "/dotnet/security/openiddict/",      tip: "Self-hosted OIDC server, user management, 2FA, passkeys, key rotation" },
+      { name: "BFF",             pkg: "Granit.Bff",             href: "/dotnet/security/bff/",             tip: "Backend For Frontend: OIDC proxy, token store, CSRF, YARP" },
+      { name: "Security",        pkg: "Granit.Security",        href: "/dotnet/security/security-overview/",        tip: "Security headers, CORS hardening" },
     ],
   },
   {
@@ -110,6 +120,8 @@ const layers: Layer[] = [
       { name: "Caching",         pkg: "Granit.Caching",         href: "/dotnet/data/caching/",         tip: "HybridCache: in-process + distributed (Redis, SQL)" },
       { name: "BlobStorage",     pkg: "Granit.BlobStorage",     href: "/dotnet/data/blob-storage/",    tip: "Multi-provider: S3, Azure Blob, GCS, FileSystem, Database" },
       { name: "Imaging",         pkg: "Granit.Imaging",         href: "/dotnet/data/imaging/",         tip: "Image processing pipeline: resize, crop, convert, watermark" },
+      { name: "Encryption",      pkg: "Granit.Encryption",      href: "/dotnet/data/encryption/",      tip: "Field-level AES-256-GCM encryption" },
+      { name: "Vault",           pkg: "Granit.Vault",           href: "/dotnet/data/vault-encryption/",tip: "HashiCorp Vault integration, secret rotation" },
     ],
   },
   {
@@ -309,6 +321,7 @@ const layers: Layer[] = [
   .arch-layer--business { --lc: #e879f9; --lt: #c026d3; }  /* fuchsia      */
   .arch-layer--api      { --lc: #ec4899; --lt: #db2777; }  /* pink         */
   .arch-layer--infra    { --lc: #7c3aed; --lt: #6d28d9; }  /* violet       — Granit accent */
+  .arch-layer--compliance { --lc: #8b5cf6; --lt: #7c3aed; } /* purple       */
   .arch-layer--security { --lc: #6366f1; --lt: #4f46e5; }  /* indigo       */
   .arch-layer--data     { --lc: #3b82f6; --lt: #2563eb; }  /* blue         */
   .arch-layer--core     { --lc: #0ea5e9; --lt: #0284c7; }  /* sky blue     */
