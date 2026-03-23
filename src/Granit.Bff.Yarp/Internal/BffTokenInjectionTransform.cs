@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Granit.Bff.ClientAssertion;
 using Granit.Bff.Diagnostics;
 using Granit.Bff.DPoP;
 using Granit.Bff.Options;
@@ -26,6 +27,7 @@ internal sealed partial class BffTokenInjectionTransform(
     IOptions<GranitBffOptions> options,
     IHttpClientFactory httpClientFactory,
     IBffDPoPService dpopService,
+    IBffClientAssertionService assertionService,
     BffMetrics metrics,
     IClock clock,
     ILogger<BffTokenInjectionTransform> logger) : RequestTransform
@@ -169,8 +171,9 @@ internal sealed partial class BffTokenInjectionTransform(
                 ["grant_type"] = "refresh_token",
                 ["refresh_token"] = currentTokens.RefreshToken!,
                 ["client_id"] = frontend.ClientId,
-                ["client_secret"] = frontend.ClientSecret,
             };
+
+            BffClientAuthentication.Apply(parameters, frontend, tokenEndpoint, assertionService);
 
             using FormUrlEncodedContent content = new(parameters);
             using var request = new HttpRequestMessage(HttpMethod.Post, tokenEndpoint) { Content = content };

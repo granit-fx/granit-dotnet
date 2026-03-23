@@ -23,18 +23,20 @@ public sealed class GranitOpenIddictSeedingOptions
 /// Describes an OIDC application to seed.
 /// </summary>
 /// <param name="ClientId">The client identifier (unique key for upsert).</param>
-/// <param name="ClientSecret">The client secret (encrypted before persistence). Null for public clients. Use Vault in production.</param>
+/// <param name="ClientSecret">The client secret (encrypted before persistence). Null for public clients or <c>private_key_jwt</c> clients. Use Vault in production.</param>
 /// <param name="DisplayName">A human-readable display name.</param>
 /// <param name="Permissions">OpenIddict permissions (e.g., <c>ept:token</c>, <c>gt:authorization_code</c>).</param>
 /// <param name="RedirectUris">Allowed redirect URIs.</param>
 /// <param name="PostLogoutRedirectUris">Allowed post-logout redirect URIs.</param>
+/// <param name="SigningKeyJwk">Optional public signing key as JWK JSON for <c>private_key_jwt</c> client authentication (RFC 7523). When set, the client authenticates with a signed JWT assertion instead of a shared secret.</param>
 public sealed record OidcApplicationSeedDescriptor(
     string ClientId,
     string? ClientSecret,
     string DisplayName,
     string[] Permissions,
     string[] RedirectUris,
-    string[] PostLogoutRedirectUris);
+    string[] PostLogoutRedirectUris,
+    string? SigningKeyJwk = null);
 
 /// <summary>
 /// Describes an OIDC scope to seed.

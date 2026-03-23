@@ -1,7 +1,9 @@
+using System.Text.Json;
 using Granit.OpenIddict.Options;
 using Granit.Persistence.DataSeeding;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Seeding;
@@ -89,6 +91,12 @@ internal sealed partial class OpenIddictSeedContributor(
                 appDescriptor.PostLogoutRedirectUris.Add(new Uri(uri));
             }
 
+            // Register client's public key for private_key_jwt authentication (RFC 7523)
+            if (!string.IsNullOrEmpty(descriptor.SigningKeyJwk))
+            {
+                appDescriptor.JsonWebKeySet = BuildJsonWebKeySet(descriptor.SigningKeyJwk);
+            }
+
             await applicationManager.CreateAsync(appDescriptor, cancellationToken).ConfigureAwait(false);
             Log.ApplicationCreated(logger, descriptor.ClientId);
         }
@@ -117,6 +125,11 @@ internal sealed partial class OpenIddictSeedContributor(
             {
                 appDescriptor.PostLogoutRedirectUris.Add(new Uri(uri));
             }
+
+            // Update client's public key for private_key_jwt authentication (RFC 7523)
+            appDescriptor.JsonWebKeySet = !string.IsNullOrEmpty(descriptor.SigningKeyJwk)
+                ? BuildJsonWebKeySet(descriptor.SigningKeyJwk)
+                : null;
 
             await applicationManager.UpdateAsync(existing, appDescriptor, cancellationToken)
                 .ConfigureAwait(false);
@@ -164,6 +177,30 @@ internal sealed partial class OpenIddictSeedContributor(
                 .ConfigureAwait(false);
             Log.ScopeUpdated(logger, descriptor.Name);
         }
+    }
+
+    /// <summary>
+    /// Builds a <see cref="JsonWebKeySet"/> from a JWK JSON string,
+    /// stripping private key parameters to store only the public key.
+    /// </summary>
+    private static JsonWebKeySet BuildJsonWebKeySet(string jwkJson)
+    {
+        var jwk = new JsonWebKey(jwkJson);
+
+        // Strip private key parameters — only store the public key
+        jwk.D = null;
+        jwk.P = null;
+        jwk.Q = null;
+        jwk.DP = null;
+        jwk.DQ = null;
+        jwk.QI = null;
+
+        // Set key use to signing (required by OpenIddict for assertion validation)
+        jwk.Use = JsonWebKeyUseNames.Sig;
+
+        var jwks = new JsonWebKeySet();
+        jwks.Keys.Add(jwk);
+        return jwks;
     }
 
     private static partial class Log

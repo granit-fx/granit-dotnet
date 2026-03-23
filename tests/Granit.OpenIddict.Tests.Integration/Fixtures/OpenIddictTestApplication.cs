@@ -1,5 +1,7 @@
 using System.Diagnostics.Metrics;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text.Json;
 using Granit.Core.Events;
 using Granit.Core.MultiTenancy;
 using Granit.Identity;
@@ -20,6 +22,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.IdentityModel.Tokens;
 using NSubstitute;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
@@ -38,9 +41,23 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
 
     internal const string TestClientId = "test-app";
     internal const string TestClientSecret = "test-secret-K8s!2024#Strong";
+    internal const string TestPkjwtClientId = "test-app-pkjwt";
     internal const string TestUserEmail = "testuser@example.com";
     internal const string TestUserPassword = "P@ssw0rd!Strong2024";
     internal const string TestIssuer = "http://localhost";
+
+    /// <summary>
+    /// EC P-256 key pair generated once for <c>private_key_jwt</c> tests.
+    /// The public key is registered with the OIDC application; the private key
+    /// is used by tests to sign client assertions.
+    /// </summary>
+    private static readonly ECDsa PkjwtKeyPair = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+
+    /// <summary>Gets the private key JWK for signing client assertions in tests.</summary>
+    internal static string TestPkjwtPrivateKeyJwk { get; } = ExportEcPrivateKeyJwk(PkjwtKeyPair);
+
+    /// <summary>Gets the public key JWK registered on the OIDC application.</summary>
+    private static string TestPkjwtPublicKeyJwk { get; } = ExportEcPublicKeyJwk(PkjwtKeyPair);
 
     public async ValueTask InitializeAsync()
     {
@@ -170,7 +187,7 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
 
     private static async Task SeedTestDataAsync(IServiceProvider services)
     {
-        // Seed OIDC application
+        // Seed OIDC application (client_secret)
         IOpenIddictApplicationManager appManager =
             services.GetRequiredService<IOpenIddictApplicationManager>();
 
@@ -201,6 +218,32 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
             await appManager.CreateAsync(descriptor);
         }
 
+        // Seed OIDC application (private_key_jwt — no client secret, public key registered)
+        object? pkjwtExisting = await appManager.FindByClientIdAsync(TestPkjwtClientId);
+        if (pkjwtExisting is null)
+        {
+            var pkjwtDescriptor = new OpenIddictApplicationDescriptor
+            {
+                ClientId = TestPkjwtClientId,
+                DisplayName = "Test Application (private_key_jwt)",
+            };
+
+            pkjwtDescriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
+            pkjwtDescriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Introspection);
+            pkjwtDescriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Revocation);
+            pkjwtDescriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials);
+            pkjwtDescriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.RefreshToken);
+            pkjwtDescriptor.Permissions.Add(OpenIddictConstants.Permissions.Prefixes.Scope + "openid");
+
+            // Register the public key for client assertion validation
+            var publicJwk = new JsonWebKey(TestPkjwtPublicKeyJwk) { Use = JsonWebKeyUseNames.Sig };
+            var jwks = new JsonWebKeySet();
+            jwks.Keys.Add(publicJwk);
+            pkjwtDescriptor.JsonWebKeySet = jwks;
+
+            await appManager.CreateAsync(pkjwtDescriptor);
+        }
+
         // Seed test user
         UserManager<GranitUser> userManager =
             services.GetRequiredService<UserManager<GranitUser>>();
@@ -225,6 +268,37 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
             }
         }
     }
+
+    private static string ExportEcPrivateKeyJwk(ECDsa ecdsa)
+    {
+        ECParameters parameters = ecdsa.ExportParameters(includePrivateParameters: true);
+        return JsonSerializer.Serialize(new Dictionary<string, string>
+        {
+            ["kty"] = "EC",
+            ["crv"] = "P-256",
+            ["x"] = Base64UrlEncode(parameters.Q.X!),
+            ["y"] = Base64UrlEncode(parameters.Q.Y!),
+            ["d"] = Base64UrlEncode(parameters.D!),
+        });
+    }
+
+    private static string ExportEcPublicKeyJwk(ECDsa ecdsa)
+    {
+        ECParameters parameters = ecdsa.ExportParameters(includePrivateParameters: false);
+        return JsonSerializer.Serialize(new Dictionary<string, string>
+        {
+            ["kty"] = "EC",
+            ["crv"] = "P-256",
+            ["x"] = Base64UrlEncode(parameters.Q.X!),
+            ["y"] = Base64UrlEncode(parameters.Q.Y!),
+        });
+    }
+
+    private static string Base64UrlEncode(byte[] data) =>
+        Convert.ToBase64String(data)
+            .Replace('+', '-')
+            .Replace('/', '_')
+            .TrimEnd('=');
 
     /// <summary>Minimal meter factory for test isolation.</summary>
     private sealed class TestMeterFactory : IMeterFactory

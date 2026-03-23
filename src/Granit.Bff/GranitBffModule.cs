@@ -1,3 +1,4 @@
+using Granit.Bff.ClientAssertion;
 using Granit.Bff.Diagnostics;
 using Granit.Bff.DPoP;
 using Granit.Bff.Internal;
@@ -31,6 +32,7 @@ public sealed class GranitBffModule : GranitModule
         context.Services.TryAddScoped<IBffTokenStore, DistributedCacheBffTokenStore>();
         context.Services.TryAddSingleton<IBffCsrfTokenGenerator, HmacBffCsrfTokenGenerator>();
         context.Services.TryAddSingleton<IBffDPoPService, DefaultBffDPoPService>();
+        context.Services.TryAddSingleton<IBffClientAssertionService, DefaultBffClientAssertionService>();
 
         GranitActivitySourceRegistry.Register(BffActivitySource.Name);
     }

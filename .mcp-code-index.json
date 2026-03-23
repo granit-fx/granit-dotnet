@@ -5744,6 +5744,38 @@
       "members": []
     },
     {
+      "name": "BffClientAuthentication",
+      "fqn": "Granit.Bff.ClientAssertion.BffClientAuthentication",
+      "kind": "class",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/ClientAssertion/BffClientAuthentication.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Apply",
+          "kind": "method",
+          "signature": "Apply(Dictionary<string, string> parameters, BffFrontendOptions frontend, string tokenEndpoint, IBffClientAssertionService assertionService)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IBffClientAssertionService",
+      "fqn": "Granit.Bff.ClientAssertion.IBffClientAssertionService",
+      "kind": "interface",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/ClientAssertion/IBffClientAssertionService.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "CreateAssertion",
+          "kind": "method",
+          "signature": "CreateAssertion(string privateKeyJwk, string clientId, string tokenEndpoint)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "IBffDPoPService",
       "fqn": "Granit.Bff.DPoP.IBffDPoPService",
       "kind": "interface",
@@ -5852,7 +5884,7 @@
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/GranitBffModule.cs",
-      "line": 26,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",
@@ -5913,12 +5945,21 @@
       ]
     },
     {
+      "name": "BffClientAuthenticationMethod",
+      "fqn": "Granit.Bff.Options.BffClientAuthenticationMethod",
+      "kind": "enum",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/Options/GranitBffOptions.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "BffFrontendOptions",
       "fqn": "Granit.Bff.Options.BffFrontendOptions",
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/Options/GranitBffOptions.cs",
-      "line": 40,
+      "line": 58,
       "members": [
         {
           "name": "Name",
@@ -5973,6 +6014,12 @@
           "kind": "property",
           "signature": "string EffectivePostLogoutRedirectPath",
           "returnType": "string"
+        },
+        {
+          "name": "UsePushedAuthorizationRequests",
+          "kind": "property",
+          "signature": "bool UsePushedAuthorizationRequests",
+          "returnType": "bool"
         }
       ]
     },
@@ -5982,7 +6029,7 @@
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/Options/GranitBffOptions.cs",
-      "line": 11,
+      "line": 29,
       "members": [
         {
           "name": "Authority",
@@ -19305,7 +19352,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 31,
+      "line": 32,
       "members": []
     },
     {
@@ -19314,7 +19361,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 45,
+      "line": 47,
       "members": []
     },
     {

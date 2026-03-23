@@ -1,6 +1,24 @@
 namespace Granit.Bff.Options;
 
 /// <summary>
+/// Client authentication method used by the BFF when communicating with the token endpoint.
+/// </summary>
+public enum BffClientAuthenticationMethod
+{
+    /// <summary>
+    /// <c>client_secret_post</c> — sends <c>client_id</c> and <c>client_secret</c> in the POST body.
+    /// This is the default and simplest method, but prohibited by FAPI 2.0.
+    /// </summary>
+    ClientSecretPost,
+
+    /// <summary>
+    /// <c>private_key_jwt</c> (RFC 7523) — sends a signed JWT assertion using the client's private key.
+    /// Required for FAPI 2.0 conformance when not using mTLS.
+    /// </summary>
+    PrivateKeyJwt,
+}
+
+/// <summary>
 /// Configuration options for the BFF security proxy.
 /// Bind from <c>Bff</c> configuration section.
 /// </summary>
@@ -113,5 +131,30 @@ public sealed class BffFrontendOptions
     /// Default: <see langword="false"/>.
     /// </remarks>
     public bool UseDPoP { get; set; }
+
+    /// <summary>
+    /// Gets or sets the client authentication method for token endpoint requests.
+    /// </summary>
+    /// <remarks>
+    /// <para>Default: <see cref="BffClientAuthenticationMethod.ClientSecretPost"/>.</para>
+    /// <para>
+    /// Set to <see cref="BffClientAuthenticationMethod.PrivateKeyJwt"/> for FAPI 2.0
+    /// conformance. Requires <see cref="ClientSigningKeyJwk"/> to be configured with
+    /// the client's private key.
+    /// </para>
+    /// </remarks>
+    public BffClientAuthenticationMethod ClientAuthenticationMethod { get; set; }
+        = BffClientAuthenticationMethod.ClientSecretPost;
+
+    /// <summary>
+    /// Gets or sets the client's private signing key as a JWK JSON string.
+    /// Required when <see cref="ClientAuthenticationMethod"/> is
+    /// <see cref="BffClientAuthenticationMethod.PrivateKeyJwt"/>.
+    /// </summary>
+    /// <remarks>
+    /// Supports EC (ES256) and RSA (PS256) keys. The JWK must include private key
+    /// parameters (<c>d</c> for EC, <c>d</c>/<c>p</c>/<c>q</c> for RSA).
+    /// </remarks>
+    public string? ClientSigningKeyJwk { get; set; }
 }
 #pragma warning restore GRSEC003
