@@ -277,6 +277,59 @@ available in the session store, the BFF includes it automatically. If the
 session has already expired, logout still works — the user is simply shown
 the IdP's logout confirmation page.
 
+## Token revocation on logout (RFC 7009)
+
+When a user logs out, the BFF revokes both the refresh token and access token at
+the authorization server's `/connect/revoke` endpoint (RFC 7009) before clearing
+the local session. This is a **best-effort** operation -- logout always completes
+even if revocation fails (e.g., the IdP is temporarily unreachable). Revocation
+order: refresh token first (cascades to access token in OpenIddict), then explicit
+access token revocation for defense in depth. DPoP proofs and `private_key_jwt`
+assertions are included in revocation requests when those features are enabled.
+
+## Back-channel logout (OIDC)
+
+The BFF supports [OIDC Back-Channel Logout 1.0](https://openid.net/specs/openid-connect-backchannel-1_0.html).
+When a user logs out at the identity provider (or an admin revokes a session), the
+IdP sends a signed `logout_token` to `/{pathPrefix}/bff/backchannel-logout`. The
+endpoint validates the JWT signature, checks for replay (`jti`), verifies the issuer,
+and removes all matching sessions for the subject from the token store. This ensures
+server-side session cleanup even when the user closes the browser without calling
+`/bff/logout`.
+
+## Session management
+
+The BFF provides endpoints for listing and revoking active sessions per user:
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/{prefix}/bff/sessions` | `GET` | Lists the current user's active sessions (masked IDs, timestamps, user agents) |
+| `/{prefix}/bff/sessions/{id}` | `DELETE` | Revokes a specific session ("log out that device") |
+| `/{prefix}/bff/sessions` | `DELETE` | Revokes all other sessions ("log out everywhere else") |
+
+These endpoints require a valid session cookie. The current session cannot be revoked
+via `DELETE /sessions/{id}` -- use `/bff/logout` instead.
+
+## Sliding session expiration
+
+By default (`UseSessionSlidingExpiration: true`), the BFF extends the session TTL
+when a proxied request occurs past the session's halfway point. This prevents active
+users from being logged out mid-work while still enforcing a hard ceiling via
+`SessionAbsoluteMaxDuration` (default: 8 hours) to meet ISO 27001 A.9.4.2.
+
+## Token store strategies
+
+The `IBffTokenStore` abstraction supports two persistence backends:
+
+| Strategy | Package | Use case |
+|----------|---------|----------|
+| **Distributed cache** (default) | `Granit.Bff` | Redis, SQL Server, or in-memory. Best for horizontally scaled deployments with existing Redis infrastructure. |
+| **EF Core** | `Granit.Bff.EntityFrameworkCore` | Stores sessions in `BffDbContext` (table `bff_sessions`). Best for deployments without Redis, or when session data must be queryable (session listing, admin dashboards). Includes an automatic expired session cleanup job. |
+
+To switch to EF Core, add a `[DependsOn(typeof(GranitBffEntityFrameworkCoreModule))]`
+to your module. This replaces the default `IBffTokenStore` registration with
+`EfCoreBffTokenStore` backed by `BffDbContext`.
+
 ## Where tokens live
 
 A clear picture of where each piece of sensitive data resides:

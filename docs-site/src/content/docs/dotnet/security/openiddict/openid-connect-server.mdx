@@ -126,6 +126,37 @@ The BFF and resource server must also be configured for DPoP, `private_key_jwt`,
 issuer verification. See the [dedicated FAPI 2.0 page](/dotnet/security/openiddict/advanced/fapi-2-security-profile/)
 for the full configuration guide.
 
+### Token Exchange (RFC 8693)
+
+The server supports [OAuth 2.0 Token Exchange (RFC 8693)](https://www.rfc-editor.org/rfc/rfc8693)
+for microservice delegation and impersonation flows. A service receiving a user's access
+token can exchange it for a narrower, audience-restricted token scoped to a downstream
+service. Enable it with:
+
+```json
+{
+  "OpenIddict": {
+    "EnableTokenExchange": true
+  }
+}
+```
+
+When enabled, the `urn:ietf:params:oauth:grant-type:token-exchange` grant type is
+registered on the `/connect/token` endpoint. Clients must have the `gt:token_exchange`
+permission in their seeding configuration.
+
+### JWT-Secured Authorization Requests (JAR, RFC 9101)
+
+The server supports JWT-Secured Authorization Requests
+([RFC 9101](https://www.rfc-editor.org/rfc/rfc9101)), where authorization parameters
+are encoded in a signed JWT `request` object instead of plain query parameters. This
+provides integrity protection and non-repudiation for authorization requests, complementing
+PAR's confidentiality benefits.
+
+JAR enforcement is controlled by the `OpenIddict.JarRequired` feature flag (default:
+`false`). When enabled, the server rejects authorization requests that do not include a
+signed `request` parameter.
+
 ## Scopes
 
 The following 7 standard OIDC scopes are **seeded automatically** on every startup

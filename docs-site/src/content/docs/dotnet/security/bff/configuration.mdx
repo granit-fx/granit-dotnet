@@ -16,14 +16,21 @@ This is a complete configuration example covering all BFF, YARP, and Redis optio
 {
   "Bff": {
     "Authority": "https://auth.example.com",
-    "ClientId": "my-bff",
-    "ClientSecret": "bff-secret-from-vault",
-    "Scopes": ["openid", "profile", "email", "roles", "offline_access"],
-    "SessionCookieName": "__Host-granit-bff",
     "SessionDuration": "08:00:00",
     "RefreshGracePeriod": "00:01:00",
-    "PostLoginRedirectPath": "/",
-    "PostLogoutRedirectPath": "/"
+    "UseSessionSlidingExpiration": true,
+    "SessionAbsoluteMaxDuration": "08:00:00",
+
+    "Frontends": [
+      {
+        "Name": "admin",
+        "ClientId": "my-bff",
+        "ClientSecret": "bff-secret-from-vault",
+        "Scopes": ["openid", "profile", "email", "roles", "offline_access"],
+        "UsePushedAuthorizationRequests": false,
+        "UseDPoP": false
+      }
+    ]
   },
 
   "ReverseProxy": {
@@ -86,6 +93,8 @@ Bind from the `Bff` configuration section. Section name constant: `GranitBffOpti
 | `UseDPoP` | `bool` | `false` | Enable DPoP (RFC 9449) token binding. When `true`, the BFF generates an EC P-256 key pair per session and attaches DPoP proofs to token requests and proxied API calls. Prevents token replay attacks. |
 | `ClientAuthenticationMethod` | `BffClientAuthenticationMethod` | `ClientSecretPost` | Client authentication method for token endpoint requests. Set to `PrivateKeyJwt` for [RFC 7523](https://www.rfc-editor.org/rfc/rfc7523) signed JWT assertions instead of shared secrets. Required for FAPI 2.0 when not using mTLS. |
 | `ClientSigningKeyJwk` | `string?` | `null` | Client's private signing key as a JWK JSON string. Required when `ClientAuthenticationMethod` is `PrivateKeyJwt`. Supports EC (ES256) and RSA (PS256) keys. Must include private key parameters. Store in Vault in production. |
+| `UseSessionSlidingExpiration` | `bool` | `true` | Enable sliding session expiration. When `true`, each proxied request past the session's halfway point extends the session TTL. Bounded by `SessionAbsoluteMaxDuration` to prevent indefinite sessions (ISO 27001 A.9.4.2). |
+| `SessionAbsoluteMaxDuration` | `TimeSpan` | `08:00:00` (8 hours) | Absolute maximum session duration even with sliding expiration. After this, the user must re-authenticate regardless of activity. |
 | `RequireIssuerValidation` | `bool` | `true` | Validate the `iss` parameter in authorization responses ([RFC 9207](https://www.rfc-editor.org/rfc/rfc9207)). Prevents IdP mix-up attacks by verifying that the authorization response comes from the expected issuer. Required for FAPI 2.0. Enabled by default — set to `false` only for legacy identity providers that do not include the `iss` parameter. |
 
 ### Configuration binding
@@ -399,7 +408,7 @@ graph TD
 
 | Service | Lifetime | Implementation | Package |
 |---------|----------|----------------|---------|
-| `IBffTokenStore` | Scoped | `DistributedCacheBffTokenStore` | `Granit.Bff` |
+| `IBffTokenStore` | Scoped | `DistributedCacheBffTokenStore` (default) or `EfCoreBffTokenStore` | `Granit.Bff` / `Granit.Bff.EntityFrameworkCore` |
 | `IBffCsrfTokenGenerator` | Singleton | `HmacBffCsrfTokenGenerator` | `Granit.Bff` |
 | `BffMetrics` | Singleton | `BffMetrics` | `Granit.Bff` |
 | `BffTokenInjectionTransform` | Scoped | `BffTokenInjectionTransform` | `Granit.Bff.Yarp` |

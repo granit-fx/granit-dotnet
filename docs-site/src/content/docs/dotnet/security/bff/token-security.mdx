@@ -375,40 +375,40 @@ stateDiagram-v2
 | Cookie `Max-Age` | Matches `SessionDuration` | Browser deletes the cookie when it expires |
 | Cache entry TTL | Matches `SessionDuration` | Redis auto-evicts the session data |
 
-### Absolute vs sliding expiry
+### Sliding expiration (default)
 
-Granit.Bff uses **absolute expiry** by default. The session duration starts
-from the moment of login and is not extended by activity. This is a deliberate
-security choice:
+Granit.Bff uses **sliding expiration** by default (`UseSessionSlidingExpiration: true`).
+When a proxied request occurs past the session's halfway point, the token store TTL
+is extended by `SessionDuration`. This prevents active users from being logged out
+mid-work.
 
-- **Absolute**: forces periodic re-authentication (ISO 27001 A.9.4.2 recommends
-  maximum session durations)
-- **Sliding**: extends with activity, which could keep a stolen session alive
-  indefinitely
+To prevent indefinite sessions (ISO 27001 A.9.4.2), a hard ceiling is enforced via
+`SessionAbsoluteMaxDuration` (default: 8 hours). Once reached, the user must
+re-authenticate regardless of activity.
 
-If your use case requires sliding expiry, you can implement a custom
-`IBffTokenStore` that refreshes the cache entry TTL on each `GetAsync` call.
+Set `UseSessionSlidingExpiration: false` to revert to absolute-only expiration where
+the session duration starts at login and is never extended.
 
 ### Session revocation
 
-To immediately invalidate a session (e.g., when an admin revokes a user's access):
+Sessions can be revoked in three ways:
+
+1. **User self-service** -- the BFF exposes session management endpoints per frontend:
+   - `GET /{prefix}/bff/sessions` -- list active sessions (masked IDs, timestamps, user agents)
+   - `DELETE /{prefix}/bff/sessions/{id}` -- revoke a specific session ("log out that device")
+   - `DELETE /{prefix}/bff/sessions` -- revoke all other sessions ("log out everywhere else")
+
+2. **Back-channel logout** -- when the IdP sends a `logout_token` to
+   `/{prefix}/bff/backchannel-logout`, all sessions for that subject are removed.
+
+3. **Direct cache removal** -- for admin operations:
 
 ```csharp
-// Inject IDistributedCache and remove the session directly
 await cache.RemoveAsync($"bff:session:{sessionId}", cancellationToken);
 ```
 
-This is immediate — the next API call from the SPA will receive `401 Unauthorized`
-because the token lookup in `BffTokenInjectionTransform` returns `null`.
-
-The user does not need to be notified — the SPA's existing `401` handler will
-redirect to `/bff/login`.
-
-<Aside type="tip" title="Bulk session revocation">
-To revoke all sessions for a user (e.g., password change), you need to track
-session IDs per user. Store a reverse mapping (`bff:user:{userId}` -> list of
-session IDs) in Redis and iterate to remove them.
-</Aside>
+All three methods are immediate -- the next API call from the SPA receives
+`401 Unauthorized` and the SPA's `401` handler redirects to `/bff/login`.
 
 ## Attack mitigation summary
 
@@ -419,7 +419,9 @@ session IDs) in Redis and iterate to remove them.
 | **CSRF** | `SameSite=Strict` + double-submit | Cookie config + `BffCsrfValidationTransform` |
 | **Session fixation** | Fresh session ID on login | `Guid.NewGuid()` after token exchange |
 | **Session hijacking** | `__Host-` prefix + `Secure` | Cookie only sent over HTTPS, no subdomain sharing |
-| **Token replay** | Short-lived access tokens | IdP-configured expiry + auto-refresh |
+| **Token replay** | Short-lived access tokens | IdP-configured expiry + auto-refresh + DPoP |
+| **Token leakage after logout** | Token revocation (RFC 7009) | `RevokeTokensAsync` on `/bff/logout` |
+| **IdP session revocation** | Back-channel logout (OIDC) | `/{prefix}/bff/backchannel-logout` endpoint |
 | **Clickjacking** | X-Frame-Options + CSP | `BffSecurityHeadersMiddleware` |
 | **Authorization code interception** | PKCE | `code_challenge` + `code_verifier` |
 | **Token storage compromise** | Redis TLS + optional AES encryption | `DistributedCacheBffTokenStore` + `ICacheValueEncryptor` |
