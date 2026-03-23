@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
+using Granit.Authentication.OpenIddict.Internal;
 using Granit.Authentication.OpenIddict.Options;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -45,6 +47,31 @@ public static class OpenIddictValidationHostApplicationBuilderExtensions
                 options.UseAspNetCore();
             });
 
+        // Store RequireDPoP flag for middleware registration
+        if (validationOptions.RequireDPoP)
+        {
+            builder.Services.AddSingleton(validationOptions);
+        }
+
         return builder;
+    }
+
+    /// <summary>
+    /// Adds DPoP enforcement middleware when <see cref="GranitOpenIddictValidationOptions.RequireDPoP"/>
+    /// is enabled. Must be called <strong>after</strong> <c>UseAuthentication()</c>.
+    /// </summary>
+    /// <param name="app">The application builder.</param>
+    /// <returns>The application builder for chaining.</returns>
+    public static IApplicationBuilder UseGranitDPoPEnforcement(this IApplicationBuilder app)
+    {
+        GranitOpenIddictValidationOptions? options = app.ApplicationServices
+            .GetService<GranitOpenIddictValidationOptions>();
+
+        if (options?.RequireDPoP == true)
+        {
+            app.UseMiddleware<RequireDPoPMiddleware>();
+        }
+
+        return app;
     }
 }

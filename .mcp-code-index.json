@@ -4584,7 +4584,7 @@
       "kind": "class",
       "project": "Granit.Authentication.OpenIddict",
       "file": "src/Granit.Authentication.OpenIddict/Extensions/OpenIddictValidationHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitOpenIddictAuthentication",
