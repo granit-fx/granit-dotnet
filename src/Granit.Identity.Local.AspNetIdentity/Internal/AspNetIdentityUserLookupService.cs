@@ -3,7 +3,7 @@ using Granit.OpenIddict.Entities;
 using Granit.Querying;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-namespace Granit.Identity.Local.AspNetCore.Internal;
+namespace Granit.Identity.Local.AspNetIdentity.Internal;
 
 /// <summary>
 /// User lookup service that queries <see cref="UserManager{TUser}"/> directly,

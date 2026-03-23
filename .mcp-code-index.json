@@ -702,7 +702,7 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Identity.Local.AspNetCore",
+      "name": "Granit.Identity.Local.AspNetIdentity",
       "deps": [
         "Granit.Identity",
         "Granit.OpenIddict.EntityFrameworkCore"
@@ -5859,7 +5859,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 140,
+      "line": 142,
       "members": [
         {
           "name": "InvokeAsync",
@@ -5941,6 +5941,12 @@
           "kind": "method",
           "signature": "RemoveAsync(string frontendName, string sessionId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        },
+        {
+          "name": "GetSessionIdsByUserAsync",
+          "kind": "method",
+          "signature": "GetSessionIdsByUserAsync(string frontendName, string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
         }
       ]
     },
@@ -14700,11 +14706,11 @@
       ]
     },
     {
-      "name": "GranitIdentityLocalAspNetCoreModule",
-      "fqn": "Granit.Identity.Local.AspNetCore.GranitIdentityLocalAspNetCoreModule",
+      "name": "GranitIdentityLocalAspNetIdentityModule",
+      "fqn": "Granit.Identity.Local.AspNetIdentity.GranitIdentityLocalAspNetIdentityModule",
       "kind": "class",
-      "project": "Granit.Identity.Local.AspNetCore",
-      "file": "src/Granit.Identity.Local.AspNetCore/GranitIdentityLocalAspNetCoreModule.cs",
+      "project": "Granit.Identity.Local.AspNetIdentity",
+      "file": "src/Granit.Identity.Local.AspNetIdentity/GranitIdentityLocalAspNetIdentityModule.cs",
       "line": 27,
       "members": [
         {

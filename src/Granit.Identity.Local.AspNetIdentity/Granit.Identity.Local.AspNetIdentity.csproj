@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>Granit.Identity.Local.AspNetCore</PackageId>
+    <PackageId>Granit.Identity.Local.AspNetIdentity</PackageId>
     <Description>IIdentityProvider bridge over ASP.NET Core Identity for Granit.OpenIddict. Replaces NullIdentityProvider with AspNetIdentityProvider backed by UserManager and RoleManager.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Granit.Identity.Local.AspNetCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Identity.Local.AspNetIdentity.Tests" />
     <InternalsVisibleTo Include="Granit.OpenIddict.Tests.Integration" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>

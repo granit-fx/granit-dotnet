@@ -10,7 +10,7 @@ using GranitIdentityGroup = Granit.Identity.Models.IdentityGroup;
 using GranitIdentityRole = Granit.Identity.Models.IdentityRole;
 #pragma warning disable EF1001 // OpenIddictDbContext is internal but accessible via InternalsVisibleTo
 
-namespace Granit.Identity.Local.AspNetCore.Internal;
+namespace Granit.Identity.Local.AspNetIdentity.Internal;
 
 /// <summary>
 /// <see cref="IIdentityProvider"/> implementation backed by ASP.NET Core Identity.

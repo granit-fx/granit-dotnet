@@ -2026,7 +2026,7 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
-      "granit.identity.local.aspnetcore": {
+      "granit.identity.local.aspnetidentity": {
         "type": "Project",
         "dependencies": {
           "Granit.Identity": "[0.1.0-dev, )",

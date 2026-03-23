@@ -9,7 +9,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.OpenIddict.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="Granit.OpenIddict.Tests.Integration" />
-    <InternalsVisibleTo Include="Granit.Identity.Local.AspNetCore" />
+    <InternalsVisibleTo Include="Granit.Identity.Local.AspNetIdentity" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

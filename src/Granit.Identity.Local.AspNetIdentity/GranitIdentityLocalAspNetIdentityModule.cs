@@ -1,13 +1,13 @@
 using Granit.Core.Modularity;
 using Granit.Identity;
 using Granit.Identity.Extensions;
-using Granit.Identity.Local.AspNetCore.Internal;
+using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.OpenIddict.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace Granit.Identity.Local.AspNetCore;
+namespace Granit.Identity.Local.AspNetIdentity;
 
 /// <summary>
 /// Granit module that registers <see cref="AspNetIdentityProvider"/> as the
@@ -24,7 +24,7 @@ namespace Granit.Identity.Local.AspNetCore;
 [DependsOn(
     typeof(GranitIdentityModule),
     typeof(GranitOpenIddictEntityFrameworkCoreModule))]
-public sealed class GranitIdentityLocalAspNetCoreModule : GranitModule
+public sealed class GranitIdentityLocalAspNetIdentityModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -48,11 +48,11 @@ public sealed class GranitIdentityLocalAspNetCoreModule : GranitModule
 
         if (userCacheDbContextType is not null)
         {
-            ILogger<GranitIdentityLocalAspNetCoreModule> logger = context.ServiceProvider
-                .GetRequiredService<ILogger<GranitIdentityLocalAspNetCoreModule>>();
+            ILogger<GranitIdentityLocalAspNetIdentityModule> logger = context.ServiceProvider
+                .GetRequiredService<ILogger<GranitIdentityLocalAspNetIdentityModule>>();
 
             logger.LogWarning(
-                "Granit.Identity.Federated.EntityFrameworkCore is loaded alongside Granit.Identity.Local.AspNetCore. " +
+                "Granit.Identity.Federated.EntityFrameworkCore is loaded alongside Granit.Identity.Local.AspNetIdentity. " +
                 "UserCacheEntry is redundant when the identity provider stores users locally (GranitUser). " +
                 "Remove the Granit.Identity.Federated.EntityFrameworkCore package reference to avoid an unnecessary " +
                 "database table and per-request cache sync overhead.");

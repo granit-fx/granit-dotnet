@@ -1,4 +1,4 @@
-# Granit.Identity.Local.AspNetCore
+# Granit.Identity.Local.AspNetIdentity
 
 `IIdentityProvider` bridge over ASP.NET Core Identity for the Granit OpenIddict module.
 
@@ -7,7 +7,7 @@ Part of the [granit](https://granit-fx.dev) framework.
 ## Installation
 
 ```bash
-dotnet add package Granit.Identity.Local.AspNetCore
+dotnet add package Granit.Identity.Local.AspNetIdentity
 ```
 
 ## What's in this package
@@ -18,7 +18,7 @@ dotnet add package Granit.Identity.Local.AspNetCore
 
 ## Do NOT add Granit.Identity.Federated.EntityFrameworkCore
 
-When using `Granit.Identity.Local.AspNetCore`, **do not add** `Granit.Identity.Federated.EntityFrameworkCore`
+When using `Granit.Identity.Local.AspNetIdentity`, **do not add** `Granit.Identity.Federated.EntityFrameworkCore`
 to your project. `UserCacheEntry` is redundant when the identity provider stores users
 locally (`GranitUser`). A warning is logged at startup if both packages are detected.
 

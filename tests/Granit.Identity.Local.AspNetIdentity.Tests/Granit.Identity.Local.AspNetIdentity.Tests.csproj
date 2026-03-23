@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.Identity.Local.AspNetCore\Granit.Identity.Local.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.Local.AspNetIdentity\Granit.Identity.Local.AspNetIdentity.csproj" />
   </ItemGroup>
 
 </Project>

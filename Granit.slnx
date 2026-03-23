@@ -94,7 +94,7 @@
     <Project Path="src/Granit.Identity.Federated.EntraId/Granit.Identity.Federated.EntraId.csproj" />
     <Project Path="src/Granit.Identity.Federated.GoogleCloud/Granit.Identity.Federated.GoogleCloud.csproj" />
     <Project Path="src/Granit.Identity.Federated.Keycloak/Granit.Identity.Federated.Keycloak.csproj" />
-    <Project Path="src/Granit.Identity.Local.AspNetCore/Granit.Identity.Local.AspNetCore.csproj" />
+    <Project Path="src/Granit.Identity.Local.AspNetIdentity/Granit.Identity.Local.AspNetIdentity.csproj" />
     <Project Path="src/Granit.Identity/Granit.Identity.csproj" />
     <Project Path="src/Granit.Imaging.AI/Granit.Imaging.AI.csproj" />
     <Project Path="src/Granit.Imaging.MagickNet/Granit.Imaging.MagickNet.csproj" />
@@ -300,7 +300,7 @@
     <Project Path="tests/Granit.Identity.Federated.GoogleCloud.Tests/Granit.Identity.Federated.GoogleCloud.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Keycloak.Tests/Granit.Identity.Federated.Keycloak.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Tests/Granit.Identity.Federated.Tests.csproj" />
-    <Project Path="tests/Granit.Identity.Local.AspNetCore.Tests/Granit.Identity.Local.AspNetCore.Tests.csproj" />
+    <Project Path="tests/Granit.Identity.Local.AspNetIdentity.Tests/Granit.Identity.Local.AspNetIdentity.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Tests/Granit.Identity.Tests.csproj" />
     <Project Path="tests/Granit.Imaging.AI.Tests/Granit.Imaging.AI.Tests.csproj" />
     <Project Path="tests/Granit.Imaging.MagickNet.Tests/Granit.Imaging.MagickNet.Tests.csproj" />

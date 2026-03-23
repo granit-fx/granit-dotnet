@@ -1,6 +1,6 @@
 using Granit.Identity;
 
-namespace Granit.Identity.Local.AspNetCore.Internal;
+namespace Granit.Identity.Local.AspNetIdentity.Internal;
 
 /// <summary>
 /// Declares the capabilities of the ASP.NET Core Identity provider.

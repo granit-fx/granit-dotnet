@@ -29,7 +29,7 @@ dotnet add package Granit.OpenIddict
 | --- | --- |
 | `Granit.OpenIddict.Server` | OIDC server configuration |
 | `Granit.OpenIddict.EntityFrameworkCore` | Entities, DbContext, tenant-isolated stores |
-| `Granit.Identity.Local.AspNetCore` | `IIdentityProvider` bridge over ASP.NET Core Identity |
+| `Granit.Identity.Local.AspNetIdentity` | `IIdentityProvider` bridge over ASP.NET Core Identity |
 | `Granit.Authentication.OpenIddict` | Authentication handler configuration |
 | `Granit.OpenIddict.Endpoints` | Account self-service and admin API |
 | `Granit.OpenIddict.BackgroundJobs` | Token cleanup + idle session enforcement |

@@ -40,7 +40,7 @@ users exclusively through `IUserLookupService`. Two implementations exist:
 | Local provider | `AspNetIdentityUserLookupService` | `GranitUser` (direct SQL) |
 
 The active implementation is determined by which identity provider package is
-registered (`Granit.Identity.Federated.Keycloak` vs `Granit.Identity.Local.AspNetCore`).
+registered (`Granit.Identity.Federated.Keycloak` vs `Granit.Identity.Local.AspNetIdentity`).
 
 ### `IIdentityProviderCapabilities.IsLocalStore`
 

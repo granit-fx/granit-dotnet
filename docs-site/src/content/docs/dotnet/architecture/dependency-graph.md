@@ -265,7 +265,7 @@ flowchart TD
 | `Granit.Identity.Federated.Cognito` | `Identity.Federated` |
 | `Granit.Identity.Federated.GoogleCloud` | `Identity.Federated` |
 | `Granit.Identity.Federated.EntityFrameworkCore` | `Identity.Federated`, `Persistence`, `Security` |
-| `Granit.Identity.Local.AspNetCore` | `Identity`, `OpenIddict.EntityFrameworkCore` |
+| `Granit.Identity.Local.AspNetIdentity` | `Identity`, `OpenIddict.EntityFrameworkCore` |
 | `Granit.Identity.Endpoints` | `Identity`, `Authorization` |
 
 ### Localization

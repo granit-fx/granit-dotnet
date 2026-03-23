@@ -6,7 +6,7 @@ using Granit.Core.Events;
 using Granit.Core.MultiTenancy;
 using Granit.Identity;
 using Granit.Identity.Extensions;
-using Granit.Identity.Local.AspNetCore.Internal;
+using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.OpenIddict.Diagnostics;
 using Granit.OpenIddict.Endpoints.Extensions;
 using Granit.OpenIddict.Entities;

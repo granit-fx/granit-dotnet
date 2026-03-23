@@ -23,7 +23,7 @@ with GDPR erasure and pseudonymization built in.
     - Granit.Identity.Federated.Cognito AWS Cognito User Pool API implementation
     - Granit.Identity.Federated.GoogleCloud Google Cloud Identity Platform (Firebase Auth) implementation
     - Granit.Identity.Federated.EntityFrameworkCore User cache (cache-aside, login-time sync)
-  - Granit.Identity.Local.AspNetCore IIdentityProvider bridge for OpenIddict (local store)
+  - Granit.Identity.Local.AspNetIdentity IIdentityProvider bridge for OpenIddict (local store)
   - Granit.Identity.Endpoints Minimal API endpoints (CRUD, sync, GDPR, webhook)
 </FileTree>
 
@@ -36,7 +36,7 @@ with GDPR erasure and pseudonymization built in.
 | `Granit.Identity.Federated.GoogleCloud` | Firebase Auth implementation (Firebase Admin SDK) | `Granit.Identity.Federated` |
 | `Granit.Authentication.GoogleCloud` | JWT Bearer for Firebase Auth + claims transformation | `Granit.Authentication.JwtBearer` |
 | `Granit.Identity.Federated.EntityFrameworkCore` | EF Core user cache | `Granit.Identity.Federated`, `Granit.Persistence` |
-| `Granit.Identity.Local.AspNetCore` | IIdentityProvider bridge for OpenIddict (local store) | `Granit.Identity`, `Granit.OpenIddict.EntityFrameworkCore` |
+| `Granit.Identity.Local.AspNetIdentity` | IIdentityProvider bridge for OpenIddict (local store) | `Granit.Identity`, `Granit.OpenIddict.EntityFrameworkCore` |
 | `Granit.Identity.Endpoints` | REST endpoints for user cache | `Granit.Identity`, `Granit.Authorization` |
 
 ## Dependency graph
@@ -51,7 +51,7 @@ graph TD
     AGC[Granit.Authentication.GoogleCloud] --> JB[Granit.Authentication.JwtBearer]
     IEF[Granit.Identity.Federated.EntityFrameworkCore] --> IF
     IEF --> P[Granit.Persistence]
-    ILA[Granit.Identity.Local.AspNetCore] --> I
+    ILA[Granit.Identity.Local.AspNetIdentity] --> I
     IE[Granit.Identity.Endpoints] --> I
     IE --> AZ[Granit.Authorization]
 ```
@@ -498,7 +498,7 @@ Both operations emit Wolverine domain events (`IdentityUserDeletedEvent`,
 
 | Category | Key types | Package |
 |----------|-----------|---------|
-| Module | `GranitIdentityModule`, `GranitIdentityFederatedModule`, `GranitIdentityFederatedKeycloakModule`, `GranitIdentityFederatedCognitoModule`, `GranitIdentityFederatedGoogleCloudModule`, `GranitAuthenticationGoogleCloudModule`, `GranitIdentityFederatedEntityFrameworkCoreModule`, `GranitIdentityEndpointsModule`, `GranitIdentityLocalAspNetCoreModule` | — |
+| Module | `GranitIdentityModule`, `GranitIdentityFederatedModule`, `GranitIdentityFederatedKeycloakModule`, `GranitIdentityFederatedCognitoModule`, `GranitIdentityFederatedGoogleCloudModule`, `GranitAuthenticationGoogleCloudModule`, `GranitIdentityFederatedEntityFrameworkCoreModule`, `GranitIdentityEndpointsModule`, `GranitIdentityLocalAspNetIdentityModule` | — |
 | Abstractions | `IIdentityProvider`, `IIdentityUserReader`, `IIdentityUserWriter`, `IIdentityRoleManager`, `IIdentityGroupManager`, `IIdentitySessionManager`, `IIdentityPasswordManager`, `IIdentityCredentialVerifier` | `Granit.Identity` |
 | Lookup | `IUserLookupService`, `IUserCacheStats`, `IIdentityProviderCapabilities` | `Granit.Identity` |
 | Models | `IdentityUser`, `IdentityUserCreate`, `IdentityUserUpdate`, `IdentityRole`, `IdentityGroup`, `IdentitySession`, `IdentityDeviceActivity` | `Granit.Identity` |

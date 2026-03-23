@@ -116,7 +116,7 @@
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntraId\Granit.Identity.Federated.EntraId.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.GoogleCloud\Granit.Identity.Federated.GoogleCloud.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Keycloak\Granit.Identity.Federated.Keycloak.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Identity.Local.AspNetCore\Granit.Identity.Local.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.Local.AspNetIdentity\Granit.Identity.Local.AspNetIdentity.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging\Granit.Imaging.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging.AI\Granit.Imaging.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging.MagickNet\Granit.Imaging.MagickNet.csproj" />
