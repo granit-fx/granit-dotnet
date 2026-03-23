@@ -190,9 +190,14 @@ When enabled, the BFF:
 
 ### Resource server
 
-Resource servers using `AddGranitOpenIddictAuthentication()` validate DPoP
+**OpenIddict resource servers** using `AddGranitOpenIddictAuthentication()` validate DPoP
 proofs automatically — the OpenIddict validation middleware handles both
 `Bearer` and `DPoP` token types transparently.
+
+**JWT Bearer resource servers** (Keycloak, Entra ID, Auth0) need
+`Granit.Authentication.DPoP` for IdP-agnostic proof validation.
+See [DPoP Resource Server Validation](/dotnet/security/openiddict/advanced/dpop-resource-server-validation/)
+for the full setup guide.
 
 ## Bearer vs DPoP comparison
 
@@ -315,6 +320,7 @@ PKCE is enforced by default (`RequireProofKeyForCodeExchange`).
 
 ## See also
 
+- [DPoP Resource Server Validation](/dotnet/security/openiddict/advanced/dpop-resource-server-validation/) — IdP-agnostic proof validation for JWT Bearer (Keycloak, Entra ID)
 - [PAR (Pushed Authorization Requests)](/dotnet/security/openiddict/advanced/pushed-authorization-requests/) — move parameters to back-channel
 - [OIDC Server Configuration](/dotnet/security/openiddict/openid-connect-server/) — endpoints and flows overview
 - [BFF Security](/dotnet/security/bff/token-security/) — token storage and encryption at rest

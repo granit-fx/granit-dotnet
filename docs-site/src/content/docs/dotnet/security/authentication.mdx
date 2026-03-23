@@ -30,6 +30,7 @@ rejects the token immediately instead of waiting for expiry.
   - Granit.Authentication.Keycloak Keycloak claims transformation
   - Granit.Authentication.EntraId Entra ID roles parsing
   - Granit.Authentication.Cognito Cognito groups → roles
+- Granit.Authentication.DPoP/ DPoP proof validation (any IdP)
 
 </FileTree>
 
@@ -39,6 +40,7 @@ rejects the token immediately instead of waiting for expiry.
 | `Granit.Authentication.Keycloak` | Keycloak claims transformation | `Granit.Authentication.JwtBearer` |
 | `Granit.Authentication.EntraId` | Entra ID roles parsing | `Granit.Authentication.JwtBearer` |
 | `Granit.Authentication.Cognito` | Cognito groups → roles | `Granit.Authentication.JwtBearer` |
+| `Granit.Authentication.DPoP` | IdP-agnostic DPoP proof validation (RFC 9449) | `Granit.Core`, `Granit.Timing` |
 
 ## Setup
 
@@ -238,11 +240,46 @@ cryptographic key. However, resource servers must also enforce that clients pres
 valid DPoP proofs — otherwise an attacker could still use a stolen token with a plain
 `Authorization: Bearer` header.
 
-`Granit.Authentication.OpenIddict` provides a `RequireDPoP` option that rejects any
-request using the `Bearer` scheme when DPoP enforcement is active. Requests without
-a valid `DPoP` proof header receive a `401 Unauthorized` response.
+Two packages provide DPoP enforcement, depending on your identity provider:
 
-### Configuration
+<Tabs>
+<TabItem label="Keycloak / Entra ID / Any IdP">
+
+`Granit.Authentication.DPoP` provides **IdP-agnostic** DPoP proof validation. It works with
+any OIDC provider that issues `cnf.jkt`-bound access tokens (Keycloak 25+, Entra ID, Duende).
+
+```csharp
+[DependsOn(
+    typeof(GranitAuthenticationKeycloakModule),
+    typeof(GranitAuthenticationDPoPModule))]
+public class MyServiceModule : GranitModule { }
+```
+
+```csharp
+app.UseAuthentication();
+app.UseGranitDPoPValidation();  // ← validates DPoP proofs
+app.UseAuthorization();
+```
+
+```json
+{
+  "Authentication": {
+    "DPoP": {
+      "RequireDPoP": true,
+      "AllowedAlgorithms": ["ES256", "PS256"]
+    }
+  }
+}
+```
+
+See [DPoP Resource Server Validation](/dotnet/security/openiddict/advanced/dpop-resource-server-validation/)
+for the full setup guide.
+
+</TabItem>
+<TabItem label="OpenIddict">
+
+`Granit.Authentication.OpenIddict` uses OpenIddict's built-in `ValidateProofOfPossession`
+handler. No extra package needed.
 
 ```json
 {
@@ -256,11 +293,8 @@ a valid `DPoP` proof header receive a `401 Unauthorized` response.
 }
 ```
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `Issuer` | `Uri?` | `null` | OIDC issuer URI of the remote authorization server. |
-| `Audience` | `string?` | `null` | Expected audience (resource server identifier). |
-| `RequireDPoP` | `bool` | `false` | Require DPoP proof-of-possession (RFC 9449) for all authenticated requests. When `true`, plain `Bearer` tokens are rejected. Required for FAPI 2.0 compliance. |
+</TabItem>
+</Tabs>
 
 :::caution
 Enable `RequireDPoP` only when **all** clients are configured to send DPoP proofs.
@@ -277,10 +311,13 @@ Enabling it while some clients still use plain Bearer tokens will lock those cli
 | Claims | `EntraIdClaimsTransformation` | `Granit.Authentication.EntraId` |
 | Claims | `CognitoClaimsTransformation` | `Granit.Authentication.Cognito` |
 | Options | `JwtBearerAuthOptions`, `KeycloakOptions`, `CognitoOptions` | — |
-| Extensions | `AddGranitJwtBearer()`, `AddGranitKeycloak()`, `AddGranitCognito()`, `MapBackChannelLogout()` | — |
+| DPoP | `IDPoPProofValidator`, `JwkThumbprintCalculator`, `DPoPValidationMiddleware` | `Granit.Authentication.DPoP` |
+| Extensions | `AddGranitJwtBearer()`, `AddGranitKeycloak()`, `AddGranitCognito()`, `MapBackChannelLogout()`, `UseGranitDPoPValidation()` | — |
 
 ## See also
 
+- [DPoP Resource Server Validation](/dotnet/security/openiddict/advanced/dpop-resource-server-validation/) -- IdP-agnostic DPoP proof validation
+- [DPoP — Proof-of-Possession](/dotnet/security/openiddict/advanced/proof-of-possession-dpop/) -- BFF-side key generation and proof creation
 - [Authorization](/dotnet/security/authorization/) -- RBAC permissions, dynamic policy provider
 - [Security](/dotnet/security/security-overview/) -- core abstractions (ICurrentUserService, ActorKind)
 - [Identity](/dotnet/security/identity/) -- user management, Keycloak Admin API, user cache
