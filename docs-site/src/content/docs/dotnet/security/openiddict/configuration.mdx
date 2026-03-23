@@ -103,6 +103,7 @@ environment variables. Never commit secrets to source control.
 | `UseReferenceTokens` | `bool` | `false` | Issue opaque reference tokens instead of self-contained JWTs. Reference tokens are validated against the database on every API request, enabling instant revocation. Required for SOC2 / ISO 27001 strict compliance. Trade-off: +1 DB round-trip per API call. |
 | `EnableEntityCaching` | `bool` | `false` | Enable OpenIddict's built-in entity caching. **Disable in multi-tenant deployments** -- the cache uses `ClientId` as the sole key, which causes cross-tenant pollution when two tenants have the same `ClientId`. |
 | `RequirePar` | `bool` | `false` | Require Pushed Authorization Requests (RFC 9126) for all authorization code flows. The `/connect/par` endpoint is always available; when `true`, direct authorization requests without a `request_uri` are rejected. Required for FAPI 2.0 compliance. |
+| `EnableFapi2Profile` | `bool` | `false` | Enable the [FAPI 2.0 Security Profile](/dotnet/security/openiddict/advanced/fapi-2-security-profile/). When `true`, enforces all server-side FAPI 2.0 constraints: `RequirePar` is set to `true`, authorization code lifetime is reduced to 60 seconds, and PKCE S256 remains enforced. BFF and resource server must also be configured separately (`UseDPoP`, `ClientAuthenticationMethod: PrivateKeyJwt`, `RequireDPoP`). |
 
 **Example:**
 
@@ -112,7 +113,8 @@ environment variables. Never commit secrets to source control.
     "Issuer": "https://auth.example.com",
     "UseReferenceTokens": false,
     "EnableEntityCaching": false,
-    "RequirePar": false
+    "RequirePar": false,
+    "EnableFapi2Profile": false
   }
 }
 ```

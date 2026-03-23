@@ -102,6 +102,30 @@ The server supports [DPoP (RFC 9449)](/dotnet/security/openiddict/advanced/proof
 leaks, it cannot be replayed without the private key. OpenIddict validates DPoP proofs
 automatically. Set `UseDPoP: true` on a BFF frontend to enable. Required for **FAPI 2.0**.
 
+### FAPI 2.0 Security Profile
+
+The server supports the [FAPI 2.0 Security Profile](/dotnet/security/openiddict/advanced/fapi-2-security-profile/)
+— a comprehensive set of constraints for high-risk APIs (Open Banking, healthcare, government).
+Enable it with a single option:
+
+```json
+{
+  "OpenIddict": {
+    "EnableFapi2Profile": true
+  }
+}
+```
+
+When enabled, the server enforces:
+
+- **PAR required** — all authorization code flows must use Pushed Authorization Requests
+- **Authorization code lifetime** — reduced to 60 seconds (FAPI 2.0 SS5.3.2.1)
+- **PKCE with S256** — already enforced by default
+
+The BFF and resource server must also be configured for DPoP, `private_key_jwt`, and
+issuer verification. See the [dedicated FAPI 2.0 page](/dotnet/security/openiddict/advanced/fapi-2-security-profile/)
+for the full configuration guide.
+
 ## Scopes
 
 The following 7 standard OIDC scopes are **seeded automatically** on every startup

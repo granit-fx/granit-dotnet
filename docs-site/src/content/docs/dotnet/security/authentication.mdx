@@ -230,6 +230,43 @@ Cognito has no native "roles" concept. **Groups serve as roles** — a user's gr
 become their role claims after transformation.
 :::
 
+## DPoP enforcement on resource servers
+
+When using [DPoP (RFC 9449)](/dotnet/security/openiddict/advanced/proof-of-possession-dpop/)
+for sender-constrained access tokens, the authorization server binds tokens to a
+cryptographic key. However, resource servers must also enforce that clients present
+valid DPoP proofs — otherwise an attacker could still use a stolen token with a plain
+`Authorization: Bearer` header.
+
+`Granit.Authentication.OpenIddict` provides a `RequireDPoP` option that rejects any
+request using the `Bearer` scheme when DPoP enforcement is active. Requests without
+a valid `DPoP` proof header receive a `401 Unauthorized` response.
+
+### Configuration
+
+```json
+{
+  "Authentication": {
+    "OpenIddict": {
+      "Issuer": "https://auth.example.com",
+      "Audience": "my-api",
+      "RequireDPoP": true
+    }
+  }
+}
+```
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `Issuer` | `Uri?` | `null` | OIDC issuer URI of the remote authorization server. |
+| `Audience` | `string?` | `null` | Expected audience (resource server identifier). |
+| `RequireDPoP` | `bool` | `false` | Require DPoP proof-of-possession (RFC 9449) for all authenticated requests. When `true`, plain `Bearer` tokens are rejected. Required for FAPI 2.0 compliance. |
+
+:::caution
+Enable `RequireDPoP` only when **all** clients are configured to send DPoP proofs.
+Enabling it while some clients still use plain Bearer tokens will lock those clients out.
+:::
+
 ## Public API summary
 
 | Category | Key types | Package |

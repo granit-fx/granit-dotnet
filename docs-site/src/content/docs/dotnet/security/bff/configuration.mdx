@@ -86,6 +86,7 @@ Bind from the `Bff` configuration section. Section name constant: `GranitBffOpti
 | `UseDPoP` | `bool` | `false` | Enable DPoP (RFC 9449) token binding. When `true`, the BFF generates an EC P-256 key pair per session and attaches DPoP proofs to token requests and proxied API calls. Prevents token replay attacks. |
 | `ClientAuthenticationMethod` | `BffClientAuthenticationMethod` | `ClientSecretPost` | Client authentication method for token endpoint requests. Set to `PrivateKeyJwt` for [RFC 7523](https://www.rfc-editor.org/rfc/rfc7523) signed JWT assertions instead of shared secrets. Required for FAPI 2.0 when not using mTLS. |
 | `ClientSigningKeyJwk` | `string?` | `null` | Client's private signing key as a JWK JSON string. Required when `ClientAuthenticationMethod` is `PrivateKeyJwt`. Supports EC (ES256) and RSA (PS256) keys. Must include private key parameters. Store in Vault in production. |
+| `RequireIssuerValidation` | `bool` | `true` | Validate the `iss` parameter in authorization responses ([RFC 9207](https://www.rfc-editor.org/rfc/rfc9207)). Prevents IdP mix-up attacks by verifying that the authorization response comes from the expected issuer. Required for FAPI 2.0. Enabled by default — set to `false` only for legacy identity providers that do not include the `iss` parameter. |
 
 ### Configuration binding
 
