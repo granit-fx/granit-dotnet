@@ -131,7 +131,7 @@ internal static partial class BffLoginEndpoints
             // PAR: push parameters to /connect/par, then redirect with request_uri only
             string? requestUri = await PushAuthorizationRequestAsync(
                 httpClientFactory, authorityBase, frontend, callbackUrl, scopes, state,
-                codeChallenge, assertionService, logger).ConfigureAwait(false);
+                codeChallenge, assertionService, logger, httpContext.RequestAborted).ConfigureAwait(false);
 
             if (requestUri is not null)
             {
@@ -399,7 +399,8 @@ internal static partial class BffLoginEndpoints
         string state,
         string codeChallenge,
         IBffClientAssertionService assertionService,
-        ILogger logger)
+        ILogger logger,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -421,7 +422,7 @@ internal static partial class BffLoginEndpoints
 
             using FormUrlEncodedContent content = new(parameters);
             using HttpResponseMessage response = await httpClient
-                .PostAsync(parEndpoint, content)
+                .PostAsync(parEndpoint, content, cancellationToken)
                 .ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
@@ -430,10 +431,11 @@ internal static partial class BffLoginEndpoints
                 return null;
             }
 
-            using Stream stream = await response.Content.ReadAsStreamAsync()
+            using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            JsonElement parResponse = await JsonSerializer.DeserializeAsync<JsonElement>(stream)
+            JsonElement parResponse = await JsonSerializer.DeserializeAsync<JsonElement>(
+                stream, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
 
             string? requestUri = parResponse.TryGetProperty("request_uri", out JsonElement ru)
