@@ -11,6 +11,14 @@ public interface ISigningKeyStore
     /// Returns all keys with the specified statuses, ordered by creation date descending.
     /// </summary>
     Task<IReadOnlyList<SigningKey>> GetKeysAsync(
+        SigningKeyStatus[] statuses,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns all keys with the specified statuses, ordered by creation date descending.
+    /// </summary>
+    /// <remarks>Convenience overload without <see cref="CancellationToken"/>.</remarks>
+    Task<IReadOnlyList<SigningKey>> GetKeysAsync(
         params SigningKeyStatus[] statuses);
 
     /// <summary>

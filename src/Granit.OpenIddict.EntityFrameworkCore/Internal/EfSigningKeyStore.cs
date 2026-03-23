@@ -12,17 +12,23 @@ internal sealed class EfSigningKeyStore(
 {
     /// <inheritdoc/>
     public async Task<IReadOnlyList<SigningKey>> GetKeysAsync(
-        params SigningKeyStatus[] statuses)
+        SigningKeyStatus[] statuses,
+        CancellationToken cancellationToken = default)
     {
-        await using OpenIddictDbContext db = await dbFactory.CreateDbContextAsync().ConfigureAwait(false);
+        await using OpenIddictDbContext db = await dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         return await db.SigningKeys
             .AsNoTracking()
             .Where(k => statuses.Contains(k.Status))
             .OrderByDescending(k => k.CreatedAt)
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
     }
+
+    /// <inheritdoc/>
+    public Task<IReadOnlyList<SigningKey>> GetKeysAsync(
+        params SigningKeyStatus[] statuses) =>
+        GetKeysAsync(statuses, CancellationToken.None);
 
     /// <inheritdoc/>
     public async Task<SigningKey?> GetActiveKeyAsync(

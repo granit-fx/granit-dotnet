@@ -20392,6 +20392,12 @@
         {
           "name": "GetKeysAsync",
           "kind": "method",
+          "signature": "GetKeysAsync(SigningKeyStatus[] statuses, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<SigningKey>>"
+        },
+        {
+          "name": "GetKeysAsync",
+          "kind": "method",
           "signature": "GetKeysAsync(params SigningKeyStatus[] statuses)",
           "returnType": "Task<IReadOnlyList<SigningKey>>"
         },

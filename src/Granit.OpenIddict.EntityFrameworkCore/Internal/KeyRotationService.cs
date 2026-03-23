@@ -43,7 +43,7 @@ internal sealed partial class KeyRotationService(
 
         // 3. Revoke keys whose grace period has expired
         IReadOnlyList<SigningKey> retiredKeys = await keyStore
-            .GetKeysAsync(SigningKeyStatus.Retired).ConfigureAwait(false);
+            .GetKeysAsync([SigningKeyStatus.Retired], cancellationToken).ConfigureAwait(false);
 
         foreach (SigningKey retiredKey in retiredKeys.Where(k =>
             k.RetiredAt.HasValue && now - k.RetiredAt.Value > options.GracePeriod))
