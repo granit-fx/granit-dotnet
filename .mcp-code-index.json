@@ -19303,6 +19303,22 @@
       "members": []
     },
     {
+      "name": "GranitOpenIddictOptionsExtensions",
+      "fqn": "Granit.OpenIddict.Options.GranitOpenIddictOptionsExtensions",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Options/GranitOpenIddictOptions.cs",
+      "line": 95,
+      "members": [
+        {
+          "name": "WithFapi2Profile",
+          "kind": "method",
+          "signature": "WithFapi2Profile(this GranitOpenIddictOptions options)",
+          "returnType": "GranitOpenIddictOptions"
+        }
+      ]
+    },
+    {
       "name": "GranitOpenIddictSeedingOptions",
       "fqn": "Granit.OpenIddict.Options.GranitOpenIddictSeedingOptions",
       "kind": "class",
