@@ -71,6 +71,20 @@ public sealed class GranitOpenIddictOptions
     public bool RequirePar { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether OAuth 2.0 Token Exchange (RFC 8693) is enabled.
+    /// Allows services to exchange an access token for a more constrained, audience-restricted one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Token exchange enables delegation and impersonation flows in microservice architectures.
+    /// A service receiving a user's token can exchange it for a narrower token scoped to a
+    /// downstream service's audience.
+    /// </para>
+    /// <para>Default: <see langword="false"/>.</para>
+    /// </remarks>
+    public bool EnableTokenExchange { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the FAPI 2.0 Security Profile is enabled.
     /// When <see langword="true"/>, all FAPI 2.0 mandatory constraints are enforced.
     /// </summary>

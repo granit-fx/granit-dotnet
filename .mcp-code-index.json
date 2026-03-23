@@ -260,6 +260,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Bff.EntityFrameworkCore",
+      "deps": [
+        "Granit.Bff",
+        "Granit.Guids",
+        "Granit.Persistence"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Bff.Yarp",
       "deps": [
         "Granit.Bff"
@@ -5877,6 +5886,66 @@
       "file": "src/Granit.Bff.Endpoints/GranitBffEndpointsModule.cs",
       "line": 12,
       "members": []
+    },
+    {
+      "name": "BffDbContext",
+      "fqn": "Granit.Bff.EntityFrameworkCore.BffDbContext",
+      "kind": "class",
+      "project": "Granit.Bff.EntityFrameworkCore",
+      "file": "src/Granit.Bff.EntityFrameworkCore/BffDbContext.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Sessions",
+          "kind": "property",
+          "signature": "DbSet<BffSessionEntity> Sessions",
+          "returnType": "DbSet<BffSessionEntity>"
+        }
+      ]
+    },
+    {
+      "name": "GranitBffEntityFrameworkCoreModule",
+      "fqn": "Granit.Bff.EntityFrameworkCore.GranitBffEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Bff.EntityFrameworkCore",
+      "file": "src/Granit.Bff.EntityFrameworkCore/GranitBffEntityFrameworkCoreModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "BffSessionEntity",
+      "fqn": "Granit.Bff.EntityFrameworkCore.Internal.BffSessionEntity",
+      "kind": "class",
+      "project": "Granit.Bff.EntityFrameworkCore",
+      "file": "src/Granit.Bff.EntityFrameworkCore/Internal/BffSessionEntity.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Id",
+          "kind": "property",
+          "signature": "Guid Id",
+          "returnType": "Guid"
+        },
+        {
+          "name": "FrontendName",
+          "kind": "property",
+          "signature": "string FrontendName",
+          "returnType": "string"
+        },
+        {
+          "name": "UserId",
+          "kind": "property",
+          "signature": "string? UserId",
+          "returnType": "string?"
+        }
+      ]
     },
     {
       "name": "GranitBffModule",
@@ -19326,7 +19395,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictOptions.cs",
-      "line": 95,
+      "line": 109,
       "members": [
         {
           "name": "WithFapi2Profile",

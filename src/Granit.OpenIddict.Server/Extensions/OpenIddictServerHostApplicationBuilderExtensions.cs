@@ -60,6 +60,12 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
                 .AllowRefreshTokenFlow()
                 .AllowDeviceAuthorizationFlow();
 
+            // Token Exchange (RFC 8693) — microservice delegation/impersonation
+            if (granitOptions.EnableTokenExchange)
+            {
+                options.AllowTokenExchangeFlow();
+            }
+
             // PKCE required by default (can be relaxed per-application)
             options.RequireProofKeyForCodeExchange();
 

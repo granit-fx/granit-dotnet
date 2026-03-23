@@ -47,6 +47,14 @@ public static class OpenIddictFeatureNames
     public const string DPoP = "OpenIddict.DPoP";
 
     /// <summary>
+    /// Enables OAuth 2.0 Token Exchange (RFC 8693) for microservice delegation flows.
+    /// Default: <see langword="false"/>.
+    /// </summary>
+#pragma warning disable GRSEC003 // Feature flag name, not a secret
+    public const string TokenExchange = "OpenIddict.TokenExchange";
+#pragma warning restore GRSEC003
+
+    /// <summary>
     /// Requires JWT-Secured Authorization Requests (JAR, RFC 9101) for authorization code flows.
     /// When enabled, the server rejects authorization requests without a signed <c>request</c> parameter.
     /// Default: <see langword="false"/>.
