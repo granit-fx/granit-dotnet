@@ -28,10 +28,10 @@ public sealed class ApiKeyEventsTests
     }
 
     [Fact]
-    public void ApiKeyRevokedEvent_HasCorrectProperties()
+    public void ApiKeyRevokedEto_HasCorrectProperties()
     {
         var id = Guid.NewGuid();
-        ApiKeyRevokedEvent evt = new(id, "hash-abc");
+        ApiKeyRevokedEto evt = new(id, "hash-abc");
 
         evt.ApiKeyId.ShouldBe(id);
         evt.HashedKey.ShouldBe("hash-abc");

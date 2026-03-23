@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Granit.AuditLog.Domain;
 
 namespace Granit.AuditLog.Options;
@@ -30,6 +31,7 @@ public sealed class AuditLogOptions
     /// Number of entries the background persistence worker processes per batch
     /// (Async mode only). Default: 50.
     /// </summary>
+    [Range(1, 10_000)]
     public int PersistenceBatchSize { get; set; } = 50;
 
     /// <summary>
@@ -77,6 +79,7 @@ public sealed class AuditLogOptions
     /// Maximum number of entries deleted per cleanup batch.
     /// Prevents long-running transactions. Default: 10,000.
     /// </summary>
+    [Range(1, 100_000)]
     public int CleanupBatchSize { get; set; } = 10_000;
 
     /// <summary>

@@ -1,6 +1,7 @@
 using Granit.AuditLog.Abstractions;
 using Granit.AuditLog.Domain;
 using Granit.AuditLog.Options;
+using Granit.Core.MultiTenancy;
 using Granit.Querying;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -15,14 +16,16 @@ namespace Granit.AuditLog.EntityFrameworkCore.Internal.Services;
 internal sealed class EfCoreAuditLogReader(
     IDbContextFactory<AuditLogDbContext> dbContextFactory,
     IMemoryCache memoryCache,
+    ICurrentTenant currentTenant,
     IOptions<AuditLogOptions> options) : IAuditLogReader
 {
     private readonly AuditLogOptions _options = options.Value;
+    private string TenantCachePrefix => currentTenant is { IsAvailable: true, Id: { } id } ? id.ToString() : "global";
 
     /// <inheritdoc/>
     public async Task<AuditLogEntry?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        string cacheKey = $"audit:entry:{id}";
+        string cacheKey = $"audit:{TenantCachePrefix}:entry:{id}";
 
         if (memoryCache.TryGetValue(cacheKey, out AuditLogEntry? cached))
         {
@@ -83,7 +86,7 @@ internal sealed class EfCoreAuditLogReader(
         int pageSize = QueryingDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
-        string cacheKey = $"audit:entity:{entityType}:{entityId}:p{page}:s{pageSize}";
+        string cacheKey = $"audit:{TenantCachePrefix}:entity:{entityType}:{entityId}:p{page}:s{pageSize}";
 
         if (memoryCache.TryGetValue(cacheKey, out PagedResult<AuditLogEntry>? cached))
         {

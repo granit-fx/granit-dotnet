@@ -1,6 +1,8 @@
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Granit.Authentication.DPoP.Diagnostics;
 using Granit.Authentication.DPoP.Options;
 using Granit.Timing;
 using Microsoft.Extensions.Caching.Distributed;
@@ -15,6 +17,7 @@ namespace Granit.Authentication.DPoP.Validation.Internal;
 internal sealed class DPoPProofValidator(
     IOptions<DPoPValidationOptions> options,
     IClock clock,
+    DPoPValidationMetrics metrics,
     IDistributedCache? cache = null) : IDPoPProofValidator
 {
     private const string JtiCachePrefix = "dpop:jti:";
@@ -25,6 +28,7 @@ internal sealed class DPoPProofValidator(
         string httpUri,
         CancellationToken cancellationToken = default)
     {
+        using Activity? activity = DPoPValidationActivitySource.Source.StartActivity(DPoPValidationActivitySource.Validate);
         DPoPValidationOptions opts = options.Value;
 
         // 1. Split JWT
@@ -136,6 +140,7 @@ internal sealed class DPoPProofValidator(
             byte[]? existing = await cache.GetAsync(jtiKey, cancellationToken).ConfigureAwait(false);
             if (existing is not null)
             {
+                metrics.RecordReplayDetected(tenantId: null);
                 return DPoPValidationResult.Failure("Proof replay detected (duplicate jti).");
             }
 
@@ -161,12 +166,14 @@ internal sealed class DPoPProofValidator(
 
         if (!signatureValid)
         {
+            metrics.RecordFailure("invalid_signature", tenantId: null);
             return DPoPValidationResult.Failure("Invalid proof signature.");
         }
 
         // 8. Compute JWK Thumbprint (RFC 7638)
         string thumbprint = JwkThumbprintCalculator.ComputeThumbprint(jwk);
 
+        metrics.RecordSuccess(tenantId: null);
         return DPoPValidationResult.Success(thumbprint);
     }
 

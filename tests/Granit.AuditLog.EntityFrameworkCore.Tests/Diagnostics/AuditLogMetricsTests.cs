@@ -68,7 +68,7 @@ public sealed class AuditLogMetricsTests : IDisposable
     {
         AuditLogMetrics metrics = new(_meterFactory);
 
-        metrics.RecordPurged(100, "DataMutation");
+        metrics.RecordPurged(100, "DataMutation", null);
         _listener.RecordObservableInstruments();
 
         _recordings.ShouldContain(r =>
@@ -80,7 +80,7 @@ public sealed class AuditLogMetricsTests : IDisposable
     {
         AuditLogMetrics metrics = new(_meterFactory);
 
-        metrics.RecordPurged(50, "ConfigurationChange");
+        metrics.RecordPurged(50, "ConfigurationChange", "tenant-1");
         _listener.RecordObservableInstruments();
 
         _recordings.ShouldContain(r =>

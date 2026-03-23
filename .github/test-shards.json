@@ -98,6 +98,7 @@
         "tests/Granit.Caching.FusionCache.Tests",
         "tests/Granit.Caching.StackExchangeRedis.Tests",
         "tests/Granit.Caching.Tests",
+        "tests/Granit.Caching.Tests.Integration",
         "tests/Granit.ExceptionHandling.Tests",
         "tests/Granit.Http.ApiDocumentation.Tests",
         "tests/Granit.Http.ApiVersioning.Tests",

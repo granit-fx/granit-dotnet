@@ -10,6 +10,7 @@ using Granit.AuditLog.Options;
 using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -45,7 +46,7 @@ public static class AuditLogEntityFrameworkCoreServiceCollectionExtensions
         builder.Services.AddGranitDbContext<AuditLogDbContext>(configure);
 
         // Metrics.
-        builder.Services.AddSingleton<AuditLogMetrics>();
+        builder.Services.TryAddSingleton<AuditLogMetrics>();
 
         // Publisher: async (Channel) or strict (synchronous).
         builder.Services.AddSingleton(Channel.CreateUnbounded<AuditLogBatch>());

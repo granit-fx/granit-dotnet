@@ -12,9 +12,9 @@ public sealed class AuditLogEndpointsOptions
 
     /// <summary>
     /// Authorization policy name for all audit log endpoints.
-    /// Default: <c>"AuditLog.Read"</c>.
+    /// Default: <c>"AuditLog.Entries.Read"</c>.
     /// </summary>
-    public string AuthorizationPolicy { get; set; } = "AuditLog.Read";
+    public string AuthorizationPolicy { get; set; } = "AuditLog.Entries.Read";
 
     /// <summary>
     /// Role required for audit log access (used as fallback when the policy is not explicitly configured).

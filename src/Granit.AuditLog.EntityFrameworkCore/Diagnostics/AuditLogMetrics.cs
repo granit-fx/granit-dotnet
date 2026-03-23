@@ -38,9 +38,10 @@ public sealed class AuditLogMetrics
             { "tenant_id", tenantId ?? "global" },
         });
 
-    public void RecordPurged(long count, string category) =>
+    public void RecordPurged(long count, string category, string? tenantId) =>
         _entriesPurged.Add(count, new TagList
         {
+            { "tenant_id", tenantId ?? "global" },
             { "category", category },
         });
 

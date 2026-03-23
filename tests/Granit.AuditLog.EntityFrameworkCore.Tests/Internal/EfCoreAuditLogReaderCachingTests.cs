@@ -3,10 +3,12 @@ using Granit.AuditLog.Domain;
 using Granit.AuditLog.EntityFrameworkCore.Internal;
 using Granit.AuditLog.EntityFrameworkCore.Internal.Services;
 using Granit.AuditLog.Options;
+using Granit.Core.MultiTenancy;
 using Granit.Querying;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -18,6 +20,7 @@ public sealed class EfCoreAuditLogReaderCachingTests : IDisposable
 {
     private readonly DbContextOptions<AuditLogDbContext> _dbOptions;
     private readonly MemoryCache _cache = new(new MemoryCacheOptions());
+    private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly IOptions<AuditLogOptions> _options = Microsoft.Extensions.Options.Options.Create(new AuditLogOptions());
 
     public EfCoreAuditLogReaderCachingTests()
@@ -37,7 +40,7 @@ public sealed class EfCoreAuditLogReaderCachingTests : IDisposable
         await SeedEntryAsync(entryId);
 
         IDbContextFactory<AuditLogDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditLogReader reader = new(factory, _cache, _options);
+        EfCoreAuditLogReader reader = new(factory, _cache, _currentTenant, _options);
 
         // Act — first call loads from DB
         AuditLogEntry? first = await reader.GetByIdAsync(entryId, TestContext.Current.CancellationToken);
@@ -63,7 +66,7 @@ public sealed class EfCoreAuditLogReaderCachingTests : IDisposable
     {
         // Arrange
         IDbContextFactory<AuditLogDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditLogReader reader = new(factory, _cache, _options);
+        EfCoreAuditLogReader reader = new(factory, _cache, _currentTenant, _options);
 
         var missingId = Guid.NewGuid();
 
@@ -72,7 +75,7 @@ public sealed class EfCoreAuditLogReaderCachingTests : IDisposable
 
         // Assert
         result.ShouldBeNull();
-        _cache.TryGetValue($"audit:entry:{missingId}", out _).ShouldBeFalse();
+        _cache.TryGetValue($"audit:global:entry:{missingId}", out _).ShouldBeFalse();
     }
 
     [Fact]
@@ -83,7 +86,7 @@ public sealed class EfCoreAuditLogReaderCachingTests : IDisposable
         await SeedEntryWithEntityChangeAsync(entryId, "Invoice", "INV-001");
 
         IDbContextFactory<AuditLogDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditLogReader reader = new(factory, _cache, _options);
+        EfCoreAuditLogReader reader = new(factory, _cache, _currentTenant, _options);
 
         // Act — first call loads from DB
         PagedResult<AuditLogEntry> first = await reader.GetByEntityAsync("Invoice", "INV-001", cancellationToken: TestContext.Current.CancellationToken);
@@ -112,7 +115,7 @@ public sealed class EfCoreAuditLogReaderCachingTests : IDisposable
         await SeedEntryAsync(entryId);
 
         IDbContextFactory<AuditLogDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditLogReader reader = new(factory, _cache, _options);
+        EfCoreAuditLogReader reader = new(factory, _cache, _currentTenant, _options);
 
         // Act
         PagedResult<AuditLogEntry> result = await reader.GetPagedAsync(

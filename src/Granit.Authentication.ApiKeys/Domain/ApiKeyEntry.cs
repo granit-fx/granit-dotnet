@@ -89,12 +89,13 @@ public sealed class ApiKeyEntry : FullAuditedAggregateRoot, IMultiTenant
     }
 
     /// <summary>
-    /// Revokes the API key and emits an <see cref="ApiKeyRevokedEvent"/> domain event.
+    /// Revokes the API key and emits an <see cref="ApiKeyRevokedEto"/> integration event
+    /// for cross-instance cache invalidation via Wolverine outbox.
     /// </summary>
     public void Revoke(DateTimeOffset revokedAt)
     {
         RevokedAt = revokedAt;
-        AddDomainEvent(new ApiKeyRevokedEvent(Id, HashedKey));
+        AddDistributedEvent(new ApiKeyRevokedEto(Id, HashedKey));
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 using Granit.AuditLog;
 using Granit.Core.Modularity;
 using Granit.Http.ApiDocumentation;
+using Granit.Validation;
 
 namespace Granit.AuditLog.Endpoints;
 
@@ -14,6 +15,7 @@ namespace Granit.AuditLog.Endpoints;
 /// </para>
 /// </remarks>
 [DependsOn(
+    typeof(GranitAuditLogModule),
     typeof(GranitHttpApiDocumentationModule),
-    typeof(GranitAuditLogModule))]
+    typeof(GranitValidationModule))]
 public sealed class GranitAuditLogEndpointsModule : GranitModule;

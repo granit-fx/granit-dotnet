@@ -40,24 +40,29 @@ public sealed class ApiKeyCreatedEtoTests
     }
 }
 
-public sealed class ApiKeyRevokedEventTests
+public sealed class ApiKeyRevokedEtoTests
 {
     [Fact]
     public void Properties_AreSetFromConstructor()
     {
         var id = Guid.NewGuid();
-        var evt = new ApiKeyRevokedEvent(id, "abc123hash");
+        var evt = new ApiKeyRevokedEto(id, "abc123hash");
 
         evt.ApiKeyId.ShouldBe(id);
         evt.HashedKey.ShouldBe("abc123hash");
     }
 
     [Fact]
+    public void ImplementsIIntegrationEvent() =>
+        new ApiKeyRevokedEto(Guid.NewGuid(), "hash")
+            .ShouldBeAssignableTo<IIntegrationEvent>();
+
+    [Fact]
     public void RecordEquality_WorksCorrectly()
     {
         var id = Guid.NewGuid();
-        var evt1 = new ApiKeyRevokedEvent(id, "hash1");
-        var evt2 = new ApiKeyRevokedEvent(id, "hash1");
+        var evt1 = new ApiKeyRevokedEto(id, "hash1");
+        var evt2 = new ApiKeyRevokedEto(id, "hash1");
 
         evt1.ShouldBe(evt2);
     }

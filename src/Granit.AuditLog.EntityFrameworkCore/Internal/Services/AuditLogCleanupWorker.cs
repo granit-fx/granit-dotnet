@@ -72,7 +72,7 @@ internal sealed partial class AuditLogCleanupWorker(
 
             if (totalPurged > 0)
             {
-                metrics.RecordPurged(totalPurged, category.ToString());
+                metrics.RecordPurged(totalPurged, category.ToString(), tenantId: null);
                 LogEntriesPurged(totalPurged, category.ToString());
             }
         }

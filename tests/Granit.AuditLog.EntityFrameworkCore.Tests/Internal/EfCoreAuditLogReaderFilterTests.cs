@@ -3,10 +3,12 @@ using Granit.AuditLog.Domain;
 using Granit.AuditLog.EntityFrameworkCore.Internal;
 using Granit.AuditLog.EntityFrameworkCore.Internal.Services;
 using Granit.AuditLog.Options;
+using Granit.Core.MultiTenancy;
 using Granit.Querying;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -18,6 +20,7 @@ public sealed class EfCoreAuditLogReaderFilterTests : IDisposable
 {
     private readonly DbContextOptions<AuditLogDbContext> _dbOptions;
     private readonly MemoryCache _cache = new(new MemoryCacheOptions());
+    private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly IOptions<AuditLogOptions> _options = Microsoft.Extensions.Options.Options.Create(new AuditLogOptions());
 
     public EfCoreAuditLogReaderFilterTests()
@@ -297,7 +300,7 @@ public sealed class EfCoreAuditLogReaderFilterTests : IDisposable
     private EfCoreAuditLogReader CreateReader()
     {
         IDbContextFactory<AuditLogDbContext> factory = new TestDbContextFactory(_dbOptions);
-        return new EfCoreAuditLogReader(factory, _cache, _options);
+        return new EfCoreAuditLogReader(factory, _cache, _currentTenant, _options);
     }
 
     private async Task SeedEntriesAsync(params AuditLogEntry[] entries)

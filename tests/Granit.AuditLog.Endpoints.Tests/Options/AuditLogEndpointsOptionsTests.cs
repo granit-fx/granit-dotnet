@@ -12,7 +12,7 @@ public sealed class AuditLogEndpointsOptionsTests
         AuditLogEndpointsOptions options = new();
 
         options.RoutePrefix.ShouldBe("audit-log");
-        options.AuthorizationPolicy.ShouldBe("AuditLog.Read");
+        options.AuthorizationPolicy.ShouldBe("AuditLog.Entries.Read");
         options.RequiredRole.ShouldBe("granit-audit-log-admin");
         options.TagName.ShouldBe("Audit Log");
     }
