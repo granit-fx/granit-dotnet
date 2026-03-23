@@ -45,4 +45,11 @@ public static class OpenIddictFeatureNames
     /// Default: <see langword="false"/>.
     /// </summary>
     public const string DPoP = "OpenIddict.DPoP";
+
+    /// <summary>
+    /// Requires JWT-Secured Authorization Requests (JAR, RFC 9101) for authorization code flows.
+    /// When enabled, the server rejects authorization requests without a signed <c>request</c> parameter.
+    /// Default: <see langword="false"/>.
+    /// </summary>
+    public const string JarRequired = "OpenIddict.JarRequired";
 }
