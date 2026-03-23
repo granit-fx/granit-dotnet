@@ -164,45 +164,40 @@ public sealed class EntityTests
     }
 
     [Fact]
-    public void SigningKey_Default_Values()
+    public void SigningKey_Create_Factory()
     {
-        SigningKey key = new();
+        DateTimeOffset now = DateTimeOffset.UtcNow;
 
-        key.KeyId.ShouldBe(string.Empty);
+        var key = SigningKey.Create(
+            "key-001", "signing", "RS256", "encrypted-data",
+            activatedAt: now, expiresAt: now.AddDays(90));
+
+        key.KeyId.ShouldBe("key-001");
         key.KeyType.ShouldBe("signing");
         key.Algorithm.ShouldBe("RS256");
-        key.EncryptedKeyMaterial.ShouldBe(string.Empty);
+        key.EncryptedKeyMaterial.ShouldBe("encrypted-data");
         key.Status.ShouldBe(SigningKeyStatus.Active);
-        key.ActivatedAt.ShouldBe(default);
-        key.ExpiresAt.ShouldBe(default);
+        key.ActivatedAt.ShouldBe(now);
+        key.ExpiresAt.ShouldBe(now.AddDays(90));
         key.RetiredAt.ShouldBeNull();
         key.KeySize.ShouldBe(2048);
     }
 
     [Fact]
-    public void SigningKey_Property_Setters()
+    public void SigningKey_Retire_And_Revoke()
     {
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        SigningKey key = new()
-        {
-            KeyId = "key-001",
-            KeyType = "encryption",
-            Algorithm = "RSA-OAEP",
-            EncryptedKeyMaterial = "encrypted-data",
-            Status = SigningKeyStatus.Retired,
-            ActivatedAt = now.AddDays(-90),
-            ExpiresAt = now,
-            RetiredAt = now,
-            KeySize = 4096,
-        };
+        var key = SigningKey.Create(
+            "key-002", "encryption", "RSA-OAEP", "encrypted-data",
+            activatedAt: now.AddDays(-90), expiresAt: now, keySize: 4096);
 
-        key.KeyId.ShouldBe("key-001");
-        key.KeyType.ShouldBe("encryption");
-        key.Algorithm.ShouldBe("RSA-OAEP");
-        key.EncryptedKeyMaterial.ShouldBe("encrypted-data");
+        key.Retire(now);
         key.Status.ShouldBe(SigningKeyStatus.Retired);
         key.RetiredAt.ShouldBe(now);
         key.KeySize.ShouldBe(4096);
+
+        key.Revoke();
+        key.Status.ShouldBe(SigningKeyStatus.Revoked);
     }
 
     [Fact]

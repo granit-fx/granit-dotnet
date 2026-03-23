@@ -48,7 +48,7 @@ internal sealed partial class KeyRotationService(
         foreach (SigningKey retiredKey in retiredKeys.Where(k =>
             k.RetiredAt.HasValue && now - k.RetiredAt.Value > options.GracePeriod))
         {
-            retiredKey.Status = SigningKeyStatus.Revoked;
+            retiredKey.Revoke();
             await keyStore.UpdateAsync(retiredKey, cancellationToken).ConfigureAwait(false);
             Log.KeyRevoked(logger, retiredKey.KeyId);
             revoked++;
@@ -87,8 +87,7 @@ internal sealed partial class KeyRotationService(
 
             await GenerateKeyAsync(keyType, options, now, cancellationToken).ConfigureAwait(false);
 
-            activeKey.Status = SigningKeyStatus.Retired;
-            activeKey.RetiredAt = now;
+            activeKey.Retire(now);
             await keyStore.UpdateAsync(activeKey, cancellationToken).ConfigureAwait(false);
             Log.KeyRetired(logger, activeKey.KeyId);
 
@@ -115,17 +114,14 @@ internal sealed partial class KeyRotationService(
             ? options.SigningAlgorithm
             : "RSA-OAEP";
 
-        SigningKey newKey = new()
-        {
-            KeyId = keyId,
-            KeyType = keyType,
-            Algorithm = algorithm,
-            EncryptedKeyMaterial = encryptionService.Encrypt(Convert.ToBase64String(privateKey)),
-            Status = SigningKeyStatus.Active,
-            ActivatedAt = now,
-            ExpiresAt = now + options.KeyLifetime,
-            KeySize = options.RsaKeySize,
-        };
+        var newKey = SigningKey.Create(
+            keyId,
+            keyType,
+            algorithm,
+            encryptionService.Encrypt(Convert.ToBase64String(privateKey)),
+            activatedAt: now,
+            expiresAt: now + options.KeyLifetime,
+            keySize: options.RsaKeySize);
 
         await keyStore.CreateAsync(newKey, cancellationToken).ConfigureAwait(false);
         Log.KeyGenerated(logger, keyId, keyType, options.RsaKeySize);
