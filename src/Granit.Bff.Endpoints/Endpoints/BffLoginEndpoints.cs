@@ -51,6 +51,7 @@ internal static partial class BffLoginEndpoints
                 [FromQuery] string? code,
                 [FromQuery] string? state,
                 [FromQuery] string? error,
+                [FromQuery] string? iss,
                 [FromServices] IOptions<GranitBffOptions> options,
                 [FromServices] IDistributedCache cache,
                 [FromServices] IBffTokenStore tokenStore,
@@ -61,7 +62,7 @@ internal static partial class BffLoginEndpoints
                 [FromServices] IBffClientAssertionService assertionService,
                 [FromServices] ILoggerFactory loggerFactory,
                 CancellationToken cancellationToken) =>
-                HandleCallbackAsync(httpContext, frontend, code, state, error, options, cache,
+                HandleCallbackAsync(httpContext, frontend, code, state, error, iss, options, cache,
                     tokenStore, metrics, clock, httpClientFactory, dpopService, assertionService, loggerFactory, cancellationToken))
             .WithName($"BffCallback_{frontend.Name}")
             .WithSummary("Handles the OIDC callback, exchanges the code for tokens, and sets the session cookie.")
@@ -164,6 +165,7 @@ internal static partial class BffLoginEndpoints
         string? code,
         string? state,
         string? error,
+        string? iss,
         [FromServices] IOptions<GranitBffOptions> options,
         [FromServices] IDistributedCache cache,
         [FromServices] IBffTokenStore tokenStore,
@@ -195,6 +197,28 @@ internal static partial class BffLoginEndpoints
         }
 
         GranitBffOptions bffOptions = options.Value;
+
+        // Verify authorization response issuer (RFC 9207, FAPI 2.0 §5.3.3.2)
+        if (bffOptions.RequireIssuerValidation)
+        {
+            string expectedIssuer = bffOptions.Authority.ToString().TrimEnd('/');
+
+            if (string.IsNullOrEmpty(iss))
+            {
+                LogIssuerMissing(logger, frontend.Name);
+                return TypedResults.Problem(
+                    detail: "Missing iss parameter in authorization response (RFC 9207).",
+                    statusCode: StatusCodes.Status400BadRequest);
+            }
+
+            if (!string.Equals(iss.TrimEnd('/'), expectedIssuer, StringComparison.OrdinalIgnoreCase))
+            {
+                LogIssuerMismatch(logger, iss, expectedIssuer, frontend.Name);
+                return TypedResults.Problem(
+                    detail: "Authorization response issuer does not match expected authority.",
+                    statusCode: StatusCodes.Status400BadRequest);
+            }
+        }
 
         // Retrieve and remove PKCE state
         string pkceKey = $"{PkceKeyPrefix}{state}";
@@ -514,4 +538,10 @@ internal static partial class BffLoginEndpoints
 
     [LoggerMessage(Level = LogLevel.Error, Message = "BFF PAR: exception during pushed authorization request for frontend {FrontendName}")]
     private static partial void LogParException(ILogger logger, Exception exception, string frontendName);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF callback: missing iss parameter in authorization response for frontend {FrontendName} (RFC 9207)")]
+    private static partial void LogIssuerMissing(ILogger logger, string frontendName);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF callback: issuer mismatch — received '{ReceivedIssuer}', expected '{ExpectedIssuer}' for frontend {FrontendName}")]
+    private static partial void LogIssuerMismatch(ILogger logger, string receivedIssuer, string expectedIssuer, string frontendName);
 }

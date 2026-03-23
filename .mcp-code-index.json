@@ -5959,7 +5959,7 @@
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/Options/GranitBffOptions.cs",
-      "line": 58,
+      "line": 65,
       "members": [
         {
           "name": "Name",
@@ -6048,6 +6048,12 @@
           "kind": "method",
           "signature": "FromMinutes(1)",
           "returnType": "TimeSpan RefreshGracePeriod { get; set; } = TimeSpan."
+        },
+        {
+          "name": "RequireIssuerValidation",
+          "kind": "property",
+          "signature": "bool RequireIssuerValidation",
+          "returnType": "bool"
         },
         {
           "name": "Frontends",

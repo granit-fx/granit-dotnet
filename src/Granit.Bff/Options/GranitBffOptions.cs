@@ -41,6 +41,13 @@ public sealed class GranitBffOptions
     public TimeSpan RefreshGracePeriod { get; set; } = TimeSpan.FromMinutes(1);
 
     /// <summary>
+    /// Gets or sets whether the BFF validates the <c>iss</c> parameter in authorization
+    /// responses (RFC 9207). Prevents IdP mix-up attacks.
+    /// Default: <see langword="true"/>.
+    /// </summary>
+    public bool RequireIssuerValidation { get; set; } = true;
+
+    /// <summary>
     /// Registered frontend applications. Each frontend has its own OIDC client,
     /// session cookie, and path prefix.
     /// </summary>
