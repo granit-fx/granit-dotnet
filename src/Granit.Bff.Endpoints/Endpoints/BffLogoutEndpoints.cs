@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using Granit.Bff.ClientAssertion;
 using Granit.Bff.Diagnostics;
+using Granit.Bff.DPoP;
 using Granit.Bff.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -22,10 +24,14 @@ internal static partial class BffLogoutEndpoints
         group.MapGet("/logout", (HttpContext httpContext,
                 [FromServices] IOptions<GranitBffOptions> options,
                 [FromServices] IBffTokenStore tokenStore,
+                [FromServices] IHttpClientFactory httpClientFactory,
+                [FromServices] IBffClientAssertionService assertionService,
+                [FromServices] IBffDPoPService dpopService,
                 [FromServices] BffMetrics metrics,
                 [FromServices] ILoggerFactory loggerFactory,
                 CancellationToken cancellationToken) =>
-                HandleLogoutAsync(httpContext, frontend, options, tokenStore, metrics, loggerFactory, cancellationToken))
+                HandleLogoutAsync(httpContext, frontend, options, tokenStore, httpClientFactory,
+                    assertionService, dpopService, metrics, loggerFactory, cancellationToken))
             .WithName($"BffLogout_{frontend.Name}")
             .WithSummary("Logs out the user, clears the session, and redirects to the OIDC end_session_endpoint.")
             .WithDescription(
@@ -44,6 +50,9 @@ internal static partial class BffLogoutEndpoints
         BffFrontendOptions frontend,
         IOptions<GranitBffOptions> options,
         IBffTokenStore tokenStore,
+        IHttpClientFactory httpClientFactory,
+        IBffClientAssertionService assertionService,
+        IBffDPoPService dpopService,
         BffMetrics metrics,
         ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
@@ -63,6 +72,14 @@ internal static partial class BffLogoutEndpoints
             BffTokenSet? tokens = await tokenStore.GetAsync(frontend.Name, sessionId, cancellationToken)
                 .ConfigureAwait(false);
             idTokenHint = tokens?.IdToken;
+
+            // Revoke tokens at the authorization server (RFC 7009) — best-effort
+            if (tokens is not null)
+            {
+                await RevokeTokensAsync(
+                    httpClientFactory, bffOptions, frontend, tokens,
+                    assertionService, dpopService, logger, cancellationToken).ConfigureAwait(false);
+            }
 #pragma warning restore GRSEC003
 
             await tokenStore.RemoveAsync(frontend.Name, sessionId, cancellationToken).ConfigureAwait(false);
@@ -98,8 +115,95 @@ internal static partial class BffLogoutEndpoints
     }
 #pragma warning restore GRAPI003
 
+    /// <summary>
+    /// Best-effort token revocation (RFC 7009). Revokes refresh token first (cascades
+    /// in OpenIddict), then access token. Failures are logged but do not block logout.
+    /// </summary>
+#pragma warning disable GRSEC003 // Method handles tokens for revocation — server-side only
+    private static async Task RevokeTokensAsync(
+        IHttpClientFactory httpClientFactory,
+        GranitBffOptions bffOptions,
+        BffFrontendOptions frontend,
+        BffTokenSet tokens,
+        IBffClientAssertionService assertionService,
+        IBffDPoPService dpopService,
+        ILogger logger,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            using HttpClient httpClient = httpClientFactory.CreateClient("Granit.Bff");
+            string revokeEndpoint = $"{bffOptions.Authority.ToString().TrimEnd('/')}/connect/revoke";
+
+            // Revoke refresh token first (cascades to access token in OpenIddict)
+            if (!string.IsNullOrEmpty(tokens.RefreshToken))
+            {
+                await RevokeTokenAsync(
+                    httpClient, revokeEndpoint, tokens.RefreshToken, "refresh_token",
+                    frontend, tokens, assertionService, dpopService, cancellationToken).ConfigureAwait(false);
+            }
+
+            // Explicitly revoke access token as well (defense in depth)
+            await RevokeTokenAsync(
+                httpClient, revokeEndpoint, tokens.AccessToken, "access_token",
+                frontend, tokens, assertionService, dpopService, cancellationToken).ConfigureAwait(false);
+
+            LogTokensRevoked(logger, frontend.Name);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            // Best-effort — logout must not fail because of revocation errors
+            LogRevocationFailed(logger, ex, frontend.Name);
+        }
+    }
+
+    private static async Task RevokeTokenAsync(
+        HttpClient httpClient,
+        string revokeEndpoint,
+        string token,
+        string tokenTypeHint,
+        BffFrontendOptions frontend,
+        BffTokenSet tokens,
+        IBffClientAssertionService assertionService,
+        IBffDPoPService dpopService,
+        CancellationToken cancellationToken)
+    {
+        Dictionary<string, string> parameters = new()
+        {
+            ["token"] = token,
+            ["token_type_hint"] = tokenTypeHint,
+            ["client_id"] = frontend.ClientId,
+        };
+
+        BffClientAuthentication.Apply(parameters, frontend, revokeEndpoint, assertionService);
+
+        using FormUrlEncodedContent content = new(parameters);
+        using var request = new HttpRequestMessage(HttpMethod.Post, revokeEndpoint) { Content = content };
+
+        // Attach DPoP proof if active
+        if (!string.IsNullOrEmpty(tokens.DPoPPrivateKeyJwk))
+        {
+            string dpopProof = dpopService.CreateProof(tokens.DPoPPrivateKeyJwk, "POST", revokeEndpoint, tokens.DPoPNonce);
+            request.Headers.TryAddWithoutValidation("DPoP", dpopProof);
+        }
+
+        using HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        // RFC 7009: server returns 200 on success, any other status is logged but not fatal
+    }
+#pragma warning restore GRSEC003
+
     // ──── Source-generated log messages ────
 
     [LoggerMessage(Level = LogLevel.Information, Message = "BFF logout: session {SessionId} cleared for frontend {FrontendName}")]
     private static partial void LogLogout(ILogger logger, string sessionId, string frontendName);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "BFF logout: tokens revoked at authorization server for frontend {FrontendName}")]
+    private static partial void LogTokensRevoked(ILogger logger, string frontendName);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF logout: token revocation failed for frontend {FrontendName} (best-effort, logout continues)")]
+    private static partial void LogRevocationFailed(ILogger logger, Exception exception, string frontendName);
 }
