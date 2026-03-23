@@ -19357,7 +19357,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Domain/SigningKey.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "KeyId",
@@ -19394,6 +19394,18 @@
           "kind": "property",
           "signature": "DateTimeOffset ActivatedAt",
           "returnType": "DateTimeOffset"
+        },
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string keyId, string keyType, string algorithm, string encryptedKeyMaterial, DateTimeOffset activatedAt, DateTimeOffset expiresAt, int keySize = 2048)",
+          "returnType": "SigningKey"
+        },
+        {
+          "name": "Retire",
+          "kind": "method",
+          "signature": "Retire(DateTimeOffset retiredAt)",
+          "returnType": "void"
         }
       ]
     },
@@ -19403,7 +19415,7 @@
       "kind": "enum",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Domain/SigningKey.cs",
-      "line": 55,
+      "line": 98,
       "members": []
     },
     {
