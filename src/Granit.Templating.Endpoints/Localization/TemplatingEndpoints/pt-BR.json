@@ -1,4 +1,7 @@
 {
   "culture": "pt-BR",
-  "texts": {}
+  "texts": {
+    "Permission:Templating.Categories.Read": "Ver categorias de modelos",
+    "Permission:Templating.Categories.Manage": "Gerenciar categorias de modelos (criar, editar, excluir)"
+  }
 }

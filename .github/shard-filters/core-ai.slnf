@@ -14,7 +14,6 @@
       "src/Granit.Analyzers/Granit.Analyzers.csproj",
       "src/Granit.Authorization.AI/Granit.Authorization.AI.csproj",
       "src/Granit.Authorization/Granit.Authorization.csproj",
-      "src/Granit.BackgroundJobs/Granit.BackgroundJobs.csproj",
       "src/Granit.BlobStorage.AI/Granit.BlobStorage.AI.csproj",
       "src/Granit.BlobStorage/Granit.BlobStorage.csproj",
       "src/Granit.Caching.StackExchangeRedis/Granit.Caching.StackExchangeRedis.csproj",

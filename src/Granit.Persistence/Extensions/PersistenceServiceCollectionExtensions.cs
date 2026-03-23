@@ -1,7 +1,9 @@
 using Granit.Core.DataFiltering;
+using Granit.Core.Diagnostics;
 using Granit.Core.Events;
 using Granit.Http.ExceptionHandling;
 using Granit.Persistence.DataSeeding;
+using Granit.Persistence.Diagnostics;
 using Granit.Persistence.Events;
 using Granit.Persistence.ExceptionHandling;
 using Granit.Persistence.Interceptors;
@@ -48,6 +50,9 @@ public static class PersistenceServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddGranitPersistence(this IServiceCollection services)
     {
+        GranitActivitySourceRegistry.Register(PersistenceActivitySource.Name);
+        services.TryAddSingleton<PersistenceMetrics>();
+
         services.AddScoped<AuditedEntityInterceptor>();
         services.AddScoped<VersioningInterceptor>();
         services.AddScoped<ConcurrencyStampInterceptor>();

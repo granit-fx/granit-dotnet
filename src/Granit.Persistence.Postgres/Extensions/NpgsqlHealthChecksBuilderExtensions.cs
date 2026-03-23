@@ -31,8 +31,10 @@ public static class NpgsqlHealthChecksBuilderExtensions
         string connectionString,
         string name = "postgres",
         HealthStatus failureStatus = HealthStatus.Unhealthy,
-        IEnumerable<string>? tags = null) =>
-        builder.AddAsyncCheck(
+        IEnumerable<string>? tags = null)
+    {
+        tags ??= ["readiness", "startup"];
+        return builder.AddAsyncCheck(
             name,
             async ct =>
             {
@@ -54,5 +56,6 @@ public static class NpgsqlHealthChecksBuilderExtensions
                     return new HealthCheckResult(failureStatus, exception: ex);
                 }
             },
-            tags ?? []);
+            tags);
+    }
 }

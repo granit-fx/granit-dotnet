@@ -57,6 +57,7 @@
       "tests/Granit.DocumentGeneration.Excel.Tests/Granit.DocumentGeneration.Excel.Tests.csproj",
       "tests/Granit.DocumentGeneration.Pdf.Tests/Granit.DocumentGeneration.Pdf.Tests.csproj",
       "tests/Granit.DocumentGeneration.Tests/Granit.DocumentGeneration.Tests.csproj",
+      "tests/Granit.Querying.Endpoints.Tests.Integration/Granit.Querying.Endpoints.Tests.Integration.csproj",
       "tests/Granit.Querying.Endpoints.Tests/Granit.Querying.Endpoints.Tests.csproj",
       "tests/Granit.Querying.EntityFrameworkCore.Tests/Granit.Querying.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Querying.Tests/Granit.Querying.Tests.csproj",

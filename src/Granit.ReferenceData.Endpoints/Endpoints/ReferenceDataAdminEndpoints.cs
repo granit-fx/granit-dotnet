@@ -2,6 +2,7 @@ using Granit.Core.Domain;
 using Granit.Guids;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Endpoints.Dtos;
+using Granit.ReferenceData.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -19,31 +20,26 @@ internal static class ReferenceDataAdminEndpoints
     /// Registers POST /, PUT /{code}, and DELETE /{code} onto the given route group.
     /// </summary>
     internal static RouteGroupBuilder MapAdminEndpoints<TEntity>(
-        this RouteGroupBuilder group,
-        string? adminPolicyName)
+        this RouteGroupBuilder group)
         where TEntity : ReferenceDataEntity, new()
     {
-        RouteGroupBuilder adminGroup = group.MapGroup("/");
-
-        if (adminPolicyName is not null)
-        {
-            adminGroup.RequireAuthorization(adminPolicyName);
-        }
-
-        adminGroup.MapPost("/", CreateAsync<TEntity>)
+        group.MapPost("/", CreateAsync<TEntity>)
+            .RequireAuthorization(ReferenceDataPermissions.Entries.Create)
             .WithName($"Create{typeof(TEntity).Name}")
             .WithSummary($"Creates a new {typeof(TEntity).Name} entry.")
             .WithDescription($"Creates a new {typeof(TEntity).Name} reference data entry with a unique code and localized labels for all supported languages. The entry is active by default. Optional validity date range can restrict when the entry is selectable.")
             .Produces(StatusCodes.Status201Created);
 
-        adminGroup.MapPut("/{code}", UpdateAsync<TEntity>)
+        group.MapPut("/{code}", UpdateAsync<TEntity>)
+            .RequireAuthorization(ReferenceDataPermissions.Entries.Manage)
             .WithName($"Update{typeof(TEntity).Name}")
             .WithSummary($"Updates an existing {typeof(TEntity).Name} entry.")
             .WithDescription($"Updates the labels, sort order, active status, and validity dates of an existing {typeof(TEntity).Name} entry. The code is immutable and cannot be changed. ExtraProperties use merge semantics: properties in the request are added or updated, properties not in the request are preserved. Returns 404 if no entry matches the code.")
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
-        adminGroup.MapDelete("/{code}", DeactivateAsync<TEntity>)
+        group.MapDelete("/{code}", DeactivateAsync<TEntity>)
+            .RequireAuthorization(ReferenceDataPermissions.Entries.Manage)
             .WithName($"Deactivate{typeof(TEntity).Name}")
             .WithSummary($"Deactivates a {typeof(TEntity).Name} entry (soft delete).")
             .WithDescription($"Sets the entry's active flag to false. Deactivated entries are excluded from default queries but remain in the database for referential integrity. Returns 404 if no entry matches the code.")

@@ -63,9 +63,10 @@ public sealed class VaultMetrics
             { "provider", provider },
         });
 
-    public void RecordRotationDetected(string provider) =>
+    public void RecordRotationDetected(string? tenantId, string provider) =>
         _rotationsDetected.Add(1, new TagList
         {
+            { "tenant_id", tenantId ?? "global" },
             { "provider", provider },
         });
 }

@@ -3,7 +3,7 @@ namespace Granit.Bff.EntityFrameworkCore.Internal;
 /// <summary>
 /// EF Core entity representing a BFF session with serialized tokens.
 /// </summary>
-public sealed class BffSessionEntity
+internal sealed class BffSessionEntity
 {
     /// <summary>Primary key (auto-generated GUID).</summary>
     public Guid Id { get; set; }

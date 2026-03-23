@@ -1,8 +1,10 @@
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Granit.AI;
 using Granit.Querying;
 using Granit.Timeline.Abstractions;
+using Granit.Timeline.AI.Diagnostics;
 using Granit.Timeline.AI.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -19,6 +21,7 @@ internal sealed partial class LlmTimelineAnomalyDetector(
     IAIChatClientFactory chatClientFactory,
     ITimelineReader timelineReader,
     IOptions<TimelineAIOptions> options,
+    TimelineAIMetrics metrics,
     ILogger<LlmTimelineAnomalyDetector> logger) : ITimelineAnomalyDetector
 {
     private static readonly AnomalyReport NoAnomalies = new(HasAnomalies: false, Anomalies: []);
@@ -36,6 +39,7 @@ internal sealed partial class LlmTimelineAnomalyDetector(
     {
         ArgumentNullException.ThrowIfNull(entityType);
 
+        long startTimestamp = Stopwatch.GetTimestamp();
         TimelineAIOptions config = options.Value;
 
         List<TimelineStreamEntry> entries = await FetchEntriesAsync(
@@ -62,10 +66,21 @@ internal sealed partial class LlmTimelineAnomalyDetector(
 
             string responseText = response.Text ?? string.Empty;
 
-            return ParseAnomalyResponse(responseText);
+            AnomalyReport report = ParseAnomalyResponse(responseText);
+
+            metrics.RecordAnomalyDetectionCompleted(tenantId: null, entityType);
+            metrics.RecordAnomalyDetectionDuration(tenantId: null, entityType, Stopwatch.GetElapsedTime(startTimestamp));
+
+            if (report.HasAnomalies)
+            {
+                metrics.RecordAnomaliesFound(tenantId: null, entityType, report.Anomalies.Count);
+            }
+
+            return report;
         }
         catch (OperationCanceledException) when (!ct.IsCancellationRequested)
         {
+            metrics.RecordAnomalyDetectionFailure(tenantId: null, entityType);
             LogAnomalyDetectionTimeout(logger, entityType, entityId, config.TimeoutSeconds);
             return NoAnomalies;
         }
@@ -75,6 +90,7 @@ internal sealed partial class LlmTimelineAnomalyDetector(
         }
         catch (Exception ex)
         {
+            metrics.RecordAnomalyDetectionFailure(tenantId: null, entityType);
             LogAnomalyDetectionFailure(logger, entityType, entityId, ex);
             return NoAnomalies;
         }

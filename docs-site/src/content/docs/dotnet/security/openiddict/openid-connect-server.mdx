@@ -8,14 +8,14 @@ sidebar:
 
 import { Tabs, TabItem, Badge } from "@astrojs/starlight/components";
 
-The OIDC server is configured in `AddGranitOpenIddictEntityFrameworkCore()` which
+The OIDC server is configured in `AddGranitOpenIddict()` which
 registers OpenIddict Core, Server, and Validation in a single call. This page covers
 the supported flows, endpoints, token formats, and signing key management.
 
 ## Endpoints
 
 The server exposes 9 standard endpoints, registered automatically by
-`AddGranitOpenIddictEntityFrameworkCore()`:
+`AddGranitOpenIddict()`:
 
 | Endpoint | Path | Specification | Passthrough |
 |----------|------|---------------|-------------|
@@ -221,7 +221,7 @@ options.AddEphemeralSigningKey();
 ### Production
 
 The host application **must** configure persistent signing and encryption keys after
-calling `AddGranitOpenIddictEntityFrameworkCore()`:
+calling `AddGranitOpenIddict()`:
 
 <Tabs>
 <TabItem label="X.509 Certificate">

@@ -19,7 +19,8 @@ internal static class WebhookSubscriptionOperationEndpoints
                 "Generates a new HMAC signing secret for the subscription. "
                 + "The previous secret is invalidated immediately. "
                 + "The new plain-text secret is returned once and cannot be retrieved later.")
-            .Produces<WebhookSubscriptionRotateSecretResponse>();
+            .Produces<WebhookSubscriptionRotateSecretResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/subscriptions/{id:guid}/test-ping", TestPing)
             .WithName("TestWebhookPing")
@@ -28,7 +29,8 @@ internal static class WebhookSubscriptionOperationEndpoints
                 "Dispatches a synthetic test event to the subscription endpoint and reports "
                 + "the HTTP status code and round-trip duration. Does not affect delivery statistics "
                 + "or the consecutive failure counter.")
-            .Produces<WebhookSubscriptionTestPingResponse>();
+            .Produces<WebhookSubscriptionTestPingResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/stats", GetStats)
             .WithName("GetWebhookStats")

@@ -1,4 +1,7 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "Permission:Templating.Categories.Read": "Consulter les catégories de templates",
+    "Permission:Templating.Categories.Manage": "Gérer les catégories de templates (créer, modifier, supprimer)"
+  }
 }

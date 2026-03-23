@@ -11,7 +11,7 @@ public static class TemplatingPermissions
     /// <summary>Permissions for the templates resource.</summary>
     public static class Templates
     {
-        /// <summary>Grants read-only access to view templates (list, detail, history).</summary>
+        /// <summary>Grants read-only access to view templates (list, detail, history, variables, lifecycle).</summary>
         public const string Read = "Templating.Templates.Read";
 
         /// <summary>
@@ -19,5 +19,15 @@ public static class TemplatingPermissions
         /// (save draft, delete draft, publish, unpublish).
         /// </summary>
         public const string Manage = "Templating.Templates.Manage";
+    }
+
+    /// <summary>Permissions for the template categories resource.</summary>
+    public static class Categories
+    {
+        /// <summary>Grants read-only access to list template categories.</summary>
+        public const string Read = "Templating.Categories.Read";
+
+        /// <summary>Grants management access to create, update, and delete template categories.</summary>
+        public const string Manage = "Templating.Categories.Manage";
     }
 }

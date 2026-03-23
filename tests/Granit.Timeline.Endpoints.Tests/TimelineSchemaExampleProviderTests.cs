@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Granit.Timeline.Endpoints.Dtos;
 using Granit.Timeline.Endpoints.Internal;
 using Shouldly;
 using Xunit;

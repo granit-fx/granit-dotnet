@@ -2,12 +2,10 @@ using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Endpoints.Endpoints;
 using Granit.ReferenceData.Endpoints.Options;
 using Granit.Validation.AspNetCore;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Granit.ReferenceData.Endpoints.Extensions;
 
@@ -36,7 +34,7 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
     /// <para>Call from your application:</para>
     /// <code>
     /// app.MapReferenceDataEndpoints&lt;Country&gt;();
-    /// app.MapReferenceDataEndpoints&lt;Currency&gt;(opts => opts.AdminPolicyName = "Custom.Policy");
+    /// app.MapReferenceDataEndpoints&lt;Currency&gt;(opts => opts.TagName = "Currencies");
     /// </code>
     /// </remarks>
     public static RouteGroupBuilder MapReferenceDataEndpoints<TEntity>(
@@ -47,16 +45,6 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
         ReferenceDataEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        // Register the admin authorization policy (role-based fallback)
-        if (options.AdminPolicyName is not null)
-        {
-            IOptions<AuthorizationOptions> authOptions =
-                endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
-            authOptions.Value.AddPolicy(
-                options.AdminPolicyName,
-                policy => policy.RequireRole(options.RequiredRole));
-        }
-
         string entitySegment = ToKebabCase(typeof(TEntity).Name);
 
         RouteGroupBuilder group = endpoints
@@ -64,7 +52,7 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
             .WithTags(options.TagName);
 
         group.MapReadEndpoints<TEntity>();
-        group.MapAdminEndpoints<TEntity>(options.AdminPolicyName);
+        group.MapAdminEndpoints<TEntity>();
 
         return group;
     }
@@ -89,16 +77,6 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
         ReferenceDataEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        // Register the admin authorization policy (role-based fallback)
-        if (options.AdminPolicyName is not null)
-        {
-            IOptions<AuthorizationOptions> authOptions =
-                endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
-            authOptions.Value.AddPolicy(
-                options.AdminPolicyName,
-                policy => policy.RequireRole(options.RequiredRole));
-        }
-
         string entitySegment = ToKebabCase(typeName);
 
         RouteGroupBuilder group = endpoints
@@ -106,7 +84,7 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
             .WithTags(options.TagName);
 
         group.MapDynamicReadEndpoints(typeName);
-        group.MapDynamicAdminEndpoints(typeName, options.AdminPolicyName);
+        group.MapDynamicAdminEndpoints(typeName);
 
         return group;
     }

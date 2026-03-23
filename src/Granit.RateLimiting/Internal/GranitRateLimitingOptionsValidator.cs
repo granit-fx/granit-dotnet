@@ -50,6 +50,11 @@ internal sealed class GranitRateLimitingOptionsValidator : IValidateOptions<Gran
                 }
             }
 
+            if (policy.Algorithm is RateLimitAlgorithm.Concurrency)
+            {
+                failures.Add($"{prefix}: {nameof(RateLimitAlgorithm.Concurrency)} algorithm is not yet supported. Use SlidingWindow, FixedWindow, or TokenBucket.");
+            }
+
             if (policy.Algorithm is RateLimitAlgorithm.SlidingWindow && policy.SegmentsPerWindow <= 0)
             {
                 failures.Add($"{prefix}: {nameof(policy.SegmentsPerWindow)} must be greater than 0 for SlidingWindow.");

@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Granit.Security;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
+using Granit.Timeline.Endpoints.Dtos;
 using Granit.Timeline.Endpoints.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;

@@ -3,6 +3,7 @@
   "texts": {
     "Permission:Privacy.Agreements.Create": "Acceptera ett juridiskt avtal",
     "Permission:Privacy.Agreements.Read": "Visa juridiska dokument och samtycksstatus",
+    "Permission:Privacy.Deletion.Read": "Visa status och historik för raderingsförfrågningar",
     "Permission:Privacy.Deletion.Execute": "Begär radering av personuppgifter",
     "Permission:Privacy.Export.Execute": "Begär export av personuppgifter",
     "Permission:Privacy.Export.Read": "Visa status för export av personuppgifter",

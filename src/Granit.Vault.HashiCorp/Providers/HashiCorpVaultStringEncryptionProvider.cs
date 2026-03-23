@@ -10,7 +10,7 @@ namespace Granit.Vault.HashiCorp.Providers;
 /// String encryption provider backed by HashiCorp Vault Transit Engine.
 /// Reserved for rare, high-security operations.
 /// </summary>
-public sealed class HashiCorpVaultStringEncryptionProvider(
+internal sealed class HashiCorpVaultStringEncryptionProvider(
     ITransitEncryptionService transitEncryption,
     IOptions<StringEncryptionOptions> options,
     IOptions<ReEncryptionOptions>? reEncryptionOptions = null) : IStringEncryptionProvider

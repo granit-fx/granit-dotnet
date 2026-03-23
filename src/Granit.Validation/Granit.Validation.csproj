@@ -12,6 +12,8 @@
     <InternalsVisibleTo Include="Granit.Validation.Europe.Tests" />
     <InternalsVisibleTo Include="Granit.Validation.NorthAmerica" />
     <InternalsVisibleTo Include="Granit.Validation.NorthAmerica.Tests" />
+    <InternalsVisibleTo Include="Granit.Validation.UnitedKingdom" />
+    <InternalsVisibleTo Include="Granit.Validation.UnitedKingdom.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

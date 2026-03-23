@@ -45,6 +45,7 @@
     <Project Path="src/Granit.BackgroundJobs.EntityFrameworkCore/Granit.BackgroundJobs.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.BackgroundJobs.Wolverine/Granit.BackgroundJobs.Wolverine.csproj" />
     <Project Path="src/Granit.BackgroundJobs/Granit.BackgroundJobs.csproj" />
+    <Project Path="src/Granit.Bff.BackgroundJobs/Granit.Bff.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Bff.EntityFrameworkCore/Granit.Bff.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Bff.Endpoints/Granit.Bff.Endpoints.csproj" />
     <Project Path="src/Granit.Bff.Yarp/Granit.Bff.Yarp.csproj" />
@@ -58,6 +59,7 @@
     <Project Path="src/Granit.BlobStorage.GoogleCloud/Granit.BlobStorage.GoogleCloud.csproj" />
     <Project Path="src/Granit.BlobStorage.Proxy/Granit.BlobStorage.Proxy.csproj" />
     <Project Path="src/Granit.BlobStorage.S3/Granit.BlobStorage.S3.csproj" />
+    <Project Path="src/Granit.BlobStorage.BackgroundJobs/Granit.BlobStorage.BackgroundJobs.csproj" />
     <Project Path="src/Granit.BlobStorage/Granit.BlobStorage.csproj" />
     <Project Path="src/Granit.Http.Bulkhead/Granit.Http.Bulkhead.csproj" />
     <Project Path="src/Granit.Caching.StackExchangeRedis/Granit.Caching.StackExchangeRedis.csproj" />
@@ -148,6 +150,7 @@
     <Project Path="src/Granit.Persistence.SqlServer/Granit.Persistence.SqlServer.csproj" />
     <Project Path="src/Granit.Persistence/Granit.Persistence.csproj" />
     <Project Path="src/Granit.Privacy.Notifications/Granit.Privacy.Notifications.csproj" />
+    <Project Path="src/Granit.Privacy.BackgroundJobs/Granit.Privacy.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Privacy/Granit.Privacy.csproj" />
     <Project Path="src/Granit.Privacy.AI/Granit.Privacy.AI.csproj" />
     <Project Path="src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj" />
@@ -252,6 +255,7 @@
     <Project Path="tests/Granit.BackgroundJobs.Tests.Integration/Granit.BackgroundJobs.Tests.Integration.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.Tests/Granit.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.Wolverine.Tests/Granit.BackgroundJobs.Wolverine.Tests.csproj" />
+    <Project Path="tests/Granit.Bff.BackgroundJobs.Tests/Granit.Bff.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Bff.EntityFrameworkCore.Tests/Granit.Bff.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Bff.Endpoints.Tests/Granit.Bff.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Bff.Tests/Granit.Bff.Tests.csproj" />
@@ -265,6 +269,7 @@
     <Project Path="tests/Granit.BlobStorage.GoogleCloud.Tests/Granit.BlobStorage.GoogleCloud.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.S3.Tests/Granit.BlobStorage.S3.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.Proxy.Tests/Granit.BlobStorage.Proxy.Tests.csproj" />
+    <Project Path="tests/Granit.BlobStorage.BackgroundJobs.Tests/Granit.BlobStorage.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.Tests/Granit.BlobStorage.Tests.csproj" />
     <Project Path="tests/Granit.Http.Bulkhead.Tests/Granit.Http.Bulkhead.Tests.csproj" />
     <Project Path="tests/Granit.Bundle.Tests/Granit.Bundle.Tests.csproj" />
@@ -359,6 +364,7 @@
     <Project Path="tests/Granit.Persistence.Migrations.Wolverine.Tests/Granit.Persistence.Migrations.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Tests/Granit.Persistence.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Notifications.Tests/Granit.Privacy.Notifications.Tests.csproj" />
+    <Project Path="tests/Granit.Privacy.BackgroundJobs.Tests/Granit.Privacy.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Tests/Granit.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.AI.Tests/Granit.Privacy.AI.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Endpoints.Tests/Granit.Privacy.Endpoints.Tests.csproj" />

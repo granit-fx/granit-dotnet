@@ -1,5 +1,6 @@
 using Granit.Core.Modularity;
 using Granit.Persistence;
+using Granit.Testing;
 
 namespace Granit.Testing.EntityFrameworkCore;
 
@@ -12,5 +13,7 @@ namespace Granit.Testing.EntityFrameworkCore;
 /// interceptor wiring (audit, versioning, soft-delete).
 /// This is a utility module with no runtime service registration.
 /// </remarks>
-[DependsOn(typeof(GranitPersistenceModule))]
+[DependsOn(
+    typeof(GranitPersistenceModule),
+    typeof(GranitTestingModule))]
 public sealed class GranitTestingEntityFrameworkCoreModule : GranitModule;

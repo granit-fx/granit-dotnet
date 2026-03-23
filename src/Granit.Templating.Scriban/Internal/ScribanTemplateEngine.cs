@@ -34,7 +34,7 @@ internal sealed class ScribanTemplateEngine : ITemplateEngine
         || string.Equals(descriptor.MimeType, "text/plain", StringComparison.OrdinalIgnoreCase);
 
     /// <inheritdoc/>
-    public Task<RenderedContent> RenderAsync<TData>(
+    public async Task<RenderedContent> RenderAsync<TData>(
         TemplateDescriptor descriptor,
         TData data,
         DocumentFormat targetFormat,
@@ -54,14 +54,12 @@ internal sealed class ScribanTemplateEngine : ITemplateEngine
         });
 
         TemplateContext context = BuildContext(data, globalContexts, cancellationToken);
-        string rendered = template.Render(context);
+        string rendered = await template.RenderAsync(context).ConfigureAwait(false);
 
-        RenderedContent result = new TextRenderedContent(rendered, targetFormat)
+        return new TextRenderedContent(rendered, targetFormat)
         {
             RevisionId = descriptor.RevisionId,
         };
-
-        return Task.FromResult(result);
     }
 
     private static TemplateContext BuildContext<TData>(

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Granit.Core.MultiTenancy;
 using Granit.Workflow.Diagnostics;
 
 namespace Granit.Workflow;
@@ -11,12 +12,14 @@ namespace Granit.Workflow;
 public sealed class WorkflowManager<TState>(
     IWorkflowDefinition<TState> definition,
     IWorkflowPermissionChecker permissionChecker,
-    WorkflowMetrics metrics) : IWorkflowManager<TState>
+    WorkflowMetrics metrics,
+    ICurrentTenant currentTenant) : IWorkflowManager<TState>
     where TState : struct, Enum
 {
     private readonly IWorkflowDefinition<TState> _definition = definition;
     private readonly IWorkflowPermissionChecker _permissionChecker = permissionChecker;
     private readonly WorkflowMetrics _metrics = metrics;
+    private readonly ICurrentTenant _currentTenant = currentTenant;
 
     /// <inheritdoc/>
     public async Task<IReadOnlyList<WorkflowTransition<TState>>> GetAllowedTransitionsAsync(
@@ -140,8 +143,9 @@ public sealed class WorkflowManager<TState>(
 
         activity?.SetTag("workflow.outcome", outcomeTag);
 
-        _metrics.RecordTransitionCompleted(tenantId: null, outcomeTag, fromState, toState);
-        _metrics.RecordTransitionDuration(tenantId: null, outcomeTag, elapsed);
+        string? tenantId = _currentTenant.IsAvailable ? _currentTenant.Id.ToString() : null;
+        _metrics.RecordTransitionCompleted(tenantId, outcomeTag, fromState, toState);
+        _metrics.RecordTransitionDuration(tenantId, outcomeTag, elapsed);
     }
 
     /// <summary>

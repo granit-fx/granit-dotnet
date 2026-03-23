@@ -5,7 +5,7 @@ namespace Granit.Timeline.Endpoints.Internal;
 /// <summary>
 /// Authorization policy constants for timeline endpoints.
 /// </summary>
-public static class TimelineAuthorizationPolicy
+internal static class TimelineAuthorizationPolicy
 {
     /// <summary>
     /// Name of the authorization policy that guards all timeline endpoints.

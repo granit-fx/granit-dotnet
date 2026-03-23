@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Timeline.Tests" />
+    <InternalsVisibleTo Include="Granit.Timeline.Endpoints" />
     <InternalsVisibleTo Include="Granit.Timeline.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.Timeline.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />

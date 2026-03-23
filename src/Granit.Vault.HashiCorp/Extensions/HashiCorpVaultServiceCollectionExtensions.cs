@@ -1,6 +1,9 @@
+using Granit.Core.Diagnostics;
 using Granit.Encryption;
+using Granit.Vault.HashiCorp.Diagnostics;
 using Granit.Vault.HashiCorp.HealthChecks;
 using Granit.Vault.HashiCorp.Options;
+using Granit.Vault.HashiCorp.Providers;
 using Granit.Vault.HashiCorp.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -37,8 +40,13 @@ public static class HashiCorpVaultServiceCollectionExtensions
 
         services.AddScoped<ITransitEncryptionService, HashiCorpTransitEncryptionService>();
 
+        // String encryption provider (synchronous bridge)
+        services.AddSingleton<IStringEncryptionProvider, HashiCorpVaultStringEncryptionProvider>();
+
         // Per-entity key isolation for crypto-shredding (GDPR Art. 17)
         services.TryAddScoped<IEntityEncryptionKeyStore, HashiCorpEntityEncryptionKeyStore>();
+
+        GranitActivitySourceRegistry.Register(VaultHashiCorpActivitySource.Name);
 
         return services;
     }

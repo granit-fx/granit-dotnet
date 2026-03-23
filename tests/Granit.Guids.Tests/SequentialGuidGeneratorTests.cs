@@ -1,11 +1,11 @@
 // =============================================================================
 // Tests - SequentialGuidGenerator
 // =============================================================================
-// Verifie que l'implementation SequentialGuidGenerator :
-//   - Genere des GUID non vides
-//   - Genere des GUID uniques (10 000 iterations)
-//   - Genere des GUID sequentiels (ordonnancement string croissant)
-//   - Respecte la configuration du type sequentiel
+// Verifies that SequentialGuidGenerator:
+//   - Generates non-empty GUIDs
+//   - Generates unique GUIDs (10,000 iterations)
+//   - Generates sequential GUIDs (ascending string ordering)
+//   - Respects the configured sequential type
 // =============================================================================
 
 using Granit.Guids.Options;
@@ -64,13 +64,13 @@ public sealed class SequentialGuidGeneratorTests
         }
 
         // Assert
-        guids.Count.ShouldBe(10_000, "tous les GUID doivent etre uniques");
+        guids.Count.ShouldBe(10_000, "all GUIDs must be unique");
     }
 
     [Fact]
     public void Create_SequentialAsString_GeneratesOrderedGuids()
     {
-        // Arrange — horloge deterministe pour eviter le flaky timing sur CI
+        // Arrange — deterministic clock to avoid flaky timing on CI
         DateTimeOffset baseTime = DateTimeOffset.UtcNow;
         int callCount = 0;
         IClock clock = Substitute.For<IClock>();
@@ -84,7 +84,7 @@ public sealed class SequentialGuidGeneratorTests
             guids.Add(generator.Create().ToString());
         }
 
-        // Assert - les representations string doivent etre en ordre croissant
+        // Assert — string representations should be in ascending order
         guids.ShouldBeInOrder(SortDirection.Ascending);
     }
 
@@ -238,7 +238,7 @@ public sealed class SequentialGuidGeneratorTests
     [Fact]
     public void Create_DefaultsToSequentialAsString()
     {
-        // Arrange — horloge deterministe, pas de type specifie (defaut = SequentialAsString)
+        // Arrange — deterministic clock, no type specified (defaults to SequentialAsString)
         DateTimeOffset baseTime = DateTimeOffset.UtcNow;
         int callCount = 0;
         IClock clock = Substitute.For<IClock>();
@@ -252,7 +252,7 @@ public sealed class SequentialGuidGeneratorTests
             guids.Add(generator.Create().ToString());
         }
 
-        // Assert - si le defaut est SequentialAsString, les strings sont ordonnees
+        // Assert — if default is SequentialAsString, strings should be ordered
         guids.ShouldBeInOrder(SortDirection.Ascending);
     }
 
@@ -269,7 +269,7 @@ public sealed class SequentialGuidGeneratorTests
             guids.Add(generator.Create());
         }
 
-        // Assert - les 6 derniers octets doivent etre croissants (timestamp a la fin)
+        // Assert — last 6 bytes should be non-decreasing (timestamp at end)
         var lastSixBytesList = guids
             .Select(g => g.ToByteArray()[10..16])
             .ToList();
@@ -278,7 +278,7 @@ public sealed class SequentialGuidGeneratorTests
         {
             int comparison = CompareBytes(lastSixBytesList[i], lastSixBytesList[i - 1]);
             comparison.ShouldBeGreaterThanOrEqualTo(0,
-                "les 6 derniers octets (timestamp) doivent etre croissants pour SequentialAtEnd");
+                "last 6 bytes (timestamp) should be non-decreasing for SequentialAtEnd");
         }
     }
 

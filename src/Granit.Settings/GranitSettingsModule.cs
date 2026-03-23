@@ -2,6 +2,7 @@ using System.Reflection;
 using Granit.Caching;
 using Granit.Core.Modularity;
 using Granit.Encryption;
+using Granit.EventBus;
 using Granit.Security;
 using Granit.Settings.Definitions;
 using Granit.Settings.Extensions;
@@ -16,6 +17,7 @@ namespace Granit.Settings;
 /// </summary>
 [DependsOn(typeof(GranitCachingModule))]
 [DependsOn(typeof(GranitEncryptionModule))]
+[DependsOn(typeof(GranitEventBusModule))]
 [DependsOn(typeof(GranitSecurityModule))]
 public sealed class GranitSettingsModule : GranitModule
 {

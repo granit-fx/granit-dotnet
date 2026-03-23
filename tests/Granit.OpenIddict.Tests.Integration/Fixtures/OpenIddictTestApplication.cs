@@ -70,7 +70,7 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
         builder.Configuration["OpenIddict:Issuer"] = TestIssuer;
 
         // 1. Register OpenIddict EF Core + Server + Identity
-        builder.AddGranitOpenIddictEntityFrameworkCore(
+        builder.AddGranitOpenIddict(
             options => options.UseNpgsql(_postgres.ConnectionString));
 
         // Disable HTTPS requirement — TestServer runs over HTTP in-memory

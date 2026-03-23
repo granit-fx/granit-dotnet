@@ -1,9 +1,9 @@
 namespace Granit.Timing;
 
 /// <summary>
-/// Implementation par defaut de <see cref="IClock"/>.
-/// Utilise <see cref="TimeProvider"/> pour l'acces au temps
-/// et <see cref="ICurrentTimezoneProvider"/> pour les conversions timezone.
+/// Default implementation of <see cref="IClock"/>.
+/// Uses <see cref="TimeProvider"/> for time access
+/// and <see cref="ICurrentTimezoneProvider"/> for timezone conversions.
 /// </summary>
 public sealed class Clock(TimeProvider timeProvider, ICurrentTimezoneProvider timezoneProvider) : IClock
 {
@@ -18,8 +18,8 @@ public sealed class Clock(TimeProvider timeProvider, ICurrentTimezoneProvider ti
 
     /// <inheritdoc />
     public DateTimeOffset Normalize(DateTimeOffset dateTime) =>
-        // Conformite ISO 27001 : tout est converti en UTC avant persistance.
-        // Meme un DateTimeOffset avec offset local (+02:00) sera normalise en UTC (+00:00).
+        // ISO 27001 compliance: all values are converted to UTC before persistence.
+        // Even a DateTimeOffset with a local offset (+02:00) is normalized to UTC (+00:00).
         dateTime.ToUniversalTime();
 
     /// <inheritdoc />

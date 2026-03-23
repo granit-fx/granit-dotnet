@@ -3,7 +3,6 @@ using Granit.Core.Modularity;
 using Granit.Persistence;
 using Granit.Persistence.Migrations.Internal;
 using Granit.Persistence.Migrations.Messages;
-using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -29,9 +28,7 @@ namespace Granit.Persistence.Migrations;
 /// startup code.
 /// </para>
 /// </remarks>
-[DependsOn(
-    typeof(GranitPersistenceModule),
-    typeof(GranitTimingModule))]
+[DependsOn(typeof(GranitPersistenceModule))]
 public sealed class GranitPersistenceMigrationsModule : GranitModule
 {
     /// <inheritdoc/>

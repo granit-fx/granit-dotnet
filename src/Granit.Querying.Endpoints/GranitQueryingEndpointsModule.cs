@@ -19,9 +19,9 @@ namespace Granit.Querying.Endpoints;
 /// Validators are auto-discovered by <c>GranitValidationModule</c>.
 /// </remarks>
 [DependsOn(
-    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitAuthorizationModule),
     typeof(GranitGuidsModule),
+    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitQueryingModule),
     typeof(GranitTimingModule),
     typeof(GranitValidationModule))]

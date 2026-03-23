@@ -36,12 +36,13 @@ public static class SettingsEntityFrameworkCoreHostApplicationBuilderExtensions
         this IHostApplicationBuilder builder)
         where TDbContext : DbContext, ISettingsDbContext
     {
+        builder.Services.AddSingleton<EfCoreSettingStore<TDbContext>>(sp =>
+            new EfCoreSettingStore<TDbContext>(
+                sp.GetRequiredService<IServiceScopeFactory>()));
         builder.Services.Replace(ServiceDescriptor.Singleton<ISettingStoreReader>(sp =>
-            new EfCoreSettingStore<TDbContext>(
-                sp.GetRequiredService<IServiceScopeFactory>())));
+            sp.GetRequiredService<EfCoreSettingStore<TDbContext>>()));
         builder.Services.Replace(ServiceDescriptor.Singleton<ISettingStoreWriter>(sp =>
-            new EfCoreSettingStore<TDbContext>(
-                sp.GetRequiredService<IServiceScopeFactory>())));
+            sp.GetRequiredService<EfCoreSettingStore<TDbContext>>()));
 
         return builder;
     }

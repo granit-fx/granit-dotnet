@@ -72,7 +72,12 @@ internal static class WebhookSubscriptionWriteEndpoints
             .FindByIdAsync(id, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(WebhookSubscriptionReadEndpoints.MapToResponse(subscription!));
+        if (subscription is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        return TypedResults.Ok(WebhookSubscriptionReadEndpoints.MapToResponse(subscription));
     }
 
     private static async Task<NoContent> Delete(

@@ -20,8 +20,9 @@ internal static class WebhookSubscriptionLifecycleEndpoints
             .WithDescription(
                 "Transitions a subscription from Suspended to Active status. "
                 + "Deliveries will resume for matching events. "
-                + "The consecutive failure counter is not reset.")
-            .Produces<WebhookSubscriptionResponse>();
+                + "The consecutive failure counter is reset to zero.")
+            .Produces<WebhookSubscriptionResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/subscriptions/{id:guid}/suspend", Suspend)
             .WithName("SuspendWebhookSubscription")
@@ -30,7 +31,8 @@ internal static class WebhookSubscriptionLifecycleEndpoints
                 "Temporarily pauses event delivery for the subscription. "
                 + "The caller's identity is recorded alongside the suspension reason. "
                 + "Use the activate endpoint to resume deliveries.")
-            .Produces<WebhookSubscriptionResponse>();
+            .Produces<WebhookSubscriptionResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/subscriptions/{id:guid}/deactivate", Deactivate)
             .WithName("DeactivateWebhookSubscription")
@@ -39,7 +41,8 @@ internal static class WebhookSubscriptionLifecycleEndpoints
                 "Moves the subscription to the Deactivated terminal status. "
                 + "No further deliveries will be attempted. A deactivation reason must be provided. "
                 + "This action cannot be reversed — create a new subscription instead.")
-            .Produces<WebhookSubscriptionResponse>();
+            .Produces<WebhookSubscriptionResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }

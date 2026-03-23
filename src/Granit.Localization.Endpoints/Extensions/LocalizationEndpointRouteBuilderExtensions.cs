@@ -61,7 +61,7 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
         configure?.Invoke(options);
 
         endpoints
-            .MapGet(options.RoutePrefix, HandleGetLocalizationAsync)
+            .MapGet(options.RoutePrefix, HandleGetLocalization)
             .AllowAnonymous()
             .WithName("GetGranitLocalization")
             .WithTags(options.TagName)
@@ -137,7 +137,7 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
     // Handlers — GET /{prefix}/localization
     // -------------------------------------------------------------------------
 
-    private static IResult HandleGetLocalizationAsync(HttpContext context, string? cultureName = null)
+    private static IResult HandleGetLocalization(HttpContext context, string? cultureName = null)
     {
         IOptions<GranitLocalizationOptions> options =
             context.RequestServices.GetRequiredService<IOptions<GranitLocalizationOptions>>();

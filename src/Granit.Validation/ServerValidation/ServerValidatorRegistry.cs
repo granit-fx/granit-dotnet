@@ -7,7 +7,7 @@ namespace Granit.Validation.ServerValidation;
 /// Singleton registry that maps error codes to <see cref="IServerValidator"/> instances.
 /// Built once at application startup from all <see cref="IServerValidatorContributor"/> implementations.
 /// </summary>
-public sealed class ServerValidatorRegistry
+public sealed partial class ServerValidatorRegistry
 {
     private readonly FrozenDictionary<string, IServerValidator> _validators;
 
@@ -28,10 +28,7 @@ public sealed class ServerValidatorRegistry
 
         foreach ((IServerValidatorContributor contributor, IServerValidator validator) in duplicates)
         {
-            logger.LogWarning(
-                "Duplicate server validator for error code '{ErrorCode}' from {ContributorType}. Keeping the first registration.",
-                validator.ErrorCode,
-                contributor.GetType().Name);
+            LogDuplicateValidator(logger, validator.ErrorCode, contributor.GetType().Name);
         }
 
         _validators = dict.ToFrozenDictionary(StringComparer.Ordinal);
@@ -47,4 +44,8 @@ public sealed class ServerValidatorRegistry
     /// Returns all registered error codes. Useful for discovery endpoints.
     /// </summary>
     public IReadOnlyCollection<string> GetAllErrorCodes() => _validators.Keys;
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Duplicate server validator for error code '{ErrorCode}' from {ContributorType}. Keeping the first registration.")]
+    private static partial void LogDuplicateValidator(ILogger logger, string errorCode, string contributorType);
 }

@@ -51,33 +51,7 @@ public static class WolverineSqlServerHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddGranitWolverineWithSqlServer(
         this IHostApplicationBuilder builder,
         Action<WolverineOptions>? configure = null)
-    {
-        // Bind and validate options at startup via DI.
-        builder.Services
-            .AddOptions<WolverineSqlServerOptions>()
-            .BindConfiguration(WolverineSqlServerOptions.SectionName)
-            .ValidateOnStart();
-        builder.Services.AddSingleton<IValidateOptions<WolverineSqlServerOptions>,
-            WolverineSqlServerOptionsValidator>();
-
-        // Read options directly from IConfiguration: the DI container is not yet
-        // built at this point, so IOptions<> is not resolvable inside ConfigureWolverine().
-        WolverineSqlServerOptions options = new();
-        builder.Configuration
-            .GetSection(WolverineSqlServerOptions.SectionName)
-            .Bind(options);
-
-        builder.Services.ConfigureWolverine(opts =>
-        {
-            opts.PersistMessagesWithSqlServer(options.TransportConnectionString);
-            opts.UseEntityFrameworkCoreTransactions(options.TransactionMode);
-            opts.Policies.AutoApplyTransactions();
-
-            configure?.Invoke(opts);
-        });
-
-        return builder;
-    }
+        => AddGranitWolverineWithSqlServerCore(builder, configure);
 
     /// <summary>
     /// Adds per-tenant database support for Wolverine: each tenant has its own isolated
@@ -115,6 +89,21 @@ public static class WolverineSqlServerHostApplicationBuilderExtensions
         Action<WolverineOptions>? configure = null)
         where TContext : DbContext
     {
+        // Register the per-tenant factory and DbContext as Scoped via Granit.Persistence.
+        // TryAdd semantics preserve any existing registration (e.g., overrides from integration tests).
+        builder.Services.AddTenantPerDatabaseDbContext<TContext>(
+            static (opts, connectionString) => opts.UseSqlServer(connectionString));
+
+        return AddGranitWolverineWithSqlServerCore(builder, configure);
+    }
+
+    /// <summary>
+    /// Shared core setup: options binding, connection string validation, and SQL Server Wolverine configuration.
+    /// </summary>
+    private static IHostApplicationBuilder AddGranitWolverineWithSqlServerCore(
+        IHostApplicationBuilder builder,
+        Action<WolverineOptions>? configure)
+    {
         // Bind and validate options at startup via DI.
         builder.Services
             .AddOptions<WolverineSqlServerOptions>()
@@ -130,17 +119,11 @@ public static class WolverineSqlServerHostApplicationBuilderExtensions
             .GetSection(WolverineSqlServerOptions.SectionName)
             .Bind(options);
 
-        // Register the per-tenant factory and DbContext as Scoped via Granit.Persistence.
-        // TryAdd semantics preserve any existing registration (e.g., overrides from integration tests).
-        builder.Services.AddTenantPerDatabaseDbContext<TContext>(
-            static (opts, connectionString) => opts.UseSqlServer(connectionString));
-
         builder.Services.ConfigureWolverine(opts =>
         {
             opts.PersistMessagesWithSqlServer(options.TransportConnectionString);
             opts.UseEntityFrameworkCoreTransactions(options.TransactionMode);
             opts.Policies.AutoApplyTransactions();
-
             configure?.Invoke(opts);
         });
 

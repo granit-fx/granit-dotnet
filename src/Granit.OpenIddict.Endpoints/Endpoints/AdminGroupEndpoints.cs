@@ -1,3 +1,4 @@
+using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -16,14 +17,14 @@ internal static class AdminGroupEndpoints
             .WithName("ListGroups")
             .WithSummary("Returns all user groups.")
             .WithDescription("Returns a paginated list of user groups for the current tenant.")
-            .Produces(StatusCodes.Status200OK)
+            .Produces<IReadOnlyList<AdminGroupResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Groups.Read);
 
         groups.MapPost("/", CreateGroupAsync)
             .WithName("CreateGroup")
             .WithSummary("Creates a new user group.")
             .WithDescription("Creates a group with the specified name. Returns 409 on duplicate name within tenant.")
-            .Produces(StatusCodes.Status201Created)
+            .Produces<AdminGroupResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status409Conflict)
             .ProducesValidationProblem()
             .RequireAuthorization(OpenIddictPermissions.Groups.Create);

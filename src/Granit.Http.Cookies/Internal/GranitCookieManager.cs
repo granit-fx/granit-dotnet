@@ -41,7 +41,7 @@ internal sealed class GranitCookieManager(
     }
 
     /// <inheritdoc/>
-    public async Task RevokeCategoryAsync(HttpContext httpContext, CookieCategory category)
+    public Task RevokeCategoryAsync(HttpContext httpContext, CookieCategory category)
     {
         IReadOnlyList<CookieDefinition> cookies = registry.GetByCategory(category);
 
@@ -50,7 +50,7 @@ internal sealed class GranitCookieManager(
             httpContext.Response.Cookies.Delete(cookie.Name);
         }
 
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc/>

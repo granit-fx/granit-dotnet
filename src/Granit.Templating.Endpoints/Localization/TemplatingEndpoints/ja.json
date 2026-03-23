@@ -3,6 +3,8 @@
   "texts": {
     "PermissionGroup:Templating": "テンプレート",
     "Permission:Templating.Templates.Read": "テンプレートの閲覧（一覧、詳細、履歴）",
-    "Permission:Templating.Templates.Manage": "テンプレートの管理（表示、作成、編集、削除、公開）"
+    "Permission:Templating.Templates.Manage": "テンプレートの管理（表示、作成、編集、削除、公開）",
+    "Permission:Templating.Categories.Read": "テンプレートカテゴリの表示",
+    "Permission:Templating.Categories.Manage": "テンプレートカテゴリの管理（作成、編集、削除）"
   }
 }

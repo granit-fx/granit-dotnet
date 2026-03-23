@@ -64,7 +64,14 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
                 EF.Functions.Like(e.LabelDe, $"%{term}%") ||
                 EF.Functions.Like(e.LabelEs, $"%{term}%") ||
                 EF.Functions.Like(e.LabelIt, $"%{term}%") ||
-                EF.Functions.Like(e.LabelPt, $"%{term}%"));
+                EF.Functions.Like(e.LabelPt, $"%{term}%") ||
+                EF.Functions.Like(e.LabelZh, $"%{term}%") ||
+                EF.Functions.Like(e.LabelJa, $"%{term}%") ||
+                EF.Functions.Like(e.LabelPl, $"%{term}%") ||
+                EF.Functions.Like(e.LabelTr, $"%{term}%") ||
+                EF.Functions.Like(e.LabelKo, $"%{term}%") ||
+                EF.Functions.Like(e.LabelSv, $"%{term}%") ||
+                EF.Functions.Like(e.LabelCs, $"%{term}%"));
         }
 
         // Total count before pagination

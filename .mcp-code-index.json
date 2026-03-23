@@ -277,6 +277,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Bff.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Bff.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Bff.Endpoints",
       "deps": [
         "Granit.Authentication.Oidc",
@@ -289,7 +297,6 @@
     {
       "name": "Granit.Bff.EntityFrameworkCore",
       "deps": [
-        "Granit.BackgroundJobs",
         "Granit.Bff",
         "Granit.Guids",
         "Granit.Persistence"
@@ -307,7 +314,6 @@
     {
       "name": "Granit.BlobStorage",
       "deps": [
-        "Granit.BackgroundJobs",
         "Granit.Core",
         "Granit.Guids"
       ],
@@ -324,6 +330,14 @@
     {
       "name": "Granit.BlobStorage.AzureBlob",
       "deps": [
+        "Granit.BlobStorage"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.BlobStorage.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
         "Granit.BlobStorage"
       ],
       "framework": "net10.0"
@@ -1092,8 +1106,7 @@
     {
       "name": "Granit.Persistence.Migrations",
       "deps": [
-        "Granit.Persistence",
-        "Granit.Timing"
+        "Granit.Persistence"
       ],
       "framework": "net10.0"
     },
@@ -1122,7 +1135,6 @@
     {
       "name": "Granit.Privacy",
       "deps": [
-        "Granit.BackgroundJobs",
         "Granit.Core"
       ],
       "framework": "net10.0"
@@ -1131,6 +1143,14 @@
       "name": "Granit.Privacy.AI",
       "deps": [
         "Granit.AI",
+        "Granit.Privacy"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Privacy.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
         "Granit.Privacy"
       ],
       "framework": "net10.0"
@@ -1211,6 +1231,7 @@
     {
       "name": "Granit.ReferenceData.Endpoints",
       "deps": [
+        "Granit.Authorization",
         "Granit.Http.ApiDocumentation",
         "Granit.Guids",
         "Granit.ReferenceData",
@@ -4796,7 +4817,7 @@
       "kind": "interface",
       "project": "Granit.Authentication.Oidc",
       "file": "src/Granit.Authentication.Oidc/Discovery/IDiscoveryDocumentService.cs",
-      "line": 7,
+      "line": 9,
       "members": [
         {
           "name": "GetAsync",
@@ -4848,10 +4869,10 @@
     },
     {
       "name": "OidcDiscoveryException",
-      "fqn": "Granit.Authentication.Oidc.Discovery.OidcDiscoveryException",
+      "fqn": "Granit.Authentication.Oidc.Exceptions.OidcDiscoveryException",
       "kind": "class",
       "project": "Granit.Authentication.Oidc",
-      "file": "src/Granit.Authentication.Oidc/Discovery/OidcDiscoveryException.cs",
+      "file": "src/Granit.Authentication.Oidc/Exceptions/OidcDiscoveryException.cs",
       "line": 6,
       "members": []
     },
@@ -6409,6 +6430,24 @@
       ]
     },
     {
+      "name": "GranitBffBackgroundJobsModule",
+      "fqn": "Granit.Bff.BackgroundJobs.GranitBffBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Bff.BackgroundJobs",
+      "file": "src/Granit.Bff.BackgroundJobs/GranitBffBackgroundJobsModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "BffExpiredSessionCleanupJob",
+      "fqn": "Granit.Bff.BackgroundJobs.Jobs.BffExpiredSessionCleanupJob",
+      "kind": "record",
+      "project": "Granit.Bff.BackgroundJobs",
+      "file": "src/Granit.Bff.BackgroundJobs/Jobs/BffExpiredSessionCleanupJob.cs",
+      "line": 13,
+      "members": []
+    },
+    {
       "name": "BffTokenSet",
       "fqn": "Granit.Bff.BffTokenSet",
       "kind": "record",
@@ -6510,7 +6549,7 @@
       "kind": "class",
       "project": "Granit.Bff.EntityFrameworkCore",
       "file": "src/Granit.Bff.EntityFrameworkCore/GranitBffEntityFrameworkCoreModule.cs",
-      "line": 18,
+      "line": 16,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6519,43 +6558,6 @@
           "returnType": "void"
         }
       ]
-    },
-    {
-      "name": "BffSessionEntity",
-      "fqn": "Granit.Bff.EntityFrameworkCore.Internal.BffSessionEntity",
-      "kind": "class",
-      "project": "Granit.Bff.EntityFrameworkCore",
-      "file": "src/Granit.Bff.EntityFrameworkCore/Internal/BffSessionEntity.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Id",
-          "kind": "property",
-          "signature": "Guid Id",
-          "returnType": "Guid"
-        },
-        {
-          "name": "FrontendName",
-          "kind": "property",
-          "signature": "string FrontendName",
-          "returnType": "string"
-        },
-        {
-          "name": "UserId",
-          "kind": "property",
-          "signature": "string? UserId",
-          "returnType": "string?"
-        }
-      ]
-    },
-    {
-      "name": "BffExpiredSessionCleanupJob",
-      "fqn": "Granit.Bff.EntityFrameworkCore.Jobs.BffExpiredSessionCleanupJob",
-      "kind": "record",
-      "project": "Granit.Bff.EntityFrameworkCore",
-      "file": "src/Granit.Bff.EntityFrameworkCore/Jobs/BffExpiredSessionCleanupJob.cs",
-      "line": 13,
-      "members": []
     },
     {
       "name": "GranitBffModule",
@@ -6934,6 +6936,24 @@
           "returnType": "bool"
         }
       ]
+    },
+    {
+      "name": "GranitBlobStorageBackgroundJobsModule",
+      "fqn": "Granit.BlobStorage.BackgroundJobs.GranitBlobStorageBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.BlobStorage.BackgroundJobs",
+      "file": "src/Granit.BlobStorage.BackgroundJobs/GranitBlobStorageBackgroundJobsModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "OrphanBlobCleanupJob",
+      "fqn": "Granit.BlobStorage.BackgroundJobs.Jobs.OrphanBlobCleanupJob",
+      "kind": "record",
+      "project": "Granit.BlobStorage.BackgroundJobs",
+      "file": "src/Granit.BlobStorage.BackgroundJobs/Jobs/OrphanBlobCleanupJob.cs",
+      "line": 10,
+      "members": []
     },
     {
       "name": "BlobConfirmationResult",
@@ -7531,7 +7551,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage",
       "file": "src/Granit.BlobStorage/GranitBlobStorageModule.cs",
-      "line": 27,
+      "line": 24,
       "members": [
         {
           "name": "ConfigureServices",
@@ -7705,15 +7725,6 @@
           "returnType": "int Order { get; } Task<BlobValidationResult>"
         }
       ]
-    },
-    {
-      "name": "OrphanBlobCleanupJob",
-      "fqn": "Granit.BlobStorage.Jobs.OrphanBlobCleanupJob",
-      "kind": "record",
-      "project": "Granit.BlobStorage",
-      "file": "src/Granit.BlobStorage/Jobs/OrphanBlobCleanupJob.cs",
-      "line": 10,
-      "members": []
     },
     {
       "name": "BlobStorageOptions",
@@ -11867,6 +11878,12 @@
       "line": 11,
       "members": [
         {
+          "name": "Encrypt",
+          "kind": "method",
+          "signature": "Encrypt(string plainText)",
+          "returnType": "string"
+        },
+        {
           "name": "Decrypt",
           "kind": "method",
           "signature": "Decrypt(string cipherText)",
@@ -15455,6 +15472,34 @@
       "members": []
     },
     {
+      "name": "ImagingAIMetrics",
+      "fqn": "Granit.Imaging.AI.Diagnostics.ImagingAIMetrics",
+      "kind": "class",
+      "project": "Granit.Imaging.AI",
+      "file": "src/Granit.Imaging.AI/Diagnostics/ImagingAIMetrics.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "RecordAnalysisCompleted",
+          "kind": "method",
+          "signature": "RecordAnalysisCompleted(string? tenantId, string contentType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAnalysisFailure",
+          "kind": "method",
+          "signature": "RecordAnalysisFailure(string? tenantId, string contentType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAnalysisDuration",
+          "kind": "method",
+          "signature": "RecordAnalysisDuration(string? tenantId, string contentType, TimeSpan duration)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "ImagingAIHostApplicationBuilderExtensions",
       "fqn": "Granit.Imaging.AI.Extensions.ImagingAIHostApplicationBuilderExtensions",
       "kind": "class",
@@ -15707,12 +15752,34 @@
       "members": []
     },
     {
+      "name": "ImagingMagickNetMetrics",
+      "fqn": "Granit.Imaging.MagickNet.Diagnostics.ImagingMagickNetMetrics",
+      "kind": "class",
+      "project": "Granit.Imaging.MagickNet",
+      "file": "src/Granit.Imaging.MagickNet/Diagnostics/ImagingMagickNetMetrics.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "RecordImageProcessed",
+          "kind": "method",
+          "signature": "RecordImageProcessed(string? tenantId, string outputFormat)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordProcessingDuration",
+          "kind": "method",
+          "signature": "RecordProcessingDuration(string? tenantId, string outputFormat, TimeSpan duration)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "ImagingMagickNetServiceCollectionExtensions",
       "fqn": "Granit.Imaging.MagickNet.Extensions.ImagingMagickNetServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Imaging.MagickNet",
       "file": "src/Granit.Imaging.MagickNet/Extensions/ImagingMagickNetServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitImagingMagickNet",
@@ -15845,6 +15912,34 @@
       "file": "src/Granit.Localization.AI/TranslationSuggestion.cs",
       "line": 8,
       "members": []
+    },
+    {
+      "name": "LocalizationMetrics",
+      "fqn": "Granit.Localization.Diagnostics.LocalizationMetrics",
+      "kind": "class",
+      "project": "Granit.Localization",
+      "file": "src/Granit.Localization/Diagnostics/LocalizationMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordOverrideSet",
+          "kind": "method",
+          "signature": "RecordOverrideSet(string? tenantId, string resourceName, string culture)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordOverrideRemoved",
+          "kind": "method",
+          "signature": "RecordOverrideRemoved(string? tenantId, string resourceName, string culture)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCacheMiss",
+          "kind": "method",
+          "signature": "RecordCacheMiss(string? tenantId, string resourceName, string culture)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "ApplicationLocalizationResponse",
@@ -16051,7 +16146,7 @@
       "kind": "class",
       "project": "Granit.Localization",
       "file": "src/Granit.Localization/Extensions/LocalizationServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitLocalization",
@@ -17133,7 +17228,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Email.AwsSes",
       "file": "src/Granit.Notifications.Email.AwsSes/GranitNotificationsEmailAwsSesModule.cs",
-      "line": 7,
+      "line": 8,
       "members": [
         {
           "name": "ConfigureServices",
@@ -17513,6 +17608,24 @@
       ]
     },
     {
+      "name": "MobilePushTokenRegisterRequest",
+      "fqn": "Granit.Notifications.Endpoints.Dtos.MobilePushTokenRegisterRequest",
+      "kind": "record",
+      "project": "Granit.Notifications.Endpoints",
+      "file": "src/Granit.Notifications.Endpoints/Dtos/MobilePushTokenRegisterRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "MobilePushTokenResponse",
+      "fqn": "Granit.Notifications.Endpoints.Dtos.MobilePushTokenResponse",
+      "kind": "record",
+      "project": "Granit.Notifications.Endpoints",
+      "file": "src/Granit.Notifications.Endpoints/Dtos/MobilePushTokenResponse.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "NotificationPreferenceResponse",
       "fqn": "Granit.Notifications.Endpoints.Dtos.NotificationPreferenceResponse",
       "kind": "record",
@@ -17563,7 +17676,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/Endpoints/MobilePushTokenEndpoints.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "MapMobilePushTokenEndpoints",
@@ -17572,24 +17685,6 @@
           "returnType": "IEndpointRouteBuilder"
         }
       ]
-    },
-    {
-      "name": "MobilePushTokenRegisterRequest",
-      "fqn": "Granit.Notifications.Endpoints.Endpoints.MobilePushTokenRegisterRequest",
-      "kind": "record",
-      "project": "Granit.Notifications.Endpoints",
-      "file": "src/Granit.Notifications.Endpoints/Endpoints/MobilePushTokenEndpoints.cs",
-      "line": 123,
-      "members": []
-    },
-    {
-      "name": "MobilePushTokenResponse",
-      "fqn": "Granit.Notifications.Endpoints.Endpoints.MobilePushTokenResponse",
-      "kind": "record",
-      "project": "Granit.Notifications.Endpoints",
-      "file": "src/Granit.Notifications.Endpoints/Endpoints/MobilePushTokenEndpoints.cs",
-      "line": 133,
-      "members": []
     },
     {
       "name": "NotificationEndpointRouteBuilderExtensions",
@@ -17613,7 +17708,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/GranitNotificationsEndpointsModule.cs",
-      "line": 21,
+      "line": 23,
       "members": []
     },
     {
@@ -17690,7 +17785,7 @@
       "kind": "class",
       "project": "Granit.Notifications.EntityFrameworkCore",
       "file": "src/Granit.Notifications.EntityFrameworkCore/Extensions/NotificationsEfCoreHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitNotificationsEntityFrameworkCore",
@@ -19080,12 +19175,34 @@
       "members": []
     },
     {
+      "name": "ObservabilityAIMetrics",
+      "fqn": "Granit.Observability.AI.Diagnostics.ObservabilityAIMetrics",
+      "kind": "class",
+      "project": "Granit.Observability.AI",
+      "file": "src/Granit.Observability.AI/Diagnostics/ObservabilityAIMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordAnalysisFailed",
+          "kind": "method",
+          "signature": "RecordAnalysisFailed(string? tenantId, string reason)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAnalysisDuration",
+          "kind": "method",
+          "signature": "RecordAnalysisDuration(string? tenantId, double durationSeconds)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "ObservabilityAIHostApplicationBuilderExtensions",
       "fqn": "Granit.Observability.AI.Extensions.ObservabilityAIHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Observability.AI",
       "file": "src/Granit.Observability.AI/Extensions/ObservabilityAIHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitObservabilityAI",
@@ -19160,7 +19277,7 @@
       "kind": "class",
       "project": "Granit.Observability.AI",
       "file": "src/Granit.Observability.AI/Options/ObservabilityAIOptions.cs",
-      "line": 9,
+      "line": 11,
       "members": [
         {
           "name": "WorkspaceName",
@@ -19214,7 +19331,7 @@
       "kind": "class",
       "project": "Granit.Observability",
       "file": "src/Granit.Observability/Options/ObservabilityOptions.cs",
-      "line": 6,
+      "line": 8,
       "members": [
         {
           "name": "ServiceName",
@@ -19594,12 +19711,66 @@
       "members": []
     },
     {
+      "name": "AdminGroupResponse",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminGroupResponse",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminGroupResponse.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "AdminOidcApplicationResponse",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcApplicationResponse",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcResponses.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "AdminOidcAuthorizationResponse",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcAuthorizationResponse",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcResponses.cs",
+      "line": 35,
+      "members": []
+    },
+    {
+      "name": "AdminOidcScopeResponse",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcScopeResponse",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcResponses.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "AdminRoleResponse",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminRoleResponse",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminRoleResponse.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "AdminUserCreateRequest",
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminUserCreateRequest",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminUserCreateRequest.cs",
       "line": 9,
+      "members": []
+    },
+    {
+      "name": "AdminUserResponse",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminUserResponse",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminUserResponse.cs",
+      "line": 13,
       "members": []
     },
     {
@@ -19755,9 +19926,9 @@
       "line": 20,
       "members": [
         {
-          "name": "AddGranitOpenIddictEntityFrameworkCore",
+          "name": "AddGranitOpenIddict",
           "kind": "method",
-          "signature": "AddGranitOpenIddictEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitOpenIddict(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -20667,6 +20838,46 @@
       ]
     },
     {
+      "name": "PersistenceMetrics",
+      "fqn": "Granit.Persistence.Diagnostics.PersistenceMetrics",
+      "kind": "class",
+      "project": "Granit.Persistence",
+      "file": "src/Granit.Persistence/Diagnostics/PersistenceMetrics.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "RecordEntitySoftDeleted",
+          "kind": "method",
+          "signature": "RecordEntitySoftDeleted(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordConcurrencyStampGenerated",
+          "kind": "method",
+          "signature": "RecordConcurrencyStampGenerated(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordDomainEventDispatched",
+          "kind": "method",
+          "signature": "RecordDomainEventDispatched(string? tenantId, string eventType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordIntegrationEventDispatched",
+          "kind": "method",
+          "signature": "RecordIntegrationEventDispatched(string? tenantId, string eventType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordEntitiesPurged",
+          "kind": "method",
+          "signature": "RecordEntitiesPurged(string? tenantId, int count)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "DbContextOptionsBuilderExtensions",
       "fqn": "Granit.Persistence.Extensions.DbContextOptionsBuilderExtensions",
       "kind": "class",
@@ -20729,7 +20940,7 @@
       "kind": "class",
       "project": "Granit.Persistence",
       "file": "src/Granit.Persistence/Extensions/PersistenceServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitPersistence",
@@ -21133,7 +21344,7 @@
       "kind": "class",
       "project": "Granit.Persistence.Migrations",
       "file": "src/Granit.Persistence.Migrations/GranitPersistenceMigrationsModule.cs",
-      "line": 35,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",
@@ -21694,6 +21905,24 @@
       "members": []
     },
     {
+      "name": "GranitPrivacyBackgroundJobsModule",
+      "fqn": "Granit.Privacy.BackgroundJobs.GranitPrivacyBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Privacy.BackgroundJobs",
+      "file": "src/Granit.Privacy.BackgroundJobs/GranitPrivacyBackgroundJobsModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "DeletionDeadlineEnforcerJob",
+      "fqn": "Granit.Privacy.BackgroundJobs.Jobs.DeletionDeadlineEnforcerJob",
+      "kind": "record",
+      "project": "Granit.Privacy.BackgroundJobs",
+      "file": "src/Granit.Privacy.BackgroundJobs/Jobs/DeletionDeadlineEnforcerJob.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "DeletionAction",
       "fqn": "Granit.Privacy.DataDeletion.DeletionAction",
       "kind": "enum",
@@ -22241,7 +22470,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
-      "line": 30,
+      "line": 33,
       "members": []
     },
     {
@@ -22309,15 +22538,6 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/GranitPrivacyModule.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "DeletionDeadlineEnforcerJob",
-      "fqn": "Granit.Privacy.Jobs.DeletionDeadlineEnforcerJob",
-      "kind": "record",
-      "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/Jobs/DeletionDeadlineEnforcerJob.cs",
       "line": 11,
       "members": []
     },
@@ -22576,6 +22796,15 @@
       ]
     },
     {
+      "name": "QueryingAIMetrics",
+      "fqn": "Granit.Querying.AI.Diagnostics.QueryingAIMetrics",
+      "kind": "class",
+      "project": "Granit.Querying.AI",
+      "file": "src/Granit.Querying.AI/Diagnostics/QueryingAIMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "QueryingAIHostApplicationBuilderExtensions",
       "fqn": "Granit.Querying.AI.Extensions.QueryingAIHostApplicationBuilderExtensions",
       "kind": "class",
@@ -22597,8 +22826,15 @@
       "kind": "class",
       "project": "Granit.Querying.AI",
       "file": "src/Granit.Querying.AI/GranitQueryingAIModule.cs",
-      "line": 18,
-      "members": []
+      "line": 22,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "INaturalLanguageQueryTranslator",
@@ -23299,7 +23535,7 @@
       "kind": "class",
       "project": "Granit.Querying",
       "file": "src/Granit.Querying/SavedViews/Domain/SavedView.cs",
-      "line": 9,
+      "line": 10,
       "members": []
     },
     {
@@ -23505,7 +23741,7 @@
       "kind": "class",
       "project": "Granit.RateLimiting",
       "file": "src/Granit.RateLimiting/Extensions/RateLimitingServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitRateLimiting",
@@ -23674,6 +23910,46 @@
       ]
     },
     {
+      "name": "ReferenceDataMetrics",
+      "fqn": "Granit.ReferenceData.Diagnostics.ReferenceDataMetrics",
+      "kind": "class",
+      "project": "Granit.ReferenceData",
+      "file": "src/Granit.ReferenceData/Diagnostics/ReferenceDataMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordEntryCreated",
+          "kind": "method",
+          "signature": "RecordEntryCreated(string? tenantId, string entityType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordEntryUpdated",
+          "kind": "method",
+          "signature": "RecordEntryUpdated(string? tenantId, string entityType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordEntryDeactivated",
+          "kind": "method",
+          "signature": "RecordEntryDeactivated(string? tenantId, string entityType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCacheMiss",
+          "kind": "method",
+          "signature": "RecordCacheMiss(string? tenantId, string entityType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordSeedExecuted",
+          "kind": "method",
+          "signature": "RecordSeedExecuted(string? tenantId, string entityType, string seederName)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "DynamicReferenceDataEntity",
       "fqn": "Granit.ReferenceData.Domain.DynamicReferenceDataEntity",
       "kind": "class",
@@ -23827,7 +24103,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData.Endpoints",
       "file": "src/Granit.ReferenceData.Endpoints/Extensions/ReferenceDataEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "line": 15,
       "members": []
     },
     {
@@ -23836,7 +24112,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData.Endpoints",
       "file": "src/Granit.ReferenceData.Endpoints/GranitReferenceDataEndpointsModule.cs",
-      "line": 23,
+      "line": 26,
       "members": []
     },
     {
@@ -23858,20 +24134,26 @@
           "kind": "property",
           "signature": "string TagName",
           "returnType": "string"
-        },
-        {
-          "name": "AdminPolicyName",
-          "kind": "property",
-          "signature": "string? AdminPolicyName",
-          "returnType": "string?"
-        },
-        {
-          "name": "RequiredRole",
-          "kind": "property",
-          "signature": "string RequiredRole",
-          "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "Entries",
+      "fqn": "Granit.ReferenceData.Endpoints.Permissions.Entries",
+      "kind": "class",
+      "project": "Granit.ReferenceData.Endpoints",
+      "file": "src/Granit.ReferenceData.Endpoints/Permissions/ReferenceDataPermissions.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "ReferenceDataPermissions",
+      "fqn": "Granit.ReferenceData.Endpoints.Permissions.ReferenceDataPermissions",
+      "kind": "class",
+      "project": "Granit.ReferenceData.Endpoints",
+      "file": "src/Granit.ReferenceData.Endpoints/Permissions/ReferenceDataPermissions.cs",
+      "line": 6,
+      "members": []
     },
     {
       "name": "ModelBuilderExtensions",
@@ -23915,7 +24197,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData",
       "file": "src/Granit.ReferenceData/Extensions/ReferenceDataServiceCollectionExtensions.cs",
-      "line": 9,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitReferenceData",
@@ -24339,6 +24621,28 @@
       ]
     },
     {
+      "name": "SettingsMetrics",
+      "fqn": "Granit.Settings.Diagnostics.SettingsMetrics",
+      "kind": "class",
+      "project": "Granit.Settings",
+      "file": "src/Granit.Settings/Diagnostics/SettingsMetrics.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "RecordValueDeleted",
+          "kind": "method",
+          "signature": "RecordValueDeleted(string? tenantId, string providerName, string settingName)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCacheInvalidated",
+          "kind": "method",
+          "signature": "RecordCacheInvalidated(string? tenantId, string providerName)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "SettingValueResponse",
       "fqn": "Granit.Settings.Endpoints.Dtos.SettingValueResponse",
       "kind": "record",
@@ -24579,7 +24883,7 @@
       "kind": "class",
       "project": "Granit.Settings",
       "file": "src/Granit.Settings/Extensions/SettingsServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitSettings",
@@ -24595,7 +24899,7 @@
       "kind": "class",
       "project": "Granit.Settings",
       "file": "src/Granit.Settings/GranitSettingsModule.cs",
-      "line": 20,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -25066,6 +25370,46 @@
       ]
     },
     {
+      "name": "TemplatingMetrics",
+      "fqn": "Granit.Templating.Diagnostics.TemplatingMetrics",
+      "kind": "class",
+      "project": "Granit.Templating",
+      "file": "src/Granit.Templating/Diagnostics/TemplatingMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordDraftUpdated",
+          "kind": "method",
+          "signature": "RecordDraftUpdated(string? tenantId, string templateName)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordDraftDeleted",
+          "kind": "method",
+          "signature": "RecordDraftDeleted(string? tenantId, string templateName)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordPublished",
+          "kind": "method",
+          "signature": "RecordPublished(string? tenantId, string templateName)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordUnpublished",
+          "kind": "method",
+          "signature": "RecordUnpublished(string? tenantId, string templateName)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordRenderCompleted",
+          "kind": "method",
+          "signature": "RecordRenderCompleted(string? tenantId, string templateName, TimeSpan duration)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "SaveTemplateCategoryRequest",
       "fqn": "Granit.Templating.Endpoints.Dtos.SaveTemplateCategoryRequest",
       "kind": "record",
@@ -25239,6 +25583,15 @@
       ]
     },
     {
+      "name": "Categories",
+      "fqn": "Granit.Templating.Endpoints.Permissions.Categories",
+      "kind": "class",
+      "project": "Granit.Templating.Endpoints",
+      "file": "src/Granit.Templating.Endpoints/Permissions/TemplatingPermissions.cs",
+      "line": 25,
+      "members": []
+    },
+    {
       "name": "Templates",
       "fqn": "Granit.Templating.Endpoints.Permissions.Templates",
       "kind": "class",
@@ -25367,7 +25720,7 @@
       "kind": "class",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Extensions/ServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitTemplating",
@@ -25826,7 +26179,7 @@
       "kind": "class",
       "project": "Granit.Templating.Workflow",
       "file": "src/Granit.Templating.Workflow/GranitTemplatingWorkflowModule.cs",
-      "line": 18,
+      "line": 19,
       "members": []
     },
     {
@@ -25844,7 +26197,7 @@
       "kind": "class",
       "project": "Granit.Testing.EntityFrameworkCore",
       "file": "src/Granit.Testing.EntityFrameworkCore/GranitTestingEntityFrameworkCoreModule.cs",
-      "line": 16,
+      "line": 19,
       "members": []
     },
     {
@@ -26034,7 +26387,7 @@
       "kind": "class",
       "project": "Granit.Testing",
       "file": "src/Granit.Testing/GranitTestingModule.cs",
-      "line": 15,
+      "line": 20,
       "members": []
     },
     {
@@ -26081,12 +26434,64 @@
       "members": []
     },
     {
+      "name": "TimelineAIMetrics",
+      "fqn": "Granit.Timeline.AI.Diagnostics.TimelineAIMetrics",
+      "kind": "class",
+      "project": "Granit.Timeline.AI",
+      "file": "src/Granit.Timeline.AI/Diagnostics/TimelineAIMetrics.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "RecordSummarizationCompleted",
+          "kind": "method",
+          "signature": "RecordSummarizationCompleted(string? tenantId, string entityType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordSummarizationFailure",
+          "kind": "method",
+          "signature": "RecordSummarizationFailure(string? tenantId, string entityType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordSummarizationDuration",
+          "kind": "method",
+          "signature": "RecordSummarizationDuration(string? tenantId, string entityType, TimeSpan duration)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAnomalyDetectionCompleted",
+          "kind": "method",
+          "signature": "RecordAnomalyDetectionCompleted(string? tenantId, string entityType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAnomalyDetectionFailure",
+          "kind": "method",
+          "signature": "RecordAnomalyDetectionFailure(string? tenantId, string entityType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAnomalyDetectionDuration",
+          "kind": "method",
+          "signature": "RecordAnomalyDetectionDuration(string? tenantId, string entityType, TimeSpan duration)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAnomaliesFound",
+          "kind": "method",
+          "signature": "RecordAnomaliesFound(string? tenantId, string entityType, int count)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "TimelineAIHostApplicationBuilderExtensions",
       "fqn": "Granit.Timeline.AI.Extensions.TimelineAIHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Timeline.AI",
       "file": "src/Granit.Timeline.AI/Extensions/TimelineAIHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitTimelineAI",
@@ -26355,12 +26760,21 @@
       "members": []
     },
     {
+      "name": "PostTimelineEntryRequest",
+      "fqn": "Granit.Timeline.Endpoints.Dtos.PostTimelineEntryRequest",
+      "kind": "record",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Dtos/PostTimelineEntryRequest.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "TimelineEndpointRouteBuilderExtensions",
       "fqn": "Granit.Timeline.Endpoints.Extensions.TimelineEndpointRouteBuilderExtensions",
       "kind": "class",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Extensions/TimelineEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "MapTimelineEndpoints",
@@ -26376,16 +26790,7 @@
       "kind": "class",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/GranitTimelineEndpointsModule.cs",
-      "line": 22,
-      "members": []
-    },
-    {
-      "name": "TimelineAuthorizationPolicy",
-      "fqn": "Granit.Timeline.Endpoints.Internal.TimelineAuthorizationPolicy",
-      "kind": "class",
-      "project": "Granit.Timeline.Endpoints",
-      "file": "src/Granit.Timeline.Endpoints/Internal/TimelineAuthorizationPolicy.cs",
-      "line": 8,
+      "line": 24,
       "members": []
     },
     {
@@ -26488,7 +26893,7 @@
       "kind": "class",
       "project": "Granit.Timeline.EntityFrameworkCore",
       "file": "src/Granit.Timeline.EntityFrameworkCore/GranitTimelineEntityFrameworkCoreModule.cs",
-      "line": 17,
+      "line": 18,
       "members": []
     },
     {
@@ -26549,22 +26954,6 @@
       "file": "src/Granit.Timeline/ITimelined.cs",
       "line": 13,
       "members": []
-    },
-    {
-      "name": "MentionParser",
-      "fqn": "Granit.Timeline.Internal.MentionParser",
-      "kind": "class",
-      "project": "Granit.Timeline",
-      "file": "src/Granit.Timeline/Internal/MentionParser.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "ExtractMentionedUserIds",
-          "kind": "method",
-          "signature": "ExtractMentionedUserIds(string body)",
-          "returnType": "IReadOnlyList<string>"
-        }
-      ]
     },
     {
       "name": "TimelineNotificationsServiceCollectionExtensions",
@@ -26659,15 +27048,6 @@
           "returnType": "string"
         }
       ]
-    },
-    {
-      "name": "PostTimelineEntryRequest",
-      "fqn": "Granit.Timeline.PostTimelineEntryRequest",
-      "kind": "record",
-      "project": "Granit.Timeline",
-      "file": "src/Granit.Timeline/PostTimelineEntryRequest.cs",
-      "line": 8,
-      "members": []
     },
     {
       "name": "TimelineAttachmentInfo",
@@ -26877,7 +27257,7 @@
       "kind": "class",
       "project": "Granit.Validation.AI",
       "file": "src/Granit.Validation.AI/GranitValidationAIModule.cs",
-      "line": 18,
+      "line": 19,
       "members": []
     },
     {
@@ -27182,7 +27562,7 @@
       "kind": "class",
       "project": "Granit.Validation.Europe",
       "file": "src/Granit.Validation.Europe/GranitValidationEuropeModule.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -27365,7 +27745,7 @@
       "kind": "class",
       "project": "Granit.Validation.NorthAmerica",
       "file": "src/Granit.Validation.NorthAmerica/GranitValidationNorthAmericaModule.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -27533,7 +27913,7 @@
       "kind": "class",
       "project": "Granit.Validation.UnitedKingdom",
       "file": "src/Granit.Validation.UnitedKingdom/GranitValidationUnitedKingdomModule.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -27734,7 +28114,7 @@
         {
           "name": "RecordRotationDetected",
           "kind": "method",
-          "signature": "RecordRotationDetected(string provider)",
+          "signature": "RecordRotationDetected(string? tenantId, string provider)",
           "returnType": "void"
         }
       ]
@@ -27845,7 +28225,7 @@
       "kind": "class",
       "project": "Granit.Vault",
       "file": "src/Granit.Vault/GranitVaultModule.cs",
-      "line": 24,
+      "line": 25,
       "members": [
         {
           "name": "ConfigureServices",
@@ -27877,7 +28257,7 @@
       "kind": "class",
       "project": "Granit.Vault.HashiCorp",
       "file": "src/Granit.Vault.HashiCorp/Extensions/HashiCorpVaultServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitVaultHashiCorp",
@@ -27893,7 +28273,7 @@
       "kind": "class",
       "project": "Granit.Vault.HashiCorp",
       "file": "src/Granit.Vault.HashiCorp/GranitVaultHashiCorpModule.cs",
-      "line": 16,
+      "line": 12,
       "members": [
         {
           "name": "IsEnabled",
@@ -27970,110 +28350,6 @@
           "kind": "property",
           "signature": "double LeaseRenewalThreshold",
           "returnType": "double"
-        }
-      ]
-    },
-    {
-      "name": "HashiCorpVaultStringEncryptionProvider",
-      "fqn": "Granit.Vault.HashiCorp.Providers.HashiCorpVaultStringEncryptionProvider",
-      "kind": "class",
-      "project": "Granit.Vault.HashiCorp",
-      "file": "src/Granit.Vault.HashiCorp/Providers/HashiCorpVaultStringEncryptionProvider.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "ProviderName",
-          "kind": "property",
-          "signature": "string ProviderName",
-          "returnType": "string"
-        },
-        {
-          "name": "Encrypt",
-          "kind": "method",
-          "signature": "Encrypt(string plainText)",
-          "returnType": "string"
-        },
-        {
-          "name": "Decrypt",
-          "kind": "method",
-          "signature": "Decrypt(string cipherText)",
-          "returnType": "string?"
-        }
-      ]
-    },
-    {
-      "name": "HashiCorpEntityEncryptionKeyStore",
-      "fqn": "Granit.Vault.HashiCorp.Services.HashiCorpEntityEncryptionKeyStore",
-      "kind": "class",
-      "project": "Granit.Vault.HashiCorp",
-      "file": "src/Granit.Vault.HashiCorp/Services/HashiCorpEntityEncryptionKeyStore.cs",
-      "line": 25,
-      "members": [
-        {
-          "name": "GetOrCreateKeyAsync",
-          "kind": "method",
-          "signature": "GetOrCreateKeyAsync(string entityType, string entityId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<byte[]>"
-        }
-      ]
-    },
-    {
-      "name": "HashiCorpTransitEncryptionService",
-      "fqn": "Granit.Vault.HashiCorp.Services.HashiCorpTransitEncryptionService",
-      "kind": "class",
-      "project": "Granit.Vault.HashiCorp",
-      "file": "src/Granit.Vault.HashiCorp/Services/HashiCorpTransitEncryptionService.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "EncryptAsync",
-          "kind": "method",
-          "signature": "EncryptAsync(string keyName, string plaintext, CancellationToken cancellationToken = default)",
-          "returnType": "Task<string>"
-        }
-      ]
-    },
-    {
-      "name": "VaultClientFactory",
-      "fqn": "Granit.Vault.HashiCorp.Services.VaultClientFactory",
-      "kind": "class",
-      "project": "Granit.Vault.HashiCorp",
-      "file": "src/Granit.Vault.HashiCorp/Services/VaultClientFactory.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create()",
-          "returnType": "IVaultClient"
-        }
-      ]
-    },
-    {
-      "name": "VaultCredentialLeaseManager",
-      "fqn": "Granit.Vault.HashiCorp.Services.VaultCredentialLeaseManager",
-      "kind": "class",
-      "project": "Granit.Vault.HashiCorp",
-      "file": "src/Granit.Vault.HashiCorp/Services/VaultCredentialLeaseManager.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "Username",
-          "kind": "property",
-          "signature": "string Username",
-          "returnType": "string"
-        },
-        {
-          "name": "Password",
-          "kind": "property",
-          "signature": "string Password",
-          "returnType": "string"
-        },
-        {
-          "name": "IsNullOrEmpty",
-          "kind": "method",
-          "signature": "IsNullOrEmpty(_username)",
-          "returnType": "bool IsReady => !string."
         }
       ]
     },
@@ -28790,7 +29066,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/Validators/WebhookTargetUrlValidatorExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": []
     },
     {
@@ -28974,7 +29250,7 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/GranitWebhooksModule.cs",
-      "line": 29,
+      "line": 31,
       "members": [
         {
           "name": "ConfigureServices",
@@ -29233,12 +29509,46 @@
       ]
     },
     {
+      "name": "WolverineMetrics",
+      "fqn": "Granit.Wolverine.Diagnostics.WolverineMetrics",
+      "kind": "class",
+      "project": "Granit.Wolverine",
+      "file": "src/Granit.Wolverine/Diagnostics/WolverineMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordMessageHandled",
+          "kind": "method",
+          "signature": "RecordMessageHandled(string? tenantId, string messageType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordRetriesExhausted",
+          "kind": "method",
+          "signature": "RecordRetriesExhausted(string? tenantId, string messageType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordClaimCheckStored",
+          "kind": "method",
+          "signature": "RecordClaimCheckStored(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordClaimCheckRetrieved",
+          "kind": "method",
+          "signature": "RecordClaimCheckRetrieved(string? tenantId)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "WolverineHostApplicationBuilderExtensions",
       "fqn": "Granit.Wolverine.Extensions.WolverineHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Extensions/WolverineHostApplicationBuilderExtensions.cs",
-      "line": 24,
+      "line": 25,
       "members": [
         {
           "name": "AddGranitWolverine",
@@ -29340,7 +29650,7 @@
       "kind": "class",
       "project": "Granit.Wolverine.Postgresql",
       "file": "src/Granit.Wolverine.Postgresql/Extensions/WolverinePostgresqlHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitWolverineWithPostgresql",
@@ -29435,6 +29745,15 @@
           "returnType": "TransactionMiddlewareMode"
         }
       ]
+    },
+    {
+      "name": "WolverineScopedSender",
+      "fqn": "Granit.Wolverine.WolverineScopedSender",
+      "kind": "class",
+      "project": "Granit.Wolverine",
+      "file": "src/Granit.Wolverine/WolverineScopedSender.cs",
+      "line": 13,
+      "members": []
     },
     {
       "name": "WorkflowAIHostApplicationBuilderExtensions",
@@ -29684,8 +30003,8 @@
       ]
     },
     {
-      "name": "TransitionHistoryResponse",
-      "fqn": "Granit.Workflow.Dtos.TransitionHistoryResponse",
+      "name": "WorkflowTransitionHistoryResponse",
+      "fqn": "Granit.Workflow.Dtos.WorkflowTransitionHistoryResponse",
       "kind": "record",
       "project": "Granit.Workflow",
       "file": "src/Granit.Workflow/Dtos/TransitionHistoryResponse.cs",
@@ -30002,7 +30321,7 @@
           "name": "GetHistoryAsync",
           "kind": "method",
           "signature": "GetHistoryAsync(string entityType, string entityId, int page = 1, int pageSize = QueryingDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
-          "returnType": "Task<PagedResult<TransitionHistoryResponse>>"
+          "returnType": "Task<PagedResult<WorkflowTransitionHistoryResponse>>"
         }
       ]
     },
@@ -30306,7 +30625,7 @@
       "kind": "class",
       "project": "Granit.Workflow",
       "file": "src/Granit.Workflow/WorkflowManager.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "GetAllowedTransitionsAsync",

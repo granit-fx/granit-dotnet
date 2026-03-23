@@ -1,5 +1,6 @@
 using Granit.Core.Modularity;
 using Granit.Http.ApiDocumentation;
+using Granit.Validation;
 
 namespace Granit.Bff.Endpoints;
 
@@ -8,5 +9,6 @@ namespace Granit.Bff.Endpoints;
 /// </summary>
 [DependsOn(
     typeof(GranitBffModule),
-    typeof(GranitHttpApiDocumentationModule))]
+    typeof(GranitHttpApiDocumentationModule),
+    typeof(GranitValidationModule))]
 public sealed class GranitBffEndpointsModule : GranitModule;

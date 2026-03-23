@@ -1,3 +1,5 @@
+using Granit.Core.Diagnostics;
+using Granit.Imaging.MagickNet.Diagnostics;
 using Granit.Imaging.MagickNet.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -16,6 +18,9 @@ public static class ImagingMagickNetServiceCollectionExtensions
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddGranitImagingMagickNet(this IServiceCollection services)
     {
+        GranitActivitySourceRegistry.Register(ImagingMagickNetActivitySource.Name);
+
+        services.TryAddSingleton<ImagingMagickNetMetrics>();
         services.TryAddSingleton<IImageProcessor, MagickNetImageProcessor>();
         return services;
     }

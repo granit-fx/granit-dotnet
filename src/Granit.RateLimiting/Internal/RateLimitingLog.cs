@@ -11,10 +11,6 @@ internal static partial class RateLimitingLog
         Message = "Rate limit exceeded for policy '{PolicyName}' (tenant: {TenantId}). Remaining: {Remaining}, RetryAfter: {RetryAfterSeconds}s.")]
     public static partial void LogRateLimitExceeded(ILogger logger, string policyName, string? tenantId, int remaining, double retryAfterSeconds);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Counter store unavailable for policy '{PolicyName}'. Applying fallback behavior.")]
-    public static partial void LogCounterStoreFailure(ILogger logger, string policyName, Exception exception);
-
     [LoggerMessage(Level = LogLevel.Debug,
         Message = "Rate limiting bypassed for policy '{PolicyName}' (claim: {Claim}, user: {UserId}).")]
     public static partial void LogBypassApplied(ILogger logger, string policyName, string claim, string? userId);

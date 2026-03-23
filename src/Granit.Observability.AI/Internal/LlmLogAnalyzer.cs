@@ -36,7 +36,7 @@ internal sealed partial class LlmLogAnalyzer(
         ObservabilityAIOptions config = options.Value;
 
         IReadOnlyList<LogEntry> truncatedEntries = entries.Count > config.MaxLogEntries
-            ? entries.Skip(entries.Count - config.MaxLogEntries).ToList()
+            ? entries.TakeLast(config.MaxLogEntries).ToList()
             : entries;
 
         LogAnalyzingEntries(logger, truncatedEntries.Count, entries.Count);

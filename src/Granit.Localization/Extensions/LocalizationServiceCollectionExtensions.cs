@@ -1,3 +1,5 @@
+using Granit.Core.Diagnostics;
+using Granit.Localization.Diagnostics;
 using Granit.Localization.Internal;
 using Granit.Localization.Options;
 using Microsoft.Extensions.Caching.Memory;
@@ -35,6 +37,9 @@ public static class LocalizationServiceCollectionExtensions
         services.TryAddSingleton<CachedLocalizationOverrideStore>();
         services.TryAddSingleton<ILocalizationOverrideStoreReader>(sp => sp.GetRequiredService<CachedLocalizationOverrideStore>());
         services.TryAddSingleton<ILocalizationOverrideStoreWriter>(sp => sp.GetRequiredService<CachedLocalizationOverrideStore>());
+
+        services.TryAddSingleton<LocalizationMetrics>();
+        GranitActivitySourceRegistry.Register(LocalizationActivitySource.Name);
 
         if (configure is not null)
         {

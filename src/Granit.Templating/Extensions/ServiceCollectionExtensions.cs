@@ -1,4 +1,6 @@
 using System.Reflection;
+using Granit.Core.Diagnostics;
+using Granit.Templating.Diagnostics;
 using Granit.Templating.Enrichment;
 using Granit.Templating.GlobalContext;
 using Granit.Templating.Internal;
@@ -36,6 +38,10 @@ public static class ServiceCollectionExtensions
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddGranitTemplating(this IServiceCollection services)
     {
+        // Diagnostics
+        GranitActivitySourceRegistry.Register(TemplatingActivitySource.Name);
+        services.TryAddSingleton<TemplatingMetrics>();
+
         services.TryAddScoped<ITextTemplateRenderer, TextTemplateRenderer>();
         services.TryAddSingleton<ITemplateTransitionHook, NullTemplateTransitionHook>();
         return services;

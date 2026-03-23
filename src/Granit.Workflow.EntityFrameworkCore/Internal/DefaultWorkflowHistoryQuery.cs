@@ -16,7 +16,7 @@ internal sealed class DefaultWorkflowHistoryQuery<TDbContext>(TDbContext dbConte
     private readonly TDbContext _dbContext = dbContext;
 
     /// <inheritdoc/>
-    public async Task<PagedResult<TransitionHistoryResponse>> GetHistoryAsync(
+    public async Task<PagedResult<WorkflowTransitionHistoryResponse>> GetHistoryAsync(
         string entityType,
         string entityId,
         int page = 1,
@@ -31,11 +31,11 @@ internal sealed class DefaultWorkflowHistoryQuery<TDbContext>(TDbContext dbConte
 
         int totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
 
-        List<TransitionHistoryResponse> items = await query
-            .OrderBy(r => r.TransitionedAt)
+        List<WorkflowTransitionHistoryResponse> items = await query
+            .OrderByDescending(r => r.TransitionedAt)
             .Skip((clampedPage - 1) * clampedPageSize)
             .Take(clampedPageSize)
-            .Select(r => new TransitionHistoryResponse(
+            .Select(r => new WorkflowTransitionHistoryResponse(
                 r.PreviousState,
                 r.NewState,
                 r.TransitionedAt,
@@ -43,6 +43,6 @@ internal sealed class DefaultWorkflowHistoryQuery<TDbContext>(TDbContext dbConte
                 r.Comment))
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-        return new PagedResult<TransitionHistoryResponse>(items, totalCount, HasMore: (clampedPage - 1) * clampedPageSize + items.Count < totalCount);
+        return new PagedResult<WorkflowTransitionHistoryResponse>(items, totalCount, HasMore: (clampedPage - 1) * clampedPageSize + items.Count < totalCount);
     }
 }

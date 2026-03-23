@@ -53,8 +53,9 @@ public static class UserSettingsEndpointRouteBuilderExtensions
         group.MapPut("/{name}", HandlePutUserSettingAsync)
              .WithName("UpdateUserSetting")
              .WithSummary("Sets a user-level setting value.")
-             .WithDescription("Sets a user-level override for the specified setting. This value takes precedence over tenant and global values for this user. Pass null to clear. Returns 404 if the setting name is not defined.")
+             .WithDescription("Sets a user-level override for the specified setting. This value takes precedence over tenant and global values for this user. Pass null to clear. Returns 404 if the setting name is not defined. Returns 400 if the User provider is not allowed for this setting.")
              .Produces(StatusCodes.Status204NoContent)
+             .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapDelete("/{name}", HandleDeleteUserSettingAsync)

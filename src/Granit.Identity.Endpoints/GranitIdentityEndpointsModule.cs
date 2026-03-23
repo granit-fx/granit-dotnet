@@ -22,8 +22,8 @@ namespace Granit.Identity.Endpoints;
 /// </para>
 /// </remarks>
 [DependsOn(
-    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitAuthorizationModule),
+    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitIdentityModule),
     typeof(GranitValidationModule))]
 public sealed class GranitIdentityEndpointsModule : GranitModule;

@@ -1,3 +1,4 @@
+using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -16,14 +17,14 @@ internal static class AdminRoleEndpoints
             .WithName("ListRoles")
             .WithSummary("Returns all roles.")
             .WithDescription("Returns the list of all roles with their descriptions.")
-            .Produces(StatusCodes.Status200OK)
+            .Produces<IReadOnlyList<AdminRoleResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Roles.Read);
 
         roles.MapPost("/", CreateRoleAsync)
             .WithName("CreateRole")
             .WithSummary("Creates a new role.")
             .WithDescription("Creates a role with the specified name and description.")
-            .Produces(StatusCodes.Status201Created)
+            .Produces<AdminRoleResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .RequireAuthorization(OpenIddictPermissions.Roles.Create);
 
@@ -39,7 +40,7 @@ internal static class AdminRoleEndpoints
             .WithName("GetRoleMembers")
             .WithSummary("Returns the members of a role.")
             .WithDescription("Returns a paginated list of users assigned to the role.")
-            .Produces(StatusCodes.Status200OK)
+            .Produces<IReadOnlyList<AdminUserResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Roles.Read);
 
         return group;

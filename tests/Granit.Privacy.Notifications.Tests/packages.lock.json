@@ -665,19 +665,6 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
-      "granit.backgroundjobs": {
-        "type": "Project",
-        "dependencies": {
-          "Cronos": "[0.11.*, )",
-          "Granit.Core": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
-          "Microsoft.Extensions.Options": "[10.*, )",
-          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
-        }
-      },
       "granit.core": {
         "type": "Project"
       },
@@ -704,7 +691,6 @@
       "granit.privacy": {
         "type": "Project",
         "dependencies": {
-          "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.Core": "[0.1.0-dev, )",
           "WolverineFx": "[5.*, )"
         }
@@ -722,12 +708,6 @@
           "Granit.Core": "[0.1.0-dev, )"
         }
       },
-      "granit.security": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
-        }
-      },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
@@ -735,12 +715,6 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
         }
-      },
-      "Cronos": {
-        "type": "CentralTransitive",
-        "requested": "[0.11.*, )",
-        "resolved": "0.11.1",
-        "contentHash": "5Ug+giPQITSAdTp/METAsofRSSUi3I5p7t4dlcXnzUgUzwZb4HkOBcYfpHuPwAHrnKJjmyW8amVzLD6mfLpaBg=="
       },
       "Microsoft.CodeAnalysis.Analyzers": {
         "type": "CentralTransitive",

@@ -24,8 +24,8 @@ namespace Granit.Workflow.EntityFrameworkCore;
 /// </para>
 /// </remarks>
 [DependsOn(
-    typeof(GranitWorkflowModule),
-    typeof(GranitPersistenceModule))]
+    typeof(GranitPersistenceModule),
+    typeof(GranitWorkflowModule))]
 public sealed class GranitWorkflowEntityFrameworkCoreModule : GranitModule
 {
     /// <inheritdoc/>

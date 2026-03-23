@@ -1,7 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
+using Granit.Core.Diagnostics;
+using Granit.Timeline.AI.Diagnostics;
 using Granit.Timeline.AI.Internal;
 using Granit.Timeline.AI.Options;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace Granit.Timeline.AI.Extensions;
@@ -29,12 +32,15 @@ public static class TimelineAIHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddGranitTimelineAI(
         this IHostApplicationBuilder builder)
     {
+        GranitActivitySourceRegistry.Register(TimelineAIActivitySource.Name);
+
         builder.Services
             .AddOptions<TimelineAIOptions>()
             .BindConfiguration(TimelineAIOptions.SectionName);
 
-        builder.Services.AddSingleton<ITimelineSummarizer, LlmTimelineSummarizer>();
-        builder.Services.AddSingleton<ITimelineAnomalyDetector, LlmTimelineAnomalyDetector>();
+        builder.Services.TryAddSingleton<TimelineAIMetrics>();
+        builder.Services.TryAddSingleton<ITimelineSummarizer, LlmTimelineSummarizer>();
+        builder.Services.TryAddSingleton<ITimelineAnomalyDetector, LlmTimelineAnomalyDetector>();
 
         return builder;
     }

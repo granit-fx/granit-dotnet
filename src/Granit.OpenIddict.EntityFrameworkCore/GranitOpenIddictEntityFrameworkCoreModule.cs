@@ -23,7 +23,7 @@ namespace Granit.OpenIddict.EntityFrameworkCore;
 /// <remarks>
 /// <para>
 /// The host application must configure the <see cref="Internal.OpenIddictDbContext"/>
-/// connection string via <c>AddGranitOpenIddictEntityFrameworkCore(configure)</c>.
+/// connection string via <c>AddGranitOpenIddict(configure)</c>.
 /// This module registers the store implementations, OpenIddict core services,
 /// the declarative seed contributor, and passkey options.
 /// </para>

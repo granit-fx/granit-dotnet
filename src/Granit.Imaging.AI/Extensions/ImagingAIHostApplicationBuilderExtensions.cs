@@ -33,6 +33,7 @@ public static class ImagingAIHostApplicationBuilderExtensions
             .AddOptions<ImagingAIOptions>()
             .BindConfiguration(ImagingAIOptions.SectionName);
 
+        builder.Services.TryAddSingleton<ImagingAIMetrics>();
         builder.Services.TryAddSingleton<IAIImageAnalyzer, LlmImageAnalyzer>();
 
         return builder;

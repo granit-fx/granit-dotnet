@@ -38,7 +38,7 @@ internal static class IdentityWebhookEndpoints
             .WithDescription("Webhook receiver for identity provider event notifications. Validates the HMAC signature (if configured) and processes user_created, user_updated, and user_deleted events by refreshing or removing the corresponding cache entries. No authentication required — security relies on the HMAC signature validation.")
             .WithTags("Identity Webhook")
             .Produces(StatusCodes.Status200OK)
-            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         return endpoints;

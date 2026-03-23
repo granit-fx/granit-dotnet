@@ -29,7 +29,7 @@ internal sealed class InMemoryRateLimitCounterStore(TimeProvider timeProvider) :
             RateLimitAlgorithm.SlidingWindow => CheckSlidingWindow(key, permitLimit, window),
             RateLimitAlgorithm.FixedWindow => CheckFixedWindow(key, permitLimit, window),
             RateLimitAlgorithm.TokenBucket => CheckTokenBucket(key, policyOptions),
-            _ => new RateLimitResult(true, permitLimit, permitLimit, TimeSpan.Zero),
+            _ => throw new NotSupportedException($"Rate limiting algorithm '{algorithm}' is not supported."),
         };
 
         return Task.FromResult(result);
@@ -45,7 +45,7 @@ internal sealed class InMemoryRateLimitCounterStore(TimeProvider timeProvider) :
         long now = _timeProvider.GetUtcNow().ToUnixTimeMilliseconds();
         long windowStart = now - (long)window.TotalMilliseconds;
 
-        lock (state)
+        lock (state.SyncLock)
         {
             state.Timestamps.RemoveAll(t => t < windowStart);
             int count = state.Timestamps.Count;
@@ -71,7 +71,7 @@ internal sealed class InMemoryRateLimitCounterStore(TimeProvider timeProvider) :
         FixedWindowState state = _fixedWindows.GetOrAdd(key, _ => new FixedWindowState());
         long now = _timeProvider.GetUtcNow().ToUnixTimeMilliseconds();
 
-        lock (state)
+        lock (state.SyncLock)
         {
             long windowMs = (long)window.TotalMilliseconds;
             long windowStart = now / windowMs * windowMs;
@@ -107,7 +107,7 @@ internal sealed class InMemoryRateLimitCounterStore(TimeProvider timeProvider) :
 
         long now = _timeProvider.GetUtcNow().ToUnixTimeMilliseconds();
 
-        lock (state)
+        lock (state.SyncLock)
         {
             long elapsed = now - state.LastRefill;
             long periodMs = (long)policyOptions.ReplenishmentPeriod.TotalMilliseconds;
@@ -139,17 +139,20 @@ internal sealed class InMemoryRateLimitCounterStore(TimeProvider timeProvider) :
 
     private sealed class SlidingWindowState
     {
+        public Lock SyncLock { get; } = new();
         public List<long> Timestamps { get; } = [];
     }
 
     private sealed class FixedWindowState
     {
+        public Lock SyncLock { get; } = new();
         public long WindowStart { get; set; }
         public int Count { get; set; }
     }
 
     private sealed class TokenBucketState
     {
+        public Lock SyncLock { get; } = new();
         public int Tokens { get; set; }
         public long LastRefill { get; set; }
     }

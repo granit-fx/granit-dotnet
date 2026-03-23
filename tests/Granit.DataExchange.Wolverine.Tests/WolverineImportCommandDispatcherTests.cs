@@ -1,8 +1,8 @@
 using Granit.DataExchange.Import.Messages;
 using Granit.DataExchange.Wolverine.Internal;
+using Granit.Wolverine;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
-using Shouldly;
 using Wolverine;
 using Xunit;
 
@@ -18,7 +18,7 @@ public sealed class WolverineImportCommandDispatcherTests
         services.AddScoped(_ => _messageBus);
         ServiceProvider sp = services.BuildServiceProvider();
         IServiceScopeFactory scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
-        return new WolverineImportCommandDispatcher(scopeFactory);
+        return new WolverineImportCommandDispatcher(new WolverineScopedSender(scopeFactory));
     }
 
     [Fact]

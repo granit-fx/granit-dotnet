@@ -1,4 +1,7 @@
+using System.Diagnostics.Metrics;
+using Granit.Imaging.MagickNet.Diagnostics;
 using Granit.Imaging.MagickNet.Internal;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -6,11 +9,18 @@ namespace Granit.Imaging.MagickNet.Tests.Internal;
 
 public sealed class MagickNetImagePipelineTests
 {
+    private static ImagingMagickNetMetrics CreateTestMetrics()
+    {
+        IMeterFactory factory = Substitute.For<IMeterFactory>();
+        factory.Create(Arg.Any<MeterOptions>()).Returns(new Meter("test"));
+        return new ImagingMagickNetMetrics(factory);
+    }
+
     private static MagickNetImagePipeline CreatePipeline()
     {
         Stream stream = typeof(MagickNetImagePipelineTests).Assembly
             .GetManifestResourceStream("Granit.Imaging.MagickNet.Tests.TestAssets.test-image.png")!;
-        MagickNetImageProcessor processor = new();
+        MagickNetImageProcessor processor = new(CreateTestMetrics());
         return (MagickNetImagePipeline)processor.Load(stream);
     }
 

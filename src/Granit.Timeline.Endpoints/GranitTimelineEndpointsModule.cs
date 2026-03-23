@@ -1,6 +1,7 @@
 using Granit.Authorization;
 using Granit.Core.Modularity;
 using Granit.Http.ApiDocumentation;
+using Granit.Validation;
 
 namespace Granit.Timeline.Endpoints;
 
@@ -18,5 +19,6 @@ namespace Granit.Timeline.Endpoints;
 [DependsOn(
     typeof(GranitAuthorizationModule),
     typeof(GranitHttpApiDocumentationModule),
-    typeof(GranitTimelineModule))]
+    typeof(GranitTimelineModule),
+    typeof(GranitValidationModule))]
 public sealed class GranitTimelineEndpointsModule : GranitModule;

@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
     <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
   </ItemGroup>
 

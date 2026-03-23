@@ -1,5 +1,8 @@
+using Granit.Core.Diagnostics;
+using Granit.ReferenceData.Diagnostics;
 using Granit.ReferenceData.Options;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.ReferenceData.Extensions;
 
@@ -30,6 +33,9 @@ public static class ReferenceDataServiceCollectionExtensions
         }
 
         services.AddMemoryCache();
+
+        services.TryAddSingleton<ReferenceDataMetrics>();
+        GranitActivitySourceRegistry.Register(ReferenceDataActivitySource.Name);
 
         return services;
     }

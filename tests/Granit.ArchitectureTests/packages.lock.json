@@ -1485,6 +1485,14 @@
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[10.*, )"
         }
       },
+      "granit.authentication.dpop": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Core": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "[10.*, )"
+        }
+      },
       "granit.authentication.entraid": {
         "type": "Project",
         "dependencies": {
@@ -1526,6 +1534,14 @@
           "Granit.Security": "[0.1.0-dev, )",
           "OpenIddict.Validation.AspNetCore": "[7.*, )",
           "OpenIddict.Validation.SystemNetHttp": "[7.*, )"
+        }
+      },
+      "granit.authentication.tokenmanagement": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Authentication.Oidc": "[0.1.0-dev, )",
+          "Granit.Core": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
         }
       },
       "granit.authorization": {
@@ -1604,6 +1620,13 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.bff.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
+          "Granit.Bff.EntityFrameworkCore": "[0.1.0-dev, )"
+        }
+      },
       "granit.bff.endpoints": {
         "type": "Project",
         "dependencies": {
@@ -1611,6 +1634,15 @@
           "Granit.Bff": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.bff.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Bff": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Persistence": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
       "granit.bff.yarp": {
@@ -1624,7 +1656,6 @@
       "granit.blobstorage": {
         "type": "Project",
         "dependencies": {
-          "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.Core": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )"
         }
@@ -1642,6 +1673,13 @@
         "dependencies": {
           "Azure.Identity": "[1.*, )",
           "Azure.Storage.Blobs": "[12.*, )",
+          "Granit.BlobStorage": "[0.1.0-dev, )"
+        }
+      },
+      "granit.blobstorage.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.BlobStorage": "[0.1.0-dev, )"
         }
       },
@@ -2389,7 +2427,6 @@
         "type": "Project",
         "dependencies": {
           "Granit.Persistence": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
@@ -2418,7 +2455,6 @@
       "granit.privacy": {
         "type": "Project",
         "dependencies": {
-          "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.Core": "[0.1.0-dev, )",
           "WolverineFx": "[5.*, )"
         }
@@ -2427,6 +2463,13 @@
         "type": "Project",
         "dependencies": {
           "Granit.AI": "[0.1.0-dev, )",
+          "Granit.Privacy": "[0.1.0-dev, )"
+        }
+      },
+      "granit.privacy.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.Privacy": "[0.1.0-dev, )"
         }
       },
@@ -2500,6 +2543,7 @@
       "granit.referencedata.endpoints": {
         "type": "Project",
         "dependencies": {
+          "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.ReferenceData": "[0.1.0-dev, )",
@@ -3479,8 +3523,8 @@
       "Scriban": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
-        "resolved": "7.0.0",
-        "contentHash": "Y4/BGU/c2TjvGUfMBm5jZfPjHe8B4dk8ej72Vsy+nTsRCb/TNqZ1PdGQnV+04p7RJ85UiM4ni2Dx2F7yKOORNw=="
+        "resolved": "7.0.3",
+        "contentHash": "BQmlHLL3H2pDWbiTXvNd53zYAav1DPYMdNhO8JcXslT8Ac9UAOhXTZ1GNXLyG26hhAX9yuEodg4rpv9b023nLw=="
       },
       "Sep": {
         "type": "CentralTransitive",

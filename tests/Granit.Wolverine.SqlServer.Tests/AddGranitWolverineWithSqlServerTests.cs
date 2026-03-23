@@ -37,18 +37,21 @@ public sealed class AddGranitWolverineWithSqlServerTests
     }
 
     // -----------------------------------------------------------------------
-    // Configure callback — ConfigureWolverine defers invocation until host
-    // build; we verify the extension does not throw when a callback is given.
+    // Configure callback — ConfigureWolverine defers invocation until
+    // WolverineOptions is resolved. We verify the IWolverineExtension
+    // registration exists (ConfigureWolverine wraps the callback as a
+    // LambdaWolverineExtension).
     // -----------------------------------------------------------------------
 
     [Fact]
-    public void AddGranitWolverineWithSqlServer_WithConfigureCallback_DoesNotThrow()
+    public void AddGranitWolverineWithSqlServer_WithConfigureCallback_RegistersWolverineExtension()
     {
         HostApplicationBuilder builder = CreateBuilder();
 
-        Action act = () => builder.AddGranitWolverineWithSqlServer(opts => { });
+        builder.AddGranitWolverineWithSqlServer(opts => { });
 
-        Should.NotThrow(act);
+        builder.Services.ShouldContain(d =>
+            d.ServiceType == typeof(IWolverineExtension));
     }
 
     // -----------------------------------------------------------------------
@@ -85,14 +88,14 @@ public sealed class AddGranitWolverineWithSqlServerTests
     // -----------------------------------------------------------------------
 
     [Fact]
-    public void AddGranitWolverineWithSqlServerPerTenant_WithConfigureCallback_DoesNotThrow()
+    public void AddGranitWolverineWithSqlServerPerTenant_WithConfigureCallback_RegistersWolverineExtension()
     {
         HostApplicationBuilder builder = CreateBuilder();
 
-        Action act = () => builder.AddGranitWolverineWithSqlServerPerTenant<StubTenantDbContext>(
-            opts => { });
+        builder.AddGranitWolverineWithSqlServerPerTenant<StubTenantDbContext>(opts => { });
 
-        Should.NotThrow(act);
+        builder.Services.ShouldContain(d =>
+            d.ServiceType == typeof(IWolverineExtension));
     }
 
     // -----------------------------------------------------------------------

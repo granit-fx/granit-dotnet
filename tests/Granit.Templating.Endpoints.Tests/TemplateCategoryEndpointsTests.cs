@@ -49,7 +49,13 @@ public sealed class TemplateCategoryEndpointsTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(TemplatingPermissions.Templates.Read,
+                policy => policy.RequireRole(ManageRole))
             .AddPolicy(TemplatingPermissions.Templates.Manage,
+                policy => policy.RequireRole(ManageRole))
+            .AddPolicy(TemplatingPermissions.Categories.Read,
+                policy => policy.RequireRole(ManageRole))
+            .AddPolicy(TemplatingPermissions.Categories.Manage,
                 policy => policy.RequireRole(ManageRole));
 
         // Register category store mocks.
@@ -387,7 +393,13 @@ public sealed class TemplateCategoryEndpointsTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(TemplatingPermissions.Templates.Read,
+                policy => policy.RequireRole(ManageRole))
             .AddPolicy(TemplatingPermissions.Templates.Manage,
+                policy => policy.RequireRole(ManageRole))
+            .AddPolicy(TemplatingPermissions.Categories.Read,
+                policy => policy.RequireRole(ManageRole))
+            .AddPolicy(TemplatingPermissions.Categories.Manage,
                 policy => policy.RequireRole(ManageRole));
 
         WebApplication app = builder.Build();

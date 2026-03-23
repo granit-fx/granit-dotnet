@@ -11,7 +11,7 @@ namespace Granit.ArchitectureTests;
 /// <item><c>*Job</c> suffix on <c>IBackgroundJob</c> implementors</item>
 /// <item><c>[RecurringJob]</c> requires <c>IBackgroundJob</c></item>
 /// <item><c>IBackgroundJob</c> types must reside in a <c>Jobs/</c> folder</item>
-/// <item>Jobs must not live in a separate <c>*.Wolverine</c> package</item>
+/// <item>Jobs must not live in a <c>*.Wolverine</c> package</item>
 /// </list>
 /// </summary>
 public sealed partial class BackgroundJobConventionTests
@@ -66,9 +66,9 @@ public sealed partial class BackgroundJobConventionTests
     }
 
     /// <summary>
-    /// Jobs must not live in a separate <c>*.Wolverine</c> package — they belong in
-    /// the base module's <c>Jobs/</c> folder. Wolverine scheduling is handled by
-    /// <c>Granit.BackgroundJobs.Wolverine</c>.
+    /// Jobs must not live in a <c>*.Wolverine</c> package — they belong in
+    /// the module's <c>*.BackgroundJobs/Jobs/</c> sub-project. Wolverine scheduling
+    /// is handled by <c>Granit.BackgroundJobs.Wolverine</c>.
     /// </summary>
     [Fact]
     public void Jobs_should_not_live_in_Wolverine_packages()
@@ -106,8 +106,8 @@ public sealed partial class BackgroundJobConventionTests
         }
 
         violations.ShouldBeEmpty(
-            "IBackgroundJob types must not live in *.Wolverine packages — move them to the " +
-            "base module's Jobs/ folder. " +
+            "IBackgroundJob types must not live in *.Wolverine packages — move them to a " +
+            "*.BackgroundJobs sub-project's Jobs/ folder. " +
             $"Violators: {string.Join(", ", violations)}");
     }
 

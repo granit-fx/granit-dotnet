@@ -13,6 +13,7 @@ namespace Granit.Templating.Workflow;
 /// Register via <see cref="ServiceCollectionExtensions.AddGranitTemplatingWorkflow"/>
 /// from the host application.
 /// </remarks>
-[DependsOn(typeof(GranitTemplatingModule))]
-[DependsOn(typeof(GranitWorkflowModule))]
+[DependsOn(
+    typeof(GranitTemplatingModule),
+    typeof(GranitWorkflowModule))]
 public sealed class GranitTemplatingWorkflowModule : GranitModule;

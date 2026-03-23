@@ -9,8 +9,9 @@ namespace Granit.Validation.NorthAmerica;
 /// <summary>
 /// Granit module for North American identifier and address validation (United States, Canada).
 /// </summary>
-[DependsOn(typeof(GranitValidationModule))]
-[DependsOn(typeof(GranitLocalizationModule))]
+[DependsOn(
+    typeof(GranitLocalizationModule),
+    typeof(GranitValidationModule))]
 public sealed class GranitValidationNorthAmericaModule : GranitModule
 {
     /// <inheritdoc/>

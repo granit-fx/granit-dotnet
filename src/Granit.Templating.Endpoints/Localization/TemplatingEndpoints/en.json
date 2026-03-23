@@ -3,6 +3,8 @@
   "texts": {
     "PermissionGroup:Templating": "Templating",
     "Permission:Templating.Templates.Read": "View templates (list, detail, history)",
-    "Permission:Templating.Templates.Manage": "Manage templates (view, create, edit, delete, publish)"
+    "Permission:Templating.Templates.Manage": "Manage templates (view, create, edit, delete, publish)",
+    "Permission:Templating.Categories.Read": "View template categories",
+    "Permission:Templating.Categories.Manage": "Manage template categories (create, edit, delete)"
   }
 }

@@ -1,5 +1,4 @@
 using Granit.Core.Modularity;
-using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
@@ -19,7 +18,7 @@ public sealed class GranitPersistenceMigrationsModuleTests
         attributes.Length.ShouldBe(1);
         Type[] dependedTypes = attributes[0].DependedTypes;
         dependedTypes.ShouldContain(typeof(GranitPersistenceModule));
-        dependedTypes.ShouldContain(typeof(GranitTimingModule));
+        dependedTypes.Length.ShouldBe(1);
     }
 
     [Fact]

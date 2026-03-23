@@ -7,7 +7,7 @@ namespace Granit.Validation.Endpoints.Validators;
 /// Validates a <see cref="ValidationFieldValidateRequest"/>.
 /// </summary>
 internal sealed class ValidationFieldValidateRequestValidator
-    : AbstractValidator<ValidationFieldValidateRequest>
+    : GranitValidator<ValidationFieldValidateRequest>
 {
     public ValidationFieldValidateRequestValidator()
     {

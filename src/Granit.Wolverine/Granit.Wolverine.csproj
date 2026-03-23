@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Wolverine.Tests" />
-    <InternalsVisibleTo Include="Granit.Wolverine.Postgresql" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

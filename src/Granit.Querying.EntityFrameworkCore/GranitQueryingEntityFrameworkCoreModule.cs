@@ -13,8 +13,8 @@ namespace Granit.Querying.EntityFrameworkCore;
 /// and <c>EfCoreSavedViewStore</c>.
 /// </summary>
 [DependsOn(
-    typeof(GranitQueryingModule),
-    typeof(GranitPersistenceModule))]
+    typeof(GranitPersistenceModule),
+    typeof(GranitQueryingModule))]
 public sealed class GranitQueryingEntityFrameworkCoreModule : GranitModule
 {
     /// <inheritdoc/>

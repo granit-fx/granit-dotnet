@@ -49,7 +49,6 @@
         "type": "Project",
         "dependencies": {
           "Granit.Persistence": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },

@@ -14,8 +14,8 @@ namespace Granit.Webhooks.EntityFrameworkCore;
 /// <c>AddGranitWebhooksEntityFrameworkCore(opts => opts.UseNpgsql(connectionString))</c>
 /// instead of using this module directly when custom DbContext options are needed.
 /// </remarks>
-[DependsOn(typeof(GranitWebhooksModule))]
 [DependsOn(typeof(GranitPersistenceModule))]
+[DependsOn(typeof(GranitWebhooksModule))]
 public sealed class GranitWebhooksEntityFrameworkCoreModule : GranitModule
 {
     private readonly Action<DbContextOptionsBuilder> _configure;

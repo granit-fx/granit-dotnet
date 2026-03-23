@@ -36,7 +36,7 @@ internal sealed class CloudKmsStringEncryptionProvider(
         {
             return transitEncryption.DecryptAsync(_keyName, cipherText).GetAwaiter().GetResult();
         }
-        catch
+        catch (Exception)
         {
             return null;
         }

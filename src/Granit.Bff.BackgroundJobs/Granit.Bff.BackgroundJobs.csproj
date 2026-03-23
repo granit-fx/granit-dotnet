@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Bff.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.Bff. Automated expired session cleanup for EF Core-backed BFF deployments via Granit.BackgroundJobs recurring job pattern.</Description>
+    <IsPackable>true</IsPackable>
+    <!-- BffDbContext and BffSessionEntity are internal in Granit.Bff.EntityFrameworkCore,
+         exposed via InternalsVisibleTo — suppress EF Core internal API warnings -->
+    <NoWarn>$(NoWarn);EF1001</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Bff.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.Bff.EntityFrameworkCore\Granit.Bff.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>

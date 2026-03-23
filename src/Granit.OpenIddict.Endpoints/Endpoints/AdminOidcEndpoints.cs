@@ -1,3 +1,4 @@
+using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -17,14 +18,14 @@ internal static class AdminOidcEndpoints
             .WithName("ListOidcApplications")
             .WithSummary("Returns all OIDC applications.")
             .WithDescription("Returns a paginated list of registered OIDC client applications.")
-            .Produces(StatusCodes.Status200OK)
+            .Produces<IReadOnlyList<AdminOidcApplicationResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Applications.Read);
 
         apps.MapPost("/", CreateApplicationAsync)
             .WithName("CreateOidcApplication")
             .WithSummary("Creates a new OIDC application.")
             .WithDescription("Registers a new OIDC client with the specified permissions and redirect URIs.")
-            .Produces(StatusCodes.Status201Created)
+            .Produces<AdminOidcApplicationResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .RequireAuthorization(OpenIddictPermissions.Applications.Create);
 
@@ -44,7 +45,7 @@ internal static class AdminOidcEndpoints
             .WithDescription(
                 "Generates a new client secret, invalidating the old one immediately. "
                 + "The new plaintext secret is returned once in the response (never stored in plaintext).")
-            .Produces(StatusCodes.Status200OK)
+            .Produces<AdminOidcApplicationResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(OpenIddictPermissions.Applications.Rotate);
 
@@ -55,14 +56,14 @@ internal static class AdminOidcEndpoints
             .WithName("ListOidcScopes")
             .WithSummary("Returns all OIDC scopes.")
             .WithDescription("Returns the list of registered OIDC scopes with their resources.")
-            .Produces(StatusCodes.Status200OK)
+            .Produces<IReadOnlyList<AdminOidcScopeResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Scopes.Read);
 
         scopes.MapPost("/", CreateScopeAsync)
             .WithName("CreateOidcScope")
             .WithSummary("Creates a new OIDC scope.")
             .WithDescription("Registers a new scope with the specified name, display name, and resources.")
-            .Produces(StatusCodes.Status201Created)
+            .Produces<AdminOidcScopeResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .RequireAuthorization(OpenIddictPermissions.Scopes.Create);
 
@@ -81,7 +82,7 @@ internal static class AdminOidcEndpoints
             .WithName("ListOidcAuthorizations")
             .WithSummary("Returns OIDC authorizations.")
             .WithDescription("Returns a paginated list filterable by userId and clientId.")
-            .Produces(StatusCodes.Status200OK)
+            .Produces<IReadOnlyList<AdminOidcAuthorizationResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Authorizations.Read);
 
         auths.MapDelete("/{authorizationId:guid}", RevokeAuthorizationAsync)

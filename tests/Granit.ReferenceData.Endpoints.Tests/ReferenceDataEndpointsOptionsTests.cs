@@ -22,19 +22,4 @@ public sealed class ReferenceDataEndpointsOptionsTests
         options.TagName.ShouldBe("Reference Data");
     }
 
-    [Fact]
-    public void Default_AdminPolicyName_Is_Set()
-    {
-        ReferenceDataEndpointsOptions options = new();
-
-        options.AdminPolicyName.ShouldBe("ReferenceData.Admin");
-    }
-
-    [Fact]
-    public void Default_RequiredRole_Is_Set()
-    {
-        ReferenceDataEndpointsOptions options = new();
-
-        options.RequiredRole.ShouldBe("granit-reference-data-admin");
-    }
 }

@@ -11,8 +11,8 @@ namespace Granit.Persistence.Hosting;
 /// <see cref="IMigratableModule{TContext}"/> discovery from the module dependency graph.
 /// </summary>
 [DependsOn(
-    typeof(GranitPersistenceModule),
-    typeof(GranitPersistenceMigrationsModule))]
+    typeof(GranitPersistenceMigrationsModule),
+    typeof(GranitPersistenceModule))]
 public sealed partial class GranitPersistenceHostingModule : GranitModule
 {
     /// <inheritdoc/>

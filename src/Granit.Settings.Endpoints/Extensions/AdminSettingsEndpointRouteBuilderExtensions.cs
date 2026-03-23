@@ -47,8 +47,9 @@ public static class AdminSettingsEndpointRouteBuilderExtensions
              .RequireAuthorization(SettingsPermissions.Global.Manage)
              .WithName("UpdateGlobalSetting")
              .WithSummary("Sets a global-level setting value.")
-             .WithDescription("Sets or clears a global-level setting value. Pass null to remove the override and revert to the definition's default. The setting name must match a registered setting definition (returns 404 otherwise). Requires the Settings.Global.Manage permission.")
+             .WithDescription("Sets or clears a global-level setting value. Pass null to remove the override and revert to the definition's default. The setting name must match a registered setting definition (returns 404 otherwise). Returns 400 if the Global provider is not allowed for this setting. Requires the Settings.Global.Manage permission.")
              .Produces(StatusCodes.Status204NoContent)
+             .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
@@ -83,8 +84,9 @@ public static class AdminSettingsEndpointRouteBuilderExtensions
              .RequireAuthorization(SettingsPermissions.Tenant.Manage)
              .WithName("UpdateTenantSetting")
              .WithSummary("Sets a tenant-level setting value.")
-             .WithDescription("Sets or clears a tenant-level setting value for the current tenant. Pass null to remove the tenant override and fall back to the global value. The setting name must match a registered setting definition (returns 404 otherwise). Requires the Settings.Tenant.Manage permission.")
+             .WithDescription("Sets or clears a tenant-level setting value for the current tenant. Pass null to remove the tenant override and fall back to the global value. The setting name must match a registered setting definition (returns 404 otherwise). Returns 400 if no tenant context is available or if the Tenant provider is not allowed for this setting. Requires the Settings.Tenant.Manage permission.")
              .Produces(StatusCodes.Status204NoContent)
+             .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using Granit.AI;
 using Granit.Imaging.AI.Diagnostics;
@@ -15,6 +16,7 @@ namespace Granit.Imaging.AI.Internal;
 internal sealed partial class LlmImageAnalyzer(
     IAIChatClientFactory chatClientFactory,
     IOptions<ImagingAIOptions> options,
+    ImagingAIMetrics metrics,
     ILogger<LlmImageAnalyzer> logger) : IAIImageAnalyzer
 {
     private const string AnalysisPrompt = """
@@ -42,37 +44,49 @@ internal sealed partial class LlmImageAnalyzer(
         ArgumentNullException.ThrowIfNull(contentType);
 
         ImagingAIOptions opts = options.Value;
+        long startTimestamp = Stopwatch.GetTimestamp();
 
-        using System.Diagnostics.Activity? activity = ImagingAIActivitySource.Source.StartActivity("ImageAnalysis.Analyze");
+        using Activity? activity = ImagingAIActivitySource.Source.StartActivity("ImageAnalysis.Analyze");
         activity?.SetTag("imaging.ai.content_type", contentType);
         activity?.SetTag("imaging.ai.image_size_bytes", imageData.Length);
 
         LogAnalysisStarted(contentType, imageData.Length);
 
-        IChatClient client = await chatClientFactory
-            .CreateAsync(opts.WorkspaceName, cancellationToken)
-            .ConfigureAwait(false);
+        try
+        {
+            IChatClient client = await chatClientFactory
+                .CreateAsync(opts.WorkspaceName, cancellationToken)
+                .ConfigureAwait(false);
 
-        var message = new ChatMessage(ChatRole.User,
-        [
-            new TextContent(AnalysisPrompt),
-            new DataContent(imageData, contentType),
-        ]);
+            var message = new ChatMessage(ChatRole.User,
+            [
+                new TextContent(AnalysisPrompt),
+                new DataContent(imageData, contentType),
+            ]);
 
-        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeoutCts.CancelAfter(TimeSpan.FromSeconds(opts.TimeoutSeconds));
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeoutCts.CancelAfter(TimeSpan.FromSeconds(opts.TimeoutSeconds));
 
-        ChatResponse response = await client
-            .GetResponseAsync([message], cancellationToken: timeoutCts.Token)
-            .ConfigureAwait(false);
+            ChatResponse response = await client
+                .GetResponseAsync([message], cancellationToken: timeoutCts.Token)
+                .ConfigureAwait(false);
 
-        string json = response.Text ?? throw new InvalidOperationException("The AI model returned an empty response.");
+            string json = response.Text ?? throw new InvalidOperationException("The AI model returned an empty response.");
 
-        ImageAnalysis result = Deserialize(json);
+            ImageAnalysis result = Deserialize(json);
 
-        LogAnalysisCompleted(result.DetectedObjects.Count, result.Tags.Count);
+            metrics.RecordAnalysisCompleted(tenantId: null, contentType);
+            metrics.RecordAnalysisDuration(tenantId: null, contentType, Stopwatch.GetElapsedTime(startTimestamp));
 
-        return result;
+            LogAnalysisCompleted(result.DetectedObjects.Count, result.Tags.Count);
+
+            return result;
+        }
+        catch
+        {
+            metrics.RecordAnalysisFailure(tenantId: null, contentType);
+            throw;
+        }
     }
 
     private static ImageAnalysis Deserialize(string json)

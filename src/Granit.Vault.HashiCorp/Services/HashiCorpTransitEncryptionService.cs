@@ -1,5 +1,9 @@
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
+using Granit.Core.MultiTenancy;
+using Granit.Vault.Diagnostics;
+using Granit.Vault.HashiCorp.Diagnostics;
 using Granit.Vault.HashiCorp.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,11 +16,14 @@ namespace Granit.Vault.HashiCorp.Services;
 /// <summary>
 /// Implementation of <see cref="ITransitEncryptionService"/> via HashiCorp Vault Transit Engine.
 /// </summary>
-public sealed partial class HashiCorpTransitEncryptionService(
+internal sealed partial class HashiCorpTransitEncryptionService(
     IVaultClient vaultClient,
     IOptions<HashiCorpVaultOptions> options,
+    VaultMetrics metrics,
+    ICurrentTenant? currentTenant,
     ILogger<HashiCorpTransitEncryptionService> logger) : ITransitEncryptionService
 {
+    private const string ProviderName = "hashicorp";
     private readonly HashiCorpVaultOptions _options = options.Value;
 
     // Vault Transit ciphertext format: vault:v{N}:...
@@ -28,19 +35,41 @@ public sealed partial class HashiCorpTransitEncryptionService(
         string plaintext,
         CancellationToken cancellationToken = default)
     {
-        string base64Plaintext = Convert.ToBase64String(Encoding.UTF8.GetBytes(plaintext));
+        using Activity? activity = VaultHashiCorpActivitySource.Source.StartActivity(
+            VaultHashiCorpActivitySource.Operations.TransitEncrypt);
+        activity?.SetTag(VaultHashiCorpActivitySource.Tags.KeyName, keyName);
+        activity?.SetTag(VaultHashiCorpActivitySource.Tags.MountPoint, _options.TransitMountPoint);
 
-        // VaultSharp API does not expose cancellation — WaitAsync provides a defensive timeout.
-        Secret<EncryptionResponse> result = await vaultClient.V1.Secrets.Transit.EncryptAsync(
-            keyName,
-            new EncryptRequestOptions
-            {
-                Base64EncodedPlainText = base64Plaintext
-            },
-            mountPoint: _options.TransitMountPoint).WaitAsync(cancellationToken).ConfigureAwait(false);
+        var stopwatch = Stopwatch.StartNew();
+        string? tenantId = currentTenant?.IsAvailable == true ? currentTenant.Id?.ToString() : null;
 
-        LogEncrypted(logger, keyName);
-        return result.Data.CipherText;
+        try
+        {
+            string base64Plaintext = Convert.ToBase64String(Encoding.UTF8.GetBytes(plaintext));
+
+            // VaultSharp API does not expose cancellation — WaitAsync provides a defensive timeout.
+            Secret<EncryptionResponse> result = await vaultClient.V1.Secrets.Transit.EncryptAsync(
+                keyName,
+                new EncryptRequestOptions
+                {
+                    Base64EncodedPlainText = base64Plaintext
+                },
+                mountPoint: _options.TransitMountPoint).WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            LogEncrypted(logger, keyName);
+            metrics.RecordOperationCompleted(tenantId, "encrypt", ProviderName, "success");
+            return result.Data.CipherText;
+        }
+        catch
+        {
+            metrics.RecordOperationError(tenantId, "encrypt", ProviderName);
+            throw;
+        }
+        finally
+        {
+            stopwatch.Stop();
+            metrics.RecordOperationDuration(tenantId, "encrypt", ProviderName, stopwatch.Elapsed);
+        }
     }
 
     public async Task<string> DecryptAsync(
@@ -48,18 +77,41 @@ public sealed partial class HashiCorpTransitEncryptionService(
         string ciphertext,
         CancellationToken cancellationToken = default)
     {
-        // VaultSharp API does not expose cancellation — WaitAsync provides a defensive timeout.
-        Secret<DecryptionResponse> result = await vaultClient.V1.Secrets.Transit.DecryptAsync(
-            keyName,
-            new DecryptRequestOptions
-            {
-                CipherText = ciphertext
-            },
-            mountPoint: _options.TransitMountPoint).WaitAsync(cancellationToken).ConfigureAwait(false);
+        using Activity? activity = VaultHashiCorpActivitySource.Source.StartActivity(
+            VaultHashiCorpActivitySource.Operations.TransitDecrypt);
+        activity?.SetTag(VaultHashiCorpActivitySource.Tags.KeyName, keyName);
+        activity?.SetTag(VaultHashiCorpActivitySource.Tags.MountPoint, _options.TransitMountPoint);
 
-        byte[] bytes = Convert.FromBase64String(result.Data.Base64EncodedPlainText);
-        LogDecrypted(logger, keyName);
-        return Encoding.UTF8.GetString(bytes);
+        var stopwatch = Stopwatch.StartNew();
+        string? tenantId = currentTenant?.IsAvailable == true ? currentTenant.Id?.ToString() : null;
+
+        try
+        {
+            // VaultSharp API does not expose cancellation — WaitAsync provides a defensive timeout.
+            Secret<DecryptionResponse> result = await vaultClient.V1.Secrets.Transit.DecryptAsync(
+                keyName,
+                new DecryptRequestOptions
+                {
+                    CipherText = ciphertext
+                },
+                mountPoint: _options.TransitMountPoint).WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            byte[] bytes = Convert.FromBase64String(result.Data.Base64EncodedPlainText);
+
+            LogDecrypted(logger, keyName);
+            metrics.RecordOperationCompleted(tenantId, "decrypt", ProviderName, "success");
+            return Encoding.UTF8.GetString(bytes);
+        }
+        catch
+        {
+            metrics.RecordOperationError(tenantId, "decrypt", ProviderName);
+            throw;
+        }
+        finally
+        {
+            stopwatch.Stop();
+            metrics.RecordOperationDuration(tenantId, "decrypt", ProviderName, stopwatch.Elapsed);
+        }
     }
 
     /// <inheritdoc />
@@ -68,17 +120,39 @@ public sealed partial class HashiCorpTransitEncryptionService(
         string ciphertext,
         CancellationToken cancellationToken = default)
     {
-        // VaultSharp API does not expose cancellation — WaitAsync provides a defensive timeout.
-        Secret<EncryptionResponse> result = await vaultClient.V1.Secrets.Transit.RewrapAsync(
-            keyName,
-            new RewrapRequestOptions
-            {
-                CipherText = ciphertext
-            },
-            mountPoint: _options.TransitMountPoint).WaitAsync(cancellationToken).ConfigureAwait(false);
+        using Activity? activity = VaultHashiCorpActivitySource.Source.StartActivity(
+            VaultHashiCorpActivitySource.Operations.TransitRewrap);
+        activity?.SetTag(VaultHashiCorpActivitySource.Tags.KeyName, keyName);
+        activity?.SetTag(VaultHashiCorpActivitySource.Tags.MountPoint, _options.TransitMountPoint);
 
-        LogRewrapped(logger, keyName);
-        return result.Data.CipherText;
+        var stopwatch = Stopwatch.StartNew();
+        string? tenantId = currentTenant?.IsAvailable == true ? currentTenant.Id?.ToString() : null;
+
+        try
+        {
+            // VaultSharp API does not expose cancellation — WaitAsync provides a defensive timeout.
+            Secret<EncryptionResponse> result = await vaultClient.V1.Secrets.Transit.RewrapAsync(
+                keyName,
+                new RewrapRequestOptions
+                {
+                    CipherText = ciphertext
+                },
+                mountPoint: _options.TransitMountPoint).WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            LogRewrapped(logger, keyName);
+            metrics.RecordOperationCompleted(tenantId, "rewrap", ProviderName, "success");
+            return result.Data.CipherText;
+        }
+        catch
+        {
+            metrics.RecordOperationError(tenantId, "rewrap", ProviderName);
+            throw;
+        }
+        finally
+        {
+            stopwatch.Stop();
+            metrics.RecordOperationDuration(tenantId, "rewrap", ProviderName, stopwatch.Elapsed);
+        }
     }
 
     /// <inheritdoc />

@@ -288,8 +288,8 @@
       "Scriban": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
-        "resolved": "7.0.0",
-        "contentHash": "Y4/BGU/c2TjvGUfMBm5jZfPjHe8B4dk8ej72Vsy+nTsRCb/TNqZ1PdGQnV+04p7RJ85UiM4ni2Dx2F7yKOORNw=="
+        "resolved": "7.0.3",
+        "contentHash": "BQmlHLL3H2pDWbiTXvNd53zYAav1DPYMdNhO8JcXslT8Ac9UAOhXTZ1GNXLyG26hhAX9yuEodg4rpv9b023nLw=="
       }
     }
   }

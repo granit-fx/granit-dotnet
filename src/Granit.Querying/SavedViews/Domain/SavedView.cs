@@ -1,4 +1,5 @@
 using Granit.Core.Domain;
+using Granit.Core.MultiTenancy;
 
 namespace Granit.Querying.SavedViews.Domain;
 
@@ -6,7 +7,7 @@ namespace Granit.Querying.SavedViews.Domain;
 /// Persistent saved view combining filters, sorting, grouping, and column visibility
 /// (inspired by Odoo's <c>ir.filters</c> model).
 /// </summary>
-public sealed class SavedView : AuditedEntity
+public sealed class SavedView : AuditedEntity, IMultiTenant
 {
     /// <summary>
     /// The entity type this view applies to (e.g. <c>"Acme.Patients"</c>).

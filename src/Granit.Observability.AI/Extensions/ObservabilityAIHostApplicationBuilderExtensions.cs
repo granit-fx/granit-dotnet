@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using Granit.Core.Diagnostics;
+using Granit.Observability.AI.Diagnostics;
 using Granit.Observability.AI.Internal;
 using Granit.Observability.AI.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,9 +28,15 @@ public static class ObservabilityAIHostApplicationBuilderExtensions
     {
         builder.Services
             .AddOptions<ObservabilityAIOptions>()
-            .BindConfiguration(ObservabilityAIOptions.SectionName);
+            .BindConfiguration(ObservabilityAIOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         builder.Services.TryAddSingleton<IAILogAnalyzer, LlmLogAnalyzer>();
+
+        // Diagnostics
+        builder.Services.TryAddSingleton<ObservabilityAIMetrics>();
+        GranitActivitySourceRegistry.Register(ObservabilityAIActivitySource.Name);
 
         return builder;
     }

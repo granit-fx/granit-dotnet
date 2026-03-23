@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
+// EntityTrackingInterceptor requires manual wiring because UseGranitInterceptors
+// only resolves the 6 standard Granit.Persistence interceptors.
+
 namespace Granit.Notifications.EntityFrameworkCore.Extensions;
 
 /// <summary>
@@ -39,7 +42,13 @@ public static class NotificationsEfCoreHostApplicationBuilderExtensions
         this IHostApplicationBuilder builder,
         Action<DbContextOptionsBuilder> configure)
     {
-        builder.Services.AddGranitDbContext<NotificationDbContext>(configure);
+        builder.Services.TryAddScoped<EntityTrackingInterceptor>();
+        builder.Services.AddDbContextFactory<NotificationDbContext>((sp, options) =>
+        {
+            configure(options);
+            options.UseGranitInterceptors(sp);
+            options.AddInterceptors(sp.GetRequiredService<EntityTrackingInterceptor>());
+        }, ServiceLifetime.Scoped);
 
         // UserNotification store — CQRS forwarding pattern
         // Scoped: AddGranitDbContext registers IDbContextFactory<T> as Scoped (interceptors

@@ -25,8 +25,8 @@ namespace Granit.Workflow.Endpoints;
 /// Permission definition providers are auto-discovered by <c>GranitAuthorizationModule</c>.
 /// </remarks>
 [DependsOn(
-    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitAuthorizationModule),
+    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitValidationModule),
     typeof(GranitWorkflowModule))]
 public sealed class GranitWorkflowEndpointsModule : GranitModule;

@@ -93,7 +93,7 @@ public static class GoogleCloudVaultServiceCollectionExtensions
             name,
             sp => sp.GetRequiredService<CloudKmsHealthCheck>(),
             failureStatus,
-            ["readiness"],
+            ["readiness", "startup"],
             timeout ?? TimeSpan.FromSeconds(10)));
     }
 }

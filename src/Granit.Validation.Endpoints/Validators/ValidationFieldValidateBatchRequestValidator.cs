@@ -8,7 +8,7 @@ namespace Granit.Validation.Endpoints.Validators;
 /// Validates a <see cref="ValidationFieldValidateBatchRequest"/>.
 /// </summary>
 internal sealed class ValidationFieldValidateBatchRequestValidator
-    : AbstractValidator<ValidationFieldValidateBatchRequest>
+    : GranitValidator<ValidationFieldValidateBatchRequest>
 {
     public ValidationFieldValidateBatchRequestValidator()
     {

@@ -1,3 +1,4 @@
+using Granit.Core.MultiTenancy;
 using Granit.Workflow.Domain;
 using Granit.Workflow.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -98,6 +99,7 @@ public sealed class WorkflowServiceCollectionExtensionsTests
         // Arrange
         ServiceCollection services = new();
         services.AddMetrics();
+        services.AddSingleton(Substitute.For<ICurrentTenant>());
         services.AddGranitWorkflow();
 
         var definition =

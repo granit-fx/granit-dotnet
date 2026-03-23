@@ -1,6 +1,7 @@
 using Granit.Timeline.Endpoints.Endpoints;
 using Granit.Timeline.Endpoints.Internal;
 using Granit.Timeline.Endpoints.Options;
+using Granit.Timeline.Endpoints.Permissions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -60,6 +61,9 @@ public static class TimelineEndpointRouteBuilderExtensions
             endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
         authOptions.Value.AddPolicy(
             TimelineAuthorizationPolicy.PolicyName,
+            policy => policy.RequireRole(options.RequiredRole));
+        authOptions.Value.AddPolicy(
+            TimelinePermissions.Entries.Create,
             policy => policy.RequireRole(options.RequiredRole));
 
         RouteGroupBuilder group = endpoints

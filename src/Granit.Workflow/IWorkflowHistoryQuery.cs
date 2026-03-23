@@ -22,7 +22,7 @@ public interface IWorkflowHistoryQuery
     /// <param name="page">One-based page number.</param>
     /// <param name="pageSize">Maximum number of entries per page.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    Task<PagedResult<TransitionHistoryResponse>> GetHistoryAsync(
+    Task<PagedResult<WorkflowTransitionHistoryResponse>> GetHistoryAsync(
         string entityType,
         string entityId,
         int page = 1,

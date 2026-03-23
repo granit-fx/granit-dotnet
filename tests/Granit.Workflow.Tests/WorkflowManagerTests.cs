@@ -1,4 +1,5 @@
 using System.Diagnostics.Metrics;
+using Granit.Core.MultiTenancy;
 using Granit.Workflow.Diagnostics;
 using Granit.Workflow.Domain;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,7 @@ public sealed class WorkflowManagerTests : IDisposable
                 .RequiresPermission("workflow.archive")));
 
     private readonly IWorkflowPermissionChecker _permissionChecker = Substitute.For<IWorkflowPermissionChecker>();
+    private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
 
     public WorkflowManagerTests()
     {
@@ -75,7 +77,7 @@ public sealed class WorkflowManagerTests : IDisposable
             WorkflowDefinition<WorkflowLifecycleStatus>.Create(b => b
                 .InitialState(WorkflowLifecycleStatus.Draft)
                 .Transition(WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.Published));
-        WorkflowManager<WorkflowLifecycleStatus> manager = new(openDefinition, _permissionChecker, _metrics);
+        WorkflowManager<WorkflowLifecycleStatus> manager = new(openDefinition, _permissionChecker, _metrics, _currentTenant);
 
         // Act
         TransitionResult<WorkflowLifecycleStatus> result = await manager.TransitionAsync(
@@ -249,5 +251,5 @@ public sealed class WorkflowManagerTests : IDisposable
     // ========================================================================
 
     private WorkflowManager<WorkflowLifecycleStatus> BuildManager() =>
-        new(Definition, _permissionChecker, _metrics);
+        new(Definition, _permissionChecker, _metrics, _currentTenant);
 }

@@ -35,7 +35,7 @@ internal sealed partial class RedisRateLimitCounterStore(
                 RateLimitAlgorithm.SlidingWindow => await ExecuteSlidingWindowAsync(key, permitLimit, window, cancellationToken).ConfigureAwait(false),
                 RateLimitAlgorithm.FixedWindow => await ExecuteFixedWindowAsync(key, permitLimit, window, cancellationToken).ConfigureAwait(false),
                 RateLimitAlgorithm.TokenBucket => await ExecuteTokenBucketAsync(key, policyOptions, cancellationToken).ConfigureAwait(false),
-                _ => new RateLimitResult(true, permitLimit, permitLimit, TimeSpan.Zero),
+                _ => throw new NotSupportedException($"Rate limiting algorithm '{algorithm}' is not supported."),
             };
         }
         catch (RedisConnectionException ex)

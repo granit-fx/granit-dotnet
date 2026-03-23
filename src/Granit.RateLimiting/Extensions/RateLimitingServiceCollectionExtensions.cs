@@ -1,3 +1,4 @@
+using Granit.Core.Diagnostics;
 using Granit.Http.ExceptionHandling;
 using Granit.RateLimiting.Abstractions;
 using Granit.RateLimiting.Diagnostics;
@@ -98,6 +99,9 @@ public static class RateLimitingServiceCollectionExtensions
 
         // Exception status code mapping (429)
         services.AddSingleton<IExceptionStatusCodeMapper, RateLimitExceptionStatusCodeMapper>();
+
+        // ActivitySource registration
+        GranitActivitySourceRegistry.Register(RateLimitingActivitySource.Name);
 
         return services;
     }

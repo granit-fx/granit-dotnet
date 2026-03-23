@@ -12,8 +12,9 @@ namespace Granit.Timeline.EntityFrameworkCore;
 /// <c>AddGranitTimelineEntityFrameworkCore(opts => opts.UseNpgsql(connectionString))</c>
 /// instead of using this module directly when custom DbContext options are needed.
 /// </remarks>
-[DependsOn(typeof(GranitTimelineModule))]
-[DependsOn(typeof(GranitPersistenceModule))]
+[DependsOn(
+    typeof(GranitPersistenceModule),
+    typeof(GranitTimelineModule))]
 public sealed class GranitTimelineEntityFrameworkCoreModule : GranitModule
 {
     // Services are registered via AddGranitTimelineEntityFrameworkCore() extension method

@@ -29,6 +29,11 @@ internal sealed class PrivacyPermissionDefinitionProvider : IPermissionDefinitio
                 "Permission:Privacy.Export.Read"));
 
         group.AddPermission(
+            PrivacyPermissions.Deletion.Read,
+            LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
+                "Permission:Privacy.Deletion.Read"));
+
+        group.AddPermission(
             PrivacyPermissions.Deletion.Execute,
             LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
                 "Permission:Privacy.Deletion.Execute"));

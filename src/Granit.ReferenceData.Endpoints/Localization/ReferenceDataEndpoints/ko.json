@@ -1,0 +1,9 @@
+{
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:ReferenceData": "참조 데이터",
+    "Permission:ReferenceData.Entries.Read": "참조 데이터 항목 조회",
+    "Permission:ReferenceData.Entries.Create": "참조 데이터 항목 생성",
+    "Permission:ReferenceData.Entries.Manage": "참조 데이터 항목 관리 (수정, 비활성화)"
+  }
+}

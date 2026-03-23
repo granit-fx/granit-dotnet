@@ -13,6 +13,7 @@ namespace Granit.Vault;
 ///   <item><c>GranitVaultHashiCorpModule</c> — HashiCorp Vault</item>
 ///   <item><c>GranitVaultAzureModule</c> — Azure Key Vault</item>
 ///   <item><c>GranitVaultAwsModule</c> — AWS KMS + Secrets Manager</item>
+///   <item><c>GranitVaultGoogleCloudModule</c> — Google Cloud KMS + Secret Manager</item>
 /// </list>
 /// </summary>
 /// <remarks>

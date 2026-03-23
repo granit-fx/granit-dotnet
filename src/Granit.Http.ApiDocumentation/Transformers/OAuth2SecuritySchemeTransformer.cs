@@ -27,7 +27,7 @@ internal sealed class OAuth2SecuritySchemeTransformer(
         CancellationToken cancellationToken)
     {
         IEnumerable<AuthenticationScheme> schemes =
-            await authenticationSchemeProvider.GetAllSchemesAsync();
+            await authenticationSchemeProvider.GetAllSchemesAsync().ConfigureAwait(false);
 
         bool hasJwtBearer = schemes.Any(s => s.Name == BearerSchemeId);
         if (!hasJwtBearer)

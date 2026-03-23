@@ -3,6 +3,7 @@
   "texts": {
     "Permission:Privacy.Agreements.Create": "Een juridische overeenkomst accepteren",
     "Permission:Privacy.Agreements.Read": "Juridische documenten en toestemmingsstatus bekijken",
+    "Permission:Privacy.Deletion.Read": "Status en geschiedenis van verwijderingsverzoeken bekijken",
     "Permission:Privacy.Deletion.Execute": "Verwijdering van persoonsgegevens aanvragen",
     "Permission:Privacy.Export.Execute": "Export van persoonsgegevens aanvragen",
     "Permission:Privacy.Export.Read": "Status van persoonsgegevensexport bekijken",

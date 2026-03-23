@@ -3,6 +3,7 @@
   "texts": {
     "Permission:Privacy.Agreements.Create": "Přijmout právní smlouvu",
     "Permission:Privacy.Agreements.Read": "Zobrazit právní dokumenty a stav souhlasu",
+    "Permission:Privacy.Deletion.Read": "Zobrazit stav a historii žádostí o smazání",
     "Permission:Privacy.Deletion.Execute": "Požádat o smazání osobních údajů",
     "Permission:Privacy.Export.Execute": "Požádat o export osobních údajů",
     "Permission:Privacy.Export.Read": "Zobrazit stav exportu osobních údajů",

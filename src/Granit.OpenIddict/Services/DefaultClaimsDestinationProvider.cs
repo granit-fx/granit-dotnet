@@ -20,7 +20,7 @@ namespace Granit.OpenIddict.Services;
 /// </list>
 /// <para>
 /// Override by registering a custom <see cref="IClaimsDestinationProvider"/>
-/// before <c>AddGranitOpenIddictEntityFrameworkCore()</c>.
+/// before <c>AddGranitOpenIddict()</c>.
 /// </para>
 /// </remarks>
 #pragma warning disable GRSEC003 // Claim type and destination constants, not secrets

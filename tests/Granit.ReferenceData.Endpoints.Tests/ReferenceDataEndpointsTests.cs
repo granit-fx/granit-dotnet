@@ -51,7 +51,11 @@ public sealed class ReferenceDataEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(Permissions.ReferenceDataPermissions.Entries.Create,
+                policy => policy.RequireRole(AdminRole))
+            .AddPolicy(Permissions.ReferenceDataPermissions.Entries.Manage,
+                policy => policy.RequireRole(AdminRole));
         builder.Services.AddSingleton(_storeReader);
         builder.Services.AddSingleton(_storeWriter);
         builder.Services.AddSingleton<IGuidGenerator>(new SimpleGuidGenerator());

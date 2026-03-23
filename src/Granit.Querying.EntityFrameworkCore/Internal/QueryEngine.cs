@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using Granit.Core.MultiTenancy;
 using Granit.Querying.EntityFrameworkCore.Diagnostics;
 using Granit.Querying.Filtering;
 using Granit.Querying.Meta;
@@ -20,7 +21,8 @@ internal sealed class QueryEngine<TEntity>(
     QueryDefinition<TEntity> definition,
     ILogger<QueryEngine<TEntity>> logger,
     IGlobalSearchStrategy<TEntity>? searchStrategy = null,
-    QueryingEfCoreMetrics? metrics = null) : IQueryEngine<TEntity>
+    QueryingEfCoreMetrics? metrics = null,
+    ICurrentTenant? currentTenant = null) : IQueryEngine<TEntity>
     where TEntity : class
 {
     private static readonly string EntityTypeName = typeof(TEntity).Name;
@@ -29,6 +31,7 @@ internal sealed class QueryEngine<TEntity>(
     private readonly ILogger _logger = logger;
     private readonly IGlobalSearchStrategy<TEntity> _searchStrategy = searchStrategy ?? new ContainsSearchStrategy<TEntity>();
     private readonly QueryingEfCoreMetrics? _metrics = metrics;
+    private readonly ICurrentTenant? _currentTenant = currentTenant;
 
     /// <inheritdoc/>
     public async Task<PagedResult<TEntity>> ExecuteAsync(
@@ -197,7 +200,7 @@ internal sealed class QueryEngine<TEntity>(
         if (count >= limit)
         {
             QueryingEfCoreLog.StreamLimitReached(_logger, EntityTypeName, limit);
-            _metrics?.RecordStreamLimitReached(tenantId: null, EntityTypeName);
+            _metrics?.RecordStreamLimitReached(GetTenantId(), EntityTypeName);
         }
 
         RecordMetrics("stream", startTimestamp);
@@ -369,6 +372,9 @@ internal sealed class QueryEngine<TEntity>(
         return criteria;
     }
 
+    private string? GetTenantId() =>
+        _currentTenant is { IsAvailable: true } ? _currentTenant.Id?.ToString() : null;
+
     private void RecordMetrics(string mode, long startTimestamp)
     {
         if (_metrics is null)
@@ -376,8 +382,9 @@ internal sealed class QueryEngine<TEntity>(
             return;
         }
 
+        string? tenantId = GetTenantId();
         double elapsed = Stopwatch.GetElapsedTime(startTimestamp).TotalSeconds;
-        _metrics.RecordQueryExecuted(tenantId: null, EntityTypeName, mode);
-        _metrics.RecordQueryDuration(tenantId: null, EntityTypeName, mode, elapsed);
+        _metrics.RecordQueryExecuted(tenantId, EntityTypeName, mode);
+        _metrics.RecordQueryDuration(tenantId, EntityTypeName, mode, elapsed);
     }
 }

@@ -105,7 +105,9 @@
       "tests/Granit.Settings.Endpoints.Tests/Granit.Settings.Endpoints.Tests.csproj",
       "tests/Granit.Settings.EntityFrameworkCore.Tests/Granit.Settings.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Settings.Tests/Granit.Settings.Tests.csproj",
+      "tests/Granit.Wolverine.Postgresql.Tests.Integration/Granit.Wolverine.Postgresql.Tests.Integration.csproj",
       "tests/Granit.Wolverine.Postgresql.Tests/Granit.Wolverine.Postgresql.Tests.csproj",
+      "tests/Granit.Wolverine.SqlServer.Tests.Integration/Granit.Wolverine.SqlServer.Tests.Integration.csproj",
       "tests/Granit.Wolverine.SqlServer.Tests/Granit.Wolverine.SqlServer.Tests.csproj",
       "tests/Granit.Wolverine.Tests/Granit.Wolverine.Tests.csproj"
     ]

@@ -50,7 +50,7 @@ builder.AddGranitObservabilityAI();
 </TabItem>
 </Tabs>
 
-`TimeoutSeconds` is intentionally high (60s default) — log analysis batches can be large.
+`TimeoutSeconds` defaults to 30 s — increase it for very large batches.
 This service is never called in the request path.
 
 ## Analyzing logs
@@ -194,13 +194,29 @@ IReadOnlyList<LogEntry> filtered = allEntries
 Deduplication before the LLM call significantly reduces token cost while
 preserving analytical quality.
 
+## Diagnostics
+
+### Metrics (meter: `Granit.Observability.AI`)
+
+| Metric                                       | Type           | Tags                                        | Description                     |
+| -------------------------------------------- | -------------- | ------------------------------------------- | ------------------------------- |
+| `granit.observability.ai.analysis.completed` | Counter        | `tenant_id`, `insight_count`, `entry_count` | Successfully completed analyses |
+| `granit.observability.ai.analysis.failed`    | Counter        | `tenant_id`, `reason`                       | Failed or unparseable analyses  |
+| `granit.observability.ai.analysis.duration`  | Histogram (s)  | `tenant_id`                                 | Duration of analysis calls      |
+
+### Activity source: `Granit.Observability.AI`
+
+| Span                                  | When                                   |
+| ------------------------------------- | -------------------------------------- |
+| `observability-ai.analysis.execute`   | Full lifecycle of a log analysis call  |
+
 ## Configuration reference
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `WorkspaceName` | `string?` | `null` (default) | AI workspace for log analysis |
-| `TimeoutSeconds` | `int` | `60` | LLM timeout — batch analysis needs more time |
-| `MaxLogEntries` | `int` | `500` | Maximum entries per analysis call |
+| Property         | Type      | Default          | Validation | Description                              |
+| ---------------- | --------- | ---------------- | ---------- | ---------------------------------------- |
+| `WorkspaceName`  | `string?` | `null` (default) | —          | AI workspace for log analysis            |
+| `TimeoutSeconds` | `int`     | `30`             | 1–3 600    | LLM timeout — increase for large batches |
+| `MaxLogEntries`  | `int`     | `500`            | 1–10 000   | Maximum entries per analysis call        |
 
 ## See also
 

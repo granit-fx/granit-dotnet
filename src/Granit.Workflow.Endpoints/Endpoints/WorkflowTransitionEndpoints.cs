@@ -1,4 +1,5 @@
 using Granit.Workflow.Endpoints.Dtos;
+using Granit.Workflow.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -22,6 +23,7 @@ internal static class WorkflowTransitionEndpoints<TState> where TState : struct,
         string stateName = typeof(TState).Name;
 
         group.MapGet("/transitions", GetAvailableTransitionsAsync)
+            .RequireAuthorization(WorkflowPermissions.Transitions.Read)
             .WithName($"GetAvailable{stateName}Transitions")
             .WithSummary($"Returns the transitions available from the given state for the current user.")
             .WithDescription(
@@ -33,6 +35,7 @@ internal static class WorkflowTransitionEndpoints<TState> where TState : struct,
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapPost("/transitions", ExecuteTransitionAsync)
+            .RequireAuthorization(WorkflowPermissions.Transitions.Execute)
             .WithName($"Execute{stateName}Transition")
             .WithSummary("Evaluates a workflow transition with permission checking and approval routing.")
             .WithDescription(

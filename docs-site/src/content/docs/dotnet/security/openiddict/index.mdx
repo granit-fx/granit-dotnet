@@ -109,7 +109,7 @@ public sealed class MyAppModule : GranitModule;
 
 ```csharp
 // Program.cs
-builder.AddGranitOpenIddictEntityFrameworkCore(options =>
+builder.AddGranitOpenIddict(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Identity")));
 ```
 

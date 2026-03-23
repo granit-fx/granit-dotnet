@@ -1,5 +1,6 @@
 using System.Reflection;
 using Granit.Core.Modularity;
+using Granit.Guids;
 using Granit.Http.Resilience;
 using Granit.Timing;
 using Granit.Webhooks.Definitions;
@@ -24,6 +25,7 @@ namespace Granit.Webhooks;
 /// </para>
 /// </remarks>
 [DependsOn(
+    typeof(GranitGuidsModule),
     typeof(GranitHttpResilienceModule),
     typeof(GranitTimingModule))]
 public sealed class GranitWebhooksModule : GranitModule

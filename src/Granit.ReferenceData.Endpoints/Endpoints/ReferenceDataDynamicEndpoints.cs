@@ -4,6 +4,7 @@ using Granit.Querying;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Endpoints.Dtos;
 using Granit.ReferenceData.Endpoints.Internal;
+using Granit.ReferenceData.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -56,24 +57,18 @@ internal static class ReferenceDataDynamicEndpoints
     /// </summary>
     internal static RouteGroupBuilder MapDynamicAdminEndpoints(
         this RouteGroupBuilder group,
-        string typeName,
-        string? adminPolicyName)
+        string typeName)
     {
-        RouteGroupBuilder adminGroup = group.MapGroup("/");
-
-        if (adminPolicyName is not null)
-        {
-            adminGroup.RequireAuthorization(adminPolicyName);
-        }
-
-        adminGroup.MapPost("/", CreateAsync)
+        group.MapPost("/", CreateAsync)
+            .RequireAuthorization(ReferenceDataPermissions.Entries.Create)
             .WithName($"Create{typeName}")
             .WithSummary($"Creates a new {typeName} entry.")
             .WithDescription($"Creates a new {typeName} reference data entry with a unique code and localized labels.")
             .Produces(StatusCodes.Status201Created)
             .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
-        adminGroup.MapPut("/{code}", UpdateAsync)
+        group.MapPut("/{code}", UpdateAsync)
+            .RequireAuthorization(ReferenceDataPermissions.Entries.Manage)
             .WithName($"Update{typeName}")
             .WithSummary($"Updates an existing {typeName} entry.")
             .WithDescription($"Updates labels, sort order, active status, and validity dates. ExtraProperties use merge semantics: properties in the request are added or updated, properties not in the request are preserved. Returns 404 if not found.")
@@ -81,7 +76,8 @@ internal static class ReferenceDataDynamicEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
-        adminGroup.MapDelete("/{code}", DeactivateAsync)
+        group.MapDelete("/{code}", DeactivateAsync)
+            .RequireAuthorization(ReferenceDataPermissions.Entries.Manage)
             .WithName($"Deactivate{typeName}")
             .WithSummary($"Deactivates a {typeName} entry (soft delete).")
             .WithDescription($"Sets the entry's active flag to false. Returns 404 if not found.")

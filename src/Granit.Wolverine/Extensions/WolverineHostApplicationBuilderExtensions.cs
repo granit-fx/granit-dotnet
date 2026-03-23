@@ -10,6 +10,7 @@ using Granit.Wolverine.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Wolverine;
@@ -49,6 +50,12 @@ public static class WolverineHostApplicationBuilderExtensions
     {
         GranitActivitySourceRegistry.Register(Diagnostics.WolverineActivitySource.Name);
 
+        // Metrics: IMeterFactory-backed counters for message throughput, retries, claim checks.
+        builder.Services.TryAddSingleton<WolverineMetrics>();
+
+        // Shared helper for Singleton services that need to dispatch via scoped IMessageBus.
+        builder.Services.TryAddSingleton<WolverineScopedSender>();
+
         // Bind and validate options at startup via DI.
         builder.Services
             .AddOptions<WolverineMessagingOptions>()
@@ -78,17 +85,8 @@ public static class WolverineHostApplicationBuilderExtensions
         // Modules without Wolverine handlers must still register manually.
         builder.Services.AddGranitValidatorsFromWolverineHandlerModules();
 
-        // Capture the WolverineOptions instance for downstream packages (e.g. Granit.Wolverine.Postgresql).
-        // Wolverine 5.20+ registers WolverineOptions via an IServiceProvider-dependent factory, making
-        // it impossible to retrieve the instance from the service collection before the DI container is
-        // built. We capture it here (the configure lambda is invoked synchronously by UseWolverine) and
-        // register a holder as a plain ImplementationInstance singleton so it is always readable.
-        WolverineOptions? captured = null;
-
         builder.UseWolverine(opts =>
         {
-            captured = opts;
-
             // Auto-discover assemblies decorated with [assembly: WolverineHandlerModule].
             // Granit library packages use this attribute to opt in to handler scanning.
             opts.Discovery.IncludeHandlerModules = true;
@@ -131,13 +129,6 @@ public static class WolverineHostApplicationBuilderExtensions
 
             configure?.Invoke(opts);
         });
-
-        // Register the captured WolverineOptions as an ImplementationInstance singleton so that
-        // Granit.Wolverine.Postgresql (and other Granit provider packages) can find it via the
-        // service descriptors before the DI container is built — without going through the factory.
-        // UseWolverine invokes the configure lambda synchronously, so captured is always
-        // non-null here. The null-forgiving operator suppresses the static analysis false positive.
-        builder.Services.AddSingleton(new GranitWolverineOptionsHolder(captured!));
 
         return builder;
     }

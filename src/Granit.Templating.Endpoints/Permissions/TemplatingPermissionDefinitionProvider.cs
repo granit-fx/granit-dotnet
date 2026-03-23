@@ -29,5 +29,15 @@ internal sealed class TemplatingPermissionDefinitionProvider : IPermissionDefini
             TemplatingPermissions.Templates.Manage,
             LocalizableString.Create<TemplatingEndpointsLocalizationResource>(
                 "Permission:Templating.Templates.Manage"));
+
+        group.AddPermission(
+            TemplatingPermissions.Categories.Read,
+            LocalizableString.Create<TemplatingEndpointsLocalizationResource>(
+                "Permission:Templating.Categories.Read"));
+
+        group.AddPermission(
+            TemplatingPermissions.Categories.Manage,
+            LocalizableString.Create<TemplatingEndpointsLocalizationResource>(
+                "Permission:Templating.Categories.Manage"));
     }
 }

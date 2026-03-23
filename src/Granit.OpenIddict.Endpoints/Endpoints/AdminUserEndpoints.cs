@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
+using ImpersonationResult = Granit.OpenIddict.Services.ImpersonationResult;
+
 namespace Granit.OpenIddict.Endpoints.Endpoints;
 
 internal static class AdminUserEndpoints
@@ -21,14 +23,14 @@ internal static class AdminUserEndpoints
             .WithName("ListUsers")
             .WithSummary("Returns a paginated list of users.")
             .WithDescription("Supports search, pagination, and tenant filtering.")
-            .Produces<IReadOnlyList<IIdentityUser>>()
+            .Produces<IReadOnlyList<AdminUserResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Users.Read);
 
         users.MapGet("/{userId:guid}", GetUserAsync)
             .WithName("GetUser")
             .WithSummary("Returns a user by ID.")
             .WithDescription("Returns the full user detail including roles and groups.")
-            .Produces<IIdentityUser>()
+            .Produces<AdminUserResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(OpenIddictPermissions.Users.Read);
 
@@ -36,7 +38,7 @@ internal static class AdminUserEndpoints
             .WithName("CreateUser")
             .WithSummary("Creates a new user.")
             .WithDescription("Admin-initiated user creation. No email confirmation required.")
-            .Produces<IIdentityUser>(StatusCodes.Status201Created)
+            .Produces<AdminUserResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .RequireAuthorization(OpenIddictPermissions.Users.Create);
 
@@ -62,7 +64,7 @@ internal static class AdminUserEndpoints
         return group;
     }
 
-    private static async Task<Ok<IReadOnlyList<IIdentityUser>>> ListUsersAsync(
+    private static async Task<Ok<IReadOnlyList<AdminUserResponse>>> ListUsersAsync(
         [FromServices] IIdentityUserReader userReader,
         string? search = null, int page = 0, int pageSize = 20,
         CancellationToken cancellationToken = default)
@@ -70,10 +72,11 @@ internal static class AdminUserEndpoints
         IReadOnlyList<IIdentityUser> users = await userReader
             .GetUsersAsync(search, page * pageSize, pageSize, cancellationToken)
             .ConfigureAwait(false);
-        return TypedResults.Ok(users);
+        return TypedResults.Ok<IReadOnlyList<AdminUserResponse>>(
+            users.Select(MapToResponse).ToList());
     }
 
-    private static async Task<Results<Ok<IIdentityUser>, NotFound>> GetUserAsync(
+    private static async Task<Results<Ok<AdminUserResponse>, NotFound>> GetUserAsync(
         Guid userId,
         [FromServices] IIdentityUserReader userReader,
         CancellationToken cancellationToken = default)
@@ -84,10 +87,10 @@ internal static class AdminUserEndpoints
 
         return user is null
             ? TypedResults.NotFound()
-            : TypedResults.Ok(user);
+            : TypedResults.Ok(MapToResponse(user));
     }
 
-    private static async Task<Created<IIdentityUser>> CreateUserAsync(
+    private static async Task<Created<AdminUserResponse>> CreateUserAsync(
         AdminUserCreateRequest request,
         [FromServices] IIdentityProvider identityProvider,
         CancellationToken cancellationToken = default)
@@ -102,8 +105,12 @@ internal static class AdminUserEndpoints
                 request.TemporaryPassword),
             cancellationToken).ConfigureAwait(false);
 
-        return TypedResults.Created($"/api/admin/users/{user.UserId}", user);
+        return TypedResults.Created($"/api/admin/users/{user.UserId}", MapToResponse(user));
     }
+
+    private static AdminUserResponse MapToResponse(IIdentityUser user) =>
+        new(user.UserId, user.Username, user.Email, user.FirstName, user.LastName,
+            user.Enabled, user.ExtraProperties);
 
     private static async Task<Results<NoContent, NotFound>> DeleteUserAsync(
         Guid userId,

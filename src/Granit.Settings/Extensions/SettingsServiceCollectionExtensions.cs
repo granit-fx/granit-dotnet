@@ -1,5 +1,7 @@
+using Granit.Core.Diagnostics;
 using Granit.EventBus.Extensions;
 using Granit.Settings.Definitions;
+using Granit.Settings.Diagnostics;
 using Granit.Settings.Options;
 using Granit.Settings.Providers;
 using Granit.Settings.Services;
@@ -29,6 +31,10 @@ public static class SettingsServiceCollectionExtensions
         {
             services.Configure<SettingsOptions>(configuration);
         }
+
+        // Diagnostics
+        GranitActivitySourceRegistry.Register(SettingsActivitySource.Name);
+        services.TryAddSingleton<SettingsMetrics>();
 
         // Definition registry (Singleton — loaded once at startup)
         services.TryAddSingleton<SettingDefinitionManager>();

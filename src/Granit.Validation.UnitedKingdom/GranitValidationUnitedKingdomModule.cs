@@ -9,8 +9,9 @@ namespace Granit.Validation.UnitedKingdom;
 /// <summary>
 /// Granit module for United Kingdom identifier, tax, and address validation.
 /// </summary>
-[DependsOn(typeof(GranitValidationModule))]
-[DependsOn(typeof(GranitLocalizationModule))]
+[DependsOn(
+    typeof(GranitLocalizationModule),
+    typeof(GranitValidationModule))]
 public sealed class GranitValidationUnitedKingdomModule : GranitModule
 {
     /// <inheritdoc/>

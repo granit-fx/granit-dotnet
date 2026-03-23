@@ -1,4 +1,7 @@
 {
   "culture": "en-GB",
-  "texts": {}
+  "texts": {
+    "Permission:Templating.Categories.Read": "View template categories",
+    "Permission:Templating.Categories.Manage": "Manage template categories (create, edit, delete)"
+  }
 }

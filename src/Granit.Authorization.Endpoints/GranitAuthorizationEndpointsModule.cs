@@ -1,5 +1,6 @@
 using Granit.Core.Modularity;
 using Granit.Http.ApiDocumentation;
+using Granit.Validation;
 
 namespace Granit.Authorization.Endpoints;
 
@@ -17,5 +18,6 @@ namespace Granit.Authorization.Endpoints;
 /// </remarks>
 [DependsOn(
     typeof(GranitAuthorizationModule),
-    typeof(GranitHttpApiDocumentationModule))]
+    typeof(GranitHttpApiDocumentationModule),
+    typeof(GranitValidationModule))]
 public sealed class GranitAuthorizationEndpointsModule : GranitModule;

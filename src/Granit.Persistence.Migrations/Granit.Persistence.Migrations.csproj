@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Persistence\Granit.Persistence.csproj" />
-    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
   </ItemGroup>
 
 </Project>

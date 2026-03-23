@@ -1,4 +1,3 @@
-using Granit.BackgroundJobs;
 using Granit.BlobStorage.Diagnostics;
 using Granit.Core.Modularity;
 using Granit.Guids;
@@ -21,9 +20,7 @@ namespace Granit.BlobStorage;
 /// <see cref="BlobStorageLocalizationResource"/>.
 /// </para>
 /// </remarks>
-[DependsOn(
-    typeof(GranitBackgroundJobsModule),
-    typeof(GranitGuidsModule))]
+[DependsOn(typeof(GranitGuidsModule))]
 public sealed class GranitBlobStorageModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context) =>

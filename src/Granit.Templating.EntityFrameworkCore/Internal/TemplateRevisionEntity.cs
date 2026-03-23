@@ -1,3 +1,4 @@
+using Granit.Core.Domain;
 using Granit.Templating.Store;
 
 namespace Granit.Templating.EntityFrameworkCore.Internal;
@@ -8,8 +9,9 @@ namespace Granit.Templating.EntityFrameworkCore.Internal;
 /// <remarks>
 /// Revisions are append-only once promoted beyond <c>Draft</c>.
 /// Published and archived revisions are preserved indefinitely (ISO 27001 audit trail).
+/// Implements <see cref="IMultiTenant"/> for per-tenant template isolation.
 /// </remarks>
-internal sealed class TemplateRevisionEntity
+internal sealed class TemplateRevisionEntity : IMultiTenant
 {
     /// <summary>Unique identifier propagated into rendered documents for traceability.</summary>
     public Guid RevisionId { get; set; }
@@ -49,4 +51,7 @@ internal sealed class TemplateRevisionEntity
 
     /// <summary>Optional category for organizing templates by domain.</summary>
     public Guid? CategoryId { get; set; }
+
+    /// <inheritdoc/>
+    public Guid? TenantId { get; set; }
 }

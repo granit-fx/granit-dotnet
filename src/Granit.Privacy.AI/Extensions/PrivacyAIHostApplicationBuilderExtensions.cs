@@ -28,7 +28,9 @@ public static class PrivacyAIHostApplicationBuilderExtensions
     {
         builder.Services
             .AddOptions<PrivacyAIOptions>()
-            .BindConfiguration(PrivacyAIOptions.SectionName);
+            .BindConfiguration(PrivacyAIOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         builder.Services.TryAddScoped<IAIPiiDetector, LlmPiiDetector>();
 

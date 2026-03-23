@@ -113,16 +113,30 @@ public sealed class VaultMetricsTests : IDisposable
     }
 
     [Fact]
-    public void RecordRotationDetected_IncrementsWithProvider()
+    public void RecordRotationDetected_IncrementsWithCorrectTags()
     {
         using var collector = new MetricCollector<long>(
             _meterFactory, VaultMetrics.MeterName, "granit.vault.rotations.detected");
 
-        _metrics.RecordRotationDetected("aws");
+        _metrics.RecordRotationDetected("tenant-123", "aws");
 
         IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
         snapshot.ShouldHaveSingleItem();
         snapshot[0].Value.ShouldBe(1);
+        snapshot[0].Tags["tenant_id"].ShouldBe("tenant-123");
         snapshot[0].Tags["provider"].ShouldBe("aws");
+    }
+
+    [Fact]
+    public void RecordRotationDetected_NullTenant_UsesGlobal()
+    {
+        using var collector = new MetricCollector<long>(
+            _meterFactory, VaultMetrics.MeterName, "granit.vault.rotations.detected");
+
+        _metrics.RecordRotationDetected(null, "hashicorp");
+
+        IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
+        snapshot.ShouldHaveSingleItem();
+        snapshot[0].Tags["tenant_id"].ShouldBe("global");
     }
 }

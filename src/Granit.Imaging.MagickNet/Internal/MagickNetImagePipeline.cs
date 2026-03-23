@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using Granit.Imaging.MagickNet.Diagnostics;
 using ImageMagick;
 
 namespace Granit.Imaging.MagickNet.Internal;
@@ -9,12 +11,16 @@ namespace Granit.Imaging.MagickNet.Internal;
 internal sealed class MagickNetImagePipeline : IImagePipeline
 {
     private readonly MagickImage _image;
+    private readonly ImagingMagickNetMetrics _metrics;
+    private readonly long _startTimestamp;
     private int? _quality;
     private ImageFormat? _targetFormat;
 
-    internal MagickNetImagePipeline(MagickImage image)
+    internal MagickNetImagePipeline(MagickImage image, ImagingMagickNetMetrics metrics)
     {
         _image = image;
+        _metrics = metrics;
+        _startTimestamp = Stopwatch.GetTimestamp();
         SourceSize = new ImageSize((int)_image.Width, (int)_image.Height);
         SourceFormat = MagickFormatMapper.FromMagickFormat(_image.Format);
     }
@@ -80,6 +86,9 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
     /// <inheritdoc/>
     public IImagePipeline Compress(int quality)
     {
+        ArgumentOutOfRangeException.ThrowIfLessThan(quality, 0);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(quality, 100);
+
         _quality = quality;
         return this;
     }
@@ -127,12 +136,15 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
 
         ApplyOutputSettings();
 
+        ImageFormat outputFormat = _targetFormat ?? SourceFormat;
         using MemoryStream ms = new();
-        _image.Write(ms, MagickFormatMapper.ToMagickFormat(_targetFormat ?? SourceFormat));
+        _image.Write(ms, MagickFormatMapper.ToMagickFormat(outputFormat));
+
+        RecordMetrics(outputFormat);
 
         ImageResult result = new(
             ms.ToArray(),
-            _targetFormat ?? SourceFormat,
+            outputFormat,
             (int)_image.Width,
             (int)_image.Height);
 
@@ -146,7 +158,11 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
 
         ApplyOutputSettings();
 
-        _image.Write(destination, MagickFormatMapper.ToMagickFormat(_targetFormat ?? SourceFormat));
+        ImageFormat outputFormat = _targetFormat ?? SourceFormat;
+        _image.Write(destination, MagickFormatMapper.ToMagickFormat(outputFormat));
+
+        RecordMetrics(outputFormat);
+
         return Task.CompletedTask;
     }
 
@@ -155,6 +171,13 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
     {
         _image.Dispose();
         return ValueTask.CompletedTask;
+    }
+
+    private void RecordMetrics(ImageFormat outputFormat)
+    {
+        string formatName = outputFormat.ToString().ToLowerInvariant();
+        _metrics.RecordImageProcessed(tenantId: null, formatName);
+        _metrics.RecordProcessingDuration(tenantId: null, formatName, Stopwatch.GetElapsedTime(_startTimestamp));
     }
 
     private void ApplyOutputSettings()

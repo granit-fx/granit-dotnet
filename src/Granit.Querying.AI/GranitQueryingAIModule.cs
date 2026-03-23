@@ -1,6 +1,10 @@
 using Granit.AI;
+using Granit.Core.Diagnostics;
 using Granit.Core.Modularity;
 using Granit.Querying;
+using Granit.Querying.AI.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Querying.AI;
 
@@ -15,4 +19,12 @@ namespace Granit.Querying.AI;
 [DependsOn(
     typeof(GranitAIModule),
     typeof(GranitQueryingModule))]
-public sealed class GranitQueryingAIModule : GranitModule;
+public sealed class GranitQueryingAIModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddSingleton<QueryingAIMetrics>();
+        GranitActivitySourceRegistry.Register(QueryingAIActivitySource.Name);
+    }
+}

@@ -8,7 +8,7 @@ namespace Granit.Persistence.Hosting.Extensions;
 /// <summary>
 /// Extension methods for migration support on <see cref="WebApplication"/>.
 /// </summary>
-public static class PersistenceHostingWebApplicationExtensions
+public static partial class PersistenceHostingWebApplicationExtensions
 {
     /// <summary>
     /// Checks whether the <c>--migrate</c> CLI flag is present in the application arguments.
@@ -61,7 +61,7 @@ public static class PersistenceHostingWebApplicationExtensions
         }
         catch (Exception ex)
         {
-            logger.LogCritical(ex, "Migration failed with an unhandled exception.");
+            LogMigrationUnhandledException(logger, ex);
         }
         finally
         {
@@ -75,4 +75,8 @@ public static class PersistenceHostingWebApplicationExtensions
 
         return exitCode;
     }
+
+    [LoggerMessage(Level = LogLevel.Critical,
+        Message = "Migration failed with an unhandled exception.")]
+    private static partial void LogMigrationUnhandledException(ILogger logger, Exception ex);
 }

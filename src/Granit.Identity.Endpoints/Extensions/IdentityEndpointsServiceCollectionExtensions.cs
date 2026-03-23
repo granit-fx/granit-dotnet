@@ -22,7 +22,9 @@ public static class IdentityEndpointsServiceCollectionExtensions
             .BindConfiguration(IdentityWebhookOptions.SectionName);
 
         services.AddHealthChecks()
-            .AddCheck<UserCacheHealthCheck>("identity-user-cache");
+            .AddCheck<UserCacheHealthCheck>(
+                "identity-user-cache",
+                tags: ["readiness", "startup"]);
 
         return services;
     }

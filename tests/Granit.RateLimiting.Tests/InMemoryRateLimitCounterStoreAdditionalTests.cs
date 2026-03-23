@@ -18,18 +18,14 @@ public sealed class InMemoryRateLimitCounterStoreAdditionalTests
     }
 
     [Fact]
-    public async Task UnknownAlgorithm_ReturnsAllowed()
+    public async Task UnknownAlgorithm_ThrowsNotSupportedException()
     {
         RateLimitPolicyOptions policy = new() { PermitLimit = 100 };
 
-        RateLimitResult result = await _store.CheckAndIncrementAsync(
-            "key", 100, TimeSpan.FromMinutes(1), (RateLimitAlgorithm)99,
-            policy, TestContext.Current.CancellationToken);
-
-        result.IsAllowed.ShouldBeTrue();
-        result.Remaining.ShouldBe(100);
-        result.Limit.ShouldBe(100);
-        result.RetryAfter.ShouldBe(TimeSpan.Zero);
+        await Should.ThrowAsync<NotSupportedException>(
+            () => _store.CheckAndIncrementAsync(
+                "key", 100, TimeSpan.FromMinutes(1), (RateLimitAlgorithm)99,
+                policy, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -176,16 +172,13 @@ public sealed class InMemoryRateLimitCounterStoreAdditionalTests
     }
 
     [Fact]
-    public async Task ConcurrencyAlgorithm_ReturnsAllowed()
+    public async Task ConcurrencyAlgorithm_ThrowsNotSupportedException()
     {
         RateLimitPolicyOptions policy = new() { PermitLimit = 100 };
 
-        RateLimitResult result = await _store.CheckAndIncrementAsync(
-            "key", 100, TimeSpan.FromMinutes(1), RateLimitAlgorithm.Concurrency,
-            policy, TestContext.Current.CancellationToken);
-
-        result.IsAllowed.ShouldBeTrue();
-        result.Remaining.ShouldBe(100);
-        result.Limit.ShouldBe(100);
+        await Should.ThrowAsync<NotSupportedException>(
+            () => _store.CheckAndIncrementAsync(
+                "key", 100, TimeSpan.FromMinutes(1), RateLimitAlgorithm.Concurrency,
+                policy, TestContext.Current.CancellationToken));
     }
 }

@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 using Granit.Http.ApiDocumentation;
-using Granit.Timeline;
+using Granit.Timeline.Endpoints.Dtos;
 
 namespace Granit.Timeline.Endpoints.Internal;
 

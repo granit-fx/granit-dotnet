@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using System.Text;
 using Granit.AI;
 using Granit.Querying;
 using Granit.Timeline.Abstractions;
+using Granit.Timeline.AI.Diagnostics;
 using Granit.Timeline.AI.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -18,6 +20,7 @@ internal sealed partial class LlmTimelineSummarizer(
     IAIChatClientFactory chatClientFactory,
     ITimelineReader timelineReader,
     IOptions<TimelineAIOptions> options,
+    TimelineAIMetrics metrics,
     ILogger<LlmTimelineSummarizer> logger) : ITimelineSummarizer
 {
     private static readonly TimelineSummary EmptySummary = new(
@@ -35,6 +38,7 @@ internal sealed partial class LlmTimelineSummarizer(
     {
         ArgumentNullException.ThrowIfNull(entityType);
 
+        long startTimestamp = Stopwatch.GetTimestamp();
         TimelineAIOptions config = options.Value;
 
         List<TimelineStreamEntry> entries = await FetchEntriesAsync(
@@ -65,10 +69,14 @@ internal sealed partial class LlmTimelineSummarizer(
             DateTimeOffset newest = entries[0].OccurredAt;
             DateTimeOffset oldest = entries[^1].OccurredAt;
 
+            metrics.RecordSummarizationCompleted(tenantId: null, entityType);
+            metrics.RecordSummarizationDuration(tenantId: null, entityType, Stopwatch.GetElapsedTime(startTimestamp));
+
             return new TimelineSummary(text, entries.Count, oldest, newest);
         }
         catch (OperationCanceledException) when (!ct.IsCancellationRequested)
         {
+            metrics.RecordSummarizationFailure(tenantId: null, entityType);
             LogSummarizationTimeout(logger, entityType, entityId, config.TimeoutSeconds);
             return new TimelineSummary(
                 "Summary generation timed out.",
@@ -82,6 +90,7 @@ internal sealed partial class LlmTimelineSummarizer(
         }
         catch (Exception ex)
         {
+            metrics.RecordSummarizationFailure(tenantId: null, entityType);
             LogSummarizationFailure(logger, entityType, entityId, ex);
             return new TimelineSummary(
                 "Summary generation failed.",

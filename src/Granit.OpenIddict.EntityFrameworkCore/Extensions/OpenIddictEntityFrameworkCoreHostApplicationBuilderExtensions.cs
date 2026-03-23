@@ -26,7 +26,7 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
     /// <param name="builder">The host application builder.</param>
     /// <param name="configure">EF Core provider configuration (e.g. <c>options.UseNpgsql(cs)</c>).</param>
     /// <returns>The builder for chaining.</returns>
-    public static IHostApplicationBuilder AddGranitOpenIddictEntityFrameworkCore(
+    public static IHostApplicationBuilder AddGranitOpenIddict(
         this IHostApplicationBuilder builder,
         Action<DbContextOptionsBuilder> configure)
     {

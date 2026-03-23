@@ -13,6 +13,7 @@ namespace Granit.Validation.AI;
 /// prompt injection attempts, and spam/gibberish. The service uses a fail-open design:
 /// when the LLM is unavailable, content is accepted with a warning log for manual review.
 /// </remarks>
-[DependsOn(typeof(GranitAIModule))]
-[DependsOn(typeof(GranitValidationModule))]
+[DependsOn(
+    typeof(GranitAIModule),
+    typeof(GranitValidationModule))]
 public sealed class GranitValidationAIModule : GranitModule;

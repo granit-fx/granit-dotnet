@@ -1,4 +1,6 @@
+using System.Diagnostics.Metrics;
 using Granit.AI;
+using Granit.Imaging.AI.Diagnostics;
 using Granit.Imaging.AI.Internal;
 using Granit.Imaging.AI.Options;
 using Microsoft.Extensions.AI;
@@ -13,11 +15,19 @@ public sealed class LlmImageAnalyzerTests
 {
     private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
     private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
+    private readonly ImagingAIMetrics _metrics = CreateTestMetrics();
     private readonly IOptions<ImagingAIOptions> _options = Microsoft.Extensions.Options.Options.Create(new ImagingAIOptions
     {
         WorkspaceName = "vision",
         TimeoutSeconds = 30,
     });
+
+    private static ImagingAIMetrics CreateTestMetrics()
+    {
+        IMeterFactory factory = Substitute.For<IMeterFactory>();
+        factory.Create(Arg.Any<MeterOptions>()).Returns(new Meter("test"));
+        return new ImagingAIMetrics(factory);
+    }
 
     private static readonly ReadOnlyMemory<byte> TestImage = new byte[] { 0x89, 0x50, 0x4E, 0x47 };
 
@@ -165,7 +175,7 @@ public sealed class LlmImageAnalyzerTests
     }
 
     private LlmImageAnalyzer CreateAnalyzer() =>
-        new(_chatClientFactory, _options, NullLogger<LlmImageAnalyzer>.Instance);
+        new(_chatClientFactory, _options, _metrics, NullLogger<LlmImageAnalyzer>.Instance);
 
     private void SetupChatResponse(string? text)
     {

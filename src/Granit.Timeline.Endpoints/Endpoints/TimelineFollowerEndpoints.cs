@@ -1,5 +1,6 @@
 using Granit.Security;
 using Granit.Timeline.Abstractions;
+using Granit.Timeline.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -16,12 +17,14 @@ internal static class TimelineFollowerEndpoints
     internal static RouteGroupBuilder MapFollowerEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/{entityType}/{entityId}/follow", FollowAsync)
+            .RequireAuthorization(TimelinePermissions.Entries.Create)
             .WithName("FollowTimelineEntity")
             .WithSummary("Subscribes the current user as a follower of an entity.")
             .WithDescription("Adds the authenticated user to the follower list for the specified entity. Followers receive notifications when new timeline entries are posted. Idempotent — following an already-followed entity is a no-op.")
             .Produces(StatusCodes.Status204NoContent);
 
         group.MapDelete("/{entityType}/{entityId}/follow", UnfollowAsync)
+            .RequireAuthorization(TimelinePermissions.Entries.Create)
             .WithName("UnfollowTimelineEntity")
             .WithSummary("Unsubscribes the current user from an entity.")
             .WithDescription("Removes the authenticated user from the follower list. The user will no longer receive notifications for new timeline entries on this entity. Idempotent.")

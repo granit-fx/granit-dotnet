@@ -36,7 +36,7 @@ internal sealed class AzureKeyVaultStringEncryptionProvider(
         {
             return transitEncryption.DecryptAsync(_keyName, cipherText).GetAwaiter().GetResult();
         }
-        catch
+        catch (Exception)
         {
             return null;
         }

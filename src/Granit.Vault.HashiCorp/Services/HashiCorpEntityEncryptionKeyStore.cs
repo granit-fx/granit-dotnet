@@ -22,7 +22,7 @@ namespace Granit.Vault.HashiCorp.Services;
 /// Cache entries are evicted on <see cref="DeleteKeyAsync"/> (crypto-shredding).
 /// </para>
 /// </remarks>
-public sealed partial class HashiCorpEntityEncryptionKeyStore(
+internal sealed partial class HashiCorpEntityEncryptionKeyStore(
     IVaultClient vaultClient,
     IOptions<HashiCorpVaultOptions> options,
     ILogger<HashiCorpEntityEncryptionKeyStore> logger) : IEntityEncryptionKeyStore

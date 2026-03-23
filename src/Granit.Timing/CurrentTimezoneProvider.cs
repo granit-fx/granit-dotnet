@@ -1,8 +1,8 @@
 namespace Granit.Timing;
 
 /// <summary>
-/// Implementation de <see cref="ICurrentTimezoneProvider"/> basee sur <see cref="AsyncLocal{T}"/>.
-/// Thread-safe et isolee par contexte d'execution async.
+/// <see cref="AsyncLocal{T}"/>-based implementation of <see cref="ICurrentTimezoneProvider"/>.
+/// Thread-safe and isolated per async execution context.
 /// </summary>
 public sealed class CurrentTimezoneProvider : ICurrentTimezoneProvider
 {

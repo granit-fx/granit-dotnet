@@ -57,7 +57,7 @@ public sealed class WorkflowReadEndpointsTests : IAsyncDisposable
     {
         // Arrange
         _historyQuery.GetHistoryAsync("Order", "42", Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<TransitionHistoryResponse>(
+            .Returns(new PagedResult<WorkflowTransitionHistoryResponse>(
             [
                 new("Draft", "Submitted", DateTimeOffset.UtcNow.AddHours(-2), "user-1", null),
                 new("Submitted", "Approved", DateTimeOffset.UtcNow.AddHours(-1), "user-2", "LGTM"),
@@ -69,8 +69,8 @@ public sealed class WorkflowReadEndpointsTests : IAsyncDisposable
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        PagedResult<TransitionHistoryResponse>? result = await response.Content
-            .ReadFromJsonAsync<PagedResult<TransitionHistoryResponse>>(TestContext.Current.CancellationToken);
+        PagedResult<WorkflowTransitionHistoryResponse>? result = await response.Content
+            .ReadFromJsonAsync<PagedResult<WorkflowTransitionHistoryResponse>>(TestContext.Current.CancellationToken);
         result.ShouldNotBeNull();
         result!.Items.Count.ShouldBe(2);
         result.TotalCount.ShouldBe(2);
@@ -85,7 +85,7 @@ public sealed class WorkflowReadEndpointsTests : IAsyncDisposable
     {
         // Arrange
         _historyQuery.GetHistoryAsync("Order", "99", Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<TransitionHistoryResponse>([], 0, HasMore: false));
+            .Returns(new PagedResult<WorkflowTransitionHistoryResponse>([], 0, HasMore: false));
 
         // Act
         HttpResponseMessage response = await _adminClient.GetAsync(
@@ -93,8 +93,8 @@ public sealed class WorkflowReadEndpointsTests : IAsyncDisposable
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        PagedResult<TransitionHistoryResponse>? result = await response.Content
-            .ReadFromJsonAsync<PagedResult<TransitionHistoryResponse>>(TestContext.Current.CancellationToken);
+        PagedResult<WorkflowTransitionHistoryResponse>? result = await response.Content
+            .ReadFromJsonAsync<PagedResult<WorkflowTransitionHistoryResponse>>(TestContext.Current.CancellationToken);
         result.ShouldNotBeNull();
         result!.Items.ShouldBeEmpty();
         result.TotalCount.ShouldBe(0);
@@ -130,7 +130,7 @@ public sealed class WorkflowReadEndpointsTests : IAsyncDisposable
     {
         // Arrange
         _historyQuery.GetHistoryAsync("Invoice", "7", Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<TransitionHistoryResponse>(
+            .Returns(new PagedResult<WorkflowTransitionHistoryResponse>(
             [
                 new("Draft", "Sent", DateTimeOffset.UtcNow, "user-1", null),
             ], 1, HasMore: false));
@@ -141,8 +141,8 @@ public sealed class WorkflowReadEndpointsTests : IAsyncDisposable
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        PagedResult<TransitionHistoryResponse>? result = await response.Content
-            .ReadFromJsonAsync<PagedResult<TransitionHistoryResponse>>(TestContext.Current.CancellationToken);
+        PagedResult<WorkflowTransitionHistoryResponse>? result = await response.Content
+            .ReadFromJsonAsync<PagedResult<WorkflowTransitionHistoryResponse>>(TestContext.Current.CancellationToken);
         result.ShouldNotBeNull();
         result!.Items[0].Comment.ShouldBeNull();
     }

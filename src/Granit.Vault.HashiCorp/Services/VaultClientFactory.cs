@@ -12,7 +12,7 @@ namespace Granit.Vault.HashiCorp.Services;
 /// <summary>
 /// Factory for creating a VaultSharp client with the configured authentication method.
 /// </summary>
-public sealed partial class VaultClientFactory(
+internal sealed partial class VaultClientFactory(
     IOptions<HashiCorpVaultOptions> options,
     ILogger<VaultClientFactory> logger)
 {

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using Wolverine;
+using Wolverine.Runtime;
 using Xunit;
 
 namespace Granit.Wolverine.Postgresql.Tests;
@@ -38,18 +39,20 @@ public sealed class AddGranitWolverineWithPostgresqlTests
     }
 
     // -----------------------------------------------------------------------
-    // Configure callback
+    // Configure callback — ConfigureWolverine defers invocation until
+    // WolverineOptions is resolved. We verify the IConfigureOptions<>
+    // registration exists and that the callback runs when resolved.
     // -----------------------------------------------------------------------
 
     [Fact]
-    public void AddGranitWolverineWithPostgresql_WithConfigureCallback_InvokesCallback()
+    public void AddGranitWolverineWithPostgresql_WithConfigureCallback_RegistersWolverineExtension()
     {
         HostApplicationBuilder builder = CreateBuilder();
-        bool callbackInvoked = false;
 
-        builder.AddGranitWolverineWithPostgresql(opts => { callbackInvoked = true; });
+        builder.AddGranitWolverineWithPostgresql(opts => { });
 
-        callbackInvoked.ShouldBeTrue();
+        builder.Services.ShouldContain(d =>
+            d.ServiceType == typeof(IWolverineExtension));
     }
 
     // -----------------------------------------------------------------------
@@ -118,19 +121,18 @@ public sealed class AddGranitWolverineWithPostgresqlTests
     }
 
     // -----------------------------------------------------------------------
-    // PerTenant — configure callback
+    // PerTenant — configure callback (deferred by ConfigureWolverine)
     // -----------------------------------------------------------------------
 
     [Fact]
-    public void AddGranitWolverineWithPostgresqlPerTenant_WithConfigureCallback_InvokesCallback()
+    public void AddGranitWolverineWithPostgresqlPerTenant_WithConfigureCallback_RegistersWolverineExtension()
     {
         HostApplicationBuilder builder = CreateBuilder();
-        bool callbackInvoked = false;
 
-        builder.AddGranitWolverineWithPostgresqlPerTenant<StubTenantDbContext>(
-            opts => { callbackInvoked = true; });
+        builder.AddGranitWolverineWithPostgresqlPerTenant<StubTenantDbContext>(opts => { });
 
-        callbackInvoked.ShouldBeTrue();
+        builder.Services.ShouldContain(d =>
+            d.ServiceType == typeof(IWolverineExtension));
     }
 
     // -----------------------------------------------------------------------

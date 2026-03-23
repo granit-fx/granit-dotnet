@@ -1,6 +1,7 @@
 using Granit.Authorization;
 using Granit.Core.Modularity;
 using Granit.Http.ApiDocumentation;
+using Granit.Notifications.MobilePush;
 using Granit.Validation;
 
 namespace Granit.Notifications.Endpoints;
@@ -16,6 +17,7 @@ namespace Granit.Notifications.Endpoints;
 [DependsOn(
     typeof(GranitAuthorizationModule),
     typeof(GranitHttpApiDocumentationModule),
+    typeof(GranitNotificationsMobilePushModule),
     typeof(GranitNotificationsModule),
     typeof(GranitValidationModule))]
 public sealed class GranitNotificationsEndpointsModule : GranitModule;

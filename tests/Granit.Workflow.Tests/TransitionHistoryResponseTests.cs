@@ -5,9 +5,9 @@ using Xunit;
 namespace Granit.Workflow.Tests;
 
 /// <summary>
-/// Tests for <see cref="TransitionHistoryResponse"/> record.
+/// Tests for <see cref="WorkflowTransitionHistoryResponse"/> record.
 /// </summary>
-public sealed class TransitionHistoryResponseTests
+public sealed class WorkflowTransitionHistoryResponseTests
 {
     [Fact]
     public void Properties_ShouldBeSetCorrectly()
@@ -16,7 +16,7 @@ public sealed class TransitionHistoryResponseTests
         DateTimeOffset now = DateTimeOffset.UtcNow;
 
         // Act
-        TransitionHistoryResponse response = new(
+        WorkflowTransitionHistoryResponse response = new(
             PreviousState: "Draft",
             NewState: "Published",
             TransitionedAt: now,
@@ -35,7 +35,7 @@ public sealed class TransitionHistoryResponseTests
     public void Comment_CanBeNull()
     {
         // Act
-        TransitionHistoryResponse response = new(
+        WorkflowTransitionHistoryResponse response = new(
             "Draft", "Published", DateTimeOffset.UtcNow, "user", null);
 
         // Assert
@@ -47,8 +47,8 @@ public sealed class TransitionHistoryResponseTests
     {
         // Arrange
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        TransitionHistoryResponse r1 = new("A", "B", now, "user", null);
-        TransitionHistoryResponse r2 = new("A", "B", now, "user", null);
+        WorkflowTransitionHistoryResponse r1 = new("A", "B", now, "user", null);
+        WorkflowTransitionHistoryResponse r2 = new("A", "B", now, "user", null);
 
         // Assert
         r1.ShouldBe(r2);

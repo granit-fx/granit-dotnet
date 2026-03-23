@@ -16,8 +16,8 @@ namespace Granit.Authorization;
 /// across loaded module assemblies.
 /// </summary>
 [DependsOn(
-    typeof(GranitSecurityModule),
-    typeof(GranitCachingModule))]
+    typeof(GranitCachingModule),
+    typeof(GranitSecurityModule))]
 public sealed class GranitAuthorizationModule : GranitModule
 {
     /// <inheritdoc />

@@ -9,8 +9,9 @@ namespace Granit.Validation.Europe;
 /// <summary>
 /// Granit module for European regulatory identifier validation (France, Belgium).
 /// </summary>
-[DependsOn(typeof(GranitValidationModule))]
-[DependsOn(typeof(GranitLocalizationModule))]
+[DependsOn(
+    typeof(GranitLocalizationModule),
+    typeof(GranitValidationModule))]
 public sealed class GranitValidationEuropeModule : GranitModule
 {
     /// <inheritdoc/>

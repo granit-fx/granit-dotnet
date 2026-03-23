@@ -63,7 +63,7 @@ internal sealed class PermissionChecker(
                 BuildCacheKey(tenantId, role, permissionName),
                 async (_, ct) => new PermissionGrantCacheItem
                 {
-                    IsGranted = await grantStore.IsGrantedAsync(role, permissionName, tenantId, ct)
+                    IsGranted = await grantStore.IsGrantedAsync(role, permissionName, tenantId, ct).ConfigureAwait(false)
                 },
                 new FusionCacheEntryOptions { Duration = opts.CacheDuration },
                 token: cancellationToken).ConfigureAwait(false);

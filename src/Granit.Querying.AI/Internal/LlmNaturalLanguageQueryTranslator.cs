@@ -1,6 +1,9 @@
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Granit.AI;
+using Granit.Core.MultiTenancy;
+using Granit.Querying.AI.Diagnostics;
 using Granit.Querying.AI.Options;
 using Granit.Querying.Meta;
 using Granit.Timing;
@@ -18,7 +21,9 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
     IAIChatClientFactory chatClientFactory,
     IOptions<QueryingAIOptions> options,
     ILogger<LlmNaturalLanguageQueryTranslator> logger,
-    IClock clock) : INaturalLanguageQueryTranslator
+    IClock clock,
+    QueryingAIMetrics? metrics = null,
+    ICurrentTenant? currentTenant = null) : INaturalLanguageQueryTranslator
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -35,6 +40,10 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
         {
             return null;
         }
+
+        using Activity? activity = QueryingAIActivitySource.Source.StartActivity(QueryingAIActivitySource.Translate);
+        long startTimestamp = Stopwatch.GetTimestamp();
+        string? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id?.ToString() : null;
 
         try
         {
@@ -62,29 +71,39 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
             string rawJson = response.Text ?? string.Empty;
             string json = StripMarkdownFences(rawJson);
 
-            QueryRequestDto? dto = JsonSerializer.Deserialize<QueryRequestDto>(json, JsonOptions);
+            LlmQueryPayload? dto = JsonSerializer.Deserialize<LlmQueryPayload>(json, JsonOptions);
             if (dto is null)
             {
                 LogInvalidResponse(logger, naturalLanguage);
+                metrics?.RecordTranslationFailed(tenantId, "invalid_response");
                 return null;
             }
 
+            metrics?.RecordTranslationExecuted(tenantId, "success");
             return ToQueryRequest(dto);
         }
         catch (OperationCanceledException)
         {
             LogTimeout(logger, naturalLanguage);
+            metrics?.RecordTranslationFailed(tenantId, "timeout");
             return null;
         }
         catch (JsonException ex)
         {
             LogJsonParseError(logger, naturalLanguage, ex);
+            metrics?.RecordTranslationFailed(tenantId, "json_parse_error");
             return null;
         }
         catch (Exception ex)
         {
             LogTranslationError(logger, naturalLanguage, ex);
+            metrics?.RecordTranslationFailed(tenantId, "error");
             return null;
+        }
+        finally
+        {
+            double elapsed = Stopwatch.GetElapsedTime(startTimestamp).TotalSeconds;
+            metrics?.RecordTranslationDuration(tenantId, elapsed);
         }
     }
 
@@ -209,7 +228,7 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
         return trimmed;
     }
 
-    private static QueryRequest ToQueryRequest(QueryRequestDto dto) =>
+    private static QueryRequest ToQueryRequest(LlmQueryPayload dto) =>
         new()
         {
             Page = dto.Page,

@@ -65,7 +65,7 @@ public sealed class TemplatingPermissionDefinitionProviderTests
     }
 
     [Fact]
-    public void DefinePermissions_registers_exactly_two_permissions()
+    public void DefinePermissions_adds_Categories_Read_permission()
     {
         // Arrange
         PermissionGroup group = new(TemplatingPermissions.GroupName);
@@ -78,6 +78,40 @@ public sealed class TemplatingPermissionDefinitionProviderTests
         provider.DefinePermissions(context);
 
         // Assert
-        group.Permissions.Count.ShouldBe(2);
+        group.Permissions.ShouldContain(p => p.Name == TemplatingPermissions.Categories.Read);
+    }
+
+    [Fact]
+    public void DefinePermissions_adds_Categories_Manage_permission()
+    {
+        // Arrange
+        PermissionGroup group = new(TemplatingPermissions.GroupName);
+        IPermissionDefinitionContext context = Substitute.For<IPermissionDefinitionContext>();
+        context.AddGroup(TemplatingPermissions.GroupName, Arg.Any<LocalizableString>()).Returns(group);
+
+        TemplatingPermissionDefinitionProvider provider = new();
+
+        // Act
+        provider.DefinePermissions(context);
+
+        // Assert
+        group.Permissions.ShouldContain(p => p.Name == TemplatingPermissions.Categories.Manage);
+    }
+
+    [Fact]
+    public void DefinePermissions_registers_exactly_four_permissions()
+    {
+        // Arrange
+        PermissionGroup group = new(TemplatingPermissions.GroupName);
+        IPermissionDefinitionContext context = Substitute.For<IPermissionDefinitionContext>();
+        context.AddGroup(TemplatingPermissions.GroupName, Arg.Any<LocalizableString>()).Returns(group);
+
+        TemplatingPermissionDefinitionProvider provider = new();
+
+        // Act
+        provider.DefinePermissions(context);
+
+        // Assert
+        group.Permissions.Count.ShouldBe(4);
     }
 }

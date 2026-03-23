@@ -13,7 +13,7 @@ namespace Granit.Vault.HashiCorp.Services;
 /// Background service that manages the lifecycle of dynamic
 /// PostgreSQL credentials via HashiCorp Vault Database Engine.
 /// </summary>
-public sealed partial class VaultCredentialLeaseManager(
+internal sealed partial class VaultCredentialLeaseManager(
     IVaultClient vaultClient,
     IOptions<HashiCorpVaultOptions> options,
     ILogger<VaultCredentialLeaseManager> logger) : BackgroundService, IDatabaseCredentialProvider
@@ -42,7 +42,7 @@ public sealed partial class VaultCredentialLeaseManager(
 
             LogNextRenewalIn(logger, renewalDelay);
 
-            await Task.Delay(renewalDelay, stoppingToken);
+            await Task.Delay(renewalDelay, stoppingToken).ConfigureAwait(false);
 
             try
             {

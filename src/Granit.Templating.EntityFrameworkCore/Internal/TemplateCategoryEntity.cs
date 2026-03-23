@@ -1,9 +1,12 @@
+using Granit.Core.Domain;
+
 namespace Granit.Templating.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// EF Core entity for template categories used to organize templates by domain.
+/// Implements <see cref="IMultiTenant"/> for per-tenant category isolation.
 /// </summary>
-internal sealed class TemplateCategoryEntity
+internal sealed class TemplateCategoryEntity : IMultiTenant
 {
     /// <summary>Unique identifier.</summary>
     public Guid Id { get; set; }
@@ -25,4 +28,7 @@ internal sealed class TemplateCategoryEntity
 
     /// <summary>Identity of the user who created this category.</summary>
     public string CreatedBy { get; set; } = null!;
+
+    /// <inheritdoc/>
+    public Guid? TenantId { get; set; }
 }

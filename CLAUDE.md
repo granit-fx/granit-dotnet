@@ -52,6 +52,7 @@ Each module follows a consistent layered split:
 | Layer | Project suffix | Contains |
 | ----- | -------------- | -------- |
 | Abstractions | `Granit.{Module}` | Interfaces, options, DI extension, `*Module` class |
+| Background Jobs | `.BackgroundJobs` | `IBackgroundJob` records, handlers, module class |
 | Endpoints | `.Endpoints` | Minimal API route groups, request/response DTOs |
 | Persistence | `.EntityFrameworkCore` | Isolated `DbContext`, entity configs, migrations |
 | Provider | `.{Provider}` | External service implementation (S3, Keycloak, SMTP...) |
@@ -203,16 +204,19 @@ Single category with **mandatory suffix** — enforced by architecture tests:
 
 | Interface | Attribute | Suffix | Example | Location |
 | --------- | --------- | ------ | ------- | -------- |
-| `IBackgroundJob` | `[RecurringJob]` | `*Job` | `OrphanBlobCleanupJob` | `Granit.{Module}/Jobs/` |
+| `IBackgroundJob` | `[RecurringJob]` | `*Job` | `OrphanBlobCleanupJob` | `Granit.{Module}.BackgroundJobs/Jobs/` |
 
 - **`*Job`**: `sealed record` implementing `IBackgroundJob`, decorated with
   `[RecurringJob("cron", "name")]`. Handler in same `Jobs/` folder.
+- **Dedicated sub-project**: each module's jobs live in `Granit.{Module}.BackgroundJobs`
+  with a `Granit{Module}BackgroundJobsModule : GranitModule` class. This keeps the base
+  module free from the `Granit.BackgroundJobs` dependency.
 - **Job name format**: `{module-kebab}-{action-kebab}` (e.g., `"blob-storage-orphan-cleanup"`).
   Module prefix ensures global uniqueness.
 - **Handler naming**: `{Action}Handler` (e.g., `OrphanBlobCleanupHandler`) — `internal static partial class`.
 - **NEVER** use `*Command` suffix for jobs — commands are CQRS, jobs are scheduled work units.
-- **NEVER** create a separate `.Wolverine` package for jobs — jobs live in the base module's
-  `Jobs/` folder. Wolverine scheduling is handled by `Granit.BackgroundJobs.Wolverine`.
+- **NEVER** create a separate `.Wolverine` package for jobs. Wolverine scheduling is
+  handled by `Granit.BackgroundJobs.Wolverine`.
 
 ### DTOs & API responses
 

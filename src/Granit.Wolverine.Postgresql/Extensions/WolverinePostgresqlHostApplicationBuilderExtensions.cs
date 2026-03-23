@@ -1,6 +1,5 @@
 using Granit.Persistence.Extensions;
 using Granit.Persistence.MultiTenancy;
-using Granit.Wolverine.Internal;
 using Granit.Wolverine.Postgresql.Internal;
 using Granit.Wolverine.Postgresql.Options;
 using Microsoft.EntityFrameworkCore;
@@ -114,7 +113,7 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
             WolverinePostgresqlOptionsValidator>();
 
         // Read options directly from IConfiguration: the DI container is not yet
-        // built at this point, so IOptions<> is not resolvable inside UseWolverine().
+        // built at this point, so IOptions<> is not resolvable inside ConfigureWolverine().
         WolverinePostgresqlOptions options = new();
         builder.Configuration
             .GetSection(WolverinePostgresqlOptions.SectionName)
@@ -122,43 +121,13 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
 
         string connectionString = ResolveConnectionString(builder.Configuration, options);
 
-        // Two paths, both ensure PersistMessagesWithPostgresql runs before the DI container is built:
-        //
-        // Path A — AddGranitWolverine() was called first (production via [DependsOn] module ordering):
-        //   UseWolverine() can only be called once; calling it again throws.
-        //   AddGranitWolverine() captures the WolverineOptions from inside the UseWolverine lambda
-        //   (invoked synchronously) and registers it via GranitWolverineOptionsHolder.
-        //   Wolverine 5.20+ registers WolverineOptions via an IServiceProvider-dependent factory —
-        //   it cannot be retrieved via ImplementationInstance or by invoking the factory before
-        //   the container is built (the factory requires IServiceProvider).
-        //   The container is not yet built so options.Services.AddSingleton() inside
-        //   PersistMessagesWithPostgresql is still valid.
-        //
-        // Path B — called standalone without AddGranitWolverine() (integration tests, manual wiring):
-        //   GranitWolverineOptionsHolder is absent — UseWolverine() hasn't been called yet — safe to
-        //   call it once here.
-        WolverineOptions? existing = builder.Services
-            .Where(sd => sd.ServiceType == typeof(GranitWolverineOptionsHolder))
-            .Select(sd => (sd.ImplementationInstance as GranitWolverineOptionsHolder)?.Options)
-            .FirstOrDefault(x => x is not null);
-
-        if (existing is not null)
+        builder.Services.ConfigureWolverine(opts =>
         {
-            existing.PersistMessagesWithPostgresql(connectionString);
-            existing.UseEntityFrameworkCoreTransactions(options.TransactionMode);
-            existing.Policies.AutoApplyTransactions();
-            configure?.Invoke(existing);
-        }
-        else
-        {
-            builder.UseWolverine(opts =>
-            {
-                opts.PersistMessagesWithPostgresql(connectionString);
-                opts.UseEntityFrameworkCoreTransactions(options.TransactionMode);
-                opts.Policies.AutoApplyTransactions();
-                configure?.Invoke(opts);
-            });
-        }
+            opts.PersistMessagesWithPostgresql(connectionString);
+            opts.UseEntityFrameworkCoreTransactions(options.TransactionMode);
+            opts.Policies.AutoApplyTransactions();
+            configure?.Invoke(opts);
+        });
 
         return builder;
     }

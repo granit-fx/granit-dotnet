@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Granit.Core.MultiTenancy;
+using Granit.Notifications.Endpoints.Dtos;
 using Granit.Notifications.MobilePush;
 using Granit.Timing;
 using Granit.Validation.AspNetCore;
@@ -118,16 +119,3 @@ public static class MobilePushTokenEndpoints
         ?? user.FindFirstValue("sub")
         ?? throw new InvalidOperationException("User identifier claim not found.");
 }
-
-/// <summary>Request to register a mobile push device token.</summary>
-public sealed record MobilePushTokenRegisterRequest
-{
-    /// <summary>Device token from FCM/APNs.</summary>
-    public required string DeviceToken { get; init; }
-
-    /// <summary>Device platform.</summary>
-    public required MobilePlatform Platform { get; init; }
-}
-
-/// <summary>Response for a mobile push device token.</summary>
-public sealed record MobilePushTokenResponse(string DeviceToken, MobilePlatform Platform, DateTimeOffset CreatedAt);

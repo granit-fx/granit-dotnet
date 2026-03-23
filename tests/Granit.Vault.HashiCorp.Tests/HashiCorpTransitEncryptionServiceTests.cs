@@ -1,6 +1,9 @@
+using System.Diagnostics.Metrics;
 using System.Text;
+using Granit.Vault.Diagnostics;
 using Granit.Vault.HashiCorp.Options;
 using Granit.Vault.HashiCorp.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -13,10 +16,11 @@ using Xunit;
 
 namespace Granit.Vault.HashiCorp.Tests;
 
-public sealed class HashiCorpTransitEncryptionServiceTests
+public sealed class HashiCorpTransitEncryptionServiceTests : IDisposable
 {
     private readonly IVaultClient _vaultClient;
     private readonly HashiCorpTransitEncryptionService _sut;
+    private readonly ServiceProvider _sp;
 
     public HashiCorpTransitEncryptionServiceTests()
     {
@@ -25,11 +29,19 @@ public sealed class HashiCorpTransitEncryptionServiceTests
         {
             TransitMountPoint = "transit"
         });
+        ServiceCollection services = new();
+        services.AddMetrics();
+        _sp = services.BuildServiceProvider();
+        VaultMetrics metrics = new(_sp.GetRequiredService<IMeterFactory>());
         _sut = new HashiCorpTransitEncryptionService(
             _vaultClient,
             vaultOptions,
+            metrics,
+            currentTenant: null,
             NullLogger<HashiCorpTransitEncryptionService>.Instance);
     }
+
+    public void Dispose() => _sp.Dispose();
 
     [Fact]
     public async Task EncryptAsync_CallsVaultTransitWithBase64Plaintext()

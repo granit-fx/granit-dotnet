@@ -3,6 +3,7 @@
   "texts": {
     "Permission:Privacy.Agreements.Create": "Accept a legal agreement",
     "Permission:Privacy.Agreements.Read": "View legal documents and consent status",
+    "Permission:Privacy.Deletion.Read": "View deletion request status and history",
     "Permission:Privacy.Deletion.Execute": "Request personal data deletion",
     "Permission:Privacy.Export.Execute": "Request personal data export",
     "Permission:Privacy.Export.Read": "View personal data export status",

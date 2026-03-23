@@ -1,15 +1,8 @@
-// =============================================================================
-// Tests — WolverineMigrationBatchDispatcher
-// =============================================================================
-// Verifies that the Wolverine-based dispatcher resolves IMessageBus from a
-// scoped service and sends each command via SendAsync.
-// =============================================================================
-
 using Granit.Persistence.Migrations.Messages;
 using Granit.Persistence.Migrations.Wolverine.Internal;
+using Granit.Wolverine;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
-using Shouldly;
 using Wolverine;
 using Xunit;
 
@@ -25,7 +18,7 @@ public sealed class WolverineMigrationBatchDispatcherTests
         services.AddScoped(_ => _messageBus);
         ServiceProvider sp = services.BuildServiceProvider();
         IServiceScopeFactory scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
-        return new WolverineMigrationBatchDispatcher(scopeFactory);
+        return new WolverineMigrationBatchDispatcher(new WolverineScopedSender(scopeFactory));
     }
 
     [Fact]

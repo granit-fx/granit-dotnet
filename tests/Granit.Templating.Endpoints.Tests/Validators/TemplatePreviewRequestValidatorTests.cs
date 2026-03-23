@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FluentValidation.Results;
 using Granit.Templating.Endpoints.Dtos;
+using Granit.Templating.Endpoints.Internal;
 using Granit.Templating.Endpoints.Validators;
 using Shouldly;
 using Xunit;
@@ -76,7 +77,7 @@ public sealed class TemplatePreviewRequestValidatorTests
     [Fact]
     public void Validate_CultureExceedsMaxLength_Fails()
     {
-        string longCulture = new('x', TemplatePreviewRequestValidator.MaxCultureLength + 1);
+        string longCulture = new('x', TemplatingPatterns.MaxCultureLength + 1);
         TemplatePreviewRequest request = new(Culture: longCulture, Data: null);
 
         ValidationResult result = _validator.Validate(request);

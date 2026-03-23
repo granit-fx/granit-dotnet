@@ -111,6 +111,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
                  + "deadline and can cancel via POST /deletion/{requestId}/cancel. "
                  + "A confirmation email is sent in both cases after deletion is executed.")
              .Produces<PrivacyDeletionRequestResponse>(StatusCodes.Status202Accepted)
+             .ProducesProblem(StatusCodes.Status409Conflict)
              .ProducesValidationProblem();
 
         group.MapPost("/deletion/{requestId:guid}/cancel", HandleCancelDeletionAsync)
@@ -125,7 +126,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapGet("/deletion/{requestId:guid}", HandleGetDeletionStatusAsync)
-             .RequireAuthorization(PrivacyPermissions.Deletion.Execute)
+             .RequireAuthorization(PrivacyPermissions.Deletion.Read)
              .WithName("GetPrivacyDeletionStatus")
              .WithSummary("Returns the status of a deferred deletion request.")
              .WithDescription(
@@ -136,7 +137,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/deletion", HandleGetMyDeletionsAsync)
-             .RequireAuthorization(PrivacyPermissions.Deletion.Execute)
+             .RequireAuthorization(PrivacyPermissions.Deletion.Read)
              .WithName("ListPrivacyDeletions")
              .WithSummary("Lists all deletion requests for the current user.")
              .WithDescription(

@@ -3,6 +3,8 @@
   "texts": {
     "PermissionGroup:Templating": "Şablonlar",
     "Permission:Templating.Templates.Read": "Şablonları görüntüle (liste, detay, geçmiş)",
-    "Permission:Templating.Templates.Manage": "Şablonları yönet (görüntüle, oluştur, düzenle, sil, yayınla)"
+    "Permission:Templating.Templates.Manage": "Şablonları yönet (görüntüle, oluştur, düzenle, sil, yayınla)",
+    "Permission:Templating.Categories.Read": "Şablon kategorilerini görüntüle",
+    "Permission:Templating.Categories.Manage": "Şablon kategorilerini yönet (oluştur, düzenle, sil)"
   }
 }

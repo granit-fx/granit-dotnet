@@ -80,17 +80,14 @@ public sealed class AesStringEncryptionProvider : IStringEncryptionProvider
         using ICryptoTransform encryptor = aes.CreateEncryptor();
         byte[] cipherBytes = encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
 
-        // Encrypt-then-MAC : HMAC-SHA256(IV || CipherText)
+        // Format: IV[16] || CipherText || HMAC-SHA256(IV || CipherText)[32]
         int dataLength = IvSize + cipherBytes.Length;
-        byte[] dataToMac = new byte[dataLength];
-        Buffer.BlockCopy(iv, 0, dataToMac, 0, IvSize);
-        Buffer.BlockCopy(cipherBytes, 0, dataToMac, IvSize, cipherBytes.Length);
-        byte[] hmac = HMACSHA256.HashData(_hmacKey, dataToMac);
-
-        // Format : IV[16] || CipherText || HMAC[32]
         byte[] output = new byte[dataLength + HmacSize];
-        Buffer.BlockCopy(dataToMac, 0, output, 0, dataLength);
-        Buffer.BlockCopy(hmac, 0, output, dataLength, HmacSize);
+        iv.CopyTo(output.AsSpan());
+        cipherBytes.CopyTo(output.AsSpan(IvSize));
+
+        // Encrypt-then-MAC: HMAC computed directly over the output buffer (non-overlapping regions)
+        HMACSHA256.TryHashData(_hmacKey, output.AsSpan(0, dataLength), output.AsSpan(dataLength), out _);
 
         return Convert.ToBase64String(output);
     }
@@ -120,17 +117,17 @@ public sealed class AesStringEncryptionProvider : IStringEncryptionProvider
         }
 
         // Verify HMAC before decryption (encrypt-then-MAC: always verify first)
-        byte[] receivedHmac = input[^HmacSize..];
-        byte[] dataToMac = input[..^HmacSize];
-        byte[] computedHmac = HMACSHA256.HashData(_hmacKey, dataToMac);
+        int dataLength = input.Length - HmacSize;
+        Span<byte> computedHmac = stackalloc byte[HmacSize];
+        HMACSHA256.TryHashData(_hmacKey, input.AsSpan(0, dataLength), computedHmac, out _);
 
-        if (!CryptographicOperations.FixedTimeEquals(computedHmac, receivedHmac))
+        if (!CryptographicOperations.FixedTimeEquals(computedHmac, input.AsSpan(dataLength)))
         {
             return null;
         }
 
         byte[] iv = input[..IvSize];
-        byte[] cipherBytes = input[IvSize..^HmacSize];
+        byte[] cipherBytes = input[IvSize..dataLength];
 
         using var aes = Aes.Create();
         aes.Key = _aesKey;

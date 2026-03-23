@@ -1,4 +1,4 @@
-using Granit.Notifications.Endpoints.Endpoints;
+using Granit.Notifications.Endpoints.Dtos;
 using Granit.Notifications.MobilePush;
 using Shouldly;
 using Xunit;

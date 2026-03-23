@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.BlobStorage.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.BlobStorage. Automated orphan blob cleanup via Granit.BackgroundJobs recurring job pattern.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.BlobStorage.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.BlobStorage\Granit.BlobStorage.csproj" />
+  </ItemGroup>
+
+</Project>

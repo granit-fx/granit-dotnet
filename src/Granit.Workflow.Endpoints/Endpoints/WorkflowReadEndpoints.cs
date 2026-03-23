@@ -22,12 +22,12 @@ internal static class WorkflowReadEndpoints
             .WithName("GetWorkflowTransitionHistory")
             .WithSummary("Returns the ISO 27001-compliant audit trail of workflow transitions for an entity.")
             .WithDescription("Returns a paginated list of all state transitions for the specified entity, ordered by timestamp descending. Each entry includes the source and target state, the actor, an optional comment, and the transition timestamp. This history is immutable and serves as the ISO 27001 A.12.4 audit trail for workflow changes.")
-            .Produces<PagedResult<TransitionHistoryResponse>>();
+            .Produces<PagedResult<WorkflowTransitionHistoryResponse>>();
 
         return group;
     }
 
-    private static async Task<Ok<PagedResult<TransitionHistoryResponse>>> GetTransitionHistoryAsync(
+    private static async Task<Ok<PagedResult<WorkflowTransitionHistoryResponse>>> GetTransitionHistoryAsync(
         string entityType,
         string entityId,
         [FromServices] IWorkflowHistoryQuery historyQuery,
@@ -38,7 +38,7 @@ internal static class WorkflowReadEndpoints
         int clampedPage = Math.Max(page, 1);
         int clampedPageSize = Math.Clamp(pageSize, 1, QueryingDefaults.MaxPageSize);
 
-        PagedResult<TransitionHistoryResponse> result = await historyQuery.GetHistoryAsync(
+        PagedResult<WorkflowTransitionHistoryResponse> result = await historyQuery.GetHistoryAsync(
             entityType, entityId, clampedPage, clampedPageSize, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Ok(result);

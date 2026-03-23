@@ -10,6 +10,7 @@ namespace Granit.DataExchange.EntityFrameworkCore;
 /// Tables are managed by the host application's migrations
 /// (via <c>modelBuilder.ConfigureDataExchangeModule()</c>), like all other modules.
 /// </summary>
-[DependsOn(typeof(GranitDataExchangeModule))]
-[DependsOn(typeof(GranitPersistenceModule))]
+[DependsOn(
+    typeof(GranitDataExchangeModule),
+    typeof(GranitPersistenceModule))]
 public sealed class GranitDataExchangeEntityFrameworkCoreModule : GranitModule;

@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
 using FluentValidation;
+using Granit.Validation.Extensions;
 
 namespace Granit.Webhooks.Endpoints.Validators;
 
@@ -26,14 +27,11 @@ public static class WebhookTargetUrlValidatorExtensions
             .NotEmpty()
             .MaximumLength(MaxUrlLength)
             .Must(BeAValidHttpsUrl)
-                .WithMessage("Granit:Validation:InvalidWebhookUrl")
-                .WithErrorCode("Granit:Validation:InvalidWebhookUrl")
+                .WithErrorCodeAndMessage("Granit:Validation:InvalidWebhookUrl")
             .Must(NotTargetPrivateOrLocalAddress)
-                .WithMessage("Granit:Validation:WebhookUrlPrivateAddress")
-                .WithErrorCode("Granit:Validation:WebhookUrlPrivateAddress")
+                .WithErrorCodeAndMessage("Granit:Validation:WebhookUrlPrivateAddress")
             .Must(NotUseBlockedTld)
-                .WithMessage("Granit:Validation:WebhookUrlBlockedTld")
-                .WithErrorCode("Granit:Validation:WebhookUrlBlockedTld");
+                .WithErrorCodeAndMessage("Granit:Validation:WebhookUrlBlockedTld");
     }
 
     private static bool BeAValidHttpsUrl(string url)

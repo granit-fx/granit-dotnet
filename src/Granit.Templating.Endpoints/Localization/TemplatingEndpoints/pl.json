@@ -3,6 +3,8 @@
   "texts": {
     "PermissionGroup:Templating": "Szablony",
     "Permission:Templating.Templates.Read": "Przeglądanie szablonów (lista, szczegóły, historia)",
-    "Permission:Templating.Templates.Manage": "Zarządzanie szablonami (wyświetlanie, tworzenie, edycja, usuwanie, publikowanie)"
+    "Permission:Templating.Templates.Manage": "Zarządzanie szablonami (wyświetlanie, tworzenie, edycja, usuwanie, publikowanie)",
+    "Permission:Templating.Categories.Read": "Przeglądanie kategorii szablonów",
+    "Permission:Templating.Categories.Manage": "Zarządzanie kategoriami szablonów (tworzenie, edycja, usuwanie)"
   }
 }
