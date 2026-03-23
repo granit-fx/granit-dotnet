@@ -32,7 +32,7 @@ internal sealed class DefaultBffDPoPService(IClock clock) : IBffDPoPService
     }
 
     /// <inheritdoc/>
-    public string CreateProof(string privateKeyJwk, string httpMethod, string httpUri)
+    public string CreateProof(string privateKeyJwk, string httpMethod, string httpUri, string? nonce = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(privateKeyJwk);
         ArgumentException.ThrowIfNullOrEmpty(httpMethod);
@@ -74,16 +74,24 @@ internal sealed class DefaultBffDPoPService(IClock clock) : IBffDPoPService
 
         long now = clock.Now.ToUnixTimeSeconds();
 
-        // Payload: {"jti":"<nonce>","htm":"<method>","htu":"<uri>","iat":<now>,"exp":<now+30>}
+        // Payload: {"jti":"<id>","htm":"<method>","htu":"<uri>","iat":<now>,"exp":<now+30>[,"nonce":"<nonce>"]}
 #pragma warning disable GRSEC002 // jti is a cryptographic nonce, not a DB key — sequential GUIDs are not needed
-        string payload = JsonSerializer.Serialize(new Dictionary<string, object>
+        var payloadDict = new Dictionary<string, object>
         {
             ["jti"] = Guid.NewGuid().ToString("N"),
             ["htm"] = httpMethod.ToUpperInvariant(),
             ["htu"] = htu,
             ["iat"] = now,
             ["exp"] = now + ProofLifetimeSeconds,
-        });
+        };
+
+        // Include server-provided nonce for replay protection (RFC 9449 §8)
+        if (!string.IsNullOrEmpty(nonce))
+        {
+            payloadDict["nonce"] = nonce;
+        }
+
+        string payload = JsonSerializer.Serialize(payloadDict);
 #pragma warning restore GRSEC002
 
         string headerB64 = Base64UrlEncode(Encoding.UTF8.GetBytes(header));

@@ -284,44 +284,62 @@ internal static partial class BffLoginEndpoints
 
         BffClientAuthentication.Apply(parameters, frontend, tokenEndpoint, assertionService);
 
-        using FormUrlEncodedContent content = new(parameters);
-        using var request = new HttpRequestMessage(HttpMethod.Post, tokenEndpoint) { Content = content };
+        HttpResponseMessage response = await SendTokenRequestAsync(
+            httpClient, tokenEndpoint, parameters, dpopPrivateKeyJwk, null, dpopService, cancellationToken)
+            .ConfigureAwait(false);
 
-        // Attach DPoP proof if key is available (RFC 9449 §4)
-        if (!string.IsNullOrEmpty(dpopPrivateKeyJwk))
+        // Handle use_dpop_nonce error — single retry with server-provided nonce (RFC 9449 §8)
+        string? dpopNonce = null;
+        if (!response.IsSuccessStatusCode
+            && !string.IsNullOrEmpty(dpopPrivateKeyJwk)
+            && await IsDPoPNonceRequiredAsync(response, cancellationToken).ConfigureAwait(false))
         {
-            string dpopProof = dpopService.CreateProof(dpopPrivateKeyJwk, "POST", tokenEndpoint);
-            request.Headers.TryAddWithoutValidation("DPoP", dpopProof);
+            dpopNonce = response.Headers.TryGetValues("DPoP-Nonce", out IEnumerable<string>? nonceValues)
+                ? nonceValues.FirstOrDefault() : null;
+
+            if (!string.IsNullOrEmpty(dpopNonce))
+            {
+                response.Dispose();
+                response = await SendTokenRequestAsync(
+                    httpClient, tokenEndpoint, parameters, dpopPrivateKeyJwk, dpopNonce, dpopService, cancellationToken)
+                    .ConfigureAwait(false);
+            }
         }
 
-        using HttpResponseMessage response = await httpClient
-            .SendAsync(request, cancellationToken)
-            .ConfigureAwait(false);
-
-        if (!response.IsSuccessStatusCode)
+        using (response)
         {
-            return null;
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            // Capture DPoP-Nonce from success response for future requests
+            if (response.Headers.TryGetValues("DPoP-Nonce", out IEnumerable<string>? successNonce))
+            {
+                dpopNonce = successNonce.FirstOrDefault() ?? dpopNonce;
+            }
+
+            using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            JsonElement tokenResponse = await JsonSerializer.DeserializeAsync<JsonElement>(stream, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+
+            string accessToken = tokenResponse.GetProperty("access_token").GetString()!;
+            string? refreshToken = tokenResponse.TryGetProperty("refresh_token", out JsonElement rt) ? rt.GetString() : null;
+            string? idToken = tokenResponse.TryGetProperty("id_token", out JsonElement it) ? it.GetString() : null;
+            int expiresIn = tokenResponse.TryGetProperty("expires_in", out JsonElement ei) ? ei.GetInt32() : 3600;
+
+            return new BffTokenSet(
+                accessToken,
+                refreshToken,
+                idToken,
+                clock.Now.AddSeconds(expiresIn))
+            {
+                DPoPPrivateKeyJwk = dpopPrivateKeyJwk,
+                DPoPNonce = dpopNonce,
+            };
         }
-
-        using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        JsonElement tokenResponse = await JsonSerializer.DeserializeAsync<JsonElement>(stream, cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-
-        string accessToken = tokenResponse.GetProperty("access_token").GetString()!;
-        string? refreshToken = tokenResponse.TryGetProperty("refresh_token", out JsonElement rt) ? rt.GetString() : null;
-        string? idToken = tokenResponse.TryGetProperty("id_token", out JsonElement it) ? it.GetString() : null;
-        int expiresIn = tokenResponse.TryGetProperty("expires_in", out JsonElement ei) ? ei.GetInt32() : 3600;
-
-        return new BffTokenSet(
-            accessToken,
-            refreshToken,
-            idToken,
-            clock.Now.AddSeconds(expiresIn))
-        {
-            DPoPPrivateKeyJwk = dpopPrivateKeyJwk,
-        };
     }
 #pragma warning restore GRSEC003
 
@@ -407,6 +425,46 @@ internal static partial class BffLoginEndpoints
         }
     }
 #pragma warning restore GRSEC003
+
+    private static async Task<HttpResponseMessage> SendTokenRequestAsync(
+        HttpClient httpClient,
+        string tokenEndpoint,
+        Dictionary<string, string> parameters,
+        string? dpopPrivateKeyJwk,
+        string? dpopNonce,
+        IBffDPoPService dpopService,
+        CancellationToken cancellationToken)
+    {
+        using FormUrlEncodedContent content = new(parameters);
+        using var request = new HttpRequestMessage(HttpMethod.Post, tokenEndpoint) { Content = content };
+
+        if (!string.IsNullOrEmpty(dpopPrivateKeyJwk))
+        {
+            string dpopProof = dpopService.CreateProof(dpopPrivateKeyJwk, "POST", tokenEndpoint, dpopNonce);
+            request.Headers.TryAddWithoutValidation("DPoP", dpopProof);
+        }
+
+        return await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task<bool> IsDPoPNonceRequiredAsync(
+        HttpResponseMessage response, CancellationToken cancellationToken)
+    {
+        try
+        {
+            using Stream errorStream = await response.Content.ReadAsStreamAsync(cancellationToken)
+                .ConfigureAwait(false);
+            JsonElement errorBody = await JsonSerializer.DeserializeAsync<JsonElement>(
+                errorStream, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            return errorBody.TryGetProperty("error", out JsonElement errorCode)
+                && errorCode.GetString() == "use_dpop_nonce";
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
 
     private static string GenerateCodeVerifier()
     {

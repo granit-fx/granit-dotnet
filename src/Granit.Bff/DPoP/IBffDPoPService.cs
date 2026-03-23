@@ -19,6 +19,7 @@ public interface IBffDPoPService
     /// <param name="privateKeyJwk">The private key as a JWK JSON string (from <see cref="GenerateKeyPair"/>).</param>
     /// <param name="httpMethod">The HTTP method of the request (e.g., <c>"POST"</c>, <c>"GET"</c>).</param>
     /// <param name="httpUri">The full URL of the target endpoint (scheme + host + path, no query).</param>
+    /// <param name="nonce">Optional server-provided nonce (RFC 9449 §8). When present, included as the <c>nonce</c> claim in the proof JWT for replay protection.</param>
     /// <returns>A signed DPoP proof JWT string.</returns>
-    string CreateProof(string privateKeyJwk, string httpMethod, string httpUri);
+    string CreateProof(string privateKeyJwk, string httpMethod, string httpUri, string? nonce = null);
 }

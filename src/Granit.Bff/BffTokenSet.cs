@@ -16,5 +16,12 @@ public sealed record BffTokenSet(
     /// When present, the BFF uses DPoP token binding (RFC 9449) for this session.
     /// </summary>
     public string? DPoPPrivateKeyJwk { get; init; }
+
+    /// <summary>
+    /// Server-provided DPoP nonce for replay protection (RFC 9449 §8).
+    /// Included in subsequent DPoP proof JWTs as the <c>nonce</c> claim.
+    /// Updated when the server returns a new <c>DPoP-Nonce</c> header.
+    /// </summary>
+    public string? DPoPNonce { get; init; }
 }
 #pragma warning restore GRSEC003

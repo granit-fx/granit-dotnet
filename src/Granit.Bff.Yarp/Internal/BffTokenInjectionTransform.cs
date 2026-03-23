@@ -130,7 +130,7 @@ internal sealed partial class BffTokenInjectionTransform(
                 ?? transformContext.HttpContext.Request.Path.Value ?? "/";
             string httpMethod = transformContext.HttpContext.Request.Method;
 
-            string dpopProof = dpopService.CreateProof(tokens.DPoPPrivateKeyJwk, httpMethod, targetUri);
+            string dpopProof = dpopService.CreateProof(tokens.DPoPPrivateKeyJwk, httpMethod, targetUri, tokens.DPoPNonce);
 
             transformContext.ProxyRequest.Headers.Authorization =
                 new AuthenticationHeaderValue("DPoP", tokens.AccessToken);
@@ -181,7 +181,8 @@ internal sealed partial class BffTokenInjectionTransform(
             // Attach DPoP proof for token refresh (RFC 9449 §5)
             if (!string.IsNullOrEmpty(currentTokens.DPoPPrivateKeyJwk))
             {
-                string dpopProof = dpopService.CreateProof(currentTokens.DPoPPrivateKeyJwk, "POST", tokenEndpoint);
+                string dpopProof = dpopService.CreateProof(
+                    currentTokens.DPoPPrivateKeyJwk, "POST", tokenEndpoint, currentTokens.DPoPNonce);
                 request.Headers.TryAddWithoutValidation("DPoP", dpopProof);
             }
 
@@ -192,6 +193,13 @@ internal sealed partial class BffTokenInjectionTransform(
             if (!response.IsSuccessStatusCode)
             {
                 return null;
+            }
+
+            // Capture updated DPoP-Nonce from refresh response (RFC 9449 §8)
+            string? dpopNonce = currentTokens.DPoPNonce;
+            if (response.Headers.TryGetValues("DPoP-Nonce", out IEnumerable<string>? nonceValues))
+            {
+                dpopNonce = nonceValues.FirstOrDefault() ?? dpopNonce;
             }
 
             using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken)
@@ -215,6 +223,7 @@ internal sealed partial class BffTokenInjectionTransform(
                 clock.Now.AddSeconds(expiresIn))
             {
                 DPoPPrivateKeyJwk = currentTokens.DPoPPrivateKeyJwk,
+                DPoPNonce = dpopNonce,
             };
         }
         catch (OperationCanceledException)

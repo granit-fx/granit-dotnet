@@ -196,4 +196,52 @@ public sealed class DefaultBffDPoPServiceTests
 
         return Convert.FromBase64String(padded);
     }
+
+    // ── Nonce Support (RFC 9449 §8) ──
+
+    [Fact]
+    public void CreateProof_WithNonce_IncludesNonceClaim()
+    {
+        string keyJwk = _service.GenerateKeyPair();
+
+        string proof = _service.CreateProof(keyJwk, "POST", "https://auth.example.com/connect/token", nonce: "server-nonce-123");
+
+        string[] parts = proof.Split('.');
+        byte[] payloadBytes = Base64UrlDecode(parts[1]);
+        using var doc = JsonDocument.Parse(payloadBytes);
+        JsonElement root = doc.RootElement;
+
+        root.TryGetProperty("nonce", out JsonElement nonceElement).ShouldBeTrue("proof should contain nonce claim");
+        nonceElement.GetString().ShouldBe("server-nonce-123");
+    }
+
+    [Fact]
+    public void CreateProof_WithoutNonce_DoesNotIncludeNonceClaim()
+    {
+        string keyJwk = _service.GenerateKeyPair();
+
+        string proof = _service.CreateProof(keyJwk, "POST", "https://auth.example.com/connect/token");
+
+        string[] parts = proof.Split('.');
+        byte[] payloadBytes = Base64UrlDecode(parts[1]);
+        using var doc = JsonDocument.Parse(payloadBytes);
+        JsonElement root = doc.RootElement;
+
+        root.TryGetProperty("nonce", out _).ShouldBeFalse("proof should not contain nonce claim when nonce is null");
+    }
+
+    [Fact]
+    public void CreateProof_WithEmptyNonce_DoesNotIncludeNonceClaim()
+    {
+        string keyJwk = _service.GenerateKeyPair();
+
+        string proof = _service.CreateProof(keyJwk, "POST", "https://auth.example.com/connect/token", nonce: "");
+
+        string[] parts = proof.Split('.');
+        byte[] payloadBytes = Base64UrlDecode(parts[1]);
+        using var doc = JsonDocument.Parse(payloadBytes);
+        JsonElement root = doc.RootElement;
+
+        root.TryGetProperty("nonce", out _).ShouldBeFalse("proof should not contain nonce claim when nonce is empty");
+    }
 }
