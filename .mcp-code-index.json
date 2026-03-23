@@ -261,6 +261,7 @@
     {
       "name": "Granit.Bff",
       "deps": [
+        "Granit.Authentication.Oidc",
         "Granit.Core",
         "Granit.Security",
         "Granit.Timing"
@@ -279,6 +280,7 @@
     {
       "name": "Granit.Bff.EntityFrameworkCore",
       "deps": [
+        "Granit.BackgroundJobs",
         "Granit.Bff",
         "Granit.Guids",
         "Granit.Persistence"
@@ -6461,7 +6463,7 @@
       "kind": "class",
       "project": "Granit.Bff.EntityFrameworkCore",
       "file": "src/Granit.Bff.EntityFrameworkCore/GranitBffEntityFrameworkCoreModule.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6498,6 +6500,15 @@
           "returnType": "string?"
         }
       ]
+    },
+    {
+      "name": "BffExpiredSessionCleanupJob",
+      "fqn": "Granit.Bff.EntityFrameworkCore.Jobs.BffExpiredSessionCleanupJob",
+      "kind": "record",
+      "project": "Granit.Bff.EntityFrameworkCore",
+      "file": "src/Granit.Bff.EntityFrameworkCore/Jobs/BffExpiredSessionCleanupJob.cs",
+      "line": 13,
+      "members": []
     },
     {
       "name": "GranitBffModule",

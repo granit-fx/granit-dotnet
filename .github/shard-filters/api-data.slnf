@@ -4,6 +4,7 @@
     "projects": [
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
       "src/Granit.Analyzers/Granit.Analyzers.csproj",
+      "src/Granit.Authentication.Oidc/Granit.Authentication.Oidc.csproj",
       "src/Granit.Authorization/Granit.Authorization.csproj",
       "src/Granit.BackgroundJobs/Granit.BackgroundJobs.csproj",
       "src/Granit.Bff.Endpoints/Granit.Bff.Endpoints.csproj",

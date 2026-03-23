@@ -1,3 +1,4 @@
+using Granit.BackgroundJobs;
 using Granit.Bff.EntityFrameworkCore.Internal;
 using Granit.Core.Modularity;
 using Granit.Persistence;
@@ -11,6 +12,7 @@ namespace Granit.Bff.EntityFrameworkCore;
 /// for deployments without Redis.
 /// </summary>
 [DependsOn(
+    typeof(GranitBackgroundJobsModule),
     typeof(GranitBffModule),
     typeof(GranitPersistenceModule))]
 public sealed class GranitBffEntityFrameworkCoreModule : GranitModule

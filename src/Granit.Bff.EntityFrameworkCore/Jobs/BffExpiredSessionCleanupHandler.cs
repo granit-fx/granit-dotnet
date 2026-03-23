@@ -1,19 +1,24 @@
+using Granit.Bff.EntityFrameworkCore.Internal;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Granit.Bff.EntityFrameworkCore.Internal;
+namespace Granit.Bff.EntityFrameworkCore.Jobs;
 
 /// <summary>
-/// Background job that purges expired BFF sessions from the database.
-/// SQL databases have no native TTL — this job runs periodically to reclaim storage.
+/// Handler for <see cref="BffExpiredSessionCleanupJob"/>. Purges expired BFF sessions
+/// from the database.
 /// </summary>
-internal static partial class ExpiredSessionCleanupHandler
+internal static partial class BffExpiredSessionCleanupHandler
 {
-    internal static async Task HandleAsync(
+    /// <summary>
+    /// Deletes all sessions past their expiry date.
+    /// </summary>
+    public static async Task HandleAsync(
+        BffExpiredSessionCleanupJob _,
         IDbContextFactory<BffDbContext> dbContextFactory,
         IClock clock,
-        ILogger logger,
+        ILogger<BffExpiredSessionCleanupJob> logger,
         CancellationToken cancellationToken)
     {
         await using BffDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken)
