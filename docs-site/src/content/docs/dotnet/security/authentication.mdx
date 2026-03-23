@@ -32,6 +32,8 @@ rejects the token immediately instead of waiting for expiry.
   - Granit.Authentication.Cognito Cognito groups → roles
   - Granit.Authentication.GoogleCloud Google Cloud Identity Platform claims
 - Granit.Authentication.OpenIddict/ Built-in token validation (OpenIddict as IdP)
+- Granit.Authentication.Oidc/ OIDC client primitives (discovery, requests, DPoP, PKCE)
+- Granit.Authentication.TokenManagement/ Token lifecycle (client credentials, caching, HttpClient)
 - Granit.Authentication.DPoP/ DPoP proof validation (any IdP)
 
 </FileTree>
@@ -44,6 +46,8 @@ rejects the token immediately instead of waiting for expiry.
 | `Granit.Authentication.Cognito` | Cognito groups → roles | `Granit.Authentication.JwtBearer` |
 | `Granit.Authentication.GoogleCloud` | Google Cloud Identity Platform claims | `Granit.Authentication.JwtBearer` |
 | `Granit.Authentication.OpenIddict` | Built-in token validation for OpenIddict IdP | `Granit.Security` |
+| `Granit.Authentication.Oidc` | OIDC client primitives — discovery, typed requests, DPoP proof generation, PKCE | `Granit.Core`, `Granit.Timing` |
+| `Granit.Authentication.TokenManagement` | Token lifecycle — client credentials caching, `DelegatingHandler`, revocation | `Granit.Authentication.Oidc` |
 | `Granit.Authentication.DPoP` | IdP-agnostic DPoP proof validation (RFC 9449) | `Granit.Core`, `Granit.Timing` |
 
 ## Setup
