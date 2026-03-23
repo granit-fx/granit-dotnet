@@ -10,7 +10,7 @@
     "lint": "markdownlint-cli2 \"src/content/docs/**/*.{md,mdx}\""
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.38.1",
+    "@astrojs/starlight": "^0.38.2",
     "@fontsource-variable/fira-code": "^5.2.7",
     "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
     "@lorenzo_lewis/starlight-utils": "^0.3.2",
