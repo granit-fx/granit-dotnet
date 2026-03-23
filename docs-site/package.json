@@ -28,7 +28,7 @@
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
-    "markdownlint-cli2": "^0.21.0",
+    "markdownlint-cli2": "^0.22.0",
     "starlight-image-zoom": "^0.14.1",
     "starlight-links-validator": "^0.20.1"
   },
