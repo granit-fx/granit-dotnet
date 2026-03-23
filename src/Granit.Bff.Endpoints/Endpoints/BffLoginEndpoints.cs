@@ -256,6 +256,15 @@ internal static partial class BffLoginEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
+        // Enrich token set with user context for session management (#621)
+        string? userId = ExtractSubFromIdToken(tokens.IdToken);
+        string? userAgent = httpContext.Request.Headers.UserAgent.ToString();
+        tokens = tokens with
+        {
+            UserId = userId,
+            UserAgent = string.IsNullOrEmpty(userAgent) ? null : userAgent,
+        };
+
         // Generate session ID and store tokens — random, not DB-stored, so sequential GUIDs are not needed
 #pragma warning disable GRSEC002 // Session IDs are ephemeral cache keys, not clustered index values
         string sessionId = Guid.NewGuid().ToString("N");
@@ -507,6 +516,47 @@ internal static partial class BffLoginEndpoints
             .Replace('+', '-')
             .Replace('/', '_')
             .TrimEnd('=');
+    }
+
+    /// <summary>
+    /// Extracts the <c>sub</c> claim from an ID token JWT payload without full validation
+    /// (token was already validated by the authorization server during exchange).
+    /// </summary>
+    private static string? ExtractSubFromIdToken(string? idToken)
+    {
+        if (string.IsNullOrEmpty(idToken))
+        {
+            return null;
+        }
+
+        try
+        {
+            string[] parts = idToken.Split('.');
+            if (parts.Length < 2)
+            {
+                return null;
+            }
+
+            string payload = parts[1].Replace('-', '+').Replace('_', '/');
+            switch (payload.Length % 4)
+            {
+                case 2: payload += "=="; break;
+                case 3: payload += "="; break;
+            }
+
+            byte[] bytes = Convert.FromBase64String(payload);
+            using var doc = JsonDocument.Parse(bytes);
+            return doc.RootElement.TryGetProperty("sub", out JsonElement sub)
+                ? sub.GetString() : null;
+        }
+        catch (FormatException)
+        {
+            return null;
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 
     private sealed record PkceState(string CodeVerifier, string State, string FrontendName, string? DPoPPrivateKeyJwk = null);

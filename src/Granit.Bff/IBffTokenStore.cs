@@ -24,4 +24,11 @@ public interface IBffTokenStore
     /// <param name="sessionId">The session identifier.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     Task RemoveAsync(string frontendName, string sessionId, CancellationToken cancellationToken = default);
+
+    /// <summary>Returns all session IDs for a given user on a frontend.</summary>
+    /// <param name="frontendName">The frontend name.</param>
+    /// <param name="userId">The user's subject identifier.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A list of session IDs, possibly including expired entries.</returns>
+    Task<IReadOnlyList<string>> GetSessionIdsByUserAsync(string frontendName, string userId, CancellationToken cancellationToken = default);
 }

@@ -16,6 +16,7 @@ internal sealed class DistributedCacheBffTokenStore(
     IClock clock) : IBffTokenStore
 {
     private const string KeyPrefix = "bff:session:";
+    private const string UserIndexPrefix = "bff:user-sessions:";
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -36,6 +37,13 @@ internal sealed class DistributedCacheBffTokenStore(
 
         await cache.SetAsync(BuildKey(frontendName, sessionId), json, cacheOptions, cancellationToken)
             .ConfigureAwait(false);
+
+        // Maintain user→sessions index for session listing
+        if (!string.IsNullOrEmpty(tokens.UserId))
+        {
+            await AddToUserIndexAsync(frontendName, tokens.UserId, sessionId, cancellationToken)
+                .ConfigureAwait(false);
+        }
     }
 
     public async Task<BffTokenSet?> GetAsync(string frontendName, string sessionId, CancellationToken cancellationToken = default)
@@ -59,9 +67,82 @@ internal sealed class DistributedCacheBffTokenStore(
         ArgumentException.ThrowIfNullOrWhiteSpace(frontendName);
         ArgumentException.ThrowIfNullOrWhiteSpace(sessionId);
 
+        // Remove from user index if possible
+        BffTokenSet? tokens = await GetAsync(frontendName, sessionId, cancellationToken).ConfigureAwait(false);
+        if (tokens?.UserId is not null)
+        {
+            await RemoveFromUserIndexAsync(frontendName, tokens.UserId, sessionId, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         await cache.RemoveAsync(BuildKey(frontendName, sessionId), cancellationToken)
             .ConfigureAwait(false);
     }
 
+    public async Task<IReadOnlyList<string>> GetSessionIdsByUserAsync(
+        string frontendName, string userId, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(frontendName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+
+        byte[]? bytes = await cache.GetAsync(BuildUserIndexKey(frontendName, userId), cancellationToken)
+            .ConfigureAwait(false);
+
+        if (bytes is null or { Length: 0 })
+        {
+            return [];
+        }
+
+        return JsonSerializer.Deserialize<List<string>>(bytes, JsonOptions) ?? [];
+    }
+
+    private async Task AddToUserIndexAsync(
+        string frontendName, string userId, string sessionId, CancellationToken cancellationToken)
+    {
+        string indexKey = BuildUserIndexKey(frontendName, userId);
+        List<string> sessionIds = await GetUserIndexAsync(indexKey, cancellationToken).ConfigureAwait(false);
+
+        if (!sessionIds.Contains(sessionId))
+        {
+            sessionIds.Add(sessionId);
+            await SaveUserIndexAsync(indexKey, sessionIds, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private async Task RemoveFromUserIndexAsync(
+        string frontendName, string userId, string sessionId, CancellationToken cancellationToken)
+    {
+        string indexKey = BuildUserIndexKey(frontendName, userId);
+        List<string> sessionIds = await GetUserIndexAsync(indexKey, cancellationToken).ConfigureAwait(false);
+
+        if (sessionIds.Remove(sessionId))
+        {
+            await SaveUserIndexAsync(indexKey, sessionIds, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private async Task<List<string>> GetUserIndexAsync(string indexKey, CancellationToken cancellationToken)
+    {
+        byte[]? bytes = await cache.GetAsync(indexKey, cancellationToken).ConfigureAwait(false);
+        if (bytes is null or { Length: 0 })
+        {
+            return [];
+        }
+
+        return JsonSerializer.Deserialize<List<string>>(bytes, JsonOptions) ?? [];
+    }
+
+    private async Task SaveUserIndexAsync(string indexKey, List<string> sessionIds, CancellationToken cancellationToken)
+    {
+        byte[] json = JsonSerializer.SerializeToUtf8Bytes(sessionIds, JsonOptions);
+        DistributedCacheEntryOptions cacheOptions = new()
+        {
+            AbsoluteExpiration = clock.Now.Add(options.Value.SessionAbsoluteMaxDuration),
+        };
+
+        await cache.SetAsync(indexKey, json, cacheOptions, cancellationToken).ConfigureAwait(false);
+    }
+
     private static string BuildKey(string frontendName, string sessionId) => $"{KeyPrefix}{frontendName}:{sessionId}";
+    private static string BuildUserIndexKey(string frontendName, string userId) => $"{UserIndexPrefix}{frontendName}:{userId}";
 }

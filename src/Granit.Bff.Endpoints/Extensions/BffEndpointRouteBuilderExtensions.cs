@@ -53,6 +53,8 @@ public static class BffEndpointRouteBuilderExtensions
         group.MapLogoutEndpoints(frontend);
         group.MapUserEndpoints(frontend);
         group.MapCsrfEndpoints(frontend);
+        group.MapSessionEndpoints(frontend);
+        group.MapBackChannelLogoutEndpoints(frontend);
     }
 
     private static void MapFrontendStaticFiles(IEndpointRouteBuilder endpoints, BffFrontendOptions frontend)

@@ -18,6 +18,17 @@ public sealed record BffTokenSet(
     public string? DPoPPrivateKeyJwk { get; init; }
 
     /// <summary>
+    /// The user's subject identifier (<c>sub</c> claim from the ID token).
+    /// Used to list/revoke all sessions for a user.
+    /// </summary>
+    public string? UserId { get; init; }
+
+    /// <summary>
+    /// The user-agent string from the login request. Used for session listing display.
+    /// </summary>
+    public string? UserAgent { get; init; }
+
+    /// <summary>
     /// Timestamp when the session was first created. Used to enforce
     /// <see cref="Options.GranitBffOptions.SessionAbsoluteMaxDuration"/>.
     /// </summary>
