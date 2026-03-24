@@ -1,4 +1,4 @@
-using Granit.Security;
+using Granit.Users;
 
 namespace Granit.Wolverine.Internal;
 

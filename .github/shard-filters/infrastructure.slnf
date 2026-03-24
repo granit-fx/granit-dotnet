@@ -52,7 +52,6 @@
       "src/Granit.Notifications/Granit.Notifications.csproj",
       "src/Granit.Persistence/Granit.Persistence.csproj",
       "src/Granit.Querying/Granit.Querying.csproj",
-      "src/Granit.Security/Granit.Security.csproj",
       "src/Granit.Settings.Endpoints/Granit.Settings.Endpoints.csproj",
       "src/Granit.Settings.EntityFrameworkCore/Granit.Settings.EntityFrameworkCore.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",

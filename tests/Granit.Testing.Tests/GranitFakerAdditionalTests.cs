@@ -1,6 +1,6 @@
-using Granit.Security;
 using Granit.Testing.Fakes;
 using Granit.Testing.Generators;
+using Granit.Users;
 using Shouldly;
 
 namespace Granit.Testing.Tests;

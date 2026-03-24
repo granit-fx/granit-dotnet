@@ -156,7 +156,6 @@
       "src/Granit.ReferenceData.Endpoints/Granit.ReferenceData.Endpoints.csproj",
       "src/Granit.ReferenceData.EntityFrameworkCore/Granit.ReferenceData.EntityFrameworkCore.csproj",
       "src/Granit.ReferenceData/Granit.ReferenceData.csproj",
-      "src/Granit.Security/Granit.Security.csproj",
       "src/Granit.Settings.Endpoints/Granit.Settings.Endpoints.csproj",
       "src/Granit.Settings.EntityFrameworkCore/Granit.Settings.EntityFrameworkCore.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",

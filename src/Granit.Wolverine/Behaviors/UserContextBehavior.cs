@@ -42,10 +42,10 @@ public sealed class UserContextBehavior(IWolverineUserContextSetter setter)
             envelope.Headers.TryGetValue(OutgoingContextMiddleware.UserFirstNameHeader, out string? firstName);
             envelope.Headers.TryGetValue(OutgoingContextMiddleware.UserLastNameHeader, out string? lastName);
 
-            Security.ActorKind actorKind = envelope.Headers.TryGetValue(OutgoingContextMiddleware.ActorKindHeader, out string? ak)
-                && Enum.TryParse<Security.ActorKind>(ak, out Security.ActorKind parsed)
+            Users.ActorKind actorKind = envelope.Headers.TryGetValue(OutgoingContextMiddleware.ActorKindHeader, out string? ak)
+                && Enum.TryParse<Users.ActorKind>(ak, out Users.ActorKind parsed)
                     ? parsed
-                    : Security.ActorKind.User;
+                    : Users.ActorKind.User;
 
             Guid? apiKeyId = envelope.Headers.TryGetValue(OutgoingContextMiddleware.ApiKeyIdHeader, out string? akId)
                 && Guid.TryParse(akId, out Guid parsedId)

@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Granit.Security;
+using Granit.Users;
 using Microsoft.AspNetCore.Http;
 
 namespace Granit.Wolverine.Internal;

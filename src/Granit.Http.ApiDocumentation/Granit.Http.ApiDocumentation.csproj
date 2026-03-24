@@ -20,6 +20,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Http.ApiVersioning\Granit.Http.ApiVersioning.csproj" />
-    <ProjectReference Include="..\Granit.Security\Granit.Security.csproj" />
   </ItemGroup>
 </Project>

@@ -10,7 +10,7 @@
 using Granit.Authentication.JwtBearer.Authentication;
 using Granit.Authentication.JwtBearer.Extensions;
 using Granit.Authentication.JwtBearer.Options;
-using Granit.Security;
+using Granit.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

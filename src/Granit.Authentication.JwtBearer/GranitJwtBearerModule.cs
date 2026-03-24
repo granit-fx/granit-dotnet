@@ -1,6 +1,6 @@
 using Granit.Authentication.JwtBearer.Extensions;
 using Granit.Modularity;
-using Granit.Security;
+using Granit.Users;
 
 namespace Granit.Authentication.JwtBearer;
 
@@ -8,7 +8,6 @@ namespace Granit.Authentication.JwtBearer;
 /// Granit module for generic OIDC JWT Bearer authentication.
 /// Depends on <see cref="GranitSecurityModule"/> for the abstractions.
 /// </summary>
-[DependsOn(typeof(GranitSecurityModule))]
 public sealed class GranitJwtBearerModule : GranitModule
 {
     /// <inheritdoc/>

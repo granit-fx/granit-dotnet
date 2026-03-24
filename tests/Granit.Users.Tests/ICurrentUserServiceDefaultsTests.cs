@@ -1,7 +1,7 @@
 using Shouldly;
 using Xunit;
 
-namespace Granit.Security.Tests;
+namespace Granit.Users.Tests;
 
 /// <summary>
 /// Verifies that default interface methods on <see cref="ICurrentUserService"/>

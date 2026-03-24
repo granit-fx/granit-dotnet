@@ -1,9 +1,9 @@
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Security;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Internal;
 using Granit.Timing;
+using Granit.Users;
 using NSubstitute;
 using Shouldly;
 using Xunit;

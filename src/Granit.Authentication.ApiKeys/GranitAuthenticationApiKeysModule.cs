@@ -3,8 +3,8 @@ using Granit.Guids;
 using Granit.Http.ExceptionHandling;
 using Granit.Modularity;
 using Granit.Querying;
-using Granit.Security;
 using Granit.Timing;
+using Granit.Users;
 
 namespace Granit.Authentication.ApiKeys;
 
@@ -14,7 +14,6 @@ namespace Granit.Authentication.ApiKeys;
 [DependsOn(typeof(GranitExceptionHandlingModule))]
 [DependsOn(typeof(GranitGuidsModule))]
 [DependsOn(typeof(GranitQueryingModule))]
-[DependsOn(typeof(GranitSecurityModule))]
 [DependsOn(typeof(GranitTimingModule))]
 public sealed class GranitAuthenticationApiKeysModule : GranitModule
 {

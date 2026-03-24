@@ -60,7 +60,6 @@
       "src/Granit.Querying.Endpoints/Granit.Querying.Endpoints.csproj",
       "src/Granit.Querying/Granit.Querying.csproj",
       "src/Granit.RateLimiting/Granit.RateLimiting.csproj",
-      "src/Granit.Security/Granit.Security.csproj",
       "src/Granit.Templating.AI/Granit.Templating.AI.csproj",
       "src/Granit.Templating.EntityFrameworkCore/Granit.Templating.EntityFrameworkCore.csproj",
       "src/Granit.Templating.Scriban/Granit.Templating.Scriban.csproj",

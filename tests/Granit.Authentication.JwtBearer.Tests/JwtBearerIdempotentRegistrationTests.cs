@@ -1,5 +1,5 @@
 using Granit.Authentication.JwtBearer.Extensions;
-using Granit.Security;
+using Granit.Users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;

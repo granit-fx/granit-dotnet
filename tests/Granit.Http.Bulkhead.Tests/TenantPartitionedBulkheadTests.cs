@@ -5,7 +5,7 @@ using Granit.Http.Bulkhead.Exceptions;
 using Granit.Http.Bulkhead.Internal;
 using Granit.Http.Bulkhead.Options;
 using Granit.MultiTenancy;
-using Granit.Security;
+using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;

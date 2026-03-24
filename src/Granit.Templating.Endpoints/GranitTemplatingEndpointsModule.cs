@@ -1,7 +1,7 @@
 using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
-using Granit.Security;
+using Granit.Users;
 using Granit.Validation;
 
 namespace Granit.Templating.Endpoints;
@@ -22,7 +22,6 @@ namespace Granit.Templating.Endpoints;
 [DependsOn(
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitAuthorizationModule),
-    typeof(GranitSecurityModule),
     typeof(GranitTemplatingModule),
     typeof(GranitValidationModule))]
 public sealed class GranitTemplatingEndpointsModule : GranitModule;

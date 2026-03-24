@@ -1,10 +1,10 @@
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Security;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Internal;
 using Granit.Timing;
+using Granit.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Timeline.EntityFrameworkCore.Internal;

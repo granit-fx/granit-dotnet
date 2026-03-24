@@ -2,8 +2,8 @@ using Granit.Guids;
 using Granit.Http.ExceptionHandling;
 using Granit.Modularity;
 using Granit.Persistence.Extensions;
-using Granit.Security;
 using Granit.Timing;
+using Granit.Users;
 
 namespace Granit.Persistence;
 
@@ -16,7 +16,6 @@ namespace Granit.Persistence;
 [DependsOn(
     typeof(GranitExceptionHandlingModule),
     typeof(GranitGuidsModule),
-    typeof(GranitSecurityModule),
     typeof(GranitTimingModule))]
 public sealed class GranitPersistenceModule : GranitModule
 {

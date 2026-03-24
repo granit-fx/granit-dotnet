@@ -1,7 +1,7 @@
 using Granit.Caching;
 using Granit.Http.Idempotency.Internal;
 using Granit.Modularity;
-using Granit.Security;
+using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
@@ -46,7 +46,6 @@ public sealed class GranitIdempotencyModuleTests
 
         Type[] dependedTypes = attributes.SelectMany(a => a.DependedTypes).ToArray();
 
-        dependedTypes.ShouldContain(typeof(GranitSecurityModule));
     }
 
     // =========================================================================

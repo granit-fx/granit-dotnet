@@ -16,7 +16,7 @@ using Granit.Authorization.Cache;
 using Granit.Authorization.Options;
 using Granit.Authorization.Services;
 using Granit.MultiTenancy;
-using Granit.Security;
+using Granit.Users;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;

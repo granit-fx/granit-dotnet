@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Security;
+using Granit.Users;
 using Granit.Validation;
 using Granit.Wolverine.Extensions;
 
@@ -19,7 +19,6 @@ namespace Granit.Wolverine;
 /// </para>
 /// </remarks>
 [DependsOn(
-    typeof(GranitSecurityModule),
     typeof(GranitValidationModule))]
 public sealed class GranitWolverineModule : GranitModule
 {

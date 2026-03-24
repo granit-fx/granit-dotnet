@@ -10,8 +10,8 @@ using Granit.Guids;
 using Granit.Modularity;
 using Granit.MultiTenancy;
 using Granit.Persistence.Interceptors;
-using Granit.Security;
 using Granit.Timing;
+using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
@@ -58,7 +58,6 @@ public sealed class GranitPersistenceModuleTests
         Type[] dependedTypes = attributes[0].DependedTypes;
         dependedTypes.ShouldContain(typeof(GranitTimingModule));
         dependedTypes.ShouldContain(typeof(GranitGuidsModule));
-        dependedTypes.ShouldContain(typeof(GranitSecurityModule));
         dependedTypes.ShouldNotContain(typeof(GranitMultiTenancyModule),
             "ICurrentTenant is now sourced from Granit.MultiTenancy — Granit.MultiTenancy is a soft dependency");
     }

@@ -303,7 +303,7 @@ public sealed class ApiKeyAuthenticationHandlerTests
         principal.FindFirstValue(ClaimTypes.Name).ShouldBe("Test Key");
 
         // ApiKey-specific claims
-        principal.FindFirstValue(ApiKeyClaimTypes.ActorKind).ShouldBe(nameof(Security.ActorKind.ExternalSystem));
+        principal.FindFirstValue(ApiKeyClaimTypes.ActorKind).ShouldBe(nameof(Users.ActorKind.ExternalSystem));
         principal.FindFirstValue(ApiKeyClaimTypes.ApiKeyId).ShouldBe(apiKey.Id.ToString());
         principal.FindFirstValue(ApiKeyClaimTypes.ApiKeyType).ShouldBe(ApiKeyType.Secret.ToString());
         principal.FindFirstValue(ApiKeyClaimTypes.Environment).ShouldBe("live");

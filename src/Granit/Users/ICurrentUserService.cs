@@ -1,4 +1,4 @@
-namespace Granit.Security;
+namespace Granit.Users;
 
 /// <summary>
 /// Service for accessing information about the current actor (user or machine).
@@ -39,7 +39,7 @@ public interface ICurrentUserService
 
     /// <summary>
     /// The kind of actor performing the current operation.
-    /// Defaults to <see cref="Security.ActorKind.User"/> for backward compatibility.
+    /// Defaults to <see cref="Users.ActorKind.User"/> for backward compatibility.
     /// </summary>
     ActorKind ActorKind => ActorKind.User;
 

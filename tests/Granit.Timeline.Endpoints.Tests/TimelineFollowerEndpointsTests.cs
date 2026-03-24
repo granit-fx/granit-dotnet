@@ -1,8 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
-using Granit.Security;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Endpoints.Extensions;
+using Granit.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;

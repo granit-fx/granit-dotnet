@@ -15,7 +15,7 @@ using Granit.Http.Idempotency.Attributes;
 using Granit.Http.Idempotency.Extensions;
 using Granit.Http.Idempotency.Models;
 using Granit.MultiTenancy;
-using Granit.Security;
+using Granit.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;

@@ -1,4 +1,4 @@
-namespace Granit.Security;
+namespace Granit.Users;
 
 /// <summary>
 /// <see cref="ICurrentUserService"/> implementation for internal system processes
@@ -7,7 +7,7 @@ namespace Granit.Security;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Sets <see cref="ICurrentUserService.ActorKind"/> to <see cref="Security.ActorKind.System"/>
+/// Sets <see cref="ICurrentUserService.ActorKind"/> to <see cref="Users.ActorKind.System"/>
 /// and provides <c>"system"</c> as <see cref="UserId"/> so that EF Core audit
 /// interceptors record a non-null <c>ModifiedBy</c> value in the ISO 27001 trail.
 /// </para>

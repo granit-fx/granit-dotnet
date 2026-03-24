@@ -30,7 +30,6 @@
       "src/Granit.ReferenceData.Endpoints/Granit.ReferenceData.Endpoints.csproj",
       "src/Granit.ReferenceData.EntityFrameworkCore/Granit.ReferenceData.EntityFrameworkCore.csproj",
       "src/Granit.ReferenceData/Granit.ReferenceData.csproj",
-      "src/Granit.Security/Granit.Security.csproj",
       "src/Granit.Templating.Endpoints/Granit.Templating.Endpoints.csproj",
       "src/Granit.Templating.EntityFrameworkCore/Granit.Templating.EntityFrameworkCore.csproj",
       "src/Granit.Templating.Scriban/Granit.Templating.Scriban.csproj",

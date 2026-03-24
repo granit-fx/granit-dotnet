@@ -1,8 +1,8 @@
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Security;
 using Granit.Timeline.Domain;
 using Granit.Timing;
+using Granit.Users;
 
 namespace Granit.Timeline.Internal;
 

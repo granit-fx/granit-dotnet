@@ -5,7 +5,7 @@ using System.Text.Json;
 using Granit.Http.Idempotency.Abstractions;
 using Granit.Http.Idempotency.Models;
 using Granit.MultiTenancy;
-using Granit.Security;
+using Granit.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

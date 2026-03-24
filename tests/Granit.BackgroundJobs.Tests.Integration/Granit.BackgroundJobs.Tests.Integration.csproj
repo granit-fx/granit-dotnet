@@ -20,7 +20,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.BackgroundJobs.Wolverine\Granit.BackgroundJobs.Wolverine.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Security\Granit.Security.csproj" />
   </ItemGroup>
 
 </Project>

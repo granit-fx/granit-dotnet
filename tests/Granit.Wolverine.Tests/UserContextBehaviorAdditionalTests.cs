@@ -5,7 +5,7 @@
 // and edge cases for the user context restore behavior.
 // =============================================================================
 
-using Granit.Security;
+using Granit.Users;
 using Granit.Wolverine.Behaviors;
 using Granit.Wolverine.Internal;
 using Granit.Wolverine.Middleware;

@@ -1,6 +1,6 @@
 using Bogus;
-using Granit.Security;
 using Granit.Testing.Fakes;
+using Granit.Users;
 
 namespace Granit.Testing.Generators;
 

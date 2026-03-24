@@ -7,7 +7,7 @@ using Granit.RateLimiting.Exceptions;
 using Granit.RateLimiting.Internal;
 using Granit.RateLimiting.Options;
 using Granit.RateLimiting.Wolverine;
-using Granit.Security;
+using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;

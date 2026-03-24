@@ -1,9 +1,9 @@
 using Granit.Guids;
 using Granit.Modularity;
 using Granit.Querying;
-using Granit.Security;
 using Granit.Timeline.Extensions;
 using Granit.Timing;
+using Granit.Users;
 
 namespace Granit.Timeline;
 
@@ -18,7 +18,6 @@ namespace Granit.Timeline;
 [DependsOn(
     typeof(GranitGuidsModule),
     typeof(GranitQueryingModule),
-    typeof(GranitSecurityModule),
     typeof(GranitTimingModule))]
 public sealed class GranitTimelineModule : GranitModule
 {

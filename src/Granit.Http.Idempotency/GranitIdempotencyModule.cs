@@ -1,7 +1,7 @@
 using Granit.Caching;
 using Granit.Http.Idempotency.Extensions;
 using Granit.Modularity;
-using Granit.Security;
+using Granit.Users;
 
 namespace Granit.Http.Idempotency;
 
@@ -11,8 +11,7 @@ namespace Granit.Http.Idempotency;
 /// and all required dependencies from configuration section <c>"Idempotency"</c>.
 /// </summary>
 [DependsOn(
-    typeof(GranitCachingModule),
-    typeof(GranitSecurityModule))]
+    typeof(GranitCachingModule))]
 public sealed class GranitIdempotencyModule : GranitModule
 {
     /// <inheritdoc/>

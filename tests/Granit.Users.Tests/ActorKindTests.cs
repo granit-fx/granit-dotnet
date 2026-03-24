@@ -1,7 +1,7 @@
 using Shouldly;
 using Xunit;
 
-namespace Granit.Security.Tests;
+namespace Granit.Users.Tests;
 
 public sealed class ActorKindTests
 {

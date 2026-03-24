@@ -1,9 +1,9 @@
 using System.Globalization;
-using Granit.Security;
 using Granit.Settings.Endpoints.Internal;
 using Granit.Settings.Endpoints.Middleware;
 using Granit.Settings.Services;
 using Granit.Timing;
+using Granit.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;

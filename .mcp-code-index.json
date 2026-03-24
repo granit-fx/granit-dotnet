@@ -106,11 +106,13 @@
     {
       "name": "Granit.Authentication.ApiKeys",
       "deps": [
-        "Granit.Security",
+        "Granit",
+        "Granit",
         "Granit.Timing",
         "Granit.Guids",
         "Granit.Http.ExceptionHandling",
-        "Granit.Querying"
+        "Granit.Querying",
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -166,7 +168,10 @@
     {
       "name": "Granit.Authentication.JwtBearer",
       "deps": [
-        "Granit.Security"
+        "Granit",
+        "Granit",
+        "Granit",
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -188,7 +193,10 @@
     {
       "name": "Granit.Authentication.OpenIddict",
       "deps": [
-        "Granit.Security"
+        "Granit",
+        "Granit",
+        "Granit",
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -204,8 +212,7 @@
     {
       "name": "Granit.Authorization",
       "deps": [
-        "Granit.Caching",
-        "Granit.Security"
+        "Granit.Caching"
       ],
       "framework": "net10.0"
     },
@@ -239,7 +246,6 @@
       "deps": [
         "Granit",
         "Granit.Guids",
-        "Granit.Security",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -276,7 +282,6 @@
       "deps": [
         "Granit.Authentication.Oidc",
         "Granit",
-        "Granit.Security",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -589,8 +594,7 @@
     {
       "name": "Granit.Http.ApiDocumentation",
       "deps": [
-        "Granit.Http.ApiVersioning",
-        "Granit.Security"
+        "Granit.Http.ApiVersioning"
       ],
       "framework": "net10.0"
     },
@@ -606,8 +610,7 @@
       "deps": [
         "Granit",
         "Granit.Http.ExceptionHandling",
-        "Granit.Features",
-        "Granit.Security"
+        "Granit.Features"
       ],
       "framework": "net10.0"
     },
@@ -651,8 +654,7 @@
     {
       "name": "Granit.Http.Idempotency",
       "deps": [
-        "Granit.Caching",
-        "Granit.Security"
+        "Granit.Caching"
       ],
       "framework": "net10.0"
     },
@@ -723,8 +725,7 @@
       "name": "Granit.Identity.Federated.EntityFrameworkCore",
       "deps": [
         "Granit.Identity.Federated",
-        "Granit.Persistence",
-        "Granit.Security"
+        "Granit.Persistence"
       ],
       "framework": "net10.0"
     },
@@ -1043,7 +1044,6 @@
         "Granit.Guids",
         "Granit.Identity",
         "Granit.Querying",
-        "Granit.Security",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1089,7 +1089,6 @@
       "name": "Granit.Persistence",
       "deps": [
         "Granit.Guids",
-        "Granit.Security",
         "Granit.Timing",
         "Granit.Http.ExceptionHandling"
       ],
@@ -1215,8 +1214,7 @@
       "deps": [
         "Granit",
         "Granit.Http.ExceptionHandling",
-        "Granit.Features",
-        "Granit.Security"
+        "Granit.Features"
       ],
       "framework": "net10.0"
     },
@@ -1249,19 +1247,11 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Security",
-      "deps": [
-        "Granit"
-      ],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.Settings",
       "deps": [
         "Granit.Caching",
         "Granit.Encryption",
-        "Granit.EventBus",
-        "Granit.Security"
+        "Granit.EventBus"
       ],
       "framework": "net10.0"
     },
@@ -1304,7 +1294,6 @@
       "deps": [
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
-        "Granit.Security",
         "Granit.Templating",
         "Granit.Validation"
       ],
@@ -1340,7 +1329,6 @@
       "deps": [
         "Granit",
         "Granit.Guids",
-        "Granit.Security",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1359,7 +1347,6 @@
         "Granit",
         "Granit.Guids",
         "Granit.Querying",
-        "Granit.Security",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1527,8 +1514,11 @@
     {
       "name": "Granit.Wolverine",
       "deps": [
-        "Granit.Security",
-        "Granit.Validation"
+        "Granit",
+        "Granit",
+        "Granit",
+        "Granit.Validation",
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -3954,7 +3944,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys",
       "file": "src/Granit.Authentication.ApiKeys/GranitAuthenticationApiKeysModule.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -4562,7 +4552,7 @@
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer",
       "file": "src/Granit.Authentication.JwtBearer/GranitJwtBearerModule.cs",
-      "line": 12,
+      "line": 11,
       "members": [
         {
           "name": "ConfigureServices",
@@ -5150,7 +5140,7 @@
       "kind": "class",
       "project": "Granit.Authentication.OpenIddict",
       "file": "src/Granit.Authentication.OpenIddict/GranitAuthenticationOpenIddictModule.cs",
-      "line": 12,
+      "line": 11,
       "members": []
     },
     {
@@ -5836,7 +5826,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/GranitAuthorizationModule.cs",
-      "line": 21,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6223,7 +6213,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs",
       "file": "src/Granit.BackgroundJobs/GranitBackgroundJobsModule.cs",
-      "line": 30,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6565,7 +6555,7 @@
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/GranitBffModule.cs",
-      "line": 27,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",
@@ -12555,7 +12545,7 @@
       "kind": "class",
       "project": "Granit.Http.ApiDocumentation",
       "file": "src/Granit.Http.ApiDocumentation/GranitHttpApiDocumentationModule.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -12848,7 +12838,7 @@
       "kind": "class",
       "project": "Granit.Http.Bulkhead",
       "file": "src/Granit.Http.Bulkhead/GranitHttpBulkheadModule.cs",
-      "line": 18,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",
@@ -13557,7 +13547,7 @@
       "kind": "class",
       "project": "Granit.Http.Idempotency",
       "file": "src/Granit.Http.Idempotency/GranitIdempotencyModule.cs",
-      "line": 16,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -20055,7 +20045,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 28,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",
@@ -21055,7 +21045,7 @@
       "kind": "class",
       "project": "Granit.Persistence",
       "file": "src/Granit.Persistence/GranitPersistenceModule.cs",
-      "line": 21,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -23757,7 +23747,7 @@
       "kind": "class",
       "project": "Granit.RateLimiting",
       "file": "src/Granit.RateLimiting/GranitRateLimitingModule.cs",
-      "line": 18,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",
@@ -24399,140 +24389,6 @@
       "members": []
     },
     {
-      "name": "ActorKind",
-      "fqn": "Granit.Security.ActorKind",
-      "kind": "enum",
-      "project": "Granit.Security",
-      "file": "src/Granit.Security/ActorKind.cs",
-      "line": 8,
-      "members": []
-    },
-    {
-      "name": "GranitSecurityModule",
-      "fqn": "Granit.Security.GranitSecurityModule",
-      "kind": "class",
-      "project": "Granit.Security",
-      "file": "src/Granit.Security/GranitSecurityModule.cs",
-      "line": 10,
-      "members": []
-    },
-    {
-      "name": "ICurrentUserService",
-      "fqn": "Granit.Security.ICurrentUserService",
-      "kind": "interface",
-      "project": "Granit.Security",
-      "file": "src/Granit.Security/ICurrentUserService.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "GetRoles",
-          "kind": "method",
-          "signature": "GetRoles()",
-          "returnType": "string? UserId { get; } string? UserName { get; } string? Email { get; } string? FirstName { get; } string? LastName { get; } bool IsAuthenticated { get; } IReadOnlyList<string>"
-        },
-        {
-          "name": "IsInRole",
-          "kind": "method",
-          "signature": "IsInRole(string role)",
-          "returnType": "bool"
-        },
-        {
-          "name": "ActorKind",
-          "kind": "property",
-          "signature": "ActorKind ActorKind",
-          "returnType": "ActorKind"
-        },
-        {
-          "name": "IsMachine",
-          "kind": "property",
-          "signature": "bool IsMachine",
-          "returnType": "bool"
-        },
-        {
-          "name": "ApiKeyId",
-          "kind": "property",
-          "signature": "Guid? ApiKeyId",
-          "returnType": "Guid?"
-        }
-      ]
-    },
-    {
-      "name": "SystemCurrentUserService",
-      "fqn": "Granit.Security.SystemCurrentUserService",
-      "kind": "class",
-      "project": "Granit.Security",
-      "file": "src/Granit.Security/SystemCurrentUserService.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "UserId",
-          "kind": "property",
-          "signature": "string? UserId",
-          "returnType": "string?"
-        },
-        {
-          "name": "UserName",
-          "kind": "property",
-          "signature": "string? UserName",
-          "returnType": "string?"
-        },
-        {
-          "name": "Email",
-          "kind": "property",
-          "signature": "string? Email",
-          "returnType": "string?"
-        },
-        {
-          "name": "FirstName",
-          "kind": "property",
-          "signature": "string? FirstName",
-          "returnType": "string?"
-        },
-        {
-          "name": "LastName",
-          "kind": "property",
-          "signature": "string? LastName",
-          "returnType": "string?"
-        },
-        {
-          "name": "IsAuthenticated",
-          "kind": "property",
-          "signature": "bool IsAuthenticated",
-          "returnType": "bool"
-        },
-        {
-          "name": "GetRoles",
-          "kind": "method",
-          "signature": "GetRoles()",
-          "returnType": "IReadOnlyList<string>"
-        },
-        {
-          "name": "IsInRole",
-          "kind": "method",
-          "signature": "IsInRole(string role)",
-          "returnType": "bool"
-        },
-        {
-          "name": "ActorKind",
-          "kind": "property",
-          "signature": "ActorKind ActorKind",
-          "returnType": "ActorKind"
-        },
-        {
-          "name": "IsMachine",
-          "kind": "property",
-          "signature": "bool IsMachine",
-          "returnType": "bool"
-        },
-        {
-          "name": "ApiKeyId",
-          "kind": "property",
-          "signature": "Guid? ApiKeyId",
-          "returnType": "Guid?"
-        }
-      ]
-    },
-    {
       "name": "ISettingDefinitionContext",
       "fqn": "Granit.Settings.Definitions.ISettingDefinitionContext",
       "kind": "interface",
@@ -24899,7 +24755,7 @@
       "kind": "class",
       "project": "Granit.Settings",
       "file": "src/Granit.Settings/GranitSettingsModule.cs",
-      "line": 22,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -25557,7 +25413,7 @@
       "kind": "class",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/GranitTemplatingEndpointsModule.cs",
-      "line": 28,
+      "line": 27,
       "members": []
     },
     {
@@ -26387,7 +26243,7 @@
       "kind": "class",
       "project": "Granit.Testing",
       "file": "src/Granit.Testing/GranitTestingModule.cs",
-      "line": 20,
+      "line": 19,
       "members": []
     },
     {
@@ -26936,7 +26792,7 @@
       "kind": "class",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/GranitTimelineModule.cs",
-      "line": 23,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -27234,6 +27090,131 @@
       "file": "src/Granit.Timing/Options/ClockOptions.cs",
       "line": 6,
       "members": []
+    },
+    {
+      "name": "ActorKind",
+      "fqn": "Granit.Users.ActorKind",
+      "kind": "enum",
+      "project": "Granit",
+      "file": "src/Granit/Users/ActorKind.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "ICurrentUserService",
+      "fqn": "Granit.Users.ICurrentUserService",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/Users/ICurrentUserService.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "GetRoles",
+          "kind": "method",
+          "signature": "GetRoles()",
+          "returnType": "string? UserId { get; } string? UserName { get; } string? Email { get; } string? FirstName { get; } string? LastName { get; } bool IsAuthenticated { get; } IReadOnlyList<string>"
+        },
+        {
+          "name": "IsInRole",
+          "kind": "method",
+          "signature": "IsInRole(string role)",
+          "returnType": "bool"
+        },
+        {
+          "name": "ActorKind",
+          "kind": "property",
+          "signature": "ActorKind ActorKind",
+          "returnType": "ActorKind"
+        },
+        {
+          "name": "IsMachine",
+          "kind": "property",
+          "signature": "bool IsMachine",
+          "returnType": "bool"
+        },
+        {
+          "name": "ApiKeyId",
+          "kind": "property",
+          "signature": "Guid? ApiKeyId",
+          "returnType": "Guid?"
+        }
+      ]
+    },
+    {
+      "name": "SystemCurrentUserService",
+      "fqn": "Granit.Users.SystemCurrentUserService",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Users/SystemCurrentUserService.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "UserId",
+          "kind": "property",
+          "signature": "string? UserId",
+          "returnType": "string?"
+        },
+        {
+          "name": "UserName",
+          "kind": "property",
+          "signature": "string? UserName",
+          "returnType": "string?"
+        },
+        {
+          "name": "Email",
+          "kind": "property",
+          "signature": "string? Email",
+          "returnType": "string?"
+        },
+        {
+          "name": "FirstName",
+          "kind": "property",
+          "signature": "string? FirstName",
+          "returnType": "string?"
+        },
+        {
+          "name": "LastName",
+          "kind": "property",
+          "signature": "string? LastName",
+          "returnType": "string?"
+        },
+        {
+          "name": "IsAuthenticated",
+          "kind": "property",
+          "signature": "bool IsAuthenticated",
+          "returnType": "bool"
+        },
+        {
+          "name": "GetRoles",
+          "kind": "method",
+          "signature": "GetRoles()",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "IsInRole",
+          "kind": "method",
+          "signature": "IsInRole(string role)",
+          "returnType": "bool"
+        },
+        {
+          "name": "ActorKind",
+          "kind": "property",
+          "signature": "ActorKind ActorKind",
+          "returnType": "ActorKind"
+        },
+        {
+          "name": "IsMachine",
+          "kind": "property",
+          "signature": "bool IsMachine",
+          "returnType": "bool"
+        },
+        {
+          "name": "ApiKeyId",
+          "kind": "property",
+          "signature": "Guid? ApiKeyId",
+          "returnType": "Guid?"
+        }
+      ]
     },
     {
       "name": "ValidationAIHostApplicationBuilderExtensions",
@@ -29580,7 +29561,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/GranitWolverineModule.cs",
-      "line": 24,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",

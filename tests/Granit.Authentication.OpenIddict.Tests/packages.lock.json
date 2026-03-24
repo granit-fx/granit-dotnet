@@ -393,15 +393,9 @@
       "granit.authentication.openiddict": {
         "type": "Project",
         "dependencies": {
-          "Granit.Security": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "OpenIddict.Validation.AspNetCore": "[7.*, )",
           "OpenIddict.Validation.SystemNetHttp": "[7.*, )"
-        }
-      },
-      "granit.security": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
         }
       },
       "Microsoft.Extensions.Http.Resilience": {

@@ -7,12 +7,12 @@
 
 using Granit.Extensions;
 using Granit.Modularity;
-using Granit.Security;
 using Granit.Settings.Definitions;
 using Granit.Settings.Providers;
 using Granit.Settings.Services;
 using Granit.Settings.Stores;
 using Granit.Settings.Values;
+using Granit.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;

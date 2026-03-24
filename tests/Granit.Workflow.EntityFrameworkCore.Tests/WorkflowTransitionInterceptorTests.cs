@@ -1,8 +1,8 @@
 using Granit.Domain;
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Security;
 using Granit.Timing;
+using Granit.Users;
 using Granit.Workflow.Domain;
 using Granit.Workflow.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;

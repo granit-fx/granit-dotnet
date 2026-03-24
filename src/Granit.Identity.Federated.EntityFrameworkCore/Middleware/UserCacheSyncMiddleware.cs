@@ -2,7 +2,7 @@ using Granit.Identity.Federated.EntityFrameworkCore.Entities;
 using Granit.Identity.Federated.EntityFrameworkCore.Internal;
 using Granit.Identity.Federated.EntityFrameworkCore.Options;
 using Granit.MultiTenancy;
-using Granit.Security;
+using Granit.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 

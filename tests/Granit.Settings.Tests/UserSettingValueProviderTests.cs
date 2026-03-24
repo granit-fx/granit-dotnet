@@ -5,12 +5,12 @@
 // and cache invalidation keyed by user ID.
 // =============================================================================
 
-using Granit.Security;
 using Granit.Settings.Definitions;
 using Granit.Settings.Options;
 using Granit.Settings.Providers;
 using Granit.Settings.Stores;
 using Granit.Settings.Values;
+using Granit.Users;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;

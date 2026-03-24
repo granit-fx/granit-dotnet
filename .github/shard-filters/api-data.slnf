@@ -50,7 +50,6 @@
       "src/Granit.Querying.Endpoints/Granit.Querying.Endpoints.csproj",
       "src/Granit.Querying/Granit.Querying.csproj",
       "src/Granit.RateLimiting/Granit.RateLimiting.csproj",
-      "src/Granit.Security/Granit.Security.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",
       "src/Granit.Webhooks.Endpoints/Granit.Webhooks.Endpoints.csproj",

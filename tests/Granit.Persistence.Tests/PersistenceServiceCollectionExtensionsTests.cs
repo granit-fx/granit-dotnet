@@ -229,7 +229,7 @@ public sealed class PersistenceServiceCollectionExtensionsTests
         // AuditedEntityInterceptor requires IClock, IGuidGenerator, ICurrentUserService, ICurrentTenant
         services.AddSingleton(NSubstitute.Substitute.For<Granit.Timing.IClock>());
         services.AddSingleton(NSubstitute.Substitute.For<Granit.Guids.IGuidGenerator>());
-        services.AddSingleton(NSubstitute.Substitute.For<Granit.Security.ICurrentUserService>());
+        services.AddSingleton(NSubstitute.Substitute.For<Granit.Users.ICurrentUserService>());
         services.AddSingleton(NSubstitute.Substitute.For<ICurrentTenant>());
     }
 

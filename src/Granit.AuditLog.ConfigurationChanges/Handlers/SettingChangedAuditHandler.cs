@@ -3,8 +3,8 @@ using Granit.AuditLog.Domain;
 using Granit.Events;
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Security;
 using Granit.Settings.Events;
+using Granit.Users;
 
 namespace Granit.AuditLog.ConfigurationChanges.Handlers;
 

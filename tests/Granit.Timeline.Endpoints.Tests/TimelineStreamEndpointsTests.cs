@@ -43,7 +43,7 @@ public sealed class TimelineStreamEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(Substitute.For<ITimelineWriter>());
         builder.Services.AddSingleton(Substitute.For<ITimelineFollowerService>());
         builder.Services.AddSingleton(Substitute.For<ITimelineNotifier>());
-        builder.Services.AddSingleton(Substitute.For<Granit.Security.ICurrentUserService>());
+        builder.Services.AddSingleton(Substitute.For<Granit.Users.ICurrentUserService>());
 
         _app = builder.Build();
         _app.MapTimelineEndpoints();

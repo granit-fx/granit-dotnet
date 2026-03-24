@@ -1,7 +1,7 @@
 using Granit.Http.ApiDocumentation.Extensions;
 using Granit.Http.ApiVersioning;
 using Granit.Modularity;
-using Granit.Security;
+using Granit.Users;
 
 namespace Granit.Http.ApiDocumentation;
 
@@ -15,8 +15,7 @@ namespace Granit.Http.ApiDocumentation;
 /// the OpenAPI JSON endpoints and the Scalar UI.
 /// </remarks>
 [DependsOn(
-    typeof(GranitHttpApiVersioningModule),
-    typeof(GranitSecurityModule))]
+    typeof(GranitHttpApiVersioningModule))]
 public sealed class GranitHttpApiDocumentationModule : GranitModule
 {
     /// <inheritdoc/>

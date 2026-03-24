@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
-    <ProjectReference Include="..\Granit.Security\Granit.Security.csproj" />
 
   </ItemGroup>
 

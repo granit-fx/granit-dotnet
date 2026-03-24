@@ -2,7 +2,7 @@ using Granit.Features;
 using Granit.Http.Bulkhead.Extensions;
 using Granit.Http.ExceptionHandling;
 using Granit.Modularity;
-using Granit.Security;
+using Granit.Users;
 
 namespace Granit.Http.Bulkhead;
 
@@ -13,8 +13,7 @@ namespace Granit.Http.Bulkhead;
 /// </summary>
 [DependsOn(
     typeof(GranitExceptionHandlingModule),
-    typeof(GranitFeaturesModule),
-    typeof(GranitSecurityModule))]
+    typeof(GranitFeaturesModule))]
 public sealed class GranitHttpBulkheadModule : GranitModule
 {
     /// <inheritdoc/>

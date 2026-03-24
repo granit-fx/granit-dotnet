@@ -8,7 +8,7 @@
 
 using Granit.Modularity;
 using Granit.MultiTenancy;
-using Granit.Security;
+using Granit.Users;
 using Granit.Wolverine.Extensions;
 using Granit.Wolverine.Internal;
 using Granit.Wolverine.Options;
@@ -34,7 +34,6 @@ public sealed class GranitWolverineModuleTests
         var attributes = (DependsOnAttribute[])
             typeof(GranitWolverineModule).GetCustomAttributes(typeof(DependsOnAttribute), inherit: false);
 
-        attributes.ShouldContain(a => a.DependedTypes.Contains(typeof(GranitSecurityModule)));
     }
 
     [Fact]

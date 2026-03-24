@@ -1,9 +1,9 @@
 using Granit.Guids;
 using Granit.Modularity;
 using Granit.MultiTenancy;
-using Granit.Security;
 using Granit.Testing.Fakes;
 using Granit.Timing;
+using Granit.Users;
 using Shouldly;
 
 namespace Granit.Testing.Tests;

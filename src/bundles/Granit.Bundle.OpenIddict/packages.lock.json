@@ -455,7 +455,7 @@
       "granit.authentication.openiddict": {
         "type": "Project",
         "dependencies": {
-          "Granit.Security": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "OpenIddict.Validation.AspNetCore": "[7.*, )",
           "OpenIddict.Validation.SystemNetHttp": "[7.*, )"
         }
@@ -463,8 +463,7 @@
       "granit.authorization": {
         "type": "Project",
         "dependencies": {
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )"
+          "Granit.Caching": "[0.1.0-dev, )"
         }
       },
       "granit.backgroundjobs": {
@@ -473,7 +472,6 @@
           "Cronos": "[0.11.*, )",
           "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
@@ -525,7 +523,6 @@
         "type": "Project",
         "dependencies": {
           "Granit.Http.ApiVersioning": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.OpenApi": "[10.*, )",
           "Scalar.AspNetCore": "[2.*, )"
         }
@@ -582,7 +579,6 @@
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "OpenIddict.EntityFrameworkCore": "[7.*, )"
         }
@@ -635,7 +631,6 @@
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore": "[10.*, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
@@ -650,19 +645,12 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.security": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
       "granit.settings": {
         "type": "Project",
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Encryption": "[0.1.0-dev, )",
-          "Granit.EventBus": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )"
+          "Granit.EventBus": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {

@@ -1,7 +1,7 @@
 using System.Reflection;
 using FluentValidation;
 using Granit.Diagnostics;
-using Granit.Security;
+using Granit.Users;
 using Granit.Wolverine.Behaviors;
 using Granit.Wolverine.Diagnostics;
 using Granit.Wolverine.Internal;

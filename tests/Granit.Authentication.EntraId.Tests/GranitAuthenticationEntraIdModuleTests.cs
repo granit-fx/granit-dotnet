@@ -10,7 +10,7 @@
 using Granit.Authentication.EntraId.Authentication;
 using Granit.Authentication.JwtBearer;
 using Granit.Modularity;
-using Granit.Security;
+using Granit.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;

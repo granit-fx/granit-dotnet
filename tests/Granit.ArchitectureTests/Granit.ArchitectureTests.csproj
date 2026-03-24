@@ -183,7 +183,6 @@
     <ProjectReference Include="..\..\src\Granit.ReferenceData\Granit.ReferenceData.csproj" />
     <ProjectReference Include="..\..\src\Granit.ReferenceData.Endpoints\Granit.ReferenceData.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.ReferenceData.EntityFrameworkCore\Granit.ReferenceData.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Security\Granit.Security.csproj" />
     <ProjectReference Include="..\..\src\Granit.Settings\Granit.Settings.csproj" />
     <ProjectReference Include="..\..\src\Granit.Settings.Endpoints\Granit.Settings.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Settings.EntityFrameworkCore\Granit.Settings.EntityFrameworkCore.csproj" />

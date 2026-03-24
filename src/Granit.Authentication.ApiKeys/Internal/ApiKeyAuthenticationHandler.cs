@@ -137,7 +137,7 @@ internal sealed partial class ApiKeyAuthenticationHandler(
         {
             new(ClaimTypes.NameIdentifier, apiKey.Id.ToString()),
             new(ClaimTypes.Name, apiKey.Name),
-            new(ApiKeyClaimTypes.ActorKind, nameof(Security.ActorKind.ExternalSystem)),
+            new(ApiKeyClaimTypes.ActorKind, nameof(Users.ActorKind.ExternalSystem)),
             new(ApiKeyClaimTypes.ApiKeyId, apiKey.Id.ToString()),
             new(ApiKeyClaimTypes.ApiKeyType, apiKey.Type.ToString()),
             new(ApiKeyClaimTypes.Environment, apiKey.Environment),

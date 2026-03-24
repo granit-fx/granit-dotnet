@@ -3,8 +3,8 @@ using Granit.Bff.Diagnostics;
 using Granit.Bff.Internal;
 using Granit.Diagnostics;
 using Granit.Modularity;
-using Granit.Security;
 using Granit.Timing;
+using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -22,7 +22,6 @@ namespace Granit.Bff;
 /// </remarks>
 [DependsOn(
     typeof(GranitAuthenticationOidcModule),
-    typeof(GranitSecurityModule),
     typeof(GranitTimingModule))]
 public sealed class GranitBffModule : GranitModule
 {

@@ -2,7 +2,7 @@ using Granit.Features;
 using Granit.Http.ExceptionHandling;
 using Granit.Modularity;
 using Granit.RateLimiting.Extensions;
-using Granit.Security;
+using Granit.Users;
 
 namespace Granit.RateLimiting;
 
@@ -13,8 +13,7 @@ namespace Granit.RateLimiting;
 /// </summary>
 [DependsOn(
     typeof(GranitExceptionHandlingModule),
-    typeof(GranitFeaturesModule),
-    typeof(GranitSecurityModule))]
+    typeof(GranitFeaturesModule))]
 public sealed class GranitRateLimitingModule : GranitModule
 {
     /// <inheritdoc/>

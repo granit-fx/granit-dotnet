@@ -4,7 +4,7 @@ using Granit.Events;
 using Granit.Features.Events;
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Security;
+using Granit.Users;
 
 namespace Granit.AuditLog.ConfigurationChanges.Handlers;
 

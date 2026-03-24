@@ -1,8 +1,8 @@
 using Granit.Guids;
 using Granit.Modularity;
 using Granit.Querying;
-using Granit.Security;
 using Granit.Timing;
+using Granit.Users;
 using Shouldly;
 using Xunit;
 
@@ -43,7 +43,6 @@ public sealed class GranitTimelineModuleTests
             .ToArray();
 
         Type[] allDeps = attributes.SelectMany(a => a.DependedTypes).ToArray();
-        allDeps.ShouldContain(typeof(GranitSecurityModule));
     }
 
     [Fact]

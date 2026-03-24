@@ -12,7 +12,7 @@ using Granit.Privacy.Endpoints.Permissions;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Events;
 using Granit.Privacy.Options;
-using Granit.Security;
+using Granit.Users;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

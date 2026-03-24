@@ -1,6 +1,6 @@
 using Granit.Domain;
-using Granit.Security;
 using Granit.Timing;
+using Granit.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 

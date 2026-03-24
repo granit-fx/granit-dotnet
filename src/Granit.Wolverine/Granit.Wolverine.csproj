@@ -8,21 +8,24 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Wolverine.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="WolverineFx" />
     <PackageReference Include="WolverineFx.FluentValidation" />
+    <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.Security\Granit.Security.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
+    <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
   </ItemGroup>
 
 </Project>

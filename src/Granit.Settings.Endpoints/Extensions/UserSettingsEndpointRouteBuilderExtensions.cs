@@ -1,9 +1,9 @@
-using Granit.Security;
 using Granit.Settings.Definitions;
 using Granit.Settings.Endpoints.Dtos;
 using Granit.Settings.Endpoints.Options;
 using Granit.Settings.Services;
 using Granit.Settings.Values;
+using Granit.Users;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

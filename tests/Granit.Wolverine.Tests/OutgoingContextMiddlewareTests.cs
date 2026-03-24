@@ -7,7 +7,7 @@
 
 using System.Diagnostics;
 using Granit.MultiTenancy;
-using Granit.Security;
+using Granit.Users;
 using Granit.Wolverine.Middleware;
 using NSubstitute;
 using Shouldly;

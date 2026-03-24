@@ -1,6 +1,6 @@
-using Granit.Security;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Endpoints.Permissions;
+using Granit.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

@@ -7,7 +7,7 @@
 // =============================================================================
 
 using System.Security.Claims;
-using Granit.Security;
+using Granit.Users;
 using Granit.Wolverine.Internal;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;

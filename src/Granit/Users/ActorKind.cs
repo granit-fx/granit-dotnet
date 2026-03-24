@@ -1,4 +1,4 @@
-namespace Granit.Security;
+namespace Granit.Users;
 
 /// <summary>
 /// Identifies the type of actor performing the current operation.

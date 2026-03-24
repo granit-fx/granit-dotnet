@@ -1,7 +1,7 @@
 using Granit.Authentication.JwtBearer.Authentication;
 using Granit.Authentication.JwtBearer.BackChannelLogout;
 using Granit.Authentication.JwtBearer.Options;
-using Granit.Security;
+using Granit.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

@@ -5,7 +5,7 @@
 // =============================================================================
 
 using Granit.Modularity;
-using Granit.Security;
+using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;

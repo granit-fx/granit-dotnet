@@ -1,6 +1,6 @@
 using Granit.Guids;
 using Granit.Modularity;
-using Granit.Security;
+using Granit.Users;
 
 namespace Granit.Testing;
 
@@ -15,6 +15,5 @@ namespace Granit.Testing;
 /// This is a utility module with no runtime service registration.
 /// </remarks>
 [DependsOn(
-    typeof(GranitGuidsModule),
-    typeof(GranitSecurityModule))]
+    typeof(GranitGuidsModule))]
 public sealed class GranitTestingModule : GranitModule;

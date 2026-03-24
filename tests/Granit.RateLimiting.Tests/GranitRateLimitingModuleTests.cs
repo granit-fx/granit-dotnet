@@ -59,6 +59,5 @@ public sealed class GranitRateLimitingModuleTests
 
         Type[] dependedTypes = attrs.SelectMany(a => a.DependedTypes).ToArray();
 
-        dependedTypes.ShouldContain(typeof(Granit.Security.GranitSecurityModule));
     }
 }

@@ -1,7 +1,7 @@
-using Granit.Security;
 using Granit.Settings.Definitions;
 using Granit.Settings.Options;
 using Granit.Settings.Values;
+using Granit.Users;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
 
