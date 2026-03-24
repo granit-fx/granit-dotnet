@@ -156,17 +156,7 @@ internal static partial class BffLogoutEndpoints
         {
             throw;
         }
-        catch (HttpRequestException ex)
-        {
-            // Best-effort — logout must not fail because of revocation errors
-            LogRevocationFailed(logger, ex, frontend.Name);
-        }
-        catch (InvalidOperationException ex)
-        {
-            // Best-effort — logout must not fail because of revocation errors
-            LogRevocationFailed(logger, ex, frontend.Name);
-        }
-        catch (System.Security.Cryptography.CryptographicException ex)
+        catch (Exception ex)
         {
             // Best-effort — logout must not fail because of revocation errors
             LogRevocationFailed(logger, ex, frontend.Name);

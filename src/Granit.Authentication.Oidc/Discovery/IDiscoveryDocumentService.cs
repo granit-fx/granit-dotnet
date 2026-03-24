@@ -1,5 +1,3 @@
-using Granit.Authentication.Oidc.Exceptions;
-
 namespace Granit.Authentication.Oidc.Discovery;
 
 /// <summary>

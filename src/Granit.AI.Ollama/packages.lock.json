@@ -59,10 +59,10 @@
       "OllamaSharp": {
         "type": "Direct",
         "requested": "[5.*, )",
-        "resolved": "5.4.24",
-        "contentHash": "h+E482EirorYOddvsujHYXbD9nk9vZosCv/5VRcgyewvDPgLcCUgsWFX1DXK0fU+gqb9gxR9dnyHJ+eZ4NTcrA==",
+        "resolved": "5.4.25",
+        "contentHash": "EqkPM1gbkE+RbHgKUMzp4lYjpFymWUIgJntx3u4uDXAfAIFUXJ0MGklNFCi/PdCaxNAPRpcf205yx+g6jLLhZg==",
         "dependencies": {
-          "Microsoft.Extensions.AI.Abstractions": "10.4.0"
+          "Microsoft.Extensions.AI.Abstractions": "10.4.1"
         }
       },
       "Microsoft.Extensions.AmbientMetadata.Application": {

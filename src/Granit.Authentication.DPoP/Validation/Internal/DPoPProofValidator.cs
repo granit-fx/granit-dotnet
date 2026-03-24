@@ -45,11 +45,7 @@ internal sealed class DPoPProofValidator(
             byte[] headerBytes = Base64UrlDecode(parts[0]);
             header = JsonDocument.Parse(headerBytes).RootElement;
         }
-        catch (FormatException)
-        {
-            return DPoPValidationResult.Failure("Invalid JWT header encoding.");
-        }
-        catch (JsonException)
+        catch (Exception)
         {
             return DPoPValidationResult.Failure("Invalid JWT header encoding.");
         }
@@ -84,11 +80,7 @@ internal sealed class DPoPProofValidator(
             byte[] payloadBytes = Base64UrlDecode(parts[1]);
             payload = JsonDocument.Parse(payloadBytes).RootElement;
         }
-        catch (FormatException)
-        {
-            return DPoPValidationResult.Failure("Invalid JWT payload encoding.");
-        }
-        catch (JsonException)
+        catch (Exception)
         {
             return DPoPValidationResult.Failure("Invalid JWT payload encoding.");
         }
@@ -217,11 +209,7 @@ internal sealed class DPoPProofValidator(
 
             return ecdsa.VerifyData(data, signature, hashAlg, DSASignatureFormat.IeeeP1363FixedFieldConcatenation);
         }
-        catch (CryptographicException)
-        {
-            return false;
-        }
-        catch (FormatException)
+        catch
         {
             return false;
         }
@@ -237,11 +225,7 @@ internal sealed class DPoPProofValidator(
             using var rsa = RSA.Create(new RSAParameters { Modulus = n, Exponent = e });
             return rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
         }
-        catch (CryptographicException)
-        {
-            return false;
-        }
-        catch (FormatException)
+        catch
         {
             return false;
         }

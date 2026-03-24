@@ -187,10 +187,13 @@ internal static partial class BffSessionEndpoints
             frontend.Name, currentTokens.UserId, cancellationToken).ConfigureAwait(false);
 
         int revoked = 0;
-        foreach (string sessionId in sessionIds.Where(id => id != currentSessionId))
+        foreach (string sessionId in sessionIds)
         {
-            await tokenStore.RemoveAsync(frontend.Name, sessionId, cancellationToken).ConfigureAwait(false);
-            revoked++;
+            if (sessionId != currentSessionId)
+            {
+                await tokenStore.RemoveAsync(frontend.Name, sessionId, cancellationToken).ConfigureAwait(false);
+                revoked++;
+            }
         }
 
         LogAllOtherSessionsRevoked(logger, revoked, frontend.Name);

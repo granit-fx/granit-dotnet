@@ -4817,7 +4817,7 @@
       "kind": "interface",
       "project": "Granit.Authentication.Oidc",
       "file": "src/Granit.Authentication.Oidc/Discovery/IDiscoveryDocumentService.cs",
-      "line": 9,
+      "line": 7,
       "members": [
         {
           "name": "GetAsync",
@@ -4866,6 +4866,15 @@
           "returnType": "IReadOnlyList<string>"
         }
       ]
+    },
+    {
+      "name": "OidcDiscoveryException",
+      "fqn": "Granit.Authentication.Oidc.Discovery.OidcDiscoveryException",
+      "kind": "class",
+      "project": "Granit.Authentication.Oidc",
+      "file": "src/Granit.Authentication.Oidc/Discovery/OidcDiscoveryException.cs",
+      "line": 6,
+      "members": []
     },
     {
       "name": "OidcDiscoveryException",

@@ -12,7 +12,7 @@ Dernière mise à jour : 2026-03-24
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 77                 |
+| MIT          | 78                 |
 | Apache-2.0   | 32                 |
 | BSD-3-Clause | 2                  |
 | BSD-2-Clause | 1                  |
@@ -82,6 +82,7 @@ Dernière mise à jour : 2026-03-24
 | WolverineFx | 5.22.0 | JasperFx Contributors |
 | WolverineFx.EntityFrameworkCore | 5.22.0 | JasperFx Contributors |
 | WolverineFx.FluentValidation | 5.22.0 | JasperFx Contributors |
+| WolverineFx.Http.FluentValidation | 5.22.0 | JasperFx Contributors |
 | WolverineFx.Postgresql | 5.22.0 | JasperFx Contributors |
 | WolverineFx.SqlServer | 5.22.0 | JasperFx Contributors |
 | Yarp.ReverseProxy | 2.3.0 | (c) Microsoft Corporation |
