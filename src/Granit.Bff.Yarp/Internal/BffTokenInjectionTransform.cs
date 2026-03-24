@@ -35,9 +35,9 @@ internal sealed partial class BffTokenInjectionTransform(
     private const string RequireAuthMetadataKey = "Granit.Bff.RequireAuth";
     private const string FrontendMetadataKey = "Granit.Bff.Frontend";
 
-    public override async ValueTask ApplyAsync(RequestTransformContext transformContext)
+    public override async ValueTask ApplyAsync(RequestTransformContext context)
     {
-        HttpContext httpContext = transformContext.HttpContext;
+        HttpContext httpContext = context.HttpContext;
 
         // Check if route requires BFF auth via YARP feature
         bool requiresAuth = false;
@@ -126,19 +126,19 @@ internal sealed partial class BffTokenInjectionTransform(
         // Inject token — DPoP-bound or Bearer depending on session key
         if (!string.IsNullOrEmpty(tokens.DPoPPrivateKeyJwk))
         {
-            string targetUri = transformContext.ProxyRequest.RequestUri?.GetLeftPart(UriPartial.Path)
-                ?? transformContext.HttpContext.Request.Path.Value ?? "/";
-            string httpMethod = transformContext.HttpContext.Request.Method;
+            string targetUri = context.ProxyRequest.RequestUri?.GetLeftPart(UriPartial.Path)
+                ?? context.HttpContext.Request.Path.Value ?? "/";
+            string httpMethod = context.HttpContext.Request.Method;
 
             string dpopProof = dpopService.CreateProof(tokens.DPoPPrivateKeyJwk, httpMethod, targetUri, tokens.DPoPNonce);
 
-            transformContext.ProxyRequest.Headers.Authorization =
+            context.ProxyRequest.Headers.Authorization =
                 new AuthenticationHeaderValue("DPoP", tokens.AccessToken);
-            transformContext.ProxyRequest.Headers.TryAddWithoutValidation("DPoP", dpopProof);
+            context.ProxyRequest.Headers.TryAddWithoutValidation("DPoP", dpopProof);
         }
         else
         {
-            transformContext.ProxyRequest.Headers.Authorization =
+            context.ProxyRequest.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
         }
 

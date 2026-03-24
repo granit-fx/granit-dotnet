@@ -123,19 +123,15 @@ public sealed class HmacBffCsrfTokenGeneratorTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("  ")]
-    public void Generate_NullOrEmptySessionId_ThrowsArgumentException(string? sessionId)
-    {
+    public void Generate_NullOrEmptySessionId_ThrowsArgumentException(string? sessionId) =>
         Should.Throw<ArgumentException>(() => _generator.Generate(sessionId!));
-    }
 
     [Theory]
     [InlineData(null)]
     [InlineData("")]
     [InlineData("  ")]
-    public void Validate_NullOrEmptySessionId_ThrowsArgumentException(string? sessionId)
-    {
+    public void Validate_NullOrEmptySessionId_ThrowsArgumentException(string? sessionId) =>
         Should.Throw<ArgumentException>(() => _generator.Validate(sessionId!, "some-token"));
-    }
 
     [Fact]
     public void Generate_ProducesDifferentTokens_ForDifferentSessions()

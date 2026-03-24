@@ -32,9 +32,9 @@ internal sealed partial class BffCsrfValidationTransform(
         HttpMethods.Patch,
     };
 
-    public override ValueTask ApplyAsync(RequestTransformContext transformContext)
+    public override ValueTask ApplyAsync(RequestTransformContext context)
     {
-        HttpContext httpContext = transformContext.HttpContext;
+        HttpContext httpContext = context.HttpContext;
 
         // Only validate on routes with RequireAuth metadata
         bool requiresAuth = false;

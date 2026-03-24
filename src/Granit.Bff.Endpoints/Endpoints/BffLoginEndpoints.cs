@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -30,14 +31,8 @@ internal static partial class BffLoginEndpoints
 
     internal static RouteGroupBuilder MapLoginEndpoints(this RouteGroupBuilder group, BffFrontendOptions frontend)
     {
-        group.MapGet("/login", (HttpContext httpContext,
-                [FromServices] IOptions<GranitBffOptions> options,
-                [FromServices] IDistributedCache cache,
-                [FromServices] IClock clock,
-                [FromServices] IHttpClientFactory httpClientFactory,
-                [FromServices] IDPoPProofService dpopService,
-                [FromServices] ILoggerFactory loggerFactory) =>
-                HandleLoginAsync(httpContext, frontend, options, cache, clock, httpClientFactory, dpopService, loggerFactory))
+        group.MapGet("/login", (HttpContext httpContext, CancellationToken cancellationToken) =>
+                HandleLoginAsync(httpContext, frontend, cancellationToken))
             .WithName($"BffLogin_{frontend.Name}")
             .WithSummary("Initiates OIDC login with PKCE and redirects to the authority.")
             .WithDescription(
@@ -52,17 +47,8 @@ internal static partial class BffLoginEndpoints
                 [FromQuery] string? state,
                 [FromQuery] string? error,
                 [FromQuery] string? iss,
-                [FromServices] IOptions<GranitBffOptions> options,
-                [FromServices] IDistributedCache cache,
-                [FromServices] IBffTokenStore tokenStore,
-                [FromServices] BffMetrics metrics,
-                [FromServices] IClock clock,
-                [FromServices] IHttpClientFactory httpClientFactory,
-                [FromServices] IDPoPProofService dpopService,
-                [FromServices] ILoggerFactory loggerFactory,
                 CancellationToken cancellationToken) =>
-                HandleCallbackAsync(httpContext, frontend, code, state, error, iss, options, cache,
-                    tokenStore, metrics, clock, httpClientFactory, dpopService, loggerFactory, cancellationToken))
+                HandleCallbackAsync(httpContext, frontend, code, state, error, iss, cancellationToken))
             .WithName($"BffCallback_{frontend.Name}")
             .WithSummary("Handles the OIDC callback, exchanges the code for tokens, and sets the session cookie.")
             .WithDescription(
@@ -77,22 +63,21 @@ internal static partial class BffLoginEndpoints
         return group;
     }
 
-#pragma warning disable GRAPI003 // Private handler — not a direct endpoint delegate; services are resolved via lambda
     private static async Task<Results<RedirectHttpResult, ProblemHttpResult>> HandleLoginAsync(
         HttpContext httpContext,
         BffFrontendOptions frontend,
-        [FromServices] IOptions<GranitBffOptions> options,
-        [FromServices] IDistributedCache cache,
-        [FromServices] IClock clock,
-        [FromServices] IHttpClientFactory httpClientFactory,
-        [FromServices] IDPoPProofService dpopService,
-        [FromServices] ILoggerFactory loggerFactory)
+        CancellationToken cancellationToken)
     {
-        ILogger logger = loggerFactory.CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
+        IServiceProvider services = httpContext.RequestServices;
+        GranitBffOptions bffOptions = services.GetRequiredService<IOptions<GranitBffOptions>>().Value;
+        IDistributedCache cache = services.GetRequiredService<IDistributedCache>();
+        IClock clock = services.GetRequiredService<IClock>();
+        IDPoPProofService dpopService = services.GetRequiredService<IDPoPProofService>();
+        ILogger logger = services.GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
+
         Activity? activity = BffActivitySource.Source.StartActivity(BffActivitySource.Login);
         using IDisposable? activityScope = activity;
-
-        GranitBffOptions bffOptions = options.Value;
 
         // Generate PKCE code verifier and challenge
         string codeVerifier = GenerateCodeVerifier();
@@ -112,7 +97,7 @@ internal static partial class BffLoginEndpoints
             AbsoluteExpiration = clock.Now.AddMinutes(10),
         };
 
-        await cache.SetAsync($"{PkceKeyPrefix}{state}", json, cacheOptions)
+        await cache.SetAsync($"{PkceKeyPrefix}{state}", json, cacheOptions, cancellationToken)
             .ConfigureAwait(false);
 
         // Build authorization URL
@@ -128,8 +113,8 @@ internal static partial class BffLoginEndpoints
         {
             // PAR: push parameters to /connect/par, then redirect with request_uri only
             string? requestUri = await PushAuthorizationRequestAsync(
-                httpClientFactory, authorityBase, frontend, callbackUrl, scopes, state,
-                codeChallenge, clock, logger, httpContext.RequestAborted).ConfigureAwait(false);
+                services, frontend, callbackUrl, scopes, state,
+                codeChallenge, cancellationToken).ConfigureAwait(false);
 
             if (requestUri is not null)
             {
@@ -164,17 +149,17 @@ internal static partial class BffLoginEndpoints
         string? state,
         string? error,
         string? iss,
-        [FromServices] IOptions<GranitBffOptions> options,
-        [FromServices] IDistributedCache cache,
-        [FromServices] IBffTokenStore tokenStore,
-        [FromServices] BffMetrics metrics,
-        [FromServices] IClock clock,
-        [FromServices] IHttpClientFactory httpClientFactory,
-        [FromServices] IDPoPProofService dpopService,
-        [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
-        ILogger logger = loggerFactory.CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
+        IServiceProvider services = httpContext.RequestServices;
+        GranitBffOptions bffOptions = services.GetRequiredService<IOptions<GranitBffOptions>>().Value;
+        IDistributedCache cache = services.GetRequiredService<IDistributedCache>();
+        IBffTokenStore tokenStore = services.GetRequiredService<IBffTokenStore>();
+        BffMetrics metrics = services.GetRequiredService<BffMetrics>();
+        IClock clock = services.GetRequiredService<IClock>();
+        ILogger logger = services.GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
+
         Activity? activity = BffActivitySource.Source.StartActivity(BffActivitySource.Callback);
         using IDisposable? activityScope = activity;
 
@@ -192,8 +177,6 @@ internal static partial class BffLoginEndpoints
                 detail: "Missing authorization code or state parameter.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
-
-        GranitBffOptions bffOptions = options.Value;
 
         // Verify authorization response issuer (RFC 9207, FAPI 2.0 §5.3.3.2)
         if (bffOptions.RequireIssuerValidation)
@@ -241,8 +224,8 @@ internal static partial class BffLoginEndpoints
         string pathPrefix = string.IsNullOrEmpty(frontend.PathPrefix) ? "" : frontend.PathPrefix;
         string callbackUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{pathPrefix}/bff/callback";
         BffTokenSet? tokens = await ExchangeCodeForTokensAsync(
-            httpClientFactory, bffOptions, frontend, code, pkceState.CodeVerifier, callbackUrl,
-            pkceState.DPoPPrivateKeyJwk, dpopService, clock, cancellationToken)
+            services, frontend, code, pkceState.CodeVerifier, callbackUrl,
+            pkceState.DPoPPrivateKeyJwk, cancellationToken)
             .ConfigureAwait(false);
 
         if (tokens is null)
@@ -284,21 +267,22 @@ internal static partial class BffLoginEndpoints
 
         return TypedResults.Redirect(frontend.EffectivePostLoginRedirectPath);
     }
-#pragma warning restore GRAPI003
 
 #pragma warning disable GRSEC003 // Method handles tokens — server-side only
     private static async Task<BffTokenSet?> ExchangeCodeForTokensAsync(
-        IHttpClientFactory httpClientFactory,
-        GranitBffOptions options,
+        IServiceProvider services,
         BffFrontendOptions frontend,
         string code,
         string codeVerifier,
         string redirectUri,
         string? dpopPrivateKeyJwk,
-        IDPoPProofService dpopService,
-        IClock clock,
         CancellationToken cancellationToken)
     {
+        IHttpClientFactory httpClientFactory = services.GetRequiredService<IHttpClientFactory>();
+        IDPoPProofService dpopService = services.GetRequiredService<IDPoPProofService>();
+        IClock clock = services.GetRequiredService<IClock>();
+        GranitBffOptions options = services.GetRequiredService<IOptions<GranitBffOptions>>().Value;
+
         using HttpClient httpClient = httpClientFactory.CreateClient("Granit.Bff");
         string tokenEndpoint = $"{options.Authority.ToString().TrimEnd('/')}/connect/token";
 
@@ -387,17 +371,21 @@ internal static partial class BffLoginEndpoints
 
 #pragma warning disable GRSEC003 // Method handles client credentials for PAR — server-side only
     private static async Task<string?> PushAuthorizationRequestAsync(
-        IHttpClientFactory httpClientFactory,
-        string authorityBase,
+        IServiceProvider services,
         BffFrontendOptions frontend,
         string callbackUrl,
         string scopes,
         string state,
         string codeChallenge,
-        IClock clock,
-        ILogger logger,
         CancellationToken cancellationToken)
     {
+        IHttpClientFactory httpClientFactory = services.GetRequiredService<IHttpClientFactory>();
+        IClock clock = services.GetRequiredService<IClock>();
+        ILogger logger = services.GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
+        GranitBffOptions bffOptions = services.GetRequiredService<IOptions<GranitBffOptions>>().Value;
+        string authorityBase = bffOptions.Authority.ToString().TrimEnd('/');
+
         try
         {
             using HttpClient httpClient = httpClientFactory.CreateClient("Granit.Bff");

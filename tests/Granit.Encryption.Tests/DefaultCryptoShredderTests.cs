@@ -60,16 +60,12 @@ public sealed class DefaultCryptoShredderTests
     }
 
     [Fact]
-    public async Task ShredAsync_WithNullEntityType_ThrowsArgumentException()
-    {
+    public async Task ShredAsync_WithNullEntityType_ThrowsArgumentException() =>
         await Should.ThrowAsync<ArgumentException>(() => _sut.ShredAsync(null!, "abc-123", TestContext.Current.CancellationToken));
-    }
 
     [Fact]
-    public async Task ShredAsync_WithEmptyEntityId_ThrowsArgumentException()
-    {
+    public async Task ShredAsync_WithEmptyEntityId_ThrowsArgumentException() =>
         await Should.ThrowAsync<ArgumentException>(() => _sut.ShredAsync("Patient", "", TestContext.Current.CancellationToken));
-    }
 
     [Fact]
     public async Task ShredBatchAsync_CallsDeleteKeyAsync_ForEachEntityId()

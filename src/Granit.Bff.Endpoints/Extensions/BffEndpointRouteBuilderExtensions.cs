@@ -150,8 +150,8 @@ public sealed class BffSecurityHeadersMiddleware(RequestDelegate next)
         if (path.Contains("/bff/login", StringComparison.OrdinalIgnoreCase)
             || path.Contains("/bff/callback", StringComparison.OrdinalIgnoreCase))
         {
-            context.Response.Headers["X-Frame-Options"] = "DENY";
-            context.Response.Headers["Content-Security-Policy"] = "frame-ancestors 'none'";
+            context.Response.Headers.XFrameOptions = "DENY";
+            context.Response.Headers.ContentSecurityPolicy = "frame-ancestors 'none'";
         }
 
         await next(context).ConfigureAwait(false);

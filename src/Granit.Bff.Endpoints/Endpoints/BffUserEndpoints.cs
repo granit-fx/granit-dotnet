@@ -134,13 +134,10 @@ internal static class BffUserEndpoints
 
     private static string[] ExtractStringArray(Dictionary<string, string> claims, string key)
     {
-        if (!claims.TryGetValue(key, out string? value))
+        // Try requested key first, then "role" (singular) as a fallback — common in many OIDC providers
+        if (!claims.TryGetValue(key, out string? value) && !claims.TryGetValue("role", out value))
         {
-            // Try "role" (singular) as a fallback — common in many OIDC providers
-            if (!claims.TryGetValue("role", out value))
-            {
-                return [];
-            }
+            return [];
         }
 
         try

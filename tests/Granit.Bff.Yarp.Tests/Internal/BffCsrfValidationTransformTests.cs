@@ -121,7 +121,7 @@ public sealed class BffCsrfValidationTransformTests : IDisposable
     [Fact]
     public async Task ApplyAsync_NoRequireAuthMetadata_SkipsValidation()
     {
-        RequestTransformContext context = CreateTransformContext("POST", new Dictionary<string, string>());
+        RequestTransformContext context = CreateTransformContext("POST", new());
 
         await _transform.ApplyAsync(context);
 
@@ -132,7 +132,7 @@ public sealed class BffCsrfValidationTransformTests : IDisposable
     [Fact]
     public async Task ApplyAsync_RequireAuthFalse_SkipsValidation()
     {
-        RequestTransformContext context = CreateTransformContext("POST", new Dictionary<string, string>
+        RequestTransformContext context = CreateTransformContext("POST", new()
         {
             ["Granit.Bff.RequireAuth"] = "false",
         });
@@ -150,7 +150,7 @@ public sealed class BffCsrfValidationTransformTests : IDisposable
             ["Granit.Bff.RequireAuth"] = "true",
             ["Granit.Bff.Frontend"] = "admin",
         });
-        context.HttpContext.Request.Cookies = CreateCookies(new Dictionary<string, string>());
+        context.HttpContext.Request.Cookies = CreateCookies(new());
 
         await _transform.ApplyAsync(context);
 

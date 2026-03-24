@@ -60,48 +60,54 @@ public sealed partial class EncryptionIsolationSaveChangesInterceptor(
 
         foreach (EntityEntry entry in context.ChangeTracker.Entries())
         {
-            if (entry.State is not (EntityState.Added or EntityState.Modified))
+            if (entry.State is EntityState.Added or EntityState.Modified)
+            {
+                await EncryptEntryAsync(entry, cancellationToken).ConfigureAwait(false);
+            }
+        }
+    }
+
+    private async Task EncryptEntryAsync(EntityEntry entry, CancellationToken cancellationToken)
+    {
+        PropertyInfo[] isolatedProperties = GetIsolatedProperties(entry.Entity.GetType());
+        if (isolatedProperties.Length == 0)
+        {
+            return;
+        }
+
+        string entityType = entry.Entity.GetType().Name;
+        string entityId = GetEntityId(entry);
+
+        if (string.IsNullOrEmpty(entityId))
+        {
+            LogSkippedNoId(logger, entityType);
+            return;
+        }
+
+        byte[] key = await keyStore.GetOrCreateKeyAsync(entityType, entityId, cancellationToken)
+            .ConfigureAwait(false);
+
+        EncryptProperties(entry, isolatedProperties, key);
+        LogEncryptedProperties(logger, entityType, entityId, isolatedProperties.Length);
+    }
+
+    private static void EncryptProperties(EntityEntry entry, PropertyInfo[] properties, byte[] key)
+    {
+        foreach (PropertyInfo property in properties)
+        {
+            string? plainText = property.GetValue(entry.Entity) as string;
+            if (plainText is null)
             {
                 continue;
             }
 
-            PropertyInfo[] isolatedProperties = GetIsolatedProperties(entry.Entity.GetType());
-            if (isolatedProperties.Length == 0)
+            string cipherText = IsolatedFieldEncryptor.Encrypt(key, plainText);
+            property.SetValue(entry.Entity, cipherText);
+
+            if (entry.State is EntityState.Modified)
             {
-                continue;
+                entry.Property(property.Name).IsModified = true;
             }
-
-            string entityType = entry.Entity.GetType().Name;
-            string entityId = GetEntityId(entry);
-
-            if (string.IsNullOrEmpty(entityId))
-            {
-                LogSkippedNoId(logger, entityType);
-                continue;
-            }
-
-            byte[] key = await keyStore.GetOrCreateKeyAsync(entityType, entityId, cancellationToken)
-                .ConfigureAwait(false);
-
-            foreach (PropertyInfo property in isolatedProperties)
-            {
-                string? plainText = property.GetValue(entry.Entity) as string;
-                if (plainText is null)
-                {
-                    continue;
-                }
-
-                string cipherText = IsolatedFieldEncryptor.Encrypt(key, plainText);
-                property.SetValue(entry.Entity, cipherText);
-
-                // Ensure EF Core tracks the change
-                if (entry.State is EntityState.Modified)
-                {
-                    entry.Property(property.Name).IsModified = true;
-                }
-            }
-
-            LogEncryptedProperties(logger, entityType, entityId, isolatedProperties.Length);
         }
     }
 

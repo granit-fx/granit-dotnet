@@ -25,11 +25,8 @@ public sealed class BffMetricsTests : IDisposable
     public void Dispose() => _sp.Dispose();
 
     [Fact]
-    public void Constructor_WithRealMeterFactory_DoesNotThrow()
-    {
-        // Already constructed in ctor — just verify it's not null
+    public void Constructor_WithRealMeterFactory_DoesNotThrow() =>
         _metrics.ShouldNotBeNull();
-    }
 
     [Fact]
     public void MeterName_IsGranitBff() => BffMetrics.MeterName.ShouldBe("Granit.Bff");
