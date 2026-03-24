@@ -42,6 +42,13 @@ public sealed class RateLimitingMetricsTests : IDisposable
     [Fact]
     public void RecordAllowed_IncrementsCounter()
     {
+        // Use a dedicated MeterFactory so previous test calls don't leak into the count.
+        ServiceCollection services = new();
+        services.AddMetrics();
+        using ServiceProvider sp = services.BuildServiceProvider();
+        IMeterFactory factory = sp.GetRequiredService<IMeterFactory>();
+        RateLimitingMetrics metrics = new(factory);
+
         using MeterListener listener = new();
         long count = 0;
 
@@ -60,8 +67,8 @@ public sealed class RateLimitingMetricsTests : IDisposable
 
         listener.Start();
 
-        _metrics.RecordAllowed("api", "tenant-1");
-        _metrics.RecordAllowed("api", "tenant-1");
+        metrics.RecordAllowed("api", "tenant-1");
+        metrics.RecordAllowed("api", "tenant-1");
 
         listener.RecordObservableInstruments();
 
@@ -71,6 +78,13 @@ public sealed class RateLimitingMetricsTests : IDisposable
     [Fact]
     public void RecordRejected_IncrementsCounter()
     {
+        // Use a dedicated MeterFactory so previous test calls don't leak into the count.
+        ServiceCollection services = new();
+        services.AddMetrics();
+        using ServiceProvider sp = services.BuildServiceProvider();
+        IMeterFactory factory = sp.GetRequiredService<IMeterFactory>();
+        RateLimitingMetrics metrics = new(factory);
+
         using MeterListener listener = new();
         long count = 0;
 
@@ -89,9 +103,9 @@ public sealed class RateLimitingMetricsTests : IDisposable
 
         listener.Start();
 
-        _metrics.RecordRejected("api", null);
-        _metrics.RecordRejected("api", null);
-        _metrics.RecordRejected("api", null);
+        metrics.RecordRejected("api", null);
+        metrics.RecordRejected("api", null);
+        metrics.RecordRejected("api", null);
 
         listener.RecordObservableInstruments();
 
