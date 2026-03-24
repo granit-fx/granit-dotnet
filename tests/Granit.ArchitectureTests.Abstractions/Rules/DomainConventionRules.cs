@@ -236,7 +236,9 @@ public static class DomainConventionRules
 
     private static bool IsAssignableToAggregateRoot(Class c) =>
         HasBaseClass(c, "Granit.Domain.AggregateRoot")
-        || HasBaseClass(c, "Granit.Domain.CreationAuditedAggregateRoot");
+        || HasBaseClass(c, "Granit.Domain.CreationAuditedAggregateRoot")
+        || HasBaseClass(c, "Granit.Domain.AuditedAggregateRoot")
+        || HasBaseClass(c, "Granit.Domain.FullAuditedAggregateRoot");
 
     private static bool HasBaseClass(Class c, string baseFullName) =>
         c.Dependencies.Any(d =>
