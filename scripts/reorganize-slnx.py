@@ -11,31 +11,35 @@ SLNX = REPO / "Granit.slnx"
 # Module-family → domain mapping
 # ---------------------------------------------------------------------------
 SRC_DOMAINS = {
-    "Core": {
-        "Diagnostics", "Guids", "Observability",
-        "Security", "Testing", "Timing", "Validation",
-    },
-    "Tools": {"Analyzers"},
-    "AI": {"AI"},
-    "Business": {
-        "DataExchange", "DocumentGeneration", "Querying",
-        "ReferenceData", "Templating", "Timeline", "Workflow",
-    },
-    "Http": {
-        "Bff", "Http", "RateLimiting", "Webhooks",
-    },
-    "Data": {
-        "BlobStorage", "Caching", "Imaging", "Persistence",
-    },
-    "Infrastructure": {
-        "BackgroundJobs", "EventBus", "Features", "Localization",
-        "MultiTenancy", "Notifications", "Settings", "Wolverine",
+    "Platform": {
+        "Diagnostics", "Guids", "Http", "MultiTenancy", "Observability",
+        "Oidc", "RateLimiting", "Timing", "Validation",
     },
     "Security": {
-        "Authentication", "Authorization", "Encryption",
-        "Identity", "OpenIddict", "Vault",
+        "Authentication", "Authorization", "Bff", "Encryption",
+        "Identity", "OpenIddict", "Security", "Vault",
+    },
+    "Application": {
+        "DataExchange", "DocumentGeneration", "Features", "Localization",
+        "Querying", "ReferenceData", "Settings", "Templating",
+        "Timeline", "Workflow",
+    },
+    "Infrastructure": {
+        "BackgroundJobs", "BlobStorage", "Caching", "EventBus",
+        "Imaging", "Persistence", "Webhooks", "Wolverine",
     },
     "Compliance": {"AuditLog", "Privacy"},
+    "Notifications": {"Notifications"},
+    "AI": {"AI"},
+    "Tooling": {"Analyzers", "Testing"},
+}
+
+# Special cases: projects classified by full directory name, not just module family.
+# Http.Cookies is Compliance (cookie consent / GDPR), not Platform.
+_SPECIAL_CASES: dict[str, str] = {
+    "Granit.Http.Cookies": "Compliance",
+    "Granit.Http.Cookies.Endpoints": "Compliance",
+    "Granit.Http.Cookies.Klaro": "Compliance",
 }
 
 # Build reverse lookup: module_family → domain
@@ -45,18 +49,20 @@ for domain, modules in SRC_DOMAINS.items():
         _MODULE_TO_DOMAIN[m] = domain
 
 # Ordered domain list (determines output order)
-DOMAIN_ORDER = ["Core", "Tools", "AI", "Business", "Http", "Data", "Infrastructure", "Security", "Compliance"]
+DOMAIN_ORDER = [
+    "Platform", "Security", "Application", "Infrastructure",
+    "Compliance", "Notifications", "AI", "Tooling",
+]
 
 DOMAIN_LABELS = {
-    "Core": "Core",
-    "Tools": "Tools",
-    "AI": "AI",
-    "Business": "Business",
-    "Http": "Http",
-    "Data": "Data",
-    "Infrastructure": "Infrastructure",
+    "Platform": "Platform",
     "Security": "Security",
+    "Application": "Application",
+    "Infrastructure": "Infrastructure",
     "Compliance": "Compliance",
+    "Notifications": "Notifications",
+    "AI": "AI",
+    "Tooling": "Tooling",
 }
 
 
@@ -69,45 +75,55 @@ def classify_src(path: str) -> str:
     # Extract directory name: src/Granit.Foo.Bar/... → Granit.Foo.Bar
     parts = path.split("/")
     if len(parts) < 2:
-        return "Core"
+        return "Platform"
     proj_dir = parts[1]  # e.g., "Granit" or "Granit.AI.AzureOpenAI"
 
+    # Check special cases first (e.g., Http.Cookies → Compliance)
+    if proj_dir in _SPECIAL_CASES:
+        return _SPECIAL_CASES[proj_dir]
+
+    # Base package "Granit" (was Granit.Core) → Platform
     if proj_dir == "Granit":
-        return "Core"
+        return "Platform"
 
     segments = proj_dir.split(".")
     if len(segments) < 2:
-        return "Core"
+        return "Platform"
 
     module_family = segments[1]  # "AI", "BlobStorage", "Http", etc.
-    return _MODULE_TO_DOMAIN.get(module_family, "Core")
+    return _MODULE_TO_DOMAIN.get(module_family, "Platform")
 
 
 def classify_test(path: str) -> str:
     """Classify a tests/ project path into a domain."""
     parts = path.split("/")
     if len(parts) < 2:
-        return "Core"
+        return "Platform"
     proj_dir = parts[1]  # e.g., "Granit.AI.Tests"
 
     # ArchitectureTests → dedicated folder
     if proj_dir.startswith("Granit.ArchitectureTests"):
         return "Architecture"
 
-    # Bundle.Tests → Core
+    # Bundle.Tests → Platform
     if proj_dir.startswith("Granit.Bundle"):
-        return "Core"
+        return "Platform"
 
-    # Granit.Tests (root module tests) → Core
+    # Granit.Tests (root module tests) → Platform
     if proj_dir == "Granit.Tests":
-        return "Core"
+        return "Platform"
+
+    # Check special cases (strip .Tests suffix for matching)
+    base_name = re.sub(r"\.Tests(\.Integration)?$", "", proj_dir)
+    if base_name in _SPECIAL_CASES:
+        return _SPECIAL_CASES[base_name]
 
     segments = proj_dir.split(".")
     if len(segments) < 2:
-        return "Core"
+        return "Platform"
 
     module_family = segments[1]
-    return _MODULE_TO_DOMAIN.get(module_family, "Core")
+    return _MODULE_TO_DOMAIN.get(module_family, "Platform")
 
 
 def parse_projects(content: str) -> tuple[list[str], list[str]]:
