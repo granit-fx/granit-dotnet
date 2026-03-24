@@ -1,5 +1,5 @@
-using Granit.Core.MultiTenancy;
 using Granit.Localization.Options;
+using Granit.MultiTenancy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;

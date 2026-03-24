@@ -1,5 +1,5 @@
 using System.Reflection;
-using Granit.Core.Domain;
+using Granit.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 

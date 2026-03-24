@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Security;
 
 namespace Granit.Authentication.OpenIddict;

@@ -4,8 +4,8 @@
 // Vérifie que ConfigureServices enregistre les services de documentation OpenAPI.
 // =============================================================================
 
-using Granit.Core.Modularity;
 using Granit.Http.ApiDocumentation.Options;
+using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;

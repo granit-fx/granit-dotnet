@@ -1,7 +1,7 @@
 using ArchUnitNET.Domain;
 using ArchUnitNET.Fluent;
 using ArchUnitNET.xUnit;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Xunit;
 using static ArchUnitNET.Fluent.ArchRuleDefinition;
 

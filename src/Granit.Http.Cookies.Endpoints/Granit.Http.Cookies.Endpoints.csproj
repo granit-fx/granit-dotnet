@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
+    <ProjectReference Include="..\Granit\Granit.csproj" />
     <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\Granit.Http.Cookies\Granit.Http.Cookies.csproj" />
   </ItemGroup>

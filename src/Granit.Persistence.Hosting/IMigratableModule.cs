@@ -18,7 +18,7 @@ public interface IMigratableModule
 /// </summary>
 /// <remarks>
 /// <para>
-/// Implement this interface on your <see cref="Granit.Core.Modularity.GranitModule"/> subclass
+/// Implement this interface on your <see cref="Granit.Modularity.GranitModule"/> subclass
 /// to declare that the module owns a host <see cref="DbContext"/> with EF Core migrations.
 /// The <see cref="IGranitMigrationRunner"/> discovers all modules implementing this interface
 /// in topological order (respecting <c>[DependsOn]</c>) and calls

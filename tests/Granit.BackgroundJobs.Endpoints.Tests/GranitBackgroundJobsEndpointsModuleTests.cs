@@ -1,6 +1,6 @@
 using Granit.Authorization;
 using Granit.BackgroundJobs.Endpoints;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Querying;
 using Shouldly;
 using Xunit;

@@ -1,7 +1,7 @@
 using Granit.Authorization.Abstractions;
 using Granit.Authorization.Cache;
 using Granit.Authorization.Options;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Security;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;

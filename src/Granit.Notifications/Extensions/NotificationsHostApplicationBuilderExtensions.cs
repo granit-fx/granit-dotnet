@@ -1,5 +1,5 @@
 using System.Threading.Channels;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Diagnostics;
 using Granit.Notifications.Handlers;

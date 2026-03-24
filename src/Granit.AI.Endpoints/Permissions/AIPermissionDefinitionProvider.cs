@@ -1,6 +1,6 @@
 using Granit.AI.Endpoints.Internal;
 using Granit.Authorization.Abstractions;
-using Granit.Core.Localization;
+using Granit.Localization;
 
 namespace Granit.AI.Endpoints.Permissions;
 

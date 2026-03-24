@@ -1,4 +1,4 @@
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.Templating.Store;
 
 namespace Granit.Templating.EntityFrameworkCore.Internal;

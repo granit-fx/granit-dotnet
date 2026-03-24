@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Identity.Federated.Cognito.Extensions;
+using Granit.Modularity;
 
 namespace Granit.Identity.Federated.Cognito;
 

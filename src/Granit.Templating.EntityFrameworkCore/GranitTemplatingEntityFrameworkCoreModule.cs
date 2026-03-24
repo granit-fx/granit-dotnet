@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Persistence;
 
 namespace Granit.Templating.EntityFrameworkCore;

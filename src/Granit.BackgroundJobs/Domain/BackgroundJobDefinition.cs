@@ -1,6 +1,6 @@
 using Granit.BackgroundJobs.Events;
 using Granit.BackgroundJobs.Internal;
-using Granit.Core.Domain;
+using Granit.Domain;
 
 namespace Granit.BackgroundJobs.Domain;
 

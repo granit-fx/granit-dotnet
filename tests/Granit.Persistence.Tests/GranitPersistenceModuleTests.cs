@@ -6,9 +6,8 @@
 //   - Déclare les dépendances [DependsOn] correctes
 // =============================================================================
 
-using Granit.Core.Modularity;
-using Granit.Core.MultiTenancy;
 using Granit.Guids;
+using Granit.Modularity;
 using Granit.MultiTenancy;
 using Granit.Persistence.Interceptors;
 using Granit.Security;
@@ -61,6 +60,6 @@ public sealed class GranitPersistenceModuleTests
         dependedTypes.ShouldContain(typeof(GranitGuidsModule));
         dependedTypes.ShouldContain(typeof(GranitSecurityModule));
         dependedTypes.ShouldNotContain(typeof(GranitMultiTenancyModule),
-            "ICurrentTenant is now sourced from Granit.Core.MultiTenancy — Granit.MultiTenancy is a soft dependency");
+            "ICurrentTenant is now sourced from Granit.MultiTenancy — Granit.MultiTenancy is a soft dependency");
     }
 }

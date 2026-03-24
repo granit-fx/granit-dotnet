@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Text.Json;
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.Identity;
 using Microsoft.AspNetCore.Identity;
 

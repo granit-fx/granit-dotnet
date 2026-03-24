@@ -3,7 +3,7 @@ using Cronos;
 using Granit.BackgroundJobs.Abstractions;
 using Granit.BackgroundJobs.Diagnostics;
 using Granit.BackgroundJobs.Domain;
-using Granit.Core.Exceptions;
+using Granit.Exceptions;
 using Granit.Security;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;

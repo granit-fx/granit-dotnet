@@ -1,5 +1,5 @@
-using Granit.Core.Events;
 using Granit.DataExchange.Import.Events;
+using Granit.Events;
 using Shouldly;
 using Xunit;
 

@@ -5,8 +5,8 @@
 // against a SQLite in-memory database.
 // =============================================================================
 
-using Granit.Core.MultiTenancy;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Security;
 using Granit.Timeline.Domain;
 using Granit.Timeline.EntityFrameworkCore.Internal;

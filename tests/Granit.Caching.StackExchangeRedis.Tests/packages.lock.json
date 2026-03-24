@@ -278,10 +278,13 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
+      "granit": {
+        "type": "Project"
+      },
       "granit.caching": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Caching.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Caching.Memory": "[10.*, )",
@@ -303,13 +306,10 @@
           "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": "[2.*, )"
         }
       },
-      "granit.core": {
-        "type": "Project"
-      },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
         }

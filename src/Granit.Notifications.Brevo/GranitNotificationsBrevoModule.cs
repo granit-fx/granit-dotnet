@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Http.Resilience;
+using Granit.Modularity;
 using Granit.Notifications.Email;
 using Granit.Notifications.Sms;
 using Granit.Notifications.WhatsApp;

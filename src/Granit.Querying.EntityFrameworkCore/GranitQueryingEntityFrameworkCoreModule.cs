@@ -1,5 +1,5 @@
-using Granit.Core.Diagnostics;
-using Granit.Core.Modularity;
+using Granit.Diagnostics;
+using Granit.Modularity;
 using Granit.Persistence;
 using Granit.Querying.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;

@@ -123,7 +123,7 @@
         "resolved": "0.0.45",
         "contentHash": "lMQhMh32mqZCIBOkEP5DX+vtuoImuyKEAotqw33OuTZUgFFUFl+tEVPZ8fTIhsTCAXp5Nbhy2d3FeVxHYLehFw=="
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       },
       "granit.documentgeneration": {
@@ -141,7 +141,7 @@
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
         }

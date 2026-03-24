@@ -3,7 +3,7 @@ using Granit.AI.Diagnostics;
 using Granit.AI.Internal;
 using Granit.AI.Options;
 using Granit.AI.Workspaces;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;

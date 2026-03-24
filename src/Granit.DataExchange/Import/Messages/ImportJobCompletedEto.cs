@@ -1,5 +1,5 @@
-using Granit.Core.Events;
 using Granit.DataExchange.Import.Domain;
+using Granit.Events;
 
 namespace Granit.DataExchange.Import.Messages;
 

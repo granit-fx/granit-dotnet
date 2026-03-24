@@ -447,7 +447,7 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       },
       "granit.guids": {
@@ -461,14 +461,14 @@
       "granit.http.resilience": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.Http.Resilience": "[10.*, )"
         }
       },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
         }
@@ -476,7 +476,7 @@
       "granit.webhooks": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"

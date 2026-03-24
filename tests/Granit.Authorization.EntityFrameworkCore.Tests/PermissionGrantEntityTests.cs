@@ -1,5 +1,5 @@
 using Granit.Authorization.EntityFrameworkCore.Entities;
-using Granit.Core.Domain;
+using Granit.Domain;
 using Shouldly;
 using Xunit;
 

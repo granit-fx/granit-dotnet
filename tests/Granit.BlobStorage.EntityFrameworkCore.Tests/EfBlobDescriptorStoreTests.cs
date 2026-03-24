@@ -1,6 +1,6 @@
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.EntityFrameworkCore.Internal;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;

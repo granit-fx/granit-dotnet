@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using Granit.Core.Events;
+using Granit.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 

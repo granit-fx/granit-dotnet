@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using Granit.Core.Exceptions;
+using Granit.Exceptions;
 using Granit.Security;
 using Granit.Templating.Endpoints.Dtos;
 using Granit.Templating.Endpoints.Internal;

@@ -1,6 +1,6 @@
-using Granit.Core.Modularity;
 using Granit.Identity.Federated.Keycloak.Extensions;
 using Granit.Identity.Federated.Keycloak.Internal;
+using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;

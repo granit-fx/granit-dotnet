@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Notifications.Sms.AwsSns.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

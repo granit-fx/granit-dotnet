@@ -1,6 +1,6 @@
 using Granit.AI;
-using Granit.Core.Diagnostics;
-using Granit.Core.Modularity;
+using Granit.Diagnostics;
+using Granit.Modularity;
 using Granit.Querying;
 using Granit.Querying.AI.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using Granit.Core.Domain;
+using Granit.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Persistence.Extensions;

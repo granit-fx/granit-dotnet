@@ -1,7 +1,7 @@
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.GoogleCloud.Internal;
 using Granit.Identity.Federated.GoogleCloud.Options;

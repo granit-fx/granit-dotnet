@@ -1,4 +1,4 @@
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Settings.Definitions;
 using Granit.Settings.Endpoints.Dtos;
 using Granit.Settings.Endpoints.Options;

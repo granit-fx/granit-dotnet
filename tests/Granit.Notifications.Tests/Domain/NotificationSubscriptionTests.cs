@@ -1,4 +1,4 @@
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.Notifications.Domain;
 using Shouldly;
 using Xunit;

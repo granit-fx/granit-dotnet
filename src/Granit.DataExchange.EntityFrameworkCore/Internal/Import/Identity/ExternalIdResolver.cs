@@ -1,8 +1,8 @@
-using Granit.Core.MultiTenancy;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Export.Entities;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Entities;
 using Granit.DataExchange.Import.Identity;
 using Granit.DataExchange.Import.Mapping;
+using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Import.Identity;

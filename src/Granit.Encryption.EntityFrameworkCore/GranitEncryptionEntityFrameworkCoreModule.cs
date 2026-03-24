@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Encryption.EntityFrameworkCore.Interceptors;
+using Granit.Modularity;
 using Granit.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

@@ -5,7 +5,7 @@
 // module dependency graph for Timing prerequisites.
 // =============================================================================
 
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Timing;
 using Shouldly;
 using Xunit;

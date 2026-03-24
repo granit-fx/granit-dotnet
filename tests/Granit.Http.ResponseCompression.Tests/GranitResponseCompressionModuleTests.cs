@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Http.ResponseCompression.Extensions;
+using Granit.Modularity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

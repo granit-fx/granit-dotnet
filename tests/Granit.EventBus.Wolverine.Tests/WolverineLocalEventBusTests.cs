@@ -1,5 +1,5 @@
-using Granit.Core.Events;
 using Granit.EventBus.Wolverine.Internal;
+using Granit.Events;
 using NSubstitute;
 using Shouldly;
 using Wolverine;

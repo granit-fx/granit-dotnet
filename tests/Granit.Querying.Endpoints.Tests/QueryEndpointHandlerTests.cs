@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Querying.Endpoints.Dtos;
 using Granit.Querying.Endpoints.Internal;
 using Granit.Querying.Meta;

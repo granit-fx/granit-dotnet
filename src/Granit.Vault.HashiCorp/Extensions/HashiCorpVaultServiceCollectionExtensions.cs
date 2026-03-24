@@ -1,4 +1,4 @@
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Encryption;
 using Granit.Vault.HashiCorp.Diagnostics;
 using Granit.Vault.HashiCorp.HealthChecks;

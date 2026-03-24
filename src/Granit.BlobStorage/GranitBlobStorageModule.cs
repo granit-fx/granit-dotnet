@@ -1,6 +1,6 @@
 using Granit.BlobStorage.Diagnostics;
-using Granit.Core.Modularity;
 using Granit.Guids;
+using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

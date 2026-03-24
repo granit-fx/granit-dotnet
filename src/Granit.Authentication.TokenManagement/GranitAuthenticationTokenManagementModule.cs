@@ -1,6 +1,6 @@
 using Granit.Authentication.Oidc;
 using Granit.Authentication.TokenManagement.Extensions;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Timing;
 
 namespace Granit.Authentication.TokenManagement;

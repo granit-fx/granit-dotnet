@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.Localization\Granit.Localization.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Core\Granit.Core.csproj" />
+    <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -22,7 +22,7 @@ public interface IBackgroundJobWriter
     /// Pauses a recurring job. The current execution (if running) completes normally,
     /// but rescheduling is skipped. The pause state persists across restarts.
     /// </summary>
-    /// <exception cref="Granit.Core.Exceptions.EntityNotFoundException">
+    /// <exception cref="Granit.Exceptions.EntityNotFoundException">
     /// Thrown when no job with <paramref name="jobName"/> exists in the store.
     /// </exception>
     Task PauseAsync(string jobName, CancellationToken cancellationToken = default);
@@ -31,7 +31,7 @@ public interface IBackgroundJobWriter
     /// Resumes a paused job and immediately schedules its next occurrence
     /// based on the current time and the job's cron expression.
     /// </summary>
-    /// <exception cref="Granit.Core.Exceptions.EntityNotFoundException">
+    /// <exception cref="Granit.Exceptions.EntityNotFoundException">
     /// Thrown when no job with <paramref name="jobName"/> exists in the store.
     /// </exception>
     Task ResumeAsync(string jobName, CancellationToken cancellationToken = default);
@@ -42,7 +42,7 @@ public interface IBackgroundJobWriter
     /// The caller's identity (<see cref="Granit.Security.ICurrentUserService.UserId"/>)
     /// is propagated for ISO 27001 audit trail.
     /// </summary>
-    /// <exception cref="Granit.Core.Exceptions.EntityNotFoundException">
+    /// <exception cref="Granit.Exceptions.EntityNotFoundException">
     /// Thrown when no job with <paramref name="jobName"/> exists in the store.
     /// </exception>
     Task TriggerNowAsync(string jobName, CancellationToken cancellationToken = default);

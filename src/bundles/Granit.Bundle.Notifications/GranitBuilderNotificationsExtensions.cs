@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Notifications;
 using Granit.Notifications.Endpoints;
 using Granit.Notifications.EntityFrameworkCore;

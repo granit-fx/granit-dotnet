@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Messages;
 using Granit.Timing;

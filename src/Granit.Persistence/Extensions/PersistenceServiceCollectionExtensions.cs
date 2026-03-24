@@ -1,6 +1,6 @@
-using Granit.Core.DataFiltering;
-using Granit.Core.Diagnostics;
-using Granit.Core.Events;
+using Granit.DataFiltering;
+using Granit.Diagnostics;
+using Granit.Events;
 using Granit.Http.ExceptionHandling;
 using Granit.Persistence.DataSeeding;
 using Granit.Persistence.Diagnostics;

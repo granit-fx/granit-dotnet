@@ -4,8 +4,8 @@
 // Verifies CRUD operations, SystemLog immutability guard, and attachment handling.
 // =============================================================================
 
-using Granit.Core.MultiTenancy;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Security;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Events;

@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Http.Resilience;
+using Granit.Modularity;
 
 namespace Granit.AI.Ollama;
 

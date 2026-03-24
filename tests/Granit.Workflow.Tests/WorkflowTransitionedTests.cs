@@ -1,4 +1,4 @@
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.Workflow.Domain;
 using Granit.Workflow.Events;
 using Shouldly;

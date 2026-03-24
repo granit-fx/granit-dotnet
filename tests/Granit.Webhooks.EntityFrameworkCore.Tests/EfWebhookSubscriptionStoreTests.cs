@@ -158,7 +158,7 @@ public sealed class EfWebhookSubscriptionStoreTests : IAsyncDisposable
     public async Task DeactivateAsync_throws_when_not_found()
     {
         // Act & Assert
-        await Should.ThrowAsync<Granit.Core.Exceptions.EntityNotFoundException>(async () =>
+        await Should.ThrowAsync<Granit.Exceptions.EntityNotFoundException>(async () =>
             await _sut.DeactivateAsync(Guid.NewGuid(), "reason", TestContext.Current.CancellationToken));
     }
 

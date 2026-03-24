@@ -100,7 +100,7 @@ public static class QueryEndpointRouteBuilderExtensions
                 [FromServices] IQueryEngine<TEntity> engine,
                 [FromServices] ISavedViewStoreReader savedViewStore,
                 [FromServices] QueryDefinition<TEntity> definition,
-                Granit.Core.MultiTenancy.ICurrentTenant tenant,
+                Granit.MultiTenancy.ICurrentTenant tenant,
                 System.Security.Claims.ClaimsPrincipal user,
                 CancellationToken cancellationToken) =>
             {

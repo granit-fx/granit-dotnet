@@ -1,4 +1,4 @@
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Templating.Scriban.GlobalContexts;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;

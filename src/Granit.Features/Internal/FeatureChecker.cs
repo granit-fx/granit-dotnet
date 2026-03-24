@@ -1,8 +1,8 @@
-using Granit.Core.MultiTenancy;
 using Granit.Features.Cache;
 using Granit.Features.Definitions;
 using Granit.Features.Exceptions;
 using Granit.Features.ValueProviders;
+using Granit.MultiTenancy;
 using Microsoft.Extensions.DependencyInjection;
 using ZiggyCreatures.Caching.Fusion;
 

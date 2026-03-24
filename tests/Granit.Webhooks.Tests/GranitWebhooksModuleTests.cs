@@ -5,7 +5,7 @@
 // registers services without throwing, and that DI registrations are present.
 // =============================================================================
 
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Extensions;

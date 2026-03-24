@@ -8,7 +8,7 @@
 // =============================================================================
 
 using System.Data.Common;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Persistence.MultiTenancy;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;

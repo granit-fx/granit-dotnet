@@ -1,5 +1,5 @@
 using System.Collections.ObjectModel;
-using Granit.Core.Localization;
+using Granit.Localization;
 
 namespace Granit.Webhooks.Definitions;
 

@@ -1,5 +1,5 @@
 using System.Diagnostics.Metrics;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Workflow.Diagnostics;
 using Granit.Workflow.Domain;
 using Microsoft.Extensions.DependencyInjection;

@@ -5,7 +5,7 @@
 // produce correct results via EF Core InMemory.
 // =============================================================================
 
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;

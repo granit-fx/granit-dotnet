@@ -1,6 +1,6 @@
-using Granit.Core.Events;
-using Granit.Core.Modularity;
 using Granit.EventBus.Diagnostics;
+using Granit.Events;
+using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;

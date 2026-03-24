@@ -1,4 +1,4 @@
-using Granit.Core.Exceptions;
+using Granit.Exceptions;
 using Microsoft.AspNetCore.Http;
 
 namespace Granit.Http.ExceptionHandling.Internal;

@@ -1,4 +1,4 @@
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Internal;
 using Granit.Privacy.Diagnostics;

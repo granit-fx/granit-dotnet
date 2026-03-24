@@ -1,5 +1,5 @@
-using Granit.Core.MultiTenancy;
 using Granit.Http.ApiDocumentation.Options;
+using Granit.MultiTenancy;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;

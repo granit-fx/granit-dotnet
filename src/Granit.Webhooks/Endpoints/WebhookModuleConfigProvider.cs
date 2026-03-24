@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Webhooks.Dtos;
 using Granit.Webhooks.Options;
 using Microsoft.Extensions.Options;

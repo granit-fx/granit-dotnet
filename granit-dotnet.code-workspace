@@ -1,0 +1,34 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+      "Granit.slnx": ".editorconfig, Directory.Build.props, Directory.Packages.props, nuget.config, global.json, .gitignore, .gitattributes, .mcp-code-index.json",
+      "*.csproj": "packages.lock.json",
+      "package.json": "package-lock.json, .npmrc, tsconfig.json"
+    },
+    "files.exclude": {
+      "**/bin": true,
+      "**/obj": true,
+      "**/.vs": true
+    },
+    "search.exclude": {
+      "**/bin": true,
+      "**/obj": true,
+      "**/node_modules": true,
+      "**/packages.lock.json": true,
+      "**/.mcp-code-index.json": true,
+      "**/dist": true
+    },
+    "files.watcherExclude": {
+      "**/bin/**": true,
+      "**/obj/**": true,
+      "**/node_modules/**": true
+    }
+  }
+}

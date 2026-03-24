@@ -1,7 +1,7 @@
 using System.Diagnostics.Metrics;
-using Granit.Core.Events;
 using Granit.EventBus.Diagnostics;
 using Granit.EventBus.Internal;
+using Granit.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;

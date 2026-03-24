@@ -1,6 +1,6 @@
-using Granit.Core.MultiTenancy;
 using Granit.Identity.Federated.EntityFrameworkCore.Entities;
 using Granit.Identity.Federated.EntityFrameworkCore.Options;
+using Granit.MultiTenancy;
 using Granit.Querying;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.Identity.Events;
 using Granit.Identity.Federated;
 using Granit.Identity.Federated.EntraId.Diagnostics;

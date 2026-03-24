@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Templating.Extensions;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;

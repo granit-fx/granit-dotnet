@@ -22,7 +22,7 @@ public sealed class GranitCachingModuleTests
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
         GranitCachingModule module = new();
-        Granit.Core.Modularity.ServiceConfigurationContext context = new(
+        Granit.Modularity.ServiceConfigurationContext context = new(
             builder.Services,
             builder.Configuration,
             builder);

@@ -1,6 +1,6 @@
 using Granit.Authentication.Cognito.Authentication;
 using Granit.Authentication.JwtBearer.Extensions;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;

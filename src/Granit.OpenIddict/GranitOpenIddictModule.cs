@@ -1,8 +1,8 @@
-using Granit.Core.Diagnostics;
-using Granit.Core.Modularity;
+using Granit.Diagnostics;
 using Granit.EventBus;
 using Granit.Guids;
 using Granit.Identity;
+using Granit.Modularity;
 using Granit.OpenIddict.Diagnostics;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Services;

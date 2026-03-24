@@ -71,13 +71,13 @@
         "resolved": "7.4.0",
         "contentHash": "n13CeYAPImXpM2Vb83dCQoMSC2VYPgRp2q4GLp4YG/TA5Qd+X/Jza6eG+MLwx/2mYt8Xhxp+fVusDrUlpe8ZkA=="
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       },
       "granit.eventbus": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.guids": {
@@ -89,26 +89,26 @@
       "granit.identity": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )"
         }
       },
       "granit.querying": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.security": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "Microsoft.EntityFrameworkCore": {

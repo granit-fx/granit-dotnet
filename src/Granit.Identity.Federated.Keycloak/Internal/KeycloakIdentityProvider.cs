@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.Identity.Diagnostics;
 using Granit.Identity.Events;
 using Granit.Identity.Federated;

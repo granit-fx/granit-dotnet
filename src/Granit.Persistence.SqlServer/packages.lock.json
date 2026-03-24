@@ -253,7 +253,7 @@
         "resolved": "9.0.4",
         "contentHash": "o94k2RKuAce3GeDMlUvIXlhVa1kWpJw95E6C9LwW0KlG0nj5+SgCiIxJ2Eroqb9sLtG1mEMbFttZIBZ13EJPvQ=="
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       },
       "granit.guids": {
@@ -267,7 +267,7 @@
       "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.persistence": {
@@ -302,13 +302,13 @@
       "granit.security": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
         }

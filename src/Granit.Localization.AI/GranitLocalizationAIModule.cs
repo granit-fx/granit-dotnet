@@ -1,6 +1,6 @@
 using Granit.AI;
-using Granit.Core.Modularity;
 using Granit.Localization;
+using Granit.Modularity;
 
 namespace Granit.Localization.AI;
 

@@ -1,5 +1,5 @@
-using Granit.Core.Events;
 using Granit.EventBus.Diagnostics;
+using Granit.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

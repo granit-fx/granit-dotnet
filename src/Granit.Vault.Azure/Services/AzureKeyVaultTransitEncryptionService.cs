@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using Azure.Security.KeyVault.Keys.Cryptography;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Vault.Azure.Diagnostics;
 using Granit.Vault.Azure.Options;
 using Granit.Vault.Diagnostics;

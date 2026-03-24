@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Notifications.Email.AzureCommunicationServices.Extensions;
 
 namespace Granit.Notifications.Email.AzureCommunicationServices;

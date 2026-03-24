@@ -1,7 +1,7 @@
 using Granit.AuditLog.Abstractions;
 using Granit.AuditLog.Domain;
 using Granit.AuditLog.Options;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Querying;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;

@@ -1,4 +1,4 @@
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.Guids;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;

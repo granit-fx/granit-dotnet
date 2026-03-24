@@ -406,11 +406,14 @@
         "resolved": "8.0.0",
         "contentHash": "7mu9v0QDv66ar3DpGSZHg9NuNcxDaaAcnMULuZlaTpP9+hwXhrxNGsF5GmLkSHxFdb5bBc1TzeujsRgTrPWi+Q=="
       },
+      "granit": {
+        "type": "Project"
+      },
       "granit.backgroundjobs": {
         "type": "Project",
         "dependencies": {
           "Cronos": "[0.11.*, )",
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
@@ -422,7 +425,7 @@
       "granit.caching": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Caching.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Caching.Memory": "[10.*, )",
@@ -435,13 +438,10 @@
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
-      "granit.core": {
-        "type": "Project"
-      },
       "granit.encryption": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
@@ -450,7 +450,7 @@
       "granit.eventbus": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Logging.Abstractions": "[10.*, )"
         }
@@ -466,14 +466,14 @@
       "granit.identity": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )"
         }
       },
       "granit.openiddict": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.EventBus": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
@@ -486,13 +486,13 @@
       "granit.querying": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.security": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.settings": {
@@ -507,7 +507,7 @@
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
         }

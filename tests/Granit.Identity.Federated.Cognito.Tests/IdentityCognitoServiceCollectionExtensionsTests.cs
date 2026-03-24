@@ -1,5 +1,5 @@
 using Amazon.CognitoIdentityProvider;
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.Cognito.Extensions;
 using Granit.Identity.Federated.Cognito.Internal;

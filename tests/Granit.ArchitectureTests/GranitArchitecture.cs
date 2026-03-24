@@ -12,19 +12,19 @@ internal static class GranitArchitecture
         ArchitectureLoader.Load("Granit.", typeof(GranitArchitecture).Assembly);
 
     /// <summary>
-    /// Fully-qualified names of all domain base classes in Granit.Core.Domain.
+    /// Fully-qualified names of all domain base classes in Granit.Domain.
     /// Shared across <see cref="LayerDependencyTests"/> and other convention tests
     /// to avoid repetition.
     /// </summary>
     internal static readonly string[] DomainBaseClassFullNames =
     [
-        "Granit.Core.Domain.Entity",
-        "Granit.Core.Domain.CreationAuditedEntity",
-        "Granit.Core.Domain.AuditedEntity",
-        "Granit.Core.Domain.FullAuditedEntity",
-        "Granit.Core.Domain.AggregateRoot",
-        "Granit.Core.Domain.CreationAuditedAggregateRoot",
-        "Granit.Core.Domain.AuditedAggregateRoot",
-        "Granit.Core.Domain.FullAuditedAggregateRoot",
+        "Granit.Domain.Entity",
+        "Granit.Domain.CreationAuditedEntity",
+        "Granit.Domain.AuditedEntity",
+        "Granit.Domain.FullAuditedEntity",
+        "Granit.Domain.AggregateRoot",
+        "Granit.Domain.CreationAuditedAggregateRoot",
+        "Granit.Domain.AuditedAggregateRoot",
+        "Granit.Domain.FullAuditedAggregateRoot",
     ];
 }

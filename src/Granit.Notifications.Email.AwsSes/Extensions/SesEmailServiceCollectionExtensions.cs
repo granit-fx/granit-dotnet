@@ -1,7 +1,7 @@
 using Amazon;
 using Amazon.Runtime;
 using Amazon.SimpleEmailV2;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Notifications.Email.AwsSes.Diagnostics;
 using Granit.Notifications.Email.AwsSes.HealthChecks;
 using Granit.Notifications.Email.AwsSes.Internal;

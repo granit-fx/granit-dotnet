@@ -1,4 +1,4 @@
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Wolverine;
 
 namespace Granit.Wolverine.Behaviors;

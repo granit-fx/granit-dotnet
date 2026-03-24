@@ -1,7 +1,7 @@
-using Granit.Core.Events;
-using Granit.Core.Modularity;
 using Granit.EventBus;
 using Granit.EventBus.Wolverine.Internal;
+using Granit.Events;
+using Granit.Modularity;
 using Granit.Wolverine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

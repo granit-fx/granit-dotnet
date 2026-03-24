@@ -1,7 +1,7 @@
 using Granit.BlobStorage.Options;
 using Granit.BlobStorage.Proxy.Internal;
 using Granit.BlobStorage.Proxy.Options;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Timing;
 using NSubstitute;
 using Shouldly;

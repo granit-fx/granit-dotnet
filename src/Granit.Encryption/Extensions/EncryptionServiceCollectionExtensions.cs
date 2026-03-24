@@ -1,4 +1,4 @@
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Encryption.Diagnostics;
 using Granit.Encryption.Options;
 using Granit.Encryption.Providers;

@@ -1345,10 +1345,13 @@
         "resolved": "2.6.0",
         "contentHash": "XE8a+11nZg0LRaf+RGABEWaHIf8yGd5w8v/Ra1iWxMBmAVzwuKbW7G21mS0U7w7sh1lYcgckInWGgnz4qyET8A=="
       },
+      "granit": {
+        "type": "Project"
+      },
       "granit.ai": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Microsoft.Extensions.AI.Abstractions": "[10.*, )"
         }
@@ -1419,7 +1422,7 @@
       "granit.auditlog": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )"
         }
       },
@@ -1488,7 +1491,7 @@
       "granit.authentication.dpop": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[10.*, )"
         }
@@ -1524,7 +1527,7 @@
       "granit.authentication.oidc": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
@@ -1539,8 +1542,8 @@
       "granit.authentication.tokenmanagement": {
         "type": "Project",
         "dependencies": {
+          "Granit": "[0.1.0-dev, )",
           "Granit.Authentication.Oidc": "[0.1.0-dev, )",
-          "Granit.Core": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
@@ -1579,7 +1582,7 @@
         "type": "Project",
         "dependencies": {
           "Cronos": "[0.11.*, )",
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
@@ -1614,8 +1617,8 @@
       "granit.bff": {
         "type": "Project",
         "dependencies": {
+          "Granit": "[0.1.0-dev, )",
           "Granit.Authentication.Oidc": "[0.1.0-dev, )",
-          "Granit.Core": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
@@ -1656,7 +1659,7 @@
       "granit.blobstorage": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )"
         }
       },
@@ -1737,7 +1740,7 @@
       "granit.caching": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "ZiggyCreatures.FusionCache": "[2.*, )",
           "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
@@ -1752,9 +1755,6 @@
           "StackExchange.Redis": "[2.*, )",
           "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": "[2.*, )"
         }
-      },
-      "granit.core": {
-        "type": "Project"
       },
       "granit.dataexchange": {
         "type": "Project",
@@ -1852,13 +1852,13 @@
       "granit.encryption": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.encryption.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore": "[10.*, )"
@@ -1874,7 +1874,7 @@
       "granit.eventbus": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.eventbus.wolverine": {
@@ -1930,13 +1930,13 @@
         "dependencies": {
           "Asp.Versioning.Mvc": "[10.0.0-preview.*, )",
           "Asp.Versioning.Mvc.ApiExplorer": "[10.0.0-preview.*, )",
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.http.bulkhead": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Features": "[0.1.0-dev, )",
           "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )"
@@ -1951,7 +1951,7 @@
       "granit.http.cookies.endpoints": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Http.Cookies": "[0.1.0-dev, )"
         }
@@ -1965,13 +1965,13 @@
       "granit.http.cors": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.http.idempotency": {
@@ -1986,7 +1986,7 @@
       "granit.http.outputcaching": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.http.outputcaching.stackexchangeredis": {
@@ -2001,20 +2001,20 @@
       "granit.http.resilience": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.Http.Resilience": "[10.*, )"
         }
       },
       "granit.http.responsecompression": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.identity": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )"
         }
       },
@@ -2084,7 +2084,7 @@
       "granit.imaging": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.imaging.ai": {
@@ -2105,8 +2105,8 @@
       "granit.localization": {
         "type": "Project",
         "dependencies": {
+          "Granit": "[0.1.0-dev, )",
           "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.Core": "[0.1.0-dev, )",
           "SmartFormat": "[3.*, )"
         }
       },
@@ -2137,7 +2137,7 @@
       "granit.multitenancy": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.notifications": {
@@ -2329,7 +2329,7 @@
       "granit.observability": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "OpenTelemetry": "[1.15.*, )",
           "OpenTelemetry.Api": "[1.15.*, )",
           "OpenTelemetry.Exporter.OpenTelemetryProtocol": "[1.15.*, )",
@@ -2352,7 +2352,7 @@
       "granit.openiddict": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.EventBus": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
@@ -2455,7 +2455,7 @@
       "granit.privacy": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "WolverineFx": "[5.*, )"
         }
       },
@@ -2493,7 +2493,7 @@
       "granit.querying": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.querying.ai": {
@@ -2526,7 +2526,7 @@
       "granit.ratelimiting": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Features": "[0.1.0-dev, )",
           "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
@@ -2536,7 +2536,7 @@
       "granit.referencedata": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )"
         }
       },
@@ -2562,7 +2562,7 @@
       "granit.security": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.settings": {
@@ -2644,7 +2644,7 @@
         "type": "Project",
         "dependencies": {
           "Bogus": "[35.*, )",
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
@@ -2663,7 +2663,7 @@
       "granit.timeline": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
@@ -2705,7 +2705,7 @@
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.validation": {
@@ -2798,7 +2798,7 @@
       "granit.webhooks": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
@@ -3517,8 +3517,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.13",
-        "contentHash": "QS94/CNp2thhykXwBaOHjDe8Zlexs8v0QOrdLfUvxS85uW84IhCf1zGiOnYZNNtVxunJvtsr7yPgEP36TXnJ3w=="
+        "resolved": "2.13.14",
+        "contentHash": "l4QRu4M9NwPAnYnaBOan5MXBdiIsKmKQ8gJUSqaqDUoAxJZ+xBsP6kmZoDf9Qovl4E2Fv5qOAWnfpVMUrs2flQ=="
       },
       "Scriban": {
         "type": "CentralTransitive",

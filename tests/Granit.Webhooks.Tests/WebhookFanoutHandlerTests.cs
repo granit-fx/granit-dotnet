@@ -8,8 +8,8 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Text.Json;
-using Granit.Core.MultiTenancy;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Diagnostics;
 using Granit.Webhooks.Domain;

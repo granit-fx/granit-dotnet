@@ -21,6 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
+    <ProjectReference Include="..\Granit\Granit.csproj" />
   </ItemGroup>
 </Project>

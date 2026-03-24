@@ -1,4 +1,4 @@
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

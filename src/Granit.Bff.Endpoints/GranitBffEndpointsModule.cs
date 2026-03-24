@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Http.ApiDocumentation;
+using Granit.Modularity;
 using Granit.Validation;
 
 namespace Granit.Bff.Endpoints;

@@ -1,6 +1,6 @@
-using Granit.Core.Modularity;
 using Granit.Http.Cors.Extensions;
 using Granit.Http.Cors.Options;
+using Granit.Modularity;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

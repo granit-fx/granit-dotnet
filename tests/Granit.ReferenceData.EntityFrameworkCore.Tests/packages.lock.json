@@ -251,18 +251,18 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
+      "granit": {
+        "type": "Project"
+      },
       "granit.caching": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "ZiggyCreatures.FusionCache": "[2.*, )",
           "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
-      },
-      "granit.core": {
-        "type": "Project"
       },
       "granit.guids": {
         "type": "Project",
@@ -273,7 +273,7 @@
       "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.persistence": {
@@ -291,13 +291,13 @@
       "granit.querying": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.referencedata": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )"
         }
       },
@@ -313,13 +313,13 @@
       "granit.security": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "Microsoft.EntityFrameworkCore": {

@@ -1,7 +1,7 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Kms.V1;
 using Google.Cloud.SecretManager.V1;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Encryption;
 using Granit.Vault.GoogleCloud.Diagnostics;
 using Granit.Vault.GoogleCloud.HealthChecks;

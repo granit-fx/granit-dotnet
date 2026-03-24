@@ -1,5 +1,5 @@
 using Granit.AuditLog.Extensions;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Querying;
 
 namespace Granit.AuditLog;

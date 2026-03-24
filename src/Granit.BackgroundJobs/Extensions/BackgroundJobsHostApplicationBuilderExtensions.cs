@@ -5,7 +5,7 @@ using Granit.BackgroundJobs.Diagnostics;
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Internal;
 using Granit.BackgroundJobs.Options;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

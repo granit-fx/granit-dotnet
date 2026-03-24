@@ -5,7 +5,7 @@ using System.Text.Encodings.Web;
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Endpoints.Extensions;
 using Granit.BackgroundJobs.Endpoints.Internal;
-using Granit.Core.Exceptions;
+using Granit.Exceptions;
 using Granit.Querying;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;

@@ -1,9 +1,9 @@
 using System.Text.Json;
-using Granit.Core.MultiTenancy;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Export.Entities;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Entities;
 using Granit.DataExchange.Import.Mapping;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 

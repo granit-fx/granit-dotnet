@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Observability.Extensions;
 
 namespace Granit.Observability;

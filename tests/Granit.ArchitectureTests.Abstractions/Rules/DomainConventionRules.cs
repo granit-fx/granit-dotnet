@@ -47,10 +47,10 @@ public static class DomainConventionRules
         // Base classes that legitimately implement IDomainEventSource
         HashSet<string> aggregateRootBases =
         [
-            "Granit.Core.Domain.AggregateRoot",
-            "Granit.Core.Domain.CreationAuditedAggregateRoot",
-            "Granit.Core.Domain.AuditedAggregateRoot",
-            "Granit.Core.Domain.FullAuditedAggregateRoot",
+            "Granit.Domain.AggregateRoot",
+            "Granit.Domain.CreationAuditedAggregateRoot",
+            "Granit.Domain.AuditedAggregateRoot",
+            "Granit.Domain.FullAuditedAggregateRoot",
         ];
 
         return architecture.Classes
@@ -58,7 +58,7 @@ public static class DomainConventionRules
                 && !aggregateRootBases.Contains(c.FullName)
                 && !allowed.Contains(c.FullName)
                 && c.Dependencies.Any(d =>
-                    d.Target.FullName == "Granit.Core.Events.IDomainEventSource"
+                    d.Target.FullName == "Granit.Events.IDomainEventSource"
                     && d is ArchUnitNET.Domain.Dependencies.ImplementsInterfaceDependency)
                 && !IsAssignableToAggregateRoot(c))
             .Select(c => c.FullName)
@@ -205,11 +205,11 @@ public static class DomainConventionRules
             }
 
             bool implementsDomainEvent = c.Dependencies.Any(d =>
-                d.Target.FullName == "Granit.Core.Events.IDomainEvent"
+                d.Target.FullName == "Granit.Events.IDomainEvent"
                 && d is ArchUnitNET.Domain.Dependencies.ImplementsInterfaceDependency);
 
             bool implementsIntegrationEvent = c.Dependencies.Any(d =>
-                d.Target.FullName == "Granit.Core.Events.IIntegrationEvent"
+                d.Target.FullName == "Granit.Events.IIntegrationEvent"
                 && d is ArchUnitNET.Domain.Dependencies.ImplementsInterfaceDependency);
 
             if (implementsDomainEvent && !c.Name.EndsWith("Event", StringComparison.Ordinal))
@@ -229,14 +229,14 @@ public static class DomainConventionRules
     }
 
     private static bool IsAssignableToValueObject(Class c) =>
-        HasBaseClass(c, "Granit.Core.Domain.ValueObject");
+        HasBaseClass(c, "Granit.Domain.ValueObject");
 
     private static bool IsAssignableToEntity(Class c) =>
-        HasBaseClass(c, "Granit.Core.Domain.Entity");
+        HasBaseClass(c, "Granit.Domain.Entity");
 
     private static bool IsAssignableToAggregateRoot(Class c) =>
-        HasBaseClass(c, "Granit.Core.Domain.AggregateRoot")
-        || HasBaseClass(c, "Granit.Core.Domain.CreationAuditedAggregateRoot");
+        HasBaseClass(c, "Granit.Domain.AggregateRoot")
+        || HasBaseClass(c, "Granit.Domain.CreationAuditedAggregateRoot");
 
     private static bool HasBaseClass(Class c, string baseFullName) =>
         c.Dependencies.Any(d =>

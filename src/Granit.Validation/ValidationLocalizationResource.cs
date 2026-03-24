@@ -1,8 +1,6 @@
-using Granit.Core.Localization;
 using Granit.Localization;
 
 namespace Granit.Validation;
-
 /// <summary>
 /// Marker class for the <c>Validation</c> localization resource.
 /// JSON files: <c>Localization/Validation/{culture}.json</c>, embedded in this assembly.

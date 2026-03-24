@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Granit.AI;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Querying.AI.Diagnostics;
 using Granit.Querying.AI.Options;
 using Granit.Querying.Meta;

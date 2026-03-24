@@ -1,4 +1,4 @@
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.Timeline.Events;
 
 namespace Granit.Timeline.Domain;

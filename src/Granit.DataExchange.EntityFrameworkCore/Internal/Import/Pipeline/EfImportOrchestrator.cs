@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Text.Json;
-using Granit.Core.Events;
 using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Domain;
@@ -12,6 +11,7 @@ using Granit.DataExchange.Import.Parsing;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.DataExchange.Import.Reporting;
 using Granit.DataExchange.Import.Validation;
+using Granit.Events;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

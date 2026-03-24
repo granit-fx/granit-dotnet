@@ -1,7 +1,7 @@
 using Granit.Caching;
-using Granit.Core.Modularity;
 using Granit.Localization.Extensions;
 using Granit.Localization.Options;
+using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Localization;

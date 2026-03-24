@@ -1,6 +1,6 @@
 using Granit.Authentication.JwtBearer;
 using Granit.Authentication.Keycloak.Extensions;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 
 namespace Granit.Authentication.Keycloak;
 

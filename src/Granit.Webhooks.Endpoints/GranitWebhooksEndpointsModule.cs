@@ -1,5 +1,5 @@
 using Granit.Authorization;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Querying.Endpoints;
 using Granit.Webhooks;
 

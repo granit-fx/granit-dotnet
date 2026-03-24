@@ -73,10 +73,13 @@
         "resolved": "10.0.2",
         "contentHash": "AKJknIFi9O3+rGExxTry188JPvUoZAPcCtS2qdqyFhIzsxQ1Ap94BeGDG0VzVEHakhmRxmJtVih6TsHoghIt/g=="
       },
+      "granit": {
+        "type": "Project"
+      },
       "granit.caching": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Caching.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Caching.Memory": "[10.*, )",
@@ -89,13 +92,10 @@
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
-      "granit.core": {
-        "type": "Project"
-      },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
         }

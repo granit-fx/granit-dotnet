@@ -1,4 +1,4 @@
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.Guids;
 using Granit.Querying;
 using Granit.ReferenceData.Domain;

@@ -6,7 +6,7 @@
 // Granit.Authentication.JwtBearer (GranitJwtBearerModule).
 // =============================================================================
 
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Shouldly;
 using Xunit;
 

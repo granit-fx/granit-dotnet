@@ -6,8 +6,7 @@
 // are present in the service collection.
 // =============================================================================
 
-using Granit.Core.Modularity;
-using Granit.Core.MultiTenancy;
+using Granit.Modularity;
 using Granit.MultiTenancy;
 using Granit.Security;
 using Granit.Wolverine.Extensions;
@@ -45,7 +44,7 @@ public sealed class GranitWolverineModuleTests
             typeof(GranitWolverineModule).GetCustomAttributes(typeof(DependsOnAttribute), inherit: false);
 
         attributes.ShouldNotContain(a => a.DependedTypes.Contains(typeof(GranitMultiTenancyModule)),
-            "ICurrentTenant is now sourced from Granit.Core.MultiTenancy — Granit.MultiTenancy is a soft dependency");
+            "ICurrentTenant is now sourced from Granit.MultiTenancy — Granit.MultiTenancy is a soft dependency");
     }
 
     [Fact]

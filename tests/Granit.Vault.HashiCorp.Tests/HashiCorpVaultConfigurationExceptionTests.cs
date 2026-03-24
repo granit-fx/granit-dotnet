@@ -1,4 +1,4 @@
-using Granit.Core.Exceptions;
+using Granit.Exceptions;
 using Granit.Vault.HashiCorp.Exceptions;
 using Shouldly;
 using Xunit;

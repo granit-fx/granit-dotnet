@@ -1,5 +1,4 @@
 using Granit.Caching;
-using Granit.Core.Modularity;
 using Granit.Diagnostics;
 using Granit.DocumentGeneration;
 using Granit.DocumentGeneration.Excel;
@@ -13,6 +12,7 @@ using Granit.Http.Cors;
 using Granit.Http.ExceptionHandling;
 using Granit.Http.Idempotency;
 using Granit.Localization;
+using Granit.Modularity;
 using Granit.MultiTenancy;
 using Granit.Notifications;
 using Granit.Notifications.Email;

@@ -1,4 +1,4 @@
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Workflow.Domain;
 using Granit.Workflow.Extensions;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,4 +1,4 @@
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.Notifications.MobilePush;
 
 namespace Granit.Notifications.EntityFrameworkCore.Entities;

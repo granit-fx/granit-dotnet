@@ -1,7 +1,7 @@
-using Granit.Core.Modularity;
 using Granit.DocumentGeneration;
 using Granit.DocumentGeneration.Excel;
 using Granit.DocumentGeneration.Pdf;
+using Granit.Modularity;
 using Granit.Templating;
 using Granit.Templating.EntityFrameworkCore;
 using Granit.Templating.Scriban;

@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Text.Json;
-using Granit.Core.Domain;
+using Granit.Domain;
 
 namespace Granit.Identity.Federated.EntityFrameworkCore.Entities;
 

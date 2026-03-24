@@ -1,5 +1,5 @@
 using System.Threading.Channels;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Persistence;
 using Granit.Persistence.Migrations.Internal;
 using Granit.Persistence.Migrations.Messages;

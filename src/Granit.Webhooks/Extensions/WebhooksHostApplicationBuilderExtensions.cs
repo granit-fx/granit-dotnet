@@ -1,5 +1,5 @@
 using System.Threading.Channels;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Http.Resilience.Extensions;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Definitions;

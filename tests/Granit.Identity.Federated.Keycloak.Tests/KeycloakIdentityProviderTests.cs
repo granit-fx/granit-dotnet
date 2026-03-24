@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Net;
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.Identity;
 using Granit.Identity.Diagnostics;
 using Granit.Identity.Events;

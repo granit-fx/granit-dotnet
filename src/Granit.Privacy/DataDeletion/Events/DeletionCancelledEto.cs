@@ -1,4 +1,4 @@
-using Granit.Core.Events;
+using Granit.Events;
 using Wolverine.Persistence.Sagas;
 
 namespace Granit.Privacy.DataDeletion.Events;

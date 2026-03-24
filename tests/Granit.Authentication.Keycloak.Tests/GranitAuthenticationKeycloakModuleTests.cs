@@ -9,7 +9,7 @@
 
 using Granit.Authentication.JwtBearer;
 using Granit.Authentication.Keycloak.Authentication;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Security;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;

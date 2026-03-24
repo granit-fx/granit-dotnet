@@ -1,5 +1,5 @@
 using Granit.Caching.Options;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;

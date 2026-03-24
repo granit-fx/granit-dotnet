@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Guids;
+using Granit.Modularity;
 using Granit.Notifications.Extensions;
 using Granit.Querying;
 using Granit.Timing;

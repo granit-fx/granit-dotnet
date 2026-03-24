@@ -433,7 +433,7 @@ public sealed class ObservabilityServiceCollectionExtensionsTests
     {
         // Arrange — register a custom ActivitySource before configuring observability
         string sourceName = $"Granit.TestModule.{Guid.NewGuid():N}";
-        Granit.Core.Diagnostics.GranitActivitySourceRegistry.Register(sourceName);
+        Granit.Diagnostics.GranitActivitySourceRegistry.Register(sourceName);
 
         HostApplicationBuilder builder = Host.CreateApplicationBuilder([]);
         builder.Configuration["Observability:EnableTracing"] = "true";
@@ -447,7 +447,7 @@ public sealed class ObservabilityServiceCollectionExtensionsTests
         sp.GetService<TracerProvider>().ShouldNotBeNull();
 
         // Verify the source was registered in the registry
-        Granit.Core.Diagnostics.GranitActivitySourceRegistry.GetRegisteredSources()
+        Granit.Diagnostics.GranitActivitySourceRegistry.GetRegisteredSources()
             .ShouldContain(sourceName);
     }
 

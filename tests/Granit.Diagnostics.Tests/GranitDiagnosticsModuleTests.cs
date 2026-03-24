@@ -5,7 +5,7 @@
 // ce qui enregistre les services HealthChecks dans le conteneur DI.
 // =============================================================================
 
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;

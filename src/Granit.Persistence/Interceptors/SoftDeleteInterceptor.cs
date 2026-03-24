@@ -1,4 +1,4 @@
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.Security;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;

@@ -1,7 +1,7 @@
 using Granit.BackgroundJobs;
 using Granit.BackgroundJobs.Abstractions;
 using Granit.BackgroundJobs.Wolverine.Internal;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Wolverine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

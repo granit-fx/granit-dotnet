@@ -56,6 +56,6 @@ public sealed class OpenIddictEventsTests
     public void UserImpersonatedEto_ImplementsIIntegrationEvent()
     {
         var evt = new UserImpersonatedEto(Guid.NewGuid(), Guid.NewGuid(), null, DateTimeOffset.UtcNow);
-        evt.ShouldBeAssignableTo<Granit.Core.Events.IIntegrationEvent>();
+        evt.ShouldBeAssignableTo<Granit.Events.IIntegrationEvent>();
     }
 }

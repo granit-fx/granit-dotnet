@@ -1,4 +1,4 @@
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Timing;
 using NSubstitute;
 using Shouldly;

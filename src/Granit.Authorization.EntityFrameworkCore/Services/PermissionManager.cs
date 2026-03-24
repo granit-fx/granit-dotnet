@@ -2,7 +2,7 @@ using Granit.Authorization.Abstractions;
 using Granit.Authorization.EntityFrameworkCore.DbContext;
 using Granit.Authorization.EntityFrameworkCore.Entities;
 using Granit.Authorization.Events;
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.Guids;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

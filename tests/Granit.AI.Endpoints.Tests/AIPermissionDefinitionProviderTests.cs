@@ -1,6 +1,6 @@
 using Granit.AI.Endpoints.Permissions;
 using Granit.Authorization.Abstractions;
-using Granit.Core.Localization;
+using Granit.Localization;
 using NSubstitute;
 using Shouldly;
 using Xunit;

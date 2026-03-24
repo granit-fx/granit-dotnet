@@ -1,5 +1,5 @@
 using Granit.BlobStorage.Domain;
-using Granit.Core.Exceptions;
+using Granit.Exceptions;
 
 namespace Granit.BlobStorage.Exceptions;
 

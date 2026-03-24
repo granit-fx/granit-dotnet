@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Notifications.Endpoints;
 using Granit.Notifications.Endpoints.Dtos;
 using Granit.Notifications.Endpoints.Endpoints;

@@ -6,9 +6,9 @@
 // Verifies that AddGranitDbContextHealthCheck<T> registers a readiness health check.
 // =============================================================================
 
-using Granit.Core.DataFiltering;
-using Granit.Core.Events;
-using Granit.Core.MultiTenancy;
+using Granit.DataFiltering;
+using Granit.Events;
+using Granit.MultiTenancy;
 using Granit.Persistence.Extensions;
 using Granit.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;

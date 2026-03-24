@@ -1,4 +1,4 @@
-using Granit.Core.Localization;
+using Granit.Localization;
 using Shouldly;
 using Xunit;
 

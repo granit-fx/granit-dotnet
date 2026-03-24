@@ -4,7 +4,7 @@ using Granit.BlobStorage.Options;
 using Granit.BlobStorage.S3.HealthChecks;
 using Granit.BlobStorage.S3.Internal;
 using Granit.BlobStorage.S3.Options;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;

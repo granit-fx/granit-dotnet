@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Notifications.MobilePush.AwsSns.Extensions;
 
 namespace Granit.Notifications.MobilePush.AwsSns;

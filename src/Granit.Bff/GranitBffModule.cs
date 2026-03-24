@@ -1,8 +1,8 @@
 using Granit.Authentication.Oidc;
 using Granit.Bff.Diagnostics;
 using Granit.Bff.Internal;
-using Granit.Core.Diagnostics;
-using Granit.Core.Modularity;
+using Granit.Diagnostics;
+using Granit.Modularity;
 using Granit.Security;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;

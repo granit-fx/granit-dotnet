@@ -1,4 +1,4 @@
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Timeline.Notifications.Internal;
 using NSubstitute;

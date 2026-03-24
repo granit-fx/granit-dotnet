@@ -1,5 +1,5 @@
 using Granit.Authentication.ApiKeys.EntityFrameworkCore;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Persistence;
 using Shouldly;
 using Xunit;

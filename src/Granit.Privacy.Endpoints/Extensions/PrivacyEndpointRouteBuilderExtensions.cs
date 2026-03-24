@@ -1,6 +1,6 @@
-using Granit.Core.Events;
-using Granit.Core.MultiTenancy;
+using Granit.Events;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;
 using Granit.Privacy.DataExport;

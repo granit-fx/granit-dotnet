@@ -1,6 +1,6 @@
-using Granit.Core.Domain;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
+using Granit.Domain;
 using Shouldly;
 using Xunit;
 

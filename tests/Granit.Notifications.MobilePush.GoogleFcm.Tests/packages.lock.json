@@ -436,7 +436,7 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       },
       "granit.guids": {
@@ -450,7 +450,7 @@
       "granit.http.resilience": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.Http.Resilience": "[10.*, )"
         }
       },
@@ -491,13 +491,13 @@
       "granit.querying": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
         }

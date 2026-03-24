@@ -1,5 +1,5 @@
-using Granit.Core.DataFiltering;
-using Granit.Core.MultiTenancy;
+using Granit.DataFiltering;
+using Granit.MultiTenancy;
 using Granit.OpenIddict.Domain;
 using Granit.OpenIddict.Entities;
 using Granit.OpenIddict.Entities.OpenIddict;

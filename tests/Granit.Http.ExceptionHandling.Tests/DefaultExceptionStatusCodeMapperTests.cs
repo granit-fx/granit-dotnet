@@ -6,7 +6,7 @@
 // downstream mappers or the handler's own fallback (500).
 // =============================================================================
 
-using Granit.Core.Exceptions;
+using Granit.Exceptions;
 using Granit.Http.ExceptionHandling.Internal;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
@@ -118,7 +118,7 @@ public sealed class DefaultExceptionStatusCodeMapperTests
     {
         DefaultExceptionStatusCodeMapper mapper = Create();
         Dictionary<string, string[]> errors = new() { ["Field"] = ["Required"] };
-        int? result = mapper.TryGetStatusCode(new Core.Exceptions.ValidationException(errors));
+        int? result = mapper.TryGetStatusCode(new Exceptions.ValidationException(errors));
 
         result.ShouldBe(StatusCodes.Status422UnprocessableEntity);
     }

@@ -16,7 +16,7 @@
 // =============================================================================
 
 using System.Diagnostics;
-using Granit.Core.Exceptions;
+using Granit.Exceptions;
 using Granit.Http.ExceptionHandling.Extensions;
 using Granit.Http.ExceptionHandling.Internal;
 using Granit.Http.ExceptionHandling.Options;
@@ -158,7 +158,7 @@ public sealed class GranitExceptionHandlerTests
         Dictionary<string, string[]> errors = new() { ["Email"] = ["Required"] };
 
         (int statusCode, _, _, _) = await InvokeHandlerAsync(
-            sp, new Core.Exceptions.ValidationException(errors));
+            sp, new Exceptions.ValidationException(errors));
 
         statusCode.ShouldBe(StatusCodes.Status422UnprocessableEntity);
     }
@@ -372,7 +372,7 @@ public sealed class GranitExceptionHandlerTests
         };
 
         (_, IDictionary<string, object?> extensions, _, _) = await InvokeHandlerAsync(
-            sp, new Core.Exceptions.ValidationException(errors));
+            sp, new Exceptions.ValidationException(errors));
 
         extensions.ShouldContainKey("errors");
         extensions["errors"].ShouldNotBeNull();

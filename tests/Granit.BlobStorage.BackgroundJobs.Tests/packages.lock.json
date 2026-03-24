@@ -279,11 +279,14 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
+      "granit": {
+        "type": "Project"
+      },
       "granit.backgroundjobs": {
         "type": "Project",
         "dependencies": {
           "Cronos": "[0.11.*, )",
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
@@ -295,7 +298,7 @@
       "granit.blobstorage": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
@@ -309,9 +312,6 @@
           "Granit.BlobStorage": "[0.1.0-dev, )"
         }
       },
-      "granit.core": {
-        "type": "Project"
-      },
       "granit.guids": {
         "type": "Project",
         "dependencies": {
@@ -323,13 +323,13 @@
       "granit.security": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
         }

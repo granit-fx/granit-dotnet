@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit</PackageId>
+    <Description>Module system for Granit packages: topological loading, DependsOn, lifecycle. Shared domain types (Entity, AggregateRoot, ValueObject, CreationAuditedEntity, AuditedEntity, FullAuditedEntity, ISoftDeletable, IDomainEventSource).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>

@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
-using Granit.Core.Domain;
-using Granit.Core.Events;
+using Granit.Domain;
+using Granit.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;

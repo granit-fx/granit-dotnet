@@ -1,5 +1,5 @@
 using System.Diagnostics.Metrics;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.RateLimiting.Abstractions;
 using Granit.RateLimiting.Attributes;
 using Granit.RateLimiting.Diagnostics;

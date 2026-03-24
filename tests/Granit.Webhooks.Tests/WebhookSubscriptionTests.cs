@@ -5,7 +5,7 @@
 // the correct domain events, ClearDomainEvents resets the collection.
 // =============================================================================
 
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.Events;
 using Shouldly;

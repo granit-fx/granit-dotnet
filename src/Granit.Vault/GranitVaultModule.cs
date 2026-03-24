@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Encryption;
+using Granit.Modularity;
 using Granit.Vault.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

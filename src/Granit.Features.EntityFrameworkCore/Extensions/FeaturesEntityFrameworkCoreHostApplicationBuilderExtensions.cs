@@ -1,5 +1,5 @@
-using Granit.Core.Events;
 using Granit.EventBus.Extensions;
+using Granit.Events;
 using Granit.Features.EntityFrameworkCore.Internal;
 using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;

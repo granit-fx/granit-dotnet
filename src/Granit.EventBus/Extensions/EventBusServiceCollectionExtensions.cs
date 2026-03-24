@@ -1,7 +1,7 @@
-using Granit.Core.Diagnostics;
-using Granit.Core.Events;
+using Granit.Diagnostics;
 using Granit.EventBus.Diagnostics;
 using Granit.EventBus.Internal;
+using Granit.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

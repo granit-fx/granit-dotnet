@@ -1,6 +1,6 @@
-using Granit.Core.Modularity;
 using Granit.Identity.Federated.EntraId.Extensions;
 using Granit.Identity.Federated.EntraId.Internal;
+using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;

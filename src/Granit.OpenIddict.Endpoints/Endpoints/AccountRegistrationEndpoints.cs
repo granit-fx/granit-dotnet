@@ -1,4 +1,4 @@
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.Identity;
 using Granit.Identity.Models;
 using Granit.OpenIddict.Diagnostics;

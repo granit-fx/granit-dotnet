@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Persistence.DataSeeding;
 using Granit.Persistence.Hosting.Options;
 using Granit.Persistence.Migrations;

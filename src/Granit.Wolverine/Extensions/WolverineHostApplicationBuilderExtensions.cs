@@ -1,6 +1,6 @@
 using System.Reflection;
 using FluentValidation;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Security;
 using Granit.Wolverine.Behaviors;
 using Granit.Wolverine.Diagnostics;
@@ -30,7 +30,7 @@ public static class WolverineHostApplicationBuilderExtensions
     /// <remarks>
     /// Configures Wolverine with:
     /// <list type="bullet">
-    ///   <item>Local routing for <see cref="Granit.Core.Events.IDomainEvent"/> — never routed to external transports.</item>
+    ///   <item>Local routing for <see cref="Granit.Events.IDomainEvent"/> — never routed to external transports.</item>
     ///   <item>FluentValidation bus middleware — validates messages before handler execution via <see cref="RegistrationBehavior.DiscoverAndRegisterValidators"/>.</item>
     ///   <item>DLQ policy — <see cref="FluentValidation.ValidationException"/> is moved to the error queue immediately (no retry, deterministic failure).</item>
     ///   <item>Retry policy from <see cref="WolverineMessagingOptions"/> (default: 5 s / 30 s / 5 min) for all other exceptions.</item>
@@ -103,7 +103,7 @@ public static class WolverineHostApplicationBuilderExtensions
 
             // IDomainEvent — force local routing, never forward to external transports.
             // IIntegrationEvent routing is configured by the provider package.
-            opts.PublishMessage<Core.Events.IDomainEvent>()
+            opts.PublishMessage<Events.IDomainEvent>()
                 .ToLocalQueue("domain-events");
 
             // FluentValidation bus middleware: validates incoming messages before handler

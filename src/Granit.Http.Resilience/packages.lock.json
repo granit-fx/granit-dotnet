@@ -96,7 +96,7 @@
           "Polly.Core": "8.4.2"
         }
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       }
     }

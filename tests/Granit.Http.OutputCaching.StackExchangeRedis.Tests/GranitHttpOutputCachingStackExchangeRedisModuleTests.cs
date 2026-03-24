@@ -19,7 +19,7 @@ public sealed class GranitHttpOutputCachingStackExchangeRedisModuleTests
             .Build();
 
         var module = new GranitHttpOutputCachingStackExchangeRedisModule();
-        Granit.Core.Modularity.ServiceConfigurationContext context = new(
+        Granit.Modularity.ServiceConfigurationContext context = new(
             new Microsoft.Extensions.DependencyInjection.ServiceCollection(),
             configuration,
             null!);
@@ -40,7 +40,7 @@ public sealed class GranitHttpOutputCachingStackExchangeRedisModuleTests
             .Build();
 
         var module = new GranitHttpOutputCachingStackExchangeRedisModule();
-        Granit.Core.Modularity.ServiceConfigurationContext context = new(
+        Granit.Modularity.ServiceConfigurationContext context = new(
             new Microsoft.Extensions.DependencyInjection.ServiceCollection(),
             configuration,
             null!);

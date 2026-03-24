@@ -1,6 +1,6 @@
 using Granit.Authorization.Abstractions;
 using Granit.BackgroundJobs.Endpoints.Permissions;
-using Granit.Core.Localization;
+using Granit.Localization;
 using Shouldly;
 using Xunit;
 

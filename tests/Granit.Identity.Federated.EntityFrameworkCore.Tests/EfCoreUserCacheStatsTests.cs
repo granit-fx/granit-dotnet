@@ -1,6 +1,6 @@
-using Granit.Core.MultiTenancy;
 using Granit.Identity.Federated.EntityFrameworkCore.Internal;
 using Granit.Identity.Federated.EntityFrameworkCore.Options;
+using Granit.MultiTenancy;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;

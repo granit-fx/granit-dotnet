@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Encryption.Extensions;
+using Granit.Modularity;
 
 namespace Granit.Encryption;
 

@@ -1,5 +1,5 @@
 using Granit.Caching;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Persistence;
 
 namespace Granit.ReferenceData.EntityFrameworkCore;

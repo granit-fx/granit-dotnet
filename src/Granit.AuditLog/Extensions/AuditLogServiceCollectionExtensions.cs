@@ -1,6 +1,6 @@
 using Granit.AuditLog.Diagnostics;
 using Granit.AuditLog.Options;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.AuditLog.Extensions;

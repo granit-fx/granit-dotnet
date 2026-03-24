@@ -1,6 +1,6 @@
 using Granit.Caching.StackExchangeRedis.Extensions;
 using Granit.Caching.StackExchangeRedis.Options;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Microsoft.Extensions.Configuration;
 
 namespace Granit.Caching.StackExchangeRedis;

@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Timeline.AI.Diagnostics;
 using Granit.Timeline.AI.Internal;
 using Granit.Timeline.AI.Options;

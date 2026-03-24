@@ -204,13 +204,13 @@
         "resolved": "4.5.0",
         "contentHash": "wLBKzFnDCxP12VL9ANydSYhk59fC4cvOr9ypYQLPnAj48NQIhqnjdD2yhP8yEKyBJEjERWS9DisKL7rX5eU25Q=="
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       },
       "granit.encryption": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"

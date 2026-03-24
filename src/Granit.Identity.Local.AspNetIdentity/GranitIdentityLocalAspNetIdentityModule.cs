@@ -1,7 +1,7 @@
-using Granit.Core.Modularity;
 using Granit.Identity;
 using Granit.Identity.Extensions;
 using Granit.Identity.Local.AspNetIdentity.Internal;
+using Granit.Modularity;
 using Granit.OpenIddict.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

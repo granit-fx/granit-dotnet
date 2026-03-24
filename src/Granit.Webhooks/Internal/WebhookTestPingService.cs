@@ -36,7 +36,7 @@ internal sealed class WebhookTestPingService(
 
         if (subscription is null)
         {
-            throw new Granit.Core.Exceptions.EntityNotFoundException(typeof(WebhookSubscription), subscriptionId);
+            throw new Granit.Exceptions.EntityNotFoundException(typeof(WebhookSubscription), subscriptionId);
         }
 
         string plainSecret = await _secretProtector

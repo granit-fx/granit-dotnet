@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Vault.Aws.Extensions;
 using Microsoft.Extensions.Hosting;
 

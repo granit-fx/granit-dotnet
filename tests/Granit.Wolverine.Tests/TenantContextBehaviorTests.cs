@@ -5,7 +5,7 @@
 // in incoming Wolverine envelopes, and that the scope is disposed on After().
 // =============================================================================
 
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Wolverine.Behaviors;
 using Granit.Wolverine.Middleware;
 using NSubstitute;

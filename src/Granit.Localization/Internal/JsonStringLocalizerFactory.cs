@@ -7,7 +7,7 @@
 
 using System.Collections.Concurrent;
 using System.Reflection;
-using Granit.Core.Localization;
+using Granit.Localization;
 using Granit.Localization.Options;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;

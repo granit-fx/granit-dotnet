@@ -340,13 +340,13 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       },
       "granit.observability": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "OpenTelemetry": "[1.15.*, )",
           "OpenTelemetry.Api": "[1.15.*, )",
           "OpenTelemetry.Exporter.OpenTelemetryProtocol": "[1.15.*, )",

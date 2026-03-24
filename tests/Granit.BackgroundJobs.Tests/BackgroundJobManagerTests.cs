@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Granit.BackgroundJobs.Abstractions;
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Internal;
-using Granit.Core.Exceptions;
+using Granit.Exceptions;
 using Granit.Security;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;

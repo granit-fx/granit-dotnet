@@ -1,7 +1,7 @@
 using Granit.BlobStorage;
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Events;
-using Granit.Core.Events;
+using Granit.Events;
 using Shouldly;
 using Xunit;
 

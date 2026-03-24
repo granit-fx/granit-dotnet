@@ -15,7 +15,7 @@ public sealed class LayerDependencyTests
     [Fact]
     public void Core_types_should_not_depend_on_EntityFrameworkCore() =>
         LayerDependencyRules.TypesShouldNotDependOnEntityFrameworkCore(
-            Architecture, "Granit.Core.", "Core layer");
+            Architecture, "Granit.", "Core layer");
 
     [Fact]
     public void Timing_types_should_not_depend_on_EntityFrameworkCore() =>

@@ -248,10 +248,13 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
+      "granit": {
+        "type": "Project"
+      },
       "granit.caching": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "ZiggyCreatures.FusionCache": "[2.*, )",
           "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
@@ -267,13 +270,10 @@
           "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": "[2.*, )"
         }
       },
-      "granit.core": {
-        "type": "Project"
-      },
       "granit.http.outputcaching": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.http.outputcaching.stackexchangeredis": {
@@ -288,7 +288,7 @@
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "Microsoft.AspNetCore.OutputCaching.StackExchangeRedis": {

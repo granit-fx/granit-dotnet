@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 
-using Granit.Core.Domain;
+using Granit.Domain;
 
 namespace Granit.ReferenceData.Domain;
 

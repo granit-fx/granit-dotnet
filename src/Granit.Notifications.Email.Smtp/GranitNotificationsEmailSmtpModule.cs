@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Notifications.Email;
 
 namespace Granit.Notifications.Email.Smtp;

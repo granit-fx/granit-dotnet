@@ -5,7 +5,7 @@
 // AddGranitWolverineWithPostgresql() registers Wolverine services without throwing.
 // =============================================================================
 
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Persistence;
 using Granit.Wolverine.Postgresql.Extensions;
 using Microsoft.Extensions.Configuration;

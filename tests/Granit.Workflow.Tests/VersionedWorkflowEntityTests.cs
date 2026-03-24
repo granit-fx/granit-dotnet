@@ -1,6 +1,6 @@
 using System.Reflection;
-using Granit.Core.Domain;
-using Granit.Core.Events;
+using Granit.Domain;
+using Granit.Events;
 using Granit.Workflow.Domain;
 using Shouldly;
 using Xunit;

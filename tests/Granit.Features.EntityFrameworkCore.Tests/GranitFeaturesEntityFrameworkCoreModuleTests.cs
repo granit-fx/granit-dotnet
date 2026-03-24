@@ -1,6 +1,6 @@
-using Granit.Core.Modularity;
 using Granit.Features.EntityFrameworkCore.Extensions;
 using Granit.Features.EntityFrameworkCore.Internal;
+using Granit.Modularity;
 using Granit.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

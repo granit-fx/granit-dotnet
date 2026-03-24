@@ -1,5 +1,5 @@
 using System.Data.Common;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Granit.Persistence.MultiTenancy;

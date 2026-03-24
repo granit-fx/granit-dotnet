@@ -1,9 +1,9 @@
 using System.Reflection;
 using FluentValidation;
-using Granit.Core.Modularity;
 using Granit.Http.ExceptionHandling;
 using Granit.Localization;
 using Granit.Localization.Options;
+using Granit.Modularity;
 using Granit.Validation.Extensions;
 using Granit.Validation.Internal;
 using Granit.Validation.OpenApi;

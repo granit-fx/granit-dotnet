@@ -95,7 +95,7 @@
           "SQLitePCLRaw.core": "2.1.11"
         }
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       },
       "granit.guids": {
@@ -107,7 +107,7 @@
       "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.persistence": {
@@ -125,14 +125,14 @@
       "granit.security": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.testing": {
         "type": "Project",
         "dependencies": {
           "Bogus": "[35.*, )",
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
@@ -142,7 +142,7 @@
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "Bogus": {

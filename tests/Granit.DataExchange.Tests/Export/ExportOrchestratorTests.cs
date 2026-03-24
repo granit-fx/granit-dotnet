@@ -1,13 +1,13 @@
 using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
-using Granit.Core.Events;
 using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Internal;
 using Granit.DataExchange.Export.Messages;
 using Granit.DataExchange.Import.Pipeline;
+using Granit.Events;
 using Granit.Guids;
 using Granit.Querying;
 using Granit.Querying.Meta;

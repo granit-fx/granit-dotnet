@@ -232,19 +232,19 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       },
       "granit.querying": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.referencedata": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )"
         }
       }

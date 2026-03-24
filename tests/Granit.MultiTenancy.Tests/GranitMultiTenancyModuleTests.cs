@@ -8,9 +8,9 @@
 // and resolves services from the real DI container.
 // =============================================================================
 
-using Granit.Core.Extensions;
-using Granit.Core.Modularity;
-using Granit.Core.MultiTenancy;
+using Granit.Extensions;
+using Granit.Modularity;
+using Granit.MultiTenancy;
 using Granit.MultiTenancy.Middleware;
 using Granit.MultiTenancy.Pipeline;
 using Granit.MultiTenancy.Resolvers;

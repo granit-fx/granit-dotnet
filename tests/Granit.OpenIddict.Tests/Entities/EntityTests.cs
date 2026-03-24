@@ -1,4 +1,4 @@
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.OpenIddict.Domain;
 using Granit.OpenIddict.Entities;
 using Granit.OpenIddict.Entities.OpenIddict;

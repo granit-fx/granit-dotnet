@@ -5,7 +5,7 @@
 // edge cases not covered by the existing OutgoingContextMiddlewareTests.
 // =============================================================================
 
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Security;
 using Granit.Wolverine.Middleware;
 using NSubstitute;

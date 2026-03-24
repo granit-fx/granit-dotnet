@@ -11,7 +11,7 @@
 
 using System.Net;
 using System.Net.Http.Json;
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.Http.ExceptionHandling.Extensions;
 using Granit.Persistence.Extensions;
 using Granit.Persistence.Interceptors;

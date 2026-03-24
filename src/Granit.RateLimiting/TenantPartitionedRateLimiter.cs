@@ -1,4 +1,4 @@
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.RateLimiting.Abstractions;
 using Granit.RateLimiting.Diagnostics;
 using Granit.RateLimiting.Internal;

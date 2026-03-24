@@ -1,4 +1,4 @@
-using Granit.Core.Domain.ValueObjects;
+using Granit.Domain.ValueObjects;
 
 namespace Granit.Webhooks.Abstractions;
 

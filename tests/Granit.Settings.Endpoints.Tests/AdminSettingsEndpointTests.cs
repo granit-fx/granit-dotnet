@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Security;
 using Granit.Settings.Definitions;
 using Granit.Settings.Endpoints.Dtos;

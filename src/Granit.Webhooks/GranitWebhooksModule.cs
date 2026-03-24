@@ -1,7 +1,7 @@
 using System.Reflection;
-using Granit.Core.Modularity;
 using Granit.Guids;
 using Granit.Http.Resilience;
+using Granit.Modularity;
 using Granit.Timing;
 using Granit.Webhooks.Definitions;
 using Granit.Webhooks.Extensions;

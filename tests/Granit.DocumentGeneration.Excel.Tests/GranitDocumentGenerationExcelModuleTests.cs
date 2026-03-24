@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Templating;
 using Granit.Templating.Pipeline;
 using Microsoft.Extensions.Configuration;

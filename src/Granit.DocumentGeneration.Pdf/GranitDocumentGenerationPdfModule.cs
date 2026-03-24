@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.DocumentGeneration.Pdf.Extensions;
+using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.DocumentGeneration.Pdf;

@@ -3,7 +3,7 @@ using Granit.BlobStorage.Internal;
 using Granit.BlobStorage.Proxy.Diagnostics;
 using Granit.BlobStorage.Proxy.Internal;
 using Granit.BlobStorage.Proxy.Options;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;

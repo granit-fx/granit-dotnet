@@ -1,5 +1,5 @@
-using Granit.Core.Extensions;
-using Granit.Core.Modularity;
+using Granit.Extensions;
+using Granit.Modularity;
 using Granit.ReferenceData.Extensions;
 using Granit.ReferenceData.Options;
 using Microsoft.AspNetCore.Builder;

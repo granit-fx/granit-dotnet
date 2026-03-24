@@ -1,4 +1,4 @@
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Templating.Store;
 using Granit.Templating.Workflow.Internal;
 using Granit.Workflow;

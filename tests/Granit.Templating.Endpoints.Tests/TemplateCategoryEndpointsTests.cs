@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using FluentValidation;
-using Granit.Core.Exceptions;
+using Granit.Exceptions;
 using Granit.Templating.Endpoints.Dtos;
 using Granit.Templating.Endpoints.Extensions;
 using Granit.Templating.Endpoints.Permissions;

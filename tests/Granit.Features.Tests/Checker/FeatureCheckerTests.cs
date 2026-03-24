@@ -1,9 +1,9 @@
-using Granit.Core.MultiTenancy;
 using Granit.Features.Definitions;
 using Granit.Features.Exceptions;
 using Granit.Features.Internal;
 using Granit.Features.ValueProviders;
 using Granit.Features.ValueTypes;
+using Granit.MultiTenancy;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;

@@ -1,5 +1,5 @@
-using Granit.Core.Domain;
 using Granit.DataExchange.Import.Domain;
+using Granit.Domain;
 using Shouldly;
 using Xunit;
 

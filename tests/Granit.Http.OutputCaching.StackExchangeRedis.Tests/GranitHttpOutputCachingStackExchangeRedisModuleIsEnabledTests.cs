@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Http.OutputCaching.StackExchangeRedis.Options;
+using Granit.Modularity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

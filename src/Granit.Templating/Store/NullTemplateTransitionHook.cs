@@ -5,7 +5,7 @@ namespace Granit.Templating.Store;
 /// Allows simple lifecycle transitions without any Workflow dependency.
 /// </summary>
 /// <remarks>
-/// Same pattern as <c>NullTenantContext</c> in <c>Granit.Core.MultiTenancy</c>:
+/// Same pattern as <c>NullTenantContext</c> in <c>Granit.MultiTenancy</c>:
 /// provides a safe default when the Workflow module is not installed.
 /// </remarks>
 internal sealed class NullTemplateTransitionHook : ITemplateTransitionHook

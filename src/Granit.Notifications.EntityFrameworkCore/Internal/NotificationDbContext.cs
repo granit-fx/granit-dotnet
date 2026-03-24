@@ -1,5 +1,5 @@
-using Granit.Core.DataFiltering;
-using Granit.Core.MultiTenancy;
+using Granit.DataFiltering;
+using Granit.MultiTenancy;
 using Granit.Notifications.Domain;
 using Granit.Notifications.EntityFrameworkCore.Entities;
 using Granit.Notifications.EntityFrameworkCore.Extensions;

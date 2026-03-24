@@ -251,10 +251,13 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
+      "granit": {
+        "type": "Project"
+      },
       "granit.auditlog": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )"
         }
       },
@@ -266,9 +269,6 @@
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
-      "granit.core": {
-        "type": "Project"
-      },
       "granit.guids": {
         "type": "Project",
         "dependencies": {
@@ -278,7 +278,7 @@
       "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.persistence": {
@@ -296,19 +296,19 @@
       "granit.querying": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.security": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "Microsoft.EntityFrameworkCore": {

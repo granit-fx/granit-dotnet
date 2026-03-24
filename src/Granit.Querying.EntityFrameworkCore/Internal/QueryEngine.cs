@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Querying.EntityFrameworkCore.Diagnostics;
 using Granit.Querying.Filtering;
 using Granit.Querying.Meta;

@@ -7,7 +7,7 @@
 // connection is never opened (only happens on query execution, not construction).
 // =============================================================================
 
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Persistence.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,4 +1,4 @@
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.Identity.Federated.GoogleCloud.Extensions;
 using Granit.Identity.Federated.GoogleCloud.Internal;
 using Granit.Identity.Federated.GoogleCloud.Options;

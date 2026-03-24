@@ -501,7 +501,7 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       },
       "granit.http.apiversioning": {
@@ -509,7 +509,7 @@
         "dependencies": {
           "Asp.Versioning.Mvc": "[10.0.0-preview.*, )",
           "Asp.Versioning.Mvc.ApiExplorer": "[10.0.0-preview.*, )",
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "Asp.Versioning.Mvc": {

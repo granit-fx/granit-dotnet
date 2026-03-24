@@ -1,6 +1,6 @@
 using Granit.AI;
 using Granit.BlobStorage;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 
 namespace Granit.BlobStorage.AI;
 

@@ -1,6 +1,6 @@
-using Granit.Core.Events;
 using Granit.EventBus.Diagnostics;
 using Granit.EventBus.Extensions;
+using Granit.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;

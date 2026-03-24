@@ -1,6 +1,6 @@
 using Granit.Authentication.EntraId.Extensions;
 using Granit.Authentication.JwtBearer;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 
 namespace Granit.Authentication.EntraId;
 

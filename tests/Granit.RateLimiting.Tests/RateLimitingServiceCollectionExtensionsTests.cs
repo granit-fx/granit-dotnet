@@ -135,7 +135,7 @@ public sealed class RateLimitingServiceCollectionExtensionsTests
         services.AddLogging();
 
         // Add required dependencies for TenantPartitionedRateLimiter
-        services.AddSingleton(NSubstitute.Substitute.For<Granit.Core.MultiTenancy.ICurrentTenant>());
+        services.AddSingleton(NSubstitute.Substitute.For<Granit.MultiTenancy.ICurrentTenant>());
         services.AddSingleton(NSubstitute.Substitute.For<Granit.Security.ICurrentUserService>());
 
         services.AddGranitRateLimiting(opts =>

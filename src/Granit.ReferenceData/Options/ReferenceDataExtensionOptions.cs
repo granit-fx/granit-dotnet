@@ -14,7 +14,7 @@ namespace Granit.ReferenceData.Options;
 /// </para>
 /// <para>
 /// Additional properties can be stored in the JSON bag via
-/// <see cref="Granit.Core.Domain.ExtraPropertyExtensions.SetExtraProperty"/> without
+/// <see cref="Granit.Domain.ExtraPropertyExtensions.SetExtraProperty"/> without
 /// needing to declare them here.
 /// </para>
 /// </remarks>

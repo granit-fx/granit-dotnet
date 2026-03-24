@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Persistence.Migrations;
 using Shouldly;
 using Xunit;

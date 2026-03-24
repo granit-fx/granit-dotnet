@@ -1,4 +1,3 @@
-using Granit.Core.Events;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Internal;
 using Granit.DataExchange.Extensions;
@@ -6,6 +5,7 @@ using Granit.DataExchange.Import.Internal;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.DataExchange.Tests.Mapping;
+using Granit.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;

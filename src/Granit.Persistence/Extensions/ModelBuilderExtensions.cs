@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using Granit.Core.DataFiltering;
-using Granit.Core.Domain;
-using Granit.Core.MultiTenancy;
+using Granit.DataFiltering;
+using Granit.Domain;
+using Granit.MultiTenancy;
 using Granit.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;

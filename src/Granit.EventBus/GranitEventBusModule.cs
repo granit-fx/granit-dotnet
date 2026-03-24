@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.EventBus.Extensions;
+using Granit.Modularity;
 
 namespace Granit.EventBus;
 

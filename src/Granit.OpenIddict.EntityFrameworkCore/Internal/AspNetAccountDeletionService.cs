@@ -1,4 +1,4 @@
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.OpenIddict.Entities;
 using Granit.OpenIddict.Events;
 using Granit.OpenIddict.Services;

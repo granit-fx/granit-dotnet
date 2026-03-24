@@ -1,5 +1,5 @@
 using Granit.Authentication.JwtBearer;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Shouldly;
 using Xunit;
 

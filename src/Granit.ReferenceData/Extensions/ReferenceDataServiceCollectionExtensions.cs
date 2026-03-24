@@ -1,4 +1,4 @@
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.ReferenceData.Diagnostics;
 using Granit.ReferenceData.Options;
 using Microsoft.Extensions.DependencyInjection;

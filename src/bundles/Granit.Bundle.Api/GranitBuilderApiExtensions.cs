@@ -1,11 +1,11 @@
 using Granit.Bundle.Essentials;
 using Granit.Caching.StackExchangeRedis;
-using Granit.Core.Modularity;
 using Granit.Http.ApiDocumentation;
 using Granit.Http.ApiVersioning;
 using Granit.Http.Cors;
 using Granit.Http.Idempotency;
 using Granit.Localization;
+using Granit.Modularity;
 
 namespace Granit.Bundle.Api;
 

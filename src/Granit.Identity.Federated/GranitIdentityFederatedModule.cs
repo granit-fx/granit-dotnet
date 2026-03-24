@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Identity;
+using Granit.Modularity;
 
 namespace Granit.Identity.Federated;
 

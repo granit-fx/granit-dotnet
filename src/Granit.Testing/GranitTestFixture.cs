@@ -1,7 +1,7 @@
-using Granit.Core.Extensions;
-using Granit.Core.Modularity;
-using Granit.Core.MultiTenancy;
+using Granit.Extensions;
 using Granit.Guids;
+using Granit.Modularity;
+using Granit.MultiTenancy;
 using Granit.Security;
 using Granit.Testing.Fakes;
 using Granit.Timing;

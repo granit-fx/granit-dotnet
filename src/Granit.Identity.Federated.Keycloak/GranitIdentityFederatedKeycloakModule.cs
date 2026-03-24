@@ -1,6 +1,6 @@
-using Granit.Core.Modularity;
 using Granit.Http.Resilience;
 using Granit.Identity.Federated.Keycloak.Extensions;
+using Granit.Modularity;
 using Granit.Timing;
 
 namespace Granit.Identity.Federated.Keycloak;

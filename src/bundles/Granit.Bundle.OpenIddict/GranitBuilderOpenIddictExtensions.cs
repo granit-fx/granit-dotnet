@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Identity.Local.AspNetIdentity;
+using Granit.Modularity;
 using Granit.OpenIddict;
 using Granit.OpenIddict.BackgroundJobs;
 using Granit.OpenIddict.Endpoints;

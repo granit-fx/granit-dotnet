@@ -1,5 +1,5 @@
-using Granit.Core.DataFiltering;
-using Granit.Core.MultiTenancy;
+using Granit.DataFiltering;
+using Granit.MultiTenancy;
 using Granit.Persistence.Extensions;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.EntityFrameworkCore.Extensions;

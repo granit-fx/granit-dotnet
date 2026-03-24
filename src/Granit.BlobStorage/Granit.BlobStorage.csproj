@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
+    <ProjectReference Include="..\Granit\Granit.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <!-- Optional at runtime: ICurrentTenant resolved via constructor injection (NullTenantContext when multi-tenancy is not installed) -->
   </ItemGroup>

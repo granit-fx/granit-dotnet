@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using Granit.Core.Domain;
+using Granit.Domain;
 
 namespace Granit.Webhooks.Domain.ValueObjects;
 

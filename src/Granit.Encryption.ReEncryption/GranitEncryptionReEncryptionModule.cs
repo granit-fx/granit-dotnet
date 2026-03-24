@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Encryption.EntityFrameworkCore;
+using Granit.Modularity;
 
 namespace Granit.Encryption.ReEncryption;
 

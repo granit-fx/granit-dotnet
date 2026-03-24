@@ -1,5 +1,5 @@
 using Granit.AI;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 
 namespace Granit.AI.VectorData;
 

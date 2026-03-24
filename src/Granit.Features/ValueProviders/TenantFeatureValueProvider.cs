@@ -1,5 +1,5 @@
-using Granit.Core.MultiTenancy;
 using Granit.Features.Definitions;
+using Granit.MultiTenancy;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Features.ValueProviders;

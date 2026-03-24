@@ -1,6 +1,6 @@
 using Granit.AI;
 using Granit.Authorization;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 
 namespace Granit.Authorization.AI;
 

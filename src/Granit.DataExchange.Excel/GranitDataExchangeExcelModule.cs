@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.DataExchange.Excel.Extensions;
+using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.DataExchange.Excel;

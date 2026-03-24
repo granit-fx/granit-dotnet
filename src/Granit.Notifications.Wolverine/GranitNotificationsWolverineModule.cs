@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Exceptions;
 using Granit.Notifications.Internal;

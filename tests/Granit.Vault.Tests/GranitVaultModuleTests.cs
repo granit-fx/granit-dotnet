@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Microsoft.Extensions.Hosting;
 using Shouldly;
 using Xunit;

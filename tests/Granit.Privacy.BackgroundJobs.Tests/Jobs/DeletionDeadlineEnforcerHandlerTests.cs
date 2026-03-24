@@ -1,4 +1,4 @@
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.Privacy.BackgroundJobs.Jobs;
 using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;

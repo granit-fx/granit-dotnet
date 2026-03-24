@@ -1,7 +1,7 @@
 using System.Diagnostics.Metrics;
 using System.Text.Json;
-using Granit.Core.MultiTenancy;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Diagnostics;
 using Granit.Notifications.Handlers;

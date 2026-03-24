@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Granit.AI.AzureOpenAI.Diagnostics;
 using Granit.AI.AzureOpenAI.Internal;
 using Granit.AI.AzureOpenAI.Options;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;

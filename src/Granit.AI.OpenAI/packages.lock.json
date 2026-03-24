@@ -117,19 +117,19 @@
         "resolved": "10.0.1",
         "contentHash": "BZC4mhdL569AXV56ep9YO6ShjhxFXGP7SwVX0Bc/e0dJPWnS6aBEXZJXqh64RVx8HquqWHkJUINBydLRQ1yq0g=="
       },
+      "granit": {
+        "type": "Project"
+      },
       "granit.ai": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Microsoft.Extensions.AI.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
         }
-      },
-      "granit.core": {
-        "type": "Project"
       },
       "granit.guids": {
         "type": "Project",
@@ -142,7 +142,7 @@
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
         }

@@ -1,6 +1,6 @@
 using Azure.Communication.Email;
 using Azure.Identity;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Notifications.Email.AzureCommunicationServices.Diagnostics;
 using Granit.Notifications.Email.AzureCommunicationServices.HealthChecks;
 using Granit.Notifications.Email.AzureCommunicationServices.Internal;

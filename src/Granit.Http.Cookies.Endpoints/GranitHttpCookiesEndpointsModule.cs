@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Http.ApiDocumentation;
+using Granit.Modularity;
 
 namespace Granit.Http.Cookies.Endpoints;
 

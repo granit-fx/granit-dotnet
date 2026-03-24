@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.DataExchange.Csv;
+using Granit.Modularity;
 using Shouldly;
 using Xunit;
 

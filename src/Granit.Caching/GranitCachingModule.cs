@@ -1,5 +1,5 @@
 using Granit.Caching.Extensions;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Timing;
 
 namespace Granit.Caching;

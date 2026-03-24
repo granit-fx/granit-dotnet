@@ -5,7 +5,7 @@ namespace Granit.Persistence;
 /// </summary>
 /// <remarks>
 /// Each module that owns a <see cref="Microsoft.EntityFrameworkCore.DbContext"/> containing
-/// <see cref="Granit.Core.Domain.ISoftDeletable"/> entities should register an implementation
+/// <see cref="Granit.Domain.ISoftDeletable"/> entities should register an implementation
 /// of this interface. The <c>SoftDeletePurge</c> recurring job collects all implementations
 /// and purges each target.
 /// </remarks>

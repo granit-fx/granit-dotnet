@@ -1,4 +1,4 @@
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.Persistence.Interceptors;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;

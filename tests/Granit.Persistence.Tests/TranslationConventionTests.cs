@@ -9,7 +9,7 @@
 // metadata (InMemory does not enforce unique indexes at runtime).
 // =============================================================================
 
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;

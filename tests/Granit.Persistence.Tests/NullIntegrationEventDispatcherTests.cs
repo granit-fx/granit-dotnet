@@ -1,4 +1,4 @@
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.Persistence.Events;
 using Granit.Persistence.Extensions;
 using Microsoft.Extensions.DependencyInjection;

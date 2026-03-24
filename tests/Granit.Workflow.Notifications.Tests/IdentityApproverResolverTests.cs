@@ -1,6 +1,6 @@
 using Granit.Authorization.Abstractions;
-using Granit.Core.MultiTenancy;
 using Granit.Identity;
+using Granit.MultiTenancy;
 using Granit.Tests.Shared;
 using Granit.Workflow.Notifications.Internal;
 using Microsoft.Extensions.Logging.Abstractions;

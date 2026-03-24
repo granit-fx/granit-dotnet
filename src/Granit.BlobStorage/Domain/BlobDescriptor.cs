@@ -1,5 +1,5 @@
 using Granit.BlobStorage.Events;
-using Granit.Core.Domain;
+using Granit.Domain;
 
 namespace Granit.BlobStorage.Domain;
 

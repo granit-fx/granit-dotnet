@@ -5,9 +5,9 @@
 // OpenAPI en fonction de EnableTenantHeader et [AllowAnonymousTenant].
 // =============================================================================
 
-using Granit.Core.MultiTenancy;
 using Granit.Http.ApiDocumentation.Options;
 using Granit.Http.ApiDocumentation.Transformers;
+using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.OpenApi;

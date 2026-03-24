@@ -25,7 +25,7 @@ public static class WolverineSqlServerHostApplicationBuilderExtensions
     /// <para>
     /// Requires <c>AddGranitWolverine()</c> to be called first on the builder,
     /// or use <see cref="GranitWolverineSqlServerModule"/> which handles the ordering
-    /// automatically via <see cref="Granit.Core.Modularity.DependsOnAttribute"/>.
+    /// automatically via <see cref="Granit.Modularity.DependsOnAttribute"/>.
     /// </para>
     /// <para>
     /// Reads <see cref="WolverineSqlServerOptions"/> from the
@@ -75,7 +75,7 @@ public static class WolverineSqlServerHostApplicationBuilderExtensions
     /// </para>
     /// <para>
     /// Relies on <see cref="Granit.Wolverine.Behaviors.TenantContextBehavior"/> (registered by
-    /// <c>AddGranitWolverine()</c>) to restore <see cref="Granit.Core.MultiTenancy.ICurrentTenant"/>
+    /// <c>AddGranitWolverine()</c>) to restore <see cref="Granit.MultiTenancy.ICurrentTenant"/>
     /// from the <c>X-Tenant-Id</c> envelope header before the handler resolves its
     /// <typeparamref name="TContext"/>.
     /// </para>

@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Shouldly;
 
 namespace Granit.Testing.Tests;

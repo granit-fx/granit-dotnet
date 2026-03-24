@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
-using Granit.Core.DataFiltering;
-using Granit.Core.Domain;
+using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.OpenIddict.Domain;
 using Granit.OpenIddict.Entities;
 using Granit.Persistence.ExtraProperties;

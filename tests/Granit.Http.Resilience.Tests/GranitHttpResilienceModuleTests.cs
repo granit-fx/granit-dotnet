@@ -5,8 +5,8 @@
 // without throwing, and that IHttpClientFactory is resolvable.
 // =============================================================================
 
-using Granit.Core.Modularity;
 using Granit.Http.Resilience.Extensions;
+using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;

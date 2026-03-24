@@ -1,8 +1,8 @@
 using Granit.AuditLog.ConfigurationChanges.Handlers;
-using Granit.Core.Events;
-using Granit.Core.Modularity;
+using Granit.Events;
 using Granit.Features;
 using Granit.Features.Events;
+using Granit.Modularity;
 using Granit.Settings;
 using Granit.Settings.Events;
 using Microsoft.Extensions.DependencyInjection;

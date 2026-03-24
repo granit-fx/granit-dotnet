@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using Granit.Core.MultiTenancy;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
 using Granit.Notifications.Endpoints.Dtos;

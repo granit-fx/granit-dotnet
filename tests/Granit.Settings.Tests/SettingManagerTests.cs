@@ -5,7 +5,7 @@
 // the Global, Tenant and User scopes.
 // =============================================================================
 
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.Settings.Definitions;
 using Granit.Settings.Events;
 using Granit.Settings.Providers;

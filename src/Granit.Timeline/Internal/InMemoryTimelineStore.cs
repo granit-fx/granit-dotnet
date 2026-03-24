@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
-using Granit.Core.MultiTenancy;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Security;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;

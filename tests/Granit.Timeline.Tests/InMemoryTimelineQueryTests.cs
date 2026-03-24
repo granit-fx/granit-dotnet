@@ -4,8 +4,8 @@
 // Verifies pagination, ordering, and soft-delete filtering.
 // =============================================================================
 
-using Granit.Core.MultiTenancy;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Querying;
 using Granit.Security;
 using Granit.Timeline.Domain;

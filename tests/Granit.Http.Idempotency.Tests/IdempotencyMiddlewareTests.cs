@@ -10,11 +10,11 @@
 
 using System.Net;
 using System.Net.Http.Headers;
-using Granit.Core.MultiTenancy;
 using Granit.Http.Idempotency.Abstractions;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Http.Idempotency.Extensions;
 using Granit.Http.Idempotency.Models;
+using Granit.MultiTenancy;
 using Granit.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

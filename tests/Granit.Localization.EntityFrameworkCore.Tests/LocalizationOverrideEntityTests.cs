@@ -44,7 +44,7 @@ public sealed class LocalizationOverrideEntityTests
     {
         LocalizationOverride entity = new();
 
-        entity.ShouldBeAssignableTo<Granit.Core.Domain.IMultiTenant>();
+        entity.ShouldBeAssignableTo<Granit.Domain.IMultiTenant>();
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public sealed class LocalizationOverrideEntityTests
     {
         LocalizationOverride entity = new();
 
-        entity.ShouldBeAssignableTo<Granit.Core.Domain.IEmitEntityLifecycleEvents>();
+        entity.ShouldBeAssignableTo<Granit.Domain.IEmitEntityLifecycleEvents>();
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public sealed class LocalizationOverrideEntityTests
     {
         LocalizationOverride entity = new();
 
-        entity.ShouldBeAssignableTo<Granit.Core.Domain.AuditedEntity>();
+        entity.ShouldBeAssignableTo<Granit.Domain.AuditedEntity>();
     }
 
     [Fact]

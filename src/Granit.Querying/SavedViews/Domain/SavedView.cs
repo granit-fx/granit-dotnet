@@ -1,5 +1,5 @@
-using Granit.Core.Domain;
-using Granit.Core.MultiTenancy;
+using Granit.Domain;
+using Granit.MultiTenancy;
 
 namespace Granit.Querying.SavedViews.Domain;
 

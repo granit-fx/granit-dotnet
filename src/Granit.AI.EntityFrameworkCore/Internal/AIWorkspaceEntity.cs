@@ -1,5 +1,5 @@
 using Granit.AI.Workspaces;
-using Granit.Core.Domain;
+using Granit.Domain;
 
 namespace Granit.AI.EntityFrameworkCore.Internal;
 

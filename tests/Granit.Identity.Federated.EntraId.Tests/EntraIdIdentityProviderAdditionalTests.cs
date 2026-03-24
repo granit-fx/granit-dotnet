@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.Net;
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.Identity;
 using Granit.Identity.Events;
 using Granit.Identity.Federated.EntraId.Internal;

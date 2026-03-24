@@ -1,5 +1,5 @@
 using System.Globalization;
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.ReferenceData.Domain;
 using Shouldly;
 using Xunit;

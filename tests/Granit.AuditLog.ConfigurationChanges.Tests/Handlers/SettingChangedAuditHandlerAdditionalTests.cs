@@ -1,8 +1,8 @@
 using Granit.AuditLog.Abstractions;
 using Granit.AuditLog.ConfigurationChanges.Handlers;
 using Granit.AuditLog.Domain;
-using Granit.Core.MultiTenancy;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Security;
 using Granit.Settings.Events;
 using NSubstitute;

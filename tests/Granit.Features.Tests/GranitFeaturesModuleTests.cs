@@ -1,9 +1,9 @@
 using Granit.Caching;
-using Granit.Core.Modularity;
 using Granit.Features.Definitions;
 using Granit.Features.ValueProviders;
 using Granit.Localization;
 using Granit.Localization.Options;
+using Granit.Modularity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

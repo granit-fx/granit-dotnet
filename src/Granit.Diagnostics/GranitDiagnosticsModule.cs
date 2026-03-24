@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Diagnostics.Extensions;
+using Granit.Modularity;
 using Granit.Timing;
 
 namespace Granit.Diagnostics;

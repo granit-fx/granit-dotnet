@@ -2,7 +2,7 @@ using Amazon;
 using Amazon.KeyManagementService;
 using Amazon.Runtime;
 using Amazon.SecretsManager;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Encryption;
 using Granit.Vault.Aws.Diagnostics;
 using Granit.Vault.Aws.HealthChecks;

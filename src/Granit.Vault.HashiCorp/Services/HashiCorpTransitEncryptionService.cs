@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Vault.Diagnostics;
 using Granit.Vault.HashiCorp.Diagnostics;
 using Granit.Vault.HashiCorp.Options;

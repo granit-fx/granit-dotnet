@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Persistence;
 using Granit.Wolverine.SqlServer.Extensions;
 using Granit.Wolverine.SqlServer.Options;

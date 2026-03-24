@@ -46,7 +46,7 @@ internal static class QueryEndpointHandler
         [FromServices] IQueryEngine<TEntity> engine,
         [FromServices] ISavedViewStoreReader savedViewStore,
         QueryDefinition<TEntity> definition,
-        [FromServices] Granit.Core.MultiTenancy.ICurrentTenant tenant,
+        [FromServices] Granit.MultiTenancy.ICurrentTenant tenant,
         System.Security.Claims.ClaimsPrincipal user,
         CancellationToken cancellationToken)
         where TEntity : class

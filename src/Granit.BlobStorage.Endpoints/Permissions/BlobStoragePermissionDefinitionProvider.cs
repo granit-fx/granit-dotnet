@@ -1,6 +1,6 @@
 using Granit.Authorization.Abstractions;
 using Granit.BlobStorage.Endpoints.Internal;
-using Granit.Core.Localization;
+using Granit.Localization;
 
 namespace Granit.BlobStorage.Endpoints.Permissions;
 

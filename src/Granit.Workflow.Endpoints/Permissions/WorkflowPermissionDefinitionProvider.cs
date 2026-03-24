@@ -1,5 +1,5 @@
 using Granit.Authorization.Abstractions;
-using Granit.Core.Localization;
+using Granit.Localization;
 using Granit.Workflow.Endpoints.Internal;
 
 namespace Granit.Workflow.Endpoints.Permissions;

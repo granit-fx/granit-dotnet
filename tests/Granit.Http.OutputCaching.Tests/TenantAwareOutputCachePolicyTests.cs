@@ -1,5 +1,5 @@
-using Granit.Core.MultiTenancy;
 using Granit.Http.OutputCaching.Policies;
+using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.DependencyInjection;

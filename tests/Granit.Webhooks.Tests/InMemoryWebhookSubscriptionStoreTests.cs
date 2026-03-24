@@ -5,7 +5,7 @@
 // (TenantId = null); CRUD operations and lifecycle transitions.
 // =============================================================================
 
-using Granit.Core.Exceptions;
+using Granit.Exceptions;
 using Granit.Guids;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;

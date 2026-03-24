@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Notifications.Email.AwsSes.Extensions;
 
 namespace Granit.Notifications.Email.AwsSes;

@@ -1,10 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
-using Granit.Core.MultiTenancy;
 using Granit.Features.Definitions;
 using Granit.Features.Endpoints.Dtos;
 using Granit.Features.Endpoints.Extensions;
 using Granit.Features.ValueTypes;
+using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;

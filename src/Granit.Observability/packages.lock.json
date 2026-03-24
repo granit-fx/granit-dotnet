@@ -196,7 +196,7 @@
           "Serilog": "4.2.0"
         }
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       }
     }

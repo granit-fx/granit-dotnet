@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
-using Granit.Core.Domain;
+using Granit.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;

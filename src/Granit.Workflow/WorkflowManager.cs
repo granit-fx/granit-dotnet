@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Workflow.Diagnostics;
 
 namespace Granit.Workflow;

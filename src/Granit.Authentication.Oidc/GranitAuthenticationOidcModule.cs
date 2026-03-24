@@ -2,7 +2,7 @@ using Granit.Authentication.Oidc.Discovery;
 using Granit.Authentication.Oidc.Discovery.Internal;
 using Granit.Authentication.Oidc.DPoP;
 using Granit.Authentication.Oidc.DPoP.Internal;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

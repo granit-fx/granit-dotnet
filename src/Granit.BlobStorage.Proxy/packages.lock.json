@@ -8,15 +8,15 @@
         "resolved": "3.3.4",
         "contentHash": "0k2Jwpc8eq0hjOtX6TxRkHm9clkJ2PAQ3heEHgqIJZcsfdFosC/iyz18nsgTVDDWpID80rC7aiYK7ripx+Qndg=="
       },
+      "granit": {
+        "type": "Project"
+      },
       "granit.blobstorage": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )"
         }
-      },
-      "granit.core": {
-        "type": "Project"
       },
       "granit.guids": {
         "type": "Project",
@@ -27,7 +27,7 @@
       "granit.timing": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       }
     }

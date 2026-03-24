@@ -1,6 +1,6 @@
-using Granit.Core.Modularity;
 using Granit.Http.OutputCaching.StackExchangeRedis.Extensions;
 using Granit.Http.OutputCaching.StackExchangeRedis.Options;
+using Granit.Modularity;
 using Microsoft.Extensions.Configuration;
 
 namespace Granit.Http.OutputCaching.StackExchangeRedis;

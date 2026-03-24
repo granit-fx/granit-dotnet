@@ -1,4 +1,4 @@
-using Granit.Core.Domain;
+using Granit.Domain;
 
 namespace Granit.DataExchange.Export.Domain;
 

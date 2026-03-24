@@ -1,5 +1,5 @@
 using System.Reflection;
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.Privacy.DataDeletion.Events;
 using Shouldly;
 using Wolverine.Persistence.Sagas;

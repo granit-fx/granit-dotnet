@@ -1,5 +1,5 @@
 using System.Globalization;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Templating.GlobalContext;
 
 namespace Granit.Templating.Scriban.GlobalContexts;

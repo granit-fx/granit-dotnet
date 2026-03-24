@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using Amazon.KeyManagementService;
 using Amazon.KeyManagementService.Model;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Vault.Aws.Diagnostics;
 using Granit.Vault.Aws.Options;
 using Granit.Vault.Diagnostics;

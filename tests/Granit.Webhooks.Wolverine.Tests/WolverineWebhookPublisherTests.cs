@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Timing;
 using Granit.Webhooks.Messages;
 using Granit.Webhooks.Wolverine.Internal;

@@ -39,7 +39,7 @@
           "Asp.Versioning.Abstractions": "10.0.0-preview.2"
         }
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       }
     }

@@ -1,6 +1,6 @@
-using Granit.Core.Domain;
-using Granit.Core.MultiTenancy;
+using Granit.Domain;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Security;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;

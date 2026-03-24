@@ -8,7 +8,7 @@
 
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Exceptions;
-using Granit.Core.Exceptions;
+using Granit.Exceptions;
 using Shouldly;
 using Xunit;
 

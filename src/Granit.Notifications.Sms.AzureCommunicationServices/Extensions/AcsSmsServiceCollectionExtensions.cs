@@ -1,6 +1,6 @@
 using Azure.Communication.Sms;
 using Azure.Identity;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Notifications.Sms.AzureCommunicationServices.Diagnostics;
 using Granit.Notifications.Sms.AzureCommunicationServices.HealthChecks;
 using Granit.Notifications.Sms.AzureCommunicationServices.Internal;

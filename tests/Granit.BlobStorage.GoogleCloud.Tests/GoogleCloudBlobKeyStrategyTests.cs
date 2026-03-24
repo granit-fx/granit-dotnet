@@ -1,6 +1,6 @@
 using Granit.BlobStorage.GoogleCloud.Internal;
 using Granit.BlobStorage.GoogleCloud.Options;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Options;
 using NSubstitute;

@@ -1,4 +1,4 @@
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Notifications.MobilePush.AzureNotificationHubs.Diagnostics;
 using Granit.Notifications.MobilePush.AzureNotificationHubs.HealthChecks;
 using Granit.Notifications.MobilePush.AzureNotificationHubs.Internal;

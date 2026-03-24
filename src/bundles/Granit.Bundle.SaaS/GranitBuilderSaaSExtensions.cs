@@ -1,7 +1,7 @@
-using Granit.Core.Modularity;
 using Granit.Features;
 using Granit.Features.EntityFrameworkCore;
 using Granit.Http.Bulkhead;
+using Granit.Modularity;
 using Granit.MultiTenancy;
 using Granit.RateLimiting;
 

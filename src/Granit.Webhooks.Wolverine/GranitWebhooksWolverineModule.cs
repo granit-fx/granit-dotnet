@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Exceptions;
 using Granit.Webhooks.Internal;

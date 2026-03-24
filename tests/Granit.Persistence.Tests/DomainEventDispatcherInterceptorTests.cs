@@ -1,5 +1,5 @@
-using Granit.Core.Domain;
-using Granit.Core.Events;
+using Granit.Domain;
+using Granit.Events;
 using Granit.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;

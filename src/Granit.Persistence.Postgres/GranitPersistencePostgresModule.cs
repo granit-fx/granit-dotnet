@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Persistence.Hosting;
 using Granit.Persistence.Postgres.Extensions;
 

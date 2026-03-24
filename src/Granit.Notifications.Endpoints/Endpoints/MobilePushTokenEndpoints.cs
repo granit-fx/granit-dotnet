@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Notifications.Endpoints.Dtos;
 using Granit.Notifications.MobilePush;
 using Granit.Timing;

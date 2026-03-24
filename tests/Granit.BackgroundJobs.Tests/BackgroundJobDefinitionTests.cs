@@ -7,7 +7,7 @@
 
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Events;
-using Granit.Core.Events;
+using Granit.Events;
 using Shouldly;
 using Xunit;
 

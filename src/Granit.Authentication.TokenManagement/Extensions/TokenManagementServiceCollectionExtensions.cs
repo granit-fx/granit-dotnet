@@ -5,7 +5,7 @@ using Granit.Authentication.TokenManagement.Handlers;
 using Granit.Authentication.TokenManagement.Options;
 using Granit.Authentication.TokenManagement.Services;
 using Granit.Authentication.TokenManagement.Services.Internal;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

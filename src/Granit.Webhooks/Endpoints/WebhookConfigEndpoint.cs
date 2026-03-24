@@ -1,4 +1,4 @@
-using Granit.Core.Endpoints;
+using Granit.Endpoints;
 using Granit.Webhooks.Dtos;
 using Microsoft.AspNetCore.Routing;
 

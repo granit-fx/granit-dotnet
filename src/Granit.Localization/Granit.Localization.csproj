@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
-    <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
+    <ProjectReference Include="..\Granit\Granit.csproj" />
     <!-- Optional at runtime: ICurrentTenant resolved via GetService for cache key scoping -->
   </ItemGroup>
 

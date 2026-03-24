@@ -469,7 +469,7 @@
         "resolved": "10.0.0",
         "contentHash": "uaFRda9NjtbJRkdx311eXlAA3n2em7223c1A8d1VWyl+4FL9vkG7y2lpPfBU9HYdj/9KgdRNdn1vFK8ZYCYT/A=="
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       },
       "Microsoft.CodeAnalysis.Analyzers": {

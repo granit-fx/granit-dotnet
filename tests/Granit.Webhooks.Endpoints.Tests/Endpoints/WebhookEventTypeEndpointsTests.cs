@@ -1,4 +1,4 @@
-using Granit.Core.Localization;
+using Granit.Localization;
 using Granit.Webhooks.Definitions;
 using Granit.Webhooks.Endpoints.Dtos;
 using Granit.Webhooks.Endpoints.Endpoints;

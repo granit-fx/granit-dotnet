@@ -72,6 +72,9 @@
           "Microsoft.IdentityModel.Tokens": "8.0.1"
         }
       },
+      "granit": {
+        "type": "Project"
+      },
       "granit.authentication.jwtbearer": {
         "type": "Project",
         "dependencies": {
@@ -79,13 +82,10 @@
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[10.*, )"
         }
       },
-      "granit.core": {
-        "type": "Project"
-      },
       "granit.security": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       }
     }

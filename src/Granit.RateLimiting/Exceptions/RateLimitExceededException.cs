@@ -1,4 +1,4 @@
-using Granit.Core.Exceptions;
+using Granit.Exceptions;
 
 namespace Granit.RateLimiting.Exceptions;
 

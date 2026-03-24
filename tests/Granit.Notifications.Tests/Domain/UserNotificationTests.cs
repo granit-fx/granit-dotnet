@@ -1,6 +1,6 @@
 using System.Text.Json;
-using Granit.Core.Domain;
-using Granit.Core.Events;
+using Granit.Domain;
+using Granit.Events;
 using Granit.Notifications.Domain;
 using Granit.Notifications.Events;
 using Shouldly;

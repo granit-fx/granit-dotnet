@@ -1,6 +1,6 @@
 using System.Diagnostics;
-using Granit.Core.MultiTenancy;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Diagnostics;
 using Granit.Webhooks.Internal;

@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Security.Cryptography;
-using Granit.Core.Domain.ValueObjects;
-using Granit.Core.Exceptions;
+using Granit.Domain.ValueObjects;
+using Granit.Exceptions;
 using Granit.Guids;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;

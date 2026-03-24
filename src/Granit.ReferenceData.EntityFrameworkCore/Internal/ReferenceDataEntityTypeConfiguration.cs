@@ -7,7 +7,7 @@ namespace Granit.ReferenceData.EntityFrameworkCore.Internal;
 /// <summary>
 /// Base EF Core Fluent API configuration for reference data entities.
 /// Configures the common columns (Code, Label, IsActive, SortOrder, ValidFrom, ValidTo)
-/// and the audit columns inherited from <see cref="Granit.Core.Domain.AuditedEntity"/>.
+/// and the audit columns inherited from <see cref="Granit.Domain.AuditedEntity"/>.
 /// </summary>
 /// <typeparam name="TEntity">The concrete reference data entity type.</typeparam>
 /// <remarks>

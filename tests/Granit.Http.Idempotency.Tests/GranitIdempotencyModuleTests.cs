@@ -1,6 +1,6 @@
 using Granit.Caching;
-using Granit.Core.Modularity;
 using Granit.Http.Idempotency.Internal;
+using Granit.Modularity;
 using Granit.Security;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

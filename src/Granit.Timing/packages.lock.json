@@ -29,7 +29,7 @@
         "resolved": "10.0.5",
         "contentHash": "/HUHJ0tw/LQvD0DZrz50eQy/3z7PfX7WWEaXnjKTV9/TNdcgFlNTZGo49QhS7PTmhDqMyHRMqAXSBxLh0vso4g=="
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       }
     }

@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Notifications.Sms.AzureCommunicationServices.Extensions;
 
 namespace Granit.Notifications.Sms.AzureCommunicationServices;

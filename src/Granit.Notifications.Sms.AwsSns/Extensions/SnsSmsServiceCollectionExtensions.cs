@@ -1,7 +1,7 @@
 using Amazon;
 using Amazon.Runtime;
 using Amazon.SimpleNotificationService;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Notifications.Sms.AwsSns.Diagnostics;
 using Granit.Notifications.Sms.AwsSns.HealthChecks;
 using Granit.Notifications.Sms.AwsSns.Internal;

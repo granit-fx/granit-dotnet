@@ -1,5 +1,5 @@
 using Bogus;
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.Testing.Generators;
 using Shouldly;
 

@@ -1,4 +1,4 @@
-using Granit.Core.Domain;
+using Granit.Domain;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Events;
 using Shouldly;

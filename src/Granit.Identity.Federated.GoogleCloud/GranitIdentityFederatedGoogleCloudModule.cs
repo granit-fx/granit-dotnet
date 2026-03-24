@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Identity.Federated.GoogleCloud.Extensions;
+using Granit.Modularity;
 
 namespace Granit.Identity.Federated.GoogleCloud;
 

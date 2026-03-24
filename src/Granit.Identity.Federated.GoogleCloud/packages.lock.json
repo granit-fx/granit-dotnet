@@ -121,13 +121,13 @@
           "System.CodeDom": "7.0.0"
         }
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       },
       "granit.identity": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )"
         }
       },
@@ -140,7 +140,7 @@
       "granit.querying": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "Microsoft.Extensions.Configuration.Binder": {

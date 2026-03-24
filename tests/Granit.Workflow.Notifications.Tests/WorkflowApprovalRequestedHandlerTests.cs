@@ -1,4 +1,4 @@
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Notifications;
 using Granit.Notifications.Abstractions;
 using Granit.Workflow.Events;

@@ -1,6 +1,6 @@
 using Granit.Authorization;
-using Granit.Core.Modularity;
 using Granit.Http.ApiDocumentation;
+using Granit.Modularity;
 using Granit.Validation;
 
 namespace Granit.Features.Endpoints;

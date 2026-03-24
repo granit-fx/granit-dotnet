@@ -1,6 +1,6 @@
 using System.Diagnostics;
-using Granit.Core.MultiTenancy;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Diagnostics;
 using Granit.Notifications.Messages;

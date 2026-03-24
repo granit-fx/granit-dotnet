@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 using System.Security.Claims;
-using Granit.Core.Events;
+using Granit.Events;
 using Granit.OpenIddict.Diagnostics;
 using Granit.OpenIddict.Entities;
 using Granit.OpenIddict.Events;

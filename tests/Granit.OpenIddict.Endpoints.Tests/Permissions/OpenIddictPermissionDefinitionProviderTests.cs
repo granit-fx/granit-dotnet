@@ -1,5 +1,5 @@
 using Granit.Authorization.Abstractions;
-using Granit.Core.Localization;
+using Granit.Localization;
 using Granit.OpenIddict.Endpoints.Permissions;
 using Granit.OpenIddict.Permissions;
 using NSubstitute;

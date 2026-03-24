@@ -1,4 +1,4 @@
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Imaging.MagickNet.Diagnostics;
 using Granit.Imaging.MagickNet.Internal;
 using Microsoft.Extensions.DependencyInjection;

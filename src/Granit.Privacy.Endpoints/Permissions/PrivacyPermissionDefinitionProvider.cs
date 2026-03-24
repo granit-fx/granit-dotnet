@@ -1,5 +1,5 @@
 using Granit.Authorization.Abstractions;
-using Granit.Core.Localization;
+using Granit.Localization;
 using Granit.Privacy.Endpoints.Internal;
 
 namespace Granit.Privacy.Endpoints.Permissions;

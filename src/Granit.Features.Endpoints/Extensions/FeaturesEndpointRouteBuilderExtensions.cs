@@ -1,10 +1,10 @@
-using Granit.Core.MultiTenancy;
 using Granit.Features.Definitions;
 using Granit.Features.Endpoints.Dtos;
 using Granit.Features.Endpoints.Options;
 using Granit.Features.Endpoints.Permissions;
 using Granit.Features.Exceptions;
 using Granit.Features.ValueTypes;
+using Granit.MultiTenancy;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

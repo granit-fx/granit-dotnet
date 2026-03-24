@@ -1,7 +1,7 @@
-using Granit.Core.Modularity;
 using Granit.DataExchange.Extensions;
 using Granit.EventBus;
 using Granit.Guids;
+using Granit.Modularity;
 using Granit.Querying;
 using Granit.Timing;
 using Granit.Validation;

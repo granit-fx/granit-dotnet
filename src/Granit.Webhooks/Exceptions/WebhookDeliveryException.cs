@@ -6,7 +6,7 @@ namespace Granit.Webhooks.Exceptions;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This exception intentionally does NOT implement <see cref="Granit.Core.Exceptions.IHasErrorCode"/>
+/// This exception intentionally does NOT implement <see cref="Granit.Exceptions.IHasErrorCode"/>
 /// because it is an internal retry signal for Wolverine, not a user-facing error.
 /// It should never reach the HTTP boundary or <c>GranitExceptionHandler</c>.
 /// </para>

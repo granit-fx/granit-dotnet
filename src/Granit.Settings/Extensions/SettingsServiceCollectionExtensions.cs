@@ -1,4 +1,4 @@
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.EventBus.Extensions;
 using Granit.Settings.Definitions;
 using Granit.Settings.Diagnostics;

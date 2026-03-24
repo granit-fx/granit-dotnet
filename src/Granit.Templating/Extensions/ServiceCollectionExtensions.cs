@@ -1,5 +1,5 @@
 using System.Reflection;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Templating.Diagnostics;
 using Granit.Templating.Enrichment;
 using Granit.Templating.GlobalContext;

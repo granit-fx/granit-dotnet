@@ -1,5 +1,5 @@
-using Granit.Core.MultiTenancy;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Security;
 using Granit.Testing.EntityFrameworkCore.Extensions;
 using Granit.Testing.Fakes;

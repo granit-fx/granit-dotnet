@@ -1,6 +1,6 @@
 using Granit.BackgroundJobs;
 using Granit.Bff.EntityFrameworkCore;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 
 namespace Granit.Bff.BackgroundJobs;
 

@@ -2,7 +2,7 @@ using Azure.Identity;
 using Azure.Security.KeyVault.Keys;
 using Azure.Security.KeyVault.Keys.Cryptography;
 using Azure.Security.KeyVault.Secrets;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Encryption;
 using Granit.Vault.Azure.Diagnostics;
 using Granit.Vault.Azure.HealthChecks;

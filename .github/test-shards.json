@@ -18,7 +18,7 @@
         "tests/Granit.Authorization.AI.Tests",
         "tests/Granit.BlobStorage.AI.Tests",
         "tests/Granit.Bundle.Tests",
-        "tests/Granit.Core.Tests",
+        "tests/Granit.Tests",
         "tests/Granit.DataExchange.AI.Tests",
         "tests/Granit.Diagnostics.Endpoints.Tests",
         "tests/Granit.Diagnostics.Tests",

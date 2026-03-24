@@ -1,4 +1,4 @@
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Localization.Diagnostics;
 using Granit.Localization.Internal;
 using Granit.Localization.Options;

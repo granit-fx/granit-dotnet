@@ -1,5 +1,5 @@
-using Granit.Core.Domain;
-using Granit.Core.Domain.ValueObjects;
+using Granit.Domain;
+using Granit.Domain.ValueObjects;
 using Granit.Webhooks.Events;
 
 namespace Granit.Webhooks.Domain;

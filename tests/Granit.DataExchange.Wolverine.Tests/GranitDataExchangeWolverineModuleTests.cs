@@ -1,7 +1,7 @@
-using Granit.Core.Modularity;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.DataExchange.Wolverine.Internal;
+using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;

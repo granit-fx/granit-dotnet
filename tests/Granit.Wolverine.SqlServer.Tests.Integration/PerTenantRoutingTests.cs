@@ -11,7 +11,7 @@
 // de démarrage (~15 s) sur l'ensemble des tests.
 // =============================================================================
 
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.MultiTenancy;
 using Microsoft.Data.SqlClient;

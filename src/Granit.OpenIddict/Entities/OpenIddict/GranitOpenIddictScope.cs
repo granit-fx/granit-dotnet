@@ -1,4 +1,4 @@
-using Granit.Core.Domain;
+using Granit.Domain;
 using OpenIddict.EntityFrameworkCore.Models;
 
 namespace Granit.OpenIddict.Entities.OpenIddict;

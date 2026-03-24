@@ -9,7 +9,7 @@
 
 using Granit.Authorization.Abstractions;
 using Granit.Authorization.Services;
-using Granit.Core.Localization;
+using Granit.Localization;
 using Shouldly;
 using Xunit;
 

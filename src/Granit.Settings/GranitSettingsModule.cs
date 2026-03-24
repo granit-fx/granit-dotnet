@@ -1,8 +1,8 @@
 using System.Reflection;
 using Granit.Caching;
-using Granit.Core.Modularity;
 using Granit.Encryption;
 using Granit.EventBus;
+using Granit.Modularity;
 using Granit.Security;
 using Granit.Settings.Definitions;
 using Granit.Settings.Extensions;

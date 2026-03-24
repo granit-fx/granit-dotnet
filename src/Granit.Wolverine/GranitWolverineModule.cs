@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Security;
 using Granit.Validation;
 using Granit.Wolverine.Extensions;

@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Granit.Core.Domain;
+using Granit.Domain;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Granit.Persistence.ValueConverters;

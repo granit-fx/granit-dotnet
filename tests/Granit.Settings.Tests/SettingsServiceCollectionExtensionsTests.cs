@@ -25,7 +25,7 @@ public sealed class SettingsServiceCollectionExtensionsTests
 
         // Register dependencies that come from other modules in production
         services.AddSingleton(Substitute.For<Granit.Security.ICurrentUserService>());
-        services.AddSingleton(Substitute.For<Granit.Core.MultiTenancy.ICurrentTenant>());
+        services.AddSingleton(Substitute.For<Granit.MultiTenancy.ICurrentTenant>());
         services.AddFusionCache();
         services.AddOptions();
         services.AddLogging();
@@ -109,7 +109,7 @@ public sealed class SettingsServiceCollectionExtensionsTests
         services.AddSingleton<IConfiguration>(configuration);
         services.AddGranitSettings(section);
         services.AddSingleton(Substitute.For<Granit.Security.ICurrentUserService>());
-        services.AddSingleton(Substitute.For<Granit.Core.MultiTenancy.ICurrentTenant>());
+        services.AddSingleton(Substitute.For<Granit.MultiTenancy.ICurrentTenant>());
         services.AddFusionCache();
         services.AddOptions();
         services.AddLogging();
@@ -139,7 +139,7 @@ public sealed class SettingsServiceCollectionExtensionsTests
         services.AddGranitSettings();
         services.AddGranitSettings();
         services.AddSingleton(Substitute.For<Granit.Security.ICurrentUserService>());
-        services.AddSingleton(Substitute.For<Granit.Core.MultiTenancy.ICurrentTenant>());
+        services.AddSingleton(Substitute.For<Granit.MultiTenancy.ICurrentTenant>());
         services.AddFusionCache();
         services.AddOptions();
         services.AddLogging();

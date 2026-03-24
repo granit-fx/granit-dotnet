@@ -1,6 +1,6 @@
 using Granit.Authorization.Abstractions;
 using Granit.BlobStorage.Endpoints.Permissions;
-using Granit.Core.Localization;
+using Granit.Localization;
 using NSubstitute;
 using Shouldly;
 using Xunit;

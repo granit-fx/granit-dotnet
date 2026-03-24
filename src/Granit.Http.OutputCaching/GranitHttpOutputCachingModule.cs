@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Http.OutputCaching.Extensions;
+using Granit.Modularity;
 
 namespace Granit.Http.OutputCaching;
 

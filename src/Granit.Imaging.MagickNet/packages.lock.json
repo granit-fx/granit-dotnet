@@ -22,13 +22,13 @@
         "resolved": "14.11.0",
         "contentHash": "MdNdyZJ7CjTV0zc4G1dGz8RIis5ZizYOMRrQ4+WghHYq5Hn151VNPPFpRsZ3fw61klegTFbzYRyMQjfl/sYW3w=="
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       },
       "granit.imaging": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )",
+          "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
         }
       },

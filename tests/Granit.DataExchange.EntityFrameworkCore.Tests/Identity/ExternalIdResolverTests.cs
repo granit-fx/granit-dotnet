@@ -1,10 +1,10 @@
-using Granit.Core.MultiTenancy;
 using Granit.DataExchange.EntityFrameworkCore.Internal;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Export.Entities;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Entities;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Identity;
 using Granit.DataExchange.EntityFrameworkCore.Tests.Infrastructure;
 using Granit.DataExchange.Import.Identity;
+using Granit.MultiTenancy;
 using NSubstitute;
 using Shouldly;
 using Xunit;

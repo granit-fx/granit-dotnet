@@ -1,4 +1,4 @@
-using Granit.Core.Events;
+using Granit.Events;
 using Wolverine;
 
 namespace Granit.EventBus.Wolverine.Internal;

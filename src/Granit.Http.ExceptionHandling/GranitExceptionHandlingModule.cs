@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Http.ExceptionHandling.Extensions;
+using Granit.Modularity;
 
 namespace Granit.Http.ExceptionHandling;
 

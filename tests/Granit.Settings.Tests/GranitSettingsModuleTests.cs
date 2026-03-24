@@ -5,8 +5,8 @@
 // à la manière d'AbpIntegratedTest<T> dans ABP Framework.
 // =============================================================================
 
-using Granit.Core.Extensions;
-using Granit.Core.Modularity;
+using Granit.Extensions;
+using Granit.Modularity;
 using Granit.Security;
 using Granit.Settings.Definitions;
 using Granit.Settings.Providers;

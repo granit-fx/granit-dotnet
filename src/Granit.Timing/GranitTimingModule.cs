@@ -1,4 +1,4 @@
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Timing.Extensions;
 
 namespace Granit.Timing;

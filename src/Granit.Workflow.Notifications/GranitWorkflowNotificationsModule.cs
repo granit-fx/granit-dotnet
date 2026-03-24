@@ -1,6 +1,6 @@
 using Granit.Authorization;
-using Granit.Core.Modularity;
 using Granit.Identity;
+using Granit.Modularity;
 using Granit.Notifications;
 using Granit.Workflow.Notifications.Extensions;
 

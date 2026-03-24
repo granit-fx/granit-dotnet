@@ -1,5 +1,4 @@
 using System.Threading.Channels;
-using Granit.Core.Diagnostics;
 using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Internal;
@@ -9,6 +8,7 @@ using Granit.DataExchange.Import.Internal;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Messages;
 using Granit.DataExchange.Import.Pipeline;
+using Granit.Diagnostics;
 using Granit.EventBus.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

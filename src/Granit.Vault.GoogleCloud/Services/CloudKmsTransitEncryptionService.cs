@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using Google.Cloud.Kms.V1;
 using Google.Protobuf;
-using Granit.Core.MultiTenancy;
+using Granit.MultiTenancy;
 using Granit.Vault.Diagnostics;
 using Granit.Vault.GoogleCloud.Diagnostics;
 using Granit.Vault.GoogleCloud.Options;

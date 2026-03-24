@@ -1,4 +1,3 @@
-using Granit.Core.MultiTenancy;
 using Granit.DataExchange.EntityFrameworkCore.Internal;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Export.Stores;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Entities;
@@ -6,6 +5,7 @@ using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Stores;
 using Granit.DataExchange.EntityFrameworkCore.Tests.Infrastructure;
 using Granit.DataExchange.Import.Mapping;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;

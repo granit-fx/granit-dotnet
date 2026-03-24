@@ -4,7 +4,7 @@ using Granit.BlobStorage.DbStore.Internal;
 using Granit.BlobStorage.DbStore.Options;
 using Granit.BlobStorage.Internal;
 using Granit.BlobStorage.Options;
-using Granit.Core.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Http.Cookies.Klaro.Extensions;
+using Granit.Modularity;
 
 namespace Granit.Http.Cookies.Klaro;
 

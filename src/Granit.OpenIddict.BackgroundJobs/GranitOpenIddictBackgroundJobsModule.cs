@@ -1,5 +1,5 @@
 using Granit.BackgroundJobs;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Settings;
 
 namespace Granit.OpenIddict.BackgroundJobs;

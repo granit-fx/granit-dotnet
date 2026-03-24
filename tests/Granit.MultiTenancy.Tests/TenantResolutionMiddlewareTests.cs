@@ -2,7 +2,6 @@
 // TenantResolutionMiddlewareTests - Unit tests for the tenant resolution middleware
 // =============================================================================
 
-using Granit.Core.MultiTenancy;
 using Granit.MultiTenancy;
 using Granit.MultiTenancy.Middleware;
 using Granit.MultiTenancy.Options;

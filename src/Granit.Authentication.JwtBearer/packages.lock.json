@@ -72,13 +72,13 @@
           "Microsoft.IdentityModel.Tokens": "8.0.1"
         }
       },
-      "granit.core": {
+      "granit": {
         "type": "Project"
       },
       "granit.security": {
         "type": "Project",
         "dependencies": {
-          "Granit.Core": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       }
     }

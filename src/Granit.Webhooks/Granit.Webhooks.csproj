@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.Core\Granit.Core.csproj" />
+    <ProjectReference Include="..\Granit\Granit.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Http.Resilience\Granit.Http.Resilience.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />

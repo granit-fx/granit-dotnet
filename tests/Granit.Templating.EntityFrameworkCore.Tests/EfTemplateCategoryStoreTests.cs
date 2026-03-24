@@ -1,4 +1,4 @@
-using Granit.Core.Exceptions;
+using Granit.Exceptions;
 using Granit.Guids;
 using Granit.Templating.EntityFrameworkCore.Internal;
 using Granit.Templating.Store;

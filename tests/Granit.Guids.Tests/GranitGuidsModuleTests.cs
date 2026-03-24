@@ -4,7 +4,7 @@
 // Verifies that the module registers Guids services via ConfigureServices.
 // =============================================================================
 
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shouldly;

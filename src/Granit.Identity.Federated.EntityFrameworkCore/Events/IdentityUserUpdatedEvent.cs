@@ -1,4 +1,4 @@
-using Granit.Core.Events;
+using Granit.Events;
 
 namespace Granit.Identity.Federated.EntityFrameworkCore.Events;
 

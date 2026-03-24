@@ -1,5 +1,5 @@
-using Granit.Core.Modularity;
 using Granit.Encryption;
+using Granit.Modularity;
 using Granit.MultiTenancy;
 using Granit.OpenIddict.Entities;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
