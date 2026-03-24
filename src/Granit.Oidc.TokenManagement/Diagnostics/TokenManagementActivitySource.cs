@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace Granit.Oidc.TokenManagement.Diagnostics;
 
 /// <summary>
-/// Central <see cref="ActivitySource"/> for Granit.Authentication.TokenManagement distributed tracing.
+/// Central <see cref="ActivitySource"/> for Granit.Oidc.TokenManagement distributed tracing.
 /// </summary>
 /// <remarks>
 /// <c>Granit.Observability</c> adds this source automatically via
@@ -13,8 +13,8 @@ namespace Granit.Oidc.TokenManagement.Diagnostics;
 /// </remarks>
 internal static class TokenManagementActivitySource
 {
-    /// <summary>The name of the Granit.Authentication.TokenManagement <see cref="ActivitySource"/>.</summary>
-    internal const string Name = "Granit.Authentication.TokenManagement";
+    /// <summary>The name of the Granit.Oidc.TokenManagement <see cref="ActivitySource"/>.</summary>
+    internal const string Name = "Granit.Oidc.TokenManagement";
 
     /// <summary>The singleton <see cref="ActivitySource"/> instance.</summary>
     internal static readonly ActivitySource Source = new(Name);

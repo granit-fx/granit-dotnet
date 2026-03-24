@@ -5,11 +5,11 @@ namespace Granit.Oidc.TokenManagement.Diagnostics;
 
 /// <summary>
 /// OpenTelemetry metrics for the token management module.
-/// Meter: <c>Granit.Authentication.TokenManagement</c>.
+/// Meter: <c>Granit.Oidc.TokenManagement</c>.
 /// </summary>
 internal sealed class TokenManagementMetrics
 {
-    public const string MeterName = "Granit.Authentication.TokenManagement";
+    public const string MeterName = "Granit.Oidc.TokenManagement";
 
     private const string TagTenantId = "tenant_id";
     private const string TagGrantType = "grant_type";
