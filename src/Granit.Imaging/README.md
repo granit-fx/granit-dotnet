@@ -17,7 +17,7 @@ This package contains interfaces only. Install an implementation package such as
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

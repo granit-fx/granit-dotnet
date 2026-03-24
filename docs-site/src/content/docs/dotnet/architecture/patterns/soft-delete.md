@@ -45,11 +45,11 @@ sequenceDiagram
 
 | Component | File | Role |
 |-----------|------|------|
-| `ISoftDeletable` | `src/Granit.Core/Domain/ISoftDeletable.cs` | Marker interface: `IsDeleted`, `DeletedAt`, `DeletedBy` |
-| `FullAuditedEntity` | `src/Granit.Core/Domain/FullAuditedEntity.cs` | Implements `ISoftDeletable` |
+| `ISoftDeletable` | `src/Granit/Domain/ISoftDeletable.cs` | Marker interface: `IsDeleted`, `DeletedAt`, `DeletedBy` |
+| `FullAuditedEntity` | `src/Granit/Domain/FullAuditedEntity.cs` | Implements `ISoftDeletable` |
 | `SoftDeleteInterceptor` | `src/Granit.Persistence/Interceptors/SoftDeleteInterceptor.cs` | Converts `Deleted` to `Modified`, fills audit fields |
 | `ApplyGranitConventions()` | `src/Granit.Persistence/Extensions/ModelBuilderExtensions.cs` | Applies query filter `WHERE IsDeleted = false` |
-| `IDataFilter` | `src/Granit.Core/DataFiltering/IDataFilter.cs` | Allows temporarily disabling the filter |
+| `IDataFilter` | `src/Granit/DataFiltering/IDataFilter.cs` | Allows temporarily disabling the filter |
 
 ### Crypto-shredding (BlobStorage)
 

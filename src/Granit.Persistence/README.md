@@ -14,7 +14,7 @@ dotnet add package Granit.Persistence
 
 - `Granit.Http.ExceptionHandling`
 - `Granit.Guids`
-- `Granit.Security`
+- `Granit.Users`
 - `Granit.Timing`
 
 ## Documentation

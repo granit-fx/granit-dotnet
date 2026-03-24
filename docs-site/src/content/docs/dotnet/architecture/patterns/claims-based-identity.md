@@ -50,8 +50,8 @@ sequenceDiagram
 
 | Component | File | Role |
 | --- | --- | --- |
-| `ICurrentUserService` | `src/Granit.Security/ICurrentUserService.cs` | `UserId`, `UserName`, `Email`, `GetRoles()`, `IsInRole()` |
-| `KeycloakClaimsTransformation` | `src/Granit.Authentication.Keycloak/Authentication/KeycloakClaimsTransformation.cs` | Extracts `realm_access.roles` from the Keycloak JWT |
+| `ICurrentUserService` | `src/Granit.Users/ICurrentUserService.cs` | `UserId`, `UserName`, `Email`, `GetRoles()`, `IsInRole()` |
+| `KeycloakClaimsTransformation` | `src/Granit.Authentication.JwtBearer.Keycloak/Authentication/KeycloakClaimsTransformation.cs` | Extracts `realm_access.roles` from the Keycloak JWT |
 | `WolverineCurrentUserService` | `src/Granit.Wolverine/Internal/WolverineCurrentUserService.cs` | `AsyncLocal` fallback for background handlers |
 
 ### Authorization layer

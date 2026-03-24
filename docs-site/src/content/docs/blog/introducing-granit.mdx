@@ -63,7 +63,7 @@ Granit is organized into package groups. You can install a single package or pul
 
     | Package | What it does |
     |---------|-------------|
-    | `Granit.Core` | Module system (`GranitModule`, `[DependsOn]`), shared domain types (`Entity`, `AggregateRoot`, `ValueObject`) |
+    | `Granit` | Module system (`GranitModule`, `[DependsOn]`), shared domain types (`Entity`, `AggregateRoot`, `ValueObject`) |
     | `Granit.Timing` | `IClock` abstraction and `TimeProvider` integration — [never use DateTime.Now](/blog/stop-using-datetime-now/) |
     | `Granit.Guids` | `IGuidGenerator` with sequential GUIDs for clustered index performance |
     | `Granit.Validation` | FluentValidation integration with international validators |
@@ -76,9 +76,9 @@ Granit is organized into package groups. You can install a single package or pul
 
     | Package | What it does |
     |---------|-------------|
-    | `Granit.Security` | `ICurrentUserService`, security abstractions |
+    | `Granit.Users` | `ICurrentUserService`, security abstractions |
     | `Granit.Authentication.JwtBearer` | JWT Bearer middleware with Keycloak token validation |
-    | `Granit.Authentication.Keycloak` | Claims transformation for Keycloak tokens |
+    | `Granit.Authentication.JwtBearer.Keycloak` | Claims transformation for Keycloak tokens |
     | `Granit.Authorization` | Policy-based authorization with EF Core store |
     | `Granit.Vault` | Vault abstractions — transit encryption, dynamic credentials |
     | `Granit.Vault.HashiCorp` | HashiCorp Vault — Transit encryption, dynamic DB credentials |
@@ -196,10 +196,10 @@ One principle deserves extra emphasis: **the dependency graph is not advisory**.
 graph TD
     A[Your Module] --> P[Granit.Persistence]
     A --> N[Granit.Notifications]
-    P --> C[Granit.Core]
+    P --> C[Granit]
     P --> T[Granit.Timing]
     P --> G[Granit.Guids]
-    P --> S[Granit.Security]
+    P --> S[Granit.Users]
     N --> C
     N --> W[Granit.Wolverine]
 

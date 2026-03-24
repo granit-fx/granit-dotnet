@@ -12,7 +12,7 @@ dotnet add package Granit.Localization
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

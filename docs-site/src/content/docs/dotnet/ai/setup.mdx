@@ -52,7 +52,7 @@ OpenAI or Anthropic. Swapping providers is a one-line configuration change.
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.AI` | `IAIChatClientFactory`, `IAIProviderFactory`, workspace CQRS, usage tracking | `Granit.Core` |
+| `Granit.AI` | `IAIChatClientFactory`, `IAIProviderFactory`, workspace CQRS, usage tracking | `Granit` |
 | `Granit.AI.OpenAI` | OpenAI provider via `Microsoft.Extensions.AI.OpenAI` | `Granit.AI` |
 | `Granit.AI.AzureOpenAI` | Azure OpenAI with API key + `DefaultAzureCredential` | `Granit.AI` |
 | `Granit.AI.Anthropic` | Claude models via official Anthropic SDK | `Granit.AI` |
@@ -77,7 +77,7 @@ OpenAI or Anthropic. Swapping providers is a one-line configuration change.
 
 ```mermaid
 graph TD
-    AI[Granit.AI] --> CO[Granit.Core]
+    AI[Granit.AI] --> CO[Granit]
     OAI[Granit.AI.OpenAI] --> AI
     AAI[Granit.AI.AzureOpenAI] --> AI
     AN[Granit.AI.Anthropic] --> AI

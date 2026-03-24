@@ -24,7 +24,7 @@ non-null value wins.
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.Settings` | `ISettingProvider`, `ISettingManager`, cascading resolution | `Granit.Caching`, `Granit.Encryption`, `Granit.Security` |
+| `Granit.Settings` | `ISettingProvider`, `ISettingManager`, cascading resolution | `Granit.Caching`, `Granit.Encryption`, `Granit.Users` |
 | `Granit.Settings.EntityFrameworkCore` | `SettingsDbContext` (isolated, multi-tenant + soft-delete) | `Granit.Settings`, `Granit.Persistence` |
 | `Granit.Settings.Endpoints` | User/Global/Tenant HTTP endpoints, `SettingsCultureMiddleware` | `Granit.Settings`, `Granit.Authorization` |
 
@@ -34,7 +34,7 @@ non-null value wins.
 graph TD
     S[Granit.Settings] --> CA[Granit.Caching]
     S --> EN[Granit.Encryption]
-    S --> SE[Granit.Security]
+    S --> SE[Granit.Users]
     SEF[Granit.Settings.EntityFrameworkCore] --> S
     SEF --> P[Granit.Persistence]
     SEP[Granit.Settings.Endpoints] --> S

@@ -12,7 +12,7 @@ dotnet add package Granit.Wolverine
 
 ## Dependencies
 
-- `Granit.Security`
+- `Granit.Users`
 - `Granit.Validation`
 
 ## Documentation

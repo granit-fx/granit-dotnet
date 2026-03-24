@@ -1,6 +1,6 @@
 ---
 title: "Module System \u2014 DependsOn & Lifecycle"
-description: Granit.Core provides the module system with topological [DependsOn] loading, DDD base types, data filtering, domain events, and shared exceptions — the foundation every module builds on.
+description: Granit provides the module system with topological [DependsOn] loading, DDD base types, data filtering, domain events, and shared exceptions — the foundation every module builds on.
 sidebar:
   label: Module System
   order: 1
@@ -11,23 +11,23 @@ sidebar:
 
 import { Tabs, TabItem, FileTree, Badge } from "@astrojs/starlight/components";
 
-Granit.Core is the foundation of the entire framework. Every Granit module depends on it.
+Granit is the foundation of the entire framework. Every Granit module depends on it.
 It provides the module system (topological loading, DI orchestration), shared domain-driven
 design base types, GDPR/ISO 27001 data filtering, domain events, and a structured exception
 hierarchy.
 
-**Package:** `Granit.Core`
+**Package:** `Granit`
 **Dependencies:** None (only `Microsoft.AspNetCore.App` framework reference)
 **Dependents:** 24 packages (all other Granit modules)
 
 ## Package structure
 
-Granit.Core is a single package — no providers, no EF Core sub-package. It defines
+Granit is a single package — no providers, no EF Core sub-package. It defines
 abstractions that other modules implement.
 
 <FileTree>
 
-- src/Granit.Core/
+- src/Granit/
   - Modularity/
     - GranitModule.cs
     - GranitBuilder.cs
@@ -81,7 +81,7 @@ builder.AddGranit<AppModule>();
 
 // Option 2: Fluent builder (multi-root)
 builder.AddGranit(granit => granit
-    .AddModule<GranitSecurityModule>()
+    .AddModule<>()
     .AddModule<GranitPersistenceModule>()
     .AddModule<AppModule>());
 
@@ -109,7 +109,7 @@ Every module inherits from `GranitModule` and declares dependencies via `[Depend
 
 ```csharp
 [DependsOn(typeof(GranitPersistenceModule))]
-[DependsOn(typeof(GranitSecurityModule))]
+[DependsOn(typeof())]
 public class AppModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -359,7 +359,7 @@ exact culture → parent culture (`fr-BE` → `fr`) → default culture (`en`) �
 
 ## Multi-tenancy abstraction
 
-`ICurrentTenant` lives in `Granit.Core.MultiTenancy` — available in every module
+`ICurrentTenant` lives in `Granit.MultiTenancy` — available in every module
 without referencing `Granit.MultiTenancy`.
 
 ```csharp
@@ -547,4 +547,4 @@ dependency chain, not just listed first in the attribute.
 - [Persistence](./persistence/) — EF Core interceptors that implement audit and soft delete
 - [Security](./authentication/) — `ICurrentUserService` that populates `CreatedBy` / `ModifiedBy`
 - [Multi-tenancy](./multi-tenancy/) — Full tenant isolation implementation
-- [API Reference](/api/Granit.Core.html) (auto-generated from XML docs)
+- [API Reference](/api/Granit.html) (auto-generated from XML docs)

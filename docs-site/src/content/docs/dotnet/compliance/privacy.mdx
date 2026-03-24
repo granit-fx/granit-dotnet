@@ -34,7 +34,7 @@ compliance during an audit without building a custom consent system.
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.Privacy` | GDPR data export/deletion orchestration, legal agreements | `Granit.Core`, `Granit.BackgroundJobs` |
+| `Granit.Privacy` | GDPR data export/deletion orchestration, legal agreements | `Granit`, `Granit.BackgroundJobs` |
 | `Granit.Privacy.Endpoints` | HTTP endpoints for GDPR Art. 7/15/17/20 | `Granit.Privacy`, `Granit.Authorization`, `Granit.Validation` |
 | `Granit.Privacy.Notifications` | Deletion reminder and confirmation notification bridge | `Granit.Privacy`, `Granit.Notifications` |
 | `Granit.Privacy.AI` | LLM-powered PII detection (`IAIPiiDetector`) | `Granit.Privacy`, `Granit.AI` |

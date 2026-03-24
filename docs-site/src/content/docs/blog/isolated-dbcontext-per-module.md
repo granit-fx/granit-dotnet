@@ -57,7 +57,7 @@ Every isolated DbContext in Granit follows a strict checklist. Break any rule an
 
 The constructor accepts `ICurrentTenant?` and `IDataFilter?` as **optional parameters** (defaulting to `null`). This is deliberate: a module should work whether or not multi-tenancy is configured in the host application.
 
-`ICurrentTenant` lives in `Granit.Core.MultiTenancy`, not in `Granit.MultiTenancy`. Every module can consume it without taking a hard dependency on the multi-tenancy package. When multi-tenancy is not installed, a `NullTenantContext` with `IsAvailable = false` is injected — the query filter simply does not apply.
+`ICurrentTenant` lives in `Granit.MultiTenancy`, not in `Granit.MultiTenancy`. Every module can consume it without taking a hard dependency on the multi-tenancy package. When multi-tenancy is not installed, a `NullTenantContext` with `IsAvailable = false` is injected — the query filter simply does not apply.
 
 `IDataFilter` enables runtime filter bypass. An admin endpoint that needs to see soft-deleted records can call `dataFilter.Disable<ISoftDeletable>()` within a scope, and the filter is suppressed for that query only.
 

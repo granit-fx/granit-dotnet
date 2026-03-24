@@ -12,7 +12,7 @@ dotnet add package Granit.Http.ExceptionHandling
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

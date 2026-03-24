@@ -24,7 +24,7 @@ audit fields, no silent data overwrites.
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.Persistence` | Interceptors, `ApplyGranitConventions`, data seeding | `Granit.Core`, `Granit.Timing`, `Granit.Guids`, `Granit.Security` |
+| `Granit.Persistence` | Interceptors, `ApplyGranitConventions`, data seeding | `Granit`, `Granit.Timing`, `Granit.Guids`, `Granit.Users` |
 | `Granit.Persistence.Migrations` | Expand & Contract migrations with batch processing | `Granit.Persistence`, `Granit.Timing` |
 | `Granit.Persistence.Migrations.Wolverine` | Durable migration dispatch via Wolverine outbox | `Granit.Persistence.Migrations`, `Granit.Wolverine` |
 
@@ -32,10 +32,10 @@ audit fields, no silent data overwrites.
 
 ```mermaid
 graph TD
-    P[Granit.Persistence] --> C[Granit.Core]
+    P[Granit.Persistence] --> C[Granit]
     P --> T[Granit.Timing]
     P --> G[Granit.Guids]
-    P --> S[Granit.Security]
+    P --> S[Granit.Users]
     PM[Granit.Persistence.Migrations] --> P
     PM --> T
     PMW[Granit.Persistence.Migrations.Wolverine] --> PM

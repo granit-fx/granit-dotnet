@@ -58,7 +58,7 @@ The three components:
 
 | Component | Role | Package |
 |-----------|------|---------|
-| `IConcurrencyAware` | Entity interface with `ConcurrencyStamp` property | `Granit.Core` |
+| `IConcurrencyAware` | Entity interface with `ConcurrencyStamp` property | `Granit` |
 | `ConcurrencyStampInterceptor` | Regenerates stamp on every `SaveChanges` | `Granit.Persistence` |
 | `ApplyGranitConventions()` | Configures `.IsConcurrencyToken()` automatically | `Granit.Persistence` |
 | `EfCoreExceptionStatusCodeMapper` | Maps `DbUpdateConcurrencyException` to 409 | `Granit.Persistence` |
@@ -289,8 +289,8 @@ entity per save, or handle partial failures.
 
 | Category | Type | Package |
 |----------|------|---------|
-| Entity interface | `IConcurrencyAware` | `Granit.Core` |
-| DTO convention | `IConcurrencyStampRequest` | `Granit.Core` |
+| Entity interface | `IConcurrencyAware` | `Granit` |
+| DTO convention | `IConcurrencyStampRequest` | `Granit` |
 | Interceptor | `ConcurrencyStampInterceptor` | `Granit.Persistence` |
 | Auto-config | `ApplyGranitConventions()` | `Granit.Persistence` |
 | Exception mapping | `EfCoreExceptionStatusCodeMapper` | `Granit.Persistence` |

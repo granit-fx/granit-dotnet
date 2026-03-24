@@ -17,7 +17,7 @@ dotnet add package Granit.Events
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

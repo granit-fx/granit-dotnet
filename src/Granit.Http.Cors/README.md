@@ -14,7 +14,7 @@ dotnet add package Granit.Http.Cors
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

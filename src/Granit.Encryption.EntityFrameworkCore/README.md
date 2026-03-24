@@ -14,7 +14,7 @@ dotnet add package Granit.Encryption.EntityFrameworkCore
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 - `Granit.Encryption`
 - `Granit.Persistence`
 

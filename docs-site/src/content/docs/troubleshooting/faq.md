@@ -88,7 +88,7 @@ including EF Core integration, endpoint mapping, and testing conventions.
 
 ## How does multi-tenancy work?
 
-`ICurrentTenant` is available in every module through `Granit.Core.MultiTenancy`
+`ICurrentTenant` is available in every module through `Granit.MultiTenancy`
 without referencing `Granit.MultiTenancy`. A `NullTenantContext` (`IsAvailable =
 false`) is registered by default.
 

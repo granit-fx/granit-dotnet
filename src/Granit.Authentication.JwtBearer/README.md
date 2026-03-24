@@ -14,7 +14,7 @@ dotnet add package Granit.Authentication.JwtBearer
 
 ## Dependencies
 
-- `Granit.Security`
+- `Granit.Users`
 
 ## Documentation
 

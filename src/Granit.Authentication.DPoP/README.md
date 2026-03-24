@@ -12,7 +12,7 @@ dotnet add package Granit.Authentication.DPoP
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 - `Granit.Timing`
 
 ## Documentation

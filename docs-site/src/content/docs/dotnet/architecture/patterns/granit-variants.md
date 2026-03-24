@@ -33,7 +33,7 @@ thanks to copy-on-write semantics.
 mutations in a child flow from propagating to the parent flow.
 
 ```csharp
-// src/Granit.Core/DataFiltering/DataFilter.cs
+// src/Granit/DataFiltering/DataFilter.cs
 _state.Value = _state.Value!.SetItem(typeof(TFilter), false);
 // New dictionary created — the original remains intact
 ```
@@ -47,7 +47,7 @@ would see child mutations affecting the parent.
 
 **Granit variant**: `NullTenantContext` is the **DI default**, replaced only when
 `Granit.MultiTenancy` is installed. All modules access `ICurrentTenant` via
-`Granit.Core.MultiTenancy` without a direct dependency on `Granit.MultiTenancy`.
+`Granit.MultiTenancy` without a direct dependency on `Granit.MultiTenancy`.
 
 The Null Object is architecturally a **soft dependency** mechanism — an optional
 package does not break packages that implicitly depend on it.

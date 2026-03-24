@@ -133,10 +133,10 @@ There is no local filesystem provider. For local development, use MinIO in a con
 
 | Package | Provider | Status |
 |---------|----------|--------|
-| Granit.Authentication.Keycloak | Keycloak | Supported |
-| Granit.Authentication.EntraId | Microsoft Entra ID (Azure AD) | Supported |
-| Granit.Authentication.Cognito | AWS Cognito | Supported |
-| Granit.Authentication.GoogleCloud | Google Cloud Identity Platform (Firebase Auth) | Supported |
+| Granit.Authentication.JwtBearer.Keycloak | Keycloak | Supported |
+| Granit.Authentication.JwtBearer.EntraId | Microsoft Entra ID (Azure AD) | Supported |
+| Granit.Authentication.JwtBearer.Cognito | AWS Cognito | Supported |
+| Granit.Authentication.JwtBearer.GoogleCloud | Google Cloud Identity Platform (Firebase Auth) | Supported |
 | Granit.Authentication.JwtBearer | Any OIDC/JWT issuer | Supported (base layer) |
 | Granit.Identity.Federated.Keycloak | Keycloak Admin API | Supported |
 | Granit.Identity.Federated.EntraId | Microsoft Graph API | Supported |

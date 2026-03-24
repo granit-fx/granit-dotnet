@@ -15,7 +15,7 @@ dotnet add package Granit.AuditLog
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 - `Granit.Querying`
 
 ## Documentation

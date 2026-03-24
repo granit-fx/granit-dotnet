@@ -22,15 +22,15 @@ setup drops to under 10 lines.
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.Testing` | `GranitTestFixture`, fakes, `GranitWebApplicationFactory`, Bogus generators | `Granit.Core`, `Granit.Security`, `Granit.Timing`, `Granit.Guids`, `Bogus` |
+| `Granit.Testing` | `GranitTestFixture`, fakes, `GranitWebApplicationFactory`, Bogus generators | `Granit`, `Granit.Users`, `Granit.Timing`, `Granit.Guids`, `Bogus` |
 | `Granit.Testing.EntityFrameworkCore` | `InMemoryDbContextFactory`, `SqliteDbContextFactory`, `AddGranitTestDbContext` | `Granit.Testing`, `Granit.Persistence`, EF Core InMemory, EF Core Sqlite |
 
 ## Dependency graph
 
 ```mermaid
 graph TD
-    T[Granit.Testing] --> C[Granit.Core]
-    T --> S[Granit.Security]
+    T[Granit.Testing] --> C[Granit]
+    T --> S[Granit.Users]
     T --> Ti[Granit.Timing]
     T --> G[Granit.Guids]
     TEF[Granit.Testing.EntityFrameworkCore] --> T

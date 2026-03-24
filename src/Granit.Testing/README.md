@@ -12,8 +12,8 @@ dotnet add package Granit.Testing
 
 ## Dependencies
 
-- `Granit.Core`
-- `Granit.Security`
+- `Granit`
+- `Granit.Users`
 - `Granit.Timing`
 - `Granit.Guids`
 - `Bogus`

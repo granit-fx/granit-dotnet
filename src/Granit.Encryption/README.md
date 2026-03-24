@@ -12,7 +12,7 @@ dotnet add package Granit.Encryption
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

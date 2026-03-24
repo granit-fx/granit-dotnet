@@ -12,7 +12,7 @@ dotnet add package Granit.MultiTenancy
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

@@ -12,7 +12,7 @@ dotnet add package Granit.Timing
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

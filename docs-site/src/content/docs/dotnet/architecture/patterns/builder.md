@@ -40,7 +40,7 @@ Each module exposes an `AddGranit*()` extension method:
 
 | Extension | File | Receiver |
 |-----------|------|----------|
-| `AddGranit<TModule>()` | `src/Granit.Core/Extensions/GranitHostBuilderExtensions.cs` | `IHostApplicationBuilder` |
+| `AddGranit<TModule>()` | `src/Granit/Extensions/GranitHostBuilderExtensions.cs` | `IHostApplicationBuilder` |
 | `AddGranitWolverine()` | `src/Granit.Wolverine/Extensions/WolverineHostApplicationBuilderExtensions.cs` | `IHostApplicationBuilder` |
 | `AddGranitBackgroundJobs()` | `src/Granit.BackgroundJobs/Extensions/BackgroundJobsHostApplicationBuilderExtensions.cs` | `IHostApplicationBuilder` |
 | `AddGranitFeatures()` | `src/Granit.Features/ServiceCollectionExtensions.cs` | `IServiceCollection` |

@@ -24,14 +24,14 @@ for real-time cross-pod L1 invalidation.
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.Caching` | `IFusionCache` with L1 in-memory, fail-safe, factory timeouts, eager refresh, `EncryptingFusionCacheSerializer`, OpenTelemetry | `Granit.Core`, `Granit.Timing` |
+| `Granit.Caching` | `IFusionCache` with L1 in-memory, fail-safe, factory timeouts, eager refresh, `EncryptingFusionCacheSerializer`, OpenTelemetry | `Granit`, `Granit.Timing` |
 | `Granit.Caching.StackExchangeRedis` | Redis L2 distributed cache, Redis pub/sub backplane, AES-256 encryption, health check | `Granit.Caching` |
 
 ## Dependency graph
 
 ```mermaid
 graph TD
-    C[Granit.Caching] --> CO[Granit.Core]
+    C[Granit.Caching] --> CO[Granit]
     C --> T[Granit.Timing]
     R[Granit.Caching.StackExchangeRedis] --> C
 ```

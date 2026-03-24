@@ -52,8 +52,8 @@ flowchart TD
 
 | Component | File | Role |
 |-----------|------|------|
-| `IDataFilter` | `src/Granit.Core/DataFiltering/IDataFilter.cs` | Interface: `IsEnabled<T>()`, `Disable<T>()`, `Enable<T>()` |
-| `DataFilter` | `src/Granit.Core/DataFiltering/DataFilter.cs` | Implementation using `AsyncLocal<ImmutableDictionary<Type, bool>>` |
+| `IDataFilter` | `src/Granit/DataFiltering/IDataFilter.cs` | Interface: `IsEnabled<T>()`, `Disable<T>()`, `Enable<T>()` |
+| `DataFilter` | `src/Granit/DataFiltering/DataFilter.cs` | Implementation using `AsyncLocal<ImmutableDictionary<Type, bool>>` |
 | `FilterProxy` | `src/Granit.Persistence/Extensions/ModelBuilderExtensions.cs` | Proxy exposing properties for EF Core |
 | `ApplyGranitConventions()` | `src/Granit.Persistence/Extensions/ModelBuilderExtensions.cs` | Builds Expression Trees for `HasQueryFilter()` |
 

@@ -49,7 +49,7 @@ consistent while minimizing server resource usage.
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.BlobStorage` | `IBlobStorage`, `IBlobValidator`, `BlobDescriptor` domain | `Granit.Core` |
+| `Granit.BlobStorage` | `IBlobStorage`, `IBlobValidator`, `BlobDescriptor` domain | `Granit` |
 | `Granit.BlobStorage.S3` | S3 native presigned URLs, `PrefixBlobKeyStrategy` | `Granit.BlobStorage` |
 | `Granit.BlobStorage.AzureBlob` | Azure Blob SAS tokens, Managed Identity support | `Granit.BlobStorage` |
 | `Granit.BlobStorage.GoogleCloud` | Google Cloud Storage signed URLs, Workload Identity support | `Granit.BlobStorage` |
@@ -78,7 +78,7 @@ identical regardless of provider.
 
 ```mermaid
 graph TD
-    BS[Granit.BlobStorage] --> CO[Granit.Core]
+    BS[Granit.BlobStorage] --> CO[Granit]
     S3[Granit.BlobStorage.S3] --> BS
     AZ[Granit.BlobStorage.AzureBlob] --> BS
     GC[Granit.BlobStorage.GoogleCloud] --> BS

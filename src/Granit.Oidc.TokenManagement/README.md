@@ -1,4 +1,4 @@
-# Granit.Authentication.TokenManagement
+# Granit.Oidc.TokenManagement
 
 OAuth 2.0 token lifecycle management for the Granit framework.
 
@@ -38,9 +38,9 @@ app.MapGet("/data", async (IHttpClientFactory factory) =>
 
 ## Dependencies
 
-- `Granit.Authentication.Oidc` — protocol primitives (discovery, DPoP, client
+- `Granit.Oidc` — protocol primitives (discovery, DPoP, client
   authentication)
-- `Granit.Core` — module system, activity source registry
+- `Granit` — module system, activity source registry
 - `Granit.Timing` — `IClock` abstraction
 - `Microsoft.Extensions.Caching.Abstractions` — `IDistributedCache`
 - `Microsoft.Extensions.Http` — `IHttpClientFactory`

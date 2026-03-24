@@ -304,7 +304,7 @@ produces a false positive, mark it as won't fix.
 dotnet test
 
 # Specific package
-dotnet test tests/Granit.Security.Tests
+dotnet test tests/Granit.Users.Tests
 
 # Architecture tests only
 dotnet test tests/Granit.ArchitectureTests

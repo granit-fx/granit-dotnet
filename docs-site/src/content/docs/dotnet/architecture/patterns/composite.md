@@ -59,13 +59,13 @@ classDiagram
 
 | Class | File | Added capabilities |
 |-------|------|--------------------|
-| `Entity` | `src/Granit.Core/Domain/Entity.cs` | `Id` (Guid) |
-| `CreationAuditedEntity` | `src/Granit.Core/Domain/CreationAuditedEntity.cs` | `CreatedAt`, `CreatedBy` |
-| `AuditedEntity` | `src/Granit.Core/Domain/AuditedEntity.cs` | `ModifiedAt`, `ModifiedBy` |
-| `FullAuditedEntity` | `src/Granit.Core/Domain/FullAuditedEntity.cs` | `IsDeleted`, `DeletedAt`, `DeletedBy` (ISoftDeletable) |
-| `ISoftDeletable` | `src/Granit.Core/Domain/ISoftDeletable.cs` | Soft delete marker |
-| `IMultiTenant` | `src/Granit.Core/Domain/IMultiTenant.cs` | `TenantId` isolation |
-| `IActive` | `src/Granit.Core/Domain/IActive.cs` | `IsActive` filtering |
+| `Entity` | `src/Granit/Domain/Entity.cs` | `Id` (Guid) |
+| `CreationAuditedEntity` | `src/Granit/Domain/CreationAuditedEntity.cs` | `CreatedAt`, `CreatedBy` |
+| `AuditedEntity` | `src/Granit/Domain/AuditedEntity.cs` | `ModifiedAt`, `ModifiedBy` |
+| `FullAuditedEntity` | `src/Granit/Domain/FullAuditedEntity.cs` | `IsDeleted`, `DeletedAt`, `DeletedBy` (ISoftDeletable) |
+| `ISoftDeletable` | `src/Granit/Domain/ISoftDeletable.cs` | Soft delete marker |
+| `IMultiTenant` | `src/Granit/Domain/IMultiTenant.cs` | `TenantId` isolation |
+| `IActive` | `src/Granit/Domain/IActive.cs` | `IsActive` filtering |
 
 The marker interfaces (`ISoftDeletable`, `IMultiTenant`, `IActive`) are
 composable with the inheritance hierarchy. EF Core interceptors and query

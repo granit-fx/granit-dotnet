@@ -43,7 +43,7 @@ classDiagram
 
 | Null Object | File | Interface | Behavior |
 | --- | --- | --- | --- |
-| `NullTenantContext` | `src/Granit.Core/MultiTenancy/NullTenantContext.cs` | `ICurrentTenant` | `IsAvailable = false`, `Id = null`, `Change()` is a no-op |
+| `NullTenantContext` | `src/Granit/MultiTenancy/NullTenantContext.cs` | `ICurrentTenant` | `IsAvailable = false`, `Id = null`, `Change()` is a no-op |
 | `NullCacheValueEncryptor` | `src/Granit.Caching/NullCacheValueEncryptor.cs` | `ICacheValueEncryptor` | Passes bytes through without encryption (dev) |
 | `NullWebhookDeliveryStore` | `src/Granit.Webhooks/Internal/NullWebhookDeliveryStore.cs` | `IWebhookDeliveryStore` | No-op operations |
 

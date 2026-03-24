@@ -43,14 +43,14 @@ flowchart TD
 
 ## Implementation in Granit
 
-### Soft dependency (`Granit.Core`)
+### Soft dependency (`Granit`)
 
 | Component | File | Role |
 |-----------|------|------|
-| `ICurrentTenant` | `src/Granit.Core/MultiTenancy/ICurrentTenant.cs` | Minimal interface: `Id`, `IsAvailable`, `Change()` |
-| `NullTenantContext` | `src/Granit.Core/MultiTenancy/NullTenantContext.cs` | Null Object: `IsAvailable = false`, no-op operations |
+| `ICurrentTenant` | `src/Granit/MultiTenancy/ICurrentTenant.cs` | Minimal interface: `Id`, `IsAvailable`, `Change()` |
+| `NullTenantContext` | `src/Granit/MultiTenancy/NullTenantContext.cs` | Null Object: `IsAvailable = false`, no-op operations |
 
-All modules resolve `ICurrentTenant` via `Granit.Core.MultiTenancy` --
+All modules resolve `ICurrentTenant` via `Granit.MultiTenancy` --
 no `[DependsOn(GranitMultiTenancyModule)]` required.
 
 ### Hard dependency (`Granit.MultiTenancy`)
@@ -93,7 +93,7 @@ Guid? tenantId = currentTenant?.IsAvailable == true ? currentTenant.Id : null;
 | Problem | Solution |
 |---------|----------|
 | GDPR/ISO 27001: strict data isolation per organization | 3 isolation strategies cover all cases (cost vs security) |
-| Modules that read the tenant without depending on `Granit.MultiTenancy` | Soft dependency via `Granit.Core.MultiTenancy` + `NullTenantContext` |
+| Modules that read the tenant without depending on `Granit.MultiTenancy` | Soft dependency via `Granit.MultiTenancy` + `NullTenantContext` |
 | Loss of tenant context in asynchronous processing | Propagation via Wolverine headers + restoration by behaviors |
 | Need to temporarily switch tenant (cross-tenant admin) | `ICurrentTenant.Change()` returns an `IDisposable` scope |
 

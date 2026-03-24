@@ -34,7 +34,7 @@ dotnet build
 dotnet test
 
 # Run tests for a specific package
-dotnet test tests/Granit.Security.Tests
+dotnet test tests/Granit.Users.Tests
 
 # Verify code formatting
 dotnet format --verify-no-changes
@@ -57,12 +57,12 @@ All package versions are managed centrally in `Directory.Packages.props` (Centra
 ```text
 granit-dotnet/
 ├── src/                    Source packages (one project = one NuGet package)
-│   ├── Granit.Core/
+│   ├── Granit/
 │   ├── Granit.Timing/
 │   ├── Granit.Vault/
 │   └── ...
 ├── tests/                  Test projects (mirror of src/)
-│   ├── Granit.Core.Tests/
+│   ├── Granit.Tests/
 │   ├── Granit.Timing.Tests/
 │   ├── Granit.ArchitectureTests/
 │   └── ...

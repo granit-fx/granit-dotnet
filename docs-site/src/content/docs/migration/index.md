@@ -15,14 +15,14 @@ versions.
 
 ### Single version for all packages
 
-Every Granit NuGet package (`Granit.Core`, `Granit.Persistence`,
+Every Granit NuGet package (`Granit`, `Granit.Persistence`,
 `Granit.Notifications.Email.Smtp`, etc.) ships under the same version number.
 When you upgrade one package, upgrade them all. This eliminates version matrix
 issues and guarantees that cross-package contracts remain consistent.
 
 ```xml
 <!-- All packages share the same version -->
-<PackageReference Include="Granit.Core" Version="1.2.0" />
+<PackageReference Include="Granit" Version="1.2.0" />
 <PackageReference Include="Granit.Persistence" Version="1.2.0" />
 <PackageReference Include="Granit.Notifications" Version="1.2.0" />
 ```

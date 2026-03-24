@@ -12,7 +12,7 @@ dotnet add package Granit.Caching
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

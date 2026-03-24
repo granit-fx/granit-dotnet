@@ -30,7 +30,7 @@ Every Granit module starts with a **domain entity**. The framework provides an e
 For a product catalog, you want the full trail. A product can be created, updated, and soft-deleted -- never hard-deleted.
 
 ```csharp title="Domain/Product.cs"
-using Granit.Core.Domain;
+using Granit.Domain;
 
 namespace ProductCatalog.Domain;
 
@@ -53,8 +53,8 @@ That is it. No marker interfaces for audit, no manual `DateTime.UtcNow` calls. T
 Granit follows the **isolated DbContext** pattern: each module owns its own `DbContext`, decoupled from the host application's context. This keeps module boundaries clean and avoids a single monolithic context with hundreds of entity sets.
 
 ```csharp title="EntityFrameworkCore/ProductDbContext.cs"
-using Granit.Core.DataFiltering;
-using Granit.Core.MultiTenancy;
+using Granit.DataFiltering;
+using Granit.MultiTenancy;
 using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using ProductCatalog.Domain;
@@ -318,7 +318,7 @@ Notice that the DELETE handler calls `Remove()`, not a manual `IsDeleted = true`
 Now bring everything together in the **module class** and the **application entry point**.
 
 ```csharp title="ProductModule.cs"
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Persistence;
 using Granit.Validation.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -342,14 +342,14 @@ public sealed class ProductModule : GranitModule
 }
 ```
 
-The `[DependsOn(typeof(GranitPersistenceModule))]` attribute declares a direct dependency. Granit resolves the module graph topologically -- `GranitPersistenceModule` and its own dependencies (`GranitTimingModule`, `GranitGuidsModule`, `GranitSecurityModule`, `GranitExceptionHandlingModule`) are configured first. You only declare **direct** dependencies; transitive ones are resolved automatically.
+The `[DependsOn(typeof(GranitPersistenceModule))]` attribute declares a direct dependency. Granit resolves the module graph topologically -- `GranitPersistenceModule` and its own dependencies (`GranitTimingModule`, `GranitGuidsModule`, ``, `GranitExceptionHandlingModule`) are configured first. You only declare **direct** dependencies; transitive ones are resolved automatically.
 
 `GranitValidationModule` auto-discovers all `IValidator<T>` implementations from loaded module assemblies and registers them as scoped services. `MapGranitGroup()` applies automatic validation to all endpoints in the route group -- no per-endpoint `.ValidateBody<T>()` calls needed.
 
 Now wire the module into your application:
 
 ```csharp title="Program.cs"
-using Granit.Core.Extensions;
+using Granit.Extensions;
 using ProductCatalog;
 using ProductCatalog.Endpoints;
 

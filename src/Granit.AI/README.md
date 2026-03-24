@@ -12,7 +12,7 @@ dotnet add package Granit.AI
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 - `Granit.Guids`
 
 ## Documentation

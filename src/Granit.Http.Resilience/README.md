@@ -51,7 +51,7 @@ it is left untouched (explicit overrides are respected).
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 - `Microsoft.Extensions.Http.Resilience`
 
 ## Documentation

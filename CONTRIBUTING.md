@@ -26,7 +26,7 @@ dotnet build
 dotnet test
 
 # Run tests for a specific package
-dotnet test tests/Granit.Security.Tests
+dotnet test tests/Granit.Users.Tests
 
 # Verify code formatting
 dotnet format --verify-no-changes

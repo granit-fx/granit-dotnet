@@ -14,7 +14,7 @@ dotnet add package Granit.Privacy
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

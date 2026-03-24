@@ -61,7 +61,7 @@ If `GranitNotificationsEntityFrameworkCoreModule` depends on `GranitPersistenceM
 
 This matters for maintainability. When a dependency changes — say `GranitPersistenceModule` drops its dependency on `GranitTimingModule` — the build breaks only in modules that actually use Timing directly but relied on the transitive path. The break is immediate, localized, and fixable by adding the missing `[DependsOn]`. Compare this to the alternative, where every module redundantly declares the full transitive closure: changes to deep dependencies require updating dozens of unrelated modules.
 
-One exception: `Granit.Core` is the implicit root. Every module depends on it. No `[DependsOn(typeof(GranitCoreModule))]` is needed or expected.
+One exception: `Granit` is the implicit root. Every module depends on it. No `[DependsOn(typeof(GranitCoreModule))]` is needed or expected.
 
 ## The DAG
 
@@ -98,7 +98,7 @@ graph TB
     end
 
     subgraph Core ["Core (1 package)"]
-        C["Granit.Core"]
+        C["Granit"]
     end
 
     Business --> Functional
@@ -128,7 +128,7 @@ graph TB
     style B6 fill:#fce4ec,stroke:#c62828,color:#b71c1c
 ```
 
-The **maximum depth** of the graph is five levels. No package sits more than five edges away from `Granit.Core`. This is not a soft guideline — it is a consequence of the layering rules. A Business-layer package cannot reference another Business-layer package outside its own family (e.g., `Granit.Notifications` cannot reference `Granit.Workflow` directly). Cross-cutting concerns live in lower layers, available to everyone above.
+The **maximum depth** of the graph is five levels. No package sits more than five edges away from `Granit`. This is not a soft guideline — it is a consequence of the layering rules. A Business-layer package cannot reference another Business-layer package outside its own family (e.g., `Granit.Notifications` cannot reference `Granit.Workflow` directly). Cross-cutting concerns live in lower layers, available to everyone above.
 
 Within each family, packages follow a predictable internal structure. Take Notifications (15 packages) as an example:
 
@@ -183,9 +183,9 @@ Not every cross-cutting concern justifies a hard `[DependsOn]`. Multi-tenancy is
 
 Many Granit modules are **tenant-aware** — they filter queries by `TenantId`, scope caches by tenant, or tag audit entries with tenant context. But multi-tenancy is optional. A single-tenant application should not be forced to install `Granit.MultiTenancy`.
 
-Granit solves this with the **soft dependency** pattern. The abstraction — `ICurrentTenant` — lives in `Granit.Core.MultiTenancy`, available to every package without an additional reference:
+Granit solves this with the **soft dependency** pattern. The abstraction — `ICurrentTenant` — lives in `Granit.MultiTenancy`, available to every package without an additional reference:
 
-```csharp title="ICurrentTenant.cs (in Granit.Core)"
+```csharp title="ICurrentTenant.cs (in Granit)"
 public interface ICurrentTenant
 {
     bool IsAvailable { get; }
@@ -203,7 +203,7 @@ builder.Services.TryAddSingleton<ICurrentTenant>(NullTenantContext.Instance);
 
 `NullTenantContext.IsAvailable` always returns `false`. `Change()` is a no-op. Any module can inject `ICurrentTenant` and check `IsAvailable` before using `Id`. If the application includes `Granit.MultiTenancy`, its module replaces the null object with the real `AsyncLocal`-based implementation. If not, everything continues to work — just without tenant isolation.
 
-This pattern keeps the dependency graph clean. Persistence, Caching, BlobStorage, and Notifications all read `ICurrentTenant` without declaring `[DependsOn(typeof(GranitMultiTenancyModule))]`. The same principle applies to `IDataFilter` (in `Granit.Core.DataFiltering`), which controls global query filters for soft-delete, active status, and publication state.
+This pattern keeps the dependency graph clean. Persistence, Caching, BlobStorage, and Notifications all read `ICurrentTenant` without declaring `[DependsOn(typeof(GranitMultiTenancyModule))]`. The same principle applies to `IDataFilter` (in `Granit.DataFiltering`), which controls global query filters for soft-delete, active status, and publication state.
 
 The rule: a hard `[DependsOn]` is required only when the module **must enforce** the dependency's presence — for example, `Granit.BlobStorage` requires a tenant context for GDPR-compliant file isolation and throws if none is available.
 

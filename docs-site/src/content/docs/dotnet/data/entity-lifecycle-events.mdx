@@ -124,7 +124,7 @@ final committed state. For soft deletes, `IsDeleted` is already `true` at this p
 ### Local — domain event handler
 
 ```csharp
-using Granit.Core.Events;
+using Granit.Events;
 
 public sealed class AppointmentCreatedHandler(
     INotificationWriter notifications) : ILocalEventHandler<EntityCreatedEvent<Appointment>>
@@ -159,7 +159,7 @@ for that.
 ### Distributed — integration event handler
 
 ```csharp
-using Granit.Core.Events;
+using Granit.Events;
 
 public sealed class InvoiceCreatedIntegrationHandler
     : IDistributedEventHandler<EntityCreatedEto<InvoiceEto>>
@@ -356,17 +356,17 @@ public async Task SaveChangesAsync_AddedInvoice_EmitsEntityCreatedEvent()
 
 | Type | Kind | Package | Role |
 |------|------|---------|------|
-| `IEmitEntityLifecycleEvents` | Interface | `Granit.Core` | Opt-in marker — local domain events |
-| `IHasEntityEto<TEto>` | Interface | `Granit.Core` | Opt-in — local + distributed ETOs |
-| `IEntityEtoProvider` | Interface | `Granit.Core` | Bridge for non-generic interceptor dispatch |
-| `EntityCreatedEvent<T>` | Record | `Granit.Core` | `IDomainEvent` emitted on insert |
-| `EntityUpdatedEvent<T>` | Record | `Granit.Core` | `IDomainEvent` emitted on update |
-| `EntityDeletedEvent<T>` | Record | `Granit.Core` | `IDomainEvent` emitted on delete (hard or soft) |
-| `EntityCreatedEto<TEto>` | Record | `Granit.Core` | `IIntegrationEvent` emitted on insert |
-| `EntityUpdatedEto<TEto>` | Record | `Granit.Core` | `IIntegrationEvent` emitted on update |
-| `EntityDeletedEto<TEto>` | Record | `Granit.Core` | `IIntegrationEvent` emitted on delete |
+| `IEmitEntityLifecycleEvents` | Interface | `Granit` | Opt-in marker — local domain events |
+| `IHasEntityEto<TEto>` | Interface | `Granit` | Opt-in — local + distributed ETOs |
+| `IEntityEtoProvider` | Interface | `Granit` | Bridge for non-generic interceptor dispatch |
+| `EntityCreatedEvent<T>` | Record | `Granit` | `IDomainEvent` emitted on insert |
+| `EntityUpdatedEvent<T>` | Record | `Granit` | `IDomainEvent` emitted on update |
+| `EntityDeletedEvent<T>` | Record | `Granit` | `IDomainEvent` emitted on delete (hard or soft) |
+| `EntityCreatedEto<TEto>` | Record | `Granit` | `IIntegrationEvent` emitted on insert |
+| `EntityUpdatedEto<TEto>` | Record | `Granit` | `IIntegrationEvent` emitted on update |
+| `EntityDeletedEto<TEto>` | Record | `Granit` | `IIntegrationEvent` emitted on delete |
 | `EntityLifecycleEventInterceptor` | Interceptor | `Granit.Persistence` | EF Core hook — auto-dispatch |
-| `IIntegrationEventDispatcher` | Interface | `Granit.Core` | Dispatch channel for ETOs |
+| `IIntegrationEventDispatcher` | Interface | `Granit` | Dispatch channel for ETOs |
 | `NullIntegrationEventDispatcher` | Implementation | `Granit.Persistence` | No-op default — replaced by Wolverine |
 | `WolverineIntegrationEventDispatcher` | Implementation | `Granit.EventBus.Wolverine` | Outbox-backed production dispatch |
 

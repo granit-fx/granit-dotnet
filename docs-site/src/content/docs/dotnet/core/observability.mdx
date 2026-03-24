@@ -16,7 +16,7 @@ metrics to Mimir — all via an OTLP collector.
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.Observability` | Serilog + OpenTelemetry (traces, metrics, logs) | `Granit.Core` |
+| `Granit.Observability` | Serilog + OpenTelemetry (traces, metrics, logs) | `Granit` |
 
 ## OTLP pipeline
 
@@ -135,7 +135,7 @@ GranitActivitySourceRegistry.Register("Granit.Workflow");
 | -------- | --------- | ------- |
 | Module | `GranitObservabilityModule` | -- |
 | Options | `ObservabilityOptions` | `Granit.Observability` |
-| Registry | `GranitActivitySourceRegistry` | `Granit.Core` |
+| Registry | `GranitActivitySourceRegistry` | `Granit` |
 | Extensions | `AddGranitObservability()` | `Granit.Observability` |
 
 ## See also
@@ -143,4 +143,4 @@ GranitActivitySourceRegistry.Register("Granit.Workflow");
 - [Application metrics reference](/dotnet/core/metrics/) -- All metrics emitted by Granit modules, with PromQL examples
 - [ADR-001: Serilog + OpenTelemetry](/dotnet/architecture/adr/001-observability/) -- Why this observability stack was chosen
 - [Diagnostics module](/dotnet/core/diagnostics/) -- Kubernetes health probes
-- [Core module](/dotnet/core/module-system/) -- `GranitActivitySourceRegistry` lives in `Granit.Core.Diagnostics`
+- [Core module](/dotnet/core/module-system/) -- `GranitActivitySourceRegistry` lives in `Granit.Diagnostics`

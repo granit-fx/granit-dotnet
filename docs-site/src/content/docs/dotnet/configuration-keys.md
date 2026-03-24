@@ -98,7 +98,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `Keycloak` | |
-| **Package** | -- | `Granit.Authentication.Keycloak` | |
+| **Package** | -- | `Granit.Authentication.JwtBearer.Keycloak` | |
 | `Authority` | `string` | `""` | OIDC authority URL. |
 | `ClientId` | `string` | `""` | Keycloak client ID. |
 | `ClientSecret` | `string` | `""` | Client secret (load from Vault). |
@@ -112,7 +112,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `EntraId` | |
-| **Package** | -- | `Granit.Authentication.EntraId` | |
+| **Package** | -- | `Granit.Authentication.JwtBearer.EntraId` | |
 | `Instance` | `string` | `"https://login.microsoftonline.com/"` | Azure AD instance URL. |
 | `TenantId` | `string` | `""` | Azure AD tenant ID. |
 | `ClientId` | `string` | `""` | App registration client ID. |
@@ -124,7 +124,7 @@ Wolverine__RetryDelays__1=00:00:30
 | Key | Type | Default | Description |
 |---|---|---|---|
 | **Section** | -- | `Cognito` | |
-| **Package** | -- | `Granit.Authentication.Cognito` | |
+| **Package** | -- | `Granit.Authentication.JwtBearer.Cognito` | |
 | `UserPoolId` | `string` | `""` | Cognito User Pool ID. |
 | `ClientId` | `string` | `""` | Cognito app client ID. |
 | `Region` | `string` | `""` | AWS region (e.g. `eu-west-1`). |

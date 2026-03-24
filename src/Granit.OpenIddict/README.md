@@ -37,12 +37,12 @@ dotnet add package Granit.OpenIddict
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 - `Granit.Events`
 - `Granit.Guids`
 - `Granit.Identity`
 - `Granit.Querying`
-- `Granit.Security`
+- `Granit.Users`
 - `Granit.Timing`
 
 ## Documentation

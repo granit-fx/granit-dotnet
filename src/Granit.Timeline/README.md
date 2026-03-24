@@ -15,10 +15,10 @@ dotnet add package Granit.Timeline
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 - `Granit.Guids`
 - `Granit.Querying`
-- `Granit.Security`
+- `Granit.Users`
 - `Granit.Timing`
 
 ## Documentation

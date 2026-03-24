@@ -35,7 +35,7 @@ international from the first commit.
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.Localization` | `GranitLocalizationModule`, JSON localizer, override store abstractions | `Granit.Core` |
+| `Granit.Localization` | `GranitLocalizationModule`, JSON localizer, override store abstractions | `Granit` |
 | `Granit.Localization.EntityFrameworkCore` | `GranitLocalizationOverridesDbContext`, `EfCoreLocalizationOverrideStore` | `Granit.Localization`, `Granit.Persistence` |
 | `Granit.Localization.Endpoints` | Anonymous SPA endpoint, override CRUD endpoints | `Granit.Localization`, `Granit.Authorization` |
 | `Granit.Localization.SourceGenerator` | Build-time `LocalizationKeys` class generation | _(analyzer, no runtime dependency)_ |
@@ -44,7 +44,7 @@ international from the first commit.
 
 ```mermaid
 graph TD
-    L[Granit.Localization] --> CO[Granit.Core]
+    L[Granit.Localization] --> CO[Granit]
     EF[Granit.Localization.EntityFrameworkCore] --> L
     EF --> P[Granit.Persistence]
     EP[Granit.Localization.Endpoints] --> L

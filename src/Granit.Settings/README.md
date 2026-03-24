@@ -14,7 +14,7 @@ dotnet add package Granit.Settings
 
 - `Granit.Caching`
 - `Granit.Encryption`
-- `Granit.Security`
+- `Granit.Users`
 
 ## Documentation
 

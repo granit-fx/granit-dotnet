@@ -23,14 +23,14 @@ go straight to the error queue, no retry.
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.Wolverine` | Domain event routing, context propagation, validation | `Granit.Security` |
+| `Granit.Wolverine` | Domain event routing, context propagation, validation | `Granit.Users` |
 | `Granit.Wolverine.Postgresql` | PostgreSQL transactional outbox, EF Core integration | `Granit.Wolverine`, `Granit.Persistence` |
 
 ## Dependency graph
 
 ```mermaid
 graph TD
-    W[Granit.Wolverine] --> S[Granit.Security]
+    W[Granit.Wolverine] --> S[Granit.Users]
     WP[Granit.Wolverine.Postgresql] --> W
     WP --> P[Granit.Persistence]
 ```

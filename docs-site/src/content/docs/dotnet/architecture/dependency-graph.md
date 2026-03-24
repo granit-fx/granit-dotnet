@@ -7,14 +7,14 @@ sidebar:
 ---
 
 This page documents the dependency graph across all %%PACKAGE_COUNT%% Granit source packages. Arrows
-indicate the direction of usage: `A --> B` means "A is used by B". `Granit.Core`
+indicate the direction of usage: `A --> B` means "A is used by B". `Granit`
 is the root and feeds the entire tree.
 
 Conventions used throughout this page:
 
 - **Diagram arrows** flow from foundation to consumers (`Core → Security → Wolverine`).
   Tables still list dependencies from the consumer's perspective ("Depends on").
-- Transitive dependencies on `Granit.Core` are omitted when a package already depends
+- Transitive dependencies on `Granit` are omitted when a package already depends
   on another module that depends on Core.
 - The systematic pattern `*.Endpoints → Authorization` is omitted from the overview
   diagram (documented in the coupling rules section).
@@ -147,12 +147,11 @@ flowchart TD
     end
 
     subgraph Security
-        SEC["Security"]
         JWT["Authentication.JwtBearer"]
-        KC["Authentication.Keycloak"]
-        ENTRA["Authentication.EntraId"]
-        COGNITO["Authentication.Cognito"]
-        GC_AUTH["Authentication.GoogleCloud"]
+        KC["Authentication.JwtBearer.Keycloak"]
+        ENTRA["Authentication.JwtBearer.EntraId"]
+        COGNITO["Authentication.JwtBearer.Cognito"]
+        GC_AUTH["Authentication.JwtBearer.GoogleCloud"]
         APIKEYS["Authentication.ApiKeys"]
         APIKEYS_EP["Authentication.ApiKeys.Endpoints"]
         APIKEYS_EF["Authentication.ApiKeys.EntityFrameworkCore"]
@@ -239,7 +238,7 @@ flowchart TD
 | Package | Depends on |
 |---------|------------|
 | `Granit.Timing` | `Core` |
-| `Granit.Security` | `Core` |
+| `Granit.Users` | `Core` |
 | `Granit.Http.ExceptionHandling` | `Core` |
 | `Granit.Observability` | `Core` |
 | `Granit.MultiTenancy` | `Core` |
@@ -538,17 +537,17 @@ flowchart LR
 
 ## Soft dependencies
 
-Several core interfaces live in `Granit.Core` rather than in their dedicated module.
+Several core interfaces live in `Granit` rather than in their dedicated module.
 This allows any package to consume them without taking a hard reference to the
 implementing module. The implementing module registers the real service; without it, a
 null-object default is used.
 
 | Interface | Declared in | Implemented by | Default behavior |
 |-----------|-------------|----------------|------------------|
-| `ICurrentTenant` | `Granit.Core.MultiTenancy` | `Granit.MultiTenancy` | `NullTenantContext` (`IsAvailable = false`) |
-| `IDataFilter` | `Granit.Core.DataFiltering` | `Granit.Persistence` | No-op (all data visible) |
+| `ICurrentTenant` | `Granit.MultiTenancy` | `Granit.MultiTenancy` | `NullTenantContext` (`IsAvailable = false`) |
+| `IDataFilter` | `Granit.DataFiltering` | `Granit.Persistence` | No-op (all data visible) |
 
-Modules that access `ICurrentTenant` use `using Granit.Core.MultiTenancy;` and check
+Modules that access `ICurrentTenant` use `using Granit.MultiTenancy;` and check
 `IsAvailable` before reading `Id`. They do NOT declare `[DependsOn(typeof(GranitMultiTenancyModule))]`
 or add a `ProjectReference` to `Granit.MultiTenancy`. The only exception is modules that
 must enforce strict tenant isolation (e.g., BlobStorage for GDPR compliance).
@@ -564,10 +563,10 @@ Minimal API foundation.
 
 | Included package |
 |------------------|
-| `Granit.Core` |
+| `Granit` |
 | `Granit.Timing` |
 | `Granit.Guids` |
-| `Granit.Security` |
+| `Granit.Users` |
 | `Granit.Validation` |
 | `Granit.Persistence` |
 | `Granit.Observability` |
@@ -656,7 +655,7 @@ in the repository.
    `Granit.Persistence.Migrations.Wolverine`).
 
 8. **Multi-tenancy is a soft dependency.** Modules use `ICurrentTenant` from
-   `Granit.Core.MultiTenancy` without referencing `Granit.MultiTenancy`. Hard dependency
+   `Granit.MultiTenancy` without referencing `Granit.MultiTenancy`. Hard dependency
    is reserved for strict tenant isolation (BlobStorage, GDPR).
 
 ## Graph properties
@@ -666,7 +665,7 @@ in the repository.
   Email → Smtp, or Core → AI → AI.OpenAI → cross-cutting *.AI packages)
 - **Leaf packages**: `*.EntityFrameworkCore`, `*.S3`, `*.GoogleCloud`, `*.AI` packages
   are almost always leaves
-- **Root packages with no dependencies**: `Granit.Core`, `Granit.Analyzers`,
+- **Root packages with no dependencies**: `Granit`, `Granit.Analyzers`,
   `Granit.Localization.SourceGenerator`
 - **5 bundle meta-packages**: Essentials, Api, Documents, Notifications, SaaS
 

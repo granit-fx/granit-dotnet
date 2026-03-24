@@ -33,14 +33,14 @@ request, so access changes take effect within the cache TTL (seconds, not sprint
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.Authorization` | RBAC permissions, dynamic policy provider | `Granit.Security`, `Granit.Caching` |
+| `Granit.Authorization` | RBAC permissions, dynamic policy provider | `Granit.Users`, `Granit.Caching` |
 | `Granit.Authorization.EntityFrameworkCore` | EF Core permission grant store | `Granit.Authorization`, `Granit.Persistence` |
 
 ## Dependency graph
 
 ```mermaid
 graph TD
-    AZ[Granit.Authorization] --> S[Granit.Security]
+    AZ[Granit.Authorization] --> S[Granit.Users]
     AZ --> CA[Granit.Caching]
     AZEF[Granit.Authorization.EntityFrameworkCore] --> AZ
     AZEF --> P[Granit.Persistence]

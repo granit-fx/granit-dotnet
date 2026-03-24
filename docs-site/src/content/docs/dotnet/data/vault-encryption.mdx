@@ -36,7 +36,7 @@ disabled in Development environments so no external vault server is required loc
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.Encryption` | `IStringEncryptionService`, AES-256-CBC provider | `Granit.Core` |
+| `Granit.Encryption` | `IStringEncryptionService`, AES-256-CBC provider | `Granit` |
 | `Granit.Encryption.EntityFrameworkCore` | `[Encrypted]` attribute, `EncryptedStringConverter`, `ApplyEncryptionConventions` | `Granit.Encryption`, `Granit.Persistence` |
 | `Granit.Encryption.ReEncryption` | `IReEncryptionJob`, `DefaultReEncryptionJob<TContext>` | `Granit.Encryption.EntityFrameworkCore` |
 | `Granit.Vault` | Abstraction layer — `ITransitEncryptionService`, `IDatabaseCredentialProvider`, `ReEncryptionOptions`, `RetiredKeyVersionException` | `Granit.Encryption` |
@@ -54,7 +54,7 @@ graph TD
     VAW[Granit.Vault.Aws] --> V
     VGC[Granit.Vault.GoogleCloud] --> V
     V --> E[Granit.Encryption]
-    E --> C[Granit.Core]
+    E --> C[Granit]
     EEFC[Granit.Encryption.EntityFrameworkCore] --> E
     EERE[Granit.Encryption.ReEncryption] --> EEFC
 ```

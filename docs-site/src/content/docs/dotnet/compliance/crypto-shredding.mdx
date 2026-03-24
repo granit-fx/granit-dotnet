@@ -114,10 +114,10 @@ makes selective crypto-shredding possible.
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.Encryption` | `IEntityEncryptionKeyStore`, `ICryptoShredder`, `DefaultCryptoShredder`, `ICryptoShreddingAuditRecorder` | `Granit.Core` |
+| `Granit.Encryption` | `IEntityEncryptionKeyStore`, `ICryptoShredder`, `DefaultCryptoShredder`, `ICryptoShreddingAuditRecorder` | `Granit` |
 | `Granit.Encryption.EntityFrameworkCore` | `[Encrypted(KeyIsolation = true)]`, `EncryptionIsolationSaveChangesInterceptor`, `EncryptionIsolationMaterializationInterceptor` | `Granit.Encryption`, `Granit.Persistence` |
 | `Granit.Vault.HashiCorp` | `HashiCorpEntityEncryptionKeyStore` — Vault KV v2 implementation with in-memory cache | `Granit.Vault` |
-| `Granit.Privacy` | `DeletionAction.CryptoShredding` — integration with GDPR erasure workflow | `Granit.Core` |
+| `Granit.Privacy` | `DeletionAction.CryptoShredding` — integration with GDPR erasure workflow | `Granit` |
 
 ## Encryption and shredding lifecycle
 

@@ -13,7 +13,7 @@ dotnet add package Granit.Http.Idempotency
 ## Dependencies
 
 - `Granit.Caching`
-- `Granit.Security`
+- `Granit.Users`
 
 ## Documentation
 

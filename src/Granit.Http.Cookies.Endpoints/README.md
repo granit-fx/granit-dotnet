@@ -15,7 +15,7 @@ dotnet add package Granit.Http.Cookies.Endpoints
 ## Dependencies
 
 - `Granit.Http.Cookies`
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

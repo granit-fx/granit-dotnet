@@ -1,11 +1,11 @@
-# Granit.Authentication.Oidc
+# Granit.Oidc
 
 Strongly typed OIDC/OAuth 2.0 protocol primitives for the Granit framework.
 
 ## Install
 
 ```sh
-dotnet add package Granit.Authentication.Oidc
+dotnet add package Granit.Oidc
 ```
 
 ## Features

@@ -24,26 +24,26 @@ Keycloak claims transformation so that every request carries a verified identity
 
 ```bash
 dotnet add package Granit.Authentication.JwtBearer
-dotnet add package Granit.Authentication.Keycloak
+dotnet add package Granit.Authentication.JwtBearer.Keycloak
 ```
 
-`Granit.Authentication.JwtBearer` configures JWT Bearer validation from your `appsettings.json`. `Granit.Authentication.Keycloak` adds a claims transformation that extracts Keycloak roles from `realm_access` and `resource_access` into standard .NET claims.
+`Granit.Authentication.JwtBearer` configures JWT Bearer validation from your `appsettings.json`. `Granit.Authentication.JwtBearer.Keycloak` adds a claims transformation that extracts Keycloak roles from `realm_access` and `resource_access` into standard .NET claims.
 
 ## 2. Update the module dependencies
 
 Open `TaskManagementModule.cs` and add the Keycloak authentication dependency:
 
 ```csharp
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Timing;
 using Granit.Persistence;
-using Granit.Authentication.Keycloak;
+using Granit.Authentication.JwtBearer.Keycloak;
 
 namespace TaskManagement.Api;
 
 [DependsOn(typeof(GranitTimingModule))]
 [DependsOn(typeof(GranitPersistenceModule))]
-[DependsOn(typeof(GranitAuthenticationKeycloakModule))]
+[DependsOn(typeof(GranitJwtBearerKeycloakModule))]
 public sealed class TaskManagementModule : GranitModule
 {
     // ConfigureServices stays the same...
@@ -51,7 +51,7 @@ public sealed class TaskManagementModule : GranitModule
 ```
 
 :::note[Good to know]
-`GranitAuthenticationKeycloakModule` transitively depends on `GranitJwtBearerModule` — you do not need to declare both. The module system resolves the full dependency graph for you.
+`GranitJwtBearerKeycloakModule` transitively depends on `GranitJwtBearerModule` — you do not need to declare both. The module system resolves the full dependency graph for you.
 :::
 
 ## 3. Add configuration

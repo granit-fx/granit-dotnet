@@ -12,7 +12,7 @@ dotnet add package Granit.Observability
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

@@ -38,7 +38,7 @@ sequenceDiagram
 
 | Component | File | Structure |
 |-----------|------|-----------|
-| `DataFilter` | `src/Granit.Core/DataFiltering/DataFilter.cs` | `AsyncLocal<ImmutableDictionary<Type, bool>>` |
+| `DataFilter` | `src/Granit/DataFiltering/DataFilter.cs` | `AsyncLocal<ImmutableDictionary<Type, bool>>` |
 
 The `DataFilter` uses `ImmutableDictionary<Type, bool>.SetItem()` which returns
 a **new** dictionary without mutating the original. Combined with

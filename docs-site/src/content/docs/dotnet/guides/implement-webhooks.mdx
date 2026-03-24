@@ -31,7 +31,7 @@ dotnet add package Granit.Webhooks.EntityFrameworkCore
 <TabItem label="Production (EF Core)">
 
 ```csharp
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Webhooks.EntityFrameworkCore;
 
 [DependsOn(typeof(GranitWebhooksEntityFrameworkCoreModule))]
@@ -42,7 +42,7 @@ public sealed class MyAppModule : GranitModule { }
 <TabItem label="Development (in-memory)">
 
 ```csharp
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Webhooks;
 
 [DependsOn(typeof(GranitWebhooksModule))]

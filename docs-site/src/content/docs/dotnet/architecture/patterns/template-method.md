@@ -49,7 +49,7 @@ classDiagram
 
 | Base class | File | Hooks |
 |------------|------|-------|
-| `GranitModule` | `src/Granit.Core/Modularity/GranitModule.cs` | `ConfigureServices()`, `ConfigureServicesAsync()`, `OnApplicationInitialization()`, `OnApplicationInitializationAsync()` |
+| `GranitModule` | `src/Granit/Modularity/GranitModule.cs` | `ConfigureServices()`, `ConfigureServicesAsync()`, `OnApplicationInitialization()`, `OnApplicationInitializationAsync()` |
 | `GranitValidator<T>` | `src/Granit.Validation/GranitValidator.cs` | Inherits from `AbstractValidator<T>` with `CascadeMode.Continue` by default |
 
 **Custom variant -- Dual Sync/Async**: `ConfigureServicesAsync()` delegates

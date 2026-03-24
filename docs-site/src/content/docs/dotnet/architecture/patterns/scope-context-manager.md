@@ -37,7 +37,7 @@ sequenceDiagram
 | Scope | File | Managed context |
 |-------|------|-----------------|
 | `TenantScope` | `src/Granit.MultiTenancy/CurrentTenant.cs` | `ICurrentTenant.Change(tenantId)` -- restores previous tenant |
-| `FilterScope` | `src/Granit.Core/DataFiltering/DataFilter.cs` | `IDataFilter.Disable<T>()` -- re-enables the filter |
+| `FilterScope` | `src/Granit/DataFiltering/DataFilter.cs` | `IDataFilter.Disable<T>()` -- re-enables the filter |
 | Wolverine behaviors | `src/Granit.Wolverine/Behaviors/UserContextBehavior.cs` | `IWolverineUserContextSetter.Change()` -- restores user |
 
 All scopes use `AsyncLocal<T>` for thread-safe propagation across

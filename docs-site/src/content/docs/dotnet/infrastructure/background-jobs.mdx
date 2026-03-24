@@ -26,7 +26,7 @@ cluster-safe singleton execution.
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.BackgroundJobs` | `[RecurringJob]` attribute, `IBackgroundJobReader`/`Writer`, in-memory store, Channel dispatcher | `Granit.Core`, `Granit.Security`, `Granit.Timing`, `Granit.Guids` |
+| `Granit.BackgroundJobs` | `[RecurringJob]` attribute, `IBackgroundJobReader`/`Writer`, in-memory store, Channel dispatcher | `Granit`, `Granit.Users`, `Granit.Timing`, `Granit.Guids` |
 | `Granit.BackgroundJobs.EntityFrameworkCore` | `BackgroundJobsDbContext`, `EfBackgroundJobStore` (durable persistence) | `Granit.BackgroundJobs`, `Granit.Persistence` |
 | `Granit.BackgroundJobs.Endpoints` | 5 Minimal API endpoints with `BackgroundJobs.Jobs.Manage` permission | `Granit.BackgroundJobs`, `Granit.Authorization`, `Granit.Querying` |
 | `Granit.BackgroundJobs.Wolverine` | `CronSchedulerAgent` (singleton), `RecurringJobSchedulingMiddleware`, DLQ inspector | `Granit.BackgroundJobs`, `Granit.Wolverine` |
@@ -35,8 +35,8 @@ cluster-safe singleton execution.
 
 ```mermaid
 graph TD
-    BJ[Granit.BackgroundJobs] --> C[Granit.Core]
-    BJ --> S[Granit.Security]
+    BJ[Granit.BackgroundJobs] --> C[Granit]
+    BJ --> S[Granit.Users]
     BJ --> T[Granit.Timing]
     BJ --> G[Granit.Guids]
     EF[Granit.BackgroundJobs.EntityFrameworkCore] --> BJ

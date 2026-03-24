@@ -41,9 +41,9 @@ classDiagram
 
 | Singleton | File | Type | Scope |
 |-----------|------|------|-------|
-| `NullTenantContext.Instance` | `src/Granit.Core/MultiTenancy/NullTenantContext.cs` | `static readonly` | Global |
+| `NullTenantContext.Instance` | `src/Granit/MultiTenancy/NullTenantContext.cs` | `static readonly` | Global |
 | `CurrentTenant._current` | `src/Granit.MultiTenancy/CurrentTenant.cs` | `AsyncLocal<TenantInfo?>` | Per async flow |
-| `DataFilter._state` | `src/Granit.Core/DataFiltering/DataFilter.cs` | `AsyncLocal<ImmutableDictionary>` | Per async flow |
+| `DataFilter._state` | `src/Granit/DataFiltering/DataFilter.cs` | `AsyncLocal<ImmutableDictionary>` | Per async flow |
 | DI services | All modules | `AddSingleton<T>()` | DI container |
 
 **Custom variant -- AsyncLocal Singleton**: a `static readonly AsyncLocal<T>`

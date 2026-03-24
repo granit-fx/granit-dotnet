@@ -16,7 +16,7 @@
 
 ```text
 src/
-  Granit.Core/                             # Module system, shared domain types
+  Granit/                             # Module system, shared domain types
   Granit.{Module}/                         # Abstractions + DI registration (e.g. Granit.BlobStorage)
   Granit.{Module}.Endpoints/               # Minimal API endpoints
   Granit.{Module}.EntityFrameworkCore/      # Isolated DbContext, EF configurations, migrations
@@ -322,9 +322,9 @@ Reference: [ADR-017](docs-site/src/content/docs/dotnet/architecture/adr/017-ddd-
 
 ### Multi-tenancy — soft dependency
 
-`ICurrentTenant` lives in `Granit.Core.MultiTenancy` — available everywhere without referencing `Granit.MultiTenancy`.
+`ICurrentTenant` lives in `Granit.MultiTenancy` — available everywhere without referencing `Granit.MultiTenancy`.
 
-- Use `using Granit.Core.MultiTenancy;` — do NOT add `[DependsOn(GranitMultiTenancyModule)]`
+- Use `using Granit.MultiTenancy;` — do NOT add `[DependsOn(GranitMultiTenancyModule)]`
 - Always check `IsAvailable` before using `Id` — `NullTenantContext` is the default
 - Hard dependency on `Granit.MultiTenancy` only when enforcing strict tenant isolation (GDPR)
 
@@ -332,7 +332,7 @@ Reference: [ADR-017](docs-site/src/content/docs/dotnet/architecture/adr/017-ddd-
 
 - **Direct = declare it.** Every `<ProjectReference>` with a `*Module` needs a `[DependsOn]`
 - **Transitive = omit it.** Already pulled in by another declared dependency → skip
-- **`Granit.Core`** = implicit base, never needs `DependsOn`
+- **`Granit`** = implicit base, never needs `DependsOn`
 - **Alphabetical order** for `DependsOn` entries
 - **Zero-dependency modules** have no `[DependsOn]` attribute — this is correct
 

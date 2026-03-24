@@ -86,7 +86,7 @@ Amazon Web Services packages use the official AWS SDK for .NET.
 
 | Package | Module | What it does |
 | ------- | ------ | ------------ |
-| `Granit.Authentication.Cognito` | Authentication | JWT validation + claims transformation for Cognito User Pools |
+| `Granit.Authentication.JwtBearer.Cognito` | Authentication | JWT validation + claims transformation for Cognito User Pools |
 | `Granit.Identity.Federated.Cognito` | Identity | `IIdentityProvider` via Cognito User Pool Admin API |
 | `Granit.Vault.Aws` | Vault | `IEncryptionService` via AWS KMS + dynamic credentials via Secrets Manager |
 | `Granit.BlobStorage.S3` | Blob Storage | `IBlobStorageProvider` via S3-compatible API (also works with MinIO, Scaleway, etc.) |
@@ -109,7 +109,7 @@ Microsoft Azure packages use `DefaultAzureCredential` for authentication
 
 | Package | Module | What it does |
 | ------- | ------ | ------------ |
-| `Granit.Authentication.EntraId` | Authentication | JWT validation + claims transformation for Microsoft Entra ID (Azure AD) |
+| `Granit.Authentication.JwtBearer.EntraId` | Authentication | JWT validation + claims transformation for Microsoft Entra ID (Azure AD) |
 | `Granit.Identity.Federated.EntraId` | Identity | `IIdentityProvider` via Microsoft Graph API |
 | `Granit.Vault.Azure` | Vault | `IEncryptionService` via Azure Key Vault |
 | `Granit.BlobStorage.AzureBlob` | Blob Storage | `IBlobStorageProvider` via Azure Blob Storage |
@@ -137,7 +137,7 @@ JSON keys.
 
 | Package | Module | What it does |
 | ------- | ------ | ------------ |
-| `Granit.Authentication.GoogleCloud` | Authentication | JWT validation + claims transformation for Google Cloud Identity Platform (Firebase Auth) |
+| `Granit.Authentication.JwtBearer.GoogleCloud` | Authentication | JWT validation + claims transformation for Google Cloud Identity Platform (Firebase Auth) |
 | `Granit.Identity.Federated.GoogleCloud` | Identity | `IIdentityProvider` via Firebase Admin SDK |
 | `Granit.Vault.GoogleCloud` | Vault | `IEncryptionService` via Cloud KMS + dynamic credentials via Secret Manager |
 | `Granit.BlobStorage.GoogleCloud` | Blob Storage | `IBlobStorageProvider` via Google Cloud Storage |

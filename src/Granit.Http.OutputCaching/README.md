@@ -14,7 +14,7 @@ dotnet add package Granit.Http.OutputCaching
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

@@ -68,14 +68,14 @@ The scope in parentheses maps to the Granit module area:
 
 | Scope | Packages |
 | ----- | -------- |
-| `core` | `Granit.Core`, `Granit.Timing`, `Granit.Guids` |
+| `core` | `Granit`, `Granit.Timing`, `Granit.Guids` |
 | `persistence` | `Granit.Persistence`, `Granit.Persistence.Migrations` |
 | `caching` | `Granit.Caching`, `Granit.Caching.StackExchangeRedis` |
 | `identity` | `Granit.Identity`, `Granit.Identity.Federated.*`, `Granit.Identity.Local.AspNetIdentity` |
 | `notifications` | All `Granit.Notifications.*` packages |
 | `templating` | `Granit.Templating`, `Granit.Templating.Scriban`, `Granit.DocumentGeneration` |
 | `blob-storage` | `Granit.BlobStorage`, `Granit.BlobStorage.S3` |
-| `security` | `Granit.Security`, `Granit.Authentication.*`, `Granit.Authorization.*` |
+| `security` | `Granit.Users`, `Granit.Authentication.*`, `Granit.Authorization.*` |
 | `vault` | `Granit.Vault`, `Granit.Encryption` |
 | `observability` | `Granit.Observability`, `Granit.Diagnostics` |
 | `workflow` | All `Granit.Workflow.*` packages |

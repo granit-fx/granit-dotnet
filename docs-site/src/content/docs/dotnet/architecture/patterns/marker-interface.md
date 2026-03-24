@@ -64,24 +64,24 @@ classDiagram
 
 | Interface | File | Detected by |
 | --------- | ---- | ----------- |
-| `ISoftDeletable` | `src/Granit.Core/Domain/ISoftDeletable.cs` | `SoftDeleteInterceptor`, `ApplyGranitConventions()` |
-| `IMultiTenant` | `src/Granit.Core/Domain/IMultiTenant.cs` | `AuditedEntityInterceptor`, `ApplyGranitConventions()` |
-| `IActive` | `src/Granit.Core/Domain/IActive.cs` | `ApplyGranitConventions()` |
+| `ISoftDeletable` | `src/Granit/Domain/ISoftDeletable.cs` | `SoftDeleteInterceptor`, `ApplyGranitConventions()` |
+| `IMultiTenant` | `src/Granit/Domain/IMultiTenant.cs` | `AuditedEntityInterceptor`, `ApplyGranitConventions()` |
+| `IActive` | `src/Granit/Domain/IActive.cs` | `ApplyGranitConventions()` |
 
 ### Event markers
 
 | Interface | File | Detected by |
 | --------- | ---- | ----------- |
-| `IDomainEvent` | `src/Granit.Core/Events/IDomainEvent.cs` | Wolverine routing -- local queue |
-| `IIntegrationEvent` | `src/Granit.Core/Events/IIntegrationEvent.cs` | Wolverine routing -- transport/Outbox |
+| `IDomainEvent` | `src/Granit/Events/IDomainEvent.cs` | Wolverine routing -- local queue |
+| `IIntegrationEvent` | `src/Granit/Events/IIntegrationEvent.cs` | Wolverine routing -- transport/Outbox |
 
 ### Exception markers
 
 | Interface | File | Detected by |
 | --------- | ---- | ----------- |
-| `IUserFriendlyException` | `src/Granit.Core/Exceptions/IUserFriendlyException.cs` | `GranitExceptionHandler` -- message exposed to client |
-| `IHasErrorCode` | `src/Granit.Core/Exceptions/IHasErrorCode.cs` | `GranitExceptionHandler` -- error code in ProblemDetails |
-| `IHasValidationErrors` | `src/Granit.Core/Exceptions/IHasValidationErrors.cs` | `GranitExceptionHandler` -- field errors in extensions |
+| `IUserFriendlyException` | `src/Granit/Exceptions/IUserFriendlyException.cs` | `GranitExceptionHandler` -- message exposed to client |
+| `IHasErrorCode` | `src/Granit/Exceptions/IHasErrorCode.cs` | `GranitExceptionHandler` -- error code in ProblemDetails |
+| `IHasValidationErrors` | `src/Granit/Exceptions/IHasValidationErrors.cs` | `GranitExceptionHandler` -- field errors in extensions |
 
 ### Idempotency markers
 

@@ -30,7 +30,7 @@ Each bundle is a NuGet meta-package with no code of its own. It only declares de
 
 | Package | Essentials | Api | Notifications | Documents | SaaS |
 |---------|:----------:|:---:|:-------------:|:---------:|:----:|
-| `Granit.Core` | ✓ | ✓ | ✓ | | ✓ |
+| `Granit` | ✓ | ✓ | ✓ | | ✓ |
 | `Granit.Timing` | ✓ | ✓ | ✓ | | ✓ |
 | `Granit.Guids` | ✓ | ✓ | ✓ | | ✓ |
 | `Granit.Validation` | ✓ | ✓ | ✓ | | ✓ |
@@ -110,7 +110,7 @@ builder.AddGranit<AppModule>(granit => granit
 Bundles are convenience, not requirement. If your project only needs two or three specific packages, reference them directly:
 
 ```xml
-<PackageReference Include="Granit.Core" />
+<PackageReference Include="Granit" />
 <PackageReference Include="Granit.Observability" />
 <PackageReference Include="Granit.Http.ExceptionHandling" />
 ```

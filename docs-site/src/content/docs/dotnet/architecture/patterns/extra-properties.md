@@ -45,7 +45,7 @@ flowchart LR
 ## Interface
 
 ```csharp
-// Granit.Core.Domain
+// Granit.Domain
 public interface IHasExtraProperties
 {
     string? ExtraPropertiesJson { get; set; }
@@ -152,8 +152,8 @@ JSON for the rest).
 
 | File | Purpose |
 |------|---------|
-| `src/Granit.Core/Domain/IHasExtraProperties.cs` | Interface |
-| `src/Granit.Core/Domain/ExtraPropertyExtensions.cs` | Get/Set/Has extension methods |
+| `src/Granit/Domain/IHasExtraProperties.cs` | Interface |
+| `src/Granit/Domain/ExtraPropertyExtensions.cs` | Get/Set/Has extension methods |
 | `src/Granit.Persistence/ExtraProperties/ExtraPropertyMappingOptions.cs` | `MapProperty<T>()` config |
 | `src/Granit.Persistence/ExtraProperties/ExtraPropertySyncInterceptor.cs` | Save-time sync (no duplication) |
 | `src/Granit.Persistence/ExtraProperties/ExtraPropertyModelBuilderExtensions.cs` | Applies Shadow Properties to ModelBuilder |

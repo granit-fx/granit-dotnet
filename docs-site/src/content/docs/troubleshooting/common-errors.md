@@ -211,12 +211,12 @@ properties (name, email, roles) even though the token contains them.
 **Cause**: Keycloak uses non-standard claim names by default (e.g.,
 `preferred_username` instead of `name`, `realm_access.roles` instead of `role`).
 
-**Fix**: Ensure `GranitAuthenticationKeycloakModule` is included in your
+**Fix**: Ensure `GranitJwtBearerKeycloakModule` is included in your
 dependency chain. It registers the `KeycloakClaimsTransformation` that maps
 Keycloak-specific claims to standard ClaimTypes.
 
 ```csharp
-[DependsOn(typeof(GranitAuthenticationKeycloakModule))]
+[DependsOn(typeof(GranitJwtBearerKeycloakModule))]
 public sealed class MyAppModule : GranitModule { }
 ```
 

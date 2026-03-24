@@ -53,8 +53,8 @@ sequenceDiagram
 
 | Interface | File | Routing |
 |-----------|------|---------|
-| `IDomainEvent` | `src/Granit.Core/Events/IDomainEvent.cs` | Local queue only -- never the Outbox |
-| `IIntegrationEvent` | `src/Granit.Core/Events/IIntegrationEvent.cs` | Configured transport (PostgreSQL, RabbitMQ...) via Outbox |
+| `IDomainEvent` | `src/Granit/Events/IDomainEvent.cs` | Local queue only -- never the Outbox |
+| `IIntegrationEvent` | `src/Granit/Events/IIntegrationEvent.cs` | Configured transport (PostgreSQL, RabbitMQ...) via Outbox |
 
 ### Wolverine configuration
 

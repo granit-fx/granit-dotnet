@@ -10,12 +10,12 @@ sidebar:
 
 import { Tabs, TabItem, FileTree } from "@astrojs/starlight/components";
 
-`Granit.Authentication.Oidc` is the foundation library for all OIDC and OAuth 2.0
+`Granit.Oidc` is the foundation library for all OIDC and OAuth 2.0
 interactions in the Granit framework. It provides strongly-typed records for every
 protocol message, a caching discovery document service, DPoP proof generation, PKCE
 helpers, and pluggable client authentication strategies. It does **not** perform
 HTTP calls to token endpoints itself -- that responsibility belongs to higher-level
-packages like `Granit.Bff` and `Granit.Authentication.TokenManagement`, which
+packages like `Granit.Bff` and `Granit.Oidc.TokenManagement`, which
 reference this package and use its primitives to build, sign, and parse protocol
 messages.
 
@@ -27,10 +27,10 @@ an HTTP stack or a particular flow orchestration.
 
 | I need to... | Package | Why |
 |--------------|---------|-----|
-| Build or parse OIDC protocol messages (token requests, authorization URLs, discovery) | **Granit.Authentication.Oidc** | Foundation primitives -- no HTTP calls, no middleware |
+| Build or parse OIDC protocol messages (token requests, authorization URLs, discovery) | **Granit.Oidc** | Foundation primitives -- no HTTP calls, no middleware |
 | Validate JWT Bearer tokens on an API | `Granit.Authentication.JwtBearer` | Middleware + claims transformation |
 | Validate DPoP proofs on a resource server | `Granit.Authentication.DPoP` | Proof-of-possession middleware |
-| Manage token lifecycle (acquire, cache, refresh) for outgoing HTTP calls | `Granit.Authentication.TokenManagement` | Built on top of this package |
+| Manage token lifecycle (acquire, cache, refresh) for outgoing HTTP calls | `Granit.Oidc.TokenManagement` | Built on top of this package |
 | Run a full BFF with cookie sessions, YARP proxy, and silent refresh | `Granit.Bff` / `Granit.Bff.Endpoints` | Built on top of this package |
 | Host your own OIDC server | `Granit.OpenIddict.*` | OpenIddict-based authorization server |
 
@@ -46,8 +46,8 @@ flowchart TD
     F -->|Yes| G{Full BFF with<br/>cookie sessions?}
     G -->|Yes| H["Granit.Bff.*<br/>(uses Oidc internally)"]
     G -->|No| I{Need automatic<br/>token caching/refresh?}
-    I -->|Yes| J["Granit.Authentication.TokenManagement<br/>(uses Oidc internally)"]
-    I -->|No| K["Granit.Authentication.Oidc<br/>(protocol primitives only)"]
+    I -->|Yes| J["Granit.Oidc.TokenManagement<br/>(uses Oidc internally)"]
+    I -->|No| K["Granit.Oidc<br/>(protocol primitives only)"]
     F -->|No| L[You probably don't<br/>need this package]
 
     style K fill:#4a9eff,color:#fff,stroke-width:2px
@@ -59,8 +59,8 @@ flowchart TD
 
 <FileTree>
 
-- Granit.Authentication.Oidc/
-  - GranitAuthenticationOidcModule.cs Module registration
+- Granit.Oidc/
+  - GranitOidcModule.cs Module registration
   - OidcConstants.cs Grant types, parameters, algorithms, discovery fields
   - Discovery/
     - IDiscoveryDocumentService.cs Fetch and cache .well-known/openid-configuration
@@ -92,7 +92,7 @@ Register the module in your application's module class. This registers
 `IDiscoveryDocumentService` and `IDPoPProofService` as singletons.
 
 ```csharp
-[DependsOn(typeof(GranitAuthenticationOidcModule))]
+[DependsOn(typeof(GranitOidcModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -101,8 +101,8 @@ request records, response records, `PkceHelper`, `OidcConstants` -- are plain da
 classes and can be used without DI registration.
 
 :::note
-You rarely need to depend on `GranitAuthenticationOidcModule` directly. Packages
-like `Granit.Bff` and `Granit.Authentication.TokenManagement` already declare it
+You rarely need to depend on `GranitOidcModule` directly. Packages
+like `Granit.Bff` and `Granit.Oidc.TokenManagement` already declare it
 as a transitive dependency. Add a direct `[DependsOn]` only when you are building
 a custom OIDC client from scratch.
 :::
@@ -574,7 +574,7 @@ parameters["grant_type"] = "authorization_code";
 
 | Category | Key types | Description |
 |----------|-----------|-------------|
-| Module | `GranitAuthenticationOidcModule` | Registers `IDPoPProofService` + `IDiscoveryDocumentService` |
+| Module | `GranitOidcModule` | Registers `IDPoPProofService` + `IDiscoveryDocumentService` |
 | Discovery | `IDiscoveryDocumentService`, `OidcDiscoveryDocument`, `OidcDiscoveryException` | Fetch, cache, and validate `.well-known/openid-configuration` |
 | Token requests | `TokenRequest` (abstract), `AuthorizationCodeTokenRequest`, `RefreshTokenRequest`, `ClientCredentialsTokenRequest` | Typed records for each grant type |
 | URL builders | `AuthorizationRequest`, `EndSessionRequest` | Build redirect URLs via `ToUrl()` |

@@ -14,7 +14,7 @@ dotnet add package Granit.Querying
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

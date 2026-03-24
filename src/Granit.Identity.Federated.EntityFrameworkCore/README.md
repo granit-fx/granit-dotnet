@@ -16,7 +16,7 @@ dotnet add package Granit.Identity.Federated.EntityFrameworkCore
 
 - `Granit.Identity.Federated`
 - `Granit.Persistence`
-- `Granit.Security`
+- `Granit.Users`
 
 ## Documentation
 

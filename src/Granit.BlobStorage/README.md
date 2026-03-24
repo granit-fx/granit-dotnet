@@ -12,7 +12,7 @@ dotnet add package Granit.BlobStorage
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 - `Granit.Guids`
 
 ## Documentation

@@ -22,7 +22,7 @@ in a hierarchical model: **AuditLogEntry → AuditEntityChange → AuditProperty
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.AuditLog` | Domain types, enums, `IAuditLogReader`, `IAuditLogWriter`, options | `Granit.Core`, `Granit.Querying` |
+| `Granit.AuditLog` | Domain types, enums, `IAuditLogReader`, `IAuditLogWriter`, options | `Granit`, `Granit.Querying` |
 | `Granit.AuditLog.EntityFrameworkCore` | `AuditLogDbContext`, interceptor, Channel persistence, cleanup worker | `Granit.AuditLog`, `Granit.Persistence` |
 | `Granit.AuditLog.Endpoints` | `GET /audit-log` endpoints (read-only, authorized) | `Granit.AuditLog`, `Granit.Http.ApiDocumentation` |
 

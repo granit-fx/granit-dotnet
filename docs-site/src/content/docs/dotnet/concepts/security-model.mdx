@@ -24,17 +24,17 @@ The authentication pipeline is built from a base package with provider-specific 
 
 ```mermaid
 graph TD
-    S["Granit.Security<br/>ICurrentUserService abstraction"] --> C[Granit.Core]
+    S["Granit.Users<br/>ICurrentUserService abstraction"] --> C[Granit]
     JWT["Granit.Authentication.JwtBearer<br/>Generic OIDC JWT Bearer"] --> S
-    KC["Granit.Authentication.Keycloak<br/>Keycloak claims transformation"] --> JWT
-    EID["Granit.Authentication.EntraId<br/>Entra ID roles parsing"] --> JWT
-    CG["Granit.Authentication.Cognito<br/>Cognito groups → roles"] --> JWT
-    GC["Granit.Authentication.GoogleCloud<br/>Identity Platform claims"] --> JWT
+    KC["Granit.Authentication.JwtBearer.Keycloak<br/>Keycloak claims transformation"] --> JWT
+    EID["Granit.Authentication.JwtBearer.EntraId<br/>Entra ID roles parsing"] --> JWT
+    CG["Granit.Authentication.JwtBearer.Cognito<br/>Cognito groups → roles"] --> JWT
+    GC["Granit.Authentication.JwtBearer.GoogleCloud<br/>Identity Platform claims"] --> JWT
 ```
 
-### Granit.Security -- the foundation
+### Granit.Users -- the foundation
 
-`ICurrentUserService` is the sole abstraction for "who is calling." It lives in `Granit.Security` with zero dependency on ASP.NET Core, so domain services and background jobs can consume it without pulling in the HTTP stack.
+`ICurrentUserService` is the sole abstraction for "who is calling." It lives in `Granit.Users` with zero dependency on ASP.NET Core, so domain services and background jobs can consume it without pulling in the HTTP stack.
 
 ```csharp
 public interface ICurrentUserService
@@ -68,12 +68,12 @@ Any OIDC-compliant provider works out of the box:
 }
 ```
 
-### Granit.Authentication.Keycloak -- PostConfigure pattern
+### Granit.Authentication.JwtBearer.Keycloak -- PostConfigure pattern
 
 The Keycloak module does not register its own authentication scheme. Instead, it **post-configures** `JwtBearerOptions` to add Keycloak-specific claims transformation. This is the key design choice: the consumer declares a single `[DependsOn]`, and the module wires itself in automatically.
 
 ```csharp
-[DependsOn(typeof(GranitAuthenticationKeycloakModule))]
+[DependsOn(typeof(GranitJwtBearerKeycloakModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -85,43 +85,43 @@ Behind the scenes, the module:
 
 No manual `PostConfigure<JwtBearerOptions>` calls, no claims transformation boilerplate.
 
-### Granit.Authentication.EntraId -- Microsoft Entra ID
+### Granit.Authentication.JwtBearer.EntraId -- Microsoft Entra ID
 
 For Azure-based deployments, the Entra ID module parses roles from both the v1.0 `roles` claim and the v2.0 `wids` claim. Like the Keycloak module, it post-configures `JwtBearerOptions` and maps provider-specific claims to standard `ClaimTypes.Role`.
 
-### Granit.Authentication.Cognito -- AWS Cognito
+### Granit.Authentication.JwtBearer.Cognito -- AWS Cognito
 
 For AWS-based deployments, the Cognito module extracts groups from the `cognito:groups` claim and maps them to standard `ClaimTypes.Role`. Cognito has no native "roles" concept -- groups serve as roles.
 
-### Granit.Authentication.GoogleCloud -- Google Cloud Identity Platform
+### Granit.Authentication.JwtBearer.GoogleCloud -- Google Cloud Identity Platform
 
 For Google Cloud deployments using Firebase Auth / Identity Platform, the module validates JWTs issued by `https://securetoken.google.com/{project-id}` and extracts custom claims from the `claims` object into standard `ClaimTypes.Role`.
 
 <Tabs>
   <TabItem label="Keycloak">
     ```csharp
-    [DependsOn(typeof(GranitAuthenticationKeycloakModule))]
+    [DependsOn(typeof(GranitJwtBearerKeycloakModule))]
     [DependsOn(typeof(GranitAuthorizationModule))]
     public class AppModule : GranitModule { }
     ```
   </TabItem>
   <TabItem label="Entra ID">
     ```csharp
-    [DependsOn(typeof(GranitAuthenticationEntraIdModule))]
+    [DependsOn(typeof(GranitJwtBearerEntraIdModule))]
     [DependsOn(typeof(GranitAuthorizationModule))]
     public class AppModule : GranitModule { }
     ```
   </TabItem>
   <TabItem label="AWS Cognito">
     ```csharp
-    [DependsOn(typeof(GranitAuthenticationCognitoModule))]
+    [DependsOn(typeof(GranitJwtBearerCognitoModule))]
     [DependsOn(typeof(GranitAuthorizationModule))]
     public class AppModule : GranitModule { }
     ```
   </TabItem>
   <TabItem label="Google Cloud">
     ```csharp
-    [DependsOn(typeof(GranitAuthenticationGoogleCloudModule))]
+    [DependsOn(typeof(GranitJwtBearerGoogleCloudModule))]
     [DependsOn(typeof(GranitAuthorizationModule))]
     public class AppModule : GranitModule { }
     ```

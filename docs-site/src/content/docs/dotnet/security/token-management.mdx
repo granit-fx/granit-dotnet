@@ -18,7 +18,7 @@ refresh, and revocation. Without a dedicated layer, this logic gets duplicated a
 services, cache expiry is handled inconsistently, and DPoP proof generation becomes
 a maintenance burden.
 
-`Granit.Authentication.TokenManagement` solves this by providing a `DelegatingHandler`
+`Granit.Oidc.TokenManagement` solves this by providing a `DelegatingHandler`
 that plugs into `IHttpClientFactory`. You register a named HTTP client with its OAuth 2.0
 credentials, and the handler takes care of everything: acquiring tokens via the client
 credentials grant, caching them with a safety margin, retrying on 401, and optionally
@@ -34,8 +34,8 @@ and first-class DPoP support.
 | Scenario | Package | Token type | Typical consumer |
 |----------|---------|------------|------------------|
 | SPA user tokens via cookie-based proxy | `Granit.Bff` | User (authorization code + PKCE) | Browser SPA |
-| **Machine-to-machine API calls** | **`Granit.Authentication.TokenManagement`** | **Client credentials** | **Backend services, workers, jobs** |
-| Low-level token endpoint operations | `Granit.Authentication.Oidc` | Any grant type | Custom flows, migration code |
+| **Machine-to-machine API calls** | **`Granit.Oidc.TokenManagement`** | **Client credentials** | **Backend services, workers, jobs** |
+| Low-level token endpoint operations | `Granit.Oidc` | Any grant type | Custom flows, migration code |
 
 :::tip
 If your service calls another API on behalf of itself (not a user), Token Management
@@ -47,7 +47,7 @@ is the right choice. If you need to forward a user's token or exchange it via
 
 <FileTree>
 
-- Granit.Authentication.TokenManagement/
+- Granit.Oidc.TokenManagement/
   - Cache/
     - IClientCredentialsTokenCache.cs Get/set/remove cached tokens
     - Internal/
@@ -65,14 +65,14 @@ is the right choice. If you need to forward a user's token or exchange it via
   - Services/
     - ITokenEndpointService.cs Send token requests to any OIDC endpoint
     - ITokenRevocationService.cs Revoke tokens (RFC 7009)
-  - GranitAuthenticationTokenManagementModule.cs Module entry point
+  - GranitOidcTokenManagementModule.cs Module entry point
 
 </FileTree>
 
 | Dependency | Role |
 |------------|------|
-| `Granit.Authentication.Oidc` | Discovery, token request encoding, DPoP proof generation, client authentication strategies |
-| `Granit.Core` | Module system, `GranitActivitySourceRegistry` |
+| `Granit.Oidc` | Discovery, token request encoding, DPoP proof generation, client authentication strategies |
+| `Granit` | Module system, `GranitActivitySourceRegistry` |
 | `Granit.Timing` | `IClock` for testable time-dependent cache expiry |
 | `Microsoft.Extensions.Caching.Abstractions` | `IDistributedCache` for token storage |
 | `Microsoft.Extensions.Http` | `IHttpClientFactory` + `DelegatingHandler` pipeline |
@@ -82,14 +82,14 @@ is the right choice. If you need to forward a user's token or exchange it via
 Register the module in your application:
 
 ```csharp
-[DependsOn(typeof(GranitAuthenticationTokenManagementModule))]
+[DependsOn(typeof(GranitOidcTokenManagementModule))]
 public class MyServiceModule : GranitModule { }
 ```
 
 The module automatically registers `ITokenEndpointService`, `ITokenRevocationService`,
 `IClientCredentialsTokenCache`, and the internal HTTP client used for token endpoint
-communication. `GranitAuthenticationTokenManagementModule` depends on
-`GranitAuthenticationOidcModule` and `GranitTimingModule` — both are loaded transitively.
+communication. `GranitOidcTokenManagementModule` depends on
+`GranitOidcModule` and `GranitTimingModule` — both are loaded transitively.
 
 ## Client credentials — the main use case
 
@@ -346,7 +346,7 @@ endpoint.
 | `ClientAuthenticationMethod` | Set to `PrivateKeyJwt` to enable JWT assertion authentication |
 | `ClientSigningKeyJwk` | The EC or RSA private key in JWK format. Used to sign the `client_assertion` JWT |
 
-The `PrivateKeyJwtStrategy` (from `Granit.Authentication.Oidc`) generates a short-lived
+The `PrivateKeyJwtStrategy` (from `Granit.Oidc`) generates a short-lived
 JWT assertion with the client ID as `sub` and `iss`, the token endpoint as `aud`, and
 a unique `jti`. The assertion is sent as `client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer`.
 
@@ -434,7 +434,7 @@ high-latency networks. A 60-second margin is a safe choice for cross-region call
 
 ### Metrics
 
-All counters are registered under the `Granit.Authentication.TokenManagement` meter
+All counters are registered under the `Granit.Oidc.TokenManagement` meter
 and follow the Granit metrics conventions.
 
 | Metric | Type | Tags | Description |
@@ -447,7 +447,7 @@ and follow the Granit metrics conventions.
 
 ### Distributed tracing
 
-The `Granit.Authentication.TokenManagement` `ActivitySource` emits spans for:
+The `Granit.Oidc.TokenManagement` `ActivitySource` emits spans for:
 
 | Operation | Span name | Description |
 |-----------|-----------|-------------|

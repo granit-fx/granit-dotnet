@@ -16,7 +16,7 @@ dotnet add package Granit.Templating.Endpoints
 
 - `Granit.Http.ApiDocumentation`
 - `Granit.Authorization`
-- `Granit.Security`
+- `Granit.Users`
 - `Granit.Templating`
 - `Granit.Validation`
 

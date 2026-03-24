@@ -162,7 +162,7 @@ builder.AddGranit(granit => granit
 
 ## Soft dependencies
 
-Not every cross-cutting concern requires a hard `[DependsOn]`. The `ICurrentTenant` interface lives in `Granit.Core.MultiTenancy` and is available to every module without referencing `Granit.MultiTenancy`. A `NullTenantContext` (where `IsAvailable` returns `false`) is registered by default during `AddGranit`.
+Not every cross-cutting concern requires a hard `[DependsOn]`. The `ICurrentTenant` interface lives in `Granit.MultiTenancy` and is available to every module without referencing `Granit.MultiTenancy`. A `NullTenantContext` (where `IsAvailable` returns `false`) is registered by default during `AddGranit`.
 
 This means a module like `Granit.BlobStorage.EntityFrameworkCore` can inject `ICurrentTenant?` and apply tenant filters without declaring `[DependsOn(typeof(GranitMultiTenancyModule))]`. The hard dependency is reserved for modules that **must enforce** tenant isolation (e.g., BlobStorage throws if no tenant context is available, for GDPR reasons).
 
@@ -180,5 +180,5 @@ If you cannot draw the `[DependsOn]` tree for your application on a whiteboard, 
 
 ## Next steps
 
-- [Core reference](/dotnet/core/module-system/) -- full API surface of `Granit.Core`
+- [Core reference](/dotnet/core/module-system/) -- full API surface of `Granit`
 - [Bundles](./bundles/) -- pre-composed module groups for common scenarios

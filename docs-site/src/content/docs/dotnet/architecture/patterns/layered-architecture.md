@@ -62,15 +62,15 @@ flowchart BT
 
 ## Implementation in Granit
 
-### Domain layer (`Granit.Core`)
+### Domain layer (`Granit`)
 
 | Component | File |
 | --------- | ---- |
-| `Entity` > `CreationAuditedEntity` > `AuditedEntity` > `FullAuditedEntity` | `src/Granit.Core/Domain/` |
-| `ISoftDeletable`, `IMultiTenant`, `IActive` | `src/Granit.Core/Domain/` |
-| `IDomainEvent`, `IIntegrationEvent` | `src/Granit.Core/Events/` |
-| `BusinessException`, `NotFoundException`, `ConflictException` | `src/Granit.Core/Exceptions/` |
-| `ICurrentTenant`, `NullTenantContext` | `src/Granit.Core/MultiTenancy/` |
+| `Entity` > `CreationAuditedEntity` > `AuditedEntity` > `FullAuditedEntity` | `src/Granit/Domain/` |
+| `ISoftDeletable`, `IMultiTenant`, `IActive` | `src/Granit/Domain/` |
+| `IDomainEvent`, `IIntegrationEvent` | `src/Granit/Events/` |
+| `BusinessException`, `NotFoundException`, `ConflictException` | `src/Granit/Exceptions/` |
+| `ICurrentTenant`, `NullTenantContext` | `src/Granit/MultiTenancy/` |
 
 ### Application layer (functional packages)
 

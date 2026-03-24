@@ -26,12 +26,12 @@ Add the persistence stack and the PostgreSQL provider:
 
 ```bash
 dotnet add package Granit.Persistence
-dotnet add package Granit.Security
+dotnet add package Granit.Users
 dotnet add package Granit.Guids
 dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 ```
 
-`Granit.Persistence` brings in `Granit.Core` and `Granit.Timing` transitively, so you
+`Granit.Persistence` brings in `Granit` and `Granit.Timing` transitively, so you
 do not need to add those manually.
 
 ## Update the domain entity
@@ -42,7 +42,7 @@ This gives you `Id`, `CreatedAt`, `CreatedBy`, `ModifiedAt`, `ModifiedBy`, `IsDe
 
 ```csharp
 // Models/TaskItem.cs
-using Granit.Core.Domain;
+using Granit.Domain;
 
 public sealed class TaskItem : FullAuditedEntity
 {
@@ -64,8 +64,8 @@ Add a `Data/TaskDbContext.cs` file:
 
 ```csharp
 // Data/TaskDbContext.cs
-using Granit.Core.DataFiltering;
-using Granit.Core.MultiTenancy;
+using Granit.DataFiltering;
+using Granit.MultiTenancy;
 using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -102,7 +102,7 @@ Declare the persistence dependency and register the DbContext:
 
 ```csharp
 // TaskManagementModule.cs
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Persistence;
 using Granit.Persistence.Extensions;
 using Granit.Timing;

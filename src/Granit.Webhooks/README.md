@@ -12,7 +12,7 @@ dotnet add package Granit.Webhooks
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 - `Granit.Guids`
 - `Granit.Timing`
 

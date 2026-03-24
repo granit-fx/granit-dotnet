@@ -19,10 +19,10 @@ Single package — isolation strategies are configured in `Granit.Persistence`.
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.MultiTenancy` | Tenant resolution, `CurrentTenant`, middleware | `Granit.Core` |
+| `Granit.MultiTenancy` | Tenant resolution, `CurrentTenant`, middleware | `Granit` |
 
 :::note
-`ICurrentTenant` lives in `Granit.Core.MultiTenancy` and is available in **every** module
+`ICurrentTenant` lives in `Granit.MultiTenancy` and is available in **every** module
 without referencing `Granit.MultiTenancy`. A `NullTenantContext` (always `IsAvailable = false`)
 is registered by default. `Granit.MultiTenancy` replaces it with the real implementation.
 :::
@@ -261,7 +261,7 @@ This ensures tenant isolation across async message processing without manual pro
 | Category | Key types | Package |
 |----------|-----------|---------|
 | Module | `GranitMultiTenancyModule` | `Granit.MultiTenancy` |
-| Core (in Granit.Core) | `ICurrentTenant`, `AllowAnonymousTenantAttribute` | `Granit.Core` |
+| Core (in Granit) | `ICurrentTenant`, `AllowAnonymousTenantAttribute` | `Granit` |
 | Implementation | `CurrentTenant`, `TenantInfo`, `ITenantInfo` | `Granit.MultiTenancy` |
 | Resolution | `ITenantResolver`, `HeaderTenantResolver`, `JwtClaimTenantResolver`, `TenantResolverPipeline` | `Granit.MultiTenancy` |
 | Middleware | `TenantResolutionMiddleware` | `Granit.MultiTenancy` |

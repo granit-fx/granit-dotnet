@@ -48,10 +48,10 @@ traffic and integration patterns demand.
 
 ```mermaid
 graph TD
-    CORS[Granit.Http.Cors] --> CO[Granit.Core]
+    CORS[Granit.Http.Cors] --> CO[Granit]
     AV[Granit.Http.ApiVersioning] --> CO
     AD[Granit.Http.ApiDocumentation] --> AV
-    AD --> SEC[Granit.Security]
+    AD --> SEC[Granit.Users]
     RC[Granit.ResponseCompression] --> CO
     EH[Granit.Http.ExceptionHandling] --> CO
     ID[Granit.Http.Idempotency] --> CA[Granit.Caching]

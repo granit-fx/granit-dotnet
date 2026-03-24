@@ -29,7 +29,7 @@ in topological order — one call in `Program.cs` replaces dozens of manual
 
 ## Prerequisites
 
-- A .NET 10 project referencing `Granit.Core`
+- A .NET 10 project referencing `Granit`
 - Familiarity with `IServiceCollection` and dependency injection
 
 ## Step 1 -- Create the project
@@ -38,7 +38,7 @@ Every module lives in its own project (one project = one NuGet package).
 
 ```bash
 dotnet new classlib -n Granit.Inventory -f net10.0
-dotnet add Granit.Inventory package Granit.Core
+dotnet add Granit.Inventory package Granit
 ```
 
 Recommended folder structure:
@@ -59,7 +59,7 @@ Granit.Inventory/
 Every module inherits from `GranitModule` and overrides lifecycle methods as needed.
 
 ```csharp
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Inventory.Extensions;
 
 namespace Granit.Inventory;
@@ -109,14 +109,14 @@ Use `[DependsOn]` to declare which modules must be loaded before yours. Dependen
 are resolved transitively and deduplicated automatically.
 
 ```csharp
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Persistence;
-using Granit.Security;
+using Granit.Users;
 
 namespace Granit.Inventory;
 
 [DependsOn(typeof(GranitPersistenceModule))]
-[DependsOn(typeof(GranitSecurityModule))]
+[DependsOn(typeof())]
 public sealed class GranitInventoryModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -131,13 +131,13 @@ You can also combine multiple types in a single attribute:
 ```csharp
 [DependsOn(
     typeof(GranitPersistenceModule),
-    typeof(GranitSecurityModule))]
+    typeof())]
 public sealed class GranitInventoryModule : GranitModule { }
 ```
 
 :::note[Transitive resolution]
 Declaring a dependency on `GranitPersistenceModule` automatically pulls in
-`GranitTimingModule`, `GranitGuidsModule`, and `GranitSecurityModule`. You do
+`GranitTimingModule`, `GranitGuidsModule`, and ``. You do
 not need to repeat them.
 :::
 
@@ -219,7 +219,7 @@ It appears as `[DISABLED]` in the startup logs.
 ## Step 7 -- Wire up in Program.cs
 
 ```csharp
-using Granit.Core.Extensions;
+using Granit.Extensions;
 using MyApp.Host;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -276,4 +276,4 @@ app.MapGet("/health/inventory", (IInventoryService svc) =>
 
 - [Add an endpoint](/dotnet/guides/add-an-endpoint/) -- expose your module via Minimal API
 - [Configure multi-tenancy](/dotnet/guides/configure-multi-tenancy/) -- add tenant isolation to your module
-- [Granit.Core reference](/dotnet/core/module-system/) -- module system internals
+- [Granit reference](/dotnet/core/module-system/) -- module system internals

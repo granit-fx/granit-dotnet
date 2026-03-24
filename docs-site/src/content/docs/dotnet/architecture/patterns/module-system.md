@@ -35,12 +35,12 @@ flowchart TD
 
 | Component | File | Role |
 |-----------|------|------|
-| `GranitModule` | `src/Granit.Core/Modularity/GranitModule.cs` | Abstract base class: `ConfigureServices()`, `ConfigureServicesAsync()`, `OnApplicationInitialization()`, `OnApplicationInitializationAsync()` |
-| `DependsOnAttribute` | `src/Granit.Core/Modularity/DependsOnAttribute.cs` | Declares module dependencies via `[DependsOn(typeof(...))]` |
-| `ModuleLoader` | `src/Granit.Core/Modularity/ModuleLoader.cs` | Topological sort (Kahn's algorithm) with circular dependency detection |
-| `ModuleDescriptor` | `src/Granit.Core/Modularity/ModuleDescriptor.cs` | Module metadata (type, instance, dependencies) |
-| `GranitApplication` | `src/Granit.Core/Modularity/GranitApplication.cs` | Full lifecycle coordinator |
-| `AddGranit<TModule>()` | `src/Granit.Core/Extensions/GranitHostBuilderExtensions.cs` | Entry point for the host application |
+| `GranitModule` | `src/Granit/Modularity/GranitModule.cs` | Abstract base class: `ConfigureServices()`, `ConfigureServicesAsync()`, `OnApplicationInitialization()`, `OnApplicationInitializationAsync()` |
+| `DependsOnAttribute` | `src/Granit/Modularity/DependsOnAttribute.cs` | Declares module dependencies via `[DependsOn(typeof(...))]` |
+| `ModuleLoader` | `src/Granit/Modularity/ModuleLoader.cs` | Topological sort (Kahn's algorithm) with circular dependency detection |
+| `ModuleDescriptor` | `src/Granit/Modularity/ModuleDescriptor.cs` | Module metadata (type, instance, dependencies) |
+| `GranitApplication` | `src/Granit/Modularity/GranitApplication.cs` | Full lifecycle coordinator |
+| `AddGranit<TModule>()` | `src/Granit/Extensions/GranitHostBuilderExtensions.cs` | Entry point for the host application |
 
 **In-house variant -- Dual Sync/Async**: the async hooks (`ConfigureServicesAsync`,
 `OnApplicationInitializationAsync`) delegate to their sync counterpart by default.

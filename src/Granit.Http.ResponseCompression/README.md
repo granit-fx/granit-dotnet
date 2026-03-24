@@ -14,7 +14,7 @@ dotnet add package Granit.Http.ResponseCompression
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 
 ## Documentation
 

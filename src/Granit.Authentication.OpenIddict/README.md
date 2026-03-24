@@ -13,7 +13,7 @@ dotnet add package Granit.Authentication.OpenIddict
 
 ## Dependencies
 
-- `Granit.Security`
+- `Granit.Users`
 
 ## Documentation
 

@@ -36,11 +36,11 @@ cd TaskManagement.Api
 Add the two foundational Granit packages:
 
 ```bash
-dotnet add package Granit.Core
+dotnet add package Granit
 dotnet add package Granit.Timing
 ```
 
-`Granit.Core` provides the module system and shared domain types. `Granit.Timing` provides `IClock`, a testable abstraction over `DateTimeOffset.UtcNow`.
+`Granit` provides the module system and shared domain types. `Granit.Timing` provides `IClock`, a testable abstraction over `DateTimeOffset.UtcNow`.
 
 ## 2. Create the root module
 
@@ -49,7 +49,7 @@ Every Granit application has a root module. Modules declare their dependencies v
 Create `TaskManagementModule.cs` in the project root:
 
 ```csharp
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Timing;
 
 namespace TaskManagement.Api;
@@ -112,7 +112,7 @@ You just wrote zero DI configuration code. The module system registered `IClock`
 Create a `Domain` folder and add `TaskItem.cs`:
 
 ```csharp
-using Granit.Core.Domain;
+using Granit.Domain;
 
 namespace TaskManagement.Api.Domain;
 

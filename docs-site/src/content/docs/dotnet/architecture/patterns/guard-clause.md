@@ -35,12 +35,12 @@ flowchart TD
 
 | Exception | File | HTTP Code | ErrorCode |
 |-----------|------|-----------|-----------|
-| `BusinessException` | `src/Granit.Core/Exceptions/BusinessException.cs` | 400 | Configurable |
-| `NotFoundException` | `src/Granit.Core/Exceptions/NotFoundException.cs` | 404 | -- |
-| `EntityNotFoundException` | `src/Granit.Core/Exceptions/EntityNotFoundException.cs` | 404 | -- |
-| `ConflictException` | `src/Granit.Core/Exceptions/ConflictException.cs` | 409 | Configurable |
-| `ForbiddenException` | `src/Granit.Core/Exceptions/ForbiddenException.cs` | 403 | -- |
-| `ValidationException` | `src/Granit.Core/Exceptions/ValidationException.cs` | 422 | Field errors |
+| `BusinessException` | `src/Granit/Exceptions/BusinessException.cs` | 400 | Configurable |
+| `NotFoundException` | `src/Granit/Exceptions/NotFoundException.cs` | 404 | -- |
+| `EntityNotFoundException` | `src/Granit/Exceptions/EntityNotFoundException.cs` | 404 | -- |
+| `ConflictException` | `src/Granit/Exceptions/ConflictException.cs` | 409 | Configurable |
+| `ForbiddenException` | `src/Granit/Exceptions/ForbiddenException.cs` | 403 | -- |
+| `ValidationException` | `src/Granit/Exceptions/ValidationException.cs` | 422 | Field errors |
 | `BlobNotFoundException` | `src/Granit.BlobStorage/Exceptions/BlobNotFoundException.cs` | 404 | `BlobStorage:NotFound` |
 | `FeatureLimitExceededException` | `src/Granit.Features/Exceptions/FeatureLimitExceededException.cs` | 429 | `Features:LimitExceeded` |
 | `FeatureNotEnabledException` | `src/Granit.Features/Exceptions/FeatureNotEnabledException.cs` | 403 | `Features:NotEnabled` |

@@ -49,11 +49,11 @@ compliant with **GDPR/ISO 27001** requirements.
 
 ```bash
 # Add the foundation package to your project
-dotnet add package Granit.Core
+dotnet add package Granit
 
 # Add the modules you need
 dotnet add package Granit.Persistence
-dotnet add package Granit.Security
+dotnet add package Granit.Users
 dotnet add package Granit.Observability
 ```
 
@@ -71,7 +71,7 @@ app.Run();
 // MyAppModule.cs
 [DependsOn(
     typeof(GranitPersistenceModule),
-    typeof(GranitSecurityModule),
+    typeof(),
     typeof(GranitObservabilityModule))]
 public sealed class MyAppModule : GranitModule
 {

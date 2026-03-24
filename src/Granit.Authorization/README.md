@@ -13,7 +13,7 @@ dotnet add package Granit.Authorization
 ## Dependencies
 
 - `Granit.Caching`
-- `Granit.Security`
+- `Granit.Users`
 
 ## Documentation
 

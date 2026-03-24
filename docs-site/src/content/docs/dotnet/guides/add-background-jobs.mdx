@@ -36,7 +36,7 @@ dotnet add package Granit.BackgroundJobs.Endpoints
 <TabItem label="Production (durable)">
 
 ```csharp
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.BackgroundJobs;
 using Granit.BackgroundJobs.EntityFrameworkCore;
 using Granit.BackgroundJobs.Endpoints;
@@ -52,7 +52,7 @@ public sealed class MyAppModule : GranitModule { }
 <TabItem label="Development (in-memory)">
 
 ```csharp
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.BackgroundJobs;
 
 [DependsOn(typeof(GranitBackgroundJobsModule))]

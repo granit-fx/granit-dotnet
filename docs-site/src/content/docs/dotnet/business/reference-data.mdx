@@ -25,7 +25,7 @@ automatic label resolution based on `CurrentUICulture`, and an extensible
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.ReferenceData` | `IReferenceDataStoreReader/Writer<T>`, `ReferenceDataEntity`, `ReferenceDataRegistry` | `Granit.Core`, `Granit.Querying` |
+| `Granit.ReferenceData` | `IReferenceDataStoreReader/Writer<T>`, `ReferenceDataEntity`, `ReferenceDataRegistry` | `Granit`, `Granit.Querying` |
 | `Granit.ReferenceData.EntityFrameworkCore` | EF Core store, seeding, dynamic column mapping, `QueryDefinition` | `Granit.ReferenceData`, `Granit.Persistence`, `Granit.Caching` |
 | `Granit.ReferenceData.Endpoints` | Generic + dynamic CRUD endpoints, hierarchical children endpoint | `Granit.ReferenceData`, `Granit.Validation`, `Granit.Guids` |
 
@@ -293,12 +293,12 @@ public sealed class CountrySeeder : IReferenceDataSeeder<Country>
 
 | Category | Key types | Package |
 |----------|-----------|---------|
-| Entity | `ReferenceDataEntity`, `DynamicReferenceDataEntity`, `IHasExtraProperties` | `Granit.ReferenceData`, `Granit.Core` |
+| Entity | `ReferenceDataEntity`, `DynamicReferenceDataEntity`, `IHasExtraProperties` | `Granit.ReferenceData`, `Granit` |
 | Store | `IReferenceDataStoreReader<T>`, `IReferenceDataStoreWriter<T>`, `IReferenceDataSeeder<T>` | `Granit.ReferenceData` |
 | Registration | `AddReferenceDataStore<T, TDb>()`, `AddReferenceData<TDb>()`, `ReferenceDataBuilder` | `Granit.ReferenceData.EntityFrameworkCore` |
 | Endpoints | `MapReferenceDataEndpoints<T>()`, `MapAllReferenceDataEndpoints()` | `Granit.ReferenceData.Endpoints` |
 | Registry | `ReferenceDataRegistry`, `ReferenceDataTypeRegistration` | `Granit.ReferenceData` |
-| ExtraProperties | `ExtraPropertyExtensions`, `ExtraPropertyMappingOptions<T>` | `Granit.Core`, `Granit.Persistence` |
+| ExtraProperties | `ExtraPropertyExtensions`, `ExtraPropertyMappingOptions<T>` | `Granit`, `Granit.Persistence` |
 
 ## See also
 

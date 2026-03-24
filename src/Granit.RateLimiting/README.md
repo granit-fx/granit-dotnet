@@ -12,10 +12,10 @@ dotnet add package Granit.RateLimiting
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 - `Granit.Http.ExceptionHandling`
 - `Granit.Features`
-- `Granit.Security`
+- `Granit.Users`
 
 ## Documentation
 

@@ -37,13 +37,13 @@ compliance and user management needs grow.
 
 <FileTree>
 
-- Granit.Security/ Base abstractions (ICurrentUserService, ActorKind)
+- Granit.Users/ Base abstractions (ICurrentUserService, ActorKind)
 
 </FileTree>
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.Security` | `ICurrentUserService`, `ActorKind` | `Granit.Core` |
+| `Granit.Users` | `ICurrentUserService`, `ActorKind` | `Granit` |
 
 ## ICurrentUserService
 
@@ -81,12 +81,12 @@ The complete authentication and authorization stack is documented in dedicated p
 
 ```mermaid
 graph TD
-    S[Granit.Security] --> C[Granit.Core]
+    S[Granit.Users] --> C[Granit]
     JWT[Granit.Authentication.JwtBearer] --> S
-    KC[Granit.Authentication.Keycloak] --> JWT
-    EID[Granit.Authentication.EntraId] --> JWT
-    CG[Granit.Authentication.Cognito] --> JWT
-    GC[Granit.Authentication.GoogleCloud] --> JWT
+    KC[Granit.Authentication.JwtBearer.Keycloak] --> JWT
+    EID[Granit.Authentication.JwtBearer.EntraId] --> JWT
+    CG[Granit.Authentication.JwtBearer.Cognito] --> JWT
+    GC[Granit.Authentication.JwtBearer.GoogleCloud] --> JWT
     DPOP[Granit.Authentication.DPoP] --> JWT
     AZ[Granit.Authorization] --> S
     AZ --> CA[Granit.Caching]

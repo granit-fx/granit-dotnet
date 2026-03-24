@@ -95,8 +95,8 @@ from proprietary JSON structures (`realm_access.roles`,
 | External service | ACL package | External DTO to internal model |
 | --- | --- | --- |
 | Keycloak Admin API | `Granit.Identity.Keycloak` | `KeycloakUserRepresentation` to `IdentityUser` |
-| Keycloak JWT | `Granit.Authentication.Keycloak` | JSON `realm_access` to `ClaimTypes.Role` |
-| Entra ID JWT | `Granit.Authentication.EntraId` | JSON `roles` (v1.0/v2.0) to `ClaimTypes.Role` |
+| Keycloak JWT | `Granit.Authentication.JwtBearer.Keycloak` | JSON `realm_access` to `ClaimTypes.Role` |
+| Entra ID JWT | `Granit.Authentication.JwtBearer.EntraId` | JSON `roles` (v1.0/v2.0) to `ClaimTypes.Role` |
 | AWS S3 SDK | `Granit.BlobStorage.S3` | `GetPreSignedUrlRequest` from `BlobUploadRequest` |
 | MailKit SMTP | `Granit.Notifications.Email.Smtp` | `MimeMessage` from `EmailMessage` |
 | Brevo API | `Granit.Notifications.Brevo` | JSON payload from `EmailMessage` / `SmsMessage` / `WhatsAppMessage` |
@@ -118,7 +118,7 @@ from proprietary JSON structures (`realm_access.roles`,
 | --- | --- |
 | `src/Granit.Identity.Keycloak/Internal/KeycloakIdentityProvider.cs` | Primary ACL (9 conversion methods) |
 | `src/Granit.Identity.Keycloak/Internal/KeycloakUserRepresentation.cs` | Keycloak external DTO |
-| `src/Granit.Authentication.Keycloak/Authentication/KeycloakClaimsTransformation.cs` | JWT claims to Role |
+| `src/Granit.Authentication.JwtBearer.Keycloak/Authentication/KeycloakClaimsTransformation.cs` | JWT claims to Role |
 | `src/Granit.BlobStorage.S3/Internal/S3BlobClient.cs` | S3 adapter |
 | `src/Granit.Notifications.Email.Smtp/Internal/MailKitEmailSender.cs` | SMTP adapter |
 | `src/Granit.Notifications.Brevo/Internal/BrevoNotificationProvider.cs` | Multi-channel Brevo |

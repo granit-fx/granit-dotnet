@@ -9,10 +9,10 @@ Part of the [granit](https://granit-fx.dev) framework.
 
 | Package | Role |
 | --- | --- |
-| `Granit.Core` | Module system, shared domain types |
+| `Granit` | Module system, shared domain types |
 | `Granit.Timing` | `IClock`, `TimeProvider` |
 | `Granit.Guids` | `IGuidGenerator`, sequential GUIDs |
-| `Granit.Security` | `ICurrentUserService` |
+| `Granit.Users` | `ICurrentUserService` |
 | `Granit.Validation` | FluentValidation integration |
 | `Granit.Persistence` | EF Core audit interceptors, soft delete |
 | `Granit.Observability` | Serilog + OpenTelemetry |

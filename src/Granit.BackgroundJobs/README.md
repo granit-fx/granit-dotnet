@@ -12,9 +12,9 @@ dotnet add package Granit.BackgroundJobs
 
 ## Dependencies
 
-- `Granit.Core`
+- `Granit`
 - `Granit.Guids`
-- `Granit.Security`
+- `Granit.Users`
 - `Granit.Timing`
 
 ## Documentation

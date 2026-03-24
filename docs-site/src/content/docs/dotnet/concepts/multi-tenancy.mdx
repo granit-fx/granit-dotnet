@@ -225,8 +225,8 @@ one wins. Let `ApplyGranitConventions` own all query filters.
 Entities opt into tenant isolation by implementing `IMultiTenant`:
 
 ```csharp
-using Granit.Core.Domain;
-using Granit.Core.MultiTenancy;
+using Granit.Domain;
+using Granit.MultiTenancy;
 
 public class Invoice : AggregateRoot, IMultiTenant
 {
@@ -239,14 +239,14 @@ public class Invoice : AggregateRoot, IMultiTenant
 
 :::caution[Warning]
 `TenantId` must be `Guid?` (nullable), never `string`. The interface contract
-in `Granit.Core.Domain` enforces this. Non-nullable `Guid` will fail the
+in `Granit.Domain` enforces this. Non-nullable `Guid` will fail the
 architecture tests.
 :::
 
 ## Soft dependency rule
 
 Granit modules that need to read `ICurrentTenant` should reference
-`Granit.Core.MultiTenancy` — **not** `Granit.MultiTenancy`. There is no need
+`Granit.MultiTenancy` — **not** `Granit.MultiTenancy`. There is no need
 to add `[DependsOn(typeof(GranitMultiTenancyModule))]` or a
 `<ProjectReference>` to the `Granit.MultiTenancy` package.
 
@@ -259,8 +259,8 @@ must enforce strict tenant isolation (e.g., `Granit.BlobStorage` throws if
 no tenant context exists — required for GDPR data segregation).
 
 ```csharp
-// Correct — soft dependency via Granit.Core
-using Granit.Core.MultiTenancy;
+// Correct — soft dependency via Granit
+using Granit.MultiTenancy;
 
 public class ReportService(ICurrentTenant currentTenant)
 {
