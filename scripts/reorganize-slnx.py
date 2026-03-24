@@ -12,15 +12,16 @@ SLNX = REPO / "Granit.slnx"
 # ---------------------------------------------------------------------------
 SRC_DOMAINS = {
     "Core": {
-        "Analyzers", "Diagnostics", "Guids", "Observability",
+        "Diagnostics", "Guids", "Observability",
         "Security", "Testing", "Timing", "Validation",
     },
+    "Tools": {"Analyzers"},
     "AI": {"AI"},
     "Business": {
         "DataExchange", "DocumentGeneration", "Querying",
         "ReferenceData", "Templating", "Timeline", "Workflow",
     },
-    "API": {
+    "Http": {
         "Bff", "Http", "RateLimiting", "Webhooks",
     },
     "Data": {
@@ -31,9 +32,10 @@ SRC_DOMAINS = {
         "MultiTenancy", "Notifications", "Settings", "Wolverine",
     },
     "Security": {
-        "AuditLog", "Authentication", "Authorization", "Encryption",
-        "Identity", "OpenIddict", "Privacy", "Vault",
+        "Authentication", "Authorization", "Encryption",
+        "Identity", "OpenIddict", "Vault",
     },
+    "Compliance": {"AuditLog", "Privacy"},
 }
 
 # Build reverse lookup: module_family → domain
@@ -43,16 +45,18 @@ for domain, modules in SRC_DOMAINS.items():
         _MODULE_TO_DOMAIN[m] = domain
 
 # Ordered domain list (determines output order)
-DOMAIN_ORDER = ["Core", "AI", "Business", "API", "Data", "Infrastructure", "Security"]
+DOMAIN_ORDER = ["Core", "Tools", "AI", "Business", "Http", "Data", "Infrastructure", "Security", "Compliance"]
 
 DOMAIN_LABELS = {
     "Core": "Core",
+    "Tools": "Tools",
     "AI": "AI",
     "Business": "Business",
-    "API": "API",
+    "Http": "Http",
     "Data": "Data",
     "Infrastructure": "Infrastructure",
     "Security": "Security",
+    "Compliance": "Compliance",
 }
 
 
