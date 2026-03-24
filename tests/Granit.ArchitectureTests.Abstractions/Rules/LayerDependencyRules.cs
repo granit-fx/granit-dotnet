@@ -30,6 +30,36 @@ public static class LayerDependencyRules
     }
 
     /// <summary>
+    /// Types whose namespace matches exactly (or is a child of) the given namespace,
+    /// but excluding types from other modules that share a prefix
+    /// (e.g. "Granit.Localization" excludes "Granit.Localization.EntityFrameworkCore").
+    /// </summary>
+    public static void ExactNamespaceShouldNotDependOnEntityFrameworkCore(
+        ArchUnitNET.Domain.Architecture architecture,
+        string exactNamespace,
+        string layerDescription)
+    {
+        IEnumerable<IType> types = architecture.Types
+            .Where(t =>
+            {
+                string ns = t.Namespace.FullName;
+                return string.Equals(ns, exactNamespace, StringComparison.Ordinal)
+                    || (ns.StartsWith(exactNamespace, StringComparison.Ordinal)
+                        && ns.Length > exactNamespace.Length
+                        && ns[exactNamespace.Length] == '.'
+                        && !ns.Contains("EntityFrameworkCore", StringComparison.Ordinal));
+            });
+
+        IEnumerable<IType> efCoreDeps = types
+            .Where(t => t.Dependencies
+                .Any(d => d.Target.FullName.StartsWith("Microsoft.EntityFrameworkCore", StringComparison.Ordinal)));
+
+        efCoreDeps.ShouldBeEmpty(
+            $"{layerDescription} must not depend on EF Core infrastructure. " +
+            $"Violators: {string.Join(", ", efCoreDeps.Select(t => t.FullName))}");
+    }
+
+    /// <summary>
     /// Endpoint types (namespace containing ".Endpoints") must not depend on EF Core.
     /// </summary>
     public static void EndpointTypesShouldNotDependOnEntityFrameworkCore(ArchUnitNET.Domain.Architecture architecture)

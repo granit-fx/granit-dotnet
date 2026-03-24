@@ -12,10 +12,26 @@ public sealed class LayerDependencyTests
 {
     private static readonly ArchUnitNET.Domain.Architecture Architecture = GranitArchitecture.Instance;
 
-    [Fact]
-    public void Core_types_should_not_depend_on_EntityFrameworkCore() =>
-        LayerDependencyRules.TypesShouldNotDependOnEntityFrameworkCore(
-            Architecture, "Granit.", "Core layer");
+    /// <summary>
+    /// Types in the base Granit package (Domain, Events, Users, Modularity, etc.)
+    /// must not depend on EF Core. These are the foundational abstractions.
+    /// </summary>
+    [Theory]
+    [InlineData("Granit.DataFiltering")]
+    [InlineData("Granit.Diagnostics")]
+    [InlineData("Granit.Domain")]
+    [InlineData("Granit.Endpoints")]
+    [InlineData("Granit.Events")]
+    [InlineData("Granit.Exceptions")]
+    [InlineData("Granit.Extensions")]
+    [InlineData("Granit.Json")]
+    [InlineData("Granit.Localization")]
+    [InlineData("Granit.Modularity")]
+    [InlineData("Granit.MultiTenancy")]
+    [InlineData("Granit.Users")]
+    public void Base_package_types_should_not_depend_on_EntityFrameworkCore(string namespacePrefix) =>
+        LayerDependencyRules.ExactNamespaceShouldNotDependOnEntityFrameworkCore(
+            Architecture, namespacePrefix, $"Base package ({namespacePrefix})");
 
     [Fact]
     public void Timing_types_should_not_depend_on_EntityFrameworkCore() =>

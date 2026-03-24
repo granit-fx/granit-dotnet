@@ -116,7 +116,8 @@ public sealed partial class SourceCodeAntiPatternTests
 
         // Strip organizational grouping folders (e.g. "bundles/") that are not part of the namespace.
         // Bundle projects live in src/bundles/Granit.Bundle.X/ but their namespace is Granit.Bundle.X.
-        if (parts.Length > 1 && !parts[0].Contains('.'))
+        // Project directories always start with "Granit" — anything else is a grouping folder.
+        if (parts.Length > 1 && !parts[0].StartsWith("Granit", StringComparison.Ordinal))
         {
             parts = parts[1..];
         }
