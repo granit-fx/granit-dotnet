@@ -27,13 +27,7 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.eventbus": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.security": {
+      "granit.events": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

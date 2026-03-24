@@ -64,7 +64,7 @@
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
-      "granit.eventbus": {
+      "granit.events": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",

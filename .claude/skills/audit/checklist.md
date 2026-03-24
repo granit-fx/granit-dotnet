@@ -475,7 +475,7 @@ Ref: `CLAUDE.md §Validation`
 
 ### 9d. Event infrastructure
 
-- [ ] For distributed events: `[DependsOn(typeof(GranitEventBusWolverineModule))]`
+- [ ] For distributed events: `[DependsOn(typeof(GranitEventsWolverineModule))]`
 - [ ] Without Wolverine: ETOs silently dropped (intentional — no overhead)
 
 Ref: `docs-site/…/data/entity-lifecycle-events.mdx`

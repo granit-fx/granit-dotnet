@@ -8,7 +8,7 @@ namespace Granit.Persistence.Events;
 /// <remarks>
 /// Registered by default in <c>Granit.Persistence</c> via <c>TryAddSingleton</c>.
 /// Replaced by <c>WolverineIntegrationEventDispatcher</c> when
-/// <c>Granit.EventBus.Wolverine</c> is loaded.
+/// <c>Granit.Events.Wolverine</c> is loaded.
 /// </remarks>
 internal sealed class NullIntegrationEventDispatcher : IIntegrationEventDispatcher
 {

@@ -1,10 +1,10 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
-using Granit.Authentication.Oidc.ClientAuthentication;
-using Granit.Authentication.Oidc.ClientAuthentication.Internal;
-using Granit.Authentication.Oidc.DPoP;
 using Granit.Bff.Diagnostics;
 using Granit.Bff.Options;
+using Granit.Oidc.ClientAuthentication;
+using Granit.Oidc.ClientAuthentication.Internal;
+using Granit.Oidc.DPoP;
 using Granit.Timing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;

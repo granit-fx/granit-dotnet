@@ -1,5 +1,5 @@
-using Granit.EventBus.Extensions;
 using Granit.Events;
+using Granit.Events.Extensions;
 using Granit.Features.EntityFrameworkCore.Internal;
 using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -40,8 +40,8 @@ public static class FeaturesEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddGranitDbContext<GranitFeaturesDbContext>(configure);
 
         // Fallbacks: ensure event bus and TimeProvider are available even if
-        // AddGranitFeatures() / AddGranitEventBus() was not called (e.g. in tests).
-        builder.Services.AddGranitEventBus();
+        // AddGranitFeatures() / AddGranitEvents() was not called (e.g. in tests).
+        builder.Services.AddGranitEvents();
         builder.Services.TryAddSingleton(TimeProvider.System);
 
         builder.Services.Replace(

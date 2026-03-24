@@ -1,9 +1,9 @@
 using System.Diagnostics;
-using Granit.Authentication.Oidc.ClientAuthentication;
-using Granit.Authentication.Oidc.ClientAuthentication.Internal;
-using Granit.Authentication.Oidc.DPoP;
 using Granit.Bff.Diagnostics;
 using Granit.Bff.Options;
+using Granit.Oidc.ClientAuthentication;
+using Granit.Oidc.ClientAuthentication.Internal;
+using Granit.Oidc.DPoP;
 using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

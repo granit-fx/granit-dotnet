@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Oidc</PackageId>
+    <Description>Strongly typed OIDC/OAuth 2.0 protocol primitives: discovery documents, typed token requests and responses, client authentication strategies, DPoP proof generation (RFC 9449), and PKCE helpers (RFC 7636). Foundation for Granit.Oidc.TokenManagement.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Oidc.Tests" />
+    <InternalsVisibleTo Include="Granit.Oidc.TokenManagement" />
+    <InternalsVisibleTo Include="Granit.Bff" />
+    <InternalsVisibleTo Include="Granit.Bff.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Bff.Yarp" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+  </ItemGroup>
+
+</Project>

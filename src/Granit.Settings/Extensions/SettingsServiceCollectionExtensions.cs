@@ -1,5 +1,5 @@
 using Granit.Diagnostics;
-using Granit.EventBus.Extensions;
+using Granit.Events.Extensions;
 using Granit.Settings.Definitions;
 using Granit.Settings.Diagnostics;
 using Granit.Settings.Options;
@@ -55,7 +55,7 @@ public static class SettingsServiceCollectionExtensions
         services.TryAddScoped<SettingValueProviderManager>();
 
         // Event bus fallback (in-process default if not already registered)
-        services.AddGranitEventBus();
+        services.AddGranitEvents();
         services.TryAddSingleton(TimeProvider.System);
 
         // Application services (Scoped — tenant/user context per request)

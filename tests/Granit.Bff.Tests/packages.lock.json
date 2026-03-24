@@ -344,7 +344,16 @@
       "granit": {
         "type": "Project"
       },
-      "granit.authentication.oidc": {
+      "granit.bff": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Oidc": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Caching.Abstractions": "[10.*, )"
+        }
+      },
+      "granit.oidc": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
@@ -352,22 +361,6 @@
           "Microsoft.Extensions.Caching.Memory": "[10.*, )",
           "Microsoft.Extensions.Http": "[10.*, )",
           "Microsoft.Extensions.Logging.Abstractions": "[10.*, )"
-        }
-      },
-      "granit.bff": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Authentication.Oidc": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Caching.Abstractions": "[10.*, )"
-        }
-      },
-      "granit.security": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {

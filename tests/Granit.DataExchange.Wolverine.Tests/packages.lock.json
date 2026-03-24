@@ -702,7 +702,7 @@
       "granit.dataexchange": {
         "type": "Project",
         "dependencies": {
-          "Granit.EventBus": "[0.1.0-dev, )",
+          "Granit.Events": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Querying": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
@@ -717,7 +717,7 @@
           "WolverineFx": "[5.*, )"
         }
       },
-      "granit.eventbus": {
+      "granit.events": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",

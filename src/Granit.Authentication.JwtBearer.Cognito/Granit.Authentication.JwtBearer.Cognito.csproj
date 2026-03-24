@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Authentication.JwtBearer.Cognito</PackageId>
+    <Description>AWS Cognito extension for Granit.Authentication.JwtBearer: cognito:groups claims transformation, Admin policy, JWT Bearer configuration from the "Cognito" config section.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Authentication.JwtBearer.Cognito.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <!-- ASP.NET Core shared framework (IClaimsTransformation, JwtBearerOptions, etc.) -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Authentication.JwtBearer\Granit.Authentication.JwtBearer.csproj" />
+  </ItemGroup>
+
+</Project>

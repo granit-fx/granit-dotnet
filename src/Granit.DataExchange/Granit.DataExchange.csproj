@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.EventBus\Granit.EventBus.csproj" />
+    <ProjectReference Include="..\Granit.Events\Granit.Events.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Querying\Granit.Querying.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />

@@ -4,8 +4,8 @@ Persists Settings and Feature Flags changes as audit log entries with category
 `ConfigurationChange`. Registers `ILocalEventHandler` implementations for
 `SettingChangedEvent` and `FeatureOverrideChangedEvent`.
 
-Works with any event bus provider — in-process (`Granit.EventBus`) or
-Wolverine-backed (`Granit.EventBus.Wolverine`). No Wolverine dependency.
+Works with any event bus provider — in-process (`Granit.Events`) or
+Wolverine-backed (`Granit.Events.Wolverine`). No Wolverine dependency.
 
 Part of the [granit](https://granit-fx.dev) framework.
 

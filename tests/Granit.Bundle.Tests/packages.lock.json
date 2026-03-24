@@ -444,8 +444,7 @@
       "granit.authorization": {
         "type": "Project",
         "dependencies": {
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )"
+          "Granit.Caching": "[0.1.0-dev, )"
         }
       },
       "granit.bundle.api": {
@@ -482,7 +481,6 @@
           "Granit.Http.ResponseCompression": "[0.1.0-dev, )",
           "Granit.Observability": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
@@ -553,7 +551,7 @@
           "PuppeteerSharp": "[24.*, )"
         }
       },
-      "granit.eventbus": {
+      "granit.events": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
@@ -569,7 +567,7 @@
       "granit.features.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
-          "Granit.EventBus": "[0.1.0-dev, )",
+          "Granit.Events": "[0.1.0-dev, )",
           "Granit.Features": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
@@ -585,7 +583,6 @@
         "type": "Project",
         "dependencies": {
           "Granit.Http.ApiVersioning": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.OpenApi": "[10.*, )",
           "Scalar.AspNetCore": "[2.*, )"
         }
@@ -603,8 +600,7 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Features": "[0.1.0-dev, )",
-          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )"
+          "Granit.Http.ExceptionHandling": "[0.1.0-dev, )"
         }
       },
       "granit.http.cors": {
@@ -623,7 +619,6 @@
         "type": "Project",
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
           "Microsoft.IO.RecyclableMemoryStream": "[3.*, )",
           "StackExchange.Redis": "[2.*, )"
         }
@@ -732,7 +727,6 @@
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore": "[10.*, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
@@ -751,14 +745,7 @@
           "Granit": "[0.1.0-dev, )",
           "Granit.Features": "[0.1.0-dev, )",
           "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
           "StackExchange.Redis": "[2.*, )"
-        }
-      },
-      "granit.security": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.templating": {

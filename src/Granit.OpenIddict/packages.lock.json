@@ -74,7 +74,7 @@
       "granit": {
         "type": "Project"
       },
-      "granit.eventbus": {
+      "granit.events": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
@@ -94,12 +94,6 @@
         }
       },
       "granit.querying": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.security": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

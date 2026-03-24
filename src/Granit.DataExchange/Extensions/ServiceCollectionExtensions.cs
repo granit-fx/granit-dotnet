@@ -9,7 +9,7 @@ using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Messages;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.Diagnostics;
-using Granit.EventBus.Extensions;
+using Granit.Events.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -59,7 +59,7 @@ public static class ServiceCollectionExtensions
         GranitActivitySourceRegistry.Register(DataExchangeActivitySource.Name);
 
         // Event bus fallback (in-process default if not already registered)
-        services.AddGranitEventBus();
+        services.AddGranitEvents();
 
         // Channel-based async dispatch (default). Replaced by Wolverine if installed.
         services.TryAddSingleton(Channel.CreateUnbounded<ExecuteImportCommand>());
@@ -123,7 +123,7 @@ public static class ServiceCollectionExtensions
         GranitActivitySourceRegistry.Register(DataExchangeActivitySource.Name);
 
         // Event bus fallback (in-process default if not already registered)
-        services.AddGranitEventBus();
+        services.AddGranitEvents();
 
         // Channel-based async dispatch (default). Replaced by Wolverine if installed.
         services.TryAddSingleton(Channel.CreateUnbounded<ExecuteExportCommand>());

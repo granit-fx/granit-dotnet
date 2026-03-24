@@ -4,7 +4,6 @@
     "projects": [
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
       "src/Granit.Analyzers/Granit.Analyzers.csproj",
-      "src/Granit.Authentication.Oidc/Granit.Authentication.Oidc.csproj",
       "src/Granit.Authorization/Granit.Authorization.csproj",
       "src/Granit.BackgroundJobs/Granit.BackgroundJobs.csproj",
       "src/Granit.Bff.Endpoints/Granit.Bff.Endpoints.csproj",
@@ -41,6 +40,7 @@
       "src/Granit.Imaging/Granit.Imaging.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
       "src/Granit.MultiTenancy/Granit.MultiTenancy.csproj",
+      "src/Granit.Oidc/Granit.Oidc.csproj",
       "src/Granit.Persistence.Hosting/Granit.Persistence.Hosting.csproj",
       "src/Granit.Persistence.Migrations.Wolverine/Granit.Persistence.Migrations.Wolverine.csproj",
       "src/Granit.Persistence.Migrations/Granit.Persistence.Migrations.csproj",

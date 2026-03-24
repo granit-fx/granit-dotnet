@@ -39,7 +39,7 @@ public static class PersistenceServiceCollectionExtensions
     ///   </item>
     ///   <item>
     ///     No-op <see cref="IIntegrationEventDispatcher"/> (replaced by Wolverine implementation
-    ///     when <c>Granit.EventBus.Wolverine</c> is configured).
+    ///     when <c>Granit.Events.Wolverine</c> is configured).
     ///   </item>
     ///   <item>
     ///     <see cref="EfCoreExceptionStatusCodeMapper"/> if

@@ -1,8 +1,8 @@
-using Granit.Authentication.Oidc;
 using Granit.Bff.Diagnostics;
 using Granit.Bff.Internal;
 using Granit.Diagnostics;
 using Granit.Modularity;
+using Granit.Oidc;
 using Granit.Timing;
 using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +21,7 @@ namespace Granit.Bff;
 /// <c>Granit.Bff.Yarp</c> for reverse proxy token injection.
 /// </remarks>
 [DependsOn(
-    typeof(GranitAuthenticationOidcModule),
+    typeof(GranitOidcModule),
     typeof(GranitTimingModule))]
 public sealed class GranitBffModule : GranitModule
 {

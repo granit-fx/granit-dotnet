@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.Authentication.Oidc\Granit.Authentication.Oidc.csproj" />
+    <ProjectReference Include="..\Granit.Oidc\Granit.Oidc.csproj" />
     <ProjectReference Include="..\Granit.Bff\Granit.Bff.csproj" />
     <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />

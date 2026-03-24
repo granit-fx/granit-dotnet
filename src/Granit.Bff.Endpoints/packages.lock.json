@@ -34,19 +34,11 @@
       "granit": {
         "type": "Project"
       },
-      "granit.authentication.oidc": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )"
-        }
-      },
       "granit.bff": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.Authentication.Oidc": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
+          "Granit.Oidc": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
@@ -64,7 +56,6 @@
         "type": "Project",
         "dependencies": {
           "Granit.Http.ApiVersioning": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.OpenApi": "[10.*, )",
           "Scalar.AspNetCore": "[2.*, )"
         }
@@ -91,10 +82,11 @@
           "SmartFormat": "[3.*, )"
         }
       },
-      "granit.security": {
+      "granit.oidc": {
         "type": "Project",
         "dependencies": {
-          "Granit": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {

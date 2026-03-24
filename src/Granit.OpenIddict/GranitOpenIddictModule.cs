@@ -1,5 +1,5 @@
 using Granit.Diagnostics;
-using Granit.EventBus;
+using Granit.Events;
 using Granit.Guids;
 using Granit.Identity;
 using Granit.Modularity;
@@ -19,7 +19,7 @@ namespace Granit.OpenIddict;
 /// Registers OIDC abstractions, service interfaces, and integration event types.
 /// </summary>
 [DependsOn(
-    typeof(GranitEventBusModule),
+    typeof(GranitEventsModule),
     typeof(GranitGuidsModule),
     typeof(GranitIdentityModule),
     typeof(GranitQueryingModule),
