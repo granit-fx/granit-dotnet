@@ -220,12 +220,6 @@
       },
       "granit": {
         "type": "Project"
-      },
-      "granit.security": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
       }
     }
   }

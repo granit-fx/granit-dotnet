@@ -485,19 +485,12 @@
           "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
-      "granit.security": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
       "granit.testing": {
         "type": "Project",
         "dependencies": {
           "Bogus": "[35.*, )",
           "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.Mvc.Testing": "[10.*, )"
         }

@@ -339,7 +339,6 @@
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
-          "Granit.Security": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore": "[10.*, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
@@ -369,12 +368,6 @@
           "Granit.Persistence.Hosting": "[0.1.0-dev, )",
           "Microsoft.Extensions.Diagnostics.HealthChecks": "[10.*, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.*, )"
-        }
-      },
-      "granit.security": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {

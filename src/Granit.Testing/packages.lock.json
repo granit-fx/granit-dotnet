@@ -43,12 +43,6 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
-      "granit.security": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
