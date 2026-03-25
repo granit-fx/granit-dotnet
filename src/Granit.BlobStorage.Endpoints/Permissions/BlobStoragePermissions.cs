@@ -7,12 +7,13 @@ public static class BlobStoragePermissions
 {
     public const string GroupName = "BlobStorage";
 
-    public static class Blobs
+    /// <summary>Permissions for blob storage administration.</summary>
+    public static class Administration
     {
-        public const string Read = "BlobStorage.Blobs.Read";
-        public const string Upload = "BlobStorage.Blobs.Upload";
-        public const string Download = "BlobStorage.Blobs.Download";
-        public const string Delete = "BlobStorage.Blobs.Delete";
-        public const string Manage = "BlobStorage.Blobs.Manage";
+        /// <summary>Grants read-only access to blob storage administration (list, descriptors, query).</summary>
+        public const string Read = "BlobStorage.Administration.Read";
+
+        /// <summary>Grants full management access to blob storage administration (upload, download, delete, confirm, cleanup).</summary>
+        public const string Manage = "BlobStorage.Administration.Manage";
     }
 }

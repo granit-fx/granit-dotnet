@@ -11,10 +11,6 @@ public sealed class WebhooksEndpointsOptionsTests
         new WebhooksEndpointsOptions().RoutePrefix.ShouldBe("webhooks");
 
     [Fact]
-    public void RequiredRole_Default_ShouldBeGranitWebhooksAdmin() =>
-        new WebhooksEndpointsOptions().RequiredRole.ShouldBe("granit-webhooks-admin");
-
-    [Fact]
     public void TagName_Default_ShouldBeWebhooks() =>
         new WebhooksEndpointsOptions().TagName.ShouldBe("Webhooks");
 

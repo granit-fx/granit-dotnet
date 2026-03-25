@@ -2,7 +2,6 @@ using Granit.Authentication.JwtBearer.Keycloak.Authentication;
 using Granit.Authentication.JwtBearer.Keycloak.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -14,8 +13,8 @@ namespace Granit.Authentication.JwtBearer.Keycloak.Extensions;
 public static class KeycloakServiceCollectionExtensions
 {
     /// <summary>
-    /// Surcharge la configuration JWT Bearer avec les valeurs Keycloak,
-    /// enregistre <see cref="KeycloakClaimsTransformation"/> et la policy <c>"Admin"</c>.
+    /// Surcharge la configuration JWT Bearer avec les valeurs Keycloak
+    /// et enregistre <see cref="KeycloakClaimsTransformation"/>.
     /// </summary>
     public static IServiceCollection AddGranitKeycloak(
         this IServiceCollection services)
@@ -44,15 +43,6 @@ public static class KeycloakServiceCollectionExtensions
             });
 
         services.AddTransient<IClaimsTransformation, KeycloakClaimsTransformation>();
-
-        // Deferred Admin policy: reads AdminRole from KeycloakOptions at resolution time.
-        services
-            .AddOptions<AuthorizationOptions>()
-            .Configure<IOptions<KeycloakOptions>>((authOpts, keycloakOpts) =>
-            {
-                authOpts.AddPolicy("Admin",
-                    policy => policy.RequireRole(keycloakOpts.Value.AdminRole));
-            });
 
         return services;
     }

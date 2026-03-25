@@ -12,10 +12,6 @@ public sealed class BackgroundJobsEndpointsOptionsTests
         new BackgroundJobsEndpointsOptions().RoutePrefix.ShouldBe("background-jobs");
 
     [Fact]
-    public void RequiredRole_Default_ShouldBeGranitBackgroundJobsAdmin() =>
-        new BackgroundJobsEndpointsOptions().RequiredRole.ShouldBe("granit-background-jobs-admin");
-
-    [Fact]
     public void TagName_Default_ShouldBeBackgroundJobs() =>
         new BackgroundJobsEndpointsOptions().TagName.ShouldBe("Background Jobs");
 }

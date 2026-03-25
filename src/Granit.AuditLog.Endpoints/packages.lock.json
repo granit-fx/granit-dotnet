@@ -41,6 +41,12 @@
           "Granit.QueryEngine": "[0.1.0-dev, )"
         }
       },
+      "granit.authorization": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Caching": "[0.1.0-dev, )"
+        }
+      },
       "granit.caching": {
         "type": "Project",
         "dependencies": {

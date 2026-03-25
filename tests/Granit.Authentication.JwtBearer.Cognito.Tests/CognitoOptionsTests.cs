@@ -19,7 +19,6 @@ public sealed class CognitoOptionsTests
         options.ClientId.ShouldBe(string.Empty);
         options.RequireHttpsMetadata.ShouldBeTrue();
         options.Audience.ShouldBeNull();
-        options.AdminGroup.ShouldBe("admin");
     }
 
     [Fact]
@@ -38,11 +37,4 @@ public sealed class CognitoOptionsTests
         options.Audience.ShouldBe("custom-audience");
     }
 
-    [Fact]
-    public void AdminGroup_CanBeOverridden()
-    {
-        CognitoOptions options = new() { AdminGroup = "super-admins" };
-
-        options.AdminGroup.ShouldBe("super-admins");
-    }
 }

@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Endpoints.Extensions;
+using Granit.Timeline.Endpoints.Permissions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -36,7 +37,9 @@ public sealed class TimelineStreamEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(TimelinePermissions.Entries.Read, policy => policy.RequireRole(UserRole))
+            .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireRole(UserRole));
         builder.Services.AddSingleton(_reader);
 
         // Required by follower/entry endpoints but not exercised here

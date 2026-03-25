@@ -15,12 +15,6 @@ public sealed class BlobStorageEndpointsOptions
     public string RoutePrefix { get; set; } = "blobs";
 
     /// <summary>
-    /// Role required to access the administration endpoints.
-    /// Default: <c>"granit-blobs-admin"</c>.
-    /// </summary>
-    public string RequiredRole { get; set; } = "granit-blobs-admin";
-
-    /// <summary>
     /// OpenAPI tag name for grouping blob storage endpoints.
     /// Default: <c>"BlobStorage"</c>.
     /// </summary>

@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Granit.DataExchange.Endpoints.Dtos.Export;
 using Granit.DataExchange.Endpoints.Extensions;
+using Granit.DataExchange.Endpoints.Permissions;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Mapping;
@@ -56,7 +57,9 @@ public sealed class ExportDefinitionEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(DataExchangePermissions.Imports.Execute, policy => policy.RequireRole(AdminRole))
+            .AddPolicy(DataExchangePermissions.Exports.Execute, policy => policy.RequireRole(AdminRole));
         builder.Services.AddSingleton(_orchestrator);
         builder.Services.AddSingleton(_presetReader);
         builder.Services.AddSingleton(_presetWriter);

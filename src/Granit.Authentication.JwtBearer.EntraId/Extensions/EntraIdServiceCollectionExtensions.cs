@@ -2,7 +2,6 @@ using Granit.Authentication.JwtBearer.EntraId.Authentication;
 using Granit.Authentication.JwtBearer.EntraId.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -14,8 +13,8 @@ namespace Granit.Authentication.JwtBearer.EntraId.Extensions;
 public static class EntraIdServiceCollectionExtensions
 {
     /// <summary>
-    /// Overrides JWT Bearer configuration with Entra ID values,
-    /// registers <see cref="EntraIdClaimsTransformation"/> and the <c>"Admin"</c> policy.
+    /// Overrides JWT Bearer configuration with Entra ID values
+    /// and registers <see cref="EntraIdClaimsTransformation"/>.
     /// </summary>
     public static IServiceCollection AddGranitEntraId(
         this IServiceCollection services)
@@ -43,15 +42,6 @@ public static class EntraIdServiceCollectionExtensions
             });
 
         services.AddTransient<IClaimsTransformation, EntraIdClaimsTransformation>();
-
-        // Deferred Admin policy: reads AdminRole from EntraIdOptions at resolution time.
-        services
-            .AddOptions<AuthorizationOptions>()
-            .Configure<IOptions<EntraIdOptions>>((authOpts, entraIdOpts) =>
-            {
-                authOpts.AddPolicy("Admin",
-                    policy => policy.RequireRole(entraIdOpts.Value.AdminRole));
-            });
 
         return services;
     }

@@ -2,10 +2,7 @@
   "culture": "pl",
   "texts": {
     "PermissionGroup:BlobStorage": "Magazyn plików",
-    "Permission:BlobStorage.Blobs.Read": "Wyświetlanie deskryptorów plików",
-    "Permission:BlobStorage.Blobs.Upload": "Przesyłanie plików",
-    "Permission:BlobStorage.Blobs.Download": "Pobieranie plików",
-    "Permission:BlobStorage.Blobs.Delete": "Usuwanie plików",
-    "Permission:BlobStorage.Blobs.Manage": "Zarządzanie plikami (potwierdzanie przesyłań, czyszczenie osieroconych plików)"
+    "Permission:BlobStorage.Administration.Read": "Wyświetlanie administracji magazynu plików (lista, deskryptory, zapytania)",
+    "Permission:BlobStorage.Administration.Manage": "Zarządzanie magazynem plików (przesyłanie, pobieranie, usuwanie, potwierdzanie, czyszczenie)"
   }
 }

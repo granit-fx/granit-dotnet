@@ -20,7 +20,6 @@ public sealed class KeycloakOptionsTests
         options.ClientSecret.ShouldBe(string.Empty);
         options.RequireHttpsMetadata.ShouldBeTrue();
         options.Audience.ShouldBeNull();
-        options.AdminRole.ShouldBe("admin");
         options.RoleClaimsSource.ShouldBe("realm_access");
     }
 

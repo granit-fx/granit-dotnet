@@ -6,24 +6,24 @@ namespace Granit.Authentication.ApiKeys.Endpoints.Permissions;
 public static class ApiKeyPermissions
 {
     /// <summary>Permission group name.</summary>
-    public const string GroupName = "ApiKeys";
+    public const string GroupName = "AuthenticationApiKeys";
 
     /// <summary>Permissions for API key administration.</summary>
     public static class Keys
     {
         /// <summary>Permission to list and view API keys.</summary>
-        public const string Read = "ApiKeys.Keys.Read";
+        public const string Read = "AuthenticationApiKeys.Keys.Read";
 
         /// <summary>Permission to create new API keys.</summary>
-        public const string Create = "ApiKeys.Keys.Create";
+        public const string Create = "AuthenticationApiKeys.Keys.Create";
 
         /// <summary>Permission to revoke API keys.</summary>
-        public const string Revoke = "ApiKeys.Keys.Revoke";
+        public const string Revoke = "AuthenticationApiKeys.Keys.Revoke";
 
         /// <summary>Permission to rotate API keys.</summary>
-        public const string Rotate = "ApiKeys.Keys.Rotate";
+        public const string Rotate = "AuthenticationApiKeys.Keys.Rotate";
 
         /// <summary>Permission to update permissions and CIDR scopes.</summary>
-        public const string UpdateScopes = "ApiKeys.Keys.UpdateScopes";
+        public const string UpdateScopes = "AuthenticationApiKeys.Keys.UpdateScopes";
     }
 }

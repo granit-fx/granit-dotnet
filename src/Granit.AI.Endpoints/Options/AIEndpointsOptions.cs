@@ -15,18 +15,6 @@ public sealed class AIEndpointsOptions
     public string RoutePrefix { get; set; } = "ai";
 
     /// <summary>
-    /// Role required to access workspace administration and usage endpoints.
-    /// Default: <c>"granit-ai-admin"</c>.
-    /// </summary>
-    public string AdminRole { get; set; } = "granit-ai-admin";
-
-    /// <summary>
-    /// Role required to access chat completion and embedding proxy endpoints.
-    /// Default: <c>"granit-ai-user"</c>.
-    /// </summary>
-    public string UserRole { get; set; } = "granit-ai-user";
-
-    /// <summary>
     /// OpenAPI tag name for workspace management endpoints.
     /// Default: <c>"AI Workspaces"</c>.
     /// </summary>

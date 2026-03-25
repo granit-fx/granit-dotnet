@@ -1,11 +1,11 @@
 {
   "culture": "zh",
   "texts": {
-    "PermissionGroup:ApiKeys": "API 密钥",
-    "Permission:ApiKeys.Keys.Read": "查看 API 密钥（列表、详情）",
-    "Permission:ApiKeys.Keys.Create": "创建新的 API 密钥",
-    "Permission:ApiKeys.Keys.Revoke": "撤销 API 密钥",
-    "Permission:ApiKeys.Keys.Rotate": "轮换 API 密钥（撤销并替换）",
-    "Permission:ApiKeys.Keys.UpdateScopes": "更新 API 密钥权限和 CIDR 范围"
+    "PermissionGroup:AuthenticationApiKeys": "API 密钥",
+    "Permission:AuthenticationApiKeys.Keys.Read": "查看 API 密钥（列表、详情）",
+    "Permission:AuthenticationApiKeys.Keys.Create": "创建新的 API 密钥",
+    "Permission:AuthenticationApiKeys.Keys.Revoke": "撤销 API 密钥",
+    "Permission:AuthenticationApiKeys.Keys.Rotate": "轮换 API 密钥（撤销并替换）",
+    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "更新 API 密钥权限和 CIDR 范围"
   }
 }

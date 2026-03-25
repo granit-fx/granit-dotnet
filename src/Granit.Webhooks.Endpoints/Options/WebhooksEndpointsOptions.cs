@@ -15,12 +15,6 @@ public sealed class WebhooksEndpointsOptions
     public string RoutePrefix { get; set; } = "webhooks";
 
     /// <summary>
-    /// Role required to access the administration endpoints.
-    /// Default: <c>"granit-webhooks-admin"</c>.
-    /// </summary>
-    public string RequiredRole { get; set; } = "granit-webhooks-admin";
-
-    /// <summary>
     /// OpenAPI tag name for grouping webhook endpoints.
     /// Default: <c>"Webhooks"</c>.
     /// </summary>

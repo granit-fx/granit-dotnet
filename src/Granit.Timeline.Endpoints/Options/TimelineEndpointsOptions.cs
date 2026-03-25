@@ -15,12 +15,6 @@ public sealed class TimelineEndpointsOptions
     public string RoutePrefix { get; set; } = "timeline";
 
     /// <summary>
-    /// Granit permission required to access the timeline endpoints.
-    /// Default: <c>"granit-timeline-user"</c>.
-    /// </summary>
-    public string RequiredRole { get; set; } = "granit-timeline-user";
-
-    /// <summary>
     /// OpenAPI tag name for grouping timeline endpoints in Swagger UI.
     /// Default: <c>"Timeline"</c>.
     /// </summary>

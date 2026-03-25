@@ -22,9 +22,6 @@ public sealed class EntraIdOptions
     /// <summary>Require HTTPS for OIDC metadata. Default: true in production.</summary>
     public bool RequireHttpsMetadata { get; set; } = true;
 
-    /// <summary>Admin App Role name. Default: <c>"admin"</c>.</summary>
-    public string AdminRole { get; set; } = "admin";
-
     /// <summary>
     /// Computed OIDC v2.0 authority URL.
     /// </summary>

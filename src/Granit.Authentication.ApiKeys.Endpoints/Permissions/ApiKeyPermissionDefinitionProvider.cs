@@ -15,31 +15,31 @@ internal sealed class ApiKeyPermissionDefinitionProvider : IPermissionDefinition
         PermissionGroup group = context.AddGroup(
             ApiKeyPermissions.GroupName,
             LocalizableString.Create<ApiKeysEndpointsLocalizationResource>(
-                "PermissionGroup:ApiKeys"));
+                "PermissionGroup:AuthenticationApiKeys"));
 
         group.AddPermission(
             ApiKeyPermissions.Keys.Read,
             LocalizableString.Create<ApiKeysEndpointsLocalizationResource>(
-                "Permission:ApiKeys.Keys.Read"));
+                "Permission:AuthenticationApiKeys.Keys.Read"));
 
         group.AddPermission(
             ApiKeyPermissions.Keys.Create,
             LocalizableString.Create<ApiKeysEndpointsLocalizationResource>(
-                "Permission:ApiKeys.Keys.Create"));
+                "Permission:AuthenticationApiKeys.Keys.Create"));
 
         group.AddPermission(
             ApiKeyPermissions.Keys.Revoke,
             LocalizableString.Create<ApiKeysEndpointsLocalizationResource>(
-                "Permission:ApiKeys.Keys.Revoke"));
+                "Permission:AuthenticationApiKeys.Keys.Revoke"));
 
         group.AddPermission(
             ApiKeyPermissions.Keys.Rotate,
             LocalizableString.Create<ApiKeysEndpointsLocalizationResource>(
-                "Permission:ApiKeys.Keys.Rotate"));
+                "Permission:AuthenticationApiKeys.Keys.Rotate"));
 
         group.AddPermission(
             ApiKeyPermissions.Keys.UpdateScopes,
             LocalizableString.Create<ApiKeysEndpointsLocalizationResource>(
-                "Permission:ApiKeys.Keys.UpdateScopes"));
+                "Permission:AuthenticationApiKeys.Keys.UpdateScopes"));
     }
 }

@@ -3,7 +3,6 @@ using Granit.Authentication.JwtBearer.GoogleCloud.Extensions;
 using Granit.Authentication.JwtBearer.GoogleCloud.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -21,7 +20,6 @@ public sealed class GoogleCloudAuthenticationServiceCollectionExtensionsTests
             .AddInMemoryCollection(config ?? new Dictionary<string, string?>
             {
                 ["GoogleCloudAuth:ProjectId"] = "my-project",
-                ["GoogleCloudAuth:AdminRole"] = "super-admin",
             })
             .Build();
         services.AddSingleton(configuration);
@@ -42,7 +40,6 @@ public sealed class GoogleCloudAuthenticationServiceCollectionExtensionsTests
 
         GoogleCloudAuthenticationOptions opts = sp.GetRequiredService<IOptions<GoogleCloudAuthenticationOptions>>().Value;
         opts.ProjectId.ShouldBe("my-project");
-        opts.AdminRole.ShouldBe("super-admin");
     }
 
     [Fact]
@@ -74,19 +71,6 @@ public sealed class GoogleCloudAuthenticationServiceCollectionExtensionsTests
             d => d.ServiceType == typeof(IClaimsTransformation) &&
                  d.ImplementationType == typeof(GoogleCloudClaimsTransformation));
         descriptor.ShouldNotBeNull();
-    }
-
-    [Fact]
-    public void AddGranitGoogleCloudAuthentication_RegistersAdminPolicy()
-    {
-        ServiceCollection services = CreateServices();
-
-        services.AddGranitGoogleCloudAuthentication();
-        ServiceProvider sp = services.BuildServiceProvider();
-
-        IOptions<AuthorizationOptions> authOpts = sp.GetRequiredService<IOptions<AuthorizationOptions>>();
-        AuthorizationPolicy? policy = authOpts.Value.GetPolicy("Admin");
-        policy.ShouldNotBeNull();
     }
 
     [Fact]

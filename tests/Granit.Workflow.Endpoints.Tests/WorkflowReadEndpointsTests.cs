@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Granit.QueryEngine;
 using Granit.Workflow.Dtos;
 using Granit.Workflow.Endpoints.Extensions;
+using Granit.Workflow.Endpoints.Permissions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -37,7 +38,8 @@ public sealed class WorkflowReadEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(WorkflowPermissions.History.Read, policy => policy.RequireRole(AdminRole));
         builder.Services.AddSingleton(_historyQuery);
 
         _app = builder.Build();

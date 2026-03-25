@@ -2,12 +2,9 @@ using Granit.Authentication.ApiKeys.Endpoints.Endpoints;
 using Granit.Authentication.ApiKeys.Endpoints.Options;
 using Granit.Authentication.ApiKeys.Endpoints.Permissions;
 using Granit.Validation.AspNetCore;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Granit.Authentication.ApiKeys.Endpoints.Extensions;
 
@@ -22,11 +19,11 @@ public static class ApiKeysEndpointRouteBuilderExtensions
     /// <remarks>
     /// <para>Registers endpoints for:</para>
     /// <list type="bullet">
-    /// <item>List and get API keys (<c>ApiKeys.Keys.Read</c> permission)</item>
-    /// <item>Create API keys (<c>ApiKeys.Keys.Create</c> permission)</item>
-    /// <item>Revoke API keys (<c>ApiKeys.Keys.Revoke</c> permission)</item>
-    /// <item>Rotate API keys (<c>ApiKeys.Keys.Rotate</c> permission)</item>
-    /// <item>Update scopes (<c>ApiKeys.Keys.UpdateScopes</c> permission)</item>
+    /// <item>List and get API keys (<c>AuthenticationApiKeys.Keys.Read</c> permission)</item>
+    /// <item>Create API keys (<c>AuthenticationApiKeys.Keys.Create</c> permission)</item>
+    /// <item>Revoke API keys (<c>AuthenticationApiKeys.Keys.Revoke</c> permission)</item>
+    /// <item>Rotate API keys (<c>AuthenticationApiKeys.Keys.Rotate</c> permission)</item>
+    /// <item>Update scopes (<c>AuthenticationApiKeys.Keys.UpdateScopes</c> permission)</item>
     /// </list>
     /// </remarks>
     /// <param name="endpoints">The endpoint route builder.</param>
@@ -38,26 +35,6 @@ public static class ApiKeysEndpointRouteBuilderExtensions
     {
         ApiKeysEndpointsOptions options = new();
         configure?.Invoke(options);
-
-        // Register fallback authorization policies
-        IOptions<AuthorizationOptions> authOptions =
-            endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
-
-        authOptions.Value.AddPolicy(
-            ApiKeyPermissions.Keys.Read,
-            policy => policy.RequireRole(options.RequiredRole));
-        authOptions.Value.AddPolicy(
-            ApiKeyPermissions.Keys.Create,
-            policy => policy.RequireRole(options.RequiredRole));
-        authOptions.Value.AddPolicy(
-            ApiKeyPermissions.Keys.Revoke,
-            policy => policy.RequireRole(options.RequiredRole));
-        authOptions.Value.AddPolicy(
-            ApiKeyPermissions.Keys.Rotate,
-            policy => policy.RequireRole(options.RequiredRole));
-        authOptions.Value.AddPolicy(
-            ApiKeyPermissions.Keys.UpdateScopes,
-            policy => policy.RequireRole(options.RequiredRole));
 
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.RoutePrefix)

@@ -17,7 +17,6 @@ public sealed class ApiKeysEndpointsOptionsTests
 
         options.RoutePrefix.ShouldBe("api-keys");
         options.TagName.ShouldBe("API Keys");
-        options.RequiredRole.ShouldBe("granit-apikeys-admin");
         options.AllowedEnvironments.ShouldBe(["live", "test", "dev"]);
     }
 
@@ -35,14 +34,6 @@ public sealed class ApiKeysEndpointsOptionsTests
         ApiKeysEndpointsOptions options = new() { TagName = "Key Management" };
 
         options.TagName.ShouldBe("Key Management");
-    }
-
-    [Fact]
-    public void RequiredRole_CanBeOverridden()
-    {
-        ApiKeysEndpointsOptions options = new() { RequiredRole = "super-admin" };
-
-        options.RequiredRole.ShouldBe("super-admin");
     }
 
     [Fact]

@@ -19,14 +19,6 @@ public sealed class DataExchangeEndpointsOptionsTests
     }
 
     [Fact]
-    public void Default_RequiredRole_IsGranitDataExchangeAdmin()
-    {
-        DataExchangeEndpointsOptions options = new();
-
-        options.RequiredRole.ShouldBe("granit-data-exchange-admin");
-    }
-
-    [Fact]
     public void Default_TagName_IsDataExchange()
     {
         DataExchangeEndpointsOptions options = new();
@@ -40,12 +32,10 @@ public sealed class DataExchangeEndpointsOptionsTests
         DataExchangeEndpointsOptions options = new()
         {
             RoutePrefix = "custom-prefix",
-            RequiredRole = "custom-role",
             TagName = "Custom Tag",
         };
 
         options.RoutePrefix.ShouldBe("custom-prefix");
-        options.RequiredRole.ShouldBe("custom-role");
         options.TagName.ShouldBe("Custom Tag");
     }
 }

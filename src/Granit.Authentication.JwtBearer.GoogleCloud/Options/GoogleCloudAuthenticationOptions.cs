@@ -17,9 +17,6 @@ public sealed class GoogleCloudAuthenticationOptions
     /// <summary>Require HTTPS for OIDC metadata. Default: true in production.</summary>
     public bool RequireHttpsMetadata { get; set; } = true;
 
-    /// <summary>Admin role name in Firebase custom claims. Default: <c>"admin"</c>.</summary>
-    public string AdminRole { get; set; } = "admin";
-
     /// <summary>
     /// Custom claims key that contains roles (e.g. <c>"roles"</c>).
     /// Firebase Auth stores roles in custom claims as a JSON array.

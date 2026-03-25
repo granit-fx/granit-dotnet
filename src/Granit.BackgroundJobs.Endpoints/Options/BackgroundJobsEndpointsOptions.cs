@@ -17,12 +17,6 @@ public sealed class BackgroundJobsEndpointsOptions
     public string RoutePrefix { get; set; } = "background-jobs";
 
     /// <summary>
-    /// Granit permission required to access the administration endpoints.
-    /// Default: <c>"granit-background-jobs-admin"</c>.
-    /// </summary>
-    public string RequiredRole { get; set; } = "granit-background-jobs-admin";
-
-    /// <summary>
     /// OpenAPI tag name for grouping background jobs endpoints in Swagger UI.
     /// Default: <c>"Background Jobs"</c>.
     /// </summary>

@@ -1,13 +1,10 @@
 using Granit.BackgroundJobs.Endpoints.Endpoints;
-using Granit.BackgroundJobs.Endpoints.Internal;
 using Granit.BackgroundJobs.Endpoints.Options;
+using Granit.BackgroundJobs.Endpoints.Permissions;
 using Granit.Validation.AspNetCore;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Granit.BackgroundJobs.Endpoints.Extensions;
 
@@ -21,19 +18,17 @@ public static class BackgroundJobsEndpointRouteBuilderExtensions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Registers the <c>BackgroundJobs.Jobs.Manage</c> authorization policy (see
-    /// <see cref="BackgroundJobsAuthorizationPolicy.PolicyName"/>) requiring the role
-    /// configured via <see cref="BackgroundJobsEndpointsOptions.RequiredRole"/>.
+    /// Read endpoints require the <c>BackgroundJobs.Jobs.Read</c> permission;
+    /// write endpoints (pause, resume, trigger) require <c>BackgroundJobs.Jobs.Manage</c>.
     /// </para>
     /// <para>Call this from your application route registration:</para>
     /// <code>
     /// app.MapBackgroundJobsEndpoints();
     ///
-    /// // With a custom prefix or role:
+    /// // With a custom prefix:
     /// app.MapBackgroundJobsEndpoints(opts =>
     /// {
     ///     opts.RoutePrefix = "admin/jobs";
-    ///     opts.RequiredRole = "ops-team";
     /// });
     /// </code>
     /// <para>
@@ -52,23 +47,12 @@ public static class BackgroundJobsEndpointRouteBuilderExtensions
         BackgroundJobsEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        // Register the named authorization policy so that endpoints can use
-        // RequireAuthorization(PolicyName). This is safe to call here because
-        // IOptions<AuthorizationOptions> is a singleton and is evaluated lazily
-        // (before the first policy lookup at request time).
-        IOptions<AuthorizationOptions> authOptions =
-            endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
-        authOptions.Value.AddPolicy(
-            BackgroundJobsAuthorizationPolicy.PolicyName,
-            policy => policy.RequireRole(options.RequiredRole));
-
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.RoutePrefix)
-            .WithTags(options.TagName)
-            .RequireAuthorization(BackgroundJobsAuthorizationPolicy.PolicyName);
+            .WithTags(options.TagName);
 
-        group.MapReadEndpoints();
-        group.MapWriteEndpoints();
+        group.RequireAuthorization(BackgroundJobsPermissions.Jobs.Read).MapReadEndpoints();
+        group.RequireAuthorization(BackgroundJobsPermissions.Jobs.Manage).MapWriteEndpoints();
 
         return group;
     }

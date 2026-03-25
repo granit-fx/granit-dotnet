@@ -18,14 +18,6 @@ public sealed class BlobStorageEndpointsOptionsTests
     }
 
     [Fact]
-    public void DefaultRequiredRole_IsGranitBlobsAdmin()
-    {
-        BlobStorageEndpointsOptions options = new();
-
-        options.RequiredRole.ShouldBe("granit-blobs-admin");
-    }
-
-    [Fact]
     public void DefaultTagName_IsBlobStorage()
     {
         BlobStorageEndpointsOptions options = new();
@@ -39,12 +31,10 @@ public sealed class BlobStorageEndpointsOptionsTests
         BlobStorageEndpointsOptions options = new()
         {
             RoutePrefix = "custom-blobs",
-            RequiredRole = "admin",
             TagName = "Files",
         };
 
         options.RoutePrefix.ShouldBe("custom-blobs");
-        options.RequiredRole.ShouldBe("admin");
         options.TagName.ShouldBe("Files");
     }
 }

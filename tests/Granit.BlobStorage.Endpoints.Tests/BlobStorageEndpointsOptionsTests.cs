@@ -12,7 +12,6 @@ public sealed class BlobStorageEndpointsOptionsTests
         BlobStorageEndpointsOptions options = new();
 
         options.RoutePrefix.ShouldBe("blobs");
-        options.RequiredRole.ShouldBe("granit-blobs-admin");
         options.TagName.ShouldBe("BlobStorage");
     }
 

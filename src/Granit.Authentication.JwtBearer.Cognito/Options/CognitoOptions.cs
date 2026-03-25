@@ -22,6 +22,4 @@ public sealed class CognitoOptions
     /// <summary>Expected audience in the token. Defaults to <see cref="ClientId"/>.</summary>
     public string? Audience { get; set; }
 
-    /// <summary>Admin group name in Cognito. Default: <c>"admin"</c>.</summary>
-    public string AdminGroup { get; set; } = "admin";
 }

@@ -1,11 +1,11 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:ApiKeys": "API-sleutels",
-    "Permission:ApiKeys.Keys.Read": "API-sleutels bekijken (lijst, details)",
-    "Permission:ApiKeys.Keys.Create": "Nieuwe API-sleutels aanmaken",
-    "Permission:ApiKeys.Keys.Revoke": "API-sleutels intrekken",
-    "Permission:ApiKeys.Keys.Rotate": "API-sleutels roteren (intrekken en vervangen)",
-    "Permission:ApiKeys.Keys.UpdateScopes": "Rechten en CIDR-bereiken van API-sleutels bijwerken"
+    "PermissionGroup:AuthenticationApiKeys": "API-sleutels",
+    "Permission:AuthenticationApiKeys.Keys.Read": "API-sleutels bekijken (lijst, details)",
+    "Permission:AuthenticationApiKeys.Keys.Create": "Nieuwe API-sleutels aanmaken",
+    "Permission:AuthenticationApiKeys.Keys.Revoke": "API-sleutels intrekken",
+    "Permission:AuthenticationApiKeys.Keys.Rotate": "API-sleutels roteren (intrekken en vervangen)",
+    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "Rechten en CIDR-bereiken van API-sleutels bijwerken"
   }
 }

@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Endpoints.Extensions;
+using Granit.Timeline.Endpoints.Permissions;
 using Granit.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -40,7 +41,9 @@ public sealed class TimelineFollowerEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(TimelinePermissions.Entries.Read, policy => policy.RequireRole(UserRole))
+            .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireRole(UserRole));
         builder.Services.AddSingleton(_followerService);
         builder.Services.AddSingleton(_currentUser);
 

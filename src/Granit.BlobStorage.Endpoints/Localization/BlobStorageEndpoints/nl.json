@@ -2,10 +2,7 @@
   "culture": "nl",
   "texts": {
     "PermissionGroup:BlobStorage": "Bestandsopslag",
-    "Permission:BlobStorage.Blobs.Read": "Bestandsdescriptors bekijken",
-    "Permission:BlobStorage.Blobs.Upload": "Bestanden uploaden",
-    "Permission:BlobStorage.Blobs.Download": "Bestanden downloaden",
-    "Permission:BlobStorage.Blobs.Delete": "Bestanden verwijderen",
-    "Permission:BlobStorage.Blobs.Manage": "Bestanden beheren (uploads bevestigen, weesbestanden opruimen)"
+    "Permission:BlobStorage.Administration.Read": "Bestandsopslagbeheer bekijken (lijst, descriptors, query)",
+    "Permission:BlobStorage.Administration.Manage": "Bestandsopslag beheren (uploaden, downloaden, verwijderen, bevestigen, opruimen)"
   }
 }

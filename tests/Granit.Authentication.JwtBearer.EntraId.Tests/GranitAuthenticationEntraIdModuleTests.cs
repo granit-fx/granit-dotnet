@@ -4,7 +4,6 @@
 // Verifies the complete DI wiring via ConfigureServices:
 //   - ICurrentUserService resolvable (via dependency on GranitJwtBearerModule)
 //   - EntraIdClaimsTransformation registered
-//   - "Admin" policy registered
 // =============================================================================
 
 using Granit.Authentication.JwtBearer;
@@ -12,10 +11,8 @@ using Granit.Authentication.JwtBearer.EntraId.Authentication;
 using Granit.Modularity;
 using Granit.Users;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
@@ -67,25 +64,4 @@ public sealed class GranitAuthenticationEntraIdModuleTests
         descriptors.ShouldContain(d => d.ImplementationType == typeof(EntraIdClaimsTransformation));
     }
 
-    [Fact]
-    public void ConfigureServices_RegistersAdminPolicy()
-    {
-        // Arrange
-        GranitAuthenticationEntraIdModule module = new();
-        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        builder.Configuration["EntraId:TenantId"] = "00000000-0000-0000-0000-000000000001";
-        builder.Configuration["EntraId:ClientId"] = "test-client";
-        builder.Configuration["EntraId:AdminRole"] = "admin";
-        ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
-        new GranitJwtBearerModule().ConfigureServices(context);
-
-        // Act
-        module.ConfigureServices(context);
-
-        using ServiceProvider sp = builder.Services.BuildServiceProvider();
-
-        // Assert
-        AuthorizationOptions authOptions = sp.GetRequiredService<IOptions<AuthorizationOptions>>().Value;
-        authOptions.GetPolicy("Admin").ShouldNotBeNull();
-    }
 }

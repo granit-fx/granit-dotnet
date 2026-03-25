@@ -281,10 +281,9 @@
     {
       "name": "Granit.Bff.Endpoints",
       "deps": [
+        "Granit.Oidc",
         "Granit.Bff",
         "Granit.Http.ApiDocumentation",
-        "Granit.Http.Cookies",
-        "Granit.Oidc",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -602,7 +601,7 @@
     {
       "name": "Granit.Http.Cookies",
       "deps": [
-        "Granit"
+        "Granit.Timing"
       ],
       "framework": "net10.0"
     },
@@ -1853,8 +1852,8 @@
       "members": []
     },
     {
-      "name": "Chats",
-      "fqn": "Granit.AI.Endpoints.Permissions.Chats",
+      "name": "Chat",
+      "fqn": "Granit.AI.Endpoints.Permissions.Chat",
       "kind": "class",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/Permissions/AIPermissions.cs",
@@ -1871,8 +1870,8 @@
       "members": []
     },
     {
-      "name": "Usages",
-      "fqn": "Granit.AI.Endpoints.Permissions.Usages",
+      "name": "Usage",
+      "fqn": "Granit.AI.Endpoints.Permissions.Usage",
       "kind": "class",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/Permissions/AIPermissions.cs",
@@ -3210,6 +3209,15 @@
       "members": []
     },
     {
+      "name": "AuditLogQueryParameters",
+      "fqn": "Granit.AuditLog.Endpoints.Dtos.AuditLogQueryParameters",
+      "kind": "class",
+      "project": "Granit.AuditLog.Endpoints",
+      "file": "src/Granit.AuditLog.Endpoints/Dtos/AuditLogQueryParameters.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "AuditLogQueryRequest",
       "fqn": "Granit.AuditLog.Endpoints.Dtos.AuditLogQueryRequest",
       "kind": "class",
@@ -3249,7 +3257,7 @@
       "kind": "class",
       "project": "Granit.AuditLog.Endpoints",
       "file": "src/Granit.AuditLog.Endpoints/GranitAuditLogEndpointsModule.cs",
-      "line": 23,
+      "line": 21,
       "members": []
     },
     {
@@ -3830,6 +3838,22 @@
           "kind": "method",
           "signature": "ConfigureApiKeysModule(this ModelBuilder modelBuilder)",
           "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitApiKeysDbProperties",
+      "fqn": "Granit.Authentication.ApiKeys.EntityFrameworkCore.GranitApiKeysDbProperties",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys.EntityFrameworkCore",
+      "file": "src/Granit.Authentication.ApiKeys.EntityFrameworkCore/GranitApiKeysDbProperties.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
         }
       ]
     },
@@ -5904,7 +5928,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "MapGranitBffEndpoints",
@@ -5920,7 +5944,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 163,
+      "line": 142,
       "members": [
         {
           "name": "InvokeAsync",
@@ -5936,15 +5960,8 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/GranitBffEndpointsModule.cs",
-      "line": 17,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
+      "line": 14,
+      "members": []
     },
     {
       "name": "GranitBffEntityFrameworkCoreModule",
@@ -6439,6 +6456,28 @@
       ]
     },
     {
+      "name": "DbStoreBlobContent",
+      "fqn": "Granit.BlobStorage.Database.Entities.DbStoreBlobContent",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Database",
+      "file": "src/Granit.BlobStorage.Database/Entities/DbStoreBlobContent.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Id",
+          "kind": "property",
+          "signature": "Guid Id",
+          "returnType": "Guid"
+        },
+        {
+          "name": "Content",
+          "kind": "property",
+          "signature": "byte[] Content",
+          "returnType": "byte[]"
+        }
+      ]
+    },
+    {
       "name": "BlobStorageDatabaseHostApplicationBuilderExtensions",
       "fqn": "Granit.BlobStorage.Database.Extensions.BlobStorageDatabaseHostApplicationBuilderExtensions",
       "kind": "class",
@@ -6447,9 +6486,9 @@
       "line": 21,
       "members": [
         {
-          "name": "AddGranitBlobStorageDatabase",
+          "name": "AddGranitBlobStorageDbStore",
           "kind": "method",
-          "signature": "AddGranitBlobStorageDatabase(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitBlobStorageDbStore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -6464,11 +6503,36 @@
       "members": []
     },
     {
+      "name": "GranitBlobStorageDbStoreModule",
+      "fqn": "Granit.BlobStorage.Database.GranitBlobStorageDbStoreModule",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Database",
+      "file": "src/Granit.BlobStorage.Database/GranitBlobStorageDbStoreModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "DatabaseBlobOptions",
       "fqn": "Granit.BlobStorage.Database.Options.DatabaseBlobOptions",
       "kind": "class",
       "project": "Granit.BlobStorage.Database",
       "file": "src/Granit.BlobStorage.Database/Options/DatabaseBlobOptions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "MaxBlobSizeBytes",
+          "kind": "property",
+          "signature": "long MaxBlobSizeBytes",
+          "returnType": "long"
+        }
+      ]
+    },
+    {
+      "name": "DbStoreBlobOptions",
+      "fqn": "Granit.BlobStorage.Database.Options.DbStoreBlobOptions",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Database",
+      "file": "src/Granit.BlobStorage.Database/Options/DbStoreBlobOptions.cs",
       "line": 11,
       "members": [
         {
@@ -7812,7 +7876,7 @@
       "kind": "record",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Dtos/Import/ConfirmMappingsRequest.cs",
-      "line": 13,
+      "line": 8,
       "members": []
     },
     {
@@ -7922,7 +7986,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.EntityFrameworkCore",
       "file": "src/Granit.DataExchange.EntityFrameworkCore/Extensions/DataExchangeEfCoreHostBuilderExtensions.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitDataExchangeEntityFrameworkCore",
@@ -10257,6 +10321,15 @@
       "members": []
     },
     {
+      "name": "GranitEncryptionReEncryptionModule",
+      "fqn": "Granit.Encryption.BackgroundJobs.GranitEncryptionReEncryptionModule",
+      "kind": "class",
+      "project": "Granit.Encryption.BackgroundJobs",
+      "file": "src/Granit.Encryption.BackgroundJobs/GranitEncryptionReEncryptionModule.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "IReEncryptionJob",
       "fqn": "Granit.Encryption.BackgroundJobs.IReEncryptionJob",
       "kind": "interface",
@@ -12349,21 +12422,8 @@
       "kind": "record",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/CookieDefinition.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "SameSite",
-          "kind": "property",
-          "signature": "SameSiteMode SameSite",
-          "returnType": "SameSiteMode"
-        },
-        {
-          "name": "Path",
-          "kind": "property",
-          "signature": "string Path",
-          "returnType": "string"
-        }
-      ]
+      "line": 12,
+      "members": []
     },
     {
       "name": "CookiesLocalizationResource",
@@ -12502,7 +12562,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/GranitHttpCookiesModule.cs",
-      "line": 10,
+      "line": 14,
       "members": []
     },
     {
@@ -13457,7 +13517,7 @@
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Extensions/IdentityEndpointRouteBuilderExtensions.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "MapIdentityUserCacheEndpoints",
@@ -13489,7 +13549,7 @@
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Extensions/IdentityProviderEndpointRouteBuilderExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "MapIdentityProviderEndpoints",
@@ -13579,25 +13639,16 @@
       "fqn": "Granit.Identity.Endpoints.Permissions.Groups",
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
-      "file": "src/Granit.Identity.Endpoints/Permissions/IdentityProviderPermissions.cs",
-      "line": 36,
+      "file": "src/Granit.Identity.Endpoints/Permissions/IdentityPermissions.cs",
+      "line": 42,
       "members": []
     },
     {
-      "name": "IdentityProviderPermissions",
-      "fqn": "Granit.Identity.Endpoints.Permissions.IdentityProviderPermissions",
+      "name": "IdentityPermissions",
+      "fqn": "Granit.Identity.Endpoints.Permissions.IdentityPermissions",
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
-      "file": "src/Granit.Identity.Endpoints/Permissions/IdentityProviderPermissions.cs",
-      "line": 10,
-      "members": []
-    },
-    {
-      "name": "IdentityUserCachePermissions",
-      "fqn": "Granit.Identity.Endpoints.Permissions.IdentityUserCachePermissions",
-      "kind": "class",
-      "project": "Granit.Identity.Endpoints",
-      "file": "src/Granit.Identity.Endpoints/Permissions/IdentityUserCachePermissions.cs",
+      "file": "src/Granit.Identity.Endpoints/Permissions/IdentityPermissions.cs",
       "line": 10,
       "members": []
     },
@@ -13606,8 +13657,8 @@
       "fqn": "Granit.Identity.Endpoints.Permissions.Passwords",
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
-      "file": "src/Granit.Identity.Endpoints/Permissions/IdentityProviderPermissions.cs",
-      "line": 56,
+      "file": "src/Granit.Identity.Endpoints/Permissions/IdentityPermissions.cs",
+      "line": 62,
       "members": []
     },
     {
@@ -13615,8 +13666,8 @@
       "fqn": "Granit.Identity.Endpoints.Permissions.Roles",
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
-      "file": "src/Granit.Identity.Endpoints/Permissions/IdentityProviderPermissions.cs",
-      "line": 26,
+      "file": "src/Granit.Identity.Endpoints/Permissions/IdentityPermissions.cs",
+      "line": 32,
       "members": []
     },
     {
@@ -13624,17 +13675,8 @@
       "fqn": "Granit.Identity.Endpoints.Permissions.Sessions",
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
-      "file": "src/Granit.Identity.Endpoints/Permissions/IdentityProviderPermissions.cs",
-      "line": 46,
-      "members": []
-    },
-    {
-      "name": "UserCache",
-      "fqn": "Granit.Identity.Endpoints.Permissions.UserCache",
-      "kind": "class",
-      "project": "Granit.Identity.Endpoints",
-      "file": "src/Granit.Identity.Endpoints/Permissions/IdentityUserCachePermissions.cs",
-      "line": 16,
+      "file": "src/Granit.Identity.Endpoints/Permissions/IdentityPermissions.cs",
+      "line": 52,
       "members": []
     },
     {
@@ -13642,7 +13684,7 @@
       "fqn": "Granit.Identity.Endpoints.Permissions.Users",
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
-      "file": "src/Granit.Identity.Endpoints/Permissions/IdentityProviderPermissions.cs",
+      "file": "src/Granit.Identity.Endpoints/Permissions/IdentityPermissions.cs",
       "line": 16,
       "members": []
     },
@@ -19518,7 +19560,7 @@
       "kind": "enum",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Domain/SigningKey.cs",
-      "line": 95,
+      "line": 98,
       "members": []
     },
     {
@@ -22402,8 +22444,8 @@
       "members": []
     },
     {
-      "name": "Deletions",
-      "fqn": "Granit.Privacy.Endpoints.Permissions.Deletions",
+      "name": "Deletion",
+      "fqn": "Granit.Privacy.Endpoints.Permissions.Deletion",
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
@@ -22411,8 +22453,8 @@
       "members": []
     },
     {
-      "name": "Exports",
-      "fqn": "Granit.Privacy.Endpoints.Permissions.Exports",
+      "name": "Export",
+      "fqn": "Granit.Privacy.Endpoints.Permissions.Export",
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
@@ -24555,12 +24597,12 @@
       ]
     },
     {
-      "name": "Globals",
-      "fqn": "Granit.Settings.Endpoints.Permissions.Globals",
+      "name": "Global",
+      "fqn": "Granit.Settings.Endpoints.Permissions.Global",
       "kind": "class",
       "project": "Granit.Settings.Endpoints",
       "file": "src/Granit.Settings.Endpoints/Permissions/SettingsPermissions.cs",
-      "line": 12,
+      "line": 14,
       "members": []
     },
     {
@@ -24573,12 +24615,12 @@
       "members": []
     },
     {
-      "name": "Tenants",
-      "fqn": "Granit.Settings.Endpoints.Permissions.Tenants",
+      "name": "Tenant",
+      "fqn": "Granit.Settings.Endpoints.Permissions.Tenant",
       "kind": "class",
       "project": "Granit.Settings.Endpoints",
       "file": "src/Granit.Settings.Endpoints/Permissions/SettingsPermissions.cs",
-      "line": 22,
+      "line": 24,
       "members": []
     },
     {
@@ -30018,8 +30060,8 @@
       ]
     },
     {
-      "name": "Histories",
-      "fqn": "Granit.Workflow.Endpoints.Permissions.Histories",
+      "name": "History",
+      "fqn": "Granit.Workflow.Endpoints.Permissions.History",
       "kind": "class",
       "project": "Granit.Workflow.Endpoints",
       "file": "src/Granit.Workflow.Endpoints/Permissions/WorkflowPermissions.cs",

@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Endpoints.Extensions;
-using Granit.BackgroundJobs.Endpoints.Internal;
+using Granit.BackgroundJobs.Endpoints.Permissions;
 using Granit.Exceptions;
 using Granit.QueryEngine;
 using Microsoft.AspNetCore.Authentication;
@@ -53,7 +53,9 @@ public sealed class BackgroundJobsEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(BackgroundJobsPermissions.Jobs.Read, policy => policy.RequireRole(AdminRole))
+            .AddPolicy(BackgroundJobsPermissions.Jobs.Manage, policy => policy.RequireRole(AdminRole));
         builder.Services.AddSingleton(_reader);
         builder.Services.AddSingleton(_writer);
 
@@ -238,46 +240,6 @@ public sealed class BackgroundJobsEndpointsTests : IAsyncDisposable
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
-    }
-
-    // ── Security: custom role via options ─────────────────────────────────────
-
-    [Fact]
-    public async Task MapBackgroundJobsEndpoints_WithCustomRole_EnforcesCustomRole()
-    {
-        // Arrange — separate app with a custom required role
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        builder.WebHost.UseTestServer();
-        builder.Services
-            .AddAuthentication(TestAuthHandler.SchemeName)
-            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
-                TestAuthHandler.SchemeName, _ => { });
-        builder.Services.AddAuthorization();
-        builder.Services.AddSingleton(_reader);
-        builder.Services.AddSingleton(_writer);
-        _reader.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-
-        await using WebApplication customApp = builder.Build();
-        customApp.MapBackgroundJobsEndpoints(opts => opts.RequiredRole = "ops-team");
-        await customApp.StartAsync(TestContext.Current.CancellationToken);
-
-        // Client with "ops-team" role
-        using HttpClient opsClient = customApp.GetTestClient();
-        opsClient.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, "ops-team");
-
-        // Client with admin role (should be rejected since policy expects ops-team)
-        using HttpClient adminClient = customApp.GetTestClient();
-        adminClient.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, AdminRole);
-
-        // Act
-        HttpResponseMessage opsResponse = await opsClient.GetAsync(
-            "/background-jobs", TestContext.Current.CancellationToken);
-        HttpResponseMessage adminResponse = await adminClient.GetAsync(
-            "/background-jobs", TestContext.Current.CancellationToken);
-
-        // Assert
-        opsResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
-        adminResponse.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

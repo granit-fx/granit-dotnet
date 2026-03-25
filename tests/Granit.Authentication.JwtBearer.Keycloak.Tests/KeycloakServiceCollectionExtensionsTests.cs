@@ -5,7 +5,6 @@
 //   - KeycloakOptions from the "Keycloak" section
 //   - PostConfigure JWT Bearer (Authority, Audience, NameClaimType)
 //   - KeycloakClaimsTransformation
-//   - "Admin" policy
 // =============================================================================
 
 using Granit.Authentication.JwtBearer.Extensions;
@@ -14,7 +13,6 @@ using Granit.Authentication.JwtBearer.Keycloak.Extensions;
 using Granit.Authentication.JwtBearer.Keycloak.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -27,15 +25,13 @@ public sealed class KeycloakServiceCollectionExtensionsTests
 {
     private static IConfiguration CreateConfiguration(
         string authority = "https://keycloak.test/realms/test",
-        string clientId = "test-client",
-        string adminRole = "admin") =>
+        string clientId = "test-client") =>
         new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["Keycloak:Authority"] = authority,
                 ["Keycloak:ClientId"] = clientId,
                 ["Keycloak:RequireHttpsMetadata"] = "false",
-                ["Keycloak:AdminRole"] = adminRole
             })
             .Build();
 
@@ -132,24 +128,4 @@ public sealed class KeycloakServiceCollectionExtensionsTests
         descriptors.ShouldContain(d => d.ImplementationType == typeof(KeycloakClaimsTransformation));
     }
 
-    [Fact]
-    public void AddGranitKeycloak_RegistersAdminPolicy()
-    {
-        // Arrange
-        ServiceCollection services = new();
-        IConfiguration config = CreateConfiguration(adminRole: "superadmin");
-        services.AddSingleton<IConfiguration>(config);
-        services.AddGranitJwtBearer();
-
-        // Act
-        services.AddGranitKeycloak();
-
-        using ServiceProvider sp = services.BuildServiceProvider();
-
-        // Assert
-        AuthorizationOptions authOptions = sp.GetRequiredService<IOptions<AuthorizationOptions>>().Value;
-        authOptions.GetPolicy("Admin").ShouldNotBeNull();
-        authOptions.GetPolicy("Authenticated").ShouldNotBeNull("inherited from Granit.Authentication.JwtBearer");
-        authOptions.GetPolicy("DataAccess").ShouldBeNull("DataAccess is application-specific, not part of Granit.Authentication.JwtBearer.Keycloak");
-    }
 }

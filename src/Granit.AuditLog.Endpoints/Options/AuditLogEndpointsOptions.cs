@@ -11,18 +11,6 @@ public sealed class AuditLogEndpointsOptions
     public string RoutePrefix { get; set; } = "audit-log";
 
     /// <summary>
-    /// Authorization policy name for all audit log endpoints.
-    /// Default: <c>"AuditLog.Entries.Read"</c>.
-    /// </summary>
-    public string AuthorizationPolicy { get; set; } = "AuditLog.Entries.Read";
-
-    /// <summary>
-    /// Role required for audit log access (used as fallback when the policy is not explicitly configured).
-    /// Default: <c>"granit-audit-log-admin"</c>.
-    /// </summary>
-    public string RequiredRole { get; set; } = "granit-audit-log-admin";
-
-    /// <summary>
     /// OpenAPI tag name for the audit log endpoints.
     /// Default: <c>"Audit Log"</c>.
     /// </summary>

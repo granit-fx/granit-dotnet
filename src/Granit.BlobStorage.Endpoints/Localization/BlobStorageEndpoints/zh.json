@@ -2,10 +2,7 @@
   "culture": "zh",
   "texts": {
     "PermissionGroup:BlobStorage": "文件存储",
-    "Permission:BlobStorage.Blobs.Read": "查看文件描述符",
-    "Permission:BlobStorage.Blobs.Upload": "上传文件",
-    "Permission:BlobStorage.Blobs.Download": "下载文件",
-    "Permission:BlobStorage.Blobs.Delete": "删除文件",
-    "Permission:BlobStorage.Blobs.Manage": "管理文件（确认上传、清理孤立文件）"
+    "Permission:BlobStorage.Administration.Read": "查看文件存储管理（列表、描述符、查询）",
+    "Permission:BlobStorage.Administration.Manage": "管理文件存储（上传、下载、删除、确认、清理）"
   }
 }

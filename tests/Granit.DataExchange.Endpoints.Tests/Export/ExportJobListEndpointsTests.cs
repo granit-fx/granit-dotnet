@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Granit.DataExchange.Endpoints.Dtos.Export;
 using Granit.DataExchange.Endpoints.Extensions;
+using Granit.DataExchange.Endpoints.Permissions;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Import.Domain;
@@ -45,7 +46,9 @@ public sealed class ExportJobListEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(DataExchangePermissions.Imports.Execute, policy => policy.RequireRole(AdminRole))
+            .AddPolicy(DataExchangePermissions.Exports.Execute, policy => policy.RequireRole(AdminRole));
         builder.Services.AddSingleton(_jobReader);
         builder.Services.AddSingleton(Substitute.For<IExportOrchestrator>());
         builder.Services.AddSingleton(Substitute.For<IExportPresetReader>());

@@ -5,7 +5,6 @@
 //   - EntraIdOptions from the "EntraId" section
 //   - PostConfigure JWT Bearer (Authority, Audience, NameClaimType)
 //   - EntraIdClaimsTransformation
-//   - "Admin" policy
 // =============================================================================
 
 using Granit.Authentication.JwtBearer.EntraId.Authentication;
@@ -14,7 +13,6 @@ using Granit.Authentication.JwtBearer.EntraId.Options;
 using Granit.Authentication.JwtBearer.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -27,15 +25,13 @@ public sealed class EntraIdServiceCollectionExtensionsTests
 {
     private static IConfiguration CreateConfiguration(
         string tenantId = "00000000-0000-0000-0000-000000000001",
-        string clientId = "test-client",
-        string adminRole = "admin") =>
+        string clientId = "test-client") =>
         new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["EntraId:TenantId"] = tenantId,
                 ["EntraId:ClientId"] = clientId,
                 ["EntraId:Instance"] = "https://login.microsoftonline.com/",
-                ["EntraId:AdminRole"] = adminRole,
                 ["EntraId:RequireHttpsMetadata"] = "false"
             })
             .Build();
@@ -104,22 +100,4 @@ public sealed class EntraIdServiceCollectionExtensionsTests
         descriptors.ShouldContain(d => d.ImplementationType == typeof(EntraIdClaimsTransformation));
     }
 
-    [Fact]
-    public void AddGranitEntraId_RegistersAdminPolicy()
-    {
-        // Arrange
-        ServiceCollection services = new();
-        IConfiguration config = CreateConfiguration(adminRole: "superadmin");
-        services.AddSingleton<IConfiguration>(config);
-        services.AddGranitJwtBearer();
-
-        // Act
-        services.AddGranitEntraId();
-
-        using ServiceProvider sp = services.BuildServiceProvider();
-
-        // Assert
-        AuthorizationOptions authOptions = sp.GetRequiredService<IOptions<AuthorizationOptions>>().Value;
-        authOptions.GetPolicy("Admin").ShouldNotBeNull();
-    }
 }

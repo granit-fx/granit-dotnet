@@ -26,8 +26,8 @@ public sealed class PermissionRequirementTests
     [Fact]
     public void Constructor_DifferentPermission_StoresCorrectValue()
     {
-        PermissionRequirement requirement = new("BlobStorage.Blobs.Read");
+        PermissionRequirement requirement = new("BlobStorage.Administration.Read");
 
-        requirement.PermissionName.ShouldBe("BlobStorage.Blobs.Read");
+        requirement.PermissionName.ShouldBe("BlobStorage.Administration.Read");
     }
 }

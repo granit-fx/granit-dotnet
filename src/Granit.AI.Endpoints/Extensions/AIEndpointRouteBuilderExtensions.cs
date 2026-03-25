@@ -1,14 +1,12 @@
 using Granit.AI.Endpoints.Endpoints;
-using Granit.AI.Endpoints.Internal;
 using Granit.AI.Endpoints.Options;
+using Granit.AI.Endpoints.Permissions;
 using Granit.QueryEngine.Endpoints.Extensions;
 using Granit.Validation.AspNetCore;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Granit.AI.Endpoints.Extensions;
 
@@ -29,7 +27,6 @@ public static class AIEndpointRouteBuilderExtensions
     /// app.MapAIEndpoints(opts =>
     /// {
     ///     opts.RoutePrefix = "api/ai";
-    ///     opts.AdminRole = "ai-admin";
     /// });
     /// </code>
     /// </remarks>
@@ -43,21 +40,12 @@ public static class AIEndpointRouteBuilderExtensions
         AIEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        IOptions<AuthorizationOptions> authOptions =
-            endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
-        authOptions.Value.AddPolicy(
-            AIAuthorizationPolicy.AdminPolicyName,
-            policy => policy.RequireRole(options.AdminRole));
-        authOptions.Value.AddPolicy(
-            AIAuthorizationPolicy.UserPolicyName,
-            policy => policy.RequireRole(options.UserRole));
-
         RouteGroupBuilder group = endpoints.MapGranitGroup(options.RoutePrefix);
 
         // Admin endpoints — workspace CRUD
         RouteGroupBuilder adminGroup = group.MapGroup("")
             .WithTags(options.WorkspacesTagName)
-            .RequireAuthorization(AIAuthorizationPolicy.AdminPolicyName);
+            .RequireAuthorization(AIPermissions.Workspaces.Manage);
         adminGroup.MapWorkspaceEndpoints();
 
         // Admin endpoints — usage tracking via Granit.QueryEngine.
@@ -73,7 +61,7 @@ public static class AIEndpointRouteBuilderExtensions
         {
             RouteGroupBuilder usageGroup = group.MapGroup("")
                 .WithTags(options.UsageTagName)
-                .RequireAuthorization(AIAuthorizationPolicy.AdminPolicyName);
+                .RequireAuthorization(AIPermissions.Usage.Read);
             usageGroup.MapQueryEndpoints<AIUsageRecord>(
                 "usage/query",
                 sp => sp.GetRequiredService<IAIUsageQueryableProvider>().GetUsageRecords());
@@ -82,13 +70,13 @@ public static class AIEndpointRouteBuilderExtensions
         // User endpoints — chat completion proxy
         RouteGroupBuilder chatGroup = group.MapGroup("")
             .WithTags(options.InferenceTagName)
-            .RequireAuthorization(AIAuthorizationPolicy.UserPolicyName);
+            .RequireAuthorization(AIPermissions.Chat.Execute);
         chatGroup.MapChatEndpoints();
 
         // User endpoints — embedding generation proxy
         RouteGroupBuilder embeddingGroup = group.MapGroup("")
             .WithTags(options.InferenceTagName)
-            .RequireAuthorization(AIAuthorizationPolicy.UserPolicyName);
+            .RequireAuthorization(AIPermissions.Embeddings.Execute);
         embeddingGroup.MapEmbeddingEndpoints();
 
         return group;

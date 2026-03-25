@@ -19,7 +19,6 @@ public sealed class EntraIdOptionsTests
         options.TenantId.ShouldBe(string.Empty);
         options.ClientId.ShouldBe(string.Empty);
         options.RequireHttpsMetadata.ShouldBeTrue();
-        options.AdminRole.ShouldBe("admin");
     }
 
     [Fact]
@@ -58,11 +57,4 @@ public sealed class EntraIdOptionsTests
         options.Authority.ShouldBe("https://login.microsoftonline.com/my-tenant/v2.0");
     }
 
-    [Fact]
-    public void AdminRole_CanBeOverridden()
-    {
-        EntraIdOptions options = new() { AdminRole = "GlobalAdmin" };
-
-        options.AdminRole.ShouldBe("GlobalAdmin");
-    }
 }

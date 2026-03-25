@@ -23,9 +23,6 @@ public sealed class KeycloakOptions
     /// <summary>Expected audience in the token. Default: ClientId.</summary>
     public string? Audience { get; set; }
 
-    /// <summary>Admin role (Keycloak realm role). Default: "admin".</summary>
-    public string AdminRole { get; set; } = "admin";
-
     /// <summary>
     /// Source of roles in the Keycloak token.
     /// <list type="bullet">

@@ -24,7 +24,6 @@ public sealed class GoogleCloudAuthenticationOptionsTests
         GoogleCloudAuthenticationOptions opts = new();
 
         opts.RequireHttpsMetadata.ShouldBeTrue();
-        opts.AdminRole.ShouldBe("admin");
         opts.RolesClaimKey.ShouldBe("roles");
     }
 }

@@ -1,14 +1,10 @@
 using Granit.Validation.AspNetCore;
 using Granit.Workflow.Endpoints.Endpoints;
-using Granit.Workflow.Endpoints.Internal;
 using Granit.Workflow.Endpoints.Options;
 using Granit.Workflow.Endpoints.Permissions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Granit.Workflow.Endpoints.Extensions;
 
@@ -22,9 +18,7 @@ public static class WorkflowEndpointRouteBuilderExtensions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Registers the <c>Workflow.History</c> authorization policy (see
-    /// <see cref="WorkflowAuthorizationPolicy.PolicyName"/>) requiring the role
-    /// configured via <see cref="WorkflowEndpointsOptions.RequiredRole"/>.
+    /// Requires the <c>Workflow.History.Read</c> permission on the route group.
     /// </para>
     /// <para>Registers the following routes:</para>
     /// <list type="bullet">
@@ -34,11 +28,10 @@ public static class WorkflowEndpointRouteBuilderExtensions
     /// <code>
     /// app.MapWorkflowEndpoints();
     ///
-    /// // With a custom prefix or role:
+    /// // With a custom prefix:
     /// app.MapWorkflowEndpoints(opts =&gt;
     /// {
     ///     opts.RoutePrefix = "admin/workflow";
-    ///     opts.RequiredRole = "ops-team";
     /// });
     /// </code>
     /// </remarks>
@@ -52,18 +45,11 @@ public static class WorkflowEndpointRouteBuilderExtensions
         WorkflowEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        IOptions<AuthorizationOptions> authOptions =
-            endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
-        authOptions.Value.AddPolicy(
-            WorkflowAuthorizationPolicy.PolicyName,
-            policy => policy.RequireRole(options.RequiredRole));
-
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.RoutePrefix)
-            .WithTags(options.TagName)
-            .RequireAuthorization(WorkflowAuthorizationPolicy.PolicyName);
+            .WithTags(options.TagName);
 
-        group.MapReadEndpoints();
+        group.RequireAuthorization(WorkflowPermissions.History.Read).MapReadEndpoints();
 
         return group;
     }

@@ -100,7 +100,6 @@ public sealed class JwtBearerServiceCollectionExtensionsTests
         AuthorizationOptions authOptions = sp.GetRequiredService<IOptions<AuthorizationOptions>>().Value;
 
         authOptions.GetPolicy("Authenticated").ShouldNotBeNull();
-        authOptions.GetPolicy("Admin").ShouldBeNull("Admin is specific to Keycloak, registered by Granit.Authentication.JwtBearer.Keycloak");
     }
 
     [Fact]

@@ -2,7 +2,6 @@ using Granit.Authentication.JwtBearer.GoogleCloud.Authentication;
 using Granit.Authentication.JwtBearer.GoogleCloud.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -15,8 +14,8 @@ namespace Granit.Authentication.JwtBearer.GoogleCloud.Extensions;
 public static class GoogleCloudAuthenticationServiceCollectionExtensions
 {
     /// <summary>
-    /// Overrides JWT Bearer configuration with Firebase Auth values,
-    /// registers <see cref="GoogleCloudClaimsTransformation"/> and the <c>"Admin"</c> policy.
+    /// Overrides JWT Bearer configuration with Firebase Auth values
+    /// and registers <see cref="GoogleCloudClaimsTransformation"/>.
     /// </summary>
     public static IServiceCollection AddGranitGoogleCloudAuthentication(
         this IServiceCollection services)
@@ -46,15 +45,6 @@ public static class GoogleCloudAuthenticationServiceCollectionExtensions
             });
 
         services.AddTransient<IClaimsTransformation, GoogleCloudClaimsTransformation>();
-
-        // Deferred Admin policy: reads AdminRole from GoogleCloudAuthenticationOptions at resolution time.
-        services
-            .AddOptions<AuthorizationOptions>()
-            .Configure<IOptions<GoogleCloudAuthenticationOptions>>((authOpts, gcOpts) =>
-            {
-                authOpts.AddPolicy("Admin",
-                    policy => policy.RequireRole(gcOpts.Value.AdminRole));
-            });
 
         return services;
     }

@@ -12,8 +12,6 @@ public sealed class AuditLogEndpointsOptionsTests
         AuditLogEndpointsOptions options = new();
 
         options.RoutePrefix.ShouldBe("audit-log");
-        options.AuthorizationPolicy.ShouldBe("AuditLog.Entries.Read");
-        options.RequiredRole.ShouldBe("granit-audit-log-admin");
         options.TagName.ShouldBe("Audit Log");
     }
 
@@ -23,14 +21,10 @@ public sealed class AuditLogEndpointsOptionsTests
         AuditLogEndpointsOptions options = new()
         {
             RoutePrefix = "custom-audit",
-            AuthorizationPolicy = "Custom.Policy",
-            RequiredRole = "custom-role",
             TagName = "Custom Tag",
         };
 
         options.RoutePrefix.ShouldBe("custom-audit");
-        options.AuthorizationPolicy.ShouldBe("Custom.Policy");
-        options.RequiredRole.ShouldBe("custom-role");
         options.TagName.ShouldBe("Custom Tag");
     }
 }

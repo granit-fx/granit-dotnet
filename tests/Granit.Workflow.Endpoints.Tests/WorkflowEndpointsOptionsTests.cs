@@ -21,13 +21,6 @@ public sealed class WorkflowEndpointsOptionsTests
     }
 
     [Fact]
-    public void Default_RequiredRole_is_granit_workflow_admin()
-    {
-        WorkflowEndpointsOptions options = new();
-        options.RequiredRole.ShouldBe("granit-workflow-admin");
-    }
-
-    [Fact]
     public void Default_TagName_is_Workflow()
     {
         WorkflowEndpointsOptions options = new();
@@ -40,12 +33,10 @@ public sealed class WorkflowEndpointsOptionsTests
         WorkflowEndpointsOptions options = new()
         {
             RoutePrefix = "wf",
-            RequiredRole = "admin",
             TagName = "WF",
         };
 
         options.RoutePrefix.ShouldBe("wf");
-        options.RequiredRole.ShouldBe("admin");
         options.TagName.ShouldBe("WF");
     }
 }

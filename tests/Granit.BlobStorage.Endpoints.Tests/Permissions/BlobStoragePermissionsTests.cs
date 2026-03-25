@@ -10,12 +10,9 @@ public sealed class BlobStoragePermissionsTests
     public void GroupName_IsBlobStorage() => BlobStoragePermissions.GroupName.ShouldBe("BlobStorage");
 
     [Theory]
-    [InlineData("BlobStorage.Blobs.Read")]
-    [InlineData("BlobStorage.Blobs.Upload")]
-    [InlineData("BlobStorage.Blobs.Download")]
-    [InlineData("BlobStorage.Blobs.Delete")]
-    [InlineData("BlobStorage.Blobs.Manage")]
-    public void BlobPermissions_FollowThreeSegmentConvention(string permissionName)
+    [InlineData("BlobStorage.Administration.Read")]
+    [InlineData("BlobStorage.Administration.Manage")]
+    public void AdministrationPermissions_FollowThreeSegmentConvention(string permissionName)
     {
         string[] segments = permissionName.Split('.');
 
@@ -23,17 +20,8 @@ public sealed class BlobStoragePermissionsTests
     }
 
     [Fact]
-    public void Blobs_Read_HasCorrectValue() => BlobStoragePermissions.Blobs.Read.ShouldBe("BlobStorage.Blobs.Read");
+    public void Administration_Read_HasCorrectValue() => BlobStoragePermissions.Administration.Read.ShouldBe("BlobStorage.Administration.Read");
 
     [Fact]
-    public void Blobs_Upload_HasCorrectValue() => BlobStoragePermissions.Blobs.Upload.ShouldBe("BlobStorage.Blobs.Upload");
-
-    [Fact]
-    public void Blobs_Download_HasCorrectValue() => BlobStoragePermissions.Blobs.Download.ShouldBe("BlobStorage.Blobs.Download");
-
-    [Fact]
-    public void Blobs_Delete_HasCorrectValue() => BlobStoragePermissions.Blobs.Delete.ShouldBe("BlobStorage.Blobs.Delete");
-
-    [Fact]
-    public void Blobs_Manage_HasCorrectValue() => BlobStoragePermissions.Blobs.Manage.ShouldBe("BlobStorage.Blobs.Manage");
+    public void Administration_Manage_HasCorrectValue() => BlobStoragePermissions.Administration.Manage.ShouldBe("BlobStorage.Administration.Manage");
 }

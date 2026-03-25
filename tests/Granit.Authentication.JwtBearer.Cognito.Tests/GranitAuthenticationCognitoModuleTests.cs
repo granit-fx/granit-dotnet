@@ -2,11 +2,9 @@ using Granit.Authentication.JwtBearer.Cognito.Authentication;
 using Granit.Authentication.JwtBearer.Extensions;
 using Granit.Modularity;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
@@ -23,7 +21,6 @@ public sealed class GranitAuthenticationCognitoModuleTests
             ["Authentication:Audience"] = "test",
             ["Cognito:Authority"] = "https://cognito-idp.eu-west-1.amazonaws.com/eu-west-1_TEST",
             ["Cognito:ClientId"] = "test-client",
-            ["Cognito:AdminGroup"] = "admins",
         });
 
         builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
@@ -50,13 +47,4 @@ public sealed class GranitAuthenticationCognitoModuleTests
         transformation.ShouldBeOfType<CognitoClaimsTransformation>();
     }
 
-    [Fact]
-    public void ConfigureServices_RegistersAdminPolicy()
-    {
-        ServiceProvider provider = BuildProvider();
-
-        AuthorizationOptions authOptions = provider.GetRequiredService<IOptions<AuthorizationOptions>>().Value;
-
-        authOptions.GetPolicy("Admin").ShouldNotBeNull();
-    }
 }

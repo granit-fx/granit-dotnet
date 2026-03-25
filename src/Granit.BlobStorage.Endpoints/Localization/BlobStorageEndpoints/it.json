@@ -2,10 +2,7 @@
   "culture": "it",
   "texts": {
     "PermissionGroup:BlobStorage": "Archiviazione file",
-    "Permission:BlobStorage.Blobs.Read": "Visualizzare i descrittori dei file",
-    "Permission:BlobStorage.Blobs.Upload": "Caricare file",
-    "Permission:BlobStorage.Blobs.Download": "Scaricare file",
-    "Permission:BlobStorage.Blobs.Delete": "Eliminare file",
-    "Permission:BlobStorage.Blobs.Manage": "Gestire i file (confermare i caricamenti, pulire gli orfani)"
+    "Permission:BlobStorage.Administration.Read": "Visualizzare l'amministrazione dell'archiviazione file (elenco, descrittori, query)",
+    "Permission:BlobStorage.Administration.Manage": "Gestire l'archiviazione file (caricare, scaricare, eliminare, confermare, pulire)"
   }
 }

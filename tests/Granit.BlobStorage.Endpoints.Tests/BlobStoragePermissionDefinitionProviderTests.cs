@@ -9,7 +9,7 @@ namespace Granit.BlobStorage.Endpoints.Tests;
 
 /// <summary>
 /// Verifies that <see cref="BlobStoragePermissionDefinitionProvider"/> correctly
-/// registers the BlobStorage permission group and all Blobs permissions.
+/// registers the BlobStorage permission group and all Administration permissions.
 /// </summary>
 public sealed class BlobStoragePermissionDefinitionProviderTests
 {
@@ -44,58 +44,7 @@ public sealed class BlobStoragePermissionDefinitionProviderTests
         provider.DefinePermissions(context);
 
         // Assert
-        group.Permissions.ShouldContain(p => p.Name == BlobStoragePermissions.Blobs.Read);
-    }
-
-    [Fact]
-    public void DefinePermissions_adds_Upload_permission()
-    {
-        // Arrange
-        PermissionGroup group = new(BlobStoragePermissions.GroupName);
-        IPermissionDefinitionContext context = Substitute.For<IPermissionDefinitionContext>();
-        context.AddGroup(BlobStoragePermissions.GroupName, Arg.Any<LocalizableString>()).Returns(group);
-
-        BlobStoragePermissionDefinitionProvider provider = new();
-
-        // Act
-        provider.DefinePermissions(context);
-
-        // Assert
-        group.Permissions.ShouldContain(p => p.Name == BlobStoragePermissions.Blobs.Upload);
-    }
-
-    [Fact]
-    public void DefinePermissions_adds_Download_permission()
-    {
-        // Arrange
-        PermissionGroup group = new(BlobStoragePermissions.GroupName);
-        IPermissionDefinitionContext context = Substitute.For<IPermissionDefinitionContext>();
-        context.AddGroup(BlobStoragePermissions.GroupName, Arg.Any<LocalizableString>()).Returns(group);
-
-        BlobStoragePermissionDefinitionProvider provider = new();
-
-        // Act
-        provider.DefinePermissions(context);
-
-        // Assert
-        group.Permissions.ShouldContain(p => p.Name == BlobStoragePermissions.Blobs.Download);
-    }
-
-    [Fact]
-    public void DefinePermissions_adds_Delete_permission()
-    {
-        // Arrange
-        PermissionGroup group = new(BlobStoragePermissions.GroupName);
-        IPermissionDefinitionContext context = Substitute.For<IPermissionDefinitionContext>();
-        context.AddGroup(BlobStoragePermissions.GroupName, Arg.Any<LocalizableString>()).Returns(group);
-
-        BlobStoragePermissionDefinitionProvider provider = new();
-
-        // Act
-        provider.DefinePermissions(context);
-
-        // Assert
-        group.Permissions.ShouldContain(p => p.Name == BlobStoragePermissions.Blobs.Delete);
+        group.Permissions.ShouldContain(p => p.Name == BlobStoragePermissions.Administration.Read);
     }
 
     [Fact]
@@ -112,11 +61,11 @@ public sealed class BlobStoragePermissionDefinitionProviderTests
         provider.DefinePermissions(context);
 
         // Assert
-        group.Permissions.ShouldContain(p => p.Name == BlobStoragePermissions.Blobs.Manage);
+        group.Permissions.ShouldContain(p => p.Name == BlobStoragePermissions.Administration.Manage);
     }
 
     [Fact]
-    public void DefinePermissions_registers_exactly_five_permissions()
+    public void DefinePermissions_registers_exactly_two_permissions()
     {
         // Arrange
         PermissionGroup group = new(BlobStoragePermissions.GroupName);
@@ -129,6 +78,6 @@ public sealed class BlobStoragePermissionDefinitionProviderTests
         provider.DefinePermissions(context);
 
         // Assert
-        group.Permissions.Count.ShouldBe(5);
+        group.Permissions.Count.ShouldBe(2);
     }
 }

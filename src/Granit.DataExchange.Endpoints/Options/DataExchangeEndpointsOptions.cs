@@ -17,12 +17,6 @@ public sealed class DataExchangeEndpointsOptions
     public string RoutePrefix { get; set; } = "data-exchange";
 
     /// <summary>
-    /// Granit permission required to access the data exchange endpoints.
-    /// Default: <c>"granit-data-exchange-admin"</c>.
-    /// </summary>
-    public string RequiredRole { get; set; } = "granit-data-exchange-admin";
-
-    /// <summary>
     /// OpenAPI tag name for grouping data import endpoints in Swagger UI.
     /// Default: <c>"Data Exchange"</c>.
     /// </summary>

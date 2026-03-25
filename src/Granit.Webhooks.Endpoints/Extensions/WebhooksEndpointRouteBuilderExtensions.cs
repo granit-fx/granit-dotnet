@@ -3,14 +3,12 @@ using Granit.Validation.AspNetCore;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.Endpoints.Endpoints;
-using Granit.Webhooks.Endpoints.Internal;
 using Granit.Webhooks.Endpoints.Options;
-using Microsoft.AspNetCore.Authorization;
+using Granit.Webhooks.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Granit.Webhooks.Endpoints.Extensions;
 
@@ -24,8 +22,8 @@ public static class WebhooksEndpointRouteBuilderExtensions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Registers the <c>Webhooks.Subscriptions.Manage</c> authorization policy requiring
-    /// the role configured via <see cref="WebhooksEndpointsOptions.RequiredRole"/>.
+    /// Requires the <c>Webhooks.Subscriptions.Read</c> permission on the route group.
+    /// Individual endpoints may require additional permissions (e.g. <c>Webhooks.Subscriptions.Manage</c>).
     /// </para>
     /// <para>Call this from your application route registration:</para>
     /// <code>
@@ -35,7 +33,6 @@ public static class WebhooksEndpointRouteBuilderExtensions
     /// app.MapWebhooksEndpoints(opts =>
     /// {
     ///     opts.RoutePrefix = "admin/webhooks";
-    ///     opts.RequiredRole = "ops-team";
     /// });
     /// </code>
     /// </remarks>
@@ -49,16 +46,10 @@ public static class WebhooksEndpointRouteBuilderExtensions
         WebhooksEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        IOptions<AuthorizationOptions> authOptions =
-            endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
-        authOptions.Value.AddPolicy(
-            WebhooksAuthorizationPolicy.PolicyName,
-            policy => policy.RequireRole(options.RequiredRole));
-
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName)
-            .RequireAuthorization(WebhooksAuthorizationPolicy.PolicyName);
+            .RequireAuthorization(WebhooksPermissions.Subscriptions.Read);
 
         group.MapEventTypeEndpoints();
         group.MapReadEndpoints();

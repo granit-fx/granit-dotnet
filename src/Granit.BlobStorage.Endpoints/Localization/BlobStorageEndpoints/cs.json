@@ -2,10 +2,7 @@
   "culture": "cs",
   "texts": {
     "PermissionGroup:BlobStorage": "Úložiště souborů",
-    "Permission:BlobStorage.Blobs.Read": "Zobrazit popisovače souborů",
-    "Permission:BlobStorage.Blobs.Upload": "Nahrát soubory",
-    "Permission:BlobStorage.Blobs.Download": "Stáhnout soubory",
-    "Permission:BlobStorage.Blobs.Delete": "Smazat soubory",
-    "Permission:BlobStorage.Blobs.Manage": "Spravovat soubory (potvrdit nahrání, vyčistit osiřelé soubory)"
+    "Permission:BlobStorage.Administration.Read": "Zobrazit správu úložiště souborů (seznam, popisovače, dotaz)",
+    "Permission:BlobStorage.Administration.Manage": "Spravovat úložiště souborů (nahrát, stáhnout, smazat, potvrdit, vyčistit)"
   }
 }

@@ -1,10 +1,9 @@
 using System.Net;
-using System.Net.Http.Json;
 using Granit.QueryEngine;
 using Granit.Workflow.Dtos;
 using Granit.Workflow.Endpoints.Extensions;
-using Granit.Workflow.Endpoints.Internal;
 using Granit.Workflow.Endpoints.Options;
+using Granit.Workflow.Endpoints.Permissions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -21,10 +20,6 @@ namespace Granit.Workflow.Endpoints.Tests;
 /// </summary>
 public sealed class WorkflowEndpointRouteBuilderExtensionsTests
 {
-    [Fact]
-    public void PolicyName_equals_History_Read() =>
-        WorkflowAuthorizationPolicy.PolicyName.ShouldBe("Workflow.History.Read");
-
     [Fact]
     public async Task MapWorkflowEndpoints_with_custom_prefix_routes_correctly()
     {
@@ -46,52 +41,6 @@ public sealed class WorkflowEndpointRouteBuilderExtensionsTests
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-    }
-
-    [Fact]
-    public async Task MapWorkflowEndpoints_with_custom_role_accepts_custom_role()
-    {
-        // Arrange
-        IWorkflowHistoryQuery historyQuery = Substitute.For<IWorkflowHistoryQuery>();
-        historyQuery.GetHistoryAsync("Order", "1", Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<WorkflowTransitionHistoryResponse>([], 0, HasMore: false));
-
-        await using WebApplication app = BuildApp(historyQuery, opts =>
-        {
-            opts.RequiredRole = "ops-team";
-        });
-
-        HttpClient client = app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, "ops-team");
-
-        // Act
-        HttpResponseMessage response = await client.GetAsync(
-            "/workflow/Order/1/history", TestContext.Current.CancellationToken);
-
-        // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-    }
-
-    [Fact]
-    public async Task MapWorkflowEndpoints_with_custom_role_rejects_default_role()
-    {
-        // Arrange
-        IWorkflowHistoryQuery historyQuery = Substitute.For<IWorkflowHistoryQuery>();
-
-        await using WebApplication app = BuildApp(historyQuery, opts =>
-        {
-            opts.RequiredRole = "ops-team";
-        });
-
-        HttpClient client = app.GetTestClient();
-        client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, "granit-workflow-admin");
-
-        // Act
-        HttpResponseMessage response = await client.GetAsync(
-            "/workflow/Order/1/history", TestContext.Current.CancellationToken);
-
-        // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -123,7 +72,8 @@ public sealed class WorkflowEndpointRouteBuilderExtensionsTests
             .AddAuthentication(TestAuthHandler.SchemeName)
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(WorkflowPermissions.History.Read, policy => policy.RequireRole("granit-workflow-admin"));
         builder.Services.AddSingleton(Substitute.For<IWorkflowHistoryQuery>());
 
         WebApplication app = builder.Build();
@@ -151,7 +101,8 @@ public sealed class WorkflowEndpointRouteBuilderExtensionsTests
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(WorkflowPermissions.History.Read, policy => policy.RequireRole("granit-workflow-admin"));
         builder.Services.AddSingleton(historyQuery);
 
         WebApplication app = builder.Build();

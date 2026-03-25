@@ -2,7 +2,6 @@ using Granit.Authentication.JwtBearer.Cognito.Authentication;
 using Granit.Authentication.JwtBearer.Cognito.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -14,8 +13,8 @@ namespace Granit.Authentication.JwtBearer.Cognito.Extensions;
 public static class CognitoServiceCollectionExtensions
 {
     /// <summary>
-    /// Overrides JWT Bearer configuration with Cognito values,
-    /// registers <see cref="CognitoClaimsTransformation"/> and the <c>"Admin"</c> policy.
+    /// Overrides JWT Bearer configuration with Cognito values
+    /// and registers <see cref="CognitoClaimsTransformation"/>.
     /// </summary>
     public static IServiceCollection AddGranitCognito(
         this IServiceCollection services)
@@ -44,15 +43,6 @@ public static class CognitoServiceCollectionExtensions
             });
 
         services.AddTransient<IClaimsTransformation, CognitoClaimsTransformation>();
-
-        // Deferred Admin policy: reads AdminGroup from CognitoOptions at resolution time.
-        services
-            .AddOptions<AuthorizationOptions>()
-            .Configure<IOptions<CognitoOptions>>((authOpts, cognitoOpts) =>
-            {
-                authOpts.AddPolicy("Admin",
-                    policy => policy.RequireRole(cognitoOpts.Value.AdminGroup));
-            });
 
         return services;
     }

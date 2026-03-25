@@ -4,7 +4,6 @@ using Granit.Authentication.JwtBearer.Cognito.Options;
 using Granit.Authentication.JwtBearer.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -17,8 +16,7 @@ public sealed class CognitoServiceCollectionExtensionsTests
 {
     private static IConfiguration CreateConfiguration(
         string authority = "https://cognito-idp.eu-west-1.amazonaws.com/eu-west-1_ABC123",
-        string clientId = "test-client",
-        string adminGroup = "admin")
+        string clientId = "test-client")
     {
         Dictionary<string, string?> config = new()
         {
@@ -26,7 +24,6 @@ public sealed class CognitoServiceCollectionExtensionsTests
             ["Authentication:Audience"] = clientId,
             ["Cognito:Authority"] = authority,
             ["Cognito:ClientId"] = clientId,
-            ["Cognito:AdminGroup"] = adminGroup,
         };
 
         return new ConfigurationBuilder()
@@ -96,22 +93,6 @@ public sealed class CognitoServiceCollectionExtensionsTests
         IClaimsTransformation transformation = provider.GetRequiredService<IClaimsTransformation>();
 
         transformation.ShouldBeOfType<CognitoClaimsTransformation>();
-    }
-
-    [Fact]
-    public void AddGranitCognito_RegistersAdminPolicy()
-    {
-        IConfiguration config = CreateConfiguration(adminGroup: "administrators");
-        ServiceCollection services = new();
-        services.AddSingleton(config);
-        services.AddGranitJwtBearer();
-        services.AddGranitCognito();
-        ServiceProvider provider = services.BuildServiceProvider();
-
-        AuthorizationOptions authOptions = provider.GetRequiredService<IOptions<AuthorizationOptions>>().Value;
-        AuthorizationPolicy? adminPolicy = authOptions.GetPolicy("Admin");
-
-        adminPolicy.ShouldNotBeNull();
     }
 
     [Fact]

@@ -2,10 +2,7 @@
   "culture": "en",
   "texts": {
     "PermissionGroup:BlobStorage": "Blob Storage",
-    "Permission:BlobStorage.Blobs.Read": "View blob descriptors",
-    "Permission:BlobStorage.Blobs.Upload": "Upload blobs",
-    "Permission:BlobStorage.Blobs.Download": "Download blobs",
-    "Permission:BlobStorage.Blobs.Delete": "Delete blobs",
-    "Permission:BlobStorage.Blobs.Manage": "Manage blobs (confirm uploads, cleanup orphans)"
+    "Permission:BlobStorage.Administration.Read": "View blob storage administration (list, descriptors, query)",
+    "Permission:BlobStorage.Administration.Manage": "Manage blob storage (upload, download, delete, confirm, cleanup)"
   }
 }

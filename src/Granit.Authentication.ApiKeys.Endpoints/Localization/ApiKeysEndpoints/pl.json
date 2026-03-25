@@ -1,11 +1,11 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:ApiKeys": "Klucze API",
-    "Permission:ApiKeys.Keys.Read": "Wyświetlanie kluczy API (lista, szczegóły)",
-    "Permission:ApiKeys.Keys.Create": "Tworzenie nowych kluczy API",
-    "Permission:ApiKeys.Keys.Revoke": "Odwoływanie kluczy API",
-    "Permission:ApiKeys.Keys.Rotate": "Rotacja kluczy API (odwołanie i zastąpienie)",
-    "Permission:ApiKeys.Keys.UpdateScopes": "Aktualizacja uprawnień i zakresów CIDR kluczy API"
+    "PermissionGroup:AuthenticationApiKeys": "Klucze API",
+    "Permission:AuthenticationApiKeys.Keys.Read": "Wyświetlanie kluczy API (lista, szczegóły)",
+    "Permission:AuthenticationApiKeys.Keys.Create": "Tworzenie nowych kluczy API",
+    "Permission:AuthenticationApiKeys.Keys.Revoke": "Odwoływanie kluczy API",
+    "Permission:AuthenticationApiKeys.Keys.Rotate": "Rotacja kluczy API (odwołanie i zastąpienie)",
+    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "Aktualizacja uprawnień i zakresów CIDR kluczy API"
   }
 }
