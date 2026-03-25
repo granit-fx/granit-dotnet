@@ -75,7 +75,7 @@ flowchart TD
 | -------- | --- | --- |
 | Cache invalidation after setting change | Local | Same process, handler runs synchronously before response returns |
 | Audit trail persistence (ISO 27001) | Local | Audit handler lives in same bounded context |
-| Feature flag change logging | Local | In-process handler via `Granit.AuditLog.ConfigurationChanges` |
+| Feature flag change logging | Local | In-process handler via `Granit.Auditing.ConfigurationChanges` |
 | Data import/export job completion | Local | Notification handlers in same service (for now) |
 | Cross-service workflow trigger | Distributed | Consumer may be in billing, notification, or analytics service |
 | External system notification (webhook, ERP) | Distributed | Needs durability — crash must not lose the event |

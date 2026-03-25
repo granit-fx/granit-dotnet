@@ -160,10 +160,10 @@
     <Project Path="src/Granit.Wolverine/Granit.Wolverine.csproj" />
   </Folder>
   <Folder Name="/src/Compliance/">
-    <Project Path="src/Granit.AuditLog.ConfigurationChanges/Granit.AuditLog.ConfigurationChanges.csproj" />
-    <Project Path="src/Granit.AuditLog.Endpoints/Granit.AuditLog.Endpoints.csproj" />
-    <Project Path="src/Granit.AuditLog.EntityFrameworkCore/Granit.AuditLog.EntityFrameworkCore.csproj" />
-    <Project Path="src/Granit.AuditLog/Granit.AuditLog.csproj" />
+    <Project Path="src/Granit.Auditing.ConfigurationChanges/Granit.Auditing.ConfigurationChanges.csproj" />
+    <Project Path="src/Granit.Auditing.Endpoints/Granit.Auditing.Endpoints.csproj" />
+    <Project Path="src/Granit.Auditing.EntityFrameworkCore/Granit.Auditing.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Auditing/Granit.Auditing.csproj" />
     <Project Path="src/Granit.Http.Cookies.Endpoints/Granit.Http.Cookies.Endpoints.csproj" />
     <Project Path="src/Granit.Http.Cookies.Klaro/Granit.Http.Cookies.Klaro.csproj" />
     <Project Path="src/Granit.Http.Cookies/Granit.Http.Cookies.csproj" />
@@ -389,10 +389,10 @@
     <Project Path="tests/Granit.Wolverine.Tests/Granit.Wolverine.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/Compliance/">
-    <Project Path="tests/Granit.AuditLog.ConfigurationChanges.Tests/Granit.AuditLog.ConfigurationChanges.Tests.csproj" />
-    <Project Path="tests/Granit.AuditLog.Endpoints.Tests/Granit.AuditLog.Endpoints.Tests.csproj" />
-    <Project Path="tests/Granit.AuditLog.EntityFrameworkCore.Tests/Granit.AuditLog.EntityFrameworkCore.Tests.csproj" />
-    <Project Path="tests/Granit.AuditLog.Tests/Granit.AuditLog.Tests.csproj" />
+    <Project Path="tests/Granit.Auditing.ConfigurationChanges.Tests/Granit.Auditing.ConfigurationChanges.Tests.csproj" />
+    <Project Path="tests/Granit.Auditing.Endpoints.Tests/Granit.Auditing.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.Auditing.EntityFrameworkCore.Tests/Granit.Auditing.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Auditing.Tests/Granit.Auditing.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Endpoints.Tests/Granit.Http.Cookies.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Klaro.Tests/Granit.Http.Cookies.Klaro.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Tests/Granit.Http.Cookies.Tests.csproj" />

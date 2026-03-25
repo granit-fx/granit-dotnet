@@ -69,7 +69,7 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.AuditLog",
+      "name": "Granit.Auditing",
       "deps": [
         "Granit",
         "Granit.QueryEngine"
@@ -77,9 +77,9 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.AuditLog.ConfigurationChanges",
+      "name": "Granit.Auditing.ConfigurationChanges",
       "deps": [
-        "Granit.AuditLog",
+        "Granit.Auditing",
         "Granit.Features",
         "Granit.Guids",
         "Granit.Settings"
@@ -87,9 +87,9 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.AuditLog.Endpoints",
+      "name": "Granit.Auditing.Endpoints",
       "deps": [
-        "Granit.AuditLog",
+        "Granit.Auditing",
         "Granit.Authorization",
         "Granit.Http.ApiDocumentation",
         "Granit.Validation"
@@ -97,9 +97,9 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.AuditLog.EntityFrameworkCore",
+      "name": "Granit.Auditing.EntityFrameworkCore",
       "deps": [
-        "Granit.AuditLog",
+        "Granit.Auditing",
         "Granit.Persistence"
       ],
       "framework": "net10.0"
@@ -2956,19 +2956,19 @@
     },
     {
       "name": "AuditLogQuery",
-      "fqn": "Granit.AuditLog.Abstractions.AuditLogQuery",
+      "fqn": "Granit.Auditing.Abstractions.AuditLogQuery",
       "kind": "record",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Abstractions/AuditLogQuery.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Abstractions/AuditLogQuery.cs",
       "line": 17,
       "members": []
     },
     {
       "name": "IAuditLogEntryPublisher",
-      "fqn": "Granit.AuditLog.Abstractions.IAuditLogEntryPublisher",
+      "fqn": "Granit.Auditing.Abstractions.IAuditLogEntryPublisher",
       "kind": "interface",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Abstractions/IAuditLogEntryPublisher.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Abstractions/IAuditLogEntryPublisher.cs",
       "line": 13,
       "members": [
         {
@@ -2981,10 +2981,10 @@
     },
     {
       "name": "IAuditLogReader",
-      "fqn": "Granit.AuditLog.Abstractions.IAuditLogReader",
+      "fqn": "Granit.Auditing.Abstractions.IAuditLogReader",
       "kind": "interface",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Abstractions/IAuditLogReader.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Abstractions/IAuditLogReader.cs",
       "line": 14,
       "members": [
         {
@@ -3009,10 +3009,10 @@
     },
     {
       "name": "IAuditLogWriter",
-      "fqn": "Granit.AuditLog.Abstractions.IAuditLogWriter",
+      "fqn": "Granit.Auditing.Abstractions.IAuditLogWriter",
       "kind": "interface",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Abstractions/IAuditLogWriter.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Abstractions/IAuditLogWriter.cs",
       "line": 13,
       "members": [
         {
@@ -3025,28 +3025,28 @@
     },
     {
       "name": "AuditIgnoreAttribute",
-      "fqn": "Granit.AuditLog.Attributes.AuditIgnoreAttribute",
+      "fqn": "Granit.Auditing.Attributes.AuditIgnoreAttribute",
       "kind": "class",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Attributes/AuditIgnoreAttribute.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Attributes/AuditIgnoreAttribute.cs",
       "line": 11,
       "members": []
     },
     {
       "name": "AuditSensitiveAttribute",
-      "fqn": "Granit.AuditLog.Attributes.AuditSensitiveAttribute",
+      "fqn": "Granit.Auditing.Attributes.AuditSensitiveAttribute",
       "kind": "class",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Attributes/AuditSensitiveAttribute.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Attributes/AuditSensitiveAttribute.cs",
       "line": 12,
       "members": []
     },
     {
-      "name": "GranitAuditLogConfigurationChangesModule",
-      "fqn": "Granit.AuditLog.ConfigurationChanges.GranitAuditLogConfigurationChangesModule",
+      "name": "GranitAuditingConfigurationChangesModule",
+      "fqn": "Granit.Auditing.ConfigurationChanges.GranitAuditingConfigurationChangesModule",
       "kind": "class",
-      "project": "Granit.AuditLog.ConfigurationChanges",
-      "file": "src/Granit.AuditLog.ConfigurationChanges/GranitAuditLogConfigurationChangesModule.cs",
+      "project": "Granit.Auditing.ConfigurationChanges",
+      "file": "src/Granit.Auditing.ConfigurationChanges/GranitAuditingConfigurationChangesModule.cs",
       "line": 31,
       "members": [
         {
@@ -3059,10 +3059,10 @@
     },
     {
       "name": "FeatureOverrideChangedAuditHandler",
-      "fqn": "Granit.AuditLog.ConfigurationChanges.Handlers.FeatureOverrideChangedAuditHandler",
+      "fqn": "Granit.Auditing.ConfigurationChanges.Handlers.FeatureOverrideChangedAuditHandler",
       "kind": "class",
-      "project": "Granit.AuditLog.ConfigurationChanges",
-      "file": "src/Granit.AuditLog.ConfigurationChanges/Handlers/FeatureOverrideChangedAuditHandler.cs",
+      "project": "Granit.Auditing.ConfigurationChanges",
+      "file": "src/Granit.Auditing.ConfigurationChanges/Handlers/FeatureOverrideChangedAuditHandler.cs",
       "line": 15,
       "members": [
         {
@@ -3075,10 +3075,10 @@
     },
     {
       "name": "SettingChangedAuditHandler",
-      "fqn": "Granit.AuditLog.ConfigurationChanges.Handlers.SettingChangedAuditHandler",
+      "fqn": "Granit.Auditing.ConfigurationChanges.Handlers.SettingChangedAuditHandler",
       "kind": "class",
-      "project": "Granit.AuditLog.ConfigurationChanges",
-      "file": "src/Granit.AuditLog.ConfigurationChanges/Handlers/SettingChangedAuditHandler.cs",
+      "project": "Granit.Auditing.ConfigurationChanges",
+      "file": "src/Granit.Auditing.ConfigurationChanges/Handlers/SettingChangedAuditHandler.cs",
       "line": 15,
       "members": [
         {
@@ -3091,19 +3091,19 @@
     },
     {
       "name": "AuditChangeType",
-      "fqn": "Granit.AuditLog.Domain.AuditChangeType",
+      "fqn": "Granit.Auditing.Domain.AuditChangeType",
       "kind": "enum",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Domain/AuditChangeType.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Domain/AuditChangeType.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "AuditEntityChange",
-      "fqn": "Granit.AuditLog.Domain.AuditEntityChange",
+      "fqn": "Granit.Auditing.Domain.AuditEntityChange",
       "kind": "class",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Domain/AuditEntityChange.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Domain/AuditEntityChange.cs",
       "line": 8,
       "members": [
         {
@@ -3128,19 +3128,19 @@
     },
     {
       "name": "AuditLogCategory",
-      "fqn": "Granit.AuditLog.Domain.AuditLogCategory",
+      "fqn": "Granit.Auditing.Domain.AuditLogCategory",
       "kind": "enum",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Domain/AuditLogCategory.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Domain/AuditLogCategory.cs",
       "line": 14,
       "members": []
     },
     {
       "name": "AuditLogEntry",
-      "fqn": "Granit.AuditLog.Domain.AuditLogEntry",
+      "fqn": "Granit.Auditing.Domain.AuditLogEntry",
       "kind": "class",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Domain/AuditLogEntry.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Domain/AuditLogEntry.cs",
       "line": 14,
       "members": [
         {
@@ -3159,19 +3159,19 @@
     },
     {
       "name": "AuditPersistenceMode",
-      "fqn": "Granit.AuditLog.Domain.AuditPersistenceMode",
+      "fqn": "Granit.Auditing.Domain.AuditPersistenceMode",
       "kind": "enum",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Domain/AuditPersistenceMode.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Domain/AuditPersistenceMode.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "AuditPropertyChange",
-      "fqn": "Granit.AuditLog.Domain.AuditPropertyChange",
+      "fqn": "Granit.Auditing.Domain.AuditPropertyChange",
       "kind": "class",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Domain/AuditPropertyChange.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Domain/AuditPropertyChange.cs",
       "line": 8,
       "members": [
         {
@@ -3184,89 +3184,89 @@
     },
     {
       "name": "AuditEntityChangeResponse",
-      "fqn": "Granit.AuditLog.Endpoints.Dtos.AuditEntityChangeResponse",
+      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditEntityChangeResponse",
       "kind": "record",
-      "project": "Granit.AuditLog.Endpoints",
-      "file": "src/Granit.AuditLog.Endpoints/Dtos/AuditEntityChangeResponse.cs",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditEntityChangeResponse.cs",
       "line": 10,
       "members": []
     },
     {
       "name": "AuditLogEntryDetailResponse",
-      "fqn": "Granit.AuditLog.Endpoints.Dtos.AuditLogEntryDetailResponse",
+      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditLogEntryDetailResponse",
       "kind": "record",
-      "project": "Granit.AuditLog.Endpoints",
-      "file": "src/Granit.AuditLog.Endpoints/Dtos/AuditLogEntryDetailResponse.cs",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditLogEntryDetailResponse.cs",
       "line": 15,
       "members": []
     },
     {
       "name": "AuditLogEntryResponse",
-      "fqn": "Granit.AuditLog.Endpoints.Dtos.AuditLogEntryResponse",
+      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditLogEntryResponse",
       "kind": "record",
-      "project": "Granit.AuditLog.Endpoints",
-      "file": "src/Granit.AuditLog.Endpoints/Dtos/AuditLogEntryResponse.cs",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditLogEntryResponse.cs",
       "line": 15,
       "members": []
     },
     {
       "name": "AuditLogQueryParameters",
-      "fqn": "Granit.AuditLog.Endpoints.Dtos.AuditLogQueryParameters",
+      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditLogQueryParameters",
       "kind": "class",
-      "project": "Granit.AuditLog.Endpoints",
-      "file": "src/Granit.AuditLog.Endpoints/Dtos/AuditLogQueryParameters.cs",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditLogQueryParameters.cs",
       "line": 9,
       "members": []
     },
     {
       "name": "AuditLogQueryRequest",
-      "fqn": "Granit.AuditLog.Endpoints.Dtos.AuditLogQueryRequest",
+      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditLogQueryRequest",
       "kind": "class",
-      "project": "Granit.AuditLog.Endpoints",
-      "file": "src/Granit.AuditLog.Endpoints/Dtos/AuditLogQueryRequest.cs",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditLogQueryRequest.cs",
       "line": 9,
       "members": []
     },
     {
       "name": "AuditPropertyChangeResponse",
-      "fqn": "Granit.AuditLog.Endpoints.Dtos.AuditPropertyChangeResponse",
+      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditPropertyChangeResponse",
       "kind": "record",
-      "project": "Granit.AuditLog.Endpoints",
-      "file": "src/Granit.AuditLog.Endpoints/Dtos/AuditPropertyChangeResponse.cs",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditPropertyChangeResponse.cs",
       "line": 9,
       "members": []
     },
     {
       "name": "AuditLogEndpointRouteBuilderExtensions",
-      "fqn": "Granit.AuditLog.Endpoints.Extensions.AuditLogEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Auditing.Endpoints.Extensions.AuditLogEndpointRouteBuilderExtensions",
       "kind": "class",
-      "project": "Granit.AuditLog.Endpoints",
-      "file": "src/Granit.AuditLog.Endpoints/Extensions/AuditLogEndpointRouteBuilderExtensions.cs",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Extensions/AuditLogEndpointRouteBuilderExtensions.cs",
       "line": 14,
       "members": [
         {
-          "name": "MapAuditLogEndpoints",
+          "name": "MapAuditingEndpoints",
           "kind": "method",
-          "signature": "MapAuditLogEndpoints(this IEndpointRouteBuilder endpoints, Action<AuditLogEndpointsOptions>? configure = null)",
+          "signature": "MapAuditingEndpoints(this IEndpointRouteBuilder endpoints, Action<AuditingEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
     },
     {
-      "name": "GranitAuditLogEndpointsModule",
-      "fqn": "Granit.AuditLog.Endpoints.GranitAuditLogEndpointsModule",
+      "name": "GranitAuditingEndpointsModule",
+      "fqn": "Granit.Auditing.Endpoints.GranitAuditingEndpointsModule",
       "kind": "class",
-      "project": "Granit.AuditLog.Endpoints",
-      "file": "src/Granit.AuditLog.Endpoints/GranitAuditLogEndpointsModule.cs",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/GranitAuditingEndpointsModule.cs",
       "line": 21,
       "members": []
     },
     {
-      "name": "AuditLogEndpointsOptions",
-      "fqn": "Granit.AuditLog.Endpoints.Options.AuditLogEndpointsOptions",
+      "name": "AuditingEndpointsOptions",
+      "fqn": "Granit.Auditing.Endpoints.Options.AuditingEndpointsOptions",
       "kind": "class",
-      "project": "Granit.AuditLog.Endpoints",
-      "file": "src/Granit.AuditLog.Endpoints/Options/AuditLogEndpointsOptions.cs",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Options/AuditingEndpointsOptions.cs",
       "line": 6,
       "members": [
         {
@@ -3285,28 +3285,28 @@
     },
     {
       "name": "AuditLogPermissions",
-      "fqn": "Granit.AuditLog.Endpoints.Permissions.AuditLogPermissions",
+      "fqn": "Granit.Auditing.Endpoints.Permissions.AuditLogPermissions",
       "kind": "class",
-      "project": "Granit.AuditLog.Endpoints",
-      "file": "src/Granit.AuditLog.Endpoints/Permissions/AuditLogPermissions.cs",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Permissions/AuditLogPermissions.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "Entries",
-      "fqn": "Granit.AuditLog.Endpoints.Permissions.Entries",
+      "fqn": "Granit.Auditing.Endpoints.Permissions.Entries",
       "kind": "class",
-      "project": "Granit.AuditLog.Endpoints",
-      "file": "src/Granit.AuditLog.Endpoints/Permissions/AuditLogPermissions.cs",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Permissions/AuditLogPermissions.cs",
       "line": 12,
       "members": []
     },
     {
       "name": "AuditLogMetrics",
-      "fqn": "Granit.AuditLog.EntityFrameworkCore.Diagnostics.AuditLogMetrics",
+      "fqn": "Granit.Auditing.EntityFrameworkCore.Diagnostics.AuditLogMetrics",
       "kind": "class",
-      "project": "Granit.AuditLog.EntityFrameworkCore",
-      "file": "src/Granit.AuditLog.EntityFrameworkCore/Diagnostics/AuditLogMetrics.cs",
+      "project": "Granit.Auditing.EntityFrameworkCore",
+      "file": "src/Granit.Auditing.EntityFrameworkCore/Diagnostics/AuditLogMetrics.cs",
       "line": 10,
       "members": [
         {
@@ -3325,26 +3325,26 @@
     },
     {
       "name": "AuditLogEntityFrameworkCoreServiceCollectionExtensions",
-      "fqn": "Granit.AuditLog.EntityFrameworkCore.Extensions.AuditLogEntityFrameworkCoreServiceCollectionExtensions",
+      "fqn": "Granit.Auditing.EntityFrameworkCore.Extensions.AuditLogEntityFrameworkCoreServiceCollectionExtensions",
       "kind": "class",
-      "project": "Granit.AuditLog.EntityFrameworkCore",
-      "file": "src/Granit.AuditLog.EntityFrameworkCore/Extensions/AuditLogEntityFrameworkCoreServiceCollectionExtensions.cs",
+      "project": "Granit.Auditing.EntityFrameworkCore",
+      "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/AuditLogEntityFrameworkCoreServiceCollectionExtensions.cs",
       "line": 22,
       "members": [
         {
-          "name": "AddGranitAuditLogEntityFrameworkCore",
+          "name": "AddGranitAuditingEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitAuditLogEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitAuditingEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
     },
     {
       "name": "AuditLogModelBuilderExtensions",
-      "fqn": "Granit.AuditLog.EntityFrameworkCore.Extensions.AuditLogModelBuilderExtensions",
+      "fqn": "Granit.Auditing.EntityFrameworkCore.Extensions.AuditLogModelBuilderExtensions",
       "kind": "class",
-      "project": "Granit.AuditLog.EntityFrameworkCore",
-      "file": "src/Granit.AuditLog.EntityFrameworkCore/Extensions/AuditLogModelBuilderExtensions.cs",
+      "project": "Granit.Auditing.EntityFrameworkCore",
+      "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/AuditLogModelBuilderExtensions.cs",
       "line": 10,
       "members": [
         {
@@ -3357,26 +3357,26 @@
     },
     {
       "name": "DbContextOptionsBuilderAuditLogExtensions",
-      "fqn": "Granit.AuditLog.EntityFrameworkCore.Extensions.DbContextOptionsBuilderAuditLogExtensions",
+      "fqn": "Granit.Auditing.EntityFrameworkCore.Extensions.DbContextOptionsBuilderAuditLogExtensions",
       "kind": "class",
-      "project": "Granit.AuditLog.EntityFrameworkCore",
-      "file": "src/Granit.AuditLog.EntityFrameworkCore/Extensions/DbContextOptionsBuilderAuditLogExtensions.cs",
+      "project": "Granit.Auditing.EntityFrameworkCore",
+      "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/DbContextOptionsBuilderAuditLogExtensions.cs",
       "line": 10,
       "members": [
         {
-          "name": "UseGranitAuditLogInterceptor",
+          "name": "UseGranitAuditingInterceptor",
           "kind": "method",
-          "signature": "UseGranitAuditLogInterceptor(this DbContextOptionsBuilder options, IServiceProvider serviceProvider)",
+          "signature": "UseGranitAuditingInterceptor(this DbContextOptionsBuilder options, IServiceProvider serviceProvider)",
           "returnType": "DbContextOptionsBuilder"
         }
       ]
     },
     {
-      "name": "GranitAuditLogDbProperties",
-      "fqn": "Granit.AuditLog.EntityFrameworkCore.GranitAuditLogDbProperties",
+      "name": "GranitAuditingDbProperties",
+      "fqn": "Granit.Auditing.EntityFrameworkCore.GranitAuditingDbProperties",
       "kind": "class",
-      "project": "Granit.AuditLog.EntityFrameworkCore",
-      "file": "src/Granit.AuditLog.EntityFrameworkCore/GranitAuditLogDbProperties.cs",
+      "project": "Granit.Auditing.EntityFrameworkCore",
+      "file": "src/Granit.Auditing.EntityFrameworkCore/GranitAuditingDbProperties.cs",
       "line": 19,
       "members": [
         {
@@ -3388,20 +3388,20 @@
       ]
     },
     {
-      "name": "GranitAuditLogEntityFrameworkCoreModule",
-      "fqn": "Granit.AuditLog.EntityFrameworkCore.GranitAuditLogEntityFrameworkCoreModule",
+      "name": "GranitAuditingEntityFrameworkCoreModule",
+      "fqn": "Granit.Auditing.EntityFrameworkCore.GranitAuditingEntityFrameworkCoreModule",
       "kind": "class",
-      "project": "Granit.AuditLog.EntityFrameworkCore",
-      "file": "src/Granit.AuditLog.EntityFrameworkCore/GranitAuditLogEntityFrameworkCoreModule.cs",
+      "project": "Granit.Auditing.EntityFrameworkCore",
+      "file": "src/Granit.Auditing.EntityFrameworkCore/GranitAuditingEntityFrameworkCoreModule.cs",
       "line": 23,
       "members": []
     },
     {
       "name": "AuditLogChangeTrackingInterceptor",
-      "fqn": "Granit.AuditLog.EntityFrameworkCore.Interceptors.AuditLogChangeTrackingInterceptor",
+      "fqn": "Granit.Auditing.EntityFrameworkCore.Interceptors.AuditLogChangeTrackingInterceptor",
       "kind": "class",
-      "project": "Granit.AuditLog.EntityFrameworkCore",
-      "file": "src/Granit.AuditLog.EntityFrameworkCore/Interceptors/AuditLogChangeTrackingInterceptor.cs",
+      "project": "Granit.Auditing.EntityFrameworkCore",
+      "file": "src/Granit.Auditing.EntityFrameworkCore/Interceptors/AuditLogChangeTrackingInterceptor.cs",
       "line": 32,
       "members": [
         {
@@ -3414,26 +3414,26 @@
     },
     {
       "name": "AuditLogServiceCollectionExtensions",
-      "fqn": "Granit.AuditLog.Extensions.AuditLogServiceCollectionExtensions",
+      "fqn": "Granit.Auditing.Extensions.AuditLogServiceCollectionExtensions",
       "kind": "class",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Extensions/AuditLogServiceCollectionExtensions.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Extensions/AuditLogServiceCollectionExtensions.cs",
       "line": 11,
       "members": [
         {
-          "name": "AddGranitAuditLog",
+          "name": "AddGranitAuditing",
           "kind": "method",
-          "signature": "AddGranitAuditLog(this IServiceCollection services, Action<AuditLogOptions>? configure = null)",
+          "signature": "AddGranitAuditing(this IServiceCollection services, Action<AuditLogOptions>? configure = null)",
           "returnType": "IServiceCollection"
         }
       ]
     },
     {
-      "name": "GranitAuditLogModule",
-      "fqn": "Granit.AuditLog.GranitAuditLogModule",
+      "name": "GranitAuditingModule",
+      "fqn": "Granit.Auditing.GranitAuditingModule",
       "kind": "class",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/GranitAuditLogModule.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/GranitAuditingModule.cs",
       "line": 21,
       "members": [
         {
@@ -3446,37 +3446,37 @@
     },
     {
       "name": "AuditEntityChangeSnapshot",
-      "fqn": "Granit.AuditLog.Messages.AuditEntityChangeSnapshot",
+      "fqn": "Granit.Auditing.Messages.AuditEntityChangeSnapshot",
       "kind": "record",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Messages/AuditEntityChangeSnapshot.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Messages/AuditEntityChangeSnapshot.cs",
       "line": 12,
       "members": []
     },
     {
       "name": "AuditLogBatch",
-      "fqn": "Granit.AuditLog.Messages.AuditLogBatch",
+      "fqn": "Granit.Auditing.Messages.AuditLogBatch",
       "kind": "record",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Messages/AuditLogBatch.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Messages/AuditLogBatch.cs",
       "line": 18,
       "members": []
     },
     {
       "name": "AuditPropertyChangeSnapshot",
-      "fqn": "Granit.AuditLog.Messages.AuditPropertyChangeSnapshot",
+      "fqn": "Granit.Auditing.Messages.AuditPropertyChangeSnapshot",
       "kind": "record",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Messages/AuditPropertyChangeSnapshot.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Messages/AuditPropertyChangeSnapshot.cs",
       "line": 9,
       "members": []
     },
     {
       "name": "AuditLogOptions",
-      "fqn": "Granit.AuditLog.Options.AuditLogOptions",
+      "fqn": "Granit.Auditing.Options.AuditLogOptions",
       "kind": "class",
-      "project": "Granit.AuditLog",
-      "file": "src/Granit.AuditLog/Options/AuditLogOptions.cs",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Options/AuditLogOptions.cs",
       "line": 10,
       "members": [
         {

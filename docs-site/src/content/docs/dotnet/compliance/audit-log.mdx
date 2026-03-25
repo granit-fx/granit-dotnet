@@ -8,38 +8,38 @@ sidebar:
 
 import { Tabs, TabItem, FileTree, Badge } from "@astrojs/starlight/components";
 
-Granit.AuditLog provides a turnkey audit trail solution for ISO 27001 A.12.4 compliance.
+Granit.Auditing provides a turnkey audit trail solution for ISO 27001 A.12.4 compliance.
 It automatically captures entity changes from EF Core's ChangeTracker and persists them
 in a hierarchical model: **AuditLogEntry → AuditEntityChange → AuditPropertyChange**.
 
 ## Package structure
 
 <FileTree>
-- Granit.AuditLog/ Abstractions, domain types, interfaces, options
-  - Granit.AuditLog.EntityFrameworkCore/ Isolated DbContext, interceptor, persistence, cleanup
-  - Granit.AuditLog.Endpoints/ Read-only Minimal API endpoints
+- Granit.Auditing/ Abstractions, domain types, interfaces, options
+  - Granit.Auditing.EntityFrameworkCore/ Isolated DbContext, interceptor, persistence, cleanup
+  - Granit.Auditing.Endpoints/ Read-only Minimal API endpoints
 </FileTree>
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.AuditLog` | Domain types, enums, `IAuditLogReader`, `IAuditLogWriter`, options | `Granit`, `Granit.QueryEngine` |
-| `Granit.AuditLog.EntityFrameworkCore` | `AuditLogDbContext`, interceptor, Channel persistence, cleanup worker | `Granit.AuditLog`, `Granit.Persistence` |
-| `Granit.AuditLog.Endpoints` | `GET /audit-log` endpoints (read-only, authorized) | `Granit.AuditLog`, `Granit.Http.ApiDocumentation` |
+| `Granit.Auditing` | Domain types, enums, `IAuditLogReader`, `IAuditLogWriter`, options | `Granit`, `Granit.QueryEngine` |
+| `Granit.Auditing.EntityFrameworkCore` | `AuditLogDbContext`, interceptor, Channel persistence, cleanup worker | `Granit.Auditing`, `Granit.Persistence` |
+| `Granit.Auditing.Endpoints` | `GET /audit-log` endpoints (read-only, authorized) | `Granit.Auditing`, `Granit.Http.ApiDocumentation` |
 
 ## Quick start
 
 ### 1. Install packages
 
 ```bash
-dotnet add package Granit.AuditLog.EntityFrameworkCore
-dotnet add package Granit.AuditLog.Endpoints   # optional — admin API
+dotnet add package Granit.Auditing.EntityFrameworkCore
+dotnet add package Granit.Auditing.Endpoints   # optional — admin API
 ```
 
 ### 2. Register services
 
 ```csharp
 // Program.cs
-builder.AddGranitAuditLogEntityFrameworkCore(options =>
+builder.AddGranitAuditingEntityFrameworkCore(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AuditLog")));
 ```
 
@@ -50,14 +50,14 @@ services.AddDbContextFactory<AppDbContext>((sp, options) =>
 {
     options.UseNpgsql(connectionString);
     options.UseGranitInterceptors(sp);
-    options.UseGranitAuditLogInterceptor(sp);  // AFTER UseGranitInterceptors
+    options.UseGranitAuditingInterceptor(sp);  // AFTER UseGranitInterceptors
 }, ServiceLifetime.Scoped);
 ```
 
 ### 4. Map endpoints (optional)
 
 ```csharp
-app.MapAuditLogEndpoints();
+app.MapAuditingEndpoints();
 ```
 
 That's it. Every `SaveChanges` on your `AppDbContext` now produces audit entries automatically.
@@ -208,7 +208,7 @@ Cascade deletes automatically remove child `AuditEntityChange` and
 
 | Signal | Name | Description |
 | ------ | ---- | ----------- |
-| Tracing | `Granit.AuditLog` | ActivitySource for capture, persist, cleanup spans |
+| Tracing | `Granit.Auditing` | ActivitySource for capture, persist, cleanup spans |
 | Metric | `granit.auditlog.entries.persisted` | Counter — entries successfully persisted |
 | Metric | `granit.auditlog.entries.purged` | Counter — entries purged by cleanup (by category) |
 | Metric | `granit.auditlog.capture.errors` | Counter — errors during change tracking capture |

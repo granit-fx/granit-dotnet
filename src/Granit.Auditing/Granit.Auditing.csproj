@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Auditing</PackageId>
+    <Description>Audit trail abstractions for ISO 27001 compliance. Provides hierarchical audit log domain types, reader/writer interfaces, category-based retention options, and diagnostics.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Auditing.Tests" />
+    <InternalsVisibleTo Include="Granit.Auditing.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine\Granit.QueryEngine.csproj" />
+  </ItemGroup>
+
+</Project>
