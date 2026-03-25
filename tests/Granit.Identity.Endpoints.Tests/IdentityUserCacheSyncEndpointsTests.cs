@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Granit.Identity.Endpoints.Extensions;
 using Granit.Identity.Endpoints.Internal;
+using Granit.Identity.Endpoints.Permissions;
 using Granit.Identity.Models;
 using Granit.Tests.Shared;
 using Microsoft.AspNetCore.Authentication;
@@ -38,7 +39,13 @@ public sealed class IdentityUserCacheSyncEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(IdentityPermissions.Users.Read,
+                policy => policy.RequireRole(AdminRole))
+            .AddPolicy(IdentityPermissions.Users.Sync,
+                policy => policy.RequireRole(AdminRole))
+            .AddPolicy(IdentityPermissions.Users.Delete,
+                policy => policy.RequireRole(AdminRole));
         builder.Services.AddGranitIdentityEndpoints();
         builder.Services.AddSingleton(_lookupService);
         builder.Services.AddSingleton(_cacheStats);

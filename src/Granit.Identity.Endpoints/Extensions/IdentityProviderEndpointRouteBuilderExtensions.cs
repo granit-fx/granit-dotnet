@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Granit.Identity.Endpoints.Extensions;
 
@@ -39,89 +37,61 @@ public static class IdentityProviderEndpointRouteBuilderExtensions
         IdentityProviderEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        RegisterFallbackPolicies(endpoints.ServiceProvider, options.RequiredRole);
-
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
         // -- Users --
         RouteGroupBuilder usersRead = group.MapGroup("/users")
-            .RequireAuthorization(IdentityProviderPermissions.Users.Read);
+            .RequireAuthorization(IdentityPermissions.Users.Read);
         usersRead.MapProviderUserReadEndpoints();
 
         RouteGroupBuilder usersWrite = group.MapGroup("/users")
-            .RequireAuthorization(IdentityProviderPermissions.Users.Manage);
+            .RequireAuthorization(IdentityPermissions.Users.Manage);
         usersWrite.MapProviderUserWriteEndpoints();
 
         // -- Roles (top-level) --
         RouteGroupBuilder rolesRead = group.MapGroup("/roles")
-            .RequireAuthorization(IdentityProviderPermissions.Roles.Read);
+            .RequireAuthorization(IdentityPermissions.Roles.Read);
         rolesRead.MapProviderRoleReadEndpoints();
 
         // -- Roles (per-user) --
         RouteGroupBuilder userRolesRead = group.MapGroup("/users/{userId}/roles")
-            .RequireAuthorization(IdentityProviderPermissions.Roles.Read);
+            .RequireAuthorization(IdentityPermissions.Roles.Read);
         userRolesRead.MapProviderUserRoleReadEndpoints();
 
         RouteGroupBuilder userRolesWrite = group.MapGroup("/users/{userId}/roles")
-            .RequireAuthorization(IdentityProviderPermissions.Roles.Manage);
+            .RequireAuthorization(IdentityPermissions.Roles.Manage);
         userRolesWrite.MapProviderUserRoleWriteEndpoints();
 
         // -- Groups (top-level) --
         RouteGroupBuilder groupsRead = group.MapGroup("/groups")
-            .RequireAuthorization(IdentityProviderPermissions.Groups.Read);
+            .RequireAuthorization(IdentityPermissions.Groups.Read);
         groupsRead.MapProviderGroupReadEndpoints();
 
         // -- Groups (per-user) --
         RouteGroupBuilder userGroupsRead = group.MapGroup("/users/{userId}/groups")
-            .RequireAuthorization(IdentityProviderPermissions.Groups.Read);
+            .RequireAuthorization(IdentityPermissions.Groups.Read);
         userGroupsRead.MapProviderUserGroupReadEndpoints();
 
         RouteGroupBuilder userGroupsWrite = group.MapGroup("/users/{userId}/groups")
-            .RequireAuthorization(IdentityProviderPermissions.Groups.Manage);
+            .RequireAuthorization(IdentityPermissions.Groups.Manage);
         userGroupsWrite.MapProviderUserGroupWriteEndpoints();
 
         // -- Sessions --
         RouteGroupBuilder sessionsRead = group.MapGroup("/users/{userId}/sessions")
-            .RequireAuthorization(IdentityProviderPermissions.Sessions.Read);
+            .RequireAuthorization(IdentityPermissions.Sessions.Read);
         sessionsRead.MapProviderSessionEndpoints();
 
         RouteGroupBuilder devicesRead = group.MapGroup("/users/{userId}/devices")
-            .RequireAuthorization(IdentityProviderPermissions.Sessions.Read);
+            .RequireAuthorization(IdentityPermissions.Sessions.Read);
         devicesRead.MapProviderDeviceEndpoints();
 
         // -- Passwords --
         RouteGroupBuilder passwords = group.MapGroup("/users/{userId}/password")
-            .RequireAuthorization(IdentityProviderPermissions.Passwords.Manage);
+            .RequireAuthorization(IdentityPermissions.Passwords.Manage);
         passwords.MapProviderPasswordEndpoints();
 
         return group;
-    }
-
-    private static void RegisterFallbackPolicies(IServiceProvider serviceProvider, string requiredRole)
-    {
-        IOptions<AuthorizationOptions> authOptions =
-            serviceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
-
-        string[] permissions =
-        [
-            IdentityProviderPermissions.Users.Read,
-            IdentityProviderPermissions.Users.Manage,
-            IdentityProviderPermissions.Roles.Read,
-            IdentityProviderPermissions.Roles.Manage,
-            IdentityProviderPermissions.Groups.Read,
-            IdentityProviderPermissions.Groups.Manage,
-            IdentityProviderPermissions.Sessions.Read,
-            IdentityProviderPermissions.Sessions.Manage,
-            IdentityProviderPermissions.Passwords.Manage,
-        ];
-
-        foreach (string permission in permissions)
-        {
-            authOptions.Value.AddPolicy(
-                permission,
-                policy => policy.RequireRole(requiredRole));
-        }
     }
 }

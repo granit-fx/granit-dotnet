@@ -1,14 +1,10 @@
 using Granit.Identity.Endpoints.Endpoints;
-using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Endpoints.Options;
 using Granit.Identity.Endpoints.Permissions;
 using Granit.Validation.AspNetCore;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Granit.Identity.Endpoints.Extensions;
 
@@ -23,10 +19,10 @@ public static class IdentityEndpointRouteBuilderExtensions
     /// <remarks>
     /// <para>Registers endpoints for:</para>
     /// <list type="bullet">
-    /// <item>Search, get by ID, batch resolve (<c>Identity.UserCache.Read</c> permission)</item>
-    /// <item>Sync, sync-all (<c>Identity.UserCache.Sync</c> permission)</item>
-    /// <item>RGPD erase, pseudonymize (<c>Identity.UserCache.Delete</c> permission)</item>
-    /// <item>Stats (<c>Identity.UserCache.Read</c> permission)</item>
+    /// <item>Search, get by ID, batch resolve (<c>Identity.Users.Read</c> permission)</item>
+    /// <item>Sync, sync-all (<c>Identity.Users.Sync</c> permission)</item>
+    /// <item>RGPD erase, pseudonymize (<c>Identity.Users.Delete</c> permission)</item>
+    /// <item>Stats (<c>Identity.Users.Read</c> permission)</item>
     /// <item>Webhook (signature-validated, no user authentication required)</item>
     /// </list>
     /// </remarks>
@@ -40,47 +36,33 @@ public static class IdentityEndpointRouteBuilderExtensions
         IdentityEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        // Register fallback authorization policies
-        IOptions<AuthorizationOptions> authOptions =
-            endpoints.ServiceProvider.GetRequiredService<IOptions<AuthorizationOptions>>();
-
-        authOptions.Value.AddPolicy(
-            IdentityUserCachePermissions.UserCache.Read,
-            policy => policy.RequireRole(options.RequiredRole));
-        authOptions.Value.AddPolicy(
-            IdentityUserCachePermissions.UserCache.Sync,
-            policy => policy.RequireRole(options.RequiredRole));
-        authOptions.Value.AddPolicy(
-            IdentityUserCachePermissions.UserCache.Delete,
-            policy => policy.RequireRole(options.RequiredRole));
-
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
         // Capabilities endpoint
         group
-            .RequireAuthorization(IdentityUserCachePermissions.UserCache.Read)
+            .RequireAuthorization(IdentityPermissions.Users.Read)
             .MapCapabilitiesEndpoints();
 
         // Read endpoints (list, get, batch)
         group
-            .RequireAuthorization(IdentityUserCachePermissions.UserCache.Read)
+            .RequireAuthorization(IdentityPermissions.Users.Read)
             .MapReadEndpoints();
 
         // Stats endpoint
         group
-            .RequireAuthorization(IdentityUserCachePermissions.UserCache.Read)
+            .RequireAuthorization(IdentityPermissions.Users.Read)
             .MapStatsEndpoints();
 
         // Sync endpoints
         group
-            .RequireAuthorization(IdentityUserCachePermissions.UserCache.Sync)
+            .RequireAuthorization(IdentityPermissions.Users.Sync)
             .MapSyncEndpoints();
 
         // RGPD endpoints
         group
-            .RequireAuthorization(IdentityUserCachePermissions.UserCache.Delete)
+            .RequireAuthorization(IdentityPermissions.Users.Delete)
             .MapRgpdEndpoints();
 
         // Webhook endpoint (outside the authorized group — uses signature validation)

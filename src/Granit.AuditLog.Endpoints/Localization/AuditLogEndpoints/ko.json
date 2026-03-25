@@ -1,0 +1,7 @@
+{
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:AuditLog": "감사 로그",
+    "Permission:AuditLog.Entries.Read": "감사 로그 항목 조회 (ISO 27001 감사 추적)"
+  }
+}

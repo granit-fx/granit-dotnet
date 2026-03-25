@@ -2,10 +2,9 @@
   "culture": "nl",
   "texts": {
     "PermissionGroup:Identity": "Identiteit",
-    "Permission:Identity.UserCache.Read": "Gebruikerscache raadplegen (lijst, zoeken, batch, statistieken)",
-    "Permission:Identity.UserCache.Sync": "Synchronisatie van de gebruikerscache forceren vanuit de identiteitsprovider",
-    "Permission:Identity.UserCache.Delete": "Gebruikerscache-items verwijderen of pseudonimiseren (AVG)",
-    "Permission:Identity.Users.Read": "Gebruikers rechtstreeks van de identiteitsprovider bekijken",
+    "Permission:Identity.Users.Read": "Gebruikers bekijken (lijst, zoeken, batch, statistieken)",
+    "Permission:Identity.Users.Sync": "Synchronisatie van gebruikers forceren vanuit de identiteitsprovider",
+    "Permission:Identity.Users.Delete": "Gebruikers verwijderen of pseudonimiseren (AVG)",
     "Permission:Identity.Users.Manage": "Gebruikers aanmaken, bijwerken en in-/uitschakelen in de identiteitsprovider",
     "Permission:Identity.Roles.Read": "Rollen, roltoewijzingen en rolleden bekijken",
     "Permission:Identity.Roles.Manage": "Rollen toewijzen aan of verwijderen van gebruikers",

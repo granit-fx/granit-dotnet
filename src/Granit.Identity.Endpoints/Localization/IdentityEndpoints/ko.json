@@ -2,10 +2,9 @@
   "culture": "ko",
   "texts": {
     "PermissionGroup:Identity": "신원",
-    "Permission:Identity.UserCache.Read": "사용자 캐시 보기 (목록, 검색, 일괄, 통계)",
-    "Permission:Identity.UserCache.Sync": "ID 공급자에서 사용자 캐시 강제 동기화",
-    "Permission:Identity.UserCache.Delete": "사용자 캐시 항목 삭제 또는 가명화 (GDPR)",
-    "Permission:Identity.Users.Read": "ID 공급자에서 직접 사용자 조회",
+    "Permission:Identity.Users.Read": "사용자 보기 (목록, 검색, 일괄, 통계)",
+    "Permission:Identity.Users.Sync": "ID 공급자에서 사용자 강제 동기화",
+    "Permission:Identity.Users.Delete": "사용자 삭제 또는 가명화 (GDPR)",
     "Permission:Identity.Users.Manage": "ID 공급자에서 사용자 생성, 수정 및 활성화/비활성화",
     "Permission:Identity.Roles.Read": "역할, 역할 할당 및 역할 구성원 조회",
     "Permission:Identity.Roles.Manage": "사용자에게 역할 할당 또는 제거",

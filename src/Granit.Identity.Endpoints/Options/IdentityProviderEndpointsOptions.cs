@@ -19,10 +19,4 @@ public sealed class IdentityProviderEndpointsOptions
     /// Default: <c>"Identity Provider"</c>.
     /// </summary>
     public string TagName { get; set; } = "Identity Provider";
-
-    /// <summary>
-    /// Role required for fallback authorization policies (when dynamic permission system
-    /// is not configured). Default: <c>"granit-identity-admin"</c>.
-    /// </summary>
-    public string RequiredRole { get; set; } = "granit-identity-admin";
 }

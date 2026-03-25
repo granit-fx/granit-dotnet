@@ -1,7 +1,7 @@
 {
   "culture": "en-GB",
   "texts": {
-    "Permission:Identity.UserCache.Sync": "Force user cache synchronisation from the identity provider",
-    "Permission:Identity.UserCache.Delete": "Delete or pseudonymise user cache entries (GDPR)"
+    "Permission:Identity.Users.Sync": "Force user synchronisation from the identity provider",
+    "Permission:Identity.Users.Delete": "Delete or pseudonymise users (GDPR)"
   }
 }

@@ -3,23 +3,29 @@ using System.Diagnostics.CodeAnalysis;
 namespace Granit.Identity.Endpoints.Permissions;
 
 /// <summary>
-/// Permission constants for identity provider administration endpoints.
+/// Permission constants for the <c>Granit.Identity.Endpoints</c> module.
 /// </summary>
 [SuppressMessage("Naming", "CA1716:Identifiers should not match keywords",
     Justification = "Permission resource names follow [Module].[Resource].[Action] convention")]
-public static class IdentityProviderPermissions
+public static class IdentityPermissions
 {
-    /// <summary>Permission group name (shared with <see cref="IdentityUserCachePermissions"/>).</summary>
+    /// <summary>Permission group name.</summary>
     public const string GroupName = "Identity";
 
-    /// <summary>Permissions for managing users via the identity provider.</summary>
+    /// <summary>Permissions for user management (cache and identity provider).</summary>
     public static class Users
     {
-        /// <summary>Grants access to list and view users directly from the identity provider.</summary>
+        /// <summary>Grants access to list, search, and view users (cache and provider).</summary>
         public const string Read = "Identity.Users.Read";
 
         /// <summary>Grants access to create, update, and enable/disable users in the identity provider.</summary>
         public const string Manage = "Identity.Users.Manage";
+
+        /// <summary>Grants access to force sync (single or full) from the identity provider.</summary>
+        public const string Sync = "Identity.Users.Sync";
+
+        /// <summary>Grants access to RGPD erasure and pseudonymization.</summary>
+        public const string Delete = "Identity.Users.Delete";
     }
 
     /// <summary>Permissions for managing roles via the identity provider.</summary>

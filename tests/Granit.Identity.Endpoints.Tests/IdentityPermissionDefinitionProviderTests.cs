@@ -22,7 +22,7 @@ public sealed class IdentityPermissionDefinitionProviderTests
         provider.DefinePermissions(context);
 
         // Assert
-        context.Groups.ShouldContain(g => g.Name == IdentityUserCachePermissions.GroupName);
+        context.Groups.ShouldContain(g => g.Name == IdentityPermissions.GroupName);
     }
 
     [Fact]
@@ -37,10 +37,18 @@ public sealed class IdentityPermissionDefinitionProviderTests
 
         // Assert
         PermissionGroup group = context.Groups.Single();
-        group.Permissions.Count.ShouldBe(3);
-        group.Permissions.ShouldContain(p => p.Name == IdentityUserCachePermissions.UserCache.Read);
-        group.Permissions.ShouldContain(p => p.Name == IdentityUserCachePermissions.UserCache.Sync);
-        group.Permissions.ShouldContain(p => p.Name == IdentityUserCachePermissions.UserCache.Delete);
+        group.Permissions.Count.ShouldBe(11);
+        group.Permissions.ShouldContain(p => p.Name == IdentityPermissions.Users.Read);
+        group.Permissions.ShouldContain(p => p.Name == IdentityPermissions.Users.Manage);
+        group.Permissions.ShouldContain(p => p.Name == IdentityPermissions.Users.Sync);
+        group.Permissions.ShouldContain(p => p.Name == IdentityPermissions.Users.Delete);
+        group.Permissions.ShouldContain(p => p.Name == IdentityPermissions.Roles.Read);
+        group.Permissions.ShouldContain(p => p.Name == IdentityPermissions.Roles.Manage);
+        group.Permissions.ShouldContain(p => p.Name == IdentityPermissions.Groups.Read);
+        group.Permissions.ShouldContain(p => p.Name == IdentityPermissions.Groups.Manage);
+        group.Permissions.ShouldContain(p => p.Name == IdentityPermissions.Sessions.Read);
+        group.Permissions.ShouldContain(p => p.Name == IdentityPermissions.Sessions.Manage);
+        group.Permissions.ShouldContain(p => p.Name == IdentityPermissions.Passwords.Manage);
     }
 
     [Fact]
@@ -56,7 +64,7 @@ public sealed class IdentityPermissionDefinitionProviderTests
 
         // Assert — AddGroup is idempotent (GetOrAdd): only one group in context
         context.Groups.Select(g => g.Name)
-            .ShouldContain(n => n == IdentityUserCachePermissions.GroupName);
+            .ShouldContain(n => n == IdentityPermissions.GroupName);
     }
 
     // ── Test double ────────────────────────────────────────────────────────────

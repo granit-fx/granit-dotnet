@@ -26,25 +26,15 @@ public sealed class IdentityEndpointsOptionsTests
     }
 
     [Fact]
-    public void Defaults_RequiredRoleIsGranitIdentityAdmin()
-    {
-        IdentityEndpointsOptions options = new();
-
-        options.RequiredRole.ShouldBe("granit-identity-admin");
-    }
-
-    [Fact]
     public void Properties_AreSettable()
     {
         IdentityEndpointsOptions options = new()
         {
             RoutePrefix = "custom/prefix",
             TagName = "Custom Tag",
-            RequiredRole = "custom-role",
         };
 
         options.RoutePrefix.ShouldBe("custom/prefix");
         options.TagName.ShouldBe("Custom Tag");
-        options.RequiredRole.ShouldBe("custom-role");
     }
 }

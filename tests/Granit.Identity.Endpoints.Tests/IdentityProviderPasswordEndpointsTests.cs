@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Granit.Identity.Endpoints.Dtos;
 using Granit.Identity.Endpoints.Extensions;
+using Granit.Identity.Endpoints.Permissions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -47,7 +48,25 @@ public sealed class IdentityProviderPasswordEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(IdentityPermissions.Users.Read,
+                policy => policy.RequireRole(AdminRole))
+            .AddPolicy(IdentityPermissions.Users.Manage,
+                policy => policy.RequireRole(AdminRole))
+            .AddPolicy(IdentityPermissions.Roles.Read,
+                policy => policy.RequireRole(AdminRole))
+            .AddPolicy(IdentityPermissions.Roles.Manage,
+                policy => policy.RequireRole(AdminRole))
+            .AddPolicy(IdentityPermissions.Groups.Read,
+                policy => policy.RequireRole(AdminRole))
+            .AddPolicy(IdentityPermissions.Groups.Manage,
+                policy => policy.RequireRole(AdminRole))
+            .AddPolicy(IdentityPermissions.Sessions.Read,
+                policy => policy.RequireRole(AdminRole))
+            .AddPolicy(IdentityPermissions.Sessions.Manage,
+                policy => policy.RequireRole(AdminRole))
+            .AddPolicy(IdentityPermissions.Passwords.Manage,
+                policy => policy.RequireRole(AdminRole));
         builder.Services.AddGranitIdentityEndpoints();
         builder.Services.AddSingleton(_passwordManager);
         builder.Services.AddSingleton(_capabilities);

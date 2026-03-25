@@ -2,10 +2,9 @@
   "culture": "sv",
   "texts": {
     "PermissionGroup:Identity": "Identitet",
-    "Permission:Identity.UserCache.Read": "Visa användarcache (lista, sök, batch, statistik)",
-    "Permission:Identity.UserCache.Sync": "Tvinga synkronisering av användarcache från identitetsleverantören",
-    "Permission:Identity.UserCache.Delete": "Radera eller pseudonymisera användarcacheposter (GDPR)",
-    "Permission:Identity.Users.Read": "Visa användare direkt från identitetsleverantören",
+    "Permission:Identity.Users.Read": "Visa användare (lista, sök, batch, statistik)",
+    "Permission:Identity.Users.Sync": "Tvinga synkronisering av användare från identitetsleverantören",
+    "Permission:Identity.Users.Delete": "Radera eller pseudonymisera användare (GDPR)",
     "Permission:Identity.Users.Manage": "Skapa, uppdatera och aktivera/inaktivera användare i identitetsleverantören",
     "Permission:Identity.Roles.Read": "Visa roller, rolltilldelningar och rollmedlemmar",
     "Permission:Identity.Roles.Manage": "Tilldela eller ta bort roller från användare",

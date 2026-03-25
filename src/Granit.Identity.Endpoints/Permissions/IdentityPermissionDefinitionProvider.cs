@@ -5,7 +5,7 @@ using Granit.Localization;
 namespace Granit.Identity.Endpoints.Permissions;
 
 /// <summary>
-/// Declares identity user cache permissions in the Granit RBAC system.
+/// Declares all identity permissions in the Granit RBAC system.
 /// </summary>
 internal sealed class IdentityPermissionDefinitionProvider : IPermissionDefinitionProvider
 {
@@ -13,23 +13,68 @@ internal sealed class IdentityPermissionDefinitionProvider : IPermissionDefiniti
     public void DefinePermissions(IPermissionDefinitionContext context)
     {
         PermissionGroup group = context.AddGroup(
-            IdentityUserCachePermissions.GroupName,
+            IdentityPermissions.GroupName,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
                 "PermissionGroup:Identity"));
 
+        // Users
         group.AddPermission(
-            IdentityUserCachePermissions.UserCache.Read,
+            IdentityPermissions.Users.Read,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
-                "Permission:Identity.UserCache.Read"));
+                "Permission:Identity.Users.Read"));
 
         group.AddPermission(
-            IdentityUserCachePermissions.UserCache.Sync,
+            IdentityPermissions.Users.Manage,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
-                "Permission:Identity.UserCache.Sync"));
+                "Permission:Identity.Users.Manage"));
 
         group.AddPermission(
-            IdentityUserCachePermissions.UserCache.Delete,
+            IdentityPermissions.Users.Sync,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
-                "Permission:Identity.UserCache.Delete"));
+                "Permission:Identity.Users.Sync"));
+
+        group.AddPermission(
+            IdentityPermissions.Users.Delete,
+            LocalizableString.Create<IdentityEndpointsLocalizationResource>(
+                "Permission:Identity.Users.Delete"));
+
+        // Roles
+        group.AddPermission(
+            IdentityPermissions.Roles.Read,
+            LocalizableString.Create<IdentityEndpointsLocalizationResource>(
+                "Permission:Identity.Roles.Read"));
+
+        group.AddPermission(
+            IdentityPermissions.Roles.Manage,
+            LocalizableString.Create<IdentityEndpointsLocalizationResource>(
+                "Permission:Identity.Roles.Manage"));
+
+        // Groups
+        group.AddPermission(
+            IdentityPermissions.Groups.Read,
+            LocalizableString.Create<IdentityEndpointsLocalizationResource>(
+                "Permission:Identity.Groups.Read"));
+
+        group.AddPermission(
+            IdentityPermissions.Groups.Manage,
+            LocalizableString.Create<IdentityEndpointsLocalizationResource>(
+                "Permission:Identity.Groups.Manage"));
+
+        // Sessions
+        group.AddPermission(
+            IdentityPermissions.Sessions.Read,
+            LocalizableString.Create<IdentityEndpointsLocalizationResource>(
+                "Permission:Identity.Sessions.Read"));
+
+        group.AddPermission(
+            IdentityPermissions.Sessions.Manage,
+            LocalizableString.Create<IdentityEndpointsLocalizationResource>(
+                "Permission:Identity.Sessions.Manage"));
+
+        // Passwords
+        group.AddPermission(
+            IdentityPermissions.Passwords.Manage,
+            LocalizableString.Create<IdentityEndpointsLocalizationResource>(
+                "Permission:Identity.Passwords.Manage"));
     }
 }

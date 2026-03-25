@@ -1,0 +1,7 @@
+{
+  "culture": "es",
+  "texts": {
+    "PermissionGroup:AuditLog": "Registro de auditoría",
+    "Permission:AuditLog.Entries.Read": "Ver entradas del registro de auditoría (pista de auditoría ISO 27001)"
+  }
+}

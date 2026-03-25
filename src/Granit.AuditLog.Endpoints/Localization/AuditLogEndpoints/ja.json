@@ -1,0 +1,7 @@
+{
+  "culture": "ja",
+  "texts": {
+    "PermissionGroup:AuditLog": "監査ログ",
+    "Permission:AuditLog.Entries.Read": "監査ログエントリを表示（ISO 27001 監査証跡）"
+  }
+}

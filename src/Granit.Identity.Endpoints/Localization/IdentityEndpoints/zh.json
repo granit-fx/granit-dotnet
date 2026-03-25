@@ -2,10 +2,9 @@
   "culture": "zh",
   "texts": {
     "PermissionGroup:Identity": "身份",
-    "Permission:Identity.UserCache.Read": "查看用户缓存（列表、搜索、批量、统计）",
-    "Permission:Identity.UserCache.Sync": "从身份提供商强制同步用户缓存",
-    "Permission:Identity.UserCache.Delete": "删除或假名化用户缓存条目（GDPR）",
-    "Permission:Identity.Users.Read": "直接从身份提供者查看用户",
+    "Permission:Identity.Users.Read": "查看用户（列表、搜索、批量、统计）",
+    "Permission:Identity.Users.Sync": "从身份提供商强制同步用户",
+    "Permission:Identity.Users.Delete": "删除或假名化用户（GDPR）",
     "Permission:Identity.Users.Manage": "在身份提供者中创建、更新和启用/禁用用户",
     "Permission:Identity.Roles.Read": "查看角色、角色分配和角色成员",
     "Permission:Identity.Roles.Manage": "为用户分配或移除角色",

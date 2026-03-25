@@ -1,0 +1,7 @@
+{
+  "culture": "pt",
+  "texts": {
+    "PermissionGroup:AuditLog": "Registo de auditoria",
+    "Permission:AuditLog.Entries.Read": "Ver entradas do registo de auditoria (trilho de auditoria ISO 27001)"
+  }
+}

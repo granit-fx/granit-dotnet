@@ -2,10 +2,9 @@
   "culture": "cs",
   "texts": {
     "PermissionGroup:Identity": "Identita",
-    "Permission:Identity.UserCache.Read": "Zobrazit mezipaměť uživatelů (seznam, hledání, dávkově, statistiky)",
-    "Permission:Identity.UserCache.Sync": "Vynutit synchronizaci mezipaměti uživatelů od poskytovatele identity",
-    "Permission:Identity.UserCache.Delete": "Smazat nebo pseudonymizovat záznamy mezipaměti uživatelů (GDPR)",
-    "Permission:Identity.Users.Read": "Zobrazit uživatele přímo od poskytovatele identity",
+    "Permission:Identity.Users.Read": "Zobrazit uživatele (seznam, hledání, dávkově, statistiky)",
+    "Permission:Identity.Users.Sync": "Vynutit synchronizaci uživatelů od poskytovatele identity",
+    "Permission:Identity.Users.Delete": "Smazat nebo pseudonymizovat uživatele (GDPR)",
     "Permission:Identity.Users.Manage": "Vytvářet, aktualizovat a aktivovat/deaktivovat uživatele u poskytovatele identity",
     "Permission:Identity.Roles.Read": "Zobrazit role, přiřazení rolí a členy rolí",
     "Permission:Identity.Roles.Manage": "Přiřadit nebo odebrat role uživatelům",

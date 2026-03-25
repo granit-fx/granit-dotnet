@@ -2,10 +2,9 @@
   "culture": "it",
   "texts": {
     "PermissionGroup:Identity": "Identità",
-    "Permission:Identity.UserCache.Read": "Consultare la cache utenti (elenco, ricerca, batch, statistiche)",
-    "Permission:Identity.UserCache.Sync": "Forzare la sincronizzazione della cache dal provider di identità",
-    "Permission:Identity.UserCache.Delete": "Eliminare o pseudonimizzare le voci della cache utenti (GDPR)",
-    "Permission:Identity.Users.Read": "Visualizzare gli utenti direttamente dal provider di identità",
+    "Permission:Identity.Users.Read": "Consultare gli utenti (elenco, ricerca, batch, statistiche)",
+    "Permission:Identity.Users.Sync": "Forzare la sincronizzazione degli utenti dal provider di identità",
+    "Permission:Identity.Users.Delete": "Eliminare o pseudonimizzare gli utenti (GDPR)",
     "Permission:Identity.Users.Manage": "Creare, aggiornare e attivare/disattivare gli utenti nel provider di identità",
     "Permission:Identity.Roles.Read": "Visualizzare i ruoli, le assegnazioni e i membri",
     "Permission:Identity.Roles.Manage": "Assegnare o rimuovere ruoli dagli utenti",

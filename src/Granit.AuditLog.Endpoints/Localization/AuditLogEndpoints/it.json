@@ -1,0 +1,7 @@
+{
+  "culture": "it",
+  "texts": {
+    "PermissionGroup:AuditLog": "Registro di audit",
+    "Permission:AuditLog.Entries.Read": "Visualizzare le voci del registro di audit (traccia di audit ISO 27001)"
+  }
+}

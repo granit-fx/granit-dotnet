@@ -1,0 +1,7 @@
+{
+  "culture": "cs",
+  "texts": {
+    "PermissionGroup:AuditLog": "Protokol auditu",
+    "Permission:AuditLog.Entries.Read": "Zobrazit položky protokolu auditu (auditní stopa ISO 27001)"
+  }
+}

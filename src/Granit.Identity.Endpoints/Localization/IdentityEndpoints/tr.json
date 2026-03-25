@@ -2,10 +2,9 @@
   "culture": "tr",
   "texts": {
     "PermissionGroup:Identity": "Kimlik",
-    "Permission:Identity.UserCache.Read": "Kullanıcı önbelleğini görüntüle (liste, arama, toplu, istatistikler)",
-    "Permission:Identity.UserCache.Sync": "Kimlik sağlayıcısından kullanıcı önbelleği eşitlemesini zorla",
-    "Permission:Identity.UserCache.Delete": "Kullanıcı önbellek girdilerini sil veya takma adlandır (KVKK)",
-    "Permission:Identity.Users.Read": "Kimlik sağlayıcısından doğrudan kullanıcıları görüntüle",
+    "Permission:Identity.Users.Read": "Kullanıcıları görüntüle (liste, arama, toplu, istatistikler)",
+    "Permission:Identity.Users.Sync": "Kimlik sağlayıcısından kullanıcı eşitlemesini zorla",
+    "Permission:Identity.Users.Delete": "Kullanıcıları sil veya takma adlandır (KVKK)",
     "Permission:Identity.Users.Manage": "Kimlik sağlayıcısında kullanıcı oluştur, güncelle ve etkinleştir/devre dışı bırak",
     "Permission:Identity.Roles.Read": "Rolleri, rol atamalarını ve rol üyelerini görüntüle",
     "Permission:Identity.Roles.Manage": "Kullanıcılara rol ata veya kaldır",

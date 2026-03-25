@@ -5,6 +5,7 @@ using System.Text.Json;
 using Granit.Identity.Endpoints.Extensions;
 using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Endpoints.Options;
+using Granit.Identity.Endpoints.Permissions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -38,7 +39,13 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(IdentityPermissions.Users.Read,
+                policy => policy.RequireRole("granit-identity-admin"))
+            .AddPolicy(IdentityPermissions.Users.Sync,
+                policy => policy.RequireRole("granit-identity-admin"))
+            .AddPolicy(IdentityPermissions.Users.Delete,
+                policy => policy.RequireRole("granit-identity-admin"));
         builder.Services.AddGranitIdentityEndpoints();
         builder.Services.AddSingleton(_lookupService);
         builder.Services.AddSingleton(_cacheStats);

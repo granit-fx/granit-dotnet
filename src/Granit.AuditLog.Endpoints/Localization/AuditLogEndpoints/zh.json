@@ -1,0 +1,7 @@
+{
+  "culture": "zh",
+  "texts": {
+    "PermissionGroup:AuditLog": "审计日志",
+    "Permission:AuditLog.Entries.Read": "查看审计日志条目（ISO 27001 审计跟踪）"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "culture": "de",
+  "texts": {
+    "PermissionGroup:AuditLog": "Prüfprotokoll",
+    "Permission:AuditLog.Entries.Read": "Prüfprotokolleinträge anzeigen (ISO 27001-Prüfpfad)"
+  }
+}
