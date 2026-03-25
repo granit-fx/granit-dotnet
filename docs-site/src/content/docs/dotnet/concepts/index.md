@@ -63,6 +63,11 @@ Start with the **Module System** — every other concept builds on it.
   per-role caching, back-channel logout
 - [Compliance](./compliance/) — GDPR and ISO 27001 enforcement as structural patterns
 
+## Architecture
+
+- [Framework vs Modules](./framework-vs-modules/) — classification boundary and
+  dependency rules between horizontal framework and vertical business modules
+
 ## Tooling
 
 - [Bundles](./bundles/) — meta-packages and the fluent `GranitBuilder` API for quick onboarding

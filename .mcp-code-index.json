@@ -90,6 +90,7 @@
       "name": "Granit.AuditLog.Endpoints",
       "deps": [
         "Granit.AuditLog",
+        "Granit.Authorization",
         "Granit.Http.ApiDocumentation",
         "Granit.Validation"
       ],
@@ -280,9 +281,10 @@
     {
       "name": "Granit.Bff.Endpoints",
       "deps": [
-        "Granit.Oidc",
         "Granit.Bff",
         "Granit.Http.ApiDocumentation",
+        "Granit.Http.Cookies",
+        "Granit.Oidc",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -600,7 +602,7 @@
     {
       "name": "Granit.Http.Cookies",
       "deps": [
-        "Granit.Timing"
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -1776,7 +1778,7 @@
       "kind": "class",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/Extensions/AIEndpointRouteBuilderExtensions.cs",
-      "line": 18,
+      "line": 16,
       "members": [
         {
           "name": "MapAIEndpoints",
@@ -1807,18 +1809,6 @@
           "name": "RoutePrefix",
           "kind": "property",
           "signature": "string RoutePrefix",
-          "returnType": "string"
-        },
-        {
-          "name": "AdminRole",
-          "kind": "property",
-          "signature": "string AdminRole",
-          "returnType": "string"
-        },
-        {
-          "name": "UserRole",
-          "kind": "property",
-          "signature": "string UserRole",
           "returnType": "string"
         },
         {
@@ -1863,8 +1853,8 @@
       "members": []
     },
     {
-      "name": "Chat",
-      "fqn": "Granit.AI.Endpoints.Permissions.Chat",
+      "name": "Chats",
+      "fqn": "Granit.AI.Endpoints.Permissions.Chats",
       "kind": "class",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/Permissions/AIPermissions.cs",
@@ -1881,8 +1871,8 @@
       "members": []
     },
     {
-      "name": "Usage",
-      "fqn": "Granit.AI.Endpoints.Permissions.Usage",
+      "name": "Usages",
+      "fqn": "Granit.AI.Endpoints.Permissions.Usages",
       "kind": "class",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/Permissions/AIPermissions.cs",
@@ -3220,11 +3210,11 @@
       "members": []
     },
     {
-      "name": "AuditLogQueryParameters",
-      "fqn": "Granit.AuditLog.Endpoints.Dtos.AuditLogQueryParameters",
+      "name": "AuditLogQueryRequest",
+      "fqn": "Granit.AuditLog.Endpoints.Dtos.AuditLogQueryRequest",
       "kind": "class",
       "project": "Granit.AuditLog.Endpoints",
-      "file": "src/Granit.AuditLog.Endpoints/Dtos/AuditLogQueryParameters.cs",
+      "file": "src/Granit.AuditLog.Endpoints/Dtos/AuditLogQueryRequest.cs",
       "line": 9,
       "members": []
     },
@@ -3243,7 +3233,7 @@
       "kind": "class",
       "project": "Granit.AuditLog.Endpoints",
       "file": "src/Granit.AuditLog.Endpoints/Extensions/AuditLogEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 14,
       "members": [
         {
           "name": "MapAuditLogEndpoints",
@@ -3259,7 +3249,7 @@
       "kind": "class",
       "project": "Granit.AuditLog.Endpoints",
       "file": "src/Granit.AuditLog.Endpoints/GranitAuditLogEndpointsModule.cs",
-      "line": 21,
+      "line": 23,
       "members": []
     },
     {
@@ -3277,24 +3267,30 @@
           "returnType": "string"
         },
         {
-          "name": "AuthorizationPolicy",
-          "kind": "property",
-          "signature": "string AuthorizationPolicy",
-          "returnType": "string"
-        },
-        {
-          "name": "RequiredRole",
-          "kind": "property",
-          "signature": "string RequiredRole",
-          "returnType": "string"
-        },
-        {
           "name": "TagName",
           "kind": "property",
           "signature": "string TagName",
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "AuditLogPermissions",
+      "fqn": "Granit.AuditLog.Endpoints.Permissions.AuditLogPermissions",
+      "kind": "class",
+      "project": "Granit.AuditLog.Endpoints",
+      "file": "src/Granit.AuditLog.Endpoints/Permissions/AuditLogPermissions.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "Entries",
+      "fqn": "Granit.AuditLog.Endpoints.Permissions.Entries",
+      "kind": "class",
+      "project": "Granit.AuditLog.Endpoints",
+      "file": "src/Granit.AuditLog.Endpoints/Permissions/AuditLogPermissions.cs",
+      "line": 12,
+      "members": []
     },
     {
       "name": "AuditLogMetrics",
@@ -3724,7 +3720,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.Endpoints",
       "file": "src/Granit.Authentication.ApiKeys.Endpoints/Extensions/ApiKeysEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "line": 14,
       "members": [
         {
           "name": "MapApiKeysEndpoints",
@@ -3777,12 +3773,6 @@
           "name": "TagName",
           "kind": "property",
           "signature": "string TagName",
-          "returnType": "string"
-        },
-        {
-          "name": "RequiredRole",
-          "kind": "property",
-          "signature": "string RequiredRole",
           "returnType": "string"
         },
         {
@@ -3844,11 +3834,11 @@
       ]
     },
     {
-      "name": "GranitApiKeysDbProperties",
-      "fqn": "Granit.Authentication.ApiKeys.EntityFrameworkCore.GranitApiKeysDbProperties",
+      "name": "GranitAuthenticationApiKeysDbProperties",
+      "fqn": "Granit.Authentication.ApiKeys.EntityFrameworkCore.GranitAuthenticationApiKeysDbProperties",
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.EntityFrameworkCore",
-      "file": "src/Granit.Authentication.ApiKeys.EntityFrameworkCore/GranitApiKeysDbProperties.cs",
+      "file": "src/Granit.Authentication.ApiKeys.EntityFrameworkCore/GranitAuthenticationApiKeysDbProperties.cs",
       "line": 19,
       "members": [
         {
@@ -4272,7 +4262,7 @@
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.Cognito",
       "file": "src/Granit.Authentication.JwtBearer.Cognito/Extensions/CognitoServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitCognito",
@@ -4323,12 +4313,6 @@
           "kind": "property",
           "signature": "bool RequireHttpsMetadata",
           "returnType": "bool"
-        },
-        {
-          "name": "Audience",
-          "kind": "property",
-          "signature": "string? Audience",
-          "returnType": "string?"
         }
       ]
     },
@@ -4354,7 +4338,7 @@
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.EntraId",
       "file": "src/Granit.Authentication.JwtBearer.EntraId/Extensions/EntraIdServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitEntraId",
@@ -4411,12 +4395,6 @@
           "kind": "property",
           "signature": "bool RequireHttpsMetadata",
           "returnType": "bool"
-        },
-        {
-          "name": "AdminRole",
-          "kind": "property",
-          "signature": "string AdminRole",
-          "returnType": "string"
         },
         {
           "name": "TrimEnd",
@@ -4480,7 +4458,7 @@
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.GoogleCloud",
       "file": "src/Granit.Authentication.JwtBearer.GoogleCloud/Extensions/GoogleCloudAuthenticationServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitGoogleCloudAuthentication",
@@ -4525,12 +4503,6 @@
           "kind": "property",
           "signature": "bool RequireHttpsMetadata",
           "returnType": "bool"
-        },
-        {
-          "name": "AdminRole",
-          "kind": "property",
-          "signature": "string AdminRole",
-          "returnType": "string"
         },
         {
           "name": "RolesClaimKey",
@@ -4584,7 +4556,7 @@
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.Keycloak",
       "file": "src/Granit.Authentication.JwtBearer.Keycloak/Extensions/KeycloakServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitKeycloak",
@@ -4647,12 +4619,6 @@
           "kind": "property",
           "signature": "string? Audience",
           "returnType": "string?"
-        },
-        {
-          "name": "RoleClaimsSource",
-          "kind": "property",
-          "signature": "string RoleClaimsSource",
-          "returnType": "string"
         }
       ]
     },
@@ -5470,7 +5436,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs.Endpoints",
       "file": "src/Granit.BackgroundJobs.Endpoints/Extensions/BackgroundJobsEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "line": 14,
       "members": [
         {
           "name": "MapBackgroundJobsEndpoints",
@@ -5490,15 +5456,6 @@
       "members": []
     },
     {
-      "name": "BackgroundJobsAuthorizationPolicy",
-      "fqn": "Granit.BackgroundJobs.Endpoints.Internal.BackgroundJobsAuthorizationPolicy",
-      "kind": "class",
-      "project": "Granit.BackgroundJobs.Endpoints",
-      "file": "src/Granit.BackgroundJobs.Endpoints/Internal/BackgroundJobsAuthorizationPolicy.cs",
-      "line": 8,
-      "members": []
-    },
-    {
       "name": "BackgroundJobsEndpointsOptions",
       "fqn": "Granit.BackgroundJobs.Endpoints.Options.BackgroundJobsEndpointsOptions",
       "kind": "class",
@@ -5510,12 +5467,6 @@
           "name": "RoutePrefix",
           "kind": "property",
           "signature": "string RoutePrefix",
-          "returnType": "string"
-        },
-        {
-          "name": "RequiredRole",
-          "kind": "property",
-          "signature": "string RequiredRole",
           "returnType": "string"
         },
         {
@@ -5953,7 +5904,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "MapGranitBffEndpoints",
@@ -5969,7 +5920,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 142,
+      "line": 163,
       "members": [
         {
           "name": "InvokeAsync",
@@ -5985,8 +5936,15 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/GranitBffEndpointsModule.cs",
-      "line": 14,
-      "members": []
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "GranitBffEntityFrameworkCoreModule",
@@ -6459,11 +6417,11 @@
       ]
     },
     {
-      "name": "DbStoreBlobContent",
-      "fqn": "Granit.BlobStorage.Database.Entities.DbStoreBlobContent",
+      "name": "DatabaseBlobContent",
+      "fqn": "Granit.BlobStorage.Database.Entities.DatabaseBlobContent",
       "kind": "class",
       "project": "Granit.BlobStorage.Database",
-      "file": "src/Granit.BlobStorage.Database/Entities/DbStoreBlobContent.cs",
+      "file": "src/Granit.BlobStorage.Database/Entities/DatabaseBlobContent.cs",
       "line": 12,
       "members": [
         {
@@ -6489,28 +6447,28 @@
       "line": 21,
       "members": [
         {
-          "name": "AddGranitBlobStorageDbStore",
+          "name": "AddGranitBlobStorageDatabase",
           "kind": "method",
-          "signature": "AddGranitBlobStorageDbStore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitBlobStorageDatabase(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
     },
     {
-      "name": "GranitBlobStorageDbStoreModule",
-      "fqn": "Granit.BlobStorage.Database.GranitBlobStorageDbStoreModule",
+      "name": "GranitBlobStorageDatabaseModule",
+      "fqn": "Granit.BlobStorage.Database.GranitBlobStorageDatabaseModule",
       "kind": "class",
       "project": "Granit.BlobStorage.Database",
-      "file": "src/Granit.BlobStorage.Database/GranitBlobStorageDbStoreModule.cs",
+      "file": "src/Granit.BlobStorage.Database/GranitBlobStorageDatabaseModule.cs",
       "line": 15,
       "members": []
     },
     {
-      "name": "DbStoreBlobOptions",
-      "fqn": "Granit.BlobStorage.Database.Options.DbStoreBlobOptions",
+      "name": "DatabaseBlobOptions",
+      "fqn": "Granit.BlobStorage.Database.Options.DatabaseBlobOptions",
       "kind": "class",
       "project": "Granit.BlobStorage.Database",
-      "file": "src/Granit.BlobStorage.Database/Options/DbStoreBlobOptions.cs",
+      "file": "src/Granit.BlobStorage.Database/Options/DatabaseBlobOptions.cs",
       "line": 11,
       "members": [
         {
@@ -6697,7 +6655,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/Extensions/BlobStorageEndpointRouteBuilderExtensions.cs",
-      "line": 19,
+      "line": 17,
       "members": [
         {
           "name": "MapBlobStorageEndpoints",
@@ -6731,12 +6689,6 @@
           "returnType": "string"
         },
         {
-          "name": "RequiredRole",
-          "kind": "property",
-          "signature": "string RequiredRole",
-          "returnType": "string"
-        },
-        {
           "name": "TagName",
           "kind": "property",
           "signature": "string TagName",
@@ -6745,21 +6697,21 @@
       ]
     },
     {
+      "name": "Administration",
+      "fqn": "Granit.BlobStorage.Endpoints.Permissions.Administration",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Endpoints",
+      "file": "src/Granit.BlobStorage.Endpoints/Permissions/BlobStoragePermissions.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "BlobStoragePermissions",
       "fqn": "Granit.BlobStorage.Endpoints.Permissions.BlobStoragePermissions",
       "kind": "class",
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/Permissions/BlobStoragePermissions.cs",
       "line": 6,
-      "members": []
-    },
-    {
-      "name": "Blobs",
-      "fqn": "Granit.BlobStorage.Endpoints.Permissions.Blobs",
-      "kind": "class",
-      "project": "Granit.BlobStorage.Endpoints",
-      "file": "src/Granit.BlobStorage.Endpoints/Permissions/BlobStoragePermissions.cs",
-      "line": 10,
       "members": []
     },
     {
@@ -7860,7 +7812,7 @@
       "kind": "record",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Dtos/Import/ConfirmMappingsRequest.cs",
-      "line": 8,
+      "line": 13,
       "members": []
     },
     {
@@ -7896,7 +7848,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Extensions/DataExchangeEndpointRouteBuilderExtensions.cs",
-      "line": 19,
+      "line": 15,
       "members": [
         {
           "name": "MapDataExchangeEndpoints",
@@ -7916,15 +7868,6 @@
       "members": []
     },
     {
-      "name": "ImportAuthorizationPolicy",
-      "fqn": "Granit.DataExchange.Endpoints.Internal.Import.ImportAuthorizationPolicy",
-      "kind": "class",
-      "project": "Granit.DataExchange.Endpoints",
-      "file": "src/Granit.DataExchange.Endpoints/Internal/Import/ImportAuthorizationPolicy.cs",
-      "line": 8,
-      "members": []
-    },
-    {
       "name": "DataExchangeEndpointsOptions",
       "fqn": "Granit.DataExchange.Endpoints.Options.DataExchangeEndpointsOptions",
       "kind": "class",
@@ -7936,12 +7879,6 @@
           "name": "RoutePrefix",
           "kind": "property",
           "signature": "string RoutePrefix",
-          "returnType": "string"
-        },
-        {
-          "name": "RequiredRole",
-          "kind": "property",
-          "signature": "string RequiredRole",
           "returnType": "string"
         },
         {
@@ -7985,7 +7922,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.EntityFrameworkCore",
       "file": "src/Granit.DataExchange.EntityFrameworkCore/Extensions/DataExchangeEfCoreHostBuilderExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitDataExchangeEntityFrameworkCore",
@@ -10311,11 +10248,11 @@
       "members": []
     },
     {
-      "name": "GranitEncryptionReEncryptionModule",
-      "fqn": "Granit.Encryption.BackgroundJobs.GranitEncryptionReEncryptionModule",
+      "name": "GranitEncryptionBackgroundJobsModule",
+      "fqn": "Granit.Encryption.BackgroundJobs.GranitEncryptionBackgroundJobsModule",
       "kind": "class",
       "project": "Granit.Encryption.BackgroundJobs",
-      "file": "src/Granit.Encryption.BackgroundJobs/GranitEncryptionReEncryptionModule.cs",
+      "file": "src/Granit.Encryption.BackgroundJobs/GranitEncryptionBackgroundJobsModule.cs",
       "line": 8,
       "members": []
     },
@@ -12412,8 +12349,21 @@
       "kind": "record",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/CookieDefinition.cs",
-      "line": 12,
-      "members": []
+      "line": 14,
+      "members": [
+        {
+          "name": "SameSite",
+          "kind": "property",
+          "signature": "SameSiteMode SameSite",
+          "returnType": "SameSiteMode"
+        },
+        {
+          "name": "Path",
+          "kind": "property",
+          "signature": "string Path",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "CookiesLocalizationResource",
@@ -12552,7 +12502,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/GranitHttpCookiesModule.cs",
-      "line": 14,
+      "line": 10,
       "members": []
     },
     {
@@ -13507,7 +13457,7 @@
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Extensions/IdentityEndpointRouteBuilderExtensions.cs",
-      "line": 18,
+      "line": 15,
       "members": [
         {
           "name": "MapIdentityUserCacheEndpoints",
@@ -13539,7 +13489,7 @@
       "kind": "class",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Extensions/IdentityProviderEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "line": 14,
       "members": [
         {
           "name": "MapIdentityProviderEndpoints",
@@ -13577,12 +13527,6 @@
           "kind": "property",
           "signature": "string TagName",
           "returnType": "string"
-        },
-        {
-          "name": "RequiredRole",
-          "kind": "property",
-          "signature": "string RequiredRole",
-          "returnType": "string"
         }
       ]
     },
@@ -13604,12 +13548,6 @@
           "name": "TagName",
           "kind": "property",
           "signature": "string TagName",
-          "returnType": "string"
-        },
-        {
-          "name": "RequiredRole",
-          "kind": "property",
-          "signature": "string RequiredRole",
           "returnType": "string"
         }
       ]
@@ -13713,8 +13651,8 @@
       "fqn": "Granit.Identity.Events.IdentityGroupMembershipChangedEto",
       "kind": "record",
       "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 48,
+      "file": "src/Granit.Identity/Events/IdentityGroupMembershipChangedEto.cs",
+      "line": 11,
       "members": []
     },
     {
@@ -13722,8 +13660,8 @@
       "fqn": "Granit.Identity.Events.IdentityPasswordResetEto",
       "kind": "record",
       "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 54,
+      "file": "src/Granit.Identity/Events/IdentityPasswordResetEto.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -13731,8 +13669,8 @@
       "fqn": "Granit.Identity.Events.IdentityRoleAssignedEto",
       "kind": "record",
       "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 33,
+      "file": "src/Granit.Identity/Events/IdentityRoleAssignedEto.cs",
+      "line": 10,
       "members": []
     },
     {
@@ -13740,8 +13678,8 @@
       "fqn": "Granit.Identity.Events.IdentityRoleRemovedEto",
       "kind": "record",
       "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 40,
+      "file": "src/Granit.Identity/Events/IdentityRoleRemovedEto.cs",
+      "line": 10,
       "members": []
     },
     {
@@ -13749,8 +13687,8 @@
       "fqn": "Granit.Identity.Events.IdentitySessionsRevokedEto",
       "kind": "record",
       "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 60,
+      "file": "src/Granit.Identity/Events/IdentitySessionsRevokedEto.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -13758,8 +13696,8 @@
       "fqn": "Granit.Identity.Events.IdentityUserCreatedEto",
       "kind": "record",
       "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 12,
+      "file": "src/Granit.Identity/Events/IdentityUserCreatedEto.cs",
+      "line": 11,
       "members": []
     },
     {
@@ -13767,8 +13705,8 @@
       "fqn": "Granit.Identity.Events.IdentityUserEnabledChangedEto",
       "kind": "record",
       "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 26,
+      "file": "src/Granit.Identity/Events/IdentityUserEnabledChangedEto.cs",
+      "line": 10,
       "members": []
     },
     {
@@ -13776,8 +13714,8 @@
       "fqn": "Granit.Identity.Events.IdentityUserProfileUpdatedEto",
       "kind": "record",
       "project": "Granit.Identity",
-      "file": "src/Granit.Identity/Events/IdentityEvents.cs",
-      "line": 19,
+      "file": "src/Granit.Identity/Events/IdentityUserProfileUpdatedEto.cs",
+      "line": 11,
       "members": []
     },
     {
@@ -19580,7 +19518,7 @@
       "kind": "enum",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Domain/SigningKey.cs",
-      "line": 98,
+      "line": 95,
       "members": []
     },
     {
@@ -19588,8 +19526,8 @@
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountAuthenticatorKeyResponse",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountTwoFactorDtos.cs",
-      "line": 19,
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountAuthenticatorKeyResponse.cs",
+      "line": 8,
       "members": []
     },
     {
@@ -19606,8 +19544,8 @@
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountForgotPasswordRequest",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountPasswordRequests.cs",
-      "line": 16,
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountForgotPasswordRequest.cs",
+      "line": 7,
       "members": []
     },
     {
@@ -19615,7 +19553,7 @@
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountPasswordChangeRequest",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountPasswordRequests.cs",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountPasswordChangeRequest.cs",
       "line": 8,
       "members": []
     },
@@ -19624,8 +19562,8 @@
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountPasswordResetRequest",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountPasswordRequests.cs",
-      "line": 24,
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountPasswordResetRequest.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -19651,8 +19589,8 @@
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountRecoveryCodesResponse",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountTwoFactorDtos.cs",
-      "line": 39,
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountRecoveryCodesResponse.cs",
+      "line": 7,
       "members": []
     },
     {
@@ -19678,8 +19616,8 @@
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountTwoFactorEnableRequest",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountTwoFactorDtos.cs",
-      "line": 27,
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountTwoFactorEnableRequest.cs",
+      "line": 7,
       "members": []
     },
     {
@@ -19687,8 +19625,8 @@
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountTwoFactorEnableResponse",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountTwoFactorDtos.cs",
-      "line": 33,
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountTwoFactorEnableResponse.cs",
+      "line": 7,
       "members": []
     },
     {
@@ -19696,7 +19634,7 @@
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountTwoFactorStatusResponse",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountTwoFactorDtos.cs",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountTwoFactorStatusResponse.cs",
       "line": 9,
       "members": []
     },
@@ -19714,7 +19652,7 @@
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcApplicationResponse",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcResponses.cs",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcApplicationResponse.cs",
       "line": 10,
       "members": []
     },
@@ -19723,8 +19661,8 @@
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcAuthorizationResponse",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcResponses.cs",
-      "line": 35,
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcAuthorizationResponse.cs",
+      "line": 11,
       "members": []
     },
     {
@@ -19732,8 +19670,8 @@
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcScopeResponse",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcResponses.cs",
-      "line": 22,
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcScopeResponse.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -19768,7 +19706,7 @@
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.PasskeyRegistrationRequest",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/PasskeyRequests.cs",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/PasskeyRegistrationRequest.cs",
       "line": 6,
       "members": []
     },
@@ -19777,8 +19715,8 @@
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.PasskeyRenameRequest",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/PasskeyRequests.cs",
-      "line": 10,
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/PasskeyRenameRequest.cs",
+      "line": 5,
       "members": []
     },
     {
@@ -22464,8 +22402,8 @@
       "members": []
     },
     {
-      "name": "Deletion",
-      "fqn": "Granit.Privacy.Endpoints.Permissions.Deletion",
+      "name": "Deletions",
+      "fqn": "Granit.Privacy.Endpoints.Permissions.Deletions",
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
@@ -22473,8 +22411,8 @@
       "members": []
     },
     {
-      "name": "Export",
-      "fqn": "Granit.Privacy.Endpoints.Permissions.Export",
+      "name": "Exports",
+      "fqn": "Granit.Privacy.Endpoints.Permissions.Exports",
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
@@ -24617,12 +24555,12 @@
       ]
     },
     {
-      "name": "Global",
-      "fqn": "Granit.Settings.Endpoints.Permissions.Global",
+      "name": "Globals",
+      "fqn": "Granit.Settings.Endpoints.Permissions.Globals",
       "kind": "class",
       "project": "Granit.Settings.Endpoints",
       "file": "src/Granit.Settings.Endpoints/Permissions/SettingsPermissions.cs",
-      "line": 14,
+      "line": 12,
       "members": []
     },
     {
@@ -24635,12 +24573,12 @@
       "members": []
     },
     {
-      "name": "Tenant",
-      "fqn": "Granit.Settings.Endpoints.Permissions.Tenant",
+      "name": "Tenants",
+      "fqn": "Granit.Settings.Endpoints.Permissions.Tenants",
       "kind": "class",
       "project": "Granit.Settings.Endpoints",
       "file": "src/Granit.Settings.Endpoints/Permissions/SettingsPermissions.cs",
-      "line": 24,
+      "line": 22,
       "members": []
     },
     {
@@ -26630,7 +26568,7 @@
       "kind": "class",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Extensions/TimelineEndpointRouteBuilderExtensions.cs",
-      "line": 18,
+      "line": 14,
       "members": [
         {
           "name": "MapTimelineEndpoints",
@@ -26661,12 +26599,6 @@
           "name": "RoutePrefix",
           "kind": "property",
           "signature": "string RoutePrefix",
-          "returnType": "string"
-        },
-        {
-          "name": "RequiredRole",
-          "kind": "property",
-          "signature": "string RequiredRole",
           "returnType": "string"
         },
         {
@@ -28976,7 +28908,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/Extensions/WebhooksEndpointRouteBuilderExtensions.cs",
-      "line": 20,
+      "line": 18,
       "members": [
         {
           "name": "MapWebhooksEndpoints",
@@ -29007,12 +28939,6 @@
           "name": "RoutePrefix",
           "kind": "property",
           "signature": "string RoutePrefix",
-          "returnType": "string"
-        },
-        {
-          "name": "RequiredRole",
-          "kind": "property",
-          "signature": "string RequiredRole",
           "returnType": "string"
         },
         {
@@ -30034,7 +29960,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Endpoints",
       "file": "src/Granit.Workflow.Endpoints/Extensions/WorkflowEndpointRouteBuilderExtensions.cs",
-      "line": 18,
+      "line": 14,
       "members": [
         {
           "name": "MapWorkflowEndpoints",
@@ -30070,15 +29996,6 @@
       "members": []
     },
     {
-      "name": "WorkflowAuthorizationPolicy",
-      "fqn": "Granit.Workflow.Endpoints.Internal.WorkflowAuthorizationPolicy",
-      "kind": "class",
-      "project": "Granit.Workflow.Endpoints",
-      "file": "src/Granit.Workflow.Endpoints/Internal/WorkflowAuthorizationPolicy.cs",
-      "line": 8,
-      "members": []
-    },
-    {
       "name": "WorkflowEndpointsOptions",
       "fqn": "Granit.Workflow.Endpoints.Options.WorkflowEndpointsOptions",
       "kind": "class",
@@ -30093,12 +30010,6 @@
           "returnType": "string"
         },
         {
-          "name": "RequiredRole",
-          "kind": "property",
-          "signature": "string RequiredRole",
-          "returnType": "string"
-        },
-        {
           "name": "TagName",
           "kind": "property",
           "signature": "string TagName",
@@ -30107,8 +30018,8 @@
       ]
     },
     {
-      "name": "History",
-      "fqn": "Granit.Workflow.Endpoints.Permissions.History",
+      "name": "Histories",
+      "fqn": "Granit.Workflow.Endpoints.Permissions.Histories",
       "kind": "class",
       "project": "Granit.Workflow.Endpoints",
       "file": "src/Granit.Workflow.Endpoints/Permissions/WorkflowPermissions.cs",

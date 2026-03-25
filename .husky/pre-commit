@@ -21,3 +21,9 @@ if git diff --cached --name-only | grep -qE 'test-shards\.json$|\.csproj$'; then
   python3 scripts/generate-shard-filters.py
   git add .github/shard-filters/*.slnf
 fi
+
+# Regenerate domain filters if .slnx or any .csproj changed
+if git diff --cached --name-only | grep -qE 'Granit\.slnx$|\.csproj$'; then
+  python3 scripts/generate-domain-filters.py
+  git add .slnf/*.slnf
+fi

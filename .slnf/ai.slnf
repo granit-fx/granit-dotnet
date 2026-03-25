@@ -1,0 +1,39 @@
+{
+  "solution": {
+    "path": "Granit.slnx",
+    "projects": [
+      "src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj",
+      "src/Granit.AI.Endpoints/Granit.AI.Endpoints.csproj",
+      "src/Granit.AI.EntityFrameworkCore/Granit.AI.EntityFrameworkCore.csproj",
+      "src/Granit.AI.Extraction/Granit.AI.Extraction.csproj",
+      "src/Granit.AI.Ollama/Granit.AI.Ollama.csproj",
+      "src/Granit.AI.OpenAI/Granit.AI.OpenAI.csproj",
+      "src/Granit.AI.VectorData/Granit.AI.VectorData.csproj",
+      "src/Granit.AI/Granit.AI.csproj",
+      "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
+      "src/Granit.Analyzers/Granit.Analyzers.csproj",
+      "src/Granit.Authorization/Granit.Authorization.csproj",
+      "src/Granit.Caching/Granit.Caching.csproj",
+      "src/Granit.Guids/Granit.Guids.csproj",
+      "src/Granit.Http.ApiDocumentation/Granit.Http.ApiDocumentation.csproj",
+      "src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj",
+      "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
+      "src/Granit.Http.Resilience/Granit.Http.Resilience.csproj",
+      "src/Granit.Localization/Granit.Localization.csproj",
+      "src/Granit.Persistence/Granit.Persistence.csproj",
+      "src/Granit.QueryEngine.Endpoints/Granit.QueryEngine.Endpoints.csproj",
+      "src/Granit.QueryEngine/Granit.QueryEngine.csproj",
+      "src/Granit.Timing/Granit.Timing.csproj",
+      "src/Granit.Validation/Granit.Validation.csproj",
+      "src/Granit/Granit.csproj",
+      "tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj",
+      "tests/Granit.AI.Endpoints.Tests/Granit.AI.Endpoints.Tests.csproj",
+      "tests/Granit.AI.EntityFrameworkCore.Tests/Granit.AI.EntityFrameworkCore.Tests.csproj",
+      "tests/Granit.AI.Extraction.Tests/Granit.AI.Extraction.Tests.csproj",
+      "tests/Granit.AI.Ollama.Tests/Granit.AI.Ollama.Tests.csproj",
+      "tests/Granit.AI.OpenAI.Tests/Granit.AI.OpenAI.Tests.csproj",
+      "tests/Granit.AI.Tests/Granit.AI.Tests.csproj",
+      "tests/Granit.AI.VectorData.Tests/Granit.AI.VectorData.Tests.csproj"
+    ]
+  }
+}

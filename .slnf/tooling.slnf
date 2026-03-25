@@ -1,0 +1,20 @@
+{
+  "solution": {
+    "path": "Granit.slnx",
+    "projects": [
+      "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
+      "src/Granit.Analyzers/Granit.Analyzers.csproj",
+      "src/Granit.Guids/Granit.Guids.csproj",
+      "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
+      "src/Granit.Persistence/Granit.Persistence.csproj",
+      "src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj",
+      "src/Granit.Testing/Granit.Testing.csproj",
+      "src/Granit.Timing/Granit.Timing.csproj",
+      "src/Granit/Granit.csproj",
+      "tests/Granit.Analyzers.CodeFixes.Tests/Granit.Analyzers.CodeFixes.Tests.csproj",
+      "tests/Granit.Analyzers.Tests/Granit.Analyzers.Tests.csproj",
+      "tests/Granit.Testing.EntityFrameworkCore.Tests/Granit.Testing.EntityFrameworkCore.Tests.csproj",
+      "tests/Granit.Testing.Tests/Granit.Testing.Tests.csproj"
+    ]
+  }
+}
