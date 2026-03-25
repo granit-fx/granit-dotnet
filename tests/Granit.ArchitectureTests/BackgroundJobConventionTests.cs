@@ -34,7 +34,7 @@ public sealed partial class BackgroundJobConventionTests
     [Fact]
     public void Background_jobs_should_reside_in_Jobs_folder()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -73,7 +73,7 @@ public sealed partial class BackgroundJobConventionTests
     [Fact]
     public void Jobs_should_not_live_in_Wolverine_packages()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -116,7 +116,7 @@ public sealed partial class BackgroundJobConventionTests
         string? dir = Path.GetDirectoryName(typeof(BackgroundJobConventionTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Combine(dir, ".git")))
+            if (Directory.Exists(Path.Join(dir, ".git")))
             {
                 return dir;
             }

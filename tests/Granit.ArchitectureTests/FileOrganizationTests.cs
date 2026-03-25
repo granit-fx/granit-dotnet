@@ -12,7 +12,7 @@ namespace Granit.ArchitectureTests;
 public sealed partial class FileOrganizationTests
 {
     private static readonly string RepoRoot = FindRepoRoot();
-    private static readonly string SrcRoot = Path.Combine(RepoRoot, "src");
+    private static readonly string SrcRoot = Path.Join(RepoRoot, "src");
 
     /// <summary>
     /// Module classes (Granit*Module.cs) must be at the module root, not nested.
@@ -715,7 +715,7 @@ public sealed partial class FileOrganizationTests
         string? dir = Path.GetDirectoryName(typeof(FileOrganizationTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Combine(dir, ".git")))
+            if (Directory.Exists(Path.Join(dir, ".git")))
             {
                 return dir;
             }

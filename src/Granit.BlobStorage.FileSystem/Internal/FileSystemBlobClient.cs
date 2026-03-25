@@ -132,6 +132,6 @@ internal sealed class FileSystemBlobClient(IOptions<FileSystemBlobOptions> optio
             throw new ArgumentException("Object key must not contain path traversal sequences.", nameof(objectKey));
         }
 
-        return Path.Combine(BasePath, objectKey);
+        return Path.Join(BasePath, objectKey);
     }
 }

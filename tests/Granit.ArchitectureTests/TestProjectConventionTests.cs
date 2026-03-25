@@ -13,23 +13,23 @@ public sealed class TestProjectConventionTests
     [Fact]
     public void Every_src_package_should_have_a_test_project()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
-        string testsDir = Path.Combine(RepoRoot, "tests");
+        string srcDir = Path.Join(RepoRoot, "src");
+        string testsDir = Path.Join(RepoRoot, "tests");
 
         // Auto-exclude analyzers and source generators (target netstandard2.0,
         // cannot reference net10.0 test infrastructure)
         IEnumerable<string> srcPackages = Directory.GetDirectories(srcDir)
             .Select(Path.GetFileName)
             .Where(name => name!.StartsWith("Granit.", StringComparison.Ordinal))
-            .Where(name => File.Exists(Path.Combine(srcDir, name!, $"{name}.csproj")))
-            .Where(name => !TargetsNetStandard(Path.Combine(srcDir, name!, $"{name}.csproj")))
+            .Where(name => File.Exists(Path.Join(srcDir, name!, $"{name}.csproj")))
+            .Where(name => !TargetsNetStandard(Path.Join(srcDir, name!, $"{name}.csproj")))
             .Cast<string>();
 
         List<string> missing = [];
         foreach (string package in srcPackages)
         {
-            bool hasUnitTests = Directory.Exists(Path.Combine(testsDir, $"{package}.Tests"));
-            bool hasIntegrationTests = Directory.Exists(Path.Combine(testsDir, $"{package}.Tests.Integration"));
+            bool hasUnitTests = Directory.Exists(Path.Join(testsDir, $"{package}.Tests"));
+            bool hasIntegrationTests = Directory.Exists(Path.Join(testsDir, $"{package}.Tests.Integration"));
 
             if (!hasUnitTests && !hasIntegrationTests)
             {
@@ -45,18 +45,18 @@ public sealed class TestProjectConventionTests
     [Fact]
     public void Every_src_package_should_have_a_README()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         IEnumerable<string> srcPackages = Directory.GetDirectories(srcDir)
             .Select(Path.GetFileName)
             .Where(name => name!.StartsWith("Granit.", StringComparison.Ordinal))
-            .Where(name => File.Exists(Path.Combine(srcDir, name!, $"{name}.csproj")))
+            .Where(name => File.Exists(Path.Join(srcDir, name!, $"{name}.csproj")))
             .Cast<string>();
 
         List<string> missing = [];
         foreach (string package in srcPackages)
         {
-            string readmePath = Path.Combine(srcDir, package, "README.md");
+            string readmePath = Path.Join(srcDir, package, "README.md");
             if (!File.Exists(readmePath))
             {
                 missing.Add(package);
@@ -83,7 +83,7 @@ public sealed class TestProjectConventionTests
         string? dir = Path.GetDirectoryName(typeof(TestProjectConventionTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Combine(dir, ".git")))
+            if (Directory.Exists(Path.Join(dir, ".git")))
             {
                 return dir;
             }

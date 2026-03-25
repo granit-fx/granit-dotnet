@@ -16,7 +16,7 @@ namespace Granit.ArchitectureTests;
 public sealed partial class NamingHomogeneityTests
 {
     private static readonly string RepoRoot = FindRepoRoot();
-    private static readonly string SrcRoot = Path.Combine(RepoRoot, "src");
+    private static readonly string SrcRoot = Path.Join(RepoRoot, "src");
 
     /// <summary>
     /// Every <c>.cs</c> file in <c>src/Granit.{Module}*/</c> must declare a namespace
@@ -226,7 +226,7 @@ public sealed partial class NamingHomogeneityTests
         string? dir = Path.GetDirectoryName(typeof(NamingHomogeneityTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Combine(dir, ".git")))
+            if (Directory.Exists(Path.Join(dir, ".git")))
             {
                 return dir;
             }

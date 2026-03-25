@@ -123,7 +123,7 @@ public sealed partial class ValidationConventionTests
     [Fact]
     public void Top_level_route_groups_should_use_MapGranitGroup()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -158,7 +158,7 @@ public sealed partial class ValidationConventionTests
     [Fact]
     public void Validators_should_not_use_hardcoded_WithMessage()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -277,7 +277,7 @@ public sealed partial class ValidationConventionTests
         string? dir = Path.GetDirectoryName(typeof(ValidationConventionTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Combine(dir, ".git")))
+            if (Directory.Exists(Path.Join(dir, ".git")))
             {
                 return dir;
             }

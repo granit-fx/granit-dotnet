@@ -22,7 +22,7 @@ public sealed partial class PermissionConventionTests
     [Fact]
     public void Permission_constants_should_use_three_segment_format()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -69,7 +69,7 @@ public sealed partial class PermissionConventionTests
     [Fact]
     public void Permission_actions_should_not_use_View()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -135,7 +135,7 @@ public sealed partial class PermissionConventionTests
         string? dir = Path.GetDirectoryName(typeof(PermissionConventionTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Combine(dir, ".git")))
+            if (Directory.Exists(Path.Join(dir, ".git")))
             {
                 return dir;
             }

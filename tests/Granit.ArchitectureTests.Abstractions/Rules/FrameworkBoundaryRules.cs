@@ -95,7 +95,7 @@ public static partial class FrameworkBoundaryRules
     /// </summary>
     public static void FrameworkProjectsShouldNotDependOnModules(string repoRoot)
     {
-        string srcDir = Path.Combine(repoRoot, "src");
+        string srcDir = Path.Join(repoRoot, "src");
         List<string> violations = [];
 
         foreach (string csproj in Directory.GetFiles(srcDir, "*.csproj", SearchOption.AllDirectories))

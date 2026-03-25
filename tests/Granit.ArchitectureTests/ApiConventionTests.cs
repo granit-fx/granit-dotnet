@@ -39,7 +39,7 @@ public sealed partial class ApiConventionTests
     [Fact]
     public void Endpoint_handlers_should_use_typed_results_union()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -90,7 +90,7 @@ public sealed partial class ApiConventionTests
     [Fact]
     public void Complex_results_unions_should_include_ProblemHttpResult()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -147,7 +147,7 @@ public sealed partial class ApiConventionTests
     [Fact]
     public void Endpoint_registrations_should_have_complete_OpenAPI_metadata()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -358,7 +358,7 @@ public sealed partial class ApiConventionTests
         string? dir = Path.GetDirectoryName(typeof(ApiConventionTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Combine(dir, ".git")))
+            if (Directory.Exists(Path.Join(dir, ".git")))
             {
                 return dir;
             }

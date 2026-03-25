@@ -17,7 +17,7 @@ public sealed partial class IsolatedDbContextTests
     [Fact]
     public void OnModelCreating_should_call_ApplyGranitConventions()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -49,7 +49,7 @@ public sealed partial class IsolatedDbContextTests
     [Fact]
     public void No_manual_HasQueryFilter_in_entity_configurations()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -83,7 +83,7 @@ public sealed partial class IsolatedDbContextTests
     [Fact]
     public void EfCore_projects_should_reference_GranitPersistence()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -111,7 +111,7 @@ public sealed partial class IsolatedDbContextTests
     [Fact]
     public void EfCore_modules_should_DependOn_GranitPersistenceModule()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -141,13 +141,13 @@ public sealed partial class IsolatedDbContextTests
     [Fact]
     public void EfCore_extension_methods_should_use_interceptor_DI_pattern()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
         foreach (string efProject in GetEfCoreProjectDirs(srcDir))
         {
-            string extensionsDir = Path.Combine(efProject, "Extensions");
+            string extensionsDir = Path.Join(efProject, "Extensions");
             if (!Directory.Exists(extensionsDir))
             {
                 continue;
@@ -184,7 +184,7 @@ public sealed partial class IsolatedDbContextTests
         string? dir = Path.GetDirectoryName(typeof(IsolatedDbContextTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Combine(dir, ".git")))
+            if (Directory.Exists(Path.Join(dir, ".git")))
             {
                 return dir;
             }

@@ -15,7 +15,7 @@ public sealed partial class ProjectDependencyTests
     [Fact]
     public void No_circular_project_references()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         // Build adjacency list: project name → set of referenced project names
         Dictionary<string, HashSet<string>> graph = new(StringComparer.Ordinal);
@@ -94,7 +94,7 @@ public sealed partial class ProjectDependencyTests
         string? dir = Path.GetDirectoryName(typeof(ProjectDependencyTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Combine(dir, ".git")))
+            if (Directory.Exists(Path.Join(dir, ".git")))
             {
                 return dir;
             }

@@ -31,7 +31,7 @@ public sealed class FrameworkBoundaryTests
     [Fact]
     public void Every_src_package_should_be_classified_as_framework_or_module()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
         List<string> unclassified = [];
 
         foreach (string csproj in Directory.GetFiles(srcDir, "*.csproj", SearchOption.AllDirectories))
@@ -57,7 +57,7 @@ public sealed class FrameworkBoundaryTests
         string? dir = Path.GetDirectoryName(typeof(FrameworkBoundaryTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Combine(dir, ".git")))
+            if (Directory.Exists(Path.Join(dir, ".git")))
             {
                 return dir;
             }

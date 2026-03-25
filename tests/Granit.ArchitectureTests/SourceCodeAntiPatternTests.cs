@@ -16,12 +16,18 @@ public sealed partial class SourceCodeAntiPatternTests
     [Fact]
     public void Async_void_methods_should_not_exist_in_src()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
         foreach (string csFile in Directory.GetFiles(srcDir, "*.cs", SearchOption.AllDirectories))
         {
+            if (csFile.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar)
+                || csFile.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar))
+            {
+                continue;
+            }
+
             string content = File.ReadAllText(csFile);
 
             foreach (Match match in AsyncVoidMethod().Matches(content))
@@ -41,12 +47,18 @@ public sealed partial class SourceCodeAntiPatternTests
     [Fact]
     public void Throw_ex_should_not_be_used_in_src()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
         foreach (string csFile in Directory.GetFiles(srcDir, "*.cs", SearchOption.AllDirectories))
         {
+            if (csFile.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar)
+                || csFile.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar))
+            {
+                continue;
+            }
+
             string content = File.ReadAllText(csFile);
 
             foreach (Match match in ThrowExStatement().Matches(content))
@@ -70,7 +82,7 @@ public sealed partial class SourceCodeAntiPatternTests
     [Fact]
     public void Namespace_should_match_folder_structure_in_src()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -147,7 +159,7 @@ public sealed partial class SourceCodeAntiPatternTests
     [Fact]
     public void DbContext_classes_should_follow_canonical_pattern()
     {
-        string srcDir = Path.Combine(RepoRoot, "src");
+        string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
 
@@ -213,7 +225,7 @@ public sealed partial class SourceCodeAntiPatternTests
         string? dir = Path.GetDirectoryName(typeof(SourceCodeAntiPatternTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Combine(dir, ".git")))
+            if (Directory.Exists(Path.Join(dir, ".git")))
             {
                 return dir;
             }

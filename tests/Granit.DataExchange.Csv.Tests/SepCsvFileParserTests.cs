@@ -12,7 +12,7 @@ public sealed class SepCsvFileParserTests
     private static readonly FileParsingOptions DefaultOptions = new();
 
     private static FileStream OpenTestFile(string fileName) =>
-        new(Path.Combine("TestData", fileName), FileMode.Open, FileAccess.Read);
+        new(Path.Join("TestData", fileName), FileMode.Open, FileAccess.Read);
 
     // ---- CanParse --------------------------------------------------------
 
