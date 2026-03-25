@@ -1,6 +1,6 @@
 using System.Threading.Channels;
+using Granit.Auditing.Diagnostics;
 using Granit.Auditing.Domain;
-using Granit.Auditing.EntityFrameworkCore.Diagnostics;
 using Granit.Auditing.Messages;
 using Granit.Guids;
 using Microsoft.EntityFrameworkCore;

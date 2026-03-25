@@ -1,3 +1,4 @@
+using Granit.Caching.Diagnostics;
 using Granit.Caching.Internal;
 using Granit.Caching.Options;
 using Granit.Timing.Extensions;
@@ -51,6 +52,7 @@ public static class CachingServiceCollectionExtensions
 
         // No-op encryptor by default (replaced by AesCacheValueEncryptor if EncryptValues=true)
         services.TryAddSingleton<ICacheValueEncryptor, NullCacheValueEncryptor>();
+        services.TryAddSingleton<CachingMetrics>();
 
         // IDistributedCache (memory) for local development — replaced by Redis in production
         services.AddDistributedMemoryCache();

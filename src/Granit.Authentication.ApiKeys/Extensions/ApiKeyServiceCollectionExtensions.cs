@@ -1,3 +1,4 @@
+using Granit.Authentication.ApiKeys.Diagnostics;
 using Granit.Authentication.ApiKeys.Internal;
 using Granit.Authentication.ApiKeys.Options;
 using Microsoft.AspNetCore.Authentication;
@@ -23,6 +24,7 @@ public static class ApiKeyServiceCollectionExtensions
 
         // Register the API key generator
         services.TryAddSingleton<IApiKeyGenerator, ApiKeyGenerator>();
+        services.TryAddSingleton<ApiKeysMetrics>();
 
         // Add the authentication scheme
         services.AddAuthentication()

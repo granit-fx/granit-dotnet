@@ -1,5 +1,5 @@
 using System.Diagnostics.Metrics;
-using Granit.Auditing.EntityFrameworkCore.Diagnostics;
+using Granit.Auditing.Diagnostics;
 using Shouldly;
 using Xunit;
 

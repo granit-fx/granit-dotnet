@@ -1,3 +1,4 @@
+using Granit.DocumentGeneration.Diagnostics;
 using Granit.DocumentGeneration.Internal;
 using Granit.DocumentGeneration.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,7 @@ public static class ServiceCollectionExtensions
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddGranitDocumentGeneration(this IServiceCollection services)
     {
+        services.TryAddSingleton<DocumentGenerationMetrics>();
         services.TryAddScoped<IDocumentGenerator, DocumentGenerator>();
         return services;
     }

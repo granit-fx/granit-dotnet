@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Granit.MultiTenancy;
+using Granit.QueryEngine.Diagnostics;
 using Granit.QueryEngine.EntityFrameworkCore.Diagnostics;
 using Granit.QueryEngine.Filtering;
 using Granit.QueryEngine.Meta;
@@ -21,7 +22,7 @@ internal sealed class QueryEngine<TEntity>(
     QueryDefinition<TEntity> definition,
     ILogger<QueryEngine<TEntity>> logger,
     IGlobalSearchStrategy<TEntity>? searchStrategy = null,
-    QueryEngineEfCoreMetrics? metrics = null,
+    QueryEngineMetrics? metrics = null,
     ICurrentTenant? currentTenant = null) : IQueryEngine<TEntity>
     where TEntity : class
 {
@@ -30,7 +31,7 @@ internal sealed class QueryEngine<TEntity>(
     private readonly QueryDefinitionBuilder<TEntity> _builder = definition.GetBuilder();
     private readonly ILogger _logger = logger;
     private readonly IGlobalSearchStrategy<TEntity> _searchStrategy = searchStrategy ?? new ContainsSearchStrategy<TEntity>();
-    private readonly QueryEngineEfCoreMetrics? _metrics = metrics;
+    private readonly QueryEngineMetrics? _metrics = metrics;
     private readonly ICurrentTenant? _currentTenant = currentTenant;
 
     /// <inheritdoc/>

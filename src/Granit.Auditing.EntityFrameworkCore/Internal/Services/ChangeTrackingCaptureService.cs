@@ -1,8 +1,8 @@
 using System.Text.Json;
 using Granit.Auditing.Abstractions;
 using Granit.Auditing.Attributes;
+using Granit.Auditing.Diagnostics;
 using Granit.Auditing.Domain;
-using Granit.Auditing.EntityFrameworkCore.Diagnostics;
 using Granit.Auditing.Messages;
 using Granit.Auditing.Options;
 using Granit.Domain;

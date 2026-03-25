@@ -1,7 +1,7 @@
 using System.Threading.Channels;
 using Granit.Auditing.Abstractions;
+using Granit.Auditing.Diagnostics;
 using Granit.Auditing.Domain;
-using Granit.Auditing.EntityFrameworkCore.Diagnostics;
 using Granit.Auditing.EntityFrameworkCore.Interceptors;
 using Granit.Auditing.EntityFrameworkCore.Internal;
 using Granit.Auditing.EntityFrameworkCore.Internal.Services;

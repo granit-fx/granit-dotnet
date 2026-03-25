@@ -1,3 +1,4 @@
+using Granit.Http.Resilience.Diagnostics;
 using Granit.Http.Resilience.Handlers;
 using Granit.Http.Resilience.Options;
 using Microsoft.AspNetCore.Http;
@@ -36,6 +37,8 @@ public static class HttpResilienceServiceCollectionExtensions
         IHttpClientBuilder clientBuilder = configure is null
             ? services.AddHttpClient(name)
             : services.AddHttpClient(name, configure);
+
+        services.TryAddSingleton<HttpResilienceMetrics>();
 
         clientBuilder.AddStandardResilienceHandler();
 

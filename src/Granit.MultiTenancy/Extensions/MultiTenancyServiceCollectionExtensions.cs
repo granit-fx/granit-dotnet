@@ -1,3 +1,4 @@
+using Granit.MultiTenancy.Diagnostics;
 using Granit.MultiTenancy.Middleware;
 using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Pipeline;
@@ -32,6 +33,7 @@ public static class MultiTenancyServiceCollectionExtensions
         services.AddSingleton<ITenantResolver, JwtClaimTenantResolver>();
 
         services.TryAddSingleton<TenantResolverPipeline>();
+        services.TryAddSingleton<MultiTenancyMetrics>();
 
         // IMiddleware pattern: resolved per scope (per request)
         services.AddScoped<TenantResolutionMiddleware>();

@@ -1,5 +1,5 @@
+using Granit.Auditing.Diagnostics;
 using Granit.Auditing.Domain;
-using Granit.Auditing.EntityFrameworkCore.Diagnostics;
 using Granit.Auditing.Options;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;

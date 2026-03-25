@@ -1,5 +1,6 @@
 using Granit.Authorization.Abstractions;
 using Granit.Authorization.Authorization;
+using Granit.Authorization.Diagnostics;
 using Granit.Authorization.Options;
 using Granit.Authorization.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -27,6 +28,7 @@ public static class AuthorizationServiceCollectionExtensions
         services.AddSingleton<IPermissionDefinitionManager, PermissionDefinitionManager>();
 
         services.TryAddSingleton<IPermissionGrantStore, NullPermissionGrantStore>();
+        services.TryAddSingleton<AuthorizationMetrics>();
 
         services.AddScoped<IPermissionChecker, PermissionChecker>();
 

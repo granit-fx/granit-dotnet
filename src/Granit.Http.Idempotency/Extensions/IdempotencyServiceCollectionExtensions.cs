@@ -1,4 +1,5 @@
 using Granit.Http.Idempotency.Abstractions;
+using Granit.Http.Idempotency.Diagnostics;
 using Granit.Http.Idempotency.Internal;
 using Granit.Http.Idempotency.Models;
 using Granit.Http.Idempotency.Redis;
@@ -55,6 +56,7 @@ public static class IdempotencyServiceCollectionExtensions
     private static IServiceCollection AddGranitIdempotencyCore(this IServiceCollection services)
     {
         services.AddSingleton<IValidateOptions<IdempotencyOptions>, IdempotencyOptionsValidator>();
+        services.TryAddSingleton<IdempotencyMetrics>();
 
         // Resolve at runtime: Redis-backed store when IConnectionMultiplexer is available,
         // otherwise fall back to an in-memory store (dev / single-instance deployments).
