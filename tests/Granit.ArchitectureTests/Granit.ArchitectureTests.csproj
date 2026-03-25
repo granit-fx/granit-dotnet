@@ -45,10 +45,10 @@
     <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys\Granit.Authentication.ApiKeys.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys.Endpoints\Granit.Authentication.ApiKeys.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys.EntityFrameworkCore\Granit.Authentication.ApiKeys.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer.Cognito/Granit.Authentication.JwtBearer.Cognito.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer.Cognito\Granit.Authentication.JwtBearer.Cognito.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.DPoP\Granit.Authentication.DPoP.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer.EntraId/Granit.Authentication.JwtBearer.EntraId.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer.GoogleCloud/Granit.Authentication.JwtBearer.GoogleCloud.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer.EntraId\Granit.Authentication.JwtBearer.EntraId.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer.GoogleCloud\Granit.Authentication.JwtBearer.GoogleCloud.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer\Granit.Authentication.JwtBearer.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.JwtBearer.Keycloak/Granit.Authentication.JwtBearer.Keycloak.csproj" />
     <ProjectReference Include="..\..\src\Granit.Oidc\Granit.Oidc.csproj" />
