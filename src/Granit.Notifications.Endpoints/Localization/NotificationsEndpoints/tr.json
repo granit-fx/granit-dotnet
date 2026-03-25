@@ -2,7 +2,7 @@
   "culture": "tr",
   "texts": {
     "PermissionGroup:Notifications": "Bildirimler",
-    "Permission:Notifications.Notifications.Read": "Bildirimleri görüntüle (gelen kutusu, etkinlik akışı)",
-    "Permission:Notifications.Notifications.Manage": "Bildirimleri yönet (tercihler, abonelikler, push tokenları)"
+    "Permission:Notifications.UserNotifications.Read": "Bildirimleri görüntüle (gelen kutusu, etkinlik akışı)",
+    "Permission:Notifications.UserNotifications.Manage": "Bildirimleri yönet (tercihler, abonelikler, push tokenları)"
   }
 }

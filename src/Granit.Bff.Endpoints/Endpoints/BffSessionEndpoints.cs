@@ -1,4 +1,3 @@
-using Granit.Bff.Diagnostics;
 using Granit.Bff.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -15,14 +14,14 @@ namespace Granit.Bff.Endpoints.Endpoints;
 /// </summary>
 internal static partial class BffSessionEndpoints
 {
+    private const string NoActiveSessionMessage = "No active session.";
     internal static RouteGroupBuilder MapSessionEndpoints(this RouteGroupBuilder group, BffFrontendOptions frontend)
     {
         group.MapGet("/sessions", (HttpContext httpContext,
                 [FromServices] IBffTokenStore tokenStore,
                 [FromServices] IBffCsrfTokenGenerator csrfGenerator,
-                [FromServices] ILoggerFactory loggerFactory,
                 CancellationToken cancellationToken) =>
-                HandleListSessionsAsync(httpContext, frontend, tokenStore, loggerFactory, cancellationToken))
+                HandleListSessionsAsync(httpContext, frontend, tokenStore, cancellationToken))
             .WithName($"BffListSessions_{frontend.Name}")
             .WithSummary("Lists the current user's active sessions.")
             .WithDescription(
@@ -35,10 +34,9 @@ internal static partial class BffSessionEndpoints
         group.MapDelete("/sessions/{targetSessionId}", (HttpContext httpContext,
                 string targetSessionId,
                 [FromServices] IBffTokenStore tokenStore,
-                [FromServices] BffMetrics metrics,
                 [FromServices] ILoggerFactory loggerFactory,
                 CancellationToken cancellationToken) =>
-                HandleRevokeSessionAsync(httpContext, frontend, targetSessionId, tokenStore, metrics, loggerFactory, cancellationToken))
+                HandleRevokeSessionAsync(httpContext, frontend, targetSessionId, tokenStore, loggerFactory, cancellationToken))
             .WithName($"BffRevokeSession_{frontend.Name}")
             .WithSummary("Revokes a specific session by ID.")
             .WithDescription(
@@ -51,10 +49,9 @@ internal static partial class BffSessionEndpoints
 
         group.MapDelete("/sessions", (HttpContext httpContext,
                 [FromServices] IBffTokenStore tokenStore,
-                [FromServices] BffMetrics metrics,
                 [FromServices] ILoggerFactory loggerFactory,
                 CancellationToken cancellationToken) =>
-                HandleRevokeAllOtherSessionsAsync(httpContext, frontend, tokenStore, metrics, loggerFactory, cancellationToken))
+                HandleRevokeAllOtherSessionsAsync(httpContext, frontend, tokenStore, loggerFactory, cancellationToken))
             .WithName($"BffRevokeAllSessions_{frontend.Name}")
             .WithSummary("Revokes all other sessions except the current one.")
             .WithDescription(
@@ -72,13 +69,12 @@ internal static partial class BffSessionEndpoints
         HttpContext httpContext,
         BffFrontendOptions frontend,
         [FromServices] IBffTokenStore tokenStore,
-        [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
         string? currentSessionId = httpContext.Request.Cookies[frontend.SessionCookieName];
         if (string.IsNullOrEmpty(currentSessionId))
         {
-            return TypedResults.Problem(detail: "No active session.", statusCode: StatusCodes.Status401Unauthorized);
+            return TypedResults.Problem(detail: NoActiveSessionMessage, statusCode: StatusCodes.Status401Unauthorized);
         }
 
 #pragma warning disable GRSEC003 // Reading tokens for session listing
@@ -88,7 +84,7 @@ internal static partial class BffSessionEndpoints
 
         if (currentTokens?.UserId is null)
         {
-            return TypedResults.Problem(detail: "No active session.", statusCode: StatusCodes.Status401Unauthorized);
+            return TypedResults.Problem(detail: NoActiveSessionMessage, statusCode: StatusCodes.Status401Unauthorized);
         }
 
         IReadOnlyList<string> sessionIds = await tokenStore.GetSessionIdsByUserAsync(
@@ -120,7 +116,6 @@ internal static partial class BffSessionEndpoints
         BffFrontendOptions frontend,
         string targetSessionId,
         [FromServices] IBffTokenStore tokenStore,
-        [FromServices] BffMetrics metrics,
         [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
@@ -129,7 +124,7 @@ internal static partial class BffSessionEndpoints
 
         if (string.IsNullOrEmpty(currentSessionId))
         {
-            return TypedResults.Problem(detail: "No active session.", statusCode: StatusCodes.Status401Unauthorized);
+            return TypedResults.Problem(detail: NoActiveSessionMessage, statusCode: StatusCodes.Status401Unauthorized);
         }
 
 #pragma warning disable GRSEC003
@@ -161,7 +156,6 @@ internal static partial class BffSessionEndpoints
         HttpContext httpContext,
         BffFrontendOptions frontend,
         [FromServices] IBffTokenStore tokenStore,
-        [FromServices] BffMetrics metrics,
         [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
@@ -170,7 +164,7 @@ internal static partial class BffSessionEndpoints
 
         if (string.IsNullOrEmpty(currentSessionId))
         {
-            return TypedResults.Problem(detail: "No active session.", statusCode: StatusCodes.Status401Unauthorized);
+            return TypedResults.Problem(detail: NoActiveSessionMessage, statusCode: StatusCodes.Status401Unauthorized);
         }
 
 #pragma warning disable GRSEC003
@@ -180,20 +174,17 @@ internal static partial class BffSessionEndpoints
 
         if (currentTokens?.UserId is null)
         {
-            return TypedResults.Problem(detail: "No active session.", statusCode: StatusCodes.Status401Unauthorized);
+            return TypedResults.Problem(detail: NoActiveSessionMessage, statusCode: StatusCodes.Status401Unauthorized);
         }
 
         IReadOnlyList<string> sessionIds = await tokenStore.GetSessionIdsByUserAsync(
             frontend.Name, currentTokens.UserId, cancellationToken).ConfigureAwait(false);
 
         int revoked = 0;
-        foreach (string sessionId in sessionIds)
+        foreach (string sessionId in sessionIds.Where(id => id != currentSessionId))
         {
-            if (sessionId != currentSessionId)
-            {
-                await tokenStore.RemoveAsync(frontend.Name, sessionId, cancellationToken).ConfigureAwait(false);
-                revoked++;
-            }
+            await tokenStore.RemoveAsync(frontend.Name, sessionId, cancellationToken).ConfigureAwait(false);
+            revoked++;
         }
 
         LogAllOtherSessionsRevoked(logger, revoked, frontend.Name);

@@ -31,28 +31,60 @@ internal sealed class DPoPProofValidator(
         using Activity? activity = DPoPValidationActivitySource.Source.StartActivity(DPoPValidationActivitySource.Validate);
         DPoPValidationOptions opts = options.Value;
 
-        // 1. Split JWT
         string[] parts = proofJwt.Split('.');
         if (parts.Length != 3)
         {
             return DPoPValidationResult.Failure("Invalid JWT structure.");
         }
 
-        // 2. Parse header
-        JsonElement header;
+        DPoPValidationResult? headerResult = ValidateHeader(parts[0], opts, out JsonElement header, out string algorithm, out JsonElement jwk);
+        if (headerResult is not null)
+        {
+            return headerResult;
+        }
+
+        DPoPValidationResult? payloadResult = ValidatePayload(parts[1], httpMethod, httpUri, opts, out JsonElement payload);
+        if (payloadResult is not null)
+        {
+            return payloadResult;
+        }
+
+        DPoPValidationResult? replayResult = await ValidateReplayProtectionAsync(payload, opts, cancellationToken).ConfigureAwait(false);
+        if (replayResult is not null)
+        {
+            return replayResult;
+        }
+
+        DPoPValidationResult? signatureResult = ValidateSignature(parts, jwk, algorithm);
+        if (signatureResult is not null)
+        {
+            return signatureResult;
+        }
+
+        string thumbprint = JwkThumbprintCalculator.ComputeThumbprint(jwk);
+        metrics.RecordSuccess(tenantId: null);
+        return DPoPValidationResult.Success(thumbprint);
+    }
+
+    private static DPoPValidationResult? ValidateHeader(
+        string headerPart, DPoPValidationOptions opts,
+        out JsonElement header, out string algorithm, out JsonElement jwk)
+    {
+        algorithm = string.Empty;
+        jwk = default;
+
         try
         {
-            byte[] headerBytes = Base64UrlDecode(parts[0]);
+            byte[] headerBytes = Base64UrlDecode(headerPart);
             header = JsonDocument.Parse(headerBytes).RootElement;
         }
         catch (Exception)
         {
+            header = default;
             return DPoPValidationResult.Failure("Invalid JWT header encoding.");
         }
 
-        // 3. Validate header: typ, alg, jwk
-        if (!header.TryGetProperty("typ", out JsonElement typ)
-            || typ.GetString() != "dpop+jwt")
+        if (!header.TryGetProperty("typ", out JsonElement typ) || typ.GetString() != "dpop+jwt")
         {
             return DPoPValidationResult.Failure("Missing or invalid typ claim (expected 'dpop+jwt').");
         }
@@ -62,30 +94,35 @@ internal sealed class DPoPProofValidator(
             return DPoPValidationResult.Failure("Missing alg claim.");
         }
 
-        string algorithm = alg.GetString()!;
+        algorithm = alg.GetString()!;
         if (!opts.AllowedAlgorithms.Contains(algorithm))
         {
             return DPoPValidationResult.Failure($"Algorithm '{algorithm}' is not allowed.");
         }
 
-        if (!header.TryGetProperty("jwk", out JsonElement jwk))
+        if (!header.TryGetProperty("jwk", out jwk))
         {
             return DPoPValidationResult.Failure("Missing jwk claim in header.");
         }
 
-        // 4. Parse payload
-        JsonElement payload;
+        return null;
+    }
+
+    private DPoPValidationResult? ValidatePayload(
+        string payloadPart, string httpMethod, string httpUri,
+        DPoPValidationOptions opts, out JsonElement payload)
+    {
         try
         {
-            byte[] payloadBytes = Base64UrlDecode(parts[1]);
+            byte[] payloadBytes = Base64UrlDecode(payloadPart);
             payload = JsonDocument.Parse(payloadBytes).RootElement;
         }
         catch (Exception)
         {
+            payload = default;
             return DPoPValidationResult.Failure("Invalid JWT payload encoding.");
         }
 
-        // 5. Validate payload claims
         if (!payload.TryGetProperty("htm", out JsonElement htm)
             || !string.Equals(htm.GetString(), httpMethod, StringComparison.OrdinalIgnoreCase))
         {
@@ -126,33 +163,44 @@ internal sealed class DPoPProofValidator(
             }
         }
 
-        // 6. jti replay protection
-        if (opts.EnableReplayProtection && cache is not null)
+        return null;
+    }
+
+    private async Task<DPoPValidationResult?> ValidateReplayProtectionAsync(
+        JsonElement payload, DPoPValidationOptions opts, CancellationToken cancellationToken)
+    {
+        if (!opts.EnableReplayProtection || cache is null)
         {
-            if (!payload.TryGetProperty("jti", out JsonElement jti))
-            {
-                return DPoPValidationResult.Failure("Missing jti claim (required for replay protection).");
-            }
-
-            string jtiValue = jti.GetString()!;
-            string jtiKey = $"{JtiCachePrefix}{jtiValue}";
-
-            byte[]? existing = await cache.GetAsync(jtiKey, cancellationToken).ConfigureAwait(false);
-            if (existing is not null)
-            {
-                metrics.RecordReplayDetected(tenantId: null);
-                return DPoPValidationResult.Failure("Proof replay detected (duplicate jti).");
-            }
-
-            await cache.SetAsync(jtiKey, "1"u8.ToArray(),
-                new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = opts.MaxProofLifetime + opts.ClockSkew,
-                },
-                cancellationToken).ConfigureAwait(false);
+            return null;
         }
 
-        // 7. Verify signature
+        if (!payload.TryGetProperty("jti", out JsonElement jti))
+        {
+            return DPoPValidationResult.Failure("Missing jti claim (required for replay protection).");
+        }
+
+        string jtiValue = jti.GetString()!;
+        string jtiKey = $"{JtiCachePrefix}{jtiValue}";
+
+        byte[]? existing = await cache.GetAsync(jtiKey, cancellationToken).ConfigureAwait(false);
+        if (existing is not null)
+        {
+            metrics.RecordReplayDetected(tenantId: null);
+            return DPoPValidationResult.Failure("Proof replay detected (duplicate jti).");
+        }
+
+        await cache.SetAsync(jtiKey, "1"u8.ToArray(),
+            new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = opts.MaxProofLifetime + opts.ClockSkew,
+            },
+            cancellationToken).ConfigureAwait(false);
+
+        return null;
+    }
+
+    private DPoPValidationResult? ValidateSignature(string[] parts, JsonElement jwk, string algorithm)
+    {
         string kty = jwk.GetProperty("kty").GetString()!;
         byte[] signingInput = Encoding.ASCII.GetBytes($"{parts[0]}.{parts[1]}");
         byte[] signature = Base64UrlDecode(parts[2]);
@@ -170,11 +218,7 @@ internal sealed class DPoPProofValidator(
             return DPoPValidationResult.Failure("Invalid proof signature.");
         }
 
-        // 8. Compute JWK Thumbprint (RFC 7638)
-        string thumbprint = JwkThumbprintCalculator.ComputeThumbprint(jwk);
-
-        metrics.RecordSuccess(tenantId: null);
-        return DPoPValidationResult.Success(thumbprint);
+        return null;
     }
 
     private static bool VerifyEcSignature(JsonElement jwk, byte[] data, byte[] signature, string algorithm)

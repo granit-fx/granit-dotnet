@@ -33,7 +33,7 @@ internal sealed class RequireDPoPMiddleware(RequestDelegate next)
                 && !context.Request.Headers.ContainsKey(DPoPScheme))
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                context.Response.Headers["WWW-Authenticate"] = "DPoP error=\"use_dpop_nonce\"";
+                context.Response.Headers.WWWAuthenticate = "DPoP error=\"use_dpop_nonce\"";
                 return;
             }
         }

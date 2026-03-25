@@ -13,6 +13,7 @@ public sealed class LocalizationMetrics
 
     private const string TagTenantId = "tenant_id";
     private const string DefaultTenant = "global";
+    private const string ResourceNameTag = "resource_name";
 
     private readonly Counter<long> _resourcesResolved;
     private readonly Counter<long> _overridesSet;
@@ -44,14 +45,14 @@ public sealed class LocalizationMetrics
         _resourcesResolved.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "resource_name", resourceName },
+            { ResourceNameTag, resourceName },
         });
 
     public void RecordOverrideSet(string? tenantId, string resourceName, string culture) =>
         _overridesSet.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "resource_name", resourceName },
+            { ResourceNameTag, resourceName },
             { "culture", culture },
         });
 
@@ -59,7 +60,7 @@ public sealed class LocalizationMetrics
         _overridesRemoved.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "resource_name", resourceName },
+            { ResourceNameTag, resourceName },
             { "culture", culture },
         });
 
@@ -67,7 +68,7 @@ public sealed class LocalizationMetrics
         _cacheMisses.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "resource_name", resourceName },
+            { ResourceNameTag, resourceName },
             { "culture", culture },
         });
 }

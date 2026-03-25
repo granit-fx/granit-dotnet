@@ -13,6 +13,7 @@ public sealed class TemplatingMetrics
 
     private const string TagTenantId = "tenant_id";
     private const string DefaultTenant = "global";
+    private const string TemplateNameTag = "template_name";
 
     private readonly Counter<long> _draftsCreated;
     private readonly Counter<long> _draftsUpdated;
@@ -65,35 +66,35 @@ public sealed class TemplatingMetrics
         _draftsCreated.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "template_name", templateName },
+            { TemplateNameTag, templateName },
         });
 
     public void RecordDraftUpdated(string? tenantId, string templateName) =>
         _draftsUpdated.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "template_name", templateName },
+            { TemplateNameTag, templateName },
         });
 
     public void RecordDraftDeleted(string? tenantId, string templateName) =>
         _draftsDeleted.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "template_name", templateName },
+            { TemplateNameTag, templateName },
         });
 
     public void RecordPublished(string? tenantId, string templateName) =>
         _templatesPublished.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "template_name", templateName },
+            { TemplateNameTag, templateName },
         });
 
     public void RecordUnpublished(string? tenantId, string templateName) =>
         _templatesUnpublished.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "template_name", templateName },
+            { TemplateNameTag, templateName },
         });
 
     public void RecordRenderCompleted(string? tenantId, string templateName, TimeSpan duration)
@@ -101,13 +102,13 @@ public sealed class TemplatingMetrics
         _rendersCompleted.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "template_name", templateName },
+            { TemplateNameTag, templateName },
         });
 
         _renderDuration.Record(duration.TotalSeconds, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "template_name", templateName },
+            { TemplateNameTag, templateName },
         });
     }
 
@@ -115,6 +116,6 @@ public sealed class TemplatingMetrics
         _rendersFailed.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "template_name", templateName },
+            { TemplateNameTag, templateName },
         });
 }

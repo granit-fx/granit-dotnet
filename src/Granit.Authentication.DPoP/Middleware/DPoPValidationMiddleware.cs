@@ -35,7 +35,7 @@ internal sealed partial class DPoPValidationMiddleware(
             {
                 LogDPoPRequired(logger);
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                context.Response.Headers["WWW-Authenticate"] = "DPoP error=\"use_dpop_nonce\"";
+                context.Response.Headers.WWWAuthenticate = "DPoP error=\"use_dpop_nonce\"";
                 return;
             }
 

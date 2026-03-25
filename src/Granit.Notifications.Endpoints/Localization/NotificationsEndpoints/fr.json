@@ -2,7 +2,7 @@
   "culture": "fr",
   "texts": {
     "PermissionGroup:Notifications": "Notifications",
-    "Permission:Notifications.Notifications.Read": "Consulter les notifications (boîte de réception, fil d'activité)",
-    "Permission:Notifications.Notifications.Manage": "Gérer les notifications (préférences, abonnements, jetons push)"
+    "Permission:Notifications.UserNotifications.Read": "Consulter les notifications (boîte de réception, fil d'activité)",
+    "Permission:Notifications.UserNotifications.Manage": "Gérer les notifications (préférences, abonnements, jetons push)"
   }
 }

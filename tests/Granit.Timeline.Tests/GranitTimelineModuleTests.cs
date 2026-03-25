@@ -43,6 +43,9 @@ public sealed class GranitTimelineModuleTests
             .ToArray();
 
         Type[] allDeps = attributes.SelectMany(a => a.DependedTypes).ToArray();
+
+        allDeps.ShouldNotContain(t => t.Name == "GranitSecurityModule",
+            "GranitSecurityModule was dissolved — it should no longer appear in DependsOn");
     }
 
     [Fact]

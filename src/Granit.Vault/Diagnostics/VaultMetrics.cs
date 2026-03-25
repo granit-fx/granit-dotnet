@@ -11,6 +11,9 @@ public sealed class VaultMetrics
 {
     public const string MeterName = "Granit.Vault";
 
+    private const string TenantIdTag = "tenant_id";
+    private const string GlobalTenantValue = "global";
+
     private readonly Counter<long> _operationsCompleted;
     private readonly Counter<long> _operationsErrors;
     private readonly Histogram<double> _operationDuration;
@@ -41,7 +44,7 @@ public sealed class VaultMetrics
     public void RecordOperationCompleted(string? tenantId, string operation, string provider, string status) =>
         _operationsCompleted.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenantValue },
             { "operation", operation },
             { "provider", provider },
             { "status", status },
@@ -50,7 +53,7 @@ public sealed class VaultMetrics
     public void RecordOperationError(string? tenantId, string operation, string provider) =>
         _operationsErrors.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenantValue },
             { "operation", operation },
             { "provider", provider },
         });
@@ -58,7 +61,7 @@ public sealed class VaultMetrics
     public void RecordOperationDuration(string? tenantId, string operation, string provider, TimeSpan duration) =>
         _operationDuration.Record(duration.TotalSeconds, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenantValue },
             { "operation", operation },
             { "provider", provider },
         });
@@ -66,7 +69,7 @@ public sealed class VaultMetrics
     public void RecordRotationDetected(string? tenantId, string provider) =>
         _rotationsDetected.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenantValue },
             { "provider", provider },
         });
 }

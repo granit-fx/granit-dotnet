@@ -73,8 +73,6 @@ public static class DPoPJwtBearerExtensions
     /// </summary>
     /// <param name="app">The application builder.</param>
     /// <returns>The application builder for chaining.</returns>
-    public static IApplicationBuilder UseGranitDPoPValidation(this IApplicationBuilder app)
-    {
-        return app.UseMiddleware<DPoPValidationMiddleware>();
-    }
+    public static IApplicationBuilder UseGranitDPoPValidation(this IApplicationBuilder app) =>
+        app.UseMiddleware<DPoPValidationMiddleware>();
 }

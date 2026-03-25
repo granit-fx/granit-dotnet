@@ -80,7 +80,7 @@ public sealed class AesStringEncryptionProvider : IStringEncryptionProvider
         using ICryptoTransform encryptor = aes.CreateEncryptor();
         byte[] cipherBytes = encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
 
-        // Format: IV[16] || CipherText || HMAC-SHA256(IV || CipherText)[32]
+        // Concatenate IV, ciphertext, then append HMAC tag
         int dataLength = IvSize + cipherBytes.Length;
         byte[] output = new byte[dataLength + HmacSize];
         iv.CopyTo(output.AsSpan());

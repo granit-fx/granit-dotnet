@@ -44,7 +44,7 @@ public sealed class NotificationPermissionDefinitionProviderTests
         provider.DefinePermissions(context);
 
         // Assert
-        group.Permissions.ShouldContain(p => p.Name == NotificationPermissions.Notifications.Read);
+        group.Permissions.ShouldContain(p => p.Name == NotificationPermissions.UserNotifications.Read);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public sealed class NotificationPermissionDefinitionProviderTests
         provider.DefinePermissions(context);
 
         // Assert
-        group.Permissions.ShouldContain(p => p.Name == NotificationPermissions.Notifications.Manage);
+        group.Permissions.ShouldContain(p => p.Name == NotificationPermissions.UserNotifications.Manage);
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public sealed class NotificationPermissionDefinitionProviderTests
 
         // Assert
         PermissionDefinition readPermission = group.Permissions
-            .Single(p => p.Name == NotificationPermissions.Notifications.Read);
+            .Single(p => p.Name == NotificationPermissions.UserNotifications.Read);
         readPermission.DisplayName.ShouldNotBeNull();
     }
 

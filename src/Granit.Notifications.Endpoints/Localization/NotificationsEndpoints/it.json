@@ -2,7 +2,7 @@
   "culture": "it",
   "texts": {
     "PermissionGroup:Notifications": "Notifiche",
-    "Permission:Notifications.Notifications.Read": "Visualizzare le notifiche (posta in arrivo, attività)",
-    "Permission:Notifications.Notifications.Manage": "Gestire le notifiche (preferenze, iscrizioni, token push)"
+    "Permission:Notifications.UserNotifications.Read": "Visualizzare le notifiche (posta in arrivo, attività)",
+    "Permission:Notifications.UserNotifications.Manage": "Gestire le notifiche (preferenze, iscrizioni, token push)"
   }
 }

@@ -2,7 +2,7 @@
   "culture": "cs",
   "texts": {
     "PermissionGroup:Notifications": "Oznámení",
-    "Permission:Notifications.Notifications.Read": "Zobrazit oznámení (doručená pošta, přehled aktivit)",
-    "Permission:Notifications.Notifications.Manage": "Spravovat oznámení (předvolby, odběry, push tokeny)"
+    "Permission:Notifications.UserNotifications.Read": "Zobrazit oznámení (doručená pošta, přehled aktivit)",
+    "Permission:Notifications.UserNotifications.Manage": "Spravovat oznámení (předvolby, odběry, push tokeny)"
   }
 }

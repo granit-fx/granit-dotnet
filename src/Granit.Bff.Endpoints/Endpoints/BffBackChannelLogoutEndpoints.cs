@@ -1,6 +1,5 @@
 using System.Text;
 using System.Text.Json;
-using Granit.Bff.Diagnostics;
 using Granit.Bff.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -31,10 +30,9 @@ internal static partial class BffBackChannelLogoutEndpoints
                 [FromServices] IOptions<GranitBffOptions> options,
                 [FromServices] IBffTokenStore tokenStore,
                 [FromServices] IDistributedCache cache,
-                [FromServices] BffMetrics metrics,
                 [FromServices] ILoggerFactory loggerFactory,
                 CancellationToken cancellationToken) =>
-                HandleBackChannelLogoutAsync(httpContext, frontend, options, tokenStore, cache, metrics, loggerFactory, cancellationToken))
+                HandleBackChannelLogoutAsync(httpContext, frontend, options, tokenStore, cache, loggerFactory, cancellationToken))
             .WithName($"BffBackChannelLogout_{frontend.Name}")
             .WithSummary("Processes an OIDC back-channel logout token from the authorization server.")
             .WithDescription(
@@ -55,7 +53,6 @@ internal static partial class BffBackChannelLogoutEndpoints
         [FromServices] IOptions<GranitBffOptions> options,
         [FromServices] IBffTokenStore tokenStore,
         [FromServices] IDistributedCache cache,
-        [FromServices] BffMetrics metrics,
         [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {

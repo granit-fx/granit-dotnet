@@ -86,10 +86,7 @@ public sealed class SigningKey : CreationAuditedEntity
     /// <summary>
     /// Revokes this key after the grace period has expired. It can no longer be used.
     /// </summary>
-    public void Revoke()
-    {
-        Status = SigningKeyStatus.Revoked;
-    }
+    public void Revoke() => Status = SigningKeyStatus.Revoked;
 }
 
 /// <summary>
