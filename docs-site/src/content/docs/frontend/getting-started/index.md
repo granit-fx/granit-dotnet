@@ -20,7 +20,7 @@ your first Granit-powered frontend application.
 | Group | Packages | Purpose |
 |-------|----------|---------|
 | [Core](/frontend/core/utils/) | utils | Foundation utilities and helpers |
-| [Data](/frontend/data/querying/) | query-engine, storage | Data fetching and client-side storage |
+| [Data](/frontend/data/query-engine/) | query-engine, storage | Data fetching and client-side storage |
 | [Security](/frontend/security/authentication/) | authentication, authorization, identity, cookies | Auth, RBAC, consent management |
 | [API](/frontend/api/http-client/) | api | HTTP client factory with interceptors |
 | [Infrastructure](/frontend/infrastructure/notifications/) | notifications, background-jobs, localization, settings, multi-tenancy | Messaging, i18n, platform config |

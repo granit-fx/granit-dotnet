@@ -83,7 +83,7 @@ public sealed class TenantFeatureOverrideConfigurationTests
             i.Properties.Any(p => p.Name == nameof(TenantFeatureOverride.FeatureName)));
 
         index.ShouldNotBeNull();
-        index.GetDatabaseName().ShouldBe("uq_feature_overrides_tenant_feature");
+        index.GetDatabaseName().ShouldBe("uq_features_overrides_tenant_feature");
     }
 
     // -------------------------------------------------------------------------

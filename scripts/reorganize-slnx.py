@@ -21,7 +21,7 @@ SRC_DOMAINS = {
     },
     "Application": {
         "DataExchange", "DocumentGeneration", "Features", "Localization",
-        "Querying", "ReferenceData", "Settings", "Templating",
+        "QueryEngine", "ReferenceData", "Settings", "Templating",
         "Timeline", "Workflow",
     },
     "Infrastructure": {
