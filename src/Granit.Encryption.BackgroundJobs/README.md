@@ -1,4 +1,4 @@
-# Granit.Encryption.ReEncryption
+# Granit.Encryption.BackgroundJobs
 
 Re-encryption job for Granit field-level encryption. Iterates entities with
 `[Encrypted]` properties and forces re-encryption to the current key version,
@@ -9,7 +9,7 @@ Part of the [granit](https://granit-fx.dev) framework.
 ## Installation
 
 ```bash
-dotnet add package Granit.Encryption.ReEncryption
+dotnet add package Granit.Encryption.BackgroundJobs
 ```
 
 ## Dependencies

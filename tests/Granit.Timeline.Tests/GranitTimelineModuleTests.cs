@@ -35,7 +35,7 @@ public sealed class GranitTimelineModuleTests
     }
 
     [Fact]
-    public void Module_DependsOn_GranitSecurityModule()
+    public void Module_DependsOn_removed_security_dependency()
     {
         DependsOnAttribute[] attributes = typeof(GranitTimelineModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false)

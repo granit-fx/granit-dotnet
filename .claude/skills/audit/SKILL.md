@@ -40,7 +40,7 @@ They are complementary; run both for a full picture.
   `Granit.BlobStorage.EntityFrameworkCore`, `Granit.BlobStorage.S3`,
   `Granit.BlobStorage.AzureBlob`, etc. — all projects matching `Granit.BlobStorage*`
 - `Encryption` resolves to: `Granit.Encryption`, `Granit.Encryption.EntityFrameworkCore`,
-  `Granit.Encryption.ReEncryption`, etc.
+  `Granit.Encryption.BackgroundJobs`, etc.
 - Discover satellites: `ls src/ | grep "^Granit\.{Module}"`
 
 ---

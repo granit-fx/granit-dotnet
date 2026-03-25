@@ -1,5 +1,5 @@
 // =============================================================================
-// Tests - GranitJwtBearerEntraIdModule
+// Tests - GranitAuthenticationEntraIdModule
 // =============================================================================
 // Verifies the complete DI wiring via ConfigureServices:
 //   - ICurrentUserService resolvable (via dependency on GranitJwtBearerModule)
@@ -21,13 +21,13 @@ using Xunit;
 
 namespace Granit.Authentication.JwtBearer.EntraId.Tests;
 
-public sealed class GranitJwtBearerEntraIdModuleTests
+public sealed class GranitAuthenticationEntraIdModuleTests
 {
     [Fact]
     public void ConfigureServices_RegistersICurrentUserService()
     {
         // Arrange
-        GranitJwtBearerEntraIdModule module = new();
+        GranitAuthenticationEntraIdModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
         builder.Configuration["EntraId:TenantId"] = "00000000-0000-0000-0000-000000000001";
         builder.Configuration["EntraId:ClientId"] = "test-client";
@@ -49,7 +49,7 @@ public sealed class GranitJwtBearerEntraIdModuleTests
     public void ConfigureServices_RegistersEntraIdClaimsTransformation()
     {
         // Arrange
-        GranitJwtBearerEntraIdModule module = new();
+        GranitAuthenticationEntraIdModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
         builder.Configuration["EntraId:TenantId"] = "00000000-0000-0000-0000-000000000001";
         builder.Configuration["EntraId:ClientId"] = "test-client";
@@ -71,7 +71,7 @@ public sealed class GranitJwtBearerEntraIdModuleTests
     public void ConfigureServices_RegistersAdminPolicy()
     {
         // Arrange
-        GranitJwtBearerEntraIdModule module = new();
+        GranitAuthenticationEntraIdModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
         builder.Configuration["EntraId:TenantId"] = "00000000-0000-0000-0000-000000000001";
         builder.Configuration["EntraId:ClientId"] = "test-client";

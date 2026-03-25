@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Granit.Authentication.JwtBearer.Cognito.Tests;
 
-public sealed class GranitJwtBearerCognitoModuleTests
+public sealed class GranitAuthenticationCognitoModuleTests
 {
     private static ServiceProvider BuildProvider()
     {
@@ -29,7 +29,7 @@ public sealed class GranitJwtBearerCognitoModuleTests
         builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
         builder.Services.AddGranitJwtBearer();
 
-        GranitJwtBearerCognitoModule module = new();
+        GranitAuthenticationCognitoModule module = new();
         ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
         module.ConfigureServices(context);
 
@@ -38,7 +38,7 @@ public sealed class GranitJwtBearerCognitoModuleTests
 
     [Fact]
     public void Module_InheritsFromGranitModule() =>
-        typeof(GranitJwtBearerCognitoModule).BaseType.ShouldBe(typeof(GranitModule));
+        typeof(GranitAuthenticationCognitoModule).BaseType.ShouldBe(typeof(GranitModule));
 
     [Fact]
     public void ConfigureServices_RegistersClaimsTransformation()

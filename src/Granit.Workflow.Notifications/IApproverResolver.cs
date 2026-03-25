@@ -7,7 +7,7 @@ namespace Granit.Workflow.Notifications;
 /// <remarks>
 /// <para>
 /// The default implementation resolves approvers from Keycloak roles via
-/// <c>Granit.Security</c>. Consumers can override with custom logic
+/// <c>Granit.Users</c>. Consumers can override with custom logic
 /// (e.g., department-based, hierarchy-based, or delegation-based approvers).
 /// </para>
 /// <para>

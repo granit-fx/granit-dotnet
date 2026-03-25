@@ -1,6 +1,6 @@
 using Granit.Bundle.Api;
 using Granit.Bundle.Notifications;
-using Granit.Core.Extensions;
+using Granit.Extensions;
 using GranitApiFull;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);

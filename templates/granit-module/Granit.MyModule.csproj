@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Granit.Core" Version="0.1.*" />
+    <PackageReference Include="Granit" Version="0.1.*" />
   </ItemGroup>
 
 </Project>

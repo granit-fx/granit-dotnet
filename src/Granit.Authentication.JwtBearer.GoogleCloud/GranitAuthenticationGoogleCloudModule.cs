@@ -10,7 +10,7 @@ namespace Granit.Authentication.JwtBearer.GoogleCloud;
 /// Depends on <see cref="GranitJwtBearerModule"/> for generic JWT Bearer.
 /// </summary>
 [DependsOn(typeof(GranitJwtBearerModule))]
-public sealed class GranitJwtBearerGoogleCloudModule : GranitModule
+public sealed class GranitAuthenticationGoogleCloudModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>

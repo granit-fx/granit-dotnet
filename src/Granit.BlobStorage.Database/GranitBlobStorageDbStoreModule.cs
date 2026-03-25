@@ -12,4 +12,4 @@ namespace Granit.BlobStorage.Database;
 /// </remarks>
 [DependsOn(typeof(GranitBlobStorageModule))]
 [DependsOn(typeof(GranitPersistenceModule))]
-public sealed class GranitBlobStorageDatabaseModule : GranitModule;
+public sealed class GranitBlobStorageDbStoreModule : GranitModule;

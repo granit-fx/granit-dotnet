@@ -16,7 +16,7 @@ public sealed partial class FileOrganizationTests
 
     /// <summary>
     /// Module classes (Granit*Module.cs) must be at the module root, not nested.
-    /// The only exception is the abstract base class GranitModule in Granit.Core/Modularity/.
+    /// The only exception is the abstract base class GranitModule in Granit/Modularity/.
     /// </summary>
     [Fact]
     public void Module_classes_should_be_at_module_root()
@@ -32,7 +32,7 @@ public sealed partial class FileOrganizationTests
                 continue;
             }
 
-            // GranitModule.cs base class is in Granit.Core/Modularity/ by design
+            // GranitModule.cs base class is in Granit/Modularity/ by design
             if (fileName == "GranitModule.cs")
             {
                 continue;
@@ -411,7 +411,7 @@ public sealed partial class FileOrganizationTests
     /// In non-EntityFrameworkCore packages, types inheriting from domain base classes
     /// (<c>Entity</c>, <c>AuditedEntity</c>, <c>AggregateRoot</c>, <c>ValueObject</c>, etc.)
     /// must reside in a <c>Domain/</c> subfolder.
-    /// Granit.Core is excluded because it defines the base classes themselves.
+    /// Granit base package is excluded because it defines the base classes themselves.
     /// </summary>
     [Fact]
     public void Domain_types_should_reside_in_Domain_folder()
@@ -422,8 +422,8 @@ public sealed partial class FileOrganizationTests
         {
             string moduleName = GetModuleName(csFile);
 
-            // Granit.Core defines the base classes — skip
-            if (moduleName == "Granit.Core")
+            // Granit defines the base classes — skip
+            if (moduleName == "Granit")
             {
                 continue;
             }

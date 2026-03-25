@@ -9,7 +9,7 @@ namespace Granit.Authentication.JwtBearer.Cognito;
 /// Depends on <see cref="GranitJwtBearerModule"/> for generic JWT Bearer.
 /// </summary>
 [DependsOn(typeof(GranitJwtBearerModule))]
-public sealed class GranitJwtBearerCognitoModule : GranitModule
+public sealed class GranitAuthenticationCognitoModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>

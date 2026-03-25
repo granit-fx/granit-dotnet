@@ -19,7 +19,7 @@ Convention references point to:
 - [ ] Module class inherits `GranitModule` and is `public sealed`
 - [ ] `[DependsOn]` attributes match actual `<ProjectReference>` graph (direct only,
   transitive omitted, alphabetical order)
-- [ ] `Granit.Core` is never listed in `[DependsOn]` (implicit base)
+- [ ] `Granit` is never listed in `[DependsOn]` (implicit base)
 - [ ] Zero-dependency modules have no `[DependsOn]` attribute
 - [ ] `.Endpoints` project exists if module exposes HTTP API
 - [ ] `.EntityFrameworkCore` project exists if module has persistence
@@ -620,7 +620,7 @@ Ref: `CLAUDE.md §Localization`
 
 ### 12d. Multi-tenancy soft dependency
 
-- [ ] `using Granit.Core.MultiTenancy;` — not a hard reference to
+- [ ] `using Granit.MultiTenancy;` — not a hard reference to
   `Granit.MultiTenancy`
 - [ ] No `[DependsOn(GranitMultiTenancyModule)]` unless strict tenant isolation
   is required (GDPR)

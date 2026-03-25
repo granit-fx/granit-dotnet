@@ -6,7 +6,7 @@ namespace Granit.QueryEngine.EntityFrameworkCore.Tests;
 public sealed class GranitQueryEngineDbPropertiesTests
 {
     [Fact]
-    public void DbTablePrefix_default_is_querying_underscore() => GranitQueryEngineDbProperties.DbTablePrefix.ShouldBe("querying_");
+    public void DbTablePrefix_default_is_query_engine_underscore() => GranitQueryEngineDbProperties.DbTablePrefix.ShouldBe("query_engine_");
 
     [Fact]
     public void DbSchema_default_is_null() => GranitQueryEngineDbProperties.DbSchema.ShouldBeNull();

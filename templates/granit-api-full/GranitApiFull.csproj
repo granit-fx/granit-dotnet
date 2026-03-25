@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Granit.Bundle.Api" Version="0.1.*" />
     <PackageReference Include="Granit.Authentication.JwtBearer" Version="0.1.*" />
-    <PackageReference Include="Granit.Authentication.Keycloak" Version="0.1.*" />
+    <PackageReference Include="Granit.Authentication.JwtBearer.Keycloak" Version="0.1.*" />
     <PackageReference Include="Granit.Authorization" Version="0.1.*" />
     <PackageReference Include="Granit.Identity" Version="0.1.*" />
     <PackageReference Include="Granit.Identity.Federated.Keycloak" Version="0.1.*" />

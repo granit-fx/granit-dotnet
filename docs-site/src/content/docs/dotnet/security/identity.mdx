@@ -107,7 +107,7 @@ public class AppModule : GranitModule
 
 ```csharp
 [DependsOn(typeof(GranitIdentityFederatedGoogleCloudModule))]
-[DependsOn(typeof(GranitJwtBearerGoogleCloudModule))]
+[DependsOn(typeof(GranitAuthenticationGoogleCloudModule))]
 [DependsOn(typeof(GranitIdentityFederatedEntityFrameworkCoreModule))]
 [DependsOn(typeof(GranitIdentityEndpointsModule))]
 public class AppModule : GranitModule
@@ -498,7 +498,7 @@ Both operations emit Wolverine domain events (`IdentityUserDeletedEvent`,
 
 | Category | Key types | Package |
 |----------|-----------|---------|
-| Module | `GranitIdentityModule`, `GranitIdentityFederatedModule`, `GranitIdentityFederatedKeycloakModule`, `GranitIdentityFederatedCognitoModule`, `GranitIdentityFederatedGoogleCloudModule`, `GranitJwtBearerGoogleCloudModule`, `GranitIdentityFederatedEntityFrameworkCoreModule`, `GranitIdentityEndpointsModule`, `GranitIdentityLocalAspNetIdentityModule` | — |
+| Module | `GranitIdentityModule`, `GranitIdentityFederatedModule`, `GranitIdentityFederatedKeycloakModule`, `GranitIdentityFederatedCognitoModule`, `GranitIdentityFederatedGoogleCloudModule`, `GranitAuthenticationGoogleCloudModule`, `GranitIdentityFederatedEntityFrameworkCoreModule`, `GranitIdentityEndpointsModule`, `GranitIdentityLocalAspNetIdentityModule` | — |
 | Abstractions | `IIdentityProvider`, `IIdentityUserReader`, `IIdentityUserWriter`, `IIdentityRoleManager`, `IIdentityGroupManager`, `IIdentitySessionManager`, `IIdentityPasswordManager`, `IIdentityCredentialVerifier` | `Granit.Identity` |
 | Lookup | `IUserLookupService`, `IUserCacheStats`, `IIdentityProviderCapabilities` | `Granit.Identity` |
 | Models | `IdentityUser`, `IdentityUserCreate`, `IdentityUserUpdate`, `IdentityRole`, `IdentityGroup`, `IdentitySession`, `IdentityDeviceActivity` | `Granit.Identity` |

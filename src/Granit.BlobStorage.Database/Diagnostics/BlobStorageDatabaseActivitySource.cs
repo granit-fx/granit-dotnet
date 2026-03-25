@@ -9,10 +9,10 @@ namespace Granit.BlobStorage.Database.Diagnostics;
 /// <c>Granit.Observability</c> adds this source automatically via
 /// <c>GranitActivitySourceRegistry</c> when both packages are used.
 /// </remarks>
-internal static class BlobStorageDbStoreActivitySource
+internal static class BlobStorageDatabaseActivitySource
 {
     /// <summary>The name of the Granit.BlobStorage.DbStore <see cref="ActivitySource"/>.</summary>
-    internal const string Name = "Granit.BlobStorage.DbStore";
+    internal const string Name = "Granit.BlobStorage.Database";
 
     /// <summary>The singleton <see cref="ActivitySource"/> instance.</summary>
     internal static readonly ActivitySource Source = new(Name);

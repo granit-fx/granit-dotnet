@@ -21,7 +21,7 @@ namespace Granit.Bff;
 /// <c>Granit.Bff.Yarp</c> for reverse proxy token injection.
 /// </remarks>
 [DependsOn(
-    typeof(GranitOidcModule),
+    typeof(GranitAuthenticationOidcModule),
     typeof(GranitTimingModule))]
 public sealed class GranitBffModule : GranitModule
 {

@@ -180,7 +180,7 @@ services
     });
 ```
 
-The application only declares `[DependsOn(typeof(GranitJwtBearerKeycloakModule))]`.
+The application only declares `[DependsOn(typeof(GranitAuthenticationKeycloakModule))]`.
 The Keycloak module's `PostConfigure` runs after the JWT Bearer module's `Configure`,
 transparently overriding Authority, Audience, and name claim type with Keycloak-specific
 values.

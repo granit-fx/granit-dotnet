@@ -39,7 +39,7 @@ public sealed class GranitIdempotencyModuleTests
     }
 
     [Fact]
-    public void Module_DependsOnGranitSecurityModule()
+    public void Module_DependsOn_removed_security_dependency()
     {
         var attributes = (DependsOnAttribute[])Attribute.GetCustomAttributes(
             typeof(GranitIdempotencyModule), typeof(DependsOnAttribute));

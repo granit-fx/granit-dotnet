@@ -18,10 +18,10 @@ namespace Granit.BlobStorage.Database.Extensions;
 /// </summary>
 // DI wiring only — no logic to unit test.
 [ExcludeFromCodeCoverage]
-public static class BlobStorageDbStoreHostApplicationBuilderExtensions
+public static class BlobStorageDatabaseHostApplicationBuilderExtensions
 {
     /// <summary>
-    /// Adds <c>Granit.BlobStorage.DbStore</c> services: database client, key strategy, isolated
+    /// Adds <c>Granit.BlobStorage.Database</c> services: database client, key strategy, isolated
     /// <see cref="DbStoreBlobStorageDbContext"/>, and the <see cref="IBlobStorage"/> orchestrator.
     /// </summary>
     /// <remarks>
@@ -40,7 +40,7 @@ public static class BlobStorageDbStoreHostApplicationBuilderExtensions
         this IHostApplicationBuilder builder,
         Action<DbContextOptionsBuilder> configure)
     {
-        GranitActivitySourceRegistry.Register(BlobStorageDbStoreActivitySource.Name);
+        GranitActivitySourceRegistry.Register(BlobStorageDatabaseActivitySource.Name);
 
         builder.Services
             .AddOptions<DbStoreBlobOptions>()

@@ -60,7 +60,7 @@ flowchart TD
 <FileTree>
 
 - Granit.Oidc/
-  - GranitOidcModule.cs Module registration
+  - GranitAuthenticationOidcModule.cs Module registration
   - OidcConstants.cs Grant types, parameters, algorithms, discovery fields
   - Discovery/
     - IDiscoveryDocumentService.cs Fetch and cache .well-known/openid-configuration
@@ -92,7 +92,7 @@ Register the module in your application's module class. This registers
 `IDiscoveryDocumentService` and `IDPoPProofService` as singletons.
 
 ```csharp
-[DependsOn(typeof(GranitOidcModule))]
+[DependsOn(typeof(GranitAuthenticationOidcModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -101,7 +101,7 @@ request records, response records, `PkceHelper`, `OidcConstants` -- are plain da
 classes and can be used without DI registration.
 
 :::note
-You rarely need to depend on `GranitOidcModule` directly. Packages
+You rarely need to depend on `GranitAuthenticationOidcModule` directly. Packages
 like `Granit.Bff` and `Granit.Oidc.TokenManagement` already declare it
 as a transitive dependency. Add a direct `[DependsOn]` only when you are building
 a custom OIDC client from scratch.
@@ -574,7 +574,7 @@ parameters["grant_type"] = "authorization_code";
 
 | Category | Key types | Description |
 |----------|-----------|-------------|
-| Module | `GranitOidcModule` | Registers `IDPoPProofService` + `IDiscoveryDocumentService` |
+| Module | `GranitAuthenticationOidcModule` | Registers `IDPoPProofService` + `IDiscoveryDocumentService` |
 | Discovery | `IDiscoveryDocumentService`, `OidcDiscoveryDocument`, `OidcDiscoveryException` | Fetch, cache, and validate `.well-known/openid-configuration` |
 | Token requests | `TokenRequest` (abstract), `AuthorizationCodeTokenRequest`, `RefreshTokenRequest`, `ClientCredentialsTokenRequest` | Typed records for each grant type |
 | URL builders | `AuthorizationRequest`, `EndSessionRequest` | Build redirect URLs via `ToUrl()` |

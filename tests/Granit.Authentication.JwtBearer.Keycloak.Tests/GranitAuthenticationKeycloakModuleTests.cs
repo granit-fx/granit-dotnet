@@ -1,5 +1,5 @@
 // =============================================================================
-// Tests - GranitJwtBearerKeycloakModule
+// Tests - GranitAuthenticationKeycloakModule
 // =============================================================================
 // Verifies the complete DI wiring via ConfigureServices:
 //   - ICurrentUserService resolvable (via dependency on GranitJwtBearerModule)
@@ -21,13 +21,13 @@ using Xunit;
 
 namespace Granit.Authentication.JwtBearer.Keycloak.Tests;
 
-public sealed class GranitJwtBearerKeycloakModuleTests
+public sealed class GranitAuthenticationKeycloakModuleTests
 {
     [Fact]
     public void ConfigureServices_RegistersICurrentUserService()
     {
         // Arrange
-        GranitJwtBearerKeycloakModule module = new();
+        GranitAuthenticationKeycloakModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
         builder.Configuration["Keycloak:Authority"] = "https://keycloak.test/realms/test";
         builder.Configuration["Keycloak:ClientId"] = "test-client";
@@ -49,7 +49,7 @@ public sealed class GranitJwtBearerKeycloakModuleTests
     public void ConfigureServices_RegistersKeycloakClaimsTransformation()
     {
         // Arrange
-        GranitJwtBearerKeycloakModule module = new();
+        GranitAuthenticationKeycloakModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
         builder.Configuration["Keycloak:Authority"] = "https://keycloak.test/realms/test";
         builder.Configuration["Keycloak:ClientId"] = "test-client";
@@ -71,7 +71,7 @@ public sealed class GranitJwtBearerKeycloakModuleTests
     public void ConfigureServices_RegistersAdminPolicy()
     {
         // Arrange
-        GranitJwtBearerKeycloakModule module = new();
+        GranitAuthenticationKeycloakModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
         builder.Configuration["Keycloak:Authority"] = "https://keycloak.test/realms/test";
         builder.Configuration["Keycloak:ClientId"] = "test-client";

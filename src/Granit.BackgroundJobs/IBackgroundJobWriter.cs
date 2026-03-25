@@ -39,7 +39,7 @@ public interface IBackgroundJobWriter
     /// <summary>
     /// Triggers an immediate execution of a job, independent of its scheduled cycle.
     /// The next scheduled execution is not affected.
-    /// The caller's identity (<see cref="Granit.Security.ICurrentUserService.UserId"/>)
+    /// The caller's identity (<see cref="Granit.Users.ICurrentUserService.UserId"/>)
     /// is propagated for ISO 27001 audit trail.
     /// </summary>
     /// <exception cref="Granit.Exceptions.EntityNotFoundException">

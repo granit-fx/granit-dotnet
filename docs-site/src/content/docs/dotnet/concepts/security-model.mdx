@@ -73,7 +73,7 @@ Any OIDC-compliant provider works out of the box:
 The Keycloak module does not register its own authentication scheme. Instead, it **post-configures** `JwtBearerOptions` to add Keycloak-specific claims transformation. This is the key design choice: the consumer declares a single `[DependsOn]`, and the module wires itself in automatically.
 
 ```csharp
-[DependsOn(typeof(GranitJwtBearerKeycloakModule))]
+[DependsOn(typeof(GranitAuthenticationKeycloakModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -100,28 +100,28 @@ For Google Cloud deployments using Firebase Auth / Identity Platform, the module
 <Tabs>
   <TabItem label="Keycloak">
     ```csharp
-    [DependsOn(typeof(GranitJwtBearerKeycloakModule))]
+    [DependsOn(typeof(GranitAuthenticationKeycloakModule))]
     [DependsOn(typeof(GranitAuthorizationModule))]
     public class AppModule : GranitModule { }
     ```
   </TabItem>
   <TabItem label="Entra ID">
     ```csharp
-    [DependsOn(typeof(GranitJwtBearerEntraIdModule))]
+    [DependsOn(typeof(GranitAuthenticationEntraIdModule))]
     [DependsOn(typeof(GranitAuthorizationModule))]
     public class AppModule : GranitModule { }
     ```
   </TabItem>
   <TabItem label="AWS Cognito">
     ```csharp
-    [DependsOn(typeof(GranitJwtBearerCognitoModule))]
+    [DependsOn(typeof(GranitAuthenticationCognitoModule))]
     [DependsOn(typeof(GranitAuthorizationModule))]
     public class AppModule : GranitModule { }
     ```
   </TabItem>
   <TabItem label="Google Cloud">
     ```csharp
-    [DependsOn(typeof(GranitJwtBearerGoogleCloudModule))]
+    [DependsOn(typeof(GranitAuthenticationGoogleCloudModule))]
     [DependsOn(typeof(GranitAuthorizationModule))]
     public class AppModule : GranitModule { }
     ```

@@ -90,7 +90,7 @@ These terms are proper nouns or framework identifiers — keep them as-is:
 - `AddGranit*()` extension methods
 - `Wolverine`, `Cronos`, `Scriban`, `Serilog`, `Keycloak`
 - `HybridCache`, `TransitEncryptionService`
-- Package names: `Granit.Core`, `Granit.Persistence`, etc.
+- Package names: `Granit`, `Granit.Persistence`, etc.
 
 ### Observability
 

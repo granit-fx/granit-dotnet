@@ -3909,7 +3909,7 @@
       "fqn": "Granit.Authentication.ApiKeys.Events.ApiKeyScopesUpdatedEto",
       "kind": "record",
       "project": "Granit.Authentication.ApiKeys",
-      "file": "src/Granit.Authentication.ApiKeys/Events/ApiKeyScopesUpdatedEvent.cs",
+      "file": "src/Granit.Authentication.ApiKeys/Events/ApiKeyScopesUpdatedEto.cs",
       "line": 11,
       "members": []
     },
@@ -6481,11 +6481,11 @@
       ]
     },
     {
-      "name": "BlobStorageDbStoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.BlobStorage.Database.Extensions.BlobStorageDbStoreHostApplicationBuilderExtensions",
+      "name": "BlobStorageDatabaseHostApplicationBuilderExtensions",
+      "fqn": "Granit.BlobStorage.Database.Extensions.BlobStorageDatabaseHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.BlobStorage.Database",
-      "file": "src/Granit.BlobStorage.Database/Extensions/BlobStorageDbStoreHostApplicationBuilderExtensions.cs",
+      "file": "src/Granit.BlobStorage.Database/Extensions/BlobStorageDatabaseHostApplicationBuilderExtensions.cs",
       "line": 21,
       "members": [
         {
@@ -13923,7 +13923,7 @@
       "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Events.IdentityUserDeletedEto",
       "kind": "record",
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
-      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Events/IdentityUserDeletedEvent.cs",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Events/IdentityUserDeletedEto.cs",
       "line": 13,
       "members": []
     },
@@ -13932,7 +13932,7 @@
       "fqn": "Granit.Identity.Federated.EntityFrameworkCore.Events.IdentityUserUpdatedEto",
       "kind": "record",
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
-      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Events/IdentityUserUpdatedEvent.cs",
+      "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Events/IdentityUserUpdatedEto.cs",
       "line": 11,
       "members": []
     },
@@ -29988,7 +29988,7 @@
       "fqn": "Granit.Workflow.Dtos.WorkflowTransitionHistoryResponse",
       "kind": "record",
       "project": "Granit.Workflow",
-      "file": "src/Granit.Workflow/Dtos/TransitionHistoryResponse.cs",
+      "file": "src/Granit.Workflow/Dtos/WorkflowTransitionHistoryResponse.cs",
       "line": 11,
       "members": []
     },

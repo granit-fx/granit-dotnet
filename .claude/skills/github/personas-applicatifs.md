@@ -90,7 +90,7 @@ Personas who use applications built with Granit.
 | **Description** | Logged-in user with standard application permissions |
 | **Responsibilities** | Managing personal data, receiving notifications, using application features |
 | **Absorbed synonyms** | User, logged-in user, standard user |
-| **Usage** | Notifications, Timeline, Settings, Localization, Querying stories |
+| **Usage** | Notifications, Timeline, Settings, Localization, QueryEngine stories |
 
 ### Administrator
 

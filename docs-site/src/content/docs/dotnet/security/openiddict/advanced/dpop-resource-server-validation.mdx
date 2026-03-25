@@ -97,7 +97,7 @@ sequenceDiagram
 
 ```csharp
 [DependsOn(
-    typeof(GranitJwtBearerKeycloakModule),
+    typeof(GranitAuthenticationKeycloakModule),
     typeof(GranitAuthenticationDPoPModule))]  // ← add this
 public class CatalogServiceModule : GranitModule { }
 ```
@@ -199,7 +199,7 @@ resource server validates tokens against an OpenIddict server.
 ```csharp
 // Granit.Authentication.DPoP package
 [DependsOn(
-    typeof(GranitJwtBearerKeycloakModule),
+    typeof(GranitAuthenticationKeycloakModule),
     typeof(GranitAuthenticationDPoPModule))]
 
 // In middleware:

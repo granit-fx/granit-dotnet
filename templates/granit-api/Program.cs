@@ -1,5 +1,5 @@
 using Granit.Bundle.Essentials;
-using Granit.Core.Extensions;
+using Granit.Extensions;
 using Granit.Timing;
 using GranitApi;
 

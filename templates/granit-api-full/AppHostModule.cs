@@ -1,7 +1,7 @@
 using Granit.Authentication.JwtBearer;
-using Granit.Authentication.Keycloak;
+using Granit.Authentication.JwtBearer.Keycloak;
 using Granit.Authorization;
-using Granit.Core.Modularity;
+using Granit.Modularity;
 using Granit.Identity;
 using Granit.Identity.Endpoints;
 using Granit.Identity.Federated.EntityFrameworkCore;
@@ -17,7 +17,7 @@ namespace GranitApiFull;
 /// </summary>
 [DependsOn(
     typeof(GranitJwtBearerModule),
-    typeof(GranitKeycloakModule),
+    typeof(GranitAuthenticationKeycloakModule),
     typeof(GranitAuthorizationModule),
     typeof(GranitIdentityModule),
     typeof(GranitIdentityFederatedKeycloakModule),

@@ -16,7 +16,7 @@ public sealed class GranitBulkheadOptions
 
     /// <summary>
     /// Roles that bypass bulkhead checks entirely.
-    /// Machine actors (<see cref="Granit.Security.ActorKind.System"/>) are always bypassed regardless of this setting.
+    /// Machine actors (<see cref="Granit.Users.ActorKind.System"/>) are always bypassed regardless of this setting.
     /// </summary>
     public string[] BypassRoles { get; set; } = [];
 
