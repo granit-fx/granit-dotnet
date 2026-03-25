@@ -29,7 +29,7 @@ namespace Granit.Validation;
 /// <c>AddGranitValidatorsFromAssemblyContaining&lt;T&gt;()</c> manually.
 /// </para>
 /// </remarks>
-[DependsOn(typeof(GranitExceptionHandlingModule))]
+[DependsOn(typeof(GranitHttpExceptionHandlingModule))]
 [DependsOn(typeof(GranitLocalizationModule))]
 public sealed class GranitValidationModule : GranitModule
 {

@@ -1,5 +1,5 @@
 // =============================================================================
-// Tests - GranitJwtBearerModule
+// Tests - GranitAuthenticationJwtBearerModule
 // =============================================================================
 // Verifies that the module registers JWT Bearer services via ConfigureServices.
 // =============================================================================
@@ -13,13 +13,13 @@ using Xunit;
 
 namespace Granit.Authentication.JwtBearer.Tests;
 
-public sealed class GranitJwtBearerModuleTests
+public sealed class GranitAuthenticationJwtBearerModuleTests
 {
     [Fact]
     public void ConfigureServices_RegistersICurrentUserService()
     {
         // Arrange
-        GranitJwtBearerModule module = new();
+        GranitAuthenticationJwtBearerModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
         builder.Configuration["Authentication:Authority"] = "https://auth.test/realms/test";
         builder.Configuration["Authentication:Audience"] = "test-client";

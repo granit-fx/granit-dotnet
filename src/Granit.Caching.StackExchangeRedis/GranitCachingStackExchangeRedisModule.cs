@@ -27,7 +27,7 @@ namespace Granit.Caching.StackExchangeRedis;
 /// </para>
 /// </remarks>
 [DependsOn(typeof(GranitCachingModule))]
-public sealed class GranitCachingRedisModule : GranitModule
+public sealed class GranitCachingStackExchangeRedisModule : GranitModule
 {
     /// <inheritdoc/>
     public override bool IsEnabled(ServiceConfigurationContext context)

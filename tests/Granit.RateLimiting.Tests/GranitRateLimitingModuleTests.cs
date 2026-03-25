@@ -37,7 +37,7 @@ public sealed class GranitRateLimitingModuleTests
 
         Type[] dependedTypes = attrs.SelectMany(a => a.DependedTypes).ToArray();
 
-        dependedTypes.ShouldContain(typeof(Granit.Http.ExceptionHandling.GranitExceptionHandlingModule));
+        dependedTypes.ShouldContain(typeof(Granit.Http.ExceptionHandling.GranitHttpExceptionHandlingModule));
     }
 
     [Fact]
@@ -59,5 +59,7 @@ public sealed class GranitRateLimitingModuleTests
 
         Type[] dependedTypes = attrs.SelectMany(a => a.DependedTypes).ToArray();
 
+        dependedTypes.ShouldNotContain(t => t.Name == "GranitSecurityModule",
+            "GranitSecurityModule was dissolved — it should no longer appear in DependsOn");
     }
 }

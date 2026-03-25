@@ -14,7 +14,7 @@ namespace Granit.Persistence;
 /// is not a direct dependency of this module.
 /// </summary>
 [DependsOn(
-    typeof(GranitExceptionHandlingModule),
+    typeof(GranitHttpExceptionHandlingModule),
     typeof(GranitGuidsModule),
     typeof(GranitTimingModule))]
 public sealed class GranitPersistenceModule : GranitModule

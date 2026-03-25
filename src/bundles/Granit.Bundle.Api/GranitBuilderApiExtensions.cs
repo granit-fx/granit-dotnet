@@ -24,9 +24,9 @@ public static class GranitBuilderApiExtensions
         builder.AddModule<GranitHttpApiVersioningModule>();
         builder.AddModule<GranitHttpApiDocumentationModule>();
         builder.AddModule<GranitHttpCorsModule>();
-        builder.AddModule<GranitIdempotencyModule>();
+        builder.AddModule<GranitHttpIdempotencyModule>();
         builder.AddModule<GranitLocalizationModule>();
-        builder.AddModule<GranitCachingRedisModule>();
+        builder.AddModule<GranitCachingStackExchangeRedisModule>();
         return builder;
     }
 }

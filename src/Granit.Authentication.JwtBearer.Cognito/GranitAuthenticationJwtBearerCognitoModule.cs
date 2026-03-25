@@ -6,10 +6,10 @@ namespace Granit.Authentication.JwtBearer.Cognito;
 
 /// <summary>
 /// Granit module for AWS Cognito extras (claims transformation, Admin policy).
-/// Depends on <see cref="GranitJwtBearerModule"/> for generic JWT Bearer.
+/// Depends on <see cref="GranitAuthenticationJwtBearerModule"/> for generic JWT Bearer.
 /// </summary>
-[DependsOn(typeof(GranitJwtBearerModule))]
-public sealed class GranitAuthenticationCognitoModule : GranitModule
+[DependsOn(typeof(GranitAuthenticationJwtBearerModule))]
+public sealed class GranitAuthenticationJwtBearerCognitoModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>

@@ -8,7 +8,7 @@ namespace Granit.Authentication.JwtBearer;
 /// Granit module for generic OIDC JWT Bearer authentication.
 /// Depends on <see cref="GranitModule"/> for the abstractions.
 /// </summary>
-public sealed class GranitJwtBearerModule : GranitModule
+public sealed class GranitAuthenticationJwtBearerModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>

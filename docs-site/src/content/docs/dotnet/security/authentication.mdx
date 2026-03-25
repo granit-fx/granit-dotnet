@@ -17,7 +17,7 @@ across your entire application. In regulated environments (healthcare, finance),
 also means a new security audit every time.
 
 Granit.Authentication normalizes all of this behind a single module interface: swap
-`GranitAuthenticationKeycloakModule` for `GranitAuthenticationEntraIdModule` and your
+`GranitAuthenticationJwtBearerKeycloakModule` for `GranitAuthenticationJwtBearerEntraIdModule` and your
 endpoints, authorization policies, and audit logs continue to work unchanged. Back-channel
 logout is built in — when a session is revoked at the identity provider, your API
 rejects the token immediately instead of waiting for expiry.
@@ -56,7 +56,7 @@ rejects the token immediately instead of waiting for expiry.
 <TabItem label="Keycloak (recommended)">
 
 ```csharp
-[DependsOn(typeof(GranitAuthenticationKeycloakModule))]
+[DependsOn(typeof(GranitAuthenticationJwtBearerKeycloakModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -78,7 +78,7 @@ public class AppModule : GranitModule { }
 <TabItem label="Entra ID">
 
 ```csharp
-[DependsOn(typeof(GranitAuthenticationEntraIdModule))]
+[DependsOn(typeof(GranitAuthenticationJwtBearerEntraIdModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -95,7 +95,7 @@ public class AppModule : GranitModule { }
 <TabItem label="AWS Cognito">
 
 ```csharp
-[DependsOn(typeof(GranitAuthenticationCognitoModule))]
+[DependsOn(typeof(GranitAuthenticationJwtBearerCognitoModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -117,7 +117,7 @@ public class AppModule : GranitModule { }
 <TabItem label="Google Cloud / Firebase">
 
 ```csharp
-[DependsOn(typeof(GranitAuthenticationGoogleCloudModule))]
+[DependsOn(typeof(GranitAuthenticationJwtBearerGoogleCloudModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -165,7 +165,7 @@ public class AppModule : GranitModule { }
 <TabItem label="Generic JWT Bearer">
 
 ```csharp
-[DependsOn(typeof(GranitJwtBearerModule))]
+[DependsOn(typeof(GranitAuthenticationJwtBearerModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -185,7 +185,7 @@ public class AppModule : GranitModule { }
 
 ## JWT Bearer
 
-`GranitJwtBearerModule` registers:
+`GranitAuthenticationJwtBearerModule` registers:
 
 - ASP.NET Core JWT Bearer authentication
 - `CurrentUserService` — `ICurrentUserService` implementation extracting claims from `HttpContext`
@@ -241,7 +241,7 @@ calls it directly. It is excluded from OpenAPI documentation by default.
 
 ## Keycloak claims transformation
 
-`GranitAuthenticationKeycloakModule` post-configures JWT Bearer with Keycloak-specific behavior:
+`GranitAuthenticationJwtBearerKeycloakModule` post-configures JWT Bearer with Keycloak-specific behavior:
 
 - Extracts roles from `realm_access.roles` or `resource_access.{clientId}.roles`
 - Maps them to standard `ClaimTypes.Role` claims
@@ -264,14 +264,14 @@ calls it directly. It is excluded from OpenAPI documentation by default.
 
 ## Entra ID claims transformation
 
-`GranitAuthenticationEntraIdModule` post-configures JWT Bearer with Entra ID-specific behavior:
+`GranitAuthenticationJwtBearerEntraIdModule` post-configures JWT Bearer with Entra ID-specific behavior:
 
 - Extracts roles from the v1.0 `roles` claim and the v2.0 `wids` claim
 - Maps them to standard `ClaimTypes.Role` claims
 
 ## Cognito claims transformation
 
-`GranitAuthenticationCognitoModule` post-configures JWT Bearer with Cognito-specific behavior:
+`GranitAuthenticationJwtBearerCognitoModule` post-configures JWT Bearer with Cognito-specific behavior:
 
 - Extracts groups from the `cognito:groups` claim (multiple claims with same type)
 - Maps them to standard `ClaimTypes.Role` claims
@@ -306,7 +306,7 @@ any OIDC provider that issues `cnf.jkt`-bound access tokens (Keycloak 25+, Entra
 
 ```csharp
 [DependsOn(
-    typeof(GranitAuthenticationKeycloakModule),
+    typeof(GranitAuthenticationJwtBearerKeycloakModule),
     typeof(GranitAuthenticationDPoPModule))]
 public class MyServiceModule : GranitModule { }
 ```
@@ -361,7 +361,7 @@ Enabling it while some clients still use plain Bearer tokens will lock those cli
 
 | Category | Key types | Package |
 |----------|-----------|---------|
-| Modules | `GranitJwtBearerModule`, `GranitAuthenticationKeycloakModule`, `GranitAuthenticationEntraIdModule`, `GranitAuthenticationCognitoModule`, `GranitAuthenticationGoogleCloudModule`, `GranitAuthenticationOpenIddictModule` | — |
+| Modules | `GranitAuthenticationJwtBearerModule`, `GranitAuthenticationJwtBearerKeycloakModule`, `GranitAuthenticationJwtBearerEntraIdModule`, `GranitAuthenticationJwtBearerCognitoModule`, `GranitAuthenticationJwtBearerGoogleCloudModule`, `GranitAuthenticationOpenIddictModule` | — |
 | Abstractions | `CurrentUserService`, `IRevokedSessionStore`, `BackChannelLogoutTokenValidator` | `Granit.Authentication.JwtBearer` |
 | Claims | `KeycloakClaimsTransformation` | `Granit.Authentication.JwtBearer.Keycloak` |
 | Claims | `EntraIdClaimsTransformation` | `Granit.Authentication.JwtBearer.EntraId` |

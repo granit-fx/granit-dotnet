@@ -24,7 +24,7 @@ public static class GranitBuilderEssentialsExtensions
         builder.AddModule<GranitValidationModule>();
         builder.AddModule<GranitPersistenceModule>();
         builder.AddModule<GranitObservabilityModule>();
-        builder.AddModule<GranitExceptionHandlingModule>();
+        builder.AddModule<GranitHttpExceptionHandlingModule>();
         builder.AddModule<GranitDiagnosticsModule>();
         return builder;
     }

@@ -16,8 +16,8 @@ namespace GranitApiFull;
 /// Module-level dependencies are declared here with <c>[DependsOn]</c>.
 /// </summary>
 [DependsOn(
-    typeof(GranitJwtBearerModule),
-    typeof(GranitAuthenticationKeycloakModule),
+    typeof(GranitAuthenticationJwtBearerModule),
+    typeof(GranitAuthenticationJwtBearerKeycloakModule),
     typeof(GranitAuthorizationModule),
     typeof(GranitIdentityModule),
     typeof(GranitIdentityFederatedKeycloakModule),

@@ -12,7 +12,7 @@ namespace Granit.Http.Bulkhead;
 /// and all required dependencies from configuration section <c>"Bulkhead"</c>.
 /// </summary>
 [DependsOn(
-    typeof(GranitExceptionHandlingModule),
+    typeof(GranitHttpExceptionHandlingModule),
     typeof(GranitFeaturesModule))]
 public sealed class GranitHttpBulkheadModule : GranitModule
 {

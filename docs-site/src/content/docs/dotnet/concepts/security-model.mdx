@@ -73,7 +73,7 @@ Any OIDC-compliant provider works out of the box:
 The Keycloak module does not register its own authentication scheme. Instead, it **post-configures** `JwtBearerOptions` to add Keycloak-specific claims transformation. This is the key design choice: the consumer declares a single `[DependsOn]`, and the module wires itself in automatically.
 
 ```csharp
-[DependsOn(typeof(GranitAuthenticationKeycloakModule))]
+[DependsOn(typeof(GranitAuthenticationJwtBearerKeycloakModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -100,35 +100,35 @@ For Google Cloud deployments using Firebase Auth / Identity Platform, the module
 <Tabs>
   <TabItem label="Keycloak">
     ```csharp
-    [DependsOn(typeof(GranitAuthenticationKeycloakModule))]
+    [DependsOn(typeof(GranitAuthenticationJwtBearerKeycloakModule))]
     [DependsOn(typeof(GranitAuthorizationModule))]
     public class AppModule : GranitModule { }
     ```
   </TabItem>
   <TabItem label="Entra ID">
     ```csharp
-    [DependsOn(typeof(GranitAuthenticationEntraIdModule))]
+    [DependsOn(typeof(GranitAuthenticationJwtBearerEntraIdModule))]
     [DependsOn(typeof(GranitAuthorizationModule))]
     public class AppModule : GranitModule { }
     ```
   </TabItem>
   <TabItem label="AWS Cognito">
     ```csharp
-    [DependsOn(typeof(GranitAuthenticationCognitoModule))]
+    [DependsOn(typeof(GranitAuthenticationJwtBearerCognitoModule))]
     [DependsOn(typeof(GranitAuthorizationModule))]
     public class AppModule : GranitModule { }
     ```
   </TabItem>
   <TabItem label="Google Cloud">
     ```csharp
-    [DependsOn(typeof(GranitAuthenticationGoogleCloudModule))]
+    [DependsOn(typeof(GranitAuthenticationJwtBearerGoogleCloudModule))]
     [DependsOn(typeof(GranitAuthorizationModule))]
     public class AppModule : GranitModule { }
     ```
   </TabItem>
   <TabItem label="Generic OIDC">
     ```csharp
-    [DependsOn(typeof(GranitJwtBearerModule))]
+    [DependsOn(typeof(GranitAuthenticationJwtBearerModule))]
     [DependsOn(typeof(GranitAuthorizationModule))]
     public class AppModule : GranitModule { }
     ```

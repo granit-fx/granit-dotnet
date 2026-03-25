@@ -5,12 +5,12 @@ using Xunit;
 
 namespace Granit.Authentication.JwtBearer.GoogleCloud.Tests;
 
-public sealed class GranitAuthenticationGoogleCloudModuleTests
+public sealed class GranitAuthenticationJwtBearerGoogleCloudModuleTests
 {
     [Fact]
     public void Module_InheritsFromGranitModule()
     {
-        GranitAuthenticationGoogleCloudModule module = new();
+        GranitAuthenticationJwtBearerGoogleCloudModule module = new();
 
         module.ShouldBeAssignableTo<GranitModule>();
     }
@@ -18,13 +18,13 @@ public sealed class GranitAuthenticationGoogleCloudModuleTests
     [Fact]
     public void Module_HasDependsOnJwtBearerModule()
     {
-        DependsOnAttribute[] attributes = typeof(GranitAuthenticationGoogleCloudModule)
+        DependsOnAttribute[] attributes = typeof(GranitAuthenticationJwtBearerGoogleCloudModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false)
             .Cast<DependsOnAttribute>()
             .ToArray();
 
         attributes.ShouldNotBeEmpty();
         attributes.SelectMany(a => a.DependedTypes)
-            .ShouldContain(typeof(GranitJwtBearerModule));
+            .ShouldContain(typeof(GranitAuthenticationJwtBearerModule));
     }
 }

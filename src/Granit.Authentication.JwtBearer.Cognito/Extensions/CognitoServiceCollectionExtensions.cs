@@ -25,7 +25,7 @@ public static class CognitoServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        // PostConfigure runs after AddGranitJwtBearer (GranitJwtBearerModule),
+        // PostConfigure runs after AddGranitJwtBearer (GranitAuthenticationJwtBearerModule),
         // overriding Authority, Audience, and NameClaimType for Cognito.
         services
             .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)

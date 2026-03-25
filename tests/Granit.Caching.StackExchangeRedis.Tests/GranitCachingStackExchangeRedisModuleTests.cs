@@ -1,5 +1,5 @@
 // =============================================================================
-// Tests - GranitCachingRedisModule
+// Tests - GranitCachingStackExchangeRedisModule
 // =============================================================================
 // Vérifie que le module Redis s'initialise correctement
 // et que les dépendances de modules sont respectées.
@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Granit.Caching.StackExchangeRedis.Tests;
 
-public sealed class GranitCachingRedisModuleTests
+public sealed class GranitCachingStackExchangeRedisModuleTests
 {
     [Fact]
     public void ConfigureServices_IsEnabledFalse_DoesNotThrow()
@@ -28,7 +28,7 @@ public sealed class GranitCachingRedisModuleTests
         ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
         cachingModule.ConfigureServices(context);
 
-        GranitCachingRedisModule redisModule = new();
+        GranitCachingStackExchangeRedisModule redisModule = new();
 
         // Act
         Action act = () => redisModule.ConfigureServices(context);
@@ -50,7 +50,7 @@ public sealed class GranitCachingRedisModuleTests
         ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
         cachingModule.ConfigureServices(context);
 
-        GranitCachingRedisModule redisModule = new();
+        GranitCachingStackExchangeRedisModule redisModule = new();
 
         // Act
         redisModule.ConfigureServices(context);

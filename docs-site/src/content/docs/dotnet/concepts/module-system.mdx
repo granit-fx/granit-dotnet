@@ -116,7 +116,7 @@ Override `IsEnabled` to skip a module's lifecycle methods based on configuration
     ```csharp
     // Redis caching activates only when configured
     [DependsOn(typeof(GranitCachingModule))]
-    public sealed class GranitCachingRedisModule : GranitModule
+    public sealed class GranitCachingStackExchangeRedisModule : GranitModule
     {
         public override bool IsEnabled(ServiceConfigurationContext context)
         {

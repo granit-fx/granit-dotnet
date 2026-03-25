@@ -11,7 +11,7 @@ namespace Granit.Notifications.MobilePush.AzureNotificationHubs;
 /// Registers <c>AzureNotificationHubsPushSender</c> as a keyed <c>IMobilePushSender</c> implementation.
 /// </remarks>
 [DependsOn(typeof(GranitNotificationsMobilePushModule))]
-public sealed class GranitNotificationsMobilePushAnhModule : GranitModule
+public sealed class GranitNotificationsMobilePushAzureNotificationHubsModule : GranitModule
 {
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context) =>

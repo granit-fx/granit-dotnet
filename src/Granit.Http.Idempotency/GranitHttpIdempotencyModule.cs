@@ -12,7 +12,7 @@ namespace Granit.Http.Idempotency;
 /// </summary>
 [DependsOn(
     typeof(GranitCachingModule))]
-public sealed class GranitIdempotencyModule : GranitModule
+public sealed class GranitHttpIdempotencyModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>

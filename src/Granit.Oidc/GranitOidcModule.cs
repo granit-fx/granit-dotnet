@@ -14,7 +14,7 @@ namespace Granit.Oidc;
 /// Registers <see cref="IDPoPProofService"/> and <see cref="IDiscoveryDocumentService"/> as singletons.
 /// </summary>
 [DependsOn(typeof(GranitTimingModule))]
-public sealed class GranitAuthenticationOidcModule : GranitModule
+public sealed class GranitOidcModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)

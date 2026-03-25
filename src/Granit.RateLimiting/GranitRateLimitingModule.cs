@@ -12,7 +12,7 @@ namespace Granit.RateLimiting;
 /// and all required dependencies from configuration section <c>"RateLimiting"</c>.
 /// </summary>
 [DependsOn(
-    typeof(GranitExceptionHandlingModule),
+    typeof(GranitHttpExceptionHandlingModule),
     typeof(GranitFeaturesModule))]
 public sealed class GranitRateLimitingModule : GranitModule
 {

@@ -48,7 +48,7 @@ public sealed class BundleTransitiveDependencyTests
         typeof(GranitValidationModule).Assembly.ShouldNotBeNull();       // Validation
         typeof(GranitPersistenceModule).Assembly.ShouldNotBeNull();      // Persistence
         typeof(GranitObservabilityModule).Assembly.ShouldNotBeNull();    // Observability
-        typeof(GranitExceptionHandlingModule).Assembly.ShouldNotBeNull(); // ExceptionHandling
+        typeof(GranitHttpExceptionHandlingModule).Assembly.ShouldNotBeNull(); // ExceptionHandling
         typeof(GranitDiagnosticsModule).Assembly.ShouldNotBeNull();      // Diagnostics
     }
 
@@ -61,7 +61,7 @@ public sealed class BundleTransitiveDependencyTests
         typeof(GranitHttpApiVersioningModule).Assembly.ShouldNotBeNull();
         typeof(GranitHttpApiDocumentationModule).Assembly.ShouldNotBeNull();
         typeof(GranitHttpCorsModule).Assembly.ShouldNotBeNull();
-        typeof(GranitIdempotencyModule).Assembly.ShouldNotBeNull();
+        typeof(GranitHttpIdempotencyModule).Assembly.ShouldNotBeNull();
         typeof(GranitLocalizationModule).Assembly.ShouldNotBeNull();
         typeof(GranitCachingModule).Assembly.ShouldNotBeNull();
     }

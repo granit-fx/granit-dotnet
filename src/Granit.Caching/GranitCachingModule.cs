@@ -14,7 +14,7 @@ namespace Granit.Caching;
 /// (replaced by <c>AesCacheValueEncryptor</c> when the Redis module enables encryption).
 /// <para>
 /// For L2 Redis distributed cache and Redis pub/sub backplane, add
-/// <c>GranitCachingRedisModule</c> from <c>Granit.Caching.StackExchangeRedis</c>.
+/// <c>GranitCachingStackExchangeRedisModule</c> from <c>Granit.Caching.StackExchangeRedis</c>.
 /// </para>
 /// </remarks>
 [DependsOn(typeof(GranitTimingModule))]

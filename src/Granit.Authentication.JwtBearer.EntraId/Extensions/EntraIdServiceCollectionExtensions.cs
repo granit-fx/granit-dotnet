@@ -25,7 +25,7 @@ public static class EntraIdServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        // PostConfigure runs after AddGranitJwtBearer (GranitJwtBearerModule),
+        // PostConfigure runs after AddGranitJwtBearer (GranitAuthenticationJwtBearerModule),
         // allowing us to override Authority, Audience and NameClaimType for Entra ID.
         // Deferred configuration: reads EntraIdOptions at resolution time.
         services

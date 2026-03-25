@@ -26,7 +26,7 @@ public static class GoogleCloudAuthenticationServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        // PostConfigure runs after AddGranitJwtBearer (GranitJwtBearerModule),
+        // PostConfigure runs after AddGranitJwtBearer (GranitAuthenticationJwtBearerModule),
         // overriding Authority, Audience, and NameClaimType for Firebase Auth.
         // Deferred configuration: reads GoogleCloudAuthenticationOptions at resolution time.
         services

@@ -14,7 +14,7 @@ entries.
 ## Setup
 
 ```csharp
-[DependsOn(typeof(GranitIdempotencyModule))]
+[DependsOn(typeof(GranitHttpIdempotencyModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -125,7 +125,7 @@ Replayed responses include an `X-Idempotency-Replayed: true` header.
 
 | Category | Key types | Package |
 | -------- | --------- | ------- |
-| Module | `GranitIdempotencyModule` | -- |
+| Module | `GranitHttpIdempotencyModule` | -- |
 | Store | `IIdempotencyStore`, `IIdempotencyMetadata`, `IdempotencyEntry`, `IdempotencyState` | `Granit.Http.Idempotency` |
 | Metadata | `IdempotentAttribute` | `Granit.Http.Idempotency` |
 | Options | `IdempotencyOptions` | `Granit.Http.Idempotency` |

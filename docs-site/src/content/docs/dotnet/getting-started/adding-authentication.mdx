@@ -43,7 +43,7 @@ namespace TaskManagement.Api;
 
 [DependsOn(typeof(GranitTimingModule))]
 [DependsOn(typeof(GranitPersistenceModule))]
-[DependsOn(typeof(GranitAuthenticationKeycloakModule))]
+[DependsOn(typeof(GranitAuthenticationJwtBearerKeycloakModule))]
 public sealed class TaskManagementModule : GranitModule
 {
     // ConfigureServices stays the same...
@@ -51,7 +51,7 @@ public sealed class TaskManagementModule : GranitModule
 ```
 
 :::note[Good to know]
-`GranitAuthenticationKeycloakModule` transitively depends on `GranitJwtBearerModule` — you do not need to declare both. The module system resolves the full dependency graph for you.
+`GranitAuthenticationJwtBearerKeycloakModule` transitively depends on `GranitAuthenticationJwtBearerModule` — you do not need to declare both. The module system resolves the full dependency graph for you.
 :::
 
 ## 3. Add configuration
@@ -160,7 +160,7 @@ Any request without a valid `Authorization: Bearer <token>` header now receives 
 
 With a single `[DependsOn]` attribute, the framework wires up several behaviors behind the scenes:
 
-- **JWT validation** — `GranitJwtBearerModule` reads the `JwtBearer` configuration section and sets up token validation parameters (issuer, audience, signing keys).
+- **JWT validation** — `GranitAuthenticationJwtBearerModule` reads the `JwtBearer` configuration section and sets up token validation parameters (issuer, audience, signing keys).
 - **Claims transformation** — `KeycloakClaimsTransformation` extracts roles from the Keycloak-specific `realm_access` and `resource_access` JWT claims and maps them to standard .NET role claims.
 - **Current user** — `ICurrentUserService` is populated from the JWT claims on every authenticated request. Inject it anywhere you need the caller's identity.
 - **Audit trail** — `AuditedEntityInterceptor` reads `ICurrentUserService` to fill `CreatedBy` and `ModifiedBy` on every entity save. No extra code required.

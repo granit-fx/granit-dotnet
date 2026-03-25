@@ -25,7 +25,7 @@ public static class KeycloakServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        // PostConfigure s'exécute après AddGranitJwtBearer (GranitJwtBearerModule),
+        // PostConfigure s'exécute après AddGranitJwtBearer (GranitAuthenticationJwtBearerModule),
         // permettant de surcharger Authority, Audience et NameClaimType pour Keycloak.
         // Deferred configuration: reads KeycloakOptions at resolution time.
         services

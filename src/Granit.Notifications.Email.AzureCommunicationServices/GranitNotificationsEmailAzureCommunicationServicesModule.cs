@@ -5,7 +5,7 @@ namespace Granit.Notifications.Email.AzureCommunicationServices;
 
 /// <summary>Module for Azure Communication Services email provider.</summary>
 [DependsOn(typeof(GranitNotificationsEmailModule))]
-public sealed class GranitNotificationsEmailAcsModule : GranitModule
+public sealed class GranitNotificationsEmailAzureCommunicationServicesModule : GranitModule
 {
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context) =>

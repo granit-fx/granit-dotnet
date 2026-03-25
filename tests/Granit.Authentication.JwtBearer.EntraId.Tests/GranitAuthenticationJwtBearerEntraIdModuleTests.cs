@@ -1,8 +1,8 @@
 // =============================================================================
-// Tests - GranitAuthenticationEntraIdModule
+// Tests - GranitAuthenticationJwtBearerEntraIdModule
 // =============================================================================
 // Verifies the complete DI wiring via ConfigureServices:
-//   - ICurrentUserService resolvable (via dependency on GranitJwtBearerModule)
+//   - ICurrentUserService resolvable (via dependency on GranitAuthenticationJwtBearerModule)
 //   - EntraIdClaimsTransformation registered
 // =============================================================================
 
@@ -18,19 +18,19 @@ using Xunit;
 
 namespace Granit.Authentication.JwtBearer.EntraId.Tests;
 
-public sealed class GranitAuthenticationEntraIdModuleTests
+public sealed class GranitAuthenticationJwtBearerEntraIdModuleTests
 {
     [Fact]
     public void ConfigureServices_RegistersICurrentUserService()
     {
         // Arrange
-        GranitAuthenticationEntraIdModule module = new();
+        GranitAuthenticationJwtBearerEntraIdModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
         builder.Configuration["EntraId:TenantId"] = "00000000-0000-0000-0000-000000000001";
         builder.Configuration["EntraId:ClientId"] = "test-client";
         ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
-        // Call GranitJwtBearerModule first (dependency)
-        new GranitJwtBearerModule().ConfigureServices(context);
+        // Call GranitAuthenticationJwtBearerModule first (dependency)
+        new GranitAuthenticationJwtBearerModule().ConfigureServices(context);
 
         // Act
         module.ConfigureServices(context);
@@ -39,19 +39,19 @@ public sealed class GranitAuthenticationEntraIdModuleTests
 
         // Assert
         ICurrentUserService? userService = sp.GetService<ICurrentUserService>();
-        userService.ShouldNotBeNull("inherited from GranitJwtBearerModule");
+        userService.ShouldNotBeNull("inherited from GranitAuthenticationJwtBearerModule");
     }
 
     [Fact]
     public void ConfigureServices_RegistersEntraIdClaimsTransformation()
     {
         // Arrange
-        GranitAuthenticationEntraIdModule module = new();
+        GranitAuthenticationJwtBearerEntraIdModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
         builder.Configuration["EntraId:TenantId"] = "00000000-0000-0000-0000-000000000001";
         builder.Configuration["EntraId:ClientId"] = "test-client";
         ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
-        new GranitJwtBearerModule().ConfigureServices(context);
+        new GranitAuthenticationJwtBearerModule().ConfigureServices(context);
 
         // Act
         module.ConfigureServices(context);

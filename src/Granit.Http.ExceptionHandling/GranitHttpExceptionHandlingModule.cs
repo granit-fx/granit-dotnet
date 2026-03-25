@@ -11,7 +11,7 @@ namespace Granit.Http.ExceptionHandling;
 /// Call <c>app.UseGranitExceptionHandling()</c> in <c>Program.cs</c>
 /// <b>as the first middleware</b>, before routing and authentication.
 /// </remarks>
-public sealed class GranitExceptionHandlingModule : GranitModule
+public sealed class GranitHttpExceptionHandlingModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>

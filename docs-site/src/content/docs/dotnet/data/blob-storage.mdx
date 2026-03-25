@@ -230,7 +230,7 @@ app.MapGranitBlobProxyEndpoints();
 
 ```csharp
 [DependsOn(
-    typeof(GranitBlobStorageDbStoreModule),
+    typeof(GranitBlobStorageDatabaseModule),
     typeof(GranitBlobStorageEntityFrameworkCoreModule),
     typeof(GranitBlobStorageProxyModule))]
 public class AppModule : GranitModule { }
@@ -735,7 +735,7 @@ Verifies GCS connectivity by listing one object in the default bucket. Tagged
 
 | Category | Key types | Package |
 | -------- | --------- | ------- |
-| Module | `GranitBlobStorageModule`, `GranitBlobStorageS3Module`, `GranitBlobStorageAzureBlobModule`, `GranitBlobStorageGoogleCloudModule`, `GranitBlobStorageFileSystemModule`, `GranitBlobStorageDbStoreModule`, `GranitBlobStorageProxyModule`, `GranitBlobStorageEntityFrameworkCoreModule` | -- |
+| Module | `GranitBlobStorageModule`, `GranitBlobStorageS3Module`, `GranitBlobStorageAzureBlobModule`, `GranitBlobStorageGoogleCloudModule`, `GranitBlobStorageFileSystemModule`, `GranitBlobStorageDatabaseModule`, `GranitBlobStorageProxyModule`, `GranitBlobStorageEntityFrameworkCoreModule` | -- |
 | Storage | `IBlobStorage`, `IBlobKeyStrategy` | `Granit.BlobStorage` |
 | Persistence (CQRS) | `IBlobDescriptorReader`, `IBlobDescriptorWriter`, `IBlobDescriptorStore` | `Granit.BlobStorage` |
 | Domain | `BlobDescriptor`, `BlobStatus`, `BlobUploadRequest` | `Granit.BlobStorage` |

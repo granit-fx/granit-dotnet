@@ -11,9 +11,9 @@ namespace Granit.Oidc.TokenManagement;
 /// and <see cref="Cache.IClientCredentialsTokenCache"/> as singletons.
 /// </summary>
 [DependsOn(
-    typeof(GranitAuthenticationOidcModule),
+    typeof(GranitOidcModule),
     typeof(GranitTimingModule))]
-public sealed class GranitAuthenticationTokenManagementModule : GranitModule
+public sealed class GranitOidcTokenManagementModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>

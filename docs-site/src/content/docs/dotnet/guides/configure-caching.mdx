@@ -72,12 +72,12 @@ underlying topology.
    ```csharp
    [DependsOn(
        typeof(GranitCachingModule),
-       typeof(GranitCachingRedisModule))]
+       typeof(GranitCachingStackExchangeRedisModule))]
    public sealed class AppModule : GranitModule { }
    ```
 
-   `GranitCachingRedisModule` depends on `GranitCachingModule` -- if you only
-   declare `GranitCachingRedisModule`, the base module is pulled in automatically.
+   `GranitCachingStackExchangeRedisModule` depends on `GranitCachingModule` -- if you only
+   declare `GranitCachingStackExchangeRedisModule`, the base module is pulled in automatically.
 
 3. **Configure appsettings.json**
 
@@ -335,7 +335,7 @@ tokens, revoked sessions).
 
 ### Redis module is loaded but falls back to in-memory
 
-Check that `Cache:Redis:IsEnabled` is `true` (default). `GranitCachingRedisModule`
+Check that `Cache:Redis:IsEnabled` is `true` (default). `GranitCachingStackExchangeRedisModule`
 reads this at startup and disables itself when set to `false`.
 
 ### Encryption errors after key rotation

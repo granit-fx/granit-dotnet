@@ -65,7 +65,7 @@ is the right choice. If you need to forward a user's token or exchange it via
   - Services/
     - ITokenEndpointService.cs Send token requests to any OIDC endpoint
     - ITokenRevocationService.cs Revoke tokens (RFC 7009)
-  - GranitAuthenticationTokenManagementModule.cs Module entry point
+  - GranitOidcTokenManagementModule.cs Module entry point
 
 </FileTree>
 
@@ -82,14 +82,14 @@ is the right choice. If you need to forward a user's token or exchange it via
 Register the module in your application:
 
 ```csharp
-[DependsOn(typeof(GranitAuthenticationTokenManagementModule))]
+[DependsOn(typeof(GranitOidcTokenManagementModule))]
 public class MyServiceModule : GranitModule { }
 ```
 
 The module automatically registers `ITokenEndpointService`, `ITokenRevocationService`,
 `IClientCredentialsTokenCache`, and the internal HTTP client used for token endpoint
-communication. `GranitAuthenticationTokenManagementModule` depends on
-`GranitAuthenticationOidcModule` and `GranitTimingModule` — both are loaded transitively.
+communication. `GranitOidcTokenManagementModule` depends on
+`GranitOidcModule` and `GranitTimingModule` — both are loaded transitively.
 
 ## Client credentials — the main use case
 

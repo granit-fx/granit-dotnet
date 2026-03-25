@@ -1,8 +1,8 @@
 // =============================================================================
-// Tests - GranitAuthenticationKeycloakModule
+// Tests - GranitAuthenticationJwtBearerKeycloakModule
 // =============================================================================
 // Verifies the complete DI wiring via ConfigureServices:
-//   - ICurrentUserService resolvable (via dependency on GranitJwtBearerModule)
+//   - ICurrentUserService resolvable (via dependency on GranitAuthenticationJwtBearerModule)
 //   - KeycloakClaimsTransformation registered
 // =============================================================================
 
@@ -18,19 +18,19 @@ using Xunit;
 
 namespace Granit.Authentication.JwtBearer.Keycloak.Tests;
 
-public sealed class GranitAuthenticationKeycloakModuleTests
+public sealed class GranitAuthenticationJwtBearerKeycloakModuleTests
 {
     [Fact]
     public void ConfigureServices_RegistersICurrentUserService()
     {
         // Arrange
-        GranitAuthenticationKeycloakModule module = new();
+        GranitAuthenticationJwtBearerKeycloakModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
         builder.Configuration["Keycloak:Authority"] = "https://keycloak.test/realms/test";
         builder.Configuration["Keycloak:ClientId"] = "test-client";
-        // Call GranitJwtBearerModule first (dependency)
+        // Call GranitAuthenticationJwtBearerModule first (dependency)
         ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
-        new GranitJwtBearerModule().ConfigureServices(context);
+        new GranitAuthenticationJwtBearerModule().ConfigureServices(context);
 
         // Act
         module.ConfigureServices(context);
@@ -39,19 +39,19 @@ public sealed class GranitAuthenticationKeycloakModuleTests
 
         // Assert
         ICurrentUserService? userService = sp.GetService<ICurrentUserService>();
-        userService.ShouldNotBeNull("inherited from GranitJwtBearerModule");
+        userService.ShouldNotBeNull("inherited from GranitAuthenticationJwtBearerModule");
     }
 
     [Fact]
     public void ConfigureServices_RegistersKeycloakClaimsTransformation()
     {
         // Arrange
-        GranitAuthenticationKeycloakModule module = new();
+        GranitAuthenticationJwtBearerKeycloakModule module = new();
         HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
         builder.Configuration["Keycloak:Authority"] = "https://keycloak.test/realms/test";
         builder.Configuration["Keycloak:ClientId"] = "test-client";
         ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
-        new GranitJwtBearerModule().ConfigureServices(context);
+        new GranitAuthenticationJwtBearerModule().ConfigureServices(context);
 
         // Act
         module.ConfigureServices(context);

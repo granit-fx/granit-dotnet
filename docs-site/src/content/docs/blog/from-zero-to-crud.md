@@ -342,7 +342,7 @@ public sealed class ProductModule : GranitModule
 }
 ```
 
-The `[DependsOn(typeof(GranitPersistenceModule))]` attribute declares a direct dependency. Granit resolves the module graph topologically -- `GranitPersistenceModule` and its own dependencies (`GranitTimingModule`, `GranitGuidsModule`, ``, `GranitExceptionHandlingModule`) are configured first. You only declare **direct** dependencies; transitive ones are resolved automatically.
+The `[DependsOn(typeof(GranitPersistenceModule))]` attribute declares a direct dependency. Granit resolves the module graph topologically -- `GranitPersistenceModule` and its own dependencies (`GranitTimingModule`, `GranitGuidsModule`, ``, `GranitHttpExceptionHandlingModule`) are configured first. You only declare **direct** dependencies; transitive ones are resolved automatically.
 
 `GranitValidationModule` auto-discovers all `IValidator<T>` implementations from loaded module assemblies and registers them as scoped services. `MapGranitGroup()` applies automatic validation to all endpoints in the route group -- no per-endpoint `.ValidateBody<T>()` calls needed.
 

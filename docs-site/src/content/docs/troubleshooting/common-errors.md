@@ -211,12 +211,12 @@ properties (name, email, roles) even though the token contains them.
 **Cause**: Keycloak uses non-standard claim names by default (e.g.,
 `preferred_username` instead of `name`, `realm_access.roles` instead of `role`).
 
-**Fix**: Ensure `GranitAuthenticationKeycloakModule` is included in your
+**Fix**: Ensure `GranitAuthenticationJwtBearerKeycloakModule` is included in your
 dependency chain. It registers the `KeycloakClaimsTransformation` that maps
 Keycloak-specific claims to standard ClaimTypes.
 
 ```csharp
-[DependsOn(typeof(GranitAuthenticationKeycloakModule))]
+[DependsOn(typeof(GranitAuthenticationJwtBearerKeycloakModule))]
 public sealed class MyAppModule : GranitModule { }
 ```
 
@@ -251,9 +251,9 @@ Check the connection string in your configuration.
    corresponding cache entry was not expired. Use `ExpireAsync` (not
    `RemoveAsync`) so fail-safe can serve stale data as fallback.
 2. **Backplane not configured**: The Redis backplane propagates L1 invalidation
-   across pods. It requires `GranitCachingRedisModule` to be loaded and Redis
+   across pods. It requires `GranitCachingStackExchangeRedisModule` to be loaded and Redis
    to support pub/sub.
 
-**Fix**: Verify that `GranitCachingRedisModule` is loaded (via the bundle or
+**Fix**: Verify that `GranitCachingStackExchangeRedisModule` is loaded (via the bundle or
 `[DependsOn]`) and that the Redis instance supports pub/sub (not all managed
 Redis services enable it by default). Check `Cache:Redis:IsEnabled` is `true`.

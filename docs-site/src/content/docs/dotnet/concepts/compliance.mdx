@@ -144,7 +144,7 @@ The Vault module is conditionally loaded -- it disables itself in `Development` 
 
 ### Encryption in transit
 
-Granit enforces HTTPS-only. The `GranitJwtBearerModule` sets `RequireHttpsMetadata = true` by default. There is no HTTP fallback configuration option in production -- the option validator rejects it outside `Development`.
+Granit enforces HTTPS-only. The `GranitAuthenticationJwtBearerModule` sets `RequireHttpsMetadata = true` by default. There is no HTTP fallback configuration option in production -- the option validator rejects it outside `Development`.
 
 ### Tenant isolation
 

@@ -11,7 +11,7 @@ namespace Granit.Authentication.ApiKeys;
 /// <summary>
 /// Granit module that registers API key authentication services.
 /// </summary>
-[DependsOn(typeof(GranitExceptionHandlingModule))]
+[DependsOn(typeof(GranitHttpExceptionHandlingModule))]
 [DependsOn(typeof(GranitGuidsModule))]
 [DependsOn(typeof(GranitQueryEngineModule))]
 [DependsOn(typeof(GranitTimingModule))]

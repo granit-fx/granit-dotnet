@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Granit.Http.Idempotency.Tests;
 
-public sealed class GranitIdempotencyModuleTests
+public sealed class GranitHttpIdempotencyModuleTests
 {
     // =========================================================================
     // Module type
@@ -18,7 +18,7 @@ public sealed class GranitIdempotencyModuleTests
     [Fact]
     public void Module_InheritsFromGranitModule()
     {
-        GranitIdempotencyModule module = new();
+        GranitHttpIdempotencyModule module = new();
 
         module.ShouldBeAssignableTo<GranitModule>();
     }
@@ -31,7 +31,7 @@ public sealed class GranitIdempotencyModuleTests
     public void Module_DependsOnGranitCachingModule()
     {
         var attributes = (DependsOnAttribute[])Attribute.GetCustomAttributes(
-            typeof(GranitIdempotencyModule), typeof(DependsOnAttribute));
+            typeof(GranitHttpIdempotencyModule), typeof(DependsOnAttribute));
 
         Type[] dependedTypes = attributes.SelectMany(a => a.DependedTypes).ToArray();
 
@@ -42,10 +42,12 @@ public sealed class GranitIdempotencyModuleTests
     public void Module_DependsOn_removed_security_dependency()
     {
         var attributes = (DependsOnAttribute[])Attribute.GetCustomAttributes(
-            typeof(GranitIdempotencyModule), typeof(DependsOnAttribute));
+            typeof(GranitHttpIdempotencyModule), typeof(DependsOnAttribute));
 
         Type[] dependedTypes = attributes.SelectMany(a => a.DependedTypes).ToArray();
 
+        dependedTypes.ShouldNotContain(t => t.Name == "GranitSecurityModule",
+            "GranitSecurityModule was dissolved — it should no longer appear in DependsOn");
     }
 
     // =========================================================================
@@ -56,7 +58,7 @@ public sealed class GranitIdempotencyModuleTests
     public void ConfigureServices_RegistersMiddleware()
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
-        GranitIdempotencyModule module = new();
+        GranitHttpIdempotencyModule module = new();
         ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
 
         module.ConfigureServices(context);

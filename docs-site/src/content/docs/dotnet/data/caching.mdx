@@ -53,7 +53,7 @@ by default. Uses `MemoryDistributedCache` as a no-op L2 backend.
 <TabItem label="Production (Redis L2 + backplane)">
 
 ```csharp
-[DependsOn(typeof(GranitCachingRedisModule))]
+[DependsOn(typeof(GranitCachingStackExchangeRedisModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -73,7 +73,7 @@ public class AppModule : GranitModule { }
 }
 ```
 
-`GranitCachingRedisModule` upgrades the FusionCache instance registered by `GranitCachingModule`
+`GranitCachingStackExchangeRedisModule` upgrades the FusionCache instance registered by `GranitCachingModule`
 with L2 Redis and a Redis pub/sub backplane. It also enables AES-256 encryption when
 `EncryptValues` is `true`.
 
@@ -290,7 +290,7 @@ sequenceDiagram
     C->>C: Evict L1 "patient:123"
 ```
 
-The backplane is automatically enabled when `GranitCachingRedisModule` is loaded. The
+The backplane is automatically enabled when `GranitCachingStackExchangeRedisModule` is loaded. The
 `BackplaneChannelPrefix` (default `"granit:fc"`) is used as the Redis pub/sub channel prefix.
 FusionCache auto-recovery ensures that transient Redis disconnections do not lose invalidation
 messages — they are replayed when the connection is restored.
@@ -307,7 +307,7 @@ applies AES-256-CBC encryption to all L2 (Redis) traffic. L1 in-memory cache sto
 | L2 | Redis (shared) | Yes (when `EncryptValues = true`) |
 
 Encryption is activated by setting `CachingOptions.EncryptValues = true` and providing
-an AES-256 key in `CacheEncryptionOptions.Key`. The `GranitCachingRedisModule` replaces
+an AES-256 key in `CacheEncryptionOptions.Key`. The `GranitCachingStackExchangeRedisModule` replaces
 the no-op `NullCacheValueEncryptor` with `AesCacheValueEncryptor` at startup.
 
 Each encryption operation generates a random 16-byte IV, prepended to the ciphertext.
@@ -399,7 +399,7 @@ Tagged `["readiness", "startup"]` — integrates with Kubernetes readiness probe
 
 | Category | Key types | Package |
 |----------|-----------|---------|
-| Modules | `GranitCachingModule`, `GranitCachingRedisModule` | -- |
+| Modules | `GranitCachingModule`, `GranitCachingStackExchangeRedisModule` | -- |
 | Cache interface | `IFusionCache` (from ZiggyCreatures.FusionCache) | `Granit.Caching` |
 | Encryption | `ICacheValueEncryptor`, `AesCacheValueEncryptor`, `EncryptingFusionCacheSerializer` | `Granit.Caching` |
 | Options | `CachingOptions`, `CacheEncryptionOptions`, `FusionCachingOptions`, `RedisCachingOptions` | -- |
