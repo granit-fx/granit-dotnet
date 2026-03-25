@@ -42,9 +42,7 @@ public static class OpenIddictEndpointRouteBuilderExtensions
             .MapGranitGroup(options.AdminRoutePrefix)
             .RequireAuthorization();
 
-        adminGroup.MapAdminUserEndpoints();
-        adminGroup.MapAdminRoleEndpoints();
-        adminGroup.MapAdminGroupEndpoints();
+        adminGroup.MapAdminImpersonationEndpoints();
         adminGroup.MapAdminOidcEndpoints();
 
         return accountGroup;

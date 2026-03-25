@@ -35,7 +35,7 @@ public sealed class OpenIddictPermissionDefinitionProviderTests
 
         provider.DefinePermissions(context);
 
-        // 5 Users + 3 Roles + 4 Groups + 5 Applications + 4 Scopes + 2 Authorizations = 23
-        group.Permissions.Count.ShouldBe(23);
+        // 1 Users (Impersonate) + 5 Applications + 4 Scopes + 2 Authorizations = 12
+        group.Permissions.Count.ShouldBe(12);
     }
 }

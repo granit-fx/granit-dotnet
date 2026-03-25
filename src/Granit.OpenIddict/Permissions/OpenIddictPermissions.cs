@@ -13,52 +13,11 @@ public static class OpenIddictPermissions
     /// <summary>Permission group name.</summary>
     public const string GroupName = "OpenIddict";
 
-    /// <summary>Permissions for user administration.</summary>
+    /// <summary>Permissions for user impersonation (token issuance).</summary>
     public static class Users
     {
-        /// <summary>Permission to list and view users.</summary>
-        public const string Read = "OpenIddict.Users.Read";
-
-        /// <summary>Permission to create new users.</summary>
-        public const string Create = "OpenIddict.Users.Create";
-
-        /// <summary>Permission to update user details.</summary>
-        public const string Manage = "OpenIddict.Users.Manage";
-
-        /// <summary>Permission to soft-delete users.</summary>
-        public const string Delete = "OpenIddict.Users.Delete";
-
-        /// <summary>Permission to impersonate a user.</summary>
+        /// <summary>Permission to impersonate a user by issuing a short-lived token.</summary>
         public const string Impersonate = "OpenIddict.Users.Impersonate";
-    }
-
-    /// <summary>Permissions for role administration.</summary>
-    public static class Roles
-    {
-        /// <summary>Permission to list and view roles.</summary>
-        public const string Read = "OpenIddict.Roles.Read";
-
-        /// <summary>Permission to create new roles.</summary>
-        public const string Create = "OpenIddict.Roles.Create";
-
-        /// <summary>Permission to delete roles.</summary>
-        public const string Delete = "OpenIddict.Roles.Delete";
-    }
-
-    /// <summary>Permissions for user group administration.</summary>
-    public static class Groups
-    {
-        /// <summary>Permission to list and view groups.</summary>
-        public const string Read = "OpenIddict.Groups.Read";
-
-        /// <summary>Permission to create new groups.</summary>
-        public const string Create = "OpenIddict.Groups.Create";
-
-        /// <summary>Permission to manage group details and membership.</summary>
-        public const string Manage = "OpenIddict.Groups.Manage";
-
-        /// <summary>Permission to delete groups.</summary>
-        public const string Delete = "OpenIddict.Groups.Delete";
     }
 
     /// <summary>Permissions for OIDC application administration.</summary>

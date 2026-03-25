@@ -19,59 +19,11 @@ internal sealed class OpenIddictPermissionDefinitionProvider : IPermissionDefini
             LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
                 "PermissionGroup:OpenIddict"));
 
-        // Users
-        group.AddPermission(
-            OpenIddictPermissions.Users.Read,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Users.Read"));
-        group.AddPermission(
-            OpenIddictPermissions.Users.Create,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Users.Create"));
-        group.AddPermission(
-            OpenIddictPermissions.Users.Manage,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Users.Manage"));
-        group.AddPermission(
-            OpenIddictPermissions.Users.Delete,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Users.Delete"));
+        // Users (impersonation only — user CRUD is handled by Granit.Identity.Endpoints)
         group.AddPermission(
             OpenIddictPermissions.Users.Impersonate,
             LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
                 "Permission:OpenIddict.Users.Impersonate"));
-
-        // Roles
-        group.AddPermission(
-            OpenIddictPermissions.Roles.Read,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Roles.Read"));
-        group.AddPermission(
-            OpenIddictPermissions.Roles.Create,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Roles.Create"));
-        group.AddPermission(
-            OpenIddictPermissions.Roles.Delete,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Roles.Delete"));
-
-        // Groups
-        group.AddPermission(
-            OpenIddictPermissions.Groups.Read,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Groups.Read"));
-        group.AddPermission(
-            OpenIddictPermissions.Groups.Create,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Groups.Create"));
-        group.AddPermission(
-            OpenIddictPermissions.Groups.Manage,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Groups.Manage"));
-        group.AddPermission(
-            OpenIddictPermissions.Groups.Delete,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Groups.Delete"));
 
         // OIDC Applications
         group.AddPermission(
