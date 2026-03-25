@@ -528,7 +528,7 @@
       "granit.http.cookies": {
         "type": "Project",
         "dependencies": {
-          "Granit.Timing": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.http.cookies.endpoints": {
@@ -537,14 +537,6 @@
           "Granit": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Http.Cookies": "[0.1.0-dev, )"
-        }
-      },
-      "granit.timing": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
-          "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
       "Asp.Versioning.Mvc": {
