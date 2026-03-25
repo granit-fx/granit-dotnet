@@ -14,10 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
     <ProjectReference Include="..\Granit.Oidc\Granit.Oidc.csproj" />
     <ProjectReference Include="..\Granit\Granit.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />

@@ -21,10 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-    <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
     <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
   </ItemGroup>
 

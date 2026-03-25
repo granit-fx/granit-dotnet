@@ -1,18 +1,22 @@
+using Granit.Caching.Internal;
+using Granit.Http.Idempotency.Abstractions;
 using Granit.Http.Idempotency.Internal;
 using Granit.Http.Idempotency.Models;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 
 namespace Granit.Http.Idempotency.Tests;
 
-public sealed class InMemoryIdempotencyStoreTests
+public sealed class ConditionalCacheIdempotencyStoreTests
 {
     private readonly ManualTimeProvider _timeProvider = new(new DateTimeOffset(2026, 3, 21, 12, 0, 0, TimeSpan.Zero));
-    private readonly InMemoryIdempotencyStore _store;
+    private readonly ConditionalCacheIdempotencyStore _store;
 
-    public InMemoryIdempotencyStoreTests()
+    public ConditionalCacheIdempotencyStoreTests()
     {
-        _store = new InMemoryIdempotencyStore(_timeProvider);
+        InMemoryConditionalCache cache = new(_timeProvider);
+        _store = new ConditionalCacheIdempotencyStore(cache, NullLogger<ConditionalCacheIdempotencyStore>.Instance);
     }
 
     private static IdempotencyEntry CreateEntry(
@@ -95,7 +99,7 @@ public sealed class InMemoryIdempotencyStoreTests
     }
 
     [Fact]
-    public async Task GetAsync_ExpiredKey_ReturnsNullAndRemovesEntry()
+    public async Task GetAsync_ExpiredKey_ReturnsNull()
     {
         await _store.TryAcquireAsync("key-1", CreateEntry(), TimeSpan.FromSeconds(10), CancellationToken.None);
 
@@ -149,7 +153,7 @@ public sealed class InMemoryIdempotencyStoreTests
     }
 
     [Fact]
-    public async Task SetCompletedAsync_NewKey_CreatesEntry()
+    public async Task SetCompletedAsync_NonExistentKey_DoesNotCreate()
     {
         IdempotencyEntry completedEntry = new()
         {
@@ -159,11 +163,11 @@ public sealed class InMemoryIdempotencyStoreTests
             StatusCode = 200,
         };
 
+        // SET XX on a non-existent key should not create it
         await _store.SetCompletedAsync("new-key", completedEntry, TimeSpan.FromHours(24), CancellationToken.None);
 
         IdempotencyEntry? result = await _store.GetAsync("new-key", CancellationToken.None);
-        result.ShouldNotBeNull();
-        result.State.ShouldBe(IdempotencyState.Completed);
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -204,10 +208,11 @@ public sealed class InMemoryIdempotencyStoreTests
     }
 
     [Fact]
-    public async Task DeleteAsync_NonExistentKey_DoesNotThrow() => await Should.NotThrowAsync(() => _store.DeleteAsync("nonexistent", CancellationToken.None));
+    public async Task DeleteAsync_NonExistentKey_DoesNotThrow() =>
+        await Should.NotThrowAsync(() => _store.DeleteAsync("nonexistent", CancellationToken.None));
 
     // =========================================================================
-    // Cleanup (called during TryAcquireAsync)
+    // Cleanup (called during SetIfAbsentAsync → TryAcquireAsync)
     // =========================================================================
 
     [Fact]

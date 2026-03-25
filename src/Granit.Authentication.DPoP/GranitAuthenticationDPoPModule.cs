@@ -1,5 +1,6 @@
 using Granit.Authentication.DPoP.Diagnostics;
 using Granit.Authentication.DPoP.Extensions;
+using Granit.Caching;
 using Granit.Diagnostics;
 using Granit.Modularity;
 using Granit.Timing;
@@ -12,7 +13,9 @@ namespace Granit.Authentication.DPoP;
 /// Granit module for DPoP proof-of-possession validation (RFC 9449).
 /// IdP-agnostic — works with Keycloak, Entra ID, Auth0, OpenIddict, or any OIDC provider.
 /// </summary>
-[DependsOn(typeof(GranitTimingModule))]
+[DependsOn(
+    typeof(GranitCachingModule),
+    typeof(GranitTimingModule))]
 public sealed class GranitAuthenticationDPoPModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)

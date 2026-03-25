@@ -1,42 +1,35 @@
-using System.Collections.Concurrent;
-using System.Text;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using ZiggyCreatures.Caching.Fusion;
 
 #pragma warning disable GRSEC003 // Cache stores access tokens for the client credentials grant — token handling is inherent to its purpose
 
 namespace Granit.Oidc.TokenManagement.Cache.Internal;
 
 /// <summary>
-/// Distributed-cache-backed token cache for client credentials tokens.
-/// Uses a <see cref="SemaphoreSlim"/> per client name to prevent cache stampedes
-/// when multiple requests race to refresh an expired token.
+/// FusionCache-backed token cache for client credentials tokens.
+/// FusionCache prevents cache stampedes natively via its built-in factory locking.
 /// </summary>
 internal sealed partial class ClientCredentialsTokenCache(
-    IDistributedCache distributedCache,
+    IFusionCache cache,
     ILogger<ClientCredentialsTokenCache> logger) : IClientCredentialsTokenCache
 {
     private const string KeyPrefix = "oidc:cc:";
-
-    private readonly ConcurrentDictionary<string, SemaphoreSlim> _locks = new(StringComparer.Ordinal);
 
     /// <inheritdoc/>
     public async Task<string?> GetTokenAsync(string clientName, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(clientName);
 
-        byte[]? bytes = await distributedCache
-            .GetAsync(BuildKey(clientName), cancellationToken)
-            .ConfigureAwait(false);
+        MaybeValue<string?> maybe = await cache.TryGetAsync<string?>(BuildKey(clientName), token: cancellationToken).ConfigureAwait(false);
 
-        if (bytes is null)
+        if (!maybe.HasValue)
         {
             LogCacheMiss(clientName);
             return null;
         }
 
         LogCacheHit(clientName);
-        return Encoding.UTF8.GetString(bytes);
+        return maybe.Value;
     }
 
     /// <inheritdoc/>
@@ -49,26 +42,13 @@ internal sealed partial class ClientCredentialsTokenCache(
         ArgumentException.ThrowIfNullOrEmpty(clientName);
         ArgumentException.ThrowIfNullOrEmpty(accessToken);
 
-        SemaphoreSlim semaphore = _locks.GetOrAdd(clientName, _ => new SemaphoreSlim(1, 1));
-        await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-        try
-        {
-            var options = new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = expiry,
-            };
+        await cache.SetAsync(
+            BuildKey(clientName),
+            accessToken,
+            new FusionCacheEntryOptions { Duration = expiry },
+            token: cancellationToken).ConfigureAwait(false);
 
-            byte[] bytes = Encoding.UTF8.GetBytes(accessToken);
-            await distributedCache
-                .SetAsync(BuildKey(clientName), bytes, options, cancellationToken)
-                .ConfigureAwait(false);
-
-            LogCacheSet(clientName, expiry);
-        }
-        finally
-        {
-            semaphore.Release();
-        }
+        LogCacheSet(clientName, expiry);
     }
 
     /// <inheritdoc/>
@@ -76,9 +56,7 @@ internal sealed partial class ClientCredentialsTokenCache(
     {
         ArgumentException.ThrowIfNullOrEmpty(clientName);
 
-        await distributedCache
-            .RemoveAsync(BuildKey(clientName), cancellationToken)
-            .ConfigureAwait(false);
+        await cache.RemoveAsync(BuildKey(clientName), token: cancellationToken).ConfigureAwait(false);
 
         LogCacheRemoved(clientName);
     }

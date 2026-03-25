@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Oidc.TokenManagement.Tests;
 
@@ -86,7 +87,7 @@ public sealed class TokenManagementServiceCollectionExtensionsTests
     private static void AddRequiredDependencies(ServiceCollection services)
     {
         services.AddLogging();
-        services.AddDistributedMemoryCache();
+        services.AddSingleton<IFusionCache>(new FusionCache(new FusionCacheOptions()));
         services.AddSingleton(Substitute.For<Granit.Oidc.Discovery.IDiscoveryDocumentService>());
         services.AddSingleton(Substitute.For<Granit.Oidc.DPoP.IDPoPProofService>());
         services.AddSingleton(Substitute.For<Granit.Timing.IClock>());

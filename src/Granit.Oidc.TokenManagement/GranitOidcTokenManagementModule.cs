@@ -1,3 +1,4 @@
+using Granit.Caching;
 using Granit.Modularity;
 using Granit.Oidc;
 using Granit.Oidc.TokenManagement.Extensions;
@@ -11,6 +12,7 @@ namespace Granit.Oidc.TokenManagement;
 /// and <see cref="Cache.IClientCredentialsTokenCache"/> as singletons.
 /// </summary>
 [DependsOn(
+    typeof(GranitCachingModule),
     typeof(GranitOidcModule),
     typeof(GranitTimingModule))]
 public sealed class GranitOidcTokenManagementModule : GranitModule

@@ -58,12 +58,10 @@ public sealed partial class EncryptionIsolationSaveChangesInterceptor(
             return;
         }
 
-        foreach (EntityEntry entry in context.ChangeTracker.Entries())
+        foreach (EntityEntry entry in context.ChangeTracker.Entries()
+            .Where(e => e.State is EntityState.Added or EntityState.Modified))
         {
-            if (entry.State is EntityState.Added or EntityState.Modified)
-            {
-                await EncryptEntryAsync(entry, cancellationToken).ConfigureAwait(false);
-            }
+            await EncryptEntryAsync(entry, cancellationToken).ConfigureAwait(false);
         }
     }
 

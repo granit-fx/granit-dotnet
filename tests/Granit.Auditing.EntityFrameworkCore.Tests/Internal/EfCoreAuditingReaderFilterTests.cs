@@ -6,11 +6,11 @@ using Granit.Auditing.Options;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 #pragma warning disable EF1001 // Internal EF Core API usage — required to test internal DbContext
 
@@ -19,7 +19,7 @@ namespace Granit.Auditing.EntityFrameworkCore.Tests.Internal;
 public sealed class EfCoreAuditingReaderFilterTests : IDisposable
 {
     private readonly DbContextOptions<AuditingDbContext> _dbOptions;
-    private readonly MemoryCache _cache = new(new MemoryCacheOptions());
+    private readonly FusionCache _cache = new(new FusionCacheOptions());
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly IOptions<AuditingOptions> _options = Microsoft.Extensions.Options.Options.Create(new AuditingOptions());
 

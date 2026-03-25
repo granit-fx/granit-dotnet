@@ -1448,6 +1448,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Auditing": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
@@ -1486,6 +1487,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[10.*, )"
         }
@@ -1494,6 +1496,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[10.*, )"
         }
       },
@@ -1602,6 +1605,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Oidc": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
@@ -1617,6 +1621,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Bff": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Http.Cookies": "[0.1.0-dev, )",
           "Granit.Oidc": "[0.1.0-dev, )",
@@ -1711,7 +1716,8 @@
       "granit.blobstorage.proxy": {
         "type": "Project",
         "dependencies": {
-          "Granit.BlobStorage": "[0.1.0-dev, )"
+          "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
         }
       },
       "granit.blobstorage.s3": {
@@ -1960,8 +1966,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
-          "Microsoft.IO.RecyclableMemoryStream": "[3.*, )",
-          "StackExchange.Redis": "[2.*, )"
+          "Microsoft.IO.RecyclableMemoryStream": "[3.*, )"
         }
       },
       "granit.http.outputcaching": {
@@ -2267,7 +2272,8 @@
       "granit.notifications.sse": {
         "type": "Project",
         "dependencies": {
-          "Granit.Notifications": "[0.1.0-dev, )"
+          "Granit.Notifications": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
         }
       },
       "granit.notifications.twilio": {
@@ -2333,6 +2339,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
@@ -2340,6 +2347,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Oidc": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
@@ -2360,6 +2368,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.OpenIddict": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
           "OpenIddict": "[7.*, )"
@@ -2369,6 +2378,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.OpenIddict": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )",

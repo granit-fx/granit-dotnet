@@ -14,10 +14,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Bff.Endpoints.Endpoints;
 
@@ -71,7 +71,7 @@ internal static partial class BffLoginEndpoints
     {
         IServiceProvider services = httpContext.RequestServices;
         GranitBffOptions bffOptions = services.GetRequiredService<IOptions<GranitBffOptions>>().Value;
-        IDistributedCache cache = services.GetRequiredService<IDistributedCache>();
+        IFusionCache cache = services.GetRequiredService<IFusionCache>();
         IClock clock = services.GetRequiredService<IClock>();
         IDPoPProofService dpopService = services.GetRequiredService<IDPoPProofService>();
         ILogger logger = services.GetRequiredService<ILoggerFactory>()
@@ -90,16 +90,14 @@ internal static partial class BffLoginEndpoints
         // Generate DPoP key pair if enabled (stored alongside PKCE state, used during token exchange)
         string? dpopPrivateKeyJwk = frontend.UseDPoP ? dpopService.GenerateKeyPair() : null;
 
-        // Store code_verifier + state + frontend name + DPoP key in distributed cache (short TTL for the auth round-trip)
+        // Store code_verifier + state + frontend name + DPoP key in cache (short TTL for the auth round-trip)
         PkceState pkceData = new(codeVerifier, state, frontend.Name, dpopPrivateKeyJwk);
-        byte[] json = JsonSerializer.SerializeToUtf8Bytes(pkceData);
-        DistributedCacheEntryOptions cacheOptions = new()
-        {
-            AbsoluteExpiration = clock.Now.AddMinutes(10),
-        };
 
-        await cache.SetAsync($"{PkceKeyPrefix}{state}", json, cacheOptions, cancellationToken)
-            .ConfigureAwait(false);
+        await cache.SetAsync(
+            $"{PkceKeyPrefix}{state}",
+            pkceData,
+            new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(10) },
+            token: cancellationToken).ConfigureAwait(false);
 
         // Build authorization URL
 #pragma warning disable GRSEC003 // Building OIDC authorize URL with client credentials
@@ -154,7 +152,7 @@ internal static partial class BffLoginEndpoints
     {
         IServiceProvider services = httpContext.RequestServices;
         GranitBffOptions bffOptions = services.GetRequiredService<IOptions<GranitBffOptions>>().Value;
-        IDistributedCache cache = services.GetRequiredService<IDistributedCache>();
+        IFusionCache cache = services.GetRequiredService<IFusionCache>();
         IBffTokenStore tokenStore = services.GetRequiredService<IBffTokenStore>();
         BffMetrics metrics = services.GetRequiredService<BffMetrics>();
         ILogger logger = services.GetRequiredService<ILoggerFactory>()
@@ -202,23 +200,19 @@ internal static partial class BffLoginEndpoints
 
         // Retrieve and remove PKCE state
         string pkceKey = $"{PkceKeyPrefix}{state}";
-        byte[]? pkceBytes = await cache.GetAsync(pkceKey, cancellationToken).ConfigureAwait(false);
-        if (pkceBytes is null)
+        MaybeValue<PkceState> maybePkce = await cache.TryGetAsync<PkceState>(pkceKey, token: cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!maybePkce.HasValue)
         {
             return TypedResults.Problem(
                 detail: "Invalid or expired state parameter.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        await cache.RemoveAsync(pkceKey, cancellationToken).ConfigureAwait(false);
+        await cache.RemoveAsync(pkceKey, token: cancellationToken).ConfigureAwait(false);
 
-        PkceState? pkceState = JsonSerializer.Deserialize<PkceState>(pkceBytes);
-        if (pkceState is null)
-        {
-            return TypedResults.Problem(
-                detail: "Corrupted PKCE state.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
+        PkceState pkceState = maybePkce.Value;
 
         // Exchange authorization code for tokens
         string pathPrefix = string.IsNullOrEmpty(frontend.PathPrefix) ? "" : frontend.PathPrefix;

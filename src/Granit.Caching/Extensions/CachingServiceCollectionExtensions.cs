@@ -54,6 +54,9 @@ public static class CachingServiceCollectionExtensions
         services.TryAddSingleton<ICacheValueEncryptor, NullCacheValueEncryptor>();
         services.TryAddSingleton<CachingMetrics>();
 
+        // In-memory conditional cache by default (replaced by RedisConditionalCache via Granit.Caching.StackExchangeRedis)
+        services.TryAddSingleton<IConditionalCache, Internal.InMemoryConditionalCache>();
+
         // IDistributedCache (memory) for local development — replaced by Redis in production
         services.AddDistributedMemoryCache();
 

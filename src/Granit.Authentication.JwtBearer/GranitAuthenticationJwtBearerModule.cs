@@ -1,4 +1,5 @@
 using Granit.Authentication.JwtBearer.Extensions;
+using Granit.Caching;
 using Granit.Modularity;
 using Granit.Users;
 
@@ -8,6 +9,7 @@ namespace Granit.Authentication.JwtBearer;
 /// Granit module for generic OIDC JWT Bearer authentication.
 /// Depends on <see cref="GranitModule"/> for the abstractions.
 /// </summary>
+[DependsOn(typeof(GranitCachingModule))]
 public sealed class GranitAuthenticationJwtBearerModule : GranitModule
 {
     /// <inheritdoc/>

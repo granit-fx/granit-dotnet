@@ -5,8 +5,8 @@ using System.Text.Json;
 using Granit.Authentication.DPoP.Diagnostics;
 using Granit.Authentication.DPoP.Options;
 using Granit.Timing;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Authentication.DPoP.Validation.Internal;
 
@@ -18,7 +18,7 @@ internal sealed class DPoPProofValidator(
     IOptions<DPoPValidationOptions> options,
     IClock clock,
     DPoPValidationMetrics metrics,
-    IDistributedCache? cache = null) : IDPoPProofValidator
+    IFusionCache cache) : IDPoPProofValidator
 {
     private const string JtiCachePrefix = "dpop:jti:";
 
@@ -37,7 +37,7 @@ internal sealed class DPoPProofValidator(
             return DPoPValidationResult.Failure("Invalid JWT structure.");
         }
 
-        DPoPValidationResult? headerResult = ValidateHeader(parts[0], opts, out JsonElement header, out string algorithm, out JsonElement jwk);
+        DPoPValidationResult? headerResult = ValidateHeader(parts[0], opts, out _, out string algorithm, out JsonElement jwk);
         if (headerResult is not null)
         {
             return headerResult;
@@ -169,7 +169,7 @@ internal sealed class DPoPProofValidator(
     private async Task<DPoPValidationResult?> ValidateReplayProtectionAsync(
         JsonElement payload, DPoPValidationOptions opts, CancellationToken cancellationToken)
     {
-        if (!opts.EnableReplayProtection || cache is null)
+        if (!opts.EnableReplayProtection)
         {
             return null;
         }
@@ -182,19 +182,16 @@ internal sealed class DPoPProofValidator(
         string jtiValue = jti.GetString()!;
         string jtiKey = $"{JtiCachePrefix}{jtiValue}";
 
-        byte[]? existing = await cache.GetAsync(jtiKey, cancellationToken).ConfigureAwait(false);
-        if (existing is not null)
+        MaybeValue<bool> existing = await cache.TryGetAsync<bool>(jtiKey, token: cancellationToken).ConfigureAwait(false);
+        if (existing.HasValue)
         {
             metrics.RecordReplayDetected(tenantId: null);
             return DPoPValidationResult.Failure("Proof replay detected (duplicate jti).");
         }
 
-        await cache.SetAsync(jtiKey, "1"u8.ToArray(),
-            new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = opts.MaxProofLifetime + opts.ClockSkew,
-            },
-            cancellationToken).ConfigureAwait(false);
+        await cache.SetAsync(jtiKey, true,
+            new FusionCacheEntryOptions { Duration = opts.MaxProofLifetime + opts.ClockSkew },
+            token: cancellationToken).ConfigureAwait(false);
 
         return null;
     }

@@ -1,4 +1,5 @@
 using Granit.Authorization;
+using Granit.Caching;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
 using Granit.QueryEngine;
@@ -20,6 +21,7 @@ namespace Granit.OpenIddict.Endpoints;
 /// </remarks>
 [DependsOn(
     typeof(GranitAuthorizationModule),
+    typeof(GranitCachingModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitOpenIddictModule),
     typeof(GranitQueryEngineModule),

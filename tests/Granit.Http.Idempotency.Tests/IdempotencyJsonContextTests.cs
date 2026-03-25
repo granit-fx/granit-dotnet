@@ -1,13 +1,18 @@
 using System.Text.Json;
-using Granit.Http.Idempotency.Internal;
 using Granit.Http.Idempotency.Models;
 using Shouldly;
 using Xunit;
 
 namespace Granit.Http.Idempotency.Tests;
 
-public sealed class IdempotencyJsonContextTests
+public sealed class IdempotencyEntrySerializationTests
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+    };
+
     // =========================================================================
     // InProgress entry round-trip
     // =========================================================================
@@ -15,15 +20,15 @@ public sealed class IdempotencyJsonContextTests
     [Fact]
     public void RoundTrip_InProgressEntry_PreservesAllProperties()
     {
-        var entry = new IdempotencyEntry
+        IdempotencyEntry entry = new()
         {
             State = IdempotencyState.InProgress,
             PayloadHash = "abcdef0123456789",
             CreatedAt = new DateTimeOffset(2026, 3, 10, 12, 0, 0, TimeSpan.Zero),
         };
 
-        byte[] json = JsonSerializer.SerializeToUtf8Bytes(entry, IdempotencyJsonContext.Default.IdempotencyEntry);
-        IdempotencyEntry? deserialized = JsonSerializer.Deserialize(json, IdempotencyJsonContext.Default.IdempotencyEntry);
+        byte[] json = JsonSerializer.SerializeToUtf8Bytes(entry, JsonOptions);
+        IdempotencyEntry? deserialized = JsonSerializer.Deserialize<IdempotencyEntry>(json, JsonOptions);
 
         deserialized.ShouldNotBeNull();
         deserialized.State.ShouldBe(IdempotencyState.InProgress);
@@ -42,7 +47,7 @@ public sealed class IdempotencyJsonContextTests
     [Fact]
     public void RoundTrip_CompletedEntry_PreservesAllProperties()
     {
-        var headers = new Dictionary<string, string[]>
+        Dictionary<string, string[]> headers = new()
         {
             ["Content-Type"] = ["application/json"],
             ["X-Custom"] = ["value1", "value2"],
@@ -50,7 +55,7 @@ public sealed class IdempotencyJsonContextTests
 
         byte[] body = "hello world"u8.ToArray();
 
-        var entry = new IdempotencyEntry
+        IdempotencyEntry entry = new()
         {
             State = IdempotencyState.Completed,
             PayloadHash = "0123456789abcdef",
@@ -61,8 +66,8 @@ public sealed class IdempotencyJsonContextTests
             CompletedAt = new DateTimeOffset(2026, 3, 10, 12, 0, 1, TimeSpan.Zero),
         };
 
-        byte[] json = JsonSerializer.SerializeToUtf8Bytes(entry, IdempotencyJsonContext.Default.IdempotencyEntry);
-        IdempotencyEntry? deserialized = JsonSerializer.Deserialize(json, IdempotencyJsonContext.Default.IdempotencyEntry);
+        byte[] json = JsonSerializer.SerializeToUtf8Bytes(entry, JsonOptions);
+        IdempotencyEntry? deserialized = JsonSerializer.Deserialize<IdempotencyEntry>(json, JsonOptions);
 
         deserialized.ShouldNotBeNull();
         deserialized.State.ShouldBe(IdempotencyState.Completed);
@@ -82,14 +87,14 @@ public sealed class IdempotencyJsonContextTests
     [Fact]
     public void Serialize_UsesCamelCasePropertyNames()
     {
-        var entry = new IdempotencyEntry
+        IdempotencyEntry entry = new()
         {
             State = IdempotencyState.InProgress,
             PayloadHash = "abc",
             CreatedAt = DateTimeOffset.UtcNow,
         };
 
-        byte[] json = JsonSerializer.SerializeToUtf8Bytes(entry, IdempotencyJsonContext.Default.IdempotencyEntry);
+        byte[] json = JsonSerializer.SerializeToUtf8Bytes(entry, JsonOptions);
         string jsonString = System.Text.Encoding.UTF8.GetString(json);
 
         jsonString.ShouldContain("\"state\":");
@@ -104,14 +109,14 @@ public sealed class IdempotencyJsonContextTests
     [Fact]
     public void Serialize_InProgressEntry_OmitsNullProperties()
     {
-        var entry = new IdempotencyEntry
+        IdempotencyEntry entry = new()
         {
             State = IdempotencyState.InProgress,
             PayloadHash = "abc",
             CreatedAt = DateTimeOffset.UtcNow,
         };
 
-        byte[] json = JsonSerializer.SerializeToUtf8Bytes(entry, IdempotencyJsonContext.Default.IdempotencyEntry);
+        byte[] json = JsonSerializer.SerializeToUtf8Bytes(entry, JsonOptions);
         string jsonString = System.Text.Encoding.UTF8.GetString(json);
 
         jsonString.ShouldNotContain("\"statusCode\"");
@@ -121,20 +126,20 @@ public sealed class IdempotencyJsonContextTests
     }
 
     // =========================================================================
-    // Dictionary<string, string[]> context
+    // Dictionary<string, string[]> round-trip
     // =========================================================================
 
     [Fact]
     public void RoundTrip_DictionaryHeaders_PreservesValues()
     {
-        var headers = new Dictionary<string, string[]>
+        Dictionary<string, string[]> headers = new()
         {
             ["Content-Type"] = ["text/plain"],
             ["Accept"] = ["application/json", "text/html"],
         };
 
-        byte[] json = JsonSerializer.SerializeToUtf8Bytes(headers, IdempotencyJsonContext.Default.DictionaryStringStringArray);
-        Dictionary<string, string[]>? deserialized = JsonSerializer.Deserialize(json, IdempotencyJsonContext.Default.DictionaryStringStringArray);
+        byte[] json = JsonSerializer.SerializeToUtf8Bytes(headers, JsonOptions);
+        Dictionary<string, string[]>? deserialized = JsonSerializer.Deserialize<Dictionary<string, string[]>>(json, JsonOptions);
 
         deserialized.ShouldNotBeNull();
         deserialized["Content-Type"].ShouldBe(["text/plain"]);

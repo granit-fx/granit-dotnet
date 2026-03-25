@@ -65,6 +65,8 @@ DOMAIN_LABELS = {
     "Tooling": "Tooling",
 }
 
+FOLDER_CLOSE = "  </Folder>"
+
 
 def classify_src(path: str) -> str:
     """Classify a src/ project path into a domain."""
@@ -139,6 +141,14 @@ def parse_projects(content: str) -> tuple[list[str], list[str]]:
     return src_projects, test_projects
 
 
+def _emit_folder(lines: list[str], name: str, projects: list[str]) -> None:
+    """Append a <Folder> element with its projects to the output lines."""
+    lines.append(f'  <Folder Name="{name}">')
+    for p in projects:
+        lines.append(f'    <Project Path="{p}" />')
+    lines.append(FOLDER_CLOSE)
+
+
 def build_slnx(src_projects: list[str], test_projects: list[str]) -> str:
     """Generate the new .slnx content with nested solution folders."""
     # Categorize src projects
@@ -176,21 +186,12 @@ def build_slnx(src_projects: list[str], test_projects: list[str]) -> str:
     # --- src domain folders ---
     for domain in DOMAIN_ORDER:
         projects = src_by_domain[domain]
-        if not projects:
-            continue
-        label = DOMAIN_LABELS[domain]
-        lines.append(f'  <Folder Name="/src/{label}/">')
-        for p in projects:
-            lines.append(f'    <Project Path="{p}" />')
-        lines.append("  </Folder>")
+        if projects:
+            _emit_folder(lines, f"/src/{DOMAIN_LABELS[domain]}/", projects)
 
     # --- bundles ---
-    bundles = src_by_domain["Bundles"]
-    if bundles:
-        lines.append('  <Folder Name="/src/Bundles/">')
-        for p in bundles:
-            lines.append(f'    <Project Path="{p}" />')
-        lines.append("  </Folder>")
+    if src_by_domain["Bundles"]:
+        _emit_folder(lines, "/src/Bundles/", src_by_domain["Bundles"])
 
     # --- test domain folders ---
     test_domain_labels = {
@@ -199,13 +200,8 @@ def build_slnx(src_projects: list[str], test_projects: list[str]) -> str:
     }
     for domain in test_domains:
         projects = test_by_domain[domain]
-        if not projects:
-            continue
-        label = test_domain_labels[domain]
-        lines.append(f'  <Folder Name="/tests/{label}/">')
-        for p in projects:
-            lines.append(f'    <Project Path="{p}" />')
-        lines.append("  </Folder>")
+        if projects:
+            _emit_folder(lines, f"/tests/{test_domain_labels[domain]}/", projects)
 
     lines.append("</Solution>")
     return "\n".join(lines) + "\n"

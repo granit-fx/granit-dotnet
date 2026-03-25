@@ -11,6 +11,9 @@ public sealed class CachingMetrics
 {
     public const string MeterName = "Granit.Caching";
 
+    private const string TagTenantId = "tenant_id";
+    private const string DefaultTenant = "global";
+
     private readonly Counter<long> _hits;
     private readonly Counter<long> _misses;
     private readonly Counter<long> _failSafeActivations;
@@ -40,25 +43,25 @@ public sealed class CachingMetrics
     public void RecordHit(string? tenantId) =>
         _hits.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 
     public void RecordMiss(string? tenantId) =>
         _misses.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 
     public void RecordFailSafeActivated(string? tenantId) =>
         _failSafeActivations.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 
     public void RecordFactoryTimeout(string? tenantId, string timeoutType) =>
         _factoryTimeouts.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "timeout_type", timeoutType },
         });
 }

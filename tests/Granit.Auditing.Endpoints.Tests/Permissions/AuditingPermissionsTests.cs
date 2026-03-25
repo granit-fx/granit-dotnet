@@ -17,8 +17,6 @@ public sealed class AuditingPermissionsTests
     }
 
     [Fact]
-    public void EntriesRead_StartsWithGroupName()
-    {
+    public void EntriesRead_StartsWithGroupName() =>
         AuditingPermissions.AuditEntries.Read.ShouldStartWith(AuditingPermissions.GroupName + ".");
-    }
 }

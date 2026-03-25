@@ -68,6 +68,8 @@ internal static class BffUserEndpoints
             return TypedResults.Ok<object>(new BffUnauthenticatedResponse());
         }
 
+        httpContext.Response.Headers.CacheControl = "private, no-cache, no-store";
+
         BffUserResponse response = new(
             Authenticated: true,
             Sub: claims.GetValueOrDefault("sub"),

@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using Granit.Notifications.Sse.Options;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ public static class SseNotificationEndpoints
     public static RouteGroupBuilder MapGranitSseNotificationEndpoints(this IEndpointRouteBuilder endpoints)
     {
         RouteGroupBuilder group = endpoints
-            .MapGroup("/notifications");
+            .MapGranitGroup("/notifications");
 
         group.MapGet("/stream", HandleStream)
             .WithName("NotificationSseStream")

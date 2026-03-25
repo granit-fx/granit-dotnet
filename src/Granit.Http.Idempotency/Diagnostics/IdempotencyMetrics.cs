@@ -11,6 +11,9 @@ public sealed class IdempotencyMetrics
 {
     public const string MeterName = "Granit.Http.Idempotency";
 
+    private const string TagTenantId = "tenant_id";
+    private const string DefaultTenant = "global";
+
     private readonly Counter<long> _lockAcquired;
     private readonly Counter<long> _lockConflicts;
     private readonly Counter<long> _responsesReplayed;
@@ -40,25 +43,25 @@ public sealed class IdempotencyMetrics
     public void RecordLockAcquired(string? tenantId) =>
         _lockAcquired.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 
     public void RecordLockConflict(string? tenantId) =>
         _lockConflicts.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 
     public void RecordResponseReplayed(string? tenantId, int statusCode) =>
         _responsesReplayed.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "status_code", statusCode.ToString() },
         });
 
     public void RecordHashMismatch(string? tenantId) =>
         _hashMismatches.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 }

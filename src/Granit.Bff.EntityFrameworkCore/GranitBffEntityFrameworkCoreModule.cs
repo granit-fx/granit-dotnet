@@ -15,9 +15,7 @@ namespace Granit.Bff.EntityFrameworkCore;
     typeof(GranitPersistenceModule))]
 public sealed class GranitBffEntityFrameworkCoreModule : GranitModule
 {
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         // Replace the default distributed cache store with EF Core
         context.Services.AddScoped<IBffTokenStore, EfCoreBffTokenStore>();
-    }
 }

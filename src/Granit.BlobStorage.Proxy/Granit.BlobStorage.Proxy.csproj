@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.BlobStorage\Granit.BlobStorage.csproj" />
+    <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
   </ItemGroup>
 
   <ItemGroup>

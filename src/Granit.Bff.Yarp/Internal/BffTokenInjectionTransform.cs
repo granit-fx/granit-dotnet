@@ -39,19 +39,7 @@ internal sealed partial class BffTokenInjectionTransform(
     {
         HttpContext httpContext = context.HttpContext;
 
-        // Check if route requires BFF auth via YARP feature
-        bool requiresAuth = false;
-        string? frontendName = null;
-        IReverseProxyFeature? proxyFeature = httpContext.Features.Get<IReverseProxyFeature>();
-        if (proxyFeature?.Route.Config.Metadata is { } metadata)
-        {
-            if (metadata.TryGetValue(RequireAuthMetadataKey, out string? requireAuthValue))
-            {
-                requiresAuth = string.Equals(requireAuthValue, "true", StringComparison.OrdinalIgnoreCase);
-            }
-
-            metadata.TryGetValue(FrontendMetadataKey, out frontendName);
-        }
+        (bool requiresAuth, string? frontendName) = ExtractRouteMetadata(httpContext);
 
         if (!requiresAuth)
         {
@@ -123,7 +111,30 @@ internal sealed partial class BffTokenInjectionTransform(
             }
         }
 
-        // Inject token — DPoP-bound or Bearer depending on session key
+        InjectAuthorizationHeader(context, tokens);
+
+        await ExtendSlidingSessionAsync(bffOptions, frontend, sessionId, tokens, httpContext.RequestAborted)
+            .ConfigureAwait(false);
+    }
+
+    private static (bool RequiresAuth, string? FrontendName) ExtractRouteMetadata(HttpContext httpContext)
+    {
+        IReverseProxyFeature? proxyFeature = httpContext.Features.Get<IReverseProxyFeature>();
+        if (proxyFeature?.Route.Config.Metadata is not { } metadata)
+        {
+            return (false, null);
+        }
+
+        bool requiresAuth = metadata.TryGetValue(RequireAuthMetadataKey, out string? requireAuthValue)
+            && string.Equals(requireAuthValue, "true", StringComparison.OrdinalIgnoreCase);
+
+        metadata.TryGetValue(FrontendMetadataKey, out string? frontendName);
+
+        return (requiresAuth, frontendName);
+    }
+
+    private void InjectAuthorizationHeader(RequestTransformContext context, BffTokenSet tokens)
+    {
         if (!string.IsNullOrEmpty(tokens.DPoPPrivateKeyJwk))
         {
             string targetUri = context.ProxyRequest.RequestUri?.GetLeftPart(UriPartial.Path)
@@ -141,22 +152,29 @@ internal sealed partial class BffTokenInjectionTransform(
             context.ProxyRequest.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
         }
+    }
 
-        // Sliding session expiration — extend session if past halfway point
-        if (bffOptions.UseSessionSlidingExpiration && !string.IsNullOrEmpty(sessionId))
+    private async Task ExtendSlidingSessionAsync(
+        GranitBffOptions bffOptions,
+        BffFrontendOptions frontend,
+        string sessionId,
+        BffTokenSet tokens,
+        CancellationToken cancellationToken)
+    {
+        if (!bffOptions.UseSessionSlidingExpiration || string.IsNullOrEmpty(sessionId))
         {
-            DateTimeOffset now = clock.Now;
-            DateTimeOffset halfwayPoint = tokens.SessionCreatedAt + (bffOptions.SessionDuration / 2);
-            DateTimeOffset absoluteMax = tokens.SessionCreatedAt + bffOptions.SessionAbsoluteMaxDuration;
+            return;
+        }
 
-            // Only extend if past halfway and within absolute max
-            if (now >= halfwayPoint && now < absoluteMax)
-            {
-                // Re-store resets the distributed cache TTL to SessionDuration
-                await tokenStore.StoreAsync(
-                    frontend.Name, sessionId, tokens, httpContext.RequestAborted)
-                    .ConfigureAwait(false);
-            }
+        DateTimeOffset now = clock.Now;
+        DateTimeOffset halfwayPoint = tokens.SessionCreatedAt + (bffOptions.SessionDuration / 2);
+        DateTimeOffset absoluteMax = tokens.SessionCreatedAt + bffOptions.SessionAbsoluteMaxDuration;
+
+        // Only extend if past halfway and within absolute max — re-store resets the distributed cache TTL
+        if (now >= halfwayPoint && now < absoluteMax)
+        {
+            await tokenStore.StoreAsync(frontend.Name, sessionId, tokens, cancellationToken)
+                .ConfigureAwait(false);
         }
     }
 

@@ -6,11 +6,11 @@ using Granit.Auditing.Options;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 #pragma warning disable EF1001 // Internal EF Core API usage — required to test internal DbContext
 
@@ -19,7 +19,7 @@ namespace Granit.Auditing.EntityFrameworkCore.Tests.Internal;
 public sealed class EfCoreAuditingReaderCachingTests : IDisposable
 {
     private readonly DbContextOptions<AuditingDbContext> _dbOptions;
-    private readonly MemoryCache _cache = new(new MemoryCacheOptions());
+    private readonly FusionCache _cache = new(new FusionCacheOptions());
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly IOptions<AuditingOptions> _options = Microsoft.Extensions.Options.Options.Create(new AuditingOptions());
 
@@ -75,7 +75,8 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
 
         // Assert
         result.ShouldBeNull();
-        _cache.TryGetValue($"audit:global:entry:{missingId}", out _).ShouldBeFalse();
+        MaybeValue<AuditEntry?> maybe = await _cache.TryGetAsync<AuditEntry?>($"audit:global:entry:{missingId}", token: TestContext.Current.CancellationToken);
+        maybe.HasValue.ShouldBeFalse();
     }
 
     [Fact]
@@ -124,7 +125,8 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
 
         // Assert — verify no cache entries were created for paged queries
         result.Items.Count.ShouldBe(1);
-        _cache.Count.ShouldBe(0);
+        MaybeValue<AuditEntry?> maybe = await _cache.TryGetAsync<AuditEntry?>("audit:global:paged", token: TestContext.Current.CancellationToken);
+        maybe.HasValue.ShouldBeFalse();
     }
 
     // --- Helpers ---

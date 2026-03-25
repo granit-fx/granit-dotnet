@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Bff.Endpoints.Endpoints;
 
@@ -29,7 +29,7 @@ internal static partial class BffBackChannelLogoutEndpoints
         group.MapPost("/backchannel-logout", (HttpContext httpContext,
                 [FromServices] IOptions<GranitBffOptions> options,
                 [FromServices] IBffTokenStore tokenStore,
-                [FromServices] IDistributedCache cache,
+                [FromServices] IFusionCache cache,
                 [FromServices] ILoggerFactory loggerFactory,
                 CancellationToken cancellationToken) =>
                 HandleBackChannelLogoutAsync(httpContext, frontend, options, tokenStore, cache, loggerFactory, cancellationToken))
@@ -52,7 +52,7 @@ internal static partial class BffBackChannelLogoutEndpoints
         BffFrontendOptions frontend,
         [FromServices] IOptions<GranitBffOptions> options,
         [FromServices] IBffTokenStore tokenStore,
-        [FromServices] IDistributedCache cache,
+        [FromServices] IFusionCache cache,
         [FromServices] ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
@@ -103,8 +103,10 @@ internal static partial class BffBackChannelLogoutEndpoints
         if (!string.IsNullOrEmpty(claims.Jti))
         {
             string jtiKey = $"{LogoutTokenJtiPrefix}{claims.Jti}";
-            byte[]? existing = await cache.GetAsync(jtiKey, cancellationToken).ConfigureAwait(false);
-            if (existing is not null)
+            MaybeValue<bool> existing = await cache.TryGetAsync<bool>(jtiKey, token: cancellationToken)
+                .ConfigureAwait(false);
+
+            if (existing.HasValue)
             {
                 LogReplayDetected(logger, claims.Jti, frontend.Name);
                 return TypedResults.Problem(
@@ -113,9 +115,11 @@ internal static partial class BffBackChannelLogoutEndpoints
             }
 
             // Mark jti as seen (TTL: 24h to prevent replay within a reasonable window)
-            await cache.SetAsync(jtiKey, "1"u8.ToArray(),
-                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24) },
-                cancellationToken).ConfigureAwait(false);
+            await cache.SetAsync(
+                jtiKey,
+                true,
+                new FusionCacheEntryOptions { Duration = TimeSpan.FromHours(24) },
+                token: cancellationToken).ConfigureAwait(false);
         }
 
         // Revoke sessions by subject

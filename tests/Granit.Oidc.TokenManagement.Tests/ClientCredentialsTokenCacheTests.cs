@@ -1,9 +1,8 @@
 using Granit.Oidc.TokenManagement.Cache.Internal;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Oidc.TokenManagement.Tests;
 
@@ -13,9 +12,8 @@ public sealed class ClientCredentialsTokenCacheTests
 
     public ClientCredentialsTokenCacheTests()
     {
-        MemoryDistributedCache memoryCache = new(
-            Microsoft.Extensions.Options.Options.Create(new MemoryDistributedCacheOptions()));
-        _sut = new ClientCredentialsTokenCache(memoryCache, NullLogger<ClientCredentialsTokenCache>.Instance);
+        FusionCache cache = new(new FusionCacheOptions());
+        _sut = new ClientCredentialsTokenCache(cache, NullLogger<ClientCredentialsTokenCache>.Instance);
     }
 
     [Fact]

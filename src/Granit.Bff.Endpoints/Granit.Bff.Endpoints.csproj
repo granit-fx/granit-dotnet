@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Bff\Granit.Bff.csproj" />
+    <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
     <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\Granit.Http.Cookies\Granit.Http.Cookies.csproj" />
     <ProjectReference Include="..\Granit.Oidc\Granit.Oidc.csproj" />

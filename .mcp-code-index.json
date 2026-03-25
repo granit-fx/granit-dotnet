@@ -100,6 +100,7 @@
       "name": "Granit.Auditing.EntityFrameworkCore",
       "deps": [
         "Granit.Auditing",
+        "Granit.Caching",
         "Granit.Persistence"
       ],
       "framework": "net10.0"
@@ -140,6 +141,7 @@
     {
       "name": "Granit.Authentication.DPoP",
       "deps": [
+        "Granit.Caching",
         "Granit",
         "Granit.Timing"
       ],
@@ -150,7 +152,7 @@
       "deps": [
         "Granit",
         "Granit",
-        "Granit",
+        "Granit.Caching",
         "Granit"
       ],
       "framework": "net10.0"
@@ -264,6 +266,7 @@
     {
       "name": "Granit.Bff",
       "deps": [
+        "Granit.Caching",
         "Granit.Oidc",
         "Granit",
         "Granit.Timing"
@@ -282,6 +285,7 @@
       "name": "Granit.Bff.Endpoints",
       "deps": [
         "Granit.Bff",
+        "Granit.Caching",
         "Granit.Http.ApiDocumentation",
         "Granit.Http.Cookies",
         "Granit.Oidc",
@@ -380,7 +384,8 @@
     {
       "name": "Granit.BlobStorage.Proxy",
       "deps": [
-        "Granit.BlobStorage"
+        "Granit.BlobStorage",
+        "Granit.Validation"
       ],
       "framework": "net10.0"
     },
@@ -963,7 +968,8 @@
     {
       "name": "Granit.Notifications.Sse",
       "deps": [
-        "Granit.Notifications"
+        "Granit.Notifications",
+        "Granit.Validation"
       ],
       "framework": "net10.0"
     },
@@ -1025,6 +1031,7 @@
       "name": "Granit.Oidc",
       "deps": [
         "Granit",
+        "Granit.Caching",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1032,6 +1039,7 @@
     {
       "name": "Granit.Oidc.TokenManagement",
       "deps": [
+        "Granit.Caching",
         "Granit.Oidc",
         "Granit",
         "Granit.Timing"
@@ -1054,6 +1062,7 @@
       "name": "Granit.OpenIddict.BackgroundJobs",
       "deps": [
         "Granit.BackgroundJobs",
+        "Granit.Caching",
         "Granit.OpenIddict",
         "Granit.Settings"
       ],
@@ -1062,9 +1071,10 @@
     {
       "name": "Granit.OpenIddict.Endpoints",
       "deps": [
+        "Granit.Authorization",
+        "Granit.Caching",
         "Granit.Http.ApiDocumentation",
         "Granit.OpenIddict",
-        "Granit.Authorization",
         "Granit.QueryEngine",
         "Granit.Validation"
       ],
@@ -3393,7 +3403,7 @@
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
       "file": "src/Granit.Auditing.EntityFrameworkCore/GranitAuditingEntityFrameworkCoreModule.cs",
-      "line": 23,
+      "line": 25,
       "members": []
     },
     {
@@ -4141,7 +4151,7 @@
       "kind": "class",
       "project": "Granit.Authentication.DPoP",
       "file": "src/Granit.Authentication.DPoP/GranitAuthenticationDPoPModule.cs",
-      "line": 16,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -4577,7 +4587,7 @@
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer",
       "file": "src/Granit.Authentication.JwtBearer/GranitAuthenticationJwtBearerModule.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6017,7 +6027,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/GranitBffEndpointsModule.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6049,7 +6059,7 @@
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/GranitBffModule.cs",
-      "line": 26,
+      "line": 28,
       "members": [
         {
           "name": "ConfigureServices",
@@ -7306,7 +7316,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Proxy",
       "file": "src/Granit.BlobStorage.Proxy/Extensions/BlobStorageProxyEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "MapGranitBlobProxyEndpoints",
@@ -7629,6 +7639,22 @@
       ]
     },
     {
+      "name": "IConditionalCache",
+      "fqn": "Granit.Caching.IConditionalCache",
+      "kind": "interface",
+      "project": "Granit.Caching",
+      "file": "src/Granit.Caching/IConditionalCache.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(string key, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "NullCacheValueEncryptor",
       "fqn": "Granit.Caching.NullCacheValueEncryptor",
       "kind": "class",
@@ -7745,7 +7771,7 @@
       "kind": "class",
       "project": "Granit.Caching.StackExchangeRedis",
       "file": "src/Granit.Caching.StackExchangeRedis/Extensions/RedisCachingServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitCachingRedis",
@@ -13133,7 +13159,7 @@
       "kind": "class",
       "project": "Granit.Http.Idempotency",
       "file": "src/Granit.Http.Idempotency/Extensions/IdempotencyServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitIdempotency",
@@ -18278,7 +18304,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Sse",
       "file": "src/Granit.Notifications.Sse/Endpoints/SseNotificationEndpoints.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "MapGranitSseNotificationEndpoints",
@@ -19137,7 +19163,7 @@
       "kind": "class",
       "project": "Granit.Oidc",
       "file": "src/Granit.Oidc/GranitOidcModule.cs",
-      "line": 17,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -19415,7 +19441,7 @@
       "kind": "class",
       "project": "Granit.Oidc.TokenManagement",
       "file": "src/Granit.Oidc.TokenManagement/GranitOidcTokenManagementModule.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -19534,7 +19560,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.BackgroundJobs",
       "file": "src/Granit.OpenIddict.BackgroundJobs/GranitOpenIddictBackgroundJobsModule.cs",
-      "line": 15,
+      "line": 17,
       "members": []
     },
     {
@@ -19928,7 +19954,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/GranitOpenIddictEndpointsModule.cs",
-      "line": 27,
+      "line": 29,
       "members": []
     },
     {

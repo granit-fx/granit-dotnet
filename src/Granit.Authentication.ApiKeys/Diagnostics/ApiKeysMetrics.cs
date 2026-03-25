@@ -11,6 +11,9 @@ public sealed class ApiKeysMetrics
 {
     public const string MeterName = "Granit.Authentication.ApiKeys";
 
+    private const string TagTenantId = "tenant_id";
+    private const string DefaultTenant = "global";
+
     private readonly Counter<long> _authenticationsSucceeded;
     private readonly Counter<long> _authenticationsFailed;
     private readonly Counter<long> _keysCreated;
@@ -40,25 +43,25 @@ public sealed class ApiKeysMetrics
     public void RecordAuthenticationSucceeded(string? tenantId) =>
         _authenticationsSucceeded.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 
     public void RecordAuthenticationFailed(string? tenantId, string reason) =>
         _authenticationsFailed.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "reason", reason },
         });
 
     public void RecordKeyCreated(string? tenantId) =>
         _keysCreated.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 
     public void RecordKeyRevoked(string? tenantId) =>
         _keysRevoked.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 }

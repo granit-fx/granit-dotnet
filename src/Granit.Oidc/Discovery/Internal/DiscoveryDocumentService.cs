@@ -1,8 +1,7 @@
-using System.Collections.Concurrent;
 using System.Text.Json;
 using Granit.Oidc.Exceptions;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Oidc.Discovery.Internal;
 
@@ -12,11 +11,10 @@ namespace Granit.Oidc.Discovery.Internal;
 /// </summary>
 internal sealed partial class DiscoveryDocumentService(
     IHttpClientFactory httpClientFactory,
-    IMemoryCache cache,
+    IFusionCache cache,
     ILogger<DiscoveryDocumentService> logger) : IDiscoveryDocumentService
 {
     private static readonly TimeSpan DefaultCacheDuration = TimeSpan.FromHours(24);
-    private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
 
     /// <inheritdoc/>
     public async Task<OidcDiscoveryDocument> GetAsync(string authority, CancellationToken cancellationToken = default)
@@ -25,58 +23,30 @@ internal sealed partial class DiscoveryDocumentService(
 
         string cacheKey = $"oidc:discovery:{authority}";
 
-        if (cache.TryGetValue(cacheKey, out OidcDiscoveryDocument? cached))
-        {
-            return cached!;
-        }
-
-        SemaphoreSlim semaphore = _semaphores.GetOrAdd(authority, _ => new SemaphoreSlim(1, 1));
-        await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-
-        try
-        {
-            // Double-check after acquiring semaphore
-            if (cache.TryGetValue(cacheKey, out cached))
+        return await cache.GetOrSetAsync<OidcDiscoveryDocument>(
+            cacheKey,
+            async (ctx, ct) =>
             {
-                return cached!;
-            }
+                string discoveryUrl = $"{authority.TrimEnd('/')}/.well-known/openid-configuration";
+                LogFetchingDiscoveryDocument(discoveryUrl);
 
-            string discoveryUrl = $"{authority.TrimEnd('/')}/.well-known/openid-configuration";
-            LogFetchingDiscoveryDocument(discoveryUrl);
+                using HttpClient httpClient = httpClientFactory.CreateClient(nameof(DiscoveryDocumentService));
+                using HttpResponseMessage response = await httpClient.GetAsync(discoveryUrl, ct).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
 
-            using HttpClient httpClient = httpClientFactory.CreateClient(nameof(DiscoveryDocumentService));
-            using HttpResponseMessage response = await httpClient.GetAsync(discoveryUrl, cancellationToken).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
+                using Stream stream = await response.Content.ReadAsStreamAsync(ct).ConfigureAwait(false);
+                using JsonDocument doc = await JsonDocument.ParseAsync(stream, cancellationToken: ct).ConfigureAwait(false);
 
-            using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-            using JsonDocument doc = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var discoveryDocument = OidcDiscoveryDocument.FromJson(doc.RootElement);
 
-            var discoveryDocument = OidcDiscoveryDocument.FromJson(doc.RootElement);
+                ValidateIssuer(authority, discoveryDocument.Issuer);
 
-            // Validate issuer matches authority (security check per OpenID Connect Discovery §4.3)
-            ValidateIssuer(authority, discoveryDocument.Issuer);
+                LogDiscoveryDocumentCached(authority, DefaultCacheDuration);
 
-            cache.Set(cacheKey, discoveryDocument, DefaultCacheDuration);
-            LogDiscoveryDocumentCached(authority, DefaultCacheDuration);
-
-            return discoveryDocument;
-        }
-        catch (HttpRequestException ex)
-        {
-            throw new OidcDiscoveryException(authority, $"HTTP request failed: {ex.Message}", ex);
-        }
-        catch (JsonException ex)
-        {
-            throw new OidcDiscoveryException(authority, $"Invalid JSON in discovery document: {ex.Message}", ex);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            throw new OidcDiscoveryException(authority, $"Missing required field in discovery document: {ex.Message}", ex);
-        }
-        finally
-        {
-            semaphore.Release();
-        }
+                return discoveryDocument;
+            },
+            new FusionCacheEntryOptions { Duration = DefaultCacheDuration },
+            token: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

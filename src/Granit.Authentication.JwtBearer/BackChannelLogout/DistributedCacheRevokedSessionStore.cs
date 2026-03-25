@@ -1,29 +1,24 @@
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Authentication.JwtBearer.BackChannelLogout;
 
 /// <summary>
-/// <see cref="IRevokedSessionStore"/> backed by <see cref="IDistributedCache"/>.
+/// <see cref="IRevokedSessionStore"/> backed by <see cref="IFusionCache"/>.
 /// Each revoked session is stored as a simple existence marker with a TTL.
 /// </summary>
 internal sealed partial class DistributedCacheRevokedSessionStore(
-    IDistributedCache cache,
+    IFusionCache cache,
     ILogger<DistributedCacheRevokedSessionStore> logger) : IRevokedSessionStore
 {
     private const string KeyPrefix = "granit:revoked-session:";
-    private static readonly byte[] Marker = [1];
 
     /// <inheritdoc/>
     public async Task RevokeSessionAsync(string sessionId, TimeSpan ttl, CancellationToken cancellationToken = default)
     {
         string key = KeyPrefix + sessionId;
-        DistributedCacheEntryOptions options = new()
-        {
-            AbsoluteExpirationRelativeToNow = ttl,
-        };
 
-        await cache.SetAsync(key, Marker, options, cancellationToken).ConfigureAwait(false);
+        await cache.SetAsync(key, true, new FusionCacheEntryOptions { Duration = ttl }, token: cancellationToken).ConfigureAwait(false);
         LogSessionRevoked(logger, sessionId, ttl);
     }
 
@@ -31,8 +26,8 @@ internal sealed partial class DistributedCacheRevokedSessionStore(
     public async Task<bool> IsSessionRevokedAsync(string sessionId, CancellationToken cancellationToken = default)
     {
         string key = KeyPrefix + sessionId;
-        byte[]? data = await cache.GetAsync(key, cancellationToken).ConfigureAwait(false);
-        return data is not null;
+        MaybeValue<bool> maybe = await cache.TryGetAsync<bool>(key, token: cancellationToken).ConfigureAwait(false);
+        return maybe.HasValue;
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Session '{SessionId}' revoked via back-channel logout (TTL: {Ttl}).")]

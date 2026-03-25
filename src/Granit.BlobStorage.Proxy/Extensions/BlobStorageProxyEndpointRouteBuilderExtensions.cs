@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.BlobStorage.Proxy.Internal;
 using Granit.BlobStorage.Proxy.Options;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -36,7 +37,7 @@ public static class BlobStorageProxyEndpointRouteBuilderExtensions
             .GetRequiredService<IOptions<ProxyBlobOptions>>().Value;
 
         RouteGroupBuilder group = endpoints
-            .MapGroup(options.RoutePrefix)
+            .MapGranitGroup(options.RoutePrefix)
             .WithTags("BlobProxy");
 
         group.MapPut("/upload/{token}", ProxyEndpoints.HandleUploadAsync)

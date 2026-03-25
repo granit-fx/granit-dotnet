@@ -1,7 +1,8 @@
+using Granit.OpenIddict.Services;
 using Granit.Settings.Services;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using OpenIddict.Abstractions;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.OpenIddict.BackgroundJobs.Jobs;
 
@@ -13,7 +14,7 @@ namespace Granit.OpenIddict.BackgroundJobs.Jobs;
 /// <remarks>
 /// <para>
 /// The heartbeat endpoint (<c>POST /api/account/session/heartbeat</c>) maintains a
-/// <c>session:{userId}:{jti}</c> key in <see cref="IDistributedCache"/> with a TTL
+/// <c>session:{userId}:{jti}</c> key in <see cref="IFusionCache"/> with a TTL
 /// of <c>IdleSessionTimeout + 5 min</c>. When the cache entry expires (user stopped
 /// sending heartbeats), this job revokes the associated refresh token.
 /// </para>
@@ -29,7 +30,7 @@ internal static partial class OpenIddictIdleSessionEnforcementHandler
     public static async Task HandleAsync(
         OpenIddictIdleSessionEnforcementJob _,
         IOpenIddictTokenManager tokenManager,
-        IDistributedCache cache,
+        IFusionCache cache,
         ISettingProvider settingProvider,
         ILogger<OpenIddictIdleSessionEnforcementJob> logger,
         CancellationToken cancellationToken)
@@ -72,9 +73,10 @@ internal static partial class OpenIddictIdleSessionEnforcementHandler
 
             // Check if session cache entry still exists
             string cacheKey = $"session:{subject}:{tokenId}";
-            byte[]? cachedEntry = await cache.GetAsync(cacheKey, cancellationToken).ConfigureAwait(false);
+            MaybeValue<UserSessionActivity> cachedEntry = await cache
+                .TryGetAsync<UserSessionActivity>(cacheKey, token: cancellationToken).ConfigureAwait(false);
 
-            if (cachedEntry is null)
+            if (!cachedEntry.HasValue)
             {
                 // Cache entry expired → session idle → revoke refresh token
                 await tokenManager.TryRevokeAsync(token, cancellationToken).ConfigureAwait(false);

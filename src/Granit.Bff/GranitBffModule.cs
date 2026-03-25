@@ -1,5 +1,6 @@
 using Granit.Bff.Diagnostics;
 using Granit.Bff.Internal;
+using Granit.Caching;
 using Granit.Diagnostics;
 using Granit.Modularity;
 using Granit.Oidc;
@@ -21,6 +22,7 @@ namespace Granit.Bff;
 /// <c>Granit.Bff.Yarp</c> for reverse proxy token injection.
 /// </remarks>
 [DependsOn(
+    typeof(GranitCachingModule),
     typeof(GranitOidcModule),
     typeof(GranitTimingModule))]
 public sealed class GranitBffModule : GranitModule

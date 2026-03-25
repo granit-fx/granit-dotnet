@@ -61,7 +61,7 @@ internal sealed class GranitCookieManager(
 
         httpContext.Response.Cookies.Delete(cookieName, new CookieOptions
         {
-            HttpOnly = definition.IsHttpOnly,
+            HttpOnly = definition.IsHttpOnly, // NOSONAR S3330 - intentional: must match SetCookieAsync options for browser to delete the cookie
             Secure = true,
             SameSite = definition.SameSite,
             Path = definition.Path,

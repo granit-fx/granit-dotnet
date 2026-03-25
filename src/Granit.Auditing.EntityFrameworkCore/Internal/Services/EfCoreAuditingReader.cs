@@ -4,18 +4,18 @@ using Granit.Auditing.Options;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Auditing.EntityFrameworkCore.Internal.Services;
 
 /// <summary>
-/// EF Core implementation of <see cref="IAuditingReader"/> with in-memory caching
+/// EF Core implementation of <see cref="IAuditingReader"/> with FusionCache
 /// for immutable audit entries and short-lived entity query results.
 /// </summary>
 internal sealed class EfCoreAuditingReader(
     IDbContextFactory<AuditingDbContext> dbContextFactory,
-    IMemoryCache memoryCache,
+    IFusionCache cache,
     ICurrentTenant currentTenant,
     IOptions<AuditingOptions> options) : IAuditingReader
 {
@@ -27,9 +27,10 @@ internal sealed class EfCoreAuditingReader(
     {
         string cacheKey = $"audit:{TenantCachePrefix}:entry:{id}";
 
-        if (memoryCache.TryGetValue(cacheKey, out AuditEntry? cached))
+        MaybeValue<AuditEntry?> maybe = await cache.TryGetAsync<AuditEntry?>(cacheKey, token: cancellationToken).ConfigureAwait(false);
+        if (maybe.HasValue)
         {
-            return cached;
+            return maybe.Value;
         }
 
         await using AuditingDbContext dbContext = await dbContextFactory
@@ -43,7 +44,7 @@ internal sealed class EfCoreAuditingReader(
 
         if (entry is not null)
         {
-            memoryCache.Set(cacheKey, entry, _options.CacheEntryTtl);
+            await cache.SetAsync(cacheKey, entry, new FusionCacheEntryOptions { Duration = _options.CacheEntryTtl }, token: cancellationToken).ConfigureAwait(false);
         }
 
         return entry;
@@ -88,9 +89,10 @@ internal sealed class EfCoreAuditingReader(
     {
         string cacheKey = $"audit:{TenantCachePrefix}:entity:{entityType}:{entityId}:p{page}:s{pageSize}";
 
-        if (memoryCache.TryGetValue(cacheKey, out PagedResult<AuditEntry>? cached))
+        MaybeValue<PagedResult<AuditEntry>?> maybe = await cache.TryGetAsync<PagedResult<AuditEntry>?>(cacheKey, token: cancellationToken).ConfigureAwait(false);
+        if (maybe.HasValue)
         {
-            return cached!;
+            return maybe.Value!;
         }
 
         await using AuditingDbContext dbContext = await dbContextFactory
@@ -112,12 +114,12 @@ internal sealed class EfCoreAuditingReader(
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        var result = new PagedResult<AuditEntry>(
+        PagedResult<AuditEntry> result = new(
             items,
             totalCount,
             HasMore: page * pageSize < totalCount);
 
-        memoryCache.Set(cacheKey, result, _options.CacheEntityQueryTtl);
+        await cache.SetAsync(cacheKey, result, new FusionCacheEntryOptions { Duration = _options.CacheEntityQueryTtl }, token: cancellationToken).ConfigureAwait(false);
         return result;
     }
 

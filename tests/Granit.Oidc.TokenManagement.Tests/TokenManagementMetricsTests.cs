@@ -16,46 +16,32 @@ public sealed class TokenManagementMetricsTests : IDisposable
     }
 
     [Fact]
-    public void RecordTokenRequest_DoesNotThrow()
-    {
+    public void RecordTokenRequest_DoesNotThrow() =>
         Should.NotThrow(() => _sut.RecordTokenRequest("tenant-1", "client_credentials", "my-client"));
-    }
 
     [Fact]
-    public void RecordTokenRequest_WithNullTenantId_DoesNotThrow()
-    {
+    public void RecordTokenRequest_WithNullTenantId_DoesNotThrow() =>
         Should.NotThrow(() => _sut.RecordTokenRequest(null, "authorization_code", "my-client"));
-    }
 
     [Fact]
-    public void RecordCacheHit_DoesNotThrow()
-    {
+    public void RecordCacheHit_DoesNotThrow() =>
         Should.NotThrow(() => _sut.RecordCacheHit("tenant-1", "my-client"));
-    }
 
     [Fact]
-    public void RecordCacheMiss_DoesNotThrow()
-    {
+    public void RecordCacheMiss_DoesNotThrow() =>
         Should.NotThrow(() => _sut.RecordCacheMiss(null, "my-client"));
-    }
 
     [Fact]
-    public void RecordRevocation_DoesNotThrow()
-    {
+    public void RecordRevocation_DoesNotThrow() =>
         Should.NotThrow(() => _sut.RecordRevocation("tenant-1"));
-    }
 
     [Fact]
-    public void RecordError_DoesNotThrow()
-    {
+    public void RecordError_DoesNotThrow() =>
         Should.NotThrow(() => _sut.RecordError(null, "invalid_grant"));
-    }
 
     [Fact]
-    public void MeterName_FollowsConvention()
-    {
+    public void MeterName_FollowsConvention() =>
         TokenManagementMetrics.MeterName.ShouldBe("Granit.Oidc.TokenManagement");
-    }
 
     [Fact]
     public void RecordTokenRequest_IncrementsCounter()

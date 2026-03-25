@@ -1,27 +1,19 @@
-using System.Text.Json;
 using Granit.Bff.Options;
-using Granit.Timing;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Bff.Internal;
 
 /// <summary>
-/// <see cref="IBffTokenStore"/> implementation backed by <see cref="IDistributedCache"/>.
+/// <see cref="IBffTokenStore"/> implementation backed by <see cref="IFusionCache"/>.
 /// Keys follow the pattern <c>bff:session:{frontendName}:{sessionId}</c>.
 /// </summary>
 internal sealed class DistributedCacheBffTokenStore(
-    IDistributedCache cache,
-    IOptions<GranitBffOptions> options,
-    IClock clock) : IBffTokenStore
+    IFusionCache cache,
+    IOptions<GranitBffOptions> options) : IBffTokenStore
 {
     private const string KeyPrefix = "bff:session:";
     private const string UserIndexPrefix = "bff:user-sessions:";
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    };
 
     public async Task StoreAsync(string frontendName, string sessionId, BffTokenSet tokens, CancellationToken cancellationToken = default)
     {
@@ -29,16 +21,11 @@ internal sealed class DistributedCacheBffTokenStore(
         ArgumentException.ThrowIfNullOrWhiteSpace(sessionId);
         ArgumentNullException.ThrowIfNull(tokens);
 
-        byte[] json = JsonSerializer.SerializeToUtf8Bytes(tokens, JsonOptions);
-        DistributedCacheEntryOptions cacheOptions = new()
-        {
-            AbsoluteExpiration = clock.Now.Add(options.Value.SessionDuration),
-        };
+        FusionCacheEntryOptions cacheOptions = new() { Duration = options.Value.SessionDuration };
 
-        await cache.SetAsync(BuildKey(frontendName, sessionId), json, cacheOptions, cancellationToken)
+        await cache.SetAsync(BuildKey(frontendName, sessionId), tokens, cacheOptions, token: cancellationToken)
             .ConfigureAwait(false);
 
-        // Maintain user→sessions index for session listing
         if (!string.IsNullOrEmpty(tokens.UserId))
         {
             await AddToUserIndexAsync(frontendName, tokens.UserId, sessionId, cancellationToken)
@@ -51,15 +38,10 @@ internal sealed class DistributedCacheBffTokenStore(
         ArgumentException.ThrowIfNullOrWhiteSpace(frontendName);
         ArgumentException.ThrowIfNullOrWhiteSpace(sessionId);
 
-        byte[]? bytes = await cache.GetAsync(BuildKey(frontendName, sessionId), cancellationToken)
+        MaybeValue<BffTokenSet> maybe = await cache.TryGetAsync<BffTokenSet>(BuildKey(frontendName, sessionId), token: cancellationToken)
             .ConfigureAwait(false);
 
-        if (bytes is null or { Length: 0 })
-        {
-            return null;
-        }
-
-        return JsonSerializer.Deserialize<BffTokenSet>(bytes, JsonOptions);
+        return maybe.HasValue ? maybe.Value : null;
     }
 
     public async Task RemoveAsync(string frontendName, string sessionId, CancellationToken cancellationToken = default)
@@ -67,7 +49,6 @@ internal sealed class DistributedCacheBffTokenStore(
         ArgumentException.ThrowIfNullOrWhiteSpace(frontendName);
         ArgumentException.ThrowIfNullOrWhiteSpace(sessionId);
 
-        // Remove from user index if possible
         BffTokenSet? tokens = await GetAsync(frontendName, sessionId, cancellationToken).ConfigureAwait(false);
         if (tokens?.UserId is not null)
         {
@@ -75,7 +56,7 @@ internal sealed class DistributedCacheBffTokenStore(
                 .ConfigureAwait(false);
         }
 
-        await cache.RemoveAsync(BuildKey(frontendName, sessionId), cancellationToken)
+        await cache.RemoveAsync(BuildKey(frontendName, sessionId), token: cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -85,15 +66,10 @@ internal sealed class DistributedCacheBffTokenStore(
         ArgumentException.ThrowIfNullOrWhiteSpace(frontendName);
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
 
-        byte[]? bytes = await cache.GetAsync(BuildUserIndexKey(frontendName, userId), cancellationToken)
+        MaybeValue<List<string>> maybe = await cache.TryGetAsync<List<string>>(BuildUserIndexKey(frontendName, userId), token: cancellationToken)
             .ConfigureAwait(false);
 
-        if (bytes is null or { Length: 0 })
-        {
-            return [];
-        }
-
-        return JsonSerializer.Deserialize<List<string>>(bytes, JsonOptions) ?? [];
+        return maybe.HasValue ? maybe.Value ?? [] : [];
     }
 
     private async Task AddToUserIndexAsync(
@@ -123,24 +99,15 @@ internal sealed class DistributedCacheBffTokenStore(
 
     private async Task<List<string>> GetUserIndexAsync(string indexKey, CancellationToken cancellationToken)
     {
-        byte[]? bytes = await cache.GetAsync(indexKey, cancellationToken).ConfigureAwait(false);
-        if (bytes is null or { Length: 0 })
-        {
-            return [];
-        }
-
-        return JsonSerializer.Deserialize<List<string>>(bytes, JsonOptions) ?? [];
+        MaybeValue<List<string>> maybe = await cache.TryGetAsync<List<string>>(indexKey, token: cancellationToken).ConfigureAwait(false);
+        return maybe.HasValue ? maybe.Value ?? [] : [];
     }
 
     private async Task SaveUserIndexAsync(string indexKey, List<string> sessionIds, CancellationToken cancellationToken)
     {
-        byte[] json = JsonSerializer.SerializeToUtf8Bytes(sessionIds, JsonOptions);
-        DistributedCacheEntryOptions cacheOptions = new()
-        {
-            AbsoluteExpiration = clock.Now.Add(options.Value.SessionAbsoluteMaxDuration),
-        };
+        FusionCacheEntryOptions cacheOptions = new() { Duration = options.Value.SessionAbsoluteMaxDuration };
 
-        await cache.SetAsync(indexKey, json, cacheOptions, cancellationToken).ConfigureAwait(false);
+        await cache.SetAsync(indexKey, sessionIds, cacheOptions, token: cancellationToken).ConfigureAwait(false);
     }
 
     private static string BuildKey(string frontendName, string sessionId) => $"{KeyPrefix}{frontendName}:{sessionId}";

@@ -73,29 +73,9 @@ internal sealed partial class OpenIddictSeedContributor(
             {
                 ClientId = descriptor.ClientId,
                 ClientSecret = descriptor.ClientSecret,
-                DisplayName = descriptor.DisplayName,
             };
 
-            foreach (string permission in descriptor.Permissions)
-            {
-                appDescriptor.Permissions.Add(permission);
-            }
-
-            foreach (string uri in descriptor.RedirectUris)
-            {
-                appDescriptor.RedirectUris.Add(new Uri(uri));
-            }
-
-            foreach (string uri in descriptor.PostLogoutRedirectUris)
-            {
-                appDescriptor.PostLogoutRedirectUris.Add(new Uri(uri));
-            }
-
-            // Register client's public key for private_key_jwt authentication (RFC 7523)
-            if (!string.IsNullOrEmpty(descriptor.SigningKeyJwk))
-            {
-                appDescriptor.JsonWebKeySet = BuildJsonWebKeySet(descriptor.SigningKeyJwk);
-            }
+            PopulateDescriptor(appDescriptor, descriptor);
 
             await applicationManager.CreateAsync(appDescriptor, cancellationToken).ConfigureAwait(false);
             Log.ApplicationCreated(logger, descriptor.ClientId);
@@ -106,35 +86,47 @@ internal sealed partial class OpenIddictSeedContributor(
             await applicationManager.PopulateAsync(appDescriptor, existing, cancellationToken)
                 .ConfigureAwait(false);
 
-            appDescriptor.DisplayName = descriptor.DisplayName;
-
-            appDescriptor.Permissions.Clear();
-            foreach (string permission in descriptor.Permissions)
-            {
-                appDescriptor.Permissions.Add(permission);
-            }
-
-            appDescriptor.RedirectUris.Clear();
-            foreach (string uri in descriptor.RedirectUris)
-            {
-                appDescriptor.RedirectUris.Add(new Uri(uri));
-            }
-
-            appDescriptor.PostLogoutRedirectUris.Clear();
-            foreach (string uri in descriptor.PostLogoutRedirectUris)
-            {
-                appDescriptor.PostLogoutRedirectUris.Add(new Uri(uri));
-            }
-
-            // Update client's public key for private_key_jwt authentication (RFC 7523)
-            appDescriptor.JsonWebKeySet = !string.IsNullOrEmpty(descriptor.SigningKeyJwk)
-                ? BuildJsonWebKeySet(descriptor.SigningKeyJwk)
-                : null;
+            PopulateDescriptor(appDescriptor, descriptor);
 
             await applicationManager.UpdateAsync(existing, appDescriptor, cancellationToken)
                 .ConfigureAwait(false);
             Log.ApplicationUpdated(logger, descriptor.ClientId);
         }
+    }
+
+    /// <summary>
+    /// Populates common fields of an <see cref="OpenIddictApplicationDescriptor"/>
+    /// from the seed configuration. Collections are cleared before adding new values
+    /// to support both create (no-op clear on empty collections) and update paths.
+    /// </summary>
+    private static void PopulateDescriptor(
+        OpenIddictApplicationDescriptor appDescriptor,
+        OidcApplicationSeedDescriptor source)
+    {
+        appDescriptor.DisplayName = source.DisplayName;
+
+        appDescriptor.Permissions.Clear();
+        foreach (string permission in source.Permissions)
+        {
+            appDescriptor.Permissions.Add(permission);
+        }
+
+        appDescriptor.RedirectUris.Clear();
+        foreach (string uri in source.RedirectUris)
+        {
+            appDescriptor.RedirectUris.Add(new Uri(uri));
+        }
+
+        appDescriptor.PostLogoutRedirectUris.Clear();
+        foreach (string uri in source.PostLogoutRedirectUris)
+        {
+            appDescriptor.PostLogoutRedirectUris.Add(new Uri(uri));
+        }
+
+        // Set client's public key for private_key_jwt authentication (RFC 7523)
+        appDescriptor.JsonWebKeySet = !string.IsNullOrEmpty(source.SigningKeyJwk)
+            ? BuildJsonWebKeySet(source.SigningKeyJwk)
+            : null;
     }
 
     private async Task SeedScopeAsync(

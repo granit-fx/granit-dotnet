@@ -1,3 +1,4 @@
+using Granit.Caching;
 using Granit.Modularity;
 using Granit.Oidc.Discovery;
 using Granit.Oidc.Discovery.Internal;
@@ -13,7 +14,9 @@ namespace Granit.Oidc;
 /// Granit module for OIDC/OAuth 2.0 protocol primitives.
 /// Registers <see cref="IDPoPProofService"/> and <see cref="IDiscoveryDocumentService"/> as singletons.
 /// </summary>
-[DependsOn(typeof(GranitTimingModule))]
+[DependsOn(
+    typeof(GranitCachingModule),
+    typeof(GranitTimingModule))]
 public sealed class GranitOidcModule : GranitModule
 {
     /// <inheritdoc/>

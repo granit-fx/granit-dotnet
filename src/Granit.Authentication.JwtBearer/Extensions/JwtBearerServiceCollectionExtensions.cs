@@ -72,7 +72,6 @@ public static class JwtBearerServiceCollectionExtensions
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         // Back-channel logout: revoked session store + token validator
-        services.AddDistributedMemoryCache();
         services.TryAddSingleton<IRevokedSessionStore, DistributedCacheRevokedSessionStore>();
         services.TryAddSingleton<BackChannelLogoutTokenValidator>();
 

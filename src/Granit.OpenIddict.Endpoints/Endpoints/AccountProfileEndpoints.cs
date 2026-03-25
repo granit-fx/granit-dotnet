@@ -39,6 +39,8 @@ internal static class AccountProfileEndpoints
 [FromServices] IIdentityUserReader userReader,
         CancellationToken cancellationToken)
     {
+        httpContext.Response.Headers.CacheControl = "private, no-cache, no-store";
+
         string userId = httpContext.User.FindFirst("sub")!.Value;
         IIdentityUser? user = await userReader
             .GetUserAsync(userId, cancellationToken).ConfigureAwait(false);

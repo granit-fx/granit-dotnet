@@ -238,16 +238,10 @@ def write_filter(name: str, slnf: dict) -> None:
     print(f"  -> {out.relative_to(REPO_ROOT)} ({count} projects)")
 
 
-def main() -> None:
-    if not SLNX_PATH.is_file():
-        print(f"ERROR: {SLNX_PATH} not found. Run from repo root.", file=sys.stderr)
-        sys.exit(1)
-
-    slnx_projects = load_slnx_projects()
-    print(f"Loaded {len(slnx_projects)} projects from {SLNX_PATH.name}")
-    FILTERS_DIR.mkdir(parents=True, exist_ok=True)
-
-    # Classify all projects by domain
+def classify_all_projects(
+    slnx_projects: set[str],
+) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
+    """Classify all slnx projects into src and test domain buckets."""
     src_by_domain: dict[str, list[str]] = {d: [] for d in DOMAIN_ORDER}
     src_by_domain["Bundles"] = []
     test_by_domain: dict[str, list[str]] = {d: [] for d in DOMAIN_ORDER}
@@ -263,6 +257,43 @@ def main() -> None:
             if domain in test_by_domain:
                 test_by_domain[domain].append(path)
 
+    return src_by_domain, test_by_domain
+
+
+def generate_framework_filter(
+    slnx_projects: set[str],
+) -> list[str]:
+    """Collect all framework-only project paths (src + tests, excluding modules)."""
+    framework_src = [
+        p for p in slnx_projects
+        if p.startswith("src/")
+        and "bundles/" not in p
+        and not is_module_project(Path(p).stem)
+    ]
+    fw_test_paths: list[str] = []
+    for p in sorted(slnx_projects):
+        if not p.startswith("tests/"):
+            continue
+        if "ArchitectureTests" in p:
+            continue
+        base_name = Path(p).stem.replace(".Tests.Integration", "").replace(".Tests", "")
+        if not is_module_project(base_name):
+            fw_test_paths.append(p)
+
+    return framework_src + fw_test_paths
+
+
+def main() -> None:
+    if not SLNX_PATH.is_file():
+        print(f"ERROR: {SLNX_PATH} not found. Run from repo root.", file=sys.stderr)
+        sys.exit(1)
+
+    slnx_projects = load_slnx_projects()
+    print(f"Loaded {len(slnx_projects)} projects from {SLNX_PATH.name}")
+    FILTERS_DIR.mkdir(parents=True, exist_ok=True)
+
+    src_by_domain, test_by_domain = classify_all_projects(slnx_projects)
+
     # -- Per-domain filters -------------------------------------------------
     for domain in DOMAIN_ORDER:
         name = domain.lower()
@@ -275,24 +306,7 @@ def main() -> None:
         write_filter(name, slnf)
 
     # -- Framework-only filter ----------------------------------------------
-    framework_src = [
-        p for p in slnx_projects
-        if p.startswith("src/")
-        and "bundles/" not in p
-        and not is_module_project(Path(p).stem)
-    ]
-    # Collect framework src + tests whose base name is framework
-    fw_test_paths: list[str] = []
-    for p in sorted(slnx_projects):
-        if not p.startswith("tests/"):
-            continue
-        if "ArchitectureTests" in p:
-            continue
-        base_name = Path(p).stem.replace(".Tests.Integration", "").replace(".Tests", "")
-        if not is_module_project(base_name):
-            fw_test_paths.append(p)
-
-    all_fw = framework_src + fw_test_paths
+    all_fw = generate_framework_filter(slnx_projects)
     print(f"Generating framework-only.slnf ({len(all_fw)} framework projects)...")
     slnf = generate_filter(all_fw, slnx_projects)
     write_filter("framework-only", slnf)

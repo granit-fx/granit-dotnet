@@ -1,6 +1,7 @@
 using Granit.Caching;
 using Granit.Caching.Options;
 using Granit.Caching.StackExchangeRedis.HealthChecks;
+using Granit.Caching.StackExchangeRedis.Internal;
 using Granit.Caching.StackExchangeRedis.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -75,6 +76,9 @@ public static class RedisCachingServiceCollectionExtensions
                 return ConnectionMultiplexer.Connect(opts.Configuration);
             });
         }
+
+        // Upgrade conditional cache: replace in-memory with Redis-backed atomic operations
+        services.AddSingleton<IConditionalCache, RedisConditionalCache>();
 
         // Upgrade FusionCache: add L2 distributed cache + Redis backplane
         // FusionCache's builder is additive — this configures the same default cache instance

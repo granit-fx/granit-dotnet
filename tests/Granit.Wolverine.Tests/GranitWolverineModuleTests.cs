@@ -9,6 +9,7 @@
 using Granit.Modularity;
 using Granit.MultiTenancy;
 using Granit.Users;
+using Granit.Validation;
 using Granit.Wolverine.Extensions;
 using Granit.Wolverine.Internal;
 using Granit.Wolverine.Options;
@@ -29,11 +30,12 @@ public sealed class GranitWolverineModuleTests
         typeof(GranitWolverineModule).IsAssignableTo(typeof(GranitModule)).ShouldBeTrue();
 
     [Fact]
-    public void GranitWolverineModule_DependsOn_SecurityModule()
+    public void GranitWolverineModule_DependsOn_ValidationModule()
     {
         var attributes = (DependsOnAttribute[])
             typeof(GranitWolverineModule).GetCustomAttributes(typeof(DependsOnAttribute), inherit: false);
 
+        attributes.ShouldContain(a => a.DependedTypes.Contains(typeof(Validation.GranitValidationModule)));
     }
 
     [Fact]

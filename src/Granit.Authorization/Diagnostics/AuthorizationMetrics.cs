@@ -11,6 +11,9 @@ public sealed class AuthorizationMetrics
 {
     public const string MeterName = "Granit.Authorization";
 
+    private const string TagTenantId = "tenant_id";
+    private const string DefaultTenant = "global";
+
     private readonly Counter<long> _checksGranted;
     private readonly Counter<long> _checksDenied;
     private readonly Counter<long> _cacheHits;
@@ -40,26 +43,26 @@ public sealed class AuthorizationMetrics
     public void RecordCheckGranted(string? tenantId, string permissionName) =>
         _checksGranted.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "permission_name", permissionName },
         });
 
     public void RecordCheckDenied(string? tenantId, string permissionName) =>
         _checksDenied.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "permission_name", permissionName },
         });
 
     public void RecordCacheHit(string? tenantId) =>
         _cacheHits.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 
     public void RecordCacheMiss(string? tenantId) =>
         _cacheMisses.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
         });
 }

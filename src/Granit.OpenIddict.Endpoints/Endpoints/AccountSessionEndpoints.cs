@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Builder;
@@ -6,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Caching.Distributed;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.OpenIddict.Endpoints.Endpoints;
 
@@ -39,7 +38,7 @@ internal static class AccountSessionEndpoints
 
     private static async Task<NoContent> HeartbeatAsync(
         HttpContext httpContext,
-        [FromServices] IDistributedCache cache,
+        [FromServices] IFusionCache cache,
         [FromServices] TimeProvider timeProvider,
         CancellationToken cancellationToken)
     {
@@ -56,13 +55,16 @@ internal static class AccountSessionEndpoints
         string cacheKey = $"session:{userId}:{jti}";
         UserSessionActivity activity = new(userId, jti, timeProvider.GetUtcNow());
 
-        byte[] serialized = JsonSerializer.SerializeToUtf8Bytes(activity);
-        await cache.SetAsync(cacheKey, serialized, new DistributedCacheEntryOptions
-        {
-            // Default: 35 min (30 min timeout + 5 min buffer).
-            // Actual TTL adjusted by enforcement job based on per-tenant IdleSessionTimeout setting.
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(35),
-        }, cancellationToken).ConfigureAwait(false);
+        await cache.SetAsync(
+            cacheKey,
+            activity,
+            new FusionCacheEntryOptions
+            {
+                // Default: 35 min (30 min timeout + 5 min buffer).
+                // Actual TTL adjusted by enforcement job based on per-tenant IdleSessionTimeout setting.
+                Duration = TimeSpan.FromMinutes(35),
+            },
+            token: cancellationToken).ConfigureAwait(false);
 
         return TypedResults.NoContent();
     }

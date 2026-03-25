@@ -206,13 +206,11 @@ internal sealed partial class ClientCredentialsTokenHandler(
             Version = original.Version,
         };
 
-        foreach (KeyValuePair<string, IEnumerable<string>> header in original.Headers)
+        foreach (KeyValuePair<string, IEnumerable<string>> header in original.Headers
+            .Where(h => !string.Equals(h.Key, "Authorization", StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(h.Key, "DPoP", StringComparison.OrdinalIgnoreCase)))
         {
-            if (!string.Equals(header.Key, "Authorization", StringComparison.OrdinalIgnoreCase)
-                && !string.Equals(header.Key, "DPoP", StringComparison.OrdinalIgnoreCase))
-            {
-                clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
-            }
+            clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
         }
 
         if (original.Content is not null)
