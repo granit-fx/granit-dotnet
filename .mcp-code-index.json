@@ -281,9 +281,10 @@
     {
       "name": "Granit.Bff.Endpoints",
       "deps": [
-        "Granit.Oidc",
         "Granit.Bff",
         "Granit.Http.ApiDocumentation",
+        "Granit.Http.Cookies",
+        "Granit.Oidc",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -601,7 +602,7 @@
     {
       "name": "Granit.Http.Cookies",
       "deps": [
-        "Granit.Timing"
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -5928,7 +5929,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "MapGranitBffEndpoints",
@@ -5944,7 +5945,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 142,
+      "line": 163,
       "members": [
         {
           "name": "InvokeAsync",
@@ -5960,8 +5961,15 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/GranitBffEndpointsModule.cs",
-      "line": 14,
-      "members": []
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "GranitBffEntityFrameworkCoreModule",
@@ -12422,8 +12430,21 @@
       "kind": "record",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/CookieDefinition.cs",
-      "line": 12,
-      "members": []
+      "line": 14,
+      "members": [
+        {
+          "name": "SameSite",
+          "kind": "property",
+          "signature": "SameSiteMode SameSite",
+          "returnType": "SameSiteMode"
+        },
+        {
+          "name": "Path",
+          "kind": "property",
+          "signature": "string Path",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "CookiesLocalizationResource",
@@ -12562,7 +12583,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/GranitHttpCookiesModule.cs",
-      "line": 14,
+      "line": 10,
       "members": []
     },
     {

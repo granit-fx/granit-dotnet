@@ -36,6 +36,7 @@ public static class CookiesServiceCollectionExtensions
         }
 
         services.TryAddSingleton<ICookieRegistry>(registry);
+        services.TryAddScoped<IConsentResolver, NullConsentResolver>();
         services.TryAddScoped<IGranitCookieManager, GranitCookieManager>();
 
         // Third-party service registry — populated from configuration

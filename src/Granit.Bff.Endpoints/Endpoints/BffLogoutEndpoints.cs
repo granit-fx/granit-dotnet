@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Granit.Bff.Diagnostics;
 using Granit.Bff.Options;
+using Granit.Http.Cookies;
 using Granit.Oidc.ClientAuthentication;
 using Granit.Oidc.ClientAuthentication.Internal;
 using Granit.Oidc.DPoP;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -89,14 +91,9 @@ internal static partial class BffLogoutEndpoints
             LogLogout(logger, sessionId, frontend.Name);
         }
 
-        // Clear frontend-specific session cookie
-        httpContext.Response.Cookies.Delete(frontend.SessionCookieName, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Path = "/",
-        });
+        // Clear frontend-specific session cookie via managed cookie system (GRSEC004)
+        IGranitCookieManager cookieManager = httpContext.RequestServices.GetRequiredService<IGranitCookieManager>();
+        cookieManager.DeleteCookie(httpContext, frontend.SessionCookieName);
 
         // Build end_session URL
 #pragma warning disable GRSEC003 // Building OIDC end_session URL with client credentials

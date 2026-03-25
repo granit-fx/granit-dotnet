@@ -1,5 +1,6 @@
 using Granit.Bff.Endpoints.Endpoints;
 using Granit.Bff.Options;
+using Granit.Http.Cookies;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -29,14 +30,34 @@ public static class BffEndpointRouteBuilderExtensions
     {
         GranitBffOptions options = endpoints.ServiceProvider
             .GetRequiredService<IOptions<GranitBffOptions>>().Value;
+        ICookieRegistry cookieRegistry = endpoints.ServiceProvider
+            .GetRequiredService<ICookieRegistry>();
 
         foreach (BffFrontendOptions frontend in options.Frontends)
         {
+            RegisterBffSessionCookie(cookieRegistry, frontend, options);
             MapFrontendEndpoints(endpoints, frontend);
             MapFrontendStaticFiles(endpoints, frontend);
         }
 
         return endpoints;
+    }
+
+    private static void RegisterBffSessionCookie(
+        ICookieRegistry cookieRegistry, BffFrontendOptions frontend, GranitBffOptions bffOptions)
+    {
+        cookieRegistry.Register(new CookieDefinition(
+            Name: frontend.SessionCookieName,
+            Category: CookieCategory.StrictlyNecessary,
+            RetentionDays: (int)Math.Ceiling(bffOptions.SessionDuration.TotalDays),
+            IsHttpOnly: true,
+            Purpose: $"BFF session identifier for the '{frontend.Name}' frontend. "
+                + "Stores a server-side session ID to associate the browser with stored OIDC tokens.")
+        {
+            SameSite = SameSiteMode.Strict,
+            Path = "/",
+            IsEssential = true,
+        });
     }
 
     private static void MapFrontendEndpoints(IEndpointRouteBuilder endpoints, BffFrontendOptions frontend)

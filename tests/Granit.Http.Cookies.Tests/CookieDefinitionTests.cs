@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Shouldly;
 using Xunit;
 
@@ -15,6 +16,31 @@ public sealed class CookieDefinitionTests
         definition.RetentionDays.ShouldBe(1);
         definition.IsHttpOnly.ShouldBeTrue();
         definition.Purpose.ShouldBe("Session management");
+    }
+
+    [Fact]
+    public void InitProperties_HaveSensibleDefaults()
+    {
+        CookieDefinition definition = new("test", CookieCategory.Analytics, 365, false, "Test");
+
+        definition.SameSite.ShouldBe(SameSiteMode.Lax);
+        definition.Path.ShouldBe("/");
+        definition.IsEssential.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void InitProperties_CanBeOverridden()
+    {
+        CookieDefinition definition = new("__Host-bff", CookieCategory.StrictlyNecessary, 1, true, "BFF")
+        {
+            SameSite = SameSiteMode.Strict,
+            Path = "/",
+            IsEssential = true,
+        };
+
+        definition.SameSite.ShouldBe(SameSiteMode.Strict);
+        definition.Path.ShouldBe("/");
+        definition.IsEssential.ShouldBeTrue();
     }
 
     [Fact]

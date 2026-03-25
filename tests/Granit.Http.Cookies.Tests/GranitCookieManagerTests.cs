@@ -1,6 +1,5 @@
 using Granit.Http.Cookies.Exceptions;
 using Granit.Http.Cookies.Internal;
-using Granit.Timing;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 using Shouldly;
@@ -12,13 +11,11 @@ public sealed class GranitCookieManagerTests
 {
     private readonly CookieRegistry _registry = new();
     private readonly IConsentResolver _consentResolver = Substitute.For<IConsentResolver>();
-    private readonly IClock _clock = Substitute.For<IClock>();
     private readonly GranitCookieManager _sut;
 
     public GranitCookieManagerTests()
     {
-        _clock.Now.Returns(new DateTimeOffset(2026, 1, 15, 10, 0, 0, TimeSpan.Zero));
-        _sut = new GranitCookieManager(_registry, _consentResolver, _clock);
+        _sut = new GranitCookieManager(_registry, _consentResolver);
     }
 
     private static DefaultHttpContext CreateHttpContext() => new();
@@ -77,7 +74,7 @@ public sealed class GranitCookieManagerTests
     }
 
     [Fact]
-    public async Task SetCookieAsync_UsesClockForExpiration()
+    public async Task SetCookieAsync_SetsMaxAgeFromRetentionDays()
     {
         CookieDefinition definition = new("pref_cookie", CookieCategory.Preferences, 30, true, "Preferences");
         _registry.Register(definition);
@@ -88,7 +85,7 @@ public sealed class GranitCookieManagerTests
 
         string? setCookieHeader = httpContext.Response.Headers.SetCookie.ToString();
         setCookieHeader.ShouldContain("pref_cookie=value");
-        setCookieHeader.ShouldContain("expires=");
+        setCookieHeader.ShouldContain("max-age=2592000"); // 30 days in seconds
         setCookieHeader.ShouldContain("secure");
         setCookieHeader.ShouldContain("httponly");
     }
@@ -105,6 +102,44 @@ public sealed class GranitCookieManagerTests
         string? setCookieHeader = httpContext.Response.Headers.SetCookie.ToString();
         setCookieHeader.ShouldContain("secure");
         setCookieHeader.ShouldContain("samesite=lax");
+    }
+
+    [Fact]
+    public async Task SetCookieAsync_UsesDefinitionSameSiteAndPath()
+    {
+        CookieDefinition definition = new("__Host-bff-admin", CookieCategory.StrictlyNecessary, 1, true, "BFF session")
+        {
+            SameSite = SameSiteMode.Strict,
+            Path = "/",
+            IsEssential = true,
+        };
+        _registry.Register(definition);
+        DefaultHttpContext httpContext = CreateHttpContext();
+
+        await _sut.SetCookieAsync(httpContext, "__Host-bff-admin", "sess_123");
+
+        string? setCookieHeader = httpContext.Response.Headers.SetCookie.ToString();
+        setCookieHeader.ShouldContain("samesite=strict");
+        setCookieHeader.ShouldContain("path=/");
+    }
+
+    [Fact]
+    public void DeleteCookie_UsesSameSiteAndPathFromDefinition()
+    {
+        CookieDefinition definition = new("__Host-bff-admin", CookieCategory.StrictlyNecessary, 1, true, "BFF session")
+        {
+            SameSite = SameSiteMode.Strict,
+            Path = "/",
+        };
+        _registry.Register(definition);
+        DefaultHttpContext httpContext = CreateHttpContext();
+
+        _sut.DeleteCookie(httpContext, "__Host-bff-admin");
+
+        string? setCookieHeader = httpContext.Response.Headers.SetCookie.ToString();
+        setCookieHeader.ShouldContain("__Host-bff-admin");
+        setCookieHeader.ShouldContain("samesite=strict");
+        setCookieHeader.ShouldContain("path=/");
     }
 
     [Fact]
