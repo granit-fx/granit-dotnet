@@ -1,7 +1,5 @@
 using Granit.Http.Cookies.Extensions;
-using Granit.Timing.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -13,7 +11,6 @@ public sealed class CookiesServiceCollectionExtensionsTests
     public void AddGranitCookies_RegistersServices()
     {
         ServiceCollection services = new();
-        services.AddGranitTiming();
         services.AddGranitCookies(cookies =>
         {
             cookies.UseConsentResolver<FakeConsentResolver>();
@@ -59,6 +56,18 @@ public sealed class CookiesServiceCollectionExtensionsTests
 
         resolver.ShouldNotBeNull();
         resolver.ShouldBeOfType<FakeConsentResolver>();
+    }
+
+    [Fact]
+    public void AddGranitCookies_WithoutConsentResolver_RegistersNullConsentResolver()
+    {
+        ServiceCollection services = new();
+        services.AddGranitCookies(_ => { });
+
+        ServiceProvider provider = services.BuildServiceProvider();
+        IConsentResolver? resolver = provider.GetService<IConsentResolver>();
+
+        resolver.ShouldNotBeNull();
     }
 
     [Fact]

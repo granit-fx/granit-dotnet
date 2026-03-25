@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace Granit.Http.Cookies;
 
 /// <summary>
@@ -14,4 +16,23 @@ public sealed record CookieDefinition(
     CookieCategory Category,
     int RetentionDays,
     bool IsHttpOnly,
-    string Purpose);
+    string Purpose)
+{
+    /// <summary>
+    /// Gets the <c>SameSite</c> attribute for the cookie. Default: <see cref="SameSiteMode.Lax"/>.
+    /// Security-sensitive cookies (e.g., BFF session) should use <see cref="SameSiteMode.Strict"/>.
+    /// </summary>
+    public SameSiteMode SameSite { get; init; } = SameSiteMode.Lax;
+
+    /// <summary>
+    /// Gets the <c>Path</c> attribute for the cookie. Default: <c>"/"</c>.
+    /// Required to be <c>"/"</c> for <c>__Host-</c> prefixed cookies (RFC 6265bis §4.1.3.2).
+    /// </summary>
+    public string Path { get; init; } = "/";
+
+    /// <summary>
+    /// Gets whether the cookie is marked as essential (bypasses GDPR consent banner suppression).
+    /// Only <see cref="CookieCategory.StrictlyNecessary"/> cookies should set this to <see langword="true"/>.
+    /// </summary>
+    public bool IsEssential { get; init; }
+}

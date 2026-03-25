@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using Granit.Bff.Diagnostics;
 using Granit.Bff.Options;
+using Granit.Http.Cookies;
 using Granit.Oidc.ClientAuthentication;
 using Granit.Oidc.ClientAuthentication.Internal;
 using Granit.Oidc.DPoP;
@@ -156,7 +157,6 @@ internal static partial class BffLoginEndpoints
         IDistributedCache cache = services.GetRequiredService<IDistributedCache>();
         IBffTokenStore tokenStore = services.GetRequiredService<IBffTokenStore>();
         BffMetrics metrics = services.GetRequiredService<BffMetrics>();
-        IClock clock = services.GetRequiredService<IClock>();
         ILogger logger = services.GetRequiredService<ILoggerFactory>()
             .CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
 
@@ -251,16 +251,10 @@ internal static partial class BffLoginEndpoints
 #pragma warning restore GRSEC002
         await tokenStore.StoreAsync(frontend.Name, sessionId, tokens, cancellationToken).ConfigureAwait(false);
 
-        // Set frontend-specific session cookie
-        httpContext.Response.Cookies.Append(frontend.SessionCookieName, sessionId, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Path = "/",
-            MaxAge = bffOptions.SessionDuration,
-            IsEssential = true,
-        });
+        // Set frontend-specific session cookie via managed cookie system (GRSEC004)
+        IGranitCookieManager cookieManager = services.GetRequiredService<IGranitCookieManager>();
+        await cookieManager.SetCookieAsync(httpContext, frontend.SessionCookieName, sessionId)
+            .ConfigureAwait(false);
 
         metrics.RecordLogin(null);
         LogLoginSuccess(logger, sessionId, frontend.Name);

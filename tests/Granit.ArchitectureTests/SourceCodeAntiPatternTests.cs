@@ -208,6 +208,59 @@ public sealed partial class SourceCodeAntiPatternTests
             $"Violators: {string.Join("; ", violations)}");
     }
 
+    /// <summary>
+    /// Direct calls to <c>IResponseCookies.Append()</c> or <c>IResponseCookies.Delete()</c>
+    /// bypass the Strict Registry Pattern and RGPD consent checks enforced by
+    /// <c>IGranitCookieManager</c>. Only <c>GranitCookieManager</c> (the manager implementation
+    /// itself) is allowed to call these methods directly.
+    /// Complements the <c>GRSEC004</c> Roslyn analyzer which is opt-in per project.
+    /// </summary>
+    [Fact]
+    public void Direct_IResponseCookies_access_should_only_be_in_GranitCookieManager()
+    {
+        string srcDir = Path.Combine(RepoRoot, "src");
+
+        List<string> violations = [];
+
+        foreach (string csFile in Directory.GetFiles(srcDir, "*.cs", SearchOption.AllDirectories))
+        {
+            if (csFile.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar)
+                || csFile.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar))
+            {
+                continue;
+            }
+
+            // Only GranitCookieManager.cs is allowed to call Response.Cookies directly
+            if (Path.GetFileName(csFile) == "GranitCookieManager.cs")
+            {
+                continue;
+            }
+
+            string content = File.ReadAllText(csFile);
+
+            foreach (Match match in DirectCookieAccess().Matches(content))
+            {
+                // Skip matches inside pragma disable GRSEC004 blocks (already suppressed intentionally)
+                string precedingText = content[..match.Index];
+                if (precedingText.Contains("#pragma warning disable GRSEC004", StringComparison.Ordinal)
+                    && !precedingText.Contains("#pragma warning restore GRSEC004", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                string relativePath = Path.GetRelativePath(RepoRoot, csFile);
+                int lineNumber = content[..match.Index].Count(c => c == '\n') + 1;
+                violations.Add($"{relativePath}:{lineNumber}");
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Direct calls to Response.Cookies.Append() / Delete() bypass the Strict Registry Pattern "
+            + "and RGPD consent checks. Use IGranitCookieManager.SetCookieAsync() or DeleteCookie() instead. "
+            + "If this is the cookie manager implementation itself, name the file GranitCookieManager.cs. "
+            + $"Violators: {string.Join(", ", violations)}");
+    }
+
     private static string FindRepoRoot()
     {
         string? dir = Path.GetDirectoryName(typeof(SourceCodeAntiPatternTests).Assembly.Location);
@@ -244,4 +297,12 @@ public sealed partial class SourceCodeAntiPatternTests
     /// </summary>
     [GeneratedRegex(@"^namespace\s+([\w.]+)\s*[;{]", RegexOptions.Multiline)]
     private static partial Regex NamespaceDeclaration();
+
+    /// <summary>
+    /// Matches direct calls to <c>.Cookies.Append(</c> or <c>.Cookies.Delete(</c>
+    /// on response objects. Captures both <c>Response.Cookies.*</c> and variables
+    /// holding <c>IResponseCookies</c>.
+    /// </summary>
+    [GeneratedRegex(@"\.Cookies\.(Append|Delete)\s*\(")]
+    private static partial Regex DirectCookieAccess();
 }
