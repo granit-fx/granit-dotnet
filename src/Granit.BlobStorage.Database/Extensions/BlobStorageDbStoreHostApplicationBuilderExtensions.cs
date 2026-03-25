@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
-using Granit.BlobStorage.DbStore.Diagnostics;
-using Granit.BlobStorage.DbStore.Internal;
-using Granit.BlobStorage.DbStore.Options;
+using Granit.BlobStorage.Database.Diagnostics;
+using Granit.BlobStorage.Database.Internal;
+using Granit.BlobStorage.Database.Options;
 using Granit.BlobStorage.Internal;
 using Granit.BlobStorage.Options;
 using Granit.Diagnostics;
@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace Granit.BlobStorage.DbStore.Extensions;
+namespace Granit.BlobStorage.Database.Extensions;
 
 /// <summary>
 /// Extension methods for registering the database blob storage provider.

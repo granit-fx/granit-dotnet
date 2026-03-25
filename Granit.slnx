@@ -7,8 +7,6 @@
   <Folder Name="/src/Platform/">
     <Project Path="src/Granit.Diagnostics.Endpoints/Granit.Diagnostics.Endpoints.csproj" />
     <Project Path="src/Granit.Diagnostics/Granit.Diagnostics.csproj" />
-    <Project Path="src/Granit.Events.Wolverine/Granit.Events.Wolverine.csproj" />
-    <Project Path="src/Granit.Events/Granit.Events.csproj" />
     <Project Path="src/Granit.Guids/Granit.Guids.csproj" />
     <Project Path="src/Granit.Http.ApiDocumentation/Granit.Http.ApiDocumentation.csproj" />
     <Project Path="src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj" />
@@ -25,6 +23,10 @@
     <Project Path="src/Granit.Observability/Granit.Observability.csproj" />
     <Project Path="src/Granit.Oidc.TokenManagement/Granit.Oidc.TokenManagement.csproj" />
     <Project Path="src/Granit.Oidc/Granit.Oidc.csproj" />
+    <Project Path="src/Granit.QueryEngine.AI/Granit.QueryEngine.AI.csproj" />
+    <Project Path="src/Granit.QueryEngine.Endpoints/Granit.QueryEngine.Endpoints.csproj" />
+    <Project Path="src/Granit.QueryEngine.EntityFrameworkCore/Granit.QueryEngine.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.QueryEngine/Granit.QueryEngine.csproj" />
     <Project Path="src/Granit.RateLimiting/Granit.RateLimiting.csproj" />
     <Project Path="src/Granit.Timing/Granit.Timing.csproj" />
     <Project Path="src/Granit.Validation.AI/Granit.Validation.AI.csproj" />
@@ -55,8 +57,8 @@
     <Project Path="src/Granit.Bff.EntityFrameworkCore/Granit.Bff.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Bff.Yarp/Granit.Bff.Yarp.csproj" />
     <Project Path="src/Granit.Bff/Granit.Bff.csproj" />
+    <Project Path="src/Granit.Encryption.BackgroundJobs/Granit.Encryption.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Encryption.EntityFrameworkCore/Granit.Encryption.EntityFrameworkCore.csproj" />
-    <Project Path="src/Granit.Encryption.ReEncryption/Granit.Encryption.ReEncryption.csproj" />
     <Project Path="src/Granit.Encryption/Granit.Encryption.csproj" />
     <Project Path="src/Granit.Identity.Endpoints/Granit.Identity.Endpoints.csproj" />
     <Project Path="src/Granit.Identity.Federated.Cognito/Granit.Identity.Federated.Cognito.csproj" />
@@ -97,10 +99,6 @@
     <Project Path="src/Granit.Localization.EntityFrameworkCore/Granit.Localization.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Localization.SourceGenerator/Granit.Localization.SourceGenerator.csproj" />
     <Project Path="src/Granit.Localization/Granit.Localization.csproj" />
-    <Project Path="src/Granit.QueryEngine.AI/Granit.QueryEngine.AI.csproj" />
-    <Project Path="src/Granit.QueryEngine.Endpoints/Granit.QueryEngine.Endpoints.csproj" />
-    <Project Path="src/Granit.QueryEngine.EntityFrameworkCore/Granit.QueryEngine.EntityFrameworkCore.csproj" />
-    <Project Path="src/Granit.QueryEngine/Granit.QueryEngine.csproj" />
     <Project Path="src/Granit.ReferenceData.Endpoints/Granit.ReferenceData.Endpoints.csproj" />
     <Project Path="src/Granit.ReferenceData.EntityFrameworkCore/Granit.ReferenceData.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.ReferenceData/Granit.ReferenceData.csproj" />
@@ -132,7 +130,7 @@
     <Project Path="src/Granit.BlobStorage.AI/Granit.BlobStorage.AI.csproj" />
     <Project Path="src/Granit.BlobStorage.AzureBlob/Granit.BlobStorage.AzureBlob.csproj" />
     <Project Path="src/Granit.BlobStorage.BackgroundJobs/Granit.BlobStorage.BackgroundJobs.csproj" />
-    <Project Path="src/Granit.BlobStorage.DbStore/Granit.BlobStorage.DbStore.csproj" />
+    <Project Path="src/Granit.BlobStorage.Database/Granit.BlobStorage.Database.csproj" />
     <Project Path="src/Granit.BlobStorage.Endpoints/Granit.BlobStorage.Endpoints.csproj" />
     <Project Path="src/Granit.BlobStorage.EntityFrameworkCore/Granit.BlobStorage.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.BlobStorage.FileSystem/Granit.BlobStorage.FileSystem.csproj" />
@@ -142,6 +140,8 @@
     <Project Path="src/Granit.BlobStorage/Granit.BlobStorage.csproj" />
     <Project Path="src/Granit.Caching.StackExchangeRedis/Granit.Caching.StackExchangeRedis.csproj" />
     <Project Path="src/Granit.Caching/Granit.Caching.csproj" />
+    <Project Path="src/Granit.Events.Wolverine/Granit.Events.Wolverine.csproj" />
+    <Project Path="src/Granit.Events/Granit.Events.csproj" />
     <Project Path="src/Granit.Imaging.AI/Granit.Imaging.AI.csproj" />
     <Project Path="src/Granit.Imaging.MagickNet/Granit.Imaging.MagickNet.csproj" />
     <Project Path="src/Granit.Imaging/Granit.Imaging.csproj" />
@@ -228,8 +228,6 @@
     <Project Path="tests/Granit.Bundle.Tests/Granit.Bundle.Tests.csproj" />
     <Project Path="tests/Granit.Diagnostics.Endpoints.Tests/Granit.Diagnostics.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Diagnostics.Tests/Granit.Diagnostics.Tests.csproj" />
-    <Project Path="tests/Granit.Events.Tests/Granit.Events.Tests.csproj" />
-    <Project Path="tests/Granit.Events.Wolverine.Tests/Granit.Events.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Guids.Tests/Granit.Guids.Tests.csproj" />
     <Project Path="tests/Granit.Http.ApiDocumentation.Tests/Granit.Http.ApiDocumentation.Tests.csproj" />
     <Project Path="tests/Granit.Http.ApiVersioning.Tests/Granit.Http.ApiVersioning.Tests.csproj" />
@@ -246,6 +244,11 @@
     <Project Path="tests/Granit.Observability.Tests/Granit.Observability.Tests.csproj" />
     <Project Path="tests/Granit.Oidc.Tests/Granit.Oidc.Tests.csproj" />
     <Project Path="tests/Granit.Oidc.TokenManagement.Tests/Granit.Oidc.TokenManagement.Tests.csproj" />
+    <Project Path="tests/Granit.QueryEngine.AI.Tests/Granit.QueryEngine.AI.Tests.csproj" />
+    <Project Path="tests/Granit.QueryEngine.Endpoints.Tests.Integration/Granit.QueryEngine.Endpoints.Tests.Integration.csproj" />
+    <Project Path="tests/Granit.QueryEngine.Endpoints.Tests/Granit.QueryEngine.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.QueryEngine.EntityFrameworkCore.Tests/Granit.QueryEngine.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.QueryEngine.Tests/Granit.QueryEngine.Tests.csproj" />
     <Project Path="tests/Granit.RateLimiting.Tests/Granit.RateLimiting.Tests.csproj" />
     <Project Path="tests/Granit.Tests/Granit.Tests.csproj" />
     <Project Path="tests/Granit.Timing.Tests/Granit.Timing.Tests.csproj" />
@@ -277,8 +280,8 @@
     <Project Path="tests/Granit.Bff.EntityFrameworkCore.Tests/Granit.Bff.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Bff.Tests/Granit.Bff.Tests.csproj" />
     <Project Path="tests/Granit.Bff.Yarp.Tests/Granit.Bff.Yarp.Tests.csproj" />
+    <Project Path="tests/Granit.Encryption.BackgroundJobs.Tests/Granit.Encryption.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Encryption.EntityFrameworkCore.Tests/Granit.Encryption.EntityFrameworkCore.Tests.csproj" />
-    <Project Path="tests/Granit.Encryption.ReEncryption.Tests/Granit.Encryption.ReEncryption.Tests.csproj" />
     <Project Path="tests/Granit.Encryption.Tests/Granit.Encryption.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Endpoints.Tests/Granit.Identity.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Cognito.Tests/Granit.Identity.Federated.Cognito.Tests.csproj" />
@@ -320,11 +323,6 @@
     <Project Path="tests/Granit.Localization.EntityFrameworkCore.Tests/Granit.Localization.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Localization.SourceGenerator.Tests/Granit.Localization.SourceGenerator.Tests.csproj" />
     <Project Path="tests/Granit.Localization.Tests/Granit.Localization.Tests.csproj" />
-    <Project Path="tests/Granit.QueryEngine.AI.Tests/Granit.QueryEngine.AI.Tests.csproj" />
-    <Project Path="tests/Granit.QueryEngine.Endpoints.Tests.Integration/Granit.QueryEngine.Endpoints.Tests.Integration.csproj" />
-    <Project Path="tests/Granit.QueryEngine.Endpoints.Tests/Granit.QueryEngine.Endpoints.Tests.csproj" />
-    <Project Path="tests/Granit.QueryEngine.EntityFrameworkCore.Tests/Granit.QueryEngine.EntityFrameworkCore.Tests.csproj" />
-    <Project Path="tests/Granit.QueryEngine.Tests/Granit.QueryEngine.Tests.csproj" />
     <Project Path="tests/Granit.ReferenceData.Endpoints.Tests/Granit.ReferenceData.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.ReferenceData.EntityFrameworkCore.Tests/Granit.ReferenceData.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.ReferenceData.Tests/Granit.ReferenceData.Tests.csproj" />
@@ -357,7 +355,7 @@
     <Project Path="tests/Granit.BlobStorage.AI.Tests/Granit.BlobStorage.AI.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.AzureBlob.Tests/Granit.BlobStorage.AzureBlob.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.BackgroundJobs.Tests/Granit.BlobStorage.BackgroundJobs.Tests.csproj" />
-    <Project Path="tests/Granit.BlobStorage.DbStore.Tests/Granit.BlobStorage.DbStore.Tests.csproj" />
+    <Project Path="tests/Granit.BlobStorage.Database.Tests/Granit.BlobStorage.Database.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.Endpoints.Tests/Granit.BlobStorage.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.EntityFrameworkCore.Tests/Granit.BlobStorage.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.BlobStorage.FileSystem.Tests/Granit.BlobStorage.FileSystem.Tests.csproj" />
@@ -369,6 +367,8 @@
     <Project Path="tests/Granit.Caching.StackExchangeRedis.Tests/Granit.Caching.StackExchangeRedis.Tests.csproj" />
     <Project Path="tests/Granit.Caching.Tests.Integration/Granit.Caching.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Caching.Tests/Granit.Caching.Tests.csproj" />
+    <Project Path="tests/Granit.Events.Tests/Granit.Events.Tests.csproj" />
+    <Project Path="tests/Granit.Events.Wolverine.Tests/Granit.Events.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Imaging.AI.Tests/Granit.Imaging.AI.Tests.csproj" />
     <Project Path="tests/Granit.Imaging.MagickNet.Tests/Granit.Imaging.MagickNet.Tests.csproj" />
     <Project Path="tests/Granit.Imaging.Tests/Granit.Imaging.Tests.csproj" />

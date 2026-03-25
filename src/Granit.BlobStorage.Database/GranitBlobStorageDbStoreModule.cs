@@ -1,7 +1,7 @@
 using Granit.Modularity;
 using Granit.Persistence;
 
-namespace Granit.BlobStorage.DbStore;
+namespace Granit.BlobStorage.Database;
 
 /// <summary>
 /// Granit module for the database blob storage provider.
@@ -12,4 +12,4 @@ namespace Granit.BlobStorage.DbStore;
 /// </remarks>
 [DependsOn(typeof(GranitBlobStorageModule))]
 [DependsOn(typeof(GranitPersistenceModule))]
-public sealed class GranitBlobStorageDbStoreModule : GranitModule;
+public sealed class GranitBlobStorageDatabaseModule : GranitModule;

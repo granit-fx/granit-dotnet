@@ -1,7 +1,7 @@
 using Granit.MultiTenancy;
 using Granit.Timing;
 
-namespace Granit.BlobStorage.DbStore.Internal;
+namespace Granit.BlobStorage.Database.Internal;
 
 /// <summary>
 /// Builds tenant-prefixed object keys for database blob storage.

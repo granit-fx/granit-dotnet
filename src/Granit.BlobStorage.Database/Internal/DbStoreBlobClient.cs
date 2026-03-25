@@ -1,16 +1,16 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Granit.BlobStorage.DbStore.Diagnostics;
-using Granit.BlobStorage.DbStore.Entities;
-using Granit.BlobStorage.DbStore.Internal;
-using Granit.BlobStorage.DbStore.Options;
+using Granit.BlobStorage.Database.Diagnostics;
+using Granit.BlobStorage.Database.Entities;
+using Granit.BlobStorage.Database.Internal;
+using Granit.BlobStorage.Database.Options;
 using Granit.BlobStorage.Internal;
 using Granit.Guids;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace Granit.BlobStorage.DbStore.Internal;
+namespace Granit.BlobStorage.Database.Internal;
 
 /// <summary>
 /// Database implementation of <see cref="IBlobStoreProvider"/>.

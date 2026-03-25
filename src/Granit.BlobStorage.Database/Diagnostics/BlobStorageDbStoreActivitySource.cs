@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Granit.BlobStorage.DbStore.Diagnostics;
+namespace Granit.BlobStorage.Database.Diagnostics;
 
 /// <summary>
 /// Central <see cref="ActivitySource"/> for Granit.BlobStorage.DbStore distributed tracing.

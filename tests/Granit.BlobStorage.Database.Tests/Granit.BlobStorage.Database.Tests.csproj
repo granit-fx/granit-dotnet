@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.BlobStorage.DbStore\Granit.BlobStorage.DbStore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.BlobStorage.Database\Granit.BlobStorage.Database.csproj" />
   </ItemGroup>
 
 </Project>

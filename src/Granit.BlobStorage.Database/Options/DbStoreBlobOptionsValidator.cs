@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 
-namespace Granit.BlobStorage.DbStore.Options;
+namespace Granit.BlobStorage.Database.Options;
 
 /// <summary>
 /// Validates <see cref="DbStoreBlobOptions"/> at startup.

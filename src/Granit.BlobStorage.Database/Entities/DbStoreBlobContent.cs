@@ -1,6 +1,6 @@
 using Granit.Domain;
 
-namespace Granit.BlobStorage.DbStore.Entities;
+namespace Granit.BlobStorage.Database.Entities;
 
 /// <summary>
 /// Stores the raw binary content of a blob in a relational database row.

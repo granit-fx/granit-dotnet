@@ -1,11 +1,11 @@
-using Granit.BlobStorage.DbStore.Configurations;
-using Granit.BlobStorage.DbStore.Entities;
+using Granit.BlobStorage.Database.Configurations;
+using Granit.BlobStorage.Database.Entities;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
 using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 
-namespace Granit.BlobStorage.DbStore.Internal;
+namespace Granit.BlobStorage.Database.Internal;
 
 /// <summary>
 /// Isolated <see cref="DbContext"/> for blob content storage.

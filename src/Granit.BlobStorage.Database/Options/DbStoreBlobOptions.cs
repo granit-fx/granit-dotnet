@@ -1,6 +1,6 @@
 using Granit.BlobStorage.Options;
 
-namespace Granit.BlobStorage.DbStore.Options;
+namespace Granit.BlobStorage.Database.Options;
 
 /// <summary>
 /// Configuration options for the database blob storage provider.

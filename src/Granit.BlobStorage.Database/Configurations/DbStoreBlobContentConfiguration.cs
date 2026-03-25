@@ -1,8 +1,8 @@
-using Granit.BlobStorage.DbStore.Entities;
+using Granit.BlobStorage.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Granit.BlobStorage.DbStore.Configurations;
+namespace Granit.BlobStorage.Database.Configurations;
 
 /// <summary>
 /// EF Core configuration for <see cref="DbStoreBlobContent"/>.
