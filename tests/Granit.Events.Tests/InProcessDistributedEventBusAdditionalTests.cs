@@ -80,7 +80,7 @@ public sealed class InProcessDistributedEventBusAdditionalTests : IDisposable
     public async Task PublishAsync_RecordsMetrics_ForEachPublish()
     {
         using MetricCollector<long> collector = new(
-            _meterFactory, EventsMetrics.MeterName, "granit.events.events.published");
+            _meterFactory, EventsMetrics.MeterName, "granit.events.event.published");
 
         TrackingHandler handler = new();
         ServiceCollection services = new();
@@ -102,7 +102,7 @@ public sealed class InProcessDistributedEventBusAdditionalTests : IDisposable
     public async Task PublishAsync_HandlerThrows_RecordsErrorMetric()
     {
         using MetricCollector<long> collector = new(
-            _meterFactory, EventsMetrics.MeterName, "granit.events.handlers.executed");
+            _meterFactory, EventsMetrics.MeterName, "granit.events.handler.executed");
 
         ServiceCollection services = new();
         services.AddSingleton<IDistributedEventHandler<TestIntegrationEvent>>(

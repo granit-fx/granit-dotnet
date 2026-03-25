@@ -54,7 +54,7 @@ public sealed class RateLimitingMetricsTests : IDisposable
 
         listener.InstrumentPublished = (instrument, meterListener) =>
         {
-            if (instrument.Name == "granit.ratelimiting.requests.allowed")
+            if (instrument.Name == "granit.rate_limiting.requests.allowed")
             {
                 meterListener.EnableMeasurementEvents(instrument);
             }
@@ -90,7 +90,7 @@ public sealed class RateLimitingMetricsTests : IDisposable
 
         listener.InstrumentPublished = (instrument, meterListener) =>
         {
-            if (instrument.Name == "granit.ratelimiting.requests.rejected")
+            if (instrument.Name == "granit.rate_limiting.requests.rejected")
             {
                 meterListener.EnableMeasurementEvents(instrument);
             }

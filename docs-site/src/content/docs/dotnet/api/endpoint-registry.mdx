@@ -706,9 +706,9 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/` | GetAuditLogEntries | `AuditLog.Entries.Read` |
-| <Badge text="GET" variant="note" /> | `/{id:guid}` | GetAuditLogEntry | `AuditLog.Entries.Read` |
-| <Badge text="GET" variant="note" /> | `/entity/{entityType}/{entityId}` | GetAuditLogByEntity | `AuditLog.Entries.Read` |
+| <Badge text="GET" variant="note" /> | `/` | GetAuditEntries | `Auditing.AuditEntries.Read` |
+| <Badge text="GET" variant="note" /> | `/{id:guid}` | GetAuditEntryById | `Auditing.AuditEntries.Read` |
+| <Badge text="GET" variant="note" /> | `/entity/{entityType}/{entityId}` | GetAuditEntriesByEntity | `Auditing.AuditEntries.Read` |
 
 ---
 

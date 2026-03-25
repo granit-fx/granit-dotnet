@@ -132,15 +132,15 @@ Meter: `Granit.AI`
 | `granit.ai.tokens.output` | Counter | `tenant_id`, `model`, `provider` | Output tokens generated |
 | `granit.ai.request.duration` | Histogram (s) | `tenant_id`, `model`, `provider` | LLM request duration |
 
-### AuditLog
+### Auditing
 
 Meter: `Granit.Auditing`
 
 | Metric | Type | Tags | Description |
 | ------ | ---- | ---- | ----------- |
-| `granit.auditlog.entries.persisted` | Counter | `tenant_id`, `entity_type` | Audit entries written |
-| `granit.auditlog.entries.purged` | Counter | `tenant_id` | Audit entries purged (retention) |
-| `granit.auditlog.capture.errors` | Counter | `tenant_id`, `entity_type` | Capture failures |
+| `granit.auditing.entries.persisted` | Counter | `tenant_id`, `entity_type` | Audit entries written |
+| `granit.auditing.entries.purged` | Counter | `tenant_id` | Audit entries purged (retention) |
+| `granit.auditing.capture.errors` | Counter | `tenant_id`, `entity_type` | Capture failures |
 
 ### BackgroundJobs
 
@@ -148,8 +148,8 @@ Meter: `Granit.BackgroundJobs`
 
 | Metric | Type | Tags | Description |
 | ------ | ---- | ---- | ----------- |
-| `granit.backgroundjobs.executions.completed` | Counter | `tenant_id`, `job_name`, `status` | Job executions completed |
-| `granit.backgroundjobs.execution.duration` | Histogram (s) | `tenant_id`, `job_name`, `status` | Job execution duration |
+| `granit.background_jobs.execution.completed` | Counter | `tenant_id`, `job_name`, `status` | Job executions completed |
+| `granit.background_jobs.execution.duration` | Histogram (s) | `tenant_id`, `job_name`, `status` | Job execution duration |
 
 ### BlobStorage
 
@@ -157,12 +157,12 @@ Meter: `Granit.BlobStorage`
 
 | Metric | Type | Tags | Description |
 | ------ | ---- | ---- | ----------- |
-| `granit.blobstorage.uploads.initiated` | Counter | `tenant_id`, `provider` | Upload operations started |
-| `granit.blobstorage.validations.completed` | Counter | `tenant_id`, `status` | Blob validations completed |
-| `granit.blobstorage.validations.failed` | Counter | `tenant_id`, `reason` | Blob validations failed |
-| `granit.blobstorage.blobs.deleted` | Counter | `tenant_id` | Blobs deleted |
-| `granit.blobstorage.orphans.cleaned` | Counter | `tenant_id` | Orphan blobs cleaned up |
-| `granit.blobstorage.confirm.duration` | Histogram (s) | `tenant_id`, `provider` | Blob confirmation duration |
+| `granit.blob_storage.uploads.initiated` | Counter | `tenant_id`, `provider` | Upload operations started |
+| `granit.blob_storage.validations.completed` | Counter | `tenant_id`, `status` | Blob validations completed |
+| `granit.blob_storage.validations.failed` | Counter | `tenant_id`, `reason` | Blob validations failed |
+| `granit.blob_storage.blobs.deleted` | Counter | `tenant_id` | Blobs deleted |
+| `granit.blob_storage.orphans.cleaned` | Counter | `tenant_id` | Orphan blobs cleaned up |
+| `granit.blob_storage.confirm.duration` | Histogram (s) | `tenant_id`, `provider` | Blob confirmation duration |
 
 ### DataExchange
 
@@ -170,22 +170,22 @@ Meter: `Granit.DataExchange`
 
 | Metric | Type | Tags | Description |
 | ------ | ---- | ---- | ----------- |
-| `granit.dataexchange.import.jobs.completed` | Counter | `tenant_id`, `status` | Import jobs completed |
-| `granit.dataexchange.import.rows.processed` | Counter | `tenant_id` | Rows processed during import |
-| `granit.dataexchange.import.rows.errors` | Counter | `tenant_id` | Rows that failed during import |
-| `granit.dataexchange.import.duration` | Histogram (s) | `tenant_id` | Import job duration |
-| `granit.dataexchange.export.jobs.completed` | Counter | `tenant_id`, `status` | Export jobs completed |
-| `granit.dataexchange.export.rows.exported` | Counter | `tenant_id` | Rows exported |
-| `granit.dataexchange.export.duration` | Histogram (s) | `tenant_id` | Export job duration |
+| `granit.data_exchange.import.jobs.completed` | Counter | `tenant_id`, `status` | Import jobs completed |
+| `granit.data_exchange.import.rows.processed` | Counter | `tenant_id` | Rows processed during import |
+| `granit.data_exchange.import.rows.errors` | Counter | `tenant_id` | Rows that failed during import |
+| `granit.data_exchange.import.duration` | Histogram (s) | `tenant_id` | Import job duration |
+| `granit.data_exchange.export.jobs.completed` | Counter | `tenant_id`, `status` | Export jobs completed |
+| `granit.data_exchange.export.rows.exported` | Counter | `tenant_id` | Rows exported |
+| `granit.data_exchange.export.duration` | Histogram (s) | `tenant_id` | Export job duration |
 
-### EventBus
+### Events
 
-Meter: `Granit.EventBus`
+Meter: `Granit.Events`
 
 | Metric | Type | Tags | Description |
 | ------ | ---- | ---- | ----------- |
-| `granit.eventbus.events.published` | Counter | `tenant_id`, `bus_type`, `event_type` | Events published (local or distributed) |
-| `granit.eventbus.handlers.executed` | Counter | `tenant_id`, `event_type`, `status` | Event handler executions |
+| `granit.events.event.published` | Counter | `tenant_id`, `bus_type`, `event_type` | Events published (local or distributed) |
+| `granit.events.handler.executed` | Counter | `tenant_id`, `event_type`, `status` | Event handler executions |
 
 ### Identity
 
@@ -225,15 +225,15 @@ Meter: `Granit.RateLimiting`
 
 | Metric | Type | Tags | Description |
 | ------ | ---- | ---- | ----------- |
-| `granit.ratelimiting.requests.allowed` | Counter | `tenant_id`, `policy` | Requests allowed through rate limiter |
-| `granit.ratelimiting.requests.rejected` | Counter | `tenant_id`, `policy` | Requests rejected by rate limiter |
+| `granit.rate_limiting.requests.allowed` | Counter | `tenant_id`, `policy` | Requests allowed through rate limiter |
+| `granit.rate_limiting.requests.rejected` | Counter | `tenant_id`, `policy` | Requests rejected by rate limiter |
 
 Meter: `Granit.Http.Bulkhead`
 
 | Metric | Type | Tags | Description |
 | ------ | ---- | ---- | ----------- |
-| `granit.bulkhead.leases.active` | UpDownCounter | `tenant_id` | Currently active bulkhead leases |
-| `granit.bulkhead.requests.rejected` | Counter | `tenant_id` | Requests rejected by bulkhead |
+| `granit.http.bulkhead.leases.active` | UpDownCounter | `tenant_id` | Currently active bulkhead leases |
+| `granit.http.bulkhead.requests.rejected` | Counter | `tenant_id` | Requests rejected by bulkhead |
 
 ### Vault
 

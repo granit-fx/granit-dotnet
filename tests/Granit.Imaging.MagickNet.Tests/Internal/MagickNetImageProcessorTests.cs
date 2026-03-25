@@ -1,5 +1,5 @@
 using System.Diagnostics.Metrics;
-using Granit.Imaging.MagickNet.Diagnostics;
+using Granit.Imaging.Diagnostics;
 using Granit.Imaging.MagickNet.Internal;
 using NSubstitute;
 using Shouldly;
@@ -11,11 +11,11 @@ public sealed class MagickNetImageProcessorTests
 {
     private readonly MagickNetImageProcessor _processor = new(CreateTestMetrics());
 
-    private static ImagingMagickNetMetrics CreateTestMetrics()
+    private static ImagingMetrics CreateTestMetrics()
     {
         IMeterFactory factory = Substitute.For<IMeterFactory>();
         factory.Create(Arg.Any<MeterOptions>()).Returns(new Meter("test"));
-        return new ImagingMagickNetMetrics(factory);
+        return new ImagingMetrics(factory);
     }
 
     private static Stream GetTestImageStream() =>

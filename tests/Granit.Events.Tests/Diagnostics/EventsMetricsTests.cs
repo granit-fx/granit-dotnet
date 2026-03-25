@@ -28,7 +28,7 @@ public sealed class EventsMetricsTests : IDisposable
     public void RecordEventPublished_IncrementsWithCorrectTags()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, EventsMetrics.MeterName, "granit.events.events.published");
+            _meterFactory, EventsMetrics.MeterName, "granit.events.event.published");
 
         _metrics.RecordEventPublished("tenant-123", "local", "OrderCreatedEvent");
 
@@ -44,7 +44,7 @@ public sealed class EventsMetricsTests : IDisposable
     public void RecordEventPublished_NullTenant_UsesGlobal()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, EventsMetrics.MeterName, "granit.events.events.published");
+            _meterFactory, EventsMetrics.MeterName, "granit.events.event.published");
 
         _metrics.RecordEventPublished(null, "distributed", "TestEto");
 
@@ -57,7 +57,7 @@ public sealed class EventsMetricsTests : IDisposable
     public void RecordHandlerExecuted_Success_IncrementsWithCorrectTags()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, EventsMetrics.MeterName, "granit.events.handlers.executed");
+            _meterFactory, EventsMetrics.MeterName, "granit.events.handler.executed");
 
         _metrics.RecordHandlerExecuted("tenant-1", "OrderCreatedEvent", "success");
 
@@ -73,7 +73,7 @@ public sealed class EventsMetricsTests : IDisposable
     public void RecordHandlerExecuted_Error_IncrementsWithCorrectTags()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, EventsMetrics.MeterName, "granit.events.handlers.executed");
+            _meterFactory, EventsMetrics.MeterName, "granit.events.handler.executed");
 
         _metrics.RecordHandlerExecuted("tenant-1", "OrderCreatedEvent", "error");
 
@@ -87,7 +87,7 @@ public sealed class EventsMetricsTests : IDisposable
     public void RecordHandlerExecuted_NullTenant_UsesGlobal()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, EventsMetrics.MeterName, "granit.events.handlers.executed");
+            _meterFactory, EventsMetrics.MeterName, "granit.events.handler.executed");
 
         _metrics.RecordHandlerExecuted(null, "TestEvent", "success");
 

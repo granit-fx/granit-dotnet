@@ -1,13 +1,13 @@
 namespace Granit.Auditing.EntityFrameworkCore;
 
 /// <summary>
-/// Provides configurable table-naming properties for the AuditLog EF Core module.
+/// Provides configurable table-naming properties for the Auditing EF Core module.
 /// </summary>
 /// <remarks>
 /// <para>
 /// These properties control the table prefix and schema used by all entity configurations
 /// in <c>Granit.Auditing.EntityFrameworkCore</c>. Both the internal
-/// <c>AuditLogDbContext</c> and the host's <c>Configure*Module()</c> call read
+/// <c>AuditingDbContext</c> and the host's <c>Configure*Module()</c> call read
 /// the same static values, ensuring migration-time and runtime SQL stay in sync.
 /// </para>
 /// <para>

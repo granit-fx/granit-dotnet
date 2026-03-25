@@ -13,7 +13,7 @@ namespace Granit.Auditing.ConfigurationChanges.Tests.Handlers;
 
 public sealed class SettingChangedAuditHandlerAdditionalTests
 {
-    private readonly IAuditLogWriter _writer = Substitute.For<IAuditLogWriter>();
+    private readonly IAuditingWriter _writer = Substitute.For<IAuditingWriter>();
     private readonly ICurrentUserService _currentUser = Substitute.For<ICurrentUserService>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
@@ -35,7 +35,7 @@ public sealed class SettingChangedAuditHandlerAdditionalTests
         await handler.HandleAsync(evt, TestContext.Current.CancellationToken);
 
         await _writer.Received(1).WriteAsync(
-            Arg.Is<AuditLogEntry>(e =>
+            Arg.Is<AuditEntry>(e =>
                 e.EntityChanges.First().ChangeType == AuditChangeType.Created),
             Arg.Any<CancellationToken>());
     }
@@ -49,7 +49,7 @@ public sealed class SettingChangedAuditHandlerAdditionalTests
         await handler.HandleAsync(evt, TestContext.Current.CancellationToken);
 
         await _writer.Received(1).WriteAsync(
-            Arg.Is<AuditLogEntry>(e =>
+            Arg.Is<AuditEntry>(e =>
                 e.EntityChanges.First().ChangeType == AuditChangeType.Deleted),
             Arg.Any<CancellationToken>());
     }
@@ -63,7 +63,7 @@ public sealed class SettingChangedAuditHandlerAdditionalTests
         await handler.HandleAsync(evt, TestContext.Current.CancellationToken);
 
         await _writer.Received(1).WriteAsync(
-            Arg.Is<AuditLogEntry>(e =>
+            Arg.Is<AuditEntry>(e =>
                 e.EntityChanges.First().ChangeType == AuditChangeType.Modified),
             Arg.Any<CancellationToken>());
     }
@@ -77,7 +77,7 @@ public sealed class SettingChangedAuditHandlerAdditionalTests
         await handler.HandleAsync(evt, TestContext.Current.CancellationToken);
 
         await _writer.Received(1).WriteAsync(
-            Arg.Is<AuditLogEntry>(e =>
+            Arg.Is<AuditEntry>(e =>
                 e.EntityChanges.First().EntityId == "App.Theme:G:user-42"),
             Arg.Any<CancellationToken>());
     }
@@ -91,7 +91,7 @@ public sealed class SettingChangedAuditHandlerAdditionalTests
         await handler.HandleAsync(evt, TestContext.Current.CancellationToken);
 
         await _writer.Received(1).WriteAsync(
-            Arg.Is<AuditLogEntry>(e =>
+            Arg.Is<AuditEntry>(e =>
                 e.EntityChanges.First().EntityId == "App.Theme:G:global"),
             Arg.Any<CancellationToken>());
     }
@@ -109,7 +109,7 @@ public sealed class SettingChangedAuditHandlerAdditionalTests
         await handler.HandleAsync(evt, TestContext.Current.CancellationToken);
 
         await _writer.Received(1).WriteAsync(
-            Arg.Is<AuditLogEntry>(e => e.TenantId == tenantId),
+            Arg.Is<AuditEntry>(e => e.TenantId == tenantId),
             Arg.Any<CancellationToken>());
     }
 
@@ -124,7 +124,7 @@ public sealed class SettingChangedAuditHandlerAdditionalTests
         await handler.HandleAsync(evt, TestContext.Current.CancellationToken);
 
         await _writer.Received(1).WriteAsync(
-            Arg.Is<AuditLogEntry>(e => e.UserId == "system"),
+            Arg.Is<AuditEntry>(e => e.UserId == "system"),
             Arg.Any<CancellationToken>());
     }
 
@@ -139,7 +139,7 @@ public sealed class SettingChangedAuditHandlerAdditionalTests
         await handler.HandleAsync(evt, TestContext.Current.CancellationToken);
 
         await _writer.Received(1).WriteAsync(
-            Arg.Is<AuditLogEntry>(e => e.Timestamp == timestamp),
+            Arg.Is<AuditEntry>(e => e.Timestamp == timestamp),
             Arg.Any<CancellationToken>());
     }
 
@@ -152,7 +152,7 @@ public sealed class SettingChangedAuditHandlerAdditionalTests
         await handler.HandleAsync(evt, TestContext.Current.CancellationToken);
 
         await _writer.Received(1).WriteAsync(
-            Arg.Is<AuditLogEntry>(e =>
+            Arg.Is<AuditEntry>(e =>
                 e.EntityChanges.First().PropertyChanges.First().PropertyName == "Value" &&
                 e.EntityChanges.First().PropertyChanges.First().OriginalValue == "light" &&
                 e.EntityChanges.First().PropertyChanges.First().NewValue == "dark"),
@@ -168,8 +168,8 @@ public sealed class SettingChangedAuditHandlerAdditionalTests
         await handler.HandleAsync(evt, TestContext.Current.CancellationToken);
 
         await _writer.Received(1).WriteAsync(
-            Arg.Is<AuditLogEntry>(e =>
-                e.EntityChanges.First().AuditLogEntryId == e.Id &&
+            Arg.Is<AuditEntry>(e =>
+                e.EntityChanges.First().AuditEntryId == e.Id &&
                 e.EntityChanges.First().PropertyChanges.First().AuditEntityChangeId == e.EntityChanges.First().Id),
             Arg.Any<CancellationToken>());
     }

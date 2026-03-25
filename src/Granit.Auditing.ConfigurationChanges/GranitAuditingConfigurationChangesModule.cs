@@ -16,8 +16,8 @@ namespace Granit.Auditing.ConfigurationChanges;
 /// <para>
 /// When loaded, every <see cref="SettingChangedEvent"/> and
 /// <see cref="FeatureOverrideChangedEvent"/> published via <see cref="ILocalEventBus"/>
-/// is handled and persisted as an <see cref="Domain.AuditLogEntry"/> with
-/// category <see cref="Domain.AuditLogCategory.ConfigurationChange"/>.
+/// is handled and persisted as an <see cref="Domain.AuditEntry"/> with
+/// category <see cref="Domain.AuditCategory.ConfigurationChange"/>.
 /// </para>
 /// <para>
 /// Works with any event bus provider — in-process or Wolverine-backed.

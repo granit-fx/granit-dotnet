@@ -17,7 +17,7 @@ public sealed class AuditEntityChangeTests
         AuditEntityChange change = new()
         {
             Id = id,
-            AuditLogEntryId = entryId,
+            AuditEntryId = entryId,
             EntityType = "Patient",
             EntityId = "12345",
             ChangeType = AuditChangeType.Modified,
@@ -25,7 +25,7 @@ public sealed class AuditEntityChangeTests
 
         // Assert
         change.Id.ShouldBe(id);
-        change.AuditLogEntryId.ShouldBe(entryId);
+        change.AuditEntryId.ShouldBe(entryId);
         change.EntityType.ShouldBe("Patient");
         change.EntityId.ShouldBe("12345");
         change.ChangeType.ShouldBe(AuditChangeType.Modified);

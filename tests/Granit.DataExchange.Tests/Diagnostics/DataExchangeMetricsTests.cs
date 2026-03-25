@@ -31,11 +31,11 @@ public sealed class DataExchangeMetricsTests : IDisposable
     {
         // Arrange
         using var jobCollector = new MetricCollector<long>(
-            _meterFactory, DataExchangeMetrics.MeterName, "granit.dataexchange.import.jobs.completed");
+            _meterFactory, DataExchangeMetrics.MeterName, "granit.data_exchange.import.jobs.completed");
         using var rowCollector = new MetricCollector<long>(
-            _meterFactory, DataExchangeMetrics.MeterName, "granit.dataexchange.import.rows.processed");
+            _meterFactory, DataExchangeMetrics.MeterName, "granit.data_exchange.import.rows.processed");
         using var durationCollector = new MetricCollector<double>(
-            _meterFactory, DataExchangeMetrics.MeterName, "granit.dataexchange.import.duration");
+            _meterFactory, DataExchangeMetrics.MeterName, "granit.data_exchange.import.duration");
 
         var job = ImportJob.Create(
             Guid.NewGuid(), "Acme.PatientImport", "Patient",
@@ -77,7 +77,7 @@ public sealed class DataExchangeMetricsTests : IDisposable
     {
         // Arrange
         using var jobCollector = new MetricCollector<long>(
-            _meterFactory, DataExchangeMetrics.MeterName, "granit.dataexchange.import.jobs.completed");
+            _meterFactory, DataExchangeMetrics.MeterName, "granit.data_exchange.import.jobs.completed");
 
         var job = ImportJob.Create(
             Guid.NewGuid(), "Acme.Import", "Entity",
@@ -115,7 +115,7 @@ public sealed class DataExchangeMetricsTests : IDisposable
     {
         // Arrange
         using var errorCollector = new MetricCollector<long>(
-            _meterFactory, DataExchangeMetrics.MeterName, "granit.dataexchange.import.rows.errors");
+            _meterFactory, DataExchangeMetrics.MeterName, "granit.data_exchange.import.rows.errors");
 
         var job = ImportJob.Create(
             Guid.NewGuid(), "Acme.Import", "Entity",
@@ -157,11 +157,11 @@ public sealed class DataExchangeMetricsTests : IDisposable
     {
         // Arrange
         using var jobCollector = new MetricCollector<long>(
-            _meterFactory, DataExchangeMetrics.MeterName, "granit.dataexchange.export.jobs.completed");
+            _meterFactory, DataExchangeMetrics.MeterName, "granit.data_exchange.export.jobs.completed");
         using var rowCollector = new MetricCollector<long>(
-            _meterFactory, DataExchangeMetrics.MeterName, "granit.dataexchange.export.rows.exported");
+            _meterFactory, DataExchangeMetrics.MeterName, "granit.data_exchange.export.rows.exported");
         using var durationCollector = new MetricCollector<double>(
-            _meterFactory, DataExchangeMetrics.MeterName, "granit.dataexchange.export.duration");
+            _meterFactory, DataExchangeMetrics.MeterName, "granit.data_exchange.export.duration");
 
         // Act
         _metrics.RecordExportCompleted("Acme.PatientExport", "xlsx", 250, "tenant-abc", TimeSpan.FromSeconds(3.7));
@@ -188,9 +188,9 @@ public sealed class DataExchangeMetricsTests : IDisposable
     {
         // Arrange
         using var jobCollector = new MetricCollector<long>(
-            _meterFactory, DataExchangeMetrics.MeterName, "granit.dataexchange.export.jobs.completed");
+            _meterFactory, DataExchangeMetrics.MeterName, "granit.data_exchange.export.jobs.completed");
         using var durationCollector = new MetricCollector<double>(
-            _meterFactory, DataExchangeMetrics.MeterName, "granit.dataexchange.export.duration");
+            _meterFactory, DataExchangeMetrics.MeterName, "granit.data_exchange.export.duration");
 
         // Act
         _metrics.RecordExportFailed("Acme.Export", "csv", null, TimeSpan.FromSeconds(0.5));

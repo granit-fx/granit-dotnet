@@ -26,27 +26,27 @@ public sealed class BlobStorageMetrics
         Meter meter = meterFactory.Create(MeterName);
 
         _uploadsInitiated = meter.CreateCounter<long>(
-            "granit.blobstorage.uploads.initiated",
+            "granit.blob_storage.uploads.initiated",
             description: "Number of upload tickets generated.");
 
         _validationsCompleted = meter.CreateCounter<long>(
-            "granit.blobstorage.validations.completed",
+            "granit.blob_storage.validations.completed",
             description: "Number of blob validations completed (valid or rejected).");
 
         _validationsFailed = meter.CreateCounter<long>(
-            "granit.blobstorage.validations.failed",
+            "granit.blob_storage.validations.failed",
             description: "Number of blob validations that resulted in rejection.");
 
         _blobsDeleted = meter.CreateCounter<long>(
-            "granit.blobstorage.blobs.deleted",
+            "granit.blob_storage.blobs.deleted",
             description: "Number of blobs deleted.");
 
         _orphansCleaned = meter.CreateCounter<long>(
-            "granit.blobstorage.orphans.cleaned",
+            "granit.blob_storage.orphans.cleaned",
             description: "Number of orphaned blobs cleaned up.");
 
         _confirmDuration = meter.CreateHistogram<double>(
-            "granit.blobstorage.confirm.duration",
+            "granit.blob_storage.confirm.duration",
             unit: "s",
             description: "Duration of blob confirmation pipeline in seconds.");
     }

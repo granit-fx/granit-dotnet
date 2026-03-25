@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Auditing.EntityFrameworkCore</PackageId>
-    <Description>EF Core persistence for Granit.Auditing. Provides an isolated AuditLogDbContext with hierarchical entity model, change tracking interceptor, async/strict persistence modes, IAuditLogReader implementation, and category-based retention cleanup.</Description>
+    <Description>EF Core persistence for Granit.Auditing. Provides an isolated AuditingDbContext with hierarchical entity model, change tracking interceptor, async/strict persistence modes, IAuditingReader implementation, and category-based retention cleanup.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

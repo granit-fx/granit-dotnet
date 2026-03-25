@@ -9,11 +9,11 @@ using Granit.Users;
 namespace Granit.Auditing.ConfigurationChanges.Handlers;
 
 /// <summary>
-/// Persists <see cref="FeatureOverrideChangedEvent"/> as an <see cref="AuditLogEntry"/>
-/// with category <see cref="AuditLogCategory.ConfigurationChange"/>.
+/// Persists <see cref="FeatureOverrideChangedEvent"/> as an <see cref="AuditEntry"/>
+/// with category <see cref="AuditCategory.ConfigurationChange"/>.
 /// </summary>
 public sealed class FeatureOverrideChangedAuditHandler(
-    IAuditLogWriter writer,
+    IAuditingWriter writer,
     ICurrentUserService currentUser,
     ICurrentTenant currentTenant,
     IGuidGenerator guidGenerator) : ILocalEventHandler<FeatureOverrideChangedEvent>
@@ -38,13 +38,13 @@ public sealed class FeatureOverrideChangedAuditHandler(
             PropertyChanges = [valueChange],
         };
 
-        AuditLogEntry entry = new()
+        AuditEntry entry = new()
         {
             Id = guidGenerator.Create(),
             Timestamp = localEvent.Timestamp,
             UserId = currentUser.UserId ?? "system",
             UserName = currentUser.UserName,
-            Category = AuditLogCategory.ConfigurationChange,
+            Category = AuditCategory.ConfigurationChange,
             TenantId = localEvent.TenantId
                        ?? (currentTenant.IsAvailable ? currentTenant.Id : null),
             CorrelationId = System.Diagnostics.Activity.Current?.Id,
@@ -52,7 +52,7 @@ public sealed class FeatureOverrideChangedAuditHandler(
         };
 
         valueChange.AuditEntityChangeId = entityChange.Id;
-        entityChange.AuditLogEntryId = entry.Id;
+        entityChange.AuditEntryId = entry.Id;
 
         await writer.WriteAsync(entry, cancellationToken).ConfigureAwait(false);
     }

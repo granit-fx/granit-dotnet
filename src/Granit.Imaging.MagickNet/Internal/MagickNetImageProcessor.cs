@@ -1,4 +1,4 @@
-using Granit.Imaging.MagickNet.Diagnostics;
+using Granit.Imaging.Diagnostics;
 using ImageMagick;
 
 namespace Granit.Imaging.MagickNet.Internal;
@@ -7,7 +7,7 @@ namespace Granit.Imaging.MagickNet.Internal;
 /// Magick.NET implementation of <see cref="IImageProcessor"/>.
 /// Stateless singleton that creates <see cref="MagickNetImagePipeline"/> instances.
 /// </summary>
-internal sealed class MagickNetImageProcessor(ImagingMagickNetMetrics metrics) : IImageProcessor
+internal sealed class MagickNetImageProcessor(ImagingMetrics metrics) : IImageProcessor
 {
     /// <inheritdoc/>
     public IImagePipeline Load(Stream source)

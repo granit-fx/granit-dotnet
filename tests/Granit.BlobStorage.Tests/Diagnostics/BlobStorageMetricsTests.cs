@@ -28,7 +28,7 @@ public sealed class BlobStorageMetricsTests : IDisposable
     public void RecordUploadInitiated_IncrementsWithCorrectTags()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, BlobStorageMetrics.MeterName, "granit.blobstorage.uploads.initiated");
+            _meterFactory, BlobStorageMetrics.MeterName, "granit.blob_storage.uploads.initiated");
 
         _metrics.RecordUploadInitiated("tenant-123", "images");
 
@@ -43,7 +43,7 @@ public sealed class BlobStorageMetricsTests : IDisposable
     public void RecordUploadInitiated_NullTenant_UsesGlobal()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, BlobStorageMetrics.MeterName, "granit.blobstorage.uploads.initiated");
+            _meterFactory, BlobStorageMetrics.MeterName, "granit.blob_storage.uploads.initiated");
 
         _metrics.RecordUploadInitiated(null, "docs");
 
@@ -56,7 +56,7 @@ public sealed class BlobStorageMetricsTests : IDisposable
     public void RecordValidationCompleted_RecordsStatus()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, BlobStorageMetrics.MeterName, "granit.blobstorage.validations.completed");
+            _meterFactory, BlobStorageMetrics.MeterName, "granit.blob_storage.validations.completed");
 
         _metrics.RecordValidationCompleted("t1", "valid", "images");
 
@@ -70,7 +70,7 @@ public sealed class BlobStorageMetricsTests : IDisposable
     public void RecordValidationFailed_RecordsReason()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, BlobStorageMetrics.MeterName, "granit.blobstorage.validations.failed");
+            _meterFactory, BlobStorageMetrics.MeterName, "granit.blob_storage.validations.failed");
 
         _metrics.RecordValidationFailed("t1", "magic_bytes_mismatch", "uploads");
 
@@ -83,7 +83,7 @@ public sealed class BlobStorageMetricsTests : IDisposable
     public void RecordDeleted_IncrementsCounter()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, BlobStorageMetrics.MeterName, "granit.blobstorage.blobs.deleted");
+            _meterFactory, BlobStorageMetrics.MeterName, "granit.blob_storage.blobs.deleted");
 
         _metrics.RecordDeleted("t1", "images");
 
@@ -96,7 +96,7 @@ public sealed class BlobStorageMetricsTests : IDisposable
     public void RecordOrphanCleaned_IncrementsCounter()
     {
         using var collector = new MetricCollector<long>(
-            _meterFactory, BlobStorageMetrics.MeterName, "granit.blobstorage.orphans.cleaned");
+            _meterFactory, BlobStorageMetrics.MeterName, "granit.blob_storage.orphans.cleaned");
 
         _metrics.RecordOrphanCleaned("t1");
 
@@ -108,7 +108,7 @@ public sealed class BlobStorageMetricsTests : IDisposable
     public void RecordConfirmDuration_RecordsHistogram()
     {
         using var collector = new MetricCollector<double>(
-            _meterFactory, BlobStorageMetrics.MeterName, "granit.blobstorage.confirm.duration");
+            _meterFactory, BlobStorageMetrics.MeterName, "granit.blob_storage.confirm.duration");
 
         _metrics.RecordConfirmDuration("t1", "valid", "images", TimeSpan.FromSeconds(2.5));
 

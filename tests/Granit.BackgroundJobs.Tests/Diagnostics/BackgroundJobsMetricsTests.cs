@@ -33,7 +33,7 @@ public sealed class BackgroundJobsMetricsTests : IDisposable
     {
         // Arrange
         using var collector = new MetricCollector<long>(
-            _meterFactory, BackgroundJobsMetrics.MeterName, "granit.backgroundjobs.executions.completed");
+            _meterFactory, BackgroundJobsMetrics.MeterName, "granit.background_jobs.execution.completed");
 
         // Act
         _sut.RecordExecutionCompleted("tenant-abc", "daily-report", "success");
@@ -52,7 +52,7 @@ public sealed class BackgroundJobsMetricsTests : IDisposable
     {
         // Arrange
         using var collector = new MetricCollector<long>(
-            _meterFactory, BackgroundJobsMetrics.MeterName, "granit.backgroundjobs.executions.completed");
+            _meterFactory, BackgroundJobsMetrics.MeterName, "granit.background_jobs.execution.completed");
 
         // Act
         _sut.RecordExecutionCompleted(null, "cleanup-job", "failure");
@@ -69,7 +69,7 @@ public sealed class BackgroundJobsMetricsTests : IDisposable
     {
         // Arrange
         using var collector = new MetricCollector<double>(
-            _meterFactory, BackgroundJobsMetrics.MeterName, "granit.backgroundjobs.execution.duration");
+            _meterFactory, BackgroundJobsMetrics.MeterName, "granit.background_jobs.execution.duration");
         var duration = TimeSpan.FromSeconds(2.5);
 
         // Act
@@ -89,7 +89,7 @@ public sealed class BackgroundJobsMetricsTests : IDisposable
     {
         // Arrange
         using var collector = new MetricCollector<double>(
-            _meterFactory, BackgroundJobsMetrics.MeterName, "granit.backgroundjobs.execution.duration");
+            _meterFactory, BackgroundJobsMetrics.MeterName, "granit.background_jobs.execution.duration");
         var duration = TimeSpan.FromMilliseconds(150);
 
         // Act

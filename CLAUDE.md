@@ -366,7 +366,7 @@ Shard mapping:
 | `business` | Business Features | Workflow, DataExchange, Templating, DocumentGeneration, Timeline, QueryEngine, ReferenceData |
 | `api-data` | API & Http + Data | Http.*, BlobStorage, Persistence, Caching, Imaging, RateLimiting, Webhooks |
 | `infrastructure` | Infrastructure | Notifications, BackgroundJobs, Wolverine, Localization, Settings, Features, MultiTenancy, EventBus |
-| `security` | Security & Compliance | AuditLog, Authentication, Authorization, Identity, Vault, Encryption, Privacy, Security |
+| `security` | Security & Compliance | Auditing, Authentication, Authorization, Identity, Vault, Encryption, Privacy, Security |
 | `architecture` | Architecture Tests | ArchitectureTests (references all src projects — isolated shard) |
 
 **NEVER** create a test project without adding it to a shard — the CI will silently skip it.

@@ -123,7 +123,7 @@ using Granit.Events;
 
 namespace MyApp.Handlers;
 
-public sealed class OrderPlacedAuditHandler(IAuditLogWriter writer) : ILocalEventHandler<OrderPlacedEvent>
+public sealed class OrderPlacedAuditHandler(IAuditingWriter writer) : ILocalEventHandler<OrderPlacedEvent>
 {
     public async Task HandleAsync(OrderPlacedEvent localEvent, CancellationToken ct = default)
     {
@@ -392,7 +392,7 @@ public async Task OrderPlacedAuditHandler_PersistsAuditEntry()
     ServiceCollection services = new();
     services.AddGranitEventBus();
     services.AddScoped<ILocalEventHandler<OrderPlacedEvent>, OrderPlacedAuditHandler>();
-    services.AddScoped<IAuditLogWriter, FakeAuditLogWriter>();
+    services.AddScoped<IAuditingWriter, FakeAuditingWriter>();
     ServiceProvider sp = services.BuildServiceProvider();
 
     ILocalEventBus bus = sp.GetRequiredService<ILocalEventBus>();
@@ -401,7 +401,7 @@ public async Task OrderPlacedAuditHandler_PersistsAuditEntry()
     await bus.PublishAsync(new OrderPlacedEvent(Guid.NewGuid(), "test@test.com", DateTimeOffset.UtcNow));
 
     // Assert
-    FakeAuditLogWriter writer = (FakeAuditLogWriter)sp.GetRequiredService<IAuditLogWriter>();
+    FakeAuditingWriter writer = (FakeAuditingWriter)sp.GetRequiredService<IAuditingWriter>();
     writer.Entries.ShouldHaveSingleItem();
 }
 ```

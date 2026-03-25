@@ -16,7 +16,7 @@ public sealed class SettingChangedAuditHandlerTests
     [Fact]
     public async Task HandleAsync_PersistsAuditEntry_WithConfigurationChangeCategory()
     {
-        IAuditLogWriter writer = Substitute.For<IAuditLogWriter>();
+        IAuditingWriter writer = Substitute.For<IAuditingWriter>();
         ICurrentUserService user = Substitute.For<ICurrentUserService>();
         user.UserId.Returns("test-user");
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
@@ -30,8 +30,8 @@ public sealed class SettingChangedAuditHandlerTests
         await handler.HandleAsync(evt, TestContext.Current.CancellationToken);
 
         await writer.Received(1).WriteAsync(
-            Arg.Is<AuditLogEntry>(e =>
-                e.Category == AuditLogCategory.ConfigurationChange &&
+            Arg.Is<AuditEntry>(e =>
+                e.Category == AuditCategory.ConfigurationChange &&
                 e.EntityChanges.First().EntityType == "Setting"),
             Arg.Any<CancellationToken>());
     }

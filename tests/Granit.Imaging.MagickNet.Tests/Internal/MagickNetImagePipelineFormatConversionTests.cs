@@ -1,5 +1,5 @@
 using System.Diagnostics.Metrics;
-using Granit.Imaging.MagickNet.Diagnostics;
+using Granit.Imaging.Diagnostics;
 using Granit.Imaging.MagickNet.Internal;
 using NSubstitute;
 using Shouldly;
@@ -9,11 +9,11 @@ namespace Granit.Imaging.MagickNet.Tests.Internal;
 
 public sealed class MagickNetImagePipelineFormatConversionTests
 {
-    private static ImagingMagickNetMetrics CreateTestMetrics()
+    private static ImagingMetrics CreateTestMetrics()
     {
         IMeterFactory factory = Substitute.For<IMeterFactory>();
         factory.Create(Arg.Any<MeterOptions>()).Returns(new Meter("test"));
-        return new ImagingMagickNetMetrics(factory);
+        return new ImagingMetrics(factory);
     }
 
     private static MagickNetImagePipeline CreatePipeline()

@@ -57,7 +57,7 @@ SRC_DOMAINS: dict[str, set[str]] = {
         "BackgroundJobs", "BlobStorage", "Caching", "Events",
         "Imaging", "Persistence", "Webhooks", "Wolverine",
     },
-    "Compliance": {"AuditLog", "Privacy"},
+    "Compliance": {"Auditing", "Privacy"},
     "Notifications": {"Notifications"},
     "AI": {"AI"},
     "Tooling": {"Analyzers", "Testing"},
@@ -84,7 +84,7 @@ DOMAIN_ORDER = [
 # Module roots for framework-only filter.
 # Authoritative source: FrameworkBoundaryRules.ModuleRootPrefixes (C#).
 MODULE_ROOTS: frozenset[str] = frozenset({
-    "AuditLog", "BackgroundJobs", "Bff", "BlobStorage",
+    "Auditing", "BackgroundJobs", "Bff", "BlobStorage",
     "DataExchange", "DocumentGeneration", "Http.Cookies",
     "Identity", "Imaging", "Notifications", "Oidc",
     "OpenIddict", "ReferenceData", "Templating",

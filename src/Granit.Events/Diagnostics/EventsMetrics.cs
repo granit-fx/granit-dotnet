@@ -19,11 +19,11 @@ public sealed class EventsMetrics
         Meter meter = meterFactory.Create(MeterName);
 
         _eventsPublished = meter.CreateCounter<long>(
-            "granit.events.events.published",
+            "granit.events.event.published",
             description: "Number of events published via the event bus.");
 
         _handlersExecuted = meter.CreateCounter<long>(
-            "granit.events.handlers.executed",
+            "granit.events.handler.executed",
             description: "Number of event handlers executed.");
     }
 

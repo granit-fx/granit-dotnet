@@ -37,32 +37,32 @@ public sealed class DataExchangeMetrics
         Meter meter = meterFactory.Create(MeterName);
 
         _importJobsCompleted = meter.CreateCounter<long>(
-            "granit.dataexchange.import.jobs.completed",
+            "granit.data_exchange.import.jobs.completed",
             description: "Number of import jobs reaching a terminal state.");
 
         _importRowsProcessed = meter.CreateCounter<long>(
-            "granit.dataexchange.import.rows.processed",
+            "granit.data_exchange.import.rows.processed",
             description: "Number of rows processed during import (by result).");
 
         _importRowErrors = meter.CreateCounter<long>(
-            "granit.dataexchange.import.rows.errors",
+            "granit.data_exchange.import.rows.errors",
             description: "Number of row-level errors during import (by kind).");
 
         _importDuration = meter.CreateHistogram<double>(
-            "granit.dataexchange.import.duration",
+            "granit.data_exchange.import.duration",
             unit: "s",
             description: "Duration of import pipeline execution in seconds.");
 
         _exportJobsCompleted = meter.CreateCounter<long>(
-            "granit.dataexchange.export.jobs.completed",
+            "granit.data_exchange.export.jobs.completed",
             description: "Number of export jobs reaching a terminal state.");
 
         _exportRowsExported = meter.CreateCounter<long>(
-            "granit.dataexchange.export.rows.exported",
+            "granit.data_exchange.export.rows.exported",
             description: "Number of rows written during export.");
 
         _exportDuration = meter.CreateHistogram<double>(
-            "granit.dataexchange.export.duration",
+            "granit.data_exchange.export.duration",
             unit: "s",
             description: "Duration of export pipeline execution in seconds.");
     }

@@ -25,8 +25,8 @@ internal sealed partial class ChangeTrackingCaptureService(
     IClock clock,
     ICurrentUserService currentUserService,
     ICurrentTenant currentTenant,
-    IAuditLogEntryPublisher publisher,
-    IOptions<AuditLogOptions> options,
+    IAuditEntryPublisher publisher,
+    IOptions<AuditingOptions> options,
     ILogger<ChangeTrackingCaptureService> logger)
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -37,10 +37,10 @@ internal sealed partial class ChangeTrackingCaptureService(
 
     private const string SensitiveMask = "***";
 
-    private AuditLogBatch? _capturedBatch;
+    private AuditingBatch? _capturedBatch;
 
     /// <summary>
-    /// Captures the current ChangeTracker state into an <see cref="AuditLogBatch"/>.
+    /// Captures the current ChangeTracker state into an <see cref="AuditingBatch"/>.
     /// Call from <c>SavingChangesAsync</c>.
     /// </summary>
     public void Capture(DbContext context)
@@ -83,11 +83,11 @@ internal sealed partial class ChangeTrackingCaptureService(
                 return;
             }
 
-            _capturedBatch = new AuditLogBatch(
+            _capturedBatch = new AuditingBatch(
                 Timestamp: clock.Now,
                 UserId: currentUserService.UserId ?? "system",
                 UserName: currentUserService.UserName,
-                Category: AuditLogCategory.DataMutation,
+                Category: AuditCategory.DataMutation,
                 IpAddress: null,
                 UserAgent: null,
                 TenantId: currentTenant.IsAvailable ? currentTenant.Id : null,
@@ -112,7 +112,7 @@ internal sealed partial class ChangeTrackingCaptureService(
             return;
         }
 
-        AuditLogBatch batch = _capturedBatch;
+        AuditingBatch batch = _capturedBatch;
         _capturedBatch = null;
 
         await publisher.PublishAsync(batch, cancellationToken).ConfigureAwait(false);

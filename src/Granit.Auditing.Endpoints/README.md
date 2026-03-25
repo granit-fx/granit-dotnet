@@ -1,4 +1,4 @@
-# Granit.AuditLog.Endpoints
+# Granit.Auditing.Endpoints
 
 Read-only Minimal API endpoints for browsing the Granit audit trail.
 Provides paginated, filtered access to audit log entries with
@@ -9,12 +9,12 @@ Part of the [granit](https://granit-fx.dev) framework.
 ## Installation
 
 ```bash
-dotnet add package Granit.AuditLog.Endpoints
+dotnet add package Granit.Auditing.Endpoints
 ```
 
 ## Dependencies
 
-- `Granit.AuditLog`
+- `Granit.Auditing`
 - `Granit.Http.ApiDocumentation`
 
 ## Documentation

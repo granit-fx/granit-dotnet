@@ -31,7 +31,7 @@ table and `UserCacheSyncMiddleware` become redundant in local mode:
 
 ### `IUserLookupService` is the single abstraction
 
-All framework modules (`AuditLog`, `Notifications`, `Timeline`, etc.) consume
+All framework modules (`Auditing`, `Notifications`, `Timeline`, etc.) consume
 users exclusively through `IUserLookupService`. Two implementations exist:
 
 | Mode | Implementation | Data source |

@@ -19,11 +19,11 @@ public sealed class BackgroundJobsMetrics
         Meter meter = meterFactory.Create(MeterName);
 
         _executionsCompleted = meter.CreateCounter<long>(
-            "granit.backgroundjobs.executions.completed",
+            "granit.background_jobs.execution.completed",
             description: "Number of background job executions completed.");
 
         _executionDuration = meter.CreateHistogram<double>(
-            "granit.backgroundjobs.execution.duration",
+            "granit.background_jobs.execution.duration",
             unit: "s",
             description: "Duration of background job executions.");
     }

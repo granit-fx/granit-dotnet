@@ -81,7 +81,7 @@ The 17 registered module roots, grouped by domain:
 
 | Root | Packages | Description |
 | --- | --- | --- |
-| `AuditLog` | 4 | Audit trail and configuration change tracking |
+| `Auditing` | 4 | Audit trail and configuration change tracking |
 | `Http.Cookies` | 3 | Cookie consent (GDPR, Klaro) |
 
 ### Notifications
@@ -142,7 +142,7 @@ flowchart TD
         BIZ["Workflow, Timeline,\nDataExchange, Templating"]:::mod
         STORE["BlobStorage, Imaging,\nBackgroundJobs, Webhooks"]:::mod
         IDENT["Identity, OpenIddict,\nBff, Notifications"]:::mod
-        COMP["AuditLog, Http.Cookies"]:::mod
+        COMP["Auditing, Http.Cookies"]:::mod
     end
 
     CORE --> INFRA

@@ -21,7 +21,7 @@ sequenceDiagram
     participant P as Publisher
     participant W as Wolverine Bus
     participant H1 as FeatureCacheInvalidationHandler
-    participant H2 as AuditLogHandler
+    participant H2 as AuditingHandler
     participant H3 as WebhookFanoutHandler
 
     P->>W: Publish FeatureValueChangedEvent
@@ -91,7 +91,7 @@ public static class FeatureCacheInvalidationHandler
 }
 
 // Observer 2 -- added later, no modification to publisher
-public static class FeatureAuditLogHandler
+public static class FeatureAuditingHandler
 {
     public static void Handle(FeatureValueChangedEvent evt, ILogger logger)
     {

@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Granit.Imaging.MagickNet.Diagnostics;
+using Granit.Imaging.Diagnostics;
 using ImageMagick;
 
 namespace Granit.Imaging.MagickNet.Internal;
@@ -11,12 +11,12 @@ namespace Granit.Imaging.MagickNet.Internal;
 internal sealed class MagickNetImagePipeline : IImagePipeline
 {
     private readonly MagickImage _image;
-    private readonly ImagingMagickNetMetrics _metrics;
+    private readonly ImagingMetrics _metrics;
     private readonly long _startTimestamp;
     private int? _quality;
     private ImageFormat? _targetFormat;
 
-    internal MagickNetImagePipeline(MagickImage image, ImagingMagickNetMetrics metrics)
+    internal MagickNetImagePipeline(MagickImage image, ImagingMetrics metrics)
     {
         _image = image;
         _metrics = metrics;

@@ -28,7 +28,7 @@ SRC_DOMAINS = {
         "BackgroundJobs", "BlobStorage", "Caching", "Events",
         "Imaging", "Persistence", "Webhooks", "Wolverine",
     },
-    "Compliance": {"AuditLog", "Privacy"},
+    "Compliance": {"Auditing", "Privacy"},
     "Notifications": {"Notifications"},
     "AI": {"AI"},
     "Tooling": {"Analyzers", "Testing"},

@@ -9,11 +9,11 @@ using Granit.Users;
 namespace Granit.Auditing.ConfigurationChanges.Handlers;
 
 /// <summary>
-/// Persists <see cref="SettingChangedEvent"/> as an <see cref="AuditLogEntry"/>
-/// with category <see cref="AuditLogCategory.ConfigurationChange"/>.
+/// Persists <see cref="SettingChangedEvent"/> as an <see cref="AuditEntry"/>
+/// with category <see cref="AuditCategory.ConfigurationChange"/>.
 /// </summary>
 public sealed class SettingChangedAuditHandler(
-    IAuditLogWriter writer,
+    IAuditingWriter writer,
     ICurrentUserService currentUser,
     ICurrentTenant currentTenant,
     IGuidGenerator guidGenerator) : ILocalEventHandler<SettingChangedEvent>
@@ -38,20 +38,20 @@ public sealed class SettingChangedAuditHandler(
             PropertyChanges = [valueChange],
         };
 
-        AuditLogEntry entry = new()
+        AuditEntry entry = new()
         {
             Id = guidGenerator.Create(),
             Timestamp = localEvent.Timestamp,
             UserId = currentUser.UserId ?? "system",
             UserName = currentUser.UserName,
-            Category = AuditLogCategory.ConfigurationChange,
+            Category = AuditCategory.ConfigurationChange,
             TenantId = currentTenant.IsAvailable ? currentTenant.Id : null,
             CorrelationId = System.Diagnostics.Activity.Current?.Id,
             EntityChanges = [entityChange],
         };
 
         valueChange.AuditEntityChangeId = entityChange.Id;
-        entityChange.AuditLogEntryId = entry.Id;
+        entityChange.AuditEntryId = entry.Id;
 
         await writer.WriteAsync(entry, cancellationToken).ConfigureAwait(false);
     }

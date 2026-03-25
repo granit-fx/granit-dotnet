@@ -18,10 +18,10 @@ public sealed class BulkheadMetrics
     {
         Meter meter = meterFactory.Create(MeterName);
         _activeCounter = meter.CreateUpDownCounter<long>(
-            "granit.bulkhead.leases.active",
+            "granit.http.bulkhead.leases.active",
             description: "Number of currently active bulkhead leases.");
         _rejectedCounter = meter.CreateCounter<long>(
-            "granit.bulkhead.requests.rejected",
+            "granit.http.bulkhead.requests.rejected",
             description: "Number of requests rejected by bulkhead isolation.");
     }
 

@@ -1,6 +1,6 @@
 ---
 title: "Audit Log \u2014 Tamper-Proof Activity Tracking"
-description: ISO 27001-compliant hierarchical audit trail captured automatically from EF Core ChangeTracker — AuditLogEntry, AuditEntityChange, AuditPropertyChange, with retention and queryable endpoints.
+description: ISO 27001-compliant hierarchical audit trail captured automatically from EF Core ChangeTracker — AuditEntry, AuditEntityChange, AuditPropertyChange, with retention and queryable endpoints.
 sidebar:
   order: 2
   label: Audit Log
@@ -10,7 +10,7 @@ import { Tabs, TabItem, FileTree, Badge } from "@astrojs/starlight/components";
 
 Granit.Auditing provides a turnkey audit trail solution for ISO 27001 A.12.4 compliance.
 It automatically captures entity changes from EF Core's ChangeTracker and persists them
-in a hierarchical model: **AuditLogEntry → AuditEntityChange → AuditPropertyChange**.
+in a hierarchical model: **AuditEntry → AuditEntityChange → AuditPropertyChange**.
 
 ## Package structure
 
@@ -22,8 +22,8 @@ in a hierarchical model: **AuditLogEntry → AuditEntityChange → AuditProperty
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.Auditing` | Domain types, enums, `IAuditLogReader`, `IAuditLogWriter`, options | `Granit`, `Granit.QueryEngine` |
-| `Granit.Auditing.EntityFrameworkCore` | `AuditLogDbContext`, interceptor, Channel persistence, cleanup worker | `Granit.Auditing`, `Granit.Persistence` |
+| `Granit.Auditing` | Domain types, enums, `IAuditingReader`, `IAuditingWriter`, options | `Granit`, `Granit.QueryEngine` |
+| `Granit.Auditing.EntityFrameworkCore` | `AuditingDbContext`, interceptor, Channel persistence, cleanup worker | `Granit.Auditing`, `Granit.Persistence` |
 | `Granit.Auditing.Endpoints` | `GET /audit-log` endpoints (read-only, authorized) | `Granit.Auditing`, `Granit.Http.ApiDocumentation` |
 
 ## Quick start
@@ -40,7 +40,7 @@ dotnet add package Granit.Auditing.Endpoints   # optional — admin API
 ```csharp
 // Program.cs
 builder.AddGranitAuditingEntityFrameworkCore(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("AuditLog")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Auditing")));
 ```
 
 ### 3. Add the interceptor to your DbContext
@@ -69,9 +69,9 @@ down to **individual property changes**.
 
 ```mermaid
 erDiagram
-    AuditLogEntry ||--o{ AuditEntityChange : contains
+    AuditEntry ||--o{ AuditEntityChange : contains
     AuditEntityChange ||--o{ AuditPropertyChange : contains
-    AuditLogEntry {
+    AuditEntry {
         guid Id PK
         datetimeoffset Timestamp
         string UserId
@@ -84,7 +84,7 @@ erDiagram
     }
     AuditEntityChange {
         guid Id PK
-        guid AuditLogEntryId FK
+        guid AuditEntryId FK
         string EntityType
         string EntityId
         enum ChangeType
@@ -118,7 +118,7 @@ with different retention defaults:
     worker. **Zero latency impact** on `SaveChanges`, but entries may be lost on crash.
 
     ```json
-    { "AuditLog": { "PersistenceMode": "Async" } }
+    { "Auditing": { "PersistenceMode": "Async" } }
     ```
   </TabItem>
   <TabItem label="Strict">
@@ -127,7 +127,7 @@ with different retention defaults:
     Required for ISO 27001 strict compliance (banking, HDS).
 
     ```json
-    { "AuditLog": { "PersistenceMode": "Strict" } }
+    { "Auditing": { "PersistenceMode": "Strict" } }
     ```
   </TabItem>
 </Tabs>
@@ -161,14 +161,14 @@ public class Patient : AuditedEntity
 
 ## Querying the audit trail
 
-### Via `IAuditLogReader` (code)
+### Via `IAuditingReader` (code)
 
 ```csharp
-public class MyService(IAuditLogReader auditLogReader)
+public class MyService(IAuditingReader auditingReader)
 {
-    public async Task<PagedResult<AuditLogEntry>> GetPatientHistoryAsync(
+    public async Task<PagedResult<AuditEntry>> GetPatientHistoryAsync(
         string patientId, CancellationToken ct) =>
-        await auditLogReader.GetByEntityAsync("Patient", patientId, cancellationToken: ct);
+        await auditingReader.GetByEntityAsync("Patient", patientId, cancellationToken: ct);
 }
 ```
 
@@ -180,16 +180,16 @@ public class MyService(IAuditLogReader auditLogReader)
 | `GET` | `/audit-log/{id}` | Single entry with full entity + property change hierarchy |
 | `GET` | `/audit-log/entity/{type}/{id}` | Audit trail for a specific entity (GDPR SAR) |
 
-All endpoints require the `AuditLog.Read` authorization policy (configurable).
+All endpoints require the `Auditing.AuditEntries.Read` authorization policy (configurable).
 
 ## Retention and cleanup
 
-The `AuditLogCleanupWorker` runs periodically and deletes expired entries
+The `AuditingCleanupWorker` runs periodically and deletes expired entries
 by category. Retention periods are configurable:
 
 ```json
 {
-  "AuditLog": {
+  "Auditing": {
     "ConfigurationChangeRetention": "2555.00:00:00",
     "DataMutationRetention": "365.00:00:00",
     "DataAccessRetention": "90.00:00:00",
@@ -209,9 +209,9 @@ Cascade deletes automatically remove child `AuditEntityChange` and
 | Signal | Name | Description |
 | ------ | ---- | ----------- |
 | Tracing | `Granit.Auditing` | ActivitySource for capture, persist, cleanup spans |
-| Metric | `granit.auditlog.entries.persisted` | Counter — entries successfully persisted |
-| Metric | `granit.auditlog.entries.purged` | Counter — entries purged by cleanup (by category) |
-| Metric | `granit.auditlog.capture.errors` | Counter — errors during change tracking capture |
+| Metric | `granit.auditing.entries.persisted` | Counter — entries successfully persisted |
+| Metric | `granit.auditing.entries.purged` | Counter — entries purged by cleanup (by category) |
+| Metric | `granit.auditing.capture.errors` | Counter — errors during change tracking capture |
 
 ## Configuration reference
 

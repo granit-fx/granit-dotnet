@@ -3,12 +3,12 @@ using Granit.Domain;
 namespace Granit.Auditing.Domain;
 
 /// <summary>
-/// Records a single entity change within an <see cref="AuditLogEntry"/>.
+/// Records a single entity change within an <see cref="AuditEntry"/>.
 /// </summary>
 public class AuditEntityChange : Entity
 {
-    /// <summary>Foreign key to the parent <see cref="AuditLogEntry"/>.</summary>
-    public Guid AuditLogEntryId { get; set; }
+    /// <summary>Foreign key to the parent <see cref="AuditEntry"/>.</summary>
+    public Guid AuditEntryId { get; set; }
 
     /// <summary>CLR type name of the affected entity.</summary>
     public string EntityType { get; set; } = string.Empty;

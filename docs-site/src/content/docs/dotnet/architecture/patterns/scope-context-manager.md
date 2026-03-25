@@ -56,7 +56,7 @@ error).
 using (currentTenant.Change(adminTenantId))
 {
     // All queries in this scope target adminTenantId
-    List<AuditLog> logs = await db.AuditLogs.ToListAsync(ct);
+    List<AuditEntry> logs = await db.AuditEntries.ToListAsync(ct);
 } // Previous tenant is automatically restored
 
 // Temporarily disable the soft delete filter

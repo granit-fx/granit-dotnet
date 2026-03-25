@@ -112,7 +112,7 @@ sequenceDiagram
 | No chaining | An impersonated token cannot impersonate another user (guards on `impersonator_id` claim) |
 | Max duration | 1 hour, hardcoded, non-configurable |
 | Permission | Requires `OpenIddict.Users.Impersonate` permission |
-| Audit trail | Mandatory `IAuditLogWriter` entry on every impersonation |
+| Audit trail | Mandatory `IAuditingWriter` entry on every impersonation |
 | Transparency | `UserImpersonatedEto` published via `IDistributedEventBus` -- consumed by `Granit.Notifications` to notify the impersonated user (GDPR / SOC2) |
 
 ### Impersonation claims

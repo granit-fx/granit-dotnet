@@ -17,7 +17,7 @@ public static partial class FrameworkBoundaryRules
     /// </summary>
     public static readonly FrozenSet<string> ModuleRootPrefixes = FrozenSet.ToFrozenSet(
     [
-        "AuditLog",
+        "Auditing",
         "BackgroundJobs",
         "Bff",
         "BlobStorage",

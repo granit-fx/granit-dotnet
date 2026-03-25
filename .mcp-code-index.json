@@ -2955,70 +2955,70 @@
       "members": []
     },
     {
-      "name": "AuditLogQuery",
-      "fqn": "Granit.Auditing.Abstractions.AuditLogQuery",
+      "name": "AuditingQuery",
+      "fqn": "Granit.Auditing.Abstractions.AuditingQuery",
       "kind": "record",
       "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Abstractions/AuditLogQuery.cs",
+      "file": "src/Granit.Auditing/Abstractions/AuditingQuery.cs",
       "line": 17,
       "members": []
     },
     {
-      "name": "IAuditLogEntryPublisher",
-      "fqn": "Granit.Auditing.Abstractions.IAuditLogEntryPublisher",
+      "name": "IAuditEntryPublisher",
+      "fqn": "Granit.Auditing.Abstractions.IAuditEntryPublisher",
       "kind": "interface",
       "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Abstractions/IAuditLogEntryPublisher.cs",
+      "file": "src/Granit.Auditing/Abstractions/IAuditEntryPublisher.cs",
       "line": 13,
       "members": [
         {
           "name": "PublishAsync",
           "kind": "method",
-          "signature": "PublishAsync(AuditLogBatch batch, CancellationToken cancellationToken = default)",
+          "signature": "PublishAsync(AuditingBatch batch, CancellationToken cancellationToken = default)",
           "returnType": "ValueTask"
         }
       ]
     },
     {
-      "name": "IAuditLogReader",
-      "fqn": "Granit.Auditing.Abstractions.IAuditLogReader",
+      "name": "IAuditingReader",
+      "fqn": "Granit.Auditing.Abstractions.IAuditingReader",
       "kind": "interface",
       "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Abstractions/IAuditLogReader.cs",
+      "file": "src/Granit.Auditing/Abstractions/IAuditingReader.cs",
       "line": 14,
       "members": [
         {
           "name": "GetByIdAsync",
           "kind": "method",
           "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
-          "returnType": "Task<AuditLogEntry?>"
+          "returnType": "Task<AuditEntry?>"
         },
         {
           "name": "GetPagedAsync",
           "kind": "method",
-          "signature": "GetPagedAsync(AuditLogQuery query, CancellationToken cancellationToken = default)",
-          "returnType": "Task<PagedResult<AuditLogEntry>>"
+          "signature": "GetPagedAsync(AuditingQuery query, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PagedResult<AuditEntry>>"
         },
         {
           "name": "GetByEntityAsync",
           "kind": "method",
           "signature": "GetByEntityAsync(string entityType, string entityId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
-          "returnType": "Task<PagedResult<AuditLogEntry>>"
+          "returnType": "Task<PagedResult<AuditEntry>>"
         }
       ]
     },
     {
-      "name": "IAuditLogWriter",
-      "fqn": "Granit.Auditing.Abstractions.IAuditLogWriter",
+      "name": "IAuditingWriter",
+      "fqn": "Granit.Auditing.Abstractions.IAuditingWriter",
       "kind": "interface",
       "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Abstractions/IAuditLogWriter.cs",
+      "file": "src/Granit.Auditing/Abstractions/IAuditingWriter.cs",
       "line": 13,
       "members": [
         {
           "name": "WriteAsync",
           "kind": "method",
-          "signature": "WriteAsync(AuditLogEntry entry, CancellationToken cancellationToken = default)",
+          "signature": "WriteAsync(AuditEntry entry, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -3090,6 +3090,15 @@
       ]
     },
     {
+      "name": "AuditCategory",
+      "fqn": "Granit.Auditing.Domain.AuditCategory",
+      "kind": "enum",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Domain/AuditCategory.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "AuditChangeType",
       "fqn": "Granit.Auditing.Domain.AuditChangeType",
       "kind": "enum",
@@ -3107,9 +3116,9 @@
       "line": 8,
       "members": [
         {
-          "name": "AuditLogEntryId",
+          "name": "AuditEntryId",
           "kind": "property",
-          "signature": "Guid AuditLogEntryId",
+          "signature": "Guid AuditEntryId",
           "returnType": "Guid"
         },
         {
@@ -3127,20 +3136,11 @@
       ]
     },
     {
-      "name": "AuditLogCategory",
-      "fqn": "Granit.Auditing.Domain.AuditLogCategory",
-      "kind": "enum",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Domain/AuditLogCategory.cs",
-      "line": 14,
-      "members": []
-    },
-    {
-      "name": "AuditLogEntry",
-      "fqn": "Granit.Auditing.Domain.AuditLogEntry",
+      "name": "AuditEntry",
+      "fqn": "Granit.Auditing.Domain.AuditEntry",
       "kind": "class",
       "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Domain/AuditLogEntry.cs",
+      "file": "src/Granit.Auditing/Domain/AuditEntry.cs",
       "line": 14,
       "members": [
         {
@@ -3192,39 +3192,21 @@
       "members": []
     },
     {
-      "name": "AuditLogEntryDetailResponse",
-      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditLogEntryDetailResponse",
+      "name": "AuditEntryDetailResponse",
+      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditEntryDetailResponse",
       "kind": "record",
       "project": "Granit.Auditing.Endpoints",
-      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditLogEntryDetailResponse.cs",
+      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditEntryDetailResponse.cs",
       "line": 15,
       "members": []
     },
     {
-      "name": "AuditLogEntryResponse",
-      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditLogEntryResponse",
+      "name": "AuditEntryResponse",
+      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditEntryResponse",
       "kind": "record",
       "project": "Granit.Auditing.Endpoints",
-      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditLogEntryResponse.cs",
+      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditEntryResponse.cs",
       "line": 15,
-      "members": []
-    },
-    {
-      "name": "AuditLogQueryParameters",
-      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditLogQueryParameters",
-      "kind": "class",
-      "project": "Granit.Auditing.Endpoints",
-      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditLogQueryParameters.cs",
-      "line": 9,
-      "members": []
-    },
-    {
-      "name": "AuditLogQueryRequest",
-      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditLogQueryRequest",
-      "kind": "class",
-      "project": "Granit.Auditing.Endpoints",
-      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditLogQueryRequest.cs",
-      "line": 9,
       "members": []
     },
     {
@@ -3237,11 +3219,29 @@
       "members": []
     },
     {
-      "name": "AuditLogEndpointRouteBuilderExtensions",
-      "fqn": "Granit.Auditing.Endpoints.Extensions.AuditLogEndpointRouteBuilderExtensions",
+      "name": "AuditingQueryParameters",
+      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditingQueryParameters",
       "kind": "class",
       "project": "Granit.Auditing.Endpoints",
-      "file": "src/Granit.Auditing.Endpoints/Extensions/AuditLogEndpointRouteBuilderExtensions.cs",
+      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditingQueryParameters.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "AuditingQueryRequest",
+      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditingQueryRequest",
+      "kind": "class",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditingQueryRequest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "AuditingEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Auditing.Endpoints.Extensions.AuditingEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Extensions/AuditingEndpointRouteBuilderExtensions.cs",
       "line": 14,
       "members": [
         {
@@ -3284,29 +3284,29 @@
       ]
     },
     {
-      "name": "AuditLogPermissions",
-      "fqn": "Granit.Auditing.Endpoints.Permissions.AuditLogPermissions",
+      "name": "AuditEntries",
+      "fqn": "Granit.Auditing.Endpoints.Permissions.AuditEntries",
       "kind": "class",
       "project": "Granit.Auditing.Endpoints",
-      "file": "src/Granit.Auditing.Endpoints/Permissions/AuditLogPermissions.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "Entries",
-      "fqn": "Granit.Auditing.Endpoints.Permissions.Entries",
-      "kind": "class",
-      "project": "Granit.Auditing.Endpoints",
-      "file": "src/Granit.Auditing.Endpoints/Permissions/AuditLogPermissions.cs",
+      "file": "src/Granit.Auditing.Endpoints/Permissions/AuditingPermissions.cs",
       "line": 12,
       "members": []
     },
     {
-      "name": "AuditLogMetrics",
-      "fqn": "Granit.Auditing.EntityFrameworkCore.Diagnostics.AuditLogMetrics",
+      "name": "AuditingPermissions",
+      "fqn": "Granit.Auditing.Endpoints.Permissions.AuditingPermissions",
+      "kind": "class",
+      "project": "Granit.Auditing.Endpoints",
+      "file": "src/Granit.Auditing.Endpoints/Permissions/AuditingPermissions.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "AuditingMetrics",
+      "fqn": "Granit.Auditing.EntityFrameworkCore.Diagnostics.AuditingMetrics",
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
-      "file": "src/Granit.Auditing.EntityFrameworkCore/Diagnostics/AuditLogMetrics.cs",
+      "file": "src/Granit.Auditing.EntityFrameworkCore/Diagnostics/AuditingMetrics.cs",
       "line": 10,
       "members": [
         {
@@ -3324,11 +3324,11 @@
       ]
     },
     {
-      "name": "AuditLogEntityFrameworkCoreServiceCollectionExtensions",
-      "fqn": "Granit.Auditing.EntityFrameworkCore.Extensions.AuditLogEntityFrameworkCoreServiceCollectionExtensions",
+      "name": "AuditingEntityFrameworkCoreServiceCollectionExtensions",
+      "fqn": "Granit.Auditing.EntityFrameworkCore.Extensions.AuditingEntityFrameworkCoreServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
-      "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/AuditLogEntityFrameworkCoreServiceCollectionExtensions.cs",
+      "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/AuditingEntityFrameworkCoreServiceCollectionExtensions.cs",
       "line": 22,
       "members": [
         {
@@ -3340,27 +3340,27 @@
       ]
     },
     {
-      "name": "AuditLogModelBuilderExtensions",
-      "fqn": "Granit.Auditing.EntityFrameworkCore.Extensions.AuditLogModelBuilderExtensions",
+      "name": "AuditingModelBuilderExtensions",
+      "fqn": "Granit.Auditing.EntityFrameworkCore.Extensions.AuditingModelBuilderExtensions",
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
-      "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/AuditLogModelBuilderExtensions.cs",
+      "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/AuditingModelBuilderExtensions.cs",
       "line": 10,
       "members": [
         {
-          "name": "ConfigureAuditLogModule",
+          "name": "ConfigureAuditingModule",
           "kind": "method",
-          "signature": "ConfigureAuditLogModule(this ModelBuilder modelBuilder)",
+          "signature": "ConfigureAuditingModule(this ModelBuilder modelBuilder)",
           "returnType": "ModelBuilder"
         }
       ]
     },
     {
-      "name": "DbContextOptionsBuilderAuditLogExtensions",
-      "fqn": "Granit.Auditing.EntityFrameworkCore.Extensions.DbContextOptionsBuilderAuditLogExtensions",
+      "name": "DbContextOptionsBuilderAuditingExtensions",
+      "fqn": "Granit.Auditing.EntityFrameworkCore.Extensions.DbContextOptionsBuilderAuditingExtensions",
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
-      "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/DbContextOptionsBuilderAuditLogExtensions.cs",
+      "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/DbContextOptionsBuilderAuditingExtensions.cs",
       "line": 10,
       "members": [
         {
@@ -3397,11 +3397,11 @@
       "members": []
     },
     {
-      "name": "AuditLogChangeTrackingInterceptor",
-      "fqn": "Granit.Auditing.EntityFrameworkCore.Interceptors.AuditLogChangeTrackingInterceptor",
+      "name": "AuditingChangeTrackingInterceptor",
+      "fqn": "Granit.Auditing.EntityFrameworkCore.Interceptors.AuditingChangeTrackingInterceptor",
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
-      "file": "src/Granit.Auditing.EntityFrameworkCore/Interceptors/AuditLogChangeTrackingInterceptor.cs",
+      "file": "src/Granit.Auditing.EntityFrameworkCore/Interceptors/AuditingChangeTrackingInterceptor.cs",
       "line": 32,
       "members": [
         {
@@ -3413,17 +3413,17 @@
       ]
     },
     {
-      "name": "AuditLogServiceCollectionExtensions",
-      "fqn": "Granit.Auditing.Extensions.AuditLogServiceCollectionExtensions",
+      "name": "AuditingServiceCollectionExtensions",
+      "fqn": "Granit.Auditing.Extensions.AuditingServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Extensions/AuditLogServiceCollectionExtensions.cs",
+      "file": "src/Granit.Auditing/Extensions/AuditingServiceCollectionExtensions.cs",
       "line": 11,
       "members": [
         {
           "name": "AddGranitAuditing",
           "kind": "method",
-          "signature": "AddGranitAuditing(this IServiceCollection services, Action<AuditLogOptions>? configure = null)",
+          "signature": "AddGranitAuditing(this IServiceCollection services, Action<AuditingOptions>? configure = null)",
           "returnType": "IServiceCollection"
         }
       ]
@@ -3454,15 +3454,6 @@
       "members": []
     },
     {
-      "name": "AuditLogBatch",
-      "fqn": "Granit.Auditing.Messages.AuditLogBatch",
-      "kind": "record",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Messages/AuditLogBatch.cs",
-      "line": 18,
-      "members": []
-    },
-    {
       "name": "AuditPropertyChangeSnapshot",
       "fqn": "Granit.Auditing.Messages.AuditPropertyChangeSnapshot",
       "kind": "record",
@@ -3472,11 +3463,20 @@
       "members": []
     },
     {
-      "name": "AuditLogOptions",
-      "fqn": "Granit.Auditing.Options.AuditLogOptions",
+      "name": "AuditingBatch",
+      "fqn": "Granit.Auditing.Messages.AuditingBatch",
+      "kind": "record",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Messages/AuditingBatch.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "AuditingOptions",
+      "fqn": "Granit.Auditing.Options.AuditingOptions",
       "kind": "class",
       "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Options/AuditLogOptions.cs",
+      "file": "src/Granit.Auditing/Options/AuditingOptions.cs",
       "line": 10,
       "members": [
         {
@@ -3548,7 +3548,7 @@
         {
           "name": "GetRetention",
           "kind": "method",
-          "signature": "GetRetention(AuditLogCategory category)",
+          "signature": "GetRetention(AuditCategory category)",
           "returnType": "TimeSpan"
         }
       ]
@@ -3611,6 +3611,34 @@
           "kind": "method",
           "signature": "IsAllowed(IPAddress? ipAddress, IReadOnlyList<string> allowedCidrs)",
           "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ApiKeysMetrics",
+      "fqn": "Granit.Authentication.ApiKeys.Diagnostics.ApiKeysMetrics",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys",
+      "file": "src/Granit.Authentication.ApiKeys/Diagnostics/ApiKeysMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordAuthenticationFailed",
+          "kind": "method",
+          "signature": "RecordAuthenticationFailed(string? tenantId, string reason)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordKeyCreated",
+          "kind": "method",
+          "signature": "RecordKeyCreated(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordKeyRevoked",
+          "kind": "method",
+          "signature": "RecordKeyRevoked(string? tenantId)",
+          "returnType": "void"
         }
       ]
     },
@@ -3943,7 +3971,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys",
       "file": "src/Granit.Authentication.ApiKeys/Extensions/ApiKeyServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitApiKeyAuthentication",
@@ -5051,6 +5079,34 @@
       "members": []
     },
     {
+      "name": "AuthorizationMetrics",
+      "fqn": "Granit.Authorization.Diagnostics.AuthorizationMetrics",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Diagnostics/AuthorizationMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordCheckDenied",
+          "kind": "method",
+          "signature": "RecordCheckDenied(string? tenantId, string permissionName)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCacheHit",
+          "kind": "method",
+          "signature": "RecordCacheHit(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCacheMiss",
+          "kind": "method",
+          "signature": "RecordCacheMiss(string? tenantId)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "MyPermissionsResponse",
       "fqn": "Granit.Authorization.Endpoints.Dtos.MyPermissionsResponse",
       "kind": "record",
@@ -5256,7 +5312,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Extensions/AuthorizationServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitAuthorization",
@@ -7491,12 +7547,40 @@
       ]
     },
     {
+      "name": "CachingMetrics",
+      "fqn": "Granit.Caching.Diagnostics.CachingMetrics",
+      "kind": "class",
+      "project": "Granit.Caching",
+      "file": "src/Granit.Caching/Diagnostics/CachingMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordMiss",
+          "kind": "method",
+          "signature": "RecordMiss(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordFailSafeActivated",
+          "kind": "method",
+          "signature": "RecordFailSafeActivated(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordFactoryTimeout",
+          "kind": "method",
+          "signature": "RecordFactoryTimeout(string? tenantId, string timeoutType)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "CachingServiceCollectionExtensions",
       "fqn": "Granit.Caching.Extensions.CachingServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Caching",
       "file": "src/Granit.Caching/Extensions/CachingServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitCaching",
@@ -9577,6 +9661,28 @@
       ]
     },
     {
+      "name": "DocumentGenerationMetrics",
+      "fqn": "Granit.DocumentGeneration.Diagnostics.DocumentGenerationMetrics",
+      "kind": "class",
+      "project": "Granit.DocumentGeneration",
+      "file": "src/Granit.DocumentGeneration/Diagnostics/DocumentGenerationMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordGenerationFailed",
+          "kind": "method",
+          "signature": "RecordGenerationFailed(string? tenantId, string templateType, string format)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordGenerationDuration",
+          "kind": "method",
+          "signature": "RecordGenerationDuration(string? tenantId, string templateType, string format, TimeSpan duration)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.DocumentGeneration.Excel.Extensions.ServiceCollectionExtensions",
       "kind": "class",
@@ -9630,7 +9736,7 @@
       "kind": "class",
       "project": "Granit.DocumentGeneration",
       "file": "src/Granit.DocumentGeneration/Extensions/ServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitDocumentGeneration",
@@ -12978,6 +13084,34 @@
       ]
     },
     {
+      "name": "IdempotencyMetrics",
+      "fqn": "Granit.Http.Idempotency.Diagnostics.IdempotencyMetrics",
+      "kind": "class",
+      "project": "Granit.Http.Idempotency",
+      "file": "src/Granit.Http.Idempotency/Diagnostics/IdempotencyMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordLockConflict",
+          "kind": "method",
+          "signature": "RecordLockConflict(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordResponseReplayed",
+          "kind": "method",
+          "signature": "RecordResponseReplayed(string? tenantId, int statusCode)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordHashMismatch",
+          "kind": "method",
+          "signature": "RecordHashMismatch(string? tenantId)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "IdempotencyApplicationBuilderExtensions",
       "fqn": "Granit.Http.Idempotency.Extensions.IdempotencyApplicationBuilderExtensions",
       "kind": "class",
@@ -13271,6 +13405,28 @@
           "kind": "property",
           "signature": "bool RequireTls",
           "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "HttpResilienceMetrics",
+      "fqn": "Granit.Http.Resilience.Diagnostics.HttpResilienceMetrics",
+      "kind": "class",
+      "project": "Granit.Http.Resilience",
+      "file": "src/Granit.Http.Resilience/Diagnostics/HttpResilienceMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordCircuitBreakerStateChanged",
+          "kind": "method",
+          "signature": "RecordCircuitBreakerStateChanged(string? tenantId, string clientName, string state)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordTimeoutOccurred",
+          "kind": "method",
+          "signature": "RecordTimeoutOccurred(string? tenantId, string clientName)",
+          "returnType": "void"
         }
       ]
     },
@@ -14759,6 +14915,28 @@
       ]
     },
     {
+      "name": "ImagingMetrics",
+      "fqn": "Granit.Imaging.Diagnostics.ImagingMetrics",
+      "kind": "class",
+      "project": "Granit.Imaging",
+      "file": "src/Granit.Imaging/Diagnostics/ImagingMetrics.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "RecordImageProcessed",
+          "kind": "method",
+          "signature": "RecordImageProcessed(string? tenantId, string outputFormat)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordProcessingDuration",
+          "kind": "method",
+          "signature": "RecordProcessingDuration(string? tenantId, string outputFormat, TimeSpan duration)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "UnsupportedImageFormatException",
       "fqn": "Granit.Imaging.Exceptions.UnsupportedImageFormatException",
       "kind": "class",
@@ -14938,34 +15116,12 @@
       "members": []
     },
     {
-      "name": "ImagingMagickNetMetrics",
-      "fqn": "Granit.Imaging.MagickNet.Diagnostics.ImagingMagickNetMetrics",
-      "kind": "class",
-      "project": "Granit.Imaging.MagickNet",
-      "file": "src/Granit.Imaging.MagickNet/Diagnostics/ImagingMagickNetMetrics.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "RecordImageProcessed",
-          "kind": "method",
-          "signature": "RecordImageProcessed(string? tenantId, string outputFormat)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordProcessingDuration",
-          "kind": "method",
-          "signature": "RecordProcessingDuration(string? tenantId, string outputFormat, TimeSpan duration)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
       "name": "ImagingMagickNetServiceCollectionExtensions",
       "fqn": "Granit.Imaging.MagickNet.Extensions.ImagingMagickNetServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Imaging.MagickNet",
       "file": "src/Granit.Imaging.MagickNet/Extensions/ImagingMagickNetServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitImagingMagickNet",
@@ -15822,6 +15978,28 @@
       ]
     },
     {
+      "name": "MultiTenancyMetrics",
+      "fqn": "Granit.MultiTenancy.Diagnostics.MultiTenancyMetrics",
+      "kind": "class",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Diagnostics/MultiTenancyMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordResolutionFailed",
+          "kind": "method",
+          "signature": "RecordResolutionFailed()",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordContextSwitched",
+          "kind": "method",
+          "signature": "RecordContextSwitched(string? tenantId)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "MultiTenancyApplicationBuilderExtensions",
       "fqn": "Granit.MultiTenancy.Extensions.MultiTenancyApplicationBuilderExtensions",
       "kind": "class",
@@ -15843,7 +16021,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Extensions/MultiTenancyServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitMultiTenancy",
@@ -22828,6 +23006,15 @@
       "members": []
     },
     {
+      "name": "QueryEngineMetrics",
+      "fqn": "Granit.QueryEngine.Diagnostics.QueryEngineMetrics",
+      "kind": "class",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Diagnostics/QueryEngineMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "QueryRequestBinder",
       "fqn": "Granit.QueryEngine.Endpoints.Binding.QueryRequestBinder",
       "kind": "class",
@@ -22915,15 +23102,6 @@
       ]
     },
     {
-      "name": "QueryEngineEfCoreMetrics",
-      "fqn": "Granit.QueryEngine.EntityFrameworkCore.Diagnostics.QueryEngineEfCoreMetrics",
-      "kind": "class",
-      "project": "Granit.QueryEngine.EntityFrameworkCore",
-      "file": "src/Granit.QueryEngine.EntityFrameworkCore/Diagnostics/QueryEngineEfCoreMetrics.cs",
-      "line": 10,
-      "members": []
-    },
-    {
       "name": "QueryEngineEfCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.QueryEngine.EntityFrameworkCore.Extensions.QueryEngineEfCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -22977,7 +23155,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.EntityFrameworkCore",
       "file": "src/Granit.QueryEngine.EntityFrameworkCore/GranitQueryEngineEntityFrameworkCoreModule.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",

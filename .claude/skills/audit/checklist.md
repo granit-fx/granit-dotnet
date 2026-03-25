@@ -709,7 +709,7 @@ domain subdirectory:
 | Security | `security/` | Authentication, Authorization, Identity |
 | Infrastructure | `infrastructure/` | BackgroundJobs, Notifications, Localization |
 | Business | `business/` | Workflow, QueryEngine, Templating, DataExchange |
-| Compliance | `compliance/` | AuditLog, Privacy |
+| Compliance | `compliance/` | Auditing, Privacy |
 | AI | `ai/` | AI modules |
 
 - [ ] Documentation page exists for the module (`{module-kebab}.mdx`)

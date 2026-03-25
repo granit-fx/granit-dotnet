@@ -135,8 +135,8 @@ the static `PermitLimit` from configuration.
 
 | Metric | Type | Description |
 |--------|------|-------------|
-| `granit.bulkhead.leases.active` | UpDownCounter | Currently active leases |
-| `granit.bulkhead.requests.rejected` | Counter | Requests rejected (bulkhead full) |
+| `granit.http.bulkhead.leases.active` | UpDownCounter | Currently active leases |
+| `granit.http.bulkhead.requests.rejected` | Counter | Requests rejected (bulkhead full) |
 
 Both metrics carry `policy` and `tenant_id` attributes.
 
