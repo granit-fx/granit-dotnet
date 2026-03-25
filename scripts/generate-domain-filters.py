@@ -281,17 +281,7 @@ def main() -> None:
         and "bundles/" not in p
         and not is_module_project(Path(p).stem)
     ]
-    framework_tests = [
-        p for p in slnx_projects
-        if p.startswith("tests/")
-        and not any(
-            is_module_project(Path(p).stem.replace(".Tests.Integration", "").replace(".Tests", ""))
-            for _ in [None]
-        )
-        and "ArchitectureTests" not in p
-    ]
-
-    # Simpler: collect framework src + tests whose base name is framework
+    # Collect framework src + tests whose base name is framework
     fw_test_paths: list[str] = []
     for p in sorted(slnx_projects):
         if not p.startswith("tests/"):
