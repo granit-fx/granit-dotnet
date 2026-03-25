@@ -3090,6 +3090,28 @@
       ]
     },
     {
+      "name": "AuditingMetrics",
+      "fqn": "Granit.Auditing.Diagnostics.AuditingMetrics",
+      "kind": "class",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Diagnostics/AuditingMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordPurged",
+          "kind": "method",
+          "signature": "RecordPurged(long count, string category, string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCaptureError",
+          "kind": "method",
+          "signature": "RecordCaptureError(string? tenantId)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "AuditCategory",
       "fqn": "Granit.Auditing.Domain.AuditCategory",
       "kind": "enum",
@@ -3300,28 +3322,6 @@
       "file": "src/Granit.Auditing.Endpoints/Permissions/AuditingPermissions.cs",
       "line": 6,
       "members": []
-    },
-    {
-      "name": "AuditingMetrics",
-      "fqn": "Granit.Auditing.EntityFrameworkCore.Diagnostics.AuditingMetrics",
-      "kind": "class",
-      "project": "Granit.Auditing.EntityFrameworkCore",
-      "file": "src/Granit.Auditing.EntityFrameworkCore/Diagnostics/AuditingMetrics.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "RecordPurged",
-          "kind": "method",
-          "signature": "RecordPurged(long count, string category, string? tenantId)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordCaptureError",
-          "kind": "method",
-          "signature": "RecordCaptureError(string? tenantId)",
-          "returnType": "void"
-        }
-      ]
     },
     {
       "name": "AuditingEntityFrameworkCoreServiceCollectionExtensions",
@@ -13133,7 +13133,7 @@
       "kind": "class",
       "project": "Granit.Http.Idempotency",
       "file": "src/Granit.Http.Idempotency/Extensions/IdempotencyServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitIdempotency",
@@ -13436,7 +13436,7 @@
       "kind": "class",
       "project": "Granit.Http.Resilience",
       "file": "src/Granit.Http.Resilience/Extensions/HttpResilienceServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitHttpClient",
