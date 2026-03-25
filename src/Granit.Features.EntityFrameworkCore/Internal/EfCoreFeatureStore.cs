@@ -12,11 +12,11 @@ namespace Granit.Features.EntityFrameworkCore.Internal;
 /// <remarks>
 /// Registered as the replacement for <c>InMemoryFeatureStore</c> when
 /// <c>AddGranitFeaturesEntityFrameworkCore</c> is called.
-/// Each operation creates and disposes its own <see cref="GranitFeaturesDbContext"/> via
+/// Each operation creates and disposes its own <see cref="FeaturesDbContext"/> via
 /// <see cref="IDbContextFactory{TContext}"/>, making it safe for concurrent request handling.
 /// </remarks>
 internal sealed class EfCoreFeatureStore(
-    IDbContextFactory<GranitFeaturesDbContext> contextFactory,
+    IDbContextFactory<FeaturesDbContext> contextFactory,
     ILocalEventBus eventBus,
     TimeProvider timeProvider) : IFeatureStoreReader, IFeatureStoreWriter
 {
@@ -27,7 +27,7 @@ internal sealed class EfCoreFeatureStore(
         CancellationToken cancellationToken = default)
     {
         Guid? tenantGuid = ParseTenantId(tenantId);
-        await using GranitFeaturesDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using FeaturesDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         TenantFeatureOverride? row = await context.FeatureOverrides
             .AsNoTracking()
@@ -46,7 +46,7 @@ internal sealed class EfCoreFeatureStore(
         CancellationToken cancellationToken = default)
     {
         Guid? tenantGuid = ParseTenantId(tenantId);
-        await using GranitFeaturesDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using FeaturesDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         TenantFeatureOverride? existing = await context.FeatureOverrides
             .FirstOrDefaultAsync(
@@ -87,7 +87,7 @@ internal sealed class EfCoreFeatureStore(
         CancellationToken cancellationToken = default)
     {
         Guid? tenantGuid = ParseTenantId(tenantId);
-        await using GranitFeaturesDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using FeaturesDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         TenantFeatureOverride? existing = await context.FeatureOverrides
             .FirstOrDefaultAsync(

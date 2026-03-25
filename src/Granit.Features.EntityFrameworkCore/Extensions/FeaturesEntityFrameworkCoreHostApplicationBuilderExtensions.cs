@@ -20,7 +20,7 @@ public static class FeaturesEntityFrameworkCoreHostApplicationBuilderExtensions
     /// <remarks>
     /// Replaces the default <c>InMemoryFeatureStore</c> registered by
     /// <c>AddGranitFeatures()</c> with <see cref="EfCoreFeatureStore"/>,
-    /// backed by <see cref="GranitFeaturesDbContext"/> (table <c>feature_overrides</c>).
+    /// backed by <see cref="FeaturesDbContext"/> (table <c>feature_overrides</c>).
     /// <para>
     /// <see cref="AuditedEntityInterceptor"/> is added automatically when
     /// <c>Granit.Persistence</c> is configured, enabling the ISO 27001 3-year audit trail
@@ -37,7 +37,7 @@ public static class FeaturesEntityFrameworkCoreHostApplicationBuilderExtensions
         this IHostApplicationBuilder builder,
         Action<DbContextOptionsBuilder> configure)
     {
-        builder.Services.AddGranitDbContext<GranitFeaturesDbContext>(configure);
+        builder.Services.AddGranitDbContext<FeaturesDbContext>(configure);
 
         // Fallbacks: ensure event bus and TimeProvider are available even if
         // AddGranitFeatures() / AddGranitEvents() was not called (e.g. in tests).

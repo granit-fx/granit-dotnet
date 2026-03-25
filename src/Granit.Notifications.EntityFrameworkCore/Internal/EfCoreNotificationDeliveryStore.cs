@@ -13,12 +13,12 @@ namespace Granit.Notifications.EntityFrameworkCore.Internal;
 /// <see cref="DeleteBeforeAsync"/> enables RGPD-compliant data minimization.
 /// </para>
 /// </remarks>
-internal sealed class EfCoreNotificationDeliveryStore(IDbContextFactory<NotificationDbContext> dbContextFactory) : INotificationDeliveryWriter
+internal sealed class EfCoreNotificationDeliveryStore(IDbContextFactory<NotificationsDbContext> dbContextFactory) : INotificationDeliveryWriter
 {
     /// <inheritdoc/>
     public async Task RecordAsync(NotificationDeliveryAttempt attempt, CancellationToken cancellationToken = default)
     {
-        await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         db.DeliveryAttempts.Add(attempt);
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
@@ -29,7 +29,7 @@ internal sealed class EfCoreNotificationDeliveryStore(IDbContextFactory<Notifica
         int batchSize,
         CancellationToken cancellationToken = default)
     {
-        await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         return await db.DeliveryAttempts
             .Where(a => a.OccurredAt < cutoff)
             .OrderBy(a => a.OccurredAt)

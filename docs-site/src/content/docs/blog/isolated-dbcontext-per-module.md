@@ -27,9 +27,9 @@ Each Granit module that persists data owns a dedicated `DbContext` subclass. Tha
 
 Here is the real `DbContext` from the Localization module:
 
-```csharp title="GranitLocalizationOverridesDbContext.cs"
-internal sealed class GranitLocalizationOverridesDbContext(
-    DbContextOptions<GranitLocalizationOverridesDbContext> options,
+```csharp title="LocalizationDbContext.cs"
+internal sealed class LocalizationDbContext(
+    DbContextOptions<LocalizationDbContext> options,
     ICurrentTenant? currentTenant = null,
     IDataFilter? dataFilter = null)
     : DbContext(options)
@@ -122,7 +122,7 @@ This method does three things right:
 The module's own service registration becomes a one-liner:
 
 ```csharp title="LocalizationEntityFrameworkCoreHostApplicationBuilderExtensions.cs"
-services.AddGranitDbContext<GranitLocalizationOverridesDbContext>(
+services.AddGranitDbContext<LocalizationDbContext>(
     options => options.UseNpgsql(connectionString));
 ```
 

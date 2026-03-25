@@ -8,13 +8,13 @@ namespace Granit.Notifications.EntityFrameworkCore.Internal;
 /// EF Core implementation of <see cref="IMobilePushTokenReader"/> and <see cref="IMobilePushTokenWriter"/>.
 /// </summary>
 internal sealed class EfCoreMobilePushTokenStore(
-    IDbContextFactory<NotificationDbContext> dbContextFactory) : IMobilePushTokenReader, IMobilePushTokenWriter
+    IDbContextFactory<NotificationsDbContext> dbContextFactory) : IMobilePushTokenReader, IMobilePushTokenWriter
 {
     /// <inheritdoc />
     public async Task<IReadOnlyList<MobilePushTokenInfo>> GetTokensAsync(
         string userId, Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         return await db.MobilePushTokens
             .Where(t => t.UserId == userId && t.TenantId == tenantId)
@@ -26,7 +26,7 @@ internal sealed class EfCoreMobilePushTokenStore(
     /// <inheritdoc />
     public async Task RegisterAsync(MobilePushTokenInfo tokenInfo, CancellationToken cancellationToken = default)
     {
-        await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         MobilePushTokenEntity? existing = await db.MobilePushTokens
             .FirstOrDefaultAsync(t => t.DeviceToken == tokenInfo.DeviceToken && t.TenantId == tokenInfo.TenantId, cancellationToken)
@@ -54,7 +54,7 @@ internal sealed class EfCoreMobilePushTokenStore(
     /// <inheritdoc />
     public async Task RemoveAsync(string deviceToken, Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         await db.MobilePushTokens
             .Where(t => t.DeviceToken == deviceToken && t.TenantId == tenantId)

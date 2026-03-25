@@ -9,12 +9,12 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
 /// <see cref="IDbContextFactory{TContext}"/> for safe concurrent access.
 /// </summary>
 internal sealed class EfCoreApiKeyAdminStore(
-    IDbContextFactory<ApiKeysDbContext> contextFactory) : IApiKeyAdminStore
+    IDbContextFactory<AuthenticationApiKeysDbContext> contextFactory) : IApiKeyAdminStore
 {
     /// <inheritdoc/>
     public async Task<ApiKeyEntry?> FindByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        await using ApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
+        await using AuthenticationApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
         return await db.ApiKeys
@@ -32,7 +32,7 @@ internal sealed class EfCoreApiKeyAdminStore(
         int pageSize = 20,
         CancellationToken cancellationToken = default)
     {
-        await using ApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
+        await using AuthenticationApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
         IQueryable<ApiKeyEntry> query = db.ApiKeys.AsNoTracking();
@@ -74,7 +74,7 @@ internal sealed class EfCoreApiKeyAdminStore(
     {
         ArgumentNullException.ThrowIfNull(entry);
 
-        await using ApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
+        await using AuthenticationApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
         db.ApiKeys.Add(entry);
@@ -84,7 +84,7 @@ internal sealed class EfCoreApiKeyAdminStore(
     /// <inheritdoc/>
     public async Task<bool> RevokeAsync(Guid id, DateTimeOffset revokedAt, CancellationToken cancellationToken = default)
     {
-        await using ApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
+        await using AuthenticationApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
         ApiKeyEntry? entry = await db.ApiKeys
@@ -109,7 +109,7 @@ internal sealed class EfCoreApiKeyAdminStore(
         List<string> allowedCidrs,
         CancellationToken cancellationToken = default)
     {
-        await using ApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
+        await using AuthenticationApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
         ApiKeyEntry? entry = await db.ApiKeys

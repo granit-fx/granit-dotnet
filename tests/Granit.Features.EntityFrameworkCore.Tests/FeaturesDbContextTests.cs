@@ -6,10 +6,10 @@ using Xunit;
 
 namespace Granit.Features.EntityFrameworkCore.Tests;
 
-public sealed class GranitFeaturesDbContextTests
+public sealed class FeaturesDbContextTests
 {
-    private static GranitFeaturesDbContext CreateInMemory() =>
-        new(new DbContextOptionsBuilder<GranitFeaturesDbContext>()
+    private static FeaturesDbContext CreateInMemory() =>
+        new(new DbContextOptionsBuilder<FeaturesDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options);
 
@@ -20,7 +20,7 @@ public sealed class GranitFeaturesDbContextTests
     [Fact]
     public async Task EnsureCreatedAsync_WithInMemoryProvider_DoesNotThrow()
     {
-        await using GranitFeaturesDbContext ctx = CreateInMemory();
+        await using FeaturesDbContext ctx = CreateInMemory();
 
         Func<Task> act = () => ctx.Database.EnsureCreatedAsync(
             TestContext.Current.CancellationToken);
@@ -35,7 +35,7 @@ public sealed class GranitFeaturesDbContextTests
     [Fact]
     public void Model_TableName_IsSaasFeatureOverrides()
     {
-        using GranitFeaturesDbContext ctx = CreateInMemory();
+        using FeaturesDbContext ctx = CreateInMemory();
 
         string? tableName = ctx.Model
             .FindEntityType(typeof(TenantFeatureOverride))!
@@ -47,7 +47,7 @@ public sealed class GranitFeaturesDbContextTests
     [Fact]
     public void Model_UniqueIndex_OnTenantIdAndFeatureName()
     {
-        using GranitFeaturesDbContext ctx = CreateInMemory();
+        using FeaturesDbContext ctx = CreateInMemory();
 
         IEntityType entityType = ctx.Model.FindEntityType(typeof(TenantFeatureOverride))!;
 
@@ -62,7 +62,7 @@ public sealed class GranitFeaturesDbContextTests
     [Fact]
     public void Model_FeatureName_HasMaxLength200()
     {
-        using GranitFeaturesDbContext ctx = CreateInMemory();
+        using FeaturesDbContext ctx = CreateInMemory();
 
         IProperty? property = ctx.Model
             .FindEntityType(typeof(TenantFeatureOverride))!
@@ -75,7 +75,7 @@ public sealed class GranitFeaturesDbContextTests
     [Fact]
     public void Model_Value_HasMaxLength2000()
     {
-        using GranitFeaturesDbContext ctx = CreateInMemory();
+        using FeaturesDbContext ctx = CreateInMemory();
 
         IProperty? property = ctx.Model
             .FindEntityType(typeof(TenantFeatureOverride))!
@@ -92,7 +92,7 @@ public sealed class GranitFeaturesDbContextTests
     [Fact]
     public async Task SaveAndReload_AllFields_MatchOriginal()
     {
-        await using GranitFeaturesDbContext ctx = CreateInMemory();
+        await using FeaturesDbContext ctx = CreateInMemory();
         var tenantId = Guid.NewGuid();
 
         TenantFeatureOverride entity = new()

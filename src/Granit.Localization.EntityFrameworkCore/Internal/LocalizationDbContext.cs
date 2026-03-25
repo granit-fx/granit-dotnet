@@ -20,8 +20,8 @@ namespace Granit.Localization.EntityFrameworkCore.Internal;
 /// Compatible with PostgreSQL (ISO 27001 compliant).
 /// </para>
 /// </remarks>
-internal sealed class GranitLocalizationOverridesDbContext(
-    DbContextOptions<GranitLocalizationOverridesDbContext> options,
+internal sealed class LocalizationDbContext(
+    DbContextOptions<LocalizationDbContext> options,
     ICurrentTenant? currentTenant = null,
     IDataFilter? dataFilter = null)
     : DbContext(options)

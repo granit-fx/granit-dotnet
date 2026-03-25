@@ -4298,11 +4298,11 @@
       ]
     },
     {
-      "name": "GranitAuthenticationCognitoModule",
-      "fqn": "Granit.Authentication.JwtBearer.Cognito.GranitAuthenticationCognitoModule",
+      "name": "GranitAuthenticationJwtBearerCognitoModule",
+      "fqn": "Granit.Authentication.JwtBearer.Cognito.GranitAuthenticationJwtBearerCognitoModule",
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.Cognito",
-      "file": "src/Granit.Authentication.JwtBearer.Cognito/GranitAuthenticationCognitoModule.cs",
+      "file": "src/Granit.Authentication.JwtBearer.Cognito/GranitAuthenticationJwtBearerCognitoModule.cs",
       "line": 12,
       "members": [
         {
@@ -4374,11 +4374,11 @@
       ]
     },
     {
-      "name": "GranitAuthenticationEntraIdModule",
-      "fqn": "Granit.Authentication.JwtBearer.EntraId.GranitAuthenticationEntraIdModule",
+      "name": "GranitAuthenticationJwtBearerEntraIdModule",
+      "fqn": "Granit.Authentication.JwtBearer.EntraId.GranitAuthenticationJwtBearerEntraIdModule",
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.EntraId",
-      "file": "src/Granit.Authentication.JwtBearer.EntraId/GranitAuthenticationEntraIdModule.cs",
+      "file": "src/Granit.Authentication.JwtBearer.EntraId/GranitAuthenticationJwtBearerEntraIdModule.cs",
       "line": 12,
       "members": [
         {
@@ -4494,11 +4494,11 @@
       ]
     },
     {
-      "name": "GranitAuthenticationGoogleCloudModule",
-      "fqn": "Granit.Authentication.JwtBearer.GoogleCloud.GranitAuthenticationGoogleCloudModule",
+      "name": "GranitAuthenticationJwtBearerGoogleCloudModule",
+      "fqn": "Granit.Authentication.JwtBearer.GoogleCloud.GranitAuthenticationJwtBearerGoogleCloudModule",
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.GoogleCloud",
-      "file": "src/Granit.Authentication.JwtBearer.GoogleCloud/GranitAuthenticationGoogleCloudModule.cs",
+      "file": "src/Granit.Authentication.JwtBearer.GoogleCloud/GranitAuthenticationJwtBearerGoogleCloudModule.cs",
       "line": 13,
       "members": [
         {
@@ -4544,11 +4544,11 @@
       ]
     },
     {
-      "name": "GranitJwtBearerModule",
-      "fqn": "Granit.Authentication.JwtBearer.GranitJwtBearerModule",
+      "name": "GranitAuthenticationJwtBearerModule",
+      "fqn": "Granit.Authentication.JwtBearer.GranitAuthenticationJwtBearerModule",
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer",
-      "file": "src/Granit.Authentication.JwtBearer/GranitJwtBearerModule.cs",
+      "file": "src/Granit.Authentication.JwtBearer/GranitAuthenticationJwtBearerModule.cs",
       "line": 11,
       "members": [
         {
@@ -4592,11 +4592,11 @@
       ]
     },
     {
-      "name": "GranitAuthenticationKeycloakModule",
-      "fqn": "Granit.Authentication.JwtBearer.Keycloak.GranitAuthenticationKeycloakModule",
+      "name": "GranitAuthenticationJwtBearerKeycloakModule",
+      "fqn": "Granit.Authentication.JwtBearer.Keycloak.GranitAuthenticationJwtBearerKeycloakModule",
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.Keycloak",
-      "file": "src/Granit.Authentication.JwtBearer.Keycloak/GranitAuthenticationKeycloakModule.cs",
+      "file": "src/Granit.Authentication.JwtBearer.Keycloak/GranitAuthenticationJwtBearerKeycloakModule.cs",
       "line": 12,
       "members": [
         {
@@ -6511,15 +6511,6 @@
       "members": []
     },
     {
-      "name": "GranitBlobStorageDbStoreModule",
-      "fqn": "Granit.BlobStorage.Database.GranitBlobStorageDbStoreModule",
-      "kind": "class",
-      "project": "Granit.BlobStorage.Database",
-      "file": "src/Granit.BlobStorage.Database/GranitBlobStorageDbStoreModule.cs",
-      "line": 15,
-      "members": []
-    },
-    {
       "name": "DatabaseBlobOptions",
       "fqn": "Granit.BlobStorage.Database.Options.DatabaseBlobOptions",
       "kind": "class",
@@ -7681,11 +7672,11 @@
       ]
     },
     {
-      "name": "GranitCachingRedisModule",
-      "fqn": "Granit.Caching.StackExchangeRedis.GranitCachingRedisModule",
+      "name": "GranitCachingStackExchangeRedisModule",
+      "fqn": "Granit.Caching.StackExchangeRedis.GranitCachingStackExchangeRedisModule",
       "kind": "class",
       "project": "Granit.Caching.StackExchangeRedis",
-      "file": "src/Granit.Caching.StackExchangeRedis/GranitCachingRedisModule.cs",
+      "file": "src/Granit.Caching.StackExchangeRedis/GranitCachingStackExchangeRedisModule.cs",
       "line": 30,
       "members": [
         {
@@ -10329,15 +10320,6 @@
       "members": []
     },
     {
-      "name": "GranitEncryptionReEncryptionModule",
-      "fqn": "Granit.Encryption.BackgroundJobs.GranitEncryptionReEncryptionModule",
-      "kind": "class",
-      "project": "Granit.Encryption.BackgroundJobs",
-      "file": "src/Granit.Encryption.BackgroundJobs/GranitEncryptionReEncryptionModule.cs",
-      "line": 8,
-      "members": []
-    },
-    {
       "name": "IReEncryptionJob",
       "fqn": "Granit.Encryption.BackgroundJobs.IReEncryptionJob",
       "kind": "interface",
@@ -12890,11 +12872,11 @@
       ]
     },
     {
-      "name": "GranitExceptionHandlingModule",
-      "fqn": "Granit.Http.ExceptionHandling.GranitExceptionHandlingModule",
+      "name": "GranitHttpExceptionHandlingModule",
+      "fqn": "Granit.Http.ExceptionHandling.GranitHttpExceptionHandlingModule",
       "kind": "class",
       "project": "Granit.Http.ExceptionHandling",
-      "file": "src/Granit.Http.ExceptionHandling/GranitExceptionHandlingModule.cs",
+      "file": "src/Granit.Http.ExceptionHandling/GranitHttpExceptionHandlingModule.cs",
       "line": 14,
       "members": [
         {
@@ -13028,11 +13010,11 @@
       ]
     },
     {
-      "name": "GranitIdempotencyModule",
-      "fqn": "Granit.Http.Idempotency.GranitIdempotencyModule",
+      "name": "GranitHttpIdempotencyModule",
+      "fqn": "Granit.Http.Idempotency.GranitHttpIdempotencyModule",
       "kind": "class",
       "project": "Granit.Http.Idempotency",
-      "file": "src/Granit.Http.Idempotency/GranitIdempotencyModule.cs",
+      "file": "src/Granit.Http.Idempotency/GranitHttpIdempotencyModule.cs",
       "line": 15,
       "members": [
         {
@@ -16723,11 +16705,11 @@
       ]
     },
     {
-      "name": "GranitNotificationsEmailAcsModule",
-      "fqn": "Granit.Notifications.Email.AzureCommunicationServices.GranitNotificationsEmailAcsModule",
+      "name": "GranitNotificationsEmailAzureCommunicationServicesModule",
+      "fqn": "Granit.Notifications.Email.AzureCommunicationServices.GranitNotificationsEmailAzureCommunicationServicesModule",
       "kind": "class",
       "project": "Granit.Notifications.Email.AzureCommunicationServices",
-      "file": "src/Granit.Notifications.Email.AzureCommunicationServices/GranitNotificationsEmailAcsModule.cs",
+      "file": "src/Granit.Notifications.Email.AzureCommunicationServices/GranitNotificationsEmailAzureCommunicationServicesModule.cs",
       "line": 8,
       "members": [
         {
@@ -17189,8 +17171,8 @@
       "members": []
     },
     {
-      "name": "Notifications",
-      "fqn": "Granit.Notifications.Endpoints.Permissions.Notifications",
+      "name": "UserNotifications",
+      "fqn": "Granit.Notifications.Endpoints.Permissions.UserNotifications",
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/Permissions/NotificationPermissions.cs",
@@ -17515,11 +17497,11 @@
       ]
     },
     {
-      "name": "GranitNotificationsMobilePushAnhModule",
-      "fqn": "Granit.Notifications.MobilePush.AzureNotificationHubs.GranitNotificationsMobilePushAnhModule",
+      "name": "GranitNotificationsMobilePushAzureNotificationHubsModule",
+      "fqn": "Granit.Notifications.MobilePush.AzureNotificationHubs.GranitNotificationsMobilePushAzureNotificationHubsModule",
       "kind": "class",
       "project": "Granit.Notifications.MobilePush.AzureNotificationHubs",
-      "file": "src/Granit.Notifications.MobilePush.AzureNotificationHubs/GranitNotificationsMobilePushAnhModule.cs",
+      "file": "src/Granit.Notifications.MobilePush.AzureNotificationHubs/GranitNotificationsMobilePushAzureNotificationHubsModule.cs",
       "line": 14,
       "members": [
         {
@@ -18972,11 +18954,11 @@
       "members": []
     },
     {
-      "name": "GranitAuthenticationOidcModule",
-      "fqn": "Granit.Oidc.GranitAuthenticationOidcModule",
+      "name": "GranitOidcModule",
+      "fqn": "Granit.Oidc.GranitOidcModule",
       "kind": "class",
       "project": "Granit.Oidc",
-      "file": "src/Granit.Oidc/GranitAuthenticationOidcModule.cs",
+      "file": "src/Granit.Oidc/GranitOidcModule.cs",
       "line": 17,
       "members": [
         {
@@ -19250,11 +19232,11 @@
       ]
     },
     {
-      "name": "GranitAuthenticationTokenManagementModule",
-      "fqn": "Granit.Oidc.TokenManagement.GranitAuthenticationTokenManagementModule",
+      "name": "GranitOidcTokenManagementModule",
+      "fqn": "Granit.Oidc.TokenManagement.GranitOidcTokenManagementModule",
       "kind": "class",
       "project": "Granit.Oidc.TokenManagement",
-      "file": "src/Granit.Oidc.TokenManagement/GranitAuthenticationTokenManagementModule.cs",
+      "file": "src/Granit.Oidc.TokenManagement/GranitOidcTokenManagementModule.cs",
       "line": 16,
       "members": [
         {
@@ -19581,7 +19563,7 @@
       "kind": "enum",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Domain/SigningKey.cs",
-      "line": 98,
+      "line": 95,
       "members": []
     },
     {
@@ -19702,15 +19684,6 @@
       "members": []
     },
     {
-      "name": "AdminGroupResponse",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminGroupResponse",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminGroupResponse.cs",
-      "line": 10,
-      "members": []
-    },
-    {
       "name": "AdminOidcApplicationResponse",
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcApplicationResponse",
       "kind": "record",
@@ -19735,33 +19708,6 @@
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcScopeResponse.cs",
       "line": 9,
-      "members": []
-    },
-    {
-      "name": "AdminRoleResponse",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminRoleResponse",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminRoleResponse.cs",
-      "line": 8,
-      "members": []
-    },
-    {
-      "name": "AdminUserCreateRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminUserCreateRequest",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminUserCreateRequest.cs",
-      "line": 9,
-      "members": []
-    },
-    {
-      "name": "AdminUserResponse",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminUserResponse",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminUserResponse.cs",
-      "line": 13,
       "members": []
     },
     {
@@ -20269,7 +20215,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
-      "line": 65,
+      "line": 24,
       "members": []
     },
     {
@@ -20278,16 +20224,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
-      "line": 100,
-      "members": []
-    },
-    {
-      "name": "Groups",
-      "fqn": "Granit.OpenIddict.Permissions.Groups",
-      "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
-      "line": 49,
+      "line": 59,
       "members": []
     },
     {
@@ -20300,21 +20237,12 @@
       "members": []
     },
     {
-      "name": "Roles",
-      "fqn": "Granit.OpenIddict.Permissions.Roles",
-      "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
-      "line": 36,
-      "members": []
-    },
-    {
       "name": "Scopes",
       "fqn": "Granit.OpenIddict.Permissions.Scopes",
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
-      "line": 84,
+      "line": 43,
       "members": []
     },
     {

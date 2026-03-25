@@ -32,7 +32,7 @@ public static class NotificationsEfCoreHostApplicationBuilderExtensions
     ///   <item><see cref="EfCoreNotificationSubscriptionStore"/> — replaces <c>InMemoryNotificationSubscriptionStore</c>.</item>
     ///   <item><see cref="EfCoreNotificationDeliveryStore"/> — replaces <c>NullNotificationDeliveryStore</c> (enables ISO 27001 audit trail).</item>
     ///   <item><see cref="EfCoreMobilePushTokenStore"/> — replaces <c>InMemoryMobilePushTokenStore</c>.</item>
-    ///   <item><see cref="Internal.NotificationDbContext"/> — registered via <c>IDbContextFactory</c> for thread-safe usage in Wolverine handlers.</item>
+    ///   <item><see cref="Internal.NotificationsDbContext"/> — registered via <c>IDbContextFactory</c> for thread-safe usage in Wolverine handlers.</item>
     /// </list>
     /// </remarks>
     /// <param name="builder">The host application builder.</param>
@@ -43,7 +43,7 @@ public static class NotificationsEfCoreHostApplicationBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.TryAddScoped<EntityTrackingInterceptor>();
-        builder.Services.AddDbContextFactory<NotificationDbContext>((sp, options) =>
+        builder.Services.AddDbContextFactory<NotificationsDbContext>((sp, options) =>
         {
             configure(options);
             options.UseGranitInterceptors(sp);

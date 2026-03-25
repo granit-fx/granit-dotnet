@@ -22,7 +22,7 @@ public static class BlobStorageDatabaseHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Adds <c>Granit.BlobStorage.Database</c> services: database client, key strategy, isolated
-    /// <see cref="DbStoreBlobStorageDbContext"/>, and the <see cref="IBlobStorage"/> orchestrator.
+    /// <see cref="BlobStorageDbStoreDbContext"/>, and the <see cref="IBlobStorage"/> orchestrator.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -49,7 +49,7 @@ public static class BlobStorageDatabaseHostApplicationBuilderExtensions
 
         builder.Services.AddSingleton<IValidateOptions<DbStoreBlobOptions>, DbStoreBlobOptionsValidator>();
 
-        builder.Services.AddGranitDbContext<DbStoreBlobStorageDbContext>(configure);
+        builder.Services.AddGranitDbContext<BlobStorageDbStoreDbContext>(configure);
 
         builder.Services.AddScoped<IBlobStoreProvider, DbStoreBlobClient>();
         builder.Services.AddScoped<IBlobKeyStrategy, DbStoreBlobKeyStrategy>();

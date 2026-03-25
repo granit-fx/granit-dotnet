@@ -11,10 +11,10 @@ public sealed class FeaturesModelBuilderExtensionsTests
 {
     private static IModel BuildModel()
     {
-        DbContextOptionsBuilder<GranitFeaturesDbContext> optionsBuilder = new();
+        DbContextOptionsBuilder<FeaturesDbContext> optionsBuilder = new();
         optionsBuilder.UseInMemoryDatabase(Guid.NewGuid().ToString());
 
-        using GranitFeaturesDbContext context = new(optionsBuilder.Options);
+        using FeaturesDbContext context = new(optionsBuilder.Options);
         return context.Model;
     }
 

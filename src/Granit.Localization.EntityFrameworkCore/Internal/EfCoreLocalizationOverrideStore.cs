@@ -12,18 +12,18 @@ namespace Granit.Localization.EntityFrameworkCore.Internal;
 /// Registered as a keyed service (<c>"efcore-raw"</c>) and wrapped by
 /// <c>CachedLocalizationOverrideStore</c> which is the default reader/writer.
 /// Each operation uses <see cref="IDbContextFactory{TContext}"/> to create and dispose its own
-/// <see cref="GranitLocalizationOverridesDbContext"/>, making it safe for concurrent request handling.
+/// <see cref="LocalizationDbContext"/>, making it safe for concurrent request handling.
 /// </remarks>
 internal sealed class EfCoreLocalizationOverrideStore(
-    IDbContextFactory<GranitLocalizationOverridesDbContext> contextFactory) : ILocalizationOverrideStoreReader, ILocalizationOverrideStoreWriter
+    IDbContextFactory<LocalizationDbContext> contextFactory) : ILocalizationOverrideStoreReader, ILocalizationOverrideStoreWriter
 {
-    private readonly IDbContextFactory<GranitLocalizationOverridesDbContext> _contextFactory = contextFactory;
+    private readonly IDbContextFactory<LocalizationDbContext> _contextFactory = contextFactory;
 
     /// <inheritdoc/>
     public async Task<IReadOnlyDictionary<string, string>> GetOverridesAsync(
         string resourceName, string culture, CancellationToken cancellationToken = default)
     {
-        await using GranitLocalizationOverridesDbContext context =
+        await using LocalizationDbContext context =
             await _contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         List<LocalizationOverride> rows = await context.LocalizationOverrides
@@ -38,7 +38,7 @@ internal sealed class EfCoreLocalizationOverrideStore(
     public async Task SetOverrideAsync(
         string resourceName, string culture, string key, string value, CancellationToken cancellationToken = default)
     {
-        await using GranitLocalizationOverridesDbContext context =
+        await using LocalizationDbContext context =
             await _contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         LocalizationOverride? existing = await context.LocalizationOverrides
@@ -68,7 +68,7 @@ internal sealed class EfCoreLocalizationOverrideStore(
     public async Task RemoveOverrideAsync(
         string resourceName, string culture, string key, CancellationToken cancellationToken = default)
     {
-        await using GranitLocalizationOverridesDbContext context =
+        await using LocalizationDbContext context =
             await _contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         LocalizationOverride? existing = await context.LocalizationOverrides

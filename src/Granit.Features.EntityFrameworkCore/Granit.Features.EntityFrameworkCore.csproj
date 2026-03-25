@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Features.EntityFrameworkCore</PackageId>
-    <Description>EF Core persistence for Granit.Features. Provides TenantFeatureOverride entity, GranitFeaturesDbContext, and EfCoreFeatureStore with ISO 27001 audit trail via Granit.Persistence interceptors.</Description>
+    <Description>EF Core persistence for Granit.Features. Provides TenantFeatureOverride entity, FeaturesDbContext, and EfCoreFeatureStore with ISO 27001 audit trail via Granit.Persistence interceptors.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

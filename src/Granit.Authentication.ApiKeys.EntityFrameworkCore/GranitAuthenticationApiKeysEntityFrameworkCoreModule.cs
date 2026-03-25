@@ -7,7 +7,7 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore;
 /// Granit module that registers EF Core persistence for API keys.
 /// </summary>
 /// <remarks>
-/// The <see cref="Internal.ApiKeysDbContext"/> must be configured by the host application
+/// The <see cref="Internal.AuthenticationApiKeysDbContext"/> must be configured by the host application
 /// (connection string). This module only registers the store implementations.
 /// </remarks>
 [DependsOn(

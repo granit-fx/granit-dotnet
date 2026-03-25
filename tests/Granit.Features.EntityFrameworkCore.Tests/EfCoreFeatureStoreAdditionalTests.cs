@@ -14,14 +14,14 @@ public sealed class EfCoreFeatureStoreAdditionalTests
     // Test infrastructure
     // -------------------------------------------------------------------------
 
-    private sealed class InMemoryContextFactory(string dbName) : IDbContextFactory<GranitFeaturesDbContext>
+    private sealed class InMemoryContextFactory(string dbName) : IDbContextFactory<FeaturesDbContext>
     {
-        public GranitFeaturesDbContext CreateDbContext() =>
-            new(new DbContextOptionsBuilder<GranitFeaturesDbContext>()
+        public FeaturesDbContext CreateDbContext() =>
+            new(new DbContextOptionsBuilder<FeaturesDbContext>()
                 .UseInMemoryDatabase(dbName)
                 .Options);
 
-        public Task<GranitFeaturesDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
+        public Task<FeaturesDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
             Task.FromResult(CreateDbContext());
     }
 

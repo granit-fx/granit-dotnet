@@ -14,14 +14,14 @@ public sealed class EfCoreFeatureStoreTests
     // Test infrastructure
     // -------------------------------------------------------------------------
 
-    private sealed class InMemoryContextFactory(string dbName) : IDbContextFactory<GranitFeaturesDbContext>
+    private sealed class InMemoryContextFactory(string dbName) : IDbContextFactory<FeaturesDbContext>
     {
-        public GranitFeaturesDbContext CreateDbContext() =>
-            new(new DbContextOptionsBuilder<GranitFeaturesDbContext>()
+        public FeaturesDbContext CreateDbContext() =>
+            new(new DbContextOptionsBuilder<FeaturesDbContext>()
                 .UseInMemoryDatabase(dbName)
                 .Options);
 
-        public Task<GranitFeaturesDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
+        public Task<FeaturesDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
             Task.FromResult(CreateDbContext());
     }
 
@@ -38,7 +38,7 @@ public sealed class EfCoreFeatureStoreTests
         CancellationToken cancellationToken = default)
     {
         InMemoryContextFactory factory = new(dbName);
-        await using GranitFeaturesDbContext ctx = factory.CreateDbContext();
+        await using FeaturesDbContext ctx = factory.CreateDbContext();
         ctx.FeatureOverrides.Add(new TenantFeatureOverride
         {
             Id = Guid.NewGuid(),
@@ -175,7 +175,7 @@ public sealed class EfCoreFeatureStoreTests
             TestContext.Current.CancellationToken);
 
         InMemoryContextFactory factory = new(db);
-        await using GranitFeaturesDbContext ctx = factory.CreateDbContext();
+        await using FeaturesDbContext ctx = factory.CreateDbContext();
         int count = await ctx.FeatureOverrides.CountAsync(
             o => o.FeatureName == "Acme.Feature" && o.TenantId == tenantId,
             TestContext.Current.CancellationToken);

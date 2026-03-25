@@ -9,12 +9,12 @@ namespace Granit.Notifications.EntityFrameworkCore.Internal;
 /// EF Core implementation of <see cref="IUserNotificationReader"/> and
 /// <see cref="IUserNotificationWriter"/> backed by PostgreSQL.
 /// </summary>
-internal sealed class EfCoreUserNotificationStore(IDbContextFactory<NotificationDbContext> dbContextFactory) : IUserNotificationReader, IUserNotificationWriter
+internal sealed class EfCoreUserNotificationStore(IDbContextFactory<NotificationsDbContext> dbContextFactory) : IUserNotificationReader, IUserNotificationWriter
 {
     /// <inheritdoc/>
     public async Task InsertAsync(UserNotification notification, CancellationToken cancellationToken = default)
     {
-        await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         db.UserNotifications.Add(notification);
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
@@ -22,7 +22,7 @@ internal sealed class EfCoreUserNotificationStore(IDbContextFactory<Notification
     /// <inheritdoc/>
     public async Task<UserNotification?> GetAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         return await db.UserNotifications.FindAsync([id], cancellationToken).ConfigureAwait(false);
     }
 
@@ -32,7 +32,7 @@ internal sealed class EfCoreUserNotificationStore(IDbContextFactory<Notification
         int clampedPage = Math.Max(page, 1);
         int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
 
-        await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         IQueryable<UserNotification> query = db.UserNotifications
             .Where(n => n.RecipientUserId == recipientUserId && n.TenantId == tenantId);
@@ -51,7 +51,7 @@ internal sealed class EfCoreUserNotificationStore(IDbContextFactory<Notification
     /// <inheritdoc/>
     public async Task<int> GetUnreadCountAsync(string recipientUserId, Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         return await db.UserNotifications
             .CountAsync(n => n.RecipientUserId == recipientUserId && n.TenantId == tenantId && n.State == UserNotificationState.Unread, cancellationToken).ConfigureAwait(false);
     }
@@ -59,7 +59,7 @@ internal sealed class EfCoreUserNotificationStore(IDbContextFactory<Notification
     /// <inheritdoc/>
     public async Task MarkAsReadAsync(Guid id, DateTimeOffset readAt, CancellationToken cancellationToken = default)
     {
-        await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         UserNotification? notification = await db.UserNotifications
             .FirstOrDefaultAsync(n => n.Id == id, cancellationToken).ConfigureAwait(false);
@@ -76,7 +76,7 @@ internal sealed class EfCoreUserNotificationStore(IDbContextFactory<Notification
     /// <inheritdoc/>
     public async Task MarkAllAsReadAsync(string recipientUserId, Guid? tenantId, DateTimeOffset readAt, CancellationToken cancellationToken = default)
     {
-        await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         List<UserNotification> unread = await db.UserNotifications
             .Where(n => n.RecipientUserId == recipientUserId && n.TenantId == tenantId && n.State == UserNotificationState.Unread)
@@ -96,7 +96,7 @@ internal sealed class EfCoreUserNotificationStore(IDbContextFactory<Notification
         int clampedPage = Math.Max(page, 1);
         int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
 
-        await using NotificationDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         IQueryable<UserNotification> query = db.UserNotifications
             .Where(n => n.RelatedEntityType == entityType && n.RelatedEntityId == entityId && n.TenantId == tenantId);

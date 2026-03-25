@@ -23,7 +23,7 @@ namespace Granit.BlobStorage.Database.Internal;
 // Infrastructure adapter over EF Core. Integration tests use in-memory database.
 [ExcludeFromCodeCoverage]
 internal sealed class DatabaseBlobClient(
-    IDbContextFactory<DatabaseBlobStorageDbContext> contextFactory,
+    IDbContextFactory<BlobStorageDatabaseDbContext> contextFactory,
     IOptions<DatabaseBlobOptions> options,
     IClock clock,
     IGuidGenerator guidGenerator) : IBlobStoreProvider
@@ -50,7 +50,7 @@ internal sealed class DatabaseBlobClient(
                 $"Blob size ({bytes.Length} bytes) exceeds the maximum allowed size ({options.Value.MaxBlobSizeBytes} bytes).");
         }
 
-        await using DatabaseBlobStorageDbContext context =
+        await using BlobStorageDatabaseDbContext context =
             await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         DatabaseBlobContent entity = new()
@@ -74,7 +74,7 @@ internal sealed class DatabaseBlobClient(
         using Activity? activity = BlobStorageDatabaseActivitySource.Source.StartActivity(BlobStorageDatabaseActivitySource.Read);
         activity?.SetTag(BlobStorageDatabaseActivitySource.TagObjectKey, objectKey);
 
-        await using DatabaseBlobStorageDbContext context =
+        await using BlobStorageDatabaseDbContext context =
             await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         DatabaseBlobContent entity = await context.BlobContents
@@ -95,7 +95,7 @@ internal sealed class DatabaseBlobClient(
         using Activity? activity = BlobStorageDatabaseActivitySource.Source.StartActivity(BlobStorageDatabaseActivitySource.Delete);
         activity?.SetTag(BlobStorageDatabaseActivitySource.TagObjectKey, objectKey);
 
-        await using DatabaseBlobStorageDbContext context =
+        await using BlobStorageDatabaseDbContext context =
             await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         await context.BlobContents
@@ -113,7 +113,7 @@ internal sealed class DatabaseBlobClient(
         using Activity? activity = BlobStorageDatabaseActivitySource.Source.StartActivity(BlobStorageDatabaseActivitySource.GetSize);
         activity?.SetTag(BlobStorageDatabaseActivitySource.TagObjectKey, objectKey);
 
-        await using DatabaseBlobStorageDbContext context =
+        await using BlobStorageDatabaseDbContext context =
             await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         DatabaseBlobContent entity = await context.BlobContents
@@ -135,7 +135,7 @@ internal sealed class DatabaseBlobClient(
         using Activity? activity = BlobStorageDatabaseActivitySource.Source.StartActivity(BlobStorageDatabaseActivitySource.PartialStream);
         activity?.SetTag(BlobStorageDatabaseActivitySource.TagObjectKey, objectKey);
 
-        await using DatabaseBlobStorageDbContext context =
+        await using BlobStorageDatabaseDbContext context =
             await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         DatabaseBlobContent entity = await context.BlobContents

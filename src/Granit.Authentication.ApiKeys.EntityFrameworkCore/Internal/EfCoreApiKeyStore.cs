@@ -9,13 +9,13 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
 /// <see cref="IDbContextFactory{TContext}"/> for safe concurrent access.
 /// </summary>
 internal sealed partial class EfCoreApiKeyStore(
-    IDbContextFactory<ApiKeysDbContext> contextFactory,
+    IDbContextFactory<AuthenticationApiKeysDbContext> contextFactory,
     ILogger<EfCoreApiKeyStore> logger) : IApiKeyStore
 {
     /// <inheritdoc/>
     public async Task<ApiKeyEntry?> FindByHashAsync(string hashedKey, CancellationToken cancellationToken = default)
     {
-        await using ApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
+        await using AuthenticationApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
         return await db.ApiKeys
@@ -29,7 +29,7 @@ internal sealed partial class EfCoreApiKeyStore(
     {
         try
         {
-            await using ApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
+            await using AuthenticationApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             await db.ApiKeys

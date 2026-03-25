@@ -52,7 +52,7 @@ public sealed class EfCoreApiKeyAdminStoreTests : IDisposable
 
         await _sut.CreateAsync(entry, TestContext.Current.CancellationToken);
 
-        await using ApiKeysDbContext db = _factory.CreateDbContext();
+        await using AuthenticationApiKeysDbContext db = _factory.CreateDbContext();
         ApiKeyEntry? persisted = await db.ApiKeys
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(k => k.Id == entry.Id, TestContext.Current.CancellationToken);
@@ -81,7 +81,7 @@ public sealed class EfCoreApiKeyAdminStoreTests : IDisposable
 
         result.ShouldBeTrue();
 
-        await using ApiKeysDbContext db = _factory.CreateDbContext();
+        await using AuthenticationApiKeysDbContext db = _factory.CreateDbContext();
         ApiKeyEntry? updated = await db.ApiKeys
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(k => k.Id == entry.Id, TestContext.Current.CancellationToken);
@@ -131,7 +131,7 @@ public sealed class EfCoreApiKeyAdminStoreTests : IDisposable
 
         result.ShouldBeTrue();
 
-        await using ApiKeysDbContext db = _factory.CreateDbContext();
+        await using AuthenticationApiKeysDbContext db = _factory.CreateDbContext();
         ApiKeyEntry? updated = await db.ApiKeys
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(k => k.Id == entry.Id, TestContext.Current.CancellationToken);
@@ -278,7 +278,7 @@ public sealed class EfCoreApiKeyAdminStoreTests : IDisposable
 
     private async Task SeedAsync(ApiKeyEntry entry)
     {
-        await using ApiKeysDbContext db = _factory.CreateDbContext();
+        await using AuthenticationApiKeysDbContext db = _factory.CreateDbContext();
         db.ApiKeys.Add(entry);
         await db.SaveChangesAsync(TestContext.Current.CancellationToken);
     }

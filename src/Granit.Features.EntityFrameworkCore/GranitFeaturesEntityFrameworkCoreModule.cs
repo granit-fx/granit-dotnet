@@ -5,7 +5,7 @@ namespace Granit.Features.EntityFrameworkCore;
 
 /// <summary>
 /// Granit module for EF Core persistence of feature value overrides.
-/// Registers <see cref="Internal.GranitFeaturesDbContext"/> and <see cref="Internal.EfCoreFeatureStore"/>.
+/// Registers <see cref="Internal.FeaturesDbContext"/> and <see cref="Internal.EfCoreFeatureStore"/>.
 /// </summary>
 /// <remarks>
 /// Register via the host application's builder:

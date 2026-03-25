@@ -5,7 +5,7 @@ namespace Granit.Localization.EntityFrameworkCore;
 
 /// <summary>
 /// Granit module for EF Core persistence of localization overrides.
-/// Registers <see cref="Internal.GranitLocalizationOverridesDbContext"/> and
+/// Registers <see cref="Internal.LocalizationDbContext"/> and
 /// <see cref="Internal.EfCoreLocalizationOverrideStore"/> wrapped by <c>CachedLocalizationOverrideStore</c>.
 /// </summary>
 /// <remarks>

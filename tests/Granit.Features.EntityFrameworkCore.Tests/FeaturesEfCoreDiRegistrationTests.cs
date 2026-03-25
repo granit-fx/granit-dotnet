@@ -65,7 +65,7 @@ public sealed class FeaturesEfCoreDiRegistrationTests
             opts.UseInMemoryDatabase("features-factory"));
 
         builder.Services.ShouldContain(d =>
-            d.ServiceType == typeof(IDbContextFactory<GranitFeaturesDbContext>) &&
+            d.ServiceType == typeof(IDbContextFactory<FeaturesDbContext>) &&
             d.Lifetime == ServiceLifetime.Scoped);
     }
 }

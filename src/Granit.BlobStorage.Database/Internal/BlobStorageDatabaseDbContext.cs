@@ -11,8 +11,8 @@ namespace Granit.BlobStorage.Database.Internal;
 /// Isolated <see cref="DbContext"/> for blob content storage.
 /// Separate from <c>BlobStorageDbContext</c> (which stores descriptors).
 /// </summary>
-internal sealed class DatabaseBlobStorageDbContext(
-    DbContextOptions<DatabaseBlobStorageDbContext> options,
+internal sealed class BlobStorageDatabaseDbContext(
+    DbContextOptions<BlobStorageDatabaseDbContext> options,
     ICurrentTenant? currentTenant = null,
     IDataFilter? dataFilter = null)
     : DbContext(options)

@@ -11,8 +11,8 @@ namespace Granit.Notifications.EntityFrameworkCore.Internal;
 /// <summary>
 /// EF Core DbContext for notification persistence.
 /// </summary>
-internal sealed class NotificationDbContext(
-    DbContextOptions<NotificationDbContext> options,
+internal sealed class NotificationsDbContext(
+    DbContextOptions<NotificationsDbContext> options,
     ICurrentTenant? currentTenant = null,
     IDataFilter? dataFilter = null)
     : DbContext(options)

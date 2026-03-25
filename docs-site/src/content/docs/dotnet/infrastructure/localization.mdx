@@ -36,7 +36,7 @@ international from the first commit.
 | Package | Role | Depends on |
 |---------|------|------------|
 | `Granit.Localization` | `GranitLocalizationModule`, JSON localizer, override store abstractions | `Granit` |
-| `Granit.Localization.EntityFrameworkCore` | `GranitLocalizationOverridesDbContext`, `EfCoreLocalizationOverrideStore` | `Granit.Localization`, `Granit.Persistence` |
+| `Granit.Localization.EntityFrameworkCore` | `LocalizationDbContext`, `EfCoreLocalizationOverrideStore` | `Granit.Localization`, `Granit.Persistence` |
 | `Granit.Localization.Endpoints` | Anonymous SPA endpoint, override CRUD endpoints | `Granit.Localization`, `Granit.Authorization` |
 | `Granit.Localization.SourceGenerator` | Build-time `LocalizationKeys` class generation | _(analyzer, no runtime dependency)_ |
 
@@ -352,7 +352,7 @@ classes matching the resource prefix.
 | Options | `GranitLocalizationOptions` (`EnableAutoDiscovery`, `Resources`, `Languages`, `FormattingCultures`) | `Granit.Localization` |
 | Abstractions | `ILocalizationOverrideStoreReader`, `ILocalizationOverrideStoreWriter` | `Granit.Localization` |
 | Caching | `CachedLocalizationOverrideStore` _(internal)_ | `Granit.Localization` |
-| EF Core | `GranitLocalizationOverridesDbContext`, `EfCoreLocalizationOverrideStore` _(internal)_ | `Granit.Localization.EntityFrameworkCore` |
+| EF Core | `LocalizationDbContext`, `EfCoreLocalizationOverrideStore` _(internal)_ | `Granit.Localization.EntityFrameworkCore` |
 | Endpoints | `MapGranitLocalization()`, `MapGranitLocalizationOverrides()` | `Granit.Localization.Endpoints` |
 | Generator | `LocalizationKeysGenerator` | `Granit.Localization.SourceGenerator` |
 

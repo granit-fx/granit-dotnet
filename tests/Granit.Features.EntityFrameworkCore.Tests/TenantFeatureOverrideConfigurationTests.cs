@@ -8,8 +8,8 @@ namespace Granit.Features.EntityFrameworkCore.Tests;
 
 public sealed class TenantFeatureOverrideConfigurationTests
 {
-    private static GranitFeaturesDbContext CreateInMemory() =>
-        new(new DbContextOptionsBuilder<GranitFeaturesDbContext>()
+    private static FeaturesDbContext CreateInMemory() =>
+        new(new DbContextOptionsBuilder<FeaturesDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options);
 
@@ -20,7 +20,7 @@ public sealed class TenantFeatureOverrideConfigurationTests
     [Fact]
     public void CreatedAt_IsRequired()
     {
-        using GranitFeaturesDbContext ctx = CreateInMemory();
+        using FeaturesDbContext ctx = CreateInMemory();
 
         IProperty property = ctx.Model
             .FindEntityType(typeof(TenantFeatureOverride))!
@@ -32,7 +32,7 @@ public sealed class TenantFeatureOverrideConfigurationTests
     [Fact]
     public void CreatedBy_HasMaxLength450_AndIsRequired()
     {
-        using GranitFeaturesDbContext ctx = CreateInMemory();
+        using FeaturesDbContext ctx = CreateInMemory();
 
         IProperty property = ctx.Model
             .FindEntityType(typeof(TenantFeatureOverride))!
@@ -45,7 +45,7 @@ public sealed class TenantFeatureOverrideConfigurationTests
     [Fact]
     public void ModifiedBy_HasMaxLength450()
     {
-        using GranitFeaturesDbContext ctx = CreateInMemory();
+        using FeaturesDbContext ctx = CreateInMemory();
 
         IProperty property = ctx.Model
             .FindEntityType(typeof(TenantFeatureOverride))!
@@ -57,7 +57,7 @@ public sealed class TenantFeatureOverrideConfigurationTests
     [Fact]
     public void ModifiedAt_IsNullable()
     {
-        using GranitFeaturesDbContext ctx = CreateInMemory();
+        using FeaturesDbContext ctx = CreateInMemory();
 
         IProperty property = ctx.Model
             .FindEntityType(typeof(TenantFeatureOverride))!
@@ -73,7 +73,7 @@ public sealed class TenantFeatureOverrideConfigurationTests
     [Fact]
     public void UniqueIndex_HasExpectedDatabaseName()
     {
-        using GranitFeaturesDbContext ctx = CreateInMemory();
+        using FeaturesDbContext ctx = CreateInMemory();
 
         IEntityType entityType = ctx.Model.FindEntityType(typeof(TenantFeatureOverride))!;
 
@@ -93,7 +93,7 @@ public sealed class TenantFeatureOverrideConfigurationTests
     [Fact]
     public void TenantId_IsNullable()
     {
-        using GranitFeaturesDbContext ctx = CreateInMemory();
+        using FeaturesDbContext ctx = CreateInMemory();
 
         IProperty property = ctx.Model
             .FindEntityType(typeof(TenantFeatureOverride))!
@@ -109,7 +109,7 @@ public sealed class TenantFeatureOverrideConfigurationTests
     [Fact]
     public void PrimaryKey_IsId()
     {
-        using GranitFeaturesDbContext ctx = CreateInMemory();
+        using FeaturesDbContext ctx = CreateInMemory();
 
         IEntityType entityType = ctx.Model.FindEntityType(typeof(TenantFeatureOverride))!;
         IKey? pk = entityType.FindPrimaryKey();

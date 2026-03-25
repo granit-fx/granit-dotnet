@@ -7,7 +7,7 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore;
 /// <para>
 /// These properties control the table prefix and schema used by all entity configurations
 /// in <c>Granit.Authentication.ApiKeys.EntityFrameworkCore</c>. Both the internal
-/// <c>ApiKeysDbContext</c> and the host's <c>Configure*Module()</c> call read
+/// <c>AuthenticationApiKeysDbContext</c> and the host's <c>Configure*Module()</c> call read
 /// the same static values, ensuring migration-time and runtime SQL stay in sync.
 /// </para>
 /// <para>

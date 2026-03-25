@@ -8,36 +8,36 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests;
 
 /// <summary>
-/// Creates <see cref="ApiKeysDbContext"/> instances backed by SQLite in-memory
+/// Creates <see cref="AuthenticationApiKeysDbContext"/> instances backed by SQLite in-memory
 /// for fast, isolated integration tests that support all relational operations
 /// (including <c>ExecuteUpdateAsync</c> / <c>ExecuteDeleteAsync</c>).
 /// </summary>
-internal sealed class TestDbContextFactory : IDbContextFactory<ApiKeysDbContext>, IDisposable
+internal sealed class TestDbContextFactory : IDbContextFactory<AuthenticationApiKeysDbContext>, IDisposable
 {
     private readonly SqliteConnection _connection;
-    private readonly DbContextOptions<ApiKeysDbContext> _options;
+    private readonly DbContextOptions<AuthenticationApiKeysDbContext> _options;
 
-    private TestDbContextFactory(SqliteConnection connection, DbContextOptions<ApiKeysDbContext> options)
+    private TestDbContextFactory(SqliteConnection connection, DbContextOptions<AuthenticationApiKeysDbContext> options)
     {
         _connection = connection;
         _options = options;
     }
 
-    public DbContextOptions<ApiKeysDbContext> Options => _options;
+    public DbContextOptions<AuthenticationApiKeysDbContext> Options => _options;
 
     public static TestDbContextFactory Create()
     {
         SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
 
-        DbContextOptionsBuilder<ApiKeysDbContext> optionsBuilder = new();
+        DbContextOptionsBuilder<AuthenticationApiKeysDbContext> optionsBuilder = new();
         optionsBuilder.UseSqlite(connection);
         optionsBuilder.ReplaceService<IModelCustomizer, SqliteCompatibleModelCustomizer>();
 
-        DbContextOptions<ApiKeysDbContext> options = optionsBuilder.Options;
+        DbContextOptions<AuthenticationApiKeysDbContext> options = optionsBuilder.Options;
 
         // Create the schema
-        using (ApiKeysDbContext db = new(options))
+        using (AuthenticationApiKeysDbContext db = new(options))
         {
             db.Database.EnsureCreated();
         }
@@ -45,7 +45,7 @@ internal sealed class TestDbContextFactory : IDbContextFactory<ApiKeysDbContext>
         return new TestDbContextFactory(connection, options);
     }
 
-    public ApiKeysDbContext CreateDbContext() => new(_options);
+    public AuthenticationApiKeysDbContext CreateDbContext() => new(_options);
 
     public void Dispose() => _connection.Dispose();
 }

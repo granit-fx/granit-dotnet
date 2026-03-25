@@ -27,7 +27,7 @@ public sealed class ApiKeysEntityFrameworkCoreServiceCollectionExtensionsTests
 
         ServiceProvider provider = services.BuildServiceProvider();
 
-        provider.GetService<IDbContextFactory<ApiKeysDbContext>>().ShouldNotBeNull();
+        provider.GetService<IDbContextFactory<AuthenticationApiKeysDbContext>>().ShouldNotBeNull();
         provider.GetService<IApiKeyStore>().ShouldNotBeNull();
         provider.GetService<IApiKeyAdminStore>().ShouldNotBeNull();
     }
@@ -85,7 +85,7 @@ public sealed class ApiKeysEntityFrameworkCoreServiceCollectionExtensionsTests
 
         ServiceProvider provider = services.BuildServiceProvider();
         using IServiceScope scope = provider.CreateScope();
-        IDbContextFactory<ApiKeysDbContext> factory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApiKeysDbContext>>();
+        IDbContextFactory<AuthenticationApiKeysDbContext> factory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<AuthenticationApiKeysDbContext>>();
         factory.ShouldNotBeNull();
     }
 
@@ -100,7 +100,7 @@ public sealed class ApiKeysEntityFrameworkCoreServiceCollectionExtensionsTests
 
         ServiceProvider provider = services.BuildServiceProvider();
         using IServiceScope scope = provider.CreateScope();
-        IDbContextFactory<ApiKeysDbContext> factory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<ApiKeysDbContext>>();
+        IDbContextFactory<AuthenticationApiKeysDbContext> factory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<AuthenticationApiKeysDbContext>>();
         factory.ShouldNotBeNull();
     }
 }

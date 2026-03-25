@@ -13,14 +13,14 @@ public sealed class EfCoreLocalizationOverrideStoreTests
     // -------------------------------------------------------------------------
 
     private sealed class InMemoryContextFactory(string dbName)
-        : IDbContextFactory<GranitLocalizationOverridesDbContext>
+        : IDbContextFactory<LocalizationDbContext>
     {
-        public GranitLocalizationOverridesDbContext CreateDbContext() =>
-            new(new DbContextOptionsBuilder<GranitLocalizationOverridesDbContext>()
+        public LocalizationDbContext CreateDbContext() =>
+            new(new DbContextOptionsBuilder<LocalizationDbContext>()
                 .UseInMemoryDatabase(dbName)
                 .Options);
 
-        public Task<GranitLocalizationOverridesDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
+        public Task<LocalizationDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
             Task.FromResult(CreateDbContext());
     }
 
@@ -36,7 +36,7 @@ public sealed class EfCoreLocalizationOverrideStoreTests
         CancellationToken cancellationToken = default)
     {
         InMemoryContextFactory factory = new(dbName);
-        await using GranitLocalizationOverridesDbContext ctx = factory.CreateDbContext();
+        await using LocalizationDbContext ctx = factory.CreateDbContext();
         ctx.LocalizationOverrides.Add(new LocalizationOverride
         {
             Id = Guid.NewGuid(),
@@ -149,7 +149,7 @@ public sealed class EfCoreLocalizationOverrideStoreTests
             TestContext.Current.CancellationToken);
 
         InMemoryContextFactory factory = new(db);
-        await using GranitLocalizationOverridesDbContext ctx = factory.CreateDbContext();
+        await using LocalizationDbContext ctx = factory.CreateDbContext();
         int count = await ctx.LocalizationOverrides.CountAsync(
             o => o.ResourceName == "TestApp" && o.CultureName == "fr" && o.Key == "Key",
             TestContext.Current.CancellationToken);

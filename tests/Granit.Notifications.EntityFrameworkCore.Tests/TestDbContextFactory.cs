@@ -9,16 +9,16 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Granit.Notifications.EntityFrameworkCore.Tests;
 
 /// <summary>
-/// Creates <see cref="NotificationDbContext"/> instances backed by SQLite in-memory
+/// Creates <see cref="NotificationsDbContext"/> instances backed by SQLite in-memory
 /// for fast, isolated integration tests that support all relational operations
 /// (including <c>ExecuteUpdateAsync</c> / <c>ExecuteDeleteAsync</c>).
 /// </summary>
-internal sealed class TestDbContextFactory : IDbContextFactory<NotificationDbContext>, IDisposable
+internal sealed class TestDbContextFactory : IDbContextFactory<NotificationsDbContext>, IDisposable
 {
     private readonly SqliteConnection _connection;
-    private readonly DbContextOptions<NotificationDbContext> _options;
+    private readonly DbContextOptions<NotificationsDbContext> _options;
 
-    private TestDbContextFactory(SqliteConnection connection, DbContextOptions<NotificationDbContext> options)
+    private TestDbContextFactory(SqliteConnection connection, DbContextOptions<NotificationsDbContext> options)
     {
         _connection = connection;
         _options = options;
@@ -29,14 +29,14 @@ internal sealed class TestDbContextFactory : IDbContextFactory<NotificationDbCon
         SqliteConnection connection = new("DataSource=:memory:");
         connection.Open();
 
-        DbContextOptionsBuilder<NotificationDbContext> optionsBuilder = new();
+        DbContextOptionsBuilder<NotificationsDbContext> optionsBuilder = new();
         optionsBuilder.UseSqlite(connection);
         optionsBuilder.ReplaceService<IModelCustomizer, SqliteCompatibleModelCustomizer>();
 
-        DbContextOptions<NotificationDbContext> options = optionsBuilder.Options;
+        DbContextOptions<NotificationsDbContext> options = optionsBuilder.Options;
 
         // Create the schema
-        using (NotificationDbContext db = new(options))
+        using (NotificationsDbContext db = new(options))
         {
             db.Database.EnsureCreated();
         }
@@ -44,7 +44,7 @@ internal sealed class TestDbContextFactory : IDbContextFactory<NotificationDbCon
         return new TestDbContextFactory(connection, options);
     }
 
-    public NotificationDbContext CreateDbContext() => new(_options);
+    public NotificationsDbContext CreateDbContext() => new(_options);
 
     public void Dispose() => _connection.Dispose();
 }

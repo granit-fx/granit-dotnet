@@ -19,8 +19,8 @@ namespace Granit.Features.EntityFrameworkCore.Internal;
 /// Compatible with PostgreSQL (ISO 27001 compliant).
 /// </para>
 /// </remarks>
-internal sealed class GranitFeaturesDbContext(
-    DbContextOptions<GranitFeaturesDbContext> options,
+internal sealed class FeaturesDbContext(
+    DbContextOptions<FeaturesDbContext> options,
     ICurrentTenant? currentTenant = null,
     IDataFilter? dataFilter = null)
     : DbContext(options)

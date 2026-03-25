@@ -32,7 +32,7 @@ public sealed class EfCoreNotificationDeliveryStoreTests : IDisposable
 
         await _store.RecordAsync(attempt, TestContext.Current.CancellationToken);
 
-        await using NotificationDbContext db = _factory.CreateDbContext();
+        await using NotificationsDbContext db = _factory.CreateDbContext();
         NotificationDeliveryAttempt? result = await db.DeliveryAttempts.FindAsync([attempt.Id], TestContext.Current.CancellationToken);
         result.ShouldNotBeNull();
         result!.NotificationId.ShouldBe(attempt.NotificationId);
@@ -53,7 +53,7 @@ public sealed class EfCoreNotificationDeliveryStoreTests : IDisposable
         await _store.RecordAsync(attempt2, TestContext.Current.CancellationToken);
         await _store.RecordAsync(attempt3, TestContext.Current.CancellationToken);
 
-        await using NotificationDbContext db = _factory.CreateDbContext();
+        await using NotificationsDbContext db = _factory.CreateDbContext();
         List<NotificationDeliveryAttempt> all = await db.DeliveryAttempts
             .Where(a => a.NotificationId == notificationId)
             .ToListAsync(TestContext.Current.CancellationToken);
@@ -83,7 +83,7 @@ public sealed class EfCoreNotificationDeliveryStoreTests : IDisposable
 
         deleted.ShouldBe(2);
 
-        await using NotificationDbContext db = _factory.CreateDbContext();
+        await using NotificationsDbContext db = _factory.CreateDbContext();
         List<NotificationDeliveryAttempt> remaining = await db.DeliveryAttempts
             .ToListAsync(TestContext.Current.CancellationToken);
         remaining.Count.ShouldBe(1);
@@ -105,7 +105,7 @@ public sealed class EfCoreNotificationDeliveryStoreTests : IDisposable
 
         deleted.ShouldBe(3);
 
-        await using NotificationDbContext db = _factory.CreateDbContext();
+        await using NotificationsDbContext db = _factory.CreateDbContext();
         int remaining = await db.DeliveryAttempts.CountAsync(TestContext.Current.CancellationToken);
         remaining.ShouldBe(2);
     }

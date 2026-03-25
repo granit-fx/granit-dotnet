@@ -64,7 +64,7 @@ public sealed class EfCoreApiKeyStoreTests : IDisposable
         await _sut.UpdateLastUsedAsync(entry.Id, usedAt, TestContext.Current.CancellationToken);
 
         // Re-fetch with a fresh context to verify
-        await using ApiKeysDbContext db = _factory.CreateDbContext();
+        await using AuthenticationApiKeysDbContext db = _factory.CreateDbContext();
         ApiKeyEntry? updated = await db.ApiKeys
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(k => k.Id == entry.Id, TestContext.Current.CancellationToken);
@@ -76,9 +76,9 @@ public sealed class EfCoreApiKeyStoreTests : IDisposable
     public async Task UpdateLastUsedAsync_DbUpdateException_DoesNotPropagate()
     {
         // Mock factory that throws DbUpdateException when creating a context
-        IDbContextFactory<ApiKeysDbContext> mockFactory = Substitute.For<IDbContextFactory<ApiKeysDbContext>>();
+        IDbContextFactory<AuthenticationApiKeysDbContext> mockFactory = Substitute.For<IDbContextFactory<AuthenticationApiKeysDbContext>>();
         mockFactory.CreateDbContextAsync(Arg.Any<CancellationToken>())
-            .Returns<ApiKeysDbContext>(_ => throw new DbUpdateException("Simulated failure"));
+            .Returns<AuthenticationApiKeysDbContext>(_ => throw new DbUpdateException("Simulated failure"));
 
         ILogger<EfCoreApiKeyStore> logger = Substitute.For<ILogger<EfCoreApiKeyStore>>();
         var failingSut = new EfCoreApiKeyStore(mockFactory, logger);
@@ -93,7 +93,7 @@ public sealed class EfCoreApiKeyStoreTests : IDisposable
 
     private async Task SeedAsync(ApiKeyEntry entry)
     {
-        await using ApiKeysDbContext db = _factory.CreateDbContext();
+        await using AuthenticationApiKeysDbContext db = _factory.CreateDbContext();
         db.ApiKeys.Add(entry);
         await db.SaveChangesAsync(TestContext.Current.CancellationToken);
     }

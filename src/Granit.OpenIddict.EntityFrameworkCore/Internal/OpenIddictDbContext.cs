@@ -18,7 +18,7 @@ namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 /// </summary>
 /// <remarks>
 /// Follows the canonical Granit isolated DbContext pattern
-/// (cf. <c>ApiKeysDbContext</c>). Uses custom multi-tenant OpenIddict entities
+/// (cf. <c>AuthenticationApiKeysDbContext</c>). Uses custom multi-tenant OpenIddict entities
 /// (<see cref="GranitOpenIddictApplication"/>, etc.) instead of the defaults.
 /// </remarks>
 internal sealed class OpenIddictDbContext(
