@@ -20,15 +20,15 @@ public sealed class QueryEngineEfCoreMetrics
         Meter meter = meterFactory.Create(MeterName);
 
         _queriesExecuted = meter.CreateCounter<long>(
-            "granit.querying.query.executed",
+            "granit.query_engine.query.executed",
             description: "Number of queries executed by the query engine.");
 
         _streamLimitsReached = meter.CreateCounter<long>(
-            "granit.querying.stream.limit_reached",
+            "granit.query_engine.stream.limit_reached",
             description: "Number of streaming queries that hit the MaxStreamSize limit.");
 
         _queryDuration = meter.CreateHistogram<double>(
-            "granit.querying.query.duration",
+            "granit.query_engine.query.duration",
             unit: "s",
             description: "Duration of query execution in seconds.");
     }

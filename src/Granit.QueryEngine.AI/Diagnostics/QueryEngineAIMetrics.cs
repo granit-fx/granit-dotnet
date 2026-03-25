@@ -20,15 +20,15 @@ public sealed class QueryEngineAIMetrics
         Meter meter = meterFactory.Create(MeterName);
 
         _translationsExecuted = meter.CreateCounter<long>(
-            "granit.querying.ai.translation.executed",
+            "granit.query_engine.ai.translation.executed",
             description: "Number of NLQ translations executed.");
 
         _translationsFailed = meter.CreateCounter<long>(
-            "granit.querying.ai.translation.failed",
+            "granit.query_engine.ai.translation.failed",
             description: "Number of NLQ translations that failed (timeout, parse error, LLM error).");
 
         _translationDuration = meter.CreateHistogram<double>(
-            "granit.querying.ai.translation.duration",
+            "granit.query_engine.ai.translation.duration",
             unit: "s",
             description: "Duration of NLQ translation in seconds.");
     }

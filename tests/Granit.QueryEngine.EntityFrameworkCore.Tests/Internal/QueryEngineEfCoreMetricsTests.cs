@@ -26,7 +26,7 @@ public sealed class QueryEngineEfCoreMetricsTests : IDisposable
 
         listener.InstrumentPublished = (instrument, meterListener) =>
         {
-            if (instrument.Name == "granit.querying.query.executed")
+            if (instrument.Name == "granit.query_engine.query.executed")
             {
                 meterListener.EnableMeasurementEvents(instrument);
             }
@@ -49,7 +49,7 @@ public sealed class QueryEngineEfCoreMetricsTests : IDisposable
 
         listener.InstrumentPublished = (instrument, meterListener) =>
         {
-            if (instrument.Name == "granit.querying.query.executed")
+            if (instrument.Name == "granit.query_engine.query.executed")
             {
                 meterListener.EnableMeasurementEvents(instrument);
             }
@@ -73,7 +73,7 @@ public sealed class QueryEngineEfCoreMetricsTests : IDisposable
 
         listener.InstrumentPublished = (instrument, meterListener) =>
         {
-            if (instrument.Name == "granit.querying.stream.limit_reached")
+            if (instrument.Name == "granit.query_engine.stream.limit_reached")
             {
                 meterListener.EnableMeasurementEvents(instrument);
             }
@@ -96,7 +96,7 @@ public sealed class QueryEngineEfCoreMetricsTests : IDisposable
 
         listener.InstrumentPublished = (instrument, meterListener) =>
         {
-            if (instrument.Name == "granit.querying.query.duration")
+            if (instrument.Name == "granit.query_engine.query.duration")
             {
                 meterListener.EnableMeasurementEvents(instrument);
             }
@@ -118,7 +118,7 @@ public sealed class QueryEngineEfCoreMetricsTests : IDisposable
 
         listener.InstrumentPublished = (instrument, meterListener) =>
         {
-            if (instrument.Name == "granit.querying.query.duration")
+            if (instrument.Name == "granit.query_engine.query.duration")
             {
                 meterListener.EnableMeasurementEvents(instrument);
             }

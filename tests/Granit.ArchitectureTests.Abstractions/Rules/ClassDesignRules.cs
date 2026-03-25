@@ -66,7 +66,7 @@ public static class ClassDesignRules
         string typePrefix,
         params string[] additionalAllowedNamespaceFragments)
     {
-        string[] defaultAllowed = ["EntityFrameworkCore", "Migrations"];
+        string[] defaultAllowed = ["EntityFrameworkCore", "Migrations", "Database"];
         string[] allAllowed = [.. defaultAllowed, .. additionalAllowedNamespaceFragments];
 
         IEnumerable<IType> violations = architecture.Types
