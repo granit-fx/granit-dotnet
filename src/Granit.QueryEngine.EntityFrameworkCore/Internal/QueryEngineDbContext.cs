@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.QueryEngine.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// Isolated DbContext for the Querying persistence layer.
+/// Isolated DbContext for the QueryEngine persistence layer.
 /// Owns <see cref="SavedView"/>.
 /// </summary>
 internal sealed class QueryEngineDbContext(
@@ -23,7 +23,7 @@ internal sealed class QueryEngineDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureQueryingModule();
+        modelBuilder.ConfigureQueryEngineModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

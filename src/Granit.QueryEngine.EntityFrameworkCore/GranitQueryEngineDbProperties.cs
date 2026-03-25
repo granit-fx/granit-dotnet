@@ -1,7 +1,7 @@
 namespace Granit.QueryEngine.EntityFrameworkCore;
 
 /// <summary>
-/// Provides configurable table-naming properties for the Querying EF Core module.
+/// Provides configurable table-naming properties for the QueryEngine EF Core module.
 /// </summary>
 /// <remarks>
 /// <b>Important:</b> Set these properties at application startup, before

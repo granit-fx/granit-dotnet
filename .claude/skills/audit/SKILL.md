@@ -1,6 +1,6 @@
 ---
 name: audit
-description: "Framework architect: audit Granit .NET modules against framework conventions, architecture rules, and CLAUDE.md standards. Checks module anatomy, DDD, naming, OpenAPI, persistence, validation, events, metrics, localization, and cross-cutting concerns. Invoke to verify convention compliance before merge or during tech-debt sprints."
+description: "Framework architect: audit Granit .NET modules against framework conventions, architecture rules, and CLAUDE.md standards. Checks module anatomy, DDD, naming, OpenAPI, persistence, validation, events, metrics, localization, documentation, and cross-cutting concerns. Invoke to verify convention compliance before merge or during tech-debt sprints."
 argument-hint: "[help | all | <module> | pr] [--fix] [--scope {anatomy|code|naming|http|openapi|persistence|ddd|validation|events|metrics|localization|deps|compliance|all}] [--base <branch>]"
 ---
 
@@ -63,7 +63,7 @@ FLAGS
   --scope <category>          Restrict to one category:
     anatomy       Module structure and layering
     code          C# 14 idioms, anti-patterns, modern patterns
-    naming        Permissions, events, jobs, DTOs naming rules
+    naming        Permissions, events, jobs, DTOs, module homogeneity
     http          HTTP conventions, status codes, pagination, caching
     openapi       Endpoint metadata (5 mandatory elements)
     persistence   DbContext, EF Core, interceptors, concurrency
@@ -74,6 +74,7 @@ FLAGS
     localization  17-culture JSON completeness
     deps          [DependsOn], project references, circular refs
     compliance    GDPR, ISO 27001, security, analyzers
+    docs          Module doc pages, code samples, cross-refs, counters
     all           Everything (default)
   --base <branch>             Base branch for PR mode (default: develop)
 
@@ -248,12 +249,17 @@ After auditing individual modules, perform cross-cutting checks:
 3. **Permission naming uniformity** — three-segment format across all `*.Endpoints`
 4. **Event naming uniformity** — `*Event` / `*Eto` suffixes across all modules
 5. **Metrics naming uniformity** — `granit.{module}.{entity}.{action}` across all modules
+5b. **Module naming homogeneity** — all classes, methods, string literals, and
+   namespaces consistently use the current module name (detect rename residues via
+   `git log --diff-filter=R`)
 6. **Health check uniformity** — readiness/startup tags, 10s timeout, no PII
 7. **Localization completeness** — all 17 cultures present in every module
 8. **[DependsOn] consistency** — matches actual `<ProjectReference>` graph
 9. **Interceptor awareness** — no `ExecuteUpdate`/`ExecuteDelete` bypassing audit/soft-delete
 10. **Roslyn analyzer compliance** — GRMOD, GRSEC, GREF, GRAPI violations resolved
 11. **Architecture test coverage** — verify `Granit.ArchitectureTests` covers the module
+12. **Documentation coverage** — every module has a doc page in `docs-site/`,
+   code samples use current names, `PACKAGE_COUNT` in `constants.ts` is accurate
 
 ### Context window discipline
 
@@ -301,6 +307,8 @@ In addition to the standard checklist:
 - **New permissions**: three-segment naming
 - **New metrics**: correct naming and `TagList` usage
 - **New localization keys**: present in all 17 JSON files
+- **Documentation**: module doc page exists and references current names
+  (check `docs-site/src/content/docs/dotnet/` for the module)
 
 ### 4. Verification gate
 

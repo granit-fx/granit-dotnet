@@ -179,6 +179,58 @@ Ref: `CLAUDE.md §Background Jobs`
 
 Ref: `CLAUDE.md §DTOs`, `docs-site/…/architecture/http-conventions.md`
 
+### 3e. Module naming homogeneity (post-rename check)
+
+After a module rename (e.g., `Querying` → `QueryEngine`), ALL artifacts bearing
+the module name must be updated consistently. Derive the canonical module name
+from the project directory name: `src/Granit.{Module}` → `{Module}`.
+
+**Classes — must embed `{Module}`:**
+
+- [ ] Module class: `Granit{Module}Module` (e.g., `GranitQueryEngineModule`)
+- [ ] DbContext: `{Module}DbContext` (e.g., `QueryEngineDbContext`)
+- [ ] ModelBuilder extensions: `{Module}ModelBuilderExtensions`
+- [ ] ServiceCollection extensions: `{Module}ServiceCollectionExtensions`
+- [ ] Options class: `{Module}Options`
+- [ ] Metrics class: `{Module}Metrics`
+- [ ] ActivitySource class: `{Module}ActivitySource`
+- [ ] Permission class: `{Module}Permissions`
+- [ ] Permission provider: `{Module}PermissionDefinitionProvider`
+- [ ] Localization resource: `{Module}EndpointsLocalizationResource`
+- [ ] Health check: `{Module}HealthCheck` (if applicable)
+
+**Methods — must embed `{Module}`:**
+
+- [ ] DI registration: `Add{Module}()`, `AddGranit{Module}()`
+- [ ] EF model config: `Configure{Module}Module()`
+- [ ] Endpoint mapping: `Map{Module}Endpoints()`
+
+**String literals — must use current module name:**
+
+- [ ] Meter name: `"Granit.{Module}"` (PascalCase)
+- [ ] ActivitySource name: `"Granit.{Module}"` (PascalCase)
+- [ ] Job name prefix: `"{module-kebab}-"` (kebab-case)
+- [ ] Permission group name: `"{Module}"` (PascalCase)
+- [ ] Log category / event names
+
+**Namespaces — must match project name:**
+
+- [ ] All `.cs` files in `Granit.{Module}` use `namespace Granit.{Module};`
+- [ ] All `.cs` files in `Granit.{Module}.Endpoints` use
+  `namespace Granit.{Module}.Endpoints;` (or sub-namespace)
+- [ ] All `.cs` files in `Granit.{Module}.EntityFrameworkCore` use
+  `namespace Granit.{Module}.EntityFrameworkCore;` (or sub-namespace)
+- [ ] Satellite projects follow the same pattern
+
+**Detection strategy:**
+
+1. Extract `{Module}` from the project directory name
+2. Grep all `.cs` files in the module family for the **old** module name
+   (check recent git renames: `git log --diff-filter=R --name-status -20`)
+3. Flag any class, method, string literal, or namespace still using the old name
+
+Ref: `CLAUDE.md §Architecture`, `CLAUDE.md §Package naming convention`
+
 ---
 
 ## 4. HTTP conventions (`--scope http`)
@@ -638,6 +690,83 @@ Ref: `docs-site/…/core/analyzers.mdx`
   Cognito) — modifies default JWT Bearer scheme in place
 
 Ref: `CLAUDE.md §Security`, `docs-site/…/concepts/security-model.mdx`
+
+---
+
+## 14. Documentation (`--scope docs`)
+
+### 14a. Module documentation page
+
+Every module with public API surface MUST have a documentation page in
+`docs-site/src/content/docs/dotnet/`. The page lives under the appropriate
+domain subdirectory:
+
+| Domain | Directory | Example modules |
+|--------|-----------|-----------------|
+| Core | `core/` | Validation, Observability, Diagnostics |
+| Data | `data/` | Persistence, BlobStorage, Caching, Encryption |
+| API | `api/` | Http, RateLimiting, Webhooks |
+| Security | `security/` | Authentication, Authorization, Identity |
+| Infrastructure | `infrastructure/` | BackgroundJobs, Notifications, Localization |
+| Business | `business/` | Workflow, QueryEngine, Templating, DataExchange |
+| Compliance | `compliance/` | AuditLog, Privacy |
+| AI | `ai/` | AI modules |
+
+- [ ] Documentation page exists for the module (`{module-kebab}.mdx`)
+- [ ] File name matches current module name (not an old name after rename)
+- [ ] Frontmatter `title` uses the current module name
+- [ ] Frontmatter `description` is accurate and current
+
+### 14b. Content consistency with code
+
+- [ ] Package/namespace references use the current module name
+  (e.g., `Granit.QueryEngine`, not `Granit.Querying`)
+- [ ] `using` statements in code samples match current namespaces
+- [ ] DI registration examples use current method names
+  (`AddQueryEngine()`, not `AddQuerying()`)
+- [ ] Class names in code samples match current class names
+- [ ] Interface names referenced are current and exist in the codebase
+- [ ] Configuration keys (`appsettings.json` examples) match current `SectionName`
+
+### 14c. Code samples
+
+- [ ] Code samples compile (use current API surface — verify with
+  `get_public_api` MCP)
+- [ ] Code samples follow CLAUDE.md conventions (primary constructors,
+  collection expressions, `TypedResults`, etc.)
+- [ ] No deprecated patterns in samples (check anti-patterns list)
+
+### 14d. Cross-references and links
+
+- [ ] Internal links (`/dotnet/data/persistence/`) point to existing pages
+- [ ] "See also" or related module links are present where relevant
+- [ ] Links to architecture patterns reference the correct pattern page
+
+### 14e. Counters
+
+- [ ] `PACKAGE_COUNT` in `docs-site/src/data/constants.ts` matches
+  actual count: `ls src/ | grep "^Granit\." | wc -l`
+- [ ] `PATTERN_COUNT` and `ADR_COUNT` are current (check only in `all` mode)
+
+### 14f. Post-rename documentation sweep
+
+After a module rename, verify:
+
+- [ ] Old documentation file renamed or redirected (e.g., `querying.mdx` →
+  `query-engine.mdx`)
+- [ ] All other `.mdx` files that reference the old module name are updated
+  (grep `docs-site/` for old name)
+- [ ] Sidebar/navigation config updated if applicable
+- [ ] Architecture diagrams (`*.md` with Mermaid) use current module name
+
+**Detection strategy:**
+
+1. Check recent renames: `git log --diff-filter=R --name-status -20 -- 'src/'`
+2. For each renamed module, grep docs for old name:
+   `grep -r "OldModuleName" docs-site/src/content/`
+3. Flag any occurrence as CONVENTION severity
+
+Ref: `CLAUDE.md §Documentation site`
 
 ---
 

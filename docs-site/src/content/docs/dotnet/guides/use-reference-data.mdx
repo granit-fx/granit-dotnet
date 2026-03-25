@@ -158,7 +158,7 @@ This registers keyed `IReferenceDataStoreReader<DynamicReferenceDataEntity>` and
 `QueryDefinition` for advanced querying.
 
 :::tip[MapProperty vs ExtraProperties]
-`MapProperty<T>()` creates a real SQL column (indexable, filterable via Querying).
+`MapProperty<T>()` creates a real SQL column (indexable, filterable via QueryEngine).
 Properties not declared via `MapProperty` are stored in the `ExtraPropertiesJson`
 JSON column — flexible but not queryable at SQL level.
 :::

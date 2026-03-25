@@ -7,7 +7,7 @@ namespace Granit.QueryEngine.AI.Tests.Options;
 public sealed class QueryEngineAIOptionsTests
 {
     [Fact]
-    public void SectionName_is_AI_Querying() => QueryEngineAIOptions.SectionName.ShouldBe("AI:Querying");
+    public void SectionName_is_AI_QueryEngine() => QueryEngineAIOptions.SectionName.ShouldBe("AI:QueryEngine");
 
     [Fact]
     public void WorkspaceName_defaults_to_default()

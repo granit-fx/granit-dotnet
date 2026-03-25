@@ -38,7 +38,7 @@ internal sealed class ParameterDescriptionOperationTransformer : IOpenApiOperati
         // Notifications
         ["typeName"] = "Notification type name.",
 
-        // Querying
+        // QueryEngine
         ["id"] = "Resource identifier (UUID).",
     };
 

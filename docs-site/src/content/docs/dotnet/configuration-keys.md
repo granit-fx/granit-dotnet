@@ -416,11 +416,11 @@ Wolverine__RetryDelays__1=00:00:30
 | `AdminPolicyName` | `string?` | `"ReferenceData.Admin"` | Admin authorization policy. `null` = no auth. |
 | `RequiredRole` | `string` | `"granit-reference-data-admin"` | Fallback admin role. |
 
-### Querying -- `QueryEngineOptions`
+### QueryEngine -- `QueryEngineOptions`
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| **Section** | -- | `Querying` | |
+| **Section** | -- | `QueryEngine` | |
 | **Package** | -- | `Granit.QueryEngine` | |
 | `DefaultPageSize` | `int` | `20` | Default page size for paginated queries. |
 | `MaxPageSize` | `int` | `100` | Maximum allowed page size. |

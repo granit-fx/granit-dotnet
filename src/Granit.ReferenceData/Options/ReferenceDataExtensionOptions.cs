@@ -65,8 +65,8 @@ public sealed class ReferenceDataExtensionOptions
     /// <param name="name">The property name (used as column name and ExtraProperties key).</param>
     /// <param name="maxLength">Maximum string length (only for <see cref="string"/> properties).</param>
     /// <param name="isRequired">Whether the column is NOT NULL. Default: <see langword="false"/>.</param>
-    /// <param name="isFilterable">Whether the property is filterable in Querying. Default: <see langword="false"/>.</param>
-    /// <param name="isSortable">Whether the property is sortable in Querying. Default: <see langword="false"/>.</param>
+    /// <param name="isFilterable">Whether the property is filterable in QueryEngine. Default: <see langword="false"/>.</param>
+    /// <param name="isSortable">Whether the property is sortable in QueryEngine. Default: <see langword="false"/>.</param>
     /// <returns>This options instance for chaining.</returns>
     public ReferenceDataExtensionOptions MapProperty<T>(
         string name,
@@ -88,8 +88,8 @@ public sealed class ReferenceDataExtensionOptions
 /// <param name="ClrType">The CLR type of the property.</param>
 /// <param name="MaxLength">Maximum string length (<see langword="null"/> for non-string types).</param>
 /// <param name="IsRequired">Whether the column is NOT NULL.</param>
-/// <param name="IsFilterable">Whether the property is filterable in Querying.</param>
-/// <param name="IsSortable">Whether the property is sortable in Querying.</param>
+/// <param name="IsFilterable">Whether the property is filterable in QueryEngine.</param>
+/// <param name="IsSortable">Whether the property is sortable in QueryEngine.</param>
 public sealed record ReferenceDataPropertyMapping(
     string Name,
     Type ClrType,

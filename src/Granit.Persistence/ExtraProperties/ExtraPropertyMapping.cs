@@ -7,8 +7,8 @@ namespace Granit.Persistence.ExtraProperties;
 /// <param name="ClrType">The CLR type of the property.</param>
 /// <param name="MaxLength">Maximum string length (<see langword="null"/> for non-string types).</param>
 /// <param name="IsRequired">Whether the column is NOT NULL.</param>
-/// <param name="IsFilterable">Whether the property should be exposed as a filterable column in Querying.</param>
-/// <param name="IsSortable">Whether the property should be exposed as a sortable column in Querying.</param>
+/// <param name="IsFilterable">Whether the property should be exposed as a filterable column in QueryEngine.</param>
+/// <param name="IsSortable">Whether the property should be exposed as a sortable column in QueryEngine.</param>
 public sealed record ExtraPropertyMapping(
     string Name,
     Type ClrType,

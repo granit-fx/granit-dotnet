@@ -444,7 +444,7 @@ With it: the feature activates. No `if` statements, no feature flags — just DI
 | `ReviewThreshold` | `double` | `0.7` | Below this confidence → `NeedsReview` status |
 | `TimeoutSeconds` | `int` | `30` | Extraction timeout (OCR + LLM) |
 
-### `QueryEngineAIOptions` (section: `AI:Querying`)
+### `QueryEngineAIOptions` (section: `AI:QueryEngine`)
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -491,7 +491,7 @@ Key indexes:
 ## See also
 
 - [Data Exchange](/dotnet/business/data-exchange/) — import/export module where AI mapping plugs in
-- [Querying](/dotnet/business/querying/) — query engine where NLQ translates natural language
+- [QueryEngine](/dotnet/business/querying/) — query engine where NLQ translates natural language
 - [Persistence](/dotnet/data/persistence/) — isolated DbContext pattern, `ApplyGranitConventions`
 - [Vault & Encryption](/dotnet/data/vault-encryption/) — secure API key storage with rotation
 - [Observability](/dotnet/core/observability/) — OpenTelemetry integration for AI call tracing

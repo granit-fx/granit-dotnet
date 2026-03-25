@@ -8,7 +8,7 @@ namespace Granit.QueryEngine.Options;
 /// <remarks>
 /// Bind from configuration:
 /// <code>
-/// services.Configure&lt;QueryEngineOptions&gt;(configuration.GetSection("Querying"));
+/// services.Configure&lt;QueryEngineOptions&gt;(configuration.GetSection("QueryEngine"));
 /// </code>
 /// Or configure inline:
 /// <code>

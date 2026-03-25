@@ -9,12 +9,12 @@ using Microsoft.Extensions.Hosting;
 namespace Granit.QueryEngine.EntityFrameworkCore.Extensions;
 
 /// <summary>
-/// Extension methods for registering the Querying EF Core persistence layer on <see cref="IHostApplicationBuilder"/>.
+/// Extension methods for registering the QueryEngine EF Core persistence layer on <see cref="IHostApplicationBuilder"/>.
 /// </summary>
 public static class QueryEngineEfCoreHostApplicationBuilderExtensions
 {
     /// <summary>
-    /// Registers the Querying EF Core persistence layer, including the isolated
+    /// Registers the QueryEngine EF Core persistence layer, including the isolated
     /// <c>QueryEngineDbContext</c> and <see cref="ISavedViewStoreReader"/>/<see cref="ISavedViewStoreWriter"/> implementation.
     /// </summary>
     /// <param name="builder">The host application builder.</param>

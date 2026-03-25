@@ -45,8 +45,8 @@ public sealed class ExtraPropertyMappingOptions<TEntity>
     /// <param name="name">The property name (used as column name and ExtraProperties key).</param>
     /// <param name="maxLength">Maximum string length (only for <see cref="string"/> properties).</param>
     /// <param name="isRequired">Whether the column is NOT NULL. Default: <see langword="false"/>.</param>
-    /// <param name="isFilterable">Whether the property is filterable in Querying. Default: <see langword="false"/>.</param>
-    /// <param name="isSortable">Whether the property is sortable in Querying. Default: <see langword="false"/>.</param>
+    /// <param name="isFilterable">Whether the property is filterable in QueryEngine. Default: <see langword="false"/>.</param>
+    /// <param name="isSortable">Whether the property is sortable in QueryEngine. Default: <see langword="false"/>.</param>
     public void MapProperty<T>(
         string name,
         int? maxLength = null,

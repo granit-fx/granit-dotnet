@@ -510,13 +510,13 @@ interface OidcAuthorizationResponse {
 
 ---
 
-## Querying
+## QueryEngine
 
 **Module:** `Granit.QueryEngine.Endpoints`
 **Prefix:** app-defined via `MapQueryEndpoints<T>(pattern)`
 
 <Aside type="caution">
-Querying endpoints are registered by the **application**, not the framework.
+QueryEngine endpoints are registered by the **application**, not the framework.
 The route pattern is passed to `MapQueryEndpoints<T>()`. For consistency,
 use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrides`).
 </Aside>
@@ -762,7 +762,7 @@ under the prefix.
 | Localization | 4 | Anonymous + Permission |
 | Notifications | 14 | Authenticated |
 | Privacy (GDPR) | 8 | Permission-based |
-| Querying | 7 per entity | App-defined |
+| QueryEngine | 7 per entity | App-defined |
 | Reference Data | 5 per entity | App-defined |
 | Settings | 8 | Authenticated + Permission |
 | Templating | 16 | Permission-based |
