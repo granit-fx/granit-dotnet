@@ -46,7 +46,7 @@ tiers are used depending on user-facing latency sensitivity:
 | `Granit.Notifications.AI` | 3 s | Use static template |
 | `Granit.Privacy.AI` | 5 s | Conservative: mark field as potentially containing PII |
 
-### Querying.AI — NLQ fallback
+### QueryEngine.AI — NLQ fallback
 
 ```csharp
 internal sealed class AINaturalLanguageQueryTranslator(
@@ -143,5 +143,5 @@ internal sealed class AIMappingSuggestionService(
 
 - [Circuit Breaker and Retry](./circuit-breaker-retry/) — the underlying resilience pattern
 - [AI module overview](/dotnet/ai/) — workspace and timeout configuration
-- [Querying.AI — Natural Language Query](/dotnet/ai/natural-language-query/)
+- [QueryEngine.AI — Natural Language Query](/dotnet/ai/natural-language-query/)
 - [DataExchange.AI — AI-assisted import mapping](/dotnet/ai/import-mapping/)

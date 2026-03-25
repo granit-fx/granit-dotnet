@@ -12,7 +12,7 @@ sidebar:
 
 ## Context
 
-The data-fetching React packages (`@granit/react-querying`,
+The data-fetching React packages (`@granit/react-query-engine`,
 `@granit/react-data-exchange`, `@granit/react-authorization`,
 `@granit/react-authentication-api-keys`, etc.) need a caching and
 synchronization layer with:

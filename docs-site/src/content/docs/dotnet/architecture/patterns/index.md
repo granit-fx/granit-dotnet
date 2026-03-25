@@ -117,7 +117,7 @@ and references to the actual source files where the pattern is applied.
 | ------- | ----------- |
 | [Retrieval-Augmented Generation](./rag/) | Vector retrieval + LLM grounding (`AI.VectorData`) |
 | [AI Workspace](./ai-workspace/) | Named, per-tenant provider configuration (`IAIChatClientFactory`) |
-| [Graceful AI Fallback](./ai-fallback/) | Timeout + deterministic baseline (`Querying.AI`, `DataExchange.AI`) |
+| [Graceful AI Fallback](./ai-fallback/) | Timeout + deterministic baseline (`QueryEngine.AI`, `DataExchange.AI`) |
 | [Structured Output](./structured-output/) | Type-safe LLM response via JSON schema (`CompleteAsync<T>`) |
 
 ## Granit-specific variants

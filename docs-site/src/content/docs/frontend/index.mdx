@@ -38,7 +38,7 @@ graph TD
     end
 
     subgraph "Business"
-        querying["@granit/querying"]
+        querying["@granit/query-engine"]
         dataExchange["@granit/data-exchange"]
         workflow["@granit/workflow"]
         timeline["@granit/timeline"]
@@ -96,8 +96,8 @@ Data flows from types to API functions to hooks to providers:
 | [`@granit/react-notifications-web-push`](../infrastructure/notifications/) | Web Push React hook |
 | [`@granit/notifications-mobile-push`](../infrastructure/notifications/) | Mobile push token registration API |
 | [`@granit/react-notifications-mobile-push`](../infrastructure/notifications/) | Mobile push React hook |
-| [`@granit/querying`](./querying/) | Headless data grid types, filter system, saved views |
-| [`@granit/react-querying`](./querying/) | Query provider, pagination, smart filter hooks |
+| [`@granit/query-engine`](./querying/) | Headless data grid types, filter system, saved views |
+| [`@granit/react-query-engine`](./querying/) | Query provider, pagination, smart filter hooks |
 | [`@granit/data-exchange`](./data-exchange/) | Import/export pipeline types and API |
 | [`@granit/react-data-exchange`](./data-exchange/) | Import/export providers and hooks |
 
@@ -157,7 +157,7 @@ Each frontend package mirrors a Granit .NET module:
 | `Granit.Identity` | `@granit/identity`, `@granit/react-identity` |
 | `Granit.MultiTenancy` | `@granit/multi-tenancy`, `@granit/react-multi-tenancy` |
 | `Granit.Notifications` | `@granit/notifications` + transport packages |
-| `Granit.QueryEngine` | `@granit/querying`, `@granit/react-querying` |
+| `Granit.QueryEngine` | `@granit/query-engine`, `@granit/react-query-engine` |
 | `Granit.DataExchange` | `@granit/data-exchange`, `@granit/react-data-exchange` |
 | `Granit.Workflow` | `@granit/workflow`, `@granit/react-workflow` |
 | `Granit.Timeline` | `@granit/timeline`, `@granit/react-timeline` |

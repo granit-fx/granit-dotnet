@@ -230,8 +230,8 @@ function UserProfile() {
 ## How source resolution works
 
 ```text
-import { useQueryEndpoint } from '@granit/querying'
-  → Vite alias → packages/@granit/querying/src/index.ts
+import { useQueryEndpoint } from '@granit/query-engine'
+  → Vite alias → packages/@granit/query-engine/src/index.ts
   → TypeScript source → transpiled on the fly by Vite
   → no dist/, no intermediate build
 ```

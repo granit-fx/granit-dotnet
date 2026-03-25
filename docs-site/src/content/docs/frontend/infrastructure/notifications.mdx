@@ -35,7 +35,7 @@ push (Capacitor).
 | Package | Role | Depends on |
 |---------|------|------------|
 | `@granit/notifications` | DTOs, API functions, `NotificationTransport` interface | `axios` |
-| `@granit/react-notifications` | `NotificationProvider`, inbox/feed/preferences hooks | `@granit/notifications`, `@granit/react-querying`, `react` |
+| `@granit/react-notifications` | `NotificationProvider`, inbox/feed/preferences hooks | `@granit/notifications`, `@granit/react-query-engine`, `react` |
 | `@granit/notifications-signalr` | `createSignalRTransport()` factory | `@granit/notifications`, `@microsoft/signalr` |
 | `@granit/notifications-sse` | `createSseTransport()` factory | `@granit/notifications`, `@microsoft/fetch-event-source` |
 | `@granit/notifications-web-push` | `registerPushSubscription()`, VAPID helpers | `axios` |
@@ -286,7 +286,7 @@ Returns connection state, last received notification, and unread count from the 
 
 ### `useNotifications(options?)`
 
-Paginated inbox with mark-as-read support and infinite scroll via `@granit/react-querying`.
+Paginated inbox with mark-as-read support and infinite scroll via `@granit/react-query-engine`.
 
 ```ts
 interface UseNotificationsReturn {

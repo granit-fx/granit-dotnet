@@ -23019,9 +23019,9 @@
       "line": 10,
       "members": [
         {
-          "name": "ConfigureQueryingModule",
+          "name": "ConfigureQueryEngineModule",
           "kind": "method",
-          "signature": "ConfigureQueryingModule(this ModelBuilder modelBuilder)",
+          "signature": "ConfigureQueryEngineModule(this ModelBuilder modelBuilder)",
           "returnType": "ModelBuilder"
         }
       ]

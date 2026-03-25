@@ -62,7 +62,7 @@ flowchart TD
 
     subgraph Business
         TMPL["Templating (8)"]:::business
-        QRY["Querying (3)"]:::business
+        QRY["QueryEngine (3)"]:::business
         DX["DataExchange (6)"]:::business
         WF["Workflow (4)"]:::business
         TL["Timeline (4)"]:::business
@@ -257,7 +257,7 @@ flowchart TD
 
 | Package | Depends on |
 |---------|------------|
-| `Granit.Identity` | `Querying` |
+| `Granit.Identity` | `QueryEngine` |
 | `Granit.Identity.Federated` | `Identity` |
 | `Granit.Identity.Federated.Keycloak` | `Identity.Federated` |
 | `Granit.Identity.Federated.EntraId` | `Identity.Federated`, `Timing` |
@@ -285,7 +285,7 @@ flowchart TD
 | `Granit.Settings.Endpoints` | `Settings`, `Authorization`, `Timing`, `Validation` |
 | `Granit.Features` | `Caching`, `Localization` |
 | `Granit.Features.EntityFrameworkCore` | `Features`, `Persistence` |
-| `Granit.ReferenceData` | `Querying` |
+| `Granit.ReferenceData` | `QueryEngine` |
 | `Granit.ReferenceData.Endpoints` | `ReferenceData` |
 | `Granit.ReferenceData.EntityFrameworkCore` | `ReferenceData`, `Persistence` |
 
@@ -436,13 +436,13 @@ These two domains share cross-module dependencies with Notifications and Identit
 | `Granit.BackgroundJobs.Endpoints` | `BackgroundJobs`, `Authorization` |
 | `Granit.BackgroundJobs.Wolverine` | `BackgroundJobs`, `Wolverine` |
 
-### Querying
+### QueryEngine
 
 | Package | Depends on |
 |---------|------------|
 | `Granit.QueryEngine` | `Core` |
-| `Granit.QueryEngine.Endpoints` | `Querying`, `Authorization` |
-| `Granit.QueryEngine.EntityFrameworkCore` | `Querying`, `Persistence` |
+| `Granit.QueryEngine.Endpoints` | `QueryEngine`, `Authorization` |
+| `Granit.QueryEngine.EntityFrameworkCore` | `QueryEngine`, `Persistence` |
 
 ### DataExchange
 
@@ -462,7 +462,7 @@ flowchart LR
 
 | Package | Depends on |
 |---------|------------|
-| `Granit.DataExchange` | `Querying`, `Timing`, `Validation` |
+| `Granit.DataExchange` | `QueryEngine`, `Timing`, `Validation` |
 | `Granit.DataExchange.Csv` | `DataExchange` |
 | `Granit.DataExchange.Excel` | `DataExchange` |
 | `Granit.DataExchange.EntityFrameworkCore` | `DataExchange`, `Persistence` |
@@ -492,7 +492,7 @@ flowchart LR
     AI --> NOTIF_AI["Notifications.AI"]
     AI --> OBS_AI["Observability.AI"]
     AI --> PRIV_AI["Privacy.AI"]
-    AI --> QRY_AI["Querying.AI"]
+    AI --> QRY_AI["QueryEngine.AI"]
     AI --> TMPL_AI["Templating.AI"]
     AI --> TL_AI["Timeline.AI"]
     AI --> VAL_AI["Validation.AI"]
@@ -522,7 +522,7 @@ flowchart LR
 | `Granit.Notifications.AI` | `AI`, `Notifications` |
 | `Granit.Observability.AI` | `AI`, `Observability` |
 | `Granit.Privacy.AI` | `AI`, `Privacy` |
-| `Granit.QueryEngine.AI` | `AI`, `Querying` |
+| `Granit.QueryEngine.AI` | `AI`, `QueryEngine` |
 | `Granit.Templating.AI` | `AI`, `Templating` |
 | `Granit.Timeline.AI` | `AI`, `Timeline` |
 | `Granit.Validation.AI` | `AI`, `Validation` |
@@ -685,10 +685,10 @@ These modules manage infrastructure data (not business entities), use `IDbContex
 for thread safety with parallel Wolverine handlers, and do not need
 `AuditedEntityInterceptor` or `SoftDeleteInterceptor`.
 
-### DataExchange depends on Querying
+### DataExchange depends on QueryEngine
 
 The coupling is export-only: `DataExchange` reads `QueryDefinition` metadata to generate
-tabular exports (columns, filters, sort). The import pipeline uses no Querying types.
+tabular exports (columns, filters, sort). The import pipeline uses no QueryEngine types.
 
 ### DocumentGeneration.Excel depends on Templating
 

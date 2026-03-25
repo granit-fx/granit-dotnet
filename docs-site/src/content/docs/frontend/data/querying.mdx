@@ -1,6 +1,6 @@
 ---
 title: "Querying \u2014 Filters, Sorting & Pagination for React"
-description: Build headless data grids with @granit/react-querying — TypeScript filters, multi-column sorting, offset and cursor pagination, grouping, saved views, and SmartFilterBar suggestion engine.
+description: Build headless data grids with @granit/react-query-engine — TypeScript filters, multi-column sorting, offset and cursor pagination, grouping, saved views, and SmartFilterBar suggestion engine.
 sidebar:
   label: Querying
   order: 9
@@ -8,12 +8,12 @@ sidebar:
 
 import { Tabs, TabItem, FileTree } from "@astrojs/starlight/components";
 
-`@granit/querying` is the largest frontend package — a framework-agnostic, headless data
+`@granit/query-engine` is the largest frontend package — a framework-agnostic, headless data
 grid system that mirrors `Granit.QueryEngine` on the .NET backend. It provides types for
 filters, sorts, pagination (offset and cursor), grouping, saved views, query serialization,
 and a SmartFilterBar suggestion engine.
 
-`@granit/react-querying` wraps everything into React hooks with TanStack Query integration:
+`@granit/react-query-engine` wraps everything into React hooks with TanStack Query integration:
 `useQueryEndpoint` (full query state machine), `usePagination`, `useInfiniteScroll`,
 `useSavedViews`, `useSmartFilter`, and `useQueryMeta`.
 
@@ -22,14 +22,14 @@ and a SmartFilterBar suggestion engine.
 ## Package structure
 
 <FileTree>
-- @granit/querying/ Types, API functions, serialization, operator utilities (framework-agnostic)
-  - @granit/react-querying QueryProvider, pagination hooks, query endpoint, smart filter, saved views
+- @granit/query-engine/ Types, API functions, serialization, operator utilities (framework-agnostic)
+  - @granit/react-query-engine QueryProvider, pagination hooks, query endpoint, smart filter, saved views
 </FileTree>
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `@granit/querying` | Filter/sort/pagination types, API functions, query serialization, operator utilities | `axios`, `@granit/utils` |
-| `@granit/react-querying` | `QueryProvider`, `useQueryEndpoint`, `usePagination`, `useInfiniteScroll`, `useSmartFilter`, `useSavedViews` | `@granit/querying`, `@tanstack/react-query`, `react` |
+| `@granit/query-engine` | Filter/sort/pagination types, API functions, query serialization, operator utilities | `axios`, `@granit/utils` |
+| `@granit/react-query-engine` | `QueryProvider`, `useQueryEndpoint`, `usePagination`, `useInfiniteScroll`, `useSmartFilter`, `useSavedViews` | `@granit/query-engine`, `@tanstack/react-query`, `react` |
 
 ## Setup
 
@@ -37,8 +37,8 @@ and a SmartFilterBar suggestion engine.
 <TabItem label="React (recommended)">
 
 ```tsx
-import { QueryProvider } from '@granit/react-querying';
-import { useQueryEndpoint, useQueryMeta } from '@granit/react-querying';
+import { QueryProvider } from '@granit/react-query-engine';
+import { useQueryEndpoint, useQueryMeta } from '@granit/react-query-engine';
 import { api } from './api-client';
 
 function PatientList() {
@@ -54,8 +54,8 @@ function PatientList() {
 <TabItem label="TypeScript only">
 
 ```ts
-import { fetchPage, fetchQueryMeta, serializeQueryParams } from '@granit/querying';
-import type { QueryParams, PagedResult, FilterEntry } from '@granit/querying';
+import { fetchPage, fetchQueryMeta, serializeQueryParams } from '@granit/query-engine';
+import type { QueryParams, PagedResult, FilterEntry } from '@granit/query-engine';
 ```
 
 </TabItem>
@@ -303,7 +303,7 @@ UIs where total count is not displayed.
 
 :::note[Framework-agnostic core]
 All types, API functions, serialization, and operator utilities live in
-`@granit/querying` — pure TypeScript. The React package below wraps them
+`@granit/query-engine` — pure TypeScript. The React package below wraps them
 into a provider and hooks.
 :::
 
@@ -440,19 +440,19 @@ interface UseSmartFilterReturn {
 
 | Category | Key exports | Package |
 |----------|-------------|---------|
-| Query types | `QueryParams`, `FilterEntry`, `SortEntry`, `FilterOperator`, `PagedResult<T>`, `GroupedResult<T>` | `@granit/querying` |
-| Metadata | `QueryMetadata`, `ColumnDefinition`, `FilterableField`, `SortableField` | `@granit/querying` |
-| Saved views | `SavedViewSummary`, `CreateSavedViewRequest`, `UpdateSavedViewRequest` | `@granit/querying` |
-| SmartFilter | `FilterToken`, `FilterSuggestion`, `SmartFilterPhase` | `@granit/querying` |
-| API functions | `fetchPage()`, `fetchGrouped()`, `fetchQueryMeta()`, saved views CRUD | `@granit/querying` |
-| Serialization | `serializeQueryParams()`, `parseQueryParams()` | `@granit/querying` |
-| Operators | `inferOperators()`, `STRING_OPERATORS`, `OPERATOR_LABELS` | `@granit/querying` |
-| Provider | `QueryProvider`, `useQueryConfig()`, `buildQueryKey()` | `@granit/react-querying` |
-| Query hook | `useQueryEndpoint()` | `@granit/react-querying` |
-| Pagination | `usePagination()`, `useInfiniteScroll()` | `@granit/react-querying` |
-| Metadata hook | `useQueryMeta()` | `@granit/react-querying` |
-| Saved views hook | `useSavedViews()` | `@granit/react-querying` |
-| Smart filter | `useSmartFilter()` | `@granit/react-querying` |
+| Query types | `QueryParams`, `FilterEntry`, `SortEntry`, `FilterOperator`, `PagedResult<T>`, `GroupedResult<T>` | `@granit/query-engine` |
+| Metadata | `QueryMetadata`, `ColumnDefinition`, `FilterableField`, `SortableField` | `@granit/query-engine` |
+| Saved views | `SavedViewSummary`, `CreateSavedViewRequest`, `UpdateSavedViewRequest` | `@granit/query-engine` |
+| SmartFilter | `FilterToken`, `FilterSuggestion`, `SmartFilterPhase` | `@granit/query-engine` |
+| API functions | `fetchPage()`, `fetchGrouped()`, `fetchQueryMeta()`, saved views CRUD | `@granit/query-engine` |
+| Serialization | `serializeQueryParams()`, `parseQueryParams()` | `@granit/query-engine` |
+| Operators | `inferOperators()`, `STRING_OPERATORS`, `OPERATOR_LABELS` | `@granit/query-engine` |
+| Provider | `QueryProvider`, `useQueryConfig()`, `buildQueryKey()` | `@granit/react-query-engine` |
+| Query hook | `useQueryEndpoint()` | `@granit/react-query-engine` |
+| Pagination | `usePagination()`, `useInfiniteScroll()` | `@granit/react-query-engine` |
+| Metadata hook | `useQueryMeta()` | `@granit/react-query-engine` |
+| Saved views hook | `useSavedViews()` | `@granit/react-query-engine` |
+| Smart filter | `useSmartFilter()` | `@granit/react-query-engine` |
 
 ## Backend pipeline overview
 

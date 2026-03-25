@@ -1,6 +1,6 @@
+using Granit.Encryption.BackgroundJobs;
 using Granit.Encryption.EntityFrameworkCore;
 using Granit.Encryption.EntityFrameworkCore.Extensions;
-using Granit.Encryption.BackgroundJobs;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;

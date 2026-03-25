@@ -11,7 +11,7 @@ import { FileTree } from '@astrojs/starlight/components';
 
 `granit-front` is a pnpm monorepo containing the `@granit/*` packages — the
 JavaScript/TypeScript counterpart of the .NET framework `granit-dotnet`. Both
-frameworks expose symmetric contracts: TypeScript types in `@granit/querying`,
+frameworks expose symmetric contracts: TypeScript types in `@granit/query-engine`,
 `@granit/data-exchange`, `@granit/workflow`, etc. are the direct mirror of C#
 types in `Granit.QueryEngine`, `Granit.DataExchange`, `Granit.Workflow`, etc.
 
@@ -54,7 +54,7 @@ graph TD
     end
 
     subgraph "Business layer"
-        querying["@granit/querying"]
+        querying["@granit/query-engine"]
         data-exchange["@granit/data-exchange"]
         workflow["@granit/workflow"]
         timeline["@granit/timeline"]
@@ -141,8 +141,8 @@ do not necessarily have all these layers.
 ## Source resolution flow
 
 ```text
-import { useQueryEndpoint } from '@granit/querying'
-  → Vite alias → packages/@granit/querying/src/index.ts
+import { useQueryEndpoint } from '@granit/query-engine'
+  → Vite alias → packages/@granit/query-engine/src/index.ts
   → TypeScript source → transpiled on the fly by Vite
   → no dist/, no intermediate build
 ```
@@ -161,7 +161,7 @@ published to the [GitHub Packages npm registry](/frontend/operations/npm-registr
 
 | granit-dotnet (.NET) | granit-front (TypeScript) |
 | --- | --- |
-| `Granit.QueryEngine` | `@granit/querying` |
+| `Granit.QueryEngine` | `@granit/query-engine` |
 | `Granit.DataExchange.Export` | `@granit/data-exchange` (export) |
 | `Granit.DataExchange.Import` | `@granit/data-exchange` (import) |
 | `Granit.Workflow` | `@granit/workflow` |

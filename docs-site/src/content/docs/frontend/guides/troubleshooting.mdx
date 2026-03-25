@@ -70,7 +70,7 @@ TypeScript `paths` and Vite aliases must point to the **same file** (`src/index.
 Tests fail with a module resolution error for a `@granit/*` package:
 
 ```text
-Error: Failed to resolve import "@granit/querying" from "src/components/..."
+Error: Failed to resolve import "@granit/query-engine" from "src/components/..."
 ```
 
 **Fix:** in `vitest.config.ts`, declare **sub-paths before the main path**:
@@ -79,9 +79,9 @@ Error: Failed to resolve import "@granit/querying" from "src/components/..."
 resolve: {
   alias: {
     // Sub-paths first
-    '@granit/querying/types': path.join(GRANIT, 'querying/src/types/index.ts'),
+    '@granit/query-engine/types': path.join(GRANIT, 'querying/src/types/index.ts'),
     // Main path after
-    '@granit/querying': path.join(GRANIT, 'querying/src/index.ts'),
+    '@granit/query-engine': path.join(GRANIT, 'querying/src/index.ts'),
   },
 }
 ```
