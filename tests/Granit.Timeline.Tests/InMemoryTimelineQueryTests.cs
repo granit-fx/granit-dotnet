@@ -6,7 +6,7 @@
 
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Internal;
 using Granit.Timing;

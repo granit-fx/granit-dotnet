@@ -1,4 +1,4 @@
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -29,7 +29,7 @@ internal static class TimelineStreamEndpoints
         string entityId,
         [FromServices] ITimelineReader reader,
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = QueryingDefaults.DefaultPageSize,
+        [FromQuery] int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
         PagedResult<TimelineStreamEntry> result = await reader.GetStreamAsync(entityType, entityId, page, pageSize, cancellationToken).ConfigureAwait(false);

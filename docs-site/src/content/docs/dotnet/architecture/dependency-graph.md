@@ -440,9 +440,9 @@ These two domains share cross-module dependencies with Notifications and Identit
 
 | Package | Depends on |
 |---------|------------|
-| `Granit.Querying` | `Core` |
-| `Granit.Querying.Endpoints` | `Querying`, `Authorization` |
-| `Granit.Querying.EntityFrameworkCore` | `Querying`, `Persistence` |
+| `Granit.QueryEngine` | `Core` |
+| `Granit.QueryEngine.Endpoints` | `Querying`, `Authorization` |
+| `Granit.QueryEngine.EntityFrameworkCore` | `Querying`, `Persistence` |
 
 ### DataExchange
 
@@ -522,7 +522,7 @@ flowchart LR
 | `Granit.Notifications.AI` | `AI`, `Notifications` |
 | `Granit.Observability.AI` | `AI`, `Observability` |
 | `Granit.Privacy.AI` | `AI`, `Privacy` |
-| `Granit.Querying.AI` | `AI`, `Querying` |
+| `Granit.QueryEngine.AI` | `AI`, `Querying` |
 | `Granit.Templating.AI` | `AI`, `Templating` |
 | `Granit.Timeline.AI` | `AI`, `Timeline` |
 | `Granit.Validation.AI` | `AI`, `Validation` |

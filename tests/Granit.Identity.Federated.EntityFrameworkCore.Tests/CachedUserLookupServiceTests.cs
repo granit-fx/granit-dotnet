@@ -4,7 +4,7 @@ using Granit.Identity.Federated.EntityFrameworkCore.Internal;
 using Granit.Identity.Federated.EntityFrameworkCore.Options;
 using Granit.Identity.Models;
 using Granit.MultiTenancy;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;

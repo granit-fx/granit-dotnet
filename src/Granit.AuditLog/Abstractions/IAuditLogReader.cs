@@ -1,5 +1,5 @@
 using Granit.AuditLog.Domain;
-using Granit.Querying;
+using Granit.QueryEngine;
 
 namespace Granit.AuditLog.Abstractions;
 
@@ -31,6 +31,6 @@ public interface IAuditLogReader
         string entityType,
         string entityId,
         int page = 1,
-        int pageSize = QueryingDefaults.DefaultPageSize,
+        int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default);
 }

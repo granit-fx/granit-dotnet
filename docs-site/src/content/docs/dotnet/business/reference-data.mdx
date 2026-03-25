@@ -25,7 +25,7 @@ automatic label resolution based on `CurrentUICulture`, and an extensible
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.ReferenceData` | `IReferenceDataStoreReader/Writer<T>`, `ReferenceDataEntity`, `ReferenceDataRegistry` | `Granit`, `Granit.Querying` |
+| `Granit.ReferenceData` | `IReferenceDataStoreReader/Writer<T>`, `ReferenceDataEntity`, `ReferenceDataRegistry` | `Granit`, `Granit.QueryEngine` |
 | `Granit.ReferenceData.EntityFrameworkCore` | EF Core store, seeding, dynamic column mapping, `QueryDefinition` | `Granit.ReferenceData`, `Granit.Persistence`, `Granit.Caching` |
 | `Granit.ReferenceData.Endpoints` | Generic + dynamic CRUD endpoints, hierarchical children endpoint | `Granit.ReferenceData`, `Granit.Validation`, `Granit.Guids` |
 

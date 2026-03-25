@@ -1,5 +1,5 @@
-using Granit.Querying;
-using Granit.Querying.Filtering;
+using Granit.QueryEngine;
+using Granit.QueryEngine.Filtering;
 
 namespace Granit.AI.Endpoints.Queries;
 

@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Timing;
 using Granit.Workflow.Extensions;
 
@@ -11,7 +11,7 @@ namespace Granit.Workflow;
 /// and domain events for state changes.
 /// </summary>
 [DependsOn(
-    typeof(GranitQueryingModule),
+    typeof(GranitQueryEngineModule),
     typeof(GranitTimingModule))]
 public sealed class GranitWorkflowModule : GranitModule
 {

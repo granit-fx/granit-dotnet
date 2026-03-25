@@ -16,7 +16,7 @@ dotnet add package Granit.Authentication.ApiKeys
 
 - `Granit.Http.ExceptionHandling`
 - `Granit.Guids`
-- `Granit.Querying`
+- `Granit.QueryEngine`
 - `Granit.Users`
 - `Granit.Timing`
 

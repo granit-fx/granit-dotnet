@@ -6,7 +6,7 @@ using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Endpoints.Extensions;
 using Granit.BackgroundJobs.Endpoints.Internal;
 using Granit.Exceptions;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;

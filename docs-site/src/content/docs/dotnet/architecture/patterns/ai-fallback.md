@@ -40,7 +40,7 @@ tiers are used depending on user-facing latency sensitivity:
 
 | Package | Timeout | Fallback |
 |---------|---------|---------|
-| `Granit.Querying.AI` | 2 s | Pass phrase as `QueryRequest.Search` (full-text) |
+| `Granit.QueryEngine.AI` | 2 s | Pass phrase as `QueryRequest.Search` (full-text) |
 | `Granit.DataExchange.AI` | 5 s | Heuristic `IMappingSuggestionService` |
 | `Granit.Validation.AI` | 1 s | Skip AI check, return valid |
 | `Granit.Notifications.AI` | 3 s | Use static template |
@@ -126,7 +126,7 @@ internal sealed class AIMappingSuggestionService(
 
 | File | Role |
 |------|------|
-| `src/Granit.Querying.AI/AINaturalLanguageQueryTranslator.cs` | 2s timeout + null fallback |
+| `src/Granit.QueryEngine.AI/AINaturalLanguageQueryTranslator.cs` | 2s timeout + null fallback |
 | `src/Granit.DataExchange.AI/AIMappingSuggestionService.cs` | 5s timeout + heuristic fallback |
 | `src/Granit.Validation.AI/AIContentModerationValidator.cs` | 1s timeout + pass-through |
 

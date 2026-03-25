@@ -41,7 +41,7 @@ dotnet add package Granit.OpenIddict
 - `Granit.Events`
 - `Granit.Guids`
 - `Granit.Identity`
-- `Granit.Querying`
+- `Granit.QueryEngine`
 - `Granit.Users`
 - `Granit.Timing`
 

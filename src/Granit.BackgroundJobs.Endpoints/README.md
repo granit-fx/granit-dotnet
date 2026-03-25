@@ -14,7 +14,7 @@ dotnet add package Granit.BackgroundJobs.Endpoints
 
 - `Granit.Authorization`
 - `Granit.BackgroundJobs`
-- `Granit.Querying`
+- `Granit.QueryEngine`
 
 ## Documentation
 

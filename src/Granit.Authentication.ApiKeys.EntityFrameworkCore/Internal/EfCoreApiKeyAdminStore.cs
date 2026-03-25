@@ -1,5 +1,5 @@
 using Granit.Authentication.ApiKeys.Domain;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;

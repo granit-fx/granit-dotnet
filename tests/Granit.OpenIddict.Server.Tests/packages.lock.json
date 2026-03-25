@@ -484,7 +484,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.Querying": "[0.1.0-dev, )"
+          "Granit.QueryEngine": "[0.1.0-dev, )"
         }
       },
       "granit.openiddict": {
@@ -494,7 +494,7 @@
           "Granit.Events": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
-          "Granit.Querying": "[0.1.0-dev, )",
+          "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "OpenIddict.EntityFrameworkCore": "[7.*, )"
         }
@@ -508,7 +508,7 @@
           "OpenIddict.Validation.AspNetCore": "[7.*, )"
         }
       },
-      "granit.querying": {
+      "granit.queryengine": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

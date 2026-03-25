@@ -1,4 +1,4 @@
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Workflow.Dtos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -32,11 +32,11 @@ internal static class WorkflowReadEndpoints
         string entityId,
         [FromServices] IWorkflowHistoryQuery historyQuery,
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = QueryingDefaults.DefaultPageSize,
+        [FromQuery] int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
         int clampedPage = Math.Max(page, 1);
-        int clampedPageSize = Math.Clamp(pageSize, 1, QueryingDefaults.MaxPageSize);
+        int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
 
         PagedResult<WorkflowTransitionHistoryResponse> result = await historyQuery.GetHistoryAsync(
             entityType, entityId, clampedPage, clampedPageSize, cancellationToken).ConfigureAwait(false);

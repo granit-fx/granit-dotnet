@@ -28,7 +28,7 @@ cluster-safe singleton execution.
 |---------|------|------------|
 | `Granit.BackgroundJobs` | `[RecurringJob]` attribute, `IBackgroundJobReader`/`Writer`, in-memory store, Channel dispatcher | `Granit`, `Granit.Users`, `Granit.Timing`, `Granit.Guids` |
 | `Granit.BackgroundJobs.EntityFrameworkCore` | `BackgroundJobsDbContext`, `EfBackgroundJobStore` (durable persistence) | `Granit.BackgroundJobs`, `Granit.Persistence` |
-| `Granit.BackgroundJobs.Endpoints` | 5 Minimal API endpoints with `BackgroundJobs.Jobs.Manage` permission | `Granit.BackgroundJobs`, `Granit.Authorization`, `Granit.Querying` |
+| `Granit.BackgroundJobs.Endpoints` | 5 Minimal API endpoints with `BackgroundJobs.Jobs.Manage` permission | `Granit.BackgroundJobs`, `Granit.Authorization`, `Granit.QueryEngine` |
 | `Granit.BackgroundJobs.Wolverine` | `CronSchedulerAgent` (singleton), `RecurringJobSchedulingMiddleware`, DLQ inspector | `Granit.BackgroundJobs`, `Granit.Wolverine` |
 
 ## Dependency graph
@@ -43,7 +43,7 @@ graph TD
     EF --> P[Granit.Persistence]
     EP[Granit.BackgroundJobs.Endpoints] --> BJ
     EP --> A[Granit.Authorization]
-    EP --> Q[Granit.Querying]
+    EP --> Q[Granit.QueryEngine]
     W[Granit.BackgroundJobs.Wolverine] --> BJ
     W --> WM[Granit.Wolverine]
 ```

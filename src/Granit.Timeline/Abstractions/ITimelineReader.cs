@@ -1,4 +1,4 @@
-using Granit.Querying;
+using Granit.QueryEngine;
 
 namespace Granit.Timeline.Abstractions;
 
@@ -16,6 +16,6 @@ public interface ITimelineReader
         string entityType,
         string entityId,
         int page = 1,
-        int pageSize = QueryingDefaults.DefaultPageSize,
+        int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default);
 }

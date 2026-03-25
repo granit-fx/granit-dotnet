@@ -1,6 +1,6 @@
 using Granit.Authorization;
 using Granit.Modularity;
-using Granit.Querying.Endpoints;
+using Granit.QueryEngine.Endpoints;
 
 namespace Granit.AI.Endpoints;
 
@@ -10,5 +10,5 @@ namespace Granit.AI.Endpoints;
 [DependsOn(
     typeof(GranitAIModule),
     typeof(GranitAuthorizationModule),
-    typeof(GranitQueryingEndpointsModule))]
+    typeof(GranitQueryEngineEndpointsModule))]
 public sealed class GranitAIEndpointsModule : GranitModule;

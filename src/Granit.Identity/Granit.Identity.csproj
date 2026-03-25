@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
-    <ProjectReference Include="..\Granit.Querying\Granit.Querying.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine\Granit.QueryEngine.csproj" />
   </ItemGroup>
 
 </Project>

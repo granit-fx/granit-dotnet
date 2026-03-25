@@ -18,7 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.AI\Granit.AI.csproj" />
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
-    <ProjectReference Include="..\Granit.Querying.Endpoints\Granit.Querying.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Endpoints\Granit.QueryEngine.Endpoints.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
   </ItemGroup>
 

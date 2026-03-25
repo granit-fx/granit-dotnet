@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Timing;
 using Shouldly;
 using Xunit;
@@ -22,7 +22,7 @@ public sealed class GranitWorkflowModuleTests
     }
 
     [Fact]
-    public void Module_ShouldDependOnGranitQueryingModule()
+    public void Module_ShouldDependOnGranitQueryEngineModule()
     {
         // Arrange
         var attr = (DependsOnAttribute?)Attribute.GetCustomAttribute(
@@ -30,7 +30,7 @@ public sealed class GranitWorkflowModuleTests
 
         // Assert
         attr.ShouldNotBeNull();
-        attr.DependedTypes.ShouldContain(typeof(GranitQueryingModule));
+        attr.DependedTypes.ShouldContain(typeof(GranitQueryEngineModule));
     }
 
     [Fact]

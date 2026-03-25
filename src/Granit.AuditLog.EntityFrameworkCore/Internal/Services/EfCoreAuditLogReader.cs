@@ -2,7 +2,7 @@ using Granit.AuditLog.Abstractions;
 using Granit.AuditLog.Domain;
 using Granit.AuditLog.Options;
 using Granit.MultiTenancy;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -83,7 +83,7 @@ internal sealed class EfCoreAuditLogReader(
         string entityType,
         string entityId,
         int page = 1,
-        int pageSize = QueryingDefaults.DefaultPageSize,
+        int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
         string cacheKey = $"audit:{TenantCachePrefix}:entity:{entityType}:{entityId}:p{page}:s{pageSize}";

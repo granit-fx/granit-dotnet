@@ -1,6 +1,6 @@
 using Granit.Identity.Internal;
 using Granit.Identity.Models;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Shouldly;
 using Xunit;
 

@@ -1,7 +1,7 @@
 using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Validation;
 
 namespace Granit.OpenIddict.Endpoints;
@@ -22,6 +22,6 @@ namespace Granit.OpenIddict.Endpoints;
     typeof(GranitAuthorizationModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitOpenIddictModule),
-    typeof(GranitQueryingModule),
+    typeof(GranitQueryEngineModule),
     typeof(GranitValidationModule))]
 public sealed class GranitOpenIddictEndpointsModule : GranitModule;

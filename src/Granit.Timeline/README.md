@@ -17,7 +17,7 @@ dotnet add package Granit.Timeline
 
 - `Granit`
 - `Granit.Guids`
-- `Granit.Querying`
+- `Granit.QueryEngine`
 - `Granit.Users`
 - `Granit.Timing`
 

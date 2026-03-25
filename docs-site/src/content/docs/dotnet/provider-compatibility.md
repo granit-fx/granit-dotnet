@@ -63,7 +63,7 @@ development scenarios but lacks support for some features used by Granit (e.g.,
 | Granit.Templating.EntityFrameworkCore | Supported | Compatible | Compatible |
 | Granit.DataExchange.EntityFrameworkCore | Supported | Compatible | Compatible |
 | Granit.BackgroundJobs.EntityFrameworkCore | Supported | Compatible | Compatible |
-| Granit.Querying.EntityFrameworkCore | Supported | Compatible | Compatible |
+| Granit.QueryEngine.EntityFrameworkCore | Supported | Compatible | Compatible |
 | Granit.Authentication.ApiKeys.EntityFrameworkCore | Supported | Compatible | Compatible |
 
 ### Wolverine database transports

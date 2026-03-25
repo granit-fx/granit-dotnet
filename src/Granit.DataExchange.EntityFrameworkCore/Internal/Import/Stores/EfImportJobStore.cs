@@ -1,6 +1,6 @@
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Pipeline;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Import.Stores;

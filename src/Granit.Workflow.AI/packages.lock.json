@@ -91,7 +91,7 @@
           "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
-      "granit.querying": {
+      "granit.queryengine": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
@@ -108,7 +108,7 @@
       "granit.workflow": {
         "type": "Project",
         "dependencies": {
-          "Granit.Querying": "[0.1.0-dev, )",
+          "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
         }

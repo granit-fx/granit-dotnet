@@ -16,7 +16,7 @@ learn which field is "Status", which operator is "Greater than", and how to comb
 date ranges with text filters. They want to type **"unpaid invoices from last week
 for Belgian clients"** and get results.
 
-`Granit.Querying.AI` makes this possible by translating natural language into the
+`Granit.QueryEngine.AI` makes this possible by translating natural language into the
 structured `QueryRequest` format that Granit's query engine already understands.
 
 ## How it works
@@ -110,7 +110,7 @@ The LLM **never** sees: row data, customer names, amounts, or any business infor
 ```csharp
 builder.AddGranitAI();
 builder.AddGranitAIOllama();
-builder.AddGranitQueryingAI();
+builder.AddGranitQueryEngineAI();
 ```
 
 ## Usage

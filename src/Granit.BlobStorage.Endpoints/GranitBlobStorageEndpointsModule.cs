@@ -1,6 +1,6 @@
 using Granit.Authorization;
 using Granit.Modularity;
-using Granit.Querying.Endpoints;
+using Granit.QueryEngine.Endpoints;
 using Granit.Validation;
 
 namespace Granit.BlobStorage.Endpoints;
@@ -11,6 +11,6 @@ namespace Granit.BlobStorage.Endpoints;
 [DependsOn(
     typeof(GranitAuthorizationModule),
     typeof(GranitBlobStorageModule),
-    typeof(GranitQueryingEndpointsModule),
+    typeof(GranitQueryEngineEndpointsModule),
     typeof(GranitValidationModule))]
 public sealed class GranitBlobStorageEndpointsModule : GranitModule;

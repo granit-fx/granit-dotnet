@@ -8,7 +8,7 @@ using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
 using Granit.Notifications.Endpoints.Dtos;
 using Granit.Notifications.Endpoints.Extensions;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;

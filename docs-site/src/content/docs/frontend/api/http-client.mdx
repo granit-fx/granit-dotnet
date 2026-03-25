@@ -191,7 +191,7 @@ interface ProblemDetails {
   errorCode?: string;  // Domain error code, e.g. "Appointment:SlotUnavailable"
 }
 
-// Paginated list — mirrors Granit.Querying PagedResult<T>
+// Paginated list — mirrors Granit.QueryEngine PagedResult<T>
 interface PaginatedResponse<T> {
   items: T[];
   total: number;

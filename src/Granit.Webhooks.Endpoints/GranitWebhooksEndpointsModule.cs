@@ -1,6 +1,6 @@
 using Granit.Authorization;
 using Granit.Modularity;
-using Granit.Querying.Endpoints;
+using Granit.QueryEngine.Endpoints;
 using Granit.Webhooks;
 
 namespace Granit.Webhooks.Endpoints;
@@ -10,6 +10,6 @@ namespace Granit.Webhooks.Endpoints;
 /// </summary>
 [DependsOn(
     typeof(GranitAuthorizationModule),
-    typeof(GranitQueryingEndpointsModule),
+    typeof(GranitQueryEngineEndpointsModule),
     typeof(GranitWebhooksModule))]
 public sealed class GranitWebhooksEndpointsModule : GranitModule;

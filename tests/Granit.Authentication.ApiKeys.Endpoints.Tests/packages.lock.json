@@ -284,7 +284,7 @@
           "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
-          "Granit.Querying": "[0.1.0-dev, )",
+          "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
@@ -294,7 +294,7 @@
           "Granit.Authentication.ApiKeys": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Querying": "[0.1.0-dev, )",
+          "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
@@ -351,7 +351,7 @@
           "SmartFormat": "[3.*, )"
         }
       },
-      "granit.querying": {
+      "granit.queryengine": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

@@ -363,7 +363,7 @@ Shard mapping:
 | Shard | Layer | Modules |
 | ----- | ----- | ------- |
 | `core-ai` | Core + AI | Core, Validation, Analyzers, Diagnostics, Observability, Timing, Guids, Testing, AI.* |
-| `business` | Business Features | Workflow, DataExchange, Templating, DocumentGeneration, Timeline, Querying, ReferenceData |
+| `business` | Business Features | Workflow, DataExchange, Templating, DocumentGeneration, Timeline, QueryEngine, ReferenceData |
 | `api-data` | API & Http + Data | Http.*, BlobStorage, Persistence, Caching, Imaging, RateLimiting, Webhooks |
 | `infrastructure` | Infrastructure | Notifications, BackgroundJobs, Wolverine, Localization, Settings, Features, MultiTenancy, EventBus |
 | `security` | Security & Compliance | AuditLog, Authentication, Authorization, Identity, Vault, Encryption, Privacy, Security |

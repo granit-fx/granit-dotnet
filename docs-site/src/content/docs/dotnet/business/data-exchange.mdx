@@ -375,7 +375,7 @@ exposes CRUD operations under `/metadata/presets/`.
 ### Query integration
 
 When `QueryDefinitionName` is set on an export definition, the export pipeline
-delegates filtering and sorting to `IQueryEngine<T>` from `Granit.Querying`.
+delegates filtering and sorting to `IQueryEngine<T>` from `Granit.QueryEngine`.
 This reuses the same whitelist-based filtering pipeline as the grid view —
 the user's active filters are applied to the export.
 

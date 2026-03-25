@@ -48,7 +48,7 @@ with secret rotation and per-user authorization revocation.
 - `Granit.Authorization`
 - `Granit.Http.ApiDocumentation`
 - `Granit.OpenIddict`
-- `Granit.Querying`
+- `Granit.QueryEngine`
 - `Granit.Validation`
 
 ## Documentation

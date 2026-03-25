@@ -1,6 +1,6 @@
 using Granit.Identity.Extensions;
 using Granit.Modularity;
-using Granit.Querying;
+using Granit.QueryEngine;
 
 namespace Granit.Identity;
 
@@ -10,7 +10,7 @@ namespace Granit.Identity;
 /// Install a provider package (e.g. <c>Granit.Identity.Federated.Keycloak</c>) to connect
 /// to a real identity system.
 /// </summary>
-[DependsOn(typeof(GranitQueryingModule))]
+[DependsOn(typeof(GranitQueryEngineModule))]
 public sealed class GranitIdentityModule : GranitModule
 {
     /// <inheritdoc/>

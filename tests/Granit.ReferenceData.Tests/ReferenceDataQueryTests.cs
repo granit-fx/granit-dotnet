@@ -1,4 +1,4 @@
-using Granit.Querying;
+using Granit.QueryEngine;
 using Shouldly;
 using Xunit;
 
@@ -51,7 +51,7 @@ public sealed class ReferenceDataQueryTests
     {
         ReferenceDataQuery query = new();
 
-        query.PageSize.ShouldBe(QueryingDefaults.DefaultPageSize);
+        query.PageSize.ShouldBe(QueryEngineDefaults.DefaultPageSize);
     }
 
     [Fact]

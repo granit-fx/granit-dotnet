@@ -1,4 +1,4 @@
-using Granit.Querying.Endpoints.Extensions;
+using Granit.QueryEngine.Endpoints.Extensions;
 using Granit.Validation.AspNetCore;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;

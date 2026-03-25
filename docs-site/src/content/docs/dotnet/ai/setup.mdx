@@ -46,7 +46,7 @@ OpenAI or Anthropic. Swapping providers is a one-line configuration change.
   - Granit.AI.VectorData Multi-tenant vector storage for semantic search (RAG)
   - Granit.AI.Endpoints REST API for workspaces, usage tracking, chat & embedding proxy
 - Granit.DataExchange.AI/ AI-powered column mapping for CSV/Excel import
-- Granit.Querying.AI/ Natural Language Query — phrases to structured filters
+- Granit.QueryEngine.AI/ Natural Language Query — phrases to structured filters
 
 </FileTree>
 
@@ -58,11 +58,11 @@ OpenAI or Anthropic. Swapping providers is a one-line configuration change.
 | `Granit.AI.Anthropic` | Claude models via official Anthropic SDK | `Granit.AI` |
 | `Granit.AI.Ollama` | Local models, health check, zero API key | `Granit.AI` |
 | `Granit.AI.EntityFrameworkCore` | `AIDbContext`, `EfAIWorkspaceStore`, `EfAIUsageStore` | `Granit.AI`, `Granit.Persistence` |
-| `Granit.AI.Endpoints` | Workspace CRUD, usage query, chat/embedding proxy | `Granit.AI`, `Granit.Authorization`, `Granit.Querying.Endpoints` |
+| `Granit.AI.Endpoints` | Workspace CRUD, usage query, chat/embedding proxy | `Granit.AI`, `Granit.Authorization`, `Granit.QueryEngine.Endpoints` |
 | `Granit.AI.Extraction` | `IDocumentExtractor<T>`, structured output from documents | `Granit.AI` |
 | `Granit.AI.VectorData` | `IVectorCollection<T>`, `ISemanticSearchService` for RAG | `Granit.AI` |
 | `Granit.DataExchange.AI` | AI-powered `ISemanticMappingService` for import mapping | `Granit.AI`, `Granit.DataExchange` |
-| `Granit.Querying.AI` | `INaturalLanguageQueryTranslator` (NLQ → `QueryRequest`) | `Granit.AI`, `Granit.Querying` |
+| `Granit.QueryEngine.AI` | `INaturalLanguageQueryTranslator` (NLQ → `QueryRequest`) | `Granit.AI`, `Granit.QueryEngine` |
 
 ## Provider comparison
 
@@ -88,8 +88,8 @@ graph TD
     VD[Granit.AI.VectorData] --> AI
     DEX[Granit.DataExchange.AI] --> AI
     DEX --> DE[Granit.DataExchange]
-    QAI[Granit.Querying.AI] --> AI
-    QAI --> Q[Granit.Querying]
+    QAI[Granit.QueryEngine.AI] --> AI
+    QAI --> Q[Granit.QueryEngine]
 ```
 
 ## Setup
@@ -444,7 +444,7 @@ With it: the feature activates. No `if` statements, no feature flags — just DI
 | `ReviewThreshold` | `double` | `0.7` | Below this confidence → `NeedsReview` status |
 | `TimeoutSeconds` | `int` | `30` | Extraction timeout (OCR + LLM) |
 
-### `QueryingAIOptions` (section: `AI:Querying`)
+### `QueryEngineAIOptions` (section: `AI:Querying`)
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|

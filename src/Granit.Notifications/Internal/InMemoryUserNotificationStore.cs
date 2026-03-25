@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
-using Granit.Querying;
+using Granit.QueryEngine;
 
 namespace Granit.Notifications.Internal;
 
@@ -18,10 +18,10 @@ internal sealed class InMemoryUserNotificationStore : IUserNotificationReader, I
     public Task<UserNotification?> GetAsync(Guid id, CancellationToken cancellationToken = default) =>
         Task.FromResult(_notifications.GetValueOrDefault(id));
 
-    public Task<PagedResult<UserNotification>> GetListAsync(string recipientUserId, Guid? tenantId, int page = 1, int pageSize = QueryingDefaults.DefaultPageSize, CancellationToken cancellationToken = default)
+    public Task<PagedResult<UserNotification>> GetListAsync(string recipientUserId, Guid? tenantId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)
     {
         int clampedPage = Math.Max(page, 1);
-        int clampedPageSize = Math.Clamp(pageSize, 1, QueryingDefaults.MaxPageSize);
+        int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
 
         var filtered = _notifications.Values
             .Where(n => n.RecipientUserId == recipientUserId && n.TenantId == tenantId)
@@ -64,10 +64,10 @@ internal sealed class InMemoryUserNotificationStore : IUserNotificationReader, I
         return Task.CompletedTask;
     }
 
-    public Task<PagedResult<UserNotification>> GetByEntityAsync(string entityType, string entityId, Guid? tenantId, int page = 1, int pageSize = QueryingDefaults.DefaultPageSize, CancellationToken cancellationToken = default)
+    public Task<PagedResult<UserNotification>> GetByEntityAsync(string entityType, string entityId, Guid? tenantId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)
     {
         int clampedPage = Math.Max(page, 1);
-        int clampedPageSize = Math.Clamp(pageSize, 1, QueryingDefaults.MaxPageSize);
+        int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
 
         var filtered = _notifications.Values
             .Where(n => n.RelatedEntityType == entityType && n.RelatedEntityId == entityId && n.TenantId == tenantId)

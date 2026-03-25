@@ -104,7 +104,7 @@
           "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
-      "granit.querying": {
+      "granit.queryengine": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

@@ -106,7 +106,7 @@ call works across all providers.
 
 | File | Role |
 |------|------|
-| `src/Granit.Querying.AI/AINaturalLanguageQueryTranslator.cs` | `CompleteAsync<QueryRequest>` |
+| `src/Granit.QueryEngine.AI/AINaturalLanguageQueryTranslator.cs` | `CompleteAsync<QueryRequest>` |
 | `src/Granit.DataExchange.AI/AIMappingSuggestionService.cs` | `CompleteAsync<MappingResponse>` |
 | `src/Granit.AI.Extraction/AIDocumentExtractor.cs` | `CompleteAsync<TSchema>` generic extraction |
 

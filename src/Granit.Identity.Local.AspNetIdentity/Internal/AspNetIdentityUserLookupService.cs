@@ -1,6 +1,6 @@
 using Granit.Identity;
 using Granit.OpenIddict.Entities;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,7 +34,7 @@ internal sealed class AspNetIdentityUserLookupService(
 
     /// <inheritdoc/>
     public async Task<PagedResult<IIdentityUser>> SearchAsync(
-        string searchTerm, int page = 1, int pageSize = QueryingDefaults.DefaultPageSize, CancellationToken cancellationToken = default)
+        string searchTerm, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)
     {
         IQueryable<GranitUser> query = _userManager.Users.AsNoTracking();
 

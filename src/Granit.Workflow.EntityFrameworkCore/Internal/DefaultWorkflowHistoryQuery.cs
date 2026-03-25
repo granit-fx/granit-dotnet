@@ -1,4 +1,4 @@
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Workflow.Dtos;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,11 +20,11 @@ internal sealed class DefaultWorkflowHistoryQuery<TDbContext>(TDbContext dbConte
         string entityType,
         string entityId,
         int page = 1,
-        int pageSize = QueryingDefaults.DefaultPageSize,
+        int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
         int clampedPage = Math.Max(page, 1);
-        int clampedPageSize = Math.Clamp(pageSize, 1, QueryingDefaults.MaxPageSize);
+        int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
 
         IQueryable<Domain.WorkflowTransitionRecord> query = _dbContext.WorkflowTransitionRecords
             .Where(r => r.EntityType == entityType && r.EntityId == entityId);

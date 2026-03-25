@@ -19,7 +19,7 @@
     <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\Granit.OpenIddict\Granit.OpenIddict.csproj" />
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
-    <ProjectReference Include="..\Granit.Querying\Granit.Querying.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine\Granit.QueryEngine.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
   </ItemGroup>
 

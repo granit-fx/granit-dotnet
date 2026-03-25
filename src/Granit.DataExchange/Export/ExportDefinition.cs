@@ -17,7 +17,7 @@ namespace Granit.DataExchange.Export;
 /// </para>
 /// <para>
 /// When <see cref="QueryDefinitionName"/> is set, the export pipeline delegates
-/// filtering and sorting to <c>IQueryEngine&lt;TEntity&gt;</c> from Granit.Querying,
+/// filtering and sorting to <c>IQueryEngine&lt;TEntity&gt;</c> from Granit.QueryEngine,
 /// reusing the same pipeline as the grid view.
 /// </para>
 /// <para>

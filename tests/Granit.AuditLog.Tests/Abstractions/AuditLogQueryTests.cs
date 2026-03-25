@@ -1,6 +1,6 @@
 using Granit.AuditLog.Abstractions;
 using Granit.AuditLog.Domain;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Shouldly;
 using Xunit;
 
@@ -14,7 +14,7 @@ public sealed class AuditLogQueryTests
         AuditLogQuery query = new();
 
         query.Page.ShouldBe(1);
-        query.PageSize.ShouldBe(QueryingDefaults.DefaultPageSize);
+        query.PageSize.ShouldBe(QueryEngineDefaults.DefaultPageSize);
         query.UserId.ShouldBeNull();
         query.EntityType.ShouldBeNull();
         query.EntityId.ShouldBeNull();

@@ -1,7 +1,7 @@
 using Granit.DataExchange.Endpoints.Dtos.Export;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

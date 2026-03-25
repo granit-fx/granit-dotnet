@@ -4,7 +4,7 @@ using Granit.AuditLog.EntityFrameworkCore.Internal;
 using Granit.AuditLog.EntityFrameworkCore.Internal.Services;
 using Granit.AuditLog.Options;
 using Granit.MultiTenancy;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;

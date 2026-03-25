@@ -1,6 +1,6 @@
 using Granit.Identity.Endpoints.Dtos;
-using Granit.Querying;
-using Granit.Querying.Endpoints.Dtos;
+using Granit.QueryEngine;
+using Granit.QueryEngine.Endpoints.Dtos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -45,7 +45,7 @@ internal static class IdentityUserCacheReadEndpoints
     {
         QueryRequest query = request.Value;
         int page = query.Page ?? 1;
-        int pageSize = Math.Clamp(query.PageSize ?? QueryingDefaults.DefaultPageSize, 1, QueryingDefaults.MaxPageSize);
+        int pageSize = Math.Clamp(query.PageSize ?? QueryEngineDefaults.DefaultPageSize, 1, QueryEngineDefaults.MaxPageSize);
 
         PagedResult<IIdentityUser> result = await lookupService.SearchAsync(
             query.Search ?? "",

@@ -11,7 +11,7 @@
       "granit": {
         "type": "Project"
       },
-      "granit.querying": {
+      "granit.queryengine": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

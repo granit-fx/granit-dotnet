@@ -1,5 +1,5 @@
 using Granit.DataExchange.Export.Domain;
-using Granit.Querying;
+using Granit.QueryEngine;
 
 namespace Granit.DataExchange.Export.Internal;
 

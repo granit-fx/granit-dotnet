@@ -1,4 +1,4 @@
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Options;
 using Microsoft.EntityFrameworkCore;
@@ -93,7 +93,7 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
 
         // Pagination
         int clampedPage = Math.Max(query.Page, 1);
-        int clampedPageSize = Math.Clamp(query.PageSize, 1, QueryingDefaults.MaxPageSize);
+        int clampedPageSize = Math.Clamp(query.PageSize, 1, QueryEngineDefaults.MaxPageSize);
         int skip = (clampedPage - 1) * clampedPageSize;
 
         queryable = queryable.Skip(skip).Take(clampedPageSize);

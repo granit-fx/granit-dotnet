@@ -1,4 +1,4 @@
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Workflow.Dtos;
 
 namespace Granit.Workflow;
@@ -26,6 +26,6 @@ public interface IWorkflowHistoryQuery
         string entityType,
         string entityId,
         int page = 1,
-        int pageSize = QueryingDefaults.DefaultPageSize,
+        int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default);
 }

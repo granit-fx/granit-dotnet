@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Endpoints.Extensions;
 using Microsoft.AspNetCore.Authentication;
@@ -71,7 +71,7 @@ public sealed class TimelineStreamEndpointsTests : IAsyncDisposable
             Body = "Hello",
         };
 
-        _reader.GetStreamAsync("Patient", "42", 1, QueryingDefaults.DefaultPageSize, Arg.Any<CancellationToken>())
+        _reader.GetStreamAsync("Patient", "42", 1, QueryEngineDefaults.DefaultPageSize, Arg.Any<CancellationToken>())
             .Returns(new PagedResult<TimelineStreamEntry>([entry], 1, HasMore: false));
 
         // Act
@@ -93,7 +93,7 @@ public sealed class TimelineStreamEndpointsTests : IAsyncDisposable
     public async Task GetStream_empty_returns_empty_page()
     {
         // Arrange
-        _reader.GetStreamAsync("Invoice", "99", 1, QueryingDefaults.DefaultPageSize, Arg.Any<CancellationToken>())
+        _reader.GetStreamAsync("Invoice", "99", 1, QueryEngineDefaults.DefaultPageSize, Arg.Any<CancellationToken>())
             .Returns(new PagedResult<TimelineStreamEntry>([], 0, HasMore: false));
 
         // Act

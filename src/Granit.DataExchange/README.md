@@ -19,7 +19,7 @@ dotnet add package Granit.DataExchange
 ## Dependencies
 
 - `Granit.Guids`
-- `Granit.Querying`
+- `Granit.QueryEngine`
 - `Granit.Timing`
 - `Granit.Validation`
 

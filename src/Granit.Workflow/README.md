@@ -14,7 +14,7 @@ dotnet add package Granit.Workflow
 
 ## Dependencies
 
-- `Granit.Querying`
+- `Granit.QueryEngine`
 - `Granit.Timing`
 
 ## Documentation

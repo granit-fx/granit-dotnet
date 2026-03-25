@@ -1,6 +1,6 @@
 using Granit.AuditLog.Extensions;
 using Granit.Modularity;
-using Granit.Querying;
+using Granit.QueryEngine;
 
 namespace Granit.AuditLog;
 
@@ -17,7 +17,7 @@ namespace Granit.AuditLog;
 /// For EF Core persistence, add <c>Granit.AuditLog.EntityFrameworkCore</c>.
 /// For admin endpoints, add <c>Granit.AuditLog.Endpoints</c>.
 /// </remarks>
-[DependsOn(typeof(GranitQueryingModule))]
+[DependsOn(typeof(GranitQueryEngineModule))]
 public sealed class GranitAuditLogModule : GranitModule
 {
     /// <inheritdoc/>

@@ -1,6 +1,6 @@
 using System.Diagnostics.Metrics;
 using Granit.AI;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Timeline;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.AI.Diagnostics;

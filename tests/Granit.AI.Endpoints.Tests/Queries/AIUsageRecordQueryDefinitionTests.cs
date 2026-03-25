@@ -15,7 +15,7 @@ public sealed class AIUsageRecordQueryDefinitionTests
     [Fact]
     public void Declares_expected_columns()
     {
-        System.Collections.Generic.IReadOnlyList<Granit.Querying.ColumnDescriptor> columns = _definition.GetColumns();
+        System.Collections.Generic.IReadOnlyList<Granit.QueryEngine.ColumnDescriptor> columns = _definition.GetColumns();
         columns.Count.ShouldBe(8);
         columns.Select(c => c.PropertyName).ShouldContain("WorkspaceName");
         columns.Select(c => c.PropertyName).ShouldContain("Provider");
@@ -30,7 +30,7 @@ public sealed class AIUsageRecordQueryDefinitionTests
     [Fact]
     public void Declares_groupby_fields()
     {
-        System.Collections.Generic.IReadOnlyList<Granit.Querying.Filtering.GroupByDescriptor> groupByFields = _definition.GetGroupByFields();
+        System.Collections.Generic.IReadOnlyList<Granit.QueryEngine.Filtering.GroupByDescriptor> groupByFields = _definition.GetGroupByFields();
         groupByFields.Count.ShouldBe(3);
         groupByFields.Select(g => g.PropertyName).ShouldContain("WorkspaceName");
         groupByFields.Select(g => g.PropertyName).ShouldContain("Provider");
@@ -40,7 +40,7 @@ public sealed class AIUsageRecordQueryDefinitionTests
     [Fact]
     public void Declares_aggregates()
     {
-        System.Collections.Generic.IReadOnlyList<Granit.Querying.Filtering.AggregateDescriptor> aggregates = _definition.GetAggregates();
+        System.Collections.Generic.IReadOnlyList<Granit.QueryEngine.Filtering.AggregateDescriptor> aggregates = _definition.GetAggregates();
         aggregates.Count.ShouldBe(3);
         aggregates.Select(a => a.Alias).ShouldContain("totalInputTokens");
         aggregates.Select(a => a.Alias).ShouldContain("totalOutputTokens");

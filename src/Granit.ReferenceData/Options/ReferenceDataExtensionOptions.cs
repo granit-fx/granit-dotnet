@@ -10,7 +10,7 @@ namespace Granit.ReferenceData.Options;
 /// <para>
 /// Used with the simplified <c>AddReferenceData&lt;TDbContext&gt;()</c> registration API.
 /// Properties declared via <see cref="MapProperty{T}"/> are stored as real SQL columns
-/// (EF Core Shadow Properties) that are indexable and filterable via Granit.Querying.
+/// (EF Core Shadow Properties) that are indexable and filterable via Granit.QueryEngine.
 /// </para>
 /// <para>
 /// Additional properties can be stored in the JSON bag via

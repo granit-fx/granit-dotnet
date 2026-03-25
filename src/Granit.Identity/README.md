@@ -17,7 +17,7 @@ dotnet add package Granit.Identity
 ## Dependencies
 
 - `Granit`
-- `Granit.Querying`
+- `Granit.QueryEngine`
 
 ## Documentation
 

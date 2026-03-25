@@ -8,7 +8,7 @@ using Granit.DataExchange.Export.Messages;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.Events;
 using Granit.Guids;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

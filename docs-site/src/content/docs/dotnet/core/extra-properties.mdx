@@ -147,7 +147,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 ### Querying Shadow Properties
 
 Shadow Properties declared with `isFilterable: true` or `isSortable: true` integrate
-with `Granit.Querying` via the `ShadowColumn()` API on `QueryDefinitionBuilder`:
+with `Granit.QueryEngine` via the `ShadowColumn()` API on `QueryDefinitionBuilder`:
 
 ```csharp
 // In a QueryDefinition

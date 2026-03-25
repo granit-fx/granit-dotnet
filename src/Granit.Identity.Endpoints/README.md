@@ -17,7 +17,7 @@ dotnet add package Granit.Identity.Endpoints
 - `Granit.Http.ApiDocumentation`
 - `Granit.Authorization`
 - `Granit.Identity`
-- `Granit.Querying`
+- `Granit.QueryEngine`
 - `Granit.Validation`
 
 ## Documentation

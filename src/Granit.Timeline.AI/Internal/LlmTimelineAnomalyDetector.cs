@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Granit.AI;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.AI.Diagnostics;
 using Granit.Timeline.AI.Options;

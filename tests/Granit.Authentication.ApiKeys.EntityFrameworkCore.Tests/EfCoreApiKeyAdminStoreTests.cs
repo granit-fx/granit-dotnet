@@ -1,6 +1,6 @@
 using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using Xunit;

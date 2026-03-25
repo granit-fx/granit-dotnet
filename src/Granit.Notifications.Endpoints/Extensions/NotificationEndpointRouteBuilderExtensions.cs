@@ -5,7 +5,7 @@ using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
 using Granit.Notifications.Endpoints.Dtos;
 using Granit.Notifications.Endpoints.Options;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Timing;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -82,10 +82,10 @@ public static class NotificationEndpointRouteBuilderExtensions
         [FromServices] IUserNotificationReader reader,
         [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user,
-        int page = 1, int pageSize = QueryingDefaults.DefaultPageSize)
+        int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize)
     {
         int clampedPage = Math.Max(page, 1);
-        int clampedPageSize = Math.Clamp(pageSize, 1, QueryingDefaults.MaxPageSize);
+        int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
 
         string userId = GetUserId(user);
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
@@ -143,10 +143,10 @@ public static class NotificationEndpointRouteBuilderExtensions
         string entityId,
         [FromServices] IUserNotificationReader reader,
         [FromServices] ICurrentTenant tenant,
-        int page = 1, int pageSize = QueryingDefaults.DefaultPageSize)
+        int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize)
     {
         int clampedPage = Math.Max(page, 1);
-        int clampedPageSize = Math.Clamp(pageSize, 1, QueryingDefaults.MaxPageSize);
+        int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
 
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
         PagedResult<UserNotification> result = await reader.GetByEntityAsync(entityType, entityId, tenantId, clampedPage, clampedPageSize).ConfigureAwait(false);

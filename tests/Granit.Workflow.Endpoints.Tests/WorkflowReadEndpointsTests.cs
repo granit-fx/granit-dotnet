@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Workflow.Dtos;
 using Granit.Workflow.Endpoints.Extensions;
 using Microsoft.AspNetCore.Authentication;

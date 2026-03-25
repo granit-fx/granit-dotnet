@@ -7,7 +7,7 @@ using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Granit.Authentication.ApiKeys.Endpoints.Extensions;
 using Granit.Authentication.ApiKeys.Endpoints.Permissions;
 using Granit.Guids;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;

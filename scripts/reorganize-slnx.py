@@ -25,7 +25,7 @@ SRC_DOMAINS = {
         "Timeline", "Workflow",
     },
     "Infrastructure": {
-        "BackgroundJobs", "BlobStorage", "Caching", "EventBus",
+        "BackgroundJobs", "BlobStorage", "Caching", "Events",
         "Imaging", "Persistence", "Webhooks", "Wolverine",
     },
     "Compliance": {"AuditLog", "Privacy"},

@@ -139,14 +139,14 @@ public static class LayerDependencyRules
     /// <summary>
     /// IQueryable must not escape the persistence/data layer.
     /// Types whose namespace contains a default-allowed fragment (EntityFrameworkCore,
-    /// Querying, Persistence) are exempt, as are types following the
+    /// QueryEngine, Persistence) are exempt, as are types following the
     /// <c>*QueryableProvider</c> convention — the standard bridge for exposing
-    /// IQueryable to the Querying endpoints layer.
+    /// IQueryable to the QueryEngine endpoints layer.
     /// </summary>
     public static void IQueryableShouldNotEscapePersistenceLayer(
         ArchUnitNET.Domain.Architecture architecture)
     {
-        string[] allowedNamespaceFragments = ["EntityFrameworkCore", "Querying", "Persistence", "Export", "Identity.Local", "Identity.OpenIddict"];
+        string[] allowedNamespaceFragments = ["EntityFrameworkCore", "QueryEngine", "Persistence", "Export", "Identity.Local", "Identity.OpenIddict"];
 
         IEnumerable<IType> violators = architecture.Types
             .Where(t => !allowedNamespaceFragments.Any(ns =>

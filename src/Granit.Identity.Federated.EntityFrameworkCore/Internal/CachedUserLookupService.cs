@@ -1,7 +1,7 @@
 using Granit.Identity.Federated.EntityFrameworkCore.Entities;
 using Granit.Identity.Federated.EntityFrameworkCore.Options;
 using Granit.MultiTenancy;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -144,7 +144,7 @@ internal sealed partial class CachedUserLookupService(
     }
 
     public async Task<PagedResult<IIdentityUser>> SearchAsync(
-        string searchTerm, int page = 1, int pageSize = QueryingDefaults.DefaultPageSize,
+        string searchTerm, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
@@ -153,7 +153,7 @@ internal sealed partial class CachedUserLookupService(
             .ConfigureAwait(false);
 
         var items = entries.Cast<IIdentityUser>().ToList();
-        int skip = (Math.Max(page, 1) - 1) * Math.Clamp(pageSize, 1, QueryingDefaults.MaxPageSize);
+        int skip = (Math.Max(page, 1) - 1) * Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
         return new PagedResult<IIdentityUser>(items, totalCount, HasMore: skip + items.Count < totalCount);
     }
 

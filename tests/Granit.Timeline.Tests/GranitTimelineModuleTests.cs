@@ -1,6 +1,6 @@
 using Granit.Guids;
 using Granit.Modularity;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Timing;
 using Granit.Users;
 using Shouldly;
@@ -23,7 +23,7 @@ public sealed class GranitTimelineModuleTests
     }
 
     [Fact]
-    public void Module_DependsOn_GranitQueryingModule()
+    public void Module_DependsOn_GranitQueryEngineModule()
     {
         DependsOnAttribute[] attributes = typeof(GranitTimelineModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false)
@@ -31,7 +31,7 @@ public sealed class GranitTimelineModuleTests
             .ToArray();
 
         Type[] allDeps = attributes.SelectMany(a => a.DependedTypes).ToArray();
-        allDeps.ShouldContain(typeof(GranitQueryingModule));
+        allDeps.ShouldContain(typeof(GranitQueryEngineModule));
     }
 
     [Fact]

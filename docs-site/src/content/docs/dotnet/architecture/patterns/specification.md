@@ -50,9 +50,9 @@ flowchart LR
 
 | Package | Role |
 | --- | --- |
-| `Granit.Querying` | Interfaces, fluent builder, DTOs (`QueryRequest`, `PagedResult<T>`) |
-| `Granit.Querying.EntityFrameworkCore` | Execution engine: expression trees, dynamic sorting, pagination |
-| `Granit.Querying.Endpoints` | REST binding (`filter[field.op]=value`), metadata + saved views endpoints |
+| `Granit.QueryEngine` | Interfaces, fluent builder, DTOs (`QueryRequest`, `PagedResult<T>`) |
+| `Granit.QueryEngine.EntityFrameworkCore` | Execution engine: expression trees, dynamic sorting, pagination |
+| `Granit.QueryEngine.Endpoints` | REST binding (`filter[field.op]=value`), metadata + saved views endpoints |
 
 ### QueryDefinition -- the declarative specification
 
@@ -111,16 +111,16 @@ through string concatenation.
 
 | File | Role |
 | --- | --- |
-| `src/Granit.Querying/QueryDefinition.cs` | Abstract specification class |
-| `src/Granit.Querying/QueryDefinitionBuilder.cs` | Fluent builder (Column, FilterGroup, GlobalSearch) |
-| `src/Granit.Querying/Filtering/FilterCriteria.cs` | Record (Field, Operator, Value) |
-| `src/Granit.Querying/Filtering/FilterOperator.cs` | Operator enum |
-| `src/Granit.Querying/QueryRequest.cs` | Query DTO (page, sort, filter, presets) |
-| `src/Granit.Querying.EntityFrameworkCore/Internal/FilterExpressionBuilder.cs` | Filter to Expression compilation |
-| `src/Granit.Querying.EntityFrameworkCore/Internal/QueryableFilterExtensions.cs` | Filter application on IQueryable |
-| `src/Granit.Querying.EntityFrameworkCore/Internal/QueryableSortExtensions.cs` | Dynamic sorting via expressions |
-| `src/Granit.Querying.EntityFrameworkCore/Internal/QueryablePaginationExtensions.cs` | Offset + keyset pagination |
-| `src/Granit.Querying.Endpoints/Binding/QueryRequestBinder.cs` | REST query string parsing |
+| `src/Granit.QueryEngine/QueryDefinition.cs` | Abstract specification class |
+| `src/Granit.QueryEngine/QueryDefinitionBuilder.cs` | Fluent builder (Column, FilterGroup, GlobalSearch) |
+| `src/Granit.QueryEngine/Filtering/FilterCriteria.cs` | Record (Field, Operator, Value) |
+| `src/Granit.QueryEngine/Filtering/FilterOperator.cs` | Operator enum |
+| `src/Granit.QueryEngine/QueryRequest.cs` | Query DTO (page, sort, filter, presets) |
+| `src/Granit.QueryEngine.EntityFrameworkCore/Internal/FilterExpressionBuilder.cs` | Filter to Expression compilation |
+| `src/Granit.QueryEngine.EntityFrameworkCore/Internal/QueryableFilterExtensions.cs` | Filter application on IQueryable |
+| `src/Granit.QueryEngine.EntityFrameworkCore/Internal/QueryableSortExtensions.cs` | Dynamic sorting via expressions |
+| `src/Granit.QueryEngine.EntityFrameworkCore/Internal/QueryablePaginationExtensions.cs` | Offset + keyset pagination |
+| `src/Granit.QueryEngine.Endpoints/Binding/QueryRequestBinder.cs` | REST query string parsing |
 
 ## Rationale
 

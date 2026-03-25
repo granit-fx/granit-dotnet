@@ -1,6 +1,6 @@
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Export.Stores;

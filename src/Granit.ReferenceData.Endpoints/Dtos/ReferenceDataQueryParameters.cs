@@ -1,4 +1,4 @@
-using Granit.Querying;
+using Granit.QueryEngine;
 
 namespace Granit.ReferenceData.Endpoints.Dtos;
 
@@ -11,4 +11,4 @@ internal sealed record ReferenceDataQueryParameters(
     string? SortBy = null,
     bool Descending = false,
     int Page = 1,
-    int PageSize = QueryingDefaults.DefaultPageSize);
+    int PageSize = QueryEngineDefaults.DefaultPageSize);

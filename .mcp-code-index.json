@@ -26,7 +26,7 @@
       "deps": [
         "Granit.AI",
         "Granit.Authorization",
-        "Granit.Querying.Endpoints",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -72,7 +72,7 @@
       "name": "Granit.AuditLog",
       "deps": [
         "Granit",
-        "Granit.Querying"
+        "Granit.QueryEngine"
       ],
       "framework": "net10.0"
     },
@@ -111,7 +111,7 @@
         "Granit.Timing",
         "Granit.Guids",
         "Granit.Http.ExceptionHandling",
-        "Granit.Querying",
+        "Granit.QueryEngine",
         "Granit"
       ],
       "framework": "net10.0"
@@ -122,7 +122,7 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Authentication.ApiKeys",
         "Granit.Authorization",
-        "Granit.Querying",
+        "Granit.QueryEngine",
         "Granit.Timing",
         "Granit.Validation"
       ],
@@ -238,7 +238,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.BackgroundJobs",
-        "Granit.Querying",
+        "Granit.QueryEngine",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -336,7 +336,7 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.BlobStorage.DbStore",
+      "name": "Granit.BlobStorage.Database",
       "deps": [
         "Granit.BlobStorage",
         "Granit.Persistence"
@@ -348,7 +348,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.BlobStorage",
-        "Granit.Querying.Endpoints",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -409,7 +409,7 @@
       "deps": [
         "Granit.Events",
         "Granit.Guids",
-        "Granit.Querying",
+        "Granit.QueryEngine",
         "Granit.Timing",
         "Granit.Validation"
       ],
@@ -510,18 +510,18 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Encryption.BackgroundJobs",
+      "deps": [
+        "Granit.Encryption.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Encryption.EntityFrameworkCore",
       "deps": [
         "Granit",
         "Granit.Encryption",
         "Granit.Persistence"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Encryption.ReEncryption",
-      "deps": [
-        "Granit.Encryption.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -674,7 +674,7 @@
       "name": "Granit.Identity",
       "deps": [
         "Granit",
-        "Granit.Querying"
+        "Granit.QueryEngine"
       ],
       "framework": "net10.0"
     },
@@ -684,8 +684,8 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
         "Granit.Identity",
-        "Granit.Querying",
-        "Granit.Querying.Endpoints",
+        "Granit.QueryEngine",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -812,7 +812,7 @@
       "name": "Granit.Notifications",
       "deps": [
         "Granit.Guids",
-        "Granit.Querying",
+        "Granit.QueryEngine",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1043,7 +1043,7 @@
         "Granit.Events",
         "Granit.Guids",
         "Granit.Identity",
-        "Granit.Querying",
+        "Granit.QueryEngine",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1063,7 +1063,7 @@
         "Granit.Http.ApiDocumentation",
         "Granit.OpenIddict",
         "Granit.Authorization",
-        "Granit.Querying",
+        "Granit.QueryEngine",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -1174,37 +1174,37 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Querying",
+      "name": "Granit.QueryEngine",
       "deps": [
         "Granit"
       ],
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Querying.AI",
+      "name": "Granit.QueryEngine.AI",
       "deps": [
         "Granit.AI",
-        "Granit.Querying",
+        "Granit.QueryEngine",
         "Granit.Timing"
       ],
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Querying.Endpoints",
+      "name": "Granit.QueryEngine.Endpoints",
       "deps": [
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
         "Granit.Guids",
-        "Granit.Querying",
+        "Granit.QueryEngine",
         "Granit.Timing",
         "Granit.Validation"
       ],
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Querying.EntityFrameworkCore",
+      "name": "Granit.QueryEngine.EntityFrameworkCore",
       "deps": [
-        "Granit.Querying",
+        "Granit.QueryEngine",
         "Granit.Persistence"
       ],
       "framework": "net10.0"
@@ -1222,7 +1222,7 @@
       "name": "Granit.ReferenceData",
       "deps": [
         "Granit",
-        "Granit.Querying"
+        "Granit.QueryEngine"
       ],
       "framework": "net10.0"
     },
@@ -1346,7 +1346,7 @@
       "deps": [
         "Granit",
         "Granit.Guids",
-        "Granit.Querying",
+        "Granit.QueryEngine",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1489,7 +1489,7 @@
       "name": "Granit.Webhooks.Endpoints",
       "deps": [
         "Granit.Authorization",
-        "Granit.Querying.Endpoints",
+        "Granit.QueryEngine.Endpoints",
         "Granit.Validation",
         "Granit.Webhooks"
       ],
@@ -1541,7 +1541,7 @@
     {
       "name": "Granit.Workflow",
       "deps": [
-        "Granit.Querying",
+        "Granit.QueryEngine",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -3012,7 +3012,7 @@
         {
           "name": "GetByEntityAsync",
           "kind": "method",
-          "signature": "GetByEntityAsync(string entityType, string entityId, int page = 1, int pageSize = QueryingDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
+          "signature": "GetByEntityAsync(string entityType, string entityId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
           "returnType": "Task<PagedResult<AuditLogEntry>>"
         }
       ]
@@ -6460,10 +6460,10 @@
     },
     {
       "name": "DbStoreBlobContent",
-      "fqn": "Granit.BlobStorage.DbStore.Entities.DbStoreBlobContent",
+      "fqn": "Granit.BlobStorage.Database.Entities.DbStoreBlobContent",
       "kind": "class",
-      "project": "Granit.BlobStorage.DbStore",
-      "file": "src/Granit.BlobStorage.DbStore/Entities/DbStoreBlobContent.cs",
+      "project": "Granit.BlobStorage.Database",
+      "file": "src/Granit.BlobStorage.Database/Entities/DbStoreBlobContent.cs",
       "line": 12,
       "members": [
         {
@@ -6482,10 +6482,10 @@
     },
     {
       "name": "BlobStorageDbStoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.BlobStorage.DbStore.Extensions.BlobStorageDbStoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.BlobStorage.Database.Extensions.BlobStorageDbStoreHostApplicationBuilderExtensions",
       "kind": "class",
-      "project": "Granit.BlobStorage.DbStore",
-      "file": "src/Granit.BlobStorage.DbStore/Extensions/BlobStorageDbStoreHostApplicationBuilderExtensions.cs",
+      "project": "Granit.BlobStorage.Database",
+      "file": "src/Granit.BlobStorage.Database/Extensions/BlobStorageDbStoreHostApplicationBuilderExtensions.cs",
       "line": 21,
       "members": [
         {
@@ -6497,20 +6497,20 @@
       ]
     },
     {
-      "name": "GranitBlobStorageDbStoreModule",
-      "fqn": "Granit.BlobStorage.DbStore.GranitBlobStorageDbStoreModule",
+      "name": "GranitBlobStorageDatabaseModule",
+      "fqn": "Granit.BlobStorage.Database.GranitBlobStorageDatabaseModule",
       "kind": "class",
-      "project": "Granit.BlobStorage.DbStore",
-      "file": "src/Granit.BlobStorage.DbStore/GranitBlobStorageDbStoreModule.cs",
+      "project": "Granit.BlobStorage.Database",
+      "file": "src/Granit.BlobStorage.Database/GranitBlobStorageDbStoreModule.cs",
       "line": 15,
       "members": []
     },
     {
       "name": "DbStoreBlobOptions",
-      "fqn": "Granit.BlobStorage.DbStore.Options.DbStoreBlobOptions",
+      "fqn": "Granit.BlobStorage.Database.Options.DbStoreBlobOptions",
       "kind": "class",
-      "project": "Granit.BlobStorage.DbStore",
-      "file": "src/Granit.BlobStorage.DbStore/Options/DbStoreBlobOptions.cs",
+      "project": "Granit.BlobStorage.Database",
+      "file": "src/Granit.BlobStorage.Database/Options/DbStoreBlobOptions.cs",
       "line": 11,
       "members": [
         {
@@ -10293,6 +10293,42 @@
       ]
     },
     {
+      "name": "DefaultReEncryptionJob",
+      "fqn": "Granit.Encryption.BackgroundJobs.DefaultReEncryptionJob",
+      "kind": "class",
+      "project": "Granit.Encryption.BackgroundJobs",
+      "file": "src/Granit.Encryption.BackgroundJobs/DefaultReEncryptionJob.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "ReEncryptionServiceCollectionExtensions",
+      "fqn": "Granit.Encryption.BackgroundJobs.Extensions.ReEncryptionServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Encryption.BackgroundJobs",
+      "file": "src/Granit.Encryption.BackgroundJobs/Extensions/ReEncryptionServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "GranitEncryptionBackgroundJobsModule",
+      "fqn": "Granit.Encryption.BackgroundJobs.GranitEncryptionBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Encryption.BackgroundJobs",
+      "file": "src/Granit.Encryption.BackgroundJobs/GranitEncryptionReEncryptionModule.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "IReEncryptionJob",
+      "fqn": "Granit.Encryption.BackgroundJobs.IReEncryptionJob",
+      "kind": "interface",
+      "project": "Granit.Encryption.BackgroundJobs",
+      "file": "src/Granit.Encryption.BackgroundJobs/IReEncryptionJob.cs",
+      "line": 12,
+      "members": []
+    },
+    {
       "name": "ICryptoShreddingAuditRecorder",
       "fqn": "Granit.Encryption.CryptoShredding.ICryptoShreddingAuditRecorder",
       "kind": "interface",
@@ -10618,42 +10654,6 @@
           "returnType": "string"
         }
       ]
-    },
-    {
-      "name": "DefaultReEncryptionJob",
-      "fqn": "Granit.Encryption.ReEncryption.DefaultReEncryptionJob",
-      "kind": "class",
-      "project": "Granit.Encryption.ReEncryption",
-      "file": "src/Granit.Encryption.ReEncryption/DefaultReEncryptionJob.cs",
-      "line": 25,
-      "members": []
-    },
-    {
-      "name": "ReEncryptionServiceCollectionExtensions",
-      "fqn": "Granit.Encryption.ReEncryption.Extensions.ReEncryptionServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Encryption.ReEncryption",
-      "file": "src/Granit.Encryption.ReEncryption/Extensions/ReEncryptionServiceCollectionExtensions.cs",
-      "line": 9,
-      "members": []
-    },
-    {
-      "name": "GranitEncryptionReEncryptionModule",
-      "fqn": "Granit.Encryption.ReEncryption.GranitEncryptionReEncryptionModule",
-      "kind": "class",
-      "project": "Granit.Encryption.ReEncryption",
-      "file": "src/Granit.Encryption.ReEncryption/GranitEncryptionReEncryptionModule.cs",
-      "line": 8,
-      "members": []
-    },
-    {
-      "name": "IReEncryptionJob",
-      "fqn": "Granit.Encryption.ReEncryption.IReEncryptionJob",
-      "kind": "interface",
-      "project": "Granit.Encryption.ReEncryption",
-      "file": "src/Granit.Encryption.ReEncryption/IReEncryptionJob.cs",
-      "line": 12,
-      "members": []
     },
     {
       "name": "DefaultCryptoShredder",
@@ -14569,7 +14569,7 @@
         {
           "name": "SearchAsync",
           "kind": "method",
-          "signature": "SearchAsync(string searchTerm, int page = 1, int pageSize = QueryingDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
+          "signature": "SearchAsync(string searchTerm, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
           "returnType": "Task<PagedResult<IIdentityUser>>"
         },
         {
@@ -16374,7 +16374,7 @@
         {
           "name": "GetListAsync",
           "kind": "method",
-          "signature": "GetListAsync(string recipientUserId, Guid? tenantId, int page = 1, int pageSize = QueryingDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
+          "signature": "GetListAsync(string recipientUserId, Guid? tenantId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
           "returnType": "Task<PagedResult<UserNotification>>"
         },
         {
@@ -16386,7 +16386,7 @@
         {
           "name": "GetByEntityAsync",
           "kind": "method",
-          "signature": "GetByEntityAsync(string entityType, string entityId, Guid? tenantId, int page = 1, int pageSize = QueryingDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
+          "signature": "GetByEntityAsync(string entityType, string entityId, Guid? tenantId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
           "returnType": "Task<PagedResult<UserNotification>>"
         }
       ]
@@ -22786,36 +22786,36 @@
       ]
     },
     {
-      "name": "QueryingAIMetrics",
-      "fqn": "Granit.Querying.AI.Diagnostics.QueryingAIMetrics",
+      "name": "QueryEngineAIMetrics",
+      "fqn": "Granit.QueryEngine.AI.Diagnostics.QueryEngineAIMetrics",
       "kind": "class",
-      "project": "Granit.Querying.AI",
-      "file": "src/Granit.Querying.AI/Diagnostics/QueryingAIMetrics.cs",
+      "project": "Granit.QueryEngine.AI",
+      "file": "src/Granit.QueryEngine.AI/Diagnostics/QueryEngineAIMetrics.cs",
       "line": 10,
       "members": []
     },
     {
-      "name": "QueryingAIHostApplicationBuilderExtensions",
-      "fqn": "Granit.Querying.AI.Extensions.QueryingAIHostApplicationBuilderExtensions",
+      "name": "QueryEngineAIHostApplicationBuilderExtensions",
+      "fqn": "Granit.QueryEngine.AI.Extensions.QueryEngineAIHostApplicationBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Querying.AI",
-      "file": "src/Granit.Querying.AI/Extensions/QueryingAIHostApplicationBuilderExtensions.cs",
+      "project": "Granit.QueryEngine.AI",
+      "file": "src/Granit.QueryEngine.AI/Extensions/QueryEngineAIHostApplicationBuilderExtensions.cs",
       "line": 15,
       "members": [
         {
-          "name": "AddGranitQueryingAI",
+          "name": "AddGranitQueryEngineAI",
           "kind": "method",
-          "signature": "AddGranitQueryingAI(this IHostApplicationBuilder builder)",
+          "signature": "AddGranitQueryEngineAI(this IHostApplicationBuilder builder)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
     },
     {
-      "name": "GranitQueryingAIModule",
-      "fqn": "Granit.Querying.AI.GranitQueryingAIModule",
+      "name": "GranitQueryEngineAIModule",
+      "fqn": "Granit.QueryEngine.AI.GranitQueryEngineAIModule",
       "kind": "class",
-      "project": "Granit.Querying.AI",
-      "file": "src/Granit.Querying.AI/GranitQueryingAIModule.cs",
+      "project": "Granit.QueryEngine.AI",
+      "file": "src/Granit.QueryEngine.AI/GranitQueryEngineAIModule.cs",
       "line": 22,
       "members": [
         {
@@ -22828,10 +22828,10 @@
     },
     {
       "name": "INaturalLanguageQueryTranslator",
-      "fqn": "Granit.Querying.AI.INaturalLanguageQueryTranslator",
+      "fqn": "Granit.QueryEngine.AI.INaturalLanguageQueryTranslator",
       "kind": "interface",
-      "project": "Granit.Querying.AI",
-      "file": "src/Granit.Querying.AI/INaturalLanguageQueryTranslator.cs",
+      "project": "Granit.QueryEngine.AI",
+      "file": "src/Granit.QueryEngine.AI/INaturalLanguageQueryTranslator.cs",
       "line": 8,
       "members": [
         {
@@ -22843,11 +22843,11 @@
       ]
     },
     {
-      "name": "QueryingAIOptions",
-      "fqn": "Granit.Querying.AI.Options.QueryingAIOptions",
+      "name": "QueryEngineAIOptions",
+      "fqn": "Granit.QueryEngine.AI.Options.QueryEngineAIOptions",
       "kind": "class",
-      "project": "Granit.Querying.AI",
-      "file": "src/Granit.Querying.AI/Options/QueryingAIOptions.cs",
+      "project": "Granit.QueryEngine.AI",
+      "file": "src/Granit.QueryEngine.AI/Options/QueryEngineAIOptions.cs",
       "line": 6,
       "members": [
         {
@@ -22866,19 +22866,19 @@
     },
     {
       "name": "ColumnBuilder",
-      "fqn": "Granit.Querying.ColumnBuilder",
+      "fqn": "Granit.QueryEngine.ColumnBuilder",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/ColumnBuilder.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/ColumnBuilder.cs",
       "line": 7,
       "members": []
     },
     {
       "name": "ColumnDescriptor",
-      "fqn": "Granit.Querying.ColumnDescriptor",
+      "fqn": "Granit.QueryEngine.ColumnDescriptor",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/ColumnDescriptor.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/ColumnDescriptor.cs",
       "line": 6,
       "members": [
         {
@@ -22891,19 +22891,19 @@
     },
     {
       "name": "DatePeriod",
-      "fqn": "Granit.Querying.DatePeriod",
+      "fqn": "Granit.QueryEngine.DatePeriod",
       "kind": "enum",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/DatePeriod.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/DatePeriod.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "QueryRequestBinder",
-      "fqn": "Granit.Querying.Endpoints.Binding.QueryRequestBinder",
+      "fqn": "Granit.QueryEngine.Endpoints.Binding.QueryRequestBinder",
       "kind": "class",
-      "project": "Granit.Querying.Endpoints",
-      "file": "src/Granit.Querying.Endpoints/Binding/QueryRequestBinder.cs",
+      "project": "Granit.QueryEngine.Endpoints",
+      "file": "src/Granit.QueryEngine.Endpoints/Binding/QueryRequestBinder.cs",
       "line": 21,
       "members": [
         {
@@ -22916,10 +22916,10 @@
     },
     {
       "name": "BindableQueryRequest",
-      "fqn": "Granit.Querying.Endpoints.Dtos.BindableQueryRequest",
+      "fqn": "Granit.QueryEngine.Endpoints.Dtos.BindableQueryRequest",
       "kind": "class",
-      "project": "Granit.Querying.Endpoints",
-      "file": "src/Granit.Querying.Endpoints/Dtos/BindableQueryRequest.cs",
+      "project": "Granit.QueryEngine.Endpoints",
+      "file": "src/Granit.QueryEngine.Endpoints/Dtos/BindableQueryRequest.cs",
       "line": 15,
       "members": [
         {
@@ -22938,37 +22938,37 @@
     },
     {
       "name": "SavedViewResponse",
-      "fqn": "Granit.Querying.Endpoints.Dtos.SavedViewResponse",
+      "fqn": "Granit.QueryEngine.Endpoints.Dtos.SavedViewResponse",
       "kind": "record",
-      "project": "Granit.Querying.Endpoints",
-      "file": "src/Granit.Querying.Endpoints/Dtos/SavedViewResponse.cs",
+      "project": "Granit.QueryEngine.Endpoints",
+      "file": "src/Granit.QueryEngine.Endpoints/Dtos/SavedViewResponse.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "QueryEndpointRouteBuilderExtensions",
-      "fqn": "Granit.Querying.Endpoints.Extensions.QueryEndpointRouteBuilderExtensions",
+      "fqn": "Granit.QueryEngine.Endpoints.Extensions.QueryEndpointRouteBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Querying.Endpoints",
-      "file": "src/Granit.Querying.Endpoints/Extensions/QueryEndpointRouteBuilderExtensions.cs",
+      "project": "Granit.QueryEngine.Endpoints",
+      "file": "src/Granit.QueryEngine.Endpoints/Extensions/QueryEndpointRouteBuilderExtensions.cs",
       "line": 18,
       "members": []
     },
     {
-      "name": "GranitQueryingEndpointsModule",
-      "fqn": "Granit.Querying.Endpoints.GranitQueryingEndpointsModule",
+      "name": "GranitQueryEngineEndpointsModule",
+      "fqn": "Granit.QueryEngine.Endpoints.GranitQueryEngineEndpointsModule",
       "kind": "class",
-      "project": "Granit.Querying.Endpoints",
-      "file": "src/Granit.Querying.Endpoints/GranitQueryingEndpointsModule.cs",
+      "project": "Granit.QueryEngine.Endpoints",
+      "file": "src/Granit.QueryEngine.Endpoints/GranitQueryEngineEndpointsModule.cs",
       "line": 28,
       "members": []
     },
     {
       "name": "QueryEndpointOptions",
-      "fqn": "Granit.Querying.Endpoints.Options.QueryEndpointOptions",
+      "fqn": "Granit.QueryEngine.Endpoints.Options.QueryEndpointOptions",
       "kind": "class",
-      "project": "Granit.Querying.Endpoints",
-      "file": "src/Granit.Querying.Endpoints/Options/QueryEndpointOptions.cs",
+      "project": "Granit.QueryEngine.Endpoints",
+      "file": "src/Granit.QueryEngine.Endpoints/Options/QueryEndpointOptions.cs",
       "line": 7,
       "members": [
         {
@@ -22986,36 +22986,36 @@
       ]
     },
     {
-      "name": "QueryingEfCoreMetrics",
-      "fqn": "Granit.Querying.EntityFrameworkCore.Diagnostics.QueryingEfCoreMetrics",
+      "name": "QueryEngineEfCoreMetrics",
+      "fqn": "Granit.QueryEngine.EntityFrameworkCore.Diagnostics.QueryEngineEfCoreMetrics",
       "kind": "class",
-      "project": "Granit.Querying.EntityFrameworkCore",
-      "file": "src/Granit.Querying.EntityFrameworkCore/Diagnostics/QueryingEfCoreMetrics.cs",
+      "project": "Granit.QueryEngine.EntityFrameworkCore",
+      "file": "src/Granit.QueryEngine.EntityFrameworkCore/Diagnostics/QueryEngineEfCoreMetrics.cs",
       "line": 10,
       "members": []
     },
     {
-      "name": "QueryingEfCoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.Querying.EntityFrameworkCore.Extensions.QueryingEfCoreHostApplicationBuilderExtensions",
+      "name": "QueryEngineEfCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.QueryEngine.EntityFrameworkCore.Extensions.QueryEngineEfCoreHostApplicationBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Querying.EntityFrameworkCore",
-      "file": "src/Granit.Querying.EntityFrameworkCore/Extensions/QueryingEfCoreHostApplicationBuilderExtensions.cs",
+      "project": "Granit.QueryEngine.EntityFrameworkCore",
+      "file": "src/Granit.QueryEngine.EntityFrameworkCore/Extensions/QueryEngineEfCoreHostApplicationBuilderExtensions.cs",
       "line": 14,
       "members": [
         {
-          "name": "AddGranitQueryingEntityFrameworkCore",
+          "name": "AddGranitQueryEngineEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitQueryingEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitQueryEngineEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
     },
     {
-      "name": "QueryingModelBuilderExtensions",
-      "fqn": "Granit.Querying.EntityFrameworkCore.Extensions.QueryingModelBuilderExtensions",
+      "name": "QueryEngineModelBuilderExtensions",
+      "fqn": "Granit.QueryEngine.EntityFrameworkCore.Extensions.QueryEngineModelBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Querying.EntityFrameworkCore",
-      "file": "src/Granit.Querying.EntityFrameworkCore/Extensions/QueryingModelBuilderExtensions.cs",
+      "project": "Granit.QueryEngine.EntityFrameworkCore",
+      "file": "src/Granit.QueryEngine.EntityFrameworkCore/Extensions/QueryEngineModelBuilderExtensions.cs",
       "line": 10,
       "members": [
         {
@@ -23027,11 +23027,11 @@
       ]
     },
     {
-      "name": "GranitQueryingDbProperties",
-      "fqn": "Granit.Querying.EntityFrameworkCore.GranitQueryingDbProperties",
+      "name": "GranitQueryEngineDbProperties",
+      "fqn": "Granit.QueryEngine.EntityFrameworkCore.GranitQueryEngineDbProperties",
       "kind": "class",
-      "project": "Granit.Querying.EntityFrameworkCore",
-      "file": "src/Granit.Querying.EntityFrameworkCore/GranitQueryingDbProperties.cs",
+      "project": "Granit.QueryEngine.EntityFrameworkCore",
+      "file": "src/Granit.QueryEngine.EntityFrameworkCore/GranitQueryEngineDbProperties.cs",
       "line": 11,
       "members": [
         {
@@ -23043,11 +23043,11 @@
       ]
     },
     {
-      "name": "GranitQueryingEntityFrameworkCoreModule",
-      "fqn": "Granit.Querying.EntityFrameworkCore.GranitQueryingEntityFrameworkCoreModule",
+      "name": "GranitQueryEngineEntityFrameworkCoreModule",
+      "fqn": "Granit.QueryEngine.EntityFrameworkCore.GranitQueryEngineEntityFrameworkCoreModule",
       "kind": "class",
-      "project": "Granit.Querying.EntityFrameworkCore",
-      "file": "src/Granit.Querying.EntityFrameworkCore/GranitQueryingEntityFrameworkCoreModule.cs",
+      "project": "Granit.QueryEngine.EntityFrameworkCore",
+      "file": "src/Granit.QueryEngine.EntityFrameworkCore/GranitQueryEngineEntityFrameworkCoreModule.cs",
       "line": 18,
       "members": [
         {
@@ -23060,62 +23060,62 @@
     },
     {
       "name": "ServiceCollectionExtensions",
-      "fqn": "Granit.Querying.Extensions.ServiceCollectionExtensions",
+      "fqn": "Granit.QueryEngine.Extensions.ServiceCollectionExtensions",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Extensions/ServiceCollectionExtensions.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Extensions/ServiceCollectionExtensions.cs",
       "line": 12,
       "members": [
         {
-          "name": "AddGranitQuerying",
+          "name": "AddGranitQueryEngine",
           "kind": "method",
-          "signature": "AddGranitQuerying(this IServiceCollection services)",
+          "signature": "AddGranitQueryEngine(this IServiceCollection services)",
           "returnType": "IServiceCollection"
         }
       ]
     },
     {
       "name": "AggregateDescriptor",
-      "fqn": "Granit.Querying.Filtering.AggregateDescriptor",
+      "fqn": "Granit.QueryEngine.Filtering.AggregateDescriptor",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Filtering/AggregateDescriptor.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Filtering/AggregateDescriptor.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "AggregateFunction",
-      "fqn": "Granit.Querying.Filtering.AggregateFunction",
+      "fqn": "Granit.QueryEngine.Filtering.AggregateFunction",
       "kind": "enum",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Filtering/AggregateFunction.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Filtering/AggregateFunction.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "DateFilterDescriptor",
-      "fqn": "Granit.Querying.Filtering.DateFilterDescriptor",
+      "fqn": "Granit.QueryEngine.Filtering.DateFilterDescriptor",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Filtering/DateFilterDescriptor.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Filtering/DateFilterDescriptor.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "FilterCriteria",
-      "fqn": "Granit.Querying.Filtering.FilterCriteria",
+      "fqn": "Granit.QueryEngine.Filtering.FilterCriteria",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Filtering/FilterCriteria.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Filtering/FilterCriteria.cs",
       "line": 9,
       "members": []
     },
     {
       "name": "FilterGroupBuilder",
-      "fqn": "Granit.Querying.Filtering.FilterGroupBuilder",
+      "fqn": "Granit.QueryEngine.Filtering.FilterGroupBuilder",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Filtering/FilterGroupBuilder.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Filtering/FilterGroupBuilder.cs",
       "line": 9,
       "members": [
         {
@@ -23128,28 +23128,28 @@
     },
     {
       "name": "FilterGroupDescriptor",
-      "fqn": "Granit.Querying.Filtering.FilterGroupDescriptor",
+      "fqn": "Granit.QueryEngine.Filtering.FilterGroupDescriptor",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Filtering/FilterGroupDescriptor.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Filtering/FilterGroupDescriptor.cs",
       "line": 7,
       "members": []
     },
     {
       "name": "FilterOperator",
-      "fqn": "Granit.Querying.Filtering.FilterOperator",
+      "fqn": "Granit.QueryEngine.Filtering.FilterOperator",
       "kind": "enum",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Filtering/FilterOperator.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Filtering/FilterOperator.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "FilterOperatorInference",
-      "fqn": "Granit.Querying.Filtering.FilterOperatorInference",
+      "fqn": "Granit.QueryEngine.Filtering.FilterOperatorInference",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Filtering/FilterOperatorInference.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Filtering/FilterOperatorInference.cs",
       "line": 6,
       "members": [
         {
@@ -23162,19 +23162,19 @@
     },
     {
       "name": "GroupByDescriptor",
-      "fqn": "Granit.Querying.Filtering.GroupByDescriptor",
+      "fqn": "Granit.QueryEngine.Filtering.GroupByDescriptor",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Filtering/GroupByDescriptor.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Filtering/GroupByDescriptor.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "IQueryFilter",
-      "fqn": "Granit.Querying.Filtering.IQueryFilter",
+      "fqn": "Granit.QueryEngine.Filtering.IQueryFilter",
       "kind": "interface",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Filtering/IQueryFilter.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Filtering/IQueryFilter.cs",
       "line": 10,
       "members": [
         {
@@ -23187,28 +23187,28 @@
     },
     {
       "name": "PresetDescriptor",
-      "fqn": "Granit.Querying.Filtering.PresetDescriptor",
+      "fqn": "Granit.QueryEngine.Filtering.PresetDescriptor",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Filtering/PresetDescriptor.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Filtering/PresetDescriptor.cs",
       "line": 8,
       "members": []
     },
     {
       "name": "QuickFilterDescriptor",
-      "fqn": "Granit.Querying.Filtering.QuickFilterDescriptor",
+      "fqn": "Granit.QueryEngine.Filtering.QuickFilterDescriptor",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Filtering/QuickFilterDescriptor.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Filtering/QuickFilterDescriptor.cs",
       "line": 11,
       "members": []
     },
     {
-      "name": "GranitQueryingModule",
-      "fqn": "Granit.Querying.GranitQueryingModule",
+      "name": "GranitQueryEngineModule",
+      "fqn": "Granit.QueryEngine.GranitQueryEngineModule",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/GranitQueryingModule.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/GranitQueryEngineModule.cs",
       "line": 18,
       "members": [
         {
@@ -23221,37 +23221,37 @@
     },
     {
       "name": "GroupEntry",
-      "fqn": "Granit.Querying.GroupEntry",
+      "fqn": "Granit.QueryEngine.GroupEntry",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/GroupedResult.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/GroupedResult.cs",
       "line": 17,
       "members": []
     },
     {
       "name": "GroupedResult",
-      "fqn": "Granit.Querying.GroupedResult",
+      "fqn": "Granit.QueryEngine.GroupedResult",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/GroupedResult.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/GroupedResult.cs",
       "line": 9,
       "members": []
     },
     {
       "name": "IQueryDefinitionDescriptor",
-      "fqn": "Granit.Querying.IQueryDefinitionDescriptor",
+      "fqn": "Granit.QueryEngine.IQueryDefinitionDescriptor",
       "kind": "interface",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/IQueryDefinitionDescriptor.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/IQueryDefinitionDescriptor.cs",
       "line": 7,
       "members": []
     },
     {
       "name": "IQueryEngine",
-      "fqn": "Granit.Querying.IQueryEngine",
+      "fqn": "Granit.QueryEngine.IQueryEngine",
       "kind": "interface",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/IQueryEngine.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/IQueryEngine.cs",
       "line": 12,
       "members": [
         {
@@ -23282,100 +23282,100 @@
     },
     {
       "name": "ColumnDefinition",
-      "fqn": "Granit.Querying.Meta.ColumnDefinition",
+      "fqn": "Granit.QueryEngine.Meta.ColumnDefinition",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Meta/ColumnDefinition.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Meta/ColumnDefinition.cs",
       "line": 14,
       "members": []
     },
     {
       "name": "DateFilterMeta",
-      "fqn": "Granit.Querying.Meta.DateFilterMeta",
+      "fqn": "Granit.QueryEngine.Meta.DateFilterMeta",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Meta/DateFilterMeta.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Meta/DateFilterMeta.cs",
       "line": 9,
       "members": []
     },
     {
       "name": "FilterGroupMeta",
-      "fqn": "Granit.Querying.Meta.FilterGroupMeta",
+      "fqn": "Granit.QueryEngine.Meta.FilterGroupMeta",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Meta/FilterGroupMeta.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Meta/FilterGroupMeta.cs",
       "line": 9,
       "members": []
     },
     {
       "name": "FilterableField",
-      "fqn": "Granit.Querying.Meta.FilterableField",
+      "fqn": "Granit.QueryEngine.Meta.FilterableField",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Meta/FilterableField.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Meta/FilterableField.cs",
       "line": 11,
       "members": []
     },
     {
       "name": "GroupByField",
-      "fqn": "Granit.Querying.Meta.GroupByField",
+      "fqn": "Granit.QueryEngine.Meta.GroupByField",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Meta/GroupByField.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Meta/GroupByField.cs",
       "line": 8,
       "members": []
     },
     {
       "name": "PaginationMeta",
-      "fqn": "Granit.Querying.Meta.PaginationMeta",
+      "fqn": "Granit.QueryEngine.Meta.PaginationMeta",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Meta/PaginationMeta.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Meta/PaginationMeta.cs",
       "line": 10,
       "members": []
     },
     {
       "name": "PresetMeta",
-      "fqn": "Granit.Querying.Meta.PresetMeta",
+      "fqn": "Granit.QueryEngine.Meta.PresetMeta",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Meta/FilterGroupMeta.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Meta/FilterGroupMeta.cs",
       "line": 20,
       "members": []
     },
     {
       "name": "QueryMetadata",
-      "fqn": "Granit.Querying.Meta.QueryMetadata",
+      "fqn": "Granit.QueryEngine.Meta.QueryMetadata",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Meta/QueryMetadata.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Meta/QueryMetadata.cs",
       "line": 7,
       "members": []
     },
     {
       "name": "QuickFilterMeta",
-      "fqn": "Granit.Querying.Meta.QuickFilterMeta",
+      "fqn": "Granit.QueryEngine.Meta.QuickFilterMeta",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Meta/QuickFilterMeta.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Meta/QuickFilterMeta.cs",
       "line": 10,
       "members": []
     },
     {
       "name": "SortableField",
-      "fqn": "Granit.Querying.Meta.SortableField",
+      "fqn": "Granit.QueryEngine.Meta.SortableField",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Meta/SortableField.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Meta/SortableField.cs",
       "line": 7,
       "members": []
     },
     {
-      "name": "QueryingOptions",
-      "fqn": "Granit.Querying.Options.QueryingOptions",
+      "name": "QueryEngineOptions",
+      "fqn": "Granit.QueryEngine.Options.QueryEngineOptions",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Options/QueryingOptions.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Options/QueryEngineOptions.cs",
       "line": 18,
       "members": [
         {
@@ -23400,19 +23400,19 @@
     },
     {
       "name": "PagedResult",
-      "fqn": "Granit.Querying.PagedResult",
+      "fqn": "Granit.QueryEngine.PagedResult",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/PagedResult.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/PagedResult.cs",
       "line": 22,
       "members": []
     },
     {
       "name": "QueryDefinition",
-      "fqn": "Granit.Querying.QueryDefinition",
+      "fqn": "Granit.QueryEngine.QueryDefinition",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/QueryDefinition.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/QueryDefinition.cs",
       "line": 34,
       "members": [
         {
@@ -23485,55 +23485,55 @@
     },
     {
       "name": "QueryDefinitionBuilder",
-      "fqn": "Granit.Querying.QueryDefinitionBuilder",
+      "fqn": "Granit.QueryEngine.QueryDefinitionBuilder",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/QueryDefinitionBuilder.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/QueryDefinitionBuilder.cs",
       "line": 13,
       "members": []
     },
     {
-      "name": "QueryRequest",
-      "fqn": "Granit.Querying.QueryRequest",
-      "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/QueryRequest.cs",
-      "line": 16,
-      "members": []
-    },
-    {
-      "name": "QueryingDefaults",
-      "fqn": "Granit.Querying.QueryingDefaults",
+      "name": "QueryEngineDefaults",
+      "fqn": "Granit.QueryEngine.QueryEngineDefaults",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/QueryingDefaults.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/QueryEngineDefaults.cs",
       "line": 6,
       "members": []
     },
     {
-      "name": "CreateSavedViewRequest",
-      "fqn": "Granit.Querying.SavedViews.CreateSavedViewRequest",
+      "name": "QueryRequest",
+      "fqn": "Granit.QueryEngine.QueryRequest",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/SavedViews/CreateSavedViewRequest.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/QueryRequest.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "CreateSavedViewRequest",
+      "fqn": "Granit.QueryEngine.SavedViews.CreateSavedViewRequest",
+      "kind": "record",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/SavedViews/CreateSavedViewRequest.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "SavedView",
-      "fqn": "Granit.Querying.SavedViews.Domain.SavedView",
+      "fqn": "Granit.QueryEngine.SavedViews.Domain.SavedView",
       "kind": "class",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/SavedViews/Domain/SavedView.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/SavedViews/Domain/SavedView.cs",
       "line": 10,
       "members": []
     },
     {
       "name": "ISavedViewStoreReader",
-      "fqn": "Granit.Querying.SavedViews.ISavedViewStoreReader",
+      "fqn": "Granit.QueryEngine.SavedViews.ISavedViewStoreReader",
       "kind": "interface",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/SavedViews/ISavedViewStoreReader.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/SavedViews/ISavedViewStoreReader.cs",
       "line": 10,
       "members": [
         {
@@ -23552,10 +23552,10 @@
     },
     {
       "name": "ISavedViewStoreWriter",
-      "fqn": "Granit.Querying.SavedViews.ISavedViewStoreWriter",
+      "fqn": "Granit.QueryEngine.SavedViews.ISavedViewStoreWriter",
       "kind": "interface",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/SavedViews/ISavedViewStoreWriter.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/SavedViews/ISavedViewStoreWriter.cs",
       "line": 10,
       "members": [
         {
@@ -23586,28 +23586,28 @@
     },
     {
       "name": "SavedViewSummary",
-      "fqn": "Granit.Querying.SavedViews.SavedViewSummary",
+      "fqn": "Granit.QueryEngine.SavedViews.SavedViewSummary",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/SavedViews/SavedViewSummary.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/SavedViews/SavedViewSummary.cs",
       "line": 10,
       "members": []
     },
     {
       "name": "UpdateSavedViewRequest",
-      "fqn": "Granit.Querying.SavedViews.UpdateSavedViewRequest",
+      "fqn": "Granit.QueryEngine.SavedViews.UpdateSavedViewRequest",
       "kind": "record",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/SavedViews/UpdateSavedViewRequest.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/SavedViews/UpdateSavedViewRequest.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "IGlobalSearchStrategy",
-      "fqn": "Granit.Querying.Search.IGlobalSearchStrategy",
+      "fqn": "Granit.QueryEngine.Search.IGlobalSearchStrategy",
       "kind": "interface",
-      "project": "Granit.Querying",
-      "file": "src/Granit.Querying/Search/IGlobalSearchStrategy.cs",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Search/IGlobalSearchStrategy.cs",
       "line": 10,
       "members": [
         {
@@ -26505,7 +26505,7 @@
         {
           "name": "GetStreamAsync",
           "kind": "method",
-          "signature": "GetStreamAsync(string entityType, string entityId, int page = 1, int pageSize = QueryingDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
+          "signature": "GetStreamAsync(string entityType, string entityId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
           "returnType": "Task<PagedResult<TimelineStreamEntry>>"
         }
       ]
@@ -30301,7 +30301,7 @@
         {
           "name": "GetHistoryAsync",
           "kind": "method",
-          "signature": "GetHistoryAsync(string entityType, string entityId, int page = 1, int pageSize = QueryingDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
+          "signature": "GetHistoryAsync(string entityType, string entityId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
           "returnType": "Task<PagedResult<WorkflowTransitionHistoryResponse>>"
         }
       ]

@@ -2,7 +2,7 @@ using Granit.AuditLog.Abstractions;
 using Granit.AuditLog.Domain;
 using Granit.AuditLog.Endpoints.Dtos;
 using Granit.AuditLog.Endpoints.Internal;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -48,7 +48,7 @@ internal static class AuditLogReadEndpoints
     {
         AuditLogQuery query = new(
             Page: parameters.Page ?? 1,
-            PageSize: Math.Clamp(parameters.PageSize ?? QueryingDefaults.DefaultPageSize, 1, QueryingDefaults.MaxPageSize),
+            PageSize: Math.Clamp(parameters.PageSize ?? QueryEngineDefaults.DefaultPageSize, 1, QueryEngineDefaults.MaxPageSize),
             UserId: parameters.UserId,
             EntityType: parameters.EntityType,
             EntityId: parameters.EntityId,
@@ -98,7 +98,7 @@ internal static class AuditLogReadEndpoints
                 entityType,
                 entityId,
                 page ?? 1,
-                Math.Clamp(pageSize ?? QueryingDefaults.DefaultPageSize, 1, QueryingDefaults.MaxPageSize),
+                Math.Clamp(pageSize ?? QueryEngineDefaults.DefaultPageSize, 1, QueryEngineDefaults.MaxPageSize),
                 cancellationToken)
             .ConfigureAwait(false);
 

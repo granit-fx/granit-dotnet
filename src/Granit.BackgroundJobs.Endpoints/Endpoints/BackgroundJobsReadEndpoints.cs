@@ -1,4 +1,4 @@
-using Granit.Querying;
+using Granit.QueryEngine;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -36,11 +36,11 @@ internal static class BackgroundJobsReadEndpoints
     private static async Task<Ok<PagedResult<BackgroundJobStatus>>> GetAllJobsAsync(
         [FromServices] IBackgroundJobReader reader,
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = QueryingDefaults.DefaultPageSize,
+        [FromQuery] int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
         int clampedPage = Math.Max(page, 1);
-        int clampedPageSize = Math.Clamp(pageSize, 1, QueryingDefaults.MaxPageSize);
+        int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
 
         IReadOnlyList<BackgroundJobStatus> all = await reader.GetAllAsync(cancellationToken).ConfigureAwait(false);
 

@@ -6,7 +6,7 @@ using Granit.Modularity;
 using Granit.OpenIddict.Diagnostics;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Services;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Granit.Timing;
 using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +22,7 @@ namespace Granit.OpenIddict;
     typeof(GranitEventsModule),
     typeof(GranitGuidsModule),
     typeof(GranitIdentityModule),
-    typeof(GranitQueryingModule),
+    typeof(GranitQueryEngineModule),
     typeof(GranitTimingModule))]
 public sealed class GranitOpenIddictModule : GranitModule
 {

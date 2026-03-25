@@ -1,7 +1,7 @@
 using Granit.Authorization;
 using Granit.BackgroundJobs.Endpoints;
 using Granit.Modularity;
-using Granit.Querying;
+using Granit.QueryEngine;
 using Shouldly;
 using Xunit;
 
@@ -20,7 +20,7 @@ public sealed class GranitBackgroundJobsEndpointsModuleTests
         attribute.ShouldNotBeNull();
         attribute!.DependedTypes.ShouldContain(typeof(GranitAuthorizationModule));
         attribute.DependedTypes.ShouldContain(typeof(GranitBackgroundJobsModule));
-        attribute.DependedTypes.ShouldContain(typeof(GranitQueryingModule));
+        attribute.DependedTypes.ShouldContain(typeof(GranitQueryEngineModule));
     }
 
     [Fact]

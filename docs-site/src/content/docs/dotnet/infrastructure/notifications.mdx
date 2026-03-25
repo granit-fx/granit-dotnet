@@ -46,7 +46,7 @@ for durable outbox-backed dispatch with exponential backoff retry.
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.Notifications` | Fan-out engine, InApp channel, definitions, entity tracking | `Granit.Guids`, `Granit.Timing`, `Granit.Querying` |
+| `Granit.Notifications` | Fan-out engine, InApp channel, definitions, entity tracking | `Granit.Guids`, `Granit.Timing`, `Granit.QueryEngine` |
 | `Granit.Notifications.EntityFrameworkCore` | EF Core stores (all entities + mobile push tokens) | `Granit.Notifications`, `Granit.Notifications.MobilePush`, `Granit.Persistence` |
 | `Granit.Notifications.Endpoints` | Minimal API endpoints (inbox, preferences, subscriptions, followers) | `Granit.Notifications`, `Granit.Notifications.MobilePush`, `Granit.Validation`, `Granit.Http.ApiDocumentation` |
 | `Granit.Notifications.Wolverine` | Durable outbox-backed dispatch via `IMessageBus` | `Granit.Notifications`, `Granit.Wolverine` |
@@ -76,7 +76,7 @@ for durable outbox-backed dispatch with exponential backoff retry.
 graph TD
     N[Granit.Notifications] --> G[Granit.Guids]
     N --> T[Granit.Timing]
-    N --> Q[Granit.Querying]
+    N --> Q[Granit.QueryEngine]
 
     NEF[Granit.Notifications.EntityFrameworkCore] --> N
     NEF --> MP[Granit.Notifications.MobilePush]

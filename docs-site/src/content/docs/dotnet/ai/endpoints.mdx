@@ -1,6 +1,6 @@
 ---
 title: "AI Endpoints — REST API for Workspaces, Usage & Inference"
-description: Minimal API endpoints for AI workspace CRUD, usage tracking via Granit.Querying, and chat/embedding proxy with SSE streaming. Two-tier authorization (admin + user).
+description: Minimal API endpoints for AI workspace CRUD, usage tracking via Granit.QueryEngine, and chat/embedding proxy with SSE streaming. Two-tier authorization (admin + user).
 sidebar:
   label: Endpoints
   order: 3
@@ -25,7 +25,7 @@ by granular permission policies.
     - AIChatEndpoints.cs Chat completion (sync + SSE streaming)
     - AIEmbeddingEndpoints.cs Embedding generation proxy
   - Queries/
-    - AIUsageRecordQueryDefinition.cs Usage tracking via Granit.Querying
+    - AIUsageRecordQueryDefinition.cs Usage tracking via Granit.QueryEngine
   - Dtos/ Request/response records
   - Validators/ FluentValidation (auto-applied via MapGranitGroup)
   - Permissions/ Granular AI.\* permission constants
@@ -78,7 +78,7 @@ Two authorization policies, configurable via `AIEndpointsOptions`:
 System workspaces (declared in code) are read-only. Attempting to modify or delete them
 returns `422 Unprocessable Entity` with `AI:Workspace:SystemImmutable`.
 
-### Usage tracking (Admin) via Granit.Querying
+### Usage tracking (Admin) via Granit.QueryEngine
 
 Instead of custom listing endpoints, usage records are exposed through
 `MapQueryEndpoints<AIUsageRecord>` — providing filtering, sorting, pagination,

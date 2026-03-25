@@ -14,7 +14,7 @@ dotnet add package Granit.BlobStorage.Endpoints
 
 - `Granit.BlobStorage`
 - `Granit.Authorization`
-- `Granit.Querying.Endpoints`
+- `Granit.QueryEngine.Endpoints`
 - `Granit.Validation`
 
 ## Documentation

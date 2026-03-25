@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.QueryEngine</PackageId>
+    <Description>Declarative query building for Granit list views. Fluent QueryDefinition API, typed filters with operator inference, FilterGroups/presets/DatePeriod/SavedViews, whitelist-first security. DTOs: QueryRequest, PagedResult, GroupedResult, QueryMetadata.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.QueryEngine.Tests" />
+    <InternalsVisibleTo Include="Granit.QueryEngine.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.QueryEngine.Endpoints" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal types in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>

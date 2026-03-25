@@ -15,7 +15,7 @@ dotnet add package Granit.Notifications
 ## Dependencies
 
 - `Granit.Guids`
-- `Granit.Querying`
+- `Granit.QueryEngine`
 - `Granit.Timing`
 
 ## Documentation

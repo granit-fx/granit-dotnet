@@ -1,7 +1,7 @@
 using Granit.AI.Endpoints.Endpoints;
 using Granit.AI.Endpoints.Internal;
 using Granit.AI.Endpoints.Options;
-using Granit.Querying.Endpoints.Extensions;
+using Granit.QueryEngine.Endpoints.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -60,7 +60,7 @@ public static class AIEndpointRouteBuilderExtensions
             .RequireAuthorization(AIAuthorizationPolicy.AdminPolicyName);
         adminGroup.MapWorkspaceEndpoints();
 
-        // Admin endpoints — usage tracking via Granit.Querying.
+        // Admin endpoints — usage tracking via Granit.QueryEngine.
         // Use a temporary scope because IAIUsageQueryableProvider is Scoped
         // when EF Core persistence is registered and cannot be resolved from the root provider.
         bool hasQueryableProvider;

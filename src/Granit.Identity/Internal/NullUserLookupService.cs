@@ -1,4 +1,4 @@
-using Granit.Querying;
+using Granit.QueryEngine;
 
 namespace Granit.Identity.Internal;
 
@@ -23,7 +23,7 @@ internal sealed class NullUserLookupService : IUserLookupService
     public Task<PagedResult<IIdentityUser>> SearchAsync(
         string searchTerm,
         int page = 1,
-        int pageSize = QueryingDefaults.DefaultPageSize,
+        int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default) =>
         Task.FromResult(new PagedResult<IIdentityUser>([], 0, HasMore: false));
 
