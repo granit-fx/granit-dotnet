@@ -54,11 +54,11 @@ public abstract class QueryDefinition<TEntity> : IQueryDefinitionDescriptor wher
     protected abstract void Configure(QueryDefinitionBuilder<TEntity> builder);
 
     /// <summary>
-    /// Sets the global querying options. Called by the DI factory in
+    /// Sets the global QueryEngine options. Called by the DI factory in
     /// <see cref="ServiceCollectionExtensions.AddQueryDefinition{TEntity, TDefinition}"/>
     /// before the builder is initialized.
     /// </summary>
-    /// <param name="options">The global querying options.</param>
+    /// <param name="options">The global QueryEngine options.</param>
     internal void Initialize(QueryEngineOptions options) =>
         _options = options;
 

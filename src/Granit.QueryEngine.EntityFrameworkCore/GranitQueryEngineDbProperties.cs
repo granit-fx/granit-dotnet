@@ -11,12 +11,12 @@ namespace Granit.QueryEngine.EntityFrameworkCore;
 public static class GranitQueryEngineDbProperties
 {
     /// <summary>
-    /// Table name prefix for all querying tables. Default: <c>"querying_"</c>.
+    /// Table name prefix for all QueryEngine tables. Default: <c>"querying_"</c>.
     /// </summary>
     public static string DbTablePrefix { get; set; } = "querying_";
 
     /// <summary>
-    /// Database schema for all querying tables. Default: <c>null</c> (provider default schema).
+    /// Database schema for all QueryEngine tables. Default: <c>null</c> (provider default schema).
     /// </summary>
     public static string? DbSchema { get; set; }
 }

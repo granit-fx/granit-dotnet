@@ -15,5 +15,5 @@ internal static class QueryEngineAIActivitySource
 
     // ──── Operation names ────
 
-    internal const string Translate = "querying.ai.translate";
+    internal const string Translate = "query_engine.ai.translate";
 }

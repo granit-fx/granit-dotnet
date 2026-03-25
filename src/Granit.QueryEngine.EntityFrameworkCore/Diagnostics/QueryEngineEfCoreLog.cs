@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 namespace Granit.QueryEngine.EntityFrameworkCore.Diagnostics;
 
 /// <summary>
-/// High-performance structured log messages for the querying EF Core engine.
+/// High-performance structured log messages for the QueryEngine EF Core engine.
 /// Uses source-generated <see cref="LoggerMessageAttribute"/> to avoid boxing and string parsing.
 /// </summary>
 internal static partial class QueryEngineEfCoreLog

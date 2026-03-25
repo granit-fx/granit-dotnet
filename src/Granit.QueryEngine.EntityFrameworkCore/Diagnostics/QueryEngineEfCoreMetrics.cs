@@ -4,7 +4,7 @@ using System.Diagnostics.Metrics;
 namespace Granit.QueryEngine.EntityFrameworkCore.Diagnostics;
 
 /// <summary>
-/// OpenTelemetry metrics for the querying EF Core engine.
+/// OpenTelemetry metrics for the QueryEngine EF Core engine.
 /// Meter: <c>Granit.QueryEngine.EntityFrameworkCore</c>.
 /// </summary>
 public sealed class QueryEngineEfCoreMetrics

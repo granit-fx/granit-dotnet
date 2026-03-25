@@ -8,7 +8,7 @@ using Granit.Validation;
 namespace Granit.QueryEngine.Endpoints;
 
 /// <summary>
-/// Granit module for querying HTTP endpoints.
+/// Granit module for QueryEngine HTTP endpoints.
 /// </summary>
 /// <remarks>
 /// Exposes query list routes via

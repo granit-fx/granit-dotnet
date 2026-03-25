@@ -5,7 +5,7 @@ using Granit.QueryEngine.SavedViews;
 namespace Granit.QueryEngine.Endpoints.Internal;
 
 /// <summary>
-/// Provides OpenAPI schema examples for querying Request DTOs.
+/// Provides OpenAPI schema examples for QueryEngine request DTOs.
 /// </summary>
 internal sealed class QueryEngineSchemaExampleProvider : ISchemaExampleProvider
 {

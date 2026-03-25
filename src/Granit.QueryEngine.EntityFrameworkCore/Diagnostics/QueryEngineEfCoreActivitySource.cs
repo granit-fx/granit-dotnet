@@ -19,7 +19,7 @@ internal static class QueryEngineEfCoreActivitySource
 
     // ──── Operation names ────
 
-    internal const string ExecuteQuery = "querying.execute";
-    internal const string ExecuteGrouped = "querying.execute_grouped";
-    internal const string ExecuteStream = "querying.execute_stream";
+    internal const string ExecuteQuery = "query_engine.execute";
+    internal const string ExecuteGrouped = "query_engine.execute_grouped";
+    internal const string ExecuteStream = "query_engine.execute_stream";
 }

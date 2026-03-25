@@ -13,7 +13,7 @@ namespace Granit.QueryEngine;
 public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
 {
     /// <summary>
-    /// Initializes a new builder with default querying options.
+    /// Initializes a new builder with default QueryEngine options.
     /// </summary>
     public QueryDefinitionBuilder() : this(new QueryEngineOptions()) { }
 

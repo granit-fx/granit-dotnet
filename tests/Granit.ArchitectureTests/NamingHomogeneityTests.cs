@@ -23,7 +23,7 @@ public sealed partial class NamingHomogeneityTests
     /// that starts with its containing project directory name.
     /// <para>
     /// Catches: file moved to a renamed project directory without updating the
-    /// <c>namespace</c> declaration. For example, <c>namespace Granit.Querying;</c>
+    /// <c>namespace</c> declaration. For example, <c>namespace Granit.QueryEngine;</c>
     /// inside <c>src/Granit.QueryEngine/</c>.
     /// </para>
     /// </summary>
@@ -93,17 +93,20 @@ public sealed partial class NamingHomogeneityTests
                 continue;
             }
 
-            bool hasMatch = typeNames.Any(t =>
-            {
-                // Handle generic type declarations: TypeName<T> → TypeName
-                string name = t.Contains('<') ? t[..t.IndexOf('<')] : t;
-                return string.Equals(name, fileName, StringComparison.Ordinal);
-            });
+            bool hasMatch = typeNames.Any(t => TypeNameMatchesFileName(t, fileName));
 
             if (!hasMatch)
             {
+                // Multi-type files with no match are often intentional groupings
+                // (e.g., PasskeyRequests.cs with PasskeyRegistrationRequest + PasskeyRenameRequest).
+                // Only flag single-type files — those are the clear rename residues.
+                if (typeNames.Count > 1)
+                {
+                    continue;
+                }
+
                 string rel = Path.GetRelativePath(SrcRoot, csFile);
-                violations.Add($"{rel}: no type matches file name '{fileName}' (found: {string.Join(", ", typeNames)})");
+                violations.Add($"{rel}: type '{typeNames[0]}' does not match file name '{fileName}'");
             }
         }
 
@@ -162,6 +165,40 @@ public sealed partial class NamingHomogeneityTests
         return types;
     }
 
+    /// <summary>
+    /// Checks if a declared type name matches the expected file name, accounting for:
+    /// <list type="bullet">
+    /// <item>Generic type parameters (<c>TypeName&lt;T&gt;</c> → <c>TypeName</c>)</item>
+    /// <item>Interface prefix (<c>IMyService</c> matches <c>MyService.cs</c> and vice versa)</item>
+    /// </list>
+    /// </summary>
+    private static bool TypeNameMatchesFileName(string typeName, string fileName)
+    {
+        // Strip generic parameters: TypeName<T> → TypeName
+        string name = typeName.Contains('<') ? typeName[..typeName.IndexOf('<')] : typeName;
+
+        // Exact match: MyClass.cs → class MyClass
+        if (string.Equals(name, fileName, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        // Interface in file named after impl: FeatureDefinitionProvider.cs → IFeatureDefinitionProvider
+        if (string.Equals("I" + fileName, name, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        // Impl in file named after interface: IMyService.cs → MyService
+        if (name.Length > 1 && name[0] == 'I' && char.IsUpper(name[1])
+            && string.Equals(name[1..], fileName, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     private static IEnumerable<string> GetGranitSrcCsFiles() =>
         Directory.EnumerateFiles(SrcRoot, "*.cs", SearchOption.AllDirectories)
             .Where(f =>
@@ -208,13 +245,18 @@ public sealed partial class NamingHomogeneityTests
     private static partial Regex NamespaceDeclaration();
 
     /// <summary>
-    /// Matches the first type declaration in a file (class, record, struct, interface, enum).
-    /// Group 1 captures the type name (including generic arity marker if present).
+    /// Matches type declarations in a file (class, record, struct, interface, enum).
+    /// Group 1 captures the type name (including generic parameters if present).
     /// Only matches top-level declarations (not nested types).
+    /// <para>
+    /// Note: <c>record</c> does NOT include a trailing <c>\s+</c> inside the alternation,
+    /// because the outer <c>\s+</c> after the group handles the separator. The optional
+    /// <c>struct</c> suffix for <c>record struct</c> is handled separately.
+    /// </para>
     /// </summary>
     [GeneratedRegex(
         @"^(?:public|internal|file)\s+(?:sealed\s+|abstract\s+|static\s+|partial\s+|readonly\s+)*" +
-        @"(?:class|record\s+(?:struct\s+)?|struct|interface|enum)\s+(\w+(?:<[\w,\s]+>)?)",
+        @"(?:class|record(?:\s+struct)?|struct|interface|enum)\s+(\w+(?:<[\w,\s]+>)?)",
         RegexOptions.Multiline)]
     private static partial Regex TypeDeclaration();
 }

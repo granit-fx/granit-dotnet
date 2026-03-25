@@ -12,7 +12,7 @@ namespace Granit.QueryEngine.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers the core querying infrastructure.
+    /// Registers the core QueryEngine infrastructure.
     /// </summary>
     /// <remarks>
     /// Registers the following services:

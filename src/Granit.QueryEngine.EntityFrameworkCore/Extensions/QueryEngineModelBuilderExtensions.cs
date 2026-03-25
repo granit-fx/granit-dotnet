@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.QueryEngine.EntityFrameworkCore.Extensions;
 
 /// <summary>
-/// <see cref="ModelBuilder"/> extensions for including Granit querying entity
+/// <see cref="ModelBuilder"/> extensions for including Granit QueryEngine entity
 /// configurations in a host-owned <see cref="DbContext"/>.
 /// </summary>
 public static class QueryEngineModelBuilderExtensions

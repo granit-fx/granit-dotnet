@@ -4283,8 +4283,8 @@
       ]
     },
     {
-      "name": "GranitJwtBearerCognitoModule",
-      "fqn": "Granit.Authentication.JwtBearer.Cognito.GranitJwtBearerCognitoModule",
+      "name": "GranitAuthenticationCognitoModule",
+      "fqn": "Granit.Authentication.JwtBearer.Cognito.GranitAuthenticationCognitoModule",
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.Cognito",
       "file": "src/Granit.Authentication.JwtBearer.Cognito/GranitAuthenticationCognitoModule.cs",
@@ -4365,8 +4365,8 @@
       ]
     },
     {
-      "name": "GranitJwtBearerEntraIdModule",
-      "fqn": "Granit.Authentication.JwtBearer.EntraId.GranitJwtBearerEntraIdModule",
+      "name": "GranitAuthenticationEntraIdModule",
+      "fqn": "Granit.Authentication.JwtBearer.EntraId.GranitAuthenticationEntraIdModule",
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.EntraId",
       "file": "src/Granit.Authentication.JwtBearer.EntraId/GranitAuthenticationEntraIdModule.cs",
@@ -4491,8 +4491,8 @@
       ]
     },
     {
-      "name": "GranitJwtBearerGoogleCloudModule",
-      "fqn": "Granit.Authentication.JwtBearer.GoogleCloud.GranitJwtBearerGoogleCloudModule",
+      "name": "GranitAuthenticationGoogleCloudModule",
+      "fqn": "Granit.Authentication.JwtBearer.GoogleCloud.GranitAuthenticationGoogleCloudModule",
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.GoogleCloud",
       "file": "src/Granit.Authentication.JwtBearer.GoogleCloud/GranitAuthenticationGoogleCloudModule.cs",
@@ -4595,8 +4595,8 @@
       ]
     },
     {
-      "name": "GranitJwtBearerKeycloakModule",
-      "fqn": "Granit.Authentication.JwtBearer.Keycloak.GranitJwtBearerKeycloakModule",
+      "name": "GranitAuthenticationKeycloakModule",
+      "fqn": "Granit.Authentication.JwtBearer.Keycloak.GranitAuthenticationKeycloakModule",
       "kind": "class",
       "project": "Granit.Authentication.JwtBearer.Keycloak",
       "file": "src/Granit.Authentication.JwtBearer.Keycloak/GranitAuthenticationKeycloakModule.cs",
@@ -6497,8 +6497,8 @@
       ]
     },
     {
-      "name": "GranitBlobStorageDatabaseModule",
-      "fqn": "Granit.BlobStorage.Database.GranitBlobStorageDatabaseModule",
+      "name": "GranitBlobStorageDbStoreModule",
+      "fqn": "Granit.BlobStorage.Database.GranitBlobStorageDbStoreModule",
       "kind": "class",
       "project": "Granit.BlobStorage.Database",
       "file": "src/Granit.BlobStorage.Database/GranitBlobStorageDbStoreModule.cs",
@@ -10311,8 +10311,8 @@
       "members": []
     },
     {
-      "name": "GranitEncryptionBackgroundJobsModule",
-      "fqn": "Granit.Encryption.BackgroundJobs.GranitEncryptionBackgroundJobsModule",
+      "name": "GranitEncryptionReEncryptionModule",
+      "fqn": "Granit.Encryption.BackgroundJobs.GranitEncryptionReEncryptionModule",
       "kind": "class",
       "project": "Granit.Encryption.BackgroundJobs",
       "file": "src/Granit.Encryption.BackgroundJobs/GranitEncryptionReEncryptionModule.cs",
@@ -18971,8 +18971,8 @@
       "members": []
     },
     {
-      "name": "GranitOidcModule",
-      "fqn": "Granit.Oidc.GranitOidcModule",
+      "name": "GranitAuthenticationOidcModule",
+      "fqn": "Granit.Oidc.GranitAuthenticationOidcModule",
       "kind": "class",
       "project": "Granit.Oidc",
       "file": "src/Granit.Oidc/GranitAuthenticationOidcModule.cs",
@@ -19249,8 +19249,8 @@
       ]
     },
     {
-      "name": "GranitOidcTokenManagementModule",
-      "fqn": "Granit.Oidc.TokenManagement.GranitOidcTokenManagementModule",
+      "name": "GranitAuthenticationTokenManagementModule",
+      "fqn": "Granit.Oidc.TokenManagement.GranitAuthenticationTokenManagementModule",
       "kind": "class",
       "project": "Granit.Oidc.TokenManagement",
       "file": "src/Granit.Oidc.TokenManagement/GranitAuthenticationTokenManagementModule.cs",
