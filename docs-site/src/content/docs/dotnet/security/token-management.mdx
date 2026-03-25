@@ -439,11 +439,11 @@ and follow the Granit metrics conventions.
 
 | Metric | Type | Tags | Description |
 |--------|------|------|-------------|
-| `granit.authentication.token.requests` | Counter | `tenant_id`, `grant_type`, `client_name` | Token endpoint requests sent |
-| `granit.authentication.token.cache_hits` | Counter | `tenant_id`, `client_name` | Token served from cache |
-| `granit.authentication.token.cache_misses` | Counter | `tenant_id`, `client_name` | Token not in cache, endpoint call required |
-| `granit.authentication.token.revocations` | Counter | `tenant_id` | Successful token revocations |
-| `granit.authentication.token.errors` | Counter | `tenant_id`, `error_type` | Token endpoint errors (network, protocol) |
+| `granit.oidc.token_management.request.sent` | Counter | `tenant_id`, `grant_type`, `client_name` | Token endpoint requests sent |
+| `granit.oidc.token_management.cache.hit` | Counter | `tenant_id`, `client_name` | Token served from cache |
+| `granit.oidc.token_management.cache.miss` | Counter | `tenant_id`, `client_name` | Token not in cache, endpoint call required |
+| `granit.oidc.token_management.revocation.sent` | Counter | `tenant_id` | Successful token revocations |
+| `granit.oidc.token_management.error.occurred` | Counter | `tenant_id`, `error_type` | Token endpoint errors (network, protocol) |
 
 ### Distributed tracing
 

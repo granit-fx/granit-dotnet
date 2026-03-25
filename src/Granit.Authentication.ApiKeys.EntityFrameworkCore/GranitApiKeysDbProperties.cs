@@ -19,9 +19,9 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore;
 public static class GranitApiKeysDbProperties
 {
     /// <summary>
-    /// Table name prefix for all API key tables. Default: <c>"auth_"</c>.
+    /// Table name prefix for all API key tables. Default: <c>"api_keys_"</c>.
     /// </summary>
-    public static string DbTablePrefix { get; set; } = "auth_";
+    public static string DbTablePrefix { get; set; } = "api_keys_";
 
     /// <summary>
     /// Database schema for all API key tables. Default: <c>null</c> (provider default schema).

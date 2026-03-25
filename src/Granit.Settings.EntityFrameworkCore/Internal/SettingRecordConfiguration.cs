@@ -6,7 +6,7 @@ namespace Granit.Settings.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// EF Core Fluent API configuration for <see cref="SettingRecord"/>.
-/// Table: <c>core_setting_records</c>.
+/// Table: <c>settings_setting_records</c>.
 /// </summary>
 internal sealed class SettingRecordConfiguration : IEntityTypeConfiguration<SettingRecord>
 {

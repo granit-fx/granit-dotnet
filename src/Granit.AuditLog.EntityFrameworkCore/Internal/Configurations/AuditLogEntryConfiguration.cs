@@ -6,7 +6,7 @@ namespace Granit.AuditLog.EntityFrameworkCore.Internal.Configurations;
 
 /// <summary>
 /// EF Core Fluent API configuration for <see cref="AuditLogEntry"/>.
-/// Table: <c>audit_log_entries</c>.
+/// Table: <c>audit_log_log_entries</c>.
 /// </summary>
 internal sealed class AuditLogEntryConfiguration : IEntityTypeConfiguration<AuditLogEntry>
 {

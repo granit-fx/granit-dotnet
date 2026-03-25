@@ -19,9 +19,9 @@ namespace Granit.AuditLog.EntityFrameworkCore;
 public static class GranitAuditLogDbProperties
 {
     /// <summary>
-    /// Table name prefix for all audit log tables. Default: <c>"audit_"</c>.
+    /// Table name prefix for all audit log tables. Default: <c>"audit_log_"</c>.
     /// </summary>
-    public static string DbTablePrefix { get; set; } = "audit_";
+    public static string DbTablePrefix { get; set; } = "audit_log_";
 
     /// <summary>
     /// Database schema for all audit log tables. Default: <c>null</c> (provider default schema).

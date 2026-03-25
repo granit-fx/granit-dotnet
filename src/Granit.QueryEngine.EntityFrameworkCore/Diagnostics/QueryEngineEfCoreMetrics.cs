@@ -5,11 +5,11 @@ namespace Granit.QueryEngine.EntityFrameworkCore.Diagnostics;
 
 /// <summary>
 /// OpenTelemetry metrics for the QueryEngine EF Core engine.
-/// Meter: <c>Granit.QueryEngine.EntityFrameworkCore</c>.
+/// Meter: <c>Granit.QueryEngine</c>.
 /// </summary>
 public sealed class QueryEngineEfCoreMetrics
 {
-    public const string MeterName = "Granit.QueryEngine.EntityFrameworkCore";
+    public const string MeterName = "Granit.QueryEngine";
 
     private readonly Counter<long> _queriesExecuted;
     private readonly Counter<long> _streamLimitsReached;

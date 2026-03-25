@@ -49,7 +49,7 @@ docs/
 ├── framework/              # 70+ module reference docs (French)
 │   ├── api/                # Versioning, bulkhead, idempotency, rate limiting
 │   ├── core/               # Module system, configuration
-│   ├── data/               # Persistence, multi-tenancy, caching, querying
+│   ├── data/               # Persistence, multi-tenancy, caching, query-engine
 │   ├── diagnostics/        # Observability, logging, exception handling
 │   ├── imaging/            # Image processing
 │   ├── messaging/          # Wolverine, notifications, webhooks
@@ -190,7 +190,7 @@ docs/
 │   │   ├── imaging.md
 │   │   ├── workflow.md
 │   │   ├── timeline.md
-│   │   ├── querying.md
+│   │   ├── query-engine.md
 │   │   ├── features.md
 │   │   ├── settings.md
 │   │   ├── reference-data.md

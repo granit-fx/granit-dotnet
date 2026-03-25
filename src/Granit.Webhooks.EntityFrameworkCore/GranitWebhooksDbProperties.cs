@@ -19,9 +19,9 @@ namespace Granit.Webhooks.EntityFrameworkCore;
 public static class GranitWebhooksDbProperties
 {
     /// <summary>
-    /// Table name prefix for all webhook tables. Default: <c>"webhook_"</c>.
+    /// Table name prefix for all webhooks tables. Default: <c>"webhooks_"</c>.
     /// </summary>
-    public static string DbTablePrefix { get; set; } = "webhook_";
+    public static string DbTablePrefix { get; set; } = "webhooks_";
 
     /// <summary>
     /// Database schema for all webhook tables. Default: <c>null</c> (provider default schema).

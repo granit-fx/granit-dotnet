@@ -203,9 +203,9 @@ OpenIddict's entity cache uses `ClientId` as the sole cache key. In multi-tenant
 two tenants with the same `ClientId` would share cached data (cross-tenant pollution).
 `EnableEntityCaching` defaults to `false`. Enable only for single-tenant deployments.
 
-### Table prefix: oidc\_
+### Table prefix: openiddict\_
 
-All Identity and OpenIddict tables use the `oidc_` prefix (configurable via
+All Identity and OpenIddict tables use the `openiddict_` prefix (configurable via
 `GranitOpenIddictDbProperties.DbTablePrefix`) to avoid collisions with other
 modules sharing the same database.
 

@@ -11,9 +11,9 @@ namespace Granit.Settings.EntityFrameworkCore;
 public static class GranitSettingsDbProperties
 {
     /// <summary>
-    /// Table name prefix for all settings tables. Default: <c>"core_"</c>.
+    /// Table name prefix for all settings tables. Default: <c>"settings_"</c>.
     /// </summary>
-    public static string DbTablePrefix { get; set; } = "core_";
+    public static string DbTablePrefix { get; set; } = "settings_";
 
     /// <summary>
     /// Database schema for all settings tables. Default: <c>null</c> (provider default schema).

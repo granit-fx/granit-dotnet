@@ -6,7 +6,7 @@ namespace Granit.BackgroundJobs.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// EF Core Fluent API configuration for <see cref="BackgroundJobDefinition"/>.
-/// Table: <c>scheduling_background_jobs</c>.
+/// Table: <c>background_jobs_background_jobs</c>.
 /// </summary>
 internal sealed class BackgroundJobDefinitionConfiguration
     : IEntityTypeConfiguration<BackgroundJobDefinition>

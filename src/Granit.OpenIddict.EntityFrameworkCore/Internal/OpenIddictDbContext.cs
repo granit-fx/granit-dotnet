@@ -49,7 +49,7 @@ internal sealed class OpenIddictDbContext(
         builder.UseOpenIddict<GranitOpenIddictApplication, GranitOpenIddictAuthorization,
             GranitOpenIddictScope, GranitOpenIddictToken, Guid>();
 
-        // 3. Granit OpenIddict conventions (oidc_* table prefix, column constraints, manual filters)
+        // 3. Granit OpenIddict conventions (openiddict_* table prefix, column constraints, manual filters)
         builder.ConfigureOpenIddictModule(dataFilter, extensionOptions?.Value);
 
         // 4. Granit cross-cutting conventions (IMultiTenant, ISoftDeletable, IActive, etc.)

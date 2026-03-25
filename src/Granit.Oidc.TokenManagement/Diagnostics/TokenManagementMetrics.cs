@@ -28,23 +28,23 @@ internal sealed class TokenManagementMetrics
         Meter meter = meterFactory.Create(MeterName);
 
         _tokenRequests = meter.CreateCounter<long>(
-            "granit.authentication.token.requests",
+            "granit.oidc.token_management.request.sent",
             description: "Number of token endpoint requests sent.");
 
         _cacheHits = meter.CreateCounter<long>(
-            "granit.authentication.token.cache_hits",
+            "granit.oidc.token_management.cache.hit",
             description: "Number of client credentials token cache hits.");
 
         _cacheMisses = meter.CreateCounter<long>(
-            "granit.authentication.token.cache_misses",
+            "granit.oidc.token_management.cache.miss",
             description: "Number of client credentials token cache misses.");
 
         _revocations = meter.CreateCounter<long>(
-            "granit.authentication.token.revocations",
+            "granit.oidc.token_management.revocation.sent",
             description: "Number of token revocations sent.");
 
         _errors = meter.CreateCounter<long>(
-            "granit.authentication.token.errors",
+            "granit.oidc.token_management.error.occurred",
             description: "Number of token endpoint errors.");
     }
 

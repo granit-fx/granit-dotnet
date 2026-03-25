@@ -19,9 +19,9 @@ namespace Granit.BackgroundJobs.EntityFrameworkCore;
 public static class GranitBackgroundJobsDbProperties
 {
     /// <summary>
-    /// Table name prefix for all background job tables. Default: <c>"scheduling_"</c>.
+    /// Table name prefix for all background job tables. Default: <c>"background_jobs_"</c>.
     /// </summary>
-    public static string DbTablePrefix { get; set; } = "scheduling_";
+    public static string DbTablePrefix { get; set; } = "background_jobs_";
 
     /// <summary>
     /// Database schema for all background job tables. Default: <c>null</c> (provider default schema).

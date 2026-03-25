@@ -37,7 +37,7 @@ public sealed class FeaturesModelBuilderExtensionsTests
             .FindEntityType(typeof(TenantFeatureOverride))!
             .GetTableName();
 
-        tableName.ShouldBe("feature_overrides");
+        tableName.ShouldBe("features_overrides");
     }
 
     [Fact]

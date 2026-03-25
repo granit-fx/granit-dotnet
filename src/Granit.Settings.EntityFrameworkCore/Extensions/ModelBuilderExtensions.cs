@@ -9,7 +9,7 @@ namespace Granit.Settings.EntityFrameworkCore.Extensions;
 public static class ModelBuilderExtensions
 {
     /// <summary>
-    /// Applies the <c>core_setting_records</c> table configuration to the model.
+    /// Applies the <c>settings_setting_records</c> table configuration to the model.
     /// </summary>
     /// <remarks>
     /// Call this method in <c>OnModelCreating</c> of the host application's DbContext

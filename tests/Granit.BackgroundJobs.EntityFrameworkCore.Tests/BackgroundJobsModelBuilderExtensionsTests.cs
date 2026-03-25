@@ -50,7 +50,7 @@ public sealed class BackgroundJobsModelBuilderExtensionsTests
         IModel model = BuildModel();
         IEntityType entity = model.FindEntityType(typeof(BackgroundJobDefinition))!;
 
-        entity.GetTableName().ShouldBe("scheduling_background_jobs");
+        entity.GetTableName().ShouldBe("background_jobs_background_jobs");
     }
 
     [Fact]

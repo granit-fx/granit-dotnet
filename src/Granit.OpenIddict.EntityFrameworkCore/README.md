@@ -15,7 +15,7 @@ dotnet add package Granit.OpenIddict.EntityFrameworkCore
 
 - **`OpenIddictDbContext`** — isolated DbContext extending `IdentityDbContext<GranitUser, GranitRole, Guid>`
 - **Entities** — `GranitUser`, `GranitRole`, `GranitUserGroup`, `GranitUserGroupMember`
-- **`GranitOpenIddictDbProperties`** — configurable table prefix (`oidc_*`) and schema
+- **`GranitOpenIddictDbProperties`** — configurable table prefix (`openiddict_*`) and schema
 - **`ConfigureOpenIddictModule()`** — model builder extension for table remapping and filters
 - **ASP.NET Core Identity** — fully configured with `AddIdentity<GranitUser, GranitRole>()`
 - **OpenIddict Core** — EF Core stores with `DisableEntityCaching()` (multi-tenant safe)
@@ -25,7 +25,7 @@ dotnet add package Granit.OpenIddict.EntityFrameworkCore
 - `GranitUser` does NOT implement `ISoftDeletable` — uses manual `IsDeleted` + named query filter
 - `GranitUser` does NOT implement `IConcurrencyAware` — Identity manages its own `ConcurrencyStamp`
 - `DisableEntityCaching()` is mandatory in multi-tenant setups (prevents cross-tenant cache pollution)
-- All tables are prefixed with `oidc_` by default (configurable via `GranitOpenIddictDbProperties`)
+- All tables are prefixed with `openiddict_` by default (configurable via `GranitOpenIddictDbProperties`)
 
 ## Dependencies
 

@@ -34,7 +34,7 @@ public sealed class ModelBuilderExtensionsTests
         IEntityType? entity = model.FindEntityType(typeof(SettingRecord));
 
         entity.ShouldNotBeNull();
-        entity.GetTableName().ShouldBe("core_setting_records");
+        entity.GetTableName().ShouldBe("settings_setting_records");
     }
 
     [Fact]

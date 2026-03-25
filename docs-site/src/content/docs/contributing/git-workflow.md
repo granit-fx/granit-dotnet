@@ -76,7 +76,7 @@ The scope in parentheses identifies the affected package or area:
 Add `!` after the type/scope and a `BREAKING CHANGE:` footer:
 
 ```text
-feat(querying)!: change filter syntax from bracket to dot notation
+feat(query-engine)!: change filter syntax from bracket to dot notation
 
 BREAKING CHANGE: filter parameters now use `filter.field.operator=value`
 instead of `filter[field][operator]=value`. Update all API clients.

@@ -8,7 +8,7 @@ namespace Granit.Settings.EntityFrameworkCore.Internal;
 /// <summary>
 /// EF Core implementation of <see cref="ISettingStoreReader"/> and <see cref="ISettingStoreWriter"/>.
 /// Persists setting values in the host application's DbContext
-/// (table <c>core_setting_records</c>) with ISO 27001 audit trail.
+/// (table <c>settings_setting_records</c>) with ISO 27001 audit trail.
 /// </summary>
 /// <remarks>
 /// <para>

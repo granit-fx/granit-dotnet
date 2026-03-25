@@ -19,9 +19,9 @@ namespace Granit.Features.EntityFrameworkCore;
 public static class GranitFeaturesDbProperties
 {
     /// <summary>
-    /// Table name prefix for all features tables. Default: <c>"feature_"</c>.
+    /// Table name prefix for all features tables. Default: <c>"features_"</c>.
     /// </summary>
-    public static string DbTablePrefix { get; set; } = "feature_";
+    public static string DbTablePrefix { get; set; } = "features_";
 
     /// <summary>
     /// Database schema for all features tables. Default: <c>null</c> (provider default schema).

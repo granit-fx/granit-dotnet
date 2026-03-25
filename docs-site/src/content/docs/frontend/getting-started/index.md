@@ -1,6 +1,6 @@
 ---
 title: Getting Started with Granit Frontend SDK
-description: Get started with the Granit frontend SDK — headless TypeScript packages and React 19 bindings for authentication, querying, multi-tenancy, and observability.
+description: Get started with the Granit frontend SDK — headless TypeScript packages and React 19 bindings for authentication, query engine, multi-tenancy, and observability.
 sidebar:
   label: Getting Started
   order: 1
@@ -20,7 +20,7 @@ your first Granit-powered frontend application.
 | Group | Packages | Purpose |
 |-------|----------|---------|
 | [Core](/frontend/core/utils/) | utils | Foundation utilities and helpers |
-| [Data](/frontend/data/querying/) | querying, storage | Data fetching and client-side storage |
+| [Data](/frontend/data/querying/) | query-engine, storage | Data fetching and client-side storage |
 | [Security](/frontend/security/authentication/) | authentication, authorization, identity, cookies | Auth, RBAC, consent management |
 | [API](/frontend/api/http-client/) | api | HTTP client factory with interceptors |
 | [Infrastructure](/frontend/infrastructure/notifications/) | notifications, background-jobs, localization, settings, multi-tenancy | Messaging, i18n, platform config |

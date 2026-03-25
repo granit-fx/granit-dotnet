@@ -185,26 +185,27 @@ table prefix and schema:
 
 ```csharp
 // Override before ConfigureServices — EF Core caches the model after first use
-GranitBackgroundJobsDbProperties.DbTablePrefix = "scheduling_";
+GranitBackgroundJobsDbProperties.DbTablePrefix = "background_jobs_";
 GranitBackgroundJobsDbProperties.DbSchema = "core";
 ```
 
-Default prefixes follow the convention **package name in snake\_case + `_`**:
+Default prefixes follow the convention **module name in snake\_case + `_`**:
 
 | Module | Default prefix | Example table |
 |--------|---------------|---------------|
-| `BackgroundJobs` | `scheduling_` | `scheduling_background_jobs` |
-| `Settings` | `core_` | `core_setting_records` |
+| `BackgroundJobs` | `background_jobs_` | `background_jobs_background_jobs` |
+| `Settings` | `settings_` | `settings_setting_records` |
 | `Workflow` | `workflow_` | `workflow_transition_records` |
-| `AuditLog` | `audit_` | `audit_log_entries` |
-| `Notifications` | `notification_` | `notification_user_notifications` |
-| `Webhooks` | `webhook_` | `webhook_subscriptions` |
+| `AuditLog` | `audit_log_` | `audit_log_log_entries` |
+| `Notifications` | `notifications_` | `notifications_user_notifications` |
+| `Webhooks` | `webhooks_` | `webhooks_subscriptions` |
 | `BlobStorage` | `blob_storage_` | `blob_storage_descriptors` |
-| `Features` | `feature_` | `feature_overrides` |
+| `Features` | `features_` | `features_overrides` |
 | `Localization` | `localization_` | `localization_overrides` |
 | `AI` | `ai_` | `ai_workspaces` |
-| `ApiKeys` | `auth_` | `auth_api_keys` |
-| `Authorization` | `auth_` | `auth_permission_grants` |
+| `ApiKeys` | `api_keys_` | `api_keys_api_keys` |
+| `Authorization` | `authorization_` | `authorization_permission_grants` |
+| `OpenIddict` | `openiddict_` | `openiddict_users` |
 | `Identity` | `identity_` | `identity_user_cache_entries` |
 | `DataExchange` | `data_exchange_` | `data_exchange_import_jobs` |
 | `QueryEngine` | `query_engine_` | `query_engine_saved_views` |

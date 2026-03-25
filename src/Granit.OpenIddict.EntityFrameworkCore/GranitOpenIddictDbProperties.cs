@@ -10,9 +10,9 @@ namespace Granit.OpenIddict.EntityFrameworkCore;
 public static class GranitOpenIddictDbProperties
 {
     /// <summary>
-    /// Table name prefix for all OpenIddict and Identity tables. Default: <c>"oidc_"</c>.
+    /// Table name prefix for all OpenIddict and Identity tables. Default: <c>"openiddict_"</c>.
     /// </summary>
-    public static string DbTablePrefix { get; set; } = "oidc_";
+    public static string DbTablePrefix { get; set; } = "openiddict_";
 
     /// <summary>
     /// Database schema for all OpenIddict and Identity tables. Default: <c>null</c> (provider default schema).

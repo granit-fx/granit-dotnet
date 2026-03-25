@@ -43,11 +43,9 @@ internal static class SavedViewEndpoints
             CreateSavedViewRequest request,
             [FromServices] ISavedViewStoreWriter store,
             [FromServices] IGuidGenerator guidGenerator,
-            [FromServices] ICurrentTenant tenant,
-            ClaimsPrincipal user,
-            [FromServices] IClock clock,
+            [AsParameters] SavedViewUserContext ctx,
             CancellationToken cancellationToken) =>
-            CreateAsync(request, store, guidGenerator, entityType, tenant, user, clock, cancellationToken))
+            CreateAsync(request, store, guidGenerator, entityType, ctx, cancellationToken))
             .WithName($"CreateSavedView_{entityType}")
             .WithSummary("Creates a new saved view.")
             .WithDescription("Creates a new saved view for the current user and entity type. The view stores a reusable query configuration (filters, sort, column selection). Returns 201 Created with the saved view details.")
@@ -111,12 +109,10 @@ internal static class SavedViewEndpoints
         [FromServices] ISavedViewStoreWriter store,
         [FromServices] IGuidGenerator guidGenerator,
         string entityType,
-        [FromServices] ICurrentTenant tenant,
-        ClaimsPrincipal user,
-        [FromServices] IClock clock,
+        [AsParameters] SavedViewUserContext ctx,
         CancellationToken cancellationToken)
     {
-        string userId = GetUserId(user);
+        string userId = GetUserId(ctx.User);
 
         SavedView view = new()
         {
@@ -130,8 +126,8 @@ internal static class SavedViewEndpoints
             SortJson = request.SortJson,
             GroupByJson = request.GroupByJson,
             VisibleColumnsJson = request.VisibleColumnsJson,
-            TenantId = tenant.IsAvailable ? tenant.Id : null,
-            CreatedAt = clock.Now,
+            TenantId = ctx.Tenant.IsAvailable ? ctx.Tenant.Id : null,
+            CreatedAt = ctx.Clock.Now,
             CreatedBy = userId,
         };
 
@@ -194,4 +190,13 @@ internal static class SavedViewEndpoints
         user.FindFirst(ClaimTypes.NameIdentifier)?.Value
         ?? user.FindFirst("sub")?.Value
         ?? string.Empty;
+
+    /// <summary>
+    /// Groups user identity and cross-cutting services for <see cref="CreateAsync"/>
+    /// to stay within the 7-parameter limit.
+    /// </summary>
+    internal sealed record SavedViewUserContext(
+        [FromServices] ICurrentTenant Tenant,
+        ClaimsPrincipal User,
+        [FromServices] IClock Clock);
 }

@@ -19,9 +19,9 @@ namespace Granit.Notifications.EntityFrameworkCore;
 public static class GranitNotificationsDbProperties
 {
     /// <summary>
-    /// Table name prefix for all notification tables. Default: <c>"notification_"</c>.
+    /// Table name prefix for all notifications tables. Default: <c>"notifications_"</c>.
     /// </summary>
-    public static string DbTablePrefix { get; set; } = "notification_";
+    public static string DbTablePrefix { get; set; } = "notifications_";
 
     /// <summary>
     /// Database schema for all notification tables. Default: <c>null</c> (provider default schema).

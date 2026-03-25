@@ -14,14 +14,14 @@ All OpenIddict entities implement `IMultiTenant` with `Guid? TenantId`:
 
 | Entity | Table | Tenant-scoped |
 |--------|-------|---------------|
-| `GranitUser` | `oidc_users` | Yes |
-| `GranitUserGroup` | `oidc_user_groups` | Yes |
-| `GranitUserGroupMember` | `oidc_user_group_members` | Yes |
-| `GranitOpenIddictApplication` | `oidc_applications` | Yes |
-| `GranitOpenIddictAuthorization` | `oidc_authorizations` | Yes |
-| `GranitOpenIddictScope` | `oidc_scopes` | Yes |
-| `GranitOpenIddictToken` | `oidc_tokens` | Yes |
-| `GranitRole` | `oidc_roles` | **No (global)** |
+| `GranitUser` | `openiddict_users` | Yes |
+| `GranitUserGroup` | `openiddict_user_groups` | Yes |
+| `GranitUserGroupMember` | `openiddict_user_group_members` | Yes |
+| `GranitOpenIddictApplication` | `openiddict_applications` | Yes |
+| `GranitOpenIddictAuthorization` | `openiddict_authorizations` | Yes |
+| `GranitOpenIddictScope` | `openiddict_scopes` | Yes |
+| `GranitOpenIddictToken` | `openiddict_tokens` | Yes |
+| `GranitRole` | `openiddict_roles` | **No (global)** |
 
 Tenant filters are applied automatically by `ApplyGranitConventions()` in the
 `OpenIddictDbContext`. Applications and scopes with `TenantId = null` are **global**

@@ -40,7 +40,7 @@ public static class OpenIddictModelBuilderExtensions
     /// </param>
     /// <param name="extensionOptions">
     /// Dynamic user extension options. If provided, adds Shadow Properties as SQL columns
-    /// on the <c>oidc_users</c> table for each mapped property.
+    /// on the <c>openiddict_users</c> table for each mapped property.
     /// </param>
     public static ModelBuilder ConfigureOpenIddictModule(
         this ModelBuilder modelBuilder,
@@ -52,7 +52,7 @@ public static class OpenIddictModelBuilderExtensions
         string prefix = GranitOpenIddictDbProperties.DbTablePrefix;
         string? schema = GranitOpenIddictDbProperties.DbSchema;
 
-        // ──── Remap ASP.NET Identity tables to oidc_* prefix ────
+        // ──── Remap ASP.NET Identity tables to openiddict_* prefix ────
 
         SoftDeleteProxy proxy = new(dataFilter);
 

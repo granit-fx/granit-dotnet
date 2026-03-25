@@ -210,7 +210,7 @@ The persistent administrative record for each recurring job:
 | `LastErrorMessage` | `string?` (max 2000) | Error from last failure (`null` on success) |
 | `TriggeredBy` | `string?` (max 450) | UserId of manual trigger operator (ISO 27001 audit) |
 
-EF Core table: `scheduling_background_jobs` with a unique index on `JobName`.
+EF Core table: `background_jobs_background_jobs` with a unique index on `JobName`.
 
 ## CQRS reader/writer interfaces
 

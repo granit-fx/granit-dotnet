@@ -44,7 +44,7 @@ public sealed class SettingRecordConfigurationTests
         IModel model = BuildModel();
         IEntityType entity = model.FindEntityType(typeof(SettingRecord))!;
 
-        entity.GetTableName().ShouldBe("core_setting_records");
+        entity.GetTableName().ShouldBe("settings_setting_records");
     }
 
     [Fact]

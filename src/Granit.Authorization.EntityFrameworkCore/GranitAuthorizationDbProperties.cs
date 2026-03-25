@@ -11,9 +11,9 @@ namespace Granit.Authorization.EntityFrameworkCore;
 public static class GranitAuthorizationDbProperties
 {
     /// <summary>
-    /// Table name prefix for all authorization tables. Default: <c>"auth_"</c>.
+    /// Table name prefix for all authorization tables. Default: <c>"authorization_"</c>.
     /// </summary>
-    public static string DbTablePrefix { get; set; } = "auth_";
+    public static string DbTablePrefix { get; set; } = "authorization_";
 
     /// <summary>
     /// Database schema for all authorization tables. Default: <c>null</c> (provider default schema).

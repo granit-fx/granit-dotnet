@@ -65,7 +65,7 @@ public sealed class TokenManagementMetricsTests : IDisposable
 
         collector.InstrumentPublished = (instrument, listener) =>
         {
-            if (instrument.Name == "granit.authentication.token.requests")
+            if (instrument.Name == "granit.oidc.token_management.request.sent")
             {
                 listener.EnableMeasurementEvents(instrument);
             }

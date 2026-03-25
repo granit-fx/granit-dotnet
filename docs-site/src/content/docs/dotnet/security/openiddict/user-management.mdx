@@ -94,10 +94,10 @@ All four OpenIddict entities are extended with `IMultiTenant` for tenant isolati
 
 | Entity | Base class | Table |
 |--------|-----------|-------|
-| `GranitOpenIddictApplication` | `OpenIddictEntityFrameworkCoreApplication<Guid, ...>` | `oidc_applications` |
-| `GranitOpenIddictAuthorization` | `OpenIddictEntityFrameworkCoreAuthorization<Guid, ...>` | `oidc_authorizations` |
-| `GranitOpenIddictScope` | `OpenIddictEntityFrameworkCoreScope<Guid>` | `oidc_scopes` |
-| `GranitOpenIddictToken` | `OpenIddictEntityFrameworkCoreToken<Guid, ...>` | `oidc_tokens` |
+| `GranitOpenIddictApplication` | `OpenIddictEntityFrameworkCoreApplication<Guid, ...>` | `openiddict_applications` |
+| `GranitOpenIddictAuthorization` | `OpenIddictEntityFrameworkCoreAuthorization<Guid, ...>` | `openiddict_authorizations` |
+| `GranitOpenIddictScope` | `OpenIddictEntityFrameworkCoreScope<Guid>` | `openiddict_scopes` |
+| `GranitOpenIddictToken` | `OpenIddictEntityFrameworkCoreToken<Guid, ...>` | `openiddict_tokens` |
 
 Applications and scopes with `TenantId == null` are global (visible to all tenants).
 
@@ -272,33 +272,33 @@ revokes each one — used for GDPR erasure requests and security incident respon
 
 ## Database tables
 
-All tables are prefixed with `oidc_` (configurable via `GranitOpenIddictDbProperties.DbTablePrefix`).
+All tables are prefixed with `openiddict_` (configurable via `GranitOpenIddictDbProperties.DbTablePrefix`).
 The schema is configurable via `GranitOpenIddictDbProperties.DbSchema`.
 
 | Table | Entity | Multi-tenant |
 |-------|--------|-------------|
-| `oidc_users` | `GranitUser` | Yes |
-| `oidc_roles` | `GranitRole` | No (global) |
-| `oidc_user_roles` | `IdentityUserRole<Guid>` | -- |
-| `oidc_user_claims` | `IdentityUserClaim<Guid>` | -- |
-| `oidc_user_logins` | `IdentityUserLogin<Guid>` | -- |
-| `oidc_user_tokens` | `IdentityUserToken<Guid>` | -- |
-| `oidc_role_claims` | `IdentityRoleClaim<Guid>` | -- |
-| `oidc_user_groups` | `GranitUserGroup` | Yes |
-| `oidc_user_group_members` | `GranitUserGroupMember` | Yes |
-| `oidc_applications` | `GranitOpenIddictApplication` | Yes |
-| `oidc_authorizations` | `GranitOpenIddictAuthorization` | Yes |
-| `oidc_scopes` | `GranitOpenIddictScope` | Yes |
-| `oidc_tokens` | `GranitOpenIddictToken` | Yes |
+| `openiddict_users` | `GranitUser` | Yes |
+| `openiddict_roles` | `GranitRole` | No (global) |
+| `openiddict_user_roles` | `IdentityUserRole<Guid>` | -- |
+| `openiddict_user_claims` | `IdentityUserClaim<Guid>` | -- |
+| `openiddict_user_logins` | `IdentityUserLogin<Guid>` | -- |
+| `openiddict_user_tokens` | `IdentityUserToken<Guid>` | -- |
+| `openiddict_role_claims` | `IdentityRoleClaim<Guid>` | -- |
+| `openiddict_user_groups` | `GranitUserGroup` | Yes |
+| `openiddict_user_group_members` | `GranitUserGroupMember` | Yes |
+| `openiddict_applications` | `GranitOpenIddictApplication` | Yes |
+| `openiddict_authorizations` | `GranitOpenIddictAuthorization` | Yes |
+| `openiddict_scopes` | `GranitOpenIddictScope` | Yes |
+| `openiddict_tokens` | `GranitOpenIddictToken` | Yes |
 
 ### Notable indexes
 
 | Index | Type | Columns |
 |-------|------|---------|
-| `ix_oidc_users_tenant_id` | Non-unique | `TenantId` |
-| `uq_oidc_user_groups_tenant_name` | Unique | `TenantId`, `Name` |
-| `uq_oidc_user_group_members_group_user` | Unique | `GroupId`, `UserId` |
-| `ix_oidc_user_group_members_user_id` | Non-unique | `UserId` |
+| `ix_openiddict_users_tenant_id` | Non-unique | `TenantId` |
+| `uq_openiddict_user_groups_tenant_name` | Unique | `TenantId`, `Name` |
+| `uq_openiddict_user_group_members_group_user` | Unique | `GroupId`, `UserId` |
+| `ix_openiddict_user_group_members_user_id` | Non-unique | `UserId` |
 
 ## Related pages
 

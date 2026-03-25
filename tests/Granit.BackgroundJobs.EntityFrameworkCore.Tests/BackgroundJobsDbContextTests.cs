@@ -47,7 +47,7 @@ public sealed class BackgroundJobsDbContextTests
             .FindEntityType(typeof(BackgroundJobDefinition))!
             .GetTableName();
 
-        tableName.ShouldBe("scheduling_background_jobs");
+        tableName.ShouldBe("background_jobs_background_jobs");
     }
 
     [Fact]

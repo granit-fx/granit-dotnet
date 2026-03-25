@@ -54,7 +54,7 @@ graph TD
     end
 
     subgraph "Business layer"
-        querying["@granit/query-engine"]
+        queryEngine["@granit/query-engine"]
         data-exchange["@granit/data-exchange"]
         workflow["@granit/workflow"]
         timeline["@granit/timeline"]
@@ -66,17 +66,17 @@ graph TD
     logger-otlp --> logger
     cookies-klaro --> cookies
     error-boundary --> logger
-    querying --> utils
+    queryEngine --> utils
     data-exchange --> utils
-    timeline --> querying
-    notifications --> querying
+    timeline --> queryEngine
+    notifications --> queryEngine
 
     utils -.-> clsx["clsx"]
     utils -.-> tw["tailwind-merge"]
     utils -.-> datefns["date-fns"]
     api -.-> axios["axios"]
     react-authn -.-> keycloak["keycloak-js"]
-    querying -.-> tanstack["@tanstack/react-query"]
+    queryEngine -.-> tanstack/react-query"]
     data-exchange -.-> tanstack
     notifications -.-> signalr["@microsoft/signalr"]
     tracing -.-> otel["@opentelemetry/*"]
@@ -96,7 +96,7 @@ graph TD
     style cookies-klaro fill:#e3f2fd
     style tracing fill:#e3f2fd
     style error-boundary fill:#e3f2fd
-    style querying fill:#fff3e0
+    style queryEngine fill:#fff3e0
     style data-exchange fill:#fff3e0
     style workflow fill:#fff3e0
     style timeline fill:#fff3e0
