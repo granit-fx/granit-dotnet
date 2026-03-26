@@ -38,7 +38,7 @@ internal sealed class DefaultMcpClientFactory(IOptions<GranitMcpClientOptions> o
 
     private static HttpClientTransport CreateHttpTransport(string name, McpConnectionOptions connection)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(connection.Url, nameof(connection.Url));
+        ArgumentException.ThrowIfNullOrWhiteSpace(connection.Url);
 
         return new HttpClientTransport(new HttpClientTransportOptions
         {
@@ -49,7 +49,7 @@ internal sealed class DefaultMcpClientFactory(IOptions<GranitMcpClientOptions> o
 
     private static StdioClientTransport CreateStdioTransport(string name, McpConnectionOptions connection)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(connection.Command, nameof(connection.Command));
+        ArgumentException.ThrowIfNullOrWhiteSpace(connection.Command);
 
         return new StdioClientTransport(new StdioClientTransportOptions
         {

@@ -11,6 +11,9 @@ public sealed class McpMetrics
 {
     public const string MeterName = "Granit.Mcp";
 
+    private const string TagTenantId = "tenant_id";
+    private const string DefaultTenant = "global";
+
     private readonly Counter<long> _toolsInvoked;
     private readonly Counter<long> _resourcesRead;
     private readonly UpDownCounter<long> _sessionsActive;
@@ -41,7 +44,7 @@ public sealed class McpMetrics
     public void RecordToolInvoked(string? tenantId, string toolName, string status) =>
         _toolsInvoked.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "tool_name", toolName },
             { "status", status },
         });
@@ -49,28 +52,28 @@ public sealed class McpMetrics
     public void RecordResourceRead(string? tenantId, string resourceUri) =>
         _resourcesRead.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "resource_uri", resourceUri },
         });
 
     public void RecordSessionStarted(string? tenantId, string transport) =>
         _sessionsActive.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "transport", transport },
         });
 
     public void RecordSessionEnded(string? tenantId, string transport) =>
         _sessionsActive.Add(-1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "transport", transport },
         });
 
     public void RecordRequestDuration(string? tenantId, string method, TimeSpan duration) =>
         _requestDuration.Record(duration.TotalSeconds, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TagTenantId, tenantId ?? DefaultTenant },
             { "method", method },
         });
 }

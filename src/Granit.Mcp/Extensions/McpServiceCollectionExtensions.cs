@@ -24,8 +24,6 @@ public static class McpServiceCollectionExtensions
     /// Adds Granit MCP core services: MCP server, output sanitization pipeline,
     /// and OpenTelemetry diagnostics. Called by <see cref="GranitMcpModule"/>.
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <returns>The MCP server builder for further configuration.</returns>
     internal static IMcpServerBuilder AddGranitMcp(this IServiceCollection services)
     {
         GranitActivitySourceRegistry.Register(McpActivitySource.Name);
@@ -36,7 +34,7 @@ public static class McpServiceCollectionExtensions
 
         services.TryAddSingleton<McpMetrics>();
 
-        // SDK: register MCP server with ServerInfo from GranitMcpOptions
+        // SDK: register MCP server
         IMcpServerBuilder mcpBuilder = services.AddMcpServer();
 
         // Bind ServerInfo from GranitMcpOptions via IConfigureOptions<McpServerOptions>
@@ -68,78 +66,10 @@ public static class McpServiceCollectionExtensions
     {
         mcpBuilder.WithRequestFilters(filters =>
         {
-            // Filter 1: Tool visibility (tenant, module scope, [McpExposed])
             filters.AddListToolsFilter(next => async (context, ct) =>
-            {
-                ListToolsResult result = await next(context, ct);
-
-                IEnumerable<IMcpToolVisibilityFilter> visibilityFilters =
-                    context.Services!.GetServices<IMcpToolVisibilityFilter>();
-
-                if (!visibilityFilters.Any())
-                {
-                    return result;
-                }
-
-                List<Tool> visibleTools = [];
-                foreach (Tool tool in result.Tools)
-                {
-                    bool isVisible = true;
-                    foreach (IMcpToolVisibilityFilter filter in visibilityFilters)
-                    {
-                        if (!await filter.IsVisibleAsync(tool.Name, toolType: null, context.Services!, ct))
-                        {
-                            isVisible = false;
-                            break;
-                        }
-                    }
-
-                    if (isVisible)
-                    {
-                        visibleTools.Add(tool);
-                    }
-                }
-
-                result.Tools = visibleTools;
-                return result;
-            });
-
-            // Filter 2: Output sanitization (GDPR) + audit/metrics
+                await ApplyVisibilityFilters(next, context, ct));
             filters.AddCallToolFilter(next => async (context, ct) =>
-            {
-                McpMetrics? metrics = context.Services?.GetService<McpMetrics>();
-                ICurrentTenant? currentTenant = context.Services?.GetService<ICurrentTenant>();
-                string? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id?.ToString() : null;
-                string toolName = context.Params?.Name ?? "unknown";
-                var sw = Stopwatch.StartNew();
-
-                try
-                {
-                    CallToolResult result = await next(context, ct);
-                    sw.Stop();
-
-                    // Sanitize output
-                    IEnumerable<IMcpOutputSanitizer> sanitizers =
-                        context.Services!.GetServices<IMcpOutputSanitizer>();
-
-                    foreach (IMcpOutputSanitizer sanitizer in sanitizers)
-                    {
-                        result = await sanitizer.SanitizeAsync(result, context.Services!, ct);
-                    }
-
-                    metrics?.RecordToolInvoked(tenantId, toolName, "success");
-                    metrics?.RecordRequestDuration(tenantId, $"tools/call/{toolName}", sw.Elapsed);
-
-                    return result;
-                }
-                catch (Exception)
-                {
-                    sw.Stop();
-                    metrics?.RecordToolInvoked(tenantId, toolName, "error");
-                    metrics?.RecordRequestDuration(tenantId, $"tools/call/{toolName}", sw.Elapsed);
-                    throw;
-                }
-            });
+                await ApplyCallToolFilters(next, context, ct));
         });
 
         return mcpBuilder;
@@ -153,14 +83,12 @@ public static class McpServiceCollectionExtensions
         this IMcpServerBuilder mcpBuilder,
         IReadOnlyCollection<Assembly> moduleAssemblies)
     {
-        // Path 1: Assembly scanning — tools, prompts
         foreach (Assembly assembly in moduleAssemblies)
         {
             mcpBuilder.WithToolsFromAssembly(assembly);
             mcpBuilder.WithPromptsFromAssembly(assembly);
         }
 
-        // Path 2: IMcpToolContributor — imperative registrations
         foreach (Assembly assembly in moduleAssemblies)
         {
             IEnumerable<Type> contributorTypes = assembly.GetTypes()
@@ -175,5 +103,97 @@ public static class McpServiceCollectionExtensions
         }
 
         return mcpBuilder;
+    }
+
+    private static async Task<ListToolsResult> ApplyVisibilityFilters(
+        McpRequestHandler<ListToolsRequestParams, ListToolsResult> next,
+        RequestContext<ListToolsRequestParams> context,
+        CancellationToken ct)
+    {
+        ListToolsResult result = await next(context, ct);
+
+        IEnumerable<IMcpToolVisibilityFilter> visibilityFilters =
+            context.Services!.GetServices<IMcpToolVisibilityFilter>();
+
+        if (!visibilityFilters.Any())
+        {
+            return result;
+        }
+
+        List<Tool> visibleTools = [];
+        foreach (Tool tool in result.Tools)
+        {
+            if (await IsToolVisible(tool, visibilityFilters, context.Services!, ct))
+            {
+                visibleTools.Add(tool);
+            }
+        }
+
+        result.Tools = visibleTools;
+        return result;
+    }
+
+    private static async Task<bool> IsToolVisible(
+        Tool tool,
+        IEnumerable<IMcpToolVisibilityFilter> filters,
+        IServiceProvider services,
+        CancellationToken ct)
+    {
+        foreach (IMcpToolVisibilityFilter filter in filters)
+        {
+            if (!await filter.IsVisibleAsync(tool.Name, toolType: null, services, ct))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static async Task<CallToolResult> ApplyCallToolFilters(
+        McpRequestHandler<CallToolRequestParams, CallToolResult> next,
+        RequestContext<CallToolRequestParams> context,
+        CancellationToken ct)
+    {
+        McpMetrics? metrics = context.Services?.GetService<McpMetrics>();
+        ICurrentTenant? currentTenant = context.Services?.GetService<ICurrentTenant>();
+        string? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id?.ToString() : null;
+        string toolName = context.Params?.Name ?? "unknown";
+        var sw = Stopwatch.StartNew();
+
+        try
+        {
+            CallToolResult result = await next(context, ct);
+            sw.Stop();
+
+            result = await ApplySanitizers(result, context.Services!, ct);
+
+            metrics?.RecordToolInvoked(tenantId, toolName, "success");
+            metrics?.RecordRequestDuration(tenantId, $"tools/call/{toolName}", sw.Elapsed);
+
+            return result;
+        }
+        catch (Exception)
+        {
+            sw.Stop();
+            metrics?.RecordToolInvoked(tenantId, toolName, "error");
+            metrics?.RecordRequestDuration(tenantId, $"tools/call/{toolName}", sw.Elapsed);
+            throw;
+        }
+    }
+
+    private static async Task<CallToolResult> ApplySanitizers(
+        CallToolResult result,
+        IServiceProvider services,
+        CancellationToken ct)
+    {
+        IEnumerable<IMcpOutputSanitizer> sanitizers = services.GetServices<IMcpOutputSanitizer>();
+
+        foreach (IMcpOutputSanitizer sanitizer in sanitizers)
+        {
+            result = await sanitizer.SanitizeAsync(result, services, ct);
+        }
+
+        return result;
     }
 }

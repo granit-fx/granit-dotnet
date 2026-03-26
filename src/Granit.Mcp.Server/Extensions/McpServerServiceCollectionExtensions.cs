@@ -19,9 +19,10 @@ public static class McpServerServiceCollectionExtensions
     /// tool visibility filters, and error sanitization.
     /// </summary>
     /// <remarks>
-    /// Does NOT call <c>AddMcpServer()</c> — that is done by <see cref="Granit.Mcp.GranitMcpModule"/>.
-    /// This method chains <c>WithHttpTransport()</c> and <c>AddAuthorizationFilters()</c>
-    /// onto the already-registered MCP server builder.
+    /// Calls <c>AddMcpServer()</c> to obtain the builder (idempotent — the SDK uses
+    /// <c>TryAdd</c> internally, so the server registered by <see cref="Granit.Mcp.GranitMcpModule"/>
+    /// is reused). Chains <c>WithHttpTransport()</c> and <c>AddAuthorizationFilters()</c>
+    /// onto that builder.
     /// </remarks>
     internal static IServiceCollection AddGranitMcpServer(this IServiceCollection services)
     {

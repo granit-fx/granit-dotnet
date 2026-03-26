@@ -82,30 +82,22 @@ public sealed class TotpServiceTests
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
-    public void GetQrCodeUri_ThrowsOnInvalidEmail(string email)
-    {
+    public void GetQrCodeUri_ThrowsOnInvalidEmail(string email) =>
         Should.Throw<ArgumentException>(() => _sut.GetQrCodeUri(email, "JBSWY3DPEHPK3PXP"));
-    }
 
     [Fact]
-    public void GetQrCodeUri_ThrowsOnNullEmail()
-    {
+    public void GetQrCodeUri_ThrowsOnNullEmail() =>
         Should.Throw<ArgumentException>(() => _sut.GetQrCodeUri(null!, "JBSWY3DPEHPK3PXP"));
-    }
 
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
-    public void GetQrCodeUri_ThrowsOnInvalidSharedKey(string key)
-    {
+    public void GetQrCodeUri_ThrowsOnInvalidSharedKey(string key) =>
         Should.Throw<ArgumentException>(() => _sut.GetQrCodeUri("user@example.com", key));
-    }
 
     [Fact]
-    public void GetQrCodeUri_ThrowsOnNullSharedKey()
-    {
+    public void GetQrCodeUri_ThrowsOnNullSharedKey() =>
         Should.Throw<ArgumentException>(() => _sut.GetQrCodeUri("user@example.com", null!));
-    }
 
     [Fact]
     public void ValidateCode_ReturnsTrueForCorrectCode()
@@ -184,16 +176,12 @@ public sealed class TotpServiceTests
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
-    public void ValidateCode_ThrowsOnInvalidSharedKey(string key)
-    {
+    public void ValidateCode_ThrowsOnInvalidSharedKey(string key) =>
         Should.Throw<ArgumentException>(() => _sut.ValidateCode(key, "123456"));
-    }
 
     [Fact]
-    public void ValidateCode_ThrowsOnNullSharedKey()
-    {
+    public void ValidateCode_ThrowsOnNullSharedKey() =>
         Should.Throw<ArgumentException>(() => _sut.ValidateCode(null!, "123456"));
-    }
 
     [Fact]
     public void RoundTrip_GenerateKeyThenValidate()

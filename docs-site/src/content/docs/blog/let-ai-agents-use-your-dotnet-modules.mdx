@@ -1,0 +1,282 @@
+---
+title: Let AI Agents Use Your .NET Modules
+date: 2026-03-26
+authors:
+  - jfmeyers
+tags:
+  - ai
+  - architecture
+  - release
+  - security
+description: "Turn any Granit module into an MCP server in 3 steps. Claude, Copilot, and Cursor discover and invoke your tools — with RBAC, GDPR sanitization, and multi-tenancy."
+excerpt: >
+  The new Granit.Mcp module family wraps the MCP C# SDK to expose your application
+  capabilities to AI agents, with auto-discovery, RBAC authorization, and GDPR-compliant
+  output sanitization.
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Your API already exposes endpoints for humans. What if AI agents could discover and
+invoke them too — with the same permissions, the same multi-tenancy isolation, and
+automatic PII redaction?
+
+That's what the **Model Context Protocol** (MCP) enables. And with the new
+`Granit.Mcp` module family, any Granit module can become an MCP server in 3 steps.
+
+## What is MCP?
+
+MCP is an open protocol (created by Anthropic, backed by Microsoft) that lets AI
+agents — Claude Desktop, GitHub Copilot, Cursor, or your own custom agents —
+**discover and invoke tools** exposed by your application over HTTP.
+
+Think of it as OpenAPI for AI agents, but bidirectional: the agent lists available
+tools, picks the right one based on the user's intent, passes typed parameters, and
+gets structured results back.
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Agent as AI Agent (Claude)
+    participant App as Your Granit App
+
+    User->>Agent: "Show me unpaid invoices from last week"
+    Agent->>App: tools/list
+    App-->>Agent: [SearchInvoices, GetInvoiceDetails, ...]
+    Agent->>App: tools/call SearchInvoices {status: "unpaid", from: "2026-03-19"}
+    App-->>Agent: [{id: 42, amount: 1250, ...}, ...]
+    Agent->>User: "Found 3 unpaid invoices totaling EUR 4,200..."
+```
+
+The agent doesn't need custom integrations, API documentation, or prompt engineering.
+It reads tool descriptions, decides which ones to call, and handles the conversation.
+
+## What Granit adds on top of the SDK
+
+The official [MCP C# SDK](https://github.com/modelcontextprotocol/csharp-sdk) handles
+the protocol. Granit adds what enterprise apps need:
+
+| Concern | MCP SDK alone | With Granit.Mcp |
+|---------|--------------|-----------------|
+| **Tool discovery** | Manual registration | Auto-discovery from module assemblies |
+| **Authorization** | Roll your own | `[Authorize(Policy = "...")]` with Granit RBAC |
+| **PII in responses** | You handle it | `[McpRedact]` + sanitization pipeline (GDPR) |
+| **Multi-tenancy** | Not supported | `[McpTenantScope]` + `ICurrentTenant` injection |
+| **Error leakage** | Stack traces exposed | `ErrorSanitizer` strips connection strings and traces |
+| **Observability** | Basic | OpenTelemetry metrics + activity source |
+| **Module scoping** | All tools always | `EnabledModules` config limits exposure |
+
+Four new packages, zero new abstractions. Everything plugs into the SDK's native
+filter pipeline.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph app["Your Granit Application"]
+        direction TB
+        T1["Invoice tools"] --> MCP["Granit.Mcp\nAuto-discovery\n+ Filters"]
+        T2["Workflow tools"] --> MCP
+        T3["BlobStorage tools"] --> MCP
+        MCP --> SRV["Granit.Mcp.Server\nHTTP + Auth"]
+    end
+
+    AI["AI Agent"] -- "/mcp" --> SRV
+
+    subgraph ext["External"]
+        ERP["ERP Server"]
+    end
+
+    CLI["Granit.Mcp.Client"] -- "HTTP" --> ERP
+    CLI --> AIM["Granit.AI.Mcp\n→ IChatClient"]
+
+    style app fill:#1a1a2e,stroke:#e94560,color:#eee
+    style ext fill:#1a1a2e,stroke:#0f3460,color:#eee
+    style AI fill:#e94560,stroke:#e94560,color:#fff
+```
+
+| Package | Purpose |
+|---------|---------|
+| **Granit.Mcp** | Auto-discovery, sanitization pipeline, metrics |
+| **Granit.Mcp.Server** | ASP.NET Core HTTP transport, `[Authorize]`, permissions |
+| **Granit.Mcp.Client** | Connect to external MCP servers (HTTP + stdio) |
+| **Granit.AI.Mcp** | Inject MCP tools into AI workspaces, sampling guard |
+
+## AI-enable your module in 3 steps
+
+### Step 1: Install and register
+
+```bash
+dotnet add package Granit.Mcp.Server
+```
+
+```csharp title="Program.cs"
+builder.AddGranit(granit =>
+{
+    granit.AddModule<GranitMcpServerModule>();
+});
+
+app.MapGranitMcpServer();
+```
+
+That's it for infrastructure. The MCP endpoint is live at `/mcp`, protected by
+`Mcp.Server.Access` permission.
+
+### Step 2: Create a tool class
+
+Add a class in your module with `[McpServerToolType]` and `[McpExposed]`:
+
+```csharp title="InvoiceMcpTools.cs"
+[McpServerToolType, McpExposed]
+[Authorize(Policy = "Invoicing.Invoices.Read")]
+public sealed class InvoiceMcpTools(IInvoiceReader reader)
+{
+    [McpServerTool, Description("Search invoices by status and date range.")]
+    [McpToolOptions(ReadOnly = true)]
+    public async Task<string> SearchInvoicesAsync(
+        [Description("Invoice status: draft, sent, paid, overdue")] string status,
+        [Description("Start date (ISO 8601)")] DateOnly from,
+        ICurrentTenant tenant,    // DI-injected, invisible to agent
+        CancellationToken ct)
+    {
+        var invoices = await reader.SearchAsync(status, from, ct);
+        return JsonSerializer.Serialize(invoices);
+    }
+
+    [McpServerTool, Description("Permanently voids an invoice.")]
+    [Authorize(Policy = "Invoicing.Invoices.Manage")]
+    [McpToolOptions(Destructive = true)]
+    public async Task<string> VoidInvoiceAsync(
+        [Description("Invoice ID")] Guid invoiceId,
+        [Description("Reason for voiding")] string reason,
+        CancellationToken ct)
+    {
+        await reader.VoidAsync(invoiceId, reason, ct);
+        return $"Invoice {invoiceId} voided.";
+    }
+}
+```
+
+### Step 3: There is no step 3
+
+`GranitMcpModule` auto-discovers your tool class from the module assembly. The AI agent
+sees `SearchInvoices` and `VoidInvoice` with their descriptions and parameter schemas.
+
+The `ICurrentTenant` and `CancellationToken` parameters are **invisible** to the agent —
+the SDK resolves them from DI automatically.
+
+## Authorization: no custom attributes
+
+You might expect a `[RequiresMcpPermission]` attribute. We built one, then deleted it.
+
+The SDK supports standard `[Authorize]` via `.AddAuthorizationFilters()`. Granit's
+`DynamicPermissionPolicyProvider` already maps policy names to RBAC permissions. So
+`[Authorize(Policy = "Invoicing.Invoices.Read")]` just works — same attribute you use on
+Minimal API endpoints.
+
+- **Class-level**: all tools in the class require the permission
+- **Method-level**: override per tool for fine-grained control
+- **`ClaimsPrincipal`**: injectable into any tool method for runtime checks
+
+## GDPR: PII never reaches the agent
+
+MCP tool responses are **sanitized before they leave your app**. This happens in
+the SDK's `AddCallToolFilter` pipeline — not a parallel abstraction.
+
+```csharp title="PatientResponse.cs"
+public sealed class PatientResponse
+{
+    public Guid Id { get; init; }
+    public string DisplayName { get; init; }
+
+    [McpRedact(Strategy = RedactionStrategy.Omit)]
+    public string Email { get; init; }
+
+    [McpRedact(Strategy = RedactionStrategy.Hash)]
+    public string NationalId { get; init; }
+}
+```
+
+Three strategies:
+
+| Strategy | Behavior | When to use |
+|----------|----------|-------------|
+| **Omit** (default) | Remove property entirely | Email, phone, address |
+| **Hash** | Stable SHA-256 | Correlation IDs |
+| **Mask** | `j***@***.com` | UI-facing only (wastes LLM tokens) |
+
+The `ErrorSanitizer` also strips stack traces and connection strings from error
+responses — no accidental `Server=db.prod;Password=...` leaking to an AI agent.
+
+## Multi-tenancy: tools follow the tenant
+
+Three visibility filters compose independently:
+
+1. **`[McpExposed]`** — required in production (`Explicit` mode). Prevents accidental
+   exposure of internal services
+2. **`[McpTenantScope(RequireTenant = true)]`** — hides tools when no tenant context
+   is active
+3. **`EnabledModules`** — configuration-driven whitelist to reduce context window
+   saturation (AI agents work better with fewer, well-described tools)
+
+```json title="appsettings.json"
+{
+  "Mcp": {
+    "Server": {
+      "EnabledModules": ["Invoicing", "Scheduling", "BlobStorage"]
+    }
+  }
+}
+```
+
+## Consuming external MCP servers
+
+The flow works both ways. `Granit.Mcp.Client` provides a named factory for connecting
+to MCP servers exposed by other services:
+
+```csharp title="Program.cs"
+builder.AddGranitMcpClient();
+```
+
+```json title="appsettings.json"
+{
+  "Mcp": {
+    "Client": {
+      "Connections": {
+        "erp": { "Url": "https://erp.internal/mcp" },
+        "local-tools": {
+          "Transport": "stdio",
+          "Command": "python",
+          "Arguments": ["-m", "data_analyzer_mcp"]
+        }
+      }
+    }
+  }
+}
+```
+
+`Granit.AI.Mcp` bridges these external tools into AI workspaces — MCP tools become
+`AITool` instances in your `IChatClient` pipeline. The `SamplingGuard` prevents
+external servers from abusing your LLM budget (disabled by default, rate-limited when
+enabled).
+
+## Key takeaways
+
+- **MCP lets AI agents discover and invoke your application tools** — no custom
+  integrations, no prompt engineering per endpoint
+- **Granit.Mcp wraps the official SDK** with auto-discovery, RBAC authorization,
+  GDPR sanitization, multi-tenancy, and observability
+- **3 lines to expose your first tool**: install, register, annotate
+- **Standard `[Authorize]`** — no custom auth attributes, uses your existing
+  permission definitions
+- **PII is omitted by default** — `[McpRedact]` with `Omit` strategy protects
+  against accidental data leakage to AI agents
+- **4 packages, 31 tests, zero circular dependencies** — ready for production
+
+## Further reading
+
+- [MCP overview](/dotnet/mcp/) — full architecture and design principles
+- [Setup guide](/dotnet/mcp/setup/) — installation, configuration, client setup
+- [Creating tools](/dotnet/mcp/tools/) — attributes, DI injection, return types
+- [Security & GDPR](/dotnet/mcp/security/) — authorization, sanitization, DPoP
+- [MCP C# SDK documentation](https://csharp.sdk.modelcontextprotocol.io/)
