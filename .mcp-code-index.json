@@ -10882,7 +10882,7 @@
       "kind": "class",
       "project": "Granit.Encryption",
       "file": "src/Granit.Encryption/Providers/AesStringEncryptionProvider.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "ProviderName",

@@ -121,7 +121,11 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
 
         string connectionString = ResolveConnectionString(builder.Configuration, options);
 
-        builder.Services.ConfigureWolverine(opts =>
+        // UseWolverine (not ConfigureWolverine): PersistMessagesWithPostgresql registers
+        // services internally. Since Wolverine 3.0/5.24, DI-registered IWolverineExtension
+        // instances run after the container is built (read-only). UseWolverine accumulates
+        // configuration delegates that run while the service collection is still writable.
+        builder.UseWolverine(opts =>
         {
             opts.PersistMessagesWithPostgresql(connectionString);
             opts.UseEntityFrameworkCoreTransactions(options.TransactionMode);

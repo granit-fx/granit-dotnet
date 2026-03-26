@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Granit.Encryption;
 using Granit.Encryption.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Encryption.Providers;
@@ -17,7 +18,7 @@ namespace Granit.Encryption.Providers;
 /// </para>
 /// Designed for frequent operations (&lt; 1 ms after startup).
 /// </summary>
-public sealed class AesStringEncryptionProvider : IStringEncryptionProvider
+public sealed partial class AesStringEncryptionProvider : IStringEncryptionProvider
 {
     /// <remarks>
     /// SECURITY: Fixed internal salt for PBKDF2 key derivation.
@@ -42,20 +43,22 @@ public sealed class AesStringEncryptionProvider : IStringEncryptionProvider
     /// <inheritdoc/>
     public string ProviderName => StringEncryptionOptions.AesProviderName;
 
-    public AesStringEncryptionProvider(IOptions<StringEncryptionOptions> options)
+    public AesStringEncryptionProvider(
+        IOptions<StringEncryptionOptions> options,
+        ILogger<AesStringEncryptionProvider> logger)
     {
         StringEncryptionOptions opts = options.Value;
+        string passPhrase = opts.PassPhrase;
 
-        if (string.IsNullOrEmpty(opts.PassPhrase))
+        if (string.IsNullOrEmpty(passPhrase))
         {
-            throw new InvalidOperationException(
-                "Encryption:PassPhrase is required for AesStringEncryptionProvider. " +
-                "Configure via Vault config provider (never in plain text in appsettings).");
+            passPhrase = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+            LogEphemeralPassPhrase(logger);
         }
 
         int aesKeySize = opts.KeySize / 8;
         byte[] derivedKey = Rfc2898DeriveBytes.Pbkdf2(
-            opts.PassPhrase,
+            passPhrase,
             KeyDerivationSalt,
             KeyDerivationIterations,
             HashAlgorithmName.SHA256,
@@ -146,4 +149,10 @@ public sealed class AesStringEncryptionProvider : IStringEncryptionProvider
             return null;
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Encryption:PassPhrase is not configured — using an ephemeral random passphrase. " +
+                  "Encrypted data will NOT survive application restarts. " +
+                  "Configure a stable passphrase via Vault for production use")]
+    private static partial void LogEphemeralPassPhrase(ILogger logger);
 }
