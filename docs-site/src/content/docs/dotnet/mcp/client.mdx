@@ -32,8 +32,7 @@ Named connections are configured in `appsettings.json`:
       "Connections": {
         "erp": {
           "Url": "https://erp.internal/mcp",
-          "Transport": "http",
-          "ForwardCredentials": true
+          "Transport": "http"
         },
         "data-tools": {
           "Transport": "stdio",
@@ -55,9 +54,9 @@ Named connections are configured in `appsettings.json`:
 
 | Property | Type | Default | Required | Description |
 |----------|------|---------|----------|-------------|
-| `Url` | `string?` | — | HTTP | Server URL (Streamable HTTP endpoint) |
+| `Url` | `string?` | — | HTTP | Server URL (must use HTTPS in production) |
 | `Transport` | `string` | `"http"` | — | `"http"` or `"stdio"` |
-| `ForwardCredentials` | `bool` | `true` | — | Forward current user's JWT to remote server |
+| `AllowInsecureTransport` | `bool` | `false` | — | Allow `http://` (non-TLS) transport. Enable only for local development |
 | `Command` | `string?` | — | stdio | Executable command |
 | `Arguments` | `string[]` | `[]` | — | Command-line arguments |
 
@@ -91,14 +90,17 @@ automatic fallback to SSE for older servers):
 ```json
 {
   "erp": {
-    "Url": "https://erp.internal/mcp",
-    "ForwardCredentials": true
+    "Url": "https://erp.internal/mcp"
   }
 }
 ```
 
-When `ForwardCredentials` is `true`, the current user's JWT Bearer token is
-forwarded to the remote server in the `Authorization` header.
+:::caution[TLS required]
+HTTP connections require HTTPS by default. The factory throws
+`InvalidOperationException` if the URL uses `http://`. For local development
+(e.g., Ollama on `http://localhost:11434`), set `"AllowInsecureTransport": true`.
+Never enable this in production.
+:::
 
 ### Stdio transport
 

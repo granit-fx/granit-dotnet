@@ -13,7 +13,7 @@ public sealed class SamplingGuardTests
     public void TryValidate_WhenDisabled_ShouldReject()
     {
         IOptions<GranitAIMcpOptions> options = MsOptions.Create(new GranitAIMcpOptions { EnableSampling = false });
-        SamplingGuard sut = new(options, NullLogger<SamplingGuard>.Instance);
+        SamplingGuard sut = new(options, TimeProvider.System, NullLogger<SamplingGuard>.Instance);
 
         bool result = sut.TryValidate(requestedMaxTokens: 100, serverOrigin: "test", out string? reason);
 
@@ -30,7 +30,7 @@ public sealed class SamplingGuardTests
             EnableSampling = true,
             SamplingMaxTokensPerRequest = 2000,
         });
-        SamplingGuard sut = new(options, NullLogger<SamplingGuard>.Instance);
+        SamplingGuard sut = new(options, TimeProvider.System, NullLogger<SamplingGuard>.Instance);
 
         bool result = sut.TryValidate(requestedMaxTokens: 100, serverOrigin: "test", out string? reason);
 
@@ -46,7 +46,7 @@ public sealed class SamplingGuardTests
             EnableSampling = true,
             SamplingMaxTokensPerRequest = 500,
         });
-        SamplingGuard sut = new(options, NullLogger<SamplingGuard>.Instance);
+        SamplingGuard sut = new(options, TimeProvider.System, NullLogger<SamplingGuard>.Instance);
 
         bool result = sut.TryValidate(requestedMaxTokens: 5000, serverOrigin: "test", out string? reason);
 
@@ -64,7 +64,7 @@ public sealed class SamplingGuardTests
             EnableSampling = true,
             SamplingMaxTokensPerRequest = 0,
         });
-        SamplingGuard sut = new(options, NullLogger<SamplingGuard>.Instance);
+        SamplingGuard sut = new(options, TimeProvider.System, NullLogger<SamplingGuard>.Instance);
 
         bool result = sut.TryValidate(requestedMaxTokens: 100_000, serverOrigin: "test", out string? reason);
 
@@ -80,7 +80,7 @@ public sealed class SamplingGuardTests
             EnableSampling = true,
             SamplingMaxTokensPerRequest = 2000,
         });
-        SamplingGuard sut = new(options, NullLogger<SamplingGuard>.Instance);
+        SamplingGuard sut = new(options, TimeProvider.System, NullLogger<SamplingGuard>.Instance);
 
         bool result = sut.TryValidate(requestedMaxTokens: null, serverOrigin: null, out string? reason);
 

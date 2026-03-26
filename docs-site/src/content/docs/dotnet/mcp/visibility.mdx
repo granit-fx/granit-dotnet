@@ -124,6 +124,13 @@ Start with a narrow set (3–5 modules) and expand as needed. AI agents perform
 better with fewer, well-described tools than with a massive catalog.
 :::
 
+## Tool type resolution
+
+Visibility filters receive the tool's CLR `Type` via `McpToolTypeRegistry` — a
+mapping built during assembly scanning in `GranitMcpModule`. This allows filters
+to inspect attributes (`[McpExposed]`, `[McpTenantScope]`) on the actual class.
+The registry is populated automatically — no manual registration needed.
+
 ## Filter composition
 
 All three filters compose independently. A tool must pass **all** filters to be

@@ -26,9 +26,13 @@ public sealed class GranitMcpModule : GranitModule
     /// <inheritdoc />
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        // Build registry first so it's available during discovery and later for visibility filters.
+        McpToolTypeRegistry registry = new();
+        context.Services.AddSingleton(registry);
+
         context.Services
             .AddGranitMcp()
-            .DiscoverFromAssemblies(context.ModuleAssemblies)
+            .DiscoverFromAssemblies(context.ModuleAssemblies, registry)
             .WithGranitFilters();
     }
 }

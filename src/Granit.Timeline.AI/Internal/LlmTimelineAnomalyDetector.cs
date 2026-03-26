@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Granit.AI;
+using Granit.AI.Internal;
 using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.AI.Diagnostics;
@@ -143,39 +144,32 @@ internal sealed partial class LlmTimelineAnomalyDetector(
         Guid entityId,
         List<TimelineStreamEntry> entries)
     {
-        var sb = new StringBuilder();
-        sb.AppendLine($"Analyze the following activity timeline for {entityType} '{entityId}' and detect any anomalies.");
-        sb.AppendLine("Look for: bulk edits in short time windows, off-hours activity (outside 06:00-22:00 UTC), privilege escalation patterns, unusual author patterns, rapid state changes, and any other suspicious behavior.");
-        sb.AppendLine();
-        sb.AppendLine("Return JSON only, no markdown fences:");
-        sb.AppendLine("""{"anomalies": [{"description": "<string>", "severity": "Low|Medium|High"}]}""");
-        sb.AppendLine("Return an empty array if no anomalies are detected.");
-        sb.AppendLine();
-        sb.AppendLine("Timeline entries (newest first):");
+        var pb = new PromptBuilder(maxInputLength: 50_000);
 
+        pb.AppendInstruction($"Analyze the following activity timeline for {entityType} '{entityId}' and detect any anomalies.");
+        pb.AppendInstruction("Look for: bulk edits in short time windows, off-hours activity (outside 06:00-22:00 UTC), privilege escalation patterns, unusual author patterns, rapid state changes, and any other suspicious behavior.");
+        pb.AppendInstruction(string.Empty);
+        pb.AppendInstruction("""
+            Return JSON only, no markdown fences:
+            {"anomalies": [{"description": "<string>", "severity": "Low|Medium|High"}]}
+            Return an empty array if no anomalies are detected.
+            """);
+
+        var sb = new StringBuilder();
         foreach (TimelineStreamEntry entry in entries)
         {
             string author = entry.AuthorName ?? entry.AuthorId ?? "System";
             sb.AppendLine($"- [{entry.OccurredAt:u}] ({entry.EntryType}) {author}: {entry.Body}");
         }
 
-        return sb.ToString();
+        pb.AppendUserTextBlock("Timeline entries (newest first)", sb.ToString());
+
+        return pb.Build();
     }
 
     internal static AnomalyReport ParseAnomalyResponse(string responseText)
     {
-        string trimmed = responseText.Trim();
-
-        // Strip markdown code fences if the LLM wraps the JSON anyway
-        if (trimmed.StartsWith("```", StringComparison.Ordinal))
-        {
-            int firstNewline = trimmed.IndexOf('\n');
-            int lastFence = trimmed.LastIndexOf("```", StringComparison.Ordinal);
-            if (firstNewline >= 0 && lastFence > firstNewline)
-            {
-                trimmed = trimmed[(firstNewline + 1)..lastFence].Trim();
-            }
-        }
+        string trimmed = LlmResponseHelper.StripMarkdownCodeFences(responseText);
 
         try
         {

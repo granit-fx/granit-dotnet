@@ -26,6 +26,24 @@
     <InternalsVisibleTo Include="Granit.Localization.AI.Tests" />
     <InternalsVisibleTo Include="Granit.Privacy.AI" />
     <InternalsVisibleTo Include="Granit.Privacy.AI.Tests" />
+    <InternalsVisibleTo Include="Granit.Authorization.AI" />
+    <InternalsVisibleTo Include="Granit.Authorization.AI.Tests" />
+    <InternalsVisibleTo Include="Granit.BlobStorage.AI" />
+    <InternalsVisibleTo Include="Granit.BlobStorage.AI.Tests" />
+    <InternalsVisibleTo Include="Granit.DataExchange.AI" />
+    <InternalsVisibleTo Include="Granit.DataExchange.AI.Tests" />
+    <InternalsVisibleTo Include="Granit.Notifications.AI" />
+    <InternalsVisibleTo Include="Granit.Notifications.AI.Tests" />
+    <InternalsVisibleTo Include="Granit.Observability.AI" />
+    <InternalsVisibleTo Include="Granit.Observability.AI.Tests" />
+    <InternalsVisibleTo Include="Granit.QueryEngine.AI" />
+    <InternalsVisibleTo Include="Granit.QueryEngine.AI.Tests" />
+    <InternalsVisibleTo Include="Granit.Templating.AI" />
+    <InternalsVisibleTo Include="Granit.Templating.AI.Tests" />
+    <InternalsVisibleTo Include="Granit.Timeline.AI" />
+    <InternalsVisibleTo Include="Granit.Timeline.AI.Tests" />
+    <InternalsVisibleTo Include="Granit.Validation.AI" />
+    <InternalsVisibleTo Include="Granit.Validation.AI.Tests" />
     <InternalsVisibleTo Include="Granit.Workflow.AI" />
     <InternalsVisibleTo Include="Granit.Workflow.AI.Tests" />
     <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->

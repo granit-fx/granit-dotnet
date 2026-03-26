@@ -55,7 +55,7 @@ public sealed class LlmLogAnalyzerParseTests
 
         LogAnalysisReport report = LlmLogAnalyzer.ParseReport(badJson, 7);
 
-        report.Summary.ShouldBe(badJson);
+        report.Summary.ShouldBe("AI analysis returned a non-JSON response.");
         report.Insights.ShouldBeEmpty();
         report.TotalEntries.ShouldBe(7);
     }

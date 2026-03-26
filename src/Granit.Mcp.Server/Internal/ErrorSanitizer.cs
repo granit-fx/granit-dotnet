@@ -52,14 +52,35 @@ internal sealed class ErrorSanitizer : IMcpOutputSanitizer
             text = text[..stackTraceIndex];
         }
 
-        // Remove connection strings (common patterns)
-        if (text.Contains("Server=", StringComparison.OrdinalIgnoreCase) ||
-            text.Contains("Data Source=", StringComparison.OrdinalIgnoreCase) ||
-            text.Contains("Password=", StringComparison.OrdinalIgnoreCase))
+        // Detect sensitive data patterns and replace with generic message.
+        if (ContainsSensitivePattern(text))
         {
             return "An internal error occurred. Check server logs for details.";
         }
 
         return text;
     }
+
+    private static bool ContainsSensitivePattern(string text) =>
+        // Connection strings
+        text.Contains("Server=", StringComparison.OrdinalIgnoreCase) ||
+        text.Contains("Data Source=", StringComparison.OrdinalIgnoreCase) ||
+        text.Contains("Password=", StringComparison.OrdinalIgnoreCase) ||
+        text.Contains("User ID=", StringComparison.OrdinalIgnoreCase) ||
+        text.Contains("Initial Catalog=", StringComparison.OrdinalIgnoreCase) ||
+        // API keys and tokens
+        text.Contains("Bearer ey", StringComparison.Ordinal) ||
+        text.Contains("sk-", StringComparison.Ordinal) ||
+        text.Contains("api_key=", StringComparison.OrdinalIgnoreCase) ||
+        text.Contains("apikey=", StringComparison.OrdinalIgnoreCase) ||
+        // Internal paths
+        text.Contains("/home/", StringComparison.Ordinal) ||
+        text.Contains("C:\\Users\\", StringComparison.OrdinalIgnoreCase) ||
+        text.Contains("/var/", StringComparison.Ordinal) ||
+        // Vault / secrets
+        text.Contains("vault:secret/", StringComparison.OrdinalIgnoreCase) ||
+        text.Contains("VAULT_TOKEN", StringComparison.Ordinal) ||
+        // Internal hostnames
+        text.Contains(".internal", StringComparison.OrdinalIgnoreCase) ||
+        text.Contains(".svc.cluster.local", StringComparison.OrdinalIgnoreCase);
 }

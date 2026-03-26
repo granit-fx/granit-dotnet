@@ -110,7 +110,7 @@ public sealed class LlmAccessAnomalyDetectorAdditionalTests
     // ── Timeout scenario ───────────────────────────────────────────────────
 
     [Fact]
-    public async Task EvaluateAccessAsync_Timeout_ReturnsFailOpenScore()
+    public async Task EvaluateAccessAsync_Timeout_ReturnsUncertaintyScore()
     {
         // Simulate a timeout by throwing OperationCanceledException from a non-user cancellation source
         _chatClientFactory.CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
@@ -121,8 +121,8 @@ public sealed class LlmAccessAnomalyDetectorAdditionalTests
         AccessRiskScore result = await detector.EvaluateAccessAsync(
             "user-timeout", "Admin.Access", cancellationToken: TestContext.Current.CancellationToken);
 
-        result.Score.ShouldBe(0.0);
-        result.Reasoning.ShouldContain("fail-open");
+        result.Score.ShouldBe(0.5);
+        result.Reasoning.ShouldContain("unavailable");
     }
 
     [Fact]

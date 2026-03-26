@@ -109,27 +109,29 @@ internal sealed partial class LlmTransitionAdvisor(
         string entityType,
         string currentState,
         string entityContext,
-        IReadOnlyList<string> allowedTransitions) =>
-        $"""
-         You are a workflow advisor. Given the following entity context, recommend the best next
-         workflow transition.
+        IReadOnlyList<string> allowedTransitions)
+    {
+        var pb = new PromptBuilder(maxInputLength: 10_000);
 
-         Entity type: {entityType}
-         Current state: {currentState}
-         Allowed transitions: {string.Join(", ", allowedTransitions)}
+        pb.AppendInstruction("You are a workflow advisor. Recommend the best next workflow transition.");
+        pb.AppendInstruction(string.Empty);
+        pb.AppendUserData("Entity type", entityType);
+        pb.AppendUserData("Current state", currentState);
+        pb.AppendInstruction($"Allowed transitions: {string.Join(", ", allowedTransitions)}");
+        pb.AppendInstruction(string.Empty);
+        pb.AppendUserTextBlock("Entity context", entityContext);
+        pb.AppendInstruction("""
 
-         Entity context:
-         ---
-         {entityContext}
-         ---
+            Respond with a JSON object containing:
+            - "recommendedTransition": one of the allowed transitions listed above
+            - "reasoning": a brief explanation of why this transition is recommended
+            - "confidence": a number between 0.0 and 1.0 indicating your confidence
 
-         Respond with a JSON object containing:
-         - "recommendedTransition": one of the allowed transitions listed above
-         - "reasoning": a brief explanation of why this transition is recommended
-         - "confidence": a number between 0.0 and 1.0 indicating your confidence
+            Return ONLY valid JSON, no markdown, no explanation.
+            """);
 
-         Return ONLY valid JSON, no markdown, no explanation.
-         """;
+        return pb.Build();
+    }
 
     private sealed record LlmRecommendationResponse(
         string? RecommendedTransition,

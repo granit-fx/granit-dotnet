@@ -2435,6 +2435,22 @@
       ]
     },
     {
+      "name": "PromptBuilder",
+      "fqn": "Granit.AI.PromptBuilder",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/PromptBuilder.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ToString",
+          "kind": "method",
+          "signature": "ToString()",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "VectorDataHostApplicationBuilderExtensions",
       "fqn": "Granit.AI.VectorData.Extensions.VectorDataHostApplicationBuilderExtensions",
       "kind": "class",
@@ -4962,6 +4978,12 @@
           "kind": "property",
           "signature": "int TimeoutSeconds",
           "returnType": "int"
+        },
+        {
+          "name": "UnavailableRiskScore",
+          "kind": "property",
+          "signature": "double UnavailableRiskScore",
+          "returnType": "double"
         }
       ]
     },
@@ -16133,16 +16155,10 @@
           "returnType": "string?"
         },
         {
-          "name": "ForwardCredentials",
+          "name": "AllowInsecureTransport",
           "kind": "property",
-          "signature": "bool ForwardCredentials",
+          "signature": "bool AllowInsecureTransport",
           "returnType": "bool"
-        },
-        {
-          "name": "Command",
-          "kind": "property",
-          "signature": "string? Command",
-          "returnType": "string?"
         }
       ]
     },
@@ -16277,6 +16293,28 @@
           "kind": "property",
           "signature": "string? IconLight",
           "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "McpToolTypeRegistry",
+      "fqn": "Granit.Mcp.McpToolTypeRegistry",
+      "kind": "class",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/McpToolTypeRegistry.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Register",
+          "kind": "method",
+          "signature": "Register(string toolName, Type toolType)",
+          "returnType": "void"
+        },
+        {
+          "name": "Resolve",
+          "kind": "method",
+          "signature": "Resolve(string toolName)",
+          "returnType": "Type?"
         }
       ]
     },

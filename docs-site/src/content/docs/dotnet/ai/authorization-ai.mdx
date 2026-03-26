@@ -165,23 +165,50 @@ if (risk.Score > 0.6)
 }
 ```
 
-## Fail-open design
+## Unavailability behavior
 
-Authorization must never be blocked by an AI timeout. When the LLM is unavailable:
+Authorization must never be blocked by an AI timeout. When the LLM is unavailable
+(timeout, exception), the detector returns a configurable **uncertainty score**:
 
-- `Score` = `0.0` (no risk assumed)
-- `Reasoning` = `"Evaluation unavailable"`
+- `Score` = `UnavailableRiskScore` (default `0.5` — "uncertain")
+- `Reasoning` = `"AI evaluation unavailable — flagged for manual review"`
 - `RiskFactors` = `[]`
 
-Access proceeds normally. A warning is logged. The AI decorator never
-becomes a denial-of-service vector for your authorization layer.
+The default `0.5` signals "uncertain — apply your policy". Callers should decide:
+
+| `UnavailableRiskScore` | Behavior | When to use |
+|------------------------|----------|-------------|
+| `0.0` | Fail-open — treat as normal | High-volume, non-sensitive APIs |
+| `0.5` (default) | Uncertain — log and monitor | General-purpose (recommended) |
+| `1.0` | Fail-closed — treat as suspicious | Financial, medical, or compliance-sensitive access |
+
+```json
+{
+  "AI": {
+    "Authorization": {
+      "UnavailableRiskScore": 0.5
+    }
+  }
+}
+```
+
+A warning is logged on every unavailability event. The detector never becomes a
+denial-of-service vector — it always returns a score, never throws.
+
+## Prompt injection protection
+
+All user-controlled inputs (`userId`, `permission`, `context`) are sanitized via
+`PromptBuilder` before being sent to the LLM. The builder wraps user data in
+structured `<data>` delimiters and neutralizes injection patterns, preventing
+an attacker from manipulating the risk score via crafted context strings.
 
 ## Configuration reference
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `WorkspaceName` | `string` | `"default"` | AI workspace for access evaluation |
-| `TimeoutSeconds` | `int` | `2` | Timeout — keep low, access evaluation is in the request path |
+| `TimeoutSeconds` | `int` | `5` | Timeout — keep low, access evaluation is in the request path |
+| `UnavailableRiskScore` | `double` | `0.5` | Risk score returned when LLM is unavailable (0.0 = fail-open, 1.0 = fail-closed) |
 
 ## See also
 

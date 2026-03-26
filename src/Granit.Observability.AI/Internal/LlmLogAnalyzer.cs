@@ -1,6 +1,10 @@
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Granit.AI;
+using Granit.AI.Internal;
+using Granit.MultiTenancy;
+using Granit.Observability.AI.Diagnostics;
 using Granit.Observability.AI.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -11,9 +15,17 @@ namespace Granit.Observability.AI.Internal;
 /// <summary>
 /// Analyzes log entries by sending them to an LLM and parsing the structured response.
 /// </summary>
+/// <remarks>
+/// <para><b>PII warning:</b> Log messages and exception texts are sent to the configured LLM.
+/// Callers must ensure log entries are pre-sanitized if they may contain PII
+/// (usernames, emails, IP addresses, tokens). Use <see cref="ObservabilityAIOptions.WorkspaceName"/>
+/// to target an on-premise model (e.g., Ollama) for sensitive environments.</para>
+/// </remarks>
 internal sealed partial class LlmLogAnalyzer(
     IAIChatClientFactory chatClientFactory,
     IOptions<ObservabilityAIOptions> options,
+    ObservabilityAIMetrics metrics,
+    ICurrentTenant? currentTenant,
     ILogger<LlmLogAnalyzer> logger) : IAILogAnalyzer
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -33,6 +45,7 @@ internal sealed partial class LlmLogAnalyzer(
             return new LogAnalysisReport("No log entries to analyze.", [], 0);
         }
 
+        string? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id?.ToString() : null;
         ObservabilityAIOptions config = options.Value;
 
         IReadOnlyList<LogEntry> truncatedEntries = entries.Count > config.MaxLogEntries
@@ -41,32 +54,47 @@ internal sealed partial class LlmLogAnalyzer(
 
         LogAnalyzingEntries(logger, truncatedEntries.Count, entries.Count);
 
-        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(config.TimeoutSeconds));
-        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
+        var sw = Stopwatch.StartNew();
 
-        IChatClient client = await chatClientFactory
-            .CreateAsync(config.WorkspaceName, linkedCts.Token)
-            .ConfigureAwait(false);
+        try
+        {
+            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(config.TimeoutSeconds));
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
 
-        string prompt = BuildPrompt(truncatedEntries);
+            IChatClient client = await chatClientFactory
+                .CreateAsync(config.WorkspaceName, linkedCts.Token)
+                .ConfigureAwait(false);
 
-        ChatMessage[] messages =
-        [
-            new(ChatRole.System, SystemPrompt),
-            new(ChatRole.User, prompt),
-        ];
+            string prompt = BuildPrompt(truncatedEntries);
 
-        ChatResponse response = await client
-            .GetResponseAsync(messages, cancellationToken: linkedCts.Token)
-            .ConfigureAwait(false);
+            ChatMessage[] messages =
+            [
+                new(ChatRole.System, SystemPrompt),
+                new(ChatRole.User, prompt),
+            ];
 
-        string content = response.Messages.LastOrDefault()?.Text ?? string.Empty;
+            ChatResponse response = await client
+                .GetResponseAsync(messages, cancellationToken: linkedCts.Token)
+                .ConfigureAwait(false);
 
-        LogAnalysisReport report = ParseReport(content, truncatedEntries.Count);
+            string content = response.Messages.LastOrDefault()?.Text ?? string.Empty;
 
-        LogAnalysisComplete(logger, report.Insights.Count, truncatedEntries.Count);
+            LogAnalysisReport report = ParseReport(content, truncatedEntries.Count);
 
-        return report;
+            sw.Stop();
+            LogAnalysisComplete(logger, report.Insights.Count, truncatedEntries.Count);
+            metrics.RecordAnalysisCompleted(tenantId, report.Insights.Count, truncatedEntries.Count);
+            metrics.RecordAnalysisDuration(tenantId, sw.Elapsed.TotalSeconds);
+
+            return report;
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+        {
+            sw.Stop();
+            metrics.RecordAnalysisFailed(tenantId, "error");
+            metrics.RecordAnalysisDuration(tenantId, sw.Elapsed.TotalSeconds);
+            throw;
+        }
     }
 
     private const string SystemPrompt =
@@ -88,10 +116,12 @@ internal sealed partial class LlmLogAnalyzer(
 
     internal static string BuildPrompt(IReadOnlyList<LogEntry> entries)
     {
-        var sb = new StringBuilder();
-        sb.AppendLine("Analyze these log entries:");
-        sb.AppendLine();
+        var pb = new PromptBuilder(maxInputLength: 100_000);
 
+        pb.AppendInstruction("Analyze these log entries:");
+        pb.AppendInstruction(string.Empty);
+
+        var sb = new StringBuilder();
         foreach (LogEntry entry in entries)
         {
             sb.Append('[').Append(entry.Timestamp.ToString("o")).Append("] ");
@@ -104,14 +134,17 @@ internal sealed partial class LlmLogAnalyzer(
             }
         }
 
-        return sb.ToString();
+        pb.AppendUserTextBlock("Log entries", sb.ToString());
+
+        return pb.Build();
     }
 
     internal static LogAnalysisReport ParseReport(string content, int totalEntries)
     {
         try
         {
-            LlmAnalysisResponse? parsed = JsonSerializer.Deserialize<LlmAnalysisResponse>(content, JsonOptions);
+            string json = LlmResponseHelper.StripMarkdownCodeFences(content);
+            LlmAnalysisResponse? parsed = JsonSerializer.Deserialize<LlmAnalysisResponse>(json, JsonOptions);
 
             if (parsed is null)
             {
@@ -135,8 +168,9 @@ internal sealed partial class LlmLogAnalyzer(
         }
         catch (JsonException)
         {
+            // Return a generic message instead of raw LLM content to prevent data leakage.
             return new LogAnalysisReport(
-                content,
+                "AI analysis returned a non-JSON response.",
                 [],
                 totalEntries);
         }

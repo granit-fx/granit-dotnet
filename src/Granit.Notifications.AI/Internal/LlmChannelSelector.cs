@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Granit.AI;
+using Granit.AI.Internal;
 using Granit.Notifications.AI.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -79,13 +80,20 @@ internal sealed partial class LlmChannelSelector(
     {
         string channelsJson = JsonSerializer.Serialize(availableChannels);
 
-        return $$"""
-            Given notification severity '{{context.Severity}}', time '{{context.OccurredAt:O}}', and available channels {{channelsJson}}, recommend the optimal channels for delivery.
-            Notification type: '{{context.NotificationTypeName}}'.
+        var pb = new PromptBuilder(maxInputLength: 5_000);
+
+        pb.AppendInstruction($"""
+            Recommend the optimal delivery channels from this list: {channelsJson}.
             Return JSON only, no markdown fences: an array of channel names, e.g. ["email", "push"].
             Only include channels from the available list. Order by priority (most important first).
             For critical/fatal severity, prefer all real-time channels. For info, prefer less intrusive channels.
-            """;
+            """);
+
+        pb.AppendUserData("Notification type", context.NotificationTypeName);
+        pb.AppendUserData("Severity", context.Severity.ToString());
+        pb.AppendUserData("Time", context.OccurredAt.ToString("O"));
+
+        return pb.Build();
     }
 
     internal static IReadOnlyList<string> ParseChannelSelectionResponse(

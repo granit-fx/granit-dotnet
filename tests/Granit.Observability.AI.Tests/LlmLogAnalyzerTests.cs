@@ -1,4 +1,6 @@
+using System.Diagnostics.Metrics;
 using Granit.AI;
+using Granit.Observability.AI.Diagnostics;
 using Granit.Observability.AI.Internal;
 using Granit.Observability.AI.Options;
 using Microsoft.Extensions.AI;
@@ -9,7 +11,7 @@ using Shouldly;
 
 namespace Granit.Observability.AI.Tests;
 
-public sealed class LlmLogAnalyzerTests
+public sealed class LlmLogAnalyzerTests : IDisposable
 {
     private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
     private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
@@ -22,8 +24,18 @@ public sealed class LlmLogAnalyzerTests
             MaxLogEntries = 500,
         });
 
+    private readonly TestMeterFactory _meterFactory = new();
+
     private LlmLogAnalyzer CreateAnalyzer() =>
-        new(_chatClientFactory, _options, NullLogger<LlmLogAnalyzer>.Instance);
+        new(_chatClientFactory, _options, new ObservabilityAIMetrics(_meterFactory), null, NullLogger<LlmLogAnalyzer>.Instance);
+
+    public void Dispose() => _meterFactory.Dispose();
+
+    private sealed class TestMeterFactory : IMeterFactory
+    {
+        public Meter Create(MeterOptions options) => new(options);
+        public void Dispose() { }
+    }
 
     private static List<LogEntry> CreateSampleEntries(int count = 3) =>
         Enumerable.Range(0, count)
@@ -113,7 +125,7 @@ public sealed class LlmLogAnalyzerTests
             .GetResponseAsync(Arg.Any<IList<ChatMessage>>(), Arg.Any<ChatOptions?>(), Arg.Any<CancellationToken>())
             .Returns(new ChatResponse(new ChatMessage(ChatRole.Assistant, llmResponse)));
 
-        var analyzer = new LlmLogAnalyzer(_chatClientFactory, smallOptions, NullLogger<LlmLogAnalyzer>.Instance);
+        var analyzer = new LlmLogAnalyzer(_chatClientFactory, smallOptions, new ObservabilityAIMetrics(_meterFactory), null, NullLogger<LlmLogAnalyzer>.Instance);
         List<LogEntry> entries = CreateSampleEntries(5);
 
         LogAnalysisReport report = await analyzer.AnalyzeAsync(entries, TestContext.Current.CancellationToken);
@@ -139,7 +151,7 @@ public sealed class LlmLogAnalyzerTests
 
         LogAnalysisReport report = await analyzer.AnalyzeAsync(entries, TestContext.Current.CancellationToken);
 
-        report.Summary.ShouldBe(invalidJson);
+        report.Summary.ShouldBe("AI analysis returned a non-JSON response.");
         report.Insights.ShouldBeEmpty();
         report.TotalEntries.ShouldBe(3);
     }

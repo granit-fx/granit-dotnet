@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Granit.AI;
+using Granit.AI.Internal;
 using Granit.Authorization.AI.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -11,8 +12,10 @@ namespace Granit.Authorization.AI.Internal;
 /// LLM-backed access anomaly detector that evaluates access patterns for suspicious behavior.
 /// </summary>
 /// <remarks>
-/// Uses a fail-open design: when the LLM is unavailable or times out,
-/// access is allowed and a warning is logged for manual review.
+/// When the LLM is unavailable or times out, returns a configurable uncertainty score
+/// (default 0.5) and logs a warning for manual review. Configure
+/// <see cref="AuthorizationAIOptions.UnavailableRiskScore"/> to control fail-open (0.0)
+/// or fail-closed (1.0) behavior.
 /// </remarks>
 internal sealed partial class LlmAccessAnomalyDetector(
     IAIChatClientFactory chatClientFactory,
@@ -58,7 +61,7 @@ internal sealed partial class LlmAccessAnomalyDetector(
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
             LogEvaluationTimeout(config.TimeoutSeconds);
-            return AllowWithWarning();
+            return UnavailableScore(config);
         }
         catch (OperationCanceledException)
         {
@@ -67,21 +70,26 @@ internal sealed partial class LlmAccessAnomalyDetector(
         catch (Exception ex)
         {
             LogEvaluationFailed(ex);
-            return AllowWithWarning();
+            return UnavailableScore(config);
         }
     }
 
     internal static string BuildPrompt(string userId, string permission, string? context)
     {
-        string contextPart = context is not null
-            ? $" Additional context: {context}."
-            : string.Empty;
+        var pb = new PromptBuilder(maxInputLength: 2_000);
 
-        return $$"""
-            Analyze the following access request for anomalies and suspicious behavior.{{contextPart}}
-            User ID: {{userId}}
-            Permission requested: {{permission}}
+        pb.AppendInstruction("Analyze the following access request for anomalies and suspicious behavior.");
+        pb.AppendInstruction(string.Empty);
+        pb.AppendUserData("User ID", userId);
+        pb.AppendUserData("Permission requested", permission);
 
+        if (context is not null)
+        {
+            pb.AppendUserData("Additional context", context);
+        }
+
+        pb.AppendInstruction(string.Empty);
+        pb.AppendInstruction("""
             Return ONLY a JSON object with this exact structure (no markdown, no explanation):
             { "score": 0.0-1.0, "reasoning": "brief explanation", "riskFactors": ["factor1", "factor2"] }
 
@@ -89,22 +97,14 @@ internal sealed partial class LlmAccessAnomalyDetector(
             - 0.0-0.3: Normal access pattern
             - 0.3-0.7: Unusual but not necessarily malicious
             - 0.7-1.0: Suspicious, warrants investigation
-            """;
+            """);
+
+        return pb.Build();
     }
 
     internal static AccessRiskScore ParseResponse(string responseText)
     {
-        // Strip markdown code fences if present.
-        string json = responseText.Trim();
-        if (json.StartsWith("```", StringComparison.Ordinal))
-        {
-            int firstNewline = json.IndexOf('\n');
-            int lastFence = json.LastIndexOf("```", StringComparison.Ordinal);
-            if (firstNewline > 0 && lastFence > firstNewline)
-            {
-                json = json[(firstNewline + 1)..lastFence].Trim();
-            }
-        }
+        string json = LlmResponseHelper.StripMarkdownCodeFences(responseText);
 
         LlmRiskResponse? parsed = JsonSerializer.Deserialize<LlmRiskResponse>(json, JsonOptions);
 
@@ -120,15 +120,15 @@ internal sealed partial class LlmAccessAnomalyDetector(
         return new AccessRiskScore(score, reasoning, riskFactors);
     }
 
-    private static AccessRiskScore AllowWithWarning() =>
-        new(0.0, "AI evaluation unavailable — access allowed (fail-open)", []);
+    private static AccessRiskScore UnavailableScore(AuthorizationAIOptions config) =>
+        new(config.UnavailableRiskScore, "AI evaluation unavailable — flagged for manual review", []);
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "AI access anomaly evaluation timed out after {TimeoutSeconds}s — access allowed (fail-open), flagged for manual review")]
+        Message = "AI access anomaly evaluation timed out after {TimeoutSeconds}s — flagged for manual review")]
     private partial void LogEvaluationTimeout(int timeoutSeconds);
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "AI access anomaly evaluation failed — access allowed (fail-open), flagged for manual review")]
+        Message = "AI access anomaly evaluation failed — flagged for manual review")]
     private partial void LogEvaluationFailed(Exception exception);
 
     private sealed record LlmRiskResponse(double Score, string? Reasoning, List<string>? RiskFactors);

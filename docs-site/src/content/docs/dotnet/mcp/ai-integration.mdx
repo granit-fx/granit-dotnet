@@ -129,7 +129,11 @@ sequenceDiagram
 |-------|--------|---------|-------------------|
 | Kill switch | `EnableSampling` | `false` | "MCP sampling is disabled." |
 | Token cap | `SamplingMaxTokensPerRequest` | `2000` | "Requested N tokens exceeds limit of 2000." |
-| Rate limit | `SamplingRateLimitPerMinute` | `10` | — (per-tenant enforcement) |
+| Rate limit | `SamplingRateLimitPerMinute` | `10` | "Rate limit exceeded: 10 requests per minute." |
+
+The rate limiter uses a **sliding window** algorithm per server origin. When the
+limit is exceeded, subsequent requests are rejected until the window slides.
+Set to `0` for unlimited (not recommended in production).
 
 ### Logging
 

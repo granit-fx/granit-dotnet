@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Granit.AI;
+using Granit.AI.Internal;
 using Granit.Notifications.AI.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -71,29 +72,23 @@ internal sealed partial class LlmNotificationContentGenerator(
             ? context.Data.GetRawText()
             : "{}";
 
-        return $$"""
-            Generate a notification subject and body for notification type '{{context.NotificationTypeName}}' in locale '{{culture}}'.
-            Context data: {{dataJson}}
-            Severity: {{context.Severity}}
-            Return JSON only, no markdown fences: {"subject": "<string>", "body": "<string>"}
-            The subject should be concise (under 100 characters). The body should be informative but brief.
-            """;
+        var pb = new PromptBuilder(maxInputLength: 10_000);
+
+        pb.AppendInstruction($"Generate a notification subject and body for the notification described below in locale '{culture}'.");
+        pb.AppendInstruction("""Return JSON only, no markdown fences: {"subject": "<string>", "body": "<string>"}""");
+        pb.AppendInstruction("The subject should be concise (under 100 characters). The body should be informative but brief.");
+        pb.AppendInstruction("Do NOT include HTML, scripts, or any markup in the generated text.");
+
+        pb.AppendUserData("Notification type", context.NotificationTypeName);
+        pb.AppendUserData("Severity", context.Severity.ToString());
+        pb.AppendUserTextBlock("Context data", dataJson);
+
+        return pb.Build();
     }
 
     internal static NotificationContent? ParseContentResponse(string responseText)
     {
-        string trimmed = responseText.Trim();
-
-        // Strip markdown code fences if the LLM wraps the JSON anyway
-        if (trimmed.StartsWith("```", StringComparison.Ordinal))
-        {
-            int firstNewline = trimmed.IndexOf('\n');
-            int lastFence = trimmed.LastIndexOf("```", StringComparison.Ordinal);
-            if (firstNewline >= 0 && lastFence > firstNewline)
-            {
-                trimmed = trimmed[(firstNewline + 1)..lastFence].Trim();
-            }
-        }
+        string trimmed = LlmResponseHelper.StripMarkdownCodeFences(responseText);
 
         try
         {

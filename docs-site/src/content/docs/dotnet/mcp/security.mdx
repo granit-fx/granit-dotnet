@@ -115,8 +115,14 @@ value. Use `Mask` only for tools consumed by a human-facing UI, not by an LLM.
 
 | Sanitizer | Registered by | Behavior |
 |-----------|--------------|----------|
+| `PropertyRedactionSanitizer` | `Granit.Mcp` | Redacts well-known sensitive JSON properties (`password`, `secret`, `apiKey`, `token`, `credential`, `ssn`, `connectionString`) using Omit or Hash strategies |
 | `ResponseSizeLimitSanitizer` | `Granit.Mcp` | Truncates responses > 50 KB (configurable via `MaxResponseSizeBytes`) |
-| `ErrorSanitizer` | `Granit.Mcp.Server` | Strips stack traces (`\n   at ...`) and connection strings from error responses |
+| `ErrorSanitizer` | `Granit.Mcp.Server` | Strips stack traces, connection strings, API keys (`Bearer ey...`, `sk-...`), internal paths, Vault tokens, and K8s hostnames from error responses |
+
+The `PropertyRedactionSanitizer` applies to **all** tool responses (not just errors). It
+scans JSON content blocks for property names matching known sensitive patterns and applies
+the appropriate `RedactionStrategy`. This works **in addition to** the `[McpRedact]` attribute —
+even if a developer forgets to annotate a DTO, well-known sensitive field names are caught.
 
 ### Custom sanitizer
 

@@ -98,32 +98,34 @@ internal sealed partial class LlmApprovalEvaluator(
         }
     }
 
-    private static string BuildPrompt(string entityType, string transition, string entityContext) =>
-        $"""
-         You are a risk evaluator for workflow transitions. Evaluate the risk of performing
-         the following transition.
+    private static string BuildPrompt(string entityType, string transition, string entityContext)
+    {
+        var pb = new PromptBuilder(maxInputLength: 10_000);
 
-         Entity type: {entityType}
-         Transition: {transition}
+        pb.AppendInstruction("You are a risk evaluator for workflow transitions. Evaluate the risk of performing the following transition.");
+        pb.AppendInstruction(string.Empty);
+        pb.AppendUserData("Entity type", entityType);
+        pb.AppendUserData("Transition", transition);
+        pb.AppendInstruction(string.Empty);
+        pb.AppendUserTextBlock("Entity context", entityContext);
+        pb.AppendInstruction("""
 
-         Entity context:
-         ---
-         {entityContext}
-         ---
+            Evaluate the risk factors and provide a risk assessment. Consider:
+            - Data completeness and consistency
+            - Compliance implications
+            - Business rule violations
+            - Potential for data loss or irreversible changes
 
-         Evaluate the risk factors and provide a risk assessment. Consider:
-         - Data completeness and consistency
-         - Compliance implications
-         - Business rule violations
-         - Potential for data loss or irreversible changes
+            Respond with a JSON object containing:
+            - "riskScore": a number between 0.0 (no risk) and 1.0 (highest risk)
+            - "reasoning": a brief explanation of the overall risk assessment
+            - "riskFactors": an array of strings, each describing a specific risk factor
 
-         Respond with a JSON object containing:
-         - "riskScore": a number between 0.0 (no risk) and 1.0 (highest risk)
-         - "reasoning": a brief explanation of the overall risk assessment
-         - "riskFactors": an array of strings, each describing a specific risk factor
+            Return ONLY valid JSON, no markdown, no explanation.
+            """);
 
-         Return ONLY valid JSON, no markdown, no explanation.
-         """;
+        return pb.Build();
+    }
 
     private sealed record LlmRiskResponse(
         double RiskScore,

@@ -40,9 +40,19 @@ internal sealed class DefaultMcpClientFactory(IOptions<GranitMcpClientOptions> o
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(connection.Url);
 
+        var endpoint = new Uri(connection.Url);
+
+        if (!connection.AllowInsecureTransport &&
+            endpoint.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                $"MCP connection '{name}' uses insecure HTTP transport. " +
+                "Use HTTPS or set AllowInsecureTransport = true for local development.");
+        }
+
         return new HttpClientTransport(new HttpClientTransportOptions
         {
-            Endpoint = new Uri(connection.Url),
+            Endpoint = endpoint,
             Name = name,
         });
     }

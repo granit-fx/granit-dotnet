@@ -53,7 +53,7 @@ public sealed class McpMetrics
         _resourcesRead.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "resource_uri", resourceUri },
+            { "resource_uri", TruncateTag(resourceUri) },
         });
 
     public void RecordSessionStarted(string? tenantId, string transport) =>
@@ -74,6 +74,13 @@ public sealed class McpMetrics
         _requestDuration.Record(duration.TotalSeconds, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "method", method },
+            { "method", TruncateTag(method) },
         });
+
+    /// <summary>
+    /// Truncates tag values to prevent cardinality explosion.
+    /// Limits to 128 characters — sufficient for tool names and URIs.
+    /// </summary>
+    private static string TruncateTag(string value) =>
+        value.Length > 128 ? value[..128] : value;
 }

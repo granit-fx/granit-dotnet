@@ -11,8 +11,11 @@ public sealed class McpConnectionOptions
     /// <summary>Transport type: <c>"http"</c> (default) or <c>"stdio"</c>.</summary>
     public string Transport { get; set; } = "http";
 
-    /// <summary>Whether to forward the current user's JWT to the remote MCP server. Default: <see langword="true"/>.</summary>
-    public bool ForwardCredentials { get; set; } = true;
+    /// <summary>
+    /// Allow insecure HTTP (non-TLS) transport. Default: <see langword="false"/>.
+    /// Enable only for local development (e.g., Ollama on localhost).
+    /// </summary>
+    public bool AllowInsecureTransport { get; set; }
 
     /// <summary>Command for stdio transport. Required when <see cref="Transport"/> is <c>"stdio"</c>.</summary>
     public string? Command { get; set; }

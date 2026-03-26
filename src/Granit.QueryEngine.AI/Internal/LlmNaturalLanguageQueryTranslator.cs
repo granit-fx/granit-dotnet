@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Granit.AI;
+using Granit.AI.Internal;
 using Granit.MultiTenancy;
 using Granit.QueryEngine.AI.Diagnostics;
 using Granit.QueryEngine.AI.Options;
@@ -58,10 +59,14 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
 
             string systemPrompt = BuildSystemPrompt(metadata);
 
+            // Sanitize user input via PromptBuilder to mitigate prompt injection
+            var userPb = new PromptBuilder(maxInputLength: 2_000);
+            userPb.AppendUserTextBlock("Query", naturalLanguage);
+
             List<ChatMessage> messages =
             [
                 new(ChatRole.System, systemPrompt),
-                new(ChatRole.User, naturalLanguage),
+                new(ChatRole.User, userPb.Build()),
             ];
 
             ChatResponse response = await chatClient
@@ -205,28 +210,8 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
         return sb.ToString();
     }
 
-    internal static string StripMarkdownFences(string text)
-    {
-        string trimmed = text.Trim();
-
-        if (trimmed.StartsWith("```", StringComparison.Ordinal))
-        {
-            // Remove opening fence (```json or ```)
-            int firstNewline = trimmed.IndexOf('\n');
-            if (firstNewline >= 0)
-            {
-                trimmed = trimmed[(firstNewline + 1)..];
-            }
-
-            // Remove closing fence
-            if (trimmed.EndsWith("```", StringComparison.Ordinal))
-            {
-                trimmed = trimmed[..^3].TrimEnd();
-            }
-        }
-
-        return trimmed;
-    }
+    internal static string StripMarkdownFences(string text) =>
+        LlmResponseHelper.StripMarkdownCodeFences(text);
 
     private static QueryRequest ToQueryRequest(LlmQueryPayload dto) =>
         new()

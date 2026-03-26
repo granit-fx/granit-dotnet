@@ -110,23 +110,26 @@ internal sealed partial class LlmPiiDetector(
         }
     }
 
-    private static string BuildPrompt(string text) =>
-        $$"""
-          Scan the following text for personally identifiable information (PII).
-          Return ONLY valid JSON matching this schema:
-          { "containsPii": bool, "items": [{ "type": "Email", "description": "Found email in sentence 2" }] }
+    private static string BuildPrompt(string text)
+    {
+        var pb = new PromptBuilder(maxInputLength: 100_000);
 
-          Valid type values: PersonName, Email, PhoneNumber, Address, NationalId, DateOfBirth, BankAccount, CreditCard, Other.
+        pb.AppendInstruction("""
+            Scan the following text for personally identifiable information (PII).
+            Return ONLY valid JSON matching this schema:
+            { "containsPii": bool, "items": [{ "type": "Email", "description": "Found email in sentence 2" }] }
 
-          If no PII is found, return: { "containsPii": false, "items": [] }
+            Valid type values: PersonName, Email, PhoneNumber, Address, NationalId, DateOfBirth, BankAccount, CreditCard, Other.
 
-          Text to scan:
-          ---
-          {{text}}
-          ---
+            If no PII is found, return: { "containsPii": false, "items": [] }
+            """);
 
-          Return ONLY valid JSON, no markdown, no explanation.
-          """;
+        pb.AppendUserTextBlock("Text to scan", text);
+
+        pb.AppendInstruction("Return ONLY valid JSON, no markdown, no explanation.");
+
+        return pb.Build();
+    }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "PII scan completed: containsPii={ContainsPii}, itemCount={ItemCount}")]
     private partial void LogScanCompleted(bool containsPii, int itemCount);

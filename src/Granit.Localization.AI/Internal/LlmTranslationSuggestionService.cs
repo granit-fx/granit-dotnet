@@ -129,24 +129,28 @@ internal sealed partial class LlmTranslationSuggestionService(
         string cultures = string.Join(", ", targetCultures);
         string exampleJson = "{ " + string.Join(", ", targetCultures.Select(c => $"\"{c}\": \"...\"")) + " }";
 
-        return $"""
-            Translate the following text to the requested languages.
-            Context: this is {contextLabel}.
+        var pb = new PromptBuilder(maxInputLength: 10_000);
 
-            Source ({sourceCulture}): "{sourceValue}"
-            Key: "{key}" (for context only, do not translate the key)
-
-            Target languages: {cultures}
-
-            Return a JSON object where keys are culture codes and values are translations:
-            {exampleJson}
-
+        pb.AppendInstruction($"Translate the following text to the requested languages.");
+        pb.AppendInstruction($"Context: this is {contextLabel}.");
+        pb.AppendInstruction(string.Empty);
+        pb.AppendUserData($"Source ({sourceCulture})", sourceValue);
+        pb.AppendUserData("Key (for context only, do not translate)", key);
+        pb.AppendInstruction(string.Empty);
+        pb.AppendInstruction($"Target languages: {cultures}");
+        pb.AppendInstruction(string.Empty);
+        pb.AppendInstruction($"Return a JSON object where keys are culture codes and values are translations:");
+        pb.AppendInstruction(exampleJson);
+        pb.AppendInstruction(string.Empty);
+        pb.AppendInstruction("""
             Rules:
             - Keep the same tone and formality level as the source
             - For regional variants (fr-CA, en-GB, pt-BR), only include if different from base
-            - Preserve placeholders like {"{0}"}, {"{1}"} exactly as-is
+            - Preserve placeholders like {0}, {1} exactly as-is
             - Return ONLY the JSON, no markdown
-            """;
+            """);
+
+        return pb.Build();
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Translation succeeded for key {Key}: {TranslatedCount}/{RequestedCount} cultures")]

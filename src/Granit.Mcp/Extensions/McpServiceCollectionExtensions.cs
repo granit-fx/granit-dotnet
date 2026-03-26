@@ -33,6 +33,7 @@ public static class McpServiceCollectionExtensions
             .BindConfiguration(GranitMcpOptions.SectionName);
 
         services.TryAddSingleton<McpMetrics>();
+        services.TryAddSingleton<McpToolTypeRegistry>();
 
         // SDK: register MCP server
         IMcpServerBuilder mcpBuilder = services.AddMcpServer();
@@ -51,7 +52,9 @@ public static class McpServiceCollectionExtensions
             });
         });
 
-        // Default sanitizer: response size limit
+        // Default sanitizers: property redaction + response size limit
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IMcpOutputSanitizer, PropertyRedactionSanitizer>());
         services.TryAddEnumerable(
             ServiceDescriptor.Singleton<IMcpOutputSanitizer, ResponseSizeLimitSanitizer>());
 
@@ -81,8 +84,12 @@ public static class McpServiceCollectionExtensions
     /// </summary>
     internal static IMcpServerBuilder DiscoverFromAssemblies(
         this IMcpServerBuilder mcpBuilder,
-        IReadOnlyCollection<Assembly> moduleAssemblies)
+        IReadOnlyCollection<Assembly> moduleAssemblies,
+        McpToolTypeRegistry toolTypeRegistry)
     {
+        // Populate the tool type registry so visibility filters can resolve CLR types.
+        toolTypeRegistry.RegisterFromAssemblies(moduleAssemblies);
+
         foreach (Assembly assembly in moduleAssemblies)
         {
             mcpBuilder.WithToolsFromAssembly(assembly);
@@ -139,9 +146,14 @@ public static class McpServiceCollectionExtensions
         IServiceProvider services,
         CancellationToken ct)
     {
+        // Resolve CLR type from the registry so visibility filters
+        // (ExplicitDiscoveryFilter, TenantAwareVisibilityFilter) can inspect attributes.
+        McpToolTypeRegistry? registry = services.GetService<McpToolTypeRegistry>();
+        Type? toolType = registry?.Resolve(tool.Name);
+
         foreach (IMcpToolVisibilityFilter filter in filters)
         {
-            if (!await filter.IsVisibleAsync(tool.Name, toolType: null, services, ct))
+            if (!await filter.IsVisibleAsync(tool.Name, toolType, services, ct))
             {
                 return false;
             }

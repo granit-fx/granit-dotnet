@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using Granit.AI;
+using Granit.AI.Internal;
 using Granit.DataExchange.AI.Options;
 using Granit.DataExchange.Import.Mapping;
 using Microsoft.Extensions.AI;
@@ -104,9 +105,11 @@ internal sealed partial class AISemanticMappingService(
 
         sb.AppendLine("You are a data mapping assistant. Match source CSV/Excel columns to target entity properties.");
         sb.AppendLine();
-        sb.Append("Source columns: ");
-        sb.AppendJoin(", ", headers);
-        sb.AppendLine();
+
+        // Wrap user-controlled headers in a PromptBuilder data block
+        var headerPb = new PromptBuilder(maxInputLength: 10_000);
+        headerPb.AppendUserDataMap("Source columns", headers.Select(h => new KeyValuePair<string, string?>(h, null)));
+        sb.Append(headerPb.Build());
 
         // Include preview rows when provided (opt-in, caller is responsible for GDPR compliance)
         if (previewRows is { Count: > 0 })
@@ -169,22 +172,7 @@ internal sealed partial class AISemanticMappingService(
 
     internal static IReadOnlyList<SemanticMappingSuggestion> ParseSuggestions(string responseText)
     {
-        string trimmed = responseText.Trim();
-
-        // Strip markdown code fences if present
-        if (trimmed.StartsWith("```", StringComparison.Ordinal))
-        {
-            int firstNewline = trimmed.IndexOf('\n');
-            if (firstNewline >= 0)
-            {
-                trimmed = trimmed[(firstNewline + 1)..];
-            }
-
-            if (trimmed.EndsWith("```", StringComparison.Ordinal))
-            {
-                trimmed = trimmed[..^3].TrimEnd();
-            }
-        }
+        string trimmed = LlmResponseHelper.StripMarkdownCodeFences(responseText);
 
         // Find the JSON array boundaries
         int startIndex = trimmed.IndexOf('[');

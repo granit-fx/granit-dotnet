@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text;
 using Granit.AI;
+using Granit.AI.Internal;
 using Granit.Templating.AI.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -65,13 +66,11 @@ internal sealed partial class LlmTemplateAssistant(
     internal static string BuildPrompt(string description, Type dataType)
     {
         var sb = new StringBuilder();
+        var pb = new PromptBuilder(maxInputLength: 5_000);
 
-        sb.AppendLine("Generate a Scriban HTML template for the following purpose:");
-        sb.Append('"');
-        sb.Append(description);
-        sb.Append('"');
-        sb.AppendLine();
-        sb.AppendLine();
+        pb.AppendInstruction("Generate a Scriban HTML template for the following purpose:");
+        pb.AppendUserData("Description", description);
+        sb.Append(pb.Build());
         sb.AppendLine("Available data properties:");
         sb.AppendLine("| Property | Type |");
         sb.AppendLine("|----------|------|");
@@ -97,28 +96,8 @@ internal sealed partial class LlmTemplateAssistant(
         return sb.ToString();
     }
 
-    internal static string StripMarkdownFences(string text)
-    {
-        string trimmed = text.Trim();
-
-        if (!trimmed.StartsWith("```", StringComparison.Ordinal))
-        {
-            return trimmed;
-        }
-
-        int firstNewline = trimmed.IndexOf('\n');
-        if (firstNewline >= 0)
-        {
-            trimmed = trimmed[(firstNewline + 1)..];
-        }
-
-        if (trimmed.EndsWith("```", StringComparison.Ordinal))
-        {
-            trimmed = trimmed[..^3].TrimEnd();
-        }
-
-        return trimmed;
-    }
+    internal static string StripMarkdownFences(string text) =>
+        LlmResponseHelper.StripMarkdownCodeFences(text);
 
     private static string GetFriendlyTypeName(Type type)
     {

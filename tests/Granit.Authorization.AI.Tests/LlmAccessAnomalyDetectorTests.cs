@@ -72,7 +72,7 @@ public sealed class LlmAccessAnomalyDetectorTests
     }
 
     [Fact]
-    public async Task EvaluateAccessAsync_LLMFailure_ReturnsZeroRisk()
+    public async Task EvaluateAccessAsync_LLMFailure_ReturnsUncertaintyScore()
     {
         _chatClientFactory.CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("LLM service unavailable"));
@@ -82,8 +82,8 @@ public sealed class LlmAccessAnomalyDetectorTests
         AccessRiskScore result = await detector.EvaluateAccessAsync(
             "user-789", "Documents.Write", cancellationToken: TestContext.Current.CancellationToken);
 
-        result.Score.ShouldBe(0.0);
-        result.Reasoning.ShouldContain("fail-open");
+        result.Score.ShouldBe(0.5);
+        result.Reasoning.ShouldContain("unavailable");
         result.RiskFactors.ShouldBeEmpty();
     }
 

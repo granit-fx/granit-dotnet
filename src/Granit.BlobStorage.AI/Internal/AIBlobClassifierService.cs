@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Granit.AI;
+using Granit.AI.Internal;
 using Granit.BlobStorage.AI.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -109,28 +110,26 @@ internal sealed partial class AIBlobClassifierService(
         return BlobValidationResult.Success();
     }
 
-    internal static string BuildClassificationPrompt(string fileName, string contentType) =>
-        $$"""
-        Given filename '{{fileName}}' and content type '{{contentType}}', classify this file.
-        Return JSON only, no markdown fences: {"category": "<string>", "confidence": <0.0-1.0>, "tags": ["<string>"], "containsPiiInFileName": <true|false>}
-        Categories: invoice, identity_document, photo, contract, report, spreadsheet, presentation, archive, code, other.
-        For PII detection, check if the filename contains patterns resembling: social security numbers, email addresses, phone numbers, national ID numbers, or full personal names.
-        """;
+    internal static string BuildClassificationPrompt(string fileName, string contentType)
+    {
+        var pb = new PromptBuilder(maxInputLength: 1_000);
+
+        pb.AppendInstruction("""
+            Classify this file based on the metadata below.
+            Return JSON only, no markdown fences: {"category": "<string>", "confidence": <0.0-1.0>, "tags": ["<string>"], "containsPiiInFileName": <true|false>}
+            Categories: invoice, identity_document, photo, contract, report, spreadsheet, presentation, archive, code, other.
+            For PII detection, check if the filename contains patterns resembling: social security numbers, email addresses, phone numbers, national ID numbers, or full personal names.
+            """);
+
+        pb.AppendUserData("Filename", fileName);
+        pb.AppendUserData("Content type", contentType);
+
+        return pb.Build();
+    }
 
     internal static BlobClassification ParseClassificationResponse(string responseText)
     {
-        string trimmed = responseText.Trim();
-
-        // Strip markdown code fences if the LLM wraps the JSON anyway
-        if (trimmed.StartsWith("```", StringComparison.Ordinal))
-        {
-            int firstNewline = trimmed.IndexOf('\n');
-            int lastFence = trimmed.LastIndexOf("```", StringComparison.Ordinal);
-            if (firstNewline >= 0 && lastFence > firstNewline)
-            {
-                trimmed = trimmed[(firstNewline + 1)..lastFence].Trim();
-            }
-        }
+        string trimmed = LlmResponseHelper.StripMarkdownCodeFences(responseText);
 
         try
         {

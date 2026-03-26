@@ -488,6 +488,60 @@ Key indexes:
 - `ix_ai_usage_records_tenant_workspace_date` — billing queries by workspace and period
 - `ix_ai_usage_records_tenant_provider_model` — cost aggregation by provider/model
 
+## PromptBuilder — prompt injection protection
+
+All AI integration modules use `PromptBuilder` to separate system instructions from
+user-controlled data. This mitigates **OWASP LLM01 (Prompt Injection)** by wrapping
+user input in structured `<data>` delimiters with sanitization:
+
+```csharp
+var pb = new PromptBuilder(maxInputLength: 50_000);
+
+// Developer-controlled instructions (not sanitized)
+pb.AppendInstruction("Analyze the following text for PII.");
+pb.AppendInstruction("Return ONLY valid JSON.");
+
+// User-controlled data (sanitized + truncated + delimited)
+pb.AppendUserData("User ID", userId);
+pb.AppendUserTextBlock("Document", documentText);
+
+string prompt = pb.Build();
+```
+
+**Output:**
+
+```text
+Analyze the following text for PII.
+Return ONLY valid JSON.
+User ID: <data>user-123</data>
+Document
+<data>
+The actual document text goes here, sanitized...
+</data>
+```
+
+### Available methods
+
+| Method | Use for |
+|--------|---------|
+| `AppendInstruction(text)` | System instructions (developer-controlled, not sanitized) |
+| `AppendUserData(label, value)` | Short user values wrapped in `<data>` |
+| `AppendUserTextBlock(label, text)` | Long text blocks wrapped in `<data>` |
+| `AppendUserDataJson(label, value)` | JSON-encoded values (prevents structural breakout) |
+| `AppendUserDataMap(label, pairs)` | Key-value maps in a `<data>` block |
+
+### Protections
+
+1. **Delimiter isolation** — user data in `<data>` blocks, instructions outside
+2. **Tag neutralization** — `<system>`, `<instruction>`, `<data>` tags in user input are HTML-escaped
+3. **Length truncation** — configurable `maxInputLength` prevents denial-of-wallet
+
+:::tip
+Use `PromptBuilder` in **all** code that sends user-controlled data to an LLM.
+All built-in Granit AI modules already use it. If you build custom AI features,
+import `Granit.AI.PromptBuilder` and follow the same pattern.
+:::
+
 ## See also
 
 - [Data Exchange](/dotnet/business/data-exchange/) — import/export module where AI mapping plugs in

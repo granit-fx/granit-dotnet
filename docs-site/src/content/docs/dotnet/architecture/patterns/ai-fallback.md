@@ -121,6 +121,10 @@ internal sealed class AIMappingSuggestionService(
 3. **Log at `Warning`, never `Error`** — a fallback is expected behavior, not a failure.
 4. **Return `null` or the baseline, never throw** — the caller controls the user
    experience after a fallback.
+5. **Configurable unavailability score** — for security-sensitive modules
+   (e.g., `Authorization.AI`), the fallback returns a configurable `UnavailableRiskScore`
+   (default `0.5` = "uncertain") rather than a hard-coded zero. This lets operators
+   choose fail-open (`0.0`), fail-closed (`1.0`), or middle-ground (`0.5`) via config.
 
 ### Reference files
 

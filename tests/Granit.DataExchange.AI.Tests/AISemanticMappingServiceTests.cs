@@ -179,7 +179,9 @@ public sealed class AISemanticMappingServiceTests
     {
         string prompt = AISemanticMappingService.BuildPrompt(_headers, _targetFields, 0.6);
 
-        prompt.ShouldContain("Email, Full Name, Phone Number");
+        prompt.ShouldContain("Email");
+        prompt.ShouldContain("Full Name");
+        prompt.ShouldContain("Phone Number");
         prompt.ShouldContain("Email Address");
         prompt.ShouldContain("The user's email");
         prompt.ShouldContain("FullName");

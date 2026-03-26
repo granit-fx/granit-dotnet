@@ -153,19 +153,22 @@ internal sealed partial class LlmTimelineSummarizer(
         Guid entityId,
         List<TimelineStreamEntry> entries)
     {
-        var sb = new StringBuilder();
-        sb.AppendLine($"Summarize the following activity timeline for {entityType} '{entityId}' in 2-4 concise sentences.");
-        sb.AppendLine("Focus on key events, who did what, and the overall progression. Be factual and concise.");
-        sb.AppendLine();
-        sb.AppendLine("Timeline entries (newest first):");
+        var pb = new PromptBuilder(maxInputLength: 50_000);
 
+        pb.AppendInstruction($"Summarize the following activity timeline for {entityType} '{entityId}' in 2-4 concise sentences.");
+        pb.AppendInstruction("Focus on key events, who did what, and the overall progression. Be factual and concise.");
+        pb.AppendInstruction(string.Empty);
+
+        var sb = new StringBuilder();
         foreach (TimelineStreamEntry entry in entries)
         {
             string author = entry.AuthorName ?? entry.AuthorId ?? "System";
             sb.AppendLine($"- [{entry.OccurredAt:u}] ({entry.EntryType}) {author}: {entry.Body}");
         }
 
-        return sb.ToString();
+        pb.AppendUserTextBlock("Timeline entries (newest first)", sb.ToString());
+
+        return pb.Build();
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Timeline summarization timed out after {TimeoutSeconds}s for {EntityType} '{EntityId}'")]

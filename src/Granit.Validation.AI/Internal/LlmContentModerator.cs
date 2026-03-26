@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Granit.AI;
+using Granit.AI.Internal;
 using Granit.Validation.AI.Options;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
@@ -71,33 +72,27 @@ internal sealed partial class LlmContentModerator(
 
     internal static string BuildPrompt(string text, string? context)
     {
-        string contextPart = context is not null
-            ? $" The text appears in the following context: {context}."
-            : string.Empty;
+        var pb = new PromptBuilder(maxInputLength: 50_000);
 
-        return $$"""
-            Analyze the following text for content policy violations.{{contextPart}}
+        pb.AppendInstruction("""
+            Analyze the following text for content policy violations.
             Return ONLY a JSON object with this exact structure (no markdown, no explanation):
             { "isAcceptable": true/false, "flags": [{ "category": "Toxic|Harassment|PromptInjection|Spam|Violence|SelfHarm|Sexual|Other", "description": "brief description", "severity": 0.0-1.0 }] }
+            """);
 
-            Text to analyze:
-            """
-            + text;
+        if (context is not null)
+        {
+            pb.AppendUserData("Context", context);
+        }
+
+        pb.AppendUserTextBlock("Text to analyze", text);
+
+        return pb.Build();
     }
 
     internal static ModerationResult ParseResponse(string responseText, double severityThreshold)
     {
-        // Strip markdown code fences if present.
-        string json = responseText.Trim();
-        if (json.StartsWith("```", StringComparison.Ordinal))
-        {
-            int firstNewline = json.IndexOf('\n');
-            int lastFence = json.LastIndexOf("```", StringComparison.Ordinal);
-            if (firstNewline > 0 && lastFence > firstNewline)
-            {
-                json = json[(firstNewline + 1)..lastFence].Trim();
-            }
-        }
+        string json = LlmResponseHelper.StripMarkdownCodeFences(responseText);
 
         LlmModerationResponse? parsed = JsonSerializer.Deserialize<LlmModerationResponse>(json, JsonOptions);
 
