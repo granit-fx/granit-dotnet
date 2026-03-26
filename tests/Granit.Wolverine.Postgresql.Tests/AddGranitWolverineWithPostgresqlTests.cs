@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Shouldly;
+using Wolverine;
 using Xunit;
 
 namespace Granit.Wolverine.Postgresql.Tests;
@@ -37,20 +38,21 @@ public sealed class AddGranitWolverineWithPostgresqlTests
     }
 
     // -----------------------------------------------------------------------
-    // Configure callback — UseWolverine registers Wolverine core services
-    // directly (no IWolverineExtension in DI since Wolverine 3.0/5.24).
-    // We verify the hosted service is registered, proving UseWolverine ran.
+    // Configure callback — ConfigureWolverine defers invocation until
+    // WolverineOptions is resolved. We verify the IWolverineExtension
+    // registration exists (ConfigureWolverine wraps the callback as a
+    // LambdaWolverineExtension).
     // -----------------------------------------------------------------------
 
     [Fact]
-    public void AddGranitWolverineWithPostgresql_WithConfigureCallback_RegistersWolverine()
+    public void AddGranitWolverineWithPostgresql_WithConfigureCallback_RegistersWolverineExtension()
     {
         HostApplicationBuilder builder = CreateBuilder();
 
         builder.AddGranitWolverineWithPostgresql(opts => { });
 
         builder.Services.ShouldContain(d =>
-            d.ServiceType == typeof(IHostedService));
+            d.ServiceType == typeof(IWolverineExtension));
     }
 
     // -----------------------------------------------------------------------
@@ -119,18 +121,18 @@ public sealed class AddGranitWolverineWithPostgresqlTests
     }
 
     // -----------------------------------------------------------------------
-    // PerTenant — configure callback (applied via UseWolverine)
+    // PerTenant — configure callback (deferred by ConfigureWolverine)
     // -----------------------------------------------------------------------
 
     [Fact]
-    public void AddGranitWolverineWithPostgresqlPerTenant_WithConfigureCallback_RegistersWolverine()
+    public void AddGranitWolverineWithPostgresqlPerTenant_WithConfigureCallback_RegistersWolverineExtension()
     {
         HostApplicationBuilder builder = CreateBuilder();
 
         builder.AddGranitWolverineWithPostgresqlPerTenant<StubTenantDbContext>(opts => { });
 
         builder.Services.ShouldContain(d =>
-            d.ServiceType == typeof(IHostedService));
+            d.ServiceType == typeof(IWolverineExtension));
     }
 
     // -----------------------------------------------------------------------

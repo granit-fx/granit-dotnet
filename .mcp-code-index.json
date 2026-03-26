@@ -686,6 +686,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Http.Security",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Identity",
       "deps": [
         "Granit",
@@ -13686,6 +13693,130 @@
           "kind": "property",
           "signature": "CompressionLevel GzipLevel",
           "returnType": "CompressionLevel"
+        }
+      ]
+    },
+    {
+      "name": "SecurityApplicationBuilderExtensions",
+      "fqn": "Granit.Http.Security.Extensions.SecurityApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/Extensions/SecurityApplicationBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "UseGranitSecurityHeaders",
+          "kind": "method",
+          "signature": "UseGranitSecurityHeaders(this IApplicationBuilder app)",
+          "returnType": "IApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "SecurityHostApplicationBuilderExtensions",
+      "fqn": "Granit.Http.Security.Extensions.SecurityHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/Extensions/SecurityHostApplicationBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitHttpSecurity",
+          "kind": "method",
+          "signature": "AddGranitHttpSecurity(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitHttpSecurityModule",
+      "fqn": "Granit.Http.Security.GranitHttpSecurityModule",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/GranitHttpSecurityModule.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitSecurityHeadersOptions",
+      "fqn": "Granit.Http.Security.Options.GranitSecurityHeadersOptions",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/Options/GranitSecurityHeadersOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "SuppressServerHeader",
+          "kind": "property",
+          "signature": "bool SuppressServerHeader",
+          "returnType": "bool"
+        },
+        {
+          "name": "EnableContentTypeOptions",
+          "kind": "property",
+          "signature": "bool EnableContentTypeOptions",
+          "returnType": "bool"
+        },
+        {
+          "name": "XFrameOptions",
+          "kind": "property",
+          "signature": "string? XFrameOptions",
+          "returnType": "string?"
+        },
+        {
+          "name": "ReferrerPolicy",
+          "kind": "property",
+          "signature": "string ReferrerPolicy",
+          "returnType": "string"
+        },
+        {
+          "name": "DisableXssProtection",
+          "kind": "property",
+          "signature": "bool DisableXssProtection",
+          "returnType": "bool"
+        },
+        {
+          "name": "PermissionsPolicy",
+          "kind": "property",
+          "signature": "string? PermissionsPolicy",
+          "returnType": "string?"
+        },
+        {
+          "name": "ContentSecurityPolicy",
+          "kind": "property",
+          "signature": "string? ContentSecurityPolicy",
+          "returnType": "string?"
+        },
+        {
+          "name": "HstsMaxAgeSeconds",
+          "kind": "property",
+          "signature": "int HstsMaxAgeSeconds",
+          "returnType": "int"
+        },
+        {
+          "name": "HstsIncludeSubDomains",
+          "kind": "property",
+          "signature": "bool HstsIncludeSubDomains",
+          "returnType": "bool"
+        },
+        {
+          "name": "HstsPreload",
+          "kind": "property",
+          "signature": "bool HstsPreload",
+          "returnType": "bool"
+        },
+        {
+          "name": "CrossOriginEmbedderPolicy",
+          "kind": "property",
+          "signature": "string? CrossOriginEmbedderPolicy",
+          "returnType": "string?"
         }
       ]
     },
