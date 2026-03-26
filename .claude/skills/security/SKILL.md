@@ -25,7 +25,8 @@ framework "Granit" (un Modular Application Framework .NET 10 de 200+ packages).
   IA (MCP).
 - **Standards stricts :** Tu evalues l'architecture a l'aune des normes
   ISO 27001 (A.9, A.10, A.12, A.14), FAPI 2.0 (Financial-grade API),
-  RFC 9449 (DPoP), RFC 9126 (PAR), OWASP ASVS 4.0, et OWASP LLM Top 10.
+  RFC 9449 (DPoP), RFC 9126 (PAR), OWASP ASVS 4.0, OWASP API Security
+  Top 10, et OWASP LLM Top 10.
 
 **Relationship with other skills:**
 
@@ -107,6 +108,7 @@ SEVERITY LEVELS (aligned with CVSS 3.1)
 
 STANDARDS EVALUATED
   OWASP ASVS 4.0        Application Security Verification Standard
+  OWASP API Top 10      API Security Top 10 (2023)
   OWASP LLM Top 10      AI/LLM-specific threats
   FAPI 2.0              Financial-grade API Security Profile
   RFC 9449              DPoP (Demonstrating Proof-of-Possession)
@@ -170,6 +172,24 @@ Mentally construct the trust boundaries:
 ```
 
 Each arrow crossing a trust boundary is an attack vector.
+
+### 0d. Secret scanning
+
+Systematically search for hardcoded secrets before diving into domain analysis:
+
+- **Connection strings** — `Grep` for `Password=`, `Server=`, `Data Source=` in
+  `appsettings*.json` and C# files (exclude placeholder values like `{VAULT}`)
+- **Cryptographic keys** — `Grep` for `-----BEGIN`, base64 patterns >40 chars
+  assigned to `const`/`static` fields, `SigningKey`, `HmacKey`, `Secret`
+- **Cloud credentials** — `Grep` for `AKIA` (AWS), `AccountKey=` (Azure),
+  `private_key_id` (GCP) across all file types
+- **Test fixtures** — verify that secrets in test projects are synthetic and do not
+  mirror production values (`grep -r "appsettings" tests/`)
+- **Git history** — `git log -p --all -S "password" -- "*.cs" "*.json"` for
+  secrets that were committed then removed (still in history)
+
+Findings from this step use checklist items 11.1-11.3 and are classified
+CRITICAL by default (CWE-798).
 
 ---
 
@@ -383,6 +403,14 @@ Key areas:
   - Source Link / reproducible builds?
   - CI pipeline security (secrets in env vars, OIDC federation)
 
+- **Secret scanning:**
+  - Hardcoded JWT signing keys, HMAC secrets, or connection strings in
+    `appsettings*.json`, C# code, or test fixtures
+  - AWS/Azure/GCP credential patterns in any file type
+  - Secrets committed then removed (still in git history)
+  - `.gitignore` coverage for `.env`, `*.pfx`, `*.key`, `*.pem`
+  - See also Step 0d for systematic pre-analysis scan
+
 ### Domain: Cryptography (`crypto`)
 
 **Checklist — see `checklist.md` section 7**
@@ -424,6 +452,81 @@ Key areas:
 - **Trace context propagation:**
   - W3C Trace Context across Wolverine messages
   - Does trace context leak internal topology to external systems?
+
+### Domain: HTTP Security Headers (`headers`)
+
+**Target modules:** `Granit.Http.SecurityHeaders`, `Granit.Bff`, YARP proxy
+configuration
+
+**Checklist — see `checklist.md` section 9**
+
+Key areas:
+
+- **Server fingerprinting:**
+  - Kestrel `Server` header suppression (`AddServerHeader = false`)
+  - `X-Powered-By` removal in YARP reverse proxy responses
+  - Error pages — do they leak ASP.NET version or stack traces?
+
+- **Content Security Policy (CSP):**
+  - XSS mitigation — `script-src` restrictions, `strict-dynamic` usage
+  - `frame-ancestors` — clickjacking protection (supersedes `X-Frame-Options`)
+  - CSP reporting — `report-uri` / `report-to` configured?
+  - BFF vs API distinction — BFF serves HTML (needs full CSP), API returns
+    JSON (simpler CSP sufficient)
+
+- **Transport security:**
+  - `Strict-Transport-Security` — `max-age >= 31536000`, `includeSubDomains`
+  - `Cache-Control: no-store` on authenticated API responses
+  - HTTPS enforcement — are HTTP redirects configured at the host level?
+
+- **Cross-Origin policies:**
+  - CORS — no wildcard `*` origin with credentials (CWE-942)
+  - `Cross-Origin-Embedder-Policy` (COEP), `Cross-Origin-Opener-Policy` (COOP),
+    `Cross-Origin-Resource-Policy` (CORP) — isolation for side-channel attacks
+    (Spectre mitigation)
+  - Preflight `Access-Control-Max-Age` — bounded to prevent stale cache
+
+- **Privacy headers:**
+  - `Referrer-Policy: strict-origin-when-cross-origin` (or `no-referrer`)
+  - `Permissions-Policy` — camera, microphone, geolocation restrictions
+
+### Domain: Deserialization Safety (`deserialization`)
+
+**Target modules:** `Granit.Caching`, `Granit.Wolverine.*`, `Granit.Mcp`,
+`Granit.DataExchange`, all `*.EntityFrameworkCore` projects
+
+**Checklist — see `checklist.md` section 10**
+
+Key areas:
+
+- **JSON deserialization (System.Text.Json):**
+  - `JsonSerializerOptions` — no `TypeInfoResolver` allowing arbitrary types
+  - Polymorphic deserialization uses `[JsonDerivedType]` with a closed type set
+    (no open hierarchies accepting unknown `$type` discriminators)
+  - `MaxDepth` configured — default 64 is acceptable, but verify no custom
+    override lowers it dangerously or removes it
+  - Newtonsoft.Json usage — should be absent or limited to legacy interop.
+    If present, verify `TypeNameHandling.None` (NEVER `Auto`/`All`/`Objects`)
+
+- **Wolverine message deserialization:**
+  - Outbox messages use schema-first deserialization (known message types only)
+  - Dead-letter queue replay validates message schema before re-processing
+  - `ClaimCheckReference` payload — type validation before deserialization
+  - External transport (if any) — messages from external systems must be
+    deserialized with a restricted type set
+
+- **Cache value deserialization:**
+  - FusionCache serializer (`IFusionCacheSerializer`) — does it resolve arbitrary
+    types from the serialized payload? (CWE-502)
+  - `EncryptingFusionCacheSerializer` — validates integrity (authenticated
+    encryption) BEFORE deserializing, preventing tampered payloads
+  - Redis binary payloads — no BinaryFormatter, no `NetDataContractSerializer`
+  - MessagePack / protobuf (if used) — type resolution restricted
+
+- **MCP tool responses:**
+  - Tool output deserialized by the MCP client — can a malicious tool response
+    inject types that trigger instantiation?
+  - Structured content responses — validated against schema before processing
 
 ---
 
@@ -562,6 +665,19 @@ Evaluate against these standards and produce a matrix:
 | LLM09 | Overreliance | | |
 | LLM10 | Model Theft | | |
 
+### OWASP API Security Top 10 (2023)
+
+| Risk | Description | Status | Gap |
+|------|-------------|--------|-----|
+| API1 | Broken Object Level Authorization (BOLA/IDOR) | | |
+| API2 | Broken Authentication | | |
+| API3 | Broken Object Property Level Authorization | | |
+| API4 | Unrestricted Resource Consumption | | |
+| API5 | Broken Function Level Authorization | | |
+| API6 | Unrestricted Access to Sensitive Business Flows | | |
+| API8 | Security Misconfiguration | | |
+| API9 | Improper Inventory Management | | |
+
 ---
 
 ## Step 6 — Report generation
@@ -576,8 +692,8 @@ Evaluate against these standards and produce a matrix:
 **Scope:** {full | domain | diff}
 **Framework version:** {git describe --tags --always}
 **Modules audited:** {count}
-**Standards evaluated:** OWASP ASVS 4.0, FAPI 2.0, ISO 27001:2022,
-  OWASP LLM Top 10, RFC 9449, RFC 9126
+**Standards evaluated:** OWASP ASVS 4.0, OWASP API Top 10, FAPI 2.0,
+  ISO 27001:2022, OWASP LLM Top 10, RFC 9449, RFC 9126
 
 ---
 
@@ -646,6 +762,12 @@ exploitation paths and required preconditions}
 ### 3.8 Observability Security
 {Findings}
 
+### 3.9 HTTP Security Headers
+{Findings}
+
+### 3.10 Deserialization Safety
+{Findings}
+
 ---
 
 ## 4. Compliance Gap Analysis
@@ -662,7 +784,10 @@ exploitation paths and required preconditions}
 ### 4.4 OWASP LLM Top 10
 {Matrix from Step 5}
 
-### 4.5 GDPR — Privacy by Design (Art. 25)
+### 4.5 OWASP API Security Top 10
+{Matrix from Step 5}
+
+### 4.6 GDPR — Privacy by Design (Art. 25)
 | Principle | Implementation | Gap |
 |-----------|---------------|-----|
 | Data minimization | | |
@@ -805,6 +930,8 @@ SAFE TO MERGE | SECURITY REVIEW REQUIRED — {reasons}
 8. **MCP first** — use Roslyn MCP tools for code analysis. Fall back to `Read`
    only for implementation logic and non-C# files.
 9. **Context window discipline** — for full audits, process one domain at a
-   time. Produce per-domain findings, then aggregate.
+   time. Write findings to a temporary file per domain (`/tmp/security-{domain}.md`),
+   then aggregate into the final report. Never attempt to hold all domains in
+   working memory simultaneously.
 10. **No invented standards** — only evaluate against standards listed in this
     skill. Do not fabricate requirements.
