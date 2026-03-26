@@ -82,22 +82,22 @@ in real time — no file upload, always up to date.
    ```
 </Steps>
 
-Claude Code now has 10 Granit tools:
+Claude Code now has 9 Granit tools:
 
 | Tool | Description |
 | ---- | ----------- |
-| `search_docs` | Full-text search across all docs (returns ID + snippet) |
-| `get_doc` | Read full article content by ID |
-| `list_patterns` | List all architecture patterns |
-| `search_code` | Search symbols across .NET and TypeScript |
-| `get_public_api` | Inspect a type's public API surface with signatures |
-| `get_project_graph` | Project/package dependency graph |
-| `list_branches` | Branches with a committed code index |
-| `list_packages` | List published Granit NuGet packages |
-| `get_package_info` | Package versions, deps, frameworks, license |
+| `docs_search` | Full-text search across all docs (returns ID + snippet) |
+| `docs_get` | Read full article content by ID |
+| `docs_list_patterns` | List all architecture patterns |
+| `code_search` | Search symbols across .NET and TypeScript |
+| `code_get_api` | Inspect a type's public API surface with signatures |
+| `code_get_graph` | Project/package dependency graph |
+| `code_list_branches` | Branches with a committed code index |
+| `nuget_list` | List published Granit NuGet packages |
+| `nuget_get` | Package versions, deps, frameworks, license |
 
 <Aside type="tip">
-Use `search_docs` first to find an article, then `get_doc`
+Use `docs_search` first to find an article, then `docs_get`
 with the returned ID to read its full content — this keeps
 token usage low.
 </Aside>
