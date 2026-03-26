@@ -6,15 +6,18 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Oidc.TokenManagement.Tests;
 
-public sealed class ClientCredentialsTokenCacheTests
+public sealed class ClientCredentialsTokenCacheTests : IDisposable
 {
+    private readonly FusionCache _cache;
     private readonly ClientCredentialsTokenCache _sut;
 
     public ClientCredentialsTokenCacheTests()
     {
-        FusionCache cache = new(new FusionCacheOptions());
-        _sut = new ClientCredentialsTokenCache(cache, NullLogger<ClientCredentialsTokenCache>.Instance);
+        _cache = new FusionCache(new FusionCacheOptions());
+        _sut = new ClientCredentialsTokenCache(_cache, NullLogger<ClientCredentialsTokenCache>.Instance);
     }
+
+    public void Dispose() => _cache.Dispose();
 
     [Fact]
     public async Task GetTokenAsync_ReturnsCachedToken()

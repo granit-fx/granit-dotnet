@@ -87,27 +87,20 @@ public sealed partial class CachingConventionTests
 
     private static bool IsExcludedPath(string csFile)
     {
-        if (csFile.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar)
-            || csFile.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar))
+        string sep = Path.DirectorySeparatorChar.ToString();
+
+        if (csFile.Contains(sep + "bin" + sep) || csFile.Contains(sep + "obj" + sep))
         {
             return true;
         }
 
-        foreach (string project in ExcludedProjects)
-        {
-            if (csFile.Contains(Path.DirectorySeparatorChar + project + Path.DirectorySeparatorChar))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return ExcludedProjects.Any(project => csFile.Contains(sep + project + sep));
     }
 
     private static string FindRepoRoot()
     {
         string dir = AppContext.BaseDirectory;
-        while (dir is not null && !Directory.Exists(Path.Combine(dir, ".git")))
+        while (dir is not null && !Directory.Exists(Path.Join(dir, ".git")))
         {
             dir = Path.GetDirectoryName(dir)!;
         }

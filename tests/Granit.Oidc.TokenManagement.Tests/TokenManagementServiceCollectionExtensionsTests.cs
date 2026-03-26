@@ -87,7 +87,7 @@ public sealed class TokenManagementServiceCollectionExtensionsTests
     private static void AddRequiredDependencies(ServiceCollection services)
     {
         services.AddLogging();
-        services.AddSingleton<IFusionCache>(new FusionCache(new FusionCacheOptions()));
+        services.AddSingleton<IFusionCache>(_ => new FusionCache(new FusionCacheOptions()));
         services.AddSingleton(Substitute.For<Granit.Oidc.Discovery.IDiscoveryDocumentService>());
         services.AddSingleton(Substitute.For<Granit.Oidc.DPoP.IDPoPProofService>());
         services.AddSingleton(Substitute.For<Granit.Timing.IClock>());

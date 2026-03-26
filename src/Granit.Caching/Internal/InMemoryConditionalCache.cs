@@ -73,12 +73,9 @@ internal sealed class InMemoryConditionalCache(TimeProvider timeProvider) : ICon
     private void Cleanup()
     {
         DateTimeOffset now = timeProvider.GetUtcNow();
-        foreach (KeyValuePair<string, (object? Value, DateTimeOffset ExpiresAt)> kvp in _store)
+        foreach (string key in _store.Where(kvp => now >= kvp.Value.ExpiresAt).Select(kvp => kvp.Key))
         {
-            if (now >= kvp.Value.ExpiresAt)
-            {
-                _store.TryRemove(kvp.Key, out _);
-            }
+            _store.TryRemove(key, out _);
         }
     }
 }
