@@ -1,18 +1,28 @@
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Granit.DataProtection;
 using ModelContextProtocol.Protocol;
 
 namespace Granit.Mcp.Sanitization;
 
 /// <summary>
-/// Processes <see cref="McpRedactAttribute"/> annotations on MCP tool response DTOs.
-/// Applies the configured <see cref="RedactionStrategy"/> (Omit, Hash, or Mask) to
-/// sensitive properties before the response reaches the MCP client.
+/// Redacts sensitive properties from MCP tool JSON responses before they reach the client.
 /// </summary>
-internal sealed class PropertyRedactionSanitizer : IMcpOutputSanitizer
+/// <remarks>
+/// <para>
+/// Combines two redaction sources:
+/// <list type="bullet">
+///   <item><b><see cref="SensitivePropertyRegistry"/></b>: properties marked with
+///   <see cref="SensitiveDataAttribute"/> on entity/DTO types across the framework.
+///   The <see cref="SensitiveDataMode"/> determines the strategy (Mask, Omit, Hash).</item>
+///   <item><b>Well-known names</b>: hardcoded fallback for property names that always
+///   indicate secrets (password, connectionString, apiKey, etc.).</item>
+/// </list>
+/// </para>
+/// </remarks>
+internal sealed class PropertyRedactionSanitizer(SensitivePropertyRegistry registry) : IMcpOutputSanitizer
 {
     public ValueTask<CallToolResult> SanitizeAsync(
         CallToolResult result,
@@ -59,11 +69,7 @@ internal sealed class PropertyRedactionSanitizer : IMcpOutputSanitizer
     private static bool IsJsonLike(string text) =>
         text.Length > 0 && text[0] is '{' or '[';
 
-    /// <summary>
-    /// Scans JSON content for property names matching known <see cref="McpRedactAttribute"/>
-    /// patterns and applies the configured redaction strategy.
-    /// </summary>
-    private static string RedactJsonProperties(string json)
+    private string RedactJsonProperties(string json)
     {
         try
         {
@@ -82,7 +88,7 @@ internal sealed class PropertyRedactionSanitizer : IMcpOutputSanitizer
         }
     }
 
-    private static bool RedactNode(JsonNode node)
+    private bool RedactNode(JsonNode node)
     {
         bool changed = false;
 
@@ -93,23 +99,23 @@ internal sealed class PropertyRedactionSanitizer : IMcpOutputSanitizer
 
             foreach ((string key, JsonNode? value) in obj)
             {
-                if (IsSensitivePropertyName(key))
+                SensitiveDataMode? mode = ResolveSensitiveMode(key);
+                if (mode is not null)
                 {
-                    RedactionStrategy strategy = GetStrategy(key);
-                    switch (strategy)
+                    switch (mode.Value)
                     {
-                        case RedactionStrategy.Omit:
+                        case SensitiveDataMode.Omit:
                             keysToRemove.Add(key);
                             changed = true;
                             break;
-                        case RedactionStrategy.Hash:
+                        case SensitiveDataMode.Hash:
                             if (value is not null)
                             {
                                 keysToReplace.Add((key, HashValue(value.ToString())));
                                 changed = true;
                             }
                             break;
-                        case RedactionStrategy.Mask:
+                        case SensitiveDataMode.Mask:
                             if (value is not null)
                             {
                                 keysToReplace.Add((key, MaskValue(value.ToString())));
@@ -146,10 +152,33 @@ internal sealed class PropertyRedactionSanitizer : IMcpOutputSanitizer
     }
 
     /// <summary>
-    /// Well-known sensitive property names that should be redacted by default.
-    /// Matches regardless of whether a <see cref="McpRedactAttribute"/> is declared.
+    /// Resolves the sensitivity mode for a JSON property name by checking the
+    /// <see cref="SensitivePropertyRegistry"/> first, then falling back to
+    /// well-known secret property names. MCP applies redaction for
+    /// <see cref="Sensitivity.Confidential"/> and above by default.
     /// </summary>
-    private static bool IsSensitivePropertyName(string name) =>
+    private SensitiveDataMode? ResolveSensitiveMode(string propertyName)
+    {
+        // 1. Registry: [SensitiveData] annotations — redact Confidential+ for MCP
+        if (registry.IsSensitiveAtLevel(propertyName, Sensitivity.Confidential, out SensitivePropertyEntry entry))
+        {
+            return entry.Mode;
+        }
+
+        // 2. Well-known secret names — always Omit (defense in depth)
+        if (IsWellKnownSecretName(propertyName))
+        {
+            return SensitiveDataMode.Omit;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Hardcoded fallback for property names that always indicate secrets,
+    /// regardless of whether a <see cref="SensitiveDataAttribute"/> is declared.
+    /// </summary>
+    private static bool IsWellKnownSecretName(string name) =>
         name.Contains("password", StringComparison.OrdinalIgnoreCase) ||
         name.Contains("secret", StringComparison.OrdinalIgnoreCase) ||
         name.Contains("apiKey", StringComparison.OrdinalIgnoreCase) ||
@@ -160,18 +189,6 @@ internal sealed class PropertyRedactionSanitizer : IMcpOutputSanitizer
         name.Contains("credential", StringComparison.OrdinalIgnoreCase) ||
         name.Contains("ssn", StringComparison.OrdinalIgnoreCase) ||
         name.Contains("socialSecurity", StringComparison.OrdinalIgnoreCase);
-
-    private static RedactionStrategy GetStrategy(string name)
-    {
-        // Tokens and IDs use Hash for correlation; everything else is Omit.
-        if (name.Contains("token", StringComparison.OrdinalIgnoreCase) ||
-            name.Contains("id", StringComparison.OrdinalIgnoreCase))
-        {
-            return RedactionStrategy.Hash;
-        }
-
-        return RedactionStrategy.Omit;
-    }
 
     internal static string HashValue(string value)
     {

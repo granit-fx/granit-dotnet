@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.Domain;
 
 namespace Granit.OpenIddict.Domain;
@@ -34,6 +35,7 @@ public sealed class SigningKey : CreationAuditedEntity
 
     /// <summary>The serialized key material (encrypted via IStringEncryptionService).</summary>
 #pragma warning disable GRSEC003 // Key material property, not a hardcoded secret
+    [SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit)]
     public string EncryptedKeyMaterial { get; private set; } = string.Empty;
 #pragma warning restore GRSEC003
 

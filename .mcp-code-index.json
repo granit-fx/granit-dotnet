@@ -3774,7 +3774,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys",
       "file": "src/Granit.Authentication.ApiKeys/Domain/ApiKeyEntry.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "Create",
@@ -16262,7 +16262,7 @@
       "kind": "class",
       "project": "Granit.Mcp",
       "file": "src/Granit.Mcp/Extensions/McpServiceCollectionExtensions.cs",
-      "line": 23,
+      "line": 22,
       "members": []
     },
     {
@@ -18136,7 +18136,7 @@
       "kind": "class",
       "project": "Granit.Notifications.EntityFrameworkCore",
       "file": "src/Granit.Notifications.EntityFrameworkCore/Entities/MobilePushTokenEntity.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "UserId",
@@ -20456,7 +20456,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Domain/SigningKey.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "KeyId",
@@ -20514,7 +20514,7 @@
       "kind": "enum",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Domain/SigningKey.cs",
-      "line": 95,
+      "line": 97,
       "members": []
     },
     {
@@ -21753,7 +21753,7 @@
       "kind": "class",
       "project": "Granit.Persistence",
       "file": "src/Granit.Persistence/Extensions/DbContextOptionsBuilderExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "UseGranitInterceptors",
@@ -27446,7 +27446,7 @@
       "kind": "class",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/Domain/TimelineEntry.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "Create",
@@ -29705,7 +29705,7 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Domain/WebhookDeliveryAttempt.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "DeliveryId",
@@ -29733,7 +29733,7 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Domain/WebhookSubscription.cs",
-      "line": 22,
+      "line": 23,
       "members": [
         {
           "name": "Create",

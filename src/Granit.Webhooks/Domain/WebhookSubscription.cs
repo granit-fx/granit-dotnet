@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.Domain;
 using Granit.Domain.ValueObjects;
 using Granit.Webhooks.Events;
@@ -65,6 +66,7 @@ public sealed class WebhookSubscription : AuditedAggregateRoot
     /// The raw value is opaque — protected by <see cref="Abstractions.IWebhookSecretProtector"/>.
     /// Never store or log the plaintext secret. Maximum length: 1000 characters.
     /// </summary>
+    [SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit)]
     public string SigningSecret { get; private set; } = string.Empty;
 
     /// <summary>

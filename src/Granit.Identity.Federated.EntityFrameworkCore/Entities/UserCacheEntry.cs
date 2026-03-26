@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Text.Json;
+using Granit.DataProtection;
 using Granit.Domain;
 
 namespace Granit.Identity.Federated.EntityFrameworkCore.Entities;
@@ -26,15 +27,19 @@ public sealed class UserCacheEntry : AuditedEntity, IMultiTenant, IIdentityUser
     public string ExternalUserId { get; set; } = string.Empty;
 
     /// <summary>Login name. Max 256 characters.</summary>
+    [SensitiveData]
     public string? Username { get; set; }
 
     /// <summary>Email address. Max 512 characters.</summary>
+    [SensitiveData(Level = Sensitivity.Confidential)]
     public string? Email { get; set; }
 
     /// <summary>First name. Max 256 characters.</summary>
+    [SensitiveData]
     public string? FirstName { get; set; }
 
     /// <summary>Last name. Max 256 characters.</summary>
+    [SensitiveData]
     public string? LastName { get; set; }
 
     /// <summary>Whether the user account is active in the identity provider.</summary>

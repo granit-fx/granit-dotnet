@@ -1,7 +1,8 @@
 namespace Granit.DataProtection;
 
 /// <summary>
-/// Marks a property as containing sensitive or personal data (GDPR Art. 25 — data minimization).
+/// Marks a property as containing sensitive or personal data (GDPR Art. 25 — data minimization,
+/// ISO 27001 A.8.2 — information classification).
 /// </summary>
 /// <remarks>
 /// <para>
@@ -14,19 +15,25 @@ namespace Granit.DataProtection;
 ///   <item><b>Data Export</b>: property values flagged for special handling in GDPR data subject exports.</item>
 /// </list>
 /// <para>
-/// The <see cref="Mode"/> property controls <b>how</b> the value is protected.
-/// Each consumer module interprets the mode according to its context.
+/// <see cref="Level"/> classifies <b>how sensitive</b> the data is (ISO 27001 A.8.2).
+/// Consumers use the level to apply context-dependent thresholds.
+/// </para>
+/// <para>
+/// <see cref="Mode"/> controls <b>how</b> the value is protected when it crosses a trust boundary.
 /// </para>
 /// </remarks>
 /// <example>
 /// <code>
-/// [SensitiveData]                             // Default: Mask → "***"
+/// [SensitiveData]                                                    // Internal + Mask (default)
+/// public string? FirstName { get; set; }
+///
+/// [SensitiveData(Level = Sensitivity.Confidential)]                  // Confidential + Mask
 /// public string? Email { get; set; }
 ///
-/// [SensitiveData(Mode = SensitiveDataMode.Omit)]   // Remove entirely from output
+/// [SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit)]  // Restricted + Omit
 /// public string? PasswordHash { get; set; }
 ///
-/// [SensitiveData(Mode = SensitiveDataMode.Hash)]   // SHA-256 for correlation
+/// [SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Hash)] // Confidential + Hash
 /// public string? ExternalUserId { get; set; }
 /// </code>
 /// </example>
@@ -34,7 +41,13 @@ namespace Granit.DataProtection;
 public sealed class SensitiveDataAttribute : Attribute
 {
     /// <summary>
-    /// Gets or sets the protection mode applied when this property crosses a trust boundary.
+    /// Classification level of the sensitive data (ISO 27001 A.8.2).
+    /// Default: <see cref="Sensitivity.Internal"/>.
+    /// </summary>
+    public Sensitivity Level { get; init; } = Sensitivity.Internal;
+
+    /// <summary>
+    /// Protection mode applied when this property crosses a trust boundary.
     /// Default: <see cref="SensitiveDataMode.Mask"/>.
     /// </summary>
     public SensitiveDataMode Mode { get; init; } = SensitiveDataMode.Mask;

@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.Domain;
 using Granit.Notifications.MobilePush;
 
@@ -9,6 +10,7 @@ namespace Granit.Notifications.EntityFrameworkCore.Entities;
 public sealed class MobilePushTokenEntity : CreationAuditedEntity, IMultiTenant
 {
     public string UserId { get; set; } = string.Empty;
+    [SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit)]
     public string DeviceToken { get; set; } = string.Empty;
     public MobilePlatform Platform { get; set; }
     public Guid? TenantId { get; set; }

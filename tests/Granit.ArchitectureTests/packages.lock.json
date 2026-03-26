@@ -93,8 +93,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.3.19",
-        "contentHash": "8zIzN59+J6arYSyFuhnSxPepr8ff4p6li+MxKUUnqCgwZqQ+icEGJK/23c1USIEALqZZ5gdiITuH2sOZWQom+Q=="
+        "resolved": "4.0.3.23",
+        "contentHash": "H5c8YSn8U0zSBAk9mRP/w1shbowfmkdW7nWidHt/4GNSq2VLtNptDTTKkqmTPYvUxC9i3hMHnlQxe1mCXHyXwA=="
       },
       "Azure.Core": {
         "type": "Transitive",
@@ -2953,55 +2953,55 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.6.3",
-        "contentHash": "jgs58BUUO1v/6thtWUYQbuIZD0LotMsbk8bpZ+qYsfMo3HOO89xEmsojs6BgwIKZe7++mltD7eSB8P7VhLSGeg==",
+        "resolved": "4.0.6.4",
+        "contentHash": "xERfZcf91tApUKMECoGb8FKVibxW8h/18TdQp6KQU0JEQ7MsICEyzs/NsGBHGfLOILlJnZuQOfN6TQAPxCSfGA==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.19, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.23, 5.0.0)"
         }
       },
       "AWSSDK.KeyManagementService": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.9.4",
-        "contentHash": "/k/kif+Iu8pzZZN2mNCJMC4bI/+3YLetPFE/bcZdtSxZPvbTdymiXOdjGwVfD6m8x6TX56xm/8GcjfvE0Rur9w==",
+        "resolved": "4.0.9.5",
+        "contentHash": "eph5TNRjldo+f0/CpGiGDgJI5JTlZu0g+qRqpdxTAjRtYBwfyVjFdtsdzKcdanua6Bj8wqqq5a01zKWlWLcEjQ==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.19, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.23, 5.0.0)"
         }
       },
       "AWSSDK.S3": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.19.2",
-        "contentHash": "UWmkyCDrCc4E25K1htdRAprjMM5/dnkeFhmQ4fn9AqWk2H9dvceFVfrGOzAxTgfjdyl4PN7WhorKasN2BM2/Pw==",
+        "resolved": "4.0.19.3",
+        "contentHash": "aa/ChYJBQVU8xQ4wmAQdFxS0C3jQJUztZgaCb++fxsmSsZkimg8wHfzaWyAfxMIIqN4DXX2/pSkkI9gXC+7Hvw==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.19, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.23, 5.0.0)"
         }
       },
       "AWSSDK.SecretsManager": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.4.10",
-        "contentHash": "5DKe0U1KVCZqlHUef/rAJm72twJMSVtsDa4+aubskqpIEffvUWWzXVgWI1MzZpvms2VKMw9DDmjUYLOXfXx88w==",
+        "resolved": "4.0.4.11",
+        "contentHash": "VP/aew8LGB4mk5CU9nDBGy4LoGeIy2ge/kgPIdNyCE+PT7Ov+15/HdTuMix3jHVAw7yAfJwbZtxeVom1gcd8AQ==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.19, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.23, 5.0.0)"
         }
       },
       "AWSSDK.SimpleEmailV2": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.12.3",
-        "contentHash": "2OV18QATAase5zArxTLNnrFx1G0pECJg/bK73k9KT66W0g2hNFuNTyY/+ERPZ3E63fBDWe0cty/OdhgsFp3ijQ==",
+        "resolved": "4.0.12.4",
+        "contentHash": "62pJUxvEaNK7OWTEAGRO9vO1akB/yKvZAxy/TIh/WiFfvoM9RmgR/Mu2pRWwNWnT03h+iyOwPmI75rvdzWOIvQ==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.19, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.23, 5.0.0)"
         }
       },
       "AWSSDK.SimpleNotificationService": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.2.20",
-        "contentHash": "Ukh0ZudL04FhC88ZTyYq2lugoX/9RCWStWvzOTREnmEaPCC51IWX7LQkIFLuMODV0k0GeuqwgReULEC6bjHuLg==",
+        "resolved": "4.0.2.21",
+        "contentHash": "5mSY3oQ9A933OvwxjgE9RMFhopI9WJBjDUvzNP1vUbQ1Y2nYOunfIwnsnske4UyU2zRdGKDmpPQ8I1JG8epGAA==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.19, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.23, 5.0.0)"
         }
       },
       "Azure.AI.OpenAI": {

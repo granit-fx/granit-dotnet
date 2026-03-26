@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using Granit.DataProtection;
 using Granit.Diagnostics;
 using Granit.Mcp.Diagnostics;
 using Granit.Mcp.Options;
@@ -50,6 +51,14 @@ public static class McpServiceCollectionExtensions
                     Version = granitOptions.ServerVersion ?? "0.0.0",
                 };
             });
+        });
+
+        // Sensitive property registry: scans loaded Granit assemblies for [SensitiveData].
+        services.TryAddSingleton(_ =>
+        {
+            IEnumerable<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => a.GetName().Name?.StartsWith("Granit", StringComparison.Ordinal) == true);
+            return new SensitivePropertyRegistry(assemblies);
         });
 
         // Default sanitizers: property redaction + response size limit

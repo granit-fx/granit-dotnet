@@ -1,5 +1,6 @@
 using Granit.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Persistence.Extensions;
@@ -50,6 +51,12 @@ public static class DbContextOptionsBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(serviceProvider);
+
+        // Granit registers many isolated DbContexts (one per module). Each unique set
+        // of options creates an internal EF Core service provider. With 14+ modules
+        // the default threshold of 20 is routinely exceeded — suppress the warning
+        // since this is by design (modular architecture with isolated persistence).
+        options.ConfigureWarnings(w => w.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning));
 
         // Order matters: Audit → Versioning → ConcurrencyStamp → DomainEvents → SoftDelete.
         // SoftDelete must be last because it converts Deleted → Modified,

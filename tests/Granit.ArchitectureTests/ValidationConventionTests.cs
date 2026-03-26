@@ -43,8 +43,6 @@ public sealed partial class ValidationConventionTests
         "TemplatePreviewRequest",
         // Nested sub-type validated via ChildRules in AIChatRequestValidator — never sent as direct body
         "AIChatMessageRequest",
-        // Query-string DTO with only optional nullable filters — pagination clamped in handler
-        "AuditingQueryRequest",
     };
 
     // -------------------------------------------------------------------------

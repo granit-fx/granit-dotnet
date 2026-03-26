@@ -60,7 +60,7 @@ the protocol. Granit adds what enterprise apps need:
 |---------|--------------|-----------------|
 | **Tool discovery** | Manual registration | Auto-discovery from module assemblies |
 | **Authorization** | Roll your own | `[Authorize(Policy = "...")]` with Granit RBAC |
-| **PII in responses** | You handle it | `[McpRedact]` + sanitization pipeline (GDPR) |
+| **PII in responses** | You handle it | `[SensitiveData]` + sanitization pipeline (GDPR) |
 | **Multi-tenancy** | Not supported | `[McpTenantScope]` + `ICurrentTenant` injection |
 | **Error leakage** | Stack traces exposed | `ErrorSanitizer` strips connection strings and traces |
 | **Observability** | Basic | OpenTelemetry metrics + activity source |
@@ -184,26 +184,29 @@ MCP tool responses are **sanitized before they leave your app**. This happens in
 the SDK's `AddCallToolFilter` pipeline — not a parallel abstraction.
 
 ```csharp title="PatientResponse.cs"
+using Granit.DataProtection;
+
 public sealed class PatientResponse
 {
     public Guid Id { get; init; }
     public string DisplayName { get; init; }
 
-    [McpRedact(Strategy = RedactionStrategy.Omit)]
+    [SensitiveData(Level = Sensitivity.Confidential)]
     public string Email { get; init; }
 
-    [McpRedact(Strategy = RedactionStrategy.Hash)]
+    [SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Hash)]
     public string NationalId { get; init; }
 }
 ```
 
-Three strategies:
+One attribute, three sensitivity levels (ISO 27001 A.8.2), three protection modes:
 
-| Strategy | Behavior | When to use |
-|----------|----------|-------------|
-| **Omit** (default) | Remove property entirely | Email, phone, address |
-| **Hash** | Stable SHA-256 | Correlation IDs |
-| **Mask** | `j***@***.com` | UI-facing only (wastes LLM tokens) |
+| Level | Mode | Behavior | When to use |
+|-------|------|----------|-------------|
+| **`Internal`** | `Mask` | `"***"` | Names, usernames |
+| **`Confidential`** | `Mask` | `"***"` | Email, phone, IP |
+| **`Restricted`** | `Omit` | Remove entirely | Passwords, tokens |
+| **`Restricted`** | `Hash` | Stable SHA-256 | Correlation IDs (SSN) |
 
 The `ErrorSanitizer` also strips stack traces and connection strings from error
 responses — no accidental `Server=db.prod;Password=...` leaking to an AI agent.
@@ -269,8 +272,8 @@ enabled).
 - **3 lines to expose your first tool**: install, register, annotate
 - **Standard `[Authorize]`** — no custom auth attributes, uses your existing
   permission definitions
-- **PII is omitted by default** — `[McpRedact]` with `Omit` strategy protects
-  against accidental data leakage to AI agents
+- **PII is protected by default** — `[SensitiveData]` is a single cross-cutting
+  attribute consumed by auditing, MCP, logging, and GDPR exports
 - **4 packages, 31 tests, zero circular dependencies** — ready for production
 
 ## Further reading

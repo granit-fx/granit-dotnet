@@ -280,7 +280,12 @@ Key areas:
 
 - **Output sanitization (OWASP LLM06 — Sensitive Information Disclosure):**
   - `IMcpOutputSanitizer` — what does it redact? Is it applied to ALL tool responses?
-  - `McpRedactAttribute` — coverage analysis, can developers forget to annotate?
+  - `[SensitiveData]` coverage — are all PII/secret DTO properties annotated?
+    `SensitivePropertyRegistry` auto-discovers `[SensitiveData]` on entity properties
+    and feeds `PropertyRedactionSanitizer` with level-aware redaction
+    (`Sensitivity.Confidential`+ redacted by default in MCP output).
+  - `[AuditIgnore]` — properties excluded from audit change tracking. Verify it is not
+    used to hide security-relevant changes (privilege escalation, key rotation).
   - Error sanitizer — does it leak stack traces, connection strings, internal paths?
 
 - **Prompt injection (OWASP LLM01):**
@@ -442,7 +447,13 @@ Key areas:
 
 - **PII in logs:**
   - `[LoggerMessage]` templates — do they include user data?
-  - `AuditSensitiveAttribute` — coverage analysis
+  - `[SensitiveData]` / `[AuditIgnore]` — coverage analysis across entity properties.
+    `[SensitiveData(Level, Mode)]` is the unified cross-cutting attribute
+    (replaces the former `AuditSensitiveAttribute` and `McpRedactAttribute`).
+    Three sensitivity levels: `Internal` (names), `Confidential` (email, IP),
+    `Restricted` (passwords, tokens, keys). Three modes: `Mask` ("***"),
+    `Omit` (remove), `Hash` (SHA-256 for correlation).
+    `AuditPiiConventionTests` architecture test enforces coverage.
   - Structured logging fields — tenant IDs, user IDs, IP addresses
 
 - **Metrics cardinality explosion:**

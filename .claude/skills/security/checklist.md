@@ -125,8 +125,8 @@ Standards referenced:
 | # | Check | Standard | Severity if missing |
 |---|-------|----------|---------------------|
 | 2.8 | `IMcpOutputSanitizer` applied to ALL tool responses (not opt-in) | LLM02 | CRITICAL |
-| 2.9 | `McpRedactAttribute` coverage: all PII/secret fields annotated | LLM06 | HIGH |
-| 2.10 | `RedactionStrategy` includes full redaction (not just masking) for secrets | LLM06 | HIGH |
+| 2.9 | `[SensitiveData]` coverage: all PII/secret entity properties annotated with correct `Sensitivity` level — `SensitivePropertyRegistry` auto-feeds `PropertyRedactionSanitizer` (threshold: `Confidential`+) | LLM06 | HIGH |
+| 2.10 | `SensitiveDataMode` includes `Omit` for secrets and `Hash` for correlatable IDs — verify no `Restricted` property uses `Mask` (leaks partial value to LLM) | LLM06 | HIGH |
 | 2.11 | Error responses sanitized (no stack traces, connection strings, paths) | LLM06 | HIGH |
 | 2.12 | SQL query results sanitized for cross-tenant data | LLM06 | CRITICAL |
 | 2.13 | File system paths in responses are relative (no absolute paths) | LLM06 | MEDIUM |
@@ -368,7 +368,7 @@ Standards referenced:
 |---|-------|----------|---------------------|
 | 8.1 | No PII in log messages (names, emails, phone numbers) | GDPR Art. 5 | CRITICAL |
 | 8.2 | No secrets in log messages (tokens, keys, passwords) | CWE-532 | CRITICAL |
-| 8.3 | `AuditSensitiveAttribute` applied to all sensitive entity properties | GDPR Art. 5 | HIGH |
+| 8.3 | `[SensitiveData]` applied to all sensitive entity properties with correct `Sensitivity` level (`Internal`/`Confidential`/`Restricted`) — enforced by `AuditPiiConventionTests`. `[AuditIgnore]` excludes entire entities/properties from change tracking (verify not misused to hide security-relevant changes). | GDPR Art. 5 | HIGH |
 | 8.4 | Structured logging does not include raw request bodies | GDPR Art. 5 | HIGH |
 | 8.5 | Exception details redacted in production (no stack traces to client) | CWE-209 | HIGH |
 | 8.6 | Log injection prevented (user input not directly in log templates) | CWE-117 | MEDIUM |

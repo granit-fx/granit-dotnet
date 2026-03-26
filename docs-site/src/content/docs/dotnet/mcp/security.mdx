@@ -76,53 +76,66 @@ public async Task<string> GetMedicalHistoryAsync(
 Tool responses pass through a sanitization pipeline before reaching the AI agent.
 This is wired into the SDK's `AddCallToolFilter` — not a parallel abstraction.
 
-### `[McpRedact]` attribute
+### `[SensitiveData]` — unified data protection attribute
 
-Mark sensitive properties on tool response DTOs:
+Granit uses a single cross-cutting attribute `[SensitiveData]` from `Granit.DataProtection`
+(in the `Granit` base package) to mark sensitive properties on **any** entity or DTO. The
+same annotation is consumed by auditing, MCP output sanitization, logging, and GDPR exports.
 
 ```csharp
+using Granit.DataProtection;
+
 public sealed class PatientResponse
 {
     public Guid Id { get; init; }
     public string DisplayName { get; init; }
 
-    [McpRedact(Strategy = RedactionStrategy.Omit)]
+    [SensitiveData(Level = Sensitivity.Confidential)]
     public string Email { get; init; }
 
-    [McpRedact(Strategy = RedactionStrategy.Omit)]
+    [SensitiveData(Level = Sensitivity.Confidential)]
     public string PhoneNumber { get; init; }
 
-    [McpRedact(Strategy = RedactionStrategy.Hash)]
+    [SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Hash)]
     public string NationalId { get; init; }
 }
 ```
 
-### Redaction strategies
+### Sensitivity levels (ISO 27001 A.8.2)
 
-| Strategy | Behavior | When to use |
-|----------|----------|-------------|
-| **`Omit`** (default) | Remove property entirely | PII fields: email, phone, address |
+| Level | Examples | MCP behavior |
+|-------|----------|-------------|
+| **`Internal`** (default) | First name, last name, username | Not redacted in MCP (below threshold) |
+| **`Confidential`** | Email, phone, IP address, DOB | **Redacted** — `Mask` by default |
+| **`Restricted`** | Password, token, SSN, health data | **Redacted** — use `Omit` or `Hash` |
+
+### Protection modes (`SensitiveDataMode`)
+
+| Mode | Behavior | When to use |
+|------|----------|-------------|
+| **`Mask`** (default) | Replace with `"***"` | PII fields: email, phone, address |
+| **`Omit`** | Remove property entirely | Secrets: passwords, tokens, keys |
 | **`Hash`** | Replace with stable SHA-256 | Correlation IDs: national ID, SSN |
-| **`Mask`** | Replace with `j***@***.com` | UI-facing tools only (not recommended for LLM) |
 
 :::caution
-**`Omit` is the default for a reason.** Masked values (`j***@***.com`) waste LLM
+**`Omit` is recommended for `Restricted` data.** Masked values (`j***@***.com`) waste LLM
 tokens and can trigger hallucinations — the model may try to "complete" the masked
-value. Use `Mask` only for tools consumed by a human-facing UI, not by an LLM.
+value. Use `Mask` only for `Confidential` data or tools consumed by a human-facing UI.
 :::
 
 ### Built-in sanitizers
 
 | Sanitizer | Registered by | Behavior |
 |-----------|--------------|----------|
-| `PropertyRedactionSanitizer` | `Granit.Mcp` | Redacts well-known sensitive JSON properties (`password`, `secret`, `apiKey`, `token`, `credential`, `ssn`, `connectionString`) using Omit or Hash strategies |
+| `PropertyRedactionSanitizer` | `Granit.Mcp` | Reads `SensitivePropertyRegistry` (auto-discovered from `[SensitiveData]` annotations at startup, threshold: `Confidential`+) **plus** well-known secret property names (`password`, `secret`, `apiKey`, `token`, `credential`, `ssn`, `connectionString`) |
 | `ResponseSizeLimitSanitizer` | `Granit.Mcp` | Truncates responses > 50 KB (configurable via `MaxResponseSizeBytes`) |
 | `ErrorSanitizer` | `Granit.Mcp.Server` | Strips stack traces, connection strings, API keys (`Bearer ey...`, `sk-...`), internal paths, Vault tokens, and K8s hostnames from error responses |
 
-The `PropertyRedactionSanitizer` applies to **all** tool responses (not just errors). It
-scans JSON content blocks for property names matching known sensitive patterns and applies
-the appropriate `RedactionStrategy`. This works **in addition to** the `[McpRedact]` attribute —
-even if a developer forgets to annotate a DTO, well-known sensitive field names are caught.
+The `PropertyRedactionSanitizer` applies to **all** tool responses (not just errors). At
+startup, the `SensitivePropertyRegistry` scans all loaded Granit assemblies for `[SensitiveData]`
+properties and builds an O(1) lookup map. This means annotating an entity property in one module
+(e.g., `UserCacheEntry.Email`) automatically protects it in every MCP tool response — even if a
+developer forgets to design the DTO carefully.
 
 ### Custom sanitizer
 

@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.Domain;
 using Granit.Timeline.Events;
 
@@ -66,6 +67,7 @@ public sealed class TimelineEntry : CreationAuditedAggregateRoot, ISoftDeletable
     public string AuthorId { get; private set; } = string.Empty;
 
     /// <summary>Display name of the author at the time of posting (denormalized).</summary>
+    [SensitiveData]
     public string AuthorName { get; private set; } = string.Empty;
 
     /// <summary>Optional parent entry ID for threaded replies.</summary>

@@ -1,4 +1,5 @@
 using Granit.Authentication.ApiKeys.Events;
+using Granit.DataProtection;
 using Granit.Domain;
 using Granit.MultiTenancy;
 
@@ -51,6 +52,7 @@ public sealed class ApiKeyEntry : FullAuditedAggregateRoot, IMultiTenant
     public string Environment { get; private set; } = string.Empty;
 
     /// <summary>SHA-256 hash of the raw secret. The raw secret is never stored.</summary>
+    [SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit)]
     public string HashedKey { get; private set; } = string.Empty;
 
     /// <summary>Prefix of the key for display purposes (e.g., <c>gk_live_sk_</c>).</summary>
