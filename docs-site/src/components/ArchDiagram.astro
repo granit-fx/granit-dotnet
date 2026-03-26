@@ -40,6 +40,18 @@ const layers: Layer[] = [
     ],
   },
   {
+    id: "mcp",
+    label: "MCP",
+    sublabel: "Model Context Protocol",
+    color: "mcp",
+    modules: [
+      { name: "Mcp",           pkg: "Granit.Mcp",           href: "/dotnet/mcp/",               tip: "Auto-discovery, sanitization pipeline, OpenTelemetry diagnostics" },
+      { name: "Mcp.Server",    pkg: "Granit.Mcp.Server",    href: "/dotnet/mcp/setup/",         tip: "ASP.NET Core Streamable HTTP transport, [Authorize], permissions" },
+      { name: "Mcp.Client",    pkg: "Granit.Mcp.Client",    href: "/dotnet/mcp/client/",        tip: "Named factory for external MCP servers (HTTP + stdio)" },
+      { name: "AI.Mcp",        pkg: "Granit.AI.Mcp",        href: "/dotnet/mcp/ai-integration/",tip: "Bridge MCP tools into AI workspaces, sampling guard" },
+    ],
+  },
+  {
     id: "business",
     label: "Business Features",
     color: "business",
@@ -318,6 +330,7 @@ const layers: Layer[] = [
 
   /* Gradient stops — warm (top) → cool (bottom) */
   .arch-layer--ai       { --lc: #f59e0b; --lt: #b45309; }  /* amber        */
+  .arch-layer--mcp      { --lc: #f97316; --lt: #c2410c; }  /* orange       */
   .arch-layer--business { --lc: #e879f9; --lt: #c026d3; }  /* fuchsia      */
   .arch-layer--api      { --lc: #ec4899; --lt: #db2777; }  /* pink         */
   .arch-layer--infra    { --lc: #7c3aed; --lt: #6d28d9; }  /* violet       — Granit accent */
