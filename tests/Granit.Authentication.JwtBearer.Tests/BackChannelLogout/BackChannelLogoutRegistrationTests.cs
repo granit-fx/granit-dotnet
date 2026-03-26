@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Authentication.JwtBearer.Tests.BackChannelLogout;
 
@@ -31,6 +32,7 @@ public sealed class BackChannelLogoutRegistrationTests
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(CreateConfiguration(backChannelEnabled: true));
         services.AddLogging();
+        services.AddSingleton<IFusionCache>(new FusionCache(new FusionCacheOptions()));
 
         // Act
         services.AddGranitJwtBearer();
@@ -50,6 +52,7 @@ public sealed class BackChannelLogoutRegistrationTests
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(CreateConfiguration(backChannelEnabled: true));
         services.AddLogging();
+        services.AddSingleton<IFusionCache>(new FusionCache(new FusionCacheOptions()));
 
         // Act
         services.AddGranitJwtBearer();
@@ -71,6 +74,7 @@ public sealed class BackChannelLogoutRegistrationTests
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(CreateConfiguration(backChannelEnabled: true));
         services.AddLogging();
+        services.AddSingleton<IFusionCache>(new FusionCache(new FusionCacheOptions()));
 
         // Act
         services.AddGranitJwtBearer();
@@ -94,6 +98,7 @@ public sealed class BackChannelLogoutRegistrationTests
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(CreateConfiguration(backChannelEnabled: false));
         services.AddLogging();
+        services.AddSingleton<IFusionCache>(new FusionCache(new FusionCacheOptions()));
 
         // Act
         services.AddGranitJwtBearer();
