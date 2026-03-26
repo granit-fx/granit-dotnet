@@ -3171,15 +3171,6 @@
       "members": []
     },
     {
-      "name": "AuditSensitiveAttribute",
-      "fqn": "Granit.Auditing.Attributes.AuditSensitiveAttribute",
-      "kind": "class",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Attributes/AuditSensitiveAttribute.cs",
-      "line": 12,
-      "members": []
-    },
-    {
       "name": "GranitAuditingConfigurationChangesModule",
       "fqn": "Granit.Auditing.ConfigurationChanges.GranitAuditingConfigurationChangesModule",
       "kind": "class",
@@ -3201,7 +3192,7 @@
       "kind": "class",
       "project": "Granit.Auditing.ConfigurationChanges",
       "file": "src/Granit.Auditing.ConfigurationChanges/Handlers/FeatureOverrideChangedAuditHandler.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "HandleAsync",
@@ -3217,7 +3208,7 @@
       "kind": "class",
       "project": "Granit.Auditing.ConfigurationChanges",
       "file": "src/Granit.Auditing.ConfigurationChanges/Handlers/SettingChangedAuditHandler.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "HandleAsync",
@@ -3366,7 +3357,7 @@
       "kind": "record",
       "project": "Granit.Auditing.Endpoints",
       "file": "src/Granit.Auditing.Endpoints/Dtos/AuditEntryResponse.cs",
-      "line": 15,
+      "line": 18,
       "members": []
     },
     {
@@ -3384,15 +3375,6 @@
       "kind": "class",
       "project": "Granit.Auditing.Endpoints",
       "file": "src/Granit.Auditing.Endpoints/Dtos/AuditingQueryParameters.cs",
-      "line": 9,
-      "members": []
-    },
-    {
-      "name": "AuditingQueryRequest",
-      "fqn": "Granit.Auditing.Endpoints.Dtos.AuditingQueryRequest",
-      "kind": "class",
-      "project": "Granit.Auditing.Endpoints",
-      "file": "src/Granit.Auditing.Endpoints/Dtos/AuditingQueryRequest.cs",
       "line": 9,
       "members": []
     },
@@ -3467,7 +3449,7 @@
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
       "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/AuditingEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 22,
+      "line": 23,
       "members": [
         {
           "name": "AddGranitAuditingEntityFrameworkCore",
@@ -3681,6 +3663,12 @@
           "name": "CleanupBatchSize",
           "kind": "property",
           "signature": "int CleanupBatchSize",
+          "returnType": "int"
+        },
+        {
+          "name": "ChannelCapacity",
+          "kind": "property",
+          "signature": "int ChannelCapacity",
           "returnType": "int"
         },
         {
@@ -9586,6 +9574,15 @@
       "members": []
     },
     {
+      "name": "SensitiveDataAttribute",
+      "fqn": "Granit.DataProtection.SensitiveDataAttribute",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/DataProtection/SensitiveDataAttribute.cs",
+      "line": 22,
+      "members": []
+    },
+    {
       "name": "IHealthCheckAggregator",
       "fqn": "Granit.Diagnostics.Abstractions.IHealthCheckAggregator",
       "kind": "interface",
@@ -14319,7 +14316,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
       "file": "src/Granit.Identity.Federated.EntityFrameworkCore/Entities/UserCacheEntry.cs",
-      "line": 22,
+      "line": 23,
       "members": [
         {
           "name": "ExternalUserId",
@@ -23382,7 +23379,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/LegalAgreements/Domain/LegalAgreementBase.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "UserId",
@@ -28454,6 +28451,28 @@
       "file": "src/Granit.Validation/Extensions/NetworkValidatorExtensions.cs",
       "line": 9,
       "members": []
+    },
+    {
+      "name": "PaginationValidatorExtensions",
+      "fqn": "Granit.Validation.Extensions.PaginationValidatorExtensions",
+      "kind": "class",
+      "project": "Granit.Validation",
+      "file": "src/Granit.Validation/Extensions/PaginationValidatorExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "maxPageSize",
+          "kind": "property",
+          "signature": "IRuleBuilderOptions<T, int> ValidPageSize<T>( this IRuleBuilder<T, int> ruleBuilder, int maxPageSize",
+          "returnType": "IRuleBuilderOptions<T, int> ValidPageSize<T>( this IRuleBuilder<T, int> ruleBuilder, int"
+        },
+        {
+          "name": "maxPageSize",
+          "kind": "property",
+          "signature": "IRuleBuilderOptions<T, int?> ValidPageSize<T>( this IRuleBuilder<T, int?> ruleBuilder, int maxPageSize",
+          "returnType": "IRuleBuilderOptions<T, int?> ValidPageSize<T>( this IRuleBuilder<T, int?> ruleBuilder, int"
+        }
+      ]
     },
     {
       "name": "PaymentValidatorExtensions",
