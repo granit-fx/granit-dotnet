@@ -3014,6 +3014,15 @@
       "members": []
     },
     {
+      "name": "LoggerMessagePiiAnalyzer",
+      "fqn": "Granit.Analyzers.LoggerMessagePiiAnalyzer",
+      "kind": "class",
+      "project": "Granit.Analyzers",
+      "file": "src/Granit.Analyzers/LoggerMessagePiiAnalyzer.cs",
+      "line": 21,
+      "members": []
+    },
+    {
       "name": "MigrationAnalyzerBase",
       "fqn": "Granit.Analyzers.MigrationAnalyzerBase",
       "kind": "class",
@@ -3071,6 +3080,15 @@
       "kind": "class",
       "project": "Granit.Analyzers",
       "file": "src/Granit.Analyzers/SynchronousSaveChangesAnalyzer.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "TagListPiiAnalyzer",
+      "fqn": "Granit.Analyzers.TagListPiiAnalyzer",
+      "kind": "class",
+      "project": "Granit.Analyzers",
+      "file": "src/Granit.Analyzers/TagListPiiAnalyzer.cs",
       "line": 19,
       "members": []
     },
@@ -4308,6 +4326,12 @@
           "kind": "property",
           "signature": "bool EnableReplayProtection",
           "returnType": "bool"
+        },
+        {
+          "name": "RequireNonce",
+          "kind": "property",
+          "signature": "bool RequireNonce",
+          "returnType": "bool"
         }
       ]
     },
@@ -4317,8 +4341,15 @@
       "kind": "record",
       "project": "Granit.Authentication.DPoP",
       "file": "src/Granit.Authentication.DPoP/Validation/IDPoPProofValidator.cs",
-      "line": 32,
-      "members": []
+      "line": 39,
+      "members": [
+        {
+          "name": "Success",
+          "kind": "method",
+          "signature": "Success(string jwkThumbprint, string? serverNonce = null)",
+          "returnType": "string? ServerNonce { get; init; } internal DPoPValidationResult"
+        }
+      ]
     },
     {
       "name": "IDPoPProofValidator",
@@ -4333,6 +4364,12 @@
           "kind": "method",
           "signature": "ValidateAsync(string proofJwt, string httpMethod, string httpUri, CancellationToken cancellationToken = default)",
           "returnType": "Task<DPoPValidationResult>"
+        },
+        {
+          "name": "GenerateNonceAsync",
+          "kind": "method",
+          "signature": "GenerateNonceAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<string?>"
         }
       ]
     },

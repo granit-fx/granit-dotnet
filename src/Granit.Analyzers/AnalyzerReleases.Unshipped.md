@@ -18,3 +18,5 @@ GRAPI001 | Api | Warning | UntypedResultsAnalyzer, IsEnabledByDefault=True
 GRAPI002 | Api | Warning | TypedResultsBadRequestAnalyzer, IsEnabledByDefault=True
 GRAPI003 | Api | Warning | MinimalApiServiceParameterAnalyzer, IsEnabledByDefault=True
 GRMOD001 | Architecture | Error | CrossModuleReferenceAnalyzer, IsEnabledByDefault=True
+GRSEC010 | Security | Error | TagListPiiAnalyzer, IsEnabledByDefault=True
+GRSEC011 | Security | Error | LoggerMessagePiiAnalyzer, IsEnabledByDefault=True
