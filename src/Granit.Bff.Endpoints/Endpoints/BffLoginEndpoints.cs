@@ -29,6 +29,21 @@ internal static partial class BffLoginEndpoints
 {
     private const string PkceKeyPrefix = "bff:pkce:";
     private const int CodeVerifierLength = 64;
+    private const int SessionIdByteLength = 32;
+
+    /// <summary>
+    /// Known OIDC error codes (RFC 6749 §4.1.2.1, §5.2 + OIDC Core §3.1.2.6).
+    /// </summary>
+    private static readonly HashSet<string> KnownOidcErrors = new(StringComparer.Ordinal)
+    {
+        "invalid_request", "unauthorized_client", "access_denied",
+        "unsupported_response_type", "invalid_scope", "server_error",
+        "temporarily_unavailable", "invalid_grant", "invalid_client",
+        "interaction_required", "login_required", "account_selection_required",
+        "consent_required", "invalid_request_uri", "invalid_request_object",
+        "request_not_supported", "request_uri_not_supported",
+        "registration_not_supported",
+    };
 
     internal static RouteGroupBuilder MapLoginEndpoints(this RouteGroupBuilder group, BffFrontendOptions frontend)
     {
@@ -120,6 +135,14 @@ internal static partial class BffLoginEndpoints
                     + $"?client_id={Uri.EscapeDataString(frontend.ClientId)}"
                     + $"&request_uri={Uri.EscapeDataString(requestUri)}";
             }
+            else if (frontend.RequirePushedAuthorizationRequests)
+            {
+                // PAR is mandatory (FAPI 2.0 strict) — do not fall back
+                LogParFallback(logger, frontend.Name);
+                return TypedResults.Problem(
+                    detail: "Pushed Authorization Request failed and is required by configuration.",
+                    statusCode: StatusCodes.Status502BadGateway);
+            }
             else
             {
                 // PAR failed — fall back to direct parameters
@@ -162,9 +185,10 @@ internal static partial class BffLoginEndpoints
 
         if (!string.IsNullOrEmpty(error))
         {
-            LogCallbackError(logger, error, frontend.Name);
+            string safeError = KnownOidcErrors.Contains(error) ? error : "unknown_error";
+            LogCallbackError(logger, safeError, frontend.Name);
             return TypedResults.Problem(
-                detail: $"OIDC authorization error: {error}",
+                detail: $"OIDC authorization error: {safeError}",
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -238,9 +262,10 @@ internal static partial class BffLoginEndpoints
             UserAgent = string.IsNullOrEmpty(userAgent) ? null : userAgent,
         };
 
-        // Generate session ID and store tokens — random, not DB-stored, so sequential GUIDs are not needed
+        // Generate session ID with 256 bits of cryptographic entropy (OWASP ASVS 3.2.2)
 #pragma warning disable GRSEC002 // Session IDs are ephemeral cache keys, not clustered index values
-        string sessionId = Guid.NewGuid().ToString("N");
+        string sessionId = Convert.ToBase64String(RandomNumberGenerator.GetBytes(SessionIdByteLength))
+            .Replace('+', '-').Replace('/', '_').TrimEnd('=');
 #pragma warning restore GRSEC002
         await tokenStore.StoreAsync(frontend.Name, sessionId, tokens, cancellationToken).ConfigureAwait(false);
 
@@ -250,7 +275,7 @@ internal static partial class BffLoginEndpoints
             .ConfigureAwait(false);
 
         metrics.RecordLogin(null);
-        LogLoginSuccess(logger, sessionId, frontend.Name);
+        LogLoginSuccess(logger, MaskSessionId(sessionId), frontend.Name);
 
         return TypedResults.Redirect(frontend.EffectivePostLoginRedirectPath);
     }
@@ -531,6 +556,9 @@ internal static partial class BffLoginEndpoints
             return null;
         }
     }
+
+    private static string MaskSessionId(string sessionId) =>
+        sessionId.Length > 8 ? $"{sessionId[..4]}...{sessionId[^4..]}" : "****";
 
     private sealed record PkceState(string CodeVerifier, string State, string FrontendName, string? DPoPPrivateKeyJwk = null);
 

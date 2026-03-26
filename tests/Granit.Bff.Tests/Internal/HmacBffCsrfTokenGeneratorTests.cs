@@ -1,5 +1,8 @@
 using Granit.Bff.Internal;
+using Granit.Bff.Options;
 using Granit.Timing;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -14,7 +17,10 @@ public sealed class HmacBffCsrfTokenGeneratorTests
     public HmacBffCsrfTokenGeneratorTests()
     {
         _clock.Now.Returns(DateTimeOffset.UtcNow);
-        _generator = new HmacBffCsrfTokenGenerator(_clock);
+        _generator = new HmacBffCsrfTokenGenerator(
+            _clock,
+            Microsoft.Extensions.Options.Options.Create(new GranitBffOptions()),
+            NullLogger<HmacBffCsrfTokenGenerator>.Instance);
     }
 
     [Fact]

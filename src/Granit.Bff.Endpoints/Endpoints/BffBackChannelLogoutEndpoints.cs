@@ -1,5 +1,3 @@
-using System.Text;
-using System.Text.Json;
 using Granit.Bff.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -7,7 +5,6 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Bff.Endpoints.Endpoints;
@@ -27,18 +24,20 @@ internal static partial class BffBackChannelLogoutEndpoints
         this RouteGroupBuilder group, BffFrontendOptions frontend)
     {
         group.MapPost("/backchannel-logout", (HttpContext httpContext,
-                [FromServices] IOptions<GranitBffOptions> options,
+                [FromServices] ILogoutTokenValidator tokenValidator,
                 [FromServices] IBffTokenStore tokenStore,
                 [FromServices] IFusionCache cache,
                 [FromServices] ILoggerFactory loggerFactory,
                 CancellationToken cancellationToken) =>
-                HandleBackChannelLogoutAsync(httpContext, frontend, options, tokenStore, cache, loggerFactory, cancellationToken))
+                HandleBackChannelLogoutAsync(httpContext, frontend, tokenValidator,
+                    tokenStore, cache, loggerFactory, cancellationToken))
             .WithName($"BffBackChannelLogout_{frontend.Name}")
             .WithSummary("Processes an OIDC back-channel logout token from the authorization server.")
             .WithDescription(
-                "Receives a signed JWT logout token, validates it (issuer, audience, events claim, "
-                + "replay protection via jti), and revokes all BFF sessions for the specified subject. "
-                + "Returns 200 on success, 400 on invalid token.")
+                "Receives a signed JWT logout token, validates its signature against the IdP's "
+                + "JWKS (auto-discovered), checks issuer, audience, and events claims, applies "
+                + "replay protection via jti, and revokes all BFF sessions for the specified "
+                + "subject. Returns 200 on success, 400 on invalid token.")
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ExcludeFromDescription();
@@ -50,10 +49,10 @@ internal static partial class BffBackChannelLogoutEndpoints
     private static async Task<Results<Ok, ProblemHttpResult>> HandleBackChannelLogoutAsync(
         HttpContext httpContext,
         BffFrontendOptions frontend,
-        [FromServices] IOptions<GranitBffOptions> options,
-        [FromServices] IBffTokenStore tokenStore,
-        [FromServices] IFusionCache cache,
-        [FromServices] ILoggerFactory loggerFactory,
+        ILogoutTokenValidator tokenValidator,
+        IBffTokenStore tokenStore,
+        IFusionCache cache,
+        ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
         ILogger logger = loggerFactory.CreateLogger("Granit.Bff.Endpoints.BffBackChannelLogoutEndpoints");
@@ -70,32 +69,15 @@ internal static partial class BffBackChannelLogoutEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        // Decode JWT payload (signature validation deferred — in production, validate against IdP JWKS)
-        LogoutTokenClaims? claims = DecodeLogoutTokenPayload(logoutToken);
+        // Validate JWT signature, issuer, audience, and events claim
+        ValidatedLogoutToken? claims = await tokenValidator.ValidateAsync(
+            logoutToken, frontend.ClientId, cancellationToken).ConfigureAwait(false);
+
         if (claims is null)
         {
             LogInvalidLogoutToken(logger, frontend.Name);
             return TypedResults.Problem(
                 detail: "Invalid logout token.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        // Validate issuer
-        GranitBffOptions bffOptions = options.Value;
-        string expectedIssuer = bffOptions.Authority.ToString().TrimEnd('/');
-        if (!string.Equals(claims.Issuer?.TrimEnd('/'), expectedIssuer, StringComparison.OrdinalIgnoreCase))
-        {
-            LogIssuerMismatch(logger, claims.Issuer ?? "(null)", expectedIssuer, frontend.Name);
-            return TypedResults.Problem(
-                detail: "Logout token issuer mismatch.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        // Validate events claim (must contain back-channel logout event)
-        if (!claims.HasBackChannelLogoutEvent)
-        {
-            return TypedResults.Problem(
-                detail: "Missing back-channel logout event in token.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -143,59 +125,10 @@ internal static partial class BffBackChannelLogoutEndpoints
     }
 #pragma warning restore GRAPI003
 
-    private static LogoutTokenClaims? DecodeLogoutTokenPayload(string logoutToken)
-    {
-        try
-        {
-            string[] parts = logoutToken.Split('.');
-            if (parts.Length < 2)
-            {
-                return null;
-            }
-
-            string payload = parts[1].Replace('-', '+').Replace('_', '/');
-            switch (payload.Length % 4)
-            {
-                case 2: payload += "=="; break;
-                case 3: payload += "="; break;
-            }
-
-            byte[] bytes = Convert.FromBase64String(payload);
-            using var doc = JsonDocument.Parse(bytes);
-            JsonElement root = doc.RootElement;
-
-            string? issuer = root.TryGetProperty("iss", out JsonElement iss) ? iss.GetString() : null;
-            string? subject = root.TryGetProperty("sub", out JsonElement sub) ? sub.GetString() : null;
-            string? jti = root.TryGetProperty("jti", out JsonElement jtiEl) ? jtiEl.GetString() : null;
-
-            bool hasEvent = root.TryGetProperty("events", out JsonElement events)
-                && events.TryGetProperty("http://schemas.openid.net/event/backchannel-logout", out _);
-
-            return new LogoutTokenClaims(issuer, subject, jti, hasEvent);
-        }
-        catch (FormatException)
-        {
-            return null;
-        }
-        catch (JsonException)
-        {
-            return null;
-        }
-    }
-
-    private sealed record LogoutTokenClaims(
-        string? Issuer,
-        string? Subject,
-        string? Jti,
-        bool HasBackChannelLogoutEvent);
-
     // ──── Source-generated log messages ────
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "BFF back-channel logout: invalid logout token for frontend {FrontendName}")]
     private static partial void LogInvalidLogoutToken(ILogger logger, string frontendName);
-
-    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF back-channel logout: issuer mismatch — received '{ReceivedIssuer}', expected '{ExpectedIssuer}' for frontend {FrontendName}")]
-    private static partial void LogIssuerMismatch(ILogger logger, string receivedIssuer, string expectedIssuer, string frontendName);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "BFF back-channel logout: replay detected for jti '{Jti}' on frontend {FrontendName}")]
     private static partial void LogReplayDetected(ILogger logger, string jti, string frontendName);

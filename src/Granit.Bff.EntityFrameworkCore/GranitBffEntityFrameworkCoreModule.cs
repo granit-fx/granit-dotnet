@@ -1,4 +1,5 @@
 using Granit.Bff.EntityFrameworkCore.Internal;
+using Granit.Encryption;
 using Granit.Modularity;
 using Granit.Persistence;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,8 +11,13 @@ namespace Granit.Bff.EntityFrameworkCore;
 /// Replaces the default <see cref="IDistributedCache"/>-backed <c>IBffTokenStore</c>
 /// for deployments without Redis.
 /// </summary>
+/// <remarks>
+/// Token encryption at rest is enabled automatically when <c>GranitEncryptionModule</c>
+/// is loaded. Without it, tokens are stored as plaintext JSON (a warning is logged).
+/// </remarks>
 [DependsOn(
     typeof(GranitBffModule),
+    typeof(GranitEncryptionModule),
     typeof(GranitPersistenceModule))]
 public sealed class GranitBffEntityFrameworkCoreModule : GranitModule
 {

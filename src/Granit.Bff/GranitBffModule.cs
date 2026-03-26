@@ -32,6 +32,7 @@ public sealed class GranitBffModule : GranitModule
         context.Services.TryAddSingleton<BffMetrics>();
         context.Services.TryAddScoped<IBffTokenStore, DistributedCacheBffTokenStore>();
         context.Services.TryAddSingleton<IBffCsrfTokenGenerator, HmacBffCsrfTokenGenerator>();
+        context.Services.TryAddSingleton<ILogoutTokenValidator, LogoutTokenValidator>();
 
         GranitActivitySourceRegistry.Register(BffActivitySource.Name);
     }

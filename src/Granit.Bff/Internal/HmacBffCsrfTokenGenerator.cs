@@ -1,19 +1,30 @@
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using Granit.Bff.Options;
 using Granit.Timing;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Bff.Internal;
 
 /// <summary>
-/// HMAC-SHA256 based CSRF token generator. Uses a random key generated at startup.
+/// HMAC-SHA256 based CSRF token generator.
 /// Token format: <c>{timestampUnixSeconds}:{hmac-hex}</c>.
 /// Validation checks both HMAC integrity and a 24-hour sliding window.
 /// </summary>
-internal sealed class HmacBffCsrfTokenGenerator(IClock clock) : IBffCsrfTokenGenerator
+/// <remarks>
+/// The HMAC key is resolved from <see cref="GranitBffOptions.CsrfHmacKey"/> (base64-encoded).
+/// When not configured, a random key is generated at startup — suitable for single-instance
+/// deployments only. Multi-instance deployments MUST configure a shared key.
+/// </remarks>
+internal sealed partial class HmacBffCsrfTokenGenerator(
+    IClock clock,
+    IOptions<GranitBffOptions> options,
+    ILogger<HmacBffCsrfTokenGenerator> logger) : IBffCsrfTokenGenerator
 {
     private static readonly TimeSpan ValidationWindow = TimeSpan.FromHours(24);
-    private readonly byte[] _key = RandomNumberGenerator.GetBytes(32);
+    private readonly byte[] _key = ResolveKey(options.Value, logger);
 
     public string Generate(string sessionId)
     {
@@ -66,4 +77,22 @@ internal sealed class HmacBffCsrfTokenGenerator(IClock clock) : IBffCsrfTokenGen
 
         return Convert.ToHexStringLower(hash);
     }
+
+    private static byte[] ResolveKey(GranitBffOptions bffOptions, ILogger logger)
+    {
+        if (!string.IsNullOrEmpty(bffOptions.CsrfHmacKey))
+        {
+            return Convert.FromBase64String(bffOptions.CsrfHmacKey);
+        }
+
+        LogCsrfKeyGenerated(logger);
+        return RandomNumberGenerator.GetBytes(32);
+    }
+
+    // ──── Source-generated log messages ────
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "BFF CSRF: no CsrfHmacKey configured — generated random key. "
+            + "CSRF tokens will be invalidated on restart and are not shared across instances")]
+    private static partial void LogCsrfKeyGenerated(ILogger logger);
 }

@@ -1,8 +1,10 @@
 using System.Text.Json;
 using Granit.Bff.Options;
+using Granit.Encryption;
 using Granit.Guids;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Bff.EntityFrameworkCore.Internal;
@@ -11,16 +13,25 @@ namespace Granit.Bff.EntityFrameworkCore.Internal;
 /// <see cref="IBffTokenStore"/> implementation backed by EF Core.
 /// Alternative to <c>DistributedCacheBffTokenStore</c> for deployments without Redis.
 /// </summary>
-internal sealed class EfCoreBffTokenStore(
+/// <remarks>
+/// Tokens are encrypted at rest using <see cref="IStringEncryptionService"/> when available.
+/// If no encryption service is configured, tokens are stored as plaintext JSON and a warning
+/// is logged at startup (ISO 27001 A.8.24).
+/// </remarks>
+internal sealed partial class EfCoreBffTokenStore(
     IDbContextFactory<BffDbContext> dbContextFactory,
     IOptions<GranitBffOptions> options,
     IGuidGenerator guidGenerator,
-    IClock clock) : IBffTokenStore
+    IClock clock,
+    ILogger<EfCoreBffTokenStore> logger,
+    IStringEncryptionService? encryptionService = null) : IBffTokenStore
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
+
+    private readonly bool _encryptionEnabled = InitEncryption(encryptionService, logger);
 
     public async Task StoreAsync(string frontendName, string sessionId, BffTokenSet tokens, CancellationToken cancellationToken = default)
     {
@@ -35,7 +46,7 @@ internal sealed class EfCoreBffTokenStore(
             .FirstOrDefaultAsync(s => s.FrontendName == frontendName && s.SessionId == sessionId, cancellationToken)
             .ConfigureAwait(false);
 
-        string serialized = JsonSerializer.Serialize(tokens, JsonOptions);
+        string serialized = SerializeTokens(tokens);
         DateTimeOffset expiresAt = clock.Now.Add(options.Value.SessionDuration);
 
         if (existing is not null)
@@ -81,7 +92,7 @@ internal sealed class EfCoreBffTokenStore(
             return null;
         }
 
-        return JsonSerializer.Deserialize<BffTokenSet>(entity.SerializedTokens, JsonOptions);
+        return DeserializeTokens(entity.SerializedTokens);
     }
 
     public async Task RemoveAsync(string frontendName, string sessionId, CancellationToken cancellationToken = default)
@@ -114,4 +125,35 @@ internal sealed class EfCoreBffTokenStore(
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
     }
+
+    private string SerializeTokens(BffTokenSet tokens)
+    {
+        string json = JsonSerializer.Serialize(tokens, JsonOptions);
+        return _encryptionEnabled ? encryptionService!.Encrypt(json) : json;
+    }
+
+    private BffTokenSet? DeserializeTokens(string data)
+    {
+        string json = _encryptionEnabled ? encryptionService!.Decrypt(data) ?? data : data;
+        return JsonSerializer.Deserialize<BffTokenSet>(json, JsonOptions);
+    }
+
+    private static bool InitEncryption(IStringEncryptionService? service, ILogger logger)
+    {
+        if (service is not null)
+        {
+            return true;
+        }
+
+        LogEncryptionNotConfigured(logger);
+        return false;
+    }
+
+    // ──── Source-generated log messages ────
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "BFF EF Core token store: no IStringEncryptionService registered — "
+            + "tokens are stored as plaintext JSON (ISO 27001 A.8.24 non-conformant). "
+            + "Register Granit.Encryption to enable at-rest encryption")]
+    private static partial void LogEncryptionNotConfigured(ILogger logger);
 }

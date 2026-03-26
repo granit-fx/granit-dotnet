@@ -364,6 +364,7 @@
         "Granit.Authorization",
         "Granit.BlobStorage",
         "Granit.QueryEngine.Endpoints",
+        "Granit.RateLimiting",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -6299,6 +6300,22 @@
       ]
     },
     {
+      "name": "ILogoutTokenValidator",
+      "fqn": "Granit.Bff.ILogoutTokenValidator",
+      "kind": "interface",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/ILogoutTokenValidator.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ValidateAsync",
+          "kind": "method",
+          "signature": "ValidateAsync(string logoutToken, string expectedClientId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ValidatedLogoutToken?>"
+        }
+      ]
+    },
+    {
       "name": "BffClientAuthenticationMethod",
       "fqn": "Granit.Bff.Options.BffClientAuthenticationMethod",
       "kind": "enum",
@@ -6428,6 +6445,15 @@
           "returnType": "string?"
         }
       ]
+    },
+    {
+      "name": "ValidatedLogoutToken",
+      "fqn": "Granit.Bff.ValidatedLogoutToken",
+      "kind": "record",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/ILogoutTokenValidator.cs",
+      "line": 23,
+      "members": []
     },
     {
       "name": "BffYarpApplicationBuilderExtensions",
@@ -6973,7 +6999,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/GranitBlobStorageEndpointsModule.cs",
-      "line": 16,
+      "line": 18,
       "members": []
     },
     {
@@ -7014,6 +7040,15 @@
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/Permissions/BlobStoragePermissions.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "BlobStorageRateLimitPolicies",
+      "fqn": "Granit.BlobStorage.Endpoints.Permissions.BlobStorageRateLimitPolicies",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Endpoints",
+      "file": "src/Granit.BlobStorage.Endpoints/Permissions/BlobStorageRateLimitPolicies.cs",
+      "line": 18,
       "members": []
     },
     {
@@ -7460,6 +7495,12 @@
           "kind": "method",
           "signature": "FromMinutes(5)",
           "returnType": "TimeSpan DownloadUrlExpiry { get; set; } = TimeSpan."
+        },
+        {
+          "name": "AllowedContentTypes",
+          "kind": "property",
+          "signature": "HashSet<string> AllowedContentTypes",
+          "returnType": "HashSet<string>"
         }
       ]
     },
@@ -7677,12 +7718,34 @@
       ]
     },
     {
+      "name": "ContentTypeAllowlistValidator",
+      "fqn": "Granit.BlobStorage.Validators.ContentTypeAllowlistValidator",
+      "kind": "class",
+      "project": "Granit.BlobStorage",
+      "file": "src/Granit.BlobStorage/Validators/ContentTypeAllowlistValidator.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Order",
+          "kind": "property",
+          "signature": "int Order",
+          "returnType": "int"
+        },
+        {
+          "name": "ValidateAsync",
+          "kind": "method",
+          "signature": "ValidateAsync(BlobValidationContext context, CancellationToken cancellationToken = default)",
+          "returnType": "Task<BlobValidationResult>"
+        }
+      ]
+    },
+    {
       "name": "MagicBytesValidator",
       "fqn": "Granit.BlobStorage.Validators.MagicBytesValidator",
       "kind": "class",
       "project": "Granit.BlobStorage",
       "file": "src/Granit.BlobStorage/Validators/MagicBytesValidator.cs",
-      "line": 18,
+      "line": 21,
       "members": [
         {
           "name": "Order",
@@ -7726,7 +7789,7 @@
       "kind": "class",
       "project": "Granit.Caching",
       "file": "src/Granit.Caching/AesCacheValueEncryptor.cs",
-      "line": 21,
+      "line": 22,
       "members": []
     },
     {
@@ -7960,7 +8023,7 @@
       "kind": "class",
       "project": "Granit.Caching.StackExchangeRedis",
       "file": "src/Granit.Caching.StackExchangeRedis/Extensions/RedisCachingServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitCachingRedis",
@@ -8020,7 +8083,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.AI",
       "file": "src/Granit.DataExchange.AI/Extensions/DataExchangeAIHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitDataExchangeAI",
@@ -8382,7 +8445,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/Domain/ExportJob.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "Create",
@@ -8415,10 +8478,10 @@
           "returnType": "ExportJobStatus"
         },
         {
-          "name": "MarkAsExporting",
-          "kind": "method",
-          "signature": "MarkAsExporting()",
-          "returnType": "string? BlobReference { get; private set; } public string? FileName { get; private set; } public int? RowCount { get; private set; } public string? ErrorMessage { get; private set; } public DateTimeOffset? CompletedAt { get; private set; } public Guid? TenantId { get; private set; } internal void"
+          "name": "BlobReference",
+          "kind": "property",
+          "signature": "string? BlobReference",
+          "returnType": "string?"
         }
       ]
     },
@@ -8807,7 +8870,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Import/Domain/ImportJob.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "Create",
@@ -8852,10 +8915,10 @@
           "returnType": "ImportJobStatus"
         },
         {
-          "name": "SetMappings",
-          "kind": "method",
-          "signature": "SetMappings(string mappingsJson)",
-          "returnType": "string? MappingsJson { get; private set; } public string? ReportJson { get; private set; } public DateTimeOffset? CompletedAt { get; private set; } public Guid? TenantId { get; private set; } internal void"
+          "name": "MappingsJson",
+          "kind": "property",
+          "signature": "string? MappingsJson",
+          "returnType": "string?"
         }
       ]
     },
@@ -9937,12 +10000,18 @@
       "kind": "class",
       "project": "Granit.Diagnostics",
       "file": "src/Granit.Diagnostics/ResponseWriters/GranitHealthCheckWriter.cs",
-      "line": 16,
+      "line": 26,
       "members": [
         {
           "name": "WriteAsync",
           "kind": "method",
           "signature": "WriteAsync(HttpContext context, HealthReport report)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WriteMinimalAsync",
+          "kind": "method",
+          "signature": "WriteMinimalAsync(HttpContext context, HealthReport report)",
           "returnType": "Task"
         }
       ]

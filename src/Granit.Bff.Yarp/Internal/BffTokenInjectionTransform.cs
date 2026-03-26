@@ -76,7 +76,7 @@ internal sealed partial class BffTokenInjectionTransform(
 
         if (tokens is null)
         {
-            LogExpiredSession(logger, sessionId, frontend.Name);
+            LogExpiredSession(logger, MaskSessionId(sessionId), frontend.Name);
             metrics.RecordProxyError(null, "expired_session");
             httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;
@@ -97,14 +97,14 @@ internal sealed partial class BffTokenInjectionTransform(
                     .ConfigureAwait(false);
 
                 metrics.RecordTokenRefresh(null);
-                LogTokenRefreshed(logger, sessionId, frontend.Name);
+                LogTokenRefreshed(logger, MaskSessionId(sessionId), frontend.Name);
 
                 // Signal to the SPA that the session was refreshed
                 httpContext.Response.Headers["X-Bff-Session-Refreshed"] = "true";
             }
             else
             {
-                LogTokenRefreshFailed(logger, sessionId, frontend.Name);
+                LogTokenRefreshFailed(logger, MaskSessionId(sessionId), frontend.Name);
                 metrics.RecordProxyError(null, "refresh_failed");
                 httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
@@ -259,6 +259,9 @@ internal sealed partial class BffTokenInjectionTransform(
             {
                 DPoPPrivateKeyJwk = currentTokens.DPoPPrivateKeyJwk,
                 DPoPNonce = dpopNonce,
+                SessionCreatedAt = currentTokens.SessionCreatedAt,
+                UserId = currentTokens.UserId,
+                UserAgent = currentTokens.UserAgent,
             };
         }
         catch (OperationCanceledException)
@@ -271,6 +274,9 @@ internal sealed partial class BffTokenInjectionTransform(
             return null;
         }
     }
+
+    private static string MaskSessionId(string sessionId) =>
+        sessionId.Length > 8 ? $"{sessionId[..4]}...{sessionId[^4..]}" : "****";
 
     private IClientAuthenticationStrategy ResolveClientAuth(BffFrontendOptions frontend) =>
         frontend.ClientAuthenticationMethod == BffClientAuthenticationMethod.PrivateKeyJwt
