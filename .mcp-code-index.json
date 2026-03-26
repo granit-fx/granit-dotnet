@@ -47,6 +47,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.AI.Mcp",
+      "deps": [
+        "Granit.AI",
+        "Granit.Mcp.Client"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.AI.Ollama",
       "deps": [
         "Granit.AI",
@@ -812,6 +820,13 @@
       "name": "Granit.Mcp",
       "deps": [
         "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Mcp.Client",
+      "deps": [
+        "Granit.Mcp"
       ],
       "framework": "net10.0"
     },
@@ -2206,6 +2221,81 @@
           "kind": "method",
           "signature": "RecordAsync(AIUsageRecord record, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "AIMcpHostApplicationBuilderExtensions",
+      "fqn": "Granit.AI.Mcp.Extensions.AIMcpHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.AI.Mcp",
+      "file": "src/Granit.AI.Mcp/Extensions/AIMcpHostApplicationBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitAIMcp",
+          "kind": "method",
+          "signature": "AddGranitAIMcp(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIMcpModule",
+      "fqn": "Granit.AI.Mcp.GranitAIMcpModule",
+      "kind": "class",
+      "project": "Granit.AI.Mcp",
+      "file": "src/Granit.AI.Mcp/GranitAIMcpModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "IMcpToolSourceProvider",
+      "fqn": "Granit.AI.Mcp.IMcpToolSourceProvider",
+      "kind": "interface",
+      "project": "Granit.AI.Mcp",
+      "file": "src/Granit.AI.Mcp/IMcpToolSourceProvider.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "GetToolsAsync",
+          "kind": "method",
+          "signature": "GetToolsAsync(string workspaceName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<AITool>>"
+        }
+      ]
+    },
+    {
+      "name": "GranitAIMcpOptions",
+      "fqn": "Granit.AI.Mcp.Options.GranitAIMcpOptions",
+      "kind": "class",
+      "project": "Granit.AI.Mcp",
+      "file": "src/Granit.AI.Mcp/Options/GranitAIMcpOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "EnableSampling",
+          "kind": "property",
+          "signature": "bool EnableSampling",
+          "returnType": "bool"
+        },
+        {
+          "name": "SamplingRateLimitPerMinute",
+          "kind": "property",
+          "signature": "int SamplingRateLimitPerMinute",
+          "returnType": "int"
+        },
+        {
+          "name": "SamplingMaxTokensPerRequest",
+          "kind": "property",
+          "signature": "int SamplingMaxTokensPerRequest",
+          "returnType": "int"
+        },
+        {
+          "name": "ToolSourceConnections",
+          "kind": "property",
+          "signature": "List<string> ToolSourceConnections",
+          "returnType": "List<string>"
         }
       ]
     },
@@ -15837,6 +15927,91 @@
           "kind": "method",
           "signature": "Initialize(IncrementalGeneratorInitializationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "McpClientHostApplicationBuilderExtensions",
+      "fqn": "Granit.Mcp.Client.Extensions.McpClientHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Mcp.Client",
+      "file": "src/Granit.Mcp.Client/Extensions/McpClientHostApplicationBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitMcpClient",
+          "kind": "method",
+          "signature": "AddGranitMcpClient(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitMcpClientModule",
+      "fqn": "Granit.Mcp.Client.GranitMcpClientModule",
+      "kind": "class",
+      "project": "Granit.Mcp.Client",
+      "file": "src/Granit.Mcp.Client/GranitMcpClientModule.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "IMcpClientFactory",
+      "fqn": "Granit.Mcp.Client.IMcpClientFactory",
+      "kind": "interface",
+      "project": "Granit.Mcp.Client",
+      "file": "src/Granit.Mcp.Client/IMcpClientFactory.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(string connectionName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<McpClient>"
+        }
+      ]
+    },
+    {
+      "name": "GranitMcpClientOptions",
+      "fqn": "Granit.Mcp.Client.Options.GranitMcpClientOptions",
+      "kind": "class",
+      "project": "Granit.Mcp.Client",
+      "file": "src/Granit.Mcp.Client/Options/GranitMcpClientOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Connections",
+          "kind": "property",
+          "signature": "Dictionary<string, McpConnectionOptions> Connections",
+          "returnType": "Dictionary<string, McpConnectionOptions>"
+        }
+      ]
+    },
+    {
+      "name": "McpConnectionOptions",
+      "fqn": "Granit.Mcp.Client.Options.McpConnectionOptions",
+      "kind": "class",
+      "project": "Granit.Mcp.Client",
+      "file": "src/Granit.Mcp.Client/Options/McpConnectionOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Url",
+          "kind": "property",
+          "signature": "string? Url",
+          "returnType": "string?"
+        },
+        {
+          "name": "ForwardCredentials",
+          "kind": "property",
+          "signature": "bool ForwardCredentials",
+          "returnType": "bool"
+        },
+        {
+          "name": "Command",
+          "kind": "property",
+          "signature": "string? Command",
+          "returnType": "string?"
         }
       ]
     },

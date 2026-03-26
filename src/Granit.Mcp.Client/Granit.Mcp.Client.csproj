@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Mcp.Client</PackageId>
+    <Description>MCP client module for Granit. Provides a named factory (IMcpClientFactory) for connecting to external MCP servers via HTTP or stdio transport, with automatic credential forwarding from the current user's JWT.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Mcp.Client.Tests" />
+    <InternalsVisibleTo Include="Granit.AI.Mcp" />
+    <InternalsVisibleTo Include="Granit.AI.Mcp.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ModelContextProtocol" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Mcp\Granit.Mcp.csproj" />
+  </ItemGroup>
+
+</Project>

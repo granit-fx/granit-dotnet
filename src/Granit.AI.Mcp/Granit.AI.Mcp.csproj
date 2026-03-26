@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.AI.Mcp</PackageId>
+    <Description>Bridges MCP tools into Granit AI workspaces. Provides IMcpToolSourceProvider for injecting external MCP tools as AITool in IChatClient pipelines, and a SamplingGuard for cost-controlled, rate-limited, audited MCP sampling.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.AI.Mcp.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.AI\Granit.AI.csproj" />
+    <ProjectReference Include="..\Granit.Mcp.Client\Granit.Mcp.Client.csproj" />
+  </ItemGroup>
+
+</Project>
