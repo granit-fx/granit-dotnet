@@ -36,21 +36,21 @@ Open an issue using the **Feature** template. Describe:
 ### Submitting changes
 
 1. **Fork** the repository
-2. **Create a branch** from `develop` (see [Git Workflow](./git-workflow.md))
-3. **Write your code** following the [Coding Standards](./coding-standards.md)
-4. **Write or update tests** (see [Testing Guide](./testing-guide.md))
-5. **Run the [Definition of Done](./definition-of-done.md) checks**
+2. **Create a branch** from `develop` (see [Git Workflow](./git-workflow/))
+3. **Write your code** following the [Coding Standards](./coding-standards/)
+4. **Write or update tests** (see [Testing Guide](./testing-guide/))
+5. **Run the [Definition of Done](./definition-of-done/) checks**
 6. **Commit** using Conventional Commits
 7. **Open a merge request** against `develop`
 
 ## Section contents
 
-- [Development Setup](./development-setup.md) -- prerequisites, build, test, project structure
-- [Coding Standards](./coding-standards.md) -- C# style, naming, architecture conventions
-- [Module Structure](./module-structure.md) -- how to create a new Granit module
-- [Testing Guide](./testing-guide.md) -- xUnit, Shouldly, NSubstitute, Bogus
-- [Definition of Done](./definition-of-done.md) -- blocking checklist before any push
-- [Git Workflow](./git-workflow.md) -- branches, commits, MR targets, releases
+- [Development Setup](./development-setup/) -- prerequisites, build, test, project structure
+- [Coding Standards](./coding-standards/) -- C# style, naming, architecture conventions
+- [Module Structure](./module-structure/) -- how to create a new Granit module
+- [Testing Guide](./testing-guide/) -- xUnit, Shouldly, NSubstitute, Bogus
+- [Definition of Done](./definition-of-done/) -- blocking checklist before any push
+- [Git Workflow](./git-workflow/) -- branches, commits, MR targets, releases
 
 ## License
 
