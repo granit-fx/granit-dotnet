@@ -1,0 +1,253 @@
+---
+title: "MCP — Model Context Protocol"
+description: Expose Granit module capabilities as MCP tools, resources, and prompts for AI agents. Built on the official MCP C# SDK.
+sidebar:
+  label: Overview
+  order: 1
+---
+
+import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
+
+Granit wraps the official [MCP C# SDK](https://github.com/modelcontextprotocol/csharp-sdk)
+to let any Granit-based application expose its capabilities to AI agents (Claude, Copilot,
+custom) via the **Model Context Protocol**.
+
+## Packages
+
+| Package | Purpose |
+|---------|---------|
+| `Granit.Mcp` | Base abstractions, auto-discovery, sanitization pipeline, diagnostics |
+| `Granit.Mcp.Server` | ASP.NET Core Streamable HTTP transport, auth, permissions |
+| `Granit.Mcp.Client` | Connect to external MCP servers (HTTP + stdio) |
+| `Granit.AI.Mcp` | Bridge MCP tools into AI workspaces, sampling guard |
+
+## Getting started
+
+### 1. Install packages
+
+```bash
+dotnet add package Granit.Mcp
+dotnet add package Granit.Mcp.Server
+```
+
+### 2. Register modules
+
+```csharp
+builder.AddGranit(granit =>
+{
+    granit.AddModule<GranitMcpServerModule>();
+});
+
+builder.AddGranitMcpServer();
+```
+
+### 3. Map the endpoint
+
+```csharp
+app.MapGranitMcpServer();
+```
+
+This exposes a Streamable HTTP endpoint at `/mcp` (configurable) protected by
+`Mcp.Server.Access` permission.
+
+## How to AI-enable your module
+
+Any Granit module can expose MCP tools in 3 steps:
+
+### Step 1: Create a tool class
+
+```csharp
+[McpServerToolType, McpExposed]
+[Authorize(Policy = "BlobStorage.Blobs.Read")]
+public sealed class BlobStorageMcpTools(IBlobStoreReader reader)
+{
+    [McpServerTool, Description("Lists blob descriptors for the current tenant.")]
+    [McpToolOptions(ReadOnly = true)]
+    public async Task<string> ListBlobsAsync(
+        ICurrentTenant tenant,
+        [Description("Optional container name filter")] string? container,
+        CancellationToken ct)
+    {
+        // tenant and ct are DI-injected, invisible to the LLM
+        var blobs = await reader.GetListAsync(container, ct);
+        return JsonSerializer.Serialize(blobs);
+    }
+}
+```
+
+### Step 2: Mark destructive tools
+
+```csharp
+[McpServerTool, Description("Deletes a blob permanently.")]
+[Authorize(Policy = "BlobStorage.Blobs.Manage")]
+[McpToolOptions(Destructive = true)]
+public async Task DeleteBlobAsync(Guid id, ...) { ... }
+```
+
+MCP clients (Claude Desktop, Cursor) will prompt for confirmation before invoking
+destructive tools.
+
+### Step 3: Done
+
+`GranitMcpModule` auto-discovers all `[McpServerToolType]` classes from loaded
+module assemblies. No manual registration needed.
+
+<Aside type="tip">
+In **Explicit** discovery mode (default, recommended for production), tool classes
+must have both `[McpServerToolType]` and `[McpExposed]` to be discovered. In
+**Auto** mode, all `[McpServerToolType]` classes are exposed.
+</Aside>
+
+## Authorization
+
+Authorization uses standard ASP.NET Core `[Authorize]` attributes via the SDK's
+`.AddAuthorizationFilters()`. Granit's `DynamicPermissionPolicyProvider` maps
+policy names to Granit permissions automatically:
+
+```csharp
+// Class-level: all tools require this permission
+[Authorize(Policy = McpPermissions.Tools.Execute)]
+
+// Method-level: override for specific tools
+[Authorize(Policy = "BlobStorage.Blobs.Read")]
+```
+
+Tool methods can also receive `ClaimsPrincipal` via DI for runtime checks.
+
+## Data protection (GDPR)
+
+MCP tool responses are automatically sanitized before reaching the client:
+
+- **`[McpRedact]`** attribute on DTO properties controls redaction strategy
+- **`PrivacyAwareSanitizer`** integrates with `Granit.Privacy` for automatic PII detection
+- **`ResponseSizeLimitSanitizer`** truncates responses beyond 50 KB (configurable)
+- **`ErrorSanitizer`** strips stack traces and connection strings from errors
+
+```csharp
+public sealed class UserResponse
+{
+    public string DisplayName { get; init; }
+
+    [McpRedact(Strategy = RedactionStrategy.Omit)]
+    public string Email { get; init; }
+
+    [McpRedact(Strategy = RedactionStrategy.Hash)]
+    public string SocialSecurityNumber { get; init; }
+}
+```
+
+<Aside type="note">
+Default redaction strategy is **Omit** (not Mask). Masked values waste LLM tokens
+and can trigger hallucinations.
+</Aside>
+
+## Tool visibility
+
+Three independent filters control which tools appear in `tools/list`:
+
+| Filter | Attribute | Behavior |
+|--------|-----------|----------|
+| Explicit discovery | `[McpExposed]` | Required in `Explicit` mode (default) |
+| Tenant scope | `[McpTenantScope(RequireTenant = true)]` | Hidden when no tenant context |
+| Module scope | `EnabledModules` config | Only tools from listed modules |
+
+```json
+{
+  "Mcp": {
+    "Server": {
+      "EnabledModules": ["BlobStorage", "Workflow"]
+    }
+  }
+}
+```
+
+## Human-in-the-loop (Elicitation)
+
+The MCP SDK supports `server.ElicitAsync()` for requesting user input — forms,
+OAuth authorization, and confirmation dialogs. Use this for operations that
+require explicit user consent:
+
+```csharp
+var result = await server.ElicitAsync(new ElicitRequestParams
+{
+    Message = "Confirm deletion of 42 blobs?",
+    RequestedSchema = new ElicitRequestParams.RequestSchema
+    {
+        Properties = new Dictionary<string, ElicitRequestParams.PrimitiveSchemaDefinition>
+        {
+            ["confirm"] = new ElicitRequestParams.BooleanSchema
+            {
+                Description = "Type true to confirm deletion",
+            },
+        },
+    },
+}, cancellationToken);
+```
+
+## DPoP compatibility
+
+`Granit.Authentication.DPoP` validates DPoP proofs via standard ASP.NET Core
+middleware. Since `MapGranitMcpServer()` uses `.RequireAuthorization()`, DPoP
+is automatically enforced when configured.
+
+## Consuming external MCP servers
+
+```csharp
+builder.AddGranitMcpClient();
+```
+
+```json
+{
+  "Mcp": {
+    "Client": {
+      "Connections": {
+        "erp": { "Url": "https://erp.internal/mcp", "ForwardCredentials": true },
+        "local-tools": { "Transport": "stdio", "Command": "dotnet", "Arguments": ["run", "--project", "../tools/"] }
+      }
+    }
+  }
+}
+```
+
+```csharp
+IMcpClientFactory factory = sp.GetRequiredService<IMcpClientFactory>();
+McpClient client = await factory.CreateAsync("erp", cancellationToken);
+IList<McpClientTool> tools = await client.ListToolsAsync();
+```
+
+## AI workspace integration
+
+`Granit.AI.Mcp` bridges external MCP tools into AI workspaces:
+
+```csharp
+builder.AddGranitAIMcp();
+```
+
+```json
+{
+  "AI": {
+    "Mcp": {
+      "ToolSourceConnections": ["erp"],
+      "EnableSampling": false,
+      "SamplingMaxTokensPerRequest": 2000
+    }
+  }
+}
+```
+
+<Aside type="caution">
+**Sampling** (external MCP servers requesting LLM completions) is disabled by
+default. Enable only for trusted servers — the `SamplingGuard` enforces
+rate limiting (10/min/tenant) and token cost control (2000 tokens/request).
+</Aside>
+
+## Metrics
+
+Meter: `Granit.Mcp`
+
+| Metric | Type | Tags |
+|--------|------|------|
+| `granit.mcp.tools.invoked` | Counter | `tenant_id`, `tool_name`, `status` |
+| `granit.mcp.resources.read` | Counter | `tenant_id`, `resource_uri` |
+| `granit.mcp.sessions.active` | UpDownCounter | `tenant_id`, `transport` |
+| `granit.mcp.request.duration` | Histogram | `tenant_id`, `method` |

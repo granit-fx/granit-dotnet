@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-03-24
+Dernière mise à jour : 2026-03-26
 
 ---
 
@@ -13,7 +13,7 @@ Dernière mise à jour : 2026-03-24
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
 | MIT          | 78                 |
-| Apache-2.0   | 32                 |
+| Apache-2.0   | 34                 |
 | BSD-3-Clause | 2                  |
 | BSD-2-Clause | 1                  |
 | PostgreSQL   | 1                  |
@@ -108,6 +108,8 @@ Dernière mise à jour : 2026-03-24
 | Google.Cloud.SecretManager.V1 | 2.7.0 | Copyright (c) Google LLC |
 | Google.Cloud.Storage.V1 | 4.14.0 | Copyright (c) Google LLC |
 | Magick.NET-Q8-AnyCPU | 14.10.3 | Copyright 2013-2026 Dirk Lemstra |
+| ModelContextProtocol | 1.1.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
+| ModelContextProtocol.AspNetCore | 1.1.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
 | OpenIddict | 7.4.0 | Copyright (c) Kévin Chalet |
 | OpenIddict.EntityFrameworkCore | 7.4.0 | Copyright (c) Kévin Chalet |
 | OpenIddict.Server.AspNetCore | 7.4.0 | Copyright (c) Kévin Chalet |

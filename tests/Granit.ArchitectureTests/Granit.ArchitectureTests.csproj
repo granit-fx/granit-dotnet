@@ -124,10 +124,14 @@
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.GoogleCloud\Granit.Identity.Federated.GoogleCloud.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Keycloak\Granit.Identity.Federated.Keycloak.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Local.AspNetIdentity\Granit.Identity.Local.AspNetIdentity.csproj" />
+    <ProjectReference Include="..\..\src\Granit.AI.Mcp\Granit.AI.Mcp.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging\Granit.Imaging.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging.AI\Granit.Imaging.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging.MagickNet\Granit.Imaging.MagickNet.csproj" />
     <ProjectReference Include="..\..\src\Granit.Localization\Granit.Localization.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Mcp\Granit.Mcp.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Mcp.Client\Granit.Mcp.Client.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Mcp.Server\Granit.Mcp.Server.csproj" />
     <ProjectReference Include="..\..\src\Granit.Localization.AI\Granit.Localization.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Localization.Endpoints\Granit.Localization.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Localization.EntityFrameworkCore\Granit.Localization.EntityFrameworkCore.csproj" />
