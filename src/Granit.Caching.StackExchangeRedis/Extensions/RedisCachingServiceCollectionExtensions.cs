@@ -5,6 +5,7 @@ using Granit.Caching.StackExchangeRedis.Internal;
 using Granit.Caching.StackExchangeRedis.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
@@ -14,8 +15,14 @@ namespace Granit.Caching.StackExchangeRedis.Extensions;
 /// <summary>
 /// DI registration extensions for the Redis cache provider.
 /// </summary>
-public static class RedisCachingServiceCollectionExtensions
+public static partial class RedisCachingServiceCollectionExtensions
 {
+    [LoggerMessage(Level = LogLevel.Warning, Message =
+        "Redis distributed cache is active but Cache:EncryptValues is disabled — " +
+        "cached values are stored in plaintext in Redis. " +
+        "Set Cache:EncryptValues to true for production deployments")]
+    private static partial void LogCacheEncryptionDisabled(ILogger logger);
+
     /// <summary>
     /// Upgrades FusionCache with L2 Redis distributed cache and Redis pub/sub backplane.
     /// Enables AES-256 encryption (<see cref="AesCacheValueEncryptor"/>) when
@@ -55,13 +62,20 @@ public static class RedisCachingServiceCollectionExtensions
                 redis.InstanceName = granitOpts.Value.InstanceName;
             });
 
-        // Conditional AES-256 encryption: factory resolves at runtime based on CachingOptions.EncryptValues.
+        // Conditional AES-256-GCM encryption: factory resolves at runtime based on CachingOptions.EncryptValues.
         services.AddSingleton<ICacheValueEncryptor>(sp =>
         {
             CachingOptions cachingOpts = sp.GetRequiredService<IOptions<CachingOptions>>().Value;
             if (cachingOpts.EncryptValues)
             {
                 return ActivatorUtilities.CreateInstance<AesCacheValueEncryptor>(sp);
+            }
+
+            ILogger? logger = sp.GetService<ILoggerFactory>()
+                ?.CreateLogger(typeof(RedisCachingServiceCollectionExtensions));
+            if (logger is not null)
+            {
+                LogCacheEncryptionDisabled(logger);
             }
 
             return new NullCacheValueEncryptor();

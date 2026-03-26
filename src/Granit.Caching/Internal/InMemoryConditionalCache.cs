@@ -18,18 +18,19 @@ internal sealed class InMemoryConditionalCache(TimeProvider timeProvider) : ICon
     /// <inheritdoc/>
     public Task<bool> SetIfAbsentAsync<T>(string key, T value, TimeSpan ttl, CancellationToken cancellationToken)
     {
-        Cleanup();
-        DateTimeOffset expiresAt = timeProvider.GetUtcNow() + ttl;
-
-        // ConcurrentDictionary.TryAdd is atomic for the "absent" case.
-        // If the key exists but is expired, remove it first then try again.
-        if (_store.TryGetValue(key, out (object? Value, DateTimeOffset ExpiresAt) existing) && timeProvider.GetUtcNow() >= existing.ExpiresAt)
+        lock (_lock)
         {
-            _store.TryRemove(key, out _);
-        }
+            Cleanup();
+            DateTimeOffset expiresAt = timeProvider.GetUtcNow() + ttl;
 
-        bool added = _store.TryAdd(key, (value, expiresAt));
-        return Task.FromResult(added);
+            if (_store.TryGetValue(key, out (object? Value, DateTimeOffset ExpiresAt) existing) && timeProvider.GetUtcNow() >= existing.ExpiresAt)
+            {
+                _store.TryRemove(key, out _);
+            }
+
+            bool added = _store.TryAdd(key, (value, expiresAt));
+            return Task.FromResult(added);
+        }
     }
 
     /// <inheritdoc/>

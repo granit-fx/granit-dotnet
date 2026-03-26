@@ -62,7 +62,7 @@ deleting them.
 | Feature resolution too slow (DB query on every request) | L1 cache (nanoseconds) + L2 Redis (microseconds) |
 | Stampede on cache miss (100 requests = 100 DB queries) | FusionCache native stampede protection |
 | Factory failure during cache miss | Fail-safe returns stale data instead of 500 error |
-| Sensitive data in Redis cache | `EncryptingFusionCacheSerializer` (AES-256-CBC) |
+| Sensitive data in Redis cache | `EncryptingFusionCacheSerializer` (AES-256-GCM) |
 
 ## Usage example
 

@@ -298,8 +298,8 @@ messages — they are replayed when the connection is restored.
 ## Encryption
 
 `EncryptingFusionCacheSerializer` is a decorator around the SystemTextJson serializer that
-applies AES-256-CBC encryption to all L2 (Redis) traffic. L1 in-memory cache stores plain
-.NET objects — same threat model as `IMemoryCache`.
+applies AES-256-GCM authenticated encryption to all L2 (Redis) traffic. L1 in-memory cache
+stores plain .NET objects — same threat model as `IMemoryCache`.
 
 | Layer | Storage | Encrypted |
 |-------|---------|-----------|
@@ -310,7 +310,9 @@ Encryption is activated by setting `CachingOptions.EncryptValues = true` and pro
 an AES-256 key in `CacheEncryptionOptions.Key`. The `GranitCachingStackExchangeRedisModule` replaces
 the no-op `NullCacheValueEncryptor` with `AesCacheValueEncryptor` at startup.
 
-Each encryption operation generates a random 16-byte IV, prepended to the ciphertext.
+Each encryption operation generates a random 12-byte nonce and produces a 16-byte
+authentication tag. Ciphertext format: `[12B nonce][16B tag][NB ciphertext]`.
+Tampered values are detected and rejected via the GCM tag.
 
 :::caution
 The encryption key must be exactly 32 bytes (256 bits) when base64-decoded. In production,

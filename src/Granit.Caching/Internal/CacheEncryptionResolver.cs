@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Reflection;
 using Granit.Caching.Options;
 
@@ -6,9 +7,12 @@ namespace Granit.Caching.Internal;
 /// <summary>
 /// Resolves whether AES encryption should be applied for a given type.
 /// Considers the <see cref="CacheEncryptedAttribute"/> attribute and the global <see cref="CachingOptions.EncryptValues"/> flag.
+/// Results are cached per type to avoid repeated reflection.
 /// </summary>
 internal static class CacheEncryptionResolver
 {
+    private static readonly ConcurrentDictionary<Type, bool?> s_attributeCache = new();
+
     /// <summary>
     /// Determines whether values of type <paramref name="type"/> should be encrypted.
     /// </summary>
@@ -17,10 +21,10 @@ internal static class CacheEncryptionResolver
     /// <returns><c>true</c> if encryption should be applied.</returns>
     internal static bool ShouldEncrypt(Type type, CachingOptions options)
     {
-        CacheEncryptedAttribute? attribute = type.GetCustomAttribute<CacheEncryptedAttribute>();
+        bool? attributeValue = s_attributeCache.GetOrAdd(
+            type,
+            static t => t.GetCustomAttribute<CacheEncryptedAttribute>()?.Encrypt);
 
-        return attribute is not null
-            ? attribute.Encrypt
-            : options.EncryptValues;
+        return attributeValue ?? options.EncryptValues;
     }
 }

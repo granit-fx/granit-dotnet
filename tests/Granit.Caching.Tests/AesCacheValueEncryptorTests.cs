@@ -1,10 +1,11 @@
 // =============================================================================
 // Tests - AesCacheValueEncryptor
 // =============================================================================
-// Vérifie que le chiffrement/déchiffrement AES-256-CBC fonctionne correctement :
+// Vérifie que le chiffrement/déchiffrement AES-256-GCM fonctionne correctement :
 //   - Encrypt(Decrypt(x)) == x (round-trip)
-//   - IV aléatoire : deux chiffrements du même plaintext donnent des ciphertexts différents
+//   - Nonce aléatoire : deux chiffrements du même plaintext donnent des ciphertexts différents
 //   - Rejet d'une clé invalide (taille != 32 octets)
+//   - Détection de falsification via le tag d'authentification GCM
 // =============================================================================
 
 using System.Security.Cryptography;
@@ -48,7 +49,7 @@ public sealed class AesCacheValueEncryptorTests
     [Fact]
     public void Encrypt_SamePlaintext_ProducesDifferentCiphertexts()
     {
-        // Arrange — IV aléatoire par opération (Gemini: jamais de IV hardcodé)
+        // Arrange — nonce aléatoire par opération
         AesCacheValueEncryptor encryptor = CreateEncryptor();
         byte[] plaintext = "test stampede ISO27001"u8.ToArray();
 
@@ -57,21 +58,21 @@ public sealed class AesCacheValueEncryptorTests
         byte[] cipher2 = encryptor.Encrypt(plaintext);
 
         // Assert
-        cipher1.ShouldNotBe(cipher2, "l'IV aléatoire doit produire des ciphertexts distincts");
+        cipher1.ShouldNotBe(cipher2, "le nonce aléatoire doit produire des ciphertexts distincts");
     }
 
     [Fact]
-    public void Decrypt_CiphertextPrefixedWithIv_ExtractsCorrectIv()
+    public void Encrypt_OutputFormat_ContainsNonceAndTag()
     {
-        // Arrange — format : [16 octets IV][N octets CipherText]
+        // Arrange — format : [12 octets Nonce][16 octets Tag][N octets CipherText]
         AesCacheValueEncryptor encryptor = CreateEncryptor();
-        byte[] plaintext = "vérification format IV"u8.ToArray();
+        byte[] plaintext = "vérification format nonce+tag"u8.ToArray();
 
         // Act
         byte[] ciphertext = encryptor.Encrypt(plaintext);
 
-        // Assert — le ciphertext doit être plus long que l'IV seul (16 octets)
-        ciphertext.Length.ShouldBeGreaterThan(16);
+        // Assert — le ciphertext doit être plus long que l'overhead (28 octets)
+        ciphertext.Length.ShouldBeGreaterThan(28);
     }
 
     [Fact]
@@ -118,16 +119,34 @@ public sealed class AesCacheValueEncryptorTests
     }
 
     [Fact]
-    public void Decrypt_CiphertextShorterThan16Bytes_ThrowsArgumentException()
+    public void Decrypt_CiphertextShorterThanOverhead_ThrowsArgumentException()
     {
-        // Arrange — ciphertext invalide : moins de 16 octets (taille de l'IV)
+        // Arrange — ciphertext invalide : moins de 28 octets (nonce 12 + tag 16)
         AesCacheValueEncryptor encryptor = CreateEncryptor();
-        byte[] tooShort = new byte[10];
+        byte[] tooShort = new byte[20];
 
         // Act
         Action act = () => encryptor.Decrypt(tooShort);
 
         // Assert
-        Should.Throw<ArgumentException>(act).Message.ShouldContain("16");
+        Should.Throw<ArgumentException>(act).Message.ShouldContain("28");
+    }
+
+    [Fact]
+    public void Decrypt_TamperedCiphertext_ThrowsCryptographicException()
+    {
+        // Arrange — GCM détecte la falsification via le tag d'authentification
+        AesCacheValueEncryptor encryptor = CreateEncryptor();
+        byte[] plaintext = "données intègres"u8.ToArray();
+        byte[] ciphertext = encryptor.Encrypt(plaintext);
+
+        // Tamper with the ciphertext body (after nonce+tag, byte index 28+)
+        if (ciphertext.Length > 28)
+        {
+            ciphertext[28] ^= 0xFF;
+        }
+
+        // Act & Assert
+        Should.Throw<CryptographicException>(() => encryptor.Decrypt(ciphertext));
     }
 }

@@ -230,13 +230,15 @@ Use a consistent pattern: `{entity}:{identifier}` or `{module}:{scope}:{identifi
 
 ## Encryption configuration
 
-AES-256-CBC encryption protects values stored in Redis (L2 only). The L1
-in-memory cache stores plain .NET objects -- same threat model as `IMemoryCache`.
+AES-256-GCM authenticated encryption protects values stored in Redis (L2 only).
+The L1 in-memory cache stores plain .NET objects -- same threat model as `IMemoryCache`.
+GCM provides both confidentiality and integrity -- tampered cache values are detected
+and rejected via the 128-bit authentication tag.
 
 ### Global encryption
 
 Set `EncryptValues: true` in the `Cache` section. All values serialized to Redis
-are encrypted with AES-256-CBC via `EncryptingFusionCacheSerializer`.
+are encrypted with AES-256-GCM via `EncryptingFusionCacheSerializer`.
 
 ```json
 {

@@ -142,7 +142,7 @@ caching provider. Drop `ICacheService<T>` entirely — consumers inject
 | Layer | Storage | Encrypted | Justification |
 | ----- | ------- | --------- | ------------- |
 | L1 | Pod-local RAM | No | Same as `IMemoryCache` — requires pod access to read |
-| L2 | Redis | Yes (AES-256-CBC) | `EncryptingFusionCacheSerializer` encrypts before write |
+| L2 | Redis | Yes (AES-256-GCM) | `EncryptingFusionCacheSerializer` encrypts before write |
 | Transit | Network | Yes (TLS) | Redis TLS configuration (infrastructure) |
 | Backplane | Redis pub/sub | No (keys only) | Only cache keys are published, not values |
 

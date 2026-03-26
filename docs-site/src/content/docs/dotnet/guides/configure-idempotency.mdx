@@ -1,6 +1,6 @@
 ---
 title: "Configure Idempotency \u2014 Safe Retries"
-description: Add Stripe-style idempotency to Minimal API endpoints — Redis-backed state machine, SHA-256 composite keys, AES-256-CBC encryption, and safe retry handling for POST/PUT/PATCH requests.
+description: Add Stripe-style idempotency to Minimal API endpoints — Redis-backed state machine, SHA-256 composite keys, AES-256-GCM encryption, and safe retry handling for POST/PUT/PATCH requests.
 sidebar:
   order: 19
   label: Configure Idempotency
@@ -11,7 +11,7 @@ import { Tabs, TabItem } from "@astrojs/starlight/components";
 Granit.Http.Idempotency provides Stripe-style HTTP idempotency for your API endpoints.
 When a client retries a request (network failure, timeout, double-click), the
 middleware returns the original response without re-executing the business logic.
-State is managed in Redis with atomic locks and AES-256-CBC encryption.
+State is managed in Redis with atomic locks and AES-256-GCM authenticated encryption.
 
 ## Prerequisites
 
@@ -156,7 +156,7 @@ Absent --(SET NX PX)--> InProgress --(SET XX PX)--> Completed
 2. **Execute handler**: The business logic runs with a `CancellationToken` that
    expires at `ExecutionTimeout`.
 3. **Store response**: On success, the response (status code, headers, body) is
-   encrypted with AES-256-CBC and stored with `CompletedTtl`.
+   encrypted with AES-256-GCM and stored with `CompletedTtl`.
 4. **On failure**: 5xx responses or exceptions release the lock so the client
    can retry.
 
@@ -192,7 +192,7 @@ change on every request, making the hash non-deterministic.
 
 - **Tenant isolation**: The Redis key includes `tenantId + userId`, preventing
   cross-tenant response replay even with identical idempotency keys.
-- **Encryption**: Cached responses are encrypted with AES-256-CBC via
+- **Encryption**: Cached responses are encrypted with AES-256-GCM via
   `ICacheValueEncryptor` (provided by `Granit.Caching`). This is mandatory for
   ISO 27001 compliance when response bodies contain health data.
 - **No side-channel**: The idempotency key is hashed before storage, preventing

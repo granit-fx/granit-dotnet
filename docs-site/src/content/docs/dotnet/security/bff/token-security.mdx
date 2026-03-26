@@ -298,7 +298,7 @@ internal sealed class EncryptedBffTokenStore(
         CancellationToken cancellationToken = default)
     {
         byte[] json = JsonSerializer.SerializeToUtf8Bytes(tokens);
-        byte[] encrypted = encryptor.Encrypt(json); // AES-256-CBC
+        byte[] encrypted = encryptor.Encrypt(json); // AES-256-GCM
 
         await cache.SetAsync(
             $"{KeyPrefix}{sessionId}",
@@ -334,9 +334,9 @@ Register it in DI to replace the default:
 services.AddScoped<IBffTokenStore, EncryptedBffTokenStore>();
 ```
 
-With `Granit.Caching`, the `AesCacheValueEncryptor` uses AES-256-CBC with a
-random IV per encryption call. The key is configured via `CachingOptions.EncryptionKey`
-(sourced from Vault in production).
+With `Granit.Caching`, the `AesCacheValueEncryptor` uses AES-256-GCM with a
+random nonce per encryption call and a 128-bit authentication tag for tamper detection.
+The key is configured via `CacheEncryptionOptions.Key` (sourced from Vault in production).
 
 </TabItem>
 </Tabs>

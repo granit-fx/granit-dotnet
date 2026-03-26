@@ -1,4 +1,5 @@
 using Granit.Caching.Internal;
+using Granit.Caching.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -11,11 +12,14 @@ public sealed class EncryptingFusionCacheSerializerAdditionalTests
 {
     private readonly FusionCacheSystemTextJsonSerializer _innerSerializer = new();
 
+    private static CachingOptions EncryptionEnabled() => new() { EncryptValues = true };
+    private static CachingOptions EncryptionDisabled() => new();
+
     [Fact]
     public void Deserialize_WithEncryptionDisabled_PassesThroughWithoutDecryption()
     {
         ICacheValueEncryptor encryptor = Substitute.For<ICacheValueEncryptor>();
-        EncryptingFusionCacheSerializer sut = new(_innerSerializer, encryptor, encrypt: false);
+        EncryptingFusionCacheSerializer sut = new(_innerSerializer, encryptor, EncryptionDisabled());
 
         byte[] serialized = _innerSerializer.Serialize("hello");
         string? result = sut.Deserialize<string>(serialized);
@@ -28,7 +32,7 @@ public sealed class EncryptingFusionCacheSerializerAdditionalTests
     public async Task SerializeAsync_WithEncryptionDisabled_PassesThroughWithoutEncryption()
     {
         ICacheValueEncryptor encryptor = Substitute.For<ICacheValueEncryptor>();
-        EncryptingFusionCacheSerializer sut = new(_innerSerializer, encryptor, encrypt: false);
+        EncryptingFusionCacheSerializer sut = new(_innerSerializer, encryptor, EncryptionDisabled());
 
         byte[] expected = _innerSerializer.Serialize("async-passthrough");
         byte[] result = await sut.SerializeAsync("async-passthrough", TestContext.Current.CancellationToken);
@@ -41,7 +45,7 @@ public sealed class EncryptingFusionCacheSerializerAdditionalTests
     public async Task DeserializeAsync_WithEncryptionDisabled_PassesThroughWithoutDecryption()
     {
         ICacheValueEncryptor encryptor = Substitute.For<ICacheValueEncryptor>();
-        EncryptingFusionCacheSerializer sut = new(_innerSerializer, encryptor, encrypt: false);
+        EncryptingFusionCacheSerializer sut = new(_innerSerializer, encryptor, EncryptionDisabled());
 
         byte[] serialized = _innerSerializer.Serialize(42);
         int? result = await sut.DeserializeAsync<int>(serialized, TestContext.Current.CancellationToken);
@@ -54,11 +58,11 @@ public sealed class EncryptingFusionCacheSerializerAdditionalTests
     public async Task DeserializeAsync_WithEncryptionEnabled_CallsDecrypt()
     {
         ICacheValueEncryptor encryptor = new AesCacheValueEncryptor(
-            Microsoft.Extensions.Options.Options.Create(new Caching.Options.CacheEncryptionOptions
+            Microsoft.Extensions.Options.Options.Create(new CacheEncryptionOptions
             {
                 Key = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32))
             }));
-        EncryptingFusionCacheSerializer sut = new(_innerSerializer, encryptor, encrypt: true);
+        EncryptingFusionCacheSerializer sut = new(_innerSerializer, encryptor, EncryptionEnabled());
 
         byte[] encrypted = await sut.SerializeAsync("decrypt-test", TestContext.Current.CancellationToken);
         string? result = await sut.DeserializeAsync<string>(encrypted, TestContext.Current.CancellationToken);
@@ -78,7 +82,7 @@ public sealed class EncryptingFusionCacheSerializerAdditionalTests
         ICacheValueEncryptor encryptor = Substitute.For<ICacheValueEncryptor>();
         encryptor.Encrypt(plainBytes).Returns(encryptedBytes);
 
-        EncryptingFusionCacheSerializer sut = new(inner, encryptor, encrypt: true);
+        EncryptingFusionCacheSerializer sut = new(inner, encryptor, EncryptionEnabled());
 
         byte[] result = sut.Serialize("test");
 
@@ -98,7 +102,7 @@ public sealed class EncryptingFusionCacheSerializerAdditionalTests
         ICacheValueEncryptor encryptor = Substitute.For<ICacheValueEncryptor>();
         encryptor.Decrypt(encryptedBytes).Returns(plainBytes);
 
-        EncryptingFusionCacheSerializer sut = new(inner, encryptor, encrypt: true);
+        EncryptingFusionCacheSerializer sut = new(inner, encryptor, EncryptionEnabled());
 
         string? result = sut.Deserialize<string>(encryptedBytes);
 
@@ -110,7 +114,7 @@ public sealed class EncryptingFusionCacheSerializerAdditionalTests
     public void RoundTrip_NullValue_PreservesNull()
     {
         ICacheValueEncryptor encryptor = new NullCacheValueEncryptor();
-        EncryptingFusionCacheSerializer sut = new(_innerSerializer, encryptor, encrypt: false);
+        EncryptingFusionCacheSerializer sut = new(_innerSerializer, encryptor, EncryptionDisabled());
 
         byte[] serialized = sut.Serialize<string?>(null);
         string? result = sut.Deserialize<string?>(serialized);

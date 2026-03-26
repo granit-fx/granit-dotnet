@@ -96,13 +96,13 @@ public static class CachingServiceCollectionExtensions
                     fc.EnableAutoRecovery = true;
                 });
 
-        // Replace the serializer with the encrypting decorator
+        // Replace the serializer with the encrypting decorator (per-type via CacheEncryptionResolver)
         services.AddSingleton<ZiggyCreatures.Caching.Fusion.Serialization.IFusionCacheSerializer>(sp =>
         {
             CachingOptions cachingOpts = sp.GetRequiredService<IOptions<CachingOptions>>().Value;
             ICacheValueEncryptor encryptor = sp.GetRequiredService<ICacheValueEncryptor>();
             var jsonSerializer = new FusionCacheSystemTextJsonSerializer(cachingOpts.JsonOptions);
-            return new EncryptingFusionCacheSerializer(jsonSerializer, encryptor, cachingOpts.EncryptValues);
+            return new EncryptingFusionCacheSerializer(jsonSerializer, encryptor, cachingOpts);
         });
 
         return services;

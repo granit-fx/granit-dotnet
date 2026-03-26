@@ -1,6 +1,6 @@
 ---
 title: "Idempotency — Safe API Request Retries"
-description: Stripe-style HTTP idempotency middleware backed by Redis. SHA-256 composite keys, AES-256-CBC encrypted entries, and a five-state machine for safe POST/PUT/PATCH retries.
+description: Stripe-style HTTP idempotency middleware backed by Redis. SHA-256 composite keys, AES-256-GCM encrypted entries, and a five-state machine for safe POST/PUT/PATCH retries.
 sidebar:
   label: Idempotency
   order: 16
@@ -8,7 +8,7 @@ sidebar:
 
 Granit.Http.Idempotency provides Stripe-style HTTP idempotency middleware backed by Redis.
 Ensures that retried POST/PUT/PATCH requests produce the same response without
-re-executing side effects. Uses SHA-256 composite keys and AES-256-CBC encrypted
+re-executing side effects. Uses SHA-256 composite keys and AES-256-GCM encrypted
 entries.
 
 ## Setup

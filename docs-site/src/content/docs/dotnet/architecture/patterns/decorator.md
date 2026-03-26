@@ -48,12 +48,13 @@ classDiagram
 
 | Decorator | File | Target | Added responsibilities |
 |-----------|------|--------|-----------------------|
-| `EncryptingFusionCacheSerializer` | `src/Granit.Caching/EncryptingFusionCacheSerializer.cs` | `IFusionCacheSerializer` | AES-256-CBC encryption of L2 (Redis) cache values |
+| `EncryptingFusionCacheSerializer` | `src/Granit.Caching/Internal/EncryptingFusionCacheSerializer.cs` | `IFusionCacheSerializer` | AES-256-GCM authenticated encryption of L2 (Redis) cache values |
 | `CachedLocalizationOverrideStore` | `src/Granit.Localization/Internal/CachedLocalizationOverrideStore.cs` | `ILocalizationOverrideStore` | FusionCache with per-tenant invalidation |
 
 **Custom variant -- Conditional encryption**: `EncryptingFusionCacheSerializer`
-wraps the inner serializer and applies AES-256-CBC encryption to all values
-written to L2 (Redis). L1 (in-process) stores unencrypted objects.
+wraps the inner serializer and applies AES-256-GCM authenticated encryption to all
+values written to L2 (Redis). L1 (in-process) stores unencrypted objects. Per-type
+encryption is resolved via `CacheEncryptionResolver` using the `[CacheEncrypted]` attribute.
 
 ## Rationale
 

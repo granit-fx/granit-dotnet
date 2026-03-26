@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Granit.Caching.Internal;
 using Granit.Caching.Options;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
@@ -50,7 +51,9 @@ internal sealed class RedisConditionalCache(
     private RedisValue Serialize<T>(T value)
     {
         byte[] json = JsonSerializer.SerializeToUtf8Bytes(value, _options.JsonOptions);
-        return _options.EncryptValues ? encryptor.Encrypt(json) : json;
+        return CacheEncryptionResolver.ShouldEncrypt(typeof(T), _options)
+            ? encryptor.Encrypt(json)
+            : json;
     }
 
     private T? Deserialize<T>(RedisValue raw)
@@ -61,7 +64,9 @@ internal sealed class RedisConditionalCache(
             return default;
         }
 
-        byte[] json = _options.EncryptValues ? encryptor.Decrypt(bytes) : bytes;
+        byte[] json = CacheEncryptionResolver.ShouldEncrypt(typeof(T), _options)
+            ? encryptor.Decrypt(bytes)
+            : bytes;
         return JsonSerializer.Deserialize<T>(json, _options.JsonOptions);
     }
 }
