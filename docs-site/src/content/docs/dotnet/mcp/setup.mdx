@@ -1,0 +1,243 @@
+---
+title: "MCP Server Setup — ASP.NET Core HTTP Transport"
+description: Install and configure Granit.Mcp.Server to expose MCP tools via Streamable HTTP. Step-by-step setup with module registration, endpoint mapping, authentication, and appsettings.json configuration reference.
+sidebar:
+  label: Setup
+  order: 2
+  badge:
+    text: New
+    variant: tip
+---
+
+import { Tabs, TabItem, FileTree, Steps } from "@astrojs/starlight/components";
+
+This guide walks through installing `Granit.Mcp` and `Granit.Mcp.Server` to expose
+your application's capabilities to AI agents via the Model Context Protocol.
+
+## Prerequisites
+
+- .NET 10 application using the Granit module system
+- `Granit.Authorization` configured (for RBAC permission checks)
+- At least one JWT authentication scheme (Bearer, Keycloak, EntraID, etc.)
+
+## Installation
+
+<Steps>
+
+1. **Add packages**
+
+   ```bash
+   dotnet add package Granit.Mcp
+   dotnet add package Granit.Mcp.Server
+   ```
+
+2. **Register modules in `Program.cs`**
+
+   ```csharp
+   builder.AddGranit(granit =>
+   {
+       granit.AddModule<GranitMcpServerModule>();
+       // GranitMcpModule is pulled in automatically via [DependsOn]
+   });
+
+   builder.AddGranitMcpServer();
+   ```
+
+3. **Map the MCP endpoint**
+
+   ```csharp
+   app.MapGranitMcpServer();
+   ```
+
+4. **Create your first tool** (see [Creating tools](/dotnet/mcp/tools/))
+
+   ```csharp
+   [McpServerToolType, McpExposed]
+   public sealed class AppointmentMcpTools(IAppointmentReader reader)
+   {
+       [McpServerTool, Description("Lists upcoming appointments for the current tenant.")]
+       [Authorize(Policy = "Scheduling.Appointments.Read")]
+       [McpToolOptions(ReadOnly = true)]
+       public async Task<string> ListUpcomingAsync(
+           [Description("Max number of results")] int limit,
+           CancellationToken ct)
+       {
+           var items = await reader.GetUpcomingAsync(limit, ct);
+           return JsonSerializer.Serialize(items);
+       }
+   }
+   ```
+
+</Steps>
+
+The MCP endpoint is now live at `/mcp`. Connect any MCP client (Claude Desktop,
+Cursor, VS Code) to `https://your-app/mcp`.
+
+## What `AddGranitMcpServer()` wires
+
+Behind the scenes, a single call registers:
+
+| Component | SDK / Granit | Purpose |
+|-----------|-------------|---------|
+| `AddMcpServer()` | SDK | Core MCP server with `Implementation { Name = "Granit" }` |
+| `WithHttpTransport()` | SDK | Streamable HTTP + legacy SSE on one endpoint |
+| `AddAuthorizationFilters()` | SDK | Enables `[Authorize]` / `[AllowAnonymous]` on tools |
+| `WithToolsFromAssembly()` | SDK | Scans module assemblies for `[McpServerToolType]` classes |
+| `WithPromptsFromAssembly()` | SDK | Scans module assemblies for `[McpServerPromptType]` classes |
+| `AddListToolsFilter` | Granit | [Tool visibility](/dotnet/mcp/visibility/) (tenant, module scope, explicit) |
+| `AddCallToolFilter` | Granit | [Output sanitization](/dotnet/mcp/security/) + audit metrics |
+| 3 visibility filters | Granit | `ExplicitDiscoveryFilter`, `TenantAwareVisibilityFilter`, `ModuleScopeVisibilityFilter` |
+| `ErrorSanitizer` | Granit | Strips stack traces and connection strings from errors |
+| `McpPermissions` | Granit | 5 RBAC permissions auto-registered in `GranitAuthorizationModule` |
+
+## What `MapGranitMcpServer()` maps
+
+```csharp
+// Default: /mcp with auth required
+app.MapGranitMcpServer();
+
+// Custom route prefix, no admin endpoints:
+app.MapGranitMcpServer(options =>
+{
+    options.RoutePrefix = "/api/mcp";
+    options.MapAdminEndpoints = false;
+});
+```
+
+| Route | Protocol | Auth | Purpose |
+|-------|----------|------|---------|
+| `{prefix}` | Streamable HTTP + SSE | `Mcp.Server.Access` | MCP protocol endpoint |
+
+## Configuration reference
+
+All options are bindable from `appsettings.json`:
+
+<Tabs>
+<TabItem label="Server options">
+
+```json
+{
+  "Mcp": {
+    "ServerName": "MyApp",
+    "ServerVersion": "2.1.0",
+    "ToolDiscovery": "Explicit",
+    "EnableTenantFiltering": true,
+    "MaxResponseSizeBytes": 51200,
+    "Server": {
+      "RoutePrefix": "/mcp",
+      "RequireAuthentication": true,
+      "MapAdminEndpoints": true,
+      "AdminTagName": "MCP Admin",
+      "EnabledModules": []
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem label="Options classes">
+
+**`GranitMcpOptions`** (section: `Mcp`)
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `ServerName` | `string` | `"Granit"` | Server name in MCP protocol info |
+| `ServerVersion` | `string?` | `null` | Server version in MCP protocol info |
+| `ToolDiscovery` | `McpToolDiscoveryMode` | `Explicit` | `Explicit` requires `[McpExposed]`; `Auto` discovers all tools |
+| `EnableTenantFiltering` | `bool` | `true` | Enable `[McpTenantScope]` filtering |
+| `MaxResponseSizeBytes` | `int` | `51200` | Response truncation threshold (0 = disabled) |
+
+**`GranitMcpServerOptions`** (section: `Mcp:Server`)
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `RoutePrefix` | `string` | `"/mcp"` | HTTP endpoint route |
+| `RequireAuthentication` | `bool` | `true` | Enforce `Mcp.Server.Access` permission |
+| `MapAdminEndpoints` | `bool` | `true` | Expose tool listing admin API |
+| `AdminTagName` | `string` | `"MCP Admin"` | OpenAPI tag for admin endpoints |
+| `EnabledModules` | `HashSet<string>` | `[]` | Module whitelist (empty = all modules) |
+
+</TabItem>
+</Tabs>
+
+## RBAC permissions
+
+`McpPermissionDefinitionProvider` auto-registers these permissions in Granit's
+authorization system:
+
+| Constant | Value | Purpose |
+|----------|-------|---------|
+| `McpPermissions.Server.Access` | `Mcp.Server.Access` | Access the MCP endpoint |
+| `McpPermissions.Tools.Read` | `Mcp.Tools.Read` | List tools (admin API) |
+| `McpPermissions.Tools.Execute` | `Mcp.Tools.Execute` | Execute MCP tools |
+| `McpPermissions.Resources.Read` | `Mcp.Resources.Read` | Read MCP resources |
+| `McpPermissions.Prompts.Read` | `Mcp.Prompts.Read` | Read MCP prompts |
+
+Assign these permissions to roles via the Granit Authorization module, then use
+them in `[Authorize(Policy = "...")]` on tool classes and methods.
+
+## Connecting MCP clients
+
+<Tabs>
+<TabItem label="Claude Desktop">
+
+Add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "my-app": {
+      "type": "url",
+      "url": "https://localhost:5001/mcp",
+      "headers": {
+        "Authorization": "Bearer <your-jwt-token>"
+      }
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem label="VS Code (Copilot)">
+
+Add to `.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "my-app": {
+      "type": "http",
+      "url": "https://localhost:5001/mcp",
+      "headers": {
+        "Authorization": "Bearer <your-jwt-token>"
+      }
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem label="Cursor">
+
+Add to Cursor settings > MCP Servers:
+
+```json
+{
+  "my-app": {
+    "url": "https://localhost:5001/mcp",
+    "headers": {
+      "Authorization": "Bearer <your-jwt-token>"
+    }
+  }
+}
+```
+
+</TabItem>
+</Tabs>
+
+## See also
+
+- [Creating MCP tools](/dotnet/mcp/tools/) — attribute reference, DI injection, return types
+- [Security & data protection](/dotnet/mcp/security/) — authorization, sanitization, DPoP
+- [Tool visibility](/dotnet/mcp/visibility/) — discovery modes, tenant scope, module scope
+- [MCP overview](/dotnet/mcp/) — architecture and design principles

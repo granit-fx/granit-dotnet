@@ -269,6 +269,18 @@ export default defineConfig({
                   ],
                 },
                 {
+                  label: "MCP",
+                  items: [
+                    { label: "Overview", link: "/dotnet/mcp/" },
+                    { label: "Setup & Configuration", link: "/dotnet/mcp/setup/" },
+                    { label: "Creating Tools", link: "/dotnet/mcp/tools/" },
+                    { label: "Security & GDPR", link: "/dotnet/mcp/security/" },
+                    { label: "Tool Visibility", link: "/dotnet/mcp/visibility/" },
+                    { label: "Client (External Servers)", link: "/dotnet/mcp/client/" },
+                    { label: "AI Integration", link: "/dotnet/mcp/ai-integration/" },
+                  ],
+                },
+                {
                   label: "Architecture",
                   items: [
                     { label: "Overview", link: "/dotnet/architecture/" },

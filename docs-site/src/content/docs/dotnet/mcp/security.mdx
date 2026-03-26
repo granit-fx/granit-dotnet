@@ -1,0 +1,219 @@
+---
+title: "MCP Security — Authorization, GDPR Sanitization & DPoP"
+description: Secure MCP tools with Granit RBAC permissions, sanitize PII from tool responses for GDPR compliance, enforce DPoP proof-of-possession, and use elicitation for human-in-the-loop confirmation flows.
+sidebar:
+  label: Security
+  order: 4
+  badge:
+    text: New
+    variant: tip
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+MCP exposes application logic to external AI agents. Granit ensures every tool
+invocation is authorized, every response is sanitized, and every action is audited.
+
+## Authorization
+
+### Standard `[Authorize]` — no custom attributes
+
+The MCP SDK's `.AddAuthorizationFilters()` (wired by `AddGranitMcpServer()`) enables
+standard ASP.NET Core `[Authorize]` on tool classes and methods. Granit's
+`DynamicPermissionPolicyProvider` maps policy names to RBAC permissions:
+
+```csharp
+[McpServerToolType, McpExposed]
+[Authorize(Policy = McpPermissions.Tools.Execute)]  // Class-level default
+public sealed class NotificationMcpTools(INotificationSender sender)
+{
+    [McpServerTool, Description("Sends a notification to a user.")]
+    [Authorize(Policy = "Notifications.Messages.Create")]
+    [McpToolOptions(Destructive = true)]
+    public async Task SendNotificationAsync(
+        [Description("Recipient user ID")] Guid userId,
+        [Description("Message body")] string message,
+        CancellationToken ct) { ... }
+
+    [McpServerTool, Description("Lists notification templates.")]
+    [Authorize(Policy = "Notifications.Templates.Read")]
+    [McpToolOptions(ReadOnly = true)]
+    public async Task<string> ListTemplatesAsync(CancellationToken ct) { ... }
+}
+```
+
+### Endpoint-level permission
+
+`MapGranitMcpServer()` applies `Mcp.Server.Access` on the HTTP endpoint itself.
+A user needs this permission to connect — then per-tool permissions apply on
+each invocation.
+
+### Runtime permission checks
+
+Inject `ClaimsPrincipal` for dynamic authorization:
+
+```csharp
+[McpServerTool, Description("Returns patient medical history.")]
+public async Task<string> GetMedicalHistoryAsync(
+    ClaimsPrincipal user,
+    IPermissionChecker permissionChecker,
+    [Description("Patient ID")] Guid patientId,
+    CancellationToken ct)
+{
+    // Runtime check: user must have access to this specific patient
+    if (!await permissionChecker.IsGrantedAsync("Patients.Records.ReadSensitive"))
+    {
+        return "Access denied: insufficient permissions for sensitive records.";
+    }
+
+    var history = await reader.GetHistoryAsync(patientId, ct);
+    return JsonSerializer.Serialize(history);
+}
+```
+
+## Output sanitization (GDPR)
+
+Tool responses pass through a sanitization pipeline before reaching the AI agent.
+This is wired into the SDK's `AddCallToolFilter` — not a parallel abstraction.
+
+### `[McpRedact]` attribute
+
+Mark sensitive properties on tool response DTOs:
+
+```csharp
+public sealed class PatientResponse
+{
+    public Guid Id { get; init; }
+    public string DisplayName { get; init; }
+
+    [McpRedact(Strategy = RedactionStrategy.Omit)]
+    public string Email { get; init; }
+
+    [McpRedact(Strategy = RedactionStrategy.Omit)]
+    public string PhoneNumber { get; init; }
+
+    [McpRedact(Strategy = RedactionStrategy.Hash)]
+    public string NationalId { get; init; }
+}
+```
+
+### Redaction strategies
+
+| Strategy | Behavior | When to use |
+|----------|----------|-------------|
+| **`Omit`** (default) | Remove property entirely | PII fields: email, phone, address |
+| **`Hash`** | Replace with stable SHA-256 | Correlation IDs: national ID, SSN |
+| **`Mask`** | Replace with `j***@***.com` | UI-facing tools only (not recommended for LLM) |
+
+:::caution
+**`Omit` is the default for a reason.** Masked values (`j***@***.com`) waste LLM
+tokens and can trigger hallucinations — the model may try to "complete" the masked
+value. Use `Mask` only for tools consumed by a human-facing UI, not by an LLM.
+:::
+
+### Built-in sanitizers
+
+| Sanitizer | Registered by | Behavior |
+|-----------|--------------|----------|
+| `ResponseSizeLimitSanitizer` | `Granit.Mcp` | Truncates responses > 50 KB (configurable via `MaxResponseSizeBytes`) |
+| `ErrorSanitizer` | `Granit.Mcp.Server` | Strips stack traces (`\n   at ...`) and connection strings from error responses |
+
+### Custom sanitizer
+
+Implement `IMcpOutputSanitizer` and register via DI:
+
+```csharp
+internal sealed class AuditTrailSanitizer : IMcpOutputSanitizer
+{
+    public ValueTask<CallToolResult> SanitizeAsync(
+        CallToolResult result,
+        IServiceProvider services,
+        CancellationToken ct)
+    {
+        // Custom sanitization logic
+        return ValueTask.FromResult(result);
+    }
+}
+
+// Registration:
+services.TryAddEnumerable(
+    ServiceDescriptor.Singleton<IMcpOutputSanitizer, AuditTrailSanitizer>());
+```
+
+Sanitizers compose in registration order — each receives the result from the
+previous sanitizer.
+
+## DPoP compatibility
+
+`Granit.Authentication.DPoP` validates Demonstration of Proof-of-Possession
+tokens via standard ASP.NET Core middleware. Since `MapGranitMcpServer()` applies
+`.RequireAuthorization()`, DPoP proofs are validated automatically on every MCP
+request — no MCP-specific configuration needed.
+
+## Human-in-the-loop (Elicitation)
+
+The MCP SDK supports `server.ElicitAsync()` for requesting user input directly
+from the end user, bypassing the AI agent. Use this for:
+
+- **Destructive operations** requiring confirmation
+- **OAuth authorization** flows
+- **Sensitive data input** (API keys, credentials)
+
+```csharp
+[McpServerTool, Description("Permanently deletes all patient records for a tenant.")]
+[Authorize(Policy = "Patients.Records.Manage")]
+[McpToolOptions(Destructive = true)]
+public async Task<string> PurgePatientRecordsAsync(
+    McpServer server,
+    ICurrentTenant tenant,
+    CancellationToken ct)
+{
+    ElicitResult result = await server.ElicitAsync(new ElicitRequestParams
+    {
+        Message = $"Confirm permanent deletion of all patient records for tenant {tenant.Id}?",
+        RequestedSchema = new ElicitRequestParams.RequestSchema
+        {
+            Properties = new Dictionary<string, ElicitRequestParams.PrimitiveSchemaDefinition>
+            {
+                ["confirm"] = new ElicitRequestParams.BooleanSchema
+                {
+                    Description = "Type true to confirm irreversible deletion",
+                },
+            },
+        },
+    }, ct);
+
+    if (result.Action != ElicitResult.UserAction.Accept)
+    {
+        return "Operation cancelled by user.";
+    }
+
+    // Proceed with deletion...
+    return "Records purged successfully.";
+}
+```
+
+:::tip
+Prefer elicitation over returning a "please confirm" text message. Elicitation
+creates a structured dialog — the user sees a form, not a chat message that
+the LLM might misinterpret or auto-confirm.
+:::
+
+## Audit trail
+
+Every tool invocation is recorded via the SDK's `AddCallToolFilter`:
+
+- **Metric**: `granit.mcp.tools.invoked` with `tenant_id`, `tool_name`, `status`
+- **Duration**: `granit.mcp.request.duration` histogram
+- **Activity**: spans under `Granit.Mcp` activity source
+
+For ISO 27001 compliance, integrate with `Granit.Auditing` by adding a custom
+`IMcpOutputSanitizer` that emits `McpToolInvokedEvent` via `ILocalEventBus`.
+
+## See also
+
+- [Tool visibility](/dotnet/mcp/visibility/) — opt-in discovery, tenant scope, module scope
+- [Creating tools](/dotnet/mcp/tools/) — attributes, DI injection, return types
+- [Setup guide](/dotnet/mcp/setup/) — permissions table and configuration
+- [Granit Authorization](/dotnet/security/authorization/) — RBAC system
+- [Granit Privacy](/dotnet/compliance/privacy/) — GDPR personal data management

@@ -1,0 +1,225 @@
+---
+title: "Creating MCP Tools — Attributes, DI Injection & Return Types"
+description: Declare MCP tools with attributes, inject Granit services via DI, return rich content (text, images, resources), add icons and annotations. Complete tool authoring reference for Granit.Mcp.
+sidebar:
+  label: Creating tools
+  order: 3
+  badge:
+    text: New
+    variant: tip
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+MCP tools are the primary way AI agents interact with your application. A tool is
+a method that an agent can discover, understand (via its description), and invoke
+with typed parameters.
+
+## Declaring a tool
+
+Annotate a class with `[McpServerToolType]` and methods with `[McpServerTool]`:
+
+```csharp
+[McpServerToolType, McpExposed]
+public sealed class PatientMcpTools(IPatientReader reader)
+{
+    [McpServerTool, Description("Search patients by name or date of birth.")]
+    [Authorize(Policy = "Patients.Records.Read")]
+    [McpToolOptions(ReadOnly = true)]
+    public async Task<string> SearchPatientsAsync(
+        [Description("Patient name (partial match)")] string? name,
+        [Description("Date of birth (ISO 8601)")] DateOnly? dateOfBirth,
+        CancellationToken ct)
+    {
+        var patients = await reader.SearchAsync(name, dateOfBirth, ct);
+        return JsonSerializer.Serialize(patients);
+    }
+}
+```
+
+:::note
+In `Explicit` discovery mode (default for production), the class needs both
+`[McpServerToolType]` (SDK) and `[McpExposed]` (Granit). In `Auto` mode,
+`[McpExposed]` is optional.
+:::
+
+## DI injection in tool methods
+
+The MCP SDK auto-resolves method parameters from the DI container. Parameters
+whose types are registered services are **injected automatically** and **invisible**
+to the AI agent (they don't appear in the tool's JSON schema):
+
+```csharp
+[McpServerTool, Description("Creates an export job for the current tenant.")]
+[Authorize(Policy = "DataExchange.Exports.Create")]
+[McpToolOptions(Destructive = false)]
+public async Task<string> CreateExportJobAsync(
+    // --- DI-injected (invisible to LLM) ---
+    ICurrentTenant tenant,                    // Granit multi-tenancy
+    ClaimsPrincipal user,                     // ASP.NET Core identity
+    IExportJobWriter writer,                  // Granit service
+    McpServer server,                         // MCP SDK server instance
+    IProgress<ProgressNotificationValue> progress, // MCP progress reporting
+    CancellationToken ct,                     // Cancellation
+
+    // --- Tool parameters (visible to LLM) ---
+    [Description("Export format")] string format,
+    [Description("Date range start")] DateOnly from,
+    [Description("Date range end")] DateOnly to)
+{
+    progress.Report(new() { Progress = 0, Total = 1, Message = "Creating export job..." });
+    var job = await writer.CreateAsync(format, from, to, ct);
+    progress.Report(new() { Progress = 1, Total = 1, Message = "Done." });
+    return JsonSerializer.Serialize(job);
+}
+```
+
+### Injectable types (auto-resolved by the SDK)
+
+| Type | Source | Use case |
+|------|--------|----------|
+| Any DI service | `IServiceProvider` | `ICurrentTenant`, readers, writers, factories |
+| `ClaimsPrincipal` | ASP.NET Core auth | Runtime permission checks, user context |
+| `McpServer` | SDK | Sampling, elicitation, notifications |
+| `IProgress<ProgressNotificationValue>` | SDK | Report progress to the client |
+| `CancellationToken` | SDK | Bidirectional cancellation |
+
+## Tool annotations and icons
+
+Use `[McpToolOptions]` to provide metadata that MCP clients render in their UI:
+
+```csharp
+[McpServerTool, Description("Permanently revokes a legal agreement.")]
+[Authorize(Policy = "Legal.Agreements.Manage")]
+[McpToolOptions(
+    Destructive = true,
+    IconLight = "https://cdn.example.com/icons/revoke-light.svg",
+    IconDark = "https://cdn.example.com/icons/revoke-dark.svg")]
+public async Task RevokeAgreementAsync(
+    [Description("Agreement ID")] Guid agreementId,
+    [Description("Revocation reason")] string reason,
+    CancellationToken ct) { ... }
+```
+
+| Property | Maps to | Effect |
+|----------|---------|--------|
+| `Destructive = true` | `Annotations.DestructiveHint` | Client prompts for confirmation |
+| `ReadOnly = true` | `Annotations.ReadOnlyHint` | Client marks as safe (no side effects) |
+| `IconLight` / `IconDark` | `McpServerToolCreateOptions.Icons` | Client renders themed icon |
+| `IconMimeType` | `Icon.MimeType` | Default: `"image/svg+xml"` |
+
+### Advanced icons (imperative registration)
+
+For complex icon configurations (multiple sizes, non-SVG), implement
+`IMcpToolContributor`:
+
+```csharp
+public sealed class InvoiceToolContributor : IMcpToolContributor
+{
+    public void Configure(IMcpServerBuilder builder)
+    {
+        builder.WithTools([
+            McpServerTool.Create(
+                typeof(InvoiceMcpTools).GetMethod(nameof(InvoiceMcpTools.SearchAsync))!,
+                new McpServerToolCreateOptions
+                {
+                    Icons = [
+                        new() { Source = "https://cdn.example.com/invoice.svg",
+                                MimeType = "image/svg+xml", Sizes = ["any"], Theme = "light" },
+                        new() { Source = "https://cdn.example.com/invoice-256.png",
+                                MimeType = "image/png", Sizes = ["256x256"], Theme = "dark" },
+                    ],
+                }),
+        ]);
+    }
+}
+```
+
+`IMcpToolContributor` implementations are auto-discovered from module assemblies.
+
+## Return types
+
+### String (most common)
+
+Returned strings are auto-wrapped in a `TextContentBlock`:
+
+```csharp
+[McpServerTool, Description("Returns a formatted patient summary.")]
+public static string GetSummary(string patientId) =>
+    $"Patient {patientId}: Dr. Martin, last visit 2026-03-15";
+```
+
+### Multiple content blocks
+
+Return `IEnumerable<ContentBlock>` for mixed content:
+
+```csharp
+[McpServerTool, Description("Returns invoice details with a chart image.")]
+public IEnumerable<ContentBlock> GetInvoiceReport(Guid invoiceId)
+{
+    byte[] chartPng = GenerateChart(invoiceId);
+    return
+    [
+        new TextContentBlock { Text = $"Invoice #{invoiceId} — Total: €1,250.00" },
+        ImageContentBlock.FromBytes(chartPng, "image/png"),
+        new TextContentBlock { Text = "Payment due: 2026-04-15" },
+    ];
+}
+```
+
+### Embedded resources
+
+```csharp
+[McpServerTool, Description("Returns the raw export file as a downloadable resource.")]
+public EmbeddedResourceBlock GetExportFile(Guid exportId)
+{
+    byte[] data = LoadExportData(exportId);
+    return new EmbeddedResourceBlock
+    {
+        Resource = BlobResourceContents.FromBytes(
+            data, $"exports://{exportId}", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+    };
+}
+```
+
+### Content annotations
+
+Target content to specific audiences:
+
+```csharp
+new TextContentBlock
+{
+    Text = "Debug: query took 142ms, 3 DB round-trips",
+    Annotations = new Annotations
+    {
+        Audience = [Role.Assistant],  // Only for the LLM, not shown to user
+        Priority = 0.2f,
+    },
+}
+```
+
+## MCP prompts
+
+Prompts are reusable message templates that agents can invoke:
+
+```csharp
+[McpServerPromptType]
+public sealed class LegalPrompts
+{
+    [McpServerPrompt, Description("Generates a contract review prompt with context.")]
+    public static IEnumerable<ChatMessage> ContractReview(
+        [Description("The contract text to review")] string contractText,
+        [Description("Jurisdiction (e.g., 'Belgian law')")] string jurisdiction) =>
+    [
+        new(ChatRole.User, $"Review the following contract under {jurisdiction}:\n\n{contractText}"),
+        new(ChatRole.Assistant, "I'll review for compliance, risks, and missing clauses."),
+    ];
+}
+```
+
+## See also
+
+- [Security & data protection](/dotnet/mcp/security/) — `[McpRedact]`, sanitization pipeline
+- [Tool visibility](/dotnet/mcp/visibility/) — `[McpExposed]`, `[McpTenantScope]`, module scope
+- [Setup guide](/dotnet/mcp/setup/) — installation and configuration
+- [MCP SDK tool documentation](https://csharp.sdk.modelcontextprotocol.io/)

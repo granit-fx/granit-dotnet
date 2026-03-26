@@ -1,0 +1,138 @@
+---
+title: "MCP Client — Connect to External MCP Servers"
+description: Use IMcpClientFactory to connect Granit applications to external MCP servers via HTTP or stdio transport. Named connections, credential forwarding, and configuration reference.
+sidebar:
+  label: Client
+  order: 6
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+`Granit.Mcp.Client` provides a named factory for connecting to external MCP
+servers — ERP systems, data APIs, CLI tools, or any MCP-compatible service.
+
+## Installation
+
+```bash
+dotnet add package Granit.Mcp.Client
+```
+
+```csharp
+builder.AddGranitMcpClient();
+```
+
+## Configuration
+
+Named connections are configured in `appsettings.json`:
+
+```json
+{
+  "Mcp": {
+    "Client": {
+      "Connections": {
+        "erp": {
+          "Url": "https://erp.internal/mcp",
+          "Transport": "http",
+          "ForwardCredentials": true
+        },
+        "data-tools": {
+          "Transport": "stdio",
+          "Command": "dotnet",
+          "Arguments": ["run", "--project", "../DataTools/DataTools.csproj"]
+        },
+        "python-analyzer": {
+          "Transport": "stdio",
+          "Command": "python",
+          "Arguments": ["-m", "analyzer_mcp"]
+        }
+      }
+    }
+  }
+}
+```
+
+### Connection options
+
+| Property | Type | Default | Required | Description |
+|----------|------|---------|----------|-------------|
+| `Url` | `string?` | — | HTTP | Server URL (Streamable HTTP endpoint) |
+| `Transport` | `string` | `"http"` | — | `"http"` or `"stdio"` |
+| `ForwardCredentials` | `bool` | `true` | — | Forward current user's JWT to remote server |
+| `Command` | `string?` | — | stdio | Executable command |
+| `Arguments` | `string[]` | `[]` | — | Command-line arguments |
+
+## Usage
+
+### Basic client creation
+
+```csharp
+public sealed class ExportService(IMcpClientFactory mcpFactory)
+{
+    public async Task<IReadOnlyList<McpClientTool>> GetErpToolsAsync(CancellationToken ct)
+    {
+        await using McpClient client = await mcpFactory.CreateAsync("erp", ct);
+        return await client.ListToolsAsync(cancellationToken: ct);
+    }
+
+    public async Task<CallToolResult> InvokeErpToolAsync(
+        string toolName, Dictionary<string, object?> args, CancellationToken ct)
+    {
+        await using McpClient client = await mcpFactory.CreateAsync("erp", ct);
+        return await client.CallToolAsync(toolName, args, cancellationToken: ct);
+    }
+}
+```
+
+### HTTP transport
+
+For remote MCP servers accessible via HTTPS. The SDK uses Streamable HTTP (with
+automatic fallback to SSE for older servers):
+
+```json
+{
+  "erp": {
+    "Url": "https://erp.internal/mcp",
+    "ForwardCredentials": true
+  }
+}
+```
+
+When `ForwardCredentials` is `true`, the current user's JWT Bearer token is
+forwarded to the remote server in the `Authorization` header.
+
+### Stdio transport
+
+For local tools running as child processes. The factory spawns the process and
+communicates via stdin/stdout:
+
+```json
+{
+  "local-tools": {
+    "Transport": "stdio",
+    "Command": "dotnet",
+    "Arguments": ["run", "--project", "../InvoiceTools/"]
+  }
+}
+```
+
+:::note
+Stdio connections are local only — the child process runs on the same machine.
+Use HTTP transport for remote servers.
+:::
+
+## Error handling
+
+The factory throws `InvalidOperationException` for configuration errors:
+
+| Scenario | Exception message |
+|----------|------------------|
+| Connection not found | `"MCP connection 'xyz' is not configured"` |
+| Unsupported transport | `"Unsupported MCP transport type 'websocket'"` |
+| Missing URL (HTTP) | `ArgumentException` from `ThrowIfNullOrWhiteSpace` |
+| Missing command (stdio) | `ArgumentException` from `ThrowIfNullOrWhiteSpace` |
+
+## See also
+
+- [AI workspace integration](/dotnet/mcp/ai-integration/) — inject MCP tools into `IChatClient`
+- [Setup guide](/dotnet/mcp/setup/) — server-side MCP configuration
+- [MCP overview](/dotnet/mcp/) — architecture and design principles
