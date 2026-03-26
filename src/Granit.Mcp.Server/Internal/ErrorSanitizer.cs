@@ -19,7 +19,7 @@ internal sealed class ErrorSanitizer : IMcpOutputSanitizer
             return ValueTask.FromResult(result);
         }
 
-        var sanitizedContent = new List<ContentBlock>();
+        List<ContentBlock> sanitizedContent = [];
         foreach (ContentBlock content in result.Content)
         {
             if (content is TextContentBlock textBlock)

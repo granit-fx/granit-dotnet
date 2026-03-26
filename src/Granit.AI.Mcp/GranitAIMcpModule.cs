@@ -1,3 +1,4 @@
+using Granit.AI;
 using Granit.Mcp.Client;
 using Granit.Modularity;
 

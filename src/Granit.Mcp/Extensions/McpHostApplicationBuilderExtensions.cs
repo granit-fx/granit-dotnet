@@ -68,7 +68,7 @@ public static class McpServiceCollectionExtensions
                     return result;
                 }
 
-                var visibleTools = new List<Tool>();
+                List<Tool> visibleTools = [];
                 foreach (Tool tool in result.Tools)
                 {
                     bool isVisible = true;
