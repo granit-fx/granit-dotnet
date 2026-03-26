@@ -4,7 +4,7 @@ namespace Granit.OpenIddict.Services;
 /// Represents the last activity timestamp for a user session, used for idle session timeout.
 /// </summary>
 /// <remarks>
-/// Stored in <c>IDistributedCache</c> with key <c>session:{userId}:{jti}</c>.
+/// Stored in <c>IFusionCache</c> with key <c>session:{userId}:{jti}</c>.
 /// Cache TTL = <c>IdleSessionTimeout + 5 min</c>.
 /// </remarks>
 /// <param name="UserId">The user identifier.</param>

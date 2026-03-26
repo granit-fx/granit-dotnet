@@ -36,7 +36,7 @@ public sealed class DPoPValidationOptions
 
     /// <summary>
     /// Gets or sets whether jti replay protection is enabled.
-    /// Requires <see cref="IDistributedCache"/> to be registered.
+    /// Requires <c>IFusionCache</c> to be registered (via <c>GranitCachingModule</c>).
     /// Default: <see langword="true"/>.
     /// </summary>
     public bool EnableReplayProtection { get; set; } = true;

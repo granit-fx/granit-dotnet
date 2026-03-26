@@ -1,77 +1,49 @@
-using System.Text.Json;
 using Granit.Bff.Internal;
 using Granit.Bff.Options;
-using Granit.Timing;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
-using NSubstitute;
 using Shouldly;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Bff.Tests.Internal;
 
-public sealed class DistributedCacheBffTokenStoreTests
+public sealed class DistributedCacheBffTokenStoreTests : IDisposable
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    };
-
-    private readonly IDistributedCache _cache = Substitute.For<IDistributedCache>();
-    private readonly IClock _clock = Substitute.For<IClock>();
+    private readonly FusionCache _cache = new(new FusionCacheOptions());
     private readonly IOptions<GranitBffOptions> _options;
     private readonly DistributedCacheBffTokenStore _store;
 
     public DistributedCacheBffTokenStoreTests()
     {
-        _clock.Now.Returns(DateTimeOffset.UtcNow);
-
         GranitBffOptions bffOptions = new() { SessionDuration = TimeSpan.FromHours(8) };
         _options = Microsoft.Extensions.Options.Options.Create(bffOptions);
 
-        _store = new DistributedCacheBffTokenStore(_cache, _options, _clock);
+        _store = new DistributedCacheBffTokenStore(_cache, _options);
     }
 
+    public void Dispose() => _cache.Dispose();
+
     [Fact]
-    public async Task StoreAsync_StoresSerializedJsonInCache_WithCorrectKeyPattern()
+    public async Task StoreAsync_StoresInCache_WithCorrectKeyPattern()
     {
         BffTokenSet tokens = new("access-token", "refresh-token", "id-token", DateTimeOffset.UtcNow.AddHours(1));
 
         await _store.StoreAsync("admin", "session-123", tokens, TestContext.Current.CancellationToken);
 
-        await _cache.Received(1).SetAsync(
+        MaybeValue<BffTokenSet> maybe = await _cache.TryGetAsync<BffTokenSet>(
             "bff:session:admin:session-123",
-            Arg.Is<byte[]>(bytes => VerifySerializedTokens(bytes, tokens)),
-            Arg.Is<DistributedCacheEntryOptions>(o => o.AbsoluteExpiration != null),
-            Arg.Any<CancellationToken>());
+            token: TestContext.Current.CancellationToken);
+        maybe.HasValue.ShouldBeTrue();
+        maybe.Value.AccessToken.ShouldBe("access-token");
+        maybe.Value.RefreshToken.ShouldBe("refresh-token");
+        maybe.Value.IdToken.ShouldBe("id-token");
     }
 
     [Fact]
-    public async Task StoreAsync_SetsAbsoluteExpiration_BasedOnSessionDuration()
-    {
-        DateTimeOffset now = new(2026, 3, 22, 10, 0, 0, TimeSpan.Zero);
-        _clock.Now.Returns(now);
-
-        BffTokenSet tokens = new("at", null, null, now.AddHours(1));
-
-        await _store.StoreAsync("patient", "sid-1", tokens, TestContext.Current.CancellationToken);
-
-        await _cache.Received(1).SetAsync(
-            Arg.Any<string>(),
-            Arg.Any<byte[]>(),
-            Arg.Is<DistributedCacheEntryOptions>(o =>
-                o.AbsoluteExpiration == now.Add(TimeSpan.FromHours(8))),
-            Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task GetAsync_ReturnsDeserializedTokens()
+    public async Task GetAsync_ReturnsStoredTokens()
     {
         BffTokenSet tokens = new("access-token", "refresh-token", "id-token", DateTimeOffset.UtcNow.AddHours(1));
-        byte[] serialized = JsonSerializer.SerializeToUtf8Bytes(tokens, JsonOptions);
-
-        _cache.GetAsync("bff:session:admin:session-456", Arg.Any<CancellationToken>())
-            .Returns(serialized);
+        await _store.StoreAsync("admin", "session-456", tokens, TestContext.Current.CancellationToken);
 
         BffTokenSet? result = await _store.GetAsync("admin", "session-456", TestContext.Current.CancellationToken);
 
@@ -84,21 +56,7 @@ public sealed class DistributedCacheBffTokenStoreTests
     [Fact]
     public async Task GetAsync_ReturnsNull_ForMissingKey()
     {
-        _cache.GetAsync("bff:session:admin:missing", Arg.Any<CancellationToken>())
-            .Returns((byte[]?)null);
-
         BffTokenSet? result = await _store.GetAsync("admin", "missing", TestContext.Current.CancellationToken);
-
-        result.ShouldBeNull();
-    }
-
-    [Fact]
-    public async Task GetAsync_ReturnsNull_ForEmptyBytes()
-    {
-        _cache.GetAsync("bff:session:admin:empty", Arg.Any<CancellationToken>())
-            .Returns(Array.Empty<byte>());
-
-        BffTokenSet? result = await _store.GetAsync("admin", "empty", TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -106,9 +64,13 @@ public sealed class DistributedCacheBffTokenStoreTests
     [Fact]
     public async Task RemoveAsync_RemovesFromCache()
     {
+        BffTokenSet tokens = new("at", null, null, DateTimeOffset.UtcNow.AddHours(1));
+        await _store.StoreAsync("admin", "session-789", tokens, TestContext.Current.CancellationToken);
+
         await _store.RemoveAsync("admin", "session-789", TestContext.Current.CancellationToken);
 
-        await _cache.Received(1).RemoveAsync("bff:session:admin:session-789", Arg.Any<CancellationToken>());
+        BffTokenSet? result = await _store.GetAsync("admin", "session-789", TestContext.Current.CancellationToken);
+        result.ShouldBeNull();
     }
 
     [Theory]
@@ -180,14 +142,5 @@ public sealed class DistributedCacheBffTokenStoreTests
     {
         await Should.ThrowAsync<ArgumentException>(
             () => _store.RemoveAsync("admin", sessionId!, TestContext.Current.CancellationToken));
-    }
-
-    private static bool VerifySerializedTokens(byte[] bytes, BffTokenSet expected)
-    {
-        BffTokenSet? deserialized = JsonSerializer.Deserialize<BffTokenSet>(bytes, JsonOptions);
-        return deserialized is not null
-            && deserialized.AccessToken == expected.AccessToken
-            && deserialized.RefreshToken == expected.RefreshToken
-            && deserialized.IdToken == expected.IdToken;
     }
 }
