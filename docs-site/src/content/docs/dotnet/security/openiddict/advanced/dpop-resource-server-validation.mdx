@@ -44,12 +44,15 @@ sequenceDiagram
     API->>API: 2. Parse proof JWT header + payload
     API->>API: 3. Verify EC/RSA signature
     API->>API: 4. Check htm=GET, htu matches request URI
-    API->>API: 5. Check exp > now, iat reasonable
-    API->>Cache: 6. Check jti uniqueness (anti-replay)
-    API->>API: 7. Compute JWK thumbprint (RFC 7638)
-    API->>API: 8. Compare with cnf.jkt in access token
+    API->>API: 5. Check exp > now, iat not in future
+    API->>Cache: 6. Validate nonce (if RequireNonce)
+    API->>Cache: 7. Check jti uniqueness (anti-replay)
+    API->>API: 8. Verify RSA key ≥ 2048-bit
+    API->>API: 9. Reject private key params in JWK
+    API->>API: 10. Compute JWK thumbprint (RFC 7638)
+    API->>API: 11. Compare with cnf.jkt in access token
 
-    API-->>BFF: 200 OK
+    API-->>BFF: 200 OK (DPoP-Nonce: ...)
 ```
 
 <Steps>
@@ -57,15 +60,22 @@ sequenceDiagram
 1. **Scheme acceptance** — `JwtBearerEvents.OnMessageReceived` extracts the token from
    `Authorization: DPoP <token>` (standard JWT Bearer only accepts `Bearer`).
 
-2. **Proof validation** — `IDPoPProofValidator` verifies the DPoP proof JWT: signature
-   (ES256, PS256, EdDSA), HTTP method (`htm`), request URI (`htu`), expiration, issued-at.
+2. **Proof validation** — `IDPoPProofValidator` verifies the DPoP proof JWT: structure,
+   algorithm whitelist, HTTP method (`htm`), request URI (`htu`), expiration, issued-at
+   (past and future bounds), and rejects JWKs containing private key parameters.
 
-3. **Anti-replay** — The `jti` claim is checked against `IDistributedCache` to prevent
+3. **Nonce validation** — When `RequireNonce` is enabled, the `nonce` claim must match
+   a server-issued value from a previous `DPoP-Nonce` response header. One-time use.
+
+4. **Anti-replay** — The `jti` claim is checked against `IFusionCache` to prevent
    proof replay within the validity window. Essential for FAPI 2.0 financial-grade security.
 
-4. **Token binding** — `JwkThumbprintCalculator` computes the SHA-256 thumbprint of the
+5. **Key strength** — RSA keys are validated against `MinimumRsaKeySize` (default 2048-bit,
+   per NIST SP 800-57).
+
+6. **Token binding** — `JwkThumbprintCalculator` computes the SHA-256 thumbprint of the
    proof's public key (RFC 7638) and compares it with the `cnf.jkt` claim in the access token.
-   If they don't match, the request is rejected with `401 Unauthorized`.
+   When `RequireTokenBinding` is `true`, tokens without `cnf.jkt` are rejected.
 
 </Steps>
 
@@ -119,10 +129,13 @@ app.UseAuthorization();
     "Audience": "catalog-service",
     "DPoP": {
       "RequireDPoP": true,
+      "RequireNonce": false,
+      "RequireTokenBinding": false,
       "AllowedAlgorithms": ["ES256", "PS256"],
-      "ProofMaxAge": "00:00:30",
-      "NonceLifetime": "00:05:00",
-      "EnableAntiReplay": true
+      "MaxProofLifetime": "00:05:00",
+      "ClockSkew": "00:00:30",
+      "EnableReplayProtection": true,
+      "MinimumRsaKeySize": 2048
     }
   }
 }
@@ -131,10 +144,13 @@ app.UseAuthorization();
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `RequireDPoP` | `bool` | `false` | Reject requests without valid DPoP proof. When `false`, DPoP is validated if present but not required. |
+| `RequireNonce` | `bool` | `false` | Require server-issued nonces in proofs (RFC 9449 §8). When enabled, the server generates a nonce per response via the `DPoP-Nonce` header. Clients must include it in the `nonce` claim of subsequent proofs. |
+| `RequireTokenBinding` | `bool` | `false` | Require the access token's `cnf.jkt` claim to match the proof's JWK thumbprint (RFC 9449 §4.3). When `true`, tokens without `cnf` are rejected even if the proof itself is valid. |
 | `AllowedAlgorithms` | `string[]` | `["ES256", "PS256"]` | Allowed signing algorithms for DPoP proofs. |
-| `ProofMaxAge` | `TimeSpan` | `00:00:30` | Maximum age of a DPoP proof JWT. |
-| `NonceLifetime` | `TimeSpan` | `00:05:00` | TTL for anti-replay `jti` entries in distributed cache. |
-| `EnableAntiReplay` | `bool` | `true` | Check `jti` uniqueness in `IDistributedCache`. |
+| `ClockSkew` | `TimeSpan` | `00:00:30` | Maximum allowed clock skew for proof expiration validation. |
+| `MaxProofLifetime` | `TimeSpan` | `00:05:00` | Maximum age of a DPoP proof JWT (`now - iat`). Proofs older than this are rejected. Also used as TTL for anti-replay `jti` and nonce cache entries. |
+| `EnableReplayProtection` | `bool` | `true` | Check `jti` uniqueness in `IFusionCache` (anti-replay). |
+| `MinimumRsaKeySize` | `int` | `2048` | Minimum RSA key size (bits) accepted in DPoP proof JWKs. Keys smaller than this are rejected (NIST SP 800-57). |
 
 <Aside type="caution" title="Gradual rollout">
 Set `RequireDPoP: false` initially to validate DPoP proofs when present without
@@ -172,8 +188,8 @@ test vectors.
 
 <Aside type="note" title="IdP prerequisite">
 The identity provider must embed the `cnf.jkt` claim in access tokens when the client
-presents a DPoP proof. If the access token has no `cnf` claim and `RequireDPoP` is `true`,
-the request is rejected.
+presents a DPoP proof. Set `RequireTokenBinding: true` to enforce this — requests with
+DPoP proofs but no `cnf.jkt` in the access token are then rejected with `401 Unauthorized`.
 </Aside>
 
 ## Comparison: OpenIddict vs JWT Bearer DPoP
@@ -236,11 +252,15 @@ Works with any provider that issues `cnf.jkt`-bound tokens.
 | Threat | Mitigation |
 |--------|-----------|
 | Stolen token + no DPoP proof | `RequireDPoP: true` rejects `Bearer` scheme |
-| Stolen token + replayed proof | `jti` anti-replay via `IDistributedCache` |
+| Stolen token + replayed proof | `jti` anti-replay via `IFusionCache` |
+| Stolen token + forged proof | `RequireTokenBinding: true` enforces `cnf.jkt` match |
+| Proof replay across requests | `RequireNonce: true` — server-issued nonces (RFC 9449 §8) |
 | Proof for wrong endpoint | `htm` + `htu` validation (method + URI bound) |
-| Expired proof | `exp` + `ProofMaxAge` enforcement |
+| Expired / future-dated proof | `MaxProofLifetime` + `ClockSkew` enforcement (both past and future) |
 | Weak algorithm | `AllowedAlgorithms` whitelist (default: ES256, PS256) |
-| Key confusion (wrong key) | `cnf.jkt` thumbprint comparison |
+| Weak RSA key | `MinimumRsaKeySize: 2048` rejects keys below NIST SP 800-57 threshold |
+| Private key leak in JWK | DPoP proofs containing private key parameters (`d`, `p`, `q`) are rejected |
+| Key confusion (wrong key) | `cnf.jkt` thumbprint comparison (RFC 7638) |
 
 ## See also
 

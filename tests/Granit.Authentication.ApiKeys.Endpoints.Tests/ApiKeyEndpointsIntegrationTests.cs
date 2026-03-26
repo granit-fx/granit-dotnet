@@ -6,6 +6,7 @@ using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Granit.Authentication.ApiKeys.Endpoints.Extensions;
 using Granit.Authentication.ApiKeys.Endpoints.Permissions;
+using Granit.Authorization.Abstractions;
 using Granit.Guids;
 using Granit.QueryEngine;
 using Granit.Timing;
@@ -34,6 +35,7 @@ public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
     private readonly IApiKeyGenerator _generator = Substitute.For<IApiKeyGenerator>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
     private readonly IClock _clock = Substitute.For<IClock>();
+    private readonly IPermissionChecker _permissionChecker = Substitute.For<IPermissionChecker>();
     private readonly WebApplication _app;
     private readonly HttpClient _adminClient;
     private readonly HttpClient _anonClient;
@@ -42,6 +44,10 @@ public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
     {
         DateTimeOffset now = new(2026, 3, 9, 12, 0, 0, TimeSpan.Zero);
         _clock.Now.Returns(now);
+
+        // Grant all permissions by default — individual tests can override
+        _permissionChecker.IsGrantedAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(true);
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
@@ -62,6 +68,7 @@ public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
         builder.Services.AddSingleton(_generator);
         builder.Services.AddSingleton(_guidGenerator);
         builder.Services.AddSingleton(_clock);
+        builder.Services.AddSingleton(_permissionChecker);
 
         _app = builder.Build();
         _app.MapApiKeysEndpoints();

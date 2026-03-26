@@ -40,4 +40,28 @@ public sealed class DPoPValidationOptions
     /// Default: <see langword="true"/>.
     /// </summary>
     public bool EnableReplayProtection { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets whether server-issued nonces are required in DPoP proofs (RFC 9449 §8).
+    /// When enabled, the server generates a nonce per response via the <c>DPoP-Nonce</c> header.
+    /// Clients must include this nonce in the <c>nonce</c> claim of subsequent proofs.
+    /// Default: <see langword="false"/>.
+    /// </summary>
+    public bool RequireNonce { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the access token must contain a <c>cnf.jkt</c> claim
+    /// matching the DPoP proof's JWK thumbprint (RFC 9449 §4.3).
+    /// When <see langword="true"/>, DPoP proofs are rejected if the access token
+    /// does not include sender-constraint confirmation.
+    /// Default: <see langword="false"/>.
+    /// </summary>
+    public bool RequireTokenBinding { get; set; }
+
+    /// <summary>
+    /// Gets or sets the minimum RSA key size (in bits) accepted in DPoP proof JWKs.
+    /// Keys smaller than this are rejected during signature verification.
+    /// Default: 2048 (NIST SP 800-57 recommendation).
+    /// </summary>
+    public int MinimumRsaKeySize { get; set; } = 2048;
 }

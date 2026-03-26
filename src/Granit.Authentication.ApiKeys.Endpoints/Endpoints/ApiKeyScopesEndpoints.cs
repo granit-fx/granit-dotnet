@@ -1,4 +1,5 @@
 using Granit.Authentication.ApiKeys.Endpoints.Dtos;
+using Granit.Authorization.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,19 +18,32 @@ internal static class ApiKeyScopesEndpoints
         group.MapPut("/{id:guid}/scopes", UpdateScopesAsync)
             .WithName("UpdateApiKeyScopes")
             .WithSummary("Updates the permissions and allowed CIDR ranges for an API key.")
-            .WithDescription("Replaces the full list of permissions and allowed CIDR ranges for the specified key. Both fields are replaced entirely (not merged). Returns 404 if the key does not exist.")
+            .WithDescription("Replaces the full list of permissions and allowed CIDR ranges for the specified key. The caller must possess every permission being assigned (privilege escalation prevention). Both fields are replaced entirely (not merged). Returns 404 if the key does not exist.")
             .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }
 
-    private static async Task<Results<NoContent, NotFound>> UpdateScopesAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult, NotFound>> UpdateScopesAsync(
         Guid id,
         ApiKeyUpdateScopesRequest request,
         [FromServices] IApiKeyAdminStore adminStore,
+        [FromServices] IPermissionChecker permissionChecker,
         CancellationToken cancellationToken)
     {
+        // Validate that the caller possesses every permission being assigned (OWASP API5:2023)
+        foreach (string permission in request.Permissions)
+        {
+            if (!await permissionChecker.IsGrantedAsync(permission, cancellationToken).ConfigureAwait(false))
+            {
+                return TypedResults.Problem(
+                    detail: $"Cannot assign permission '{permission}' — caller does not possess it.",
+                    statusCode: StatusCodes.Status403Forbidden);
+            }
+        }
+
         bool updated = await adminStore.UpdateScopesAsync(
             id,
             request.Permissions,

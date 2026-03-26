@@ -21,6 +21,12 @@ internal sealed class DPoPProofValidator(
     IFusionCache cache) : IDPoPProofValidator
 {
     private const string JtiCachePrefix = "dpop:jti:";
+    private const string NonceCachePrefix = "dpop:nonce:";
+
+    /// <summary>
+    /// Private key parameters that MUST NOT appear in a DPoP proof JWK (RFC 9449 §4.1).
+    /// </summary>
+    private static readonly string[] PrivateKeyParameters = ["d", "p", "q", "dp", "dq", "qi", "k"];
 
     public async Task<DPoPValidationResult> ValidateAsync(
         string proofJwt,
@@ -43,27 +49,38 @@ internal sealed class DPoPProofValidator(
             return headerResult;
         }
 
+        // Generate a fresh nonce for the response (always, even on failure)
+        string? serverNonce = opts.RequireNonce
+            ? await GenerateAndStoreNonceAsync(opts, cancellationToken).ConfigureAwait(false)
+            : null;
+
         DPoPValidationResult? payloadResult = ValidatePayload(parts[1], httpMethod, httpUri, opts, out JsonElement payload);
         if (payloadResult is not null)
         {
-            return payloadResult;
+            return payloadResult with { ServerNonce = serverNonce };
+        }
+
+        DPoPValidationResult? nonceResult = await ValidateNonceAsync(payload, opts, serverNonce, cancellationToken).ConfigureAwait(false);
+        if (nonceResult is not null)
+        {
+            return nonceResult;
         }
 
         DPoPValidationResult? replayResult = await ValidateReplayProtectionAsync(payload, opts, cancellationToken).ConfigureAwait(false);
         if (replayResult is not null)
         {
-            return replayResult;
+            return replayResult with { ServerNonce = serverNonce };
         }
 
-        DPoPValidationResult? signatureResult = ValidateSignature(parts, jwk, algorithm);
+        DPoPValidationResult? signatureResult = ValidateSignature(parts, jwk, algorithm, opts);
         if (signatureResult is not null)
         {
-            return signatureResult;
+            return signatureResult with { ServerNonce = serverNonce };
         }
 
         string thumbprint = JwkThumbprintCalculator.ComputeThumbprint(jwk);
         metrics.RecordSuccess(tenantId: null);
-        return DPoPValidationResult.Success(thumbprint);
+        return DPoPValidationResult.Success(thumbprint, serverNonce);
     }
 
     private static DPoPValidationResult? ValidateHeader(
@@ -103,6 +120,16 @@ internal sealed class DPoPProofValidator(
         if (!header.TryGetProperty("jwk", out jwk))
         {
             return DPoPValidationResult.Failure("Missing jwk claim in header.");
+        }
+
+        // RFC 9449 §4.1: JWK MUST contain only public key parameters
+        foreach (string privateParam in PrivateKeyParameters)
+        {
+            if (jwk.TryGetProperty(privateParam, out _))
+            {
+                return DPoPValidationResult.Failure(
+                    $"JWK must not contain private key parameter '{privateParam}'.");
+            }
         }
 
         return null;
@@ -154,6 +181,11 @@ internal sealed class DPoPProofValidator(
             return DPoPValidationResult.Failure("Proof is too old (iat).");
         }
 
+        if (issuedAt > now + opts.ClockSkew)
+        {
+            return DPoPValidationResult.Failure("Proof iat is in the future.");
+        }
+
         if (payload.TryGetProperty("exp", out JsonElement exp))
         {
             var expiresAt = DateTimeOffset.FromUnixTimeSeconds(exp.GetInt64());
@@ -196,7 +228,7 @@ internal sealed class DPoPProofValidator(
         return null;
     }
 
-    private DPoPValidationResult? ValidateSignature(string[] parts, JsonElement jwk, string algorithm)
+    private DPoPValidationResult? ValidateSignature(string[] parts, JsonElement jwk, string algorithm, DPoPValidationOptions opts)
     {
         string kty = jwk.GetProperty("kty").GetString()!;
         byte[] signingInput = Encoding.ASCII.GetBytes($"{parts[0]}.{parts[1]}");
@@ -205,7 +237,7 @@ internal sealed class DPoPProofValidator(
         bool signatureValid = kty switch
         {
             "EC" => VerifyEcSignature(jwk, signingInput, signature, algorithm),
-            "RSA" => VerifyRsaSignature(jwk, signingInput, signature),
+            "RSA" => VerifyRsaSignature(jwk, signingInput, signature, opts.MinimumRsaKeySize),
             _ => false,
         };
 
@@ -256,12 +288,19 @@ internal sealed class DPoPProofValidator(
         }
     }
 
-    private static bool VerifyRsaSignature(JsonElement jwk, byte[] data, byte[] signature)
+    private static bool VerifyRsaSignature(JsonElement jwk, byte[] data, byte[] signature, int minimumKeySizeBits)
     {
         try
         {
             byte[] n = Base64UrlDecode(jwk.GetProperty("n").GetString()!);
             byte[] e = Base64UrlDecode(jwk.GetProperty("e").GetString()!);
+
+            // NIST SP 800-57: reject keys below the minimum size
+            int keySizeBits = n.Length * 8;
+            if (keySizeBits < minimumKeySizeBits)
+            {
+                return false;
+            }
 
             using var rsa = RSA.Create(new RSAParameters { Modulus = n, Exponent = e });
             return rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
@@ -270,6 +309,61 @@ internal sealed class DPoPProofValidator(
         {
             return false;
         }
+    }
+
+    /// <inheritdoc />
+    public async Task<string?> GenerateNonceAsync(CancellationToken cancellationToken = default)
+    {
+        if (!options.Value.RequireNonce)
+        {
+            return null;
+        }
+
+        return await GenerateAndStoreNonceAsync(options.Value, cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task<DPoPValidationResult?> ValidateNonceAsync(
+        JsonElement payload, DPoPValidationOptions opts,
+        string? serverNonce, CancellationToken cancellationToken)
+    {
+        if (!opts.RequireNonce)
+        {
+            return null;
+        }
+
+        if (!payload.TryGetProperty("nonce", out JsonElement nonceClaim))
+        {
+            metrics.RecordFailure("missing_nonce", tenantId: null);
+            return DPoPValidationResult.Failure("Missing nonce claim (required by server).", serverNonce);
+        }
+
+        string nonceValue = nonceClaim.GetString()!;
+        string cacheKey = $"{NonceCachePrefix}{nonceValue}";
+
+        MaybeValue<bool> existing = await cache.TryGetAsync<bool>(cacheKey, token: cancellationToken).ConfigureAwait(false);
+        if (!existing.HasValue)
+        {
+            metrics.RecordFailure("invalid_nonce", tenantId: null);
+            return DPoPValidationResult.Failure("Invalid or expired nonce.", serverNonce);
+        }
+
+        // Remove used nonce (one-time use)
+        await cache.RemoveAsync(cacheKey, token: cancellationToken).ConfigureAwait(false);
+        return null;
+    }
+
+    private async Task<string> GenerateAndStoreNonceAsync(DPoPValidationOptions opts, CancellationToken cancellationToken)
+    {
+        byte[] nonceBytes = RandomNumberGenerator.GetBytes(32);
+        string nonce = Convert.ToBase64String(nonceBytes)
+            .TrimEnd('=').Replace('+', '-').Replace('/', '_');
+
+        string cacheKey = $"{NonceCachePrefix}{nonce}";
+        await cache.SetAsync(cacheKey, true,
+            new FusionCacheEntryOptions { Duration = opts.MaxProofLifetime + opts.ClockSkew },
+            token: cancellationToken).ConfigureAwait(false);
+
+        return nonce;
     }
 
     /// <summary>

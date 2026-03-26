@@ -21,6 +21,13 @@ public interface IDPoPProofValidator
         string httpMethod,
         string httpUri,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Generates a fresh server nonce for the <c>DPoP-Nonce</c> response header (RFC 9449 §8).
+    /// Returns <see langword="null"/> when nonce generation is not enabled.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<string?> GenerateNonceAsync(CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -31,9 +38,17 @@ public interface IDPoPProofValidator
 /// <param name="Error">Error description if invalid. Null if valid.</param>
 public sealed record DPoPValidationResult(bool IsValid, string? JwkThumbprint, string? Error)
 {
+    /// <summary>
+    /// Server-issued nonce to return in the <c>DPoP-Nonce</c> response header (RFC 9449 §8).
+    /// Present when nonce generation is enabled, regardless of validation outcome.
+    /// </summary>
+    public string? ServerNonce { get; init; }
+
     /// <summary>Creates a successful result.</summary>
-    internal static DPoPValidationResult Success(string jwkThumbprint) => new(true, jwkThumbprint, null);
+    internal static DPoPValidationResult Success(string jwkThumbprint, string? serverNonce = null) =>
+        new(true, jwkThumbprint, null) { ServerNonce = serverNonce };
 
     /// <summary>Creates a failed result.</summary>
-    internal static DPoPValidationResult Failure(string error) => new(false, null, error);
+    internal static DPoPValidationResult Failure(string error, string? serverNonce = null) =>
+        new(false, null, error) { ServerNonce = serverNonce };
 }

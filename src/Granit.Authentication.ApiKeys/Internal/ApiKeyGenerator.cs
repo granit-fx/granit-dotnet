@@ -44,17 +44,31 @@ internal sealed class ApiKeyGenerator : IApiKeyGenerator
         _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
     };
 
-    private static string GenerateRandomBase62(int byteCount)
+    /// <summary>
+    /// Generates a uniform random base62 string using rejection sampling
+    /// to eliminate modulo bias (256 mod 62 = 8 biased characters).
+    /// </summary>
+    private static string GenerateRandomBase62(int length)
     {
-        Span<byte> bytes = stackalloc byte[byteCount];
-        RandomNumberGenerator.Fill(bytes);
+        // Rejection threshold: largest multiple of 62 that fits in a byte (62 * 4 = 248)
+        const int rejectionThreshold = 248;
 
-        return string.Create(byteCount, bytes.ToArray(), static (chars, data) =>
+        char[] result = new char[length];
+        Span<byte> buffer = stackalloc byte[1];
+
+        for (int i = 0; i < length; i++)
         {
-            for (int i = 0; i < data.Length; i++)
+            byte value;
+            do
             {
-                chars[i] = Base62Chars[data[i] % Base62Chars.Length];
+                RandomNumberGenerator.Fill(buffer);
+                value = buffer[0];
             }
-        });
+            while (value >= rejectionThreshold);
+
+            result[i] = Base62Chars[value % Base62Chars.Length];
+        }
+
+        return new string(result);
     }
 }

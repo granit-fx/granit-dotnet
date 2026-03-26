@@ -5,7 +5,6 @@ using Granit.Authentication.DPoP.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 
 namespace Granit.Authentication.DPoP.Middleware;
 
@@ -34,6 +33,18 @@ internal sealed partial class DPoPValidationMiddleware(
             if (opts.RequireDPoP && context.User.Identity?.IsAuthenticated == true)
             {
                 LogDPoPRequired(logger);
+
+                // Return a fresh nonce for the client to use on retry (RFC 9449 §8)
+                if (opts.RequireNonce)
+                {
+                    string? nonce = await proofValidator.GenerateNonceAsync(context.RequestAborted)
+                        .ConfigureAwait(false);
+                    if (nonce is not null)
+                    {
+                        context.Response.Headers["DPoP-Nonce"] = nonce;
+                    }
+                }
+
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 context.Response.Headers.WWWAuthenticate = "DPoP error=\"use_dpop_nonce\"";
                 return;
@@ -41,6 +52,12 @@ internal sealed partial class DPoPValidationMiddleware(
 
             await next(context).ConfigureAwait(false);
             return;
+        }
+
+        // Detect middleware ordering issue: DPoP header is present but auth hasn't run yet
+        if (opts.RequireDPoP && context.User.Identity is null)
+        {
+            LogMiddlewareOrderingError(logger);
         }
 
         // Extract DPoP proof JWT
@@ -59,6 +76,12 @@ internal sealed partial class DPoPValidationMiddleware(
         DPoPValidationResult result = await proofValidator.ValidateAsync(
             proofJwt, httpMethod, requestUri, context.RequestAborted).ConfigureAwait(false);
 
+        // Always return the server nonce for the next request (RFC 9449 §8)
+        if (result.ServerNonce is not null)
+        {
+            context.Response.Headers["DPoP-Nonce"] = result.ServerNonce;
+        }
+
         if (!result.IsValid)
         {
             LogProofInvalid(logger, result.Error!);
@@ -69,10 +92,20 @@ internal sealed partial class DPoPValidationMiddleware(
         // Verify cnf.jkt token binding — the access token must contain a cnf claim
         // with a jkt (JWK thumbprint) matching the proof's public key
         string? expectedThumbprint = ExtractCnfJkt(context.User);
+
         if (expectedThumbprint is not null
             && !string.Equals(expectedThumbprint, result.JwkThumbprint, StringComparison.Ordinal))
         {
             LogThumbprintMismatch(logger);
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return;
+        }
+
+        // RFC 9449 §4.3: when token binding is required, the access token MUST
+        // include a cnf.jkt claim matching the proof's public key
+        if (expectedThumbprint is null && opts.RequireTokenBinding)
+        {
+            LogMissingTokenBinding(logger);
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;
         }
@@ -113,4 +146,10 @@ internal sealed partial class DPoPValidationMiddleware(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "DPoP validation: JWK thumbprint mismatch (cnf.jkt binding failed)")]
     private static partial void LogThumbprintMismatch(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "DPoP validation: access token missing cnf.jkt claim (token binding required)")]
+    private static partial void LogMissingTokenBinding(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Critical, Message = "DPoP validation: User.Identity is null — UseGranitDPoPValidation() must be placed after UseAuthentication() in the middleware pipeline")]
+    private static partial void LogMiddlewareOrderingError(ILogger logger);
 }
