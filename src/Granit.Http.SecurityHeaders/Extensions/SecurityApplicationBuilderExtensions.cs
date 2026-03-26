@@ -1,10 +1,10 @@
-using Granit.Http.Security.Internal;
-using Granit.Http.Security.Options;
+using Granit.Http.SecurityHeaders.Internal;
+using Granit.Http.SecurityHeaders.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Granit.Http.Security.Extensions;
+namespace Granit.Http.SecurityHeaders.Extensions;
 
 /// <summary>
 /// Extension methods for adding Granit security headers middleware to the pipeline.

@@ -1,7 +1,7 @@
-using Granit.Http.Security.Extensions;
+using Granit.Http.SecurityHeaders.Extensions;
 using Granit.Modularity;
 
-namespace Granit.Http.Security;
+namespace Granit.Http.SecurityHeaders;
 
 /// <summary>
 /// Granit module for HTTP security hardening.
@@ -16,7 +16,7 @@ namespace Granit.Http.Security;
 ///   <item><c>X-Frame-Options: DENY</c> (clickjacking prevention)</item>
 ///   <item><c>Strict-Transport-Security</c> (HSTS, 1 year default)</item>
 ///   <item><c>Referrer-Policy: strict-origin-when-cross-origin</c></item>
-///   <item><c>Permissions-Policy</c> (browser feature restrictions)</item>
+///   <item><c>Permissions-Policy</c> (camera, microphone, geolocation, payment, accelerometer, gyroscope, magnetometer, USB)</item>
 ///   <item><c>Cross-Origin-Opener-Policy: same-origin</c> (Spectre mitigation)</item>
 ///   <item><c>Cross-Origin-Resource-Policy: same-origin</c></item>
 ///   <item><c>X-XSS-Protection: 0</c> (disables legacy XSS auditor)</item>

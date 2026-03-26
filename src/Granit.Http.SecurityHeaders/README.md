@@ -1,4 +1,4 @@
-# Granit.Http.Security
+# Granit.Http.SecurityHeaders
 
 HTTP security hardening for Granit APIs. Suppresses the Kestrel `Server` response
 header, injects OWASP recommended security headers (X-Content-Type-Options,
@@ -10,7 +10,7 @@ Part of the [granit](https://granit-fx.dev) framework.
 ## Installation
 
 ```bash
-dotnet add package Granit.Http.Security
+dotnet add package Granit.Http.SecurityHeaders
 ```
 
 ## Dependencies

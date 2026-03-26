@@ -6,7 +6,7 @@ sidebar:
   label: Security Headers
 ---
 
-The `Granit.Http.Security` module provides centralized HTTP security response header
+The `Granit.Http.SecurityHeaders` module provides centralized HTTP security response header
 management. It suppresses the Kestrel `Server` header to prevent server fingerprinting
 and injects defensive headers on every response per the
 [OWASP Secure Headers Project](https://owasp.org/www-project-secure-headers/).
@@ -31,7 +31,7 @@ and injects defensive headers on every response per the
 | `X-Frame-Options` | `DENY` | Prevent clickjacking |
 | `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` | Force HTTPS (1 year) |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` | Control referrer leakage |
-| `Permissions-Policy` | `camera=(), microphone=(), geolocation=(), payment=()` | Restrict browser features |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=(), payment=(), accelerometer=(), gyroscope=(), magnetometer=(), usb=()` | Restrict browser features |
 | `X-XSS-Protection` | `0` | Disable legacy XSS auditor |
 | `Cross-Origin-Opener-Policy` | `same-origin` | Spectre isolation |
 | `Cross-Origin-Resource-Policy` | `same-origin` | Resource sharing control |
@@ -67,7 +67,7 @@ All headers are configurable via `appsettings.json`:
     "XFrameOptions": "DENY",
     "ReferrerPolicy": "strict-origin-when-cross-origin",
     "DisableXssProtection": true,
-    "PermissionsPolicy": "camera=(), microphone=(), geolocation=(), payment=()",
+    "PermissionsPolicy": "camera=(), microphone=(), geolocation=(), payment=(), accelerometer=(), gyroscope=(), magnetometer=(), usb=()",
     "ContentSecurityPolicy": null,
     "EnableHsts": true,
     "HstsMaxAgeSeconds": 31536000,

@@ -201,7 +201,7 @@
     <Project Path="src/Granit.Notifications/Granit.Notifications.csproj" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/Granit.Http.Security/Granit.Http.Security.csproj" />
+    <Project Path="src/Granit.Http.SecurityHeaders/Granit.Http.SecurityHeaders.csproj" />
   </Folder>
   <Folder Name="/src/AI/">
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
@@ -439,7 +439,7 @@
     <Project Path="tests/Granit.Notifications.Zulip.Tests/Granit.Notifications.Zulip.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/Granit.Http.Security.Tests/Granit.Http.Security.Tests.csproj" />
+    <Project Path="tests/Granit.Http.SecurityHeaders.Tests/Granit.Http.SecurityHeaders.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />

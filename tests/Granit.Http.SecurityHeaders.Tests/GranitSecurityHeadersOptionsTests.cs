@@ -1,8 +1,8 @@
-using Granit.Http.Security.Options;
+using Granit.Http.SecurityHeaders.Options;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Http.Security.Tests;
+namespace Granit.Http.SecurityHeaders.Tests;
 
 public sealed class GranitSecurityHeadersOptionsTests
 {
@@ -34,7 +34,8 @@ public sealed class GranitSecurityHeadersOptionsTests
     [Fact]
     public void PermissionsPolicy_DefaultsToRestrictive() =>
         new GranitSecurityHeadersOptions().PermissionsPolicy
-            .ShouldBe("camera=(), microphone=(), geolocation=(), payment=()");
+            .ShouldBe("camera=(), microphone=(), geolocation=(), payment=(), " +
+                       "accelerometer=(), gyroscope=(), magnetometer=(), usb=()");
 
     [Fact]
     public void ContentSecurityPolicy_DefaultsToNull() =>

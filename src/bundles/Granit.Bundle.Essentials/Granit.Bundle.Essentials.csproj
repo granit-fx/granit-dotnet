@@ -16,7 +16,7 @@
     <ProjectReference Include="..\..\Granit.Http.Cors\Granit.Http.Cors.csproj" />
     <ProjectReference Include="..\..\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
     <ProjectReference Include="..\..\Granit.Http.ResponseCompression\Granit.Http.ResponseCompression.csproj" />
-    <ProjectReference Include="..\..\Granit.Http.Security\Granit.Http.Security.csproj" />
+    <ProjectReference Include="..\..\Granit.Http.SecurityHeaders\Granit.Http.SecurityHeaders.csproj" />
     <ProjectReference Include="..\..\Granit.Diagnostics\Granit.Diagnostics.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,5 @@
-using Granit.Http.Security.Extensions;
-using Granit.Http.Security.Options;
+using Granit.Http.SecurityHeaders.Extensions;
+using Granit.Http.SecurityHeaders.Options;
 using Granit.Modularity;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Http.Security.Tests;
+namespace Granit.Http.SecurityHeaders.Tests;
 
 public sealed class GranitHttpSecurityModuleTests
 {
@@ -148,5 +148,37 @@ public sealed class GranitHttpSecurityModuleTests
 
         options.XFrameOptions.ShouldBe("SAMEORIGIN");
         options.ReferrerPolicy.ShouldBe("no-referrer");
+    }
+
+    // -------------------------------------------------------------------------
+    // Validation
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void AddGranitHttpSecurity_RejectsInvalidXFrameOptions()
+    {
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+        builder.Configuration["SecurityHeaders:XFrameOptions"] = "INVALID";
+
+        builder.AddGranitHttpSecurity();
+
+        using IHost host = builder.Build();
+
+        Should.Throw<OptionsValidationException>(() =>
+            host.Services.GetRequiredService<IOptions<GranitSecurityHeadersOptions>>().Value);
+    }
+
+    [Fact]
+    public void AddGranitHttpSecurity_RejectsNegativeHstsMaxAge()
+    {
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+        builder.Configuration["SecurityHeaders:HstsMaxAgeSeconds"] = "-1";
+
+        builder.AddGranitHttpSecurity();
+
+        using IHost host = builder.Build();
+
+        Should.Throw<OptionsValidationException>(() =>
+            host.Services.GetRequiredService<IOptions<GranitSecurityHeadersOptions>>().Value);
     }
 }

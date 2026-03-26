@@ -1,4 +1,4 @@
-namespace Granit.Http.Security.Options;
+namespace Granit.Http.SecurityHeaders.Options;
 
 /// <summary>
 /// Configuration options for Granit HTTP security headers.
@@ -52,11 +52,14 @@ public sealed class GranitSecurityHeadersOptions
     public bool DisableXssProtection { get; set; } = true;
 
     /// <summary>
-    /// Sets <c>Permissions-Policy</c> to restrict browser features (camera, microphone, etc.).
-    /// Default: <c>"camera=(), microphone=(), geolocation=(), payment=()"</c>.
+    /// Sets <c>Permissions-Policy</c> to restrict browser features.
+    /// Default restricts camera, microphone, geolocation, payment, accelerometer, gyroscope,
+    /// magnetometer, and USB per the OWASP Secure Headers Project.
     /// Set to <c>null</c> to omit.
     /// </summary>
-    public string? PermissionsPolicy { get; set; } = "camera=(), microphone=(), geolocation=(), payment=()";
+    public string? PermissionsPolicy { get; set; } =
+        "camera=(), microphone=(), geolocation=(), payment=(), " +
+        "accelerometer=(), gyroscope=(), magnetometer=(), usb=()";
 
     /// <summary>
     /// Sets <c>Content-Security-Policy</c> header.

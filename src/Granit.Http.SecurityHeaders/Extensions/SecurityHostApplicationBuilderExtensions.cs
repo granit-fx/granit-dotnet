@@ -1,11 +1,11 @@
-using Granit.Http.Security.Options;
+using Granit.Http.SecurityHeaders.Options;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace Granit.Http.Security.Extensions;
+namespace Granit.Http.SecurityHeaders.Extensions;
 
 /// <summary>
 /// Extension methods for registering Granit HTTP security hardening services.
@@ -43,6 +43,9 @@ public static class SecurityHostApplicationBuilderExtensions
         builder.Services
             .AddOptions<GranitSecurityHeadersOptions>()
             .BindConfiguration(GranitSecurityHeadersOptions.SectionName);
+
+        builder.Services.AddSingleton<IValidateOptions<GranitSecurityHeadersOptions>,
+            GranitSecurityHeadersOptionsValidator>();
 
         builder.Services.AddSingleton<IConfigureOptions<KestrelServerOptions>,
             ConfigureKestrelServerOptions>();

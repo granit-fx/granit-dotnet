@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>Granit.Http.Security</PackageId>
+    <PackageId>Granit.Http.SecurityHeaders</PackageId>
     <Description>HTTP security hardening for Granit APIs. Suppresses the Kestrel Server header, adds OWASP recommended response headers (X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy, COOP, CORP), and configures HSTS. OWASP ASVS V14.4, ISO 27001 A.8.9 compliant.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Granit.Http.Security.Tests" />
+    <InternalsVisibleTo Include="Granit.Http.SecurityHeaders.Tests" />
   </ItemGroup>
 
   <ItemGroup>

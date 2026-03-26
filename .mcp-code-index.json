@@ -686,7 +686,7 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Http.Security",
+      "name": "Granit.Http.SecurityHeaders",
       "deps": [
         "Granit"
       ],
@@ -13698,10 +13698,10 @@
     },
     {
       "name": "SecurityApplicationBuilderExtensions",
-      "fqn": "Granit.Http.Security.Extensions.SecurityApplicationBuilderExtensions",
+      "fqn": "Granit.Http.SecurityHeaders.Extensions.SecurityApplicationBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Http.Security",
-      "file": "src/Granit.Http.Security/Extensions/SecurityApplicationBuilderExtensions.cs",
+      "project": "Granit.Http.SecurityHeaders",
+      "file": "src/Granit.Http.SecurityHeaders/Extensions/SecurityApplicationBuilderExtensions.cs",
       "line": 12,
       "members": [
         {
@@ -13714,10 +13714,10 @@
     },
     {
       "name": "SecurityHostApplicationBuilderExtensions",
-      "fqn": "Granit.Http.Security.Extensions.SecurityHostApplicationBuilderExtensions",
+      "fqn": "Granit.Http.SecurityHeaders.Extensions.SecurityHostApplicationBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Http.Security",
-      "file": "src/Granit.Http.Security/Extensions/SecurityHostApplicationBuilderExtensions.cs",
+      "project": "Granit.Http.SecurityHeaders",
+      "file": "src/Granit.Http.SecurityHeaders/Extensions/SecurityHostApplicationBuilderExtensions.cs",
       "line": 13,
       "members": [
         {
@@ -13730,10 +13730,10 @@
     },
     {
       "name": "GranitHttpSecurityModule",
-      "fqn": "Granit.Http.Security.GranitHttpSecurityModule",
+      "fqn": "Granit.Http.SecurityHeaders.GranitHttpSecurityModule",
       "kind": "class",
-      "project": "Granit.Http.Security",
-      "file": "src/Granit.Http.Security/GranitHttpSecurityModule.cs",
+      "project": "Granit.Http.SecurityHeaders",
+      "file": "src/Granit.Http.SecurityHeaders/GranitHttpSecurityModule.cs",
       "line": 32,
       "members": [
         {
@@ -13746,10 +13746,10 @@
     },
     {
       "name": "GranitSecurityHeadersOptions",
-      "fqn": "Granit.Http.Security.Options.GranitSecurityHeadersOptions",
+      "fqn": "Granit.Http.SecurityHeaders.Options.GranitSecurityHeadersOptions",
       "kind": "class",
-      "project": "Granit.Http.Security",
-      "file": "src/Granit.Http.Security/Options/GranitSecurityHeadersOptions.cs",
+      "project": "Granit.Http.SecurityHeaders",
+      "file": "src/Granit.Http.SecurityHeaders/Options/GranitSecurityHeadersOptions.cs",
       "line": 7,
       "members": [
         {

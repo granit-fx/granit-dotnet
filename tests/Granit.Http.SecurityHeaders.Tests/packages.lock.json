@@ -235,7 +235,7 @@
       "granit": {
         "type": "Project"
       },
-      "granit.http.security": {
+      "granit.http.securityheaders": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

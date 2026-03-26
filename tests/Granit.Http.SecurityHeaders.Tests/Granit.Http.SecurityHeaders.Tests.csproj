@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.Http.Security\Granit.Http.Security.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.SecurityHeaders\Granit.Http.SecurityHeaders.csproj" />
   </ItemGroup>
 
 </Project>
