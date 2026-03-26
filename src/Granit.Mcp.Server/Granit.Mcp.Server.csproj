@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Mcp.Server</PackageId>
+    <Description>ASP.NET Core MCP server integration for Granit. Provides Streamable HTTP transport via MapGranitMcpServer(), authorization via [Authorize] + AddAuthorizationFilters(), multi-tenant tool visibility, module scoping, and admin endpoints.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Mcp.Server.Tests" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ModelContextProtocol.AspNetCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
+    <ProjectReference Include="..\Granit.Mcp\Granit.Mcp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\**\*.json" />
+  </ItemGroup>
+
+</Project>

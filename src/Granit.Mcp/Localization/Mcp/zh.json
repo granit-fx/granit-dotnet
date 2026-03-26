@@ -1,0 +1,10 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Mcp:Tool:NotFound": "MCP tool '{0}' was not found.",
+    "Mcp:Server:Unavailable": "The MCP server is currently unavailable.",
+    "Mcp:Response:Truncated": "Response truncated: exceeded size limit.",
+    "Mcp:Sampling:Disabled": "MCP sampling is disabled.",
+    "Mcp:Sampling:RateLimitExceeded": "Sampling rate limit exceeded for this tenant."
+  }
+}

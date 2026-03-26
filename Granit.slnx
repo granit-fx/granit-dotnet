@@ -210,6 +210,10 @@
     <Project Path="src/Granit.AI.VectorData/Granit.AI.VectorData.csproj" />
     <Project Path="src/Granit.AI/Granit.AI.csproj" />
   </Folder>
+  <Folder Name="/src/MCP/">
+    <Project Path="src/Granit.Mcp/Granit.Mcp.csproj" />
+    <Project Path="src/Granit.Mcp.Server/Granit.Mcp.Server.csproj" />
+  </Folder>
   <Folder Name="/src/Tooling/">
     <Project Path="src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj" />
     <Project Path="src/Granit.Analyzers/Granit.Analyzers.csproj" />
@@ -438,6 +442,10 @@
     <Project Path="tests/Granit.AI.OpenAI.Tests/Granit.AI.OpenAI.Tests.csproj" />
     <Project Path="tests/Granit.AI.Tests/Granit.AI.Tests.csproj" />
     <Project Path="tests/Granit.AI.VectorData.Tests/Granit.AI.VectorData.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tests/MCP/">
+    <Project Path="tests/Granit.Mcp.Tests/Granit.Mcp.Tests.csproj" />
+    <Project Path="tests/Granit.Mcp.Server.Tests/Granit.Mcp.Server.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/Tooling/">
     <Project Path="tests/Granit.Analyzers.CodeFixes.Tests/Granit.Analyzers.CodeFixes.Tests.csproj" />

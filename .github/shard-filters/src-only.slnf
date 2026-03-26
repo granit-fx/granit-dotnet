@@ -103,6 +103,8 @@
       "src/Granit.Localization.EntityFrameworkCore/Granit.Localization.EntityFrameworkCore.csproj",
       "src/Granit.Localization.SourceGenerator/Granit.Localization.SourceGenerator.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
+      "src/Granit.Mcp.Server/Granit.Mcp.Server.csproj",
+      "src/Granit.Mcp/Granit.Mcp.csproj",
       "src/Granit.MultiTenancy/Granit.MultiTenancy.csproj",
       "src/Granit.Notifications.AI/Granit.Notifications.AI.csproj",
       "src/Granit.Notifications.Brevo/Granit.Notifications.Brevo.csproj",

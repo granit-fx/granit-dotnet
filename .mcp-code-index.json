@@ -809,6 +809,21 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Mcp",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Mcp.Server",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Mcp"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.MultiTenancy",
       "deps": [
         "Granit"
@@ -15824,6 +15839,359 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "McpMetrics",
+      "fqn": "Granit.Mcp.Diagnostics.McpMetrics",
+      "kind": "class",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/Diagnostics/McpMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordResourceRead",
+          "kind": "method",
+          "signature": "RecordResourceRead(string? tenantId, string resourceUri)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordSessionStarted",
+          "kind": "method",
+          "signature": "RecordSessionStarted(string? tenantId, string transport)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordSessionEnded",
+          "kind": "method",
+          "signature": "RecordSessionEnded(string? tenantId, string transport)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordRequestDuration",
+          "kind": "method",
+          "signature": "RecordRequestDuration(string? tenantId, string method, TimeSpan duration)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "McpServiceCollectionExtensions",
+      "fqn": "Granit.Mcp.Extensions.McpServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/Extensions/McpHostApplicationBuilderExtensions.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "GranitMcpModule",
+      "fqn": "Granit.Mcp.GranitMcpModule",
+      "kind": "class",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/GranitMcpModule.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IMcpToolContributor",
+      "fqn": "Granit.Mcp.IMcpToolContributor",
+      "kind": "interface",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/IMcpToolContributor.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Configure",
+          "kind": "method",
+          "signature": "Configure(IMcpServerBuilder builder)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IMcpToolVisibilityFilter",
+      "fqn": "Granit.Mcp.IMcpToolVisibilityFilter",
+      "kind": "interface",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/IMcpToolVisibilityFilter.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "IsVisibleAsync",
+          "kind": "method",
+          "signature": "IsVisibleAsync(string toolName, Type? toolType, IServiceProvider services, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<bool>"
+        }
+      ]
+    },
+    {
+      "name": "McpExposedAttribute",
+      "fqn": "Granit.Mcp.McpExposedAttribute",
+      "kind": "class",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/McpExposedAttribute.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "McpLocalizationResource",
+      "fqn": "Granit.Mcp.McpLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/McpLocalizationResource.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "McpTenantScopeAttribute",
+      "fqn": "Granit.Mcp.McpTenantScopeAttribute",
+      "kind": "class",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/McpTenantScopeAttribute.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "McpToolOptionsAttribute",
+      "fqn": "Granit.Mcp.McpToolOptionsAttribute",
+      "kind": "class",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/McpToolOptionsAttribute.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "IconLight",
+          "kind": "property",
+          "signature": "string? IconLight",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "GranitMcpOptions",
+      "fqn": "Granit.Mcp.Options.GranitMcpOptions",
+      "kind": "class",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/Options/GranitMcpOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ServerName",
+          "kind": "property",
+          "signature": "string ServerName",
+          "returnType": "string"
+        },
+        {
+          "name": "ServerVersion",
+          "kind": "property",
+          "signature": "string? ServerVersion",
+          "returnType": "string?"
+        },
+        {
+          "name": "EnableTenantFiltering",
+          "kind": "property",
+          "signature": "bool EnableTenantFiltering",
+          "returnType": "bool"
+        },
+        {
+          "name": "MaxResponseSizeBytes",
+          "kind": "property",
+          "signature": "int MaxResponseSizeBytes",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "McpToolDiscoveryMode",
+      "fqn": "Granit.Mcp.Options.McpToolDiscoveryMode",
+      "kind": "enum",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/Options/McpToolDiscoveryMode.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "IMcpOutputSanitizer",
+      "fqn": "Granit.Mcp.Sanitization.IMcpOutputSanitizer",
+      "kind": "interface",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/Sanitization/IMcpOutputSanitizer.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "SanitizeAsync",
+          "kind": "method",
+          "signature": "SanitizeAsync(CallToolResult result, IServiceProvider services, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<CallToolResult>"
+        }
+      ]
+    },
+    {
+      "name": "McpRedactAttribute",
+      "fqn": "Granit.Mcp.Sanitization.McpRedactAttribute",
+      "kind": "class",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/Sanitization/McpRedactAttribute.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Strategy",
+          "kind": "property",
+          "signature": "RedactionStrategy Strategy",
+          "returnType": "RedactionStrategy"
+        }
+      ]
+    },
+    {
+      "name": "RedactionStrategy",
+      "fqn": "Granit.Mcp.Sanitization.RedactionStrategy",
+      "kind": "enum",
+      "project": "Granit.Mcp",
+      "file": "src/Granit.Mcp/Sanitization/RedactionStrategy.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "McpServerEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Mcp.Server.Extensions.McpServerEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Mcp.Server",
+      "file": "src/Granit.Mcp.Server/Extensions/McpServerEndpointRouteBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "MapGranitMcpServer",
+          "kind": "method",
+          "signature": "MapGranitMcpServer(this IEndpointRouteBuilder endpoints, Action<GranitMcpServerOptions>? configure = null)",
+          "returnType": "IEndpointRouteBuilder"
+        }
+      ]
+    },
+    {
+      "name": "McpServerHostApplicationBuilderExtensions",
+      "fqn": "Granit.Mcp.Server.Extensions.McpServerHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Mcp.Server",
+      "file": "src/Granit.Mcp.Server/Extensions/McpServerHostApplicationBuilderExtensions.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "AddGranitMcpServer",
+          "kind": "method",
+          "signature": "AddGranitMcpServer(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitMcpServerModule",
+      "fqn": "Granit.Mcp.Server.GranitMcpServerModule",
+      "kind": "class",
+      "project": "Granit.Mcp.Server",
+      "file": "src/Granit.Mcp.Server/GranitMcpServerModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "McpServerLocalizationResource",
+      "fqn": "Granit.Mcp.Server.McpServerLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Mcp.Server",
+      "file": "src/Granit.Mcp.Server/McpServerLocalizationResource.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "GranitMcpServerOptions",
+      "fqn": "Granit.Mcp.Server.Options.GranitMcpServerOptions",
+      "kind": "class",
+      "project": "Granit.Mcp.Server",
+      "file": "src/Granit.Mcp.Server/Options/GranitMcpServerOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "RequireAuthentication",
+          "kind": "property",
+          "signature": "bool RequireAuthentication",
+          "returnType": "bool"
+        },
+        {
+          "name": "MapAdminEndpoints",
+          "kind": "property",
+          "signature": "bool MapAdminEndpoints",
+          "returnType": "bool"
+        },
+        {
+          "name": "AdminTagName",
+          "kind": "property",
+          "signature": "string AdminTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "EnabledModules",
+          "kind": "property",
+          "signature": "HashSet<string> EnabledModules",
+          "returnType": "HashSet<string>"
+        }
+      ]
+    },
+    {
+      "name": "McpPermissions",
+      "fqn": "Granit.Mcp.Server.Permissions.McpPermissions",
+      "kind": "class",
+      "project": "Granit.Mcp.Server",
+      "file": "src/Granit.Mcp.Server/Permissions/McpPermissions.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "Prompts",
+      "fqn": "Granit.Mcp.Server.Permissions.Prompts",
+      "kind": "class",
+      "project": "Granit.Mcp.Server",
+      "file": "src/Granit.Mcp.Server/Permissions/McpPermissions.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "Resources",
+      "fqn": "Granit.Mcp.Server.Permissions.Resources",
+      "kind": "class",
+      "project": "Granit.Mcp.Server",
+      "file": "src/Granit.Mcp.Server/Permissions/McpPermissions.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "Server",
+      "fqn": "Granit.Mcp.Server.Permissions.Server",
+      "kind": "class",
+      "project": "Granit.Mcp.Server",
+      "file": "src/Granit.Mcp.Server/Permissions/McpPermissions.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "Tools",
+      "fqn": "Granit.Mcp.Server.Permissions.Tools",
+      "kind": "class",
+      "project": "Granit.Mcp.Server",
+      "file": "src/Granit.Mcp.Server/Permissions/McpPermissions.cs",
+      "line": 16,
+      "members": []
     },
     {
       "name": "ApplicationInitializationContext",

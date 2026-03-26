@@ -24,6 +24,10 @@
     <PackageVersion Include="Microsoft.Extensions.VectorData.Abstractions" Version="10.*" />
     <PackageVersion Include="OllamaSharp" Version="5.*" />
   </ItemGroup>
+  <ItemGroup Label="Model Context Protocol">
+    <PackageVersion Include="ModelContextProtocol" Version="1.1.*" />
+    <PackageVersion Include="ModelContextProtocol.AspNetCore" Version="1.1.*" />
+  </ItemGroup>
   <ItemGroup Label="ASP.NET Core">
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.*" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.*" />

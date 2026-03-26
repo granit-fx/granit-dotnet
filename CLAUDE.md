@@ -471,7 +471,7 @@ Full guide in global `~/.claude/CLAUDE.md`.
 ## Code index (`.mcp-code-index.json`)
 
 A pre-commit hook regenerates `.mcp-code-index.json` when `.cs` or `.csproj`
-files are staged. This file is consumed by the `granit-mcp` local dotnet
+files are staged. This file is consumed by the `granit-tools-mcp` local dotnet
 tool for code navigation (`search_code`, `get_public_api`,
 `get_project_graph`).
 

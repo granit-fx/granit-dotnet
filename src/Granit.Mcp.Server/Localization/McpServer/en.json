@@ -1,0 +1,11 @@
+{
+  "culture": "en",
+  "texts": {
+    "PermissionGroup:Mcp": "MCP Server",
+    "Permission:Mcp.Server.Access": "Access MCP server endpoint",
+    "Permission:Mcp.Tools.Read": "List MCP tools",
+    "Permission:Mcp.Tools.Execute": "Execute MCP tools",
+    "Permission:Mcp.Resources.Read": "Read MCP resources",
+    "Permission:Mcp.Prompts.Read": "Read MCP prompts"
+  }
+}

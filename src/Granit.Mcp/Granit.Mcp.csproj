@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Mcp</PackageId>
+    <Description>MCP (Model Context Protocol) module for Granit. Provides auto-discovery of MCP tools, resources, and prompts from module assemblies, an output sanitization pipeline for GDPR compliance, and OpenTelemetry diagnostics. Built on the official MCP C# SDK.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Mcp.Tests" />
+    <InternalsVisibleTo Include="Granit.Mcp.Server" />
+    <InternalsVisibleTo Include="Granit.Mcp.Server.Tests" />
+    <InternalsVisibleTo Include="Granit.Mcp.Client" />
+    <InternalsVisibleTo Include="Granit.Mcp.Client.Tests" />
+    <InternalsVisibleTo Include="Granit.AI.Mcp" />
+    <InternalsVisibleTo Include="Granit.AI.Mcp.Tests" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ModelContextProtocol" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\**\*.json" />
+  </ItemGroup>
+
+</Project>
