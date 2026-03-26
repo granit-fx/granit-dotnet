@@ -62,9 +62,15 @@ a.site-title {
   font-weight: 500 !important;
 }
 
-/* Hide Starlight's default hero on splash pages (we render our own) */
-.hero {
+/* Hide Starlight's default hero only on the homepage (custom hero in .lp) */
+main:has(.lp) .hero {
   display: none !important;
+}
+
+/* starlight-blog hides .content-panel:first-of-type globally — restore it
+   on pages that have a single content-panel with a hero (e.g. 404 page) */
+main:has(.hero) > .content-panel:only-of-type {
+  display: block !important;
 }
 
 /* ── Print styles ── */
