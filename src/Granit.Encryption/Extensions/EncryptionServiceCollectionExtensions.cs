@@ -29,7 +29,10 @@ public static class EncryptionServiceCollectionExtensions
 
         services.TryAddSingleton<IStringEncryptionService, DefaultStringEncryptionService>();
 
-        // Crypto-shredding (requires IEntityEncryptionKeyStore to be registered by a Vault provider)
+        // In-memory fallback for dev/test — replaced by a Vault provider in production
+        services.TryAddScoped<IEntityEncryptionKeyStore, InMemoryEntityEncryptionKeyStore>();
+
+        // Crypto-shredding
         services.TryAddScoped<ICryptoShredder, DefaultCryptoShredder>();
 
         // Diagnostics
