@@ -264,7 +264,7 @@ public sealed class RecurringJobSchedulingMiddlewareTests : IDisposable
 // Test fixtures — shared with RecurringJobDiscoveryTests in Granit.BackgroundJobs.Tests
 
 [RecurringJob("0 8 * * *", "fake-daily-report")]
-public sealed class FakeDailyReportMessage;
+public sealed class FakeDailyReportMessage : IBackgroundJob;
 
 /// <summary>A message without [RecurringJob] — middleware must skip it.</summary>
 public sealed class UndecoratedMessage;

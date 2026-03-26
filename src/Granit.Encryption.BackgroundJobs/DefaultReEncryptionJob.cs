@@ -20,6 +20,14 @@ namespace Granit.Encryption.BackgroundJobs;
 /// each save re-encrypts with the latest key version. When using the AES provider,
 /// each save produces a fresh ciphertext (new IV).
 /// </para>
+/// <para>
+/// <b>Multi-tenancy:</b> In multi-tenant deployments with per-tenant encryption keys,
+/// callers MUST ensure the correct tenant context is active before invoking
+/// <see cref="ReEncryptAsync{TEntity}"/>. EF Core named query filters will scope the
+/// query to the current tenant if the entity implements <c>IMultiTenant</c>. For
+/// system-wide re-encryption, iterate tenants explicitly with
+/// <c>ICurrentTenant.Change(tenantId)</c> scopes.
+/// </para>
 /// </remarks>
 /// <typeparam name="TContext">The <see cref="DbContext"/> type that owns the entities.</typeparam>
 public sealed class DefaultReEncryptionJob<TContext>(IDbContextFactory<TContext> contextFactory)

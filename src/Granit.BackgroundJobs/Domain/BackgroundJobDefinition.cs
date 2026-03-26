@@ -125,12 +125,21 @@ public sealed class BackgroundJobDefinition : AggregateRoot
         NextExecutionAt = nextExecution;
 
     /// <summary>
-    /// Records an execution failure.
+    /// Maximum length of stored error messages. Prevents unbounded PII propagation
+    /// through API responses and integration events.
+    /// </summary>
+    internal const int MaxErrorMessageLength = 500;
+
+    /// <summary>
+    /// Records an execution failure. Error messages are truncated to
+    /// <see cref="MaxErrorMessageLength"/> characters to limit information disclosure.
     /// </summary>
     internal void RecordFailure(string? errorMessage)
     {
         ConsecutiveFailureCount++;
-        LastErrorMessage = errorMessage;
+        LastErrorMessage = errorMessage is not null && errorMessage.Length > MaxErrorMessageLength
+            ? string.Concat(errorMessage.AsSpan(0, MaxErrorMessageLength), "… [truncated]")
+            : errorMessage;
 
         if (ConsecutiveFailureCount >= 3)
         {

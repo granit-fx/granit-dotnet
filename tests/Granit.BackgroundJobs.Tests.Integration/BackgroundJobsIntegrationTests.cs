@@ -18,10 +18,10 @@ namespace Granit.BackgroundJobs.Tests.Integration;
 
 // Duplicated from Granit.BackgroundJobs.Tests to avoid cross-test-project references.
 [RecurringJob("0 8 * * *", "fake-daily-report")]
-public sealed class FakeDailyReportMessage;
+public sealed class FakeDailyReportMessage : IBackgroundJob;
 
 [RecurringJob("0 * * * *", "fake-hourly-cleanup")]
-public sealed class FakeHourlyCleanupMessage;
+public sealed class FakeHourlyCleanupMessage : IBackgroundJob;
 
 /// <summary>
 /// Integration tests validating interactions between real components

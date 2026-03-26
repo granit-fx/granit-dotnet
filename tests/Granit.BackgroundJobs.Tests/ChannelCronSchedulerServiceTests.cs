@@ -79,7 +79,7 @@ public sealed class ChannelCronSchedulerServiceTests
     }
 
     // Minimal job message class for testing
-    private sealed class FakeJobMessage;
+    private sealed class FakeJobMessage : IBackgroundJob;
 
     // =========================================================================
     // Scenario: job with null NextExecutionAt -> schedules first occurrence

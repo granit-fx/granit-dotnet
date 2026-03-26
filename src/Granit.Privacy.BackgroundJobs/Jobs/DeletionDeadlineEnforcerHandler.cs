@@ -37,8 +37,11 @@ internal static partial class DeletionDeadlineEnforcerHandler
 
         foreach (DeletionRequestStatus request in expired)
         {
-            await trackerWriter.MarkExecutedAsync(request.RequestId, now, cancellationToken).ConfigureAwait(false);
-
+            // Publish events BEFORE marking executed. Events go into the Wolverine outbox
+            // (not committed yet). If MarkExecutedAsync fails, the exception propagates and
+            // the outbox is not committed — both operations roll back cleanly on retry.
+            // This ordering prevents a GDPR compliance gap where the request is marked
+            // "Executed" but the deletion event was never enqueued.
             await eventBus.PublishAsync(
                 new PersonalDataDeletionRequestedEto(
                     request.RequestId,
@@ -51,6 +54,8 @@ internal static partial class DeletionDeadlineEnforcerHandler
             await eventBus.PublishAsync(
                 new DeletionExecutedEto(request.RequestId, request.UserId, now),
                 cancellationToken).ConfigureAwait(false);
+
+            await trackerWriter.MarkExecutedAsync(request.RequestId, now, cancellationToken).ConfigureAwait(false);
 
             metrics.RecordDeletionExecuted(null);
             Log.DeletionEnforced(logger, request.RequestId, request.UserId);

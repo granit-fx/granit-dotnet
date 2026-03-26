@@ -207,7 +207,7 @@ The persistent administrative record for each recurring job:
 | `LastExecutedAt` | `DateTimeOffset?` | UTC timestamp of last execution start |
 | `NextExecutionAt` | `DateTimeOffset?` | UTC timestamp of next scheduled execution |
 | `ConsecutiveFailureCount` | `int` | Failures since last success (reset on success) |
-| `LastErrorMessage` | `string?` (max 2000) | Error from last failure (`null` on success) |
+| `LastErrorMessage` | `string?` (max 500 + suffix) | Error from last failure, truncated to 500 chars to limit information disclosure (`null` on success) |
 | `TriggeredBy` | `string?` (max 450) | UserId of manual trigger operator (ISO 27001 audit) |
 
 EF Core table: `background_jobs_background_jobs` with a unique index on `JobName`.
@@ -366,15 +366,16 @@ with Wolverine-backed implementations via `ServiceDescriptor.Replace()`.
 
 ## Endpoints
 
-Five Minimal API endpoints protected by the `BackgroundJobs.Jobs.Manage` permission:
+Five Minimal API endpoints with split permissions — `BackgroundJobs.Jobs.Read` for read
+operations and `BackgroundJobs.Jobs.Manage` for mutations:
 
-| Method | Route | Handler | Response |
-|--------|-------|---------|----------|
-| `GET` | `/{prefix}` | List all jobs (paginated) | `200 OK` with `PagedResult<BackgroundJobStatus>` |
-| `GET` | `/{prefix}/{name}` | Get job by name | `200 OK` / `404 Not Found` |
-| `POST` | `/{prefix}/{name}/pause` | Pause a job | `204 No Content` / `404 Not Found` |
-| `POST` | `/{prefix}/{name}/resume` | Resume a paused job | `204 No Content` / `404 Not Found` |
-| `POST` | `/{prefix}/{name}/trigger` | Trigger immediate execution | `202 Accepted` / `404 Not Found` |
+| Method | Route | Handler | Permission | Response |
+|--------|-------|---------|------------|----------|
+| `GET` | `/{prefix}` | List all jobs (paginated) | `Jobs.Read` | `200 OK` with `PagedResult<BackgroundJobStatus>` |
+| `GET` | `/{prefix}/{name}` | Get job by name | `Jobs.Read` | `200 OK` / `404 Not Found` |
+| `POST` | `/{prefix}/{name}/pause` | Pause a job | `Jobs.Manage` | `204 No Content` / `404 Not Found` |
+| `POST` | `/{prefix}/{name}/resume` | Resume a paused job | `Jobs.Manage` | `204 No Content` / `404 Not Found` |
+| `POST` | `/{prefix}/{name}/trigger` | Trigger immediate execution | `Jobs.Manage` | `202 Accepted` / `404 Not Found` |
 
 Default route prefix: `background-jobs`. Customize via `BackgroundJobsEndpointsOptions`:
 
@@ -389,15 +390,22 @@ app.MapBackgroundJobsEndpoints(opts =>
 
 ### Permission model
 
-The `BackgroundJobs.Jobs.Manage` permission grants access to all five endpoints.
-It integrates with the Granit RBAC pipeline:
+Two permissions control access with least-privilege separation:
+
+| Permission | Grants |
+|------------|--------|
+| `BackgroundJobs.Jobs.Read` | View job status and metadata (GET endpoints) |
+| `BackgroundJobs.Jobs.Manage` | Pause, resume, and trigger jobs (POST endpoints) |
+
+Both integrate with the Granit RBAC pipeline:
 
 1. `AlwaysAllow` bypass (dev/test: `GranitAuthorizationOptions.AlwaysAllow = true`)
 2. Admin role bypass (`GranitAuthorizationOptions.AdminRoles`)
 3. Permission grant store query per role
 
-In production, grant the permission via:
+In production, grant permissions via:
 - Add the role to `GranitAuthorizationOptions.AdminRoles`
+- Call `IPermissionManagerWriter.SetAsync("BackgroundJobs.Jobs.Read", "my-role", tenantId, true)`
 - Call `IPermissionManagerWriter.SetAsync("BackgroundJobs.Jobs.Manage", "my-role", tenantId, true)`
 
 ## Domain events
@@ -460,7 +468,7 @@ When `Granit.Observability` is loaded, the activity source is auto-discovered vi
 | Abstractions | `IBackgroundJobDispatcher`, `IDeadLetterQueueInspector` | `Granit.BackgroundJobs` |
 | Headers | `BackgroundJobHeaders` (`X-Triggered-By`) | `Granit.BackgroundJobs` |
 | Options | `BackgroundJobsOptions`, `BackgroundJobsEndpointsOptions` | -- |
-| Permissions | `BackgroundJobsPermissions.Jobs.Manage` | `Granit.BackgroundJobs.Endpoints` |
+| Permissions | `BackgroundJobsPermissions.Jobs.Read`, `BackgroundJobsPermissions.Jobs.Manage` | `Granit.BackgroundJobs.Endpoints` |
 | Middleware | `RecurringJobSchedulingMiddleware` | `Granit.BackgroundJobs.Wolverine` |
 | Extensions | `AddGranitBackgroundJobs()`, `AddGranitBackgroundJobsEntityFrameworkCore()`, `MapBackgroundJobsEndpoints()` | -- |
 
@@ -525,6 +533,25 @@ public async Task Cleanup_job_deletes_expired_records()
     remaining.ShouldBe(0);
 }
 ```
+
+## Security considerations
+
+**Error message truncation:** `BackgroundJobDefinition.RecordFailure()` truncates error messages
+to 500 characters before persisting them. This prevents accidental information disclosure through
+the admin API or integration events. Job handlers should still avoid including PII in exception
+messages.
+
+**Type validation:** `CronSchedulerHelper.CreateMessage()` validates that the resolved CLR type
+implements `IBackgroundJob` before instantiation, preventing arbitrary type activation from
+tampered database values.
+
+**Key material zeroization:** The `OpenIddictKeyRotationJob` clears RSA private key bytes from
+memory via `CryptographicOperations.ZeroMemory()` immediately after encryption, minimizing the
+window for key material exposure through memory dumps.
+
+**GDPR deletion ordering:** `DeletionDeadlineEnforcerHandler` publishes deletion events into the
+Wolverine outbox before marking the request as executed, ensuring deletion is never silently
+skipped on partial failure.
 
 ## See also
 

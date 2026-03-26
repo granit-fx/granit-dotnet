@@ -52,37 +52,52 @@ internal static partial class OpenIddictIdleSessionEnforcementHandler
         // with TTL = IdleSessionTimeout + 5 min. When the cache entry expires naturally
         // (user stopped sending heartbeats), the session is considered idle.
         //
-        // This job iterates active refresh tokens and checks whether their corresponding
-        // cache entry still exists. If not, the refresh token is revoked.
+        // This job iterates active refresh tokens in bounded pages and checks whether
+        // their corresponding cache entry still exists. If not, the refresh token is revoked.
+        const int pageSize = 1_000;
         int revokedCount = 0;
+        int offset = 0;
+        bool hasMore;
 
-        await foreach (object token in tokenManager.ListAsync(int.MaxValue, 0, cancellationToken))
+        do
         {
-            string? tokenType = await tokenManager.GetTypeAsync(token, cancellationToken).ConfigureAwait(false);
-            if (tokenType != global::OpenIddict.Abstractions.OpenIddictConstants.TokenTypeHints.RefreshToken)
+            hasMore = false;
+            int pageCount = 0;
+
+            await foreach (object token in tokenManager.ListAsync(pageSize, offset, cancellationToken))
             {
-                continue;
+                pageCount++;
+
+                string? tokenType = await tokenManager.GetTypeAsync(token, cancellationToken).ConfigureAwait(false);
+                if (tokenType != global::OpenIddict.Abstractions.OpenIddictConstants.TokenTypeHints.RefreshToken)
+                {
+                    continue;
+                }
+
+                string? subject = await tokenManager.GetSubjectAsync(token, cancellationToken).ConfigureAwait(false);
+                string? tokenId = await tokenManager.GetIdAsync(token, cancellationToken).ConfigureAwait(false);
+                if (subject is null || tokenId is null)
+                {
+                    continue;
+                }
+
+                // Check if session cache entry still exists
+                string cacheKey = $"session:{subject}:{tokenId}";
+                MaybeValue<UserSessionActivity> cachedEntry = await cache
+                    .TryGetAsync<UserSessionActivity>(cacheKey, token: cancellationToken).ConfigureAwait(false);
+
+                if (!cachedEntry.HasValue)
+                {
+                    // Cache entry expired → session idle → revoke refresh token
+                    await tokenManager.TryRevokeAsync(token, cancellationToken).ConfigureAwait(false);
+                    revokedCount++;
+                }
             }
 
-            string? subject = await tokenManager.GetSubjectAsync(token, cancellationToken).ConfigureAwait(false);
-            string? tokenId = await tokenManager.GetIdAsync(token, cancellationToken).ConfigureAwait(false);
-            if (subject is null || tokenId is null)
-            {
-                continue;
-            }
-
-            // Check if session cache entry still exists
-            string cacheKey = $"session:{subject}:{tokenId}";
-            MaybeValue<UserSessionActivity> cachedEntry = await cache
-                .TryGetAsync<UserSessionActivity>(cacheKey, token: cancellationToken).ConfigureAwait(false);
-
-            if (!cachedEntry.HasValue)
-            {
-                // Cache entry expired → session idle → revoke refresh token
-                await tokenManager.TryRevokeAsync(token, cancellationToken).ConfigureAwait(false);
-                revokedCount++;
-            }
+            offset += pageCount;
+            hasMore = pageCount == pageSize;
         }
+        while (hasMore);
 
         Log.IdleSessionEnforcementCompleted(logger, revokedCount);
     }

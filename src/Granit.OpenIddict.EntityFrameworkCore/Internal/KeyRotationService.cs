@@ -106,25 +106,32 @@ internal sealed partial class KeyRotationService(
         using var rsa = RSA.Create(options.RsaKeySize);
         byte[] privateKey = rsa.ExportRSAPrivateKey();
 
+        try
+        {
 #pragma warning disable GRSEC002 // Key ID suffix, not a database entity ID
-        string keyId = $"{keyType}-{now:yyyyMMdd}-{Guid.NewGuid():N}";
+            string keyId = $"{keyType}-{now:yyyyMMdd}-{Guid.NewGuid():N}";
 #pragma warning restore GRSEC002
 
-        string algorithm = keyType == "signing"
-            ? options.SigningAlgorithm
-            : "RSA-OAEP";
+            string algorithm = keyType == "signing"
+                ? options.SigningAlgorithm
+                : "RSA-OAEP";
 
-        var newKey = SigningKey.Create(
-            keyId,
-            keyType,
-            algorithm,
-            encryptionService.Encrypt(Convert.ToBase64String(privateKey)),
-            activatedAt: now,
-            expiresAt: now + options.KeyLifetime,
-            keySize: options.RsaKeySize);
+            var newKey = SigningKey.Create(
+                keyId,
+                keyType,
+                algorithm,
+                encryptionService.Encrypt(Convert.ToBase64String(privateKey)),
+                activatedAt: now,
+                expiresAt: now + options.KeyLifetime,
+                keySize: options.RsaKeySize);
 
-        await keyStore.CreateAsync(newKey, cancellationToken).ConfigureAwait(false);
-        Log.KeyGenerated(logger, keyId, keyType, options.RsaKeySize);
+            await keyStore.CreateAsync(newKey, cancellationToken).ConfigureAwait(false);
+            Log.KeyGenerated(logger, keyId, keyType, options.RsaKeySize);
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(privateKey);
+        }
     }
 
     private static partial class Log

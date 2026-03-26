@@ -26,4 +26,19 @@ public sealed class CronSchedulerHelperTests
         ex.Message.ShouldContain("Cannot resolve message type");
         ex.Message.ShouldContain("test-job");
     }
+
+    [Fact]
+    public void CreateMessage_TypeNotImplementingIBackgroundJob_ThrowsInvalidOperationException()
+    {
+        string assemblyQualifiedName = typeof(NotABackgroundJob).AssemblyQualifiedName!;
+
+        Action act = () => CronSchedulerHelper.CreateMessage(assemblyQualifiedName, "rogue-job");
+
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(act);
+        ex.Message.ShouldContain("does not implement IBackgroundJob");
+        ex.Message.ShouldContain("rogue-job");
+    }
+
+    // A valid CLR type that does NOT implement IBackgroundJob — simulates a tampered MessageType.
+    private sealed class NotABackgroundJob;
 }

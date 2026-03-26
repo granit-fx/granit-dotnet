@@ -74,10 +74,10 @@ public sealed class RecurringJobDiscoveryTests
 // =========================================================================
 
 [RecurringJob("0 8 * * *", "fake-daily-report")]
-public sealed class FakeDailyReportMessage;
+public sealed class FakeDailyReportMessage : IBackgroundJob;
 
 [RecurringJob("0 * * * *", "fake-hourly-cleanup")]
-public sealed class FakeHourlyCleanupMessage;
+public sealed class FakeHourlyCleanupMessage : IBackgroundJob;
 
 // Intentionally not decorated — must not appear in discovery results.
 public sealed class UndecoratedMessage;

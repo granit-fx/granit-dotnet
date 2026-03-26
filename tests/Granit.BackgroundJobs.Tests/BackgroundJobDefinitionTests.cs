@@ -155,6 +155,41 @@ public sealed class BackgroundJobDefinitionTests
         job.IntegrationEvents.Count.ShouldBe(3); // failures 3, 4, 5
     }
 
+    [Fact]
+    public void RecordFailure_LongErrorMessage_ShouldTruncate()
+    {
+        BackgroundJobDefinition job = BuildJob();
+        string longMessage = new('x', 1000);
+
+        job.RecordFailure(longMessage);
+
+        job.LastErrorMessage.ShouldNotBeNull();
+        job.LastErrorMessage.Length.ShouldBeLessThanOrEqualTo(
+            BackgroundJobDefinition.MaxErrorMessageLength + "… [truncated]".Length);
+        job.LastErrorMessage.ShouldEndWith("… [truncated]");
+    }
+
+    [Fact]
+    public void RecordFailure_ShortErrorMessage_ShouldNotTruncate()
+    {
+        BackgroundJobDefinition job = BuildJob();
+        string shortMessage = "timeout";
+
+        job.RecordFailure(shortMessage);
+
+        job.LastErrorMessage.ShouldBe("timeout");
+    }
+
+    [Fact]
+    public void RecordFailure_NullErrorMessage_ShouldStoreNull()
+    {
+        BackgroundJobDefinition job = BuildJob();
+
+        job.RecordFailure(null);
+
+        job.LastErrorMessage.ShouldBeNull();
+    }
+
     private static BackgroundJobDefinition BuildJob(bool enabled = true)
     {
         var job = BackgroundJobDefinition.Create(

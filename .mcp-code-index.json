@@ -305,6 +305,7 @@
       "name": "Granit.Bff.EntityFrameworkCore",
       "deps": [
         "Granit.Bff",
+        "Granit.Encryption",
         "Granit.Guids",
         "Granit.Persistence"
       ],
@@ -6298,6 +6299,22 @@
       ]
     },
     {
+      "name": "ILogoutTokenValidator",
+      "fqn": "Granit.Bff.ILogoutTokenValidator",
+      "kind": "interface",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/ILogoutTokenValidator.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ValidateAsync",
+          "kind": "method",
+          "signature": "ValidateAsync(string logoutToken, string expectedClientId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ValidatedLogoutToken?>"
+        }
+      ]
+    },
+    {
       "name": "BffClientAuthenticationMethod",
       "fqn": "Granit.Bff.Options.BffClientAuthenticationMethod",
       "kind": "enum",
@@ -6312,7 +6329,7 @@
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/Options/GranitBffOptions.cs",
-      "line": 79,
+      "line": 91,
       "members": [
         {
           "name": "Name",
@@ -6421,12 +6438,21 @@
           "returnType": "bool"
         },
         {
-          "name": "Frontends",
+          "name": "CsrfHmacKey",
           "kind": "property",
-          "signature": "List<BffFrontendOptions> Frontends",
-          "returnType": "List<BffFrontendOptions>"
+          "signature": "string? CsrfHmacKey",
+          "returnType": "string?"
         }
       ]
+    },
+    {
+      "name": "ValidatedLogoutToken",
+      "fqn": "Granit.Bff.ValidatedLogoutToken",
+      "kind": "record",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/ILogoutTokenValidator.cs",
+      "line": 23,
+      "members": []
     },
     {
       "name": "BffYarpApplicationBuilderExtensions",
