@@ -39,8 +39,7 @@ internal static class BackgroundJobsReadEndpoints
         [FromQuery] int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
-        int clampedPage = Math.Max(page, 1);
-        int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
+        (int clampedPage, int clampedPageSize) = QueryEngineDefaults.ClampPagination(page, pageSize);
 
         IReadOnlyList<BackgroundJobStatus> all = await reader.GetAllAsync(cancellationToken).ConfigureAwait(false);
 

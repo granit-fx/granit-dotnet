@@ -36,8 +36,7 @@ internal static class ImportJobListEndpoints
         [FromQuery] int pageSize = 20,
         CancellationToken cancellationToken = default)
     {
-        int clampedPageSize = Math.Clamp(pageSize, 1, 100);
-        int clampedPage = Math.Max(page, 1);
+        (int clampedPage, int clampedPageSize) = QueryEngineDefaults.ClampPagination(page, pageSize);
 
         PagedResult<ImportJob> result = await jobReader
             .ListAsync(status, clampedPage, clampedPageSize, cancellationToken)

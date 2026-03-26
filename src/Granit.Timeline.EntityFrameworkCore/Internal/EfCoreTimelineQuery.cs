@@ -23,8 +23,7 @@ internal sealed class EfCoreTimelineQuery(
         int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
-        int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
-        int clampedPage = Math.Max(page, 1);
+        (int clampedPage, int clampedPageSize) = QueryEngineDefaults.ClampPagination(page, pageSize);
 
         await using TimelineDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 

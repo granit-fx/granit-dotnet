@@ -23,8 +23,7 @@ internal sealed class DefaultWorkflowHistoryQuery<TDbContext>(TDbContext dbConte
         int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
-        int clampedPage = Math.Max(page, 1);
-        int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
+        (int clampedPage, int clampedPageSize) = QueryEngineDefaults.ClampPagination(page, pageSize);
 
         IQueryable<Domain.WorkflowTransitionRecord> query = _dbContext.WorkflowTransitionRecords
             .Where(r => r.EntityType == entityType && r.EntityId == entityId);

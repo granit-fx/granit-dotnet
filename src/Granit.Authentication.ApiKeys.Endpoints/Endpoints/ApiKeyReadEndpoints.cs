@@ -37,8 +37,7 @@ internal static class ApiKeyReadEndpoints
         [AsParameters] ApiKeyListRequest request,
         CancellationToken cancellationToken)
     {
-        int page = Math.Max(request.Page, 1);
-        int pageSize = Math.Clamp(request.PageSize, 1, 100);
+        (int page, int pageSize) = QueryEngineDefaults.ClampPagination(request.Page, request.PageSize);
 
         PagedResult<ApiKeyEntry> result = await adminStore.ListAsync(
             request.Search,

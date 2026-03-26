@@ -17,8 +17,7 @@ internal sealed class InMemoryTimelineQuery(InMemoryTimelineStore store) : ITime
         int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
-        int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
-        int clampedPage = Math.Max(page, 1);
+        (int clampedPage, int clampedPageSize) = QueryEngineDefaults.ClampPagination(page, pageSize);
 
         var entries = store.Entries.Values
             .Where(e => e.EntityType == entityType

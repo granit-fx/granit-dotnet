@@ -84,8 +84,7 @@ public static class NotificationEndpointRouteBuilderExtensions
         ClaimsPrincipal user,
         int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize)
     {
-        int clampedPage = Math.Max(page, 1);
-        int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
+        (int clampedPage, int clampedPageSize) = QueryEngineDefaults.ClampPagination(page, pageSize);
 
         string userId = GetUserId(user);
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
@@ -145,8 +144,7 @@ public static class NotificationEndpointRouteBuilderExtensions
         [FromServices] ICurrentTenant tenant,
         int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize)
     {
-        int clampedPage = Math.Max(page, 1);
-        int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
+        (int clampedPage, int clampedPageSize) = QueryEngineDefaults.ClampPagination(page, pageSize);
 
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
         PagedResult<UserNotification> result = await reader.GetByEntityAsync(entityType, entityId, tenantId, clampedPage, clampedPageSize).ConfigureAwait(false);

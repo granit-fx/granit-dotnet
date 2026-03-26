@@ -44,8 +44,8 @@ internal static class IdentityUserCacheReadEndpoints
         CancellationToken cancellationToken)
     {
         QueryRequest query = request.Value;
-        int page = query.Page ?? 1;
-        int pageSize = Math.Clamp(query.PageSize ?? QueryEngineDefaults.DefaultPageSize, 1, QueryEngineDefaults.MaxPageSize);
+        (int page, int pageSize) = QueryEngineDefaults.ClampPagination(
+            query.Page ?? 1, query.PageSize ?? QueryEngineDefaults.DefaultPageSize);
 
         PagedResult<IIdentityUser> result = await lookupService.SearchAsync(
             query.Search ?? "",

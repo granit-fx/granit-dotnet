@@ -35,8 +35,7 @@ internal static class WorkflowReadEndpoints
         [FromQuery] int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
-        int clampedPage = Math.Max(page, 1);
-        int clampedPageSize = Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
+        (int clampedPage, int clampedPageSize) = QueryEngineDefaults.ClampPagination(page, pageSize);
 
         PagedResult<WorkflowTransitionHistoryResponse> result = await historyQuery.GetHistoryAsync(
             entityType, entityId, clampedPage, clampedPageSize, cancellationToken).ConfigureAwait(false);

@@ -153,7 +153,8 @@ internal sealed partial class CachedUserLookupService(
             .ConfigureAwait(false);
 
         var items = entries.Cast<IIdentityUser>().ToList();
-        int skip = (Math.Max(page, 1) - 1) * Math.Clamp(pageSize, 1, QueryEngineDefaults.MaxPageSize);
+        (int clampedPage, int clampedPageSize) = QueryEngineDefaults.ClampPagination(page, pageSize);
+        int skip = (clampedPage - 1) * clampedPageSize;
         return new PagedResult<IIdentityUser>(items, totalCount, HasMore: skip + items.Count < totalCount);
     }
 
