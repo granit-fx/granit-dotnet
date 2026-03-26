@@ -2,7 +2,7 @@
 title: Use Granit docs with AI assistants
 description: Get accurate, context-aware answers about Granit from ChatGPT, Claude, GitHub Copilot, or any LLM — ingest the full documentation as plain text for real framework knowledge, not guesswork.
 sidebar:
-  order: 99
+  order: 10
 ---
 
 import { Aside, Steps, TabItem, Tabs } from "@astrojs/starlight/components";
@@ -61,28 +61,46 @@ conversations in that project.
 
 ### Claude Code (MCP server)
 
-The fastest way: add the Granit MCP server so Claude Code
-can **search** the documentation in real time — no file
-upload, always up to date.
+The fastest way: install the Granit MCP server as a local
+.NET tool so Claude Code can **search** the documentation
+in real time — no file upload, always up to date.
 
-Add this to your project's `.mcp.json`:
+<Steps>
+1. Install the tool:
+   ```bash
+   dotnet tool install --global Granit.Tools.Mcp
+   ```
+2. Add this to your project's `.mcp.json`:
+   ```json
+   {
+     "mcpServers": {
+       "granit": {
+         "command": "granit-tools-mcp"
+       }
+     }
+   }
+   ```
+</Steps>
 
-```json
-{
-  "mcpServers": {
-    "granit-docs": {
-      "type": "url",
-      "url": "https://mcp.granit-fx.dev/mcp"
-    }
-  }
-}
-```
+Claude Code now has 10 Granit tools:
 
-Claude Code now has three Granit tools:
+| Tool | Description |
+| ---- | ----------- |
+| `search_docs` | Full-text search across all docs (returns ID + snippet) |
+| `get_doc` | Read full article content by ID |
+| `list_patterns` | List all architecture patterns |
+| `search_code` | Search symbols across .NET and TypeScript |
+| `get_public_api` | Inspect a type's public API surface with signatures |
+| `get_project_graph` | Project/package dependency graph |
+| `list_branches` | Branches with a committed code index |
+| `list_packages` | List published Granit NuGet packages |
+| `get_package_info` | Package versions, deps, frameworks, license |
 
-- **`search_granit_docs`** — full-text search across all docs
-- **`get_module_reference`** — pull the full reference for a module
-- **`list_patterns`** — list all architecture patterns
+<Aside type="tip">
+Use `search_docs` first to find an article, then `get_doc`
+with the returned ID to read its full content — this keeps
+token usage low.
+</Aside>
 
 ### Claude Code (file context)
 

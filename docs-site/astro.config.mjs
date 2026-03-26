@@ -153,13 +153,6 @@ export default defineConfig({
                       ],
                     },
                     {
-                      label: "AI",
-                      collapsed: true,
-                      items: [
-                        { label: "Use with AI Assistants", link: "/dotnet/guides/use-with-ai-assistants/" },
-                      ],
-                    },
-                    {
                       label: "Testing",
                       collapsed: true,
                       items: [
@@ -404,6 +397,17 @@ export default defineConfig({
                   label: "Troubleshooting",
                   autogenerate: { directory: "troubleshooting" },
                   collapsed: true,
+                },
+              ],
+            },
+            {
+              label: "Tools",
+              link: "/tools/ai-assistants/",
+              icon: "rocket",
+              items: [
+                {
+                  label: "Tools",
+                  autogenerate: { directory: "tools" },
                 },
               ],
             },
