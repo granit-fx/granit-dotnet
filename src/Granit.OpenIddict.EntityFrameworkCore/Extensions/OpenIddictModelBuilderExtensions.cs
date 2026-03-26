@@ -3,6 +3,7 @@ using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.OpenIddict.Domain;
 using Granit.OpenIddict.Entities;
+using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.Persistence.ExtraProperties;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -94,6 +95,13 @@ public static class OpenIddictModelBuilderExtensions
         modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable(prefix + "user_logins", schema);
         modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable(prefix + "user_tokens", schema);
         modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable(prefix + "role_claims", schema);
+
+        // ──── Remap OpenIddict core tables to openiddict_* prefix ────
+
+        modelBuilder.Entity<GranitOpenIddictApplication>().ToTable(prefix + "applications", schema);
+        modelBuilder.Entity<GranitOpenIddictAuthorization>().ToTable(prefix + "authorizations", schema);
+        modelBuilder.Entity<GranitOpenIddictScope>().ToTable(prefix + "scopes", schema);
+        modelBuilder.Entity<GranitOpenIddictToken>().ToTable(prefix + "tokens", schema);
 
         // ──── Custom group tables ────
 

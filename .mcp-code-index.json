@@ -4940,8 +4940,21 @@
       "kind": "record",
       "project": "Granit.Authorization.AI",
       "file": "src/Granit.Authorization.AI/AccessRiskScore.cs",
-      "line": 12,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "Clamp",
+          "kind": "method",
+          "signature": "Clamp(Score, 0.0, 1.0)",
+          "returnType": "double Score { get; } = Math."
+        },
+        {
+          "name": "IsAdvisoryOnly",
+          "kind": "property",
+          "signature": "bool IsAdvisoryOnly",
+          "returnType": "bool"
+        }
+      ]
     },
     {
       "name": "AuthorizationAIHostApplicationBuilderExtensions",
@@ -4949,7 +4962,7 @@
       "kind": "class",
       "project": "Granit.Authorization.AI",
       "file": "src/Granit.Authorization.AI/Extensions/AuthorizationAIHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitAuthorizationAI",
@@ -5228,7 +5241,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Cache/PermissionCacheInvalidationHandler.cs",
-      "line": 17,
+      "line": 25,
       "members": [
         {
           "name": "HandleAsync",
@@ -5258,7 +5271,7 @@
         {
           "name": "RecordCheckDenied",
           "kind": "method",
-          "signature": "RecordCheckDenied(string? tenantId, string permissionName)",
+          "signature": "RecordCheckDenied(string? tenantId)",
           "returnType": "void"
         },
         {
@@ -5481,7 +5494,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Extensions/AuthorizationServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitAuthorization",
@@ -5513,7 +5526,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Options/GranitAuthorizationOptions.cs",
-      "line": 4,
+      "line": 6,
       "members": [
         {
           "name": "AdminRoles",
@@ -10661,7 +10674,7 @@
       "kind": "class",
       "project": "Granit.Encryption.BackgroundJobs",
       "file": "src/Granit.Encryption.BackgroundJobs/DefaultReEncryptionJob.cs",
-      "line": 25,
+      "line": 33,
       "members": []
     },
     {
@@ -20864,7 +20877,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictModelBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "ConfigureOpenIddictModule",
