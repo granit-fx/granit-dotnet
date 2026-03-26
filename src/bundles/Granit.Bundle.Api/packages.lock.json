@@ -257,6 +257,7 @@
           "Granit.Http.Cors": "[0.1.0-dev, )",
           "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Http.ResponseCompression": "[0.1.0-dev, )",
+          "Granit.Http.Security": "[0.1.0-dev, )",
           "Granit.Observability": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
@@ -338,6 +339,12 @@
         }
       },
       "granit.http.responsecompression": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.security": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

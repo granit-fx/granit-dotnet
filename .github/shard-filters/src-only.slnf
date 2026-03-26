@@ -87,6 +87,7 @@
       "src/Granit.Http.OutputCaching/Granit.Http.OutputCaching.csproj",
       "src/Granit.Http.Resilience/Granit.Http.Resilience.csproj",
       "src/Granit.Http.ResponseCompression/Granit.Http.ResponseCompression.csproj",
+      "src/Granit.Http.Security/Granit.Http.Security.csproj",
       "src/Granit.Identity.Endpoints/Granit.Identity.Endpoints.csproj",
       "src/Granit.Identity.Federated.Cognito/Granit.Identity.Federated.Cognito.csproj",
       "src/Granit.Identity.Federated.EntityFrameworkCore/Granit.Identity.Federated.EntityFrameworkCore.csproj",

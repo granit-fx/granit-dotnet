@@ -1,5 +1,6 @@
 using Granit.Diagnostics;
 using Granit.Http.ExceptionHandling;
+using Granit.Http.Security;
 using Granit.Modularity;
 using Granit.Observability;
 using Granit.Persistence;
@@ -16,7 +17,7 @@ public static class GranitBuilderEssentialsExtensions
 {
     /// <summary>
     /// Adds the Essentials bundle: Core, Timing, Guids, Security, Validation,
-    /// Persistence, Observability, ExceptionHandling, Diagnostics.
+    /// Persistence, Observability, ExceptionHandling, Http.Security, Diagnostics.
     /// </summary>
     public static GranitBuilder AddEssentials(this GranitBuilder builder)
     {
@@ -25,6 +26,7 @@ public static class GranitBuilderEssentialsExtensions
         builder.AddModule<GranitPersistenceModule>();
         builder.AddModule<GranitObservabilityModule>();
         builder.AddModule<GranitHttpExceptionHandlingModule>();
+        builder.AddModule<GranitHttpSecurityModule>();
         builder.AddModule<GranitDiagnosticsModule>();
         return builder;
     }

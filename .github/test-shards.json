@@ -119,6 +119,7 @@
         "tests/Granit.Http.OutputCaching.Tests",
         "tests/Granit.Http.Resilience.Tests",
         "tests/Granit.Http.ResponseCompression.Tests",
+        "tests/Granit.Http.Security.Tests",
         "tests/Granit.Imaging.MagickNet.Tests",
         "tests/Granit.Imaging.Tests",
         "tests/Granit.Persistence.Hosting.Tests",
