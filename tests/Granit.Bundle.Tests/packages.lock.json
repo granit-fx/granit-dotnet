@@ -619,8 +619,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
-          "Microsoft.IO.RecyclableMemoryStream": "[3.*, )",
-          "StackExchange.Redis": "[2.*, )"
+          "Microsoft.IO.RecyclableMemoryStream": "[3.*, )"
         }
       },
       "granit.http.responsecompression": {
@@ -994,14 +993,14 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.14",
-        "contentHash": "l4QRu4M9NwPAnYnaBOan5MXBdiIsKmKQ8gJUSqaqDUoAxJZ+xBsP6kmZoDf9Qovl4E2Fv5qOAWnfpVMUrs2flQ=="
+        "resolved": "2.13.15",
+        "contentHash": "ufSBk0vdDnrhn+YLGElUdegUkM+hb7xUoySH+oaZrNHi2fAm+oeSCr60Lqmm4OeLBhPKd2htr/DANOvjuNT6rg=="
       },
       "Scriban": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
-        "resolved": "7.0.3",
-        "contentHash": "BQmlHLL3H2pDWbiTXvNd53zYAav1DPYMdNhO8JcXslT8Ac9UAOhXTZ1GNXLyG26hhAX9yuEodg4rpv9b023nLw=="
+        "resolved": "7.0.5",
+        "contentHash": "GmK0nHYvmUV7ue93eaEWwVU4NQLcW1MlBckAT6BTUIIJm9UA92pVWdcJH5BGqzgWkrA+xVt065gjP2vpQ47h6g=="
       },
       "Serilog.AspNetCore": {
         "type": "CentralTransitive",
@@ -1041,8 +1040,8 @@
       "StackExchange.Redis": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.12.4",
-        "contentHash": "KNyzLp0aTcvWSxnbS6rCxX+2e+Q3goXhW80Iu7dwMkCQbENkoBw418I/UpgIxGzmS4gV10a5CdfdY4O0tO9Nrg==",
+        "resolved": "2.12.8",
+        "contentHash": "I2x/MZ+I0YR2KYYOtlIaEq0Thd+Uhioao6BIaEs+U1MeGkbJF+peLtoZucJwHmfrFxMDXAzWOZrLnOQqPgyGvA==",
         "dependencies": {
           "Pipelines.Sockets.Unofficial": "2.2.8",
           "System.IO.Hashing": "10.0.2"

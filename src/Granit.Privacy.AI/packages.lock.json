@@ -613,8 +613,8 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.23.0",
-        "contentHash": "wP90xEOd3oX/Lhz2lul4nzK7LN8utZEs2EAPXTW8irMYCXhpLcgWeFqkIn1nZH0Ye5gcxFj82hKT3oXiBcD3ow==",
+        "resolved": "5.24.0",
+        "contentHash": "ZHzuuMMT7hwsctvIko2U24Oi0as16NmgVIF+ZF5BgasZVGivJUq/iHdUzqbpe9XC/8Vm3gQXruHAQXxF+yzCwA==",
         "dependencies": {
           "JasperFx": "1.21.3",
           "JasperFx.Events": "1.24.1",

@@ -11,8 +11,8 @@
       "WolverineFx": {
         "type": "Direct",
         "requested": "[5.*, )",
-        "resolved": "5.23.0",
-        "contentHash": "wP90xEOd3oX/Lhz2lul4nzK7LN8utZEs2EAPXTW8irMYCXhpLcgWeFqkIn1nZH0Ye5gcxFj82hKT3oXiBcD3ow==",
+        "resolved": "5.24.0",
+        "contentHash": "ZHzuuMMT7hwsctvIko2U24Oi0as16NmgVIF+ZF5BgasZVGivJUq/iHdUzqbpe9XC/8Vm3gQXruHAQXxF+yzCwA==",
         "dependencies": {
           "JasperFx": "1.21.3",
           "JasperFx.Events": "1.24.1",
@@ -811,11 +811,11 @@
       "WolverineFx.FluentValidation": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.23.0",
-        "contentHash": "DQtLjgz5lU0SA9x/hHrEOIxJodm3jzcDIFu8nmAMzqx946GRY4nzIiqjMYSqHp4YGArT33lTOZUg6UWIAPi3jA==",
+        "resolved": "5.24.0",
+        "contentHash": "KKYpf9xrU98Rx4zWrD4CEwWMBHrajnwhMtp63wStvNP0x2mI9HFb0woPd5KSIEL1xe30cQF5u/3DkcvChS8wiw==",
         "dependencies": {
           "FluentValidation": "12.0.0",
-          "WolverineFx": "5.23.0"
+          "WolverineFx": "5.24.0"
         }
       },
       "ZiggyCreatures.FusionCache": {
