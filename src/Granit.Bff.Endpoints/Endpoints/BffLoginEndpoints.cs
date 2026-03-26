@@ -72,7 +72,6 @@ internal static partial class BffLoginEndpoints
         IServiceProvider services = httpContext.RequestServices;
         GranitBffOptions bffOptions = services.GetRequiredService<IOptions<GranitBffOptions>>().Value;
         IFusionCache cache = services.GetRequiredService<IFusionCache>();
-        IClock clock = services.GetRequiredService<IClock>();
         IDPoPProofService dpopService = services.GetRequiredService<IDPoPProofService>();
         ILogger logger = services.GetRequiredService<ILoggerFactory>()
             .CreateLogger("Granit.Bff.Endpoints.BffLoginEndpoints");
