@@ -16,6 +16,7 @@ in a hierarchical model: **AuditEntry → AuditEntityChange → AuditPropertyCha
 
 <FileTree>
 - Granit.Auditing/ Abstractions, domain types, interfaces, options
+  - Granit.Auditing.ConfigurationChanges/ Setting & feature flag change audit handlers
   - Granit.Auditing.EntityFrameworkCore/ Isolated DbContext, interceptor, persistence, cleanup
   - Granit.Auditing.Endpoints/ Read-only Minimal API endpoints
 </FileTree>
@@ -23,6 +24,7 @@ in a hierarchical model: **AuditEntry → AuditEntityChange → AuditPropertyCha
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
 | `Granit.Auditing` | Domain types, enums, `IAuditingReader`, `IAuditingWriter`, options | `Granit`, `Granit.QueryEngine` |
+| `Granit.Auditing.ConfigurationChanges` | Audit handlers for `SettingChangedEvent` and `FeatureOverrideChangedEvent` | `Granit.Auditing`, `Granit.Settings`, `Granit.Features` |
 | `Granit.Auditing.EntityFrameworkCore` | `AuditingDbContext`, interceptor, Channel persistence, cleanup worker | `Granit.Auditing`, `Granit.Persistence` |
 | `Granit.Auditing.Endpoints` | `GET /audit-log` endpoints (read-only, authorized) | `Granit.Auditing`, `Granit.Http.ApiDocumentation` |
 
@@ -116,10 +118,18 @@ with different retention defaults:
   <TabItem label="Async (default)">
     Entries are published to an in-memory `Channel<T>` and persisted by a background
     worker. **Zero latency impact** on `SaveChanges`, but entries may be lost on crash.
+    Transient database failures are retried automatically (3 attempts with exponential
+    backoff). If all attempts fail, the entry is dropped and a `Critical`-level log is
+    emitted for alerting.
 
     ```json
     { "Auditing": { "PersistenceMode": "Async" } }
     ```
+
+    :::caution
+    In Async mode, audit entries are buffered in-memory. A process crash loses all
+    buffered entries. Use `Strict` mode for ISO 27001 strict compliance in production.
+    :::
   </TabItem>
   <TabItem label="Strict">
     Entries are persisted synchronously within the interceptor's `SavedChangesAsync`
@@ -149,15 +159,30 @@ public class Patient : AuditedEntity
 }
 ```
 
-### Mask sensitive values
+### Protect sensitive values
+
+Use the cross-cutting `[SensitiveData]` attribute from `Granit.DataProtection`.
+It is consumed by the auditing module, AI/MCP output sanitization, and logging.
 
 ```csharp
 public class Patient : AuditedEntity
 {
-    [AuditSensitive]
-    public string NationalId { get; set; }  // Stored as "***" in audit trail
+    [SensitiveData]                              // Default (Mask) → stored as "***"
+    public string NationalId { get; set; }
+
+    [SensitiveData(Mode = SensitiveDataMode.Omit)]   // Removed entirely from audit trail
+    public string? PasswordHash { get; set; }
+
+    [SensitiveData(Mode = SensitiveDataMode.Hash)]   // SHA-256 hash for correlation
+    public string? ExternalUserId { get; set; }
 }
 ```
+
+| Mode | Audit trail value | Use case |
+| ---- | ----------------- | -------- |
+| `Mask` (default) | `***` | PII that must be recorded but not revealed |
+| `Omit` | `null` | Secrets that must never appear in audit trail |
+| `Hash` | `sha256:a1b2c3...` | Values needing cross-reference without exposure |
 
 ## Querying the audit trail
 
@@ -226,6 +251,9 @@ Cascade deletes automatically remove child `AuditEntityChange` and
 | `AccessDeniedRetention` | `TimeSpan` | `2555d` | Retention for auth failures |
 | `CleanupInterval` | `TimeSpan` | `24h` | Interval between cleanup runs |
 | `CleanupBatchSize` | `int` | `10000` | Max entries deleted per batch |
+| `ChannelCapacity` | `int` | `10000` | Max buffered batches in Async mode (backpressure) |
+| `CacheEntryTtl` | `TimeSpan` | `30m` | Cache duration for individual audit entries |
+| `CacheEntityQueryTtl` | `TimeSpan` | `2m` | Cache duration for entity-scoped queries |
 
 ## See also
 

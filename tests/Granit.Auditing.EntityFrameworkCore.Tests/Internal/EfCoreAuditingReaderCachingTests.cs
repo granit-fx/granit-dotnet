@@ -109,6 +109,27 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
     }
 
     [Fact]
+    public async Task GetByEntityAsync_WithColonsInParameters_DoesNotCollideCacheKeys()
+    {
+        // Arrange — two entries with entity parameters that would collide without encoding
+        var entryId1 = Guid.NewGuid();
+        var entryId2 = Guid.NewGuid();
+        await SeedEntryWithEntityChangeAsync(entryId1, "A:B", "C");
+        await SeedEntryWithEntityChangeAsync(entryId2, "A", "B:C");
+
+        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
+        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, _options);
+
+        // Act
+        PagedResult<AuditEntry> result1 = await reader.GetByEntityAsync("A:B", "C", cancellationToken: TestContext.Current.CancellationToken);
+        PagedResult<AuditEntry> result2 = await reader.GetByEntityAsync("A", "B:C", cancellationToken: TestContext.Current.CancellationToken);
+
+        // Assert — each query returns its own entry, not the other's cached result
+        result1.Items.ShouldAllBe(e => e.EntityChanges.Any(ec => ec.EntityType == "A:B"));
+        result2.Items.ShouldAllBe(e => e.EntityChanges.Any(ec => ec.EntityType == "A"));
+    }
+
+    [Fact]
     public async Task GetPagedAsync_IsNotCached()
     {
         // Arrange

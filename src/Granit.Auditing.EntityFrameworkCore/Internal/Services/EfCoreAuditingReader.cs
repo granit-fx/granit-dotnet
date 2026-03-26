@@ -87,7 +87,7 @@ internal sealed class EfCoreAuditingReader(
         int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
-        string cacheKey = $"audit:{TenantCachePrefix}:entity:{entityType}:{entityId}:p{page}:s{pageSize}";
+        string cacheKey = $"audit:{TenantCachePrefix}:entity:{Uri.EscapeDataString(entityType)}:{Uri.EscapeDataString(entityId)}:p{page}:s{pageSize}";
 
         MaybeValue<PagedResult<AuditEntry>?> maybe = await cache.TryGetAsync<PagedResult<AuditEntry>?>(cacheKey, token: cancellationToken).ConfigureAwait(false);
         if (maybe.HasValue)

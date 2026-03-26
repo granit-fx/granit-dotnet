@@ -16,14 +16,14 @@ public class AuditPropertyChange : Entity
     /// <summary>
     /// Original value before the change (JSON-serialized).
     /// <c>null</c> for newly created entities. Masked as <c>"***"</c> for
-    /// properties decorated with <see cref="Attributes.AuditSensitiveAttribute"/>.
+    /// properties decorated with <see cref="Granit.DataProtection.SensitiveDataAttribute"/>.
     /// </summary>
     public string? OriginalValue { get; set; }
 
     /// <summary>
     /// New value after the change (JSON-serialized).
     /// <c>null</c> for deleted entities. Masked as <c>"***"</c> for
-    /// properties decorated with <see cref="Attributes.AuditSensitiveAttribute"/>.
+    /// properties decorated with <see cref="Granit.DataProtection.SensitiveDataAttribute"/>.
     /// </summary>
     public string? NewValue { get; set; }
 }

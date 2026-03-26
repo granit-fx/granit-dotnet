@@ -1,4 +1,5 @@
 using Granit.Auditing.Abstractions;
+using Granit.Auditing.ConfigurationChanges.Internal;
 using Granit.Auditing.Domain;
 using Granit.Events;
 using Granit.Guids;
@@ -25,8 +26,8 @@ public sealed class SettingChangedAuditHandler(
         {
             Id = guidGenerator.Create(),
             PropertyName = "Value",
-            OriginalValue = localEvent.OldValue,
-            NewValue = localEvent.NewValue,
+            OriginalValue = SensitiveValueMasker.MaskIfSensitive(localEvent.SettingName, localEvent.OldValue),
+            NewValue = SensitiveValueMasker.MaskIfSensitive(localEvent.SettingName, localEvent.NewValue),
         };
 
         AuditEntityChange entityChange = new()

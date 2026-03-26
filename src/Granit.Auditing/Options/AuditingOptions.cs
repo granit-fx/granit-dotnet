@@ -83,6 +83,15 @@ public sealed class AuditingOptions
     public int CleanupBatchSize { get; set; } = 10_000;
 
     /// <summary>
+    /// Maximum number of audit batches buffered in the async persistence channel.
+    /// When the channel is full, producers (interceptors) wait until space is available.
+    /// Only applies in <see cref="AuditPersistenceMode.Async"/> mode.
+    /// Default: 10,000.
+    /// </summary>
+    [Range(100, 1_000_000)]
+    public int ChannelCapacity { get; set; } = 10_000;
+
+    /// <summary>
     /// Returns the retention period for the given category.
     /// </summary>
     public TimeSpan GetRetention(AuditCategory category) => category switch

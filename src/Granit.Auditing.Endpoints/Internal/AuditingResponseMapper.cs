@@ -8,7 +8,7 @@ namespace Granit.Auditing.Endpoints.Internal;
 /// </summary>
 internal static class AuditingResponseMapper
 {
-    /// <summary>Maps to a summary response (list item).</summary>
+    /// <summary>Maps to a summary response (list item — no PII fields like IpAddress).</summary>
     public static AuditEntryResponse ToSummaryResponse(AuditEntry entry) =>
         new(
             entry.Id,
@@ -16,7 +16,6 @@ internal static class AuditingResponseMapper
             entry.UserId,
             entry.UserName,
             entry.Category.ToString(),
-            entry.IpAddress,
             entry.TenantId,
             entry.CorrelationId,
             entry.EntityChanges.Count);

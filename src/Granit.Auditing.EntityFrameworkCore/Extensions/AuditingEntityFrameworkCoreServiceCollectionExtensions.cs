@@ -8,6 +8,7 @@ using Granit.Auditing.EntityFrameworkCore.Internal.Services;
 using Granit.Auditing.Messages;
 using Granit.Auditing.Options;
 using Granit.Persistence.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -48,8 +49,16 @@ public static class AuditingEntityFrameworkCoreServiceCollectionExtensions
         // Metrics.
         builder.Services.TryAddSingleton<AuditingMetrics>();
 
-        // Publisher: async (Channel) or strict (synchronous).
-        builder.Services.AddSingleton(Channel.CreateUnbounded<AuditingBatch>());
+        // Publisher: async (Channel with backpressure) or strict (synchronous).
+        builder.Services.AddSingleton(sp =>
+        {
+            AuditingOptions opts = sp.GetRequiredService<IOptions<AuditingOptions>>().Value;
+            return Channel.CreateBounded<AuditingBatch>(new BoundedChannelOptions(opts.ChannelCapacity)
+            {
+                FullMode = BoundedChannelFullMode.Wait,
+                SingleReader = true,
+            });
+        });
         builder.Services.AddScoped<ChannelAuditingPublisher>();
         builder.Services.AddScoped<StrictAuditingPublisher>();
         builder.Services.AddScoped<IAuditEntryPublisher>(sp =>
@@ -67,6 +76,9 @@ public static class AuditingEntityFrameworkCoreServiceCollectionExtensions
         // CQRS services.
         builder.Services.AddScoped<IAuditingReader, EfCoreAuditingReader>();
         builder.Services.AddScoped<IAuditingWriter, EfCoreAuditingWriter>();
+
+        // HttpContextAccessor for IP/UserAgent capture in audit entries.
+        builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         // Interceptor + capture service (scoped — host DbContext resolves from its SP).
         builder.Services.AddScoped<AuditingChangeTrackingInterceptor>();

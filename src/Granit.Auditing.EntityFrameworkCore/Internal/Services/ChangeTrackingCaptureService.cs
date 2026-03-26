@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using Granit.Auditing.Abstractions;
 using Granit.Auditing.Attributes;
@@ -5,6 +7,7 @@ using Granit.Auditing.Diagnostics;
 using Granit.Auditing.Domain;
 using Granit.Auditing.Messages;
 using Granit.Auditing.Options;
+using Granit.DataProtection;
 using Granit.Domain;
 using Granit.MultiTenancy;
 using Granit.Timing;
@@ -27,6 +30,8 @@ internal sealed partial class ChangeTrackingCaptureService(
     ICurrentTenant currentTenant,
     IAuditEntryPublisher publisher,
     IOptions<AuditingOptions> options,
+    AuditingMetrics metrics,
+    Microsoft.AspNetCore.Http.IHttpContextAccessor? httpContextAccessor,
     ILogger<ChangeTrackingCaptureService> logger)
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -36,6 +41,8 @@ internal sealed partial class ChangeTrackingCaptureService(
     };
 
     private const string SensitiveMask = "***";
+    private const int MaxIpAddressLength = 45;
+    private const int MaxUserAgentLength = 500;
 
     private AuditingBatch? _capturedBatch;
 
@@ -83,13 +90,15 @@ internal sealed partial class ChangeTrackingCaptureService(
                 return;
             }
 
+            Microsoft.AspNetCore.Http.HttpContext? httpContext = httpContextAccessor?.HttpContext;
+
             _capturedBatch = new AuditingBatch(
                 Timestamp: clock.Now,
                 UserId: currentUserService.UserId ?? "system",
                 UserName: currentUserService.UserName,
                 Category: AuditCategory.DataMutation,
-                IpAddress: null,
-                UserAgent: null,
+                IpAddress: Truncate(httpContext?.Connection.RemoteIpAddress?.ToString(), MaxIpAddressLength),
+                UserAgent: Truncate(httpContext?.Request.Headers.UserAgent.ToString(), MaxUserAgentLength),
                 TenantId: currentTenant.IsAvailable ? currentTenant.Id : null,
                 CorrelationId: System.Diagnostics.Activity.Current?.Id,
                 EntityChanges: entityChanges);
@@ -97,6 +106,7 @@ internal sealed partial class ChangeTrackingCaptureService(
         catch (Exception ex)
         {
             LogCaptureError(ex);
+            metrics.RecordCaptureError(currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null);
             _capturedBatch = null;
         }
     }
@@ -169,29 +179,57 @@ internal sealed partial class ChangeTrackingCaptureService(
         PropertyEntry prop,
         AuditChangeType changeType)
     {
-        bool isSensitive = prop.Metadata.PropertyInfo?
-            .GetCustomAttributes(typeof(AuditSensitiveAttribute), true).Length > 0;
+        SensitiveDataAttribute? sensitive = prop.Metadata.PropertyInfo?
+            .GetCustomAttributes(typeof(SensitiveDataAttribute), true)
+            .OfType<SensitiveDataAttribute>()
+            .FirstOrDefault();
 
         return changeType switch
         {
             AuditChangeType.Created => new AuditPropertyChangeSnapshot(
                 prop.Metadata.Name,
                 null,
-                isSensitive ? SensitiveMask : SerializeValue(prop.CurrentValue)),
+                ProtectValue(prop.CurrentValue, sensitive)),
 
             AuditChangeType.Deleted => new AuditPropertyChangeSnapshot(
                 prop.Metadata.Name,
-                isSensitive ? SensitiveMask : SerializeValue(prop.OriginalValue),
+                ProtectValue(prop.OriginalValue, sensitive),
                 null),
 
             _ when prop.IsModified && !Equals(prop.OriginalValue, prop.CurrentValue) =>
                 new AuditPropertyChangeSnapshot(
                     prop.Metadata.Name,
-                    isSensitive ? SensitiveMask : SerializeValue(prop.OriginalValue),
-                    isSensitive ? SensitiveMask : SerializeValue(prop.CurrentValue)),
+                    ProtectValue(prop.OriginalValue, sensitive),
+                    ProtectValue(prop.CurrentValue, sensitive)),
 
             _ => null,
         };
+    }
+
+    private static string? ProtectValue(object? value, SensitiveDataAttribute? sensitive)
+    {
+        if (sensitive is null)
+        {
+            return SerializeValue(value);
+        }
+
+        return sensitive.Mode switch
+        {
+            SensitiveDataMode.Omit => null,
+            SensitiveDataMode.Hash => HashValue(SerializeValue(value)),
+            _ => SensitiveMask,
+        };
+    }
+
+    private static string? HashValue(string? value)
+    {
+        if (value is null)
+        {
+            return null;
+        }
+
+        byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(value));
+        return $"sha256:{Convert.ToHexStringLower(hash)}";
     }
 
     private static string? SerializeValue(object? value) => value switch
@@ -203,6 +241,9 @@ internal sealed partial class ChangeTrackingCaptureService(
         Enum e => e.ToString(),
         _ => JsonSerializer.Serialize(value, JsonOptions),
     };
+
+    private static string? Truncate(string? value, int maxLength) =>
+        value?.Length > maxLength ? value[..maxLength] : value;
 
     [LoggerMessage(Level = LogLevel.Error,
         Message = "Failed to capture audit change tracking data")]

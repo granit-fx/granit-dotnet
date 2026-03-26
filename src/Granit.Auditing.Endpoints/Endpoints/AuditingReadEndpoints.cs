@@ -35,8 +35,9 @@ internal static class AuditingReadEndpoints
         group.MapGet("/entity/{entityType}/{entityId}", GetByEntityAsync)
             .WithName("GetAuditEntriesByEntity")
             .WithSummary("Get audit trail for a specific entity instance.")
-            .WithDescription("Returns all audit log entries associated with a specific entity, identified by its CLR type name and primary key. Results are paginated and ordered by timestamp descending. Useful for displaying the full change history of a single record.")
-            .Produces<PagedResult<AuditEntryResponse>>();
+            .WithDescription("Returns all audit log entries associated with a specific entity, identified by its CLR type name and primary key. Results are paginated and ordered by timestamp descending. Useful for displaying the full change history of a single record. Path parameters are limited to 256 characters.")
+            .Produces<PagedResult<AuditEntryResponse>>()
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         return group;
     }
@@ -85,7 +86,7 @@ internal static class AuditingReadEndpoints
         return TypedResults.Ok(AuditingResponseMapper.ToDetailResponse(entry));
     }
 
-    private static async Task<Ok<PagedResult<AuditEntryResponse>>> GetByEntityAsync(
+    private static async Task<Results<Ok<PagedResult<AuditEntryResponse>>, ProblemHttpResult>> GetByEntityAsync(
         string entityType,
         string entityId,
         [FromQuery] int? page,
@@ -93,6 +94,14 @@ internal static class AuditingReadEndpoints
         [FromServices] IAuditingReader reader,
         CancellationToken cancellationToken)
     {
+        const int maxPathParamLength = 256;
+        if (entityType.Length > maxPathParamLength || entityId.Length > maxPathParamLength)
+        {
+            return TypedResults.Problem(
+                detail: $"Path parameters must not exceed {maxPathParamLength} characters.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
         PagedResult<AuditEntry> result = await reader
             .GetByEntityAsync(
                 entityType,

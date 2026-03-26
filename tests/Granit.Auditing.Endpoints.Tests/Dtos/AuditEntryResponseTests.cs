@@ -19,7 +19,6 @@ public sealed class AuditEntryResponseTests
             "user-1",
             "Jane Doe",
             "DataMutation",
-            "10.0.0.1",
             tenantId,
             "trace-abc",
             3);
@@ -29,7 +28,6 @@ public sealed class AuditEntryResponseTests
         response.UserId.ShouldBe("user-1");
         response.UserName.ShouldBe("Jane Doe");
         response.Category.ShouldBe("DataMutation");
-        response.IpAddress.ShouldBe("10.0.0.1");
         response.TenantId.ShouldBe(tenantId);
         response.CorrelationId.ShouldBe("trace-abc");
         response.EntityChangeCount.ShouldBe(3);
@@ -46,11 +44,9 @@ public sealed class AuditEntryResponseTests
             "DataMutation",
             null,
             null,
-            null,
             0);
 
         response.UserName.ShouldBeNull();
-        response.IpAddress.ShouldBeNull();
         response.TenantId.ShouldBeNull();
         response.CorrelationId.ShouldBeNull();
     }
@@ -61,8 +57,8 @@ public sealed class AuditEntryResponseTests
         var id = Guid.NewGuid();
         DateTimeOffset ts = DateTimeOffset.UtcNow;
 
-        AuditEntryResponse r1 = new(id, ts, "u1", null, "DataMutation", null, null, null, 1);
-        AuditEntryResponse r2 = new(id, ts, "u1", null, "DataMutation", null, null, null, 1);
+        AuditEntryResponse r1 = new(id, ts, "u1", null, "DataMutation", null, null, 1);
+        AuditEntryResponse r2 = new(id, ts, "u1", null, "DataMutation", null, null, 1);
 
         r1.ShouldBe(r2);
     }

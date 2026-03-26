@@ -1,16 +1,16 @@
-using Granit.Auditing.Attributes;
+using Granit.DataProtection;
 using Shouldly;
 using Xunit;
 
 namespace Granit.Auditing.Tests.Attributes;
 
-public sealed class AuditSensitiveAttributeTests
+public sealed class SensitiveDataAttributeTests
 {
     [Fact]
     public void CanBeAppliedToProperty()
     {
         var usage = (AttributeUsageAttribute?)Attribute.GetCustomAttribute(
-            typeof(AuditSensitiveAttribute), typeof(AttributeUsageAttribute));
+            typeof(SensitiveDataAttribute), typeof(AttributeUsageAttribute));
 
         usage.ShouldNotBeNull();
         (usage.ValidOn & AttributeTargets.Property).ShouldBe(AttributeTargets.Property);
@@ -20,7 +20,7 @@ public sealed class AuditSensitiveAttributeTests
     public void CannotBeAppliedToClass()
     {
         var usage = (AttributeUsageAttribute?)Attribute.GetCustomAttribute(
-            typeof(AuditSensitiveAttribute), typeof(AttributeUsageAttribute));
+            typeof(SensitiveDataAttribute), typeof(AttributeUsageAttribute));
 
         usage.ShouldNotBeNull();
         (usage.ValidOn & AttributeTargets.Class).ShouldBe((AttributeTargets)0);
@@ -29,13 +29,13 @@ public sealed class AuditSensitiveAttributeTests
     [Fact]
     public void CanBeInstantiated()
     {
-        AuditSensitiveAttribute attribute = new();
+        SensitiveDataAttribute attribute = new();
         attribute.ShouldNotBeNull();
     }
 
     private sealed class EntityWithSensitive
     {
-        [AuditSensitive]
+        [SensitiveData]
         public string Password { get; set; } = string.Empty;
 
         public string Name { get; set; } = string.Empty;
@@ -47,7 +47,7 @@ public sealed class AuditSensitiveAttributeTests
         System.Reflection.PropertyInfo? passwordProp = typeof(EntityWithSensitive).GetProperty("Password");
         System.Reflection.PropertyInfo? nameProp = typeof(EntityWithSensitive).GetProperty("Name");
 
-        Attribute.IsDefined(passwordProp!, typeof(AuditSensitiveAttribute)).ShouldBeTrue();
-        Attribute.IsDefined(nameProp!, typeof(AuditSensitiveAttribute)).ShouldBeFalse();
+        Attribute.IsDefined(passwordProp!, typeof(SensitiveDataAttribute)).ShouldBeTrue();
+        Attribute.IsDefined(nameProp!, typeof(SensitiveDataAttribute)).ShouldBeFalse();
     }
 }

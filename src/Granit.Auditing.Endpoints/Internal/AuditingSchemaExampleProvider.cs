@@ -20,7 +20,6 @@ internal sealed class AuditingSchemaExampleProvider : ISchemaExampleProvider
                 ["userId"] = "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
                 ["userName"] = "Jane Doe",
                 ["category"] = "DataMutation",
-                ["ipAddress"] = "198.51.100.42",
                 ["tenantId"] = "d4e5f6a7-b8c9-0123-4567-89abcdef0123",
                 ["correlationId"] = "req-abc123def456",
                 ["entityChangeCount"] = 2,
