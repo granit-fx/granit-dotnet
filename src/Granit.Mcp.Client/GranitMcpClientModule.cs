@@ -1,3 +1,4 @@
+using Granit.Mcp.Client.Extensions;
 using Granit.Modularity;
 
 namespace Granit.Mcp.Client;
@@ -7,4 +8,9 @@ namespace Granit.Mcp.Client;
 /// Provides <see cref="IMcpClientFactory"/> for connecting to external MCP servers.
 /// </summary>
 [DependsOn(typeof(GranitMcpModule))]
-public sealed class GranitMcpClientModule : GranitModule;
+public sealed class GranitMcpClientModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddGranitMcpClient();
+}

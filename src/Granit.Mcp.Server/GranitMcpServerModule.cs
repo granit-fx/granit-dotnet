@@ -1,4 +1,5 @@
 using Granit.Authorization;
+using Granit.Mcp.Server.Extensions;
 using Granit.Modularity;
 
 namespace Granit.Mcp.Server;
@@ -11,4 +12,9 @@ namespace Granit.Mcp.Server;
 [DependsOn(
     typeof(GranitAuthorizationModule),
     typeof(GranitMcpModule))]
-public sealed class GranitMcpServerModule : GranitModule;
+public sealed class GranitMcpServerModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddGranitMcpServer();
+}

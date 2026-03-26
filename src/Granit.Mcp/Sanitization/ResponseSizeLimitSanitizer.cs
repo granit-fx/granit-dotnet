@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using Granit.Mcp.Options;
 using Microsoft.Extensions.Options;
@@ -22,7 +23,8 @@ internal sealed class ResponseSizeLimitSanitizer(IOptions<GranitMcpOptions> opti
         }
 
         string json = JsonSerializer.Serialize(result.Content);
-        if (json.Length <= maxBytes)
+        int byteCount = Encoding.UTF8.GetByteCount(json);
+        if (byteCount <= maxBytes)
         {
             return ValueTask.FromResult(result);
         }
@@ -31,7 +33,7 @@ internal sealed class ResponseSizeLimitSanitizer(IOptions<GranitMcpOptions> opti
         {
             Content = [new TextContentBlock
             {
-                Text = $"[Response truncated: {json.Length:N0} bytes exceeded {maxBytes:N0} byte limit]",
+                Text = $"[Response truncated: {byteCount:N0} bytes exceeded {maxBytes:N0} byte limit]",
             }],
         });
     }

@@ -5,8 +5,10 @@ using Granit.Diagnostics;
 using Granit.Mcp.Diagnostics;
 using Granit.Mcp.Options;
 using Granit.Mcp.Sanitization;
+using Granit.MultiTenancy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 
@@ -34,10 +36,21 @@ public static class McpServiceCollectionExtensions
 
         services.TryAddSingleton<McpMetrics>();
 
-        // SDK: register MCP server
-        IMcpServerBuilder mcpBuilder = services.AddMcpServer(options =>
+        // SDK: register MCP server with ServerInfo from GranitMcpOptions
+        IMcpServerBuilder mcpBuilder = services.AddMcpServer();
+
+        // Bind ServerInfo from GranitMcpOptions via IConfigureOptions<McpServerOptions>
+        services.AddSingleton<IConfigureOptions<McpServerOptions>>(sp =>
         {
-            options.ServerInfo = new Implementation { Name = "Granit", Version = "1.0.0" };
+            GranitMcpOptions granitOptions = sp.GetRequiredService<IOptions<GranitMcpOptions>>().Value;
+            return new ConfigureOptions<McpServerOptions>(serverOptions =>
+            {
+                serverOptions.ServerInfo = new Implementation
+                {
+                    Name = granitOptions.ServerName,
+                    Version = granitOptions.ServerVersion ?? "0.0.0",
+                };
+            });
         });
 
         // Default sanitizer: response size limit
@@ -95,6 +108,8 @@ public static class McpServiceCollectionExtensions
             filters.AddCallToolFilter(next => async (context, ct) =>
             {
                 McpMetrics? metrics = context.Services?.GetService<McpMetrics>();
+                ICurrentTenant? currentTenant = context.Services?.GetService<ICurrentTenant>();
+                string? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id?.ToString() : null;
                 string toolName = context.Params?.Name ?? "unknown";
                 var sw = Stopwatch.StartNew();
 
@@ -112,16 +127,16 @@ public static class McpServiceCollectionExtensions
                         result = await sanitizer.SanitizeAsync(result, context.Services!, ct);
                     }
 
-                    metrics?.RecordToolInvoked(tenantId: null, toolName, "success");
-                    metrics?.RecordRequestDuration(tenantId: null, $"tools/call/{toolName}", sw.Elapsed);
+                    metrics?.RecordToolInvoked(tenantId, toolName, "success");
+                    metrics?.RecordRequestDuration(tenantId, $"tools/call/{toolName}", sw.Elapsed);
 
                     return result;
                 }
                 catch (Exception)
                 {
                     sw.Stop();
-                    metrics?.RecordToolInvoked(tenantId: null, toolName, "error");
-                    metrics?.RecordRequestDuration(tenantId: null, $"tools/call/{toolName}", sw.Elapsed);
+                    metrics?.RecordToolInvoked(tenantId, toolName, "error");
+                    metrics?.RecordRequestDuration(tenantId, $"tools/call/{toolName}", sw.Elapsed);
                     throw;
                 }
             });

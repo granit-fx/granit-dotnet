@@ -26,7 +26,7 @@ internal sealed class McpToolSourceProvider(
         List<AITool> tools = [];
         foreach (string connectionName in connections)
         {
-            McpClient client = await clientFactory.CreateAsync(connectionName, cancellationToken);
+            await using McpClient client = await clientFactory.CreateAsync(connectionName, cancellationToken);
             IList<McpClientTool> mcpTools = await client.ListToolsAsync(cancellationToken: cancellationToken);
             tools.AddRange(mcpTools);
         }

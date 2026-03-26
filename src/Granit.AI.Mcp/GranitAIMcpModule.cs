@@ -1,4 +1,5 @@
 using Granit.AI;
+using Granit.AI.Mcp.Extensions;
 using Granit.Mcp.Client;
 using Granit.Modularity;
 
@@ -12,4 +13,9 @@ namespace Granit.AI.Mcp;
 [DependsOn(
     typeof(GranitAIModule),
     typeof(GranitMcpClientModule))]
-public sealed class GranitAIMcpModule : GranitModule;
+public sealed class GranitAIMcpModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddGranitAIMcp();
+}

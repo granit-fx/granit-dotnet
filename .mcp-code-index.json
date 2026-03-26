@@ -2225,20 +2225,13 @@
       ]
     },
     {
-      "name": "AIMcpHostApplicationBuilderExtensions",
-      "fqn": "Granit.AI.Mcp.Extensions.AIMcpHostApplicationBuilderExtensions",
+      "name": "AIMcpServiceCollectionExtensions",
+      "fqn": "Granit.AI.Mcp.Extensions.AIMcpServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.AI.Mcp",
-      "file": "src/Granit.AI.Mcp/Extensions/AIMcpHostApplicationBuilderExtensions.cs",
+      "file": "src/Granit.AI.Mcp/Extensions/AIMcpServiceCollectionExtensions.cs",
       "line": 14,
-      "members": [
-        {
-          "name": "AddGranitAIMcp",
-          "kind": "method",
-          "signature": "AddGranitAIMcp(this IHostApplicationBuilder builder)",
-          "returnType": "IHostApplicationBuilder"
-        }
-      ]
+      "members": []
     },
     {
       "name": "GranitAIMcpModule",
@@ -2246,8 +2239,15 @@
       "kind": "class",
       "project": "Granit.AI.Mcp",
       "file": "src/Granit.AI.Mcp/GranitAIMcpModule.cs",
-      "line": 15,
-      "members": []
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IMcpToolSourceProvider",
@@ -15931,20 +15931,13 @@
       ]
     },
     {
-      "name": "McpClientHostApplicationBuilderExtensions",
-      "fqn": "Granit.Mcp.Client.Extensions.McpClientHostApplicationBuilderExtensions",
+      "name": "McpClientServiceCollectionExtensions",
+      "fqn": "Granit.Mcp.Client.Extensions.McpClientServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Mcp.Client",
-      "file": "src/Granit.Mcp.Client/Extensions/McpClientHostApplicationBuilderExtensions.cs",
+      "file": "src/Granit.Mcp.Client/Extensions/McpClientServiceCollectionExtensions.cs",
       "line": 14,
-      "members": [
-        {
-          "name": "AddGranitMcpClient",
-          "kind": "method",
-          "signature": "AddGranitMcpClient(this IHostApplicationBuilder builder)",
-          "returnType": "IHostApplicationBuilder"
-        }
-      ]
+      "members": []
     },
     {
       "name": "GranitMcpClientModule",
@@ -15952,8 +15945,15 @@
       "kind": "class",
       "project": "Granit.Mcp.Client",
       "file": "src/Granit.Mcp.Client/GranitMcpClientModule.cs",
-      "line": 10,
-      "members": []
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IMcpClientFactory",
@@ -16055,7 +16055,7 @@
       "kind": "class",
       "project": "Granit.Mcp",
       "file": "src/Granit.Mcp/Extensions/McpServiceCollectionExtensions.cs",
-      "line": 19,
+      "line": 21,
       "members": []
     },
     {
@@ -16239,7 +16239,7 @@
       "kind": "class",
       "project": "Granit.Mcp.Server",
       "file": "src/Granit.Mcp.Server/Extensions/McpServerEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "MapGranitMcpServer",
@@ -16250,20 +16250,13 @@
       ]
     },
     {
-      "name": "McpServerHostApplicationBuilderExtensions",
-      "fqn": "Granit.Mcp.Server.Extensions.McpServerHostApplicationBuilderExtensions",
+      "name": "McpServerServiceCollectionExtensions",
+      "fqn": "Granit.Mcp.Server.Extensions.McpServerServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Mcp.Server",
-      "file": "src/Granit.Mcp.Server/Extensions/McpServerHostApplicationBuilderExtensions.cs",
+      "file": "src/Granit.Mcp.Server/Extensions/McpServerServiceCollectionExtensions.cs",
       "line": 15,
-      "members": [
-        {
-          "name": "AddGranitMcpServer",
-          "kind": "method",
-          "signature": "AddGranitMcpServer(this IHostApplicationBuilder builder)",
-          "returnType": "IHostApplicationBuilder"
-        }
-      ]
+      "members": []
     },
     {
       "name": "GranitMcpServerModule",
@@ -16271,8 +16264,15 @@
       "kind": "class",
       "project": "Granit.Mcp.Server",
       "file": "src/Granit.Mcp.Server/GranitMcpServerModule.cs",
-      "line": 14,
-      "members": []
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "McpServerLocalizationResource",
