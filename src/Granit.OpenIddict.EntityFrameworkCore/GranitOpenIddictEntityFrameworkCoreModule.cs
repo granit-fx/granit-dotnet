@@ -55,6 +55,7 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
 
         context.Services.TryAddScoped<ExternalClaimsMapper>();
         context.Services.TryAddScoped<IExternalLoginService, AspNetExternalLoginService>();
+        context.Services.TryAddScoped<ITotpService, TotpService>();
         context.Services.TryAddScoped<ITwoFactorService, AspNetTwoFactorService>();
         context.Services.TryAddScoped<IAccountDeletionService, AspNetAccountDeletionService>();
         context.Services.TryAddScoped<IPasswordResetService, AspNetPasswordResetService>();

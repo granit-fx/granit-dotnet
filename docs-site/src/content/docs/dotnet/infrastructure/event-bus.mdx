@@ -1,8 +1,8 @@
 ---
-title: "Event Bus \u2014 Distributed Events with Wolverine"
+title: "Events \u2014 Local & Distributed Event Bus with Wolverine"
 description: Dual event bus for modular .NET apps — in-process local events and distributed cross-service events with Wolverine transactional outbox, guaranteed delivery, and automatic context propagation.
 sidebar:
-  label: Event Bus
+  label: Events
   order: 8
 ---
 
@@ -27,10 +27,10 @@ gives you both — and lets you swap the transport without touching business cod
   - IDistributedEventBus publish cross-service integration events
   - IDistributedEventHandler\<T\> handle distributed events
   - IIntegrationEvent marker for serializable event DTOs
-- Granit.EventBus/ Default in-process providers (monolith, tests)
+- Granit.Events/ Default in-process providers (monolith, tests)
   - InProcessLocalEventBus resolves handlers from DI, calls sequentially
   - InProcessDistributedEventBus same — dev/test only, not durable
-- Granit.EventBus.Wolverine/ Wolverine-backed providers (production)
+- Granit.Events.Wolverine/ Wolverine-backed providers (production)
   - WolverineLocalEventBus publishes to Wolverine local queue
   - WolverineDistributedEventBus publishes via IMessageBus with outbox
 </FileTree>
@@ -38,8 +38,8 @@ gives you both — and lets you swap the transport without touching business cod
 | Package | Role | When to use |
 | ------- | ---- | ----------- |
 | `Granit` | `ILocalEventBus`, `IDistributedEventBus` interfaces | Always available — no extra dependency |
-| `Granit.EventBus` | `InProcessLocalEventBus`, `InProcessDistributedEventBus` | Monoliths, unit tests, development |
-| `Granit.EventBus.Wolverine` | `WolverineLocalEventBus`, `WolverineDistributedEventBus` | Production — outbox-backed delivery |
+| `Granit.Events` | `InProcessLocalEventBus`, `InProcessDistributedEventBus` | Monoliths, unit tests, development |
+| `Granit.Events.Wolverine` | `WolverineLocalEventBus`, `WolverineDistributedEventBus` | Production — outbox-backed delivery |
 
 ## When to use Local vs Distributed
 
@@ -205,7 +205,7 @@ version fields, or `INSERT ... ON CONFLICT DO NOTHING`.
 
 <Tabs>
   <TabItem label="In-process (manual DI)">
-    With `Granit.EventBus` (in-process provider), handlers are resolved from DI.
+    With `Granit.Events` (in-process provider), handlers are resolved from DI.
     You must register them explicitly:
 
     ```csharp
@@ -217,7 +217,7 @@ version fields, or `INSERT ... ON CONFLICT DO NOTHING`.
     Multiple handlers per event type are supported — all are called sequentially.
   </TabItem>
   <TabItem label="Wolverine (auto-discovery)">
-    With `Granit.EventBus.Wolverine`, handlers that follow Wolverine's naming
+    With `Granit.Events.Wolverine`, handlers that follow Wolverine's naming
     convention are auto-discovered. But `ILocalEventHandler<T>` implementations
     still need explicit DI registration — Wolverine discovers by convention
     (`HandleAsync` method), not by interface.
@@ -236,8 +236,8 @@ version fields, or `INSERT ... ON CONFLICT DO NOTHING`.
 If your handler is never invoked, check this list:
 
 1. Is the handler registered in DI? (`services.AddScoped<ILocalEventHandler<T>, ...>()`)
-2. Is `AddGranitEventBus()` called? (auto-called by Settings, Features, DataExchange)
-3. For distributed: is `Granit.EventBus.Wolverine` loaded? (check module dependencies)
+2. Is `AddGranitEvents()` called? (auto-called by Settings, Features, DataExchange)
+3. For distributed: is `Granit.Events.Wolverine` loaded? (check module dependencies)
 4. Is the event type correct? (generic type must match exactly)
 
 :::
@@ -246,29 +246,29 @@ If your handler is never invoked, check this list:
 
 <Tabs>
   <TabItem label="In-process (default)">
-    Registered automatically by `AddGranitEventBus()`. No configuration needed.
+    Registered automatically by `AddGranitEvents()`. No configuration needed.
 
     ```csharp
     // Already registered by Settings, Features, DataExchange modules.
     // Or explicitly in your host:
-    services.AddGranitEventBus();
+    services.AddGranitEvents();
     ```
 
     :::caution
     The in-process distributed bus logs a warning on first use:
-    *"InProcessDistributedEventBus is not durable — events will be lost on crash."*
+    *"InProcessDistributedEventBus is not durable — events will be lost on crash. Use Granit.Events.Wolverine for production"*
     Never use in production for critical integration events.
     :::
   </TabItem>
   <TabItem label="Wolverine (production)">
-    Replaces in-process defaults when `Granit.EventBus.Wolverine` is loaded.
+    Replaces in-process defaults when `Granit.Events.Wolverine` is loaded.
 
     ```csharp
     // Program.cs
     builder.AddGranitWolverine();
     builder.AddGranitWolverineWithPostgresql(); // Outbox + transport
 
-    // Granit.EventBus.Wolverine auto-replaces via [DependsOn] module system
+    // Granit.Events.Wolverine auto-replaces via [DependsOn] module system
     ```
 
     Events published via `IDistributedEventBus` are now outbox-backed:
@@ -390,7 +390,7 @@ public async Task OrderPlacedAuditHandler_PersistsAuditEntry()
 {
     // Arrange — use InProcessLocalEventBus with real handler
     ServiceCollection services = new();
-    services.AddGranitEventBus();
+    services.AddGranitEvents();
     services.AddScoped<ILocalEventHandler<OrderPlacedEvent>, OrderPlacedAuditHandler>();
     services.AddScoped<IAuditingWriter, FakeAuditingWriter>();
     ServiceProvider sp = services.BuildServiceProvider();
@@ -410,7 +410,7 @@ public async Task OrderPlacedAuditHandler_PersistsAuditEntry()
 
 :::caution[Distributed events lost in production]
 If you use `InProcessDistributedEventBus` in production, events are lost on crash.
-Always install `Granit.EventBus.Wolverine` with an outbox provider for production
+Always install `Granit.Events.Wolverine` with an outbox provider for production
 distributed events.
 :::
 
@@ -436,7 +436,7 @@ exactly-once processing. Use the module-specific Wolverine dispatchers for comma
 | Symptom | Likely cause | Fix |
 | ------- | ------------ | --- |
 | Handler never called | Not registered in DI | Add `services.AddScoped<ILocalEventHandler<T>, ...>()` |
-| Distributed event lost on crash | Using in-process provider | Install `Granit.EventBus.Wolverine` + outbox |
+| Distributed event lost on crash | Using in-process provider | Install `Granit.Events.Wolverine` + outbox |
 | Handler runs but tenant is wrong | Missing `TenantContextBehavior` | Ensure `Granit.Wolverine` is loaded |
 | Handler called multiple times | At-least-once delivery (normal) | Make handler idempotent |
 | `InProcessDistributedEventBus` warning | Expected in dev | Switch to Wolverine for production |
@@ -448,10 +448,11 @@ exactly-once processing. Use the module-specific Wolverine dispatchers for comma
 | Local bus | `ILocalEventBus`, `ILocalEventHandler<T>` | `Granit` |
 | Distributed bus | `IDistributedEventBus`, `IDistributedEventHandler<T>` | `Granit` |
 | Integration marker | `IIntegrationEvent` | `Granit` |
-| In-process providers | `InProcessLocalEventBus`, `InProcessDistributedEventBus` | `Granit.EventBus` |
-| Wolverine providers | `WolverineLocalEventBus`, `WolverineDistributedEventBus` | `Granit.EventBus.Wolverine` |
-| DI extension | `AddGranitEventBus()` | `Granit.EventBus` |
-| Modules | `GranitEventBusModule`, `GranitEventBusWolverineModule` | respective packages |
+| Integration dispatcher | `IIntegrationEventDispatcher` | `Granit` |
+| In-process providers | `InProcessLocalEventBus`, `InProcessDistributedEventBus` | `Granit.Events` |
+| Wolverine providers | `WolverineLocalEventBus`, `WolverineDistributedEventBus`, `WolverineIntegrationEventDispatcher` | `Granit.Events.Wolverine` |
+| DI extension | `AddGranitEvents()` | `Granit.Events` |
+| Modules | `GranitEventsModule`, `GranitEventsWolverineModule` | respective packages |
 
 ## Architecture diagram
 
@@ -469,9 +470,9 @@ graph TD
     end
 
     subgraph "Providers (swappable)"
-        IP["InProcessLocalEventBus\n(Granit.EventBus)"]
-        WL["WolverineLocalEventBus\n(Granit.EventBus.Wolverine)"]
-        WD["WolverineDistributedEventBus\n(Granit.EventBus.Wolverine)"]
+        IP["InProcessLocalEventBus\n(Granit.Events)"]
+        WL["WolverineLocalEventBus\n(Granit.Events.Wolverine)"]
+        WD["WolverineDistributedEventBus\n(Granit.Events.Wolverine)"]
     end
 
     subgraph "Handlers"

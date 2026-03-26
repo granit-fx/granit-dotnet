@@ -16054,7 +16054,7 @@
       "fqn": "Granit.Mcp.Extensions.McpServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Mcp",
-      "file": "src/Granit.Mcp/Extensions/McpHostApplicationBuilderExtensions.cs",
+      "file": "src/Granit.Mcp/Extensions/McpServiceCollectionExtensions.cs",
       "line": 19,
       "members": []
     },
