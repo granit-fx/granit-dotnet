@@ -12,6 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Wolverine.Postgresql" />
+    <InternalsVisibleTo Include="Granit.Wolverine.SqlServer" />
     <InternalsVisibleTo Include="Granit.Wolverine.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
     <ProjectReference Include="..\..\src\Granit\Granit.csproj" />

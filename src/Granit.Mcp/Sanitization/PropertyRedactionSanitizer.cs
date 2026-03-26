@@ -136,12 +136,9 @@ internal sealed class PropertyRedactionSanitizer : IMcpOutputSanitizer
         }
         else if (node is JsonArray arr)
         {
-            foreach (JsonNode? item in arr)
+            foreach (JsonNode item in arr.Where(item => item is not null)!)
             {
-                if (item is not null)
-                {
-                    changed |= RedactNode(item);
-                }
+                changed |= RedactNode(item);
             }
         }
 

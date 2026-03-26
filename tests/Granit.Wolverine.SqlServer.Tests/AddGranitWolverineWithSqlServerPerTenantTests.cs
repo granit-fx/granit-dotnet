@@ -7,6 +7,7 @@
 // built to avoid requiring a live SQL Server Outbox connection.
 // =============================================================================
 
+using Granit.Wolverine.Extensions;
 using Granit.Wolverine.SqlServer.Extensions;
 using Granit.Wolverine.SqlServer.Options;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +39,9 @@ public sealed class AddGranitWolverineWithSqlServerPerTenantTests
             [$"{WolverineSqlServerOptions.SectionName}:TransportConnectionString"] =
                 ValidTransportConnStr,
         });
-        return Host.CreateApplicationBuilder(settings);
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder(settings);
+        builder.AddGranitWolverine();
+        return builder;
     }
 
     // -----------------------------------------------------------------------

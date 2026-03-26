@@ -7,6 +7,7 @@
 
 using Granit.Modularity;
 using Granit.Persistence;
+using Granit.Wolverine.Extensions;
 using Granit.Wolverine.Postgresql.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -57,7 +58,8 @@ public sealed class GranitWolverinePostgresqlModuleTests
             ["WolverinePostgresql:TransportConnectionString"] =
                 "Host=localhost;Database=test;Username=test;Password=test",
         });
-        IHostApplicationBuilder builder = Host.CreateApplicationBuilder(settings);
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder(settings);
+        builder.AddGranitWolverine();
 
         Action act = () => builder.AddGranitWolverineWithPostgresql();
 

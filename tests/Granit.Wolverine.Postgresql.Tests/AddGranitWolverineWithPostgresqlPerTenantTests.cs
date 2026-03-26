@@ -7,6 +7,7 @@
 // built to avoid requiring a live PostgreSQL Outbox connection.
 // =============================================================================
 
+using Granit.Wolverine.Extensions;
 using Granit.Wolverine.Postgresql.Extensions;
 using Granit.Wolverine.Postgresql.Options;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +39,9 @@ public sealed class AddGranitWolverineWithPostgresqlPerTenantTests
             [$"{WolverinePostgresqlOptions.SectionName}:TransportConnectionString"] =
                 ValidTransportConnStr,
         });
-        return Host.CreateApplicationBuilder(settings);
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder(settings);
+        builder.AddGranitWolverine();
+        return builder;
     }
 
     // -----------------------------------------------------------------------

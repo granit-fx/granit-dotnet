@@ -128,6 +128,14 @@ public static class WolverineHostApplicationBuilderExtensions
             opts.Policies.AddMiddleware<TraceContextBehavior>();
 
             configure?.Invoke(opts);
+
+            // Expose the WolverineOptions instance for provider modules (PostgreSQL, SqlServer).
+            // Provider modules call extension methods like PersistMessagesWithPostgresql()
+            // directly on this instance during their ConfigureServices phase, when the
+            // service collection is still writable. This avoids ConfigureWolverine() which
+            // defers extension processing to DI resolution (Wolverine 3.0+ blocks service
+            // modifications at that point).
+            builder.Services.TryAddSingleton(new WolverineOptionsHolder(opts));
         });
 
         return builder;

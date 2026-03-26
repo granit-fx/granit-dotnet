@@ -30464,7 +30464,7 @@
       "kind": "class",
       "project": "Granit.Wolverine.Postgresql",
       "file": "src/Granit.Wolverine.Postgresql/Extensions/WolverinePostgresqlHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitWolverineWithPostgresql",
@@ -30512,7 +30512,7 @@
       "kind": "class",
       "project": "Granit.Wolverine.SqlServer",
       "file": "src/Granit.Wolverine.SqlServer/Extensions/WolverineSqlServerHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitWolverineWithSqlServer",

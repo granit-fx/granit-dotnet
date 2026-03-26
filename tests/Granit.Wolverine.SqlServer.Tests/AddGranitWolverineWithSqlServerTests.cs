@@ -5,6 +5,7 @@
 // value for both single-tenant and per-tenant extension methods.
 // =============================================================================
 
+using Granit.Wolverine.Extensions;
 using Granit.Wolverine.SqlServer.Extensions;
 using Granit.Wolverine.SqlServer.Options;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Shouldly;
-using Wolverine;
 using Xunit;
 
 namespace Granit.Wolverine.SqlServer.Tests;
@@ -33,25 +33,26 @@ public sealed class AddGranitWolverineWithSqlServerTests
             [$"{WolverineSqlServerOptions.SectionName}:TransportConnectionString"] =
                 ValidTransportConnStr,
         });
-        return Host.CreateApplicationBuilder(settings);
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder(settings);
+        builder.AddGranitWolverine();
+        return builder;
     }
 
     // -----------------------------------------------------------------------
-    // Configure callback — ConfigureWolverine defers invocation until
-    // WolverineOptions is resolved. We verify the IWolverineExtension
-    // registration exists (ConfigureWolverine wraps the callback as a
-    // LambdaWolverineExtension).
+    // Configure callback — invoked synchronously during registration
+    // (applied directly on the WolverineOptions instance, not as a deferred
+    // extension, to avoid Wolverine 3.0 read-only service collection restriction).
     // -----------------------------------------------------------------------
 
     [Fact]
-    public void AddGranitWolverineWithSqlServer_WithConfigureCallback_RegistersWolverineExtension()
+    public void AddGranitWolverineWithSqlServer_WithConfigureCallback_InvokesCallbackSynchronously()
     {
         HostApplicationBuilder builder = CreateBuilder();
+        bool callbackInvoked = false;
 
-        builder.AddGranitWolverineWithSqlServer(opts => { });
+        builder.AddGranitWolverineWithSqlServer(_ => callbackInvoked = true);
 
-        builder.Services.ShouldContain(d =>
-            d.ServiceType == typeof(IWolverineExtension));
+        callbackInvoked.ShouldBeTrue();
     }
 
     // -----------------------------------------------------------------------
@@ -84,18 +85,18 @@ public sealed class AddGranitWolverineWithSqlServerTests
     }
 
     // -----------------------------------------------------------------------
-    // PerTenant — configure callback (deferred by ConfigureWolverine)
+    // PerTenant — configure callback (invoked synchronously)
     // -----------------------------------------------------------------------
 
     [Fact]
-    public void AddGranitWolverineWithSqlServerPerTenant_WithConfigureCallback_RegistersWolverineExtension()
+    public void AddGranitWolverineWithSqlServerPerTenant_WithConfigureCallback_InvokesCallbackSynchronously()
     {
         HostApplicationBuilder builder = CreateBuilder();
+        bool callbackInvoked = false;
 
-        builder.AddGranitWolverineWithSqlServerPerTenant<StubTenantDbContext>(opts => { });
+        builder.AddGranitWolverineWithSqlServerPerTenant<StubTenantDbContext>(_ => callbackInvoked = true);
 
-        builder.Services.ShouldContain(d =>
-            d.ServiceType == typeof(IWolverineExtension));
+        callbackInvoked.ShouldBeTrue();
     }
 
     // -----------------------------------------------------------------------

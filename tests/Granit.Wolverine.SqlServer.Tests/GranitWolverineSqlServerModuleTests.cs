@@ -7,6 +7,7 @@
 
 using Granit.Modularity;
 using Granit.Persistence;
+using Granit.Wolverine.Extensions;
 using Granit.Wolverine.SqlServer.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -57,7 +58,8 @@ public sealed class GranitWolverineSqlServerModuleTests
             ["WolverineSqlServer:TransportConnectionString"] =
                 "Server=localhost;Database=test;User Id=sa;Password=test;TrustServerCertificate=True",
         });
-        IHostApplicationBuilder builder = Host.CreateApplicationBuilder(settings);
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder(settings);
+        builder.AddGranitWolverine();
 
         Action act = () => builder.AddGranitWolverineWithSqlServer();
 

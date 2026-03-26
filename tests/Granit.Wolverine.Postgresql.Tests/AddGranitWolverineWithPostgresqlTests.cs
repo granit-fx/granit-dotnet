@@ -5,6 +5,7 @@
 // connection string name resolution, and missing connection string scenarios.
 // =============================================================================
 
+using Granit.Wolverine.Extensions;
 using Granit.Wolverine.Postgresql.Extensions;
 using Granit.Wolverine.Postgresql.Options;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Shouldly;
-using Wolverine;
 using Xunit;
 
 namespace Granit.Wolverine.Postgresql.Tests;
@@ -23,7 +23,8 @@ public sealed class AddGranitWolverineWithPostgresqlTests
         "Host=localhost;Database=wolverine_transport;Username=test;Password=test";
 
     private static HostApplicationBuilder CreateBuilder(
-        Dictionary<string, string?>? config = null)
+        Dictionary<string, string?>? config = null,
+        bool withWolverine = true)
     {
         HostApplicationBuilderSettings settings = new()
         {
@@ -34,25 +35,31 @@ public sealed class AddGranitWolverineWithPostgresqlTests
             [$"{WolverinePostgresqlOptions.SectionName}:TransportConnectionString"] =
                 ValidTransportConnStr,
         });
-        return Host.CreateApplicationBuilder(settings);
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder(settings);
+
+        if (withWolverine)
+        {
+            builder.AddGranitWolverine();
+        }
+
+        return builder;
     }
 
     // -----------------------------------------------------------------------
-    // Configure callback — ConfigureWolverine defers invocation until
-    // WolverineOptions is resolved. We verify the IWolverineExtension
-    // registration exists (ConfigureWolverine wraps the callback as a
-    // LambdaWolverineExtension).
+    // Configure callback — invoked synchronously during registration
+    // (applied directly on the WolverineOptions instance, not as a deferred
+    // extension, to avoid Wolverine 3.0 read-only service collection restriction).
     // -----------------------------------------------------------------------
 
     [Fact]
-    public void AddGranitWolverineWithPostgresql_WithConfigureCallback_RegistersWolverineExtension()
+    public void AddGranitWolverineWithPostgresql_WithConfigureCallback_InvokesCallbackSynchronously()
     {
         HostApplicationBuilder builder = CreateBuilder();
+        bool callbackInvoked = false;
 
-        builder.AddGranitWolverineWithPostgresql(opts => { });
+        builder.AddGranitWolverineWithPostgresql(_ => callbackInvoked = true);
 
-        builder.Services.ShouldContain(d =>
-            d.ServiceType == typeof(IWolverineExtension));
+        callbackInvoked.ShouldBeTrue();
     }
 
     // -----------------------------------------------------------------------
@@ -95,10 +102,13 @@ public sealed class AddGranitWolverineWithPostgresqlTests
     [Fact]
     public void AddGranitWolverineWithPostgresql_WithMissingConnectionStringName_ThrowsInvalidOperationException()
     {
-        HostApplicationBuilder builder = CreateBuilder(new Dictionary<string, string?>
-        {
-            [$"{WolverinePostgresqlOptions.SectionName}:TransportConnectionStringName"] = "non-existent-db",
-        });
+        // Throws before WolverineOptionsHolder lookup, so AddGranitWolverine() is not needed.
+        HostApplicationBuilder builder = CreateBuilder(
+            config: new Dictionary<string, string?>
+            {
+                [$"{WolverinePostgresqlOptions.SectionName}:TransportConnectionStringName"] = "non-existent-db",
+            },
+            withWolverine: false);
 
         Action act = () => builder.AddGranitWolverineWithPostgresql();
 
@@ -121,18 +131,18 @@ public sealed class AddGranitWolverineWithPostgresqlTests
     }
 
     // -----------------------------------------------------------------------
-    // PerTenant — configure callback (deferred by ConfigureWolverine)
+    // PerTenant — configure callback (invoked synchronously)
     // -----------------------------------------------------------------------
 
     [Fact]
-    public void AddGranitWolverineWithPostgresqlPerTenant_WithConfigureCallback_RegistersWolverineExtension()
+    public void AddGranitWolverineWithPostgresqlPerTenant_WithConfigureCallback_InvokesCallbackSynchronously()
     {
         HostApplicationBuilder builder = CreateBuilder();
+        bool callbackInvoked = false;
 
-        builder.AddGranitWolverineWithPostgresqlPerTenant<StubTenantDbContext>(opts => { });
+        builder.AddGranitWolverineWithPostgresqlPerTenant<StubTenantDbContext>(_ => callbackInvoked = true);
 
-        builder.Services.ShouldContain(d =>
-            d.ServiceType == typeof(IWolverineExtension));
+        callbackInvoked.ShouldBeTrue();
     }
 
     // -----------------------------------------------------------------------

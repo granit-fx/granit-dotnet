@@ -1,5 +1,6 @@
 using Granit.Persistence.Extensions;
 using Granit.Persistence.MultiTenancy;
+using Granit.Wolverine.Internal;
 using Granit.Wolverine.SqlServer.Internal;
 using Granit.Wolverine.SqlServer.Options;
 using Microsoft.EntityFrameworkCore;
@@ -119,13 +120,26 @@ public static class WolverineSqlServerHostApplicationBuilderExtensions
             .GetSection(WolverineSqlServerOptions.SectionName)
             .Bind(options);
 
-        builder.Services.ConfigureWolverine(opts =>
-        {
-            opts.PersistMessagesWithSqlServer(options.TransportConnectionString);
-            opts.UseEntityFrameworkCoreTransactions(options.TransactionMode);
-            opts.Policies.AutoApplyTransactions();
-            configure?.Invoke(opts);
-        });
+        // Resolve the WolverineOptions instance captured by AddGranitWolverine().
+        // We apply SQL Server configuration directly on this instance instead of using
+        // ConfigureWolverine(), which registers a deferred LambdaWolverineExtension in
+        // the IoC container. As of Wolverine 3.0, deferred extensions face a read-only
+        // IServiceCollection during DI resolution — PersistMessagesWithSqlServer()
+        // needs to register services and would throw InvalidOperationException.
+        // Calling it here (during ConfigureServices, Phase 1) keeps services writable.
+        WolverineOptions wolverineOptions = builder.Services
+            .Select(d => d.ImplementationInstance)
+            .OfType<WolverineOptionsHolder>()
+            .FirstOrDefault()
+            ?.Options
+            ?? throw new InvalidOperationException(
+                "AddGranitWolverine() must be called before AddGranitWolverineWithSqlServer(). " +
+                "Ensure GranitWolverineModule is declared in the [DependsOn] chain.");
+
+        wolverineOptions.PersistMessagesWithSqlServer(options.TransportConnectionString);
+        wolverineOptions.UseEntityFrameworkCoreTransactions(options.TransactionMode);
+        wolverineOptions.Policies.AutoApplyTransactions();
+        configure?.Invoke(wolverineOptions);
 
         return builder;
     }

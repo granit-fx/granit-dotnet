@@ -1,5 +1,6 @@
 using Granit.Persistence.Extensions;
 using Granit.Persistence.MultiTenancy;
+using Granit.Wolverine.Internal;
 using Granit.Wolverine.Postgresql.Internal;
 using Granit.Wolverine.Postgresql.Options;
 using Microsoft.EntityFrameworkCore;
@@ -121,17 +122,26 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
 
         string connectionString = ResolveConnectionString(builder.Configuration, options);
 
-        // ConfigureWolverine (not UseWolverine): UseWolverine is called once by
-        // AddGranitWolverine() in the base module. ConfigureWolverine accumulates
-        // additional configuration delegates that run during the same phase —
-        // services are still writable. Wolverine 5.24 throws on duplicate UseWolverine.
-        builder.Services.ConfigureWolverine(opts =>
-        {
-            opts.PersistMessagesWithPostgresql(connectionString);
-            opts.UseEntityFrameworkCoreTransactions(options.TransactionMode);
-            opts.Policies.AutoApplyTransactions();
-            configure?.Invoke(opts);
-        });
+        // Resolve the WolverineOptions instance captured by AddGranitWolverine().
+        // We apply PostgreSQL configuration directly on this instance instead of using
+        // ConfigureWolverine(), which registers a deferred LambdaWolverineExtension in
+        // the IoC container. As of Wolverine 3.0, deferred extensions face a read-only
+        // IServiceCollection during DI resolution — PersistMessagesWithPostgresql()
+        // needs to register services and would throw InvalidOperationException.
+        // Calling it here (during ConfigureServices, Phase 1) keeps services writable.
+        WolverineOptions wolverineOptions = builder.Services
+            .Select(d => d.ImplementationInstance)
+            .OfType<WolverineOptionsHolder>()
+            .FirstOrDefault()
+            ?.Options
+            ?? throw new InvalidOperationException(
+                "AddGranitWolverine() must be called before AddGranitWolverineWithPostgresql(). " +
+                "Ensure GranitWolverineModule is declared in the [DependsOn] chain.");
+
+        wolverineOptions.PersistMessagesWithPostgresql(connectionString);
+        wolverineOptions.UseEntityFrameworkCoreTransactions(options.TransactionMode);
+        wolverineOptions.Policies.AutoApplyTransactions();
+        configure?.Invoke(wolverineOptions);
 
         return builder;
     }
