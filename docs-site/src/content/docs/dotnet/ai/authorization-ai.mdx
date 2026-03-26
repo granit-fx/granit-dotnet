@@ -24,7 +24,7 @@ The detector is called **after** the permission check succeeds. It analyzes thre
 
 | Signal | What's passed to the LLM |
 |--------|--------------------------|
-| `userId` | The user performing the access |
+| `userId` | **Pseudonymized** (SHA-256 hash) — the real user ID never leaves the system |
 | `permission` | The permission being checked (e.g. `invoices.read`) |
 | `context` | Optional JSON: resource type, count, time, previous access patterns |
 
@@ -33,10 +33,19 @@ throttle — without blocking the operation:
 
 ```csharp
 public sealed record AccessRiskScore(
-    double Score,                         // 0.0 (normal) – 1.0 (high risk)
+    double Score,                         // 0.0 (normal) – 1.0 (high risk), clamped
     string Reasoning,                     // "800 reads in 5 minutes at 2am"
-    IReadOnlyList<string> RiskFactors);   // ["unusual time", "high volume", "bulk export"]
+    IReadOnlyList<string> RiskFactors)    // ["unusual time", "high volume", "bulk export"]
+{
+    public bool IsAdvisoryOnly => true;   // MUST NOT be used as sole deny factor
+}
 ```
+
+:::caution[Advisory only — OWASP LLM09]
+`IsAdvisoryOnly` is always `true`. AI scores are non-deterministic and susceptible
+to prompt injection. **Never** use this score as the sole factor in an authorization
+deny decision — always combine with deterministic checks.
+:::
 
 ## Setup
 
@@ -71,7 +80,8 @@ builder.AddGranitAuthorizationAI();
 </Tabs>
 
 Note the **2-second timeout**: access evaluation is in the request path.
-Fail-open design: timeout returns `Score = 0.0` and access proceeds normally.
+Fail-open design: timeout returns `Score = UnavailableRiskScore` (default `0.5`)
+and access proceeds normally.
 
 ## Using the detector
 
@@ -197,18 +207,22 @@ denial-of-service vector — it always returns a score, never throws.
 
 ## Prompt injection protection
 
-All user-controlled inputs (`userId`, `permission`, `context`) are sanitized via
-`PromptBuilder` before being sent to the LLM. The builder wraps user data in
-structured `<data>` delimiters and neutralizes injection patterns, preventing
-an attacker from manipulating the risk score via crafted context strings.
+All user-controlled inputs are sanitized before being sent to the LLM:
+
+- **`userId`** — pseudonymized via SHA-256 hash (GDPR Art. 5 data minimization)
+- **`context`** — Unicode control characters, zero-width chars, and bidirectional
+  overrides are stripped before entering `PromptBuilder`
+- **All inputs** — `PromptBuilder` wraps user data in structured `<data>` delimiters
+  and neutralizes injection patterns, preventing an attacker from manipulating
+  the risk score via crafted context strings
 
 ## Configuration reference
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `WorkspaceName` | `string` | `"default"` | AI workspace for access evaluation |
-| `TimeoutSeconds` | `int` | `5` | Timeout — keep low, access evaluation is in the request path |
-| `UnavailableRiskScore` | `double` | `0.5` | Risk score returned when LLM is unavailable (0.0 = fail-open, 1.0 = fail-closed) |
+| `TimeoutSeconds` | `int` | `5` | Timeout in seconds (validated: 1–30) |
+| `UnavailableRiskScore` | `double` | `0.5` | Risk score when LLM is unavailable (validated: 0.0–1.0) |
 
 ## See also
 

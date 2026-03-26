@@ -6,6 +6,7 @@ using Granit.Authorization.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Authorization.Extensions;
 
@@ -24,6 +25,9 @@ public static class AuthorizationServiceCollectionExtensions
             .BindConfiguration(GranitAuthorizationOptions.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        services.TryAddSingleton<IValidateOptions<GranitAuthorizationOptions>,
+            GranitAuthorizationOptionsValidator>();
 
         services.AddSingleton<IPermissionDefinitionManager, PermissionDefinitionManager>();
 

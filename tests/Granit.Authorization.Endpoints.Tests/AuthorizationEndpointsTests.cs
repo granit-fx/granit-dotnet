@@ -231,6 +231,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
     {
         // Arrange
         _definitionManager.Exists("Invoices.Read").Returns(true);
+        _permissionChecker.IsGrantedAsync("Invoices.Read", Arg.Any<CancellationToken>()).Returns(true);
 
         // Act
         HttpResponseMessage response = await _adminClient.PutAsync(

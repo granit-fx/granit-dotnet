@@ -18,8 +18,8 @@ internal sealed class AuthorizationSchemaExampleProvider : ISchemaExampleProvide
                 ["permissions"] = new JsonArray
                 {
                     "Settings.Global.Read",
-                    "BlobStorage.Read",
-                    "BlobStorage.Write",
+                    "BlobStorage.Blobs.Read",
+                    "BlobStorage.Blobs.Write",
                 },
             },
             [typeof(PermissionGroupResponse)] = new JsonObject
@@ -30,12 +30,12 @@ internal sealed class AuthorizationSchemaExampleProvider : ISchemaExampleProvide
                 {
                     new JsonObject
                     {
-                        ["name"] = "BlobStorage.Read",
+                        ["name"] = "BlobStorage.Blobs.Read",
                         ["displayName"] = "Read files",
                     },
                     new JsonObject
                     {
-                        ["name"] = "BlobStorage.Write",
+                        ["name"] = "BlobStorage.Blobs.Write",
                         ["displayName"] = "Upload and delete files",
                     },
                 },
@@ -47,8 +47,8 @@ internal sealed class AuthorizationSchemaExampleProvider : ISchemaExampleProvide
                 {
                     "Settings.Global.Read",
                     "Settings.Global.Manage",
-                    "BlobStorage.Read",
-                    "BlobStorage.Write",
+                    "BlobStorage.Blobs.Read",
+                    "BlobStorage.Blobs.Write",
                 },
             },
         };

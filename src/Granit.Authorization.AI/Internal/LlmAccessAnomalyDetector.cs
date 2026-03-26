@@ -1,4 +1,7 @@
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Granit.AI;
 using Granit.AI.Internal;
 using Granit.Authorization.AI.Options;
@@ -80,12 +83,16 @@ internal sealed partial class LlmAccessAnomalyDetector(
 
         pb.AppendInstruction("Analyze the following access request for anomalies and suspicious behavior.");
         pb.AppendInstruction(string.Empty);
-        pb.AppendUserData("User ID", userId);
+
+        // VULN-101 fix: pseudonymize userId to prevent PII leakage to external AI services.
+        pb.AppendUserData("User ID", PseudonymizeUserId(userId));
         pb.AppendUserData("Permission requested", permission);
 
         if (context is not null)
         {
-            pb.AppendUserData("Additional context", context);
+            // VULN-200 fix: strip control characters that could bypass PromptBuilder's
+            // blocklist sanitization (Unicode tricks, bidirectional overrides, zero-width chars).
+            pb.AppendUserData("Additional context", StripControlCharacters(context));
         }
 
         pb.AppendInstruction(string.Empty);
@@ -121,7 +128,26 @@ internal sealed partial class LlmAccessAnomalyDetector(
     }
 
     private static AccessRiskScore UnavailableScore(AuthorizationAIOptions config) =>
-        new(config.UnavailableRiskScore, "AI evaluation unavailable — flagged for manual review", []);
+        new(Math.Clamp(config.UnavailableRiskScore, 0.0, 1.0),
+            "AI evaluation unavailable — flagged for manual review", []);
+
+    /// <summary>
+    /// One-way SHA-256 hash of the user ID, truncated to 16 hex characters.
+    /// The LLM can still detect patterns for the same pseudonymized user
+    /// without receiving the actual user identifier (GDPR Art. 5 data minimization).
+    /// </summary>
+    internal static string PseudonymizeUserId(string userId) =>
+        Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(userId)))[..16];
+
+    /// <summary>
+    /// Strips Unicode control characters, zero-width chars, and bidirectional overrides
+    /// that could be used to obfuscate prompt injection payloads.
+    /// </summary>
+    internal static string StripControlCharacters(string input) =>
+        ControlCharacterRegex().Replace(input, string.Empty);
+
+    [GeneratedRegex(@"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\u200B-\u200F\u202A-\u202E\uFEFF]")]
+    private static partial Regex ControlCharacterRegex();
 
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "AI access anomaly evaluation timed out after {TimeoutSeconds}s — flagged for manual review")]

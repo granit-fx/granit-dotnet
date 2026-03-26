@@ -6216,7 +6216,7 @@
       "kind": "class",
       "project": "Granit.Bff.EntityFrameworkCore",
       "file": "src/Granit.Bff.EntityFrameworkCore/GranitBffEntityFrameworkCoreModule.cs",
-      "line": 16,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6295,22 +6295,6 @@
           "kind": "method",
           "signature": "GetSessionIdsByUserAsync(string frontendName, string userId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<string>>"
-        }
-      ]
-    },
-    {
-      "name": "ILogoutTokenValidator",
-      "fqn": "Granit.Bff.ILogoutTokenValidator",
-      "kind": "interface",
-      "project": "Granit.Bff",
-      "file": "src/Granit.Bff/ILogoutTokenValidator.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "ValidateAsync",
-          "kind": "method",
-          "signature": "ValidateAsync(string logoutToken, string expectedClientId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<ValidatedLogoutToken?>"
         }
       ]
     },
@@ -6444,15 +6428,6 @@
           "returnType": "string?"
         }
       ]
-    },
-    {
-      "name": "ValidatedLogoutToken",
-      "fqn": "Granit.Bff.ValidatedLogoutToken",
-      "kind": "record",
-      "project": "Granit.Bff",
-      "file": "src/Granit.Bff/ILogoutTokenValidator.cs",
-      "line": 23,
-      "members": []
     },
     {
       "name": "BffYarpApplicationBuilderExtensions",
@@ -7447,6 +7422,22 @@
           "kind": "method",
           "signature": "ValidateAsync(BlobValidationContext context, CancellationToken cancellationToken = default)",
           "returnType": "int Order { get; } Task<BlobValidationResult>"
+        }
+      ]
+    },
+    {
+      "name": "ContentDispositionHelper",
+      "fqn": "Granit.BlobStorage.Internal.ContentDispositionHelper",
+      "kind": "class",
+      "project": "Granit.BlobStorage",
+      "file": "src/Granit.BlobStorage/Internal/ContentDispositionHelper.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "BuildAttachmentHeader",
+          "kind": "method",
+          "signature": "BuildAttachmentHeader(string fileName)",
+          "returnType": "string"
         }
       ]
     },

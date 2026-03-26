@@ -61,7 +61,16 @@ internal sealed partial class PermissionManager<TContext>(
             return; // no-op: state already matches requested value
         }
 
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (DbUpdateException) when (isGranted)
+        {
+            // VULN-205 fix: TOCTOU race — concurrent grant for the same tuple hit
+            // the unique index. Treat as idempotent no-op (grant already exists).
+            return;
+        }
 
         // Event-driven cache invalidation — consumed by PermissionCacheInvalidationHandler.
         // Decoupled from the store so other modules can react to permission changes.

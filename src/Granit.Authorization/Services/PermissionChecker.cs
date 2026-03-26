@@ -1,5 +1,6 @@
 using Granit.Authorization.Abstractions;
 using Granit.Authorization.Cache;
+using Granit.Authorization.Diagnostics;
 using Granit.Authorization.Options;
 using Granit.MultiTenancy;
 using Granit.Users;
@@ -11,9 +12,9 @@ namespace Granit.Authorization.Services;
 /// <summary>
 /// Scoped permission checker implementing the full RBAC verification pipeline:
 /// <list type="number">
-/// <item>AlwaysAllow (dev/test) → granted</item>
 /// <item>Not authenticated → denied</item>
-/// <item>AdminRole bypass (root of trust) → granted without DB</item>
+/// <item>AlwaysAllow (dev/test, authenticated users only) → granted</item>
+/// <item>AdminRole bypass (root of trust, case-insensitive) → granted without DB</item>
 /// <item>Permission undefined → <see cref="InvalidOperationException"/></item>
 /// <item>For each role: cache hit or store query; any true → granted</item>
 /// </list>
@@ -25,6 +26,7 @@ internal sealed class PermissionChecker(
     IPermissionDefinitionManager definitionManager,
     IPermissionGrantStore grantStore,
     IFusionCache cache,
+    AuthorizationMetrics metrics,
     IOptions<GranitAuthorizationOptions> options) : IPermissionChecker
 {
     /// <inheritdoc />
@@ -32,17 +34,23 @@ internal sealed class PermissionChecker(
     {
         GranitAuthorizationOptions opts = options.Value;
 
-        if (opts.AlwaysAllow)
-        {
-            return true;
-        }
-
+        // VULN-001 fix: authentication MUST be checked before AlwaysAllow to prevent
+        // a configuration error from granting access to anonymous users.
         if (!currentUserService.IsAuthenticated)
         {
             return false;
         }
 
-        if (opts.AdminRoles.Any(currentUserService.IsInRole))
+        if (opts.AlwaysAllow)
+        {
+            return true;
+        }
+
+        IReadOnlyList<string> roles = currentUserService.GetRoles();
+
+        // VULN-301 fix: case-insensitive comparison prevents mismatch with IdP role casing.
+        if (opts.AdminRoles.Any(adminRole => roles.Any(
+            r => string.Equals(r, adminRole, StringComparison.OrdinalIgnoreCase))))
         {
             return true;
         }
@@ -55,7 +63,7 @@ internal sealed class PermissionChecker(
 
         // Explicit IsAvailable check per soft-dependency contract (NullTenantContext returns null).
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
-        IReadOnlyList<string> roles = currentUserService.GetRoles();
+        string tenantIdStr = tenantId?.ToString() ?? "global";
 
         foreach (string role in roles)
         {
@@ -70,10 +78,12 @@ internal sealed class PermissionChecker(
 
             if (result.IsGranted)
             {
+                metrics.RecordCheckGranted(tenantIdStr);
                 return true;
             }
         }
 
+        metrics.RecordCheckDenied(tenantIdStr);
         return false;
     }
 

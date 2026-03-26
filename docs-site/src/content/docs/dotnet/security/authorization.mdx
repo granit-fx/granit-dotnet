@@ -92,25 +92,28 @@ Standard actions: `Read`, `Create`, `Update`, `Delete`, `Manage` (all CRUD), `Ex
 
 ```mermaid
 flowchart LR
-    A[Request] --> B{AlwaysAllow?}
-    B -->|yes| C[Granted]
-    B -->|no| D{AdminRole?}
-    D -->|yes| C
-    D -->|no| E{Cache hit?}
-    E -->|yes| F{Granted?}
-    E -->|no| G[IPermissionGrantStore]
-    G --> H[Cache result]
-    H --> F
-    F -->|yes| C
-    F -->|no| I[Denied]
+    A[Request] --> B{Authenticated?}
+    B -->|no| I[Denied]
+    B -->|yes| C{AlwaysAllow?}
+    C -->|yes| D[Granted]
+    C -->|no| E{AdminRole?}
+    E -->|yes| D
+    E -->|no| F{Cache hit?}
+    F -->|yes| G{Granted?}
+    F -->|no| H[IPermissionGrantStore]
+    H --> J[Cache result]
+    J --> G
+    G -->|yes| D
+    G -->|no| I
 ```
 
 The `PermissionChecker` evaluates in order:
 
-1. `AlwaysAllow` option (development only)
-2. Admin role bypass — users with any role in `AdminRoles` get all permissions
-3. Per-role cache lookup (key: `perm:{tenantId}:{roleName}:{permissionName}`)
-4. `IPermissionGrantStore` fallback (default: `NullPermissionGrantStore` — always denied)
+1. **Not authenticated → denied** — anonymous users are always rejected, even with `AlwaysAllow`
+2. `AlwaysAllow` option (development only, authenticated users only)
+3. Admin role bypass — users with any role in `AdminRoles` get all permissions (case-insensitive)
+4. Per-role cache lookup (key: `perm:{tenantId}:{roleName}:{permissionName}`)
+5. `IPermissionGrantStore` fallback (default: `NullPermissionGrantStore` — always denied)
 
 ## Using permissions
 
@@ -155,13 +158,14 @@ public class InvoiceService(IPermissionChecker permissionChecker)
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `AdminRoles` | `["admin"]` | Roles that bypass all permission checks |
-| `CacheDuration` | `00:05:00` | Per-role permission cache TTL |
-| `AlwaysAllow` | `false` | Skip all checks (development only) |
+| `AdminRoles` | `["admin"]` | Roles that bypass all permission checks (case-insensitive) |
+| `CacheDuration` | `00:05:00` | Per-role permission cache TTL (10s – 30min) |
+| `AlwaysAllow` | `false` | Skip all checks for authenticated users (development only) |
 
 :::danger
-Never set `AlwaysAllow: true` in production. This disables the entire authorization
-pipeline. The option validator rejects it outside `Development` environment.
+Never set `AlwaysAllow: true` in production. This bypasses all permission checks
+for authenticated users. The startup validator rejects it in `Production` environment.
+Anonymous users are always denied regardless of this setting.
 :::
 
 ## EF Core permission store
@@ -174,9 +178,9 @@ real store backed by EF Core.
 ```csharp
 public class PermissionGrant : AuditedEntity, IMultiTenant
 {
-    public string Name { get; set; } = string.Empty;     // Permission name
-    public string RoleName { get; set; } = string.Empty;  // Role granted to
-    public Guid? TenantId { get; set; }                   // Tenant scope (null = global)
+    public string Name { get; init; } = string.Empty;     // Permission name (immutable)
+    public string RoleName { get; init; } = string.Empty;  // Role granted to (immutable)
+    public Guid? TenantId { get; set; }                    // Tenant scope (null = global)
 }
 // Unique index: (TenantId, Name, RoleName)
 ```
@@ -216,6 +220,12 @@ public class PermissionAdminService(
 ```
 
 All grant changes are audit-logged via `AuditedEntity` (ISO 27001 — 3-year retention).
+
+:::note[Privilege escalation prevention]
+The `PUT /roles/{roleName}/{permissionName}` grant endpoint requires the calling user
+to **hold the permission they are granting**. A user with `Authorization.Grants.Manage`
+cannot grant permissions they do not themselves possess (returns 403 Forbidden).
+:::
 
 ## Public API summary
 

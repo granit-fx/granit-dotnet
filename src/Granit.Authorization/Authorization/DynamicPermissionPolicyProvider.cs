@@ -27,6 +27,7 @@ internal sealed class DynamicPermissionPolicyProvider(
         definitionManager.Exists(policyName)
             ? Task.FromResult<AuthorizationPolicy?>(
                 new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
                     .AddRequirements(new PermissionRequirement(policyName))
                     .Build())
             : _fallback.GetPolicyAsync(policyName);

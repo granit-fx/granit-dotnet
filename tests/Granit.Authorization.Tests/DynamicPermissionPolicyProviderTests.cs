@@ -35,7 +35,8 @@ public sealed class DynamicPermissionPolicyProviderTests
 
         // Assert
         policy.ShouldNotBeNull();
-        policy!.Requirements.ShouldHaveSingleItem().ShouldBeOfType<PermissionRequirement>()
+        policy!.Requirements.Count.ShouldBe(2);
+        policy.Requirements.OfType<PermissionRequirement>().ShouldHaveSingleItem()
             .PermissionName.ShouldBe("Invoices.Delete");
     }
 

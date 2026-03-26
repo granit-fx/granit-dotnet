@@ -2,17 +2,19 @@
 // Tests - PermissionChecker
 // =============================================================================
 // Verifies the full RBAC pipeline:
-//   1. AlwaysAllow → true without store or cache
-//   2. Not authenticated → false
-//   3. AdminRole bypass → true without store or cache
+//   1. Not authenticated → false
+//   2. AlwaysAllow (authenticated only) → true without store or cache
+//   3. AdminRole bypass (case-insensitive) → true without store or cache
 //   4. Unknown permission → InvalidOperationException
 //   5. Cache miss → store called, result cached
 //   6. Cache hit → store NOT called
 //   7. Multi-role OR logic
 // =============================================================================
 
+using System.Diagnostics.Metrics;
 using Granit.Authorization.Abstractions;
 using Granit.Authorization.Cache;
+using Granit.Authorization.Diagnostics;
 using Granit.Authorization.Options;
 using Granit.Authorization.Services;
 using Granit.MultiTenancy;
@@ -42,7 +44,7 @@ public sealed class PermissionCheckerTests
         IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
         PermissionChecker checker = BuildChecker(
             alwaysAllow: true,
-            isAuthenticated: false,
+            isAuthenticated: true,
             cache: cache,
             store: store);
 
@@ -267,7 +269,11 @@ public sealed class PermissionCheckerTests
             CacheDuration = TimeSpan.FromMinutes(5)
         };
 
-        return new PermissionChecker(user, tenant, manager, grantStore, cacheService, Microsoft.Extensions.Options.Options.Create(opts));
+        IMeterFactory meterFactory = Substitute.For<IMeterFactory>();
+        meterFactory.Create(Arg.Any<MeterOptions>()).Returns(new Meter("test"));
+        AuthorizationMetrics metrics = new(meterFactory);
+
+        return new PermissionChecker(user, tenant, manager, grantStore, cacheService, metrics, Microsoft.Extensions.Options.Options.Create(opts));
     }
 
     /// <summary>

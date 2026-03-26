@@ -40,18 +40,16 @@ public sealed class AuthorizationMetrics
             description: "Number of permission grant cache misses.");
     }
 
-    public void RecordCheckGranted(string? tenantId, string permissionName) =>
+    public void RecordCheckGranted(string? tenantId) =>
         _checksGranted.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "permission_name", permissionName },
         });
 
-    public void RecordCheckDenied(string? tenantId, string permissionName) =>
+    public void RecordCheckDenied(string? tenantId) =>
         _checksDenied.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "permission_name", permissionName },
         });
 
     public void RecordCacheHit(string? tenantId) =>

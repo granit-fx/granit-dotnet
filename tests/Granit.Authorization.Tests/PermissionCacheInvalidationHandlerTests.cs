@@ -42,6 +42,6 @@ public sealed class PermissionCacheInvalidationHandlerTests
         // Assert
         string expectedKey = PermissionChecker.BuildCacheKey(null, "accountant", "Invoices.Delete");
         expectedKey.ShouldStartWith("perm:global:");
-        await cache.Received(1).ExpireAsync(expectedKey, Arg.Any<FusionCacheEntryOptions?>(), Arg.Any<CancellationToken>());
+        await cache.Received(1).RemoveAsync(expectedKey, Arg.Any<FusionCacheEntryOptions?>(), Arg.Any<CancellationToken>());
     }
 }
