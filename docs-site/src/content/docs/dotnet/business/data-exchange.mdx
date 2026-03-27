@@ -270,7 +270,16 @@ Only column header names and field metadata are sent to the AI provider — neve
 | `Completed` | All rows imported successfully |
 | `PartiallyCompleted` | Some rows failed, others succeeded |
 | `Failed` | Import failed entirely |
-| `Cancelled` | Cancelled by the user |
+| `Cancelled` | Cancelled by the user (only from Created, Previewed, or Mapped) |
+
+State transitions are **guarded** — calling a transition from an invalid state throws
+`InvalidOperationException`. The valid transition graph is:
+
+```text
+Created → Previewed → Mapped → Executing → Completed / PartiallyCompleted / Failed
+                                    ↑
+Created / Previewed / Mapped → Cancelled
+```
 
 ### Execution options
 
@@ -372,6 +381,8 @@ exposes CRUD operations under `/metadata/presets/`.
 | `Completed` | File available for download |
 | `Failed` | Export failed |
 
+State transitions are **guarded**: `Queued → Exporting → Completed / Failed`.
+
 ### Query integration
 
 When `QueryDefinitionName` is set on an export definition, the export pipeline
@@ -384,7 +395,12 @@ the user's active filters are applied to the export.
 | Format | Parser (import) | Writer (export) | Package |
 |--------|-----------------|-----------------|---------|
 | CSV | [Sep](https://github.com/nietras/Sep) (SIMD-accelerated) | Semicolon separator (EU locale) | `Granit.DataExchange.Csv` |
-| Excel (.xlsx) | [Sylvan.Data.Excel](https://github.com/MarkPflug/Sylvan.Data.Excel) (streaming) | [ClosedXML](https://github.com/ClosedXML/ClosedXML) | `Granit.DataExchange.Excel` |
+| Excel (.xlsx, .xls) | [Sylvan.Data.Excel](https://github.com/MarkPflug/Sylvan.Data.Excel) (streaming) | [ClosedXML](https://github.com/ClosedXML/ClosedXML) | `Granit.DataExchange.Excel` |
+
+:::note[Macro-enabled Excel files not supported]
+`.xlsb` (macro-enabled binary workbooks) are rejected at upload. This prevents
+macro execution when exported files are re-served to users.
+:::
 
 :::caution
 At least one parser package must be registered. The core module provides **no** file
@@ -395,7 +411,8 @@ parser by default. If neither CSV nor Excel is installed, upload will fail at ru
 
 All endpoints require authorization. Import endpoints use the
 `DataExchange.Imports.Execute` permission, export endpoints use
-`DataExchange.Exports.Execute`.
+`DataExchange.Exports.Execute`. Metadata endpoints require authentication
+(any authenticated user).
 
 ### Import endpoints
 
@@ -436,7 +453,8 @@ All endpoints require authorization. Import endpoints use the
 `Granit.DataExchange.EntityFrameworkCore` provides:
 
 - **`DataExchangeDbContext`** with entities for import jobs, export jobs, saved mappings,
-  external ID mappings, and export presets.
+  external ID mappings, and export presets. All entities implement `IMultiTenant` for
+  automatic tenant query filtering via `ApplyGranitConventions`.
 - **`EfImportExecutor`** — batched INSERT/UPDATE executor with `SaveChanges` per batch.
 - **Identity resolvers**: `BusinessKeyResolver`, `CompositeKeyResolver` — query the database
   to determine whether each row is an INSERT or UPDATE.
@@ -451,7 +469,8 @@ All endpoints require authorization. Import endpoints use the
 
 ## Wolverine integration
 
-Without Wolverine, import and export commands dispatch via in-memory `Channel<T>` —
+Without Wolverine, import and export commands dispatch via bounded in-memory
+`Channel<T>` (capacity: 100, back-pressure via `BoundedChannelFullMode.Wait`) —
 messages are lost on crash. Adding `Granit.DataExchange.Wolverine` replaces both
 dispatchers with Wolverine's `IMessageBus` for durable outbox-backed execution:
 
@@ -475,8 +494,31 @@ dispatchers with Wolverine's `IMessageBus` for durable outbox-backed execution:
 | Export presets | `IExportPresetReader`, `IExportPresetWriter` | `Granit.DataExchange` |
 | Mapping | `MappingConfidence`, `ImportColumnMapping`, `ISemanticMappingService` | `Granit.DataExchange` |
 | Options | `ImportOptions`, `ExportOptions`, `ImportExecutionOptions` | `Granit.DataExchange` |
-| Permissions | `DataExchangePermissions.Imports.Execute`, `DataExchangePermissions.Exports.Execute` | `Granit.DataExchange.Endpoints` |
+| Permissions | `DataExchangePermissions.Imports.{Read,Execute}`, `DataExchangePermissions.Exports.{Read,Execute}` | `Granit.DataExchange.Endpoints` |
 | Extensions | `AddImportDefinition<T, TDef>()`, `AddExportDefinition<T, TDef>()`, `AddSemanticMappingService<T>()`, `MapDataExchangeEndpoints()` | --- |
+
+## Security
+
+The DataExchange module includes several hardening measures:
+
+- **Multi-tenancy isolation** — all entities (`ImportJob`, `ExportJob`, `SavedMappingEntity`,
+  `ExternalIdMappingEntity`, `ExportPresetEntity`) implement `IMultiTenant`, activating
+  automatic tenant query filters via `ApplyGranitConventions`.
+- **Formula injection protection** — CSV and Excel writers neutralize cell values starting
+  with `=`, `+`, `-`, `@`, `\t`, or `\r` to prevent spreadsheet formula injection (CWE-1236).
+- **Upload validation** — filenames are sanitized via `Path.GetFileName()` to prevent path
+  traversal. File extensions are cross-validated against allowed MIME types.
+- **State machine guards** — `ImportJob` and `ExportJob` enforce valid state transitions.
+  Calling a transition from an invalid state throws `InvalidOperationException`.
+- **Error message sanitization** — exception messages stored in the database and published
+  via integration events are truncated to 500 characters to prevent information disclosure.
+- **Bounded channels** — in-memory command dispatch uses bounded channels (capacity 100)
+  with back-pressure to prevent resource exhaustion.
+- **AI output validation** — LLM mapping suggestions are validated against the known property
+  whitelist and source headers. Confidence scores are clamped to `[0.0, 1.0]`. Preview row
+  cell values and target field metadata are sanitized before prompt injection.
+- **AI options validation** — `DataExchangeAIOptions` are validated at startup
+  (`ValidateOnStart`) to catch misconfigurations (invalid score ranges, zero timeouts).
 
 ## See also
 

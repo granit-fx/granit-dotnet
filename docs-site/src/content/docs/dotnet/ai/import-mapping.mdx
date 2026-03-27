@@ -172,6 +172,21 @@ Granit.DataExchange.AI           → implements AISemanticMappingService (IsAvai
 Without the AI package: Tier 4 is silently skipped. With it: Tier 4 activates.
 No `if` statements, no feature flags — just DI composition.
 
+## Security hardening
+
+The AI mapping service applies multiple layers of defense:
+
+- **Prompt injection protection** — preview row cell values and target field metadata
+  (`DisplayName`, `Description`) are sanitized before embedding in the prompt. XML-like
+  tags, pipe characters, and newlines are escaped to prevent markdown table breakout.
+- **Output validation** — LLM suggestions are validated against known `ImportFieldMetadata`
+  property paths and source headers. Suggestions targeting unknown properties are discarded.
+  Confidence scores are clamped to `[0.0, 1.0]` to prevent the LLM from inflating scores.
+- **Preview row truncation** — when `IncludePreviewRows` is enabled, rows are truncated
+  to `PreviewRowCount` before prompt construction, preventing unbounded token consumption.
+- **Startup validation** — `DataExchangeAIOptions` are validated at startup. Invalid
+  configurations (`TimeoutSeconds: 0`, `MinConfidenceScore: -1.0`) are rejected immediately.
+
 ## Risks and limitations
 
 | Risk | Mitigation |
@@ -181,6 +196,7 @@ No `if` statements, no feature flags — just DI composition.
 | **PII in preview rows** | Disabled by default, explicit opt-in required |
 | **Cost** | Only called for unmapped columns after 3 free tiers, typically 1-5 columns per import |
 | **LLM hallucination** | Structured output (JSON), validated against known property paths |
+| **Prompt injection** | Cell values and field metadata sanitized before prompt embedding |
 
 ## Configuration reference
 
