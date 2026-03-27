@@ -291,11 +291,23 @@ assertions are included in revocation requests when those features are enabled.
 
 The BFF supports [OIDC Back-Channel Logout 1.0](https://openid.net/specs/openid-connect-backchannel-1_0.html).
 When a user logs out at the identity provider (or an admin revokes a session), the
-IdP sends a signed `logout_token` to `/{pathPrefix}/bff/backchannel-logout`. The
-endpoint validates the JWT signature, checks for replay (`jti`), verifies the issuer,
-and removes all matching sessions for the subject from the token store. This ensures
-server-side session cleanup even when the user closes the browser without calling
-`/bff/logout`.
+IdP sends a signed `logout_token` to `/{pathPrefix}/bff/backchannel-logout`.
+
+The `ILogoutTokenValidator` performs full JWT validation:
+
+1. **Signature verification** against the IdP's JWKS (auto-discovered from
+   `/.well-known/openid-configuration`). Supports RS256/384/512, PS256/384/512,
+   and ES256/384/512. JWKS keys are cached for 1 hour with automatic re-fetch
+   on unknown `kid` (handles key rotation).
+2. **`alg:none` rejection** (CWE-345) — unsigned tokens are always refused.
+3. **Issuer validation** — `iss` must match the configured `Authority`.
+4. **Audience validation** — `aud` must contain the frontend's `ClientId`.
+5. **Event claim** — the `events` object must contain the back-channel logout event.
+6. **Replay protection** — `jti` is cached for 10 minutes to prevent replay.
+
+After validation, all matching sessions for the subject are removed from the token
+store. This ensures server-side session cleanup even when the user closes the browser
+without calling `/bff/logout`.
 
 :::note[BFF vs API back-channel logout]
 `/{prefix}/bff/backchannel-logout` invalidates **BFF cookie sessions** (this module).

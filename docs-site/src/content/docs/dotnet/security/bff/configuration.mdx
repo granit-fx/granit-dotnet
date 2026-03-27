@@ -97,6 +97,20 @@ When using multi-frontend (`Frontends[]` array), the properties below apply to e
 | `UseSessionSlidingExpiration` | `bool` | `true` | Enable sliding session expiration. When `true`, each proxied request past the session's halfway point extends the session TTL. Bounded by `SessionAbsoluteMaxDuration` to prevent indefinite sessions (ISO 27001 A.9.4.2). |
 | `SessionAbsoluteMaxDuration` | `TimeSpan` | `08:00:00` (8 hours) | Absolute maximum session duration even with sliding expiration. After this, the user must re-authenticate regardless of activity. |
 | `RequireIssuerValidation` | `bool` | `true` | Validate the `iss` parameter in authorization responses ([RFC 9207](https://www.rfc-editor.org/rfc/rfc9207)). Prevents IdP mix-up attacks by verifying that the authorization response comes from the expected issuer. Required for FAPI 2.0. Enabled by default — set to `false` only for legacy identity providers that do not include the `iss` parameter. |
+| `CsrfHmacKey` | `string?` | `null` | Base64-encoded HMAC-SHA256 key for CSRF token generation (32 bytes = 44 base64 characters). When `null`, a random key is generated at startup — valid for **single-instance deployments only**. Multi-instance deployments MUST configure a shared key via Vault or environment variables. |
+
+Per-frontend options in `Frontends[]`:
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `RequirePushedAuthorizationRequests` | `bool` | `false` | When `true`, a PAR failure returns 502 instead of falling back to direct authorization parameters. Requires `UsePushedAuthorizationRequests: true`. |
+
+### Startup validation
+
+`GranitBffOptionsValidator` validates options at startup and fails fast on misconfiguration:
+
+- `Authority` must not be `null`
+- `CsrfHmacKey`, if provided, must be valid base64 and decode to exactly 32 bytes
 
 ### Configuration binding
 
@@ -411,6 +425,8 @@ graph TD
 |---------|----------|----------------|---------|
 | `IBffTokenStore` | Scoped | `DistributedCacheBffTokenStore` (default) or `EfCoreBffTokenStore` | `Granit.Bff` / `Granit.Bff.EntityFrameworkCore` |
 | `IBffCsrfTokenGenerator` | Singleton | `HmacBffCsrfTokenGenerator` | `Granit.Bff` |
+| `ILogoutTokenValidator` | Singleton | `LogoutTokenValidator` | `Granit.Bff` |
+| `IValidateOptions<GranitBffOptions>` | Singleton | `GranitBffOptionsValidator` | `Granit.Bff` |
 | `BffMetrics` | Singleton | `BffMetrics` | `Granit.Bff` |
 | `BffTokenInjectionTransform` | Scoped | `BffTokenInjectionTransform` | `Granit.Bff.Yarp` |
 | `BffCsrfValidationTransform` | Scoped | `BffCsrfValidationTransform` | `Granit.Bff.Yarp` |

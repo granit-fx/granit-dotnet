@@ -105,6 +105,69 @@ Rules enforcing testability, secret management, and GDPR compliance.
 | GRSEC010 | <Badge text="Error" variant="danger" /> | — | PII-indicative name used as metric tag key |
 | GRSEC011 | <Badge text="Error" variant="danger" /> | — | PII-indicative placeholder in LoggerMessage template |
 
+#### GRSEC010 — PII in metric tag keys
+
+Detects `TagList` initializers where the **key** (first string literal in each
+`{ "key", value }` pair) matches a PII-indicative pattern: `email`, `phone`,
+`ipAddress`, `username`, `ssn`, `passport`, `token`, etc.
+
+PII as metric tag keys causes both a **GDPR violation** (PII in telemetry backends)
+and a **cardinality explosion** (unbounded memory, high cost in Prometheus/Grafana).
+
+<Tabs>
+  <TabItem label="Bad">
+    ```csharp
+    // ❌ GRSEC010: Tag key 'email' matches a PII pattern
+    _counter.Add(1, new TagList
+    {
+        { "email", user.Email },
+        { "tenant_id", tenantId },
+    });
+    ```
+  </TabItem>
+  <TabItem label="Good">
+    ```csharp
+    // ✅ Use bounded, low-cardinality identifiers
+    _counter.Add(1, new TagList
+    {
+        { "user_id", userId },
+        { "tenant_id", tenantId },
+    });
+    ```
+  </TabItem>
+</Tabs>
+
+#### GRSEC011 — PII in LoggerMessage placeholders
+
+Detects `[LoggerMessage]` templates containing placeholders whose names match
+PII-indicative patterns. Supports both named (`Message = "..."`) and positional
+(`[LoggerMessage(id, Level, "...")]`) constructor forms. Escaped braces (`{{`/`}}`)
+are correctly skipped.
+
+PII in structured logs violates **GDPR Art. 5** (data minimization) and exposes
+personal data to log aggregation systems (ELK, Loki, Application Insights).
+
+<Tabs>
+  <TabItem label="Bad">
+    ```csharp
+    // ❌ GRSEC011: PII placeholder {Email}
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "User {Email} logged in from {IpAddress}")]
+    private static partial void LogUserLogin(
+        ILogger logger, string email, string ipAddress);
+    ```
+  </TabItem>
+  <TabItem label="Good">
+    ```csharp
+    // ✅ Log identifiers, not PII
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "User {UserId} logged in")]
+    private static partial void LogUserLogin(
+        ILogger logger, string userId);
+    ```
+  </TabItem>
+</Tabs>
+
 ### Entity Framework
 
 Rules enforcing async-first EF Core patterns.
