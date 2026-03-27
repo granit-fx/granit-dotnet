@@ -13,7 +13,7 @@ public sealed class OptionsTests
 
         options.Enabled.ShouldBeTrue();
         options.KeyPrefix.ShouldBe("rl");
-        options.FallbackOnCounterStoreFailure.ShouldBe(CounterStoreFailureBehavior.Allow);
+        options.FallbackOnCounterStoreFailure.ShouldBe(CounterStoreFailureBehavior.Deny);
         options.BypassRoles.ShouldBeEmpty();
         options.Policies.ShouldBeEmpty();
         options.UseFeatureBasedQuotas.ShouldBeFalse();
@@ -31,6 +31,7 @@ public sealed class OptionsTests
         policy.TokenLimit.ShouldBe(50);
         policy.TokensPerPeriod.ShouldBe(10);
         policy.ReplenishmentPeriod.ShouldBe(TimeSpan.FromSeconds(10));
+        policy.PartitionBy.ShouldBe(RateLimitPartition.Tenant);
         policy.FeatureName.ShouldBeNull();
     }
 

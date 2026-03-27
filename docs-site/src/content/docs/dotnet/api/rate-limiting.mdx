@@ -24,7 +24,7 @@ public class AppModule : GranitModule { }
     "Enabled": true,
     "KeyPrefix": "rl",
     "BypassRoles": ["admin"],
-    "FallbackOnCounterStoreFailure": "Allow",
+    "FallbackOnCounterStoreFailure": "Deny",
     "Policies": {
       "api-default": {
         "Algorithm": "SlidingWindow",
@@ -80,13 +80,30 @@ by Wolverine's retry policy.
 | `TokenBucket` | Controlled burst allowance | `TokenLimit`, `TokensPerPeriod`, `ReplenishmentPeriod` |
 | `Concurrency` | Limit simultaneous in-flight requests | `PermitLimit` |
 
-## Tenant partitioning
+## Key partitioning
 
-Rate limit counters are partitioned by tenant. The Redis key uses hash tags to
-ensure all keys for a tenant hash to the same Redis Cluster slot:
+Rate limit counters are partitioned according to `PartitionBy` on each policy.
+Redis keys use hash tags for Cluster slot co-location.
 
-```
-{prefix}:{{tenantId|global}}:{policyName}
+| `PartitionBy` | Key format | Use case |
+| ------------- | ---------- | -------- |
+| `Tenant` (default) | `rl:{tenantId}:policy` | Shared tenant quota |
+| `TenantAndIp` | `rl:{tenantId}:ip:policy` | Per-IP within a tenant |
+| `Ip` | `rl:{ip}:policy` | Unauthenticated endpoints (login, reset) |
+| `User` | `rl:{userId}:policy` | Per-user quota |
+| `TenantAndUser` | `rl:{tenantId}:userId:policy` | Per-user within a tenant |
+
+```json
+{
+  "Policies": {
+    "auth": {
+      "Algorithm": "FixedWindow",
+      "PermitLimit": 5,
+      "Window": "00:15:00",
+      "PartitionBy": "Ip"
+    }
+  }
+}
 ```
 
 ## Failure behavior
@@ -98,21 +115,29 @@ When Redis is unavailable, the `FallbackOnCounterStoreFailure` setting controls 
 | `Allow` | Let the request through, log warning | Prefer availability over quota enforcement |
 | `Deny` | Reject with 429 | Conservative — prefer safety over availability |
 
-## 429 response format
+## Response headers
+
+On **allowed** responses, the following headers are set:
+
+| Header | Description |
+| ------ | ----------- |
+| `X-RateLimit-Limit` | Total permit limit for the policy |
+| `X-RateLimit-Remaining` | Remaining permits in the current window |
+
+On **rejected** responses (429), `Retry-After` is set in addition.
+
+### 429 response format
 
 ```json
 {
   "status": 429,
   "title": "Too Many Requests",
-  "detail": "Rate limit exceeded for policy 'api-default'. Retry after 10s.",
-  "policy": "api-default",
+  "detail": "Too many requests. Please retry later.",
   "limit": 1000,
   "remaining": 0,
   "retryAfter": 10
 }
 ```
-
-The `Retry-After` header is also set on the response.
 
 ## Dynamic quotas with Granit.Features
 
@@ -126,7 +151,7 @@ is `RateLimit.{PolicyName}`, overridable via `RateLimitPolicyOptions.FeatureName
 | -------- | ------- | ----------- |
 | `Enabled` | `true` | Enable/disable rate limiting globally |
 | `KeyPrefix` | `"rl"` | Redis key prefix |
-| `FallbackOnCounterStoreFailure` | `Allow` | Behavior when Redis is down |
+| `FallbackOnCounterStoreFailure` | `Deny` | Behavior when Redis is down |
 | `BypassRoles` | `[]` | Roles that skip rate limiting |
 | `UseFeatureBasedQuotas` | `false` | Use `Granit.Features` for dynamic quotas |
 | `Policies.*` | -- | Named rate limiting policies (see below) |
@@ -136,6 +161,7 @@ is `RateLimit.{PolicyName}`, overridable via `RateLimitPolicyOptions.FeatureName
 | Property | Default | Description |
 | -------- | ------- | ----------- |
 | `Algorithm` | `SlidingWindow` | Rate limiting algorithm |
+| `PartitionBy` | `Tenant` | Key partitioning strategy (`Tenant`, `TenantAndIp`, `Ip`, `User`, `TenantAndUser`) |
 | `PermitLimit` | `1000` | Max permits per window |
 | `Window` | `00:01:00` | Window duration |
 | `SegmentsPerWindow` | `6` | Sliding window segments (accuracy vs. memory) |
@@ -152,7 +178,7 @@ is `RateLimit.{PolicyName}`, overridable via `RateLimitPolicyOptions.FeatureName
 | Store | `IRateLimitCounterStore`, `IRateLimitQuotaProvider`, `RateLimitResult` | `Granit.RateLimiting` |
 | Attributes | `RateLimitedAttribute` | `Granit.RateLimiting` |
 | Exceptions | `RateLimitExceededException` | `Granit.RateLimiting` |
-| Options | `GranitRateLimitingOptions`, `RateLimitPolicyOptions` | `Granit.RateLimiting` |
+| Options | `GranitRateLimitingOptions`, `RateLimitPolicyOptions`, `RateLimitPartition` | `Granit.RateLimiting` |
 | Extensions | `AddGranitRateLimiting()`, `.RequireGranitRateLimiting()` | `Granit.RateLimiting` |
 
 ## See also

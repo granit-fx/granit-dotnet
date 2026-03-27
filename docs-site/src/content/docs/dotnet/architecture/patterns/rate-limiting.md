@@ -37,16 +37,16 @@ sequenceDiagram
     participant Redis
 
     Client->>Filter: GET /api/patients
-    Filter->>Limiter: CheckAsync("api")
+    Filter->>Limiter: CheckAsync("api", clientIp)
     Limiter->>Redis: EVALSHA sliding_window.lua
     Redis-->>Limiter: count: 42, oldest: 0
     Limiter-->>Filter: Allowed (remaining: 58)
-    Filter-->>Client: 200 OK
+    Filter-->>Client: 200 OK + X-RateLimit-Remaining: 58
 
     Note over Client,Redis: After 100 requests in 60s...
 
     Client->>Filter: GET /api/patients
-    Filter->>Limiter: CheckAsync("api")
+    Filter->>Limiter: CheckAsync("api", clientIp)
     Limiter->>Redis: EVALSHA sliding_window.lua
     Redis-->>Limiter: count: 101, oldest: 18000
     Limiter-->>Filter: Rejected (retryAfter: 18s)
@@ -73,18 +73,21 @@ clock drift issues between pods.
 | **Fixed Window** | Counter (`INCR` + `PEXPIRE`) | Low-volume endpoints -- simplicity |
 | **Token Bucket** | Hash (`HMGET`/`HSET` + refill) | Export jobs -- controlled bursts |
 
-### Per-tenant partitioning
+### Key partitioning
 
 The Redis key is structured with a **hash tag** to guarantee co-location in
-Redis Cluster:
+Redis Cluster. The `PartitionBy` policy option controls the key strategy:
 
-```text
-{prefix}:{tenantId}:{policyName}
-  rl   :{a1b2c3d4}:  api
-```
+| `PartitionBy` | Key pattern | Use case |
+| ------------- | ----------- | -------- |
+| `Tenant` (default) | `rl:{tenantId}:api` | Shared tenant quota |
+| `TenantAndIp` | `rl:{tenantId}:1.2.3.4:api` | Per-IP within a tenant |
+| `Ip` | `rl:{1.2.3.4}:auth` | Pre-auth endpoints (login) |
+| `User` | `rl:{userId}:export` | Per-user quota |
+| `TenantAndUser` | `rl:{tenantId}:userId:api` | Per-user within a tenant |
 
-Without multi-tenancy, the `global` segment is used. Each tenant has its own
-counters -- a tenant can never consume another's quota.
+Without multi-tenancy, the `global` segment is used. Each partition key has its
+own counters -- a tenant (or IP, or user) can never consume another's quota.
 
 ### Dynamic quotas by plan
 
@@ -129,15 +132,15 @@ When Redis is unavailable, the behavior is configurable:
 
 | Mode | Behavior | When to use |
 | --- | --- | --- |
-| `Allow` (default) | Request allowed + warning | Availability > quota protection |
-| `Deny` | Systematic 429 | Critical endpoints (payment, auth) |
+| `Deny` (default) | Systematic 429 | Fail-closed -- security first |
+| `Allow` | Request allowed + warning | Availability > quota protection |
 
 ### Reference files
 
 | File | Role |
 | --- | --- |
 | `src/Granit.RateLimiting/Internal/LuaScripts.cs` | 3 atomic Lua scripts |
-| `src/Granit.RateLimiting/Internal/TenantPartitionedRateLimiter.cs` | Core logic (tenant, bypass, quota, metrics) |
+| `src/Granit.RateLimiting/TenantPartitionedRateLimiter.cs` | Core logic (partition, bypass, quota, metrics) |
 | `src/Granit.RateLimiting/Internal/RedisRateLimitCounterStore.cs` | Redis execution with fallback |
 | `src/Granit.RateLimiting/Internal/FeatureBasedRateLimitQuotaProvider.cs` | Quota resolution via Granit.Features |
 | `src/Granit.RateLimiting/AspNetCore/RateLimitEndpointExtensions.cs` | Endpoint filter 429 + Retry-After |
@@ -147,7 +150,7 @@ When Redis is unavailable, the behavior is configurable:
 
 | Problem | Solution |
 | --- | --- |
-| Greedy tenant saturates the API for everyone (noisy neighbor) | Counters partitioned by tenant, independent quotas |
+| Greedy tenant saturates the API for everyone (noisy neighbor) | Counters partitioned by tenant/IP/user via `PartitionBy` |
 | Identical quota limits for all plans | `Granit.Features` Numeric resolves dynamically by plan |
 | Redis failure = blocked service | Configurable graceful degradation (Allow/Deny) |
 | Clock drift between pods = inconsistent counters | `redis.call('TIME')` in Lua scripts |
@@ -164,7 +167,7 @@ When Redis is unavailable, the behavior is configurable:
 //     "UseFeatureBasedQuotas": true,
 //     "Policies": {
 //       "api": { "Algorithm": "SlidingWindow", "PermitLimit": 100, "Window": "00:01:00" },
-//       "auth": { "Algorithm": "FixedWindow", "PermitLimit": 5, "Window": "00:15:00" }
+//       "auth": { "Algorithm": "FixedWindow", "PermitLimit": 5, "Window": "00:15:00", "PartitionBy": "Ip" }
 //     }
 //   }
 // }

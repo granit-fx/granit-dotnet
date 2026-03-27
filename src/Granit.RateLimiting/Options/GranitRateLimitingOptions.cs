@@ -18,8 +18,8 @@ public sealed class GranitRateLimitingOptions
     [Required]
     public string KeyPrefix { get; set; } = "rl";
 
-    /// <summary>Behavior when the counter store is unavailable. Default: <see cref="CounterStoreFailureBehavior.Allow"/>.</summary>
-    public CounterStoreFailureBehavior FallbackOnCounterStoreFailure { get; set; } = CounterStoreFailureBehavior.Allow;
+    /// <summary>Behavior when the counter store is unavailable. Default: <see cref="CounterStoreFailureBehavior.Deny"/>.</summary>
+    public CounterStoreFailureBehavior FallbackOnCounterStoreFailure { get; set; } = CounterStoreFailureBehavior.Deny;
 
     /// <summary>
     /// Roles that bypass rate limiting entirely.

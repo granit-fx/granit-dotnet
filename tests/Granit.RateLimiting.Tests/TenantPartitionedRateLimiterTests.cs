@@ -63,7 +63,7 @@ public sealed class TenantPartitionedRateLimiterTests : IDisposable
         _options.Enabled = false;
         TenantPartitionedRateLimiter limiter = CreateLimiter();
 
-        RateLimitResult? result = await limiter.CheckAsync("api", TestContext.Current.CancellationToken);
+        RateLimitResult? result = await limiter.CheckAsync("api", clientIp: null, TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
         await _counterStore.DidNotReceiveWithAnyArgs()
@@ -79,7 +79,7 @@ public sealed class TenantPartitionedRateLimiterTests : IDisposable
     {
         TenantPartitionedRateLimiter limiter = CreateLimiter();
 
-        RateLimitResult? result = await limiter.CheckAsync("nonexistent", TestContext.Current.CancellationToken);
+        RateLimitResult? result = await limiter.CheckAsync("nonexistent", clientIp: null, TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -96,7 +96,7 @@ public sealed class TenantPartitionedRateLimiterTests : IDisposable
         _currentUser.IsInRole("Admin").Returns(true);
         TenantPartitionedRateLimiter limiter = CreateLimiter();
 
-        RateLimitResult? result = await limiter.CheckAsync("api", TestContext.Current.CancellationToken);
+        RateLimitResult? result = await limiter.CheckAsync("api", clientIp: null, TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -117,7 +117,7 @@ public sealed class TenantPartitionedRateLimiterTests : IDisposable
             .Returns(new RateLimitResult(true, 99, 100, TimeSpan.Zero));
 
         TenantPartitionedRateLimiter limiter = CreateLimiter();
-        RateLimitResult? result = await limiter.CheckAsync("api", TestContext.Current.CancellationToken);
+        RateLimitResult? result = await limiter.CheckAsync("api", clientIp: null, TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.IsAllowed.ShouldBeTrue();
@@ -138,7 +138,7 @@ public sealed class TenantPartitionedRateLimiterTests : IDisposable
             .Returns(new RateLimitResult(true, 99, 100, TimeSpan.Zero));
 
         TenantPartitionedRateLimiter limiter = CreateLimiter();
-        RateLimitResult? result = await limiter.CheckAsync("api", TestContext.Current.CancellationToken);
+        RateLimitResult? result = await limiter.CheckAsync("api", clientIp: null, TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         _currentUser.DidNotReceiveWithAnyArgs().IsInRole(default!);
@@ -164,7 +164,7 @@ public sealed class TenantPartitionedRateLimiterTests : IDisposable
             .Returns(new RateLimitResult(true, 99, 100, TimeSpan.Zero));
 
         TenantPartitionedRateLimiter limiter = CreateLimiter();
-        await limiter.CheckAsync("api", TestContext.Current.CancellationToken);
+        await limiter.CheckAsync("api", clientIp: null, TestContext.Current.CancellationToken);
 
         await _counterStore.Received(1).CheckAndIncrementAsync(
             Arg.Is<string>(k => k.Contains(tenantId.ToString())),
@@ -187,7 +187,7 @@ public sealed class TenantPartitionedRateLimiterTests : IDisposable
             .Returns(new RateLimitResult(true, 99, 100, TimeSpan.Zero));
 
         TenantPartitionedRateLimiter limiter = CreateLimiter();
-        await limiter.CheckAsync("api", TestContext.Current.CancellationToken);
+        await limiter.CheckAsync("api", clientIp: null, TestContext.Current.CancellationToken);
 
         await _counterStore.Received(1).CheckAndIncrementAsync(
             Arg.Is<string>(k => k.Contains("{global}")),
@@ -214,7 +214,7 @@ public sealed class TenantPartitionedRateLimiterTests : IDisposable
             .Returns(new RateLimitResult(true, 49, 50, TimeSpan.Zero));
 
         TenantPartitionedRateLimiter limiter = CreateLimiter();
-        await limiter.CheckAsync("api", TestContext.Current.CancellationToken);
+        await limiter.CheckAsync("api", clientIp: null, TestContext.Current.CancellationToken);
 
         await _counterStore.Received(1).CheckAndIncrementAsync(
             Arg.Any<string>(),
@@ -238,7 +238,7 @@ public sealed class TenantPartitionedRateLimiterTests : IDisposable
             .Returns(new RateLimitResult(true, 99, 100, TimeSpan.Zero));
 
         TenantPartitionedRateLimiter limiter = CreateLimiter();
-        await limiter.CheckAsync("api", TestContext.Current.CancellationToken);
+        await limiter.CheckAsync("api", clientIp: null, TestContext.Current.CancellationToken);
 
         await _counterStore.Received(1).CheckAndIncrementAsync(
             Arg.Any<string>(),
@@ -265,7 +265,7 @@ public sealed class TenantPartitionedRateLimiterTests : IDisposable
             .Returns(new RateLimitResult(true, 99, 100, TimeSpan.Zero));
 
         TenantPartitionedRateLimiter limiter = CreateLimiter();
-        RateLimitResult? result = await limiter.CheckAsync("api", TestContext.Current.CancellationToken);
+        RateLimitResult? result = await limiter.CheckAsync("api", clientIp: null, TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.IsAllowed.ShouldBeTrue();
@@ -285,7 +285,7 @@ public sealed class TenantPartitionedRateLimiterTests : IDisposable
             .Returns(new RateLimitResult(false, 0, 100, retryAfter));
 
         TenantPartitionedRateLimiter limiter = CreateLimiter();
-        RateLimitResult? result = await limiter.CheckAsync("api", TestContext.Current.CancellationToken);
+        RateLimitResult? result = await limiter.CheckAsync("api", clientIp: null, TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.IsAllowed.ShouldBeFalse();

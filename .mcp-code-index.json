@@ -25454,7 +25454,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData.EntityFrameworkCore",
       "file": "src/Granit.ReferenceData.EntityFrameworkCore/Extensions/ReferenceDataEfCoreServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": []
     },
     {

@@ -27,8 +27,11 @@ public sealed class TenantPartitionedRateLimiter(
     /// <summary>
     /// Checks whether the current request is within the rate limit for <paramref name="policyName"/>.
     /// </summary>
+    /// <param name="policyName">Name of the rate limiting policy.</param>
+    /// <param name="clientIp">Client IP address for IP-based partitioning. Pass <see langword="null"/> when not applicable (e.g., Wolverine messages).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The rate limit result, or <see langword="null"/> if the policy is not configured.</returns>
-    public async Task<RateLimitResult?> CheckAsync(string policyName, CancellationToken cancellationToken)
+    public async Task<RateLimitResult?> CheckAsync(string policyName, string? clientIp, CancellationToken cancellationToken)
     {
         if (!_options.Enabled)
         {
@@ -47,7 +50,7 @@ public sealed class TenantPartitionedRateLimiter(
         }
 
         string? tenantId = currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null;
-        string key = BuildKey(policyName, tenantId);
+        string key = BuildKey(policyName, policy.PartitionBy, tenantId, clientIp);
 
         int permitLimit = await quotaProvider.GetPermitLimitAsync(policyName, cancellationToken).ConfigureAwait(false)
                           ?? policy.PermitLimit;
@@ -86,10 +89,21 @@ public sealed class TenantPartitionedRateLimiter(
         return false;
     }
 
-    private string BuildKey(string policyName, string? tenantId)
+    private string BuildKey(string policyName, RateLimitPartition partition, string? tenantId, string? clientIp)
     {
-        string segment = tenantId ?? "global";
-        // Hash tag {segment} ensures all keys for a tenant hash to the same Redis Cluster slot.
-        return $"{_options.KeyPrefix}:{{{segment}}}:{policyName}";
+        string tenant = tenantId ?? "global";
+        string ip = clientIp ?? "unknown";
+        string user = currentUser.IsAuthenticated ? currentUser.UserId ?? "anon" : "anon";
+
+        // Hash tag {...} ensures all keys for the primary partition entity hash to the same Redis Cluster slot.
+        return partition switch
+        {
+            RateLimitPartition.Tenant => $"{_options.KeyPrefix}:{{{tenant}}}:{policyName}",
+            RateLimitPartition.TenantAndIp => $"{_options.KeyPrefix}:{{{tenant}}}:{ip}:{policyName}",
+            RateLimitPartition.Ip => $"{_options.KeyPrefix}:{{{ip}}}:{policyName}",
+            RateLimitPartition.User => $"{_options.KeyPrefix}:{{{user}}}:{policyName}",
+            RateLimitPartition.TenantAndUser => $"{_options.KeyPrefix}:{{{tenant}}}:{user}:{policyName}",
+            _ => $"{_options.KeyPrefix}:{{{tenant}}}:{policyName}",
+        };
     }
 }
