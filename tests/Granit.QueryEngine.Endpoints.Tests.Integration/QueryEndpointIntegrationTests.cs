@@ -307,6 +307,16 @@ public sealed class QueryEndpointIntegrationTests : IAsyncDisposable
     public async Task SavedViews_Delete_returns_204()
     {
         var viewId = Guid.NewGuid();
+        _savedViewStoreReader.GetAsync(viewId, Arg.Any<CancellationToken>())
+            .Returns(new SavedView
+            {
+                Id = viewId,
+                EntityType = "Test.Products",
+                Name = "To Delete",
+                UserId = "test-user-id",
+                CreatedAt = DateTimeOffset.UtcNow,
+                CreatedBy = "test-user-id",
+            });
 
         HttpResponseMessage response = await _authClient.DeleteAsync(
             $"{Prefix}/saved-views/{viewId}", TestContext.Current.CancellationToken);
@@ -320,6 +330,16 @@ public sealed class QueryEndpointIntegrationTests : IAsyncDisposable
     public async Task SavedViews_SetDefault_returns_204()
     {
         var viewId = Guid.NewGuid();
+        _savedViewStoreReader.GetAsync(viewId, Arg.Any<CancellationToken>())
+            .Returns(new SavedView
+            {
+                Id = viewId,
+                EntityType = "Test.Products",
+                Name = "Default View",
+                UserId = "test-user-id",
+                CreatedAt = DateTimeOffset.UtcNow,
+                CreatedBy = "test-user-id",
+            });
 
         HttpResponseMessage response = await _authClient.PostAsync(
             $"{Prefix}/saved-views/{viewId}/set-default", null, TestContext.Current.CancellationToken);

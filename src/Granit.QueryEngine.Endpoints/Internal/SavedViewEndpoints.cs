@@ -171,7 +171,7 @@ internal static class SavedViewEndpoints
         return TypedResults.Created($"/saved-views/{view.Id}", MapView(view, userId));
     }
 
-    private static async Task<Results<NoContent, NotFound, ForbidHttpResult, UnauthorizedHttpResult>> UpdateAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult, UnauthorizedHttpResult>> UpdateAsync(
         Guid id,
         UpdateSavedViewRequest request,
         [FromServices] ISavedViewStoreReader reader,
@@ -189,12 +189,12 @@ internal static class SavedViewEndpoints
         SavedView? existing = await reader.GetAsync(id, cancellationToken).ConfigureAwait(false);
         if (existing is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(detail: "Saved view not found.", statusCode: StatusCodes.Status404NotFound);
         }
 
         if (!string.Equals(existing.UserId, userId, StringComparison.Ordinal))
         {
-            return TypedResults.Forbid();
+            return TypedResults.Problem(detail: "You do not own this saved view.", statusCode: StatusCodes.Status403Forbidden);
         }
 
         existing.Name = request.Name;
@@ -210,7 +210,7 @@ internal static class SavedViewEndpoints
         return TypedResults.NoContent();
     }
 
-    private static async Task<Results<NoContent, NotFound, ForbidHttpResult, UnauthorizedHttpResult>> DeleteAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult, UnauthorizedHttpResult>> DeleteAsync(
         Guid id,
         [FromServices] ISavedViewStoreReader reader,
         [FromServices] ISavedViewStoreWriter store,
@@ -226,19 +226,19 @@ internal static class SavedViewEndpoints
         SavedView? existing = await reader.GetAsync(id, cancellationToken).ConfigureAwait(false);
         if (existing is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(detail: "Saved view not found.", statusCode: StatusCodes.Status404NotFound);
         }
 
         if (!string.Equals(existing.UserId, userId, StringComparison.Ordinal))
         {
-            return TypedResults.Forbid();
+            return TypedResults.Problem(detail: "You do not own this saved view.", statusCode: StatusCodes.Status403Forbidden);
         }
 
         await store.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
         return TypedResults.NoContent();
     }
 
-    private static async Task<Results<NoContent, NotFound, ForbidHttpResult, UnauthorizedHttpResult>> SetDefaultAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult, UnauthorizedHttpResult>> SetDefaultAsync(
         Guid id,
         [FromServices] ISavedViewStoreReader reader,
         [FromServices] ISavedViewStoreWriter store,
@@ -255,12 +255,12 @@ internal static class SavedViewEndpoints
         SavedView? existing = await reader.GetAsync(id, cancellationToken).ConfigureAwait(false);
         if (existing is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(detail: "Saved view not found.", statusCode: StatusCodes.Status404NotFound);
         }
 
         if (!string.Equals(existing.UserId, userId, StringComparison.Ordinal) && !existing.IsShared)
         {
-            return TypedResults.Forbid();
+            return TypedResults.Problem(detail: "You do not own this saved view.", statusCode: StatusCodes.Status403Forbidden);
         }
 
         await store.SetDefaultAsync(id, userId, entityType, cancellationToken).ConfigureAwait(false);

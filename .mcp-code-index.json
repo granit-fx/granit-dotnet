@@ -2505,7 +2505,7 @@
       "kind": "class",
       "project": "Granit.AI",
       "file": "src/Granit.AI/PromptBuilder.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "ToString",
@@ -26458,7 +26458,7 @@
       "kind": "class",
       "project": "Granit.Templating.AI",
       "file": "src/Granit.Templating.AI/AITemplateDataEnricher.cs",
-      "line": 21,
+      "line": 28,
       "members": [
         {
           "name": "BuildPrompt",
@@ -26480,7 +26480,7 @@
       "kind": "class",
       "project": "Granit.Templating.AI",
       "file": "src/Granit.Templating.AI/Extensions/TemplatingAIHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitTemplatingAI",
@@ -27728,6 +27728,12 @@
           "name": "MaxEntriesToAnalyze",
           "kind": "property",
           "signature": "int MaxEntriesToAnalyze",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxConcurrentRequests",
+          "kind": "property",
+          "signature": "int MaxConcurrentRequests",
           "returnType": "int"
         }
       ]
@@ -29125,6 +29131,12 @@
           "returnType": "string ErrorCode { get; } = errorCode ?? throw"
         },
         {
+          "name": "IsSensitive",
+          "kind": "property",
+          "signature": "bool IsSensitive",
+          "returnType": "bool"
+        },
+        {
           "name": "Validate",
           "kind": "method",
           "signature": "Validate(string? value)",
@@ -29141,10 +29153,16 @@
       "line": 12,
       "members": [
         {
+          "name": "ErrorCode",
+          "kind": "property",
+          "signature": "string ErrorCode",
+          "returnType": "string"
+        },
+        {
           "name": "Validate",
           "kind": "method",
           "signature": "Validate(string? value)",
-          "returnType": "string ErrorCode { get; } bool"
+          "returnType": "bool"
         }
       ]
     },
@@ -29177,6 +29195,12 @@
           "kind": "method",
           "signature": "GetAllErrorCodes()",
           "returnType": "IReadOnlyCollection<string>"
+        },
+        {
+          "name": "GetAll",
+          "kind": "method",
+          "signature": "GetAll()",
+          "returnType": "IReadOnlyCollection<IServerValidator>"
         }
       ]
     },
