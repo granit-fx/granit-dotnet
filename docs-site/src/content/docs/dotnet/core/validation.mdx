@@ -404,6 +404,35 @@ internal sealed class AppServerValidatorContributor : IServerValidatorContributo
 }
 ```
 
+### Sensitive validators (PII protection)
+
+Validators that handle **personally identifiable information** (SSN, national IDs,
+credit cards, tax references) are marked as `isSensitive: true`. These validators
+are **hidden from unauthenticated callers**:
+
+- `GET /validators` only lists non-sensitive validators for anonymous users
+- `POST /validate` and `/validate-batch` return **404 Not Found** for sensitive
+  validators when the caller is unauthenticated — as if the validator does not exist
+
+Authenticated users see and use all validators normally.
+
+```csharp
+// Marking a custom PII validator as sensitive
+yield return new DelegatingServerValidator(
+    "Acme:Validation:InvalidSocialSecurityNumber",
+    SsnAlgorithm.IsValid,
+    isSensitive: true);  // hidden from anonymous callers
+```
+
+The following framework validators are marked as sensitive:
+
+| Region | Sensitive validators |
+| ------ | -------------------- |
+| Core | Credit card |
+| North America | SSN, SIN, EIN |
+| Europe | NISS, NIR, eID, BSN, Codice Fiscale, NIF, NIE, Matricule, Steuer-ID |
+| United Kingdom | NI Number, NHS Number, UTR |
+
 ### Anti-DDoS protection
 
 The package has **no dependency** on `Granit.RateLimiting` or `Granit.Http.Bulkhead`.

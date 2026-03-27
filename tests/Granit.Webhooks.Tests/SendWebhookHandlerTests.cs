@@ -12,6 +12,7 @@ using System.Text.Json;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Diagnostics;
+using Granit.Webhooks.Domain;
 using Granit.Webhooks.Exceptions;
 using Granit.Webhooks.Handlers;
 using Granit.Webhooks.Internal;
@@ -29,6 +30,7 @@ namespace Granit.Webhooks.Tests;
 public sealed class SendWebhookHandlerTests : IDisposable
 {
     private readonly IWebhookDeliveryWriter _deliveryWriter = Substitute.For<IWebhookDeliveryWriter>();
+    private readonly IWebhookSubscriptionReader _subscriptionReader = Substitute.For<IWebhookSubscriptionReader>();
 
     // Use the real no-op protector to avoid CA2012 when mocking ValueTask-returning methods.
     private readonly IWebhookSecretProtector _secretProtector = new NoOpWebhookSecretProtector();
@@ -54,6 +56,10 @@ public sealed class SendWebhookHandlerTests : IDisposable
 
         _clock = Substitute.For<IClock>();
         _clock.Now.Returns(_ => DateTimeOffset.UtcNow);
+
+        _subscriptionReader.FindByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(ci => WebhookSubscription.Create(
+                ci.ArgAt<Guid>(0), "https://example.com/webhook", "test.event", "test-secret"));
     }
 
     public void Dispose()
@@ -242,7 +248,7 @@ public sealed class SendWebhookHandlerTests : IDisposable
         IHttpClientFactory factory = Substitute.For<IHttpClientFactory>();
         factory.CreateClient(Arg.Any<string>()).Returns(httpClient);
         IOptions<WebhooksOptions> opts = Microsoft.Extensions.Options.Options.Create(new WebhooksOptions { StorePayload = storePayload });
-        return new SendWebhookHandler(factory, _deliveryWriter, _secretProtector, opts, NullLogger<SendWebhookHandler>.Instance, _clock, _metrics);
+        return new SendWebhookHandler(factory, _deliveryWriter, _subscriptionReader, _secretProtector, opts, NullLogger<SendWebhookHandler>.Instance, _clock, _metrics);
     }
 
     private SendWebhookHandler BuildHandlerWithTimeout()
@@ -251,7 +257,7 @@ public sealed class SendWebhookHandlerTests : IDisposable
         IHttpClientFactory factory = Substitute.For<IHttpClientFactory>();
         factory.CreateClient(Arg.Any<string>()).Returns(httpClient);
         IOptions<WebhooksOptions> opts = Microsoft.Extensions.Options.Options.Create(new WebhooksOptions());
-        return new SendWebhookHandler(factory, _deliveryWriter, _secretProtector, opts, NullLogger<SendWebhookHandler>.Instance, _clock, _metrics);
+        return new SendWebhookHandler(factory, _deliveryWriter, _subscriptionReader, _secretProtector, opts, NullLogger<SendWebhookHandler>.Instance, _clock, _metrics);
     }
 
     private static SendWebhookCommand BuildCommand() => new()
@@ -259,7 +265,6 @@ public sealed class SendWebhookHandlerTests : IDisposable
         DeliveryId = Guid.NewGuid(),
         SubscriptionId = Guid.NewGuid(),
         TargetUrl = "https://example.com/webhook",
-        SigningSecret = "test-secret",
         Envelope = new WebhookEnvelope
         {
             EventId = Guid.NewGuid(),

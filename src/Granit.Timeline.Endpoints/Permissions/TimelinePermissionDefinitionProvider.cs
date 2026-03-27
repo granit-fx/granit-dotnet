@@ -7,11 +7,6 @@ namespace Granit.Timeline.Endpoints.Permissions;
 /// <summary>
 /// Declares all Timeline permissions in the Granit RBAC system.
 /// </summary>
-/// <remarks>
-/// Registered automatically by <see cref="GranitTimelineEndpointsModule"/>.
-/// Once registered, <c>DynamicPermissionPolicyProvider</c> creates the authorization policies
-/// via <c>PermissionRequirement</c> — the full <c>IPermissionChecker</c> pipeline is used.
-/// </remarks>
 internal sealed class TimelinePermissionDefinitionProvider : IPermissionDefinitionProvider
 {
     /// <inheritdoc />

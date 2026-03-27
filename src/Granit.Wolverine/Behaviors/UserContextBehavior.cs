@@ -39,9 +39,6 @@ public sealed class UserContextBehavior(IWolverineUserContextSetter setter)
         if (envelope.Headers.TryGetValue(OutgoingContextMiddleware.UserIdHeader, out string? userId)
             && !string.IsNullOrEmpty(userId))
         {
-            envelope.Headers.TryGetValue(OutgoingContextMiddleware.UserFirstNameHeader, out string? firstName);
-            envelope.Headers.TryGetValue(OutgoingContextMiddleware.UserLastNameHeader, out string? lastName);
-
             Users.ActorKind actorKind = envelope.Headers.TryGetValue(OutgoingContextMiddleware.ActorKindHeader, out string? ak)
                 && Enum.TryParse<Users.ActorKind>(ak, out Users.ActorKind parsed)
                     ? parsed
@@ -52,7 +49,7 @@ public sealed class UserContextBehavior(IWolverineUserContextSetter setter)
                     ? parsedId
                     : null;
 
-            _scope = setter.Change(userId, firstName, lastName, actorKind, apiKeyId);
+            _scope = setter.Change(userId, actorKind, apiKeyId);
         }
     }
 

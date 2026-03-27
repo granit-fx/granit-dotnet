@@ -3,6 +3,9 @@
   "texts": {
     "PermissionGroup:Timeline": "Zeitachse",
     "Permission:Timeline.Entries.Read": "Aktivitätsfeeds und Prüfverlauf anzeigen",
-    "Permission:Timeline.Entries.Create": "Kommentare veröffentlichen und Entitäten folgen/entfolgen"
+    "Permission:Timeline.Entries.Create": "Kommentare veröffentlichen und Entitäten folgen/entfolgen",
+    "Permission:Timeline.Entries.Manage": "Beliebige Zeitachseneinträge verwalten (löschen), unabhängig vom Eigentümer",
+    "Permission:Timeline.InternalNotes.Read": "Interne Notizen (nur für Mitarbeiter) in Aktivitätsfeeds anzeigen",
+    "Permission:Timeline.Followers.Manage": "Entitäten in Aktivitätsfeeds folgen und entfolgen"
   }
 }

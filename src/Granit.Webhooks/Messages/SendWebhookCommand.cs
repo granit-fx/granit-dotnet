@@ -10,9 +10,9 @@ namespace Granit.Webhooks.Messages;
 /// individually in the Outbox, so retries and failures are isolated per subscriber.
 /// </para>
 /// <para>
-/// The <see cref="SigningSecret"/> contains the protected (opaque) value from
-/// <see cref="Domain.WebhookSubscription.SigningSecret"/>. It is unprotected at delivery
-/// time by <see cref="Abstractions.IWebhookSecretProtector"/>. Never log this value.
+/// The signing secret is NOT carried in this command to avoid persisting secrets in the
+/// Wolverine outbox. The <see cref="Handlers.SendWebhookHandler"/> resolves the secret
+/// at delivery time from the subscription via <see cref="Abstractions.IWebhookSecretProtector"/>.
 /// </para>
 /// </remarks>
 public sealed record SendWebhookCommand
@@ -29,13 +29,6 @@ public sealed record SendWebhookCommand
 
     /// <summary>Target HTTPS endpoint URL.</summary>
     public required string TargetUrl { get; init; }
-
-    /// <summary>
-    /// Protected signing secret copied from <see cref="Domain.WebhookSubscription.SigningSecret"/>.
-    /// Unprotected at delivery time by <see cref="Abstractions.IWebhookSecretProtector"/>.
-    /// Never log this field.
-    /// </summary>
-    public required string SigningSecret { get; init; }
 
     /// <summary>The standardized envelope to serialize and POST to <see cref="TargetUrl"/>.</summary>
     public required WebhookEnvelope Envelope { get; init; }

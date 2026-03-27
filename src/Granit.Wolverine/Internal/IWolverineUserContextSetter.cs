@@ -13,14 +13,15 @@ public interface IWolverineUserContextSetter
     /// Dispose the returned scope to restore the previous values.
     /// </summary>
     /// <param name="userId">The user ID to set.</param>
-    /// <param name="firstName">The user first name (optional).</param>
-    /// <param name="lastName">The user last name (optional).</param>
     /// <param name="actorKind">The actor kind (optional, defaults to <see cref="ActorKind.User"/>).</param>
     /// <param name="apiKeyId">The API key ID when <paramref name="actorKind"/> is <see cref="ActorKind.ExternalSystem"/> (optional).</param>
+    /// <remarks>
+    /// First name and last name are intentionally not propagated through the message bus
+    /// to comply with GDPR Art. 5(1)(c) — data minimization. Background handlers that need
+    /// display names should resolve them on demand from the identity store.
+    /// </remarks>
     IDisposable Change(
         string? userId,
-        string? firstName = null,
-        string? lastName = null,
         ActorKind actorKind = ActorKind.User,
         Guid? apiKeyId = null);
 }

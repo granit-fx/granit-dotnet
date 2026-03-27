@@ -53,9 +53,14 @@ public static class WebhooksEndpointRouteBuilderExtensions
 
         group.MapEventTypeEndpoints();
         group.MapReadEndpoints();
-        group.MapWriteEndpoints();
-        group.MapLifecycleEndpoints();
-        group.MapOperationEndpoints();
+
+        // Mutating operations require Manage permission (ISO 27001 A.5.15 — least privilege).
+        group.MapWriteEndpoints()
+            .RequireAuthorization(WebhooksPermissions.Subscriptions.Manage);
+        group.MapLifecycleEndpoints()
+            .RequireAuthorization(WebhooksPermissions.Subscriptions.Manage);
+        group.MapOperationEndpoints()
+            .RequireAuthorization(WebhooksPermissions.Subscriptions.Manage);
 
         // Query endpoints for subscription list and delivery attempts.
         // Use a temporary scope because IWebhookQueryableProvider is Scoped

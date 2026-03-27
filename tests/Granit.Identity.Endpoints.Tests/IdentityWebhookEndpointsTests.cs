@@ -69,9 +69,9 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
     public async Task Webhook_user_updated_calls_RefreshByIdAsync()
     {
         var payload = new { eventType = "user_updated", userId = "user-1" };
-        HttpRequestMessage request = CreateSignedRequest(payload);
+        using HttpRequestMessage request = CreateSignedRequest(payload);
 
-        HttpResponseMessage response = await _client.SendAsync(
+        using HttpResponseMessage response = await _client.SendAsync(
             request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -82,9 +82,9 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
     public async Task Webhook_user_created_calls_RefreshByIdAsync()
     {
         var payload = new { eventType = "user_created", userId = "user-2" };
-        HttpRequestMessage request = CreateSignedRequest(payload);
+        using HttpRequestMessage request = CreateSignedRequest(payload);
 
-        HttpResponseMessage response = await _client.SendAsync(
+        using HttpResponseMessage response = await _client.SendAsync(
             request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -95,9 +95,9 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
     public async Task Webhook_user_deleted_calls_DeleteByIdAsync()
     {
         var payload = new { eventType = "user_deleted", userId = "user-1" };
-        HttpRequestMessage request = CreateSignedRequest(payload);
+        using HttpRequestMessage request = CreateSignedRequest(payload);
 
-        HttpResponseMessage response = await _client.SendAsync(
+        using HttpResponseMessage response = await _client.SendAsync(
             request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -110,13 +110,13 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
         var payload = new { eventType = "user_updated", userId = "user-1" };
         string json = JsonSerializer.Serialize(payload);
 
-        HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
+        using HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
         };
         request.Headers.Add("X-Webhook-Signature", "invalid-signature");
 
-        HttpResponseMessage response = await _client.SendAsync(
+        using HttpResponseMessage response = await _client.SendAsync(
             request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -128,12 +128,12 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
         var payload = new { eventType = "user_updated", userId = "user-1" };
         string json = JsonSerializer.Serialize(payload);
 
-        HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
+        using HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
         };
 
-        HttpResponseMessage response = await _client.SendAsync(
+        using HttpResponseMessage response = await _client.SendAsync(
             request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -146,13 +146,13 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
         byte[] body = Encoding.UTF8.GetBytes(invalidJson);
         string signature = ComputeSignature(body);
 
-        HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
+        using HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
         {
             Content = new StringContent(invalidJson, Encoding.UTF8, "application/json"),
         };
         request.Headers.Add("X-Webhook-Signature", signature);
 
-        HttpResponseMessage response = await _client.SendAsync(
+        using HttpResponseMessage response = await _client.SendAsync(
             request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -162,9 +162,9 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
     public async Task Webhook_unknown_event_type_returns_400_without_reflecting_input()
     {
         var payload = new { eventType = "unknown_event", userId = "user-1" };
-        HttpRequestMessage request = CreateSignedRequest(payload);
+        using HttpRequestMessage request = CreateSignedRequest(payload);
 
-        HttpResponseMessage response = await _client.SendAsync(
+        using HttpResponseMessage response = await _client.SendAsync(
             request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -179,9 +179,9 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
     public async Task Webhook_missing_userId_returns_400()
     {
         var payload = new { eventType = "user_updated", userId = "" };
-        HttpRequestMessage request = CreateSignedRequest(payload);
+        using HttpRequestMessage request = CreateSignedRequest(payload);
 
-        HttpResponseMessage response = await _client.SendAsync(
+        using HttpResponseMessage response = await _client.SendAsync(
             request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);

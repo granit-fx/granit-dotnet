@@ -24,7 +24,12 @@ namespace Granit.Wolverine.Middleware;
 /// <see cref="Granit.Wolverine.Behaviors.UserContextBehavior"/>, and
 /// <see cref="Granit.Wolverine.Behaviors.TraceContextBehavior"/> on the receiving side.
 /// </para>
-/// <para>Compliance: no PII is logged — headers flow only inside message envelopes.</para>
+/// <para>
+/// Compliance (GDPR Art. 5(1)(c) — data minimization): only the opaque <c>X-User-Id</c>
+/// (sub claim) is propagated. First name / last name are intentionally excluded to avoid
+/// storing PII in the outbox tables. Background handlers that need display names should
+/// resolve them on demand from the identity store.
+/// </para>
 /// </remarks>
 public sealed class OutgoingContextMiddleware(
     ICurrentTenant currentTenant,
@@ -32,8 +37,6 @@ public sealed class OutgoingContextMiddleware(
 {
     internal const string TenantIdHeader = "X-Tenant-Id";
     internal const string UserIdHeader = "X-User-Id";
-    internal const string UserFirstNameHeader = "X-User-FirstName";
-    internal const string UserLastNameHeader = "X-User-LastName";
     internal const string ActorKindHeader = "X-Actor-Kind";
 #pragma warning disable GRSEC003 // HTTP header name constant, not a secret
     internal const string ApiKeyIdHeader = "X-Api-Key-Id";
@@ -54,16 +57,6 @@ public sealed class OutgoingContextMiddleware(
         if (currentUserService.IsAuthenticated && currentUserService.UserId is { Length: > 0 } userId)
         {
             envelope.Headers[UserIdHeader] = userId;
-
-            if (currentUserService.FirstName is { Length: > 0 } firstName)
-            {
-                envelope.Headers[UserFirstNameHeader] = firstName;
-            }
-
-            if (currentUserService.LastName is { Length: > 0 } lastName)
-            {
-                envelope.Headers[UserLastNameHeader] = lastName;
-            }
         }
 
         // Propagate actor kind (User, ExternalSystem, System)

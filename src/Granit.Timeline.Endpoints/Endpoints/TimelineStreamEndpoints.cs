@@ -20,7 +20,7 @@ internal static class TimelineStreamEndpoints
         group.MapGet("/{entityType}/{entityId}", GetStreamAsync)
             .WithName("GetTimelineStream")
             .WithSummary("Returns the paginated activity stream for an entity, newest first.")
-            .WithDescription("Returns comments, internal notes (staff-only, requires Timeline.InternalNotes.Read permission), and system log entries associated with the entity, ordered by occurrence date descending. Supports pagination via page and pageSize query parameters. Soft-deleted entries are excluded.")
+            .WithDescription("Returns comments, internal notes (staff-only, requires Timeline.InternalNotes.Read), and system log entries. Supports pagination. Soft-deleted entries are excluded.")
             .Produces<PagedResult<TimelineStreamEntry>>();
 
         return group;
@@ -47,10 +47,7 @@ internal static class TimelineStreamEndpoints
                 .Where(e => e.EntryType != TimelineStreamEntryType.InternalNote)
                 .ToList();
 
-            result = new PagedResult<TimelineStreamEntry>(
-                filtered,
-                result.TotalCount,
-                result.HasMore);
+            result = new PagedResult<TimelineStreamEntry>(filtered, result.TotalCount, result.HasMore);
         }
 
         return TypedResults.Ok(result);

@@ -2,6 +2,7 @@ using Granit.Guids;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
+using Granit.Webhooks.Internal;
 using Granit.Webhooks.Messages;
 using Microsoft.EntityFrameworkCore;
 
@@ -137,6 +138,15 @@ internal sealed class EfWebhookDeliveryStore(IDbContextFactory<WebhooksDbContext
         int batchSize,
         CancellationToken cancellationToken = default)
     {
+        // ISO 27001: enforce 3-year minimum retention for delivery audit records.
+        DateTimeOffset earliestAllowed = clock.Now - WebhooksConstants.MinAuditRetention;
+        if (cutoff > earliestAllowed)
+        {
+            throw new InvalidOperationException(
+                $"Cannot delete delivery records newer than {WebhooksConstants.MinAuditRetention.TotalDays:F0} days. "
+                + $"Requested cutoff: {cutoff:O}, earliest allowed: {earliestAllowed:O}.");
+        }
+
         await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         return await context.WebhookDeliveryAttempts
             .Where(a => a.OccurredAt < cutoff)

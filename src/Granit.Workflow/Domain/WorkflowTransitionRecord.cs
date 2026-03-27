@@ -17,7 +17,7 @@ namespace Granit.Workflow.Domain;
 /// to which state, and an optional regulatory comment/justification.
 /// </para>
 /// </remarks>
-public sealed class WorkflowTransitionRecord : Entity
+public sealed class WorkflowTransitionRecord : Entity, IMultiTenant
 {
     /// <summary>Logical entity type name (e.g. <c>"Document"</c>, <c>"Invoice"</c>).</summary>
     public string EntityType { get; set; } = string.Empty;

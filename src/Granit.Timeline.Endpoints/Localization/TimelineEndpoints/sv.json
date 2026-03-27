@@ -3,6 +3,9 @@
   "texts": {
     "PermissionGroup:Timeline": "Tidslinje",
     "Permission:Timeline.Entries.Read": "Visa aktivitetsflöden och revisionshistorik",
-    "Permission:Timeline.Entries.Create": "Publicera kommentarer och följa/sluta följa entiteter"
+    "Permission:Timeline.Entries.Create": "Publicera kommentarer och följa/sluta följa entiteter",
+    "Permission:Timeline.Entries.Manage": "Hantera (ta bort) tidslinjepost oavsett ägare",
+    "Permission:Timeline.InternalNotes.Read": "Visa personalens interna anteckningar i aktivitetsflöden",
+    "Permission:Timeline.Followers.Manage": "Följa och sluta följa entiteter i aktivitetsflöden"
   }
 }

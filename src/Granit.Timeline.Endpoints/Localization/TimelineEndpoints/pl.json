@@ -3,6 +3,9 @@
   "texts": {
     "PermissionGroup:Timeline": "Oś czasu",
     "Permission:Timeline.Entries.Read": "Wyświetlanie kanałów aktywności i historii audytu",
-    "Permission:Timeline.Entries.Create": "Dodawanie komentarzy i śledzenie/zaprzestanie śledzenia encji"
+    "Permission:Timeline.Entries.Create": "Dodawanie komentarzy i śledzenie/zaprzestanie śledzenia encji",
+    "Permission:Timeline.Entries.Manage": "Zarządzanie (usuwanie) wpisów osi czasu niezależnie od właściciela",
+    "Permission:Timeline.InternalNotes.Read": "Przeglądanie wewnętrznych notatek dostępnych tylko dla personelu",
+    "Permission:Timeline.Followers.Manage": "Obserwowanie i rezygnacja z obserwowania podmiotów w kanałach aktywności"
   }
 }

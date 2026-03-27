@@ -3,6 +3,9 @@
   "texts": {
     "PermissionGroup:Timeline": "Timeline",
     "Permission:Timeline.Entries.Read": "View activity feeds and audit history",
-    "Permission:Timeline.Entries.Create": "Post comments and follow/unfollow entities"
+    "Permission:Timeline.Entries.Create": "Post comments and follow/unfollow entities",
+    "Permission:Timeline.Entries.Manage": "Manage (delete) any timeline entry regardless of ownership",
+    "Permission:Timeline.InternalNotes.Read": "View staff-only internal notes in activity feeds",
+    "Permission:Timeline.Followers.Manage": "Follow and unfollow entities in timeline feeds"
   }
 }

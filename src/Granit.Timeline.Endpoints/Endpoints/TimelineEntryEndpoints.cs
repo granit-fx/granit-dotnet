@@ -35,7 +35,7 @@ internal static class TimelineEntryEndpoints
             .RequireAuthorization(TimelinePermissions.Entries.Create)
             .WithName("DeleteTimelineEntry")
             .WithSummary("Soft-deletes a comment or internal note (RGPD right to erasure).")
-            .WithDescription("Performs a soft-delete on the timeline entry, preserving the record for audit purposes while hiding the content. Only the author or users with Timeline.Entries.Manage permission can delete. Only Comment and InternalNote entries can be deleted. SystemLog entries are immutable (ISO 27001). Returns 404 if the entry does not exist.")
+            .WithDescription("Performs a soft-delete on the timeline entry. Only the author or users with Timeline.Entries.Manage permission can delete. SystemLog entries are immutable (ISO 27001). Returns 404 if the entry does not exist.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status403Forbidden);
@@ -105,12 +105,11 @@ internal static class TimelineEntryEndpoints
         CancellationToken cancellationToken)
 #pragma warning restore S1172
     {
-        // VULN-100: Ownership check — only author or admin (Timeline.Entries.Manage) can delete
+        // VULN-100: Ownership check — only author or admin can delete
         bool isAdmin = await permissionChecker.IsGrantedAsync(TimelinePermissions.Entries.Manage, cancellationToken).ConfigureAwait(false);
 
         if (!isAdmin)
         {
-            // Verify the current user owns the entry before allowing deletion
             PagedResult<TimelineStreamEntry> stream = await reader.GetStreamAsync(entityType, entityId, 1, 1000, cancellationToken).ConfigureAwait(false);
             TimelineStreamEntry? target = stream.Items.FirstOrDefault(e => e.Id == entryId);
 

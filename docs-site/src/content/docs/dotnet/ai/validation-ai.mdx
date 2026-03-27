@@ -152,9 +152,17 @@ ModerationResult result = await moderator.ModerateAsync(
 This protects downstream AI handlers from being manipulated before they even receive
 the input.
 
-## Fail-open design
+## Fail-open / fail-closed design
 
-When the LLM is unavailable or times out, the moderator returns:
+The moderator uses a **hybrid** error handling strategy depending on failure type:
+
+| Failure | Behavior | Rationale |
+| ------- | -------- | --------- |
+| LLM timeout | **Fail-open** — content accepted, warning logged | Infrastructure outage must not block users |
+| Network / LLM error | **Fail-open** — content accepted, warning logged | Same as above |
+| Malformed LLM response | **Fail-closed** — content rejected, warning logged | Suggests adversarial manipulation or model drift |
+
+For **infrastructure failures** (timeout, network error), the moderator returns:
 
 ```csharp
 new ModerationResult { IsAcceptable = true, Flags = [] }
@@ -166,21 +174,14 @@ rejected — and marked for manual review. This is intentional:
 > A moderation scanner should never become a denial-of-service vector.
 > Accept now, flag for review, escalate later.
 
-If your use case requires fail-closed behavior (reject on timeout), configure a
-shorter timeout and handle the exception explicitly:
+For **malformed LLM responses** (JSON parse failure, null JSON), the moderator returns:
 
 ```csharp
-try
-{
-    ModerationResult result = await moderator.ModerateAsync(text, ct: ct).ConfigureAwait(false);
-    if (!result.IsAcceptable) return ValidationResult.Fail("Content not allowed.");
-}
-catch (TimeoutException)
-{
-    // Fail-closed: treat timeout as rejection
-    return ValidationResult.Fail("Content review unavailable. Please try again.");
-}
+new ModerationResult { IsAcceptable = false, Flags = [] }
 ```
+
+This prevents an attacker from bypassing moderation by injecting prompts that cause
+the LLM to return unparseable output.
 
 ## Execution order in FluentValidation
 
@@ -243,7 +244,7 @@ For moderation, fast and cheap models are preferable. Configure a dedicated work
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `WorkspaceName` | `string` | `"default"` | AI workspace for content moderation |
-| `TimeoutSeconds` | `int` | `2` | Timeout for the LLM call. Keep low — validation is in the request path |
+| `TimeoutSeconds` | `int` | `2` | Timeout for the LLM call (1–30). Keep low — validation is in the request path |
 | `SeverityThreshold` | `double` | `0.5` | Minimum severity (0.0–1.0) to include a flag in the result |
 
 ## See also

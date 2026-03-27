@@ -199,7 +199,10 @@ The LLM never has access to your database — only what you serialize.
 | Guarantee | How it's enforced |
 |-----------|-------------------|
 | LLM never executes transitions | `IAITransitionAdvisor` returns a recommendation string; `IWorkflowManager.TransitionAsync` is called separately by your code |
-| Auto-approval requires explicit threshold | Default is `0.0` — no auto-approval unless you configure a positive threshold |
+| Auto-approval threshold | Default is `0.3` — transitions with `RiskScore < 0.3` auto-approve. Set to `0.0` to disable |
+| Recommendation validation | `IAITransitionAdvisor` validates the LLM's recommended transition against the allowed set — hallucinated transitions are rejected (returns `null`) |
+| Adversarial input mitigation | `PromptBuilder` strips XML tags, control characters, and truncates input. A system-level disclaimer warns the LLM that entity context is user-provided and may contain adversarial content |
+| Fail-closed on error | On LLM timeout, JSON parse failure, or any exception, `IAIApprovalEvaluator` returns `RiskScore = 1.0` (maximum risk) — never auto-approves on failure |
 | Timeout never blocks workflow | Both services return `null` / neutral results on timeout |
 | Human can always override | Recommendations are suggestions; the UI shows them as such |
 
@@ -245,7 +248,7 @@ public static async Task Handle(
 |----------|------|---------|-------------|
 | `WorkspaceName` | `string` | `"default"` | AI workspace for workflow decisions |
 | `TimeoutSeconds` | `int` | `10` | LLM call timeout |
-| `AutoApprovalThreshold` | `double` | `0.0` | Max risk score for auto-approval (0 = disabled) |
+| `AutoApprovalThreshold` | `double` | `0.3` | Max risk score for auto-approval (0 = disabled) |
 
 ## See also
 

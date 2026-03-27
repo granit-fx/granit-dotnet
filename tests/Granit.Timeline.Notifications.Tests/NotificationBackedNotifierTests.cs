@@ -92,7 +92,7 @@ public sealed class NotificationBackedNotifierTests
             TimelineMentionNotificationType.Instance,
             Arg.Is<TimelineMentionNotificationData>(d =>
                 d.EntityType == "Patient" &&
-                d.AuthorName == "Author Name"),
+                d.AuthorName == null),
             Arg.Is<IReadOnlyList<string>>(r =>
                 r.Count == 1 &&
                 r.Contains("user-3")),

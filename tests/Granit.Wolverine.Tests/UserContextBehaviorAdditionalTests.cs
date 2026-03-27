@@ -1,8 +1,8 @@
 // =============================================================================
 // Tests - UserContextBehavior (additional coverage)
 // =============================================================================
-// Covers FirstName/LastName passthrough, ActorKind parsing, ApiKeyId parsing,
-// and edge cases for the user context restore behavior.
+// Covers ActorKind parsing, ApiKeyId parsing, and edge cases for the user
+// context restore behavior.
 // =============================================================================
 
 using Granit.Users;
@@ -19,70 +19,6 @@ namespace Granit.Wolverine.Tests;
 public sealed class UserContextBehaviorAdditionalTests
 {
     // -------------------------------------------------------------------------
-    // FirstName / LastName passthrough
-    // -------------------------------------------------------------------------
-
-    [Fact]
-    public void Before_WithFirstNameAndLastNameHeaders_PassesBothToSetter()
-    {
-        const string userId = "user-1";
-        const string firstName = "Jean";
-        const string lastName = "Dupont";
-
-        IWolverineUserContextSetter setter = Substitute.For<IWolverineUserContextSetter>();
-        setter.Change(
-                userId,
-                firstName,
-                lastName,
-                Arg.Any<ActorKind>(),
-                Arg.Any<Guid?>())
-            .Returns(Substitute.For<IDisposable>());
-
-        UserContextBehavior behavior = new(setter);
-        Envelope envelope = new();
-        envelope.Headers[OutgoingContextMiddleware.UserIdHeader] = userId;
-        envelope.Headers[OutgoingContextMiddleware.UserFirstNameHeader] = firstName;
-        envelope.Headers[OutgoingContextMiddleware.UserLastNameHeader] = lastName;
-
-        behavior.Before(envelope);
-
-        setter.Received(1).Change(
-            userId,
-            firstName,
-            lastName,
-            Arg.Any<ActorKind>(),
-            Arg.Any<Guid?>());
-    }
-
-    [Fact]
-    public void Before_WithNoFirstNameHeader_PassesNullFirstName()
-    {
-        const string userId = "user-1";
-
-        IWolverineUserContextSetter setter = Substitute.For<IWolverineUserContextSetter>();
-        setter.Change(
-                userId,
-                Arg.Any<string?>(),
-                Arg.Any<string?>(),
-                Arg.Any<ActorKind>(),
-                Arg.Any<Guid?>())
-            .Returns(Substitute.For<IDisposable>());
-
-        UserContextBehavior behavior = new(setter);
-        Envelope envelope = new();
-        envelope.Headers[OutgoingContextMiddleware.UserIdHeader] = userId;
-
-        behavior.Before(envelope);
-
-        setter.Received(1).Change(
-            userId,
-            null,
-            null,
-            ActorKind.User,
-            null);
-    }
-
-    // -------------------------------------------------------------------------
     // ActorKind parsing
     // -------------------------------------------------------------------------
 
@@ -94,8 +30,6 @@ public sealed class UserContextBehaviorAdditionalTests
         IWolverineUserContextSetter setter = Substitute.For<IWolverineUserContextSetter>();
         setter.Change(
                 userId,
-                Arg.Any<string?>(),
-                Arg.Any<string?>(),
                 ActorKind.ExternalSystem,
                 Arg.Any<Guid?>())
             .Returns(Substitute.For<IDisposable>());
@@ -109,8 +43,6 @@ public sealed class UserContextBehaviorAdditionalTests
 
         setter.Received(1).Change(
             userId,
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
             ActorKind.ExternalSystem,
             Arg.Any<Guid?>());
     }
@@ -123,8 +55,6 @@ public sealed class UserContextBehaviorAdditionalTests
         IWolverineUserContextSetter setter = Substitute.For<IWolverineUserContextSetter>();
         setter.Change(
                 userId,
-                Arg.Any<string?>(),
-                Arg.Any<string?>(),
                 ActorKind.User,
                 Arg.Any<Guid?>())
             .Returns(Substitute.For<IDisposable>());
@@ -138,8 +68,6 @@ public sealed class UserContextBehaviorAdditionalTests
 
         setter.Received(1).Change(
             userId,
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
             ActorKind.User,
             Arg.Any<Guid?>());
     }
@@ -152,10 +80,8 @@ public sealed class UserContextBehaviorAdditionalTests
         IWolverineUserContextSetter setter = Substitute.For<IWolverineUserContextSetter>();
         setter.Change(
                 userId,
-                Arg.Any<string?>(),
-                Arg.Any<string?>(),
                 ActorKind.User,
-                Arg.Any<Guid?>())
+                (Guid?)null)
             .Returns(Substitute.For<IDisposable>());
 
         UserContextBehavior behavior = new(setter);
@@ -166,10 +92,8 @@ public sealed class UserContextBehaviorAdditionalTests
 
         setter.Received(1).Change(
             userId,
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
             ActorKind.User,
-            Arg.Any<Guid?>());
+            (Guid?)null);
     }
 
     // -------------------------------------------------------------------------
@@ -185,8 +109,6 @@ public sealed class UserContextBehaviorAdditionalTests
         IWolverineUserContextSetter setter = Substitute.For<IWolverineUserContextSetter>();
         setter.Change(
                 userId,
-                Arg.Any<string?>(),
-                Arg.Any<string?>(),
                 Arg.Any<ActorKind>(),
                 apiKeyId)
             .Returns(Substitute.For<IDisposable>());
@@ -200,8 +122,6 @@ public sealed class UserContextBehaviorAdditionalTests
 
         setter.Received(1).Change(
             userId,
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
             Arg.Any<ActorKind>(),
             apiKeyId);
     }
@@ -214,8 +134,6 @@ public sealed class UserContextBehaviorAdditionalTests
         IWolverineUserContextSetter setter = Substitute.For<IWolverineUserContextSetter>();
         setter.Change(
                 userId,
-                Arg.Any<string?>(),
-                Arg.Any<string?>(),
                 Arg.Any<ActorKind>(),
                 (Guid?)null)
             .Returns(Substitute.For<IDisposable>());
@@ -229,8 +147,6 @@ public sealed class UserContextBehaviorAdditionalTests
 
         setter.Received(1).Change(
             userId,
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
             Arg.Any<ActorKind>(),
             (Guid?)null);
     }
@@ -243,8 +159,6 @@ public sealed class UserContextBehaviorAdditionalTests
         IWolverineUserContextSetter setter = Substitute.For<IWolverineUserContextSetter>();
         setter.Change(
                 userId,
-                Arg.Any<string?>(),
-                Arg.Any<string?>(),
                 Arg.Any<ActorKind>(),
                 (Guid?)null)
             .Returns(Substitute.For<IDisposable>());
@@ -257,8 +171,6 @@ public sealed class UserContextBehaviorAdditionalTests
 
         setter.Received(1).Change(
             userId,
-            Arg.Any<string?>(),
-            Arg.Any<string?>(),
             Arg.Any<ActorKind>(),
             (Guid?)null);
     }
@@ -271,15 +183,11 @@ public sealed class UserContextBehaviorAdditionalTests
     public void Before_WithAllHeaders_PassesAllValuesToSetter()
     {
         const string userId = "user-full";
-        const string firstName = "Marie";
-        const string lastName = "Curie";
         var apiKeyId = Guid.NewGuid();
 
         IWolverineUserContextSetter setter = Substitute.For<IWolverineUserContextSetter>();
         setter.Change(
                 userId,
-                firstName,
-                lastName,
                 ActorKind.ExternalSystem,
                 apiKeyId)
             .Returns(Substitute.For<IDisposable>());
@@ -287,8 +195,6 @@ public sealed class UserContextBehaviorAdditionalTests
         UserContextBehavior behavior = new(setter);
         Envelope envelope = new();
         envelope.Headers[OutgoingContextMiddleware.UserIdHeader] = userId;
-        envelope.Headers[OutgoingContextMiddleware.UserFirstNameHeader] = firstName;
-        envelope.Headers[OutgoingContextMiddleware.UserLastNameHeader] = lastName;
         envelope.Headers[OutgoingContextMiddleware.ActorKindHeader] = "ExternalSystem";
         envelope.Headers[OutgoingContextMiddleware.ApiKeyIdHeader] = apiKeyId.ToString();
 
@@ -296,8 +202,6 @@ public sealed class UserContextBehaviorAdditionalTests
 
         setter.Received(1).Change(
             userId,
-            firstName,
-            lastName,
             ActorKind.ExternalSystem,
             apiKeyId);
     }

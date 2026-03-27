@@ -1,4 +1,5 @@
 using System.Reflection;
+using Granit.Encryption;
 using Granit.Guids;
 using Granit.Http.Resilience;
 using Granit.Modularity;
@@ -25,6 +26,7 @@ namespace Granit.Webhooks;
 /// </para>
 /// </remarks>
 [DependsOn(
+    typeof(GranitEncryptionModule),
     typeof(GranitGuidsModule),
     typeof(GranitHttpResilienceModule),
     typeof(GranitTimingModule))]

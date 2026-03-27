@@ -52,11 +52,15 @@ public static class WebhooksHostApplicationBuilderExtensions
         configure?.Invoke(options);
 
         // Named HttpClient for webhook delivery — resilience pipeline + strict timeout.
+        // ConnectCallback enforces SSRF protection at DNS resolution time (CWE-918 / DNS rebinding).
         builder.Services.AddGranitHttpClient(WebhooksConstants.HttpClientName, client =>
         {
             client.Timeout = TimeSpan.FromSeconds(options.HttpTimeoutSeconds);
             client.DefaultRequestHeaders.Add(
                 "User-Agent", $"Granit-Webhooks/{WebhooksConstants.ApiVersion}");
+        }).ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+        {
+            ConnectCallback = WebhookSsrfConnectCallback.ConnectAsync,
         });
 
         // Default (replaceable) store registrations.
@@ -65,15 +69,27 @@ public static class WebhooksHostApplicationBuilderExtensions
         builder.Services.AddSingleton<IWebhookSubscriptionWriter>(sp => sp.GetRequiredService<InMemoryWebhookSubscriptionStore>());
         builder.Services.AddScoped<IWebhookDeliveryWriter, NullWebhookDeliveryWriter>();
         builder.Services.AddScoped<IWebhookDeliveryReader, NullWebhookDeliveryReader>();
-        builder.Services.AddSingleton<IWebhookSecretProtector, NoOpWebhookSecretProtector>();
+        // Default: pass-through protector suitable for dev/test.
+        // For production (ISO 27001 A.8.24), register EncryptionWebhookSecretProtector
+        // (backed by IStringEncryptionService) BEFORE calling AddGranitWebhooks().
+        builder.Services.TryAddSingleton<IWebhookSecretProtector, NoOpWebhookSecretProtector>();
 
         // Handlers (scoped — required by the Channel-based worker)
         builder.Services.AddScoped<WebhookFanoutHandler>();
         builder.Services.AddScoped<SendWebhookHandler>();
 
-        // In-process channel dispatch (default — replaced by Granit.Webhooks.Wolverine)
-        builder.Services.AddSingleton(Channel.CreateUnbounded<WebhookTrigger>());
-        builder.Services.AddSingleton(Channel.CreateUnbounded<SendWebhookCommand>());
+        // In-process channel dispatch (default — replaced by Granit.Webhooks.Wolverine).
+        // Bounded channels prevent OOM under event burst (OWASP API4 — Unrestricted Resource Consumption).
+        builder.Services.AddSingleton(Channel.CreateBounded<WebhookTrigger>(
+            new BoundedChannelOptions(WebhooksConstants.TriggerChannelCapacity)
+            {
+                FullMode = BoundedChannelFullMode.Wait,
+            }));
+        builder.Services.AddSingleton(Channel.CreateBounded<SendWebhookCommand>(
+            new BoundedChannelOptions(WebhooksConstants.CommandChannelCapacity)
+            {
+                FullMode = BoundedChannelFullMode.Wait,
+            }));
         builder.Services.AddScoped<IWebhookPublisher, ChannelWebhookPublisher>();
         builder.Services.AddScoped<IWebhookCommandDispatcher, ChannelWebhookCommandDispatcher>();
         builder.Services.AddHostedService<WebhookDispatchWorker>();

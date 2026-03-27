@@ -21,7 +21,6 @@ public sealed class WolverineWebhookCommandDispatcherTests
             DeliveryId = Guid.NewGuid(),
             SubscriptionId = Guid.NewGuid(),
             TargetUrl = "https://example.com/webhook",
-            SigningSecret = "secret",
             Envelope = new()
             {
                 EventId = Guid.NewGuid(),

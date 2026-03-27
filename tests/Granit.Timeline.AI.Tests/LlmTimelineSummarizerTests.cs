@@ -1,5 +1,6 @@
 using System.Diagnostics.Metrics;
 using Granit.AI;
+using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.Timeline;
 using Granit.Timeline.Abstractions;
@@ -26,6 +27,7 @@ public sealed class LlmTimelineSummarizerTests
     private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
     private readonly ITimelineReader _timelineReader = Substitute.For<ITimelineReader>();
     private readonly IOptions<TimelineAIOptions> _options = MsOptions.Create(new TimelineAIOptions());
+    private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly TimelineAIMetrics _metrics = CreateTestMetrics();
 
     public LlmTimelineSummarizerTests()
@@ -36,7 +38,7 @@ public sealed class LlmTimelineSummarizerTests
     }
 
     private LlmTimelineSummarizer CreateSut() =>
-        new(_chatClientFactory, _timelineReader, _options, _metrics, NullLogger<LlmTimelineSummarizer>.Instance);
+        new(_chatClientFactory, _timelineReader, _options, _currentTenant, _metrics, NullLogger<LlmTimelineSummarizer>.Instance);
 
     private static TimelineAIMetrics CreateTestMetrics()
     {
@@ -55,6 +57,7 @@ public sealed class LlmTimelineSummarizerTests
                 Id = Guid.NewGuid(),
                 OccurredAt = new DateTimeOffset(2026, 3, 16, 12, 0, 0, TimeSpan.Zero).AddHours(-i),
                 EntryType = TimelineStreamEntryType.Comment,
+                AuthorId = $"aaaaaaaa-bbbb-cccc-dddd-{i:D12}",
                 AuthorName = $"User {i}",
                 Body = $"Entry body {i}",
             });
@@ -144,6 +147,8 @@ public sealed class LlmTimelineSummarizerTests
         prompt.ShouldContain(TestEntityId.ToString());
         prompt.ShouldContain("Entry body 0");
         prompt.ShouldContain("Entry body 1");
-        prompt.ShouldContain("User 0");
+        // VULN-002: AuthorName is pseudonymized — prompt contains "User-{first8chars}" not the real name
+        prompt.ShouldContain("User-aaaaaaaa");
+        prompt.ShouldNotContain("User 0");
     }
 }

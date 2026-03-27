@@ -119,14 +119,8 @@ public sealed class TimelineAIMetrics(IMeterFactory meterFactory)
             return UnknownEntityType;
         }
 
-        foreach (char c in entityType)
-        {
-            if (!char.IsLetterOrDigit(c) && c != '.' && c != '_' && c != '-')
-            {
-                return UnknownEntityType;
-            }
-        }
-
-        return entityType;
+        return entityType.All(c => char.IsLetterOrDigit(c) || c is '.' or '_' or '-')
+            ? entityType
+            : UnknownEntityType;
     }
 }

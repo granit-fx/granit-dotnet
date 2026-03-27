@@ -258,7 +258,6 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
         DeliveryId = Guid.NewGuid(),
         SubscriptionId = subscriptionId ?? Guid.NewGuid(),
         TargetUrl = "https://example.com/hook",
-        SigningSecret = "protected-secret",
         Envelope = new WebhookEnvelope
         {
             EventId = Guid.NewGuid(),
@@ -303,9 +302,10 @@ public sealed class EfWebhookDeliveryStoreDeleteTests : IDisposable
     [Fact]
     public async Task DeleteBeforeAsync_DeletesAttemptsBeforeCutoff()
     {
-        DateTimeOffset old = new(2024, 1, 1, 0, 0, 0, TimeSpan.Zero);
-        DateTimeOffset recent = new(2026, 6, 1, 0, 0, 0, TimeSpan.Zero);
-        DateTimeOffset cutoff = new(2025, 6, 1, 0, 0, 0, TimeSpan.Zero);
+        // Dates must be older than the 3-year ISO 27001 retention guard.
+        DateTimeOffset old = new(2019, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        DateTimeOffset recent = new(2024, 6, 1, 0, 0, 0, TimeSpan.Zero);
+        DateTimeOffset cutoff = new(2022, 6, 1, 0, 0, 0, TimeSpan.Zero);
 
         await SeedDeliveryAttemptAsync(old);
         await SeedDeliveryAttemptAsync(old);
@@ -323,8 +323,8 @@ public sealed class EfWebhookDeliveryStoreDeleteTests : IDisposable
     [Fact]
     public async Task DeleteBeforeAsync_RespectsPageSize()
     {
-        DateTimeOffset old = new(2024, 1, 1, 0, 0, 0, TimeSpan.Zero);
-        DateTimeOffset cutoff = new(2025, 6, 1, 0, 0, 0, TimeSpan.Zero);
+        DateTimeOffset old = new(2019, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        DateTimeOffset cutoff = new(2022, 6, 1, 0, 0, 0, TimeSpan.Zero);
 
         for (int i = 0; i < 5; i++)
         {
@@ -343,9 +343,19 @@ public sealed class EfWebhookDeliveryStoreDeleteTests : IDisposable
     [Fact]
     public async Task DeleteBeforeAsync_ReturnsZeroWhenNothingToDelete()
     {
-        int deleted = await _sut.DeleteBeforeAsync(DateTimeOffset.UtcNow, 1000, TestContext.Current.CancellationToken);
+        // Cutoff must be older than the 3-year retention guard.
+        DateTimeOffset cutoff = new(2020, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        int deleted = await _sut.DeleteBeforeAsync(cutoff, 1000, TestContext.Current.CancellationToken);
 
         deleted.ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task DeleteBeforeAsync_ThrowsWhenCutoffWithinRetentionPeriod()
+    {
+        // Attempting to delete records within the 3-year retention period should throw.
+        await Should.ThrowAsync<InvalidOperationException>(
+            () => _sut.DeleteBeforeAsync(DateTimeOffset.UtcNow, 1000, TestContext.Current.CancellationToken));
     }
 
     private async Task SeedDeliveryAttemptAsync(DateTimeOffset occurredAt)

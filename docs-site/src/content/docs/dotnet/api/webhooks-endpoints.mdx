@@ -16,8 +16,9 @@ import { FileTree } from "@astrojs/starlight/components";
 `Granit.Webhooks.Endpoints` exposes a Minimal API for managing webhook subscriptions:
 create and update subscriptions, transition through lifecycle states (active, suspended,
 deactivated), rotate signing secrets, send test pings, and monitor delivery statistics.
-All endpoints are protected by the `Webhooks.Admin` authorization policy with configurable
-role requirements.
+Read endpoints require the `Webhooks.Subscriptions.Read` permission; mutating
+operations (write, lifecycle, operations) additionally require
+`Webhooks.Subscriptions.Manage`.
 
 ## Package structure
 
@@ -39,7 +40,6 @@ app.MapWebhooksEndpoints();
 app.MapWebhooksEndpoints(opts =>
 {
     opts.RoutePrefix = "admin/webhooks";
-    opts.RequiredRole = "platform-admin";
     opts.TagName = "Webhook Administration";
 });
 ```
@@ -49,10 +49,7 @@ app.MapWebhooksEndpoints(opts =>
 | Option | Default | Description |
 | ------ | ------- | ----------- |
 | `RoutePrefix` | `"webhooks"` | Route prefix for all webhook endpoints |
-| `RequiredRole` | `"granit-webhooks-admin"` | Role required for the authorization policy |
 | `TagName` | `"Webhooks"` | OpenAPI tag name for endpoint grouping |
-
-Configuration section: `WebhooksEndpoints`.
 
 ## Endpoints
 
@@ -68,13 +65,13 @@ localized display name, description, and category for UI grouping. Labels are
 resolved based on the `Accept-Language` header. Requires
 `Webhooks.Subscriptions.Read` permission.
 
-### Read
+### Read — `Webhooks.Subscriptions.Read`
 
 | Method | Route | Description |
 | ------ | ----- | ----------- |
 | `GET` | `/subscriptions/{id}` | Get a webhook subscription by ID |
 
-### Write
+### Write — `Webhooks.Subscriptions.Manage`
 
 | Method | Route | Description |
 | ------ | ----- | ----------- |
@@ -82,7 +79,7 @@ resolved based on the `Accept-Language` header. Requires
 | `PUT` | `/subscriptions/{id}` | Update a subscription's target URL |
 | `DELETE` | `/subscriptions/{id}` | Hard-delete a subscription |
 
-### Lifecycle
+### Lifecycle — `Webhooks.Subscriptions.Manage`
 
 | Method | Route | Description |
 | ------ | ----- | ----------- |
@@ -99,13 +96,23 @@ stateDiagram-v2
     Suspended --> Deactivated: Deactivate
 ```
 
-### Operations
+### Operations — `Webhooks.Subscriptions.Manage`
 
 | Method | Route | Description |
 | ------ | ----- | ----------- |
 | `POST` | `/subscriptions/{id}/rotate-secret` | Rotate the HMAC signing secret |
 | `POST` | `/subscriptions/{id}/test-ping` | Send a Stripe-style test ping to the target URL |
 | `GET` | `/stats` | Get aggregate delivery statistics (last 24h) |
+
+### Redelivery — requires authentication
+
+Mapped separately via `MapGranitWebhooksRedelivery()`:
+
+| Method | Route | Description |
+| ------ | ----- | ----------- |
+| `POST` | `/deliveries/{deliveryId}/retry` | Retry a previously failed delivery attempt |
+
+Returns `202 Accepted` on success, `404` if not found, `409` if not retryable.
 
 ### Query
 

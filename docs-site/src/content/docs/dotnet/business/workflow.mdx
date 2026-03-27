@@ -227,6 +227,29 @@ sequenceDiagram
     Note over EV: Notifications module sends InApp + Email to approvers
 ```
 
+### Permission checker bridge
+
+`IWorkflowPermissionChecker` decouples the core engine from
+`Granit.Authorization`. Two implementations exist:
+
+| Implementation | When | Behavior |
+|----------------|------|----------|
+| `NullWorkflowPermissionChecker` | `Granit.Workflow` alone (tests, no auth) | Always grants — all transitions succeed |
+| `AuthorizationWorkflowPermissionChecker` | `Granit.Workflow.Endpoints` loaded | Delegates to `IPermissionChecker` from `Granit.Authorization` |
+
+When `GranitWorkflowEndpointsModule` is registered, `AddGranitWorkflowEndpoints()`
+automatically replaces the null object with the real bridge. No manual registration
+needed.
+
+:::caution[Core-only usage without Granit.Authorization]
+If you use `Granit.Workflow` without the Endpoints module, the default
+`NullWorkflowPermissionChecker` allows all transitions. Register your own
+`IWorkflowPermissionChecker` implementation to enforce domain-level permission
+checks.
+:::
+
+### Approver resolution
+
 The `IApproverResolver` interface determines who receives the notification:
 
 | Implementation | Behavior |
@@ -282,7 +305,10 @@ public class DocumentRevision : VersionedWorkflowEntity
 ### WorkflowTransitionRecord
 
 Every state change produces an INSERT-only `WorkflowTransitionRecord`. These records
-are never modified or deleted (soft-delete is explicitly prohibited):
+are never modified or deleted (soft-delete is explicitly prohibited).
+`WorkflowTransitionRecord` implements `IMultiTenant` — the standard tenant query
+filter applied by `ApplyGranitConventions` ensures records are scoped to the
+current tenant automatically:
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -404,7 +430,7 @@ consumption (notifications, timeline).
 | Manager | `IWorkflowManager<TState>`, `WorkflowManager<TState>` | `Granit.Workflow` |
 | Marker | `IWorkflowStateful`, `VersionedWorkflowEntity` | `Granit.Workflow` |
 | Context | `WorkflowTransitionContext`, `TransitionContext` | `Granit.Workflow` |
-| Permission | `IWorkflowPermissionChecker` | `Granit.Workflow` |
+| Permission | `IWorkflowPermissionChecker`, `AuthorizationWorkflowPermissionChecker` | `Granit.Workflow` / `.Endpoints` |
 | Audit | `WorkflowTransitionRecord`, `IWorkflowTransitionRecorder`, `IWorkflowHistoryQuery` | `Granit.Workflow` / `.EntityFrameworkCore` |
 | Domain | `WorkflowLifecycleStatus`, `PublicationWorkflow` | `Granit.Workflow` |
 | Events | `WorkflowTransitionedEvent<TState>`, `WorkflowStateChangedEvent`, `WorkflowApprovalRequestedEvent` | `Granit.Workflow` |

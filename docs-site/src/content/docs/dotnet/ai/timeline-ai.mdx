@@ -205,7 +205,7 @@ public static class NightlyAnomalyDetectionHandler
 |-----------|---------------|
 | **Raw logs immutable** | `ITimelineAnomalyDetector` and `ITimelineSummarizer` are read-only — they call `ITimelineReader`, never `ITimelineWriter` |
 | **Summaries additive** | When posted back, summaries use `TimelineEntryType.SystemLog` — a separate, non-deletable entry type |
-| **No PII leakage** | The timeline entry `Body` field is passed to the LLM — ensure sensitive data in comments is handled per your GDPR policies |
+| **PII pseudonymized** | Author names (`[SensitiveData]`) are replaced with `User-{id prefix}` before being sent to the LLM. `InternalNote` entries are excluded from prompts. |
 | **Audit of AI actions** | All LLM calls are tracked in `Granit.AI.EntityFrameworkCore` usage records |
 
 ## Configuration reference
@@ -213,8 +213,9 @@ public static class NightlyAnomalyDetectionHandler
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `WorkspaceName` | `string?` | `null` (default) | AI workspace for timeline analysis |
-| `TimeoutSeconds` | `int` | `30` | LLM call timeout — summaries are long |
-| `MaxEntriesToAnalyze` | `int` | `200` | Max entries sent to LLM per call |
+| `TimeoutSeconds` | `int` | `15` | LLM call timeout |
+| `MaxEntriesToAnalyze` | `int` | `100` | Max entries sent to LLM per call |
+| `MaxConcurrentRequests` | `int` | `3` | Concurrency limiter for LLM calls (denial-of-wallet protection) |
 
 ## See also
 

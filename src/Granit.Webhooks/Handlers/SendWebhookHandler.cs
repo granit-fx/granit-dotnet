@@ -43,6 +43,7 @@ namespace Granit.Webhooks.Handlers;
 public sealed partial class SendWebhookHandler(
     IHttpClientFactory httpClientFactory,
     IWebhookDeliveryWriter deliveryWriter,
+    IWebhookSubscriptionReader subscriptionReader,
     IWebhookSecretProtector secretProtector,
     IOptions<WebhooksOptions> options,
     ILogger<SendWebhookHandler> logger,
@@ -65,7 +66,20 @@ public sealed partial class SendWebhookHandler(
         string? storedPayload = options.Value.StorePayload ? bodyJson : null;
         DateTimeOffset sentAt = clock.Now;
 
-        string plainSecret = await secretProtector.UnprotectAsync(command.SigningSecret, cancellationToken).ConfigureAwait(false);
+        // Resolve the signing secret at delivery time — never carried in outbox messages.
+        Domain.WebhookSubscription? subscription = await subscriptionReader
+            .FindByIdAsync(command.SubscriptionId, cancellationToken).ConfigureAwait(false);
+
+        if (subscription is null || subscription.Status == Domain.WebhookSubscriptionStatus.Deactivated)
+        {
+            LogSubscriptionGone(command.SubscriptionId, command.DeliveryId);
+            await deliveryWriter.RecordFailureAsync(
+                command, httpStatusCode: null, durationMs: 0,
+                "Subscription not found or deactivated at delivery time", storedPayload, cancellationToken).ConfigureAwait(false);
+            return; // Treat as non-retriable — subscription is gone.
+        }
+
+        string plainSecret = await secretProtector.UnprotectAsync(subscription.SigningSecret, cancellationToken).ConfigureAwait(false);
         string signature = WebhookSignatureService.Compute(plainSecret, sentAt, bodyJson);
 
         using StringContent content = new(bodyJson, Encoding.UTF8, "application/json");
@@ -196,4 +210,7 @@ public sealed partial class SendWebhookHandler(
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Webhook delivered successfully HTTP {StatusCode} for subscription {SubscriptionId} delivery {DeliveryId}")]
     private partial void LogWebhookDelivered(int statusCode, Guid subscriptionId, Guid deliveryId);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Subscription {SubscriptionId} not found or deactivated at delivery time for delivery {DeliveryId}")]
+    private partial void LogSubscriptionGone(Guid subscriptionId, Guid deliveryId);
 }

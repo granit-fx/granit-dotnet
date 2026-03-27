@@ -78,7 +78,6 @@ public sealed class NullWebhookDeliveryWriterTests
         DeliveryId = Guid.NewGuid(),
         SubscriptionId = Guid.NewGuid(),
         TargetUrl = "https://example.com/webhook",
-        SigningSecret = "test-secret",
         Envelope = new WebhookEnvelope
         {
             EventId = Guid.NewGuid(),

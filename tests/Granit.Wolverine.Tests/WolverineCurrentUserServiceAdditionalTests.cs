@@ -1,9 +1,10 @@
 // =============================================================================
 // Tests - WolverineCurrentUserService (additional coverage)
 // =============================================================================
-// Covers FirstName/LastName override and HTTP fallback, ActorKind override and
-// HTTP fallback, IsMachine property, ApiKeyId override and HTTP fallback,
-// and edge cases not covered by WolverineCurrentUserServiceTests.
+// Covers FirstName/LastName HTTP fallback (no override path since GDPR data
+// minimization removed PII propagation), ActorKind override and HTTP fallback,
+// IsMachine property, ApiKeyId override and HTTP fallback, and edge cases not
+// covered by WolverineCurrentUserServiceTests.
 // =============================================================================
 
 using System.Security.Claims;
@@ -37,21 +38,11 @@ public sealed class WolverineCurrentUserServiceAdditionalTests
     }
 
     // -------------------------------------------------------------------------
-    // FirstName — AsyncLocal override
+    // FirstName — background handler (override active, no PII propagated)
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void FirstName_AfterChangeWithFirstName_ReturnsOverrideValue()
-    {
-        WolverineCurrentUserService sut = CreateWithoutHttpContext();
-
-        using IDisposable scope = sut.Change("user", firstName: "Jean");
-
-        sut.FirstName.ShouldBe("Jean");
-    }
-
-    [Fact]
-    public void FirstName_AfterChangeWithoutFirstName_ReturnsNull()
+    public void FirstName_WithOverrideActive_ReturnsNull()
     {
         WolverineCurrentUserService sut = CreateWithoutHttpContext();
 
@@ -67,9 +58,9 @@ public sealed class WolverineCurrentUserServiceAdditionalTests
             isAuthenticated: true,
             new Claim(ClaimTypes.GivenName, "HttpJean"));
 
-        using IDisposable scope = sut.Change("user", firstName: "OverrideJean");
+        using IDisposable scope = sut.Change("user");
 
-        sut.FirstName.ShouldBe("OverrideJean");
+        sut.FirstName.ShouldBeNull();
     }
 
     // -------------------------------------------------------------------------
@@ -107,21 +98,11 @@ public sealed class WolverineCurrentUserServiceAdditionalTests
     }
 
     // -------------------------------------------------------------------------
-    // LastName — AsyncLocal override
+    // LastName — background handler (override active, no PII propagated)
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void LastName_AfterChangeWithLastName_ReturnsOverrideValue()
-    {
-        WolverineCurrentUserService sut = CreateWithoutHttpContext();
-
-        using IDisposable scope = sut.Change("user", lastName: "Dupont");
-
-        sut.LastName.ShouldBe("Dupont");
-    }
-
-    [Fact]
-    public void LastName_AfterChangeWithoutLastName_ReturnsNull()
+    public void LastName_WithOverrideActive_ReturnsNull()
     {
         WolverineCurrentUserService sut = CreateWithoutHttpContext();
 
@@ -137,9 +118,9 @@ public sealed class WolverineCurrentUserServiceAdditionalTests
             isAuthenticated: true,
             new Claim(ClaimTypes.Surname, "HttpDupont"));
 
-        using IDisposable scope = sut.Change("user", lastName: "OverrideDupont");
+        using IDisposable scope = sut.Change("user");
 
-        sut.LastName.ShouldBe("OverrideDupont");
+        sut.LastName.ShouldBeNull();
     }
 
     // -------------------------------------------------------------------------
@@ -344,7 +325,7 @@ public sealed class WolverineCurrentUserServiceAdditionalTests
     }
 
     // -------------------------------------------------------------------------
-    // Nested scopes — FirstName/LastName/ActorKind/ApiKeyId restore correctly
+    // Nested scopes — ActorKind/ApiKeyId restore correctly
     // -------------------------------------------------------------------------
 
     [Fact]
@@ -355,25 +336,25 @@ public sealed class WolverineCurrentUserServiceAdditionalTests
         var innerApiKeyId = Guid.NewGuid();
 
         IDisposable outerScope = sut.Change(
-            "outer", "OuterFirst", "OuterLast", ActorKind.ExternalSystem, outerApiKeyId);
+            "outer", ActorKind.ExternalSystem, outerApiKeyId);
 
-        sut.FirstName.ShouldBe("OuterFirst");
-        sut.LastName.ShouldBe("OuterLast");
+        sut.FirstName.ShouldBeNull();
+        sut.LastName.ShouldBeNull();
         sut.ActorKind.ShouldBe(ActorKind.ExternalSystem);
         sut.ApiKeyId.ShouldBe(outerApiKeyId);
 
         IDisposable innerScope = sut.Change(
-            "inner", "InnerFirst", "InnerLast", ActorKind.System, innerApiKeyId);
+            "inner", ActorKind.System, innerApiKeyId);
 
-        sut.FirstName.ShouldBe("InnerFirst");
-        sut.LastName.ShouldBe("InnerLast");
+        sut.FirstName.ShouldBeNull();
+        sut.LastName.ShouldBeNull();
         sut.ActorKind.ShouldBe(ActorKind.System);
         sut.ApiKeyId.ShouldBe(innerApiKeyId);
 
         innerScope.Dispose();
 
-        sut.FirstName.ShouldBe("OuterFirst");
-        sut.LastName.ShouldBe("OuterLast");
+        sut.FirstName.ShouldBeNull();
+        sut.LastName.ShouldBeNull();
         sut.ActorKind.ShouldBe(ActorKind.ExternalSystem);
         sut.ApiKeyId.ShouldBe(outerApiKeyId);
 

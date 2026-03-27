@@ -22,12 +22,16 @@ internal static class WorkflowReadEndpoints
             .WithName("GetWorkflowTransitionHistory")
             .WithSummary("Returns the ISO 27001-compliant audit trail of workflow transitions for an entity.")
             .WithDescription("Returns a paginated list of all state transitions for the specified entity, ordered by timestamp descending. Each entry includes the source and target state, the actor, an optional comment, and the transition timestamp. This history is immutable and serves as the ISO 27001 A.12.4 audit trail for workflow changes.")
-            .Produces<PagedResult<WorkflowTransitionHistoryResponse>>();
+            .Produces<PagedResult<WorkflowTransitionHistoryResponse>>()
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         return group;
     }
 
-    private static async Task<Ok<PagedResult<WorkflowTransitionHistoryResponse>>> GetTransitionHistoryAsync(
+    /// <summary>Maximum length for entityType/entityId path params (matches EF column configuration).</summary>
+    private const int MaxPathParamLength = 200;
+
+    private static async Task<Results<Ok<PagedResult<WorkflowTransitionHistoryResponse>>, ProblemHttpResult>> GetTransitionHistoryAsync(
         string entityType,
         string entityId,
         [FromServices] IWorkflowHistoryQuery historyQuery,
@@ -35,6 +39,13 @@ internal static class WorkflowReadEndpoints
         [FromQuery] int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
+        if (entityType.Length > MaxPathParamLength || entityId.Length > MaxPathParamLength)
+        {
+            return TypedResults.Problem(
+                detail: "Path parameter exceeds maximum allowed length.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
         (int clampedPage, int clampedPageSize) = QueryEngineDefaults.ClampPagination(page, pageSize);
 
         PagedResult<WorkflowTransitionHistoryResponse> result = await historyQuery.GetHistoryAsync(

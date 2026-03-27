@@ -1,4 +1,8 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "Permission:Timeline.Entries.Manage": "Gérer (supprimer) toute entrée de fil d'activité quel que soit le propriétaire",
+    "Permission:Timeline.InternalNotes.Read": "Consulter les notes internes réservées au personnel",
+    "Permission:Timeline.Followers.Manage": "Suivre et ne plus suivre des entités dans les fils d'activité"
+  }
 }

@@ -16,4 +16,13 @@ internal static class WebhooksConstants
 
     /// <summary>Wolverine local queue for <see cref="Messages.WebhookTrigger"/> fan-out.</summary>
     internal const string FanoutQueueName = "webhook-fanout";
+
+    /// <summary>Bounded channel capacity for <see cref="Messages.WebhookTrigger"/> (in-process dispatch).</summary>
+    internal const int TriggerChannelCapacity = 1_000;
+
+    /// <summary>Bounded channel capacity for <see cref="Messages.SendWebhookCommand"/> (in-process dispatch).</summary>
+    internal const int CommandChannelCapacity = 5_000;
+
+    /// <summary>Minimum retention period for delivery audit records (ISO 27001).</summary>
+    internal static readonly TimeSpan MinAuditRetention = TimeSpan.FromDays(3 * 365);
 }

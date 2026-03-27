@@ -58,7 +58,7 @@ internal static class WorkflowTransitionEndpoints<TState> where TState : struct,
         if (!Enum.TryParse(currentState, ignoreCase: true, out TState state))
         {
             return TypedResults.Problem(
-                detail: $"Unknown state '{currentState}'. Valid states: {string.Join(", ", Enum.GetNames<TState>())}.",
+                detail: "Invalid workflow state value.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
@@ -86,14 +86,14 @@ internal static class WorkflowTransitionEndpoints<TState> where TState : struct,
         if (!Enum.TryParse(currentState, ignoreCase: true, out TState fromState))
         {
             return TypedResults.Problem(
-                detail: $"Unknown current state '{currentState}'. Valid states: {string.Join(", ", Enum.GetNames<TState>())}.",
+                detail: "Invalid current workflow state value.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
         if (!Enum.TryParse(request.TargetState, ignoreCase: true, out TState toState))
         {
             return TypedResults.Problem(
-                detail: $"Unknown target state '{request.TargetState}'. Valid states: {string.Join(", ", Enum.GetNames<TState>())}.",
+                detail: "Invalid target workflow state value.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
 

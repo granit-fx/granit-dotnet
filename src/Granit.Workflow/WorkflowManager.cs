@@ -82,11 +82,11 @@ public sealed class WorkflowManager<TState>(
             };
         }
 
-        // Set comment in AsyncLocal context for the interceptor
-        if (context?.Comment is not null)
-        {
-            WorkflowTransitionContext.SetComment(context.Comment);
-        }
+        // Set comment in AsyncLocal context for the interceptor.
+        // The scope is disposed when the method returns, clearing the AsyncLocal.
+        using IDisposable? commentScope = context?.Comment is not null
+            ? WorkflowTransitionContext.SetComment(context.Comment)
+            : null;
 
         // Check permission if required
         if (transition.RequiredPermission is not null)

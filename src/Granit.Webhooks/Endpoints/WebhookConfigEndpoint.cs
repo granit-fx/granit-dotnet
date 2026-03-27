@@ -1,5 +1,6 @@
 using Granit.Endpoints;
 using Granit.Webhooks.Dtos;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Webhooks.Endpoints;
@@ -17,5 +18,6 @@ public static class WebhookConfigEndpoint
         this IEndpointRouteBuilder endpoints,
         string routePrefix = "webhooks") =>
         endpoints.MapGranitModuleConfig<WebhookModuleConfigProvider, WebhookModuleConfigResponse>(
-            routePrefix, "GetWebhooksConfig", "Webhooks");
+            routePrefix, "GetWebhooksConfig", "Webhooks",
+            builder => builder.RequireAuthorization());
 }

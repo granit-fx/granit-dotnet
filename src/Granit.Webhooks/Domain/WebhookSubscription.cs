@@ -20,7 +20,7 @@ namespace Granit.Webhooks.Domain;
 /// and <see cref="SuspendedBy"/> (UserId only, never PII).
 /// </para>
 /// </remarks>
-public sealed class WebhookSubscription : AuditedAggregateRoot
+public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
 {
     // Parameterless constructor required by EF Core materializer.
     private WebhookSubscription() { }
@@ -74,6 +74,9 @@ public sealed class WebhookSubscription : AuditedAggregateRoot
     /// <c>null</c> indicates a global subscription that applies regardless of tenant context.
     /// </summary>
     public Guid? TenantId { get; private set; }
+
+    /// <inheritdoc />
+    Guid? IMultiTenant.TenantId { get => TenantId; set => TenantId = value; }
 
     /// <summary>Current lifecycle status of the subscription.</summary>
     public WebhookSubscriptionStatus Status { get; private set; } = WebhookSubscriptionStatus.Active;

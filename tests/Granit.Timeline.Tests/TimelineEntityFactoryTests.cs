@@ -73,17 +73,16 @@ public sealed class TimelineEntityFactoryTests
     }
 
     [Fact]
-    public void CreateEntry_WithNullUserId_DefaultsToEmptyString()
+    public void CreateEntry_WithNullUserId_ThrowsArgumentException()
     {
         _currentUser.UserId.Returns((string?)null);
         _currentUser.UserName.Returns((string?)null);
         AuditContext context = BuildContext();
 
-        TimelineEntry entry = TimelineEntityFactory.CreateEntry(
-            "Patient", "p-1", TimelineEntryType.Comment, "Hello", null, context);
-
-        entry.AuthorId.ShouldBe(string.Empty);
-        entry.AuthorName.ShouldBe(string.Empty);
+        // VULN-302: Domain guards now reject empty authorId
+        Should.Throw<ArgumentException>(() =>
+            TimelineEntityFactory.CreateEntry(
+                "Patient", "p-1", TimelineEntryType.Comment, "Hello", null, context));
     }
 
     [Fact]

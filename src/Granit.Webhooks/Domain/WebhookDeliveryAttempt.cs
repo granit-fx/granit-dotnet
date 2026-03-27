@@ -19,7 +19,7 @@ namespace Granit.Webhooks.Domain;
 /// health data in clear text.
 /// </para>
 /// </remarks>
-public sealed class WebhookDeliveryAttempt : Entity
+public sealed class WebhookDeliveryAttempt : Entity, IMultiTenant
 {
     /// <summary>
     /// Unique identifier of this delivery attempt.

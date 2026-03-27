@@ -111,9 +111,9 @@ public class InvoiceApprovalHandler(ITimelineWriter timeline)
 }
 ```
 
-Entry bodies support Markdown formatting. The `@mention` syntax (`@userId`) triggers
-automatic follower subscription and mention notifications when the Endpoints module
-processes the entry.
+Entry bodies support Markdown formatting. The `@mention` syntax
+(`@[Display Name](user:guid)`) triggers one-time mention notifications (capped at
+10 per entry) when the Endpoints module processes the entry.
 
 ## TimelineStreamEntry (DTO)
 
@@ -131,11 +131,11 @@ public sealed record TimelineStreamEntry
 }
 ```
 
-| Entry type | Description | Deletable |
-|-----------|-------------|-----------|
-| `Comment` | Human-authored comment visible to all users | Yes (soft-delete, GDPR) |
-| `InternalNote` | Staff-only internal note | Yes (soft-delete, GDPR) |
-| `SystemLog` | Auto-generated audit entry | No (immutable, ISO 27001) |
+| Entry type | Description | Deletable | Visibility |
+|-----------|-------------|-----------|------------|
+| `Comment` | Human-authored comment visible to all users | Yes (soft-delete, GDPR) | All users with `Timeline.Entries.Read` |
+| `InternalNote` | Staff-only internal note | Yes (soft-delete, GDPR) | Requires `Timeline.InternalNotes.Read` |
+| `SystemLog` | Auto-generated audit entry | No (immutable, ISO 27001) | All users with `Timeline.Entries.Read` |
 
 ## REST API endpoints
 
@@ -145,10 +145,20 @@ All endpoints are prefixed with `/api/granit/timeline`.
 |--------|------|-------------|------------|
 | `GET` | `/{entityType}/{entityId}` | Paginated activity stream (newest first) | `Timeline.Entries.Read` |
 | `POST` | `/{entityType}/{entityId}/entries` | Post a comment, note, or system log | `Timeline.Entries.Create` |
-| `DELETE` | `/{entityType}/{entityId}/entries/{entryId}` | Soft-delete an entry (GDPR) | `Timeline.Entries.Create` |
-| `POST` | `/{entityType}/{entityId}/follow` | Subscribe current user as follower | `Timeline.Entries.Create` |
-| `DELETE` | `/{entityType}/{entityId}/follow` | Unsubscribe current user | `Timeline.Entries.Create` |
+| `DELETE` | `/{entityType}/{entityId}/entries/{entryId}` | Soft-delete an entry (GDPR) — owner or admin | `Timeline.Entries.Create` + ownership or `Timeline.Entries.Manage` |
+| `POST` | `/{entityType}/{entityId}/follow` | Subscribe current user as follower | `Timeline.Followers.Manage` |
+| `DELETE` | `/{entityType}/{entityId}/follow` | Unsubscribe current user | `Timeline.Followers.Manage` |
 | `GET` | `/{entityType}/{entityId}/followers` | List follower user IDs | `Timeline.Entries.Read` |
+
+### Permissions
+
+| Permission | Description |
+|-----------|-------------|
+| `Timeline.Entries.Read` | View activity streams and audit history |
+| `Timeline.Entries.Create` | Post comments and internal notes |
+| `Timeline.Entries.Manage` | Admin: soft-delete any entry regardless of ownership |
+| `Timeline.InternalNotes.Read` | View staff-only internal notes (filtered by default) |
+| `Timeline.Followers.Manage` | Follow/unfollow entities |
 
 ## Follow/notify pattern
 
@@ -159,13 +169,18 @@ sequenceDiagram
     participant FS as FollowerService
     participant N as Notifier
 
-    U->>API: POST /Invoice/42/entries (body: "@user-b reviewed")
+    U->>API: POST /Invoice/42/entries (body: "@[Bob](user:guid) reviewed")
     API->>API: PostEntryAsync (persist)
-    API->>FS: FollowAsync("user-b") (auto-subscribe @mention)
-    API->>FS: GetFollowerIdsAsync() → ["user-a", "user-b"]
+    API->>FS: GetFollowerIdsAsync() → ["user-a"]
     API->>N: NotifyEntryPostedAsync (fan-out to followers)
-    API->>N: NotifyMentionedUsersAsync (extra channels for @user-b)
+    API->>N: NotifyMentionedUsersAsync (one-time notification for @Bob)
 ```
+
+:::note[Security — no auto-follow on @mention]
+Mentioned users receive a **one-time notification** but are **not** automatically
+subscribed as followers. This prevents forced subscription attacks and complies
+with GDPR consent requirements. Mentions are capped at 10 per entry.
+:::
 
 Without `Granit.Timeline.Notifications`, the follower service uses an in-memory store
 and the notifier is a no-op (`NullTimelineNotifier`). Installing the Notifications
@@ -194,7 +209,7 @@ await timeline.AddAttachmentAsync(
 | Modules | `GranitTimelineModule`, `GranitTimelineEntityFrameworkCoreModule`, `GranitTimelineEndpointsModule`, `GranitTimelineNotificationsModule` | Timeline |
 | Timeline core | `ITimelined`, `ITimelineReader`, `ITimelineWriter`, `ITimelineFollowerService`, `ITimelineNotifier` | `Granit.Timeline` |
 | DTOs | `TimelineStreamEntry`, `TimelineStreamEntryType`, `TimelineAttachmentInfo`, `PostTimelineEntryRequest` | `Granit.Timeline` |
-| Permissions | `TimelinePermissions.Entries.Read`, `TimelinePermissions.Entries.Create` | `Granit.Timeline.Endpoints` |
+| Permissions | `TimelinePermissions.Entries.{Read,Create,Manage}`, `.InternalNotes.Read`, `.Followers.Manage` | `Granit.Timeline.Endpoints` |
 | Extensions | `AddGranitTimeline()`, `AddGranitTimelineEntityFrameworkCore()`, `MapTimelineEndpoints()` | — |
 
 ## See also

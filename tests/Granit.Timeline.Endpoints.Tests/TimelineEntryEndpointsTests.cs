@@ -1,5 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
+using Granit.Authorization.Abstractions;
+using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Endpoints.Dtos;
@@ -26,14 +28,19 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
     private const string Prefix = "/timeline";
 
     private readonly ITimelineWriter _writer = Substitute.For<ITimelineWriter>();
+    private readonly ITimelineReader _reader = Substitute.For<ITimelineReader>();
     private readonly ITimelineFollowerService _followerService = Substitute.For<ITimelineFollowerService>();
     private readonly ITimelineNotifier _notifier = Substitute.For<ITimelineNotifier>();
+    private readonly IPermissionChecker _permissionChecker = Substitute.For<IPermissionChecker>();
+    private readonly ICurrentUserService _currentUser = Substitute.For<ICurrentUserService>();
     private readonly WebApplication _app;
     private readonly HttpClient _authClient;
     private readonly HttpClient _anonClient;
 
     public TimelineEntryEndpointsTests()
     {
+        _currentUser.UserId.Returns("test-user-id");
+
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
 
@@ -44,14 +51,14 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(TimelinePermissions.Entries.Read, policy => policy.RequireRole(UserRole))
-            .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireRole(UserRole));
+            .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireRole(UserRole))
+            .AddPolicy(TimelinePermissions.Followers.Manage, policy => policy.RequireRole(UserRole));
         builder.Services.AddSingleton(_writer);
+        builder.Services.AddSingleton(_reader);
         builder.Services.AddSingleton(_followerService);
         builder.Services.AddSingleton(_notifier);
-        builder.Services.AddSingleton(Substitute.For<ICurrentUserService>());
-
-        // Required by stream endpoints but not exercised here
-        builder.Services.AddSingleton(Substitute.For<ITimelineReader>());
+        builder.Services.AddSingleton(_currentUser);
+        builder.Services.AddSingleton(_permissionChecker);
 
         _app = builder.Build();
         _app.MapTimelineEndpoints();
@@ -173,7 +180,7 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task PostEntry_with_mentions_auto_subscribes_and_notifies()
+    public async Task PostEntry_with_mentions_notifies_but_does_not_auto_follow()
     {
         // Arrange
         var mentionedUserId = Guid.NewGuid();
@@ -203,9 +210,9 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-        // Verify auto-subscribe for mentioned user
-        await _followerService.Received(1).FollowAsync(
-            mentionedUserId.ToString(), "Patient", "42", Arg.Any<CancellationToken>());
+        // Verify auto-follow was NOT triggered (VULN-205: removed auto-subscribe)
+        await _followerService.DidNotReceive().FollowAsync(
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
 
         // Verify followers were notified
         await _notifier.Received(1).NotifyEntryPostedAsync(
@@ -268,10 +275,12 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
     // -- DELETE /{entityType}/{entityId}/entries/{entryId} ---------------------
 
     [Fact]
-    public async Task DeleteEntry_existing_returns_204()
+    public async Task DeleteEntry_as_admin_returns_204()
     {
-        // Arrange
+        // Arrange — admin permission bypasses ownership check
         var entryId = Guid.NewGuid();
+        _permissionChecker.IsGrantedAsync(TimelinePermissions.Entries.Manage, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         // Act
         HttpResponseMessage response = await _authClient.DeleteAsync(
@@ -283,12 +292,74 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
     }
 
     [Fact]
+    public async Task DeleteEntry_as_owner_returns_204()
+    {
+        // Arrange — non-admin but author matches current user
+        var entryId = Guid.NewGuid();
+        _permissionChecker.IsGrantedAsync(TimelinePermissions.Entries.Manage, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        var streamEntry = new TimelineStreamEntry
+        {
+            Id = entryId,
+            OccurredAt = DateTimeOffset.UtcNow,
+            EntryType = TimelineStreamEntryType.Comment,
+            AuthorId = "test-user-id",
+            AuthorName = "Test",
+            Body = "my comment",
+        };
+
+        _reader.GetStreamAsync("Patient", "42", 1, 1000, Arg.Any<CancellationToken>())
+            .Returns(new PagedResult<TimelineStreamEntry>([streamEntry], 1, HasMore: false));
+
+        // Act
+        HttpResponseMessage response = await _authClient.DeleteAsync(
+            $"{Prefix}/Patient/42/entries/{entryId}", TestContext.Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        await _writer.Received(1).DeleteEntryAsync(entryId, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task DeleteEntry_non_owner_returns_403()
+    {
+        // Arrange — non-admin and not the author
+        var entryId = Guid.NewGuid();
+        _permissionChecker.IsGrantedAsync(TimelinePermissions.Entries.Manage, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        var streamEntry = new TimelineStreamEntry
+        {
+            Id = entryId,
+            OccurredAt = DateTimeOffset.UtcNow,
+            EntryType = TimelineStreamEntryType.Comment,
+            AuthorId = "other-user",
+            AuthorName = "Other",
+            Body = "their comment",
+        };
+
+        _reader.GetStreamAsync("Patient", "42", 1, 1000, Arg.Any<CancellationToken>())
+            .Returns(new PagedResult<TimelineStreamEntry>([streamEntry], 1, HasMore: false));
+
+        // Act
+        HttpResponseMessage response = await _authClient.DeleteAsync(
+            $"{Prefix}/Patient/42/entries/{entryId}", TestContext.Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
     public async Task DeleteEntry_nonexistent_returns_404()
     {
-        // Arrange
+        // Arrange — non-admin, entry not found in stream
         var entryId = Guid.NewGuid();
-        _writer.DeleteEntryAsync(entryId, Arg.Any<CancellationToken>())
-            .Throws(new KeyNotFoundException($"Timeline entry '{entryId}' not found."));
+        _permissionChecker.IsGrantedAsync(TimelinePermissions.Entries.Manage, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        _reader.GetStreamAsync("Patient", "42", 1, 1000, Arg.Any<CancellationToken>())
+            .Returns(new PagedResult<TimelineStreamEntry>([], 0, HasMore: false));
 
         // Act
         HttpResponseMessage response = await _authClient.DeleteAsync(

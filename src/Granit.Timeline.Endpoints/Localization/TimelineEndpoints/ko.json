@@ -3,6 +3,9 @@
   "texts": {
     "PermissionGroup:Timeline": "타임라인",
     "Permission:Timeline.Entries.Read": "활동 피드 및 감사 이력 보기",
-    "Permission:Timeline.Entries.Create": "댓글 작성 및 엔티티 팔로우/언팔로우"
+    "Permission:Timeline.Entries.Create": "댓글 작성 및 엔티티 팔로우/언팔로우",
+    "Permission:Timeline.Entries.Manage": "소유자에 관계없이 타임라인 항목 관리(삭제)",
+    "Permission:Timeline.InternalNotes.Read": "활동 피드에서 직원 전용 내부 메모 보기",
+    "Permission:Timeline.Followers.Manage": "활동 피드에서 엔터티 팔로우 및 팔로우 취소"
   }
 }

@@ -56,7 +56,7 @@ public sealed class TimelinePermissionDefinitionProviderTests
     }
 
     [Fact]
-    public void DefinePermissions_registers_exactly_two_permissions()
+    public void DefinePermissions_registers_Entries_Manage_permission()
     {
         // Arrange
         FakePermissionDefinitionContext context = new();
@@ -67,7 +67,52 @@ public sealed class TimelinePermissionDefinitionProviderTests
 
         // Assert
         PermissionGroup group = context.Groups.Single(g => g.Name == TimelinePermissions.GroupName);
-        group.Permissions.Count.ShouldBe(2);
+        group.Permissions.ShouldContain(p => p.Name == TimelinePermissions.Entries.Manage);
+    }
+
+    [Fact]
+    public void DefinePermissions_registers_InternalNotes_Read_permission()
+    {
+        // Arrange
+        FakePermissionDefinitionContext context = new();
+        TimelinePermissionDefinitionProvider provider = new();
+
+        // Act
+        provider.DefinePermissions(context);
+
+        // Assert
+        PermissionGroup group = context.Groups.Single(g => g.Name == TimelinePermissions.GroupName);
+        group.Permissions.ShouldContain(p => p.Name == TimelinePermissions.InternalNotes.Read);
+    }
+
+    [Fact]
+    public void DefinePermissions_registers_Followers_Manage_permission()
+    {
+        // Arrange
+        FakePermissionDefinitionContext context = new();
+        TimelinePermissionDefinitionProvider provider = new();
+
+        // Act
+        provider.DefinePermissions(context);
+
+        // Assert
+        PermissionGroup group = context.Groups.Single(g => g.Name == TimelinePermissions.GroupName);
+        group.Permissions.ShouldContain(p => p.Name == TimelinePermissions.Followers.Manage);
+    }
+
+    [Fact]
+    public void DefinePermissions_registers_exactly_five_permissions()
+    {
+        // Arrange
+        FakePermissionDefinitionContext context = new();
+        TimelinePermissionDefinitionProvider provider = new();
+
+        // Act
+        provider.DefinePermissions(context);
+
+        // Assert
+        PermissionGroup group = context.Groups.Single(g => g.Name == TimelinePermissions.GroupName);
+        group.Permissions.Count.ShouldBe(5);
     }
 
     [Fact]

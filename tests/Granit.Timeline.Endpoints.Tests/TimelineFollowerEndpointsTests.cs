@@ -43,9 +43,11 @@ public sealed class TimelineFollowerEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(TimelinePermissions.Entries.Read, policy => policy.RequireRole(UserRole))
-            .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireRole(UserRole));
+            .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireRole(UserRole))
+            .AddPolicy(TimelinePermissions.Followers.Manage, policy => policy.RequireRole(UserRole));
         builder.Services.AddSingleton(_followerService);
         builder.Services.AddSingleton(_currentUser);
+        builder.Services.AddSingleton(Substitute.For<Granit.Authorization.Abstractions.IPermissionChecker>());
 
         // Required by other endpoints but not exercised here
         builder.Services.AddSingleton(Substitute.For<ITimelineReader>());

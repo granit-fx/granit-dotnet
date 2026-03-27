@@ -1,7 +1,7 @@
 // =============================================================================
 // Tests - OutgoingContextMiddleware (additional coverage)
 // =============================================================================
-// Covers FirstName/LastName headers, ActorKind header, ApiKeyId header, and
+// Covers ActorKind header, ApiKeyId header, and
 // edge cases not covered by the existing OutgoingContextMiddlewareTests.
 // =============================================================================
 
@@ -20,51 +20,11 @@ public sealed class OutgoingContextMiddlewareAdditionalTests
     private static Envelope CreateEnvelope() => new();
 
     // -------------------------------------------------------------------------
-    // FirstName / LastName headers
+    // GDPR data minimization — FirstName/LastName must NOT be propagated
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void Before_WithAuthenticatedUserAndFirstName_SetsFirstNameHeader()
-    {
-        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
-        tenant.Id.Returns((Guid?)null);
-        ICurrentUserService userService = Substitute.For<ICurrentUserService>();
-        userService.IsAuthenticated.Returns(true);
-        userService.UserId.Returns("user-1");
-        userService.FirstName.Returns("Jean");
-        userService.LastName.Returns((string?)null);
-
-        OutgoingContextMiddleware middleware = new(tenant, userService);
-        Envelope envelope = CreateEnvelope();
-
-        middleware.Before(envelope);
-
-        envelope.Headers[OutgoingContextMiddleware.UserFirstNameHeader].ShouldBe("Jean");
-        envelope.Headers.ContainsKey(OutgoingContextMiddleware.UserLastNameHeader).ShouldBeFalse();
-    }
-
-    [Fact]
-    public void Before_WithAuthenticatedUserAndLastName_SetsLastNameHeader()
-    {
-        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
-        tenant.Id.Returns((Guid?)null);
-        ICurrentUserService userService = Substitute.For<ICurrentUserService>();
-        userService.IsAuthenticated.Returns(true);
-        userService.UserId.Returns("user-1");
-        userService.FirstName.Returns((string?)null);
-        userService.LastName.Returns("Dupont");
-
-        OutgoingContextMiddleware middleware = new(tenant, userService);
-        Envelope envelope = CreateEnvelope();
-
-        middleware.Before(envelope);
-
-        envelope.Headers.ContainsKey(OutgoingContextMiddleware.UserFirstNameHeader).ShouldBeFalse();
-        envelope.Headers[OutgoingContextMiddleware.UserLastNameHeader].ShouldBe("Dupont");
-    }
-
-    [Fact]
-    public void Before_WithAuthenticatedUserAndBothNames_SetsBothHeaders()
+    public void Before_WithAuthenticatedUserAndNames_DoesNotSetNameHeaders()
     {
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         tenant.Id.Returns((Guid?)null);
@@ -79,44 +39,8 @@ public sealed class OutgoingContextMiddlewareAdditionalTests
 
         middleware.Before(envelope);
 
-        envelope.Headers[OutgoingContextMiddleware.UserFirstNameHeader].ShouldBe("Jean");
-        envelope.Headers[OutgoingContextMiddleware.UserLastNameHeader].ShouldBe("Dupont");
-    }
-
-    [Fact]
-    public void Before_WithEmptyFirstName_DoesNotSetFirstNameHeader()
-    {
-        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
-        tenant.Id.Returns((Guid?)null);
-        ICurrentUserService userService = Substitute.For<ICurrentUserService>();
-        userService.IsAuthenticated.Returns(true);
-        userService.UserId.Returns("user-1");
-        userService.FirstName.Returns(string.Empty);
-
-        OutgoingContextMiddleware middleware = new(tenant, userService);
-        Envelope envelope = CreateEnvelope();
-
-        middleware.Before(envelope);
-
-        envelope.Headers.ContainsKey(OutgoingContextMiddleware.UserFirstNameHeader).ShouldBeFalse();
-    }
-
-    [Fact]
-    public void Before_WithEmptyLastName_DoesNotSetLastNameHeader()
-    {
-        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
-        tenant.Id.Returns((Guid?)null);
-        ICurrentUserService userService = Substitute.For<ICurrentUserService>();
-        userService.IsAuthenticated.Returns(true);
-        userService.UserId.Returns("user-1");
-        userService.LastName.Returns(string.Empty);
-
-        OutgoingContextMiddleware middleware = new(tenant, userService);
-        Envelope envelope = CreateEnvelope();
-
-        middleware.Before(envelope);
-
-        envelope.Headers.ContainsKey(OutgoingContextMiddleware.UserLastNameHeader).ShouldBeFalse();
+        envelope.Headers.ContainsKey("X-User-FirstName").ShouldBeFalse();
+        envelope.Headers.ContainsKey("X-User-LastName").ShouldBeFalse();
     }
 
     // -------------------------------------------------------------------------
@@ -224,14 +148,6 @@ public sealed class OutgoingContextMiddlewareAdditionalTests
     [Fact]
     public void UserIdHeader_HasExpectedValue() =>
         OutgoingContextMiddleware.UserIdHeader.ShouldBe("X-User-Id");
-
-    [Fact]
-    public void UserFirstNameHeader_HasExpectedValue() =>
-        OutgoingContextMiddleware.UserFirstNameHeader.ShouldBe("X-User-FirstName");
-
-    [Fact]
-    public void UserLastNameHeader_HasExpectedValue() =>
-        OutgoingContextMiddleware.UserLastNameHeader.ShouldBe("X-User-LastName");
 
     [Fact]
     public void ActorKindHeader_HasExpectedValue() =>

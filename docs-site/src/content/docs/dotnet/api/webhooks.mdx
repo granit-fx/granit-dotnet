@@ -32,7 +32,7 @@ full delivery audit trail for ISO 27001 compliance.
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.Webhooks` | `IWebhookPublisher`, HMAC delivery, domain events | `Granit.Timing` |
+| `Granit.Webhooks` | `IWebhookPublisher`, HMAC delivery, domain events | `Granit.Timing`, `Granit.Encryption` |
 | `Granit.Webhooks.EntityFrameworkCore` | Isolated DbContext for subscriptions + deliveries | `Granit.Webhooks`, `Granit.Persistence` |
 | `Granit.Webhooks.Wolverine` | Durable outbox dispatch, retry policies | `Granit.Webhooks`, `Granit.Wolverine` |
 
@@ -41,6 +41,7 @@ full delivery audit trail for ISO 27001 compliance.
 ```mermaid
 graph TD
     W[Granit.Webhooks] --> T[Granit.Timing]
+    W --> E[Granit.Encryption]
     WEF[Granit.Webhooks.EntityFrameworkCore] --> W
     WEF --> P[Granit.Persistence]
     WW[Granit.Webhooks.Wolverine] --> W
@@ -261,6 +262,60 @@ against GDPR data-minimization requirements.
 | `HttpTimeoutSeconds` | `10` | HTTP request timeout (5–120 seconds) |
 | `MaxParallelDeliveries` | `20` | Max parallel `SendWebhookCommand` on the delivery queue (1–100) |
 | `StorePayload` | `false` | Persist full JSON body alongside delivery attempts |
+
+## Security
+
+### Multi-tenancy
+
+Both `WebhookSubscription` and `WebhookDeliveryAttempt` implement `IMultiTenant`.
+`ApplyGranitConventions` automatically adds a named query filter, ensuring that
+subscriptions and delivery records are scoped to the current tenant. Global
+subscriptions (`TenantId = null`) match all tenants during fan-out.
+
+### Secret protection
+
+Signing secrets are stored through `IWebhookSecretProtector`. The default
+registration is `NoOpWebhookSecretProtector` (pass-through, suitable for dev/test).
+
+For production, register an encrypted protector backed by `IStringEncryptionService`
+from `Granit.Encryption` **before** calling `AddGranitWebhooks()`:
+
+```csharp
+// The EncryptionWebhookSecretProtector is available in Granit.Webhooks
+// but not registered by default — register it explicitly for production.
+builder.Services.AddSingleton<IWebhookSecretProtector, EncryptionWebhookSecretProtector>();
+```
+
+:::caution[ISO 27001 A.8.24]
+Without a real `IWebhookSecretProtector`, signing secrets are stored in plaintext
+in the database. Always configure encryption for production environments.
+:::
+
+### SSRF protection
+
+Target URLs are validated at two levels:
+
+1. **At registration** — FluentValidation blocks `http://`, private IPs (RFC 1918),
+   loopback, link-local, carrier-grade NAT (`100.64.0.0/10`), and internal TLDs
+   (`.local`, `.internal`, `.localhost`, `.onion`)
+2. **At delivery** — a `SocketsHttpHandler.ConnectCallback` validates the resolved IP
+   address at connection time, preventing DNS rebinding attacks where a hostname
+   resolves to a public IP during validation but to an internal IP during delivery
+
+### Permissions
+
+Endpoints use two permission levels:
+
+| Permission | Scope |
+|------------|-------|
+| `Webhooks.Subscriptions.Read` | View subscriptions, event types, stats |
+| `Webhooks.Subscriptions.Manage` | Create, update, delete, lifecycle, secret rotation, test ping |
+
+### Audit retention
+
+`DeleteBeforeAsync` enforces a 3-year minimum retention period for delivery records
+(ISO 27001). Attempting to delete records newer than 3 years throws
+`InvalidOperationException`.
 
 ## Public API summary
 

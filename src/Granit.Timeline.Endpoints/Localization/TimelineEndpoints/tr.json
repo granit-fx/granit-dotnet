@@ -3,6 +3,9 @@
   "texts": {
     "PermissionGroup:Timeline": "Zaman Çizelgesi",
     "Permission:Timeline.Entries.Read": "Etkinlik akışlarını ve denetim geçmişini görüntüle",
-    "Permission:Timeline.Entries.Create": "Yorum yap ve varlıkları takip et/takipten çık"
+    "Permission:Timeline.Entries.Create": "Yorum yap ve varlıkları takip et/takipten çık",
+    "Permission:Timeline.Entries.Manage": "Sahibinden bağımsız olarak herhangi bir zaman çizelgesi girişini yönetin (silin)",
+    "Permission:Timeline.InternalNotes.Read": "Etkinlik akışlarında yalnızca personele özel dahili notları görüntüleyin",
+    "Permission:Timeline.Followers.Manage": "Etkinlik akışlarında varlıkları takip edin ve takipten çıkın"
   }
 }

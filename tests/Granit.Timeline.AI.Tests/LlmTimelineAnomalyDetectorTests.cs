@@ -1,5 +1,6 @@
 using System.Diagnostics.Metrics;
 using Granit.AI;
+using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.Timeline;
 using Granit.Timeline.Abstractions;
@@ -26,6 +27,7 @@ public sealed class LlmTimelineAnomalyDetectorTests
     private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
     private readonly ITimelineReader _timelineReader = Substitute.For<ITimelineReader>();
     private readonly IOptions<TimelineAIOptions> _options = MsOptions.Create(new TimelineAIOptions());
+    private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly TimelineAIMetrics _metrics = CreateTestMetrics();
 
     public LlmTimelineAnomalyDetectorTests()
@@ -36,7 +38,7 @@ public sealed class LlmTimelineAnomalyDetectorTests
     }
 
     private LlmTimelineAnomalyDetector CreateSut() =>
-        new(_chatClientFactory, _timelineReader, _options, _metrics, NullLogger<LlmTimelineAnomalyDetector>.Instance);
+        new(_chatClientFactory, _timelineReader, _options, _currentTenant, _metrics, NullLogger<LlmTimelineAnomalyDetector>.Instance);
 
     private static TimelineAIMetrics CreateTestMetrics()
     {

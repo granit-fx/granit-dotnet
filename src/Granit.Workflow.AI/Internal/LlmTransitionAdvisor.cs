@@ -75,6 +75,12 @@ internal sealed partial class LlmTransitionAdvisor(
                 return null;
             }
 
+            if (!allowedTransitions.Contains(result.RecommendedTransition, StringComparer.OrdinalIgnoreCase))
+            {
+                LogInvalidRecommendation(entityType, result.RecommendedTransition);
+                return null;
+            }
+
             double confidence = Math.Clamp(result.Confidence, 0.0, 1.0);
 
             LogRecommendationSucceeded(entityType, currentState, result.RecommendedTransition, confidence);
@@ -143,6 +149,9 @@ internal sealed partial class LlmTransitionAdvisor(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "No allowed transitions for {EntityType} in state {CurrentState}")]
     private partial void LogNoAllowedTransitions(string entityType, string currentState);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "LLM recommended transition '{RecommendedTransition}' is not in the allowed set for {EntityType}")]
+    private partial void LogInvalidRecommendation(string entityType, string recommendedTransition);
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Failed to deserialize LLM recommendation response for {EntityType}")]
     private partial void LogDeserializationFailed(string entityType);

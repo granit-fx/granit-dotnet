@@ -3,6 +3,9 @@
   "texts": {
     "PermissionGroup:Timeline": "Cronologia",
     "Permission:Timeline.Entries.Read": "Visualizzare i flussi di attività e la cronologia di audit",
-    "Permission:Timeline.Entries.Create": "Pubblicare commenti e seguire/smettere di seguire entità"
+    "Permission:Timeline.Entries.Create": "Pubblicare commenti e seguire/smettere di seguire entità",
+    "Permission:Timeline.Entries.Manage": "Gestire (eliminare) qualsiasi voce della timeline indipendentemente dal proprietario",
+    "Permission:Timeline.InternalNotes.Read": "Visualizzare le note interne riservate al personale nei feed di attività",
+    "Permission:Timeline.Followers.Manage": "Seguire e smettere di seguire entità nei feed di attività"
   }
 }

@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Granit.Authorization.Abstractions;
 using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Endpoints.Extensions;
@@ -23,12 +24,17 @@ public sealed class TimelineStreamEndpointsTests : IAsyncDisposable
     private const string Prefix = "/timeline";
 
     private readonly ITimelineReader _reader = Substitute.For<ITimelineReader>();
+    private readonly IPermissionChecker _permissionChecker = Substitute.For<IPermissionChecker>();
     private readonly WebApplication _app;
     private readonly HttpClient _authClient;
     private readonly HttpClient _anonClient;
 
     public TimelineStreamEndpointsTests()
     {
+        // Default: allow InternalNotes.Read so existing tests see all entry types
+        _permissionChecker.IsGrantedAsync(TimelinePermissions.InternalNotes.Read, Arg.Any<CancellationToken>())
+            .Returns(true);
+
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
 
@@ -39,8 +45,10 @@ public sealed class TimelineStreamEndpointsTests : IAsyncDisposable
 
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(TimelinePermissions.Entries.Read, policy => policy.RequireRole(UserRole))
-            .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireRole(UserRole));
+            .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireRole(UserRole))
+            .AddPolicy(TimelinePermissions.Followers.Manage, policy => policy.RequireRole(UserRole));
         builder.Services.AddSingleton(_reader);
+        builder.Services.AddSingleton(_permissionChecker);
 
         // Required by follower/entry endpoints but not exercised here
         builder.Services.AddSingleton(Substitute.For<ITimelineWriter>());

@@ -73,7 +73,6 @@ public sealed class WebhookFanoutHandler(
             DeliveryId = guidGenerator.Create(),
             SubscriptionId = sub.Id,
             TargetUrl = sub.TargetUrl,
-            SigningSecret = sub.SigningSecret,
             Envelope = envelope,
         });
     }

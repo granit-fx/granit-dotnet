@@ -65,7 +65,6 @@ public sealed class RetryWebhookHandler(
             DeliveryId = guidGenerator.Create(),
             SubscriptionId = subscription.Id,
             TargetUrl = subscription.TargetUrl,
-            SigningSecret = subscription.SigningSecret,
             Envelope = new WebhookEnvelope
             {
                 EventId = attempt.DeliveryId,

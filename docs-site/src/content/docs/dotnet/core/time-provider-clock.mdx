@@ -84,7 +84,9 @@ app.Use(async (context, next) =>
 });
 ```
 
-Then `IClock.ConvertToUserTime()` converts UTC dates to the user's local time:
+Then `IClock.ConvertToUserTime()` converts UTC dates to the user's local time.
+If the timezone ID is invalid or not found on the system, the value is returned
+**unchanged** (graceful fallback to UTC — no exception thrown):
 
 ```csharp
 public class AppointmentResponse

@@ -150,7 +150,6 @@ public sealed class RetryWebhookHandlerTests
         SendWebhookCommand command = result.Command!;
         command.SubscriptionId.ShouldBe(subscription.Id);
         command.TargetUrl.ShouldBe(subscription.TargetUrl);
-        command.SigningSecret.ShouldBe(subscription.SigningSecret);
         command.Envelope.EventType.ShouldBe(attempt.EventType);
         command.Envelope.TenantId.ShouldBe(attempt.TenantId);
         command.DeliveryId.ShouldNotBe(attempt.DeliveryId);

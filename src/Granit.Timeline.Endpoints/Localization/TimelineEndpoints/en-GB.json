@@ -1,4 +1,8 @@
 {
   "culture": "en-GB",
-  "texts": {}
+  "texts": {
+    "Permission:Timeline.Entries.Manage": "Manage (delete) any timeline entry regardless of ownership",
+    "Permission:Timeline.InternalNotes.Read": "View staff-only internal notes in activity feeds",
+    "Permission:Timeline.Followers.Manage": "Follow and unfollow entities in timeline feeds"
+  }
 }
