@@ -95,6 +95,7 @@ public sealed class MigrationStartupServiceTests
         int defaultBatchSize = 200) =>
         new(
             factory,
+            Substitute.For<IMigrationProgressDbEnsurer>(),
             tenantEnumerator,
             dispatcher,
             Microsoft.Extensions.Options.Options.Create(new MigrationStartupOptions { DefaultBatchSize = defaultBatchSize }),

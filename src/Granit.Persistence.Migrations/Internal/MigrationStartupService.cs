@@ -1,8 +1,6 @@
 using Granit.Persistence.Migrations.Messages;
 using Granit.Persistence.Migrations.Options;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -31,6 +29,7 @@ namespace Granit.Persistence.Migrations.Internal;
 /// </remarks>
 internal sealed partial class MigrationStartupService(
     IDbContextFactory<MigrationProgressDbContext> progressFactory,
+    IMigrationProgressDbEnsurer dbEnsurer,
     ITenantEnumerator tenantEnumerator,
     IMigrationBatchDispatcher dispatcher,
     IOptions<MigrationStartupOptions> options,
@@ -132,45 +131,7 @@ internal sealed partial class MigrationStartupService(
     /// </remarks>
     private async Task EnsureProgressTableAsync(CancellationToken ct)
     {
-        // Probe with a dedicated context
-        bool exists;
-        {
-            await using MigrationProgressDbContext probeDb = await progressFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
-
-            if (!probeDb.Database.IsRelational())
-            {
-                return;
-            }
-
-            IRelationalDatabaseCreator probeCreator = probeDb.GetService<IRelationalDatabaseCreator>();
-
-            if (!await probeCreator.HasTablesAsync(ct).ConfigureAwait(false))
-            {
-                exists = false;
-            }
-            else
-            {
-                try
-                {
-                    await probeDb.MigrationProgresses.AnyAsync(ct).ConfigureAwait(false);
-                    exists = true;
-                }
-                catch (Exception) when (!ct.IsCancellationRequested)
-                {
-                    exists = false;
-                }
-            }
-        }
-
-        if (exists)
-        {
-            return;
-        }
-
-        // Fresh context for DDL — probe context's connection may be in a failed state.
-        await using MigrationProgressDbContext ddlDb = await progressFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
-        IRelationalDatabaseCreator creator = ddlDb.GetService<IRelationalDatabaseCreator>();
-        await creator.CreateTablesAsync(ct).ConfigureAwait(false);
+        await dbEnsurer.EnsureCreatedAsync(ct).ConfigureAwait(false);
     }
 
     [LoggerMessage(Level = LogLevel.Information,

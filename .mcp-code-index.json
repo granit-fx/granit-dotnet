@@ -30180,7 +30180,7 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Domain/WebhookDeliveryAttempt.cs",
-      "line": 22,
+      "line": 21,
       "members": [
         {
           "name": "DeliveryId",
@@ -31351,6 +31351,12 @@
           "kind": "property",
           "signature": "DateTimeOffset TransitionedAt",
           "returnType": "DateTimeOffset"
+        },
+        {
+          "name": "Comment",
+          "kind": "property",
+          "signature": "string? Comment",
+          "returnType": "string?"
         }
       ]
     },
