@@ -61,7 +61,6 @@ internal static partial class OpenIddictIdleSessionEnforcementHandler
 
         do
         {
-            hasMore = false;
             int pageCount = 0;
 
             await foreach (object token in tokenManager.ListAsync(pageSize, offset, cancellationToken))

@@ -57,9 +57,7 @@ internal sealed partial class AISemanticMappingService(
 
         // Only include preview rows if the option is explicitly enabled (GDPR opt-in)
         // Truncate to configured limit to prevent unbounded prompt size (VULN-209)
-        IReadOnlyList<string[]>? effectivePreview = opts.IncludePreviewRows && previewRows is not null
-            ? (previewRows.Count <= opts.PreviewRowCount ? previewRows : previewRows.Take(opts.PreviewRowCount).ToList())
-            : null;
+        IReadOnlyList<string[]>? effectivePreview = GetEffectivePreview(opts, previewRows);
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(opts.TimeoutSeconds));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
@@ -232,5 +230,18 @@ internal sealed partial class AISemanticMappingService(
         public string? Source { get; set; }
         public string? Target { get; set; }
         public double Score { get; set; }
+    }
+
+    private static IReadOnlyList<string[]>? GetEffectivePreview(
+        DataExchangeAIOptions opts, IReadOnlyList<string[]>? previewRows)
+    {
+        if (!opts.IncludePreviewRows || previewRows is null)
+        {
+            return null;
+        }
+
+        return previewRows.Count <= opts.PreviewRowCount
+            ? previewRows
+            : previewRows.Take(opts.PreviewRowCount).ToList();
     }
 }

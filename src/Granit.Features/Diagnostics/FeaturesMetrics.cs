@@ -15,6 +15,7 @@ public sealed class FeaturesMetrics
     public const string MeterName = "Granit.Features";
 
     private const string TagTenantId = "tenant_id";
+    private const string TagFeatureName = "feature_name";
     private const string DefaultTenant = "global";
 
     private readonly Counter<long> _valuesResolved;
@@ -47,7 +48,7 @@ public sealed class FeaturesMetrics
         _valuesResolved.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "feature_name", featureName },
+            { TagFeatureName, featureName },
             { "value_provider", provider },
         });
 
@@ -55,7 +56,7 @@ public sealed class FeaturesMetrics
         _overridesChanged.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "feature_name", featureName },
+            { TagFeatureName, featureName },
             { "operation", operation },
         });
 
@@ -63,13 +64,13 @@ public sealed class FeaturesMetrics
         _limitsChecked.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "feature_name", featureName },
+            { TagFeatureName, featureName },
         });
 
     public void RecordLimitExceeded(string? tenantId, string featureName) =>
         _limitsExceeded.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { "feature_name", featureName },
+            { TagFeatureName, featureName },
         });
 }

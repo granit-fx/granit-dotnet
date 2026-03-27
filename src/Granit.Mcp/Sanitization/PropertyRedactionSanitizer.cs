@@ -88,64 +88,74 @@ internal sealed class PropertyRedactionSanitizer(SensitivePropertyRegistry regis
         }
     }
 
-    private bool RedactNode(JsonNode node)
+    private bool RedactNode(JsonNode node) => node switch
+    {
+        JsonObject obj => RedactObjectNode(obj),
+        JsonArray arr => RedactArrayNode(arr),
+        _ => false,
+    };
+
+    private bool RedactObjectNode(JsonObject obj)
     {
         bool changed = false;
+        List<string> keysToRemove = [];
+        List<(string Key, string Value)> keysToReplace = [];
 
-        if (node is JsonObject obj)
+        foreach ((string key, JsonNode? value) in obj)
         {
-            List<string> keysToRemove = [];
-            List<(string Key, string Value)> keysToReplace = [];
-
-            foreach ((string key, JsonNode? value) in obj)
+            SensitiveDataMode? mode = ResolveSensitiveMode(key);
+            if (mode is not null)
             {
-                SensitiveDataMode? mode = ResolveSensitiveMode(key);
-                if (mode is not null)
-                {
-                    switch (mode.Value)
-                    {
-                        case SensitiveDataMode.Omit:
-                            keysToRemove.Add(key);
-                            changed = true;
-                            break;
-                        case SensitiveDataMode.Hash:
-                            if (value is not null)
-                            {
-                                keysToReplace.Add((key, HashValue(value.ToString())));
-                                changed = true;
-                            }
-                            break;
-                        case SensitiveDataMode.Mask:
-                            if (value is not null)
-                            {
-                                keysToReplace.Add((key, MaskValue(value.ToString())));
-                                changed = true;
-                            }
-                            break;
-                    }
-                }
-                else if (value is not null)
-                {
-                    changed |= RedactNode(value);
-                }
+                changed |= ApplyRedaction(mode.Value, key, value, keysToRemove, keysToReplace);
             }
-
-            foreach (string key in keysToRemove)
+            else if (value is not null)
             {
-                obj.Remove(key);
-            }
-
-            foreach ((string key, string replacement) in keysToReplace)
-            {
-                obj[key] = replacement;
+                changed |= RedactNode(value);
             }
         }
-        else if (node is JsonArray arr)
+
+        foreach (string key in keysToRemove)
         {
-            foreach (JsonNode item in arr.Where(item => item is not null)!)
-            {
-                changed |= RedactNode(item);
-            }
+            obj.Remove(key);
+        }
+
+        foreach ((string key, string replacement) in keysToReplace)
+        {
+            obj[key] = replacement;
+        }
+
+        return changed;
+    }
+
+    private static bool ApplyRedaction(
+        SensitiveDataMode mode,
+        string key,
+        JsonNode? value,
+        List<string> keysToRemove,
+        List<(string Key, string Value)> keysToReplace)
+    {
+        switch (mode)
+        {
+            case SensitiveDataMode.Omit:
+                keysToRemove.Add(key);
+                return true;
+            case SensitiveDataMode.Hash or SensitiveDataMode.Mask when value is not null:
+                string redacted = mode == SensitiveDataMode.Hash
+                    ? HashValue(value.ToString())
+                    : MaskValue(value.ToString());
+                keysToReplace.Add((key, redacted));
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private bool RedactArrayNode(JsonArray arr)
+    {
+        bool changed = false;
+        foreach (JsonNode item in arr.Where(item => item is not null)!)
+        {
+            changed |= RedactNode(item);
         }
 
         return changed;

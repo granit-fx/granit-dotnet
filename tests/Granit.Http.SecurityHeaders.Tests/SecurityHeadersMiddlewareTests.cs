@@ -22,7 +22,7 @@ public sealed class SecurityHeadersMiddlewareTests
         context.Response.Headers.XFrameOptions.ToString().ShouldBe("DENY");
         context.Response.Headers["Referrer-Policy"].ToString()
             .ShouldBe("strict-origin-when-cross-origin");
-        context.Response.Headers["X-XSS-Protection"].ToString().ShouldBe("0");
+        context.Response.Headers.XXSSProtection.ToString().ShouldBe("0");
         context.Response.Headers["Permissions-Policy"].ToString()
             .ShouldBe("camera=(), microphone=(), geolocation=(), payment=(), " +
                        "accelerometer=(), gyroscope=(), magnetometer=(), usb=()");

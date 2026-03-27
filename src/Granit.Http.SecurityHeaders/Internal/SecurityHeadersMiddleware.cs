@@ -50,7 +50,7 @@ internal sealed class SecurityHeadersMiddleware(
 
         if (options.DisableXssProtection)
         {
-            headers["X-XSS-Protection"] = "0";
+            headers.XXSSProtection = "0";
         }
 
         if (options.ReferrerPolicy is { Length: > 0 })

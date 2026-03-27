@@ -21,6 +21,11 @@ internal sealed partial class LogoutTokenValidator(
     ILogger<LogoutTokenValidator> logger) : ILogoutTokenValidator
 {
     private const string JwksCacheKey = "bff:oidc-jwks";
+
+    // OIDC Back-Channel Logout §2.4 — spec-defined event type URI (identifier, not a URL to fetch)
+#pragma warning disable S1075 // URI should not be hardcoded
+    private const string BackChannelLogoutEventType = "http://schemas.openid.net/event/backchannel-logout";
+#pragma warning restore S1075
     private static readonly TimeSpan JwksCacheDuration = TimeSpan.FromHours(1);
 
     public async Task<ValidatedLogoutToken?> ValidateAsync(
@@ -114,11 +119,11 @@ internal sealed partial class LogoutTokenValidator(
 
         if (string.IsNullOrEmpty(kid))
         {
-            return keys.Find(k =>
+            return FindKeyByPredicate(keys, k =>
                 !k.TryGetProperty("use", out JsonElement use) || use.GetString() == "sig");
         }
 
-        JsonElement? match = keys.Find(k =>
+        JsonElement? match = FindKeyByPredicate(keys, k =>
             k.TryGetProperty("kid", out JsonElement kidProp) && kidProp.GetString() == kid);
 
         if (match is null)
@@ -126,11 +131,20 @@ internal sealed partial class LogoutTokenValidator(
             // kid not found — re-fetch JWKS (key rotation may have occurred)
             await cache.RemoveAsync(JwksCacheKey, token: ct).ConfigureAwait(false);
             keys = await GetJwksAsync(ct).ConfigureAwait(false);
-            match = keys?.Find(k =>
-                k.TryGetProperty("kid", out JsonElement kidProp) && kidProp.GetString() == kid);
+            if (keys is not null)
+            {
+                match = FindKeyByPredicate(keys, k =>
+                    k.TryGetProperty("kid", out JsonElement kidProp) && kidProp.GetString() == kid);
+            }
         }
 
         return match;
+    }
+
+    private static JsonElement? FindKeyByPredicate(List<JsonElement> keys, Predicate<JsonElement> predicate)
+    {
+        int index = keys.FindIndex(predicate);
+        return index >= 0 ? keys[index] : null;
     }
 
     private async Task<List<JsonElement>?> GetJwksAsync(CancellationToken ct)
@@ -308,16 +322,12 @@ internal sealed partial class LogoutTokenValidator(
             string? jti = root.TryGetProperty("jti", out JsonElement jtiEl) ? jtiEl.GetString() : null;
 
             // Parse audience (can be string or array per JWT spec)
-            List<string>? audiences = null;
-            if (root.TryGetProperty("aud", out JsonElement aud))
-            {
-                audiences = aud.ValueKind == JsonValueKind.Array
-                    ? [.. aud.EnumerateArray().Select(a => a.GetString()!).Where(a => a is not null)]
-                    : aud.GetString() is { } audStr ? [audStr] : null;
-            }
+            List<string>? audiences = root.TryGetProperty("aud", out JsonElement aud)
+                ? ParseAudiences(aud)
+                : null;
 
             bool hasEvent = root.TryGetProperty("events", out JsonElement events)
-                && events.TryGetProperty("http://schemas.openid.net/event/backchannel-logout", out _);
+                && events.TryGetProperty(BackChannelLogoutEventType, out _);
 
             return new ValidatedLogoutToken(issuer, subject, jti, hasEvent) { Audiences = audiences };
         }
@@ -325,6 +335,16 @@ internal sealed partial class LogoutTokenValidator(
         {
             return null;
         }
+    }
+
+    private static List<string>? ParseAudiences(JsonElement aud)
+    {
+        if (aud.ValueKind == JsonValueKind.Array)
+        {
+            return [.. aud.EnumerateArray().Select(a => a.GetString()!).Where(a => a is not null)];
+        }
+
+        return aud.GetString() is { } audStr ? [audStr] : null;
     }
 
     private static byte[] Base64UrlDecode(string input)

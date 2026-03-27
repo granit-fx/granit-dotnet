@@ -38,7 +38,7 @@ internal sealed class InMemoryAIQuotaGuard(
         DateTimeOffset now = clock.Now;
         TenantWindow window = _windows.GetOrAdd(tenantKey, _ => new TenantWindow());
 
-        int count = window.IncrementAndCount(now, maxRequests);
+        int count = window.IncrementAndCount(now);
 
         if (count > maxRequests)
         {
@@ -61,7 +61,7 @@ internal sealed class InMemoryAIQuotaGuard(
         /// <summary>
         /// Records the current request and returns the count within the rolling hour window.
         /// </summary>
-        public int IncrementAndCount(DateTimeOffset now, int capacity)
+        public int IncrementAndCount(DateTimeOffset now)
         {
             DateTimeOffset windowStart = now.AddHours(-1);
 

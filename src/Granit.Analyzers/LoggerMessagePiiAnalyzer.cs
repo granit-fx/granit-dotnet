@@ -104,7 +104,7 @@ public sealed class LoggerMessagePiiAnalyzer : SingleRuleAnalyzerBase
                 break;
             }
 
-            // Skip escaped brace: {{
+            // Skip escaped braces (double open-brace is an escape sequence)
             if (openBrace + 1 < messageTemplate.Length && messageTemplate[openBrace + 1] == '{')
             {
                 startIndex = openBrace + 2;

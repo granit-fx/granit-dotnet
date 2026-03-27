@@ -28,18 +28,18 @@ public static class PaginationValidatorExtensions
         ruleBuilder.GreaterThanOrEqualTo(1);
 
     /// <summary>
-    /// Validates that a page size is between 1 and <paramref name="maxPageSize"/>.
-    /// </summary>
-    public static IRuleBuilderOptions<T, int> ValidPageSize<T>(
-        this IRuleBuilder<T, int> ruleBuilder, int maxPageSize = DefaultMaxPageSize) =>
-        ruleBuilder.InclusiveBetween(1, maxPageSize);
-
-    /// <summary>
     /// Validates that a nullable page number is at least 1 (when provided).
     /// </summary>
     public static IRuleBuilderOptions<T, int?> ValidPage<T>(
         this IRuleBuilder<T, int?> ruleBuilder) =>
         ruleBuilder.GreaterThanOrEqualTo(1);
+
+    /// <summary>
+    /// Validates that a page size is between 1 and <paramref name="maxPageSize"/>.
+    /// </summary>
+    public static IRuleBuilderOptions<T, int> ValidPageSize<T>(
+        this IRuleBuilder<T, int> ruleBuilder, int maxPageSize = DefaultMaxPageSize) =>
+        ruleBuilder.InclusiveBetween(1, maxPageSize);
 
     /// <summary>
     /// Validates that a nullable page size is between 1 and <paramref name="maxPageSize"/> (when provided).

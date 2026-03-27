@@ -84,29 +84,37 @@ public sealed class SensitivePropertyRegistry
 
         foreach (Type type in types)
         {
-            foreach (PropertyInfo prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            ScanType(type, map);
+        }
+    }
+
+    private static void ScanType(Type type, Dictionary<string, SensitivePropertyEntry> map)
+    {
+        foreach (PropertyInfo prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        {
+            SensitiveDataAttribute? attr = prop.GetCustomAttribute<SensitiveDataAttribute>();
+            if (attr is null)
             {
-                SensitiveDataAttribute? attr = prop.GetCustomAttribute<SensitiveDataAttribute>();
-                if (attr is null)
-                {
-                    continue;
-                }
-
-                string name = prop.Name;
-                SensitivePropertyEntry incoming = new(attr.Level, attr.Mode);
-
-                if (map.TryGetValue(name, out SensitivePropertyEntry existing))
-                {
-                    // Most restrictive wins for both level and mode
-                    map[name] = new SensitivePropertyEntry(
-                        Level: incoming.Level > existing.Level ? incoming.Level : existing.Level,
-                        Mode: incoming.Mode > existing.Mode ? incoming.Mode : existing.Mode);
-                }
-                else
-                {
-                    map[name] = incoming;
-                }
+                continue;
             }
+
+            MergeEntry(map, prop.Name, new SensitivePropertyEntry(attr.Level, attr.Mode));
+        }
+    }
+
+    private static void MergeEntry(
+        Dictionary<string, SensitivePropertyEntry> map, string name, SensitivePropertyEntry incoming)
+    {
+        if (map.TryGetValue(name, out SensitivePropertyEntry existing))
+        {
+            // Most restrictive wins for both level and mode
+            map[name] = new SensitivePropertyEntry(
+                Level: (Sensitivity)Math.Max((int)incoming.Level, (int)existing.Level),
+                Mode: (SensitiveDataMode)Math.Max((int)incoming.Mode, (int)existing.Mode));
+        }
+        else
+        {
+            map[name] = incoming;
         }
     }
 }

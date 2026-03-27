@@ -244,7 +244,7 @@ public sealed class LogoutTokenValidatorTests : IDisposable
                 Arg.Any<Func<FusionCacheFactoryExecutionContext<List<JsonElement>>, CancellationToken, Task<List<JsonElement>>>>(),
                 Arg.Any<FusionCacheEntryOptions?>(),
                 Arg.Any<CancellationToken>())
-            .ReturnsForAnyArgs(new List<JsonElement>());
+            .ReturnsForAnyArgs((List<JsonElement>)[]);
 
         ValidatedLogoutToken? result = await _validator.ValidateAsync(
             token, ClientId, TestContext.Current.CancellationToken);

@@ -21112,7 +21112,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitOpenIddict",

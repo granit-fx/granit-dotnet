@@ -30,27 +30,7 @@ internal sealed partial class DPoPValidationMiddleware(
 
         if (!hasDPoPHeader && !hasDPoPScheme)
         {
-            if (opts.RequireDPoP && context.User.Identity?.IsAuthenticated == true)
-            {
-                LogDPoPRequired(logger);
-
-                // Return a fresh nonce for the client to use on retry (RFC 9449 §8)
-                if (opts.RequireNonce)
-                {
-                    string? nonce = await proofValidator.GenerateNonceAsync(context.RequestAborted)
-                        .ConfigureAwait(false);
-                    if (nonce is not null)
-                    {
-                        context.Response.Headers["DPoP-Nonce"] = nonce;
-                    }
-                }
-
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                context.Response.Headers.WWWAuthenticate = "DPoP error=\"use_dpop_nonce\"";
-                return;
-            }
-
-            await next(context).ConfigureAwait(false);
+            await HandleMissingDPoPProofAsync(context, opts).ConfigureAwait(false);
             return;
         }
 
@@ -89,28 +69,68 @@ internal sealed partial class DPoPValidationMiddleware(
             return;
         }
 
-        // Verify cnf.jkt token binding — the access token must contain a cnf claim
-        // with a jkt (JWK thumbprint) matching the proof's public key
-        string? expectedThumbprint = ExtractCnfJkt(context.User);
-
-        if (expectedThumbprint is not null
-            && !string.Equals(expectedThumbprint, result.JwkThumbprint, StringComparison.Ordinal))
+        // Verify cnf.jkt token binding (RFC 9449 §4.3)
+        if (!VerifyTokenBinding(context, result.JwkThumbprint, opts))
         {
-            LogThumbprintMismatch(logger);
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return;
-        }
-
-        // RFC 9449 §4.3: when token binding is required, the access token MUST
-        // include a cnf.jkt claim matching the proof's public key
-        if (expectedThumbprint is null && opts.RequireTokenBinding)
-        {
-            LogMissingTokenBinding(logger);
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;
         }
 
         await next(context).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Handles requests without a DPoP proof header. If DPoP is required and the user
+    /// is authenticated, returns 401 with a nonce hint. Otherwise passes through.
+    /// </summary>
+    private async Task HandleMissingDPoPProofAsync(HttpContext context, DPoPValidationOptions opts)
+    {
+        if (opts.RequireDPoP && context.User.Identity?.IsAuthenticated == true)
+        {
+            LogDPoPRequired(logger);
+
+            // Return a fresh nonce for the client to use on retry (RFC 9449 §8)
+            if (opts.RequireNonce)
+            {
+                string? nonce = await proofValidator.GenerateNonceAsync(context.RequestAborted)
+                    .ConfigureAwait(false);
+                if (nonce is not null)
+                {
+                    context.Response.Headers["DPoP-Nonce"] = nonce;
+                }
+            }
+
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.Headers.WWWAuthenticate = "DPoP error=\"use_dpop_nonce\"";
+            return;
+        }
+
+        await next(context).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Verifies the cnf.jkt token binding between the access token and the DPoP proof.
+    /// Returns <c>false</c> and sets 401 if verification fails.
+    /// </summary>
+    private bool VerifyTokenBinding(HttpContext context, string? jwkThumbprint, DPoPValidationOptions opts)
+    {
+        string? expectedThumbprint = ExtractCnfJkt(context.User);
+
+        if (expectedThumbprint is not null
+            && !string.Equals(expectedThumbprint, jwkThumbprint, StringComparison.Ordinal))
+        {
+            LogThumbprintMismatch(logger);
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return false;
+        }
+
+        if (expectedThumbprint is null && opts.RequireTokenBinding)
+        {
+            LogMissingTokenBinding(logger);
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>

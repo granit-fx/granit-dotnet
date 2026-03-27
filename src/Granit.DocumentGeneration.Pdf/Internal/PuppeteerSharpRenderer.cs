@@ -37,7 +37,7 @@ internal sealed partial class PuppeteerSharpRenderer(
             // Block all outbound network requests to prevent SSRF (CWE-918).
             // SetContentAsync injects HTML via CDP — no network request is needed.
             await page.SetRequestInterceptionAsync(true).ConfigureAwait(false);
-            page.Request += (_, e) => _ = e.Request.AbortAsync();
+            page.Request += async (_, e) => await e.Request.AbortAsync().ConfigureAwait(false);
 
             await page.SetContentAsync(html, new NavigationOptions
             {
