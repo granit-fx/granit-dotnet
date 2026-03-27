@@ -487,8 +487,8 @@ interface OidcAuthorizationResponse {
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="POST" variant="success" /> | `/export` | RequestPrivacyExport | `Privacy.Export.Execute` |
-| <Badge text="GET" variant="note" /> | `/export/{requestId}` | GetPrivacyExportStatus | `Privacy.Export.Read` |
-| <Badge text="GET" variant="note" /> | `/export` | ListPrivacyExports | `Privacy.Export.Read` |
+| <Badge text="GET" variant="note" /> | `/export/{requestId}` | GetPrivacyExportStatus | *(owner only)* |
+| <Badge text="GET" variant="note" /> | `/export` | ListPrivacyExports | *(owner only)* |
 
 ### Data Deletion (Art. 17)
 
@@ -496,8 +496,8 @@ interface OidcAuthorizationResponse {
 |--------|-------|-----------|------------|
 | <Badge text="POST" variant="success" /> | `/deletion` | RequestPrivacyDeletion | `Privacy.Deletion.Execute` |
 | <Badge text="POST" variant="success" /> | `/deletion/{requestId}/cancel` | CancelPrivacyDeletion | `Privacy.Deletion.Execute` |
-| <Badge text="GET" variant="note" /> | `/deletion/{requestId}` | GetPrivacyDeletionStatus | `Privacy.Deletion.Execute` |
-| <Badge text="GET" variant="note" /> | `/deletion` | ListPrivacyDeletions | `Privacy.Deletion.Execute` |
+| <Badge text="GET" variant="note" /> | `/deletion/{requestId}` | GetPrivacyDeletionStatus | *(owner only)* |
+| <Badge text="GET" variant="note" /> | `/deletion` | ListPrivacyDeletions | *(owner only)* |
 
 ### Legal Agreements (Art. 7)
 

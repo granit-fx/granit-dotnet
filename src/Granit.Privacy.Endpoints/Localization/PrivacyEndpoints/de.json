@@ -3,10 +3,8 @@
   "texts": {
     "Permission:Privacy.Agreements.Create": "Einer rechtlichen Vereinbarung zustimmen",
     "Permission:Privacy.Agreements.Read": "Rechtliche Dokumente und Einwilligungsstatus anzeigen",
-    "Permission:Privacy.Deletion.Read": "Status und Verlauf von Löschanfragen anzeigen",
     "Permission:Privacy.Deletion.Execute": "Löschung personenbezogener Daten anfordern",
     "Permission:Privacy.Export.Execute": "Export personenbezogener Daten anfordern",
-    "Permission:Privacy.Export.Read": "Status des Datenexports anzeigen",
     "PermissionGroup:Privacy": "Datenschutz (DSGVO)"
   }
 }

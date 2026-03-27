@@ -14,10 +14,6 @@ public sealed class PrivacyPermissionsTests
         PrivacyPermissions.Export.Execute.ShouldBe("Privacy.Export.Execute");
 
     [Fact]
-    public void Export_Read_FollowsThreeSegmentConvention() =>
-        PrivacyPermissions.Export.Read.ShouldBe("Privacy.Export.Read");
-
-    [Fact]
     public void Deletion_Execute_FollowsThreeSegmentConvention() =>
         PrivacyPermissions.Deletion.Execute.ShouldBe("Privacy.Deletion.Execute");
 
@@ -31,7 +27,6 @@ public sealed class PrivacyPermissionsTests
 
     [Theory]
     [InlineData("Privacy.Export.Execute")]
-    [InlineData("Privacy.Export.Read")]
     [InlineData("Privacy.Deletion.Execute")]
     [InlineData("Privacy.Agreements.Read")]
     [InlineData("Privacy.Agreements.Create")]
@@ -43,7 +38,6 @@ public sealed class PrivacyPermissionsTests
 
     [Theory]
     [InlineData("Privacy.Export.Execute")]
-    [InlineData("Privacy.Export.Read")]
     [InlineData("Privacy.Deletion.Execute")]
     [InlineData("Privacy.Agreements.Read")]
     [InlineData("Privacy.Agreements.Create")]

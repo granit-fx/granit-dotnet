@@ -14,17 +14,11 @@ public static class PrivacyPermissions
     {
         /// <summary>Request a personal data export.</summary>
         public const string Execute = "Privacy.Export.Execute";
-
-        /// <summary>View export request status and history.</summary>
-        public const string Read = "Privacy.Export.Read";
     }
 
     /// <summary>Permissions for personal data deletion (GDPR Art. 17).</summary>
     public static class Deletion
     {
-        /// <summary>View deletion request status and history.</summary>
-        public const string Read = "Privacy.Deletion.Read";
-
         /// <summary>Request and cancel personal data erasure.</summary>
         public const string Execute = "Privacy.Deletion.Execute";
     }

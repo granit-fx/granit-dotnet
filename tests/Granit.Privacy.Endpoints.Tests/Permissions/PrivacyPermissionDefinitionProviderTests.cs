@@ -24,8 +24,6 @@ public sealed class PrivacyPermissionDefinitionProviderTests
 
     [Theory]
     [InlineData("Privacy.Export.Execute")]
-    [InlineData("Privacy.Export.Read")]
-    [InlineData("Privacy.Deletion.Read")]
     [InlineData("Privacy.Deletion.Execute")]
     [InlineData("Privacy.Agreements.Read")]
     [InlineData("Privacy.Agreements.Create")]
@@ -42,7 +40,7 @@ public sealed class PrivacyPermissionDefinitionProviderTests
     }
 
     [Fact]
-    public void DefinePermissions_RegistersExactlySixPermissions()
+    public void DefinePermissions_RegistersExactlyFourPermissions()
     {
         IPermissionDefinitionContext context = Substitute.For<IPermissionDefinitionContext>();
         PermissionGroup group = new(PrivacyPermissions.GroupName);
@@ -51,6 +49,6 @@ public sealed class PrivacyPermissionDefinitionProviderTests
         PrivacyPermissionDefinitionProvider provider = new();
         provider.DefinePermissions(context);
 
-        group.Permissions.Count.ShouldBe(6);
+        group.Permissions.Count.ShouldBe(4);
     }
 }

@@ -3,10 +3,8 @@
   "texts": {
     "Permission:Privacy.Agreements.Create": "Yasal sözleşmeyi kabul et",
     "Permission:Privacy.Agreements.Read": "Yasal belgeleri ve onay durumunu görüntüle",
-    "Permission:Privacy.Deletion.Read": "Silme isteği durumunu ve geçmişini görüntüle",
     "Permission:Privacy.Deletion.Execute": "Kişisel veri silme talep et",
     "Permission:Privacy.Export.Execute": "Kişisel veri dışa aktarımı talep et",
-    "Permission:Privacy.Export.Read": "Kişisel veri dışa aktarım durumunu görüntüle",
     "PermissionGroup:Privacy": "Gizlilik (KVKK)"
   }
 }

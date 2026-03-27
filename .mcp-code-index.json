@@ -25010,7 +25010,7 @@
       "kind": "class",
       "project": "Granit.RateLimiting",
       "file": "src/Granit.RateLimiting/Extensions/RateLimitingServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitRateLimiting",
@@ -25095,6 +25095,15 @@
       "members": []
     },
     {
+      "name": "RateLimitPartition",
+      "fqn": "Granit.RateLimiting.Options.RateLimitPartition",
+      "kind": "enum",
+      "project": "Granit.RateLimiting",
+      "file": "src/Granit.RateLimiting/Options/RateLimitPartition.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "RateLimitPolicyOptions",
       "fqn": "Granit.RateLimiting.Options.RateLimitPolicyOptions",
       "kind": "class",
@@ -25107,6 +25116,12 @@
           "kind": "property",
           "signature": "RateLimitAlgorithm Algorithm",
           "returnType": "RateLimitAlgorithm"
+        },
+        {
+          "name": "PartitionBy",
+          "kind": "property",
+          "signature": "RateLimitPartition PartitionBy",
+          "returnType": "RateLimitPartition"
         },
         {
           "name": "PermitLimit",
@@ -25157,7 +25172,7 @@
         {
           "name": "CheckAsync",
           "kind": "method",
-          "signature": "CheckAsync(string policyName, CancellationToken cancellationToken)",
+          "signature": "CheckAsync(string policyName, string? clientIp, CancellationToken cancellationToken)",
           "returnType": "Task<RateLimitResult?>"
         }
       ]
