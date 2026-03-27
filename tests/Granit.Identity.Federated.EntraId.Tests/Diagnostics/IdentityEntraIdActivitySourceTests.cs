@@ -5,6 +5,7 @@ using Xunit;
 
 namespace Granit.Identity.Federated.EntraId.Tests.Diagnostics;
 
+[Collection("EntraIdActivitySource")]
 public sealed class IdentityEntraIdActivitySourceTests : IDisposable
 {
     private readonly ActivityListener _listener;

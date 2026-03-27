@@ -15,6 +15,7 @@ using MsOptions = Microsoft.Extensions.Options.Options;
 
 namespace Granit.Identity.Federated.EntraId.Tests;
 
+[Collection("EntraIdActivitySource")]
 public sealed class IdentityEntraIdActivitySourceTests : IDisposable
 {
     private readonly List<Activity> _activities = [];

@@ -15,6 +15,7 @@ using Xunit;
 
 namespace Granit.Identity.Federated.EntraId.Tests;
 
+[Collection("EntraIdActivitySource")]
 public sealed class EntraIdIdentityProviderTests : IDisposable
 {
     private readonly MockHttpMessageHandler _handler = new();
