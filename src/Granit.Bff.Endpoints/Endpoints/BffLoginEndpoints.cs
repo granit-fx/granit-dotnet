@@ -33,6 +33,7 @@ internal static partial class BffLoginEndpoints
 
     /// <summary>
     /// Known OIDC error codes (RFC 6749 §4.1.2.1, §5.2 + OIDC Core §3.1.2.6).
+    /// Unknown codes are replaced with <c>"unknown_error"</c> to prevent reflection.
     /// </summary>
     private static readonly HashSet<string> KnownOidcErrors = new(StringComparer.Ordinal)
     {

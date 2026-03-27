@@ -305,6 +305,7 @@
       "name": "Granit.Bff.EntityFrameworkCore",
       "deps": [
         "Granit.Bff",
+        "Granit.Encryption",
         "Granit.Guids",
         "Granit.Persistence"
       ],
@@ -363,6 +364,7 @@
         "Granit.Authorization",
         "Granit.BlobStorage",
         "Granit.QueryEngine.Endpoints",
+        "Granit.RateLimiting",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -7060,7 +7062,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/GranitBlobStorageEndpointsModule.cs",
-      "line": 16,
+      "line": 18,
       "members": []
     },
     {
@@ -7346,7 +7348,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage",
       "file": "src/Granit.BlobStorage/GranitBlobStorageModule.cs",
-      "line": 24,
+      "line": 25,
       "members": [
         {
           "name": "ConfigureServices",
@@ -7556,6 +7558,12 @@
           "kind": "method",
           "signature": "FromMinutes(5)",
           "returnType": "TimeSpan DownloadUrlExpiry { get; set; } = TimeSpan."
+        },
+        {
+          "name": "AllowedContentTypes",
+          "kind": "property",
+          "signature": "HashSet<string> AllowedContentTypes",
+          "returnType": "HashSet<string>"
         }
       ]
     },
@@ -7800,7 +7808,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage",
       "file": "src/Granit.BlobStorage/Validators/MagicBytesValidator.cs",
-      "line": 18,
+      "line": 21,
       "members": [
         {
           "name": "Order",
@@ -7844,7 +7852,7 @@
       "kind": "class",
       "project": "Granit.Caching",
       "file": "src/Granit.Caching/AesCacheValueEncryptor.cs",
-      "line": 21,
+      "line": 22,
       "members": []
     },
     {
@@ -8078,7 +8086,7 @@
       "kind": "class",
       "project": "Granit.Caching.StackExchangeRedis",
       "file": "src/Granit.Caching.StackExchangeRedis/Extensions/RedisCachingServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitCachingRedis",
@@ -8138,7 +8146,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.AI",
       "file": "src/Granit.DataExchange.AI/Extensions/DataExchangeAIHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitDataExchangeAI",
@@ -10055,12 +10063,18 @@
       "kind": "class",
       "project": "Granit.Diagnostics",
       "file": "src/Granit.Diagnostics/ResponseWriters/GranitHealthCheckWriter.cs",
-      "line": 16,
+      "line": 26,
       "members": [
         {
           "name": "WriteAsync",
           "kind": "method",
           "signature": "WriteAsync(HttpContext context, HealthReport report)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WriteMinimalAsync",
+          "kind": "method",
+          "signature": "WriteMinimalAsync(HttpContext context, HealthReport report)",
           "returnType": "Task"
         }
       ]
@@ -10248,6 +10262,12 @@
           "kind": "property",
           "signature": "string? ChromiumExecutablePath",
           "returnType": "string?"
+        },
+        {
+          "name": "MaxConcurrentPages",
+          "kind": "property",
+          "signature": "int MaxConcurrentPages",
+          "returnType": "int"
         }
       ]
     },

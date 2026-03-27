@@ -81,6 +81,7 @@ internal sealed class S3BlobOptionsValidator : IValidateOptions<S3BlobOptions>
                 $"{nameof(options.ServiceUrl)} must be a valid absolute URI.");
         }
 
+        // Allow HTTP only for localhost (MinIO development). Enforce HTTPS for all other hosts.
         bool isLocalhost = serviceUri.Host is "localhost" or "127.0.0.1" or "::1";
         if (serviceUri.Scheme != Uri.UriSchemeHttps && !isLocalhost)
         {

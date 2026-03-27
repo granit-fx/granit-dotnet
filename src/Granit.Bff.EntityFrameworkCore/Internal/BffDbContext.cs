@@ -6,8 +6,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.Bff.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// Isolated DbContext for BFF session persistence. Stores encrypted token sets
-/// as an alternative to <c>IDistributedCache</c>-backed storage.
+/// Isolated DbContext for BFF session persistence. Stores token sets (encrypted
+/// when <c>IStringEncryptionService</c> is registered) as an alternative to
+/// <c>IDistributedCache</c>-backed storage.
 /// </summary>
 internal sealed class BffDbContext(
     DbContextOptions<BffDbContext> options,

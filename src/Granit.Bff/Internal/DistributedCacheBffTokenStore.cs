@@ -72,6 +72,12 @@ internal sealed class DistributedCacheBffTokenStore(
         return maybe.HasValue ? maybe.Value ?? [] : [];
     }
 
+    // NOTE: AddToUserIndexAsync/RemoveFromUserIndexAsync use a non-atomic read-modify-write
+    // pattern. Two concurrent logins from the same user can race, causing one session to be
+    // omitted from the index (it remains active but invisible to session management).
+    // Accepted risk: the window is narrow, the EF Core store is not affected, and the
+    // cleanup job eventually removes orphaned sessions. A proper fix requires Redis SADD
+    // or distributed locking which is beyond the scope of the FusionCache abstraction.
     private async Task AddToUserIndexAsync(
         string frontendName, string userId, string sessionId, CancellationToken cancellationToken)
     {

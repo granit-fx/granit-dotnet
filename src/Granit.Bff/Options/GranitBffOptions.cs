@@ -153,11 +153,15 @@ public sealed class BffFrontendOptions
     public bool UsePushedAuthorizationRequests { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether PAR is mandatory. When <see langword="true"/>,
-    /// a PAR failure returns 502 instead of falling back to direct authorization parameters.
-    /// Requires <see cref="UsePushedAuthorizationRequests"/> to be <see langword="true"/>.
-    /// Default: <see langword="false"/>.
+    /// Gets or sets a value indicating whether PAR (Pushed Authorization Requests)
+    /// is mandatory. When <see langword="true"/>, a PAR failure returns 502 instead
+    /// of falling back to direct authorization parameters.
     /// </summary>
+    /// <remarks>
+    /// Enable for FAPI 2.0 strict conformance. When <see langword="false"/>
+    /// (default), PAR failure falls back to direct parameters for availability.
+    /// Requires <see cref="UsePushedAuthorizationRequests"/> to be <see langword="true"/>.
+    /// </remarks>
     public bool RequirePushedAuthorizationRequests { get; set; }
 
     /// <summary>

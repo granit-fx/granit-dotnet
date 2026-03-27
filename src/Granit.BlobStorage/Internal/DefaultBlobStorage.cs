@@ -100,6 +100,7 @@ internal sealed partial class DefaultBlobStorage(
     {
         BlobDescriptor? descriptor = await reader.FindAsync(blobId, cancellationToken).ConfigureAwait(false);
 
+        // Verify the descriptor belongs to the requested container to prevent cross-container IDOR.
         if (descriptor is not null &&
             !string.Equals(descriptor.ContainerName, containerName, StringComparison.Ordinal))
         {
