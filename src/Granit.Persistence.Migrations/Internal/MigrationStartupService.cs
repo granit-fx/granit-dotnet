@@ -54,11 +54,12 @@ internal sealed partial class MigrationStartupService(
 
     private async Task ResumeAsync(CancellationToken cancellationToken)
     {
-        await using MigrationProgressDbContext db = await progressFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        // Ensure the progress table exists using a dedicated probe + DDL context pair
+        // to avoid PostgreSQL connection-state contamination.
+        await EnsureProgressTableAsync(cancellationToken).ConfigureAwait(false);
 
-        // EnsureCreatedAsync is a no-op when the database already has tables (from host migrations).
-        // Use the relational database creator to create only missing tables from this DbContext model.
-        await EnsureProgressTableAsync(db, cancellationToken).ConfigureAwait(false);
+        // Use a fresh context for the actual query — the probe contexts are disposed.
+        await using MigrationProgressDbContext db = await progressFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         List<MigrationProgress> pending = await db.MigrationProgresses
             .Where(p => p.Status == MigrationStatus.Pending || p.Status == MigrationStatus.InProgress)
@@ -126,36 +127,50 @@ internal sealed partial class MigrationStartupService(
     /// Creates the <c>data_migration_progress</c> table if it doesn't exist.
     /// </summary>
     /// <remarks>
-    /// <c>EnsureCreatedAsync()</c> is a no-op when the database already has tables
-    /// (e.g., from host application migrations). We use <see cref="IRelationalDatabaseCreator"/>
-    /// with a try/catch probe to detect missing tables.
+    /// Uses two separate DbContext instances to avoid PostgreSQL connection-state contamination:
+    /// one for probing table existence (which may throw) and a fresh one for DDL.
     /// </remarks>
-    private static async Task EnsureProgressTableAsync(MigrationProgressDbContext db, CancellationToken ct)
+    private async Task EnsureProgressTableAsync(CancellationToken ct)
     {
-        if (!db.Database.IsRelational())
+        // Probe with a dedicated context
+        bool exists;
         {
-            // Non-relational providers (e.g. InMemory) don't need table creation.
+            await using MigrationProgressDbContext probeDb = await progressFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+
+            if (!probeDb.Database.IsRelational())
+            {
+                return;
+            }
+
+            IRelationalDatabaseCreator probeCreator = probeDb.GetService<IRelationalDatabaseCreator>();
+
+            if (!await probeCreator.HasTablesAsync(ct).ConfigureAwait(false))
+            {
+                exists = false;
+            }
+            else
+            {
+                try
+                {
+                    await probeDb.MigrationProgresses.AnyAsync(ct).ConfigureAwait(false);
+                    exists = true;
+                }
+                catch (Exception) when (!ct.IsCancellationRequested)
+                {
+                    exists = false;
+                }
+            }
+        }
+
+        if (exists)
+        {
             return;
         }
 
-        IRelationalDatabaseCreator creator = db.GetService<IRelationalDatabaseCreator>();
-
-        if (!await creator.HasTablesAsync(ct).ConfigureAwait(false))
-        {
-            await creator.CreateTablesAsync(ct).ConfigureAwait(false);
-            return;
-        }
-
-        // Database has tables (from host migrations) — EnsureCreated would be a no-op.
-        // Try to query the progress table; if it fails, create it.
-        try
-        {
-            await db.MigrationProgresses.AnyAsync(ct).ConfigureAwait(false);
-        }
-        catch (Exception) when (!ct.IsCancellationRequested)
-        {
-            await creator.CreateTablesAsync(ct).ConfigureAwait(false);
-        }
+        // Fresh context for DDL — probe context's connection may be in a failed state.
+        await using MigrationProgressDbContext ddlDb = await progressFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        IRelationalDatabaseCreator creator = ddlDb.GetService<IRelationalDatabaseCreator>();
+        await creator.CreateTablesAsync(ct).ConfigureAwait(false);
     }
 
     [LoggerMessage(Level = LogLevel.Information,

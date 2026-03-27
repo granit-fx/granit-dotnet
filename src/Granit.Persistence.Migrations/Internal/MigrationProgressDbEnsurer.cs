@@ -9,10 +9,11 @@ namespace Granit.Persistence.Migrations.Internal;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <c>EnsureCreatedAsync()</c> is a no-op when the database already has tables
-/// (e.g., from host application migrations). This implementation uses the
-/// <see cref="IRelationalDatabaseCreator"/> to check table existence and create
-/// only the tables defined in the <see cref="MigrationProgressDbContext"/> model.
+/// Uses two separate <see cref="MigrationProgressDbContext"/> instances to avoid PostgreSQL
+/// connection-state contamination: one for probing table existence (which may throw) and a
+/// fresh one for <see cref="IRelationalDatabaseCreator.CreateTablesAsync"/>. This avoids the
+/// "current transaction is aborted" error that occurs when a failed query and a DDL command
+/// share the same connection.
 /// </para>
 /// </remarks>
 internal sealed class MigrationProgressDbEnsurer(
@@ -20,29 +21,48 @@ internal sealed class MigrationProgressDbEnsurer(
 {
     public async Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
     {
+        if (await ProbeTableExistsAsync(cancellationToken).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        // Use a FRESH context — the probe context's connection may be in a failed state
+        // after the unsuccessful SELECT.
         await using MigrationProgressDbContext db = await factory
             .CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
         IRelationalDatabaseCreator creator = db.GetService<IRelationalDatabaseCreator>();
+        await creator.CreateTablesAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task<bool> ProbeTableExistsAsync(CancellationToken cancellationToken)
+    {
+        await using MigrationProgressDbContext db = await factory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!db.Database.IsRelational())
+        {
+            return true; // Non-relational providers don't need table creation
+        }
+
+        IRelationalDatabaseCreator creator = db.GetService<IRelationalDatabaseCreator>();
 
         if (!await creator.HasTablesAsync(cancellationToken).ConfigureAwait(false))
         {
-            // Database has no tables at all — safe to use EnsureCreated
-            await creator.CreateTablesAsync(cancellationToken).ConfigureAwait(false);
-            return;
+            return false; // Database has no tables at all
         }
 
-        // Database has tables (from host migrations) — EnsureCreated would be a no-op.
-        // Try to query the progress table; if it fails, create it.
+        // Database has tables (from host migrations) — probe the specific table.
         try
         {
             await db.MigrationProgresses.AnyAsync(cancellationToken).ConfigureAwait(false);
+            return true;
         }
         catch (Exception) when (!cancellationToken.IsCancellationRequested)
         {
-            // Table doesn't exist — create all tables from this model
-            await creator.CreateTablesAsync(cancellationToken).ConfigureAwait(false);
+            return false;
         }
     }
 }
