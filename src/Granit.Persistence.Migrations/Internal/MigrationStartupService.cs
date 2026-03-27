@@ -1,6 +1,7 @@
 using Granit.Persistence.Migrations.Messages;
 using Granit.Persistence.Migrations.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -28,8 +29,8 @@ namespace Granit.Persistence.Migrations.Internal;
 /// </para>
 /// </remarks>
 internal sealed partial class MigrationStartupService(
+    IServiceScopeFactory scopeFactory,
     IDbContextFactory<MigrationProgressDbContext> progressFactory,
-    IMigrationProgressDbEnsurer dbEnsurer,
     ITenantEnumerator tenantEnumerator,
     IMigrationBatchDispatcher dispatcher,
     IOptions<MigrationStartupOptions> options,
@@ -131,7 +132,9 @@ internal sealed partial class MigrationStartupService(
     /// </remarks>
     private async Task EnsureProgressTableAsync(CancellationToken ct)
     {
-        await dbEnsurer.EnsureCreatedAsync(ct).ConfigureAwait(false);
+        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+        IMigrationProgressDbEnsurer ensurer = scope.ServiceProvider.GetRequiredService<IMigrationProgressDbEnsurer>();
+        await ensurer.EnsureCreatedAsync(ct).ConfigureAwait(false);
     }
 
     [LoggerMessage(Level = LogLevel.Information,

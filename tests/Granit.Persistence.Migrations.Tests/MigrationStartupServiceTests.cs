@@ -92,14 +92,25 @@ public sealed class MigrationStartupServiceTests
         IDbContextFactory<MigrationProgressDbContext> factory,
         ITenantEnumerator tenantEnumerator,
         IMigrationBatchDispatcher dispatcher,
-        int defaultBatchSize = 200) =>
-        new(
+        int defaultBatchSize = 200)
+    {
+        IMigrationProgressDbEnsurer ensurer = Substitute.For<IMigrationProgressDbEnsurer>();
+
+        IServiceScopeFactory scopeFactory = Substitute.For<IServiceScopeFactory>();
+        IServiceScope scope = Substitute.For<IServiceScope>();
+        IServiceProvider sp = Substitute.For<IServiceProvider>();
+        sp.GetService(typeof(IMigrationProgressDbEnsurer)).Returns(ensurer);
+        scope.ServiceProvider.Returns(sp);
+        scopeFactory.CreateScope().Returns(scope);
+
+        return new(
+            scopeFactory,
             factory,
-            Substitute.For<IMigrationProgressDbEnsurer>(),
             tenantEnumerator,
             dispatcher,
             Microsoft.Extensions.Options.Options.Create(new MigrationStartupOptions { DefaultBatchSize = defaultBatchSize }),
             NullLogger<MigrationStartupService>.Instance);
+    }
 
     // -------------------------------------------------------------------------
     // No pending cycles
