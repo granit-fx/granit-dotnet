@@ -39,10 +39,10 @@ internal sealed class TemplateCategoryEntityConfiguration
             .HasMaxLength(200)
             .IsRequired();
 
-        // Unique constraint on Name for business rule enforcement.
-        builder.HasIndex(e => e.Name)
+        // Unique constraint on (TenantId, Name) for multi-tenant business rule enforcement.
+        builder.HasIndex(e => new { e.TenantId, e.Name })
             .IsUnique()
-            .HasDatabaseName($"uq_{GranitTemplatingDbProperties.DbTablePrefix}categories_name");
+            .HasDatabaseName($"uq_{GranitTemplatingDbProperties.DbTablePrefix}categories_tenant_name");
 
         // Sort index for default ordering (SortOrder, Name).
         builder.HasIndex(e => new { e.SortOrder, e.Name })

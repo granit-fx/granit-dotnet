@@ -63,6 +63,12 @@ internal sealed partial class LlmContentModerator(
         {
             throw;
         }
+        catch (JsonException ex)
+        {
+            // Adversarial/malformed LLM output — fail-closed to prevent bypass
+            LogModerationParseFailure(ex);
+            return new ModerationResult { IsAcceptable = false, Flags = [] };
+        }
         catch (Exception ex)
         {
             LogModerationFailed(ex);
@@ -98,7 +104,8 @@ internal sealed partial class LlmContentModerator(
 
         if (parsed is null)
         {
-            return new ModerationResult { IsAcceptable = true, Flags = [] };
+            // Fail-closed: unparseable LLM response suggests adversarial manipulation
+            return new ModerationResult { IsAcceptable = false, Flags = [] };
         }
 
         List<ModerationFlag> filteredFlags = [];
@@ -132,6 +139,10 @@ internal sealed partial class LlmContentModerator(
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "AI content moderation failed — content accepted (fail-open), flagged for manual review")]
     private partial void LogModerationFailed(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "AI content moderation returned unparseable response — content rejected (fail-closed)")]
+    private partial void LogModerationParseFailure(Exception exception);
 
     private sealed record LlmModerationResponse(bool IsAcceptable, List<LlmModerationFlag>? Flags);
 

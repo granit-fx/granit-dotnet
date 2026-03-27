@@ -70,8 +70,8 @@ internal sealed class EfCoreTimelineStore(
     {
         await using TimelineDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
+        // VULN-209: Do not bypass soft-delete filter — reject attachments on deleted entries
         bool entryExists = await db.TimelineEntries
-            .IgnoreQueryFilters([GranitFilterNames.SoftDelete])
             .AnyAsync(e => e.Id == entryId, cancellationToken).ConfigureAwait(false);
 
         if (!entryExists)

@@ -1,5 +1,7 @@
+using Granit.Domain;
 using Granit.Exceptions;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Templating.Store;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +14,8 @@ namespace Granit.Templating.EntityFrameworkCore.Internal;
 internal sealed class EfTemplateCategoryStore(
     IDbContextFactory<TemplatingDbContext> contextFactory,
     IGuidGenerator guidGenerator,
-    IClock clock)
+    IClock clock,
+    ICurrentTenant? currentTenant = null)
     : ITemplateCategoryStoreReader, ITemplateCategoryStoreWriter
 {
     /// <inheritdoc/>
@@ -101,6 +104,7 @@ internal sealed class EfTemplateCategoryStore(
             SortOrder = sortOrder,
             CreatedAt = clock.Now,
             CreatedBy = createdBy,
+            TenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id : null,
         };
 
         ctx.TemplateCategories.Add(entity);

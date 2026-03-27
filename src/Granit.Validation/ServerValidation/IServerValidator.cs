@@ -17,6 +17,16 @@ public interface IServerValidator
     string ErrorCode { get; }
 
     /// <summary>
+    /// Indicates whether this validator handles personally identifiable information (PII)
+    /// such as social security numbers, national IDs, or credit card numbers.
+    /// </summary>
+    /// <remarks>
+    /// Sensitive validators are hidden from unauthenticated callers in the
+    /// server-side validation endpoints (discovery and validate).
+    /// </remarks>
+    bool IsSensitive => false;
+
+    /// <summary>
     /// Returns <see langword="true"/> when <paramref name="value"/> satisfies the validation rule.
     /// </summary>
     bool Validate(string? value);

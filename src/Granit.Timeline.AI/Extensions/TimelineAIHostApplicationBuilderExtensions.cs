@@ -39,8 +39,8 @@ public static class TimelineAIHostApplicationBuilderExtensions
             .BindConfiguration(TimelineAIOptions.SectionName);
 
         builder.Services.TryAddSingleton<TimelineAIMetrics>();
-        builder.Services.TryAddSingleton<ITimelineSummarizer, LlmTimelineSummarizer>();
-        builder.Services.TryAddSingleton<ITimelineAnomalyDetector, LlmTimelineAnomalyDetector>();
+        builder.Services.TryAddScoped<ITimelineSummarizer, LlmTimelineSummarizer>();
+        builder.Services.TryAddScoped<ITimelineAnomalyDetector, LlmTimelineAnomalyDetector>();
 
         return builder;
     }

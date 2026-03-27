@@ -40,4 +40,20 @@ public sealed class DelegatingServerValidatorTests
 
         validator.ShouldBeAssignableTo<IServerValidator>();
     }
+
+    [Fact]
+    public void IsSensitive_DefaultsFalse()
+    {
+        DelegatingServerValidator validator = new("Granit:Validation:Test", _ => true);
+
+        validator.IsSensitive.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IsSensitive_WhenExplicitlyTrue_ReturnsTrue()
+    {
+        DelegatingServerValidator validator = new("Granit:Validation:Test", _ => true, isSensitive: true);
+
+        validator.IsSensitive.ShouldBeTrue();
+    }
 }

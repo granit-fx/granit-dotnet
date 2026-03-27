@@ -1,5 +1,7 @@
+using Granit.Domain;
 using Granit.Exceptions;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Templating.Exceptions;
 using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
@@ -32,7 +34,8 @@ internal sealed class EfDocumentTemplateStore(
     HybridCache cache,
     IGuidGenerator guidGenerator,
     IClock clock,
-    ITemplateTransitionHook transitionHook) : IDocumentTemplateStoreReader, IDocumentTemplateStoreWriter
+    ITemplateTransitionHook transitionHook,
+    ICurrentTenant? currentTenant = null) : IDocumentTemplateStoreReader, IDocumentTemplateStoreWriter
 {
     /// <inheritdoc/>
     public async Task<TemplateDescriptor?> TryGetPublishedAsync(
@@ -93,6 +96,7 @@ internal sealed class EfDocumentTemplateStore(
                 Status = TemplateLifecycleStatus.Draft,
                 CreatedAt = clock.Now,
                 CreatedBy = updatedBy,
+                TenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id : null,
             });
         }
 
@@ -341,6 +345,9 @@ internal sealed class EfDocumentTemplateStore(
             PublishedBy = entity.PublishedBy,
         };
 
-    private static string CacheKey(TemplateKey key) =>
-        $"granit:tmpl:{key.Name}|{key.Culture ?? string.Empty}";
+    private string CacheKey(TemplateKey key)
+    {
+        string tenantSegment = currentTenant is { IsAvailable: true } ? currentTenant.Id?.ToString() ?? "global" : "global";
+        return $"granit:tmpl:{tenantSegment}:{key.Name}|{key.Culture ?? string.Empty}";
+    }
 }

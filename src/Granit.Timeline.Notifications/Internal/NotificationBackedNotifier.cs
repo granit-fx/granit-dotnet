@@ -12,6 +12,8 @@ namespace Granit.Timeline.Notifications.Internal;
 internal sealed class NotificationBackedNotifier(
     INotificationPublisher publisher) : ITimelineNotifier
 {
+    private const int MaxBodyPreviewLength = 200;
+
     /// <inheritdoc/>
     public async Task NotifyEntryPostedAsync(
         TimelineEntry entry,
@@ -33,13 +35,14 @@ internal sealed class NotificationBackedNotifier(
             return;
         }
 
+        // VULN-206: Truncate body and use AuthorId only (AuthorName is PII / [SensitiveData])
         TimelineCommentNotificationData data = new(
             entry.EntityType,
             entry.EntityId,
             entry.Id,
             entry.AuthorId,
-            entry.AuthorName,
-            entry.Body);
+            null,
+            TruncateBody(entry.Body));
 
         EntityReference relatedEntity = new(entry.EntityType, entry.EntityId);
 
@@ -72,13 +75,14 @@ internal sealed class NotificationBackedNotifier(
             return;
         }
 
+        // VULN-206: Truncate body and use AuthorId only
         TimelineMentionNotificationData data = new(
             entry.EntityType,
             entry.EntityId,
             entry.Id,
             entry.AuthorId,
-            entry.AuthorName,
-            entry.Body);
+            null,
+            TruncateBody(entry.Body));
 
         EntityReference relatedEntity = new(entry.EntityType, entry.EntityId);
 
@@ -88,5 +92,15 @@ internal sealed class NotificationBackedNotifier(
             recipients,
             relatedEntity,
             cancellationToken).ConfigureAwait(false);
+    }
+
+    private static string TruncateBody(string body)
+    {
+        if (body.Length <= MaxBodyPreviewLength)
+        {
+            return body;
+        }
+
+        return string.Concat(body.AsSpan(0, MaxBodyPreviewLength), "...");
     }
 }

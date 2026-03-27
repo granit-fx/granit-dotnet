@@ -76,13 +76,14 @@ public static class ValidationEndpointRouteBuilderExtensions
 
     internal static Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> HandleValidate(
         ValidationFieldValidateRequest request,
-        [FromServices] ServerValidatorRegistry registry)
+        [FromServices] ServerValidatorRegistry registry,
+        HttpContext httpContext)
     {
-        IServerValidator? validator = registry.GetOrNull(request.ErrorCode);
+        IServerValidator? validator = ResolveValidator(registry, request.ErrorCode, httpContext);
 
         if (validator is null)
         {
-            return ValidatorNotFound(request.ErrorCode);
+            return ValidatorNotFound();
         }
 
         ValidationFieldStatus status = validator.Validate(request.Value)
@@ -94,13 +95,14 @@ public static class ValidationEndpointRouteBuilderExtensions
 
     internal static Ok<ValidationFieldValidateBatchResponse> HandleValidateBatch(
         ValidationFieldValidateBatchRequest request,
-        [FromServices] ServerValidatorRegistry registry)
+        [FromServices] ServerValidatorRegistry registry,
+        HttpContext httpContext)
     {
         List<ValidationFieldValidateResponse> results = new(request.Fields.Count);
 
         foreach (ValidationFieldValidateRequest field in request.Fields)
         {
-            IServerValidator? validator = registry.GetOrNull(field.ErrorCode);
+            IServerValidator? validator = ResolveValidator(registry, field.ErrorCode, httpContext);
 
             ValidationFieldStatus status;
             if (validator is null)
@@ -121,15 +123,49 @@ public static class ValidationEndpointRouteBuilderExtensions
     }
 
     internal static Ok<IReadOnlyList<string>> HandleGetValidators(
-        [FromServices] ServerValidatorRegistry registry) =>
-        TypedResults.Ok<IReadOnlyList<string>>(registry.GetAllErrorCodes().Order().ToList());
+        [FromServices] ServerValidatorRegistry registry,
+        HttpContext httpContext)
+    {
+        bool isAuthenticated = httpContext.User.Identity?.IsAuthenticated == true;
+
+        return TypedResults.Ok<IReadOnlyList<string>>(
+            registry.GetAll()
+                .Where(v => !v.IsSensitive || isAuthenticated)
+                .Select(v => v.ErrorCode)
+                .Order()
+                .ToList());
+    }
 
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 
-    private static ProblemHttpResult ValidatorNotFound(string errorCode) =>
+    /// <summary>
+    /// Resolves a validator by error code. Sensitive validators are hidden
+    /// from unauthenticated callers (returns <see langword="null"/>).
+    /// </summary>
+    private static IServerValidator? ResolveValidator(
+        ServerValidatorRegistry registry,
+        string errorCode,
+        HttpContext httpContext)
+    {
+        IServerValidator? validator = registry.GetOrNull(errorCode);
+
+        if (validator is null)
+        {
+            return null;
+        }
+
+        if (validator.IsSensitive && httpContext.User.Identity?.IsAuthenticated != true)
+        {
+            return null;
+        }
+
+        return validator;
+    }
+
+    private static ProblemHttpResult ValidatorNotFound() =>
         TypedResults.Problem(
-            detail: $"No server validator is registered for error code '{errorCode}'.",
+            detail: "No server validator is registered for the specified error code.",
             statusCode: StatusCodes.Status404NotFound);
 }

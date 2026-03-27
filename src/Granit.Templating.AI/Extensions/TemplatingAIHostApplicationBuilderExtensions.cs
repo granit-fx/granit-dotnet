@@ -4,6 +4,7 @@ using Granit.Templating.AI.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Templating.AI.Extensions;
 
@@ -33,6 +34,7 @@ public static class TemplatingAIHostApplicationBuilderExtensions
             .AddOptions<TemplatingAIOptions>()
             .BindConfiguration(TemplatingAIOptions.SectionName);
 
+        builder.Services.TryAddSingleton<IValidateOptions<TemplatingAIOptions>, TemplatingAIOptionsValidator>();
         builder.Services.TryAddSingleton<IAITemplateAssistant, LlmTemplateAssistant>();
 
         return builder;

@@ -12,14 +12,14 @@ internal sealed class UnitedKingdomServerValidatorContributor : IServerValidator
     public IEnumerable<IServerValidator> GetValidators()
     {
         // --- Personal identifiers ---
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidUkNationalInsuranceNumber", NationalInsuranceNumberAlgorithm.IsValid);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidUkNhsNumber", NhsNumberAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Granit:Validation:InvalidUkNationalInsuranceNumber", NationalInsuranceNumberAlgorithm.IsValid, isSensitive: true);
+        yield return new DelegatingServerValidator("Granit:Validation:InvalidUkNhsNumber", NhsNumberAlgorithm.IsValid, isSensitive: true);
 
         // --- Payment ---
         yield return new DelegatingServerValidator("Granit:Validation:InvalidUkSortCode", SortCodeAlgorithm.IsValid);
 
         // --- Tax & Company ---
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidUkUtr", UtrAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Granit:Validation:InvalidUkUtr", UtrAlgorithm.IsValid, isSensitive: true);
         yield return new DelegatingServerValidator("Granit:Validation:InvalidUkVat", UkVatAlgorithm.IsValid);
         yield return new DelegatingServerValidator("Granit:Validation:InvalidUkCompaniesHouseNumber", CompaniesHouseNumberAlgorithm.IsValid);
 

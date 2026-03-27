@@ -25,4 +25,20 @@ public sealed class DelegatingServerValidatorTests
         Should.Throw<ArgumentNullException>(
             () => new DelegatingServerValidator(null!, _ => true));
     }
+
+    [Fact]
+    public void IsSensitive_DefaultsFalse()
+    {
+        var validator = new DelegatingServerValidator("Granit:Validation:Test", _ => true);
+
+        validator.IsSensitive.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IsSensitive_WhenExplicitlyTrue_ReturnsTrue()
+    {
+        var validator = new DelegatingServerValidator("Granit:Validation:Test", _ => true, isSensitive: true);
+
+        validator.IsSensitive.ShouldBeTrue();
+    }
 }

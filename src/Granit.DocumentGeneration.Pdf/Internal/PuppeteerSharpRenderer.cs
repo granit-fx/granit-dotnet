@@ -39,6 +39,11 @@ internal sealed partial class PuppeteerSharpRenderer(
             await page.SetRequestInterceptionAsync(true).ConfigureAwait(false);
             page.Request += async (_, e) => await e.Request.AbortAsync().ConfigureAwait(false);
 
+            // Disable JavaScript execution — PDF rendering from HTML/CSS does not
+            // require JS, and user-controlled <script> tags could cause CPU/memory
+            // exhaustion (CWE-94). SSRF is already blocked by request interception.
+            await page.SetJavaScriptEnabledAsync(false).ConfigureAwait(false);
+
             await page.SetContentAsync(html, new NavigationOptions
             {
                 WaitUntil = [WaitUntilNavigation.DOMContentLoaded],

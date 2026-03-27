@@ -12,14 +12,23 @@ namespace Granit.Templating.Endpoints.Validators;
 /// </summary>
 internal sealed class SaveTemplateRequestValidator : GranitValidator<SaveTemplateRequest>
 {
+    /// <summary>Maximum allowed template content length (1 MB).</summary>
+    private const int MaxContentLength = 1_048_576;
+
+    /// <summary>Supported MIME types for template content.</summary>
+    private static readonly string[] SupportedMimeTypes = ["text/html", "text/plain"];
+
     public SaveTemplateRequestValidator()
     {
         RuleFor(x => x.Content)
-            .NotEmpty();
+            .NotEmpty()
+            .MaximumLength(MaxContentLength);
 
         RuleFor(x => x.MimeType)
             .NotEmpty()
-            .MaximumLength(TemplatingPatterns.MaxMimeTypeLength);
+            .MaximumLength(TemplatingPatterns.MaxMimeTypeLength)
+            .Must(mime => SupportedMimeTypes.Contains(mime, StringComparer.OrdinalIgnoreCase))
+            .WithErrorCodeAndMessage("Granit:Validation:UnsupportedMimeType");
 
         RuleFor(x => x.Name)
             .MaximumLength(TemplatingPatterns.MaxNameLength)

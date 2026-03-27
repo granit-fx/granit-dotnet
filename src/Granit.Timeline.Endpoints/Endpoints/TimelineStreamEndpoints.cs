@@ -1,5 +1,7 @@
+using Granit.Authorization.Abstractions;
 using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
+using Granit.Timeline.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -18,7 +20,7 @@ internal static class TimelineStreamEndpoints
         group.MapGet("/{entityType}/{entityId}", GetStreamAsync)
             .WithName("GetTimelineStream")
             .WithSummary("Returns the paginated activity stream for an entity, newest first.")
-            .WithDescription("Returns comments, internal notes, and system log entries associated with the entity, ordered by occurrence date descending. Supports pagination via page and pageSize query parameters. Soft-deleted entries are excluded.")
+            .WithDescription("Returns comments, internal notes (staff-only, requires Timeline.InternalNotes.Read permission), and system log entries associated with the entity, ordered by occurrence date descending. Supports pagination via page and pageSize query parameters. Soft-deleted entries are excluded.")
             .Produces<PagedResult<TimelineStreamEntry>>();
 
         return group;
@@ -28,11 +30,29 @@ internal static class TimelineStreamEndpoints
         string entityType,
         string entityId,
         [FromServices] ITimelineReader reader,
+        [FromServices] IPermissionChecker permissionChecker,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = QueryEngineDefaults.DefaultPageSize,
         CancellationToken cancellationToken = default)
     {
         PagedResult<TimelineStreamEntry> result = await reader.GetStreamAsync(entityType, entityId, page, pageSize, cancellationToken).ConfigureAwait(false);
+
+        // VULN-101: Filter InternalNote entries unless user has staff permission
+        bool canReadInternalNotes = await permissionChecker.IsGrantedAsync(
+            TimelinePermissions.InternalNotes.Read, cancellationToken).ConfigureAwait(false);
+
+        if (!canReadInternalNotes)
+        {
+            var filtered = result.Items
+                .Where(e => e.EntryType != TimelineStreamEntryType.InternalNote)
+                .ToList();
+
+            result = new PagedResult<TimelineStreamEntry>(
+                filtered,
+                result.TotalCount,
+                result.HasMore);
+        }
+
         return TypedResults.Ok(result);
     }
 }

@@ -17,14 +17,14 @@ internal static class TimelineFollowerEndpoints
     internal static RouteGroupBuilder MapFollowerEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/{entityType}/{entityId}/follow", FollowAsync)
-            .RequireAuthorization(TimelinePermissions.Entries.Create)
+            .RequireAuthorization(TimelinePermissions.Followers.Manage)
             .WithName("FollowTimelineEntity")
             .WithSummary("Subscribes the current user as a follower of an entity.")
             .WithDescription("Adds the authenticated user to the follower list for the specified entity. Followers receive notifications when new timeline entries are posted. Idempotent — following an already-followed entity is a no-op.")
             .Produces(StatusCodes.Status204NoContent);
 
         group.MapDelete("/{entityType}/{entityId}/follow", UnfollowAsync)
-            .RequireAuthorization(TimelinePermissions.Entries.Create)
+            .RequireAuthorization(TimelinePermissions.Followers.Manage)
             .WithName("UnfollowTimelineEntity")
             .WithSummary("Unsubscribes the current user from an entity.")
             .WithDescription("Removes the authenticated user from the follower list. The user will no longer receive notifications for new timeline entries on this entity. Idempotent.")
@@ -46,7 +46,9 @@ internal static class TimelineFollowerEndpoints
         [FromServices] ICurrentUserService currentUser,
         CancellationToken cancellationToken)
     {
-        string userId = currentUser.UserId ?? string.Empty;
+        // VULN-207: Fail-closed — reject unauthenticated users instead of creating ghost followers
+        string userId = currentUser.UserId
+            ?? throw new UnauthorizedAccessException("User ID is required to follow an entity.");
         await followerService.FollowAsync(userId, entityType, entityId, cancellationToken).ConfigureAwait(false);
         return TypedResults.NoContent();
     }
@@ -58,7 +60,9 @@ internal static class TimelineFollowerEndpoints
         [FromServices] ICurrentUserService currentUser,
         CancellationToken cancellationToken)
     {
-        string userId = currentUser.UserId ?? string.Empty;
+        // VULN-207: Fail-closed
+        string userId = currentUser.UserId
+            ?? throw new UnauthorizedAccessException("User ID is required to unfollow an entity.");
         await followerService.UnfollowAsync(userId, entityType, entityId, cancellationToken).ConfigureAwait(false);
         return TypedResults.NoContent();
     }

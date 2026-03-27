@@ -1,4 +1,5 @@
 using Granit.AI;
+using Granit.AI.Internal;
 using Granit.Authorization.AI.Internal;
 using Granit.Authorization.AI.Options;
 using Microsoft.Extensions.AI;
@@ -148,7 +149,7 @@ public sealed class LlmAccessAnomalyDetectorTests
         string prompt = LlmAccessAnomalyDetector.BuildPrompt("user-1", "Admin.Access", "off-hours login");
 
         prompt.ShouldContain("off-hours login");
-        prompt.ShouldContain(LlmAccessAnomalyDetector.PseudonymizeUserId("user-1"));
+        prompt.ShouldContain(LlmInputSanitizer.PseudonymizeUserId("user-1"));
         prompt.ShouldContain("Admin.Access");
     }
 
@@ -158,7 +159,7 @@ public sealed class LlmAccessAnomalyDetectorTests
         string prompt = LlmAccessAnomalyDetector.BuildPrompt("user-1", "Documents.Read", null);
 
         prompt.ShouldNotContain("Additional context:");
-        prompt.ShouldContain(LlmAccessAnomalyDetector.PseudonymizeUserId("user-1"));
+        prompt.ShouldContain(LlmInputSanitizer.PseudonymizeUserId("user-1"));
         prompt.ShouldContain("Documents.Read");
     }
 }

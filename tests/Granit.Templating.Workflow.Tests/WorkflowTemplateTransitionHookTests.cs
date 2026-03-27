@@ -30,30 +30,39 @@ public sealed class WorkflowTemplateTransitionHookTests
     private static IWorkflowManager<WorkflowLifecycleStatus> CreateDefaultManager()
     {
         IWorkflowManager<WorkflowLifecycleStatus> manager = Substitute.For<IWorkflowManager<WorkflowLifecycleStatus>>();
-        manager.GetAllowedTransitionsAsync(Arg.Any<WorkflowLifecycleStatus>(), Arg.Any<CancellationToken>())
+
+        // Mock TransitionAsync — CanTransitionAsync now calls TransitionAsync instead of GetAllowedTransitionsAsync
+        // to distinguish "can execute directly" from "requires approval".
+        manager.TransitionAsync(
+                Arg.Any<WorkflowLifecycleStatus>(), Arg.Any<WorkflowLifecycleStatus>(),
+                Arg.Any<TransitionContext?>(), Arg.Any<CancellationToken>())
             .Returns(callInfo =>
             {
-                WorkflowLifecycleStatus from = callInfo.Arg<WorkflowLifecycleStatus>();
-                List<WorkflowTransition<WorkflowLifecycleStatus>> transitions = from switch
-                {
-                    WorkflowLifecycleStatus.Draft =>
-                    [
-                        new() { From = from, To = WorkflowLifecycleStatus.Published },
-                        new() { From = from, To = WorkflowLifecycleStatus.PendingReview },
-                    ],
-                    WorkflowLifecycleStatus.Published =>
-                    [
-                        new() { From = from, To = WorkflowLifecycleStatus.Archived },
-                        new() { From = from, To = WorkflowLifecycleStatus.Draft },
-                    ],
-                    WorkflowLifecycleStatus.PendingReview =>
-                    [
-                        new() { From = from, To = WorkflowLifecycleStatus.Published },
-                    ],
-                    _ => [],
-                };
-                return (IReadOnlyList<WorkflowTransition<WorkflowLifecycleStatus>>)transitions;
+                WorkflowLifecycleStatus from = callInfo.ArgAt<WorkflowLifecycleStatus>(0);
+                WorkflowLifecycleStatus to = callInfo.ArgAt<WorkflowLifecycleStatus>(1);
+
+                // Define valid direct transitions (Completed outcome).
+                bool isValid = (from, to) is
+                    (WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.Published) or
+                    (WorkflowLifecycleStatus.Published, WorkflowLifecycleStatus.Archived) or
+                    (WorkflowLifecycleStatus.Published, WorkflowLifecycleStatus.Draft) or
+                    (WorkflowLifecycleStatus.PendingReview, WorkflowLifecycleStatus.Published);
+
+                return isValid
+                    ? new TransitionResult<WorkflowLifecycleStatus>
+                    {
+                        Succeeded = true,
+                        ResultingState = to,
+                        Outcome = TransitionOutcome.Completed,
+                    }
+                    : new TransitionResult<WorkflowLifecycleStatus>
+                    {
+                        Succeeded = false,
+                        ResultingState = from,
+                        Outcome = TransitionOutcome.InvalidTransition,
+                    };
             });
+
         return manager;
     }
 
@@ -82,7 +91,6 @@ public sealed class WorkflowTemplateTransitionHookTests
 
     [Theory]
     [InlineData(TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.Published, true)]
-    [InlineData(TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.PendingReview, true)]
     [InlineData(TemplateLifecycleStatus.Published, TemplateLifecycleStatus.Archived, true)]
     [InlineData(TemplateLifecycleStatus.Published, TemplateLifecycleStatus.Draft, true)]
     [InlineData(TemplateLifecycleStatus.PendingReview, TemplateLifecycleStatus.Published, true)]

@@ -146,6 +146,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .WithSummary("Creates a new template draft.")
              .WithDescription("Creates a new template with an initial draft revision. The template name must be unique. The draft can be previewed and edited before publishing. Returns 201 Created with the template detail.")
              .Produces<TemplateDetailResponse>(StatusCodes.Status201Created)
+             .ProducesValidationProblem()
              .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
@@ -155,6 +156,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .WithSummary("Updates an existing template draft.")
              .WithDescription("Replaces the draft revision content and metadata. Only the draft revision is affected — published and archived revisions are immutable. Creates a new draft if none exists. Returns 404 if the template does not exist.")
              .Produces<TemplateDetailResponse>()
+             .ProducesValidationProblem()
              .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
@@ -192,6 +194,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .WithSummary("Renders the current draft with optional test data and returns the HTML output.")
              .WithDescription("Renders the template's current draft content using the configured template engine (Liquid, Razor, etc.) with optional test data. Returns the rendered HTML. Useful for live preview in the template editor. Returns 404 if the template or draft does not exist.")
              .Produces<TemplatePreviewResponse>()
+             .ProducesValidationProblem()
              .ProducesProblem(StatusCodes.Status404NotFound)
              .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
@@ -214,6 +217,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .WithSummary("Creates a new template category.")
              .WithDescription("Creates a new template category with the given name and sort order. The name must be unique.")
              .Produces<TemplateCategoryResponse>(StatusCodes.Status201Created)
+             .ProducesValidationProblem()
              .ProducesProblem(StatusCodes.Status409Conflict)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
@@ -223,6 +227,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .WithSummary("Updates an existing template category.")
              .WithDescription("Updates the name and sort order of an existing category. Returns 404 if the category does not exist.")
              .Produces<TemplateCategoryResponse>()
+             .ProducesValidationProblem()
              .ProducesProblem(StatusCodes.Status404NotFound)
              .ProducesProblem(StatusCodes.Status409Conflict)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
@@ -915,8 +920,10 @@ public static class TemplatingEndpointRouteBuilderExtensions
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
+            // Do not leak internal error details (VULN-300). Log the full exception
+            // via structured logging in the engine; return a generic message to the client.
             return TypedResults.Problem(
-                detail: $"Template rendering failed: {ex.Message}",
+                detail: "Template rendering failed. Check the template syntax and data model.",
                 statusCode: StatusCodes.Status422UnprocessableEntity);
         }
 
@@ -1128,7 +1135,9 @@ public static class TemplatingEndpointRouteBuilderExtensions
     private static string GetCurrentUserId(HttpContext context)
     {
         ICurrentUserService? userService = context.RequestServices.GetService<ICurrentUserService>();
-        return userService?.UserId ?? userService?.UserName ?? "unknown";
+        return userService?.UserId
+            ?? userService?.UserName
+            ?? throw new UnauthorizedAccessException("Unable to resolve current user identity for audit trail.");
     }
 
     private static TemplateRevisionResponse ToRevisionResponse(TemplateRevision revision) =>
@@ -1172,7 +1181,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
 
     private static ProblemHttpResult StoreNotRegistered() =>
         TypedResults.Problem(
-            detail: "No template store is registered. Add Granit.Templating.EntityFrameworkCore to enable persistence.",
+            detail: "No template store is registered. Install a persistence module to enable this feature.",
             statusCode: StatusCodes.Status501NotImplemented);
 
     private static ProblemHttpResult? ValidateTemplateName(string name)
@@ -1203,10 +1212,10 @@ public static class TemplatingEndpointRouteBuilderExtensions
 
     private static ProblemHttpResult? ValidatePagination(int page, int pageSize)
     {
-        if (page < 1)
+        if (page is < 1 or > 10_000)
         {
             return TypedResults.Problem(
-                detail: "Page must be at least 1.",
+                detail: "Page must be between 1 and 10000.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
 

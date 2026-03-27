@@ -15,8 +15,9 @@ namespace Granit.Templating.Scriban.Internal;
 /// </summary>
 /// <remarks>
 /// <strong>Security:</strong> templates run in a sandboxed <see cref="TemplateContext"/> with
-/// <c>EnableRelaxedMemberAccess = false</c>. No I/O, reflection, or .NET assembly access is
-/// available from within a template.
+/// <c>EnableRelaxedMemberAccess = false</c>, explicit loop/recursion limits, and a member filter
+/// blocking <c>regex</c> builtins (ReDoS prevention). No I/O, reflection, or .NET assembly access
+/// is available from within a template.
 /// <para>
 /// Model data is exposed under the <c>model</c> variable with snake_case property names
 /// (e.g. <c>{{ model.first_name }}</c>). Global contexts are injected under their
@@ -25,7 +26,11 @@ namespace Granit.Templating.Scriban.Internal;
 /// </remarks>
 internal sealed class ScribanTemplateEngine : ITemplateEngine
 {
-    // Parsed Template objects are immutable and thread-safe — cache to avoid re-parsing
+    private const int MaxLoopIterations = 500;
+    private const int MaxRecursionDepth = 50;
+    private const int MaxCachedTemplates = 1_000;
+
+    // Parsed Template objects are immutable and thread-safe — bounded cache to prevent memory exhaustion.
     private readonly ConcurrentDictionary<string, Template> _templateCache = new();
 
     /// <inheritdoc/>
@@ -42,6 +47,17 @@ internal sealed class ScribanTemplateEngine : ITemplateEngine
         CancellationToken cancellationToken = default) where TData : notnull
     {
         string cacheKey = descriptor.RevisionId?.ToString() ?? descriptor.Content;
+
+        // Evict oldest entries when cache exceeds size limit to prevent memory exhaustion.
+        if (_templateCache.Count >= MaxCachedTemplates && !_templateCache.ContainsKey(cacheKey))
+        {
+            string? firstKey = _templateCache.Keys.FirstOrDefault();
+            if (firstKey is not null)
+            {
+                _templateCache.TryRemove(firstKey, out _);
+            }
+        }
+
         Template template = _templateCache.GetOrAdd(cacheKey, _ =>
         {
             var parsed = Template.Parse(descriptor.Content);
@@ -87,10 +103,32 @@ internal sealed class ScribanTemplateEngine : ITemplateEngine
             // Sandboxing: no bypass of member visibility restrictions
             EnableRelaxedMemberAccess = false,
 
+            // Explicit resource limits to prevent CPU/memory exhaustion (VULN-200)
+            LoopLimit = MaxLoopIterations,
+            RecursiveLimit = MaxRecursionDepth,
+
+            // Block access to regex builtins to prevent ReDoS (VULN-207 / CWE-1333)
+            MemberFilter = MemberFilterDelegate,
+
             // Propagate cancellation to the Scriban render loop
             CancellationToken = cancellationToken,
         };
 
         return templateContext;
     }
+
+    /// <summary>
+    /// Blocks access to <c>regex</c> builtins to prevent ReDoS attacks via user-controlled patterns.
+    /// All other Scriban builtins (string, math, date, array, object) remain accessible.
+    /// </summary>
+    private static MemberFilterDelegate MemberFilterDelegate => (member) =>
+    {
+        // Block regex builtins — user-controlled patterns can cause catastrophic backtracking
+        if (member.DeclaringType?.Name is "RegexFunctions")
+        {
+            return false;
+        }
+
+        return true;
+    };
 }

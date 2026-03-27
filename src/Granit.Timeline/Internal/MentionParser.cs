@@ -8,7 +8,10 @@ namespace Granit.Timeline.Internal;
 /// </summary>
 internal static partial class MentionParser
 {
-    [GeneratedRegex(@"@\[[^\]]+\]\(user:([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\)")]
+    [GeneratedRegex(
+        @"@\[[^\]]+\]\(user:([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\)",
+        RegexOptions.None,
+        matchTimeoutMilliseconds: 1000)]
     private static partial Regex MentionPattern();
 
     /// <summary>

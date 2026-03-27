@@ -13,14 +13,14 @@ internal sealed class NorthAmericaServerValidatorContributor : IServerValidatorC
     public IEnumerable<IServerValidator> GetValidators()
     {
         // --- United States ---
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidUsSsn", SsnAlgorithm.IsValid);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidUsEin", EinAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Granit:Validation:InvalidUsSsn", SsnAlgorithm.IsValid, isSensitive: true);
+        yield return new DelegatingServerValidator("Granit:Validation:InvalidUsEin", EinAlgorithm.IsValid, isSensitive: true);
         yield return new DelegatingServerValidator("Granit:Validation:InvalidUsStateCode", UsStateCodeAlgorithm.IsValid);
         yield return new DelegatingServerValidator("Granit:Validation:InvalidUsZipCode", ZipCodeAlgorithm.IsValid);
         yield return new DelegatingServerValidator("Granit:Validation:InvalidNanpPhoneNumber", NanpPhoneAlgorithm.IsValid);
 
         // --- Canada ---
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidCanadianSin", SinAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Granit:Validation:InvalidCanadianSin", SinAlgorithm.IsValid, isSensitive: true);
         yield return new DelegatingServerValidator("Granit:Validation:InvalidCanadianBusinessNumber", BusinessNumberAlgorithm.IsValid);
         yield return new DelegatingServerValidator("Granit:Validation:InvalidCanadianPostalCode", CanadianPostalCodeAlgorithm.IsValid);
     }

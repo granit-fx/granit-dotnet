@@ -19,7 +19,7 @@ internal sealed class CoreServerValidatorContributor : IServerValidatorContribut
         yield return new DelegatingServerValidator("Granit:Validation:InvalidIban", IbanAlgorithm.IsValid);
         yield return new DelegatingServerValidator("Granit:Validation:InvalidBicSwift", BicSwiftAlgorithm.IsValid);
         yield return new DelegatingServerValidator("Granit:Validation:InvalidSepaCreditorIdentifier", SepaCreditorIdentifierAlgorithm.IsValid);
-        yield return new DelegatingServerValidator("Granit:Validation:InvalidCreditCard", CreditCardAlgorithm.IsValid);
+        yield return new DelegatingServerValidator("Granit:Validation:InvalidCreditCard", CreditCardAlgorithm.IsValid, isSensitive: true);
         yield return new DelegatingServerValidator("Granit:Validation:InvalidLei", LeiAlgorithm.IsValid);
 
         // ISO standard codes (algorithm + regex)

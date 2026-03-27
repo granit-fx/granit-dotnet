@@ -20,7 +20,7 @@ internal sealed class TimelineEntryConfiguration : IEntityTypeConfiguration<Time
         builder.Property(x => x.EntityType).HasMaxLength(256).IsRequired();
         builder.Property(x => x.EntityId).HasMaxLength(256).IsRequired();
         builder.Property(x => x.EntryType).IsRequired();
-        builder.Property(x => x.Body).IsRequired();
+        builder.Property(x => x.Body).HasMaxLength(65_536).IsRequired();
         builder.Property(x => x.AuthorId).HasMaxLength(256).IsRequired();
         builder.Property(x => x.AuthorName).HasMaxLength(512).IsRequired();
         builder.Property(x => x.CreatedBy).HasMaxLength(256).IsRequired();

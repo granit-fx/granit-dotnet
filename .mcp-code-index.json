@@ -2505,7 +2505,7 @@
       "kind": "class",
       "project": "Granit.AI",
       "file": "src/Granit.AI/PromptBuilder.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "ToString",
@@ -26458,7 +26458,7 @@
       "kind": "class",
       "project": "Granit.Templating.AI",
       "file": "src/Granit.Templating.AI/AITemplateDataEnricher.cs",
-      "line": 21,
+      "line": 28,
       "members": [
         {
           "name": "BuildPrompt",
@@ -26480,7 +26480,7 @@
       "kind": "class",
       "project": "Granit.Templating.AI",
       "file": "src/Granit.Templating.AI/Extensions/TemplatingAIHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitTemplatingAI",
@@ -27729,6 +27729,12 @@
           "kind": "property",
           "signature": "int MaxEntriesToAnalyze",
           "returnType": "int"
+        },
+        {
+          "name": "MaxConcurrentRequests",
+          "kind": "property",
+          "signature": "int MaxConcurrentRequests",
+          "returnType": "int"
         }
       ]
     },
@@ -27859,6 +27865,12 @@
       "line": 10,
       "members": [
         {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid entryId, Guid blobId, string fileName, string contentType, long sizeBytes, DateTimeOffset createdAt, string createdBy, Guid? tenantId = null)",
+          "returnType": "TimelineAttachment"
+        },
+        {
           "name": "EntryId",
           "kind": "property",
           "signature": "Guid EntryId",
@@ -27885,12 +27897,6 @@
           "kind": "method",
           "signature": "Create(Guid id, string entityType, string entityId, TimelineEntryType entryType, string body, string authorId, string authorName, DateTimeOffset createdAt, string createdBy, Guid? tenantId = null, Guid? parentEntryId = null)",
           "returnType": "TimelineEntry"
-        },
-        {
-          "name": "EntityType",
-          "kind": "property",
-          "signature": "string EntityType",
-          "returnType": "string"
         },
         {
           "name": "EntityId",
@@ -27990,6 +27996,24 @@
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Permissions/TimelinePermissions.cs",
       "line": 14,
+      "members": []
+    },
+    {
+      "name": "Followers",
+      "fqn": "Granit.Timeline.Endpoints.Permissions.Followers",
+      "kind": "class",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Permissions/TimelinePermissions.cs",
+      "line": 43,
+      "members": []
+    },
+    {
+      "name": "InternalNotes",
+      "fqn": "Granit.Timeline.Endpoints.Permissions.InternalNotes",
+      "kind": "class",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Permissions/TimelinePermissions.cs",
+      "line": 33,
       "members": []
     },
     {
@@ -28226,7 +28250,7 @@
       "kind": "record",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/TimelineStreamEntry.cs",
-      "line": 7,
+      "line": 9,
       "members": [
         {
           "name": "Id",
@@ -29125,6 +29149,12 @@
           "returnType": "string ErrorCode { get; } = errorCode ?? throw"
         },
         {
+          "name": "IsSensitive",
+          "kind": "property",
+          "signature": "bool IsSensitive",
+          "returnType": "bool"
+        },
+        {
           "name": "Validate",
           "kind": "method",
           "signature": "Validate(string? value)",
@@ -29141,10 +29171,16 @@
       "line": 12,
       "members": [
         {
+          "name": "ErrorCode",
+          "kind": "property",
+          "signature": "string ErrorCode",
+          "returnType": "string"
+        },
+        {
           "name": "Validate",
           "kind": "method",
           "signature": "Validate(string? value)",
-          "returnType": "string ErrorCode { get; } bool"
+          "returnType": "bool"
         }
       ]
     },
@@ -29177,6 +29213,12 @@
           "kind": "method",
           "signature": "GetAllErrorCodes()",
           "returnType": "IReadOnlyCollection<string>"
+        },
+        {
+          "name": "GetAll",
+          "kind": "method",
+          "signature": "GetAll()",
+          "returnType": "IReadOnlyCollection<IServerValidator>"
         }
       ]
     },

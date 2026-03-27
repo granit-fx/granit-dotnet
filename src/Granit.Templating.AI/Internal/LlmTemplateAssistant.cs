@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using Granit.AI;
 using Granit.AI.Internal;
 using Granit.Templating.AI.Options;
@@ -54,7 +55,16 @@ internal sealed partial class LlmTemplateAssistant(
 
             string template = StripMarkdownFences(responseText);
 
-            return string.IsNullOrWhiteSpace(template) ? null : template;
+            if (string.IsNullOrWhiteSpace(template))
+            {
+                return null;
+            }
+
+            // Strip potentially dangerous HTML elements from LLM output (VULN-100).
+            // Full Scriban syntax validation is deferred to the template engine at render time.
+            template = SanitizeHtmlOutput(template);
+
+            return template;
         }
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
@@ -99,6 +109,26 @@ internal sealed partial class LlmTemplateAssistant(
     internal static string StripMarkdownFences(string text) =>
         LlmResponseHelper.StripMarkdownCodeFences(text);
 
+    /// <summary>
+    /// Strips dangerous HTML elements from LLM-generated template output.
+    /// Removes <c>&lt;script&gt;</c> blocks and inline event handlers (<c>on*=</c>)
+    /// to prevent XSS when the output is rendered or stored as a template.
+    /// </summary>
+    internal static string SanitizeHtmlOutput(string html)
+    {
+        // Remove <script>...</script> blocks (case-insensitive, multiline)
+        html = ScriptTagPattern().Replace(html, string.Empty);
+        // Remove inline event handler attributes (onclick, onload, onerror, etc.)
+        html = EventHandlerPattern().Replace(html, string.Empty);
+        return html;
+    }
+
+    [GeneratedRegex(@"<script\b[^>]*>[\s\S]*?</script>", RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex ScriptTagPattern();
+
+    [GeneratedRegex(@"\s+on\w+\s*=\s*""[^""]*""", RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex EventHandlerPattern();
+
     private static string GetFriendlyTypeName(Type type)
     {
         Type? nullableUnderlying = Nullable.GetUnderlyingType(type);
@@ -137,4 +167,5 @@ internal sealed partial class LlmTemplateAssistant(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "AI template generation failed, returning null (graceful degradation)")]
     private partial void LogTemplateGenerationFailed(Exception exception);
+
 }

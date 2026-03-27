@@ -1,8 +1,11 @@
+using Granit.Authorization.Abstractions;
+using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Endpoints.Dtos;
 using Granit.Timeline.Endpoints.Permissions;
 using Granit.Timeline.Internal;
+using Granit.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -16,22 +19,26 @@ namespace Granit.Timeline.Endpoints.Endpoints;
 /// </summary>
 internal static class TimelineEntryEndpoints
 {
+    private const int MaxMentionsPerEntry = 10;
+
     internal static RouteGroupBuilder MapEntryEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/{entityType}/{entityId}/entries", PostEntryAsync)
             .RequireAuthorization(TimelinePermissions.Entries.Create)
             .WithName("PostTimelineEntry")
             .WithSummary("Posts a new comment, internal note, or system log entry.")
-            .WithDescription("Creates a new timeline entry for the specified entity. Supports Comment and InternalNote types (SystemLog is system-only). The body supports Markdown. @mentions in the body auto-subscribe mentioned users as followers and trigger mention notifications. Supports threaded replies via parentEntryId and file attachments via attachmentBlobIds.")
-            .Produces<TimelineStreamEntry>(StatusCodes.Status201Created);
+            .WithDescription("Creates a new timeline entry for the specified entity. Supports Comment and InternalNote types (SystemLog is system-only). The body supports Markdown. @mentions in the body trigger one-time mention notifications (max 10 per entry). Supports threaded replies via parentEntryId.")
+            .Produces<TimelineStreamEntry>(StatusCodes.Status201Created)
+            .ProducesValidationProblem();
 
         group.MapDelete("/{entityType}/{entityId}/entries/{entryId:guid}", DeleteEntryAsync)
             .RequireAuthorization(TimelinePermissions.Entries.Create)
             .WithName("DeleteTimelineEntry")
             .WithSummary("Soft-deletes a comment or internal note (RGPD right to erasure).")
-            .WithDescription("Performs a soft-delete on the timeline entry, preserving the record for audit purposes while hiding the content. Only Comment and InternalNote entries can be deleted. SystemLog entries are immutable (ISO 27001). Returns 404 if the entry does not exist.")
+            .WithDescription("Performs a soft-delete on the timeline entry, preserving the record for audit purposes while hiding the content. Only the author or users with Timeline.Entries.Manage permission can delete. Only Comment and InternalNote entries can be deleted. SystemLog entries are immutable (ISO 27001). Returns 404 if the entry does not exist.")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status403Forbidden);
 
         return group;
     }
@@ -49,11 +56,11 @@ internal static class TimelineEntryEndpoints
             entityType, entityId, request.EntryType, request.Body,
             request.ParentEntryId, cancellationToken).ConfigureAwait(false);
 
-        // Parse @mentions and auto-subscribe mentioned users
+        // VULN-205: Parse @mentions with cap — send one-time notification only, no auto-follow
         IReadOnlyList<string> mentionedUserIds = MentionParser.ExtractMentionedUserIds(entry.Body);
-        foreach (string userId in mentionedUserIds)
+        if (mentionedUserIds.Count > MaxMentionsPerEntry)
         {
-            await followerService.FollowAsync(userId, entityType, entityId, cancellationToken).ConfigureAwait(false);
+            mentionedUserIds = mentionedUserIds.Take(MaxMentionsPerEntry).ToList();
         }
 
         // Notify followers
@@ -87,14 +94,40 @@ internal static class TimelineEntryEndpoints
     }
 
 #pragma warning disable S1172 // Route parameters bound by ASP.NET Core minimal API
-    private static async Task<Results<NoContent, NotFound>> DeleteEntryAsync(
+    private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> DeleteEntryAsync(
         string entityType,
         string entityId,
         Guid entryId,
         [FromServices] ITimelineWriter writer,
+        [FromServices] ITimelineReader reader,
+        [FromServices] ICurrentUserService currentUser,
+        [FromServices] IPermissionChecker permissionChecker,
         CancellationToken cancellationToken)
 #pragma warning restore S1172
     {
+        // VULN-100: Ownership check — only author or admin (Timeline.Entries.Manage) can delete
+        bool isAdmin = await permissionChecker.IsGrantedAsync(TimelinePermissions.Entries.Manage, cancellationToken).ConfigureAwait(false);
+
+        if (!isAdmin)
+        {
+            // Verify the current user owns the entry before allowing deletion
+            PagedResult<TimelineStreamEntry> stream = await reader.GetStreamAsync(entityType, entityId, 1, 1000, cancellationToken).ConfigureAwait(false);
+            TimelineStreamEntry? target = stream.Items.FirstOrDefault(e => e.Id == entryId);
+
+            if (target is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            string userId = currentUser.UserId ?? string.Empty;
+            if (target.AuthorId != userId)
+            {
+                return TypedResults.Problem(
+                    detail: "You can only delete your own timeline entries.",
+                    statusCode: StatusCodes.Status403Forbidden);
+            }
+        }
+
         try
         {
             await writer.DeleteEntryAsync(entryId, cancellationToken).ConfigureAwait(false);

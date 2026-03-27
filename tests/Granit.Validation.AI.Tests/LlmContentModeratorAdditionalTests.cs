@@ -44,11 +44,12 @@ public sealed class LlmContentModeratorAdditionalTests
     }
 
     [Fact]
-    public void ParseResponse_NullJson_ReturnsAcceptable()
+    public void ParseResponse_NullJson_ReturnsNotAcceptable()
     {
+        // Fail-closed: unparseable/null JSON → content rejected
         ModerationResult result = LlmContentModerator.ParseResponse("null", 0.5);
 
-        result.IsAcceptable.ShouldBeTrue();
+        result.IsAcceptable.ShouldBeFalse();
         result.Flags.ShouldBeEmpty();
     }
 

@@ -65,6 +65,20 @@ public sealed class ServerValidatorRegistryTests
         registry.GetOrNull("Granit:Validation:InvalidIban").ShouldBeNull();
     }
 
+    [Fact]
+    public void GetAll_ReturnsAllValidatorInstances()
+    {
+        ServerValidatorRegistry registry = CreateRegistry(
+            new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Granit:Validation:InvalidSsn", _ => true, isSensitive: true));
+
+        IReadOnlyCollection<IServerValidator> all = registry.GetAll();
+
+        all.Count.ShouldBe(2);
+        all.ShouldContain(v => v.ErrorCode == "Granit:Validation:InvalidIban");
+        all.ShouldContain(v => v.ErrorCode == "Granit:Validation:InvalidSsn" && v.IsSensitive);
+    }
+
     private static ServerValidatorRegistry CreateRegistry(params IServerValidator[] validators)
     {
         var contributor = new TestContributor(validators);

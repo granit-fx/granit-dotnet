@@ -12,9 +12,11 @@ internal sealed class PostTimelineEntryRequestValidator : AbstractValidator<Post
 {
     public PostTimelineEntryRequestValidator()
     {
-        RuleFor(x => x.Body).NotEmpty();
+        RuleFor(x => x.Body).NotEmpty().MaximumLength(65_536);
         RuleFor(x => x.EntryType)
             .IsInEnum()
             .NotEqual(TimelineEntryType.SystemLog);
+        RuleFor(x => x.AttachmentBlobIds)
+            .Must(ids => ids is null || ids.Count <= 20);
     }
 }

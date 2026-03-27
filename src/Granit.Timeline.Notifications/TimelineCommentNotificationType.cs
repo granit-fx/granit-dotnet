@@ -33,5 +33,5 @@ public sealed record TimelineCommentNotificationData(
     string EntityId,
     Guid EntryId,
     string AuthorId,
-    string AuthorName,
+    string? AuthorName,
     string Body);

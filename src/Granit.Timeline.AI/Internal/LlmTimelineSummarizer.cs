@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using Granit.AI;
+using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.AI.Diagnostics;
@@ -20,9 +21,13 @@ internal sealed partial class LlmTimelineSummarizer(
     IAIChatClientFactory chatClientFactory,
     ITimelineReader timelineReader,
     IOptions<TimelineAIOptions> options,
+    ICurrentTenant currentTenant,
     TimelineAIMetrics metrics,
     ILogger<LlmTimelineSummarizer> logger) : ITimelineSummarizer
 {
+    // VULN-103: Shared concurrency limiter to prevent denial-of-wallet via unbounded LLM calls
+    private static readonly SemaphoreSlim ConcurrencyLimiter = new(3, 3);
+
     private static readonly TimelineSummary EmptySummary = new(
         Text: "No timeline entries found.",
         EntryCount: 0,
@@ -49,6 +54,8 @@ internal sealed partial class LlmTimelineSummarizer(
             return EmptySummary;
         }
 
+        // VULN-103: Concurrency limiter to prevent denial-of-wallet
+        await ConcurrencyLimiter.WaitAsync(ct).ConfigureAwait(false);
         try
         {
             IChatClient chatClient = await chatClientFactory
@@ -69,14 +76,14 @@ internal sealed partial class LlmTimelineSummarizer(
             DateTimeOffset newest = entries[0].OccurredAt;
             DateTimeOffset oldest = entries[^1].OccurredAt;
 
-            metrics.RecordSummarizationCompleted(tenantId: null, entityType);
-            metrics.RecordSummarizationDuration(tenantId: null, entityType, Stopwatch.GetElapsedTime(startTimestamp));
+            metrics.RecordSummarizationCompleted(tenantId: currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null, entityType);
+            metrics.RecordSummarizationDuration(tenantId: currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null, entityType, Stopwatch.GetElapsedTime(startTimestamp));
 
             return new TimelineSummary(text, entries.Count, oldest, newest);
         }
         catch (OperationCanceledException) when (!ct.IsCancellationRequested)
         {
-            metrics.RecordSummarizationFailure(tenantId: null, entityType);
+            metrics.RecordSummarizationFailure(tenantId: currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null, entityType);
             LogSummarizationTimeout(logger, entityType, entityId, config.TimeoutSeconds);
             return new TimelineSummary(
                 "Summary generation timed out.",
@@ -90,13 +97,17 @@ internal sealed partial class LlmTimelineSummarizer(
         }
         catch (Exception ex)
         {
-            metrics.RecordSummarizationFailure(tenantId: null, entityType);
+            metrics.RecordSummarizationFailure(tenantId: currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null, entityType);
             LogSummarizationFailure(logger, entityType, entityId, ex);
             return new TimelineSummary(
                 "Summary generation failed.",
                 entries.Count,
                 entries[^1].OccurredAt,
                 entries[0].OccurredAt);
+        }
+        finally
+        {
+            ConcurrencyLimiter.Release();
         }
     }
 
@@ -127,6 +138,12 @@ internal sealed partial class LlmTimelineSummarizer(
                 if (since.HasValue && entry.OccurredAt < since.Value)
                 {
                     return allEntries;
+                }
+
+                // VULN-102: Exclude staff-only InternalNote entries from LLM prompts
+                if (entry.EntryType == TimelineStreamEntryType.InternalNote)
+                {
+                    continue;
                 }
 
                 allEntries.Add(entry);
@@ -162,7 +179,8 @@ internal sealed partial class LlmTimelineSummarizer(
         var sb = new StringBuilder();
         foreach (TimelineStreamEntry entry in entries)
         {
-            string author = entry.AuthorName ?? entry.AuthorId ?? "System";
+            // VULN-002: Pseudonymize PII — never send AuthorName ([SensitiveData]) to external LLM
+            string author = entry.AuthorId is { Length: >= 8 } id ? $"User-{id[..8]}" : "System";
             sb.AppendLine($"- [{entry.OccurredAt:u}] ({entry.EntryType}) {author}: {entry.Body}");
         }
 

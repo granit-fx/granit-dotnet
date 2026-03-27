@@ -45,6 +45,13 @@ public sealed partial class ServerValidatorRegistry
     /// </summary>
     public IReadOnlyCollection<string> GetAllErrorCodes() => _validators.Keys;
 
+    /// <summary>
+    /// Returns all registered validators. Useful for filtered discovery
+    /// (e.g. excluding <see cref="IServerValidator.IsSensitive"/> validators
+    /// from unauthenticated endpoints).
+    /// </summary>
+    public IReadOnlyCollection<IServerValidator> GetAll() => _validators.Values;
+
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Duplicate server validator for error code '{ErrorCode}' from {ContributorType}. Keeping the first registration.")]
     private static partial void LogDuplicateValidator(ILogger logger, string errorCode, string contributorType);

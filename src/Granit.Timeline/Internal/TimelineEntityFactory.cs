@@ -48,16 +48,14 @@ internal static class TimelineEntityFactory
         string contentType,
         long sizeBytes,
         AuditContext context) =>
-        new()
-        {
-            Id = context.GuidGenerator.Create(),
-            EntryId = entryId,
-            BlobId = blobId,
-            FileName = fileName,
-            ContentType = contentType,
-            SizeBytes = sizeBytes,
-            CreatedAt = context.Clock.Now,
-            CreatedBy = context.CurrentUser.UserId ?? string.Empty,
-            TenantId = context.CurrentTenant.IsAvailable ? context.CurrentTenant.Id : null,
-        };
+        TimelineAttachment.Create(
+            context.GuidGenerator.Create(),
+            entryId,
+            blobId,
+            fileName,
+            contentType,
+            sizeBytes,
+            context.Clock.Now,
+            context.CurrentUser.UserId ?? string.Empty,
+            context.CurrentTenant.IsAvailable ? context.CurrentTenant.Id : null);
 }

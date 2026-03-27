@@ -185,14 +185,17 @@ public sealed class ClockTests
     }
 
     [Fact]
-    public void ConvertToUserTime_WithInvalidTimezone_ThrowsTimeZoneNotFoundException()
+    public void ConvertToUserTime_WithInvalidTimezone_ReturnsUnchanged()
     {
         // Arrange
         _timezoneProvider.Timezone.Returns("Invalid/Timezone");
         var utcTime = new DateTimeOffset(2026, 6, 15, 12, 0, 0, TimeSpan.Zero);
 
-        // Act & Assert
-        Should.Throw<TimeZoneNotFoundException>(() => _clock.ConvertToUserTime(utcTime));
+        // Act
+        DateTimeOffset result = _clock.ConvertToUserTime(utcTime);
+
+        // Assert — graceful fallback: invalid timezone ID returns the value unchanged
+        result.ShouldBe(utcTime);
     }
 
     [Fact]

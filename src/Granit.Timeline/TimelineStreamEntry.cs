@@ -1,3 +1,5 @@
+using Granit.DataProtection;
+
 namespace Granit.Timeline;
 
 /// <summary>
@@ -19,6 +21,7 @@ public sealed record TimelineStreamEntry
     public string? AuthorId { get; init; }
 
     /// <summary>Author display name.</summary>
+    [SensitiveData]
     public string? AuthorName { get; init; }
 
     /// <summary>Content body (Markdown, structured text, or summary).</summary>

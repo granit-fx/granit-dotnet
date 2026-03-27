@@ -1,4 +1,5 @@
 using Granit.Templating.Store;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 
@@ -6,7 +7,7 @@ namespace Granit.Templating.Tests;
 
 public sealed class NullTemplateTransitionHookTests
 {
-    private readonly NullTemplateTransitionHook _hook = new();
+    private readonly NullTemplateTransitionHook _hook = new(NullLogger<NullTemplateTransitionHook>.Instance);
 
     [Fact]
     public void IsWorkflowEnabled_ReturnsFalse() =>

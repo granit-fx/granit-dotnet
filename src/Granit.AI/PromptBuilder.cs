@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Granit.AI;
 
@@ -8,7 +9,7 @@ namespace Granit.AI;
 /// Separates system instructions from user data using structured delimiters
 /// and enforces input length limits.
 /// </summary>
-public sealed class PromptBuilder
+public sealed partial class PromptBuilder
 {
     private const int DefaultMaxInputLength = 50_000;
     private const string DataBlockOpen = "<data>";
@@ -100,12 +101,13 @@ public sealed class PromptBuilder
 
     /// <summary>
     /// Sanitizes user input to prevent prompt injection.
-    /// Strips control characters, XML-like tags that could confuse delimiters,
-    /// and truncates to the configured maximum length.
+    /// Strips Unicode control characters (VULN-200), XML-like tags that could confuse
+    /// delimiters, and truncates to the configured maximum length.
     /// </summary>
     internal string SanitizeInput(string input)
     {
         input = Truncate(input);
+        input = StripControlCharacters(input);
         return StripDangerousPatterns(input);
     }
 
@@ -114,16 +116,25 @@ public sealed class PromptBuilder
             ? $"{input[.._maxInputLength]}[TRUNCATED]"
             : input;
 
-    private static string StripDangerousPatterns(string input)
-    {
-        // Neutralize XML-like tags that could break our data block delimiters.
-        // Also neutralize common prompt injection patterns.
-        return input
-            .Replace("<data>", "&lt;data&gt;", StringComparison.OrdinalIgnoreCase)
-            .Replace("</data>", "&lt;/data&gt;", StringComparison.OrdinalIgnoreCase)
-            .Replace("<system>", "&lt;system&gt;", StringComparison.OrdinalIgnoreCase)
-            .Replace("</system>", "&lt;/system&gt;", StringComparison.OrdinalIgnoreCase)
-            .Replace("<instruction>", "&lt;instruction&gt;", StringComparison.OrdinalIgnoreCase)
-            .Replace("</instruction>", "&lt;/instruction&gt;", StringComparison.OrdinalIgnoreCase);
-    }
+    /// <summary>
+    /// Strips ALL XML/HTML-like tags from user input to prevent prompt injection
+    /// via delimiter spoofing (e.g. &lt;data&gt;, &lt;system&gt;, &lt;tool&gt;,
+    /// &lt;assistant&gt;, and any other tag an attacker might use).
+    /// </summary>
+    [GeneratedRegex(@"</?[a-zA-Z][a-zA-Z0-9]*[^>]*>", RegexOptions.None, 100)]
+    private static partial Regex XmlLikeTagRegex();
+
+    /// <summary>
+    /// Strips Unicode control characters, zero-width chars, and bidirectional overrides
+    /// that could be used to obfuscate prompt injection payloads (VULN-200).
+    /// Preserves tab (0x09), LF (0x0A), and CR (0x0D).
+    /// </summary>
+    internal static string StripControlCharacters(string input) =>
+        ControlCharacterRegex().Replace(input, string.Empty);
+
+    [GeneratedRegex(@"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\u200B-\u200F\u202A-\u202E\uFEFF]")]
+    private static partial Regex ControlCharacterRegex();
+
+    private static string StripDangerousPatterns(string input) =>
+        XmlLikeTagRegex().Replace(input, string.Empty);
 }

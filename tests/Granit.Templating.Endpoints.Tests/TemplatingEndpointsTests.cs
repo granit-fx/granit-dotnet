@@ -14,6 +14,7 @@ using Granit.Templating.GlobalContext;
 using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
 using Granit.Templating.Store;
+using Granit.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -69,6 +70,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_storeWriter);
         builder.Services.AddSingleton(_transitionHook);
         builder.Services.AddSingleton<IValidator<SaveTemplateRequest>, SaveTemplateRequestValidator>();
+        builder.Services.AddSingleton(CreateTestUserService());
 
         _app = builder.Build();
         _app.MapGranitTemplatingAdmin();
@@ -1079,6 +1081,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_storeReader);
         builder.Services.AddSingleton(_storeWriter);
         builder.Services.AddSingleton<IValidator<SaveTemplateRequest>, SaveTemplateRequestValidator>();
+        builder.Services.AddSingleton(CreateTestUserService());
 
         _storeReader.ListTemplatesAsync(Arg.Any<TemplateListFilter>(), Arg.Any<CancellationToken>())
             .Returns(new PagedTemplateResult([], 0));
@@ -1436,6 +1439,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(storeWriter);
         builder.Services.AddSingleton<IValidator<SaveTemplateRequest>, SaveTemplateRequestValidator>();
         builder.Services.AddSingleton<ITemplateGlobalContext, TestGlobalContext>();
+        builder.Services.AddSingleton(CreateTestUserService());
 
         WebApplication app = builder.Build();
         app.MapGranitTemplatingAdmin();
@@ -1491,6 +1495,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(transitionHook);
         builder.Services.AddSingleton(engine);
         builder.Services.AddSingleton<IValidator<SaveTemplateRequest>, SaveTemplateRequestValidator>();
+        builder.Services.AddSingleton(CreateTestUserService());
 
         WebApplication app = builder.Build();
         app.MapGranitTemplatingAdmin();
@@ -1536,6 +1541,14 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     // =========================================================================
     // Fake global context for variable introspection tests
     // =========================================================================
+
+    private static ICurrentUserService CreateTestUserService()
+    {
+        ICurrentUserService service = Substitute.For<ICurrentUserService>();
+        service.UserId.Returns("test-user");
+        service.UserName.Returns("test-user");
+        return service;
+    }
 
     private sealed class TestGlobalContext : ITemplateGlobalContext
     {

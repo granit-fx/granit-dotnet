@@ -28,9 +28,22 @@ internal sealed class WorkflowTemplateTransitionHook(
     {
         WorkflowLifecycleStatus wFrom = ToWorkflow(from);
         WorkflowLifecycleStatus wTo = ToWorkflow(target);
-        IReadOnlyList<WorkflowTransition<WorkflowLifecycleStatus>> allowed =
-            await workflowManager.GetAllowedTransitionsAsync(wFrom, cancellationToken).ConfigureAwait(false);
-        return allowed.Any(t => t.To == wTo);
+
+        // Use TransitionAsync to validate both permission AND approval routing.
+        // GetAllowedTransitionsAsync conflates "can execute" with "can request approval",
+        // which would allow unpermitted users to publish directly.
+        TransitionContext? context = WorkflowTransitionContext.Current is { } info
+            ? new TransitionContext { Comment = info.Comment }
+            : null;
+
+        TransitionResult<WorkflowLifecycleStatus> result = await workflowManager
+            .TransitionAsync(wFrom, wTo, context, cancellationToken)
+            .ConfigureAwait(false);
+
+        // Only allow if the transition completed directly to the requested state.
+        // ApprovalRequested means the user lacks permission — the store must route
+        // to PendingReview instead of the requested target.
+        return result.Succeeded && result.Outcome == TransitionOutcome.Completed;
     }
 
     /// <inheritdoc/>

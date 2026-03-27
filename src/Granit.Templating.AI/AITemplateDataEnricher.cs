@@ -17,6 +17,13 @@ namespace Granit.Templating.AI;
 /// <see cref="BuildPrompt"/> and <see cref="ApplyEnrichment"/>. The base class handles
 /// <c>IChatClient</c> resolution, timeout, and graceful degradation (returns the original
 /// data unchanged on failure).
+/// <para>
+/// <strong>Security (GDPR/LLM06):</strong> <see cref="BuildPrompt"/> receives the full
+/// <typeparamref name="TData"/> business object. Subclass implementations MUST NOT include
+/// PII (personal names, email, addresses, financial data) in the prompt unless the LLM provider
+/// has a Data Processing Agreement (DPA) that covers the tenant's jurisdiction. Use
+/// <c>PromptBuilder</c> from <c>Granit.AI</c> to sanitize user-controlled input.
+/// </para>
 /// </remarks>
 public abstract partial class AITemplateDataEnricher<TData>(
     IAIChatClientFactory chatClientFactory,
@@ -32,6 +39,12 @@ public abstract partial class AITemplateDataEnricher<TData>(
     /// </summary>
     /// <param name="data">The current data model instance.</param>
     /// <returns>A prompt string for the LLM.</returns>
+    /// <remarks>
+    /// <strong>Security:</strong> Use <c>PromptBuilder</c> from <c>Granit.AI</c> to sanitize
+    /// any user-controlled fields included in the prompt. Do not interpolate raw user input
+    /// directly (prompt injection risk — OWASP LLM01). Avoid including PII unless the
+    /// LLM provider has an appropriate DPA (OWASP LLM06).
+    /// </remarks>
     protected abstract string BuildPrompt(TData data);
 
     /// <summary>

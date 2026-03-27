@@ -19,8 +19,32 @@ public static class TimelinePermissions
         public const string Read = "Timeline.Entries.Read";
 
         /// <summary>
-        /// Grants access to create timeline entries (post comments, follow/unfollow entities).
+        /// Grants access to create timeline entries (post comments).
         /// </summary>
         public const string Create = "Timeline.Entries.Create";
+
+        /// <summary>
+        /// Grants access to soft-delete any timeline entry regardless of ownership (admin).
+        /// </summary>
+        public const string Manage = "Timeline.Entries.Manage";
+    }
+
+    /// <summary>Permissions for the internal notes resource (staff-only entries).</summary>
+    public static class InternalNotes
+    {
+        /// <summary>
+        /// Grants read access to internal notes in activity streams.
+        /// Without this permission, internal notes are filtered out.
+        /// </summary>
+        public const string Read = "Timeline.InternalNotes.Read";
+    }
+
+    /// <summary>Permissions for the followers resource.</summary>
+    public static class Followers
+    {
+        /// <summary>
+        /// Grants access to follow/unfollow entities and view follower lists.
+        /// </summary>
+        public const string Manage = "Timeline.Followers.Manage";
     }
 }

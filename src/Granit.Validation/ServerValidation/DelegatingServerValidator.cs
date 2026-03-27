@@ -11,12 +11,15 @@ namespace Granit.Validation.ServerValidation;
 ///     "Granit:Validation:InvalidIban", IbanAlgorithm.IsValid);
 /// </code>
 /// </remarks>
-public sealed class DelegatingServerValidator(string errorCode, Func<string?, bool> validateFunc)
+public sealed class DelegatingServerValidator(string errorCode, Func<string?, bool> validateFunc, bool isSensitive = false)
     : IServerValidator
 {
     /// <inheritdoc />
     public string ErrorCode { get; } = errorCode
         ?? throw new ArgumentNullException(nameof(errorCode));
+
+    /// <inheritdoc />
+    public bool IsSensitive { get; } = isSensitive;
 
     /// <inheritdoc />
     public bool Validate(string? value) => validateFunc(value);

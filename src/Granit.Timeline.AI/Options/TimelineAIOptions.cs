@@ -29,4 +29,10 @@ public sealed class TimelineAIOptions
     /// Older entries are truncated when the stream exceeds this limit.
     /// </summary>
     public int MaxEntriesToAnalyze { get; set; } = 100;
+
+    /// <summary>
+    /// Maximum number of concurrent LLM requests for timeline AI operations per scope.
+    /// Prevents denial-of-wallet attacks via unbounded parallel LLM calls.
+    /// </summary>
+    public int MaxConcurrentRequests { get; set; } = 3;
 }

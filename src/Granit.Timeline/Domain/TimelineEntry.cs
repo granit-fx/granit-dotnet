@@ -32,7 +32,15 @@ public sealed class TimelineEntry : CreationAuditedAggregateRoot, ISoftDeletable
         DateTimeOffset createdAt,
         string createdBy,
         Guid? tenantId = null,
-        Guid? parentEntryId = null) => new()
+        Guid? parentEntryId = null)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(entityType);
+        ArgumentException.ThrowIfNullOrEmpty(entityId);
+        ArgumentException.ThrowIfNullOrEmpty(body);
+        ArgumentException.ThrowIfNullOrEmpty(authorId);
+        ArgumentException.ThrowIfNullOrEmpty(createdBy);
+
+        return new()
         {
             Id = id,
             EntityType = entityType,
@@ -46,6 +54,7 @@ public sealed class TimelineEntry : CreationAuditedAggregateRoot, ISoftDeletable
             CreatedBy = createdBy,
             TenantId = tenantId,
         };
+    }
 
     /// <summary>Entity type name (e.g. "Patient", "Invoice").</summary>
     public string EntityType { get; private set; } = string.Empty;

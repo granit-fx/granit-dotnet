@@ -19,6 +19,8 @@ public sealed class TimelineAIMetrics(IMeterFactory meterFactory)
     private const string TagTenantId = "tenant_id";
     private const string TagEntityType = "entity_type";
     private const string DefaultTenant = "global";
+    private const string UnknownEntityType = "_unknown_";
+    private const int MaxEntityTypeLength = 64;
 
     private readonly Counter<long> _summarizationsCompleted = meterFactory.Create(MeterName).CreateCounter<long>(
         "granit.timeline.ai.summarization.completed",
@@ -55,7 +57,7 @@ public sealed class TimelineAIMetrics(IMeterFactory meterFactory)
         _summarizationsCompleted.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { TagEntityType, entityType },
+            { TagEntityType, SanitizeEntityType(entityType) },
         });
 
     /// <summary>Records a failed AI timeline summarization.</summary>
@@ -63,7 +65,7 @@ public sealed class TimelineAIMetrics(IMeterFactory meterFactory)
         _summarizationFailures.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { TagEntityType, entityType },
+            { TagEntityType, SanitizeEntityType(entityType) },
         });
 
     /// <summary>Records the duration of an AI timeline summarization.</summary>
@@ -71,7 +73,7 @@ public sealed class TimelineAIMetrics(IMeterFactory meterFactory)
         _summarizationDuration.Record(duration.TotalSeconds, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { TagEntityType, entityType },
+            { TagEntityType, SanitizeEntityType(entityType) },
         });
 
     /// <summary>Records a completed AI timeline anomaly detection.</summary>
@@ -79,7 +81,7 @@ public sealed class TimelineAIMetrics(IMeterFactory meterFactory)
         _anomalyDetectionsCompleted.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { TagEntityType, entityType },
+            { TagEntityType, SanitizeEntityType(entityType) },
         });
 
     /// <summary>Records a failed AI timeline anomaly detection.</summary>
@@ -87,7 +89,7 @@ public sealed class TimelineAIMetrics(IMeterFactory meterFactory)
         _anomalyDetectionFailures.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { TagEntityType, entityType },
+            { TagEntityType, SanitizeEntityType(entityType) },
         });
 
     /// <summary>Records the duration of an AI timeline anomaly detection.</summary>
@@ -95,7 +97,7 @@ public sealed class TimelineAIMetrics(IMeterFactory meterFactory)
         _anomalyDetectionDuration.Record(duration.TotalSeconds, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { TagEntityType, entityType },
+            { TagEntityType, SanitizeEntityType(entityType) },
         });
 
     /// <summary>Records the number of anomalies found during detection.</summary>
@@ -103,6 +105,28 @@ public sealed class TimelineAIMetrics(IMeterFactory meterFactory)
         _anomaliesFound.Add(count, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
-            { TagEntityType, entityType },
+            { TagEntityType, SanitizeEntityType(entityType) },
         });
+
+    /// <summary>
+    /// Sanitizes entity type to prevent metrics cardinality explosion (VULN-211).
+    /// Rejects values that are too long or contain non-alphanumeric characters.
+    /// </summary>
+    private static string SanitizeEntityType(string entityType)
+    {
+        if (string.IsNullOrWhiteSpace(entityType) || entityType.Length > MaxEntityTypeLength)
+        {
+            return UnknownEntityType;
+        }
+
+        foreach (char c in entityType)
+        {
+            if (!char.IsLetterOrDigit(c) && c != '.' && c != '_' && c != '-')
+            {
+                return UnknownEntityType;
+            }
+        }
+
+        return entityType;
+    }
 }

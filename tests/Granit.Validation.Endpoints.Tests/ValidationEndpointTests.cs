@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using Granit.Validation.Endpoints.Dtos;
 using Granit.Validation.Endpoints.Extensions;
 using Granit.Validation.ServerValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -22,7 +24,8 @@ public sealed class ValidationEndpointTests
             new DelegatingServerValidator("Granit:Validation:InvalidIban", value => value == "BE68539007547034"));
 
         var request = new ValidationFieldValidateRequest("Granit:Validation:InvalidIban", "BE68539007547034");
-        Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result = ValidationEndpointRouteBuilderExtensions.HandleValidate(request, registry);
+        Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result =
+            ValidationEndpointRouteBuilderExtensions.HandleValidate(request, registry, CreateAuthenticatedContext());
 
         Ok<ValidationFieldValidateResponse> ok = result.Result.ShouldBeOfType<Ok<ValidationFieldValidateResponse>>();
         ok.Value.ShouldNotBeNull();
@@ -37,7 +40,8 @@ public sealed class ValidationEndpointTests
             new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => false));
 
         var request = new ValidationFieldValidateRequest("Granit:Validation:InvalidIban", "INVALID");
-        Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result = ValidationEndpointRouteBuilderExtensions.HandleValidate(request, registry);
+        Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result =
+            ValidationEndpointRouteBuilderExtensions.HandleValidate(request, registry, CreateAnonymousContext());
 
         Ok<ValidationFieldValidateResponse> ok = result.Result.ShouldBeOfType<Ok<ValidationFieldValidateResponse>>();
         ok.Value.ShouldNotBeNull();
@@ -50,10 +54,40 @@ public sealed class ValidationEndpointTests
         ServerValidatorRegistry registry = CreateRegistry();
 
         var request = new ValidationFieldValidateRequest("Granit:Validation:Unknown", "value");
-        Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result = ValidationEndpointRouteBuilderExtensions.HandleValidate(request, registry);
+        Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result =
+            ValidationEndpointRouteBuilderExtensions.HandleValidate(request, registry, CreateAnonymousContext());
 
         ProblemHttpResult problem = result.Result.ShouldBeOfType<ProblemHttpResult>();
         problem.StatusCode.ShouldBe(404);
+    }
+
+    [Fact]
+    public void HandleValidate_SensitiveValidator_Unauthenticated_Returns404()
+    {
+        ServerValidatorRegistry registry = CreateRegistry(
+            new DelegatingServerValidator("Granit:Validation:InvalidUsSsn", _ => true, isSensitive: true));
+
+        var request = new ValidationFieldValidateRequest("Granit:Validation:InvalidUsSsn", "123-45-6789");
+        Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result =
+            ValidationEndpointRouteBuilderExtensions.HandleValidate(request, registry, CreateAnonymousContext());
+
+        ProblemHttpResult problem = result.Result.ShouldBeOfType<ProblemHttpResult>();
+        problem.StatusCode.ShouldBe(404);
+    }
+
+    [Fact]
+    public void HandleValidate_SensitiveValidator_Authenticated_Validates()
+    {
+        ServerValidatorRegistry registry = CreateRegistry(
+            new DelegatingServerValidator("Granit:Validation:InvalidUsSsn", _ => true, isSensitive: true));
+
+        var request = new ValidationFieldValidateRequest("Granit:Validation:InvalidUsSsn", "123-45-6789");
+        Results<Ok<ValidationFieldValidateResponse>, ProblemHttpResult> result =
+            ValidationEndpointRouteBuilderExtensions.HandleValidate(request, registry, CreateAuthenticatedContext());
+
+        Ok<ValidationFieldValidateResponse> ok = result.Result.ShouldBeOfType<Ok<ValidationFieldValidateResponse>>();
+        ok.Value.ShouldNotBeNull();
+        ok.Value.Status.ShouldBe(ValidationFieldStatus.Valid);
     }
 
     // =========================================================================
@@ -74,13 +108,36 @@ public sealed class ValidationEndpointTests
             new("Granit:Validation:Unknown", "value"),
         ]);
 
-        Ok<ValidationFieldValidateBatchResponse> result = ValidationEndpointRouteBuilderExtensions.HandleValidateBatch(request, registry);
+        Ok<ValidationFieldValidateBatchResponse> result =
+            ValidationEndpointRouteBuilderExtensions.HandleValidateBatch(request, registry, CreateAuthenticatedContext());
 
         ValidationFieldValidateBatchResponse ok = result.Value.ShouldNotBeNull();
         ok.Results.Count.ShouldBe(3);
         ok.Results[0].Status.ShouldBe(ValidationFieldStatus.Valid);
         ok.Results[1].Status.ShouldBe(ValidationFieldStatus.Invalid);
         ok.Results[2].Status.ShouldBe(ValidationFieldStatus.ValidatorNotFound);
+    }
+
+    [Fact]
+    public void HandleValidateBatch_SensitiveValidator_Unauthenticated_ReturnsNotFound()
+    {
+        ServerValidatorRegistry registry = CreateRegistry(
+            new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Granit:Validation:InvalidUsSsn", _ => true, isSensitive: true));
+
+        var request = new ValidationFieldValidateBatchRequest(
+        [
+            new("Granit:Validation:InvalidIban", "BE68539007547034"),
+            new("Granit:Validation:InvalidUsSsn", "123-45-6789"),
+        ]);
+
+        Ok<ValidationFieldValidateBatchResponse> result =
+            ValidationEndpointRouteBuilderExtensions.HandleValidateBatch(request, registry, CreateAnonymousContext());
+
+        ValidationFieldValidateBatchResponse ok = result.Value.ShouldNotBeNull();
+        ok.Results.Count.ShouldBe(2);
+        ok.Results[0].Status.ShouldBe(ValidationFieldStatus.Valid);
+        ok.Results[1].Status.ShouldBe(ValidationFieldStatus.ValidatorNotFound);
     }
 
     // =========================================================================
@@ -94,7 +151,8 @@ public sealed class ValidationEndpointTests
             new DelegatingServerValidator("Granit:Validation:InvalidEmail", _ => true),
             new DelegatingServerValidator("Granit:Validation:InvalidBicSwift", _ => true));
 
-        Ok<IReadOnlyList<string>> result = ValidationEndpointRouteBuilderExtensions.HandleGetValidators(registry);
+        Ok<IReadOnlyList<string>> result =
+            ValidationEndpointRouteBuilderExtensions.HandleGetValidators(registry, CreateAnonymousContext());
 
         IReadOnlyList<string> codes = result.Value.ShouldNotBeNull();
         codes.Count.ShouldBe(2);
@@ -102,9 +160,52 @@ public sealed class ValidationEndpointTests
         codes[1].ShouldBe("Granit:Validation:InvalidEmail");
     }
 
+    [Fact]
+    public void HandleGetValidators_HidesSensitiveFromAnonymous()
+    {
+        ServerValidatorRegistry registry = CreateRegistry(
+            new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Granit:Validation:InvalidUsSsn", _ => true, isSensitive: true));
+
+        Ok<IReadOnlyList<string>> result =
+            ValidationEndpointRouteBuilderExtensions.HandleGetValidators(registry, CreateAnonymousContext());
+
+        IReadOnlyList<string> codes = result.Value.ShouldNotBeNull();
+        codes.Count.ShouldBe(1);
+        codes[0].ShouldBe("Granit:Validation:InvalidIban");
+    }
+
+    [Fact]
+    public void HandleGetValidators_ShowsSensitiveToAuthenticated()
+    {
+        ServerValidatorRegistry registry = CreateRegistry(
+            new DelegatingServerValidator("Granit:Validation:InvalidIban", _ => true),
+            new DelegatingServerValidator("Granit:Validation:InvalidUsSsn", _ => true, isSensitive: true));
+
+        Ok<IReadOnlyList<string>> result =
+            ValidationEndpointRouteBuilderExtensions.HandleGetValidators(registry, CreateAuthenticatedContext());
+
+        IReadOnlyList<string> codes = result.Value.ShouldNotBeNull();
+        codes.Count.ShouldBe(2);
+    }
+
     // =========================================================================
     // Helpers
     // =========================================================================
+
+    private static DefaultHttpContext CreateAnonymousContext()
+    {
+        DefaultHttpContext context = new();
+        context.User = new ClaimsPrincipal(new ClaimsIdentity());
+        return context;
+    }
+
+    private static DefaultHttpContext CreateAuthenticatedContext()
+    {
+        DefaultHttpContext context = new();
+        context.User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, "testuser")], "TestAuth"));
+        return context;
+    }
 
     private static ServerValidatorRegistry CreateRegistry(params IServerValidator[] validators)
     {

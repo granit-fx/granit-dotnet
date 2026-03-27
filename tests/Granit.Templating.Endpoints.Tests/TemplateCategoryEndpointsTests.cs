@@ -9,6 +9,7 @@ using Granit.Templating.Endpoints.Extensions;
 using Granit.Templating.Endpoints.Permissions;
 using Granit.Templating.Endpoints.Validators;
 using Granit.Templating.Store;
+using Granit.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -68,6 +69,9 @@ public sealed class TemplateCategoryEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(Substitute.For<ITemplateTransitionHook>());
         builder.Services.AddSingleton<IValidator<SaveTemplateRequest>, SaveTemplateRequestValidator>();
         builder.Services.AddSingleton<IValidator<SaveTemplateCategoryRequest>, SaveTemplateCategoryRequestValidator>();
+        ICurrentUserService userService = Substitute.For<ICurrentUserService>();
+        userService.UserId.Returns("test-user");
+        builder.Services.AddSingleton(userService);
 
         _app = builder.Build();
         _app.MapGranitTemplatingAdmin();
