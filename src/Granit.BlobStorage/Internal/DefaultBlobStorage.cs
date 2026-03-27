@@ -96,8 +96,18 @@ internal sealed partial class DefaultBlobStorage(
     public async Task<BlobDescriptor?> GetDescriptorAsync(
         string containerName,
         Guid blobId,
-        CancellationToken cancellationToken = default) =>
-        await reader.FindAsync(blobId, cancellationToken).ConfigureAwait(false);
+        CancellationToken cancellationToken = default)
+    {
+        BlobDescriptor? descriptor = await reader.FindAsync(blobId, cancellationToken).ConfigureAwait(false);
+
+        if (descriptor is not null &&
+            !string.Equals(descriptor.ContainerName, containerName, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        return descriptor;
+    }
 
     /// <inheritdoc/>
     public async Task DeleteAsync(

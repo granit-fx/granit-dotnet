@@ -69,6 +69,12 @@ internal sealed class AzureBlobOptionsValidator : IValidateOptions<AzureBlobOpti
                 return ValidateOptionsResult.Fail(
                     $"{nameof(options.ServiceUri)} must be set when {nameof(options.UseManagedIdentity)} is true.");
             }
+
+            if (options.ServiceUri.Scheme != Uri.UriSchemeHttps)
+            {
+                return ValidateOptionsResult.Fail(
+                    $"{nameof(options.ServiceUri)} must use HTTPS.");
+            }
         }
         else
         {

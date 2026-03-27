@@ -1,5 +1,6 @@
 using Granit.Encryption;
 using Granit.Encryption.Options;
+using Grpc.Core;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Vault.GoogleCloud.Providers;
@@ -36,8 +37,9 @@ internal sealed class CloudKmsStringEncryptionProvider(
         {
             return transitEncryption.DecryptAsync(_keyName, cipherText).GetAwaiter().GetResult();
         }
-        catch (Exception)
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.InvalidArgument)
         {
+            // Invalid ciphertext — Cloud KMS rejected the data
             return null;
         }
     }

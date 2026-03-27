@@ -8,6 +8,7 @@ using Granit.DataExchange.Export.Messages;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.Events;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +34,7 @@ internal sealed partial class ExportOrchestrator(
     IGuidGenerator guidGenerator,
     ILocalEventBus eventBus,
     IDistributedEventBus distributedEventBus,
+    ICurrentTenant currentTenant,
     DataExchangeMetrics metrics,
     ILogger<ExportOrchestrator> logger) : IExportOrchestrator
 {
@@ -49,7 +51,8 @@ internal sealed partial class ExportOrchestrator(
             guidGenerator.Create(),
             request.DefinitionName,
             request.Format,
-            JsonSerializer.Serialize(request));
+            JsonSerializer.Serialize(request),
+            currentTenant.IsAvailable ? currentTenant.Id : null);
 
         await jobWriter.CreateAsync(job, cancellationToken).ConfigureAwait(false);
 
@@ -117,7 +120,10 @@ internal sealed partial class ExportOrchestrator(
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             stopwatch.Stop();
-            job.Fail(ex.Message, clock.Now);
+            string sanitizedError = ex.Message.Length > 500
+                ? string.Concat(ex.Message.AsSpan(0, 500), "… [truncated]")
+                : ex.Message;
+            job.Fail(sanitizedError, clock.Now);
             await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
             metrics.RecordExportFailed(
@@ -125,10 +131,10 @@ internal sealed partial class ExportOrchestrator(
 
             await eventBus.PublishAsync(new ExportJobCompletedEto(
                 jobId, job.DefinitionName, ExportJobStatus.Failed,
-                job.CreatedBy, RowCount: null, ex.Message), cancellationToken).ConfigureAwait(false);
+                job.CreatedBy, RowCount: null, sanitizedError), cancellationToken).ConfigureAwait(false);
 
             await distributedEventBus.PublishAsync(new ExportJobFailedEto(
-                jobId, job.DefinitionName, ex.Message), cancellationToken).ConfigureAwait(false);
+                jobId, job.DefinitionName, sanitizedError), cancellationToken).ConfigureAwait(false);
 
             LogExportFailed(jobId, ex);
             throw;
@@ -329,8 +335,11 @@ internal sealed partial class ExportOrchestrator(
         return current;
     }
 
-    private static string SanitizeFileName(string definitionName) =>
-        definitionName.Replace('.', '_').Replace('/', '_').Replace('\\', '_');
+    private static string SanitizeFileName(string definitionName)
+    {
+        char[] invalidChars = Path.GetInvalidFileNameChars();
+        return string.Concat(definitionName.Select(c => invalidChars.Contains(c) ? '_' : c));
+    }
 
     [LoggerMessage(1, LogLevel.Information, "Export job {ExportJobId} queued for '{DefinitionName}' format '{Format}'")]
     private partial void LogExportQueued(Guid exportJobId, string definitionName, string format);

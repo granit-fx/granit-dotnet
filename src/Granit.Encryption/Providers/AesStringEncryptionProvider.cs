@@ -18,7 +18,7 @@ namespace Granit.Encryption.Providers;
 /// </para>
 /// Designed for frequent operations (&lt; 1 ms after startup).
 /// </summary>
-public sealed partial class AesStringEncryptionProvider : IStringEncryptionProvider
+public sealed partial class AesStringEncryptionProvider : IStringEncryptionProvider, IDisposable
 {
     /// <remarks>
     /// SECURITY: Fixed internal salt for PBKDF2 key derivation.
@@ -52,8 +52,22 @@ public sealed partial class AesStringEncryptionProvider : IStringEncryptionProvi
 
         if (string.IsNullOrEmpty(passPhrase))
         {
+            if (!opts.AllowEphemeralPassPhrase)
+            {
+                throw new InvalidOperationException(
+                    "Encryption:PassPhrase is required. " +
+                    "Configure a stable passphrase via Vault for production use, " +
+                    "or set Encryption:AllowEphemeralPassPhrase to true for development.");
+            }
+
             passPhrase = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
             LogEphemeralPassPhrase(logger);
+        }
+
+        if (opts.KeySize is not (128 or 192 or 256))
+        {
+            throw new ArgumentException(
+                $"Encryption:KeySize must be 128, 192, or 256 bits, got {opts.KeySize}.");
         }
 
         int aesKeySize = opts.KeySize / 8;
@@ -148,6 +162,13 @@ public sealed partial class AesStringEncryptionProvider : IStringEncryptionProvi
         {
             return null;
         }
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        CryptographicOperations.ZeroMemory(_aesKey);
+        CryptographicOperations.ZeroMemory(_hmacKey);
     }
 
     [LoggerMessage(Level = LogLevel.Warning,

@@ -221,10 +221,12 @@ public sealed class ExportJobListEndpointsTests : IAsyncDisposable
         }
         else if (status == ExportJobStatus.Completed)
         {
+            job.MarkAsExporting();
             job.Complete("blob-ref", "export.xlsx", 42, DateTimeOffset.UtcNow);
         }
         else if (status == ExportJobStatus.Failed)
         {
+            job.MarkAsExporting();
             job.Fail("failed", DateTimeOffset.UtcNow);
         }
 

@@ -92,6 +92,8 @@ public sealed class ImportJobTests
             "text/csv",
             1024,
             "blob/test.csv");
+        job.MarkAsPreviewed();
+        job.ConfirmMappings("[]");
 
         job.MarkAsExecuting();
 
@@ -110,6 +112,9 @@ public sealed class ImportJobTests
             1024,
             "blob/test.csv");
         DateTimeOffset completedAt = DateTimeOffset.UtcNow;
+        job.MarkAsPreviewed();
+        job.ConfirmMappings("[]");
+        job.MarkAsExecuting();
 
         job.Complete(ImportJobStatus.Completed, "{\"totalRows\":100}", completedAt);
 

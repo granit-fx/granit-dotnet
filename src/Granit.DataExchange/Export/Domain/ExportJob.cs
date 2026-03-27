@@ -1,4 +1,5 @@
 using Granit.Domain;
+using Granit.MultiTenancy;
 
 namespace Granit.DataExchange.Export.Domain;
 
@@ -9,7 +10,7 @@ namespace Granit.DataExchange.Export.Domain;
 /// Inherits <see cref="AuditedAggregateRoot"/> for ISO 27001-compliant audit trail
 /// (CreatedAt, CreatedBy, ModifiedAt, ModifiedBy).
 /// </remarks>
-public sealed class ExportJob : AuditedAggregateRoot
+public sealed class ExportJob : AuditedAggregateRoot, IMultiTenant
 {
     // Parameterless constructor required by EF Core materializer.
     private ExportJob() { }
@@ -84,17 +85,32 @@ public sealed class ExportJob : AuditedAggregateRoot
     /// </summary>
     public Guid? TenantId { get; private set; }
 
+    /// <inheritdoc />
+    Guid? IMultiTenant.TenantId { get => TenantId; set => TenantId = value; }
+
     /// <summary>
     /// Transitions to <see cref="ExportJobStatus.Exporting"/>.
     /// </summary>
-    internal void MarkAsExporting() =>
+    internal void MarkAsExporting()
+    {
+        if (Status is not ExportJobStatus.Queued)
+        {
+            throw new InvalidOperationException($"Cannot transition to '{ExportJobStatus.Exporting}' from '{Status}'.");
+        }
+
         Status = ExportJobStatus.Exporting;
+    }
 
     /// <summary>
     /// Marks the export as completed.
     /// </summary>
     internal void Complete(string blobReference, string fileName, int rowCount, DateTimeOffset completedAt)
     {
+        if (Status is not ExportJobStatus.Exporting)
+        {
+            throw new InvalidOperationException($"Cannot transition to '{ExportJobStatus.Completed}' from '{Status}'.");
+        }
+
         Status = ExportJobStatus.Completed;
         BlobReference = blobReference;
         FileName = fileName;
@@ -107,6 +123,11 @@ public sealed class ExportJob : AuditedAggregateRoot
     /// </summary>
     internal void Fail(string errorMessage, DateTimeOffset completedAt)
     {
+        if (Status is not ExportJobStatus.Exporting)
+        {
+            throw new InvalidOperationException($"Cannot transition to '{ExportJobStatus.Failed}' from '{Status}'.");
+        }
+
         Status = ExportJobStatus.Failed;
         ErrorMessage = errorMessage;
         CompletedAt = completedAt;

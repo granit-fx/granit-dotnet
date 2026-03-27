@@ -19,7 +19,7 @@ namespace Granit.Caching;
 /// The AES key must be provided exclusively via Vault or secure configuration.
 /// Never store the key in plaintext in code or committed configuration files.
 /// </remarks>
-public sealed class AesCacheValueEncryptor(IOptions<CacheEncryptionOptions> options) : ICacheValueEncryptor
+public sealed class AesCacheValueEncryptor(IOptions<CacheEncryptionOptions> options) : ICacheValueEncryptor, IDisposable
 {
     private const int NonceSizeBytes = 12;
     private const int TagSizeBytes = 16;
@@ -45,6 +45,12 @@ public sealed class AesCacheValueEncryptor(IOptions<CacheEncryptionOptions> opti
             throw new ArgumentException(
                 $"AES key must be {KeySizeBits} bits ({KeySizeBytes} bytes). " +
                 $"Received: {key.Length * 8} bits ({key.Length} bytes).");
+        }
+
+        if (CryptographicOperations.FixedTimeEquals(key, new byte[KeySizeBytes]))
+        {
+            throw new ArgumentException(
+                "AES key is all zeros — provide a cryptographically random key via Vault.");
         }
 
         return key;
@@ -107,4 +113,7 @@ public sealed class AesCacheValueEncryptor(IOptions<CacheEncryptionOptions> opti
 
         return plaintext;
     }
+
+    /// <inheritdoc/>
+    public void Dispose() => CryptographicOperations.ZeroMemory(_key);
 }

@@ -31,6 +31,7 @@ public sealed class GranitEventsWolverineModule : GranitModule
     {
         context.Services.AddScoped<ILocalEventBus, WolverineLocalEventBus>();
         context.Services.AddScoped<IDistributedEventBus, WolverineDistributedEventBus>();
+        context.Services.AddScoped<IDomainEventDispatcher, WolverineDomainEventDispatcher>();
         context.Services.AddScoped<IIntegrationEventDispatcher, WolverineIntegrationEventDispatcher>();
     }
 }

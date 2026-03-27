@@ -75,6 +75,20 @@ internal sealed class S3BlobOptionsValidator : IValidateOptions<S3BlobOptions>
                 "Set it to your S3-compatible endpoint (e.g. https://s3.eu-west-1.amazonaws.com or http://localhost:9000).");
         }
 
+        if (!Uri.TryCreate(options.ServiceUrl, UriKind.Absolute, out Uri? serviceUri))
+        {
+            return ValidateOptionsResult.Fail(
+                $"{nameof(options.ServiceUrl)} must be a valid absolute URI.");
+        }
+
+        bool isLocalhost = serviceUri.Host is "localhost" or "127.0.0.1" or "::1";
+        if (serviceUri.Scheme != Uri.UriSchemeHttps && !isLocalhost)
+        {
+            return ValidateOptionsResult.Fail(
+                $"{nameof(options.ServiceUrl)} must use HTTPS for non-localhost endpoints. " +
+                "HTTP is only allowed for local development (localhost/127.0.0.1).");
+        }
+
         if (string.IsNullOrWhiteSpace(options.AccessKey))
         {
             return ValidateOptionsResult.Fail(

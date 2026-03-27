@@ -20,8 +20,15 @@ public sealed class StringEncryptionOptions
     /// </summary>
     public string PassPhrase { get; set; } = string.Empty;
 
-    /// <summary>AES key size in bits (256 by default = AES-256).</summary>
+    /// <summary>AES key size in bits (256 by default = AES-256). Valid values: 128, 192, 256.</summary>
     public int KeySize { get; set; } = 256;
+
+    /// <summary>
+    /// When <c>true</c>, allows an ephemeral random passphrase for development/test environments.
+    /// When <c>false</c> (default), a missing <see cref="PassPhrase"/> causes a startup failure.
+    /// NEVER enable in production — ephemeral passphrases cause data loss on pod restart.
+    /// </summary>
+    public bool AllowEphemeralPassPhrase { get; set; }
 
     /// <summary>
     /// Active provider name. Values: "Aes" (default) or "Vault".

@@ -64,6 +64,7 @@ public sealed class ExportJobTests
     {
         ExportJob job = CreateJob();
         DateTimeOffset completedAt = DateTimeOffset.UtcNow;
+        job.MarkAsExporting();
 
         job.Complete("blob/export.xlsx", "patients_2026-03-21.xlsx", 500, completedAt);
 
@@ -79,6 +80,7 @@ public sealed class ExportJobTests
     {
         ExportJob job = CreateJob();
         DateTimeOffset completedAt = DateTimeOffset.UtcNow;
+        job.MarkAsExporting();
 
         job.Fail("Database connection lost", completedAt);
 

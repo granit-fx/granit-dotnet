@@ -171,13 +171,13 @@ public sealed partial class AuditPiiConventionTests
     /// </summary>
     [GeneratedRegex(
         @"class\s+(\w+)\s*(?:<[^>]+>)?\s*:\s*(?:[\w.]+\s*,\s*)*(?:(?:Creation)?Audited(?:Entity|AggregateRoot)|Full(?:Audited)?(?:Entity|AggregateRoot)|Entity|AggregateRoot)",
-        RegexOptions.Compiled)]
+        RegexOptions.None)]
     private static partial Regex EntityClassDeclaration();
 
     /// <summary>
     /// Matches public property declarations. Group 1: property name.
     /// </summary>
-    [GeneratedRegex(@"public\s+\w+[\w<>?,\s]*\s+(\w+)\s*\{", RegexOptions.Compiled)]
+    [GeneratedRegex(@"public\s+\w+[\w<>?,\s]*\s+(\w+)\s*\{", RegexOptions.None)]
     private static partial Regex PublicPropertyDeclaration();
 
     /// <summary>

@@ -13,6 +13,7 @@ internal sealed class BlobDownloadUrlRequestValidator : AbstractValidator<BlobDo
 
         RuleFor(x => x.FileName)
             .MaximumLength(1024)
+            .Matches(@"^[^\x00-\x1f""\\]*$")
             .When(x => x.FileName is not null);
     }
 }

@@ -223,21 +223,29 @@ public sealed class ImportReportEndpointsTests : IAsyncDisposable
 
         if (status == ImportJobStatus.Completed && reportJson is not null)
         {
+            job.MarkAsPreviewed();
+            job.ConfirmMappings("[]");
             job.MarkAsExecuting();
             job.Complete(ImportJobStatus.Completed, reportJson, DateTimeOffset.UtcNow);
         }
         else if (status == ImportJobStatus.PartiallyCompleted && reportJson is not null)
         {
+            job.MarkAsPreviewed();
+            job.ConfirmMappings("[]");
             job.MarkAsExecuting();
             job.Complete(ImportJobStatus.PartiallyCompleted, reportJson, DateTimeOffset.UtcNow);
         }
         else if (status == ImportJobStatus.Failed && reportJson is not null)
         {
+            job.MarkAsPreviewed();
+            job.ConfirmMappings("[]");
             job.MarkAsExecuting();
             job.Complete(ImportJobStatus.Failed, reportJson, DateTimeOffset.UtcNow);
         }
         else if (status == ImportJobStatus.Executing)
         {
+            job.MarkAsPreviewed();
+            job.ConfirmMappings("[]");
             job.MarkAsExecuting();
         }
 

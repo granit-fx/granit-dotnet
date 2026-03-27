@@ -1,45 +1,23 @@
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Authorization.Options;
 
-/// <summary>
-/// Validates <see cref="GranitAuthorizationOptions"/> at startup to catch
-/// misconfigurations that would silently degrade authorization security.
-/// </summary>
-internal sealed class GranitAuthorizationOptionsValidator(
-    IHostEnvironment environment) : IValidateOptions<GranitAuthorizationOptions>
+/// <summary>Validates <see cref="GranitAuthorizationOptions"/>.</summary>
+internal sealed class GranitAuthorizationOptionsValidator : IValidateOptions<GranitAuthorizationOptions>
 {
+    /// <inheritdoc />
     public ValidateOptionsResult Validate(string? name, GranitAuthorizationOptions options)
     {
-        List<string>? failures = null;
-
-        if (options.AlwaysAllow && environment.IsProduction())
+        if (options.AdminRoles is null || options.AdminRoles.Count == 0)
         {
-            (failures ??= []).Add(
-                "AlwaysAllow must not be enabled in production — it bypasses all permission checks for authenticated users.");
+            return ValidateOptionsResult.Fail("Authorization.AdminRoles must contain at least one role.");
         }
 
-        if (options.AdminRoles.Count == 0)
+        if (options.CacheDuration < TimeSpan.FromSeconds(10) || options.CacheDuration > TimeSpan.FromMinutes(30))
         {
-            (failures ??= []).Add(
-                "AdminRoles must contain at least one role name.");
+            return ValidateOptionsResult.Fail("Authorization.CacheDuration must be between 10 seconds and 30 minutes.");
         }
 
-        if (options.CacheDuration < TimeSpan.FromSeconds(10))
-        {
-            (failures ??= []).Add(
-                $"CacheDuration must be at least 10 seconds, got {options.CacheDuration}.");
-        }
-
-        if (options.CacheDuration > TimeSpan.FromMinutes(30))
-        {
-            (failures ??= []).Add(
-                $"CacheDuration must not exceed 30 minutes, got {options.CacheDuration}.");
-        }
-
-        return failures is null
-            ? ValidateOptionsResult.Success
-            : ValidateOptionsResult.Fail(failures);
+        return ValidateOptionsResult.Success;
     }
 }

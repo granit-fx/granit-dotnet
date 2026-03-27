@@ -60,6 +60,7 @@ public sealed class EfExportJobStoreTests
         await sut.CreateAsync(job, TestContext.Current.CancellationToken);
 
         // Act
+        job.MarkAsExporting();
         job.Complete("blob-123", "export.csv", 42, DateTimeOffset.UtcNow);
         await sut.UpdateAsync(job, TestContext.Current.CancellationToken);
 
@@ -83,6 +84,7 @@ public sealed class EfExportJobStoreTests
         await sut.CreateAsync(job, TestContext.Current.CancellationToken);
 
         // Act
+        job.MarkAsExporting();
         job.Fail("Something went wrong", DateTimeOffset.UtcNow);
         await sut.UpdateAsync(job, TestContext.Current.CancellationToken);
 

@@ -59,4 +59,18 @@ public sealed class GranitEventsWolverineModuleTests
             d.ImplementationType == typeof(WolverineDistributedEventBus) &&
             d.Lifetime == ServiceLifetime.Scoped);
     }
+
+    [Fact]
+    public void ConfigureServices_RegistersWolverineDomainEventDispatcher()
+    {
+        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+        ServiceConfigurationContext context = new(builder.Services, builder.Configuration, builder);
+
+        new GranitEventsWolverineModule().ConfigureServices(context);
+
+        builder.Services.ShouldContain(d =>
+            d.ServiceType == typeof(IDomainEventDispatcher) &&
+            d.ImplementationType == typeof(WolverineDomainEventDispatcher) &&
+            d.Lifetime == ServiceLifetime.Scoped);
+    }
 }

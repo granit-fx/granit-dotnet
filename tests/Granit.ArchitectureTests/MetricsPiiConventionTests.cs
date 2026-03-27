@@ -134,7 +134,7 @@ public sealed partial class MetricsPiiConventionTests
     /// Matches string literal keys in TagList initializers: <c>{ "key_name", ... }</c>.
     /// Group 1: the tag key name.
     /// </summary>
-    [GeneratedRegex(@"\{\s*""(\w+)""\s*,", RegexOptions.Compiled)]
+    [GeneratedRegex(@"\{\s*""(\w+)""\s*,", RegexOptions.None)]
     private static partial Regex TagKeyLiteral();
 
     /// <summary>
@@ -142,6 +142,6 @@ public sealed partial class MetricsPiiConventionTests
     /// </summary>
     [GeneratedRegex(
         @"(?i)(email|mail|phone|mobile|address|street|city|postal|zip|firstName|lastName|fullName|displayName|userName|username|ssn|nationalId|passport|birthDate|dateOfBirth|salary|income|bankAccount|iban|ipAddress|password|secret|token|avatar|photo)",
-        RegexOptions.Compiled)]
+        RegexOptions.None)]
     private static partial Regex PiiTagName();
 }

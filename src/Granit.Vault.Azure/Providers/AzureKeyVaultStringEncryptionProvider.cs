@@ -1,3 +1,4 @@
+using Azure;
 using Granit.Encryption;
 using Granit.Encryption.Options;
 using Microsoft.Extensions.Options;
@@ -36,7 +37,7 @@ internal sealed class AzureKeyVaultStringEncryptionProvider(
         {
             return transitEncryption.DecryptAsync(_keyName, cipherText).GetAwaiter().GetResult();
         }
-        catch (Exception)
+        catch (RequestFailedException ex) when (ex.Status is 400 or 422)
         {
             return null;
         }

@@ -1,3 +1,4 @@
+using Amazon.KeyManagementService.Model;
 using Granit.Encryption;
 using Granit.Encryption.Options;
 using Microsoft.Extensions.Options;
@@ -36,8 +37,10 @@ internal sealed class KmsStringEncryptionProvider(
         {
             return transitEncryption.DecryptAsync(_keyName, cipherText).GetAwaiter().GetResult();
         }
-        catch (Exception)
+        catch (Exception ex) when (
+            ex is InvalidCiphertextException or IncorrectKeyException)
         {
+            // Invalid ciphertext or wrong key — KMS rejected the data
             return null;
         }
     }

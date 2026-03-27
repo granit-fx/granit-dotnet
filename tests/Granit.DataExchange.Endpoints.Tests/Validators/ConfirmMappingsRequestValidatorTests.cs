@@ -31,7 +31,7 @@ public sealed class ConfirmMappingsRequestValidatorTests
     [Fact]
     public void Validate_UnmappedColumn_ReturnsValid()
     {
-        ConfirmMappingsRequest request = new([ValidMapping(target: null)]);
+        ConfirmMappingsRequest request = new([ValidMapping(), ValidMapping(source: "Phone", target: null)]);
 
         ValidationResult result = _validator.Validate(request);
 

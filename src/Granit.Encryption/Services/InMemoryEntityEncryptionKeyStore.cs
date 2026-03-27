@@ -47,7 +47,11 @@ internal sealed class InMemoryEntityEncryptionKeyStore : IEntityEncryptionKeySto
         CancellationToken cancellationToken = default)
     {
         string cacheKey = BuildKey(entityType, entityId);
-        _keys.TryRemove(cacheKey, out _);
+        if (_keys.TryRemove(cacheKey, out byte[]? key))
+        {
+            CryptographicOperations.ZeroMemory(key);
+        }
+
         return Task.CompletedTask;
     }
 

@@ -101,7 +101,7 @@ internal sealed class AzureBlobClient : IBlobStoreProvider, IPresignedUrlProvide
             .GetBlobClient(objectKey);
 
         string? contentDisposition = !string.IsNullOrEmpty(options?.DownloadFileName)
-            ? $"attachment; filename=\"{options.DownloadFileName}\""
+            ? ContentDispositionHelper.BuildAttachmentHeader(options.DownloadFileName)
             : null;
 
         Uri sasUri = await GenerateSasUriAsync(

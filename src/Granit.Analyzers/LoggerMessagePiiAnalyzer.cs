@@ -49,7 +49,11 @@ public sealed class LoggerMessagePiiAnalyzer : SingleRuleAnalyzerBase
         "ipaddress",
         "password",
         "secret",
-        "token"
+        "token",
+        "postal",
+        "zip",
+        "avatar",
+        "photo"
     };
 
     private static readonly DiagnosticDescriptor _rule = new(
@@ -90,13 +94,21 @@ public sealed class LoggerMessagePiiAnalyzer : SingleRuleAnalyzerBase
         }
 
         // Parse placeholders: {PlaceholderName} or {PlaceholderName:format}
+        // Skip escaped braces: {{ and }}
         int startIndex = 0;
-        while (true)
+        while (startIndex < messageTemplate.Length)
         {
             int openBrace = messageTemplate.IndexOf('{', startIndex);
             if (openBrace < 0)
             {
                 break;
+            }
+
+            // Skip escaped brace: {{
+            if (openBrace + 1 < messageTemplate.Length && messageTemplate[openBrace + 1] == '{')
+            {
+                startIndex = openBrace + 2;
+                continue;
             }
 
             int closeBrace = messageTemplate.IndexOf('}', openBrace + 1);
@@ -131,9 +143,9 @@ public sealed class LoggerMessagePiiAnalyzer : SingleRuleAnalyzerBase
             return string.Empty;
         }
 
+        // First: check named argument — Message = "..."
         foreach (AttributeArgumentSyntax argument in attribute.ArgumentList.Arguments)
         {
-            // Named: Message = "..."
             if (argument.NameEquals is not null
                 && argument.NameEquals.Name.Identifier.Text == "Message"
                 && argument.Expression is LiteralExpressionSyntax namedLiteral
@@ -141,6 +153,18 @@ public sealed class LoggerMessagePiiAnalyzer : SingleRuleAnalyzerBase
             {
                 return namedLiteral.Token.ValueText;
             }
+        }
+
+        // Second: check positional form — [LoggerMessage(eventId, LogLevel, "template")]
+        // The message template is the 3rd positional argument (index 2).
+        SeparatedSyntaxList<AttributeArgumentSyntax> arguments = attribute.ArgumentList.Arguments;
+        if (arguments.Count >= 3
+            && arguments[2].NameEquals is null
+            && arguments[2].NameColon is null
+            && arguments[2].Expression is LiteralExpressionSyntax positionalLiteral
+            && positionalLiteral.IsKind(SyntaxKind.StringLiteralExpression))
+        {
+            return positionalLiteral.Token.ValueText;
         }
 
         return string.Empty;

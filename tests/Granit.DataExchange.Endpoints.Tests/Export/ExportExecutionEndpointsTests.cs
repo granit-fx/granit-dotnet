@@ -178,6 +178,7 @@ public sealed class ExportExecutionEndpointsTests : IAsyncDisposable
         // Arrange
         var jobId = Guid.NewGuid();
         var completedJob = ExportJob.Create(jobId, "Test.Export", "xlsx", "{}");
+        completedJob.MarkAsExporting();
         completedJob.Complete("blob-ref", "export.xlsx", 100, DateTimeOffset.UtcNow);
         _orchestrator.GetJobAsync(jobId, Arg.Any<CancellationToken>())
             .Returns(completedJob);
@@ -219,6 +220,7 @@ public sealed class ExportExecutionEndpointsTests : IAsyncDisposable
         // Arrange
         var jobId = Guid.NewGuid();
         var downloadJob = ExportJob.Create(jobId, "Test.Export", "csv", "{}");
+        downloadJob.MarkAsExporting();
         downloadJob.Complete("blob-ref", "export.csv", 10, DateTimeOffset.UtcNow);
         _orchestrator.GetJobAsync(jobId, Arg.Any<CancellationToken>())
             .Returns(downloadJob);

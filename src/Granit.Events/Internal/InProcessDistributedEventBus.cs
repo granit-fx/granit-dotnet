@@ -24,7 +24,7 @@ internal sealed partial class InProcessDistributedEventBus(
     ILogger<InProcessDistributedEventBus> logger,
     EventsMetrics metrics) : IDistributedEventBus
 {
-    private bool _warned;
+    private int _warned;
 
     /// <inheritdoc/>
     public async Task PublishAsync<TEvent>(TEvent integrationEvent, CancellationToken cancellationToken = default)
@@ -32,10 +32,9 @@ internal sealed partial class InProcessDistributedEventBus(
     {
         ArgumentNullException.ThrowIfNull(integrationEvent);
 
-        if (!_warned)
+        if (Interlocked.CompareExchange(ref _warned, 1, 0) == 0)
         {
             LogNotDurable();
-            _warned = true;
         }
 
         string eventType = typeof(TEvent).Name;

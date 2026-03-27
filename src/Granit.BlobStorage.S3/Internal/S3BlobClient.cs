@@ -118,7 +118,7 @@ internal sealed class S3BlobClient : IBlobStoreProvider, IPresignedUrlProvider, 
         if (!string.IsNullOrEmpty(options?.DownloadFileName))
         {
             presignRequest.ResponseHeaderOverrides.ContentDisposition =
-                $"attachment; filename=\"{options.DownloadFileName}\"";
+                ContentDispositionHelper.BuildAttachmentHeader(options.DownloadFileName);
         }
 
         string downloadUrl = _s3.GetPreSignedURL(presignRequest);

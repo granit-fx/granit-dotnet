@@ -9,6 +9,7 @@ using Granit.DataExchange.Export.Messages;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.Events;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Meta;
 using Granit.QueryEngine.SavedViews;
@@ -31,6 +32,7 @@ public sealed class ExportOrchestratorTests
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly ILocalEventBus _eventBus = Substitute.For<ILocalEventBus>();
     private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
+    private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly DataExchangeMetrics _metrics = new(new ServiceCollection().AddMetrics().BuildServiceProvider().GetRequiredService<IMeterFactory>());
     private readonly DateTimeOffset _now = new(2026, 3, 3, 10, 0, 0, TimeSpan.Zero);
 
@@ -364,13 +366,11 @@ public sealed class ExportOrchestratorTests
         // Act
         await sut.ExecuteAsync(jobId, TestContext.Current.CancellationToken);
 
-        // Assert — definition name "Test.Export" becomes "Test_Export" in filename
+        // Assert — definition name "Test.Export" is preserved (dots are valid in filenames)
+        // and invalid chars (from Path.GetInvalidFileNameChars()) are replaced with underscores
         job.FileName.ShouldNotBeNull();
-        job.FileName!.ShouldStartWith("Test_Export_");
+        job.FileName!.ShouldStartWith("Test.Export_");
         job.FileName.ShouldEndWith(".csv");
-        // The dot in "Test.Export" should be sanitized to underscore
-        string nameWithoutExtension = Path.GetFileNameWithoutExtension(job.FileName);
-        nameWithoutExtension.ShouldNotContain(".");
     }
 
     [Fact]
@@ -499,6 +499,7 @@ public sealed class ExportOrchestratorTests
         ExportOrchestrator sut = CreateOrchestrator();
         var jobId = Guid.NewGuid();
         var job = ExportJob.Create(jobId, "Test.Export", "xlsx", "{}");
+        job.MarkAsExporting();
         job.Complete("blob-ref-xlsx", "test_export.xlsx", 0, DateTimeOffset.UtcNow);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
@@ -527,6 +528,7 @@ public sealed class ExportOrchestratorTests
             new SimpleGuidGenerator(),
             _eventBus,
             _distributedEventBus,
+            _currentTenant,
             _metrics,
             NullLogger<ExportOrchestrator>.Instance);
 
@@ -567,6 +569,7 @@ public sealed class ExportOrchestratorTests
         var jobId = Guid.NewGuid();
         var job = ExportJob.Create(jobId, "Test.Export", "csv",
             JsonSerializer.Serialize(new ExportRequest("Test.Export", "csv", null, false, null, null, null, null)));
+        job.MarkAsExporting();
         job.Complete("blob-ref-export", "test_export.csv", 10, DateTimeOffset.UtcNow);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
 
@@ -637,6 +640,7 @@ public sealed class ExportOrchestratorTests
             new SimpleGuidGenerator(),
             _eventBus,
             _distributedEventBus,
+            _currentTenant,
             _metrics,
             NullLogger<ExportOrchestrator>.Instance);
     }
@@ -665,6 +669,7 @@ public sealed class ExportOrchestratorTests
             new SimpleGuidGenerator(),
             _eventBus,
             _distributedEventBus,
+            _currentTenant,
             _metrics,
             NullLogger<ExportOrchestrator>.Instance);
     }
@@ -709,10 +714,12 @@ public sealed class ExportOrchestratorTests
         }
         else if (status == ExportJobStatus.Completed)
         {
+            job.MarkAsExporting();
             job.Complete("blob-ref", "export.csv", 0, DateTimeOffset.UtcNow);
         }
         else if (status == ExportJobStatus.Failed)
         {
+            job.MarkAsExporting();
             job.Fail("failed", DateTimeOffset.UtcNow);
         }
 

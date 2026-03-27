@@ -123,9 +123,10 @@ internal sealed class GoogleCloudBlobClient : IBlobStoreProvider, IPresignedUrlP
 
         if (!string.IsNullOrEmpty(options?.DownloadFileName))
         {
+            string disposition = ContentDispositionHelper.BuildAttachmentHeader(options.DownloadFileName);
             template = template.WithQueryParameters(new Dictionary<string, IEnumerable<string>>
             {
-                ["response-content-disposition"] = [$"attachment; filename=\"{options.DownloadFileName}\""],
+                ["response-content-disposition"] = [disposition],
             });
         }
 

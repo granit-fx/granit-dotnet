@@ -50,7 +50,8 @@ public sealed class TagListPiiAnalyzer : SingleRuleAnalyzerBase
         "password",
         "secret",
         "avatar",
-        "photo"
+        "photo",
+        "token"
     };
 
     private static readonly DiagnosticDescriptor _rule = new(
@@ -81,17 +82,21 @@ public sealed class TagListPiiAnalyzer : SingleRuleAnalyzerBase
             return;
         }
 
-        // Scan all string literals inside the initializer for PII patterns.
-        foreach (SyntaxNode descendant in initializer.DescendantNodes())
+        // Scan only the KEY position (first argument) of each { "key", value } pair.
+        foreach (SyntaxNode expression in initializer.Expressions)
         {
-            if (descendant is LiteralExpressionSyntax literal
-                && literal.IsKind(SyntaxKind.StringLiteralExpression))
+            // ComplexElementInitializerExpression: { "key", value }
+            if (expression is InitializerExpressionSyntax complexInit
+                && complexInit.IsKind(SyntaxKind.ComplexElementInitializerExpression)
+                && complexInit.Expressions.Count >= 1
+                && complexInit.Expressions[0] is LiteralExpressionSyntax keyLiteral
+                && keyLiteral.IsKind(SyntaxKind.StringLiteralExpression))
             {
-                string value = literal.Token.ValueText;
+                string value = keyLiteral.Token.ValueText;
                 if (IsPiiTagName(value))
                 {
                     context.ReportDiagnostic(
-                        Diagnostic.Create(_rule, literal.GetLocation(), value));
+                        Diagnostic.Create(_rule, keyLiteral.GetLocation(), value));
                 }
             }
         }

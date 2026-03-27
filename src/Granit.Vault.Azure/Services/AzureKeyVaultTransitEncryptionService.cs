@@ -3,7 +3,6 @@ using System.Text;
 using Azure.Security.KeyVault.Keys.Cryptography;
 using Granit.MultiTenancy;
 using Granit.Vault.Azure.Diagnostics;
-using Granit.Vault.Azure.Options;
 using Granit.Vault.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -125,7 +124,9 @@ internal sealed partial class AzureKeyVaultTransitEncryptionService(
     {
         "RSA-OAEP" => EncryptionAlgorithm.RsaOaep,
         "RSA-OAEP-256" => EncryptionAlgorithm.RsaOaep256,
-        "RSA1_5" => EncryptionAlgorithm.Rsa15,
+        "RSA1_5" => throw new ArgumentException(
+            "RSA1_5 (PKCS#1 v1.5) is deprecated due to Bleichenbacher's attack — use RSA-OAEP or RSA-OAEP-256.",
+            nameof(algorithm)),
         _ => throw new ArgumentException($"Unsupported encryption algorithm: {algorithm}", nameof(algorithm)),
     };
 

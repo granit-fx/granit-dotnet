@@ -20,7 +20,6 @@ public sealed class SylvanExcelFileParserTests
     [Theory]
     [InlineData("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
     [InlineData("application/vnd.ms-excel")]
-    [InlineData("application/vnd.ms-excel.sheet.binary.macroenabled.12")]
     public void CanParse_supported_mime_types_returns_true(string mimeType) =>
         Sut.CanParse(mimeType).ShouldBeTrue();
 

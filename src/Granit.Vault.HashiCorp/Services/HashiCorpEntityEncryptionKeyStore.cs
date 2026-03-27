@@ -72,11 +72,43 @@ internal sealed partial class HashiCorpEntityEncryptionKeyStore(
         byte[] newKey = RandomNumberGenerator.GetBytes(KeySizeBytes);
         string newKeyBase64 = Convert.ToBase64String(newKey);
 
-        await vaultClient.V1.Secrets.KeyValue.V2.WriteSecretAsync(
-            path,
-            new Dictionary<string, object> { [SecretKeyField] = newKeyBase64 },
-            mountPoint: _kvMountPoint)
-            .WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            // CAS=0: only create, never overwrite — prevents TOCTOU race in multi-pod deployments
+            await vaultClient.V1.Secrets.KeyValue.V2.WriteSecretAsync(
+                path,
+                new Dictionary<string, object> { [SecretKeyField] = newKeyBase64 },
+                checkAndSet: 0,
+                mountPoint: _kvMountPoint)
+                .WaitAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (VaultSharp.Core.VaultApiException writeEx)
+            when (writeEx.HttpStatusCode == System.Net.HttpStatusCode.BadRequest)
+        {
+            // Likely CAS conflict: another pod created the key concurrently — read existing key
+            try
+            {
+                Secret<SecretData> retry = await vaultClient.V1.Secrets.KeyValue.V2
+                    .ReadSecretAsync(path, mountPoint: _kvMountPoint)
+                    .WaitAsync(cancellationToken).ConfigureAwait(false);
+
+                if (retry.Data.Data.TryGetValue(SecretKeyField, out object? val) &&
+                    val is string existingBase64)
+                {
+                    byte[] existingKey = Convert.FromBase64String(existingBase64);
+                    _cache.TryAdd(cacheKey, existingKey);
+                    CryptographicOperations.ZeroMemory(newKey);
+                    return existingKey;
+                }
+            }
+            catch (VaultSharp.Core.VaultApiException)
+            {
+                // Retry read also failed — rethrow original write error
+            }
+
+            CryptographicOperations.ZeroMemory(newKey);
+            throw;
+        }
 
         _cache.TryAdd(cacheKey, newKey);
         LogKeyCreated(logger, entityType, entityId);
@@ -152,8 +184,22 @@ internal sealed partial class HashiCorpEntityEncryptionKeyStore(
         return key is not null;
     }
 
-    private static string BuildPath(string entityType, string entityId) =>
-        $"{PathPrefix}/{entityType}/{entityId}";
+    private static string BuildPath(string entityType, string entityId)
+    {
+        ValidatePathSegment(entityType, nameof(entityType));
+        ValidatePathSegment(entityId, nameof(entityId));
+        return $"{PathPrefix}/{entityType}/{entityId}";
+    }
+
+    private static void ValidatePathSegment(string value, string paramName)
+    {
+        if (value.Contains('/') || value.Contains('\\') || value.Contains("..", StringComparison.Ordinal))
+        {
+            throw new ArgumentException(
+                "Value must not contain path separators or traversal sequences.",
+                paramName);
+        }
+    }
 
     private static string BuildCacheKey(string entityType, string entityId) =>
         $"{entityType}:{entityId}";

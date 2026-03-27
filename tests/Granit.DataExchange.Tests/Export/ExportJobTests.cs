@@ -71,6 +71,7 @@ public sealed class ExportJobTests
             "xlsx",
             "{}");
         DateTimeOffset now = DateTimeOffset.UtcNow;
+        job.MarkAsExporting();
 
         job.Complete("exports/abc.xlsx", "patients_2026-03-03.xlsx", 42, now);
 
@@ -104,6 +105,7 @@ public sealed class ExportJobTests
             "csv",
             "{}");
         DateTimeOffset now = DateTimeOffset.UtcNow;
+        job.MarkAsExporting();
 
         job.Fail("Something went wrong", now);
 

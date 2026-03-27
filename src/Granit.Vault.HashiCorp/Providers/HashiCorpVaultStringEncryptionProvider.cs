@@ -51,8 +51,10 @@ internal sealed class HashiCorpVaultStringEncryptionProvider(
                 .GetAwaiter()
                 .GetResult();
         }
-        catch (Exception)
+        catch (VaultSharp.Core.VaultApiException ex)
+            when (ex.HttpStatusCode == System.Net.HttpStatusCode.BadRequest)
         {
+            // Invalid ciphertext or decryption error — Vault returned 400
             return null;
         }
     }

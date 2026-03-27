@@ -217,11 +217,15 @@ public sealed class ImportJobListEndpointsTests : IAsyncDisposable
 
         if (status == ImportJobStatus.Completed)
         {
+            job.MarkAsPreviewed();
+            job.ConfirmMappings("[]");
             job.MarkAsExecuting();
             job.Complete(ImportJobStatus.Completed, "{}", DateTimeOffset.UtcNow);
         }
         else if (status == ImportJobStatus.Executing)
         {
+            job.MarkAsPreviewed();
+            job.ConfirmMappings("[]");
             job.MarkAsExecuting();
         }
 

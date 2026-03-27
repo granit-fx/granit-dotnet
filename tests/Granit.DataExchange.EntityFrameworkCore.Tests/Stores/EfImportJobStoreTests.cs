@@ -98,6 +98,8 @@ public sealed class EfImportJobStoreTests
         await store.CreateAsync(job, TestContext.Current.CancellationToken);
 
         // Act
+        job.MarkAsPreviewed();
+        job.ConfirmMappings("[]");
         job.MarkAsExecuting();
         job.ModifiedAt = DateTimeOffset.UtcNow;
         job.ModifiedBy = "system";
@@ -118,8 +120,10 @@ public sealed class EfImportJobStoreTests
         EfImportJobStore store = CreateStore(dbName);
         var tenantId = Guid.NewGuid();
         ImportJob job = CreateJobWithTenant(tenantId);
-        // Use internal behavior methods to set state
-        job.SetMappings("[{\"sourceColumn\":\"A\"}]");
+        // Use internal behavior methods to set state through proper lifecycle
+        job.MarkAsPreviewed();
+        job.ConfirmMappings("[{\"sourceColumn\":\"A\"}]");
+        job.MarkAsExecuting();
         job.Complete(ImportJobStatus.Completed, "{\"totalRows\":100}", DateTimeOffset.UtcNow);
 
         // Act
@@ -145,8 +149,8 @@ public sealed class EfImportJobStoreTests
         await store.CreateAsync(job, TestContext.Current.CancellationToken);
 
         // Act — simulate full lifecycle using behavior methods
-        // Note: Previewed and Mapped don't have dedicated transition methods,
-        // but Executing and Completed do.
+        job.MarkAsPreviewed();
+        job.ConfirmMappings("[]");
         job.MarkAsExecuting();
         await store.UpdateAsync(job, TestContext.Current.CancellationToken);
 

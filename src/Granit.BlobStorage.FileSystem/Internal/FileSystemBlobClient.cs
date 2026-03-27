@@ -126,12 +126,14 @@ internal sealed class FileSystemBlobClient(IOptions<FileSystemBlobOptions> optio
     /// </summary>
     private string ResolvePath(string objectKey)
     {
-        // Prevent path traversal attacks — reject keys containing ".." segments.
-        if (objectKey.Contains("..", StringComparison.Ordinal))
+        string fullPath = Path.GetFullPath(Path.Join(BasePath, objectKey));
+        string resolvedBase = Path.GetFullPath(BasePath);
+
+        if (!fullPath.StartsWith(resolvedBase, StringComparison.Ordinal))
         {
-            throw new ArgumentException("Object key must not contain path traversal sequences.", nameof(objectKey));
+            throw new ArgumentException("Object key must not escape the base storage directory.", nameof(objectKey));
         }
 
-        return Path.Join(BasePath, objectKey);
+        return fullPath;
     }
 }

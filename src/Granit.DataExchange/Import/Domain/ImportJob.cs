@@ -1,5 +1,6 @@
 using Granit.DataExchange.Import.Events;
 using Granit.Domain;
+using Granit.MultiTenancy;
 
 namespace Granit.DataExchange.Import.Domain;
 
@@ -10,7 +11,7 @@ namespace Granit.DataExchange.Import.Domain;
 /// Inherits <see cref="AuditedAggregateRoot"/> for ISO 27001-compliant audit trail
 /// (CreatedAt, CreatedBy, ModifiedAt, ModifiedBy).
 /// </remarks>
-public sealed class ImportJob : AuditedAggregateRoot
+public sealed class ImportJob : AuditedAggregateRoot, IMultiTenant
 {
     // Parameterless constructor required by EF Core materializer.
     private ImportJob() { }
@@ -95,6 +96,9 @@ public sealed class ImportJob : AuditedAggregateRoot
     /// </summary>
     public Guid? TenantId { get; private set; }
 
+    /// <inheritdoc />
+    Guid? IMultiTenant.TenantId { get => TenantId; set => TenantId = value; }
+
     /// <summary>
     /// Sets the column mappings after user confirmation.
     /// </summary>
@@ -104,14 +108,26 @@ public sealed class ImportJob : AuditedAggregateRoot
     /// <summary>
     /// Transitions to <see cref="ImportJobStatus.Previewed"/> after header extraction.
     /// </summary>
-    internal void MarkAsPreviewed() =>
+    internal void MarkAsPreviewed()
+    {
+        if (Status is not ImportJobStatus.Created)
+        {
+            throw new InvalidOperationException($"Cannot transition to '{ImportJobStatus.Previewed}' from '{Status}'.");
+        }
+
         Status = ImportJobStatus.Previewed;
+    }
 
     /// <summary>
     /// Confirms mappings and transitions to <see cref="ImportJobStatus.Mapped"/>.
     /// </summary>
     internal void ConfirmMappings(string mappingsJson)
     {
+        if (Status is not ImportJobStatus.Previewed)
+        {
+            throw new InvalidOperationException($"Cannot transition to '{ImportJobStatus.Mapped}' from '{Status}'.");
+        }
+
         MappingsJson = mappingsJson;
         Status = ImportJobStatus.Mapped;
     }
@@ -121,6 +137,11 @@ public sealed class ImportJob : AuditedAggregateRoot
     /// </summary>
     internal void Cancel()
     {
+        if (Status is not (ImportJobStatus.Created or ImportJobStatus.Previewed or ImportJobStatus.Mapped))
+        {
+            throw new InvalidOperationException($"Cannot transition to '{ImportJobStatus.Cancelled}' from '{Status}'.");
+        }
+
         Status = ImportJobStatus.Cancelled;
         AddDomainEvent(new ImportJobCancelledEvent(Id, DefinitionName));
     }
@@ -128,14 +149,26 @@ public sealed class ImportJob : AuditedAggregateRoot
     /// <summary>
     /// Transitions to <see cref="ImportJobStatus.Executing"/>.
     /// </summary>
-    internal void MarkAsExecuting() =>
+    internal void MarkAsExecuting()
+    {
+        if (Status is not ImportJobStatus.Mapped)
+        {
+            throw new InvalidOperationException($"Cannot transition to '{ImportJobStatus.Executing}' from '{Status}'.");
+        }
+
         Status = ImportJobStatus.Executing;
+    }
 
     /// <summary>
     /// Marks the import as completed with a final status and report.
     /// </summary>
     internal void Complete(ImportJobStatus finalStatus, string reportJson, DateTimeOffset completedAt)
     {
+        if (Status is not ImportJobStatus.Executing)
+        {
+            throw new InvalidOperationException($"Cannot transition to '{finalStatus}' from '{Status}'.");
+        }
+
         Status = finalStatus;
         ReportJson = reportJson;
         CompletedAt = completedAt;

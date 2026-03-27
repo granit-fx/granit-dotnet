@@ -81,6 +81,7 @@ public sealed class ImportJobTests
     {
         ImportJob job = CreateJob();
         const string json = """[{"SourceColumn":"Email","TargetProperty":"Email"}]""";
+        job.MarkAsPreviewed();
 
         job.ConfirmMappings(json);
 
@@ -92,6 +93,8 @@ public sealed class ImportJobTests
     public void MarkAsExecuting_TransitionsToExecutingStatus()
     {
         ImportJob job = CreateJob();
+        job.MarkAsPreviewed();
+        job.ConfirmMappings("[]");
 
         job.MarkAsExecuting();
 
@@ -104,6 +107,9 @@ public sealed class ImportJobTests
         ImportJob job = CreateJob();
         DateTimeOffset completedAt = DateTimeOffset.UtcNow;
         const string reportJson = """{"totalRows":100}""";
+        job.MarkAsPreviewed();
+        job.ConfirmMappings("[]");
+        job.MarkAsExecuting();
 
         job.Complete(ImportJobStatus.Completed, reportJson, completedAt);
 
@@ -117,6 +123,9 @@ public sealed class ImportJobTests
     {
         ImportJob job = CreateJob();
         DateTimeOffset completedAt = DateTimeOffset.UtcNow;
+        job.MarkAsPreviewed();
+        job.ConfirmMappings("[]");
+        job.MarkAsExecuting();
 
         job.Complete(ImportJobStatus.PartiallyCompleted, "{}", completedAt);
 
