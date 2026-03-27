@@ -23,7 +23,8 @@ with GDPR erasure and pseudonymization built in.
     - Granit.Identity.Federated.Cognito AWS Cognito User Pool API implementation
     - Granit.Identity.Federated.GoogleCloud Google Cloud Identity Platform (Firebase Auth) implementation
     - Granit.Identity.Federated.EntityFrameworkCore User cache (cache-aside, login-time sync)
-  - Granit.Identity.Local.AspNetIdentity IIdentityProvider bridge for OpenIddict (local store)
+  - Granit.Identity.Local/ Shared domain types for self-hosted identity providers
+    - Granit.Identity.Local.AspNetIdentity IIdentityProvider bridge for OpenIddict (local store)
   - Granit.Identity.Endpoints Minimal API endpoints (CRUD, sync, GDPR, webhook)
 </FileTree>
 
@@ -36,7 +37,8 @@ with GDPR erasure and pseudonymization built in.
 | `Granit.Identity.Federated.GoogleCloud` | Firebase Auth implementation (Firebase Admin SDK) | `Granit.Identity.Federated` |
 | `Granit.Authentication.JwtBearer.GoogleCloud` | JWT Bearer for Firebase Auth + claims transformation | `Granit.Authentication.JwtBearer` |
 | `Granit.Identity.Federated.EntityFrameworkCore` | EF Core user cache | `Granit.Identity.Federated`, `Granit.Persistence` |
-| `Granit.Identity.Local.AspNetIdentity` | IIdentityProvider bridge for OpenIddict (local store) | `Granit.Identity`, `Granit.OpenIddict.EntityFrameworkCore` |
+| `Granit.Identity.Local` | Shared domain types for self-hosted identity providers | `Granit.Identity`, `Granit.Events`, `Granit.Guids`, `Granit.Timing` |
+| `Granit.Identity.Local.AspNetIdentity` | IIdentityProvider bridge for OpenIddict (local store) | `Granit.Identity.Local` |
 | `Granit.Identity.Endpoints` | REST endpoints for user cache | `Granit.Identity`, `Granit.Authorization` |
 
 ## Dependency graph
@@ -51,7 +53,8 @@ graph TD
     AGC[Granit.Authentication.JwtBearer.GoogleCloud] --> JB[Granit.Authentication.JwtBearer]
     IEF[Granit.Identity.Federated.EntityFrameworkCore] --> IF
     IEF --> P[Granit.Persistence]
-    ILA[Granit.Identity.Local.AspNetIdentity] --> I
+    IL[Granit.Identity.Local] --> I
+    ILA[Granit.Identity.Local.AspNetIdentity] --> IL
     IE[Granit.Identity.Endpoints] --> I
     IE --> AZ[Granit.Authorization]
 ```

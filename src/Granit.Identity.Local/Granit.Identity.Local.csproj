@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Identity.Local</PackageId>
+    <Description>Shared abstractions for self-hosted identity providers backed by ASP.NET Core Identity. Contains GranitUser, GranitRole, GranitUserGroup, provider-agnostic service interfaces (TOTP, passkeys, impersonation, email confirmation, password reset, external logins, account deletion), integration events, and ILocalIdentityGroupStore. Shared between Granit.OpenIddict and any future local provider (e.g. Duende Identity Server).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Identity.Local.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Events\Granit.Events.csproj" />
+    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
+    <ProjectReference Include="..\Granit.Identity\Granit.Identity.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+  </ItemGroup>
+
+</Project>
