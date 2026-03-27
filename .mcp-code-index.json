@@ -18344,7 +18344,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/Endpoints/MobilePushTokenEndpoints.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "MapMobilePushTokenEndpoints",
@@ -18360,7 +18360,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/Extensions/NotificationEndpointRouteBuilderExtensions.cs",
-      "line": 22,
+      "line": 23,
       "members": [
         {
           "name": "MapGranitNotificationEndpoints",
@@ -19387,7 +19387,7 @@
           "name": "Connect",
           "kind": "method",
           "signature": "Connect(string userId)",
-          "returnType": "SseConnection"
+          "returnType": "SseConnection?"
         },
         {
           "name": "Disconnect",

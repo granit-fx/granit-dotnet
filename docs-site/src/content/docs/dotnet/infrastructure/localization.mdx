@@ -28,6 +28,7 @@ international from the first commit.
 
 <FileTree>
 - Granit.Localization/ Core abstractions, JSON resource loading, auto-discovery, override caching
+  - Granit.Localization.AI AI-powered translation suggestions via LLM
   - Granit.Localization.EntityFrameworkCore EF Core persistence for translation overrides
   - Granit.Localization.Endpoints Minimal API (SPA bootstrapping + override CRUD)
   - Granit.Localization.SourceGenerator Roslyn incremental generator for type-safe keys
@@ -36,6 +37,7 @@ international from the first commit.
 | Package | Role | Depends on |
 |---------|------|------------|
 | `Granit.Localization` | `GranitLocalizationModule`, JSON localizer, override store abstractions | `Granit` |
+| `Granit.Localization.AI` | `ITranslationSuggestionService`, LLM-based translation suggestions | `Granit.Localization`, `Granit.AI` |
 | `Granit.Localization.EntityFrameworkCore` | `LocalizationDbContext`, `EfCoreLocalizationOverrideStore` | `Granit.Localization`, `Granit.Persistence` |
 | `Granit.Localization.Endpoints` | Anonymous SPA endpoint, override CRUD endpoints | `Granit.Localization`, `Granit.Authorization` |
 | `Granit.Localization.SourceGenerator` | Build-time `LocalizationKeys` class generation | _(analyzer, no runtime dependency)_ |
@@ -45,6 +47,8 @@ international from the first commit.
 ```mermaid
 graph TD
     L[Granit.Localization] --> CO[Granit]
+    AI[Granit.Localization.AI] --> L
+    AI --> AIM[Granit.AI]
     EF[Granit.Localization.EntityFrameworkCore] --> L
     EF --> P[Granit.Persistence]
     EP[Granit.Localization.Endpoints] --> L
@@ -231,25 +235,26 @@ public interface ILocalizationOverrideStoreWriter
 
 ### Caching layer
 
-The `CachedLocalizationOverrideStore` wraps the EF Core store with an `IMemoryCache`
-layer. Cache keys are tenant-scoped (`localization:{tenantId}:{resource}:{culture}`)
-and invalidated on every write.
+The `CachedLocalizationOverrideStore` wraps the EF Core store with a FusionCache
+layer (L1 memory + optional L2 distributed cache + backplane). Cache keys are
+tenant-scoped (`localization:{tenantId}:{resource}:{culture}`) and invalidated on
+every write.
 
 ```mermaid
 sequenceDiagram
     participant L as IStringLocalizer
     participant C as CachedLocalizationOverrideStore
-    participant M as IMemoryCache
+    participant FC as IFusionCache
     participant EF as EfCoreLocalizationOverrideStore
 
     L->>C: GetOverridesAsync("Acme", "fr")
-    C->>M: TryGetValue(cacheKey)
+    C->>FC: TryGet(cacheKey)
     alt Cache hit
-        M-->>C: overrides
+        FC-->>C: overrides
     else Cache miss
         C->>EF: GetOverridesAsync("Acme", "fr")
         EF-->>C: overrides
-        C->>M: Set(cacheKey, overrides, TTL)
+        C->>FC: SetAsync(cacheKey, overrides, TTL)
     end
     C-->>L: overrides
 ```
@@ -347,11 +352,12 @@ classes matching the resource prefix.
 
 | Category | Key types | Package |
 |----------|-----------|---------|
-| Module | `GranitLocalizationModule`, `GranitLocalizationEntityFrameworkCoreModule`, `GranitLocalizationEndpointsModule` | -- |
+| Module | `GranitLocalizationModule`, `GranitLocalizationAIModule`, `GranitLocalizationEntityFrameworkCoreModule`, `GranitLocalizationEndpointsModule` | -- |
 | Core | `LocalizationResourceStore`, `LocalizationResourceInfo`, `LanguageInfo` | `Granit.Localization` |
 | Options | `GranitLocalizationOptions` (`EnableAutoDiscovery`, `Resources`, `Languages`, `FormattingCultures`) | `Granit.Localization` |
 | Abstractions | `ILocalizationOverrideStoreReader`, `ILocalizationOverrideStoreWriter` | `Granit.Localization` |
-| Caching | `CachedLocalizationOverrideStore` _(internal)_ | `Granit.Localization` |
+| Caching | `CachedLocalizationOverrideStore` _(internal, FusionCache L1+L2)_ | `Granit.Localization` |
+| AI | `ITranslationSuggestionService`, `TranslationSuggestion`, `TranslationContext` | `Granit.Localization.AI` |
 | EF Core | `LocalizationDbContext`, `EfCoreLocalizationOverrideStore` _(internal)_ | `Granit.Localization.EntityFrameworkCore` |
 | Endpoints | `MapGranitLocalization()`, `MapGranitLocalizationOverrides()` | `Granit.Localization.Endpoints` |
 | Generator | `LocalizationKeysGenerator` | `Granit.Localization.SourceGenerator` |
@@ -381,9 +387,18 @@ silent degradation.
 :::
 
 :::caution[Overrides cached per tenant]
-Translation overrides are cached in-memory **per tenant**. If you update an override
-via the CRUD endpoints, the change is visible immediately for that tenant. Other tenants
-or other pods see the change after the cache expires (controlled by the caching module TTL).
+Translation overrides are cached via FusionCache **per tenant** (cache key includes
+`tenantId`). Write operations (`SetOverrideAsync`, `RemoveOverrideAsync`) expire the
+cache entry immediately. Other pods see the change after the FusionCache TTL expires
+(default: 5 minutes, configurable via `LocalizationOverridesCacheOptions.CacheTtl`).
+:::
+
+:::caution[SmartFormat security restriction]
+`JsonStringLocalizer` uses SmartFormat.NET for format strings (`{0}`, `{1}`, plural
+rules). The `ReflectionSource` extension is **removed** from the formatter to prevent
+template injection via database override values. This means format strings like
+`{0.PropertyName}` (member access via reflection) are **not supported**. Use positional
+placeholders (`{0}`, `{1}`) and built-in formatters (plural, conditional) instead.
 :::
 
 :::caution[Source generator not running]
@@ -396,7 +411,7 @@ If `LocalizationKeys` constants are not generated, verify that:
 ## See also
 
 - [Set up localization guide](/dotnet/guides/set-up-localization/) — step-by-step setup walkthrough
-- [ADR-008: SmartFormat.NET](/dotnet/architecture/adr/008-smartformat-pluralization/) -- Why SmartFormat.NET was chosen for CLDR pluralization
+- [ADR-008: SmartFormat.NET](/dotnet/architecture/adr/008-smartformat-pluralization/) — Why SmartFormat.NET was chosen for CLDR pluralization
 - [Settings, Features & Reference Data](./settings/) -- uses localization for display names
 - [Persistence module](./persistence/) -- EF Core interceptors used by the override store
 - [Security module](./authentication/) -- permission-based access for override management

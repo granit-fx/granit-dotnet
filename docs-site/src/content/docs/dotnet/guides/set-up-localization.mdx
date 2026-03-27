@@ -213,7 +213,10 @@ Key resolution follows this order:
 
 ### Pluralization
 
-SmartFormat.NET provides automatic pluralization based on CLDR rules:
+SmartFormat.NET provides automatic pluralization based on CLDR rules.
+Positional placeholders (`{0}`, `{1}`) and built-in formatters (plural,
+conditional) are supported. Reflection-based member access (`{0.Name}`) is
+**disabled** for security — use positional arguments only.
 
 ```json
 {

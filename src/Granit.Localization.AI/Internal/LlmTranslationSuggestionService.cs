@@ -134,13 +134,14 @@ internal sealed partial class LlmTranslationSuggestionService(
         pb.AppendInstruction($"Translate the following text to the requested languages.");
         pb.AppendInstruction($"Context: this is {contextLabel}.");
         pb.AppendInstruction(string.Empty);
-        pb.AppendUserData($"Source ({sourceCulture})", sourceValue);
+        pb.AppendUserData("Source culture", sourceCulture);
+        pb.AppendUserData("Source text", sourceValue);
         pb.AppendUserData("Key (for context only, do not translate)", key);
         pb.AppendInstruction(string.Empty);
-        pb.AppendInstruction($"Target languages: {cultures}");
+        pb.AppendUserData("Target languages", cultures);
         pb.AppendInstruction(string.Empty);
-        pb.AppendInstruction($"Return a JSON object where keys are culture codes and values are translations:");
-        pb.AppendInstruction(exampleJson);
+        pb.AppendInstruction("Return a JSON object where keys are culture codes and values are translations:");
+        pb.AppendUserData("Expected JSON format", exampleJson);
         pb.AppendInstruction(string.Empty);
         pb.AppendInstruction("""
             Rules:

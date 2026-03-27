@@ -306,7 +306,13 @@ public sealed class LocalizationKeysGenerator : IIncrementalGenerator
     /// Escapes a string for use in a C# string literal.
     /// </summary>
     private static string EscapeString(string value) =>
-        value.Replace("\\", "\\\\").Replace("\"", "\\\"");
+        value
+            .Replace("\\", "\\\\")
+            .Replace("\"", "\\\"")
+            .Replace("\n", "\\n")
+            .Replace("\r", "\\r")
+            .Replace("\t", "\\t")
+            .Replace("\0", "\\0");
 
     /// <summary>
     /// Represents a node in the key hierarchy tree.

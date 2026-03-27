@@ -11,6 +11,7 @@ using System.Globalization;
 using Granit.Localization.Internal;
 using Microsoft.Extensions.Localization;
 using SmartFormat;
+using SmartFormat.Extensions;
 
 namespace Granit.Localization.Internal;
 
@@ -34,8 +35,13 @@ internal sealed class JsonStringLocalizer(
     string? resourceName = null,
     ILocalizationOverrideStoreReader? overrideStore = null) : IStringLocalizer
 {
+    /// <summary>
+    /// SmartFormatter without <see cref="ReflectionSource"/> to prevent template injection
+    /// via DB override values (e.g., <c>{0.Password}</c> accessing argument properties).
+    /// </summary>
+    private static readonly SmartFormatter SafeFormatter = CreateSafeFormatter();
+
     private readonly ConcurrentDictionary<string, Lazy<Dictionary<string, string>>> _cultureCache = new(StringComparer.OrdinalIgnoreCase);
-    private readonly ConcurrentDictionary<string, Lazy<IReadOnlyDictionary<string, string>>> _overrideCache = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<EmbeddedJsonSource> _sources = sources;
     private readonly string _defaultCulture = defaultCulture;
     private readonly List<IStringLocalizer> _baseLocalizers = baseLocalizers;
@@ -68,7 +74,7 @@ internal sealed class JsonStringLocalizer(
 
             string formatted = arguments.Length == 0
                 ? value
-                : Smart.Format(CultureInfo.CurrentCulture, value, arguments);
+                : SafeFormatter.Format(CultureInfo.CurrentCulture, value, arguments);
 
             return new LocalizedString(name, formatted, resourceNotFound: false);
         }
@@ -176,19 +182,18 @@ internal sealed class JsonStringLocalizer(
     }
 
     /// <summary>
-    /// Returns DB overrides for the given culture, loading them once per culture via Lazy&lt;T&gt;.
-    /// Blocking call is safe because <see cref="CachedLocalizationOverrideStore"/> returns
-    /// from in-memory cache, making the Task complete synchronously.
+    /// Returns DB overrides for the given culture by delegating to
+    /// <see cref="CachedLocalizationOverrideStore"/> which handles tenant-scoped caching
+    /// and invalidation via FusionCache.
     /// </summary>
-    private IReadOnlyDictionary<string, string> GetOrLoadOverrides(string cultureName)
-    {
-        Lazy<IReadOnlyDictionary<string, string>> lazy = _overrideCache.GetOrAdd(
-            cultureName,
-            name => new Lazy<IReadOnlyDictionary<string, string>>(
-                () => _overrideStore!.GetOverridesAsync(_resourceName!, name).GetAwaiter().GetResult()));
-
-        return lazy.Value;
-    }
+    /// <remarks>
+    /// The blocking <c>GetAwaiter().GetResult()</c> call is safe because
+    /// <see cref="CachedLocalizationOverrideStore.GetOverridesAsync"/> returns synchronously
+    /// from L1 memory cache on cache hits. No secondary cache is maintained here to avoid
+    /// cross-tenant leakage and stale-cache issues.
+    /// </remarks>
+    private IReadOnlyDictionary<string, string> GetOrLoadOverrides(string cultureName) =>
+        _overrideStore!.GetOverridesAsync(_resourceName!, cultureName).GetAwaiter().GetResult();
 
     /// <summary>
     /// Loads or retrieves from cache the dictionary for a given culture.
@@ -226,5 +231,23 @@ internal sealed class JsonStringLocalizer(
         }
 
         return merged;
+    }
+
+    /// <summary>
+    /// Creates a <see cref="SmartFormatter"/> without <see cref="ReflectionSource"/>
+    /// to prevent template injection via DB override values.
+    /// </summary>
+    /// <remarks>
+    /// Override values are admin-controlled (via <c>Localization.Overrides.Manage</c> permission).
+    /// Without this restriction, a malicious override like <c>{0.Password}</c> could access
+    /// properties of format arguments via SmartFormat's reflection-based member resolution.
+    /// Removing <see cref="ReflectionSource"/> limits format strings to positional placeholders
+    /// (<c>{0}</c>, <c>{1}</c>), named dictionary keys, and built-in formatters (plural, conditional).
+    /// </remarks>
+    private static SmartFormatter CreateSafeFormatter()
+    {
+        SmartFormatter formatter = Smart.CreateDefaultSmartFormat();
+        formatter.RemoveSourceExtension<ReflectionSource>();
+        return formatter;
     }
 }
