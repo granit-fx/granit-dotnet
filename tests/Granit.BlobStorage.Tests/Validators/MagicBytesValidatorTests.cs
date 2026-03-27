@@ -1,5 +1,7 @@
 using Granit.BlobStorage.Domain;
+using Granit.BlobStorage.Options;
 using Granit.BlobStorage.Validators;
+using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
@@ -114,7 +116,7 @@ public sealed class MagicBytesValidatorTests
     [Fact]
     public async Task ValidateAsync_PdfBytesWithPdfDeclared_ReturnsSuccess()
     {
-        MagicBytesValidator validator = new();
+        MagicBytesValidator validator = new(Microsoft.Extensions.Options.Options.Create(new BlobStorageOptions()));
         byte[] pdfBytes = [0x25, 0x50, 0x44, 0x46, 0x2D, 0x31, 0x2E, 0x34];
         BlobValidationContext context = MakeContext(MakeDescriptor("application/pdf"), pdfBytes);
 
@@ -128,7 +130,7 @@ public sealed class MagicBytesValidatorTests
     [Fact]
     public async Task ValidateAsync_JpegBytesDeclaredAsPdf_ReturnsFailure()
     {
-        MagicBytesValidator validator = new();
+        MagicBytesValidator validator = new(Microsoft.Extensions.Options.Options.Create(new BlobStorageOptions()));
         byte[] jpegBytes = [0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10];
         BlobValidationContext context = MakeContext(MakeDescriptor("application/pdf"), jpegBytes);
 
@@ -143,7 +145,7 @@ public sealed class MagicBytesValidatorTests
     [Fact]
     public async Task ValidateAsync_UnknownBytesWithAnyDeclaredType_PassesThroughWithDeclaredType()
     {
-        MagicBytesValidator validator = new();
+        MagicBytesValidator validator = new(Microsoft.Extensions.Options.Options.Create(new BlobStorageOptions()));
         byte[] unknownBytes = new byte[50]; // all zeros — no known signature
         BlobDescriptor descriptor = MakeDescriptor("application/octet-stream");
         BlobValidationContext context = MakeContext(descriptor, unknownBytes);
@@ -158,7 +160,7 @@ public sealed class MagicBytesValidatorTests
     [Fact]
     public async Task ValidateAsync_PngBytesCaseInsensitiveMatch_ReturnsSuccess()
     {
-        MagicBytesValidator validator = new();
+        MagicBytesValidator validator = new(Microsoft.Extensions.Options.Options.Create(new BlobStorageOptions()));
         byte[] pngBytes = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00];
         // Declared in uppercase (unusual but should work)
         BlobValidationContext context = MakeContext(MakeDescriptor("IMAGE/PNG"), pngBytes);

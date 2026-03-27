@@ -11820,6 +11820,34 @@
       ]
     },
     {
+      "name": "FeaturesMetrics",
+      "fqn": "Granit.Features.Diagnostics.FeaturesMetrics",
+      "kind": "class",
+      "project": "Granit.Features",
+      "file": "src/Granit.Features/Diagnostics/FeaturesMetrics.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "RecordOverrideChanged",
+          "kind": "method",
+          "signature": "RecordOverrideChanged(string? tenantId, string featureName, string operation)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordLimitChecked",
+          "kind": "method",
+          "signature": "RecordLimitChecked(string? tenantId, string featureName)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordLimitExceeded",
+          "kind": "method",
+          "signature": "RecordLimitExceeded(string? tenantId, string featureName)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "FeatureDefinitionResponse",
       "fqn": "Granit.Features.Endpoints.Dtos.FeatureDefinitionResponse",
       "kind": "record",
@@ -11935,7 +11963,7 @@
       "kind": "class",
       "project": "Granit.Features.EntityFrameworkCore",
       "file": "src/Granit.Features.EntityFrameworkCore/Extensions/FeaturesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitFeaturesEntityFrameworkCore",
@@ -12074,7 +12102,7 @@
       "kind": "class",
       "project": "Granit.Features",
       "file": "src/Granit.Features/Extensions/ServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitFeatures",
@@ -12099,7 +12127,7 @@
       "kind": "class",
       "project": "Granit.Features",
       "file": "src/Granit.Features/GranitFeaturesModule.cs",
-      "line": 33,
+      "line": 37,
       "members": [
         {
           "name": "ConfigureServices",

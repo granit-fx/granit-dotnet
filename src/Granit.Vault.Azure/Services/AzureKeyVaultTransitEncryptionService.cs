@@ -3,6 +3,7 @@ using System.Text;
 using Azure.Security.KeyVault.Keys.Cryptography;
 using Granit.MultiTenancy;
 using Granit.Vault.Azure.Diagnostics;
+using Granit.Vault.Azure.Options;
 using Granit.Vault.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
