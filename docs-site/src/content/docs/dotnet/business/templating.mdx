@@ -250,6 +250,14 @@ services.AddTransient<ITemplateDataEnricher<InvoiceDocumentData>,
     PaymentQrCodeEnricher>();
 ```
 
+:::caution[AI enricher security (GDPR / OWASP LLM)]
+`AITemplateDataEnricher<TData>` from `Granit.Templating.AI` sends business data to
+an external LLM provider. Subclass implementations of `BuildPrompt()` **must not**
+include PII (names, emails, addresses, financial data) unless the provider has a
+Data Processing Agreement covering the tenant's jurisdiction. Use `PromptBuilder`
+from `Granit.AI` to sanitize user-controlled input (prompt injection defense).
+:::
+
 ## Global contexts
 
 Global contexts inject ambient data into every template under a named variable.
@@ -295,13 +303,18 @@ Template usage: `{{ brand.logo_url }}`, `{{ brand.primary_color }}`.
 
 ## Scriban sandboxing
 
-The Scriban engine runs in strict sandboxed mode:
+The Scriban engine runs in strict sandboxed mode with explicit resource limits:
 
 - **`EnableRelaxedMemberAccess = false`** -- no access to .NET internals
 - **No I/O, reflection, or network access** from templates
+- **`LoopLimit = 500`** -- prevents CPU exhaustion from nested loops
+- **`RecursiveLimit = 50`** -- prevents stack overflow from recursive includes
+- **`MemberFilter` blocks `regex` builtins** -- prevents ReDoS attacks (CWE-1333) via user-controlled regex patterns
 - **Snake_case property mapping** -- `PatientName` becomes `{{ model.patient_name }}`
-- **Template caching** -- parsed `Template` objects are cached by `RevisionId` (thread-safe)
+- **Bounded template cache** -- parsed `Template` objects are cached by `RevisionId` with a maximum of 1 000 entries (evicts oldest on overflow)
 - **CancellationToken propagation** -- long-running templates can be cancelled
+- **Content size limit** -- template body is capped at 1 MB via `SaveTemplateRequestValidator`
+- **MIME type allowlist** -- only `text/html` and `text/plain` are accepted
 
 ## Template lifecycle
 
@@ -343,10 +356,11 @@ for full traceability.
 ### Workflow bridge
 
 Without the `Granit.Templating.Workflow` package, transitions are direct
-(Draft → Published → Archived) via `NullTemplateTransitionHook`. Installing the
-Workflow bridge replaces this with `WorkflowTemplateTransitionHook`, which:
+(Draft → Published → Archived) via `NullTemplateTransitionHook`. A warning is logged
+at startup when this fallback is active, as it bypasses all permission checks.
+Installing the Workflow bridge replaces this with `WorkflowTemplateTransitionHook`, which:
 
-1. **Validates transitions** via `IWorkflowManager<WorkflowLifecycleStatus>` FSM
+1. **Validates transitions** via `IWorkflowManager<WorkflowLifecycleStatus>.TransitionAsync` — only `Completed` outcomes allow direct state changes; `ApprovalRequested` outcomes block direct publish
 2. **Records transitions** via `IWorkflowTransitionRecorder` for unified ISO 27001 audit trail
 3. **Supports approval routing** (Draft → PendingReview → Published)
 

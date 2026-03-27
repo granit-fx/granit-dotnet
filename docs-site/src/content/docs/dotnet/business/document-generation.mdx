@@ -243,12 +243,18 @@ Protocol without triggering network navigation. Templates must embed all
 resources inline (base64 images, inline CSS/fonts) rather than referencing
 external URLs.
 
+### JavaScript disabled (PDF)
+
+JavaScript execution is explicitly disabled (`SetJavaScriptEnabledAsync(false)`)
+before HTML content injection. PDF rendering from HTML/CSS does not require
+JavaScript, and user-controlled `<script>` tags in templates could cause CPU or
+memory exhaustion. This is a defense-in-depth measure alongside SSRF prevention.
+
 ### Rendering timeout (PDF)
 
 Both the HTML content injection and PDF byte generation are bounded by
 `RenderTimeoutMs` (default 30 seconds). This prevents denial-of-service from
-complex CSS layouts or infinite JavaScript loops. The caller's
-`CancellationToken` is also respected.
+complex CSS layouts. The caller's `CancellationToken` is also respected.
 
 ### Formula injection protection (Excel)
 
