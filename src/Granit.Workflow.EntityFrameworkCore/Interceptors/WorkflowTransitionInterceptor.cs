@@ -135,7 +135,34 @@ public sealed class WorkflowTransitionInterceptor(
         }
     }
 
-    private static T GetStaticAbstract<T>(Type type, string propertyName) =>
-        (T)type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)! // NOSONAR S3011 - intentional: static abstract interface members resolved via reflection
-            .GetValue(null)!;
+    private static T GetStaticAbstract<T>(Type type, string propertyName)
+    {
+        // Implicit (public) implementation — e.g., `public static string StatusPropertyName => ...`
+        PropertyInfo? property = type.GetProperty(
+            propertyName, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+
+        if (property is null) // NOSONAR S3011 — intentional: explicit static abstract interface members resolved via reflection
+        {
+            // Explicit interface implementation — CLR stores these as private static properties
+            // with the fully-qualified interface name prefix (e.g., "Granit.Workflow.Domain.IWorkflowStateful.StatusPropertyName").
+            // FlattenHierarchy does not include private statics from base types, so walk manually.
+            string suffix = $".{propertyName}";
+            for (Type? t = type; t is not null; t = t.BaseType)
+            {
+                property = Array.Find(
+                    t.GetProperties(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly),
+                    p => p.Name.EndsWith(suffix, StringComparison.Ordinal));
+
+                if (property is not null)
+                {
+                    break;
+                }
+            }
+        }
+
+        return (T)(property?.GetValue(null)
+            ?? throw new InvalidOperationException(
+                $"Type '{type.FullName}' does not expose static property '{propertyName}' " +
+                $"required by {nameof(IWorkflowStateful)}."));
+    }
 }

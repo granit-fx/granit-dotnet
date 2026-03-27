@@ -224,6 +224,59 @@ public sealed class WorkflowTransitionInterceptorTests
     }
 
     // ========================================================================
+    // Explicit interface implementation (VersionedWorkflowEntity pattern)
+    // ========================================================================
+
+    [Fact]
+    public async Task SaveChanges_ExplicitInterfaceImpl_ShouldSyncIsPublished()
+    {
+        // Arrange — entity uses explicit IWorkflowStateful implementation (like VersionedWorkflowEntity)
+        using TestDbContext context = CreateContext();
+        TestExplicitEntity entity = new()
+        {
+            Id = Guid.NewGuid(),
+            LifecycleStatus = WorkflowLifecycleStatus.Published,
+            IsPublished = false, // Intentionally wrong — interceptor should fix
+        };
+        context.ExplicitEntities.Add(entity);
+
+        // Act
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        entity.IsPublished.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task SaveChanges_ExplicitInterfaceImpl_ShouldCreateTransitionRecord()
+    {
+        // Arrange
+        using TestDbContext context = CreateContext();
+        TestExplicitEntity entity = new()
+        {
+            Id = Guid.NewGuid(),
+            LifecycleStatus = WorkflowLifecycleStatus.Draft,
+            IsPublished = false,
+        };
+        context.ExplicitEntities.Add(entity);
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act — change status
+        entity.LifecycleStatus = WorkflowLifecycleStatus.Published;
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        List<WorkflowTransitionRecord> records = await context.WorkflowTransitionRecords
+            .ToListAsync(TestContext.Current.CancellationToken);
+
+        records.Count.ShouldBe(1);
+        WorkflowTransitionRecord record = records[0];
+        record.EntityType.ShouldBe("TestExplicit");
+        record.PreviousState.ShouldBe("Draft");
+        record.NewState.ShouldBe("Published");
+    }
+
+    // ========================================================================
     // Test infrastructure
     // ========================================================================
 
@@ -264,6 +317,20 @@ public sealed class WorkflowTransitionInterceptorTests
         public string GetWorkflowEntityId() => Id.ToString();
     }
 
+    /// <summary>
+    /// Uses explicit interface implementation for static abstract members,
+    /// mirroring <see cref="VersionedWorkflowEntity"/>.
+    /// </summary>
+    private sealed class TestExplicitEntity : Entity, IPublishable, IWorkflowStateful
+    {
+        public WorkflowLifecycleStatus LifecycleStatus { get; set; }
+        public bool IsPublished { get; set; }
+
+        static string IWorkflowStateful.StatusPropertyName => nameof(LifecycleStatus);
+        static string IWorkflowStateful.WorkflowEntityType => "TestExplicit";
+        public string GetWorkflowEntityId() => Id.ToString();
+    }
+
     // --- Test DbContext ---
 
     private sealed class TestDbContext(DbContextOptions<TestDbContext> options)
@@ -271,6 +338,7 @@ public sealed class WorkflowTransitionInterceptorTests
     {
         public DbSet<TestWorkflowEntity> Entities => Set<TestWorkflowEntity>();
         public DbSet<TestVersionedEntity> VersionedEntities => Set<TestVersionedEntity>();
+        public DbSet<TestExplicitEntity> ExplicitEntities => Set<TestExplicitEntity>();
         public DbSet<WorkflowTransitionRecord> WorkflowTransitionRecords => Set<WorkflowTransitionRecord>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -284,6 +352,12 @@ public sealed class WorkflowTransitionInterceptorTests
             });
 
             modelBuilder.Entity<TestVersionedEntity>(b =>
+            {
+                b.HasKey(e => e.Id);
+                b.Property(e => e.Id).ValueGeneratedNever();
+            });
+
+            modelBuilder.Entity<TestExplicitEntity>(b =>
             {
                 b.HasKey(e => e.Id);
                 b.Property(e => e.Id).ValueGeneratedNever();

@@ -159,7 +159,7 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task Webhook_unknown_event_type_returns_400()
+    public async Task Webhook_unknown_event_type_returns_400_without_reflecting_input()
     {
         var payload = new { eventType = "unknown_event", userId = "user-1" };
         HttpRequestMessage request = CreateSignedRequest(payload);
@@ -168,6 +168,11 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
             request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+
+        // VULN-204: verify user-controlled data is NOT reflected in the response
+        string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        body.ShouldNotContain("unknown_event");
+        body.ShouldContain("Unsupported event type.");
     }
 
     [Fact]
@@ -180,6 +185,29 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
             request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    // ──── VULN-101: Oversized payload ────
+
+    [Fact]
+    public async Task Webhook_oversized_payload_returns_413()
+    {
+        // 65 KB > 64 KB limit
+        string largeJson = new('x', 65 * 1024);
+        byte[] body = Encoding.UTF8.GetBytes(largeJson);
+        string signature = ComputeSignature(body);
+
+        HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
+        {
+            Content = new StringContent(largeJson, Encoding.UTF8, "application/json"),
+        };
+        request.Headers.Add("X-Webhook-Signature", signature);
+
+        HttpResponseMessage response = await _client.SendAsync(
+            request, TestContext.Current.CancellationToken);
+
+        // 413 Payload Too Large (returned as ProblemDetails which maps to the status code)
+        ((int)response.StatusCode).ShouldBe(413);
     }
 
     private static HttpRequestMessage CreateSignedRequest(object payload)
@@ -202,5 +230,84 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
         byte[] key = Encoding.UTF8.GetBytes(WebhookSecret);
         byte[] hash = HMACSHA256.HashData(key, body);
         return Convert.ToHexStringLower(hash);
+    }
+}
+
+/// <summary>
+/// Tests for the fail-closed behavior when the webhook secret is not configured (VULN-001).
+/// Uses a separate <see cref="WebApplication"/> without a configured secret.
+/// </summary>
+public sealed class IdentityWebhookEndpointsNoSecretTests : IAsyncDisposable
+{
+    private const string WebhookUrl = "/identity/webhook";
+
+    private readonly WebApplication _app;
+    private readonly HttpClient _client;
+
+    public IdentityWebhookEndpointsNoSecretTests()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseTestServer();
+
+        builder.Services
+            .AddAuthentication(TestAuthHandler.SchemeName)
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                TestAuthHandler.SchemeName, _ => { });
+
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(IdentityPermissions.Users.Read,
+                policy => policy.RequireRole("granit-identity-admin"))
+            .AddPolicy(IdentityPermissions.Users.Sync,
+                policy => policy.RequireRole("granit-identity-admin"))
+            .AddPolicy(IdentityPermissions.Users.Delete,
+                policy => policy.RequireRole("granit-identity-admin"));
+        builder.Services.AddGranitIdentityEndpoints();
+        builder.Services.AddSingleton(Substitute.For<IUserLookupService>());
+        builder.Services.AddSingleton(Substitute.For<IUserCacheStats>());
+
+        // No secret configured — IdentityWebhookOptions.Secret remains ""
+
+        _app = builder.Build();
+        _app.MapIdentityUserCacheEndpoints();
+        _app.StartAsync().GetAwaiter().GetResult();
+
+        _client = _app.GetTestClient();
+    }
+
+    public async ValueTask DisposeAsync() => await _app.DisposeAsync();
+
+    [Fact]
+    public async Task Webhook_rejects_all_requests_when_secret_not_configured()
+    {
+        var payload = new { eventType = "user_updated", userId = "user-1" };
+        string json = JsonSerializer.Serialize(payload);
+
+        HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json"),
+        };
+
+        HttpResponseMessage response = await _client.SendAsync(
+            request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Webhook_rejects_even_with_forged_signature_when_no_secret()
+    {
+        var payload = new { eventType = "user_updated", userId = "user-1" };
+        string json = JsonSerializer.Serialize(payload);
+
+        HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json"),
+        };
+        request.Headers.Add("X-Webhook-Signature", "some-forged-signature");
+
+        HttpResponseMessage response = await _client.SendAsync(
+            request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 }

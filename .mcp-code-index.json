@@ -10018,6 +10018,22 @@
       ]
     },
     {
+      "name": "LogRedaction",
+      "fqn": "Granit.Diagnostics.LogRedaction",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Diagnostics/LogRedaction.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Email",
+          "kind": "method",
+          "signature": "Email(string email)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "DiagnosticsOptions",
       "fqn": "Granit.Diagnostics.Options.DiagnosticsOptions",
       "kind": "class",
@@ -15698,12 +15714,12 @@
       "kind": "class",
       "project": "Granit.Imaging.MagickNet",
       "file": "src/Granit.Imaging.MagickNet/Extensions/ImagingMagickNetServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitImagingMagickNet",
           "kind": "method",
-          "signature": "AddGranitImagingMagickNet(this IServiceCollection services)",
+          "signature": "AddGranitImagingMagickNet(this IServiceCollection services, Action<ImagingMagickNetOptions>? configure = null)",
           "returnType": "IServiceCollection"
         }
       ]
@@ -15721,6 +15737,46 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ImagingMagickNetOptions",
+      "fqn": "Granit.Imaging.MagickNet.Options.ImagingMagickNetOptions",
+      "kind": "class",
+      "project": "Granit.Imaging.MagickNet",
+      "file": "src/Granit.Imaging.MagickNet/Options/ImagingMagickNetOptions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "MaxMemoryBytes",
+          "kind": "property",
+          "signature": "long MaxMemoryBytes",
+          "returnType": "long"
+        },
+        {
+          "name": "MaxWidthPixels",
+          "kind": "property",
+          "signature": "int MaxWidthPixels",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxHeightPixels",
+          "kind": "property",
+          "signature": "int MaxHeightPixels",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxListLength",
+          "kind": "property",
+          "signature": "int MaxListLength",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxInputBytes",
+          "kind": "property",
+          "signature": "long MaxInputBytes",
+          "returnType": "long"
         }
       ]
     },
@@ -17575,7 +17631,7 @@
         {
           "name": "MarkAsReadAsync",
           "kind": "method",
-          "signature": "MarkAsReadAsync(Guid id, DateTimeOffset readAt, CancellationToken cancellationToken = default)",
+          "signature": "MarkAsReadAsync(Guid id, string recipientUserId, DateTimeOffset readAt, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {
@@ -18873,7 +18929,7 @@
         {
           "name": "RemoveAsync",
           "kind": "method",
-          "signature": "RemoveAsync(string deviceToken, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "signature": "RemoveAsync(string deviceToken, string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -19365,6 +19421,18 @@
           "name": "HeartbeatIntervalSeconds",
           "kind": "property",
           "signature": "int HeartbeatIntervalSeconds",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxConnectionsPerUser",
+          "kind": "property",
+          "signature": "int MaxConnectionsPerUser",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxBufferSize",
+          "kind": "property",
+          "signature": "int MaxBufferSize",
           "returnType": "int"
         }
       ]
@@ -22301,6 +22369,22 @@
           "kind": "method",
           "signature": "FromSeconds(5)",
           "returnType": "TimeSpan RetryDelay { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "IInternalDbContextEnsurer",
+      "fqn": "Granit.Persistence.IInternalDbContextEnsurer",
+      "kind": "interface",
+      "project": "Granit.Persistence",
+      "file": "src/Granit.Persistence/IInternalDbContextEnsurer.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "EnsureCreatedAsync",
+          "kind": "method",
+          "signature": "EnsureCreatedAsync(CancellationToken cancellationToken = default)",
+          "returnType": "string ContextName { get; } Task"
         }
       ]
     },

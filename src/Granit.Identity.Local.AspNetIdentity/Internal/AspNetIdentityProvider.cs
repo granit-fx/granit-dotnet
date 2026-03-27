@@ -360,7 +360,7 @@ internal sealed partial class AspNetIdentityProvider(
     }
 #pragma warning restore GRSEC003
 
-    private static Guid ParseGuid(string value, string parameterName) =>
+    internal static Guid ParseGuid(string value, string parameterName) =>
         Guid.TryParse(value, out Guid result)
             ? result
             : throw new ArgumentException($"'{value}' is not a valid GUID.", parameterName);
