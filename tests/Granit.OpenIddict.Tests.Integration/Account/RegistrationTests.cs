@@ -1,5 +1,4 @@
 using System.Net;
-using System.Text.Json;
 using Granit.OpenIddict.Tests.Integration.Fixtures;
 using Granit.OpenIddict.Tests.Integration.Helpers;
 using Shouldly;
@@ -22,17 +21,12 @@ public sealed class RegistrationTests(OpenIddictTestApplication app)
             "New",
             "User");
 
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
-
-        string json = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        var doc = JsonDocument.Parse(json);
-
-        doc.RootElement.GetProperty("userId").GetGuid().ShouldNotBe(Guid.Empty);
-        doc.RootElement.GetProperty("requiresEmailConfirmation").GetBoolean().ShouldBeTrue();
+        // Anti-enumeration: always 202 regardless of outcome (VULN-201)
+        response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
     }
 
     [Fact]
-    public async Task Should_reject_duplicate_email()
+    public async Task Should_return_accepted_for_duplicate_email()
     {
         OidcTestClient client = app.CreateOidcClient();
         string uniqueEmail = $"dup-{Guid.NewGuid():N}@example.com";
@@ -41,14 +35,14 @@ public sealed class RegistrationTests(OpenIddictTestApplication app)
         HttpResponseMessage firstResponse = await client.RegisterAsync(
             uniqueEmail,
             "V@lidP4ssword!Strong");
-        firstResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
+        firstResponse.StatusCode.ShouldBe(HttpStatusCode.Accepted);
 
-        // Register again with same email
+        // Register again with same email — same 202 to prevent enumeration
         HttpResponseMessage secondResponse = await client.RegisterAsync(
             uniqueEmail,
             "An0therP@ss!Strong");
 
-        secondResponse.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        secondResponse.StatusCode.ShouldBe(HttpStatusCode.Accepted);
     }
 
     [Fact]
