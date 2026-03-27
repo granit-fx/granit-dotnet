@@ -351,8 +351,8 @@ With **Wolverine**, context is propagated via message headers:
 | ------ | ------ | ----------- |
 | `X-Tenant-Id` | `ICurrentTenant.Id` | `TenantContextBehavior` |
 | `X-User-Id` | `ICurrentUserService.UserId` | `UserContextBehavior` |
-| `X-User-FirstName` | `ICurrentUserService.FirstName` | `UserContextBehavior` |
 | `X-Actor-Kind` | `ActorKind` (User, System, ExternalSystem) | `UserContextBehavior` |
+| `X-Api-Key-Id` | `ICurrentUserService.ApiKeyId` | `UserContextBehavior` |
 | `traceparent` | `Activity.Current?.Id` (W3C Trace Context) | `TraceContextBehavior` |
 
 :::tip

@@ -111,13 +111,13 @@ Three contexts propagate automatically through message envelopes, so background 
 |--------|--------|---------|
 | `X-Tenant-Id` | `ICurrentTenant.Id` | Tenant isolation in background handlers |
 | `X-User-Id` | `ICurrentUserService.UserId` | Audit trail (`CreatedBy`, `ModifiedBy`) |
-| `X-User-FirstName` | `ICurrentUserService.FirstName` | Audit display name |
-| `X-User-LastName` | `ICurrentUserService.LastName` | Audit display name |
 | `X-Actor-Kind` | `ICurrentUserService.ActorKind` | `User`, `ExternalSystem`, or `System` |
 | `X-Api-Key-Id` | `ICurrentUserService.ApiKeyId` | Service account identification |
 | `traceparent` | `Activity.Current?.Id` | W3C Trace Context for distributed tracing |
 
-Headers are omitted when the corresponding context is absent. No PII is logged.
+Headers are omitted when the corresponding context is absent. First name and last name
+are intentionally excluded from message headers (GDPR Art. 5(1)(c) — data minimization).
+Background handlers that need display names should resolve them from the identity store.
 
 ### Incoming: envelope to handler context
 

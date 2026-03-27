@@ -139,13 +139,21 @@ When `Granit.Webhooks.EntityFrameworkCore` is registered, query endpoints are av
 
 ## Permissions
 
-All endpoints require the `Webhooks.Admin` authorization policy. Permissions
-are defined in `WebhooksPermissions`:
+The route group applies `Webhooks.Subscriptions.Read` at the group level.
+Mutating sub-groups (Write, Lifecycle, Operations) additionally require
+`Webhooks.Subscriptions.Manage`. Both permissions are declared by
+`WebhooksPermissionDefinitionProvider` and auto-discovered by
+`GranitAuthorizationModule`.
 
-| Permission | Description |
-| ---------- | ----------- |
-| `Webhooks.Subscriptions.Read` | View subscriptions, list event types |
-| `Webhooks.Subscriptions.Manage` | Create, update, delete, lifecycle transitions, rotate secrets, test pings, stats |
+| Permission | Applies to | Description |
+| ---------- | ---------- | ----------- |
+| `Webhooks.Subscriptions.Read` | Discovery, Read, Query, Stats | View subscriptions, list event types, query delivery history |
+| `Webhooks.Subscriptions.Manage` | Write, Lifecycle, Operations | Create, update, delete, activate, suspend, deactivate, rotate secrets, test ping |
+
+:::tip[Least privilege]
+Grant `Read` to monitoring dashboards and support roles. Reserve `Manage` for
+platform administrators who need to create or modify webhook subscriptions.
+:::
 
 ## Validation
 
@@ -153,7 +161,8 @@ All request DTOs are automatically validated via `FluentValidation` through
 `MapGranitGroup()`. Key rules:
 
 - **Target URL**: HTTPS only, absolute URI, max 2048 chars
-- **SSRF protection**: blocks private IP ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16), localhost, link-local IPv6, and blocked TLDs (.local, .internal, .onion)
+- **SSRF protection (registration)**: blocks private IP ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16, 100.64.0.0/10), localhost, link-local IPv6, and blocked TLDs (.local, .internal, .onion)
+- **SSRF protection (delivery)**: `SocketsHttpHandler.ConnectCallback` validates resolved IPs at connection time, preventing DNS rebinding attacks
 - **Event type**: non-empty, max 200 chars, **must exist in the event type registry**
 - **Deactivation reason**: non-empty, max 1000 chars
 

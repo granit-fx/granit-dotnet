@@ -193,8 +193,6 @@ sequenceDiagram
 |--------|--------|----------|
 | `X-Tenant-Id` | `ICurrentTenant.Id` | `TenantContextBehavior` restores AsyncLocal |
 | `X-User-Id` | `ICurrentUserService.UserId` | `UserContextBehavior` restores via `WolverineCurrentUserService` |
-| `X-User-FirstName` | `ICurrentUserService.FirstName` | Propagated for audit trail |
-| `X-User-LastName` | `ICurrentUserService.LastName` | Propagated for audit trail |
 | `X-Actor-Kind` | `ICurrentUserService.ActorKind` | `User`, `ExternalSystem`, or `System` |
 | `X-Api-Key-Id` | `ICurrentUserService.ApiKeyId` | Service account identification |
 | `traceparent` | `Activity.Current?.Id` | W3C Trace Context for distributed tracing |
