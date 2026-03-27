@@ -24674,6 +24674,18 @@
           "kind": "property",
           "signature": "int MaxStreamSize",
           "returnType": "int"
+        },
+        {
+          "name": "MaxGroupCount",
+          "kind": "property",
+          "signature": "int MaxGroupCount",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxSavedViewsPerUser",
+          "kind": "property",
+          "signature": "int MaxSavedViewsPerUser",
+          "returnType": "int"
         }
       ]
     },
