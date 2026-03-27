@@ -209,12 +209,13 @@ denial-of-service vector — it always returns a score, never throws.
 
 All user-controlled inputs are sanitized before being sent to the LLM:
 
-- **`userId`** — pseudonymized via SHA-256 hash (GDPR Art. 5 data minimization)
-- **`context`** — Unicode control characters, zero-width chars, and bidirectional
-  overrides are stripped before entering `PromptBuilder`
-- **All inputs** — `PromptBuilder` wraps user data in structured `<data>` delimiters
-  and neutralizes injection patterns, preventing an attacker from manipulating
-  the risk score via crafted context strings
+- **`userId`** — pseudonymized via `LlmInputSanitizer.PseudonymizeUserId()` (SHA-256
+  hash, GDPR Art. 5 data minimization). This utility lives in `Granit.AI` and is
+  available to all AI modules that send user identifiers to an LLM.
+- **All inputs** — `PromptBuilder` strips Unicode control characters, zero-width
+  chars, and bidirectional overrides, wraps user data in structured `<data>`
+  delimiters, and neutralizes injection patterns, preventing an attacker from
+  manipulating the risk score via crafted context strings
 
 ## Configuration reference
 

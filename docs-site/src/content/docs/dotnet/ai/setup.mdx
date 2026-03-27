@@ -533,8 +533,11 @@ The actual document text goes here, sanitized...
 ### Protections
 
 1. **Delimiter isolation** — user data in `<data>` blocks, instructions outside
-2. **Tag neutralization** — `<system>`, `<instruction>`, `<data>` tags in user input are HTML-escaped
-3. **Length truncation** — configurable `maxInputLength` prevents denial-of-wallet
+2. **Control character stripping** — Unicode control characters, zero-width chars,
+   and bidirectional overrides are stripped to prevent obfuscation-based injection
+3. **Tag neutralization** — XML/HTML-like tags in user input are stripped to prevent
+   delimiter spoofing (`<data>`, `<system>`, `<tool>`, etc.)
+4. **Length truncation** — configurable `maxInputLength` prevents denial-of-wallet
 
 :::tip
 Use `PromptBuilder` in **all** code that sends user-controlled data to an LLM.
