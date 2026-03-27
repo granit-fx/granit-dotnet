@@ -23,14 +23,15 @@ public sealed class TenantResolverPipelineTests
     }
 
     [Fact]
-    public async Task ResolveAsync_NoResolvers_ReturnsNull()
+    public async Task ResolveAsync_NoResolvers_ReturnsNullTenant()
     {
         TenantResolverPipeline pipeline = new([]);
         DefaultHttpContext context = new();
 
-        TenantInfo? result = await pipeline.ResolveAsync(context, TestContext.Current.CancellationToken);
+        TenantResolutionResult result = await pipeline.ResolveAsync(context, TestContext.Current.CancellationToken);
 
-        result.ShouldBeNull();
+        result.Tenant.ShouldBeNull();
+        result.ResolverType.ShouldBe("none");
     }
 
     [Fact]
@@ -41,23 +42,25 @@ public sealed class TenantResolverPipelineTests
         TenantResolverPipeline pipeline = new([resolver]);
         DefaultHttpContext context = new();
 
-        TenantInfo? result = await pipeline.ResolveAsync(context, TestContext.Current.CancellationToken);
+        TenantResolutionResult result = await pipeline.ResolveAsync(context, TestContext.Current.CancellationToken);
 
-        result.ShouldNotBeNull();
-        result!.Id.ShouldBe(tenantId);
-        result.Name.ShouldBe("Acme");
+        result.Tenant.ShouldNotBeNull();
+        result.Tenant!.Id.ShouldBe(tenantId);
+        result.Tenant.Name.ShouldBe("Acme");
+        result.ResolverType.ShouldNotBe("none");
     }
 
     [Fact]
-    public async Task ResolveAsync_SingleResolver_ReturnsNull_WhenResolverReturnsNull()
+    public async Task ResolveAsync_SingleResolver_ReturnsNullTenant_WhenResolverReturnsNull()
     {
         ITenantResolver resolver = MockResolver(100, null);
         TenantResolverPipeline pipeline = new([resolver]);
         DefaultHttpContext context = new();
 
-        TenantInfo? result = await pipeline.ResolveAsync(context, TestContext.Current.CancellationToken);
+        TenantResolutionResult result = await pipeline.ResolveAsync(context, TestContext.Current.CancellationToken);
 
-        result.ShouldBeNull();
+        result.Tenant.ShouldBeNull();
+        result.ResolverType.ShouldBe("none");
     }
 
     [Fact]
@@ -69,11 +72,11 @@ public sealed class TenantResolverPipelineTests
         TenantResolverPipeline pipeline = new([first, second]);
         DefaultHttpContext context = new();
 
-        TenantInfo? result = await pipeline.ResolveAsync(context, TestContext.Current.CancellationToken);
+        TenantResolutionResult result = await pipeline.ResolveAsync(context, TestContext.Current.CancellationToken);
 
-        result.ShouldNotBeNull();
-        result!.Id.ShouldBe(tenantId);
-        result.Name.ShouldBe("First");
+        result.Tenant.ShouldNotBeNull();
+        result.Tenant!.Id.ShouldBe(tenantId);
+        result.Tenant.Name.ShouldBe("First");
         await second.DidNotReceive().ResolveAsync(Arg.Any<HttpContext>(), Arg.Any<CancellationToken>());
     }
 
@@ -86,15 +89,15 @@ public sealed class TenantResolverPipelineTests
         TenantResolverPipeline pipeline = new([first, second]);
         DefaultHttpContext context = new();
 
-        TenantInfo? result = await pipeline.ResolveAsync(context, TestContext.Current.CancellationToken);
+        TenantResolutionResult result = await pipeline.ResolveAsync(context, TestContext.Current.CancellationToken);
 
-        result.ShouldNotBeNull();
-        result!.Id.ShouldBe(tenantId);
-        result.Name.ShouldBe("Fallback");
+        result.Tenant.ShouldNotBeNull();
+        result.Tenant!.Id.ShouldBe(tenantId);
+        result.Tenant.Name.ShouldBe("Fallback");
     }
 
     [Fact]
-    public async Task ResolveAsync_AllResolversReturnNull_ReturnsNull()
+    public async Task ResolveAsync_AllResolversReturnNull_ReturnsNullTenant()
     {
         ITenantResolver first = MockResolver(100, null);
         ITenantResolver second = MockResolver(200, null);
@@ -102,9 +105,10 @@ public sealed class TenantResolverPipelineTests
         TenantResolverPipeline pipeline = new([first, second, third]);
         DefaultHttpContext context = new();
 
-        TenantInfo? result = await pipeline.ResolveAsync(context, TestContext.Current.CancellationToken);
+        TenantResolutionResult result = await pipeline.ResolveAsync(context, TestContext.Current.CancellationToken);
 
-        result.ShouldBeNull();
+        result.Tenant.ShouldBeNull();
+        result.ResolverType.ShouldBe("none");
     }
 
     [Fact]
@@ -118,11 +122,11 @@ public sealed class TenantResolverPipelineTests
         TenantResolverPipeline pipeline = new([highOrder, lowOrder, midOrder]);
         DefaultHttpContext context = new();
 
-        TenantInfo? result = await pipeline.ResolveAsync(context, TestContext.Current.CancellationToken);
+        TenantResolutionResult result = await pipeline.ResolveAsync(context, TestContext.Current.CancellationToken);
 
-        result.ShouldNotBeNull();
-        result!.Id.ShouldBe(tenantId);
-        result.Name.ShouldBe("Low");
+        result.Tenant.ShouldNotBeNull();
+        result.Tenant!.Id.ShouldBe(tenantId);
+        result.Tenant.Name.ShouldBe("Low");
     }
 
     [Fact]

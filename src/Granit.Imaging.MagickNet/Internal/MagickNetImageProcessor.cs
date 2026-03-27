@@ -14,29 +14,24 @@ internal sealed class MagickNetImageProcessor(ImagingMetrics metrics, ImagingMag
     /// <inheritdoc/>
     public IImagePipeline Load(Stream source)
     {
-        Stream seekable = source;
-        MemoryStream? buffer = null;
-
-        try
+        if (!source.CanSeek)
         {
-            if (!source.CanSeek)
-            {
-                buffer = new MemoryStream();
-                source.CopyTo(buffer);
-                buffer.Position = 0;
-                seekable = buffer;
-            }
+            using MemoryStream buffer = new();
+            source.CopyTo(buffer);
+            buffer.Position = 0;
 
-            ValidateInputSize(seekable.Length);
-            ValidateFormat(seekable);
+            ValidateInputSize(buffer.Length);
+            ValidateFormat(buffer);
 
-            MagickImage image = new(seekable);
-            return new MagickNetImagePipeline(image, metrics);
+            MagickImage bufferedImage = new(buffer);
+            return new MagickNetImagePipeline(bufferedImage, metrics);
         }
-        finally
-        {
-            buffer?.Dispose();
-        }
+
+        ValidateInputSize(source.Length);
+        ValidateFormat(source);
+
+        MagickImage image = new(source);
+        return new MagickNetImagePipeline(image, metrics);
     }
 
     /// <inheritdoc/>

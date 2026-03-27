@@ -65,13 +65,11 @@ internal static class ImageFormatDetector
         }
 
         // AVIF: ????ftyp[avif|avis] (ISO BMFF ftyp box at offset 4, brand at offset 8)
-        if (header[4] == 0x66 && header[5] == 0x74 && header[6] == 0x79 && header[7] == 0x70)
+        if (header[4] == 0x66 && header[5] == 0x74 && header[6] == 0x79 && header[7] == 0x70 &&
+            header[8] == 0x61 && header[9] == 0x76 && header[10] == 0x69 &&
+            (header[11] == 0x66 || header[11] == 0x73))
         {
-            if (header[8] == 0x61 && header[9] == 0x76 && header[10] == 0x69 &&
-                (header[11] == 0x66 || header[11] == 0x73))
-            {
-                return true;
-            }
+            return true;
         }
 
         return false;

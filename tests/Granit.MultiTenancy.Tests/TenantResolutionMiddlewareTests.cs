@@ -2,12 +2,15 @@
 // TenantResolutionMiddlewareTests - Unit tests for the tenant resolution middleware
 // =============================================================================
 
+using System.Diagnostics.Metrics;
 using Granit.MultiTenancy;
+using Granit.MultiTenancy.Diagnostics;
 using Granit.MultiTenancy.Middleware;
 using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Pipeline;
 using Granit.MultiTenancy.Resolvers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
@@ -17,16 +20,30 @@ namespace Granit.MultiTenancy.Tests;
 
 public sealed class TenantResolutionMiddlewareTests
 {
+    private static MultiTenancyMetrics CreateMetrics()
+    {
+        IMeterFactory meterFactory = Substitute.For<IMeterFactory>();
+        meterFactory.Create(Arg.Any<MeterOptions>()).Returns(callInfo => new Meter(callInfo.Arg<MeterOptions>().Name));
+        return new MultiTenancyMetrics(meterFactory);
+    }
+
     private static TenantResolutionMiddleware CreateMiddleware(
         ICurrentTenant currentTenant,
         TenantResolverPipeline pipeline,
-        bool isEnabled = true)
+        bool isEnabled = true,
+        TenantHeaderTrustMode headerTrustMode = TenantHeaderTrustMode.Unrestricted)
     {
         IOptions<MultiTenancyOptions> options = Microsoft.Extensions.Options.Options.Create(new MultiTenancyOptions
         {
-            IsEnabled = isEnabled
+            IsEnabled = isEnabled,
+            HeaderTrustMode = headerTrustMode,
         });
-        return new TenantResolutionMiddleware(currentTenant, pipeline, options);
+        return new TenantResolutionMiddleware(
+            currentTenant,
+            pipeline,
+            CreateMetrics(),
+            options,
+            NullLogger<TenantResolutionMiddleware>.Instance);
     }
 
     private static TenantResolverPipeline PipelineReturning(TenantInfo? tenant)

@@ -197,13 +197,13 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
         byte[] body = Encoding.UTF8.GetBytes(largeJson);
         string signature = ComputeSignature(body);
 
-        HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
+        using HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
         {
             Content = new StringContent(largeJson, Encoding.UTF8, "application/json"),
         };
         request.Headers.Add("X-Webhook-Signature", signature);
 
-        HttpResponseMessage response = await _client.SendAsync(
+        using HttpResponseMessage response = await _client.SendAsync(
             request, TestContext.Current.CancellationToken);
 
         // 413 Payload Too Large (returned as ProblemDetails which maps to the status code)
@@ -282,12 +282,12 @@ public sealed class IdentityWebhookEndpointsNoSecretTests : IAsyncDisposable
         var payload = new { eventType = "user_updated", userId = "user-1" };
         string json = JsonSerializer.Serialize(payload);
 
-        HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
+        using HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
         };
 
-        HttpResponseMessage response = await _client.SendAsync(
+        using HttpResponseMessage response = await _client.SendAsync(
             request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -299,13 +299,13 @@ public sealed class IdentityWebhookEndpointsNoSecretTests : IAsyncDisposable
         var payload = new { eventType = "user_updated", userId = "user-1" };
         string json = JsonSerializer.Serialize(payload);
 
-        HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
+        using HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json"),
         };
         request.Headers.Add("X-Webhook-Signature", "some-forged-signature");
 
-        HttpResponseMessage response = await _client.SendAsync(
+        using HttpResponseMessage response = await _client.SendAsync(
             request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
