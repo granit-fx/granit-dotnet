@@ -117,6 +117,27 @@ GranitActivitySourceRegistry.Register("Granit.Workflow");
 | `Granit.Privacy` | `privacy.export.execute`, `privacy.deletion.execute` |
 | `Granit.Observability.AI` | `observability-ai.analysis.execute` |
 
+## PII redaction — `LogRedaction`
+
+Logs and trace spans must **never** contain raw PII (GDPR Art. 5, ISO 27001 A.5.34).
+The `Granit.Diagnostics.LogRedaction` static class provides redaction helpers for use
+in `[LoggerMessage]` call sites and `Activity.SetTag()` calls:
+
+| Method | Input | Output | Use case |
+| ------ | ----- | ------ | -------- |
+| `Email(string)` | `john.doe@example.com` | `joh***@example.com` | Log templates |
+| `EmailDomain(string)` | `john.doe@example.com` | `example.com` | Span tags (bounded cardinality) |
+| `Phone(string)` | `+33612345678` | `+336*****78` | Log templates |
+| `Token(string)` | `dLkj3FDmAbCdEfGh` | `dLkj...fGh` | Device tokens, API tokens |
+| `IpAddress(string)` | `192.168.1.42` | `192.168.1.***` | IPv4 /24 masking |
+| `Username(string)` | `john_admin` | `joh***` | DB credentials, identity |
+| `HashPrefix(string)` | *(any)* | `a1b2c3d4` | Non-reversible correlation (span tags) |
+
+**Architecture tests** enforce PII-safe naming in `[LoggerMessage]` templates
+(`LoggerMessagePiiConventionTests`) and `*ActivitySource.cs` tag constants
+(`ActivitySourcePiiConventionTests`). GUIDs (user IDs, session IDs) are
+pseudonymous and exempt.
+
 ## Configuration reference
 
 | Property | Type | Default | Description |
@@ -136,6 +157,7 @@ GranitActivitySourceRegistry.Register("Granit.Workflow");
 | Module | `GranitObservabilityModule` | -- |
 | Options | `ObservabilityOptions` | `Granit.Observability` |
 | Registry | `GranitActivitySourceRegistry` | `Granit` |
+| PII redaction | `LogRedaction` | `Granit` |
 | Extensions | `AddGranitObservability()` | `Granit.Observability` |
 
 ## See also
@@ -143,4 +165,5 @@ GranitActivitySourceRegistry.Register("Granit.Workflow");
 - [Application metrics reference](/dotnet/core/metrics/) -- All metrics emitted by Granit modules, with PromQL examples
 - [ADR-001: Serilog + OpenTelemetry](/dotnet/architecture/adr/001-observability/) -- Why this observability stack was chosen
 - [Diagnostics module](/dotnet/core/diagnostics/) -- Kubernetes health probes
-- [Core module](/dotnet/core/module-system/) -- `GranitActivitySourceRegistry` lives in `Granit.Diagnostics`
+- [Core module](/dotnet/core/module-system/) -- `GranitActivitySourceRegistry` and `LogRedaction` live in `Granit.Diagnostics`
+- [Coding standards — PII redaction](/contributing/coding-standards/#pii-redaction-in-logs-and-traces) -- Mandatory `LogRedaction` usage in log templates

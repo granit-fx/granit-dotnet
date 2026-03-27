@@ -39,7 +39,8 @@ public class AppModule : GranitModule { }
   "MultiTenancy": {
     "IsEnabled": true,
     "TenantIdClaimType": "tenant_id",
-    "TenantIdHeaderName": "X-Tenant-Id"
+    "TenantIdHeaderName": "X-Tenant-Id",
+    "HeaderTrustMode": "Unrestricted"
   }
 }
 ```
@@ -248,6 +249,44 @@ HTTP Request (Tenant A) → Wolverine handler → background job
 
 This ensures tenant isolation across async message processing without manual propagation.
 
+## Security hardening
+
+### Header trust mode
+
+The `X-Tenant-Id` header is accepted by default without cross-validation
+(`Unrestricted`). This is safe when the header is set by a trusted BFF or
+reverse proxy. For direct API exposure, enable `CrossValidate`:
+
+```json
+{
+  "MultiTenancy": {
+    "HeaderTrustMode": "CrossValidate"
+  }
+}
+```
+
+In `CrossValidate` mode, when the user is authenticated and has a `tenant_id`
+JWT claim, the resolved tenant must match the claim. A mismatch returns
+**403 Forbidden** and logs a warning with the resolved and expected tenant IDs.
+
+| Mode | Behavior | Use case |
+|------|----------|----------|
+| `Unrestricted` | Header accepted as-is | Behind BFF/reverse proxy |
+| `CrossValidate` | Header must match JWT claim | Direct API exposure |
+
+### Observability
+
+The middleware emits three OpenTelemetry counters under the `Granit.MultiTenancy` meter:
+
+| Metric | Tags | Description |
+|--------|------|-------------|
+| `granit.multi_tenancy.resolution.succeeded` | `tenant_id`, `resolver_type` | Successful tenant resolutions |
+| `granit.multi_tenancy.resolution.failed` | `tenant_id` | Failed resolutions (no resolver matched or cross-validation rejected) |
+| `granit.multi_tenancy.context.switched` | `tenant_id` | Explicit `ICurrentTenant.Change()` calls |
+
+The `resolver_type` tag identifies which resolver matched (`HeaderTenantResolver`,
+`JwtClaimTenantResolver`, or a custom resolver), enabling targeted dashboards.
+
 ## Configuration reference
 
 | Property | Default | Description |
@@ -255,6 +294,7 @@ This ensures tenant isolation across async message processing without manual pro
 | `IsEnabled` | `true` | Enable/disable tenant resolution |
 | `TenantIdClaimType` | `"tenant_id"` | JWT claim name for tenant ID |
 | `TenantIdHeaderName` | `"X-Tenant-Id"` | HTTP header name for tenant ID |
+| `HeaderTrustMode` | `"Unrestricted"` | `Unrestricted` or `CrossValidate` (match header against JWT claim) |
 
 ## Public API summary
 
@@ -263,9 +303,10 @@ This ensures tenant isolation across async message processing without manual pro
 | Module | `GranitMultiTenancyModule` | `Granit.MultiTenancy` |
 | Core (in Granit) | `ICurrentTenant`, `AllowAnonymousTenantAttribute` | `Granit` |
 | Implementation | `CurrentTenant`, `TenantInfo`, `ITenantInfo` | `Granit.MultiTenancy` |
-| Resolution | `ITenantResolver`, `HeaderTenantResolver`, `JwtClaimTenantResolver`, `TenantResolverPipeline` | `Granit.MultiTenancy` |
+| Resolution | `ITenantResolver`, `HeaderTenantResolver`, `JwtClaimTenantResolver`, `TenantResolverPipeline`, `TenantResolutionResult` | `Granit.MultiTenancy` |
 | Middleware | `TenantResolutionMiddleware` | `Granit.MultiTenancy` |
-| Options | `MultiTenancyOptions` | `Granit.MultiTenancy` |
+| Options | `MultiTenancyOptions`, `TenantHeaderTrustMode` | `Granit.MultiTenancy` |
+| Diagnostics | `MultiTenancyMetrics` | `Granit.MultiTenancy` |
 | Extensions | `AddGranitMultiTenancy()`, `UseGranitMultiTenancy()` | `Granit.MultiTenancy` |
 
 ## See also

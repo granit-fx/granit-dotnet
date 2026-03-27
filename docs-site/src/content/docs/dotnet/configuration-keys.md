@@ -341,6 +341,7 @@ Wolverine__RetryDelays__1=00:00:30
 | `IsEnabled` | `bool` | `true` | Enable tenant resolution middleware. |
 | `TenantIdClaimType` | `string` | `"tenant_id"` | JWT claim for tenant ID. |
 | `TenantIdHeaderName` | `string` | `"X-Tenant-Id"` | HTTP header for tenant ID. |
+| `HeaderTrustMode` | `TenantHeaderTrustMode` | `Unrestricted` | `Unrestricted` or `CrossValidate` (match header against JWT claim). |
 
 ### Tenant isolation -- `TenantIsolationOptions`
 
@@ -357,7 +358,7 @@ Wolverine__RetryDelays__1=00:00:30
 | **Section** | -- | `TenantSchema` | |
 | **Package** | -- | `Granit.Persistence` | |
 | `NamingConvention` | `TenantSchemaNamingConvention` | `TenantId` | `TenantId`, `TenantName`, or `Custom`. |
-| `Prefix` | `string` | `"tenant_"` | Schema name prefix. |
+| `Prefix` | `string` | `"tenant_"` | Schema name prefix. Must match `^[a-z][a-z0-9_]*$` (validated at startup). |
 
 ### Data migrations -- `MigrationStartupOptions`
 

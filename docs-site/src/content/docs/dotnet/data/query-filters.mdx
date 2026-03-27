@@ -58,7 +58,7 @@ var deletedPatients = await db.Patients
     .ToListAsync(cancellationToken)
     .ConfigureAwait(false);
 
-// Bypass all named filters (equivalent to IgnoreQueryFilters() without args)
+// Bypass multiple specific filters
 var allPatients = await db.Patients
     .IgnoreQueryFilters([
         GranitFilterNames.SoftDelete,
@@ -66,6 +66,15 @@ var allPatients = await db.Patients
     .ToListAsync(cancellationToken)
     .ConfigureAwait(false);
 ```
+
+:::danger[Never use parameterless IgnoreQueryFilters()]
+Calling `.IgnoreQueryFilters()` without arguments disables **all** query filters,
+including the multi-tenant filter -- creating a **cross-tenant data leak risk**.
+Always use the named form: `.IgnoreQueryFilters([GranitFilterNames.SoftDelete])`.
+
+An architecture test (`IgnoreQueryFilters_without_named_filter_should_not_exist_in_src`)
+enforces this convention across the entire codebase.
+:::
 
 ## Translation conventions
 

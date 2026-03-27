@@ -60,7 +60,8 @@ Add the configuration to `appsettings.json`:
   "MultiTenancy": {
     "IsEnabled": true,
     "TenantIdClaimType": "tenant_id",
-    "TenantIdHeaderName": "X-Tenant-Id"
+    "TenantIdHeaderName": "X-Tenant-Id",
+    "HeaderTrustMode": "Unrestricted"
   }
 }
 ```
@@ -70,6 +71,15 @@ Add the configuration to `appsettings.json`:
 | `IsEnabled` | `true` | Enable or disable tenant resolution |
 | `TenantIdClaimType` | `"tenant_id"` | JWT claim name containing the tenant ID |
 | `TenantIdHeaderName` | `"X-Tenant-Id"` | HTTP header name for explicit tenant specification |
+| `HeaderTrustMode` | `"Unrestricted"` | `Unrestricted` (accept header as-is) or `CrossValidate` (header must match JWT claim) |
+
+:::caution[Security hardening]
+By default, the `X-Tenant-Id` header is trusted without cross-validation
+(`Unrestricted`). This is safe behind a BFF or reverse proxy that sets the
+header from authenticated context. If the header may be attacker-controlled
+(direct API exposure), set `HeaderTrustMode` to `CrossValidate` — mismatches
+between the header and the JWT `tenant_id` claim return **403 Forbidden**.
+:::
 
 ### Resolution order
 
