@@ -171,7 +171,7 @@ internal static class SavedViewEndpoints
         return TypedResults.Created($"/saved-views/{view.Id}", MapView(view, userId));
     }
 
-    private static async Task<Results<NoContent, NotFound, ForbidHttpResult, UnauthorizedHttpResult>> UpdateAsync(
+    private static async Task<Results<NoContent, NotFound, ForbidHttpResult, UnauthorizedHttpResult, ProblemHttpResult>> UpdateAsync(
         Guid id,
         UpdateSavedViewRequest request,
         [FromServices] ISavedViewStoreReader reader,
@@ -210,7 +210,7 @@ internal static class SavedViewEndpoints
         return TypedResults.NoContent();
     }
 
-    private static async Task<Results<NoContent, NotFound, ForbidHttpResult, UnauthorizedHttpResult>> DeleteAsync(
+    private static async Task<Results<NoContent, NotFound, ForbidHttpResult, UnauthorizedHttpResult, ProblemHttpResult>> DeleteAsync(
         Guid id,
         [FromServices] ISavedViewStoreReader reader,
         [FromServices] ISavedViewStoreWriter store,
@@ -238,7 +238,7 @@ internal static class SavedViewEndpoints
         return TypedResults.NoContent();
     }
 
-    private static async Task<Results<NoContent, NotFound, ForbidHttpResult, UnauthorizedHttpResult>> SetDefaultAsync(
+    private static async Task<Results<NoContent, NotFound, ForbidHttpResult, UnauthorizedHttpResult, ProblemHttpResult>> SetDefaultAsync(
         Guid id,
         [FromServices] ISavedViewStoreReader reader,
         [FromServices] ISavedViewStoreWriter store,
