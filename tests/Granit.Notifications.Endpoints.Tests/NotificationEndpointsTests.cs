@@ -11,6 +11,7 @@ using Granit.Notifications.Endpoints.Extensions;
 using Granit.QueryEngine;
 using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,6 +53,7 @@ public sealed class NotificationEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
         builder.Services.AddAuthorization();
+        builder.Services.AddSingleton<IAuthorizationPolicyProvider, TestPolicyProvider>();
 
         builder.Services.AddSingleton(_userNotificationReader);
         builder.Services.AddSingleton(_userNotificationWriter);
@@ -129,7 +131,7 @@ public sealed class NotificationEndpointsTests : IAsyncDisposable
             $"{Prefix}/{id}/read", content: null, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        await _userNotificationWriter.Received(1).MarkAsReadAsync(id, _clock.Now, Arg.Any<CancellationToken>());
+        await _userNotificationWriter.Received(1).MarkAsReadAsync(id, "user-123", _clock.Now, Arg.Any<CancellationToken>());
     }
 
     // ── POST /read-all ─────────────────────────────────────────────────────
@@ -318,6 +320,19 @@ public sealed class NotificationEndpointsTests : IAsyncDisposable
         HttpClient client = _app.GetTestClient();
         client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, userId);
         return client;
+    }
+
+    // ── Fake policy provider (resolves any named policy as "require auth") ──
+
+    internal sealed class TestPolicyProvider : IAuthorizationPolicyProvider
+    {
+        private static readonly AuthorizationPolicy s_policy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+
+        public Task<AuthorizationPolicy> GetDefaultPolicyAsync() => Task.FromResult(s_policy);
+        public Task<AuthorizationPolicy?> GetFallbackPolicyAsync() => Task.FromResult<AuthorizationPolicy?>(null);
+        public Task<AuthorizationPolicy?> GetPolicyAsync(string policyName) => Task.FromResult<AuthorizationPolicy?>(s_policy);
     }
 
     // ── Fake authentication handler ─────────────────────────────────────────

@@ -1,6 +1,7 @@
 using System.Diagnostics.Metrics;
 using Granit.Imaging.Diagnostics;
 using Granit.Imaging.MagickNet.Internal;
+using Granit.Imaging.MagickNet.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -9,7 +10,7 @@ namespace Granit.Imaging.MagickNet.Tests.Internal;
 
 public sealed class MagickNetImageProcessorTests
 {
-    private readonly MagickNetImageProcessor _processor = new(CreateTestMetrics());
+    private readonly MagickNetImageProcessor _processor = new(CreateTestMetrics(), new ImagingMagickNetOptions());
 
     private static ImagingMetrics CreateTestMetrics()
     {

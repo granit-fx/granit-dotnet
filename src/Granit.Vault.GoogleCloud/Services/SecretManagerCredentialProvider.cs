@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Google.Cloud.SecretManager.V1;
+using Granit.Diagnostics;
 using Granit.Vault.GoogleCloud.Diagnostics;
 using Granit.Vault.GoogleCloud.Options;
 using Microsoft.Extensions.Hosting;
@@ -112,7 +113,7 @@ internal sealed partial class SecretManagerCredentialProvider(
         _password = root.GetProperty("password").GetString() ?? string.Empty;
         _versionName = response.Name;
 
-        LogCredentialsObtained(_username, _versionName);
+        LogCredentialsObtained(LogRedaction.Username(_username), _versionName);
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Starting Secret Manager credential manager")]
@@ -127,8 +128,8 @@ internal sealed partial class SecretManagerCredentialProvider(
     [LoggerMessage(Level = LogLevel.Information, Message = "Obtaining credentials from {SecretName}")]
     private partial void LogObtainingCredentials(string secretName);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Credentials obtained: user={Username}, version={VersionName}")]
-    private partial void LogCredentialsObtained(string username, string versionName);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Credentials obtained: user={RedactedUsername}, version={VersionName}")]
+    private partial void LogCredentialsObtained(string redactedUsername, string versionName);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Next rotation check in {Interval}")]
     private partial void LogNextCheckIn(TimeSpan interval);

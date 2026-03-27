@@ -5,6 +5,7 @@ using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
 using Granit.Notifications.Endpoints.Dtos;
 using Granit.Notifications.Endpoints.Options;
+using Granit.Notifications.Endpoints.Permissions;
 using Granit.QueryEngine;
 using Granit.Timing;
 using Granit.Validation.AspNetCore;
@@ -54,24 +55,28 @@ public static class NotificationEndpointRouteBuilderExtensions
     private static void MapInboxEndpoints(RouteGroupBuilder group)
     {
         group.MapGet("/", GetNotificationsAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
             .WithName("GetNotifications")
             .WithSummary("Returns the user's notification inbox, newest first.")
             .WithDescription("Returns a paginated list of the current user's notifications. Supports filtering by read/unread status. Results are sorted by creation date, newest first.")
             .Produces<PagedResult<UserNotificationResponse>>();
 
         group.MapGet("/unread/count", GetUnreadCountAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
             .WithName("GetUnreadCount")
             .WithSummary("Returns the number of unread notifications for the current user.")
             .WithDescription("Returns the total count of unread notifications for the authenticated user within the current tenant. Use this to display a badge count in the UI.")
             .Produces<UnreadCountResponse>();
 
         group.MapPost("/{id:guid}/read", MarkAsReadAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("MarkAsRead")
             .WithSummary("Marks a single notification as read.")
             .WithDescription("Marks the specified notification as read by setting its read timestamp. Idempotent — marking an already-read notification is a no-op.")
             .Produces(StatusCodes.Status204NoContent);
 
         group.MapPost("/read-all", MarkAllAsReadAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("MarkAllAsRead")
             .WithSummary("Marks all notifications as read for the current user.")
             .WithDescription("Marks all unread notifications as read for the authenticated user within the current tenant. Useful for a 'mark all as read' bulk action.")
@@ -105,10 +110,12 @@ public static class NotificationEndpointRouteBuilderExtensions
 
     private static async Task<NoContent> MarkAsReadAsync(
         Guid id,
+        ClaimsPrincipal user,
         [FromServices] IUserNotificationWriter writer,
         [FromServices] IClock clock)
     {
-        await writer.MarkAsReadAsync(id, clock.Now).ConfigureAwait(false);
+        string userId = GetUserId(user);
+        await writer.MarkAsReadAsync(id, userId, clock.Now).ConfigureAwait(false);
         return TypedResults.NoContent();
     }
 
@@ -131,6 +138,7 @@ public static class NotificationEndpointRouteBuilderExtensions
     private static void MapActivityFeedEndpoints(RouteGroupBuilder group)
     {
         group.MapGet("/entity/{entityType}/{entityId}", GetEntityActivityFeedAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
             .WithName("GetEntityActivityFeed")
             .WithSummary("Returns the activity feed for a specific entity.")
             .WithDescription("Returns a paginated list of notifications related to a specific entity. Useful for displaying an activity log on an entity detail page. Results are sorted by creation date, newest first.")
@@ -158,18 +166,21 @@ public static class NotificationEndpointRouteBuilderExtensions
     private static void MapPreferenceEndpoints(RouteGroupBuilder group)
     {
         group.MapGet("/preferences", GetPreferencesAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
             .WithName("GetPreferences")
             .WithSummary("Returns notification delivery preferences for the current user.")
             .WithDescription("Returns all notification delivery preferences for the authenticated user within the current tenant. Each preference indicates whether a specific notification type is enabled or disabled for a given channel.")
             .Produces<List<NotificationPreferenceResponse>>();
 
         group.MapPut("/preferences", UpdatePreferenceAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("UpdatePreference")
             .WithSummary("Creates or updates a notification delivery preference.")
             .WithDescription("Creates or updates a delivery preference for a specific notification type and channel. If a preference already exists for the same type and channel, it is replaced (upsert).")
             .Produces(StatusCodes.Status204NoContent);
 
         group.MapGet("/types", GetNotificationTypes)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
             .WithName("GetNotificationTypes")
             .WithSummary("Returns all registered notification type definitions.")
             .WithDescription("Returns all notification types registered in the system with their metadata. Use this to build the preferences UI, showing which notification types are available and their supported channels.")
@@ -231,18 +242,21 @@ public static class NotificationEndpointRouteBuilderExtensions
     private static void MapSubscriptionEndpoints(RouteGroupBuilder group)
     {
         group.MapGet("/subscriptions", GetSubscriptionsAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
             .WithName("GetSubscriptions")
             .WithSummary("Returns all notification subscriptions for the current user.")
             .WithDescription("Returns all notification type subscriptions for the authenticated user within the current tenant. Each subscription indicates a notification type the user has opted into.")
             .Produces<List<NotificationSubscriptionResponse>>();
 
         group.MapPost("/subscriptions/{typeName}", SubscribeAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("Subscribe")
             .WithSummary("Subscribes the current user to a notification type.")
             .WithDescription("Subscribes the authenticated user to the specified notification type within the current tenant. Idempotent — subscribing to an already-subscribed type is a no-op.")
             .Produces(StatusCodes.Status204NoContent);
 
         group.MapDelete("/subscriptions/{typeName}", UnsubscribeAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("Unsubscribe")
             .WithSummary("Unsubscribes the current user from a notification type.")
             .WithDescription("Removes the authenticated user's subscription to the specified notification type within the current tenant. Idempotent — unsubscribing from a non-subscribed type is a no-op.")
@@ -291,18 +305,21 @@ public static class NotificationEndpointRouteBuilderExtensions
     private static void MapEntityFollowerEndpoints(RouteGroupBuilder group)
     {
         group.MapPost("/entity/{entityType}/{entityId}/follow", FollowEntityAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("FollowEntity")
             .WithSummary("Subscribes the current user as a follower of an entity.")
             .WithDescription("Adds the authenticated user as a follower of the specified entity within the current tenant. Followers receive notifications when activity occurs on the entity. Idempotent.")
             .Produces(StatusCodes.Status204NoContent);
 
         group.MapDelete("/entity/{entityType}/{entityId}/follow", UnfollowEntityAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("UnfollowEntity")
             .WithSummary("Unsubscribes the current user from an entity.")
             .WithDescription("Removes the authenticated user from the follower list of the specified entity within the current tenant. The user will no longer receive entity-level notifications. Idempotent.")
             .Produces(StatusCodes.Status204NoContent);
 
         group.MapGet("/entity/{entityType}/{entityId}/followers", GetEntityFollowersAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
             .WithName("GetEntityFollowers")
             .WithSummary("Returns all followers of a specific entity.")
             .WithDescription("Returns all users following the specified entity within the current tenant. Each entry includes the user ID and subscription metadata.")

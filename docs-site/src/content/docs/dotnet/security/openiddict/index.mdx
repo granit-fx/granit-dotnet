@@ -125,10 +125,16 @@ app.MapOpenIddictEndpoints();
 
 ### 5. Run migrations
 
+`OpenIddictDbContext` tables are created **automatically** during `--migrate`.
+The framework registers an `IInternalDbContextEnsurer` that calls
+`CreateTablesAsync()` when the `openiddict_*` tables do not yet exist.
+
 ```bash
-dotnet ef migrations add Initial --context OpenIddictDbContext
-dotnet ef database update --context OpenIddictDbContext
+dotnet run --migrate
 ```
+
+No `dotnet ef migrations add` is required — `OpenIddictDbContext` is an internal
+context managed by the framework.
 
 ### 6. Seed an application
 

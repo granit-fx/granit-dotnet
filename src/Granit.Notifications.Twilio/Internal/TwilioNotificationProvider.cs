@@ -1,3 +1,4 @@
+using Granit.Diagnostics;
 using Granit.Notifications.Sms;
 using Granit.Notifications.Twilio.Options;
 using Granit.Notifications.WhatsApp;
@@ -36,7 +37,7 @@ internal sealed partial class TwilioNotificationProvider(
             endpoint, content, cancellationToken).ConfigureAwait(false);
         await EnsureSuccessAsync(endpoint, response, cancellationToken).ConfigureAwait(false);
 
-        LogSmsSent(message.To);
+        LogSmsSent(LogRedaction.Phone(message.To));
     }
 
     /// <inheritdoc />
@@ -61,7 +62,7 @@ internal sealed partial class TwilioNotificationProvider(
             endpoint, content, cancellationToken).ConfigureAwait(false);
         await EnsureSuccessAsync(endpoint, response, cancellationToken).ConfigureAwait(false);
 
-        LogWhatsAppSent(message.To, message.TemplateName);
+        LogWhatsAppSent(LogRedaction.Phone(message.To), message.TemplateName);
     }
 
     /// <summary>
@@ -106,11 +107,11 @@ internal sealed partial class TwilioNotificationProvider(
             response.StatusCode);
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Twilio SMS sent to {Recipient}")]
-    private partial void LogSmsSent(string recipient);
+    [LoggerMessage(Level = LogLevel.Information, Message = "Twilio SMS sent to {RedactedRecipient}")]
+    private partial void LogSmsSent(string redactedRecipient);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Twilio WhatsApp sent to {Recipient} template {TemplateName}")]
-    private partial void LogWhatsAppSent(string recipient, string templateName);
+    [LoggerMessage(Level = LogLevel.Information, Message = "Twilio WhatsApp sent to {RedactedRecipient} template {TemplateName}")]
+    private partial void LogWhatsAppSent(string redactedRecipient, string templateName);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Twilio API error on {Endpoint}: HTTP {StatusCode} — {ErrorBody}")]
     private partial void LogTwilioError(string endpoint, int statusCode, string? errorBody);

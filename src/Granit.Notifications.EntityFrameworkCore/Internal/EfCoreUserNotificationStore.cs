@@ -56,12 +56,12 @@ internal sealed class EfCoreUserNotificationStore(IDbContextFactory<Notification
     }
 
     /// <inheritdoc/>
-    public async Task MarkAsReadAsync(Guid id, DateTimeOffset readAt, CancellationToken cancellationToken = default)
+    public async Task MarkAsReadAsync(Guid id, string recipientUserId, DateTimeOffset readAt, CancellationToken cancellationToken = default)
     {
         await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         UserNotification? notification = await db.UserNotifications
-            .FirstOrDefaultAsync(n => n.Id == id, cancellationToken).ConfigureAwait(false);
+            .FirstOrDefaultAsync(n => n.Id == id && n.RecipientUserId == recipientUserId, cancellationToken).ConfigureAwait(false);
 
         if (notification is null)
         {

@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using Granit.Diagnostics;
 using Granit.Notifications.MobilePush.AzureNotificationHubs.Options;
 using Microsoft.Azure.NotificationHubs;
 using Microsoft.Extensions.Logging;
@@ -37,7 +38,7 @@ internal sealed partial class AzureNotificationHubsTransport(
             {
                 // Log but do not throw — partial delivery is acceptable for push.
                 // Individual token failures (expired, unregistered) must not block other recipients.
-                LogTokenSendFailed(deviceToken, ex);
+                LogTokenSendFailed(LogRedaction.Token(deviceToken), ex);
             }
         }
     }
@@ -82,6 +83,6 @@ internal sealed partial class AzureNotificationHubsTransport(
         return System.Text.Encoding.UTF8.GetString(stream.ToArray());
     }
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to send push notification to device token {DeviceToken}")]
-    private partial void LogTokenSendFailed(string deviceToken, Exception exception);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to send push notification to device token {RedactedToken}")]
+    private partial void LogTokenSendFailed(string redactedToken, Exception exception);
 }

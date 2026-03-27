@@ -1,3 +1,4 @@
+using Granit.Diagnostics;
 using Granit.Notifications.Email.Smtp.Options;
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
@@ -56,9 +57,9 @@ internal sealed partial class MailKitEmailSender(
         await client.SendAsync(mimeMessage, cancellationToken).ConfigureAwait(false);
         await client.DisconnectAsync(quit: true, cancellationToken).ConfigureAwait(false);
 
-        LogEmailSent(message.To, smtp.Host, smtp.Port);
+        LogEmailSent(LogRedaction.Email(message.To), smtp.Host, smtp.Port);
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "SMTP email sent to {Recipient} via {Host}:{Port}")]
-    private partial void LogEmailSent(string recipient, string host, int port);
+    [LoggerMessage(Level = LogLevel.Information, Message = "SMTP email sent to {RedactedRecipient} via {Host}:{Port}")]
+    private partial void LogEmailSent(string redactedRecipient, string host, int port);
 }

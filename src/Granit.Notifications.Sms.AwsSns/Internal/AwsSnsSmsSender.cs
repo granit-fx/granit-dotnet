@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Amazon.SimpleNotificationService.Model;
+using Granit.Diagnostics;
 using Granit.Notifications.Sms.AwsSns.Diagnostics;
 using Granit.Notifications.Sms.AwsSns.Options;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,7 @@ internal sealed partial class AwsSnsSmsSender(
 
         using Activity? activity = NotificationsSmsAwsSnsActivitySource.Source.StartActivity(
             NotificationsSmsAwsSnsActivitySource.Operations.SendSms);
-        activity?.SetTag(NotificationsSmsAwsSnsActivitySource.Tags.Recipient, message.To);
+        activity?.SetTag(NotificationsSmsAwsSnsActivitySource.Tags.Recipient, LogRedaction.HashPrefix(message.To));
 
         Dictionary<string, MessageAttributeValue> attributes = new()
         {
@@ -66,9 +67,9 @@ internal sealed partial class AwsSnsSmsSender(
             .PublishAsync(request, cancellationToken)
             .ConfigureAwait(false);
 
-        LogSmsSent(message.To, response.MessageId);
+        LogSmsSent(LogRedaction.Phone(message.To), response.MessageId);
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "SNS SMS sent to {Recipient}, messageId={MessageId}")]
-    private partial void LogSmsSent(string recipient, string messageId);
+    [LoggerMessage(Level = LogLevel.Information, Message = "SNS SMS sent to {RedactedRecipient}, messageId={MessageId}")]
+    private partial void LogSmsSent(string redactedRecipient, string messageId);
 }

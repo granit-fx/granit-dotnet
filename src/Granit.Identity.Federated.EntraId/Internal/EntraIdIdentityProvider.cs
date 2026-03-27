@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
+using Granit.Diagnostics;
 using Granit.Events;
 using Granit.Identity.Events;
 using Granit.Identity.Federated;
@@ -656,7 +657,7 @@ internal sealed partial class EntraIdIdentityProvider(
             ?? throw new InvalidOperationException("Entra ID did not return a user ID after creation.");
 
         activity?.SetTag(IdentityEntraIdActivitySource.TagUserId, createdUserId);
-        LogUserCreated(user.Username, createdUserId);
+        LogUserCreated(LogRedaction.Username(user.Username), createdUserId);
 
         var createdIdentityUser = new FederatedIdentityUser(
             createdUserId,
@@ -821,11 +822,11 @@ internal sealed partial class EntraIdIdentityProvider(
 
         if (response.IsSuccessStatusCode)
         {
-            LogCredentialVerificationSucceeded(username);
+            LogCredentialVerificationSucceeded(LogRedaction.Username(username));
             return true;
         }
 
-        LogCredentialVerificationFailed(username, (int)response.StatusCode);
+        LogCredentialVerificationFailed(LogRedaction.Username(username), (int)response.StatusCode);
         return false;
     }
 
@@ -988,8 +989,8 @@ internal sealed partial class EntraIdIdentityProvider(
     [LoggerMessage(Level = LogLevel.Information, Message = "Temporary password set for user {UserId} in Entra ID")]
     private partial void LogTemporaryPasswordSet(string userId);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "User {Username} created with ID {UserId} in Entra ID")]
-    private partial void LogUserCreated(string username, string userId);
+    [LoggerMessage(Level = LogLevel.Information, Message = "User {RedactedUsername} created with ID {UserId} in Entra ID")]
+    private partial void LogUserCreated(string redactedUsername, string userId);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get groups from Entra ID. Returning empty list")]
     private partial void LogGetGroupsFailed(Exception exception);
@@ -1003,9 +1004,9 @@ internal sealed partial class EntraIdIdentityProvider(
     [LoggerMessage(Level = LogLevel.Information, Message = "User {UserId} removed from group {GroupId} in Entra ID")]
     private partial void LogUserRemovedFromGroup(string userId, string groupId);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Credential verification succeeded for user {Username}")]
-    private partial void LogCredentialVerificationSucceeded(string username);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Credential verification succeeded for user {RedactedUsername}")]
+    private partial void LogCredentialVerificationSucceeded(string redactedUsername);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Credential verification failed for user {Username} (HTTP {StatusCode})")]
-    private partial void LogCredentialVerificationFailed(string username, int statusCode);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Credential verification failed for user {RedactedUsername} (HTTP {StatusCode})")]
+    private partial void LogCredentialVerificationFailed(string redactedUsername, int statusCode);
 }

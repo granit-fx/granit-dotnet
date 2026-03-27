@@ -1,6 +1,7 @@
 using System.Diagnostics.Metrics;
 using Granit.Imaging.Diagnostics;
 using Granit.Imaging.MagickNet.Internal;
+using Granit.Imaging.MagickNet.Options;
 using ImageMagick;
 using NSubstitute;
 using Shouldly;
@@ -21,7 +22,7 @@ public sealed class MagickNetImagePipelineWatermarkTests
     {
         Stream stream = typeof(MagickNetImagePipelineWatermarkTests).Assembly
             .GetManifestResourceStream("Granit.Imaging.MagickNet.Tests.TestAssets.test-image.png")!;
-        MagickNetImageProcessor processor = new(CreateTestMetrics());
+        MagickNetImageProcessor processor = new(CreateTestMetrics(), new ImagingMagickNetOptions());
         return (MagickNetImagePipeline)processor.Load(stream);
     }
 

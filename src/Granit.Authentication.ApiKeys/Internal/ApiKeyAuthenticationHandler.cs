@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.Options;
+using Granit.Diagnostics;
 using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
@@ -79,7 +80,7 @@ internal sealed partial class ApiKeyAuthenticationHandler(
         // Validate CIDR
         if (!CidrValidator.IsAllowed(Context.Connection.RemoteIpAddress, apiKey.AllowedCidrs))
         {
-            LogIpNotAllowed(Logger, apiKey.Id, Context.Connection.RemoteIpAddress?.ToString());
+            LogIpNotAllowed(Logger, apiKey.Id, LogRedaction.IpAddress(Context.Connection.RemoteIpAddress?.ToString() ?? "unknown"));
             return AuthenticateResult.Fail("IP address not in allowed CIDR ranges.");
         }
 
@@ -166,8 +167,8 @@ internal sealed partial class ApiKeyAuthenticationHandler(
     [LoggerMessage(Level = LogLevel.Warning, Message = "API key {ApiKeyId} has expired.")]
     private static partial void LogApiKeyExpired(ILogger logger, Guid apiKeyId);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "API key {ApiKeyId}: IP {IpAddress} not in allowed CIDR ranges.")]
-    private static partial void LogIpNotAllowed(ILogger logger, Guid apiKeyId, string? ipAddress);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "API key {ApiKeyId}: IP {MaskedIp} not in allowed CIDR ranges.")]
+    private static partial void LogIpNotAllowed(ILogger logger, Guid apiKeyId, string? maskedIp);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "API key {ApiKeyId} ({ApiKeyName}) authenticated successfully.")]
     private static partial void LogApiKeyAuthenticated(ILogger logger, Guid apiKeyId, string apiKeyName);

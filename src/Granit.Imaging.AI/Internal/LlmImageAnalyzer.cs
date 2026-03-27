@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Granit.AI;
 using Granit.Imaging.AI.Diagnostics;
 using Granit.Imaging.AI.Options;
@@ -35,6 +36,9 @@ internal sealed partial class LlmImageAnalyzer(
         PropertyNameCaseInsensitive = true,
     };
 
+    private static readonly HashSet<string> AllowedContentTypes =
+        ["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif", "image/bmp", "image/tiff"];
+
     /// <inheritdoc />
     public async Task<ImageAnalysis> AnalyzeAsync(
         ReadOnlyMemory<byte> imageData,
@@ -44,13 +48,14 @@ internal sealed partial class LlmImageAnalyzer(
         ArgumentNullException.ThrowIfNull(contentType);
 
         ImagingAIOptions opts = options.Value;
+        string normalizedContentType = NormalizeContentType(contentType);
         long startTimestamp = Stopwatch.GetTimestamp();
 
         using Activity? activity = ImagingAIActivitySource.Source.StartActivity("ImageAnalysis.Analyze");
-        activity?.SetTag("imaging.ai.content_type", contentType);
+        activity?.SetTag("imaging.ai.content_type", normalizedContentType);
         activity?.SetTag("imaging.ai.image_size_bytes", imageData.Length);
 
-        LogAnalysisStarted(contentType, imageData.Length);
+        LogAnalysisStarted(normalizedContentType, imageData.Length);
 
         try
         {
@@ -75,8 +80,8 @@ internal sealed partial class LlmImageAnalyzer(
 
             ImageAnalysis result = Deserialize(json);
 
-            metrics.RecordAnalysisCompleted(tenantId: null, contentType);
-            metrics.RecordAnalysisDuration(tenantId: null, contentType, Stopwatch.GetElapsedTime(startTimestamp));
+            metrics.RecordAnalysisCompleted(tenantId: null, normalizedContentType);
+            metrics.RecordAnalysisDuration(tenantId: null, normalizedContentType, Stopwatch.GetElapsedTime(startTimestamp));
 
             LogAnalysisCompleted(result.DetectedObjects.Count, result.Tags.Count);
 
@@ -84,10 +89,13 @@ internal sealed partial class LlmImageAnalyzer(
         }
         catch
         {
-            metrics.RecordAnalysisFailure(tenantId: null, contentType);
+            metrics.RecordAnalysisFailure(tenantId: null, normalizedContentType);
             throw;
         }
     }
+
+    private static string NormalizeContentType(string contentType) =>
+        AllowedContentTypes.Contains(contentType) ? contentType : "other";
 
     private static ImageAnalysis Deserialize(string json)
     {
@@ -111,11 +119,42 @@ internal sealed partial class LlmImageAnalyzer(
             ?? throw new InvalidOperationException("Failed to parse the AI model response as JSON.");
 
         return new ImageAnalysis(
-            parsed.Description ?? string.Empty,
-            parsed.DetectedObjects ?? [],
-            parsed.Tags ?? [],
-            parsed.SuggestedAltText);
+            SanitizeText(parsed.Description),
+            SanitizeList(parsed.DetectedObjects),
+            SanitizeList(parsed.Tags),
+            parsed.SuggestedAltText is not null ? SanitizeText(parsed.SuggestedAltText, 500) : null);
     }
+
+    private static string SanitizeText(string? value, int maxLength = 2000)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return string.Empty;
+        }
+
+        string cleaned = ControlCharPattern().Replace(value, string.Empty);
+        return cleaned.Length > maxLength ? cleaned[..maxLength] : cleaned;
+    }
+
+    private static List<string> SanitizeList(
+        IReadOnlyList<string>? items,
+        int maxItems = 50,
+        int maxItemLength = 200)
+    {
+        if (items is null or { Count: 0 })
+        {
+            return [];
+        }
+
+        return items
+            .Take(maxItems)
+            .Select(item => SanitizeText(item, maxItemLength))
+            .Where(item => item.Length > 0)
+            .ToList();
+    }
+
+    [GeneratedRegex(@"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]")]
+    private static partial Regex ControlCharPattern();
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Starting AI image analysis (contentType={ContentType}, size={SizeBytes} bytes)")]
     private partial void LogAnalysisStarted(string contentType, int sizeBytes);

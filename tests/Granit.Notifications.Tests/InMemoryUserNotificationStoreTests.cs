@@ -75,7 +75,7 @@ public sealed class InMemoryUserNotificationStoreTests
         await _store.InsertAsync(notification, TestContext.Current.CancellationToken);
 
         DateTimeOffset readAt = DateTimeOffset.UtcNow;
-        await _store.MarkAsReadAsync(notification.Id, readAt, TestContext.Current.CancellationToken);
+        await _store.MarkAsReadAsync(notification.Id, "user-1", readAt, TestContext.Current.CancellationToken);
 
         UserNotification? updated = await _store.GetAsync(notification.Id, TestContext.Current.CancellationToken);
         updated!.State.ShouldBe(UserNotificationState.Read);

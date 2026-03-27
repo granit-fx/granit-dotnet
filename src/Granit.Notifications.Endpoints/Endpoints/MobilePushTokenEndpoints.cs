@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Granit.MultiTenancy;
 using Granit.Notifications.Endpoints.Dtos;
+using Granit.Notifications.Endpoints.Permissions;
 using Granit.Notifications.MobilePush;
 using Granit.Timing;
 using Granit.Validation.AspNetCore;
@@ -27,6 +28,7 @@ public static class MobilePushTokenEndpoints
             .WithTags("MobilePush");
 
         group.MapPost("/", RegisterTokenAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("RegisterMobilePushToken")
             .WithSummary("Registers a mobile device token for push notifications.")
             .WithDescription("Registers a device token (FCM or APNs) for the authenticated user. If the token already exists, it is updated (upsert). Returns 201 Created for new registrations, 200 OK for updates. Tokens are scoped to the current tenant.")
@@ -34,12 +36,14 @@ public static class MobilePushTokenEndpoints
             .Produces(StatusCodes.Status200OK);
 
         group.MapDelete("/{deviceToken}", RemoveTokenAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)
             .WithName("RemoveMobilePushToken")
             .WithSummary("Removes a mobile device token.")
-            .WithDescription("Removes the specified device token for the current tenant. Call this when the user logs out or the token becomes invalid. No-op if the token does not exist.")
+            .WithDescription("Removes the specified device token for the authenticated user in the current tenant. Call this when the user logs out or the token becomes invalid. No-op if the token does not exist.")
             .Produces(StatusCodes.Status204NoContent);
 
         group.MapGet("/", GetTokensAsync)
+            .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
             .WithName("GetMobilePushTokens")
             .WithSummary("Returns the current user's registered device tokens.")
             .WithDescription("Returns all device tokens registered by the authenticated user for the current tenant, including the platform (iOS, Android) and registration timestamp.")
@@ -83,13 +87,15 @@ public static class MobilePushTokenEndpoints
 
     private static async Task<NoContent> RemoveTokenAsync(
         string deviceToken,
+        ClaimsPrincipal user,
         [FromServices] IMobilePushTokenWriter tokenWriter,
         [FromServices] ICurrentTenant tenant,
         CancellationToken cancellationToken)
     {
+        string userId = GetUserId(user);
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
 
-        await tokenWriter.RemoveAsync(deviceToken, tenantId, cancellationToken).ConfigureAwait(false);
+        await tokenWriter.RemoveAsync(deviceToken, userId, tenantId, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.NoContent();
     }

@@ -8,6 +8,6 @@ namespace Granit.Notifications.Abstractions;
 public interface IUserNotificationWriter
 {
     Task InsertAsync(UserNotification notification, CancellationToken cancellationToken = default);
-    Task MarkAsReadAsync(Guid id, DateTimeOffset readAt, CancellationToken cancellationToken = default);
+    Task MarkAsReadAsync(Guid id, string recipientUserId, DateTimeOffset readAt, CancellationToken cancellationToken = default);
     Task MarkAllAsReadAsync(string recipientUserId, Guid? tenantId, DateTimeOffset readAt, CancellationToken cancellationToken = default);
 }

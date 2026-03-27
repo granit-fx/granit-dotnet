@@ -233,7 +233,30 @@ sequenceDiagram
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `WorkspaceName` | `string?` | `null` (default) | AI workspace — must use a vision-capable model |
-| `TimeoutSeconds` | `int` | `30` | LLM timeout — vision calls are slower than text |
+| `TimeoutSeconds` | `int` | `15` | LLM timeout — vision calls are slower than text |
+
+## Security
+
+### Output sanitization
+
+LLM responses are sanitized before being returned in `ImageAnalysis`:
+
+- **Control characters** stripped (prevents injection via invisible chars)
+- **Text fields** capped at 2000 characters (`SuggestedAltText`: 500 chars)
+- **List fields** capped at 50 items, each item at 200 characters
+
+:::caution[Treat analysis results as untrusted]
+An attacker can embed text instructions in an image (steganography, visible OCR text) that
+influence the LLM response. Always HTML-encode `Description`, `Tags`, and `SuggestedAltText`
+before rendering in a web page.
+:::
+
+### Metrics safety
+
+The `content_type` metric tag is normalized against a fixed allowlist of 7 MIME types
+(`image/jpeg`, `image/png`, `image/webp`, `image/avif`, `image/gif`, `image/bmp`,
+`image/tiff`). Unrecognized values are mapped to `"other"` to prevent metrics cardinality
+explosion from attacker-controlled MIME strings.
 
 ## See also
 

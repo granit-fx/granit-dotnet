@@ -6,6 +6,7 @@ EF Core migration runner with `--migrate` CLI support for Granit applications.
 
 - **`--migrate` CLI mode** — apply pending migrations, seed data, exit cleanly
 - **Automatic discovery** — finds `IMigratableModule<TContext>` in the module dependency graph
+- **Internal DbContext support** — discovers `IInternalDbContextEnsurer` for isolated contexts (e.g., OpenIddict)
 - **Distributed locking** — PostgreSQL advisory lock prevents concurrent migrations
 - **Multi-tenant** — supports schema-per-tenant and DB-per-tenant via `ITenantEnumerator`
 - **Retry with backoff** — handles transient database connection failures

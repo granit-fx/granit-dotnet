@@ -15,6 +15,6 @@ public sealed class UnsupportedImageFormatException : Exception
     /// </summary>
     /// <param name="detectedFormat">The format identifier that could not be mapped.</param>
     public UnsupportedImageFormatException(string detectedFormat)
-        : base($"The image format '{detectedFormat}' is not supported.") =>
+        : base("The uploaded image format is not supported.") =>
         DetectedFormat = detectedFormat;
 }

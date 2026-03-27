@@ -1,4 +1,5 @@
 using Granit.Modularity;
+using Granit.Persistence;
 using Granit.Persistence.DataSeeding;
 using Granit.Persistence.Hosting.Options;
 using Granit.Persistence.Migrations;
@@ -57,6 +58,9 @@ internal sealed partial class GranitMigrationRunner(
 
             // Ensure Expand & Contract tracking table exists
             await EnsureExpandContractDbAsync(ct).ConfigureAwait(false);
+
+            // Ensure internal DbContext tables (OpenIddict, etc.)
+            await EnsureInternalDbContextsAsync(ct).ConfigureAwait(false);
 
             // Data seeding
             if (options.SeedAfterMigration)
@@ -182,6 +186,20 @@ internal sealed partial class GranitMigrationRunner(
         await ensurer.EnsureCreatedAsync(ct).ConfigureAwait(false);
     }
 
+    private async Task EnsureInternalDbContextsAsync(CancellationToken ct)
+    {
+        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+        IEnumerable<IInternalDbContextEnsurer> ensurers =
+            scope.ServiceProvider.GetServices<IInternalDbContextEnsurer>();
+
+        foreach (IInternalDbContextEnsurer ensurer in ensurers)
+        {
+            LogEnsuringInternalContext(ensurer.ContextName);
+            await ensurer.EnsureCreatedAsync(ct).ConfigureAwait(false);
+            LogEnsuredInternalContext(ensurer.ContextName);
+        }
+    }
+
     private async Task SeedAsync(CancellationToken ct)
     {
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
@@ -271,6 +289,14 @@ internal sealed partial class GranitMigrationRunner(
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Data seeding completed.")]
     private partial void LogSeedingCompleted();
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Ensuring internal DbContext '{ContextName}' tables exist...")]
+    private partial void LogEnsuringInternalContext(string contextName);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Internal DbContext '{ContextName}' tables verified.")]
+    private partial void LogEnsuredInternalContext(string contextName);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "All migrations completed successfully.")]
     private partial void LogMigrationCompleted();

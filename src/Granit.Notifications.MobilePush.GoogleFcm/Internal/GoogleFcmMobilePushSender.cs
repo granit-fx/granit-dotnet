@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Granit.Diagnostics;
 using Granit.Notifications.MobilePush.GoogleFcm.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -38,7 +39,7 @@ internal sealed partial class GoogleFcmMobilePushSender(
             }
             catch (FcmTokenUnregisteredException)
             {
-                LogTokenUnregistered(token);
+                LogTokenUnregistered(LogRedaction.Token(token));
                 await eventPublisher.PublishTokenInvalidatedAsync(new MobilePushTokenInvalidated
                 {
                     DeviceToken = token,
@@ -46,7 +47,7 @@ internal sealed partial class GoogleFcmMobilePushSender(
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                LogSendFailed(token, ex);
+                LogSendFailed(LogRedaction.Token(token), ex);
                 (failures ??= []).Add(ex);
             }
         }
@@ -97,22 +98,22 @@ internal sealed partial class GoogleFcmMobilePushSender(
             response.EnsureSuccessStatusCode();
         }
 
-        LogMessageSent(token, projectId);
+        LogMessageSent(LogRedaction.Token(token), projectId);
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "FCM push sent to token {Token} for project {ProjectId}")]
-    private partial void LogMessageSent(string token, string projectId);
+    [LoggerMessage(Level = LogLevel.Information, Message = "FCM push sent to token {RedactedToken} for project {ProjectId}")]
+    private partial void LogMessageSent(string redactedToken, string projectId);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "FCM token {Token} is unregistered, publishing invalidation event")]
-    private partial void LogTokenUnregistered(string token);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "FCM token {RedactedToken} is unregistered, publishing invalidation event")]
+    private partial void LogTokenUnregistered(string redactedToken);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "FCM push delivery failed for token {Token}")]
-    private partial void LogSendFailed(string token, Exception exception);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "FCM push delivery failed for token {RedactedToken}")]
+    private partial void LogSendFailed(string redactedToken, Exception exception);
 }
 
 /// <summary>Thrown when a device token is no longer registered with FCM.</summary>
 internal sealed class FcmTokenUnregisteredException(string token)
-    : Exception($"FCM token is unregistered: {token}");
+    : Exception($"FCM token is unregistered: {LogRedaction.Token(token)}");
 
 internal sealed record FcmPayload
 {

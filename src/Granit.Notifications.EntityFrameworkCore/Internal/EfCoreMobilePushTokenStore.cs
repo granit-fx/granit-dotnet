@@ -52,12 +52,12 @@ internal sealed class EfCoreMobilePushTokenStore(
     }
 
     /// <inheritdoc />
-    public async Task RemoveAsync(string deviceToken, Guid? tenantId, CancellationToken cancellationToken = default)
+    public async Task RemoveAsync(string deviceToken, string userId, Guid? tenantId, CancellationToken cancellationToken = default)
     {
         await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         await db.MobilePushTokens
-            .Where(t => t.DeviceToken == deviceToken && t.TenantId == tenantId)
+            .Where(t => t.DeviceToken == deviceToken && t.UserId == userId && t.TenantId == tenantId)
             .ExecuteDeleteAsync(cancellationToken)
             .ConfigureAwait(false);
     }

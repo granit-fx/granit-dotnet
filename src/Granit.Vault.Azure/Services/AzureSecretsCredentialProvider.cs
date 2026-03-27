@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Azure.Security.KeyVault.Secrets;
+using Granit.Diagnostics;
 using Granit.Vault.Azure.Diagnostics;
 using Granit.Vault.Azure.Options;
 using Microsoft.Extensions.Hosting;
@@ -108,7 +109,7 @@ internal sealed partial class AzureSecretsCredentialProvider(
         _password = root.GetProperty("password").GetString() ?? string.Empty;
         _version = secret.Properties.Version ?? string.Empty;
 
-        LogCredentialsObtained(_username, _version);
+        LogCredentialsObtained(LogRedaction.Username(_username), _version);
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Starting Azure Key Vault Secrets credential manager")]
@@ -123,8 +124,8 @@ internal sealed partial class AzureSecretsCredentialProvider(
     [LoggerMessage(Level = LogLevel.Information, Message = "Obtaining credentials from {SecretName}")]
     private partial void LogObtainingCredentials(string secretName);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Credentials obtained: user={Username}, version={Version}")]
-    private partial void LogCredentialsObtained(string username, string version);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Credentials obtained: user={RedactedUsername}, version={Version}")]
+    private partial void LogCredentialsObtained(string redactedUsername, string version);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Next rotation check in {Interval}")]
     private partial void LogNextCheckIn(TimeSpan interval);

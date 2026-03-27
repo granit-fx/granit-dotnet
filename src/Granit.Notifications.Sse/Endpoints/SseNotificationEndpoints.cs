@@ -19,12 +19,13 @@ public static class SseNotificationEndpoints
     /// <summary>
     /// Maps the SSE notification stream endpoint at <c>/notifications/stream</c>.
     /// The returned <see cref="RouteGroupBuilder"/> can be further configured by the application
-    /// (e.g. <c>.RequireAuthorization()</c>).
+    /// (e.g. additional authorization policies).
     /// </summary>
     public static RouteGroupBuilder MapGranitSseNotificationEndpoints(this IEndpointRouteBuilder endpoints)
     {
         RouteGroupBuilder group = endpoints
-            .MapGranitGroup("/notifications");
+            .MapGranitGroup("/notifications")
+            .RequireAuthorization();
 
         group.MapGet("/stream", HandleStream)
             .WithName("NotificationSseStream")
@@ -50,20 +51,27 @@ public static class SseNotificationEndpoints
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
+        SseConnection? connection = connectionManager.Connect(userId);
+
+        if (connection is null)
+        {
+            return TypedResults.Problem(
+                detail: "Too many concurrent SSE connections.",
+                statusCode: StatusCodes.Status429TooManyRequests);
+        }
+
         int heartbeatSeconds = options.Value.HeartbeatIntervalSeconds;
 
         return TypedResults.ServerSentEvents(
-            StreamNotifications(connectionManager, userId, heartbeatSeconds, cancellationToken));
+            StreamNotifications(connectionManager, connection, heartbeatSeconds, cancellationToken));
     }
 
     private static async IAsyncEnumerable<SseNotificationMessage> StreamNotifications(
         ISseConnectionManager connectionManager,
-        string userId,
+        SseConnection connection,
         int heartbeatSeconds,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        SseConnection connection = connectionManager.Connect(userId);
-
         try
         {
             while (!cancellationToken.IsCancellationRequested)

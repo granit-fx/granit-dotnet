@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Azure.Communication.Sms;
+using Granit.Diagnostics;
 using Granit.Notifications.Sms.AzureCommunicationServices.Diagnostics;
 using Granit.Notifications.Sms.AzureCommunicationServices.Options;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,7 @@ internal sealed partial class AcsSmsSender(
 
         using Activity? activity = NotificationsSmsAcsActivitySource.Source.StartActivity(
             NotificationsSmsAcsActivitySource.Operations.SendSms);
-        activity?.SetTag(NotificationsSmsAcsActivitySource.Tags.Recipient, message.To);
+        activity?.SetTag(NotificationsSmsAcsActivitySource.Tags.Recipient, LogRedaction.HashPrefix(message.To));
 
         string fromNumber = message.SenderId ?? opts.FromPhoneNumber;
 
@@ -35,17 +36,17 @@ internal sealed partial class AcsSmsSender(
 
         if (result.Successful)
         {
-            LogSmsSent(message.To, result.MessageId);
+            LogSmsSent(LogRedaction.Phone(message.To), result.MessageId);
         }
         else
         {
-            LogSmsFailed(message.To, result.ErrorMessage);
+            LogSmsFailed(LogRedaction.Phone(message.To), result.ErrorMessage);
         }
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "ACS SMS sent to {Recipient}, messageId={MessageId}")]
-    private partial void LogSmsSent(string recipient, string messageId);
+    [LoggerMessage(Level = LogLevel.Information, Message = "ACS SMS sent to {RedactedRecipient}, messageId={MessageId}")]
+    private partial void LogSmsSent(string redactedRecipient, string messageId);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "ACS SMS to {Recipient} failed: {ErrorMessage}")]
-    private partial void LogSmsFailed(string recipient, string errorMessage);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "ACS SMS to {RedactedRecipient} failed: {ErrorMessage}")]
+    private partial void LogSmsFailed(string redactedRecipient, string errorMessage);
 }

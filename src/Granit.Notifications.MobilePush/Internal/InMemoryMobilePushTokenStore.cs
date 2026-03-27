@@ -28,9 +28,14 @@ internal sealed class InMemoryMobilePushTokenStore : IMobilePushTokenReader, IMo
     }
 
     /// <inheritdoc />
-    public Task RemoveAsync(string deviceToken, Guid? tenantId, CancellationToken cancellationToken = default)
+    public Task RemoveAsync(string deviceToken, string userId, Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        _tokens.TryRemove(deviceToken, out _);
+        if (_tokens.TryGetValue(deviceToken, out MobilePushTokenInfo? existing) &&
+            existing.UserId == userId && existing.TenantId == tenantId)
+        {
+            _tokens.TryRemove(deviceToken, out _);
+        }
+
         return Task.CompletedTask;
     }
 }

@@ -34,6 +34,9 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
     /// <inheritdoc/>
     public IImagePipeline Resize(int width, int height, ResizeMode mode = ResizeMode.Max)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
+
         MagickGeometry geometry = new((uint)width, (uint)height);
 
         switch (mode)
@@ -78,6 +81,11 @@ internal sealed class MagickNetImagePipeline : IImagePipeline
     /// <inheritdoc/>
     public IImagePipeline Crop(CropRectangle rectangle)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(rectangle.X);
+        ArgumentOutOfRangeException.ThrowIfNegative(rectangle.Y);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(rectangle.Width);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(rectangle.Height);
+
         _image.Crop(new MagickGeometry(rectangle.X, rectangle.Y, (uint)rectangle.Width, (uint)rectangle.Height));
         _image.ResetPage();
         return this;

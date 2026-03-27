@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Granit.Diagnostics;
 using Granit.Notifications.Email.Scaleway.Diagnostics;
 using Granit.Notifications.Email.Scaleway.Options;
 using Microsoft.Extensions.Logging;
@@ -55,7 +56,7 @@ internal sealed partial class ScalewayEmailSender(
             "emails", payload, JsonOptions, cancellationToken).ConfigureAwait(false);
         await EnsureSuccessAsync(response, cancellationToken).ConfigureAwait(false);
 
-        LogEmailSent(message.To);
+        LogEmailSent(LogRedaction.Email(message.To));
     }
 
     /// <summary>
@@ -86,8 +87,8 @@ internal sealed partial class ScalewayEmailSender(
             response.StatusCode);
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Scaleway email sent to {Recipient}")]
-    private partial void LogEmailSent(string recipient);
+    [LoggerMessage(Level = LogLevel.Information, Message = "Scaleway email sent to {RedactedRecipient}")]
+    private partial void LogEmailSent(string redactedRecipient);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Scaleway API error: HTTP {StatusCode} — {ErrorBody}")]
     private partial void LogScalewayError(int statusCode, string? errorBody);

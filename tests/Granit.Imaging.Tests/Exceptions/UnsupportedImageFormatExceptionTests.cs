@@ -15,12 +15,13 @@ public sealed class UnsupportedImageFormatExceptionTests
     }
 
     [Fact]
-    public void Constructor_SetsMessageContainingFormat()
+    public void Constructor_SetsGenericMessage_WithoutLeakingFormat()
     {
         UnsupportedImageFormatException exception = new("HEIC");
 
-        exception.Message.ShouldContain("HEIC");
         exception.Message.ShouldContain("not supported");
+        exception.Message.ShouldNotContain("HEIC");
+        exception.DetectedFormat.ShouldBe("HEIC");
     }
 
     [Fact]

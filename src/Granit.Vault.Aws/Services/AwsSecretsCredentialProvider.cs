@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
+using Granit.Diagnostics;
 using Granit.Vault.Aws.Diagnostics;
 using Granit.Vault.Aws.Options;
 using Microsoft.Extensions.Hosting;
@@ -114,7 +115,7 @@ internal sealed partial class AwsSecretsCredentialProvider(
         _password = root.GetProperty("password").GetString() ?? string.Empty;
         _versionId = response.VersionId;
 
-        LogCredentialsObtained(_username, _versionId);
+        LogCredentialsObtained(LogRedaction.Username(_username), _versionId);
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Starting AWS Secrets Manager credential manager")]
@@ -129,8 +130,8 @@ internal sealed partial class AwsSecretsCredentialProvider(
     [LoggerMessage(Level = LogLevel.Information, Message = "Obtaining credentials from {SecretArn}")]
     private partial void LogObtainingCredentials(string secretArn);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Credentials obtained: user={Username}, version={VersionId}")]
-    private partial void LogCredentialsObtained(string username, string versionId);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Credentials obtained: user={RedactedUsername}, version={VersionId}")]
+    private partial void LogCredentialsObtained(string redactedUsername, string versionId);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Next rotation check in {Interval}")]
     private partial void LogNextCheckIn(TimeSpan interval);

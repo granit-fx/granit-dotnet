@@ -265,10 +265,14 @@ dotnet ef migrations add AddBackgroundJobsTables \
 </TabItem>
 </Tabs>
 
-:::caution[Never mix EnsureCreated with migrations]
+:::caution[Never mix EnsureCreated with migrations on a host DbContext]
 `EnsureCreatedAsync()` creates the schema without a migration history table.
 Once used, `MigrateAsync()` will fail because it cannot determine which
 migrations have already been applied. Pick one approach and stick with it.
+
+This restriction applies to **host application DbContexts** that use EF Core migrations.
+Internal framework DbContexts (e.g., `OpenIddictDbContext`) may use `EnsureCreated`
+safely because they have isolated table prefixes and no migration history of their own.
 :::
 
 ## Data seeding

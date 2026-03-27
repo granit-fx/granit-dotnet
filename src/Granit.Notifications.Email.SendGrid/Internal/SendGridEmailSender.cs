@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Granit.Diagnostics;
 using Granit.Notifications.Email.SendGrid.Diagnostics;
 using Granit.Notifications.Email.SendGrid.Options;
 using Microsoft.Extensions.Logging;
@@ -56,7 +57,7 @@ internal sealed partial class SendGridEmailSender(
             "mail/send", payload, JsonOptions, cancellationToken).ConfigureAwait(false);
         await EnsureSuccessAsync(response, cancellationToken).ConfigureAwait(false);
 
-        LogEmailSent(message.To);
+        LogEmailSent(LogRedaction.Email(message.To));
     }
 
     /// <summary>
@@ -87,8 +88,8 @@ internal sealed partial class SendGridEmailSender(
             response.StatusCode);
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "SendGrid email sent to {Recipient}")]
-    private partial void LogEmailSent(string recipient);
+    [LoggerMessage(Level = LogLevel.Information, Message = "SendGrid email sent to {RedactedRecipient}")]
+    private partial void LogEmailSent(string redactedRecipient);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "SendGrid API error: HTTP {StatusCode} — {ErrorBody}")]
     private partial void LogSendGridError(int statusCode, string? errorBody);

@@ -9,10 +9,10 @@ sidebar:
 import { FileTree } from "@astrojs/starlight/components";
 
 Granit.Imaging provides a fluent image processing pipeline for transformations such as
-resize, crop, compress, format conversion, and watermarking. The pipeline strips EXIF
-metadata by default to prevent GPS coordinates and camera details leaking via uploaded
-photos (GDPR). The Magick.NET implementation supports JPEG, PNG, WebP, AVIF, GIF, BMP,
-and TIFF.
+resize, crop, compress, format conversion, and watermarking. Call `StripMetadata()` in the
+pipeline to remove GPS coordinates and camera details from uploaded photos (GDPR).
+The Magick.NET implementation supports JPEG, PNG, WebP, AVIF, GIF, BMP, and TIFF with
+built-in security hardening (resource limits, format allowlisting, input size validation).
 
 ## Package structure
 
@@ -35,6 +35,19 @@ public class AppModule : GranitModule { }
 
 ```csharp
 builder.AddGranitImagingMagickNet();
+```
+
+Customize resource limits via the options callback:
+
+```csharp
+builder.AddGranitImagingMagickNet(options =>
+{
+    options.MaxMemoryBytes = 512 * 1024 * 1024;  // 512 MB (default: 256 MB)
+    options.MaxWidthPixels = 8192;                // 8K px (default: 16384)
+    options.MaxHeightPixels = 8192;
+    options.MaxInputBytes = 25 * 1024 * 1024;     // 25 MB (default: 50 MB)
+    options.MaxListLength = 16;                   // GIF frames (default: 32)
+});
 ```
 
 `MagickNetImageProcessor` is registered as a singleton — Magick.NET is thread-safe and
@@ -153,6 +166,37 @@ public static class BlobValidatedEventHandler
 This keeps the upload path fast (202 Accepted) while image processing runs in the background.
 See [Blob Storage domain events](/dotnet/data/blob-storage/#domain-events) for the full event list.
 
+## Security
+
+`Granit.Imaging.MagickNet` applies three layers of defense against malicious image uploads:
+
+### Format allowlisting
+
+Before passing any data to the native ImageMagick decoder, `Load()` validates magic bytes
+against a safe raster format allowlist (JPEG, PNG, GIF, BMP, TIFF, WebP, AVIF). Dangerous
+formats that ImageMagick can parse — SVG (SSRF via `xlink:href`), MSL (file I/O), MVG, PDF,
+EPS — are rejected before native code executes.
+
+### Resource limits
+
+ImageMagick resource limits are configured at startup to prevent decompression bomb attacks
+(a 42 KB crafted JPEG can inflate to 4+ GB). Default limits:
+
+| Limit | Default | Description |
+| ----- | ------- | ----------- |
+| `MaxMemoryBytes` | 256 MB | Pixel cache memory ceiling |
+| `MaxWidthPixels` | 16384 | Maximum image width |
+| `MaxHeightPixels` | 16384 | Maximum image height |
+| `MaxListLength` | 32 | Maximum frames (GIF animation) |
+| `MaxInputBytes` | 50 MB | Pre-decode input size check |
+
+### Input validation
+
+- **Resize / Crop**: negative or zero dimensions are rejected with `ArgumentOutOfRangeException`
+  (prevents integer overflow from `int` → `uint` cast)
+- **Compress**: quality is validated in the 0–100 range
+- **Non-seekable streams**: automatically buffered before validation
+
 ## Public API summary
 
 | Category | Key types | Package |
@@ -161,6 +205,7 @@ See [Blob Storage domain events](/dotnet/data/blob-storage/#domain-events) for t
 | Processor | `IImageProcessor`, `IImagePipeline`, `ImageResult` | `Granit.Imaging` |
 | Formats | `ImageFormat`, `ImageSize` | `Granit.Imaging` |
 | Modes | `ResizeMode`, `CropRectangle`, `WatermarkPosition` | `Granit.Imaging` |
+| Options | `ImagingMagickNetOptions` | `Granit.Imaging.MagickNet` |
 | Extensions | `AddGranitImagingMagickNet()` | `Granit.Imaging.MagickNet` |
 
 ## See also

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Amazon.SimpleEmailV2.Model;
+using Granit.Diagnostics;
 using Granit.Notifications.Email.AwsSes.Diagnostics;
 using Granit.Notifications.Email.AwsSes.Options;
 using Microsoft.Extensions.Logging;
@@ -62,9 +63,9 @@ internal sealed partial class AwsSesEmailSender(
         using IAwsSesTransport transport = _transportFactory();
         await transport.SendEmailAsync(request, cancellationToken).ConfigureAwait(false);
 
-        LogEmailSent(message.To, ses.Region);
+        LogEmailSent(LogRedaction.Email(message.To), ses.Region);
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "SES email sent to {Recipient} via {Region}")]
-    private partial void LogEmailSent(string recipient, string region);
+    [LoggerMessage(Level = LogLevel.Information, Message = "SES email sent to {RedactedRecipient} via {Region}")]
+    private partial void LogEmailSent(string redactedRecipient, string region);
 }

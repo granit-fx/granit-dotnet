@@ -1,30 +1,44 @@
 using System.Collections.Concurrent;
 using System.Threading.Channels;
 using Granit.Guids;
+using Granit.Notifications.Sse.Options;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Notifications.Sse.Internal;
 
 /// <summary>
 /// Thread-safe connection manager backed by <see cref="Channel{T}"/> per connection
 /// and <see cref="ConcurrentDictionary{TKey,TValue}"/> for user-to-connections mapping.
+/// Enforces per-user connection limits and bounded message buffers to prevent resource exhaustion.
 /// </summary>
-internal sealed class SseConnectionManager(IGuidGenerator guidGenerator) : ISseConnectionManager, IDisposable
+internal sealed class SseConnectionManager(
+    IGuidGenerator guidGenerator,
+    IOptions<SseChannelOptions> options) : ISseConnectionManager, IDisposable
 {
     private readonly ConcurrentDictionary<string, ConcurrentDictionary<Guid, SseConnection>> _connections = new();
 
     /// <inheritdoc/>
-    public SseConnection Connect(string userId)
+    public SseConnection? Connect(string userId)
     {
         ArgumentNullException.ThrowIfNull(userId);
-
-        var channel = Channel.CreateUnbounded<SseNotificationMessage>(
-            new UnboundedChannelOptions { SingleWriter = false, SingleReader = true });
-
-        SseConnection connection = new(guidGenerator.Create(), userId, channel);
 
         ConcurrentDictionary<Guid, SseConnection> userConnections =
             _connections.GetOrAdd(userId, _ => new ConcurrentDictionary<Guid, SseConnection>());
 
+        if (userConnections.Count >= options.Value.MaxConnectionsPerUser)
+        {
+            return null;
+        }
+
+        var channel = Channel.CreateBounded<SseNotificationMessage>(
+            new BoundedChannelOptions(options.Value.MaxBufferSize)
+            {
+                FullMode = BoundedChannelFullMode.DropOldest,
+                SingleWriter = false,
+                SingleReader = true,
+            });
+
+        SseConnection connection = new(guidGenerator.Create(), userId, channel);
         userConnections.TryAdd(connection.ConnectionId, connection);
 
         return connection;

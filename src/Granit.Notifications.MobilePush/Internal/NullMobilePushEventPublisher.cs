@@ -1,3 +1,4 @@
+using Granit.Diagnostics;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Notifications.MobilePush.Internal;
@@ -14,12 +15,12 @@ internal sealed partial class NullMobilePushEventPublisher(
         MobilePushTokenInvalidated tokenInvalidated,
         CancellationToken cancellationToken = default)
     {
-        LogTokenInvalidationIgnored(tokenInvalidated.DeviceToken);
+        LogTokenInvalidationIgnored(LogRedaction.Token(tokenInvalidated.DeviceToken));
         return Task.CompletedTask;
     }
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "MobilePush token invalidation event for token '{Token}' was not published — " +
+        Message = "MobilePush token invalidation event for token '{RedactedToken}' was not published — " +
                   "no event publisher configured. Install Granit.Notifications.Wolverine for durable event dispatch.")]
-    private partial void LogTokenInvalidationIgnored(string token);
+    private partial void LogTokenInvalidationIgnored(string redactedToken);
 }

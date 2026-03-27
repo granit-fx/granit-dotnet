@@ -9,6 +9,7 @@ using Granit.Notifications.Endpoints.Endpoints;
 using Granit.Notifications.MobilePush;
 using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,6 +46,7 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
         builder.Services.AddAuthorization();
+        builder.Services.AddSingleton<IAuthorizationPolicyProvider, TestPolicyProvider>();
 
         builder.Services.AddSingleton(_tokenWriter);
         builder.Services.AddSingleton(_tokenReader);
@@ -138,7 +140,7 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
             $"{Prefix}/my-device-token", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        await _tokenWriter.Received(1).RemoveAsync("my-device-token", null, Arg.Any<CancellationToken>());
+        await _tokenWriter.Received(1).RemoveAsync("my-device-token", "user-456", null, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -232,7 +234,7 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
             $"{Prefix}/my-token", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
-        await _tokenWriter.Received(1).RemoveAsync("my-token", tenantId, Arg.Any<CancellationToken>());
+        await _tokenWriter.Received(1).RemoveAsync("my-token", "user-456", tenantId, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -257,6 +259,17 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
         HttpClient client = _app.GetTestClient();
         client.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, userId);
         return client;
+    }
+
+    internal sealed class TestPolicyProvider : IAuthorizationPolicyProvider
+    {
+        private static readonly AuthorizationPolicy s_policy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+
+        public Task<AuthorizationPolicy> GetDefaultPolicyAsync() => Task.FromResult(s_policy);
+        public Task<AuthorizationPolicy?> GetFallbackPolicyAsync() => Task.FromResult<AuthorizationPolicy?>(null);
+        public Task<AuthorizationPolicy?> GetPolicyAsync(string policyName) => Task.FromResult<AuthorizationPolicy?>(s_policy);
     }
 
     internal sealed class TestAuthHandler(

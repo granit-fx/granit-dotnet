@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using Amazon.SimpleNotificationService.Model;
+using Granit.Diagnostics;
 using Granit.Notifications.MobilePush.AwsSns.Diagnostics;
 using Granit.Notifications.MobilePush.AwsSns.Options;
 using Microsoft.Extensions.Logging;
@@ -70,7 +71,7 @@ internal sealed partial class AwsSnsMobilePushSender(
         }
         catch (EndpointDisabledException)
         {
-            LogEndpointDisabled(deviceToken);
+            LogEndpointDisabled(LogRedaction.Token(deviceToken));
             await eventPublisher.PublishTokenInvalidatedAsync(
                 new MobilePushTokenInvalidated { DeviceToken = deviceToken },
                 cancellationToken).ConfigureAwait(false);
@@ -117,6 +118,6 @@ internal sealed partial class AwsSnsMobilePushSender(
     [LoggerMessage(Level = LogLevel.Information, Message = "SNS push sent to {DeviceCount} device(s)")]
     private partial void LogPushSent(int deviceCount);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "SNS endpoint disabled for token {DeviceToken}, publishing invalidation event")]
-    private partial void LogEndpointDisabled(string deviceToken);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "SNS endpoint disabled for token {RedactedToken}, publishing invalidation event")]
+    private partial void LogEndpointDisabled(string redactedToken);
 }

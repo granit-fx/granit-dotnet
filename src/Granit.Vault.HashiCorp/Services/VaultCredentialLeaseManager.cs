@@ -1,3 +1,4 @@
+using Granit.Diagnostics;
 using Granit.Vault.HashiCorp.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -74,7 +75,7 @@ internal sealed partial class VaultCredentialLeaseManager(
         _leaseId = secret.LeaseId;
         _leaseDurationSeconds = secret.LeaseDurationSeconds;
 
-        LogCredentialsObtained(logger, _username, _leaseId, _leaseDurationSeconds);
+        LogCredentialsObtained(logger, LogRedaction.Username(_username), _leaseDurationSeconds);
     }
 
     private async Task RenewLeaseAsync(CancellationToken cancellationToken)
@@ -106,8 +107,8 @@ internal sealed partial class VaultCredentialLeaseManager(
     [LoggerMessage(Level = LogLevel.Information, Message = "Obtaining dynamic credentials from {Path}")]
     private static partial void LogObtainingCredentials(ILogger logger, string path);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Dynamic credentials obtained: user={Username}, lease={LeaseId}, TTL={Ttl}s")]
-    private static partial void LogCredentialsObtained(ILogger logger, string username, string leaseId, int ttl);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Dynamic credentials obtained: user={RedactedUsername}, TTL={Ttl}s")]
+    private static partial void LogCredentialsObtained(ILogger logger, string redactedUsername, int ttl);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Renewing lease {LeaseId}")]
     private static partial void LogRenewingLease(ILogger logger, string leaseId);

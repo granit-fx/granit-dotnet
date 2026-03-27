@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Granit.Diagnostics;
 using Granit.Notifications.Email.AzureCommunicationServices.Diagnostics;
 using Granit.Notifications.Email.AzureCommunicationServices.Options;
 using Microsoft.Extensions.Logging;
@@ -22,7 +23,7 @@ internal sealed partial class AcsEmailSender(
 
         using Activity? activity = NotificationsEmailAcsActivitySource.Source.StartActivity(
             NotificationsEmailAcsActivitySource.Operations.SendEmail);
-        activity?.SetTag(NotificationsEmailAcsActivitySource.Tags.To, message.To);
+        activity?.SetTag(NotificationsEmailAcsActivitySource.Tags.To, LogRedaction.EmailDomain(message.To));
         activity?.SetTag(
             NotificationsEmailAcsActivitySource.Tags.SubjectLength,
             message.Subject.Length);
@@ -46,9 +47,9 @@ internal sealed partial class AcsEmailSender(
 
         await transport.SendAsync(acsMessage, cancellationToken).ConfigureAwait(false);
 
-        LogEmailSent(message.To);
+        LogEmailSent(LogRedaction.Email(message.To));
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "ACS email sent to {Recipient}")]
-    private partial void LogEmailSent(string recipient);
+    [LoggerMessage(Level = LogLevel.Information, Message = "ACS email sent to {RedactedRecipient}")]
+    private partial void LogEmailSent(string redactedRecipient);
 }

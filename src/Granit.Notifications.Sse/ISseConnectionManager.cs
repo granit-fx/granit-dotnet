@@ -7,8 +7,9 @@ public interface ISseConnectionManager
 {
     /// <summary>
     /// Registers a new SSE connection for the specified user.
+    /// Returns <c>null</c> when the per-user connection limit is reached.
     /// </summary>
-    SseConnection Connect(string userId);
+    SseConnection? Connect(string userId);
 
     /// <summary>
     /// Removes an SSE connection and completes its channel.

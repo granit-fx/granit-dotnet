@@ -44,9 +44,10 @@ internal sealed class InMemoryUserNotificationStore : IUserNotificationReader, I
         return Task.FromResult(count);
     }
 
-    public Task MarkAsReadAsync(Guid id, DateTimeOffset readAt, CancellationToken cancellationToken = default)
+    public Task MarkAsReadAsync(Guid id, string recipientUserId, DateTimeOffset readAt, CancellationToken cancellationToken = default)
     {
-        if (_notifications.TryGetValue(id, out UserNotification? notification))
+        if (_notifications.TryGetValue(id, out UserNotification? notification) &&
+            notification.RecipientUserId == recipientUserId)
         {
             notification.MarkAsRead(readAt);
         }
