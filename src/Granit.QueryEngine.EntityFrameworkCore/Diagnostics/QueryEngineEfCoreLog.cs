@@ -9,9 +9,9 @@ namespace Granit.QueryEngine.EntityFrameworkCore.Diagnostics;
 internal static partial class QueryEngineEfCoreLog
 {
     [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Filter value conversion failed for field '{Field}': cannot convert '{Value}' to {TargetType}")]
+        Message = "Filter value conversion failed for field '{Field}' to {TargetType}")]
     public static partial void FilterValueConversionFailed(
-        ILogger logger, string field, string value, string targetType, Exception exception);
+        ILogger logger, string field, string targetType, Exception exception);
 
     [LoggerMessage(Level = LogLevel.Debug,
         Message = "Filter field '{Field}' not found on entity type {EntityType}")]
@@ -19,9 +19,9 @@ internal static partial class QueryEngineEfCoreLog
         ILogger logger, string field, string entityType);
 
     [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Cursor decode failed for cursor '{Cursor}'")]
+        Message = "Cursor decode failed")]
     public static partial void CursorDecodeFailed(
-        ILogger logger, string cursor, Exception exception);
+        ILogger logger, Exception exception);
 
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Stream limit reached for entity type {EntityType}: {Limit} items — results are truncated")]

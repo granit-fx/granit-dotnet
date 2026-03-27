@@ -7,7 +7,7 @@ public sealed record SavedViewResponse(
     Guid Id,
     string EntityType,
     string Name,
-    string UserId,
+    bool IsOwner,
     bool IsShared,
     bool IsDefault,
     string? FilterJson,

@@ -26,4 +26,15 @@ public interface ISavedViewStoreReader
     /// <param name="id">The saved view identifier.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     Task<SavedView?> GetAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Counts saved views owned by a user for a specific entity type.
+    /// Used to enforce per-user view count limits.
+    /// </summary>
+    /// <param name="entityType">The query definition name.</param>
+    /// <param name="userId">The current user identifier.</param>
+    /// <param name="tenantId">The tenant identifier, or <c>null</c>.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<int> GetCountAsync(
+        string entityType, string userId, Guid? tenantId, CancellationToken cancellationToken = default);
 }

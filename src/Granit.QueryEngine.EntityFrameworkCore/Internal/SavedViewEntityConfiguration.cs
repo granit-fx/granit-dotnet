@@ -22,10 +22,10 @@ internal sealed class SavedViewEntityConfiguration : IEntityTypeConfiguration<Sa
         builder.Property(e => e.UserId).HasMaxLength(200).IsRequired();
         builder.Property(e => e.IsShared).IsRequired();
         builder.Property(e => e.IsDefault).IsRequired();
-        builder.Property(e => e.FilterJson);
-        builder.Property(e => e.SortJson);
-        builder.Property(e => e.GroupByJson);
-        builder.Property(e => e.VisibleColumnsJson);
+        builder.Property(e => e.FilterJson).HasMaxLength(10_000);
+        builder.Property(e => e.SortJson).HasMaxLength(10_000);
+        builder.Property(e => e.GroupByJson).HasMaxLength(10_000);
+        builder.Property(e => e.VisibleColumnsJson).HasMaxLength(10_000);
         builder.Property(e => e.TenantId);
 
         // Audit trail (ISO 27001)

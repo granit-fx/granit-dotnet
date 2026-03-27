@@ -67,7 +67,9 @@ internal static class QueryablePaginationExtensions
         string cursorPropertyName,
         CancellationToken cancellationToken,
         ILogger? logger = null,
-        string? effectiveSort = null)
+        string? effectiveSort = null,
+        IReadOnlySet<string>? sortableFields = null,
+        byte[]? cursorHmacKey = null)
         where T : class
     {
         PropertyInfo? cursorProperty = typeof(T).GetProperty(
@@ -86,7 +88,7 @@ internal static class QueryablePaginationExtensions
         List<CompositeCursorBuilder.SortField> sortFields = [];
         if (!string.IsNullOrWhiteSpace(effectiveSort))
         {
-            sortFields = CompositeCursorBuilder.ParseSortFields<T>(effectiveSort);
+            sortFields = CompositeCursorBuilder.ParseSortFields<T>(effectiveSort, sortableFields);
 
             // Ensure cursor property is included as tiebreaker (append if missing)
             if (!sortFields.Exists(f => f.Property.Name.Equals(cursorPropertyName, StringComparison.OrdinalIgnoreCase)))
@@ -97,7 +99,7 @@ internal static class QueryablePaginationExtensions
 
         if (!string.IsNullOrEmpty(cursor))
         {
-            query = ApplyCursorFilter(query, cursor, cursorProperty, cursorPropertyName, sortFields, logger);
+            query = ApplyCursorFilter(query, cursor, cursorProperty, cursorPropertyName, sortFields, logger, cursorHmacKey);
         }
 
         // Take pageSize + 1 to determine if there are more pages
@@ -111,7 +113,7 @@ internal static class QueryablePaginationExtensions
         if (hasMore)
         {
             items.RemoveAt(items.Count - 1);
-            nextCursor = EncodeCursor(items[^1], cursorProperty, sortFields);
+            nextCursor = EncodeCursor(items[^1], cursorProperty, sortFields, cursorHmacKey);
         }
 
         return new PagedResult<T>(items, TotalCount: null, HasMore: hasMore, NextCursor: nextCursor);
@@ -123,10 +125,11 @@ internal static class QueryablePaginationExtensions
         PropertyInfo cursorProperty,
         string cursorPropertyName,
         List<CompositeCursorBuilder.SortField> sortFields,
-        ILogger? logger)
+        ILogger? logger,
+        byte[]? hmacKey = null)
         where T : class
     {
-        Dictionary<string, string>? compositeValues = CursorEncoder.DecodeComposite(cursor, logger);
+        Dictionary<string, string>? compositeValues = CursorEncoder.DecodeComposite(cursor, logger, hmacKey);
 
         if (compositeValues is not null && sortFields.Count > 0)
         {
@@ -174,15 +177,16 @@ internal static class QueryablePaginationExtensions
     private static string? EncodeCursor<T>(
         T lastItem,
         PropertyInfo cursorProperty,
-        List<CompositeCursorBuilder.SortField> sortFields)
+        List<CompositeCursorBuilder.SortField> sortFields,
+        byte[]? hmacKey = null)
         where T : class
     {
         if (sortFields.Count > 0)
         {
-            return CompositeCursorBuilder.EncodeCompositeCursor(lastItem, sortFields);
+            return CompositeCursorBuilder.EncodeCompositeCursor(lastItem, sortFields, hmacKey);
         }
 
         object? lastValue = cursorProperty.GetValue(lastItem);
-        return lastValue is not null ? CursorEncoder.Encode(lastValue.ToString()!) : null;
+        return lastValue is not null ? CursorEncoder.Encode(lastValue.ToString()!, hmacKey) : null;
     }
 }

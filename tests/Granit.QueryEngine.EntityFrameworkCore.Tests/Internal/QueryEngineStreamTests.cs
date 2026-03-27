@@ -54,7 +54,7 @@ public sealed class QueryEngineStreamTests : IAsyncLifetime
     {
         // Arrange
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         // Act — default preset filters to Electronics (3 items)
         List<TestProduct> items = [];
@@ -76,7 +76,7 @@ public sealed class QueryEngineStreamTests : IAsyncLifetime
     {
         // Arrange
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         // Act
         List<TestProduct> items = [];
@@ -102,7 +102,7 @@ public sealed class QueryEngineStreamTests : IAsyncLifetime
     {
         // Arrange
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         // Act — sort ascending by price
         List<TestProduct> items = [];
@@ -129,7 +129,7 @@ public sealed class QueryEngineStreamTests : IAsyncLifetime
     {
         // Arrange
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         // Act
         List<TestProduct> items = [];
@@ -150,7 +150,7 @@ public sealed class QueryEngineStreamTests : IAsyncLifetime
     {
         // Arrange
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         // Act
         List<TestProduct> items = [];
@@ -176,7 +176,7 @@ public sealed class QueryEngineStreamTests : IAsyncLifetime
     {
         // Arrange
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         // Act — even with PageSize=1, stream should return all items
         List<TestProduct> items = [];

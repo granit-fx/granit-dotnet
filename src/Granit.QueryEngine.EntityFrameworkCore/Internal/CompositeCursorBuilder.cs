@@ -25,9 +25,15 @@ internal static class CompositeCursorBuilder
 
     /// <summary>
     /// Parses a sort specification string into a list of <see cref="SortField"/> entries.
-    /// Only includes fields that exist as public instance properties on <typeparamref name="T"/>.
+    /// Only includes fields that exist as public instance properties on <typeparamref name="T"/>
+    /// AND are present in the <paramref name="allowedSortFields"/> whitelist.
     /// </summary>
-    public static List<SortField> ParseSortFields<T>(string sort)
+    /// <param name="sort">Comma-separated sort specification (e.g. <c>"-createdAt,id"</c>).</param>
+    /// <param name="allowedSortFields">
+    /// Whitelist of allowed sort field names. When <c>null</c>, all public properties are accepted
+    /// (backward compatibility for legacy callers).
+    /// </param>
+    public static List<SortField> ParseSortFields<T>(string sort, IReadOnlySet<string>? allowedSortFields = null)
     {
         List<SortField> fields = [];
 
@@ -37,6 +43,11 @@ internal static class CompositeCursorBuilder
         {
             bool descending = part.StartsWith('-');
             string fieldName = descending ? part[1..] : part;
+
+            if (allowedSortFields is not null && !allowedSortFields.Contains(fieldName))
+            {
+                continue;
+            }
 
             PropertyInfo? property = typeof(T).GetProperty(
                 fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
@@ -96,7 +107,8 @@ internal static class CompositeCursorBuilder
     /// <summary>
     /// Encodes cursor values from the last item for all sort fields.
     /// </summary>
-    public static string EncodeCompositeCursor<T>(T lastItem, IReadOnlyList<SortField> sortFields)
+    public static string EncodeCompositeCursor<T>(
+        T lastItem, IReadOnlyList<SortField> sortFields, byte[]? hmacKey = null)
         where T : class
     {
         var values = sortFields
@@ -104,7 +116,7 @@ internal static class CompositeCursorBuilder
             .Where(x => x.Value is not null)
             .ToDictionary(x => x.Name, x => x.Value!.ToString()!, StringComparer.OrdinalIgnoreCase);
 
-        return CursorEncoder.EncodeComposite(values);
+        return CursorEncoder.EncodeComposite(values, hmacKey);
     }
 
     private static Expression? BuildBranch(

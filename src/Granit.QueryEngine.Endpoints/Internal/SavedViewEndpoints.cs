@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.QueryEngine.Endpoints.Dtos;
+using Granit.QueryEngine.Options;
 using Granit.QueryEngine.SavedViews;
 using Granit.QueryEngine.SavedViews.Domain;
 using Granit.Timing;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 
 namespace Granit.QueryEngine.Endpoints.Internal;
 
@@ -41,11 +43,13 @@ internal static class SavedViewEndpoints
 
         savedViews.MapPost("/", (
             CreateSavedViewRequest request,
+            [FromServices] ISavedViewStoreReader reader,
             [FromServices] ISavedViewStoreWriter store,
             [FromServices] IGuidGenerator guidGenerator,
+            [FromServices] IOptions<QueryEngineOptions> engineOptions,
             [AsParameters] SavedViewUserContext ctx,
             CancellationToken cancellationToken) =>
-            CreateAsync(request, store, guidGenerator, entityType, ctx, cancellationToken))
+            CreateAsync(request, reader, store, guidGenerator, engineOptions, entityType, ctx, cancellationToken))
             .WithName($"CreateSavedView_{entityType}")
             .WithSummary("Creates a new saved view.")
             .WithDescription("Creates a new saved view for the current user and entity type. The view stores a reusable query configuration (filters, sort, column selection). Returns 201 Created with the saved view details.")
@@ -57,62 +61,94 @@ internal static class SavedViewEndpoints
             [FromServices] ISavedViewStoreReader reader,
             [FromServices] ISavedViewStoreWriter writer,
             [FromServices] IClock clock,
+            ClaimsPrincipal user,
             CancellationToken cancellationToken) =>
-            UpdateAsync(id, request, reader, writer, clock, cancellationToken))
+            UpdateAsync(id, request, reader, writer, clock, user, cancellationToken))
             .WithName($"UpdateSavedView_{entityType}")
             .WithSummary("Updates an existing saved view.")
-            .WithDescription("Replaces the name, filter, sort, and column selection of an existing saved view. Returns 404 if the view does not exist.")
+            .WithDescription("Replaces the name, filter, sort, and column selection of an existing saved view. Returns 404 if the view does not exist. Returns 403 if the view belongs to another user.")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status403Forbidden);
 
         savedViews.MapDelete("/{id:guid}", (
             Guid id,
-            [FromServices] ISavedViewStoreWriter store,
-            CancellationToken cancellationToken) =>
-            DeleteAsync(id, store, cancellationToken))
-            .WithName($"DeleteSavedView_{entityType}")
-            .WithSummary("Deletes a saved view.")
-            .WithDescription("Permanently deletes the saved view. If it was the user's default view, no default is set afterward. Returns 404 if the view does not exist.")
-            .Produces(StatusCodes.Status204NoContent);
-
-        savedViews.MapPost("/{id:guid}/set-default", (
-            Guid id,
+            [FromServices] ISavedViewStoreReader reader,
             [FromServices] ISavedViewStoreWriter store,
             ClaimsPrincipal user,
             CancellationToken cancellationToken) =>
-            SetDefaultAsync(id, store, entityType, user, cancellationToken))
+            DeleteAsync(id, reader, store, user, cancellationToken))
+            .WithName($"DeleteSavedView_{entityType}")
+            .WithSummary("Deletes a saved view.")
+            .WithDescription("Permanently deletes the saved view. If it was the user's default view, no default is set afterward. Returns 404 if the view does not exist. Returns 403 if the view belongs to another user.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status403Forbidden);
+
+        savedViews.MapPost("/{id:guid}/set-default", (
+            Guid id,
+            [FromServices] ISavedViewStoreReader reader,
+            [FromServices] ISavedViewStoreWriter store,
+            ClaimsPrincipal user,
+            CancellationToken cancellationToken) =>
+            SetDefaultAsync(id, reader, store, entityType, user, cancellationToken))
             .WithName($"SetDefaultSavedView_{entityType}")
             .WithSummary("Sets a saved view as the default for the current user.")
-            .WithDescription("Marks the specified saved view as the user's default for this entity type. The previous default (if any) is unset. The default view is automatically applied when the user opens the list page.")
-            .Produces(StatusCodes.Status204NoContent);
+            .WithDescription("Marks the specified saved view as the user's default for this entity type. The previous default (if any) is unset. The view must belong to the current user or be shared. Returns 404 if the view does not exist. Returns 403 if the view belongs to another user.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status403Forbidden);
     }
 
-    private static async Task<Ok<List<SavedViewResponse>>> GetListAsync(
+    private static async Task<Results<Ok<List<SavedViewResponse>>, UnauthorizedHttpResult>> GetListAsync(
         [FromServices] ISavedViewStoreReader store,
         string entityType,
         [FromServices] ICurrentTenant tenant,
         ClaimsPrincipal user,
         CancellationToken cancellationToken)
     {
-        string userId = GetUserId(user);
+        string? userId = GetUserId(user);
+        if (userId is null)
+        {
+            return TypedResults.Unauthorized();
+        }
+
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
 
         IReadOnlyList<SavedView> views = await store
             .GetListAsync(entityType, userId, tenantId, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(views.Select(MapView).ToList());
+        return TypedResults.Ok(views.Select(v => MapView(v, userId)).ToList());
     }
 
-    private static async Task<Created<SavedViewResponse>> CreateAsync(
+    private static async Task<Results<Created<SavedViewResponse>, ProblemHttpResult, UnauthorizedHttpResult>> CreateAsync(
         CreateSavedViewRequest request,
+        [FromServices] ISavedViewStoreReader reader,
         [FromServices] ISavedViewStoreWriter store,
         [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] IOptions<QueryEngineOptions> engineOptions,
         string entityType,
         [AsParameters] SavedViewUserContext ctx,
         CancellationToken cancellationToken)
     {
-        string userId = GetUserId(ctx.User);
+        string? userId = GetUserId(ctx.User);
+        if (userId is null)
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        Guid? tenantId = ctx.Tenant.IsAvailable ? ctx.Tenant.Id : null;
+        int existingCount = await reader
+            .GetCountAsync(entityType, userId, tenantId, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (existingCount >= engineOptions.Value.MaxSavedViewsPerUser)
+        {
+            return TypedResults.Problem(
+                detail: $"Maximum saved views per user reached ({engineOptions.Value.MaxSavedViewsPerUser}).",
+                statusCode: StatusCodes.Status429TooManyRequests);
+        }
 
         SavedView view = new()
         {
@@ -126,27 +162,39 @@ internal static class SavedViewEndpoints
             SortJson = request.SortJson,
             GroupByJson = request.GroupByJson,
             VisibleColumnsJson = request.VisibleColumnsJson,
-            TenantId = ctx.Tenant.IsAvailable ? ctx.Tenant.Id : null,
+            TenantId = tenantId,
             CreatedAt = ctx.Clock.Now,
             CreatedBy = userId,
         };
 
         await store.CreateAsync(view, cancellationToken).ConfigureAwait(false);
-        return TypedResults.Created($"/saved-views/{view.Id}", MapView(view));
+        return TypedResults.Created($"/saved-views/{view.Id}", MapView(view, userId));
     }
 
-    private static async Task<Results<NoContent, NotFound>> UpdateAsync(
+    private static async Task<Results<NoContent, NotFound, ForbidHttpResult, UnauthorizedHttpResult>> UpdateAsync(
         Guid id,
         UpdateSavedViewRequest request,
         [FromServices] ISavedViewStoreReader reader,
         [FromServices] ISavedViewStoreWriter writer,
         [FromServices] IClock clock,
+        ClaimsPrincipal user,
         CancellationToken cancellationToken)
     {
+        string? userId = GetUserId(user);
+        if (userId is null)
+        {
+            return TypedResults.Unauthorized();
+        }
+
         SavedView? existing = await reader.GetAsync(id, cancellationToken).ConfigureAwait(false);
         if (existing is null)
         {
             return TypedResults.NotFound();
+        }
+
+        if (!string.Equals(existing.UserId, userId, StringComparison.Ordinal))
+        {
+            return TypedResults.Forbid();
         }
 
         existing.Name = request.Name;
@@ -156,40 +204,78 @@ internal static class SavedViewEndpoints
         existing.GroupByJson = request.GroupByJson;
         existing.VisibleColumnsJson = request.VisibleColumnsJson;
         existing.ModifiedAt = clock.Now;
+        existing.ModifiedBy = userId;
 
         await writer.UpdateAsync(existing, cancellationToken).ConfigureAwait(false);
         return TypedResults.NoContent();
     }
 
-    private static async Task<NoContent> DeleteAsync(
+    private static async Task<Results<NoContent, NotFound, ForbidHttpResult, UnauthorizedHttpResult>> DeleteAsync(
         Guid id,
+        [FromServices] ISavedViewStoreReader reader,
         [FromServices] ISavedViewStoreWriter store,
+        ClaimsPrincipal user,
         CancellationToken cancellationToken)
     {
+        string? userId = GetUserId(user);
+        if (userId is null)
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        SavedView? existing = await reader.GetAsync(id, cancellationToken).ConfigureAwait(false);
+        if (existing is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        if (!string.Equals(existing.UserId, userId, StringComparison.Ordinal))
+        {
+            return TypedResults.Forbid();
+        }
+
         await store.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
         return TypedResults.NoContent();
     }
 
-    private static async Task<NoContent> SetDefaultAsync(
+    private static async Task<Results<NoContent, NotFound, ForbidHttpResult, UnauthorizedHttpResult>> SetDefaultAsync(
         Guid id,
+        [FromServices] ISavedViewStoreReader reader,
         [FromServices] ISavedViewStoreWriter store,
         string entityType,
         ClaimsPrincipal user,
         CancellationToken cancellationToken)
     {
-        string userId = GetUserId(user);
+        string? userId = GetUserId(user);
+        if (userId is null)
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        SavedView? existing = await reader.GetAsync(id, cancellationToken).ConfigureAwait(false);
+        if (existing is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        if (!string.Equals(existing.UserId, userId, StringComparison.Ordinal) && !existing.IsShared)
+        {
+            return TypedResults.Forbid();
+        }
+
         await store.SetDefaultAsync(id, userId, entityType, cancellationToken).ConfigureAwait(false);
         return TypedResults.NoContent();
     }
 
-    private static SavedViewResponse MapView(SavedView v) =>
-        new(v.Id, v.EntityType, v.Name, v.UserId, v.IsShared, v.IsDefault,
+    private static SavedViewResponse MapView(SavedView v, string currentUserId) =>
+        new(v.Id, v.EntityType, v.Name,
+            string.Equals(v.UserId, currentUserId, StringComparison.Ordinal),
+            v.IsShared, v.IsDefault,
             v.FilterJson, v.SortJson, v.GroupByJson, v.VisibleColumnsJson);
 
-    private static string GetUserId(ClaimsPrincipal user) =>
+    private static string? GetUserId(ClaimsPrincipal user) =>
         user.FindFirst(ClaimTypes.NameIdentifier)?.Value
-        ?? user.FindFirst("sub")?.Value
-        ?? string.Empty;
+        ?? user.FindFirst("sub")?.Value;
 
     /// <summary>
     /// Groups user identity and cross-cutting services for <see cref="CreateAsync"/>

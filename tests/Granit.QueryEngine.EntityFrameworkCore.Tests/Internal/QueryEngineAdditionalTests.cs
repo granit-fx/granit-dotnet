@@ -61,7 +61,7 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
     public async Task ExecuteAsync_SkipTotalCount_returns_null_totalCount()
     {
         FullQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -77,7 +77,7 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
     public async Task ExecuteAsync_negative_page_is_clamped_to_1()
     {
         FullQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -92,7 +92,7 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
     public async Task ExecuteAsync_null_page_defaults_to_1()
     {
         FullQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -106,7 +106,7 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
     public async Task ExecuteAsync_null_pageSize_uses_default()
     {
         FullQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -121,7 +121,7 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
     public async Task ExecuteAsync_zero_pageSize_uses_default()
     {
         FullQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -135,7 +135,7 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
     public async Task ExecuteAsync_invalid_filter_key_is_ignored()
     {
         FullQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         // "nodot" has no dot separator, should be ignored
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
@@ -159,7 +159,7 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
     public async Task ExecuteAsync_invalid_operator_in_filter_is_ignored()
     {
         FullQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         PagedResult<TestProduct> result = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -179,7 +179,7 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
     public void GetMetadata_includes_date_filters()
     {
         FullQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         QueryMetadata metadata = engine.GetMetadata();
 
@@ -193,7 +193,7 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
     public void GetMetadata_includes_invisible_columns()
     {
         FullQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         QueryMetadata metadata = engine.GetMetadata();
 
@@ -205,7 +205,7 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
     public void GetMetadata_uses_property_name_when_label_is_null()
     {
         SimpleDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         QueryMetadata metadata = engine.GetMetadata();
 
@@ -216,7 +216,7 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
     public void GetMetadata_supports_cursor_when_configured()
     {
         FullQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         QueryMetadata metadata = engine.GetMetadata();
 
@@ -227,7 +227,7 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
     public void GetMetadata_filter_group_preset_uses_name_when_label_null()
     {
         PresetWithoutLabelDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         QueryMetadata metadata = engine.GetMetadata();
 
@@ -239,7 +239,7 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
     public void GetMetadata_quick_filter_uses_name_when_label_null()
     {
         FullQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         QueryMetadata metadata = engine.GetMetadata();
 

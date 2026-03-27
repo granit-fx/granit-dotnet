@@ -50,7 +50,7 @@ public sealed class QueryableGroupByExtensionsTests : IAsyncLifetime
     [Fact]
     public async Task GroupBy_enum_field_returns_groups_with_counts()
     {
-        QueryEngine<TestProduct> engine = new(new GroupByDefinition(), NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(new GroupByDefinition(), NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         GroupedResult<TestProduct> result = await engine.ExecuteGroupedAsync(
             _db.Products.AsQueryable(),
@@ -68,7 +68,7 @@ public sealed class QueryableGroupByExtensionsTests : IAsyncLifetime
     [Fact]
     public async Task GroupBy_bool_field_returns_groups()
     {
-        QueryEngine<TestProduct> engine = new(new GroupByDefinition(), NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(new GroupByDefinition(), NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         GroupedResult<TestProduct> result = await engine.ExecuteGroupedAsync(
             _db.Products.AsQueryable(),
@@ -85,7 +85,7 @@ public sealed class QueryableGroupByExtensionsTests : IAsyncLifetime
     [Fact]
     public async Task GroupBy_null_or_empty_returns_empty()
     {
-        QueryEngine<TestProduct> engine = new(new GroupByDefinition(), NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(new GroupByDefinition(), NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         GroupedResult<TestProduct> result = await engine.ExecuteGroupedAsync(
             _db.Products.AsQueryable(),
@@ -99,7 +99,7 @@ public sealed class QueryableGroupByExtensionsTests : IAsyncLifetime
     [Fact]
     public async Task GroupBy_non_whitelisted_field_returns_empty()
     {
-        QueryEngine<TestProduct> engine = new(new GroupByDefinition(), NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(new GroupByDefinition(), NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         // Price exists on TestProduct but is NOT in AllowGroupBy
         GroupedResult<TestProduct> result = await engine.ExecuteGroupedAsync(
@@ -114,7 +114,7 @@ public sealed class QueryableGroupByExtensionsTests : IAsyncLifetime
     [Fact]
     public async Task GroupBy_unknown_field_returns_empty()
     {
-        QueryEngine<TestProduct> engine = new(new GroupByDefinition(), NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(new GroupByDefinition(), NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         GroupedResult<TestProduct> result = await engine.ExecuteGroupedAsync(
             _db.Products.AsQueryable(),

@@ -116,9 +116,12 @@ internal static class FilterExpressionBuilder
             return null;
         }
 
-        // Guard against null: (e.Property != null && e.Property.Contains(value))
+        // Escape LIKE wildcards to prevent wildcard injection (CWE-943)
+        string sanitized = LikeWildcardEscaper.Escape(value);
+
+        // Guard against null: (e.Property != null && e.Property.Contains(sanitizedValue))
         Expression notNull = Expression.NotEqual(member, Expression.Constant(null, typeof(string)));
-        Expression call = Expression.Call(member, method, Expression.Constant(value));
+        Expression call = Expression.Call(member, method, Expression.Constant(sanitized));
         return Expression.AndAlso(notNull, call);
     }
 
@@ -287,7 +290,8 @@ internal static class FilterExpressionBuilder
 
             if (targetType.IsEnum)
             {
-                return Enum.Parse(targetType, value, ignoreCase: true);
+                object parsed = Enum.Parse(targetType, value, ignoreCase: true);
+                return Enum.IsDefined(targetType, parsed) ? parsed : null;
             }
 
             return Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
@@ -297,7 +301,7 @@ internal static class FilterExpressionBuilder
             if (logger is not null)
             {
                 QueryEngineEfCoreLog.FilterValueConversionFailed(
-                    logger, field ?? "(unknown)", value, targetType.Name, ex);
+                    logger, field ?? "(unknown)", targetType.Name, ex);
             }
 
             return null;

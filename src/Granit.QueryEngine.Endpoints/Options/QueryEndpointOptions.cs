@@ -19,6 +19,13 @@ public sealed class QueryEndpointOptions
     public string? AuthorizationPolicy { get; set; }
 
     /// <summary>
+    /// Whether to allow anonymous access to the query endpoints.
+    /// Defaults to <c>false</c> — endpoints require authentication unless
+    /// an <see cref="AuthorizationPolicy"/> is configured.
+    /// </summary>
+    public bool AllowAnonymous { get; set; }
+
+    /// <summary>
     /// Whether to register the <c>GET /meta</c> metadata endpoint.
     /// Defaults to <c>true</c>.
     /// </summary>

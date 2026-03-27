@@ -120,7 +120,14 @@ public sealed class LlmNaturalLanguageQueryTranslatorAdditionalTests
                 Arg.Any<CancellationToken>())
             .Returns(response);
 
-        QueryMetadata metadata = CreateMinimalMetadata();
+        QueryMetadata metadata = CreateMinimalMetadata() with
+        {
+            QuickFilters =
+            [
+                new QuickFilterMeta("active", "Active Items", false),
+                new QuickFilterMeta("recent", "Recent Items", false),
+            ],
+        };
 
         QueryRequest? result = await _sut.TranslateAsync(
             "show active recent items",
@@ -193,7 +200,10 @@ public sealed class LlmNaturalLanguageQueryTranslatorAdditionalTests
                 Arg.Any<CancellationToken>())
             .Returns(response);
 
-        QueryMetadata metadata = CreateMinimalMetadata();
+        QueryMetadata metadata = CreateMinimalMetadata() with
+        {
+            GroupByFields = [new GroupByField("category", "String")],
+        };
 
         QueryRequest? result = await _sut.TranslateAsync(
             "group by category",

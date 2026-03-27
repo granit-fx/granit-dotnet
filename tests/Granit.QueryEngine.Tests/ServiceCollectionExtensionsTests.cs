@@ -134,6 +134,10 @@ public sealed class ServiceCollectionExtensionsTests
 
         public Task<SavedView?> GetAsync(Guid id, CancellationToken cancellationToken = default) =>
             Task.FromResult<SavedView?>(null);
+
+        public Task<int> GetCountAsync(
+            string entityType, string userId, Guid? tenantId, CancellationToken cancellationToken = default) =>
+            Task.FromResult(0);
     }
 
     private sealed class FakeSavedViewStoreWriter : ISavedViewStoreWriter

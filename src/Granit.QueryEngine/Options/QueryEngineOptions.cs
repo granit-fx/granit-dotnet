@@ -25,4 +25,23 @@ public sealed class QueryEngineOptions
 
     /// <summary>Maximum number of items returned by streaming queries. Default: <c>100_000</c>.</summary>
     public int MaxStreamSize { get; set; } = QueryEngineDefaults.MaxStreamSize;
+
+    /// <summary>
+    /// Maximum number of groups returned by grouped queries. Default: <c>1000</c>.
+    /// Prevents memory exhaustion from high-cardinality group-by fields.
+    /// </summary>
+    public int MaxGroupCount { get; set; } = 1000;
+
+    /// <summary>
+    /// Maximum number of saved views per user per entity type. Default: <c>100</c>.
+    /// Prevents storage exhaustion attacks.
+    /// </summary>
+    public int MaxSavedViewsPerUser { get; set; } = 100;
+
+    /// <summary>
+    /// Base64-encoded HMAC-SHA256 key for signing cursor tokens (CWE-565 mitigation).
+    /// When <c>null</c>, cursors are unsigned (backward compatible). Configure a 256-bit
+    /// (32-byte) key for production use.
+    /// </summary>
+    public string? CursorHmacKey { get; set; }
 }

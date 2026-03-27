@@ -4,6 +4,7 @@ using Granit.QueryEngine.AI.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace Granit.QueryEngine.AI.Extensions;
 
@@ -25,7 +26,8 @@ public static class QueryEngineAIHostApplicationBuilderExtensions
             .AddOptions<QueryEngineAIOptions>()
             .BindConfiguration(QueryEngineAIOptions.SectionName);
 
-        builder.Services.TryAddSingleton<INaturalLanguageQueryTranslator, LlmNaturalLanguageQueryTranslator>();
+        builder.Services.TryAddSingleton<IValidateOptions<QueryEngineAIOptions>, QueryEngineAIOptionsValidator>();
+        builder.Services.TryAddScoped<INaturalLanguageQueryTranslator, LlmNaturalLanguageQueryTranslator>();
 
         return builder;
     }

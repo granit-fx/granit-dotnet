@@ -33,6 +33,14 @@ internal static class QueryableFilterExtensions
             shadowColumns = shadows.ToDictionary(c => c.PropertyName, StringComparer.OrdinalIgnoreCase);
         }
 
+        // Build operator whitelist per field type for runtime validation (CWE-20)
+        var fieldOperators = builder.Columns
+            .Where(c => c.IsFilterable)
+            .ToDictionary(
+                c => c.PropertyName,
+                c => FilterOperatorInference.GetOperators(c.ClrType),
+                StringComparer.OrdinalIgnoreCase);
+
         IQueryable<TEntity> query = source;
 
         foreach (FilterCriteria criterion in criteria)
@@ -40,6 +48,13 @@ internal static class QueryableFilterExtensions
             if (!filterableFields.Contains(criterion.Field))
             {
                 continue; // Silently ignore non-whitelisted fields
+            }
+
+            // Validate operator is valid for this field's type
+            if (fieldOperators.TryGetValue(criterion.Field, out IReadOnlyList<FilterOperator>? allowed)
+                && !allowed.Contains(criterion.Operator))
+            {
+                continue; // Silently ignore invalid operator for this field type
             }
 
             Expression<Func<TEntity, bool>>? predicate =

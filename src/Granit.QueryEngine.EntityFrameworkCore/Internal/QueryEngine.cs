@@ -6,10 +6,12 @@ using Granit.QueryEngine.Diagnostics;
 using Granit.QueryEngine.EntityFrameworkCore.Diagnostics;
 using Granit.QueryEngine.Filtering;
 using Granit.QueryEngine.Meta;
+using Granit.QueryEngine.Options;
 using Granit.QueryEngine.SavedViews;
 using Granit.QueryEngine.Search;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Granit.QueryEngine.EntityFrameworkCore.Internal;
 
@@ -21,6 +23,7 @@ namespace Granit.QueryEngine.EntityFrameworkCore.Internal;
 internal sealed class QueryEngine<TEntity>(
     QueryDefinition<TEntity> definition,
     ILogger<QueryEngine<TEntity>> logger,
+    IOptions<QueryEngineOptions> engineOptions,
     IGlobalSearchStrategy<TEntity>? searchStrategy = null,
     QueryEngineMetrics? metrics = null,
     ICurrentTenant? currentTenant = null) : IQueryEngine<TEntity>
@@ -33,6 +36,9 @@ internal sealed class QueryEngine<TEntity>(
     private readonly IGlobalSearchStrategy<TEntity> _searchStrategy = searchStrategy ?? new ContainsSearchStrategy<TEntity>();
     private readonly QueryEngineMetrics? _metrics = metrics;
     private readonly ICurrentTenant? _currentTenant = currentTenant;
+    private readonly byte[]? _cursorHmacKey = !string.IsNullOrEmpty(engineOptions.Value.CursorHmacKey)
+        ? Convert.FromBase64String(engineOptions.Value.CursorHmacKey)
+        : null;
 
     /// <inheritdoc/>
     public async Task<PagedResult<TEntity>> ExecuteAsync(
@@ -57,10 +63,14 @@ internal sealed class QueryEngine<TEntity>(
             string effectiveSort = string.IsNullOrWhiteSpace(request.Sort)
                 ? _builder.DefaultSortValue ?? string.Empty
                 : request.Sort;
+            var sortableSet = _builder.Columns
+                .Where(c => c.IsSortable)
+                .Select(c => c.PropertyName)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
             IQueryable<TEntity> sorted = filtered.ApplySort(request.Sort, _builder);
             result = await sorted.ApplyCursorPaginationAsync(
                 request.Cursor, pageSize, _builder.CursorPropertyName, cancellationToken,
-                _logger, effectiveSort)
+                _logger, effectiveSort, sortableSet, _cursorHmacKey)
                 .ConfigureAwait(false);
         }
         else
@@ -169,7 +179,8 @@ internal sealed class QueryEngine<TEntity>(
 
         IQueryable<TEntity> query = ApplyCommonFilters(source.AsNoTracking(), request);
 
-        GroupedResult<TEntity> result = await query.ApplyGroupByAsync(request.GroupBy, _builder, cancellationToken)
+        GroupedResult<TEntity> result = await query.ApplyGroupByAsync(
+            request.GroupBy, _builder, engineOptions.Value.MaxGroupCount, cancellationToken)
             .ConfigureAwait(false);
 
         RecordMetrics("grouped", startTimestamp);

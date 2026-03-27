@@ -28,6 +28,19 @@ internal sealed class EfCoreSavedViewStore(
     }
 
     /// <inheritdoc/>
+    public async Task<int> GetCountAsync(
+        string entityType, string userId, Guid? tenantId, CancellationToken cancellationToken = default)
+    {
+        await using QueryEngineDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+        return await context.SavedViews
+            .CountAsync(v => v.EntityType == entityType
+                && v.UserId == userId
+                && v.TenantId == tenantId, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public async Task<SavedView?> GetAsync(Guid id, CancellationToken cancellationToken = default)
     {
         await using QueryEngineDbContext context = await contextFactory

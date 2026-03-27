@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Granit.QueryEngine.EntityFrameworkCore.Diagnostics;
@@ -7,37 +8,44 @@ namespace Granit.QueryEngine.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// Encodes and decodes opaque cursors for keyset pagination.
-/// Uses Base64Url-encoded JSON.
+/// Uses Base64Url-encoded JSON with HMAC-SHA256 integrity protection
+/// to prevent cursor forgery (CWE-565).
 /// </summary>
 internal static class CursorEncoder
 {
+    private const char SignatureSeparator = '.';
+
     /// <summary>
-    /// Encodes a single cursor value to a Base64Url string.
+    /// Encodes a single cursor value to a signed Base64Url string.
     /// </summary>
-    public static string Encode(object value)
+    public static string Encode(object value, byte[]? hmacKey = null)
     {
         string json = JsonSerializer.Serialize(value);
-        return ToBase64Url(json);
+        string payload = ToBase64Url(json);
+        return hmacKey is not null ? Sign(payload, hmacKey) : payload;
     }
 
     /// <summary>
-    /// Encodes a composite cursor (multiple sort field values) to a Base64Url string.
+    /// Encodes a composite cursor (multiple sort field values) to a signed Base64Url string.
     /// </summary>
-    public static string EncodeComposite(Dictionary<string, string> values)
+    public static string EncodeComposite(Dictionary<string, string> values, byte[]? hmacKey = null)
     {
         string json = JsonSerializer.Serialize(values);
-        return ToBase64Url(json);
+        string payload = ToBase64Url(json);
+        return hmacKey is not null ? Sign(payload, hmacKey) : payload;
     }
 
     /// <summary>
     /// Attempts to decode a cursor as a composite cursor (JSON object with field-value pairs).
     /// Returns <c>null</c> if the cursor is a legacy single-value cursor.
     /// </summary>
-    public static Dictionary<string, string>? DecodeComposite(string cursor, ILogger? logger = null)
+    public static Dictionary<string, string>? DecodeComposite(
+        string cursor, ILogger? logger = null, byte[]? hmacKey = null)
     {
         try
         {
-            string json = FromBase64Url(cursor);
+            string payload = VerifyAndExtractPayload(cursor, hmacKey);
+            string json = FromBase64Url(payload);
 
             // Composite cursors are JSON objects; legacy cursors are JSON primitives (strings)
             if (!json.StartsWith('{'))
@@ -51,7 +59,7 @@ internal static class CursorEncoder
         {
             if (logger is not null)
             {
-                QueryEngineEfCoreLog.CursorDecodeFailed(logger, cursor, ex);
+                QueryEngineEfCoreLog.CursorDecodeFailed(logger, ex);
             }
 
             return null;
@@ -61,26 +69,65 @@ internal static class CursorEncoder
     /// <summary>
     /// Decodes a Base64Url cursor string back to the target type.
     /// </summary>
-    public static T? Decode<T>(string cursor, ILogger? logger = null)
+    public static T? Decode<T>(string cursor, ILogger? logger = null, byte[]? hmacKey = null)
     {
         try
         {
-            string json = FromBase64Url(cursor);
+            string payload = VerifyAndExtractPayload(cursor, hmacKey);
+            string json = FromBase64Url(payload);
             return JsonSerializer.Deserialize<T>(json);
         }
         catch (Exception ex)
         {
             if (logger is not null)
             {
-                QueryEngineEfCoreLog.CursorDecodeFailed(logger, cursor, ex);
+                QueryEngineEfCoreLog.CursorDecodeFailed(logger, ex);
             }
 
             return default;
         }
     }
 
+    private static string Sign(string payload, byte[] key)
+    {
+        byte[] signature = HMACSHA256.HashData(key, Encoding.UTF8.GetBytes(payload));
+        return payload + SignatureSeparator + ToBase64Url(signature);
+    }
+
+    private static string VerifyAndExtractPayload(string cursor, byte[]? hmacKey)
+    {
+        if (hmacKey is null)
+        {
+            return cursor;
+        }
+
+        int separatorIndex = cursor.LastIndexOf(SignatureSeparator);
+        if (separatorIndex < 0)
+        {
+            throw new InvalidOperationException("Cursor signature missing.");
+        }
+
+        string payload = cursor[..separatorIndex];
+        string providedSignature = cursor[(separatorIndex + 1)..];
+
+        byte[] expected = HMACSHA256.HashData(hmacKey, Encoding.UTF8.GetBytes(payload));
+        string expectedSignature = ToBase64Url(expected);
+
+        if (!CryptographicOperations.FixedTimeEquals(
+            Encoding.UTF8.GetBytes(expectedSignature),
+            Encoding.UTF8.GetBytes(providedSignature)))
+        {
+            throw new InvalidOperationException("Cursor signature invalid.");
+        }
+
+        return payload;
+    }
+
     private static string ToBase64Url(string json) =>
-        Convert.ToBase64String(Encoding.UTF8.GetBytes(json))
+        ToBase64Url(Encoding.UTF8.GetBytes(json));
+
+    private static string ToBase64Url(byte[] bytes) =>
+        Convert.ToBase64String(bytes)
             .TrimEnd('=')
             .Replace('+', '-')
             .Replace('/', '_');

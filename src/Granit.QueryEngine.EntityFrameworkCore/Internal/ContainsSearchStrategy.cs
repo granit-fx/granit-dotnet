@@ -22,6 +22,8 @@ internal sealed class ContainsSearchStrategy<TEntity> : IGlobalSearchStrategy<TE
             return source;
         }
 
+        string sanitized = LikeWildcardEscaper.Escape(searchTerm);
+
         ParameterExpression parameter = Expression.Parameter(typeof(TEntity), "e");
         Expression? combined = null;
 
@@ -33,12 +35,12 @@ internal sealed class ContainsSearchStrategy<TEntity> : IGlobalSearchStrategy<TE
                 continue;
             }
 
-            // e.Property != null && e.Property.Contains(searchTerm)
+            // e.Property != null && e.Property.Contains(sanitizedTerm)
             Expression notNull = Expression.NotEqual(member, Expression.Constant(null, typeof(string)));
             Expression contains = Expression.Call(
                 member,
                 typeof(string).GetMethod(nameof(string.Contains), [typeof(string)])!,
-                Expression.Constant(searchTerm));
+                Expression.Constant(sanitized));
             Expression predicate = Expression.AndAlso(notNull, contains);
 
             combined = combined is null ? predicate : Expression.OrElse(combined, predicate);
@@ -51,4 +53,22 @@ internal sealed class ContainsSearchStrategy<TEntity> : IGlobalSearchStrategy<TE
 
         return source.Where(Expression.Lambda<Func<TEntity, bool>>(combined, parameter));
     }
+
+}
+
+/// <summary>
+/// Shared helpers for LIKE wildcard escaping.
+/// </summary>
+internal static class LikeWildcardEscaper
+{
+    /// <summary>
+    /// Escapes SQL LIKE wildcard characters (<c>%</c>, <c>_</c>, <c>[</c>) to prevent
+    /// wildcard injection in <c>string.Contains</c>/<c>StartsWith</c>/<c>EndsWith</c>
+    /// calls translated to LIKE by EF Core (CWE-943).
+    /// </summary>
+    internal static string Escape(string value) =>
+        value.Replace("\\", "\\\\")
+             .Replace("%", "\\%")
+             .Replace("_", "\\_")
+             .Replace("[", "\\[");
 }

@@ -425,6 +425,19 @@ Wolverine__RetryDelays__1=00:00:30
 | **Package** | -- | `Granit.QueryEngine` | |
 | `DefaultPageSize` | `int` | `20` | Default page size for paginated queries. |
 | `MaxPageSize` | `int` | `100` | Maximum allowed page size. |
+| `MaxStreamSize` | `int` | `100000` | Maximum items returned by streaming queries. |
+| `MaxGroupCount` | `int` | `1000` | Maximum groups returned by grouped queries. Prevents OOM from high-cardinality fields. |
+| `MaxSavedViewsPerUser` | `int` | `100` | Maximum saved views per user per entity type. Prevents storage exhaustion. |
+| `CursorHmacKey` | `string?` | `null` | Base64-encoded HMAC-SHA256 key for cursor signing. When `null`, cursors are unsigned. |
+
+### QueryEngine AI -- `QueryEngineAIOptions`
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| **Section** | -- | `AI:QueryEngine` | |
+| **Package** | -- | `Granit.QueryEngine.AI` | |
+| `WorkspaceName` | `string` | `"default"` | AI workspace for NLQ translation. |
+| `TimeoutSeconds` | `int` | `5` | Timeout for LLM calls. Validated at startup (must be > 0). |
 
 ---
 

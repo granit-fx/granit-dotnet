@@ -22,6 +22,11 @@ internal sealed class NullSavedViewStore : ISavedViewStoreReader, ISavedViewStor
         throw new NotImplementedException(Message);
 
     /// <inheritdoc/>
+    public Task<int> GetCountAsync(
+        string entityType, string userId, Guid? tenantId, CancellationToken cancellationToken = default) =>
+        throw new NotImplementedException(Message);
+
+    /// <inheritdoc/>
     public Task CreateAsync(SavedView view, CancellationToken cancellationToken = default) =>
         throw new NotImplementedException(Message);
 

@@ -79,29 +79,29 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
             LlmQueryPayload? dto = JsonSerializer.Deserialize<LlmQueryPayload>(json, JsonOptions);
             if (dto is null)
             {
-                LogInvalidResponse(logger, naturalLanguage);
+                LogInvalidResponse(logger, naturalLanguage.Length);
                 metrics?.RecordTranslationFailed(tenantId, "invalid_response");
                 return null;
             }
 
             metrics?.RecordTranslationExecuted(tenantId, "success");
-            return ToQueryRequest(dto);
+            return ValidateAndConvert(dto, metadata);
         }
         catch (OperationCanceledException)
         {
-            LogTimeout(logger, naturalLanguage);
+            LogTimeout(logger, naturalLanguage.Length);
             metrics?.RecordTranslationFailed(tenantId, "timeout");
             return null;
         }
         catch (JsonException ex)
         {
-            LogJsonParseError(logger, naturalLanguage, ex);
+            LogJsonParseError(logger, naturalLanguage.Length, ex);
             metrics?.RecordTranslationFailed(tenantId, "json_parse_error");
             return null;
         }
         catch (Exception ex)
         {
-            LogTranslationError(logger, naturalLanguage, ex);
+            LogTranslationError(logger, naturalLanguage.Length, ex);
             metrics?.RecordTranslationFailed(tenantId, "error");
             return null;
         }
@@ -213,30 +213,87 @@ internal sealed partial class LlmNaturalLanguageQueryTranslator(
     internal static string StripMarkdownFences(string text) =>
         LlmResponseHelper.StripMarkdownCodeFences(text);
 
-    private static QueryRequest ToQueryRequest(LlmQueryPayload dto) =>
-        new()
+    private static QueryRequest? ValidateAndConvert(LlmQueryPayload dto, QueryMetadata metadata)
+    {
+        // Build whitelist of allowed filter keys from metadata (CWE-20, LLM02)
+        var allowedFilterKeys = metadata.FilterableFields
+            .SelectMany(f => f.Operators.Select(op => $"{f.Name}.{op.ToString().ToLowerInvariant()}"))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var allowedSortFields = metadata.SortableFields
+            .Select(f => f.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var allowedGroupByFields = metadata.GroupByFields
+            .Select(f => f.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var allowedQuickFilters = metadata.QuickFilters
+            .Select(f => f.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // Validate and strip non-whitelisted fields from LLM output
+        Dictionary<string, string>? validatedFilter = dto.Filter is { Count: > 0 }
+            ? dto.Filter
+                .Where(kv => allowedFilterKeys.Contains(kv.Key))
+                .ToDictionary(kv => kv.Key, kv => kv.Value)
+            : null;
+
+        if (validatedFilter is { Count: 0 })
+        {
+            validatedFilter = null;
+        }
+
+        // Validate sort fields
+        string? validatedSort = null;
+        if (!string.IsNullOrWhiteSpace(dto.Sort))
+        {
+            string[] sortParts = dto.Sort.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            string[] validParts = sortParts
+                .Where(p =>
+                {
+                    string fieldName = p.StartsWith('-') ? p[1..] : p;
+                    return allowedSortFields.Contains(fieldName);
+                })
+                .ToArray();
+            validatedSort = validParts.Length > 0 ? string.Join(',', validParts) : null;
+        }
+
+        // Validate group-by
+        string? validatedGroupBy = !string.IsNullOrWhiteSpace(dto.GroupBy) && allowedGroupByFields.Contains(dto.GroupBy)
+            ? dto.GroupBy
+            : null;
+
+        // Validate quick filters
+        List<string>? validatedQuickFilters = dto.QuickFilters is { Count: > 0 }
+            ? dto.QuickFilters.Where(qf => allowedQuickFilters.Contains(qf)).ToList()
+            : null;
+
+        if (validatedQuickFilters is { Count: 0 })
+        {
+            validatedQuickFilters = null;
+        }
+
+        return new QueryRequest
         {
             Page = dto.Page,
             PageSize = dto.PageSize,
-            Sort = dto.Sort,
-            Filter = dto.Filter is { Count: > 0 }
-                ? new Dictionary<string, string>(dto.Filter)
-                : null,
-            QuickFilters = dto.QuickFilters is { Count: > 0 }
-                ? dto.QuickFilters.AsReadOnly()
-                : null,
-            GroupBy = dto.GroupBy,
+            Sort = validatedSort,
+            Filter = validatedFilter,
+            QuickFilters = validatedQuickFilters?.AsReadOnly(),
+            GroupBy = validatedGroupBy,
         };
+    }
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "NLQ translation returned invalid response for input: {NaturalLanguage}")]
-    private static partial void LogInvalidResponse(ILogger logger, string naturalLanguage);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "NLQ translation returned invalid response (input length: {InputLength})")]
+    private static partial void LogInvalidResponse(ILogger logger, int inputLength);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "NLQ translation timed out for input: {NaturalLanguage}")]
-    private static partial void LogTimeout(ILogger logger, string naturalLanguage);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "NLQ translation timed out (input length: {InputLength})")]
+    private static partial void LogTimeout(ILogger logger, int inputLength);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "NLQ translation failed to parse JSON for input: {NaturalLanguage}")]
-    private static partial void LogJsonParseError(ILogger logger, string naturalLanguage, Exception exception);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "NLQ translation failed to parse JSON (input length: {InputLength})")]
+    private static partial void LogJsonParseError(ILogger logger, int inputLength, Exception exception);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "NLQ translation failed for input: {NaturalLanguage}")]
-    private static partial void LogTranslationError(ILogger logger, string naturalLanguage, Exception exception);
+    [LoggerMessage(Level = LogLevel.Error, Message = "NLQ translation failed (input length: {InputLength})")]
+    private static partial void LogTranslationError(ILogger logger, int inputLength, Exception exception);
 }

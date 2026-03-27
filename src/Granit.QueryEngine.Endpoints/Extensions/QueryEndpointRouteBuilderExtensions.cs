@@ -61,6 +61,10 @@ public static class QueryEndpointRouteBuilderExtensions
         {
             group.RequireAuthorization(options.AuthorizationPolicy);
         }
+        else if (!options.AllowAnonymous)
+        {
+            group.RequireAuthorization();
+        }
 
         // GET / — paginated or grouped query
         // Lambda returns different typed results (Ok<GroupedResult<T>> / Ok<PagedResult<T>>)

@@ -47,11 +47,20 @@ The actual query runs through the same type-safe `IQueryEngine` as manual filter
 ## Why it's safe (no SQL injection)
 
 The LLM output is a `QueryRequest` JSON — a structured object with typed filters.
-It's **not** SQL. The query engine validates every filter against the `QueryDefinition`:
+It's **not** SQL. Two independent validation layers ensure safety:
+
+**Layer 1 — Post-LLM whitelist validation** (in the translator itself):
+
+- Filter keys are validated against the `QueryMetadata` filterable fields
+- Sort fields, quick filter names, and group-by values are checked against their respective whitelists
+- Any field the LLM hallucinates or is tricked into generating is silently stripped
+
+**Layer 2 — QueryEngine runtime validation** (defense-in-depth):
 
 - Only declared columns can be filtered
 - Only valid operators for each column type are accepted
 - Values are parameterized (no string concatenation)
+- LIKE wildcards in string filters are escaped (CWE-943)
 
 ```text
 User types: "DROP TABLE invoices; --"
@@ -64,7 +73,8 @@ Query engine: WHERE SearchField LIKE @p0
 ```
 
 Even if the LLM were compromised, the worst it could do is generate a valid filter
-that returns unexpected results — never execute arbitrary SQL.
+that returns unexpected results — never execute arbitrary SQL or access non-whitelisted
+fields.
 
 ## What the LLM receives
 
@@ -195,6 +205,9 @@ manually configuring 3-5 filter dropdowns (which takes 10-30 seconds).
 | **Latency spike** | 5s timeout, `null` return on timeout |
 | **LLM cost** | ~300 tokens per query, cached metadata prompt |
 | **Date misinterpretation** | Current date injected in prompt for "last week", "this month" |
+| **Prompt injection** | User input sanitized via `PromptBuilder`; output validated against metadata whitelist |
+| **PII in logs** | Natural language input never logged — only input length on failure |
+| **Schema exposure** | Only metadata (column names, types) sent to LLM — document in DPA |
 
 ## Configuration reference
 

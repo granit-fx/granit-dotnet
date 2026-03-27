@@ -17,6 +17,7 @@ internal static class QueryableGroupByExtensions
         this IQueryable<T> source,
         string groupByField,
         QueryDefinitionBuilder<T> builder,
+        int maxGroupCount,
         CancellationToken cancellationToken)
         where T : class
     {
@@ -55,7 +56,7 @@ internal static class QueryableGroupByExtensions
         // Materialize groups with count
         // We need to project to a known type
         List<GroupEntry<T>> groups = await MaterializeGroupsAsync<T>(
-            groupedQuery, property, groupByField, cancellationToken).ConfigureAwait(false);
+            groupedQuery, property, groupByField, maxGroupCount, cancellationToken).ConfigureAwait(false);
 
         int totalCount = groups.Sum(g => g.Count);
 
@@ -66,6 +67,7 @@ internal static class QueryableGroupByExtensions
         object groupedQuery,
         PropertyInfo property,
         string fieldName,
+        int maxGroupCount,
         CancellationToken cancellationToken)
         where T : class
     {
@@ -97,6 +99,14 @@ internal static class QueryableGroupByExtensions
             .MakeGenericMethod(groupingType, resultType);
 
         object projected = selectMethod.Invoke(null, [groupedQuery, selectLambda])!;
+
+        // Apply cardinality limit to prevent memory exhaustion (CWE-770)
+        MethodInfo takeMethod = typeof(Queryable)
+            .GetMethods()
+            .First(m => m.Name == nameof(Queryable.Take) && m.GetParameters().Length == 2)
+            .MakeGenericMethod(resultType);
+
+        projected = takeMethod.Invoke(null, [projected, maxGroupCount])!;
 
         // Materialize via ToListAsync
         MethodInfo toListAsync = typeof(EntityFrameworkQueryableExtensions)

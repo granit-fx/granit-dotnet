@@ -20,14 +20,14 @@ public sealed class SavedViewResponseTests
 
         // Act
         SavedViewResponse response = new(
-            id, "Acme.Patients", "Active patients", "user-1",
+            id, "Acme.Patients", "Active patients", true,
             true, false, "{}", "[]", null, "[\"Name\",\"Email\"]");
 
         // Assert
         response.Id.ShouldBe(id);
         response.EntityType.ShouldBe("Acme.Patients");
         response.Name.ShouldBe("Active patients");
-        response.UserId.ShouldBe("user-1");
+        response.IsOwner.ShouldBeTrue();
         response.IsShared.ShouldBeTrue();
         response.IsDefault.ShouldBeFalse();
         response.FilterJson.ShouldBe("{}");
@@ -40,7 +40,7 @@ public sealed class SavedViewResponseTests
     public void Record_Equality_SameValues_AreEqual()
     {
         var id = Guid.NewGuid();
-        new SavedViewResponse(id, "E", "N", "U", false, false, null, null, null, null)
-            .ShouldBe(new SavedViewResponse(id, "E", "N", "U", false, false, null, null, null, null));
+        new SavedViewResponse(id, "E", "N", true, false, false, null, null, null, null)
+            .ShouldBe(new SavedViewResponse(id, "E", "N", true, false, false, null, null, null, null));
     }
 }

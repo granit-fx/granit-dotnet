@@ -19,6 +19,8 @@ internal sealed class BindableQueryRequestValidator : GranitValidator<BindableQu
     internal const int MaxCursorLength = 2000;
     internal const int MaxGroupByLength = 200;
     internal const int MaxFilterEntries = 50;
+    internal const int MaxFilterKeyLength = 200;
+    internal const int MaxFilterValueLength = 2000;
     internal const int MaxQuickFilters = 20;
     internal const int MaxPresetEntries = 20;
 
@@ -60,6 +62,12 @@ internal sealed class BindableQueryRequestValidator : GranitValidator<BindableQu
         RuleFor(x => x.Value.Filter)
             .Must(f => f!.Count <= MaxFilterEntries)
             .WithErrorCodeAndMessage("Granit:Validation:MaxFilterEntries")
+            .When(x => x.Value.Filter is not null);
+
+        RuleFor(x => x.Value.Filter)
+            .Must(f => f!.All(kv => kv.Key.Length <= MaxFilterKeyLength
+                && kv.Value.Length <= MaxFilterValueLength))
+            .WithErrorCodeAndMessage("Granit:Validation:FilterEntryTooLong")
             .When(x => x.Value.Filter is not null);
 
         RuleFor(x => x.Value.QuickFilters)

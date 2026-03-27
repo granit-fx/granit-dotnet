@@ -70,7 +70,7 @@ public sealed class QueryEngineProjectionTests : IAsyncLifetime
     public async Task ExecuteAsync_with_projection_returns_projected_items()
     {
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         PagedResult<ProductProjection> result = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -86,7 +86,7 @@ public sealed class QueryEngineProjectionTests : IAsyncLifetime
     public async Task ExecuteAsync_with_projection_applies_offset_pagination()
     {
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         PagedResult<ProductProjection> page1 = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -110,7 +110,7 @@ public sealed class QueryEngineProjectionTests : IAsyncLifetime
     public async Task ExecuteAsync_with_projection_applies_filters()
     {
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         PagedResult<ProductProjection> result = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -129,7 +129,7 @@ public sealed class QueryEngineProjectionTests : IAsyncLifetime
     public async Task ExecuteAsync_with_projection_skip_total_count()
     {
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         PagedResult<ProductProjection> result = await engine.ExecuteAsync(
             _db.Products.AsQueryable(),
@@ -146,7 +146,7 @@ public sealed class QueryEngineProjectionTests : IAsyncLifetime
     public async Task ExecuteAsync_with_projection_throws_on_null_projection()
     {
         ProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         await Should.ThrowAsync<ArgumentNullException>(() =>
             engine.ExecuteAsync<ProductProjection>(
@@ -164,7 +164,7 @@ public sealed class QueryEngineProjectionTests : IAsyncLifetime
     public async Task ExecuteAsync_with_projection_cursor_pagination()
     {
         CursorProductQueryDefinition definition = new();
-        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance);
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
 
         // Get first page items to build cursor
         PagedResult<TestProduct> firstPage = await engine.ExecuteAsync(
