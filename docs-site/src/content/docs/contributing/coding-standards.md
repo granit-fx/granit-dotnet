@@ -396,6 +396,48 @@ interpolation in log calls:
 private static partial void LogEncrypted(ILogger logger, string keyName);
 ```
 
+### PII redaction in logs and traces
+
+**Never** log raw PII (email addresses, phone numbers, IP addresses, usernames,
+device tokens). Use `Granit.Diagnostics.LogRedaction` to redact values before
+passing them to `[LoggerMessage]` methods or `Activity.SetTag()`:
+
+```csharp
+using Granit.Diagnostics;
+
+// Email: "john.doe@example.com" → "joh***@example.com"
+LogEmailSent(LogRedaction.Email(message.To));
+
+// Phone: "+33612345678" → "+336*****78"
+LogSmsSent(LogRedaction.Phone(message.To));
+
+// Device token: redacted to "abcd...5678"
+LogTokenInvalidated(LogRedaction.Token(deviceToken));
+
+// IP address: "192.168.1.42" → "192.168.1.***"
+LogCidrRejected(LogRedaction.IpAddress(remoteIp));
+
+// Username: "john_admin" → "joh***"
+LogCredentialsObtained(LogRedaction.Username(dbUser));
+
+// Span tags: use EmailDomain() or HashPrefix() for bounded cardinality
+activity?.SetTag("email.domain", LogRedaction.EmailDomain(recipient));
+activity?.SetTag("sms.recipient_hash", LogRedaction.HashPrefix(phone));
+```
+
+**Naming convention:** rename template parameters to signal redaction --
+`{RedactedRecipient}`, `{MaskedIp}`, `{RedactedToken}`. Two architecture tests
+enforce this:
+
+- `LoggerMessagePiiConventionTests` -- flags PII-indicative parameter names
+  in `[LoggerMessage]` templates
+- `ActivitySourcePiiConventionTests` -- flags PII-indicative tag constants
+  in `*ActivitySource.cs` files
+
+**GUIDs (user IDs, session IDs)** are pseudonymous identifiers (GDPR Recital 26)
+and may be logged as-is for operational debugging. They are exempted in the
+architecture tests.
+
 ## Regex
 
 Use **`[GeneratedRegex]`** -- never `new Regex(..., RegexOptions.Compiled)`:
