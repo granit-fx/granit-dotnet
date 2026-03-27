@@ -24,6 +24,8 @@ public sealed class MultiTenancyServiceCollectionExtensionsTests
         // BindConfiguration requires IConfiguration in the container
         IConfiguration configuration = new ConfigurationBuilder().Build();
         services.AddSingleton(configuration);
+        services.AddLogging();
+        services.AddMetrics();
         services.AddGranitMultiTenancy();
         return services.BuildServiceProvider();
     }

@@ -560,7 +560,7 @@ public interface IUserNotificationReader
 public interface IUserNotificationWriter
 {
     Task InsertAsync(UserNotification notification, CancellationToken ct = default);
-    Task MarkAsReadAsync(Guid id, DateTimeOffset readAt, CancellationToken ct = default);
+    Task MarkAsReadAsync(Guid id, string recipientUserId, DateTimeOffset readAt, CancellationToken ct = default);
     Task MarkAllAsReadAsync(
         string recipientUserId, Guid? tenantId,
         DateTimeOffset readAt, CancellationToken ct = default);
@@ -665,57 +665,69 @@ When `Patient.Status` changes, the interceptor publishes an
 
 `Granit.Notifications.Endpoints` maps all endpoints under the
 `/notifications` prefix (configurable via `NotificationEndpointsOptions.RoutePrefix`).
-All endpoints require authentication.
+All endpoints require authentication **and** a permission from `NotificationPermissions`:
+
+| Permission | Scope |
+|------------|-------|
+| `Notifications.UserNotifications.Read` | Read-only access (inbox, counts, preferences, subscriptions, followers) |
+| `Notifications.UserNotifications.Manage` | Write access (mark read, update preferences, subscribe, follow, push tokens) |
+
+:::caution[IDOR protection]
+`MarkAsReadAsync` and `RemoveAsync` (push tokens) enforce ownership at the
+store level -- the `recipientUserId` / `userId` is extracted from the
+`ClaimsPrincipal` and passed down to the query filter. A user cannot mark
+another user's notification as read or remove another user's device token.
+:::
 
 ### Inbox
 
-| Method | Route | Description |
-|--------|-------|-------------|
-| GET | `/notifications` | User's notification inbox (paged, newest first) |
-| GET | `/notifications/unread/count` | Unread notification count |
-| POST | `/notifications/{id}/read` | Mark a single notification as read |
-| POST | `/notifications/read-all` | Mark all notifications as read |
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| GET | `/notifications` | `Read` | User's notification inbox (paged, newest first) |
+| GET | `/notifications/unread/count` | `Read` | Unread notification count |
+| POST | `/notifications/{id}/read` | `Manage` | Mark a single notification as read |
+| POST | `/notifications/read-all` | `Manage` | Mark all notifications as read |
 
 ### Activity feed
 
-| Method | Route | Description |
-|--------|-------|-------------|
-| GET | `/notifications/entity/{entityType}/{entityId}` | Activity feed for a specific entity |
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| GET | `/notifications/entity/{entityType}/{entityId}` | `Read` | Activity feed for a specific entity |
 
 ### Preferences
 
-| Method | Route | Description |
-|--------|-------|-------------|
-| GET | `/notifications/preferences` | User's delivery preferences |
-| PUT | `/notifications/preferences` | Create or update a preference |
-| GET | `/notifications/types` | List all registered notification type definitions |
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| GET | `/notifications/preferences` | `Read` | User's delivery preferences |
+| PUT | `/notifications/preferences` | `Manage` | Create or update a preference |
+| GET | `/notifications/types` | `Read` | List all registered notification type definitions |
 
 ### Subscriptions
 
-| Method | Route | Description |
-|--------|-------|-------------|
-| GET | `/notifications/subscriptions` | User's topic subscriptions |
-| POST | `/notifications/subscriptions/{typeName}` | Subscribe to a notification type |
-| DELETE | `/notifications/subscriptions/{typeName}` | Unsubscribe from a notification type |
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| GET | `/notifications/subscriptions` | `Read` | User's topic subscriptions |
+| POST | `/notifications/subscriptions/{typeName}` | `Manage` | Subscribe to a notification type |
+| DELETE | `/notifications/subscriptions/{typeName}` | `Manage` | Unsubscribe from a notification type |
 
 ### Entity followers
 
-| Method | Route | Description |
-|--------|-------|-------------|
-| POST | `/notifications/entity/{entityType}/{entityId}/follow` | Follow an entity |
-| DELETE | `/notifications/entity/{entityType}/{entityId}/follow` | Unfollow an entity |
-| GET | `/notifications/entity/{entityType}/{entityId}/followers` | List entity followers |
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| POST | `/notifications/entity/{entityType}/{entityId}/follow` | `Manage` | Follow an entity |
+| DELETE | `/notifications/entity/{entityType}/{entityId}/follow` | `Manage` | Unfollow an entity |
+| GET | `/notifications/entity/{entityType}/{entityId}/followers` | `Read` | List entity followers |
 
 ### Mobile push tokens
 
 Mapped separately via `MapMobilePushTokenEndpoints()` under
 `api/notifications/mobile-push/tokens`:
 
-| Method | Route | Description |
-|--------|-------|-------------|
-| POST | `/api/notifications/mobile-push/tokens` | Register a device token |
-| DELETE | `/api/notifications/mobile-push/tokens/{deviceToken}` | Remove a device token |
-| GET | `/api/notifications/mobile-push/tokens` | List current user's device tokens |
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| POST | `/api/notifications/mobile-push/tokens` | `Manage` | Register a device token |
+| DELETE | `/api/notifications/mobile-push/tokens/{deviceToken}` | `Manage` | Remove a device token (owner-scoped) |
+| GET | `/api/notifications/mobile-push/tokens` | `Read` | List current user's device tokens |
 
 ## Wolverine integration
 
@@ -1026,15 +1038,28 @@ No dependency on FCM or US cloud providers -- European sovereignty by design.
 
 ### SSE
 
+The SSE channel requires authentication (`.RequireAuthorization()` on the route
+group) and enforces per-user connection limits to prevent resource exhaustion.
+When the limit is reached, the endpoint returns `429 Too Many Requests`.
+Message buffers use bounded channels with `DropOldest` policy.
+
 ```json
 {
   "Notifications": {
     "Sse": {
-      "HeartbeatIntervalSeconds": 30
+      "HeartbeatIntervalSeconds": 30,
+      "MaxConnectionsPerUser": 10,
+      "MaxBufferSize": 100
     }
   }
 }
 ```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `HeartbeatIntervalSeconds` | 30 | Keep-alive interval through proxies |
+| `MaxConnectionsPerUser` | 10 | Concurrent SSE connections per user (covers multiple tabs/devices) |
+| `MaxBufferSize` | 100 | Messages buffered per connection before oldest are dropped |
 
 ### Zulip
 
