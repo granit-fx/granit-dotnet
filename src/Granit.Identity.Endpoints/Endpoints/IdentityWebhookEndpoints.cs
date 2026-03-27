@@ -39,10 +39,14 @@ internal static class IdentityWebhookEndpoints
             .WithTags("Identity Webhook")
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status413PayloadTooLarge);
 
         return endpoints;
     }
+
+    /// <summary>Maximum webhook payload size (64 KB). Webhook payloads are small JSON objects.</summary>
+    private const int MaxWebhookBodySize = 64 * 1024;
 
     private static async Task<Results<Ok, UnauthorizedHttpResult, ProblemHttpResult>> HandleWebhookAsync(
         HttpRequest request,
@@ -51,21 +55,34 @@ internal static class IdentityWebhookEndpoints
         [FromServices] IUserLookupService lookupService,
         CancellationToken cancellationToken)
     {
+        // Reject oversized payloads before buffering (VULN-101)
+        if (request.ContentLength > MaxWebhookBodySize)
+        {
+            return TypedResults.Problem(
+                detail: "Payload too large.",
+                statusCode: StatusCodes.Status413PayloadTooLarge);
+        }
+
         // Read raw body for signature validation
         request.EnableBuffering();
-        using var ms = new MemoryStream();
+        using var ms = new MemoryStream(capacity: (int)Math.Min(request.ContentLength ?? 1024, MaxWebhookBodySize));
         await request.Body.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
+
+        if (ms.Length > MaxWebhookBodySize)
+        {
+            return TypedResults.Problem(
+                detail: "Payload too large.",
+                statusCode: StatusCodes.Status413PayloadTooLarge);
+        }
+
         byte[] body = ms.ToArray();
         request.Body.Position = 0;
 
-        // Validate HMAC signature
-        if (signatureValidator.IsEnabled)
+        // Validate HMAC signature (fail-closed: rejects when secret is not configured)
+        string? signature = request.Headers[webhookOptions.Value.SignatureHeaderName].FirstOrDefault();
+        if (!signatureValidator.Validate(body, signature))
         {
-            string? signature = request.Headers[webhookOptions.Value.SignatureHeaderName].FirstOrDefault();
-            if (!signatureValidator.Validate(body, signature))
-            {
-                return TypedResults.Unauthorized();
-            }
+            return TypedResults.Unauthorized();
         }
 
         // Parse payload
@@ -102,7 +119,7 @@ internal static class IdentityWebhookEndpoints
 
             default:
                 return TypedResults.Problem(
-                    detail: $"Unknown event type: {payload.EventType}",
+                    detail: "Unsupported event type.",
                     statusCode: StatusCodes.Status400BadRequest);
         }
 

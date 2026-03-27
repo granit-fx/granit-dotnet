@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Endpoints.Options;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
@@ -16,7 +17,8 @@ public sealed class WebhookSignatureValidatorTests
     private const string Secret = "my-webhook-secret";
 
     private static WebhookSignatureValidator CreateValidator(string secret = Secret) =>
-        new(Microsoft.Extensions.Options.Options.Create(new IdentityWebhookOptions { Secret = secret }));
+        new(Microsoft.Extensions.Options.Options.Create(new IdentityWebhookOptions { Secret = secret }),
+            NullLogger<WebhookSignatureValidator>.Instance);
 
     [Fact]
     public void IsEnabled_true_when_secret_configured()
@@ -61,12 +63,12 @@ public sealed class WebhookSignatureValidatorTests
     }
 
     [Fact]
-    public void Validate_returns_true_when_disabled()
+    public void Validate_returns_false_when_disabled()
     {
         WebhookSignatureValidator validator = CreateValidator(string.Empty);
         byte[] payload = "hello"u8.ToArray();
 
-        validator.Validate(payload, null).ShouldBeTrue();
+        validator.Validate(payload, null).ShouldBeFalse();
     }
 
     private static string ComputeHmac(string secret, byte[] payload)

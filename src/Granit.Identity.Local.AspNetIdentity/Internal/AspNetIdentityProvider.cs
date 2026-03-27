@@ -230,9 +230,11 @@ internal sealed partial class AspNetIdentityProvider(
     public async Task<IReadOnlyList<GranitIdentityGroup>> GetUserGroupsAsync(
         string userId, CancellationToken cancellationToken = default)
     {
+        Guid userGuid = ParseGuid(userId, nameof(userId));
+
         await using OpenIddictDbContext db = await _dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         List<Guid> groupIds = await db.UserGroupMembers.AsNoTracking()
-            .Where(m => m.UserId == Guid.Parse(userId))
+            .Where(m => m.UserId == userGuid)
             .Select(m => m.GroupId)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
@@ -247,11 +249,14 @@ internal sealed partial class AspNetIdentityProvider(
     public async Task AddUserToGroupAsync(
         string userId, string groupId, CancellationToken cancellationToken = default)
     {
+        Guid userGuid = ParseGuid(userId, nameof(userId));
+        Guid groupGuid = ParseGuid(groupId, nameof(groupId));
+
         await using OpenIddictDbContext db = await _dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         db.UserGroupMembers.Add(new GranitUserGroupMember
         {
-            GroupId = Guid.Parse(groupId),
-            UserId = Guid.Parse(userId),
+            GroupId = groupGuid,
+            UserId = userGuid,
         });
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
@@ -260,9 +265,12 @@ internal sealed partial class AspNetIdentityProvider(
     public async Task RemoveUserFromGroupAsync(
         string userId, string groupId, CancellationToken cancellationToken = default)
     {
+        Guid userGuid = ParseGuid(userId, nameof(userId));
+        Guid groupGuid = ParseGuid(groupId, nameof(groupId));
+
         await using OpenIddictDbContext db = await _dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         GranitUserGroupMember? member = await db.UserGroupMembers
-            .FirstOrDefaultAsync(m => m.GroupId == Guid.Parse(groupId) && m.UserId == Guid.Parse(userId),
+            .FirstOrDefaultAsync(m => m.GroupId == groupGuid && m.UserId == userGuid,
                 cancellationToken).ConfigureAwait(false);
 
         if (member is not null)
@@ -351,6 +359,11 @@ internal sealed partial class AspNetIdentityProvider(
         return await _userManager.CheckPasswordAsync(user, password).ConfigureAwait(false);
     }
 #pragma warning restore GRSEC003
+
+    private static Guid ParseGuid(string value, string parameterName) =>
+        Guid.TryParse(value, out Guid result)
+            ? result
+            : throw new ArgumentException($"'{value}' is not a valid GUID.", parameterName);
 
     private static partial class Log
     {
