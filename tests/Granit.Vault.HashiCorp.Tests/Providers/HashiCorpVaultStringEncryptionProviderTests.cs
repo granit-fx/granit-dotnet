@@ -4,6 +4,7 @@ using Granit.Vault.HashiCorp.Providers;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using VaultSharp.Core;
 using Shouldly;
 using Xunit;
 
@@ -72,15 +73,26 @@ public sealed class HashiCorpVaultStringEncryptionProviderTests
     }
 
     [Fact]
-    public void Decrypt_ServiceThrows_ReturnsNull()
+    public void Decrypt_VaultBadRequest_ReturnsNull()
+    {
+        ITransitEncryptionService service = Substitute.For<ITransitEncryptionService>();
+        service.DecryptAsync(KeyName, Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .ThrowsAsync(new VaultApiException(System.Net.HttpStatusCode.BadRequest, "invalid ciphertext"));
+        HashiCorpVaultStringEncryptionProvider provider = CreateProvider(service);
+
+        string? result = provider.Decrypt("vault:v1:corrupted");
+
+        result.ShouldBeNull("VaultApiException with 400 must return null (invalid ciphertext)");
+    }
+
+    [Fact]
+    public void Decrypt_InfrastructureError_Propagates()
     {
         ITransitEncryptionService service = Substitute.For<ITransitEncryptionService>();
         service.DecryptAsync(KeyName, Arg.Any<string>(), Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("Vault unavailable"));
         HashiCorpVaultStringEncryptionProvider provider = CreateProvider(service);
 
-        string? result = provider.Decrypt("vault:v1:corrupted");
-
-        result.ShouldBeNull("exceptions must be silenced — return null instead of propagating");
+        Should.Throw<InvalidOperationException>(() => provider.Decrypt("vault:v1:corrupted"));
     }
 }

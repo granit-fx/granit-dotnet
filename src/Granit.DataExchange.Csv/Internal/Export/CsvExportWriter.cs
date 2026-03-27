@@ -85,11 +85,20 @@ internal sealed class CsvExportWriter : IExportWriter
             _ => value.ToString() ?? string.Empty,
         };
 
+    private static readonly char[] FormulaTriggerChars = ['=', '+', '-', '@', '\t', '\r'];
+
     private static void WriteField(StreamWriter writer, string value)
     {
-        if (value.Contains(Separator) || value.Contains(Quote) || value.Contains('\n') || value.Contains('\r'))
+        bool needsFormulaProtection = value.Length > 0 && FormulaTriggerChars.Contains(value[0]);
+
+        if (needsFormulaProtection || value.Contains(Separator) || value.Contains(Quote) || value.Contains('\n') || value.Contains('\r'))
         {
             writer.Write(Quote);
+            if (needsFormulaProtection)
+            {
+                writer.Write('\'');
+            }
+
             writer.Write(value.Replace("\"", "\"\""));
             writer.Write(Quote);
         }

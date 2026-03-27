@@ -24,6 +24,7 @@ namespace Granit.BlobStorage.AI.Internal;
 /// </remarks>
 internal sealed partial class AIBlobClassifierService(
     IAIChatClientFactory chatClientFactory,
+    IAIQuotaGuard quotaGuard,
     IOptions<BlobStorageAIOptions> options,
     ILogger<AIBlobClassifierService> logger) : IAIBlobClassifier, IBlobValidator
 {
@@ -54,6 +55,13 @@ internal sealed partial class AIBlobClassifierService(
 
         try
         {
+            AIQuotaResult quota = await quotaGuard.CheckAsync(cancellationToken).ConfigureAwait(false);
+            if (!quota.IsAllowed)
+            {
+                LogQuotaExceeded(logger, fileName, quota.Reason ?? "quota exceeded");
+                return UnknownClassification;
+            }
+
             IChatClient chatClient = await chatClientFactory
                 .CreateAsync(config.WorkspaceName, cancellationToken)
                 .ConfigureAwait(false);
@@ -151,6 +159,9 @@ internal sealed partial class AIBlobClassifierService(
             return UnknownClassification;
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "AI blob classification skipped for '{FileName}': {Reason}")]
+    private static partial void LogQuotaExceeded(ILogger logger, string fileName, string reason);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "AI blob classification timed out after {TimeoutSeconds}s for file '{FileName}'")]
     private static partial void LogClassificationTimeout(ILogger logger, string fileName, int timeoutSeconds);

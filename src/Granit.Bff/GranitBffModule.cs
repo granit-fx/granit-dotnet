@@ -1,5 +1,6 @@
 using Granit.Bff.Diagnostics;
 using Granit.Bff.Internal;
+using Granit.Bff.Options;
 using Granit.Caching;
 using Granit.Diagnostics;
 using Granit.Modularity;
@@ -8,6 +9,7 @@ using Granit.Timing;
 using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Bff;
 
@@ -29,6 +31,7 @@ public sealed class GranitBffModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        context.Services.TryAddSingleton<IValidateOptions<GranitBffOptions>, GranitBffOptionsValidator>();
         context.Services.TryAddSingleton<BffMetrics>();
         context.Services.TryAddScoped<IBffTokenStore, DistributedCacheBffTokenStore>();
         context.Services.TryAddSingleton<IBffCsrfTokenGenerator, HmacBffCsrfTokenGenerator>();

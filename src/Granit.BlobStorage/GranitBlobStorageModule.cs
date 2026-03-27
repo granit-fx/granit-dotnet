@@ -1,4 +1,5 @@
 using Granit.BlobStorage.Diagnostics;
+using Granit.BlobStorage.Validators;
 using Granit.Guids;
 using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,12 @@ namespace Granit.BlobStorage;
 [DependsOn(typeof(GranitGuidsModule))]
 public sealed class GranitBlobStorageModule : GranitModule
 {
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.TryAddSingleton<BlobStorageMetrics>();
+
+        context.Services.AddSingleton<IBlobValidator, ContentTypeAllowlistValidator>();
+        context.Services.AddSingleton<IBlobValidator, MagicBytesValidator>();
+        context.Services.AddSingleton<IBlobValidator, MaxSizeValidator>();
+    }
 }

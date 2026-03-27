@@ -102,6 +102,8 @@ Rules enforcing testability, secret management, and GDPR compliance.
 | GRSEC002 | <Badge text="Warning" variant="caution" /> | Yes | Avoid Guid.NewGuid() — use IGuidGenerator |
 | GRSEC003 | <Badge text="Error" variant="danger" /> | — | Potential hardcoded secret detected |
 | GRSEC004 | <Badge text="Warning" variant="caution" /> | Yes | Avoid direct IResponseCookies — use IGranitCookieManager |
+| GRSEC010 | <Badge text="Error" variant="danger" /> | — | PII-indicative name used as metric tag key |
+| GRSEC011 | <Badge text="Error" variant="danger" /> | — | PII-indicative placeholder in LoggerMessage template |
 
 ### Entity Framework
 

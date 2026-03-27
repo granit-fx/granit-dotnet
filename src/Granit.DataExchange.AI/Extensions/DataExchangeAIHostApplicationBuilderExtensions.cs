@@ -4,7 +4,9 @@ using Granit.DataExchange.AI.Options;
 using Granit.DataExchange.Extensions;
 using Granit.DataExchange.Import.Mapping;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace Granit.DataExchange.AI.Extensions;
 
@@ -33,8 +35,10 @@ public static class DataExchangeAIHostApplicationBuilderExtensions
     {
         builder.Services
             .AddOptions<DataExchangeAIOptions>()
-            .BindConfiguration(DataExchangeAIOptions.SectionName);
+            .BindConfiguration(DataExchangeAIOptions.SectionName)
+            .ValidateOnStart();
 
+        builder.Services.TryAddSingleton<IValidateOptions<DataExchangeAIOptions>, DataExchangeAIOptionsValidator>();
         builder.Services.AddSemanticMappingService<AISemanticMappingService>();
 
         return builder;

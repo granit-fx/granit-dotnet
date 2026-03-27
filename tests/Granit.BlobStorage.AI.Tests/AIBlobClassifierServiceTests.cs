@@ -22,6 +22,7 @@ public sealed class AIBlobClassifierServiceTests
 
     private readonly IAIChatClientFactory _chatClientFactory = Substitute.For<IAIChatClientFactory>();
     private readonly IChatClient _chatClient = Substitute.For<IChatClient>();
+    private readonly IAIQuotaGuard _quotaGuard = Substitute.For<IAIQuotaGuard>();
     private readonly IOptions<BlobStorageAIOptions> _options = MsOptions.Create(new BlobStorageAIOptions());
     private readonly ILogger<AIBlobClassifierService> _logger = NullLogger<AIBlobClassifierService>.Instance;
 
@@ -30,9 +31,11 @@ public sealed class AIBlobClassifierServiceTests
         _chatClientFactory
             .CreateAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
             .Returns(_chatClient);
+
+        _quotaGuard.CheckAsync(Arg.Any<CancellationToken>()).Returns(AIQuotaResult.Allowed);
     }
 
-    private AIBlobClassifierService CreateSut() => new(_chatClientFactory, _options, _logger);
+    private AIBlobClassifierService CreateSut() => new(_chatClientFactory, _quotaGuard, _options, _logger);
 
     private static BlobDescriptor MakeDescriptor(string fileName, string contentType) =>
         BlobDescriptor.Create(
@@ -169,7 +172,7 @@ public sealed class AIBlobClassifierServiceTests
     {
         IOptions<BlobStorageAIOptions> disabledPiiOptions = MsOptions.Create(
             new BlobStorageAIOptions { EnablePiiDetection = false });
-        var sut = new AIBlobClassifierService(_chatClientFactory, disabledPiiOptions, _logger);
+        var sut = new AIBlobClassifierService(_chatClientFactory, _quotaGuard, disabledPiiOptions, _logger);
 
         string json = """{"category": "identity_document", "confidence": 0.9, "tags": ["personal"], "containsPiiInFileName": true}""";
 

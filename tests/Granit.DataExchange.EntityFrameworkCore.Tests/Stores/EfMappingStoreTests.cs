@@ -7,6 +7,7 @@ using Granit.DataExchange.Import.Mapping;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Timing;
+using Granit.Users;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;
@@ -38,7 +39,8 @@ public sealed class EfMappingStoreTests
             new InMemoryDataExchangeContextFactory(dbName),
             clock ?? CreateClock(),
             new SimpleGuidGenerator(),
-            tenant ?? CreateTenant());
+            tenant ?? CreateTenant(),
+            Substitute.For<ICurrentUserService>());
 
     // ---- LoadAsync --------------------------------------------------------
 

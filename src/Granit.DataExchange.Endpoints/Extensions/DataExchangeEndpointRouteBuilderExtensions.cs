@@ -82,7 +82,8 @@ public static class DataExchangeEndpointRouteBuilderExtensions
         // Shared metadata (definitions, presets) under /metadata/
         // Export-specific write operations require DataExchange.Exports.Execute
         RouteGroupBuilder metadataGroup = group
-            .MapGroup("metadata");
+            .MapGroup("metadata")
+            .RequireAuthorization();
 
         metadataGroup.MapExportDefinitionEndpoints();
 

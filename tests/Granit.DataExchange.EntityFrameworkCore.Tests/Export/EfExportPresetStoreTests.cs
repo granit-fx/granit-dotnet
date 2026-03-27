@@ -5,6 +5,7 @@ using Granit.DataExchange.Export;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Timing;
+using Granit.Users;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -172,6 +173,7 @@ public sealed class EfExportPresetStoreTests
             tenant.Id.Returns(tenantId.Value);
         }
 
-        return new EfExportPresetStore(factory, clock, new SimpleGuidGenerator(), tenant);
+        ICurrentUserService currentUser = Substitute.For<ICurrentUserService>();
+        return new EfExportPresetStore(factory, clock, new SimpleGuidGenerator(), tenant, currentUser);
     }
 }

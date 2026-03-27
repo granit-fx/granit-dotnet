@@ -5,6 +5,7 @@ using Granit.DataExchange.Import.Mapping;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Timing;
+using Granit.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Import.Stores;
@@ -17,7 +18,8 @@ internal sealed class EfMappingStore(
     IDbContextFactory<DataExchangeDbContext> contextFactory,
     IClock clock,
     IGuidGenerator guidGenerator,
-    ICurrentTenant currentTenant) : IMappingReader, IMappingWriter
+    ICurrentTenant currentTenant,
+    ICurrentUserService currentUser) : IMappingReader, IMappingWriter
 {
     /// <inheritdoc/>
     public async Task<IReadOnlyList<ImportColumnMapping>> LoadAsync(
@@ -68,7 +70,7 @@ internal sealed class EfMappingStore(
                 TenantId = tenantId,
                 MappingsJson = json,
                 SavedAt = clock.Now,
-                SavedBy = "system",
+                SavedBy = currentUser.UserId ?? "system",
             });
         }
 

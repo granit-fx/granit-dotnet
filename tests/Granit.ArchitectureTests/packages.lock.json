@@ -1647,6 +1647,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Bff": "[0.1.0-dev, )",
+          "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"

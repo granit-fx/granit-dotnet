@@ -93,13 +93,13 @@ internal static class ImportReportEndpoints
             return TypedResults.NoContent();
         }
 
-        Stream originalStream = await fileProvider.OpenAsync(job.BlobReference, cancellationToken).ConfigureAwait(false);
+        await using Stream originalStream = await fileProvider.OpenAsync(job.BlobReference, cancellationToken).ConfigureAwait(false);
         FileParsingOptions parsingOptions = new() { MimeType = job.MimeType };
 
         Stream correctionStream = await generator.GenerateAsync(
             originalStream, job.MimeType, report, parsingOptions, cancellationToken).ConfigureAwait(false);
 
-        string correctionFileName = $"corrections_{job.OriginalFileName}";
+        string correctionFileName = $"corrections_{Path.GetFileName(job.OriginalFileName)}";
         return TypedResults.File(correctionStream, job.MimeType, correctionFileName);
     }
 }

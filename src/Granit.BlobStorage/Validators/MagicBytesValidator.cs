@@ -1,3 +1,6 @@
+using Granit.BlobStorage.Options;
+using Microsoft.Extensions.Options;
+
 namespace Granit.BlobStorage.Validators;
 
 /// <summary>
@@ -15,7 +18,7 @@ namespace Granit.BlobStorage.Validators;
 /// declared type (conservative behaviour: do not reject what cannot be inspected).
 /// </para>
 /// </remarks>
-public sealed class MagicBytesValidator : IBlobValidator
+public sealed class MagicBytesValidator(IOptions<BlobStorageOptions> options) : IBlobValidator
 {
     /// <inheritdoc/>
     public int Order => 10;
@@ -40,9 +43,15 @@ public sealed class MagicBytesValidator : IBlobValidator
 
         string? detectedType = MagicByteDetector.Detect(buffer.AsSpan(0, totalRead));
 
-        // Unknown format: cannot validate. Pass through with the declared type.
         if (detectedType is null)
         {
+            if (options.Value.RejectUnverifiedContentTypes)
+            {
+                return BlobValidationResult.Failure(
+                    $"Cannot verify content type '{context.Descriptor.DeclaredContentType}' " +
+                    "from magic bytes. Unverified content types are rejected by policy.");
+            }
+
             return BlobValidationResult.Success(context.Descriptor.DeclaredContentType);
         }
 

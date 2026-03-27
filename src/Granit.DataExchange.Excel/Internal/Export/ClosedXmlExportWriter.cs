@@ -120,7 +120,16 @@ internal sealed class ClosedXmlExportWriter : IExportWriter
                 break;
 
             default:
-                cell.SetValue(value.ToString());
+                string text = value.ToString() ?? string.Empty;
+                if (text.Length > 0 && text[0] is '=' or '+' or '-' or '@')
+                {
+                    cell.SetValue($"'{text}");
+                }
+                else
+                {
+                    cell.SetValue(text);
+                }
+
                 break;
         }
     }

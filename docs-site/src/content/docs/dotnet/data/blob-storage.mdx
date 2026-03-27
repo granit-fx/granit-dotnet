@@ -436,6 +436,8 @@ public async Task<PresignedDownloadUrl> GetPhotoDownloadUrlAsync(
 
 Setting `DownloadFileName` injects a `Content-Disposition: attachment; filename="..."` header
 into the presigned URL, forcing the browser to download rather than preview.
+The filename is sanitized by `ContentDispositionHelper` to strip path traversal sequences
+(`../`, `..\\`), null bytes, and non-ASCII control characters.
 
 ### GDPR deletion
 
@@ -500,7 +502,8 @@ full file in the application server.
 
 | Validator | Order | Check |
 | --------- | ----- | ----- |
-| `MagicBytesValidator` | 10 | Reads first 261 bytes via range read; compares magic-byte signature against declared `Content-Type`. Detects PDF, JPEG, PNG, GIF, TIFF, DICOM, ZIP. |
+| `ContentTypeAllowlistValidator` | 5 | Rejects blobs whose declared content type is not in `AllowedContentTypes`. No-op when allowlist is empty. |
+| `MagicBytesValidator` | 10 | Reads first 261 bytes via range read; compares magic-byte signature against declared `Content-Type`. Detects PDF, JPEG, PNG, GIF, TIFF, DICOM, ZIP. Rejects unverifiable types when `RejectUnverifiedContentTypes` is enabled. |
 | `MaxSizeValidator` | 20 | Compares actual size against `MaxAllowedBytes` declared at upload time. |
 
 The pipeline is **fail-fast**: processing stops at the first failing validator.
@@ -574,6 +577,30 @@ Single-tenant deployments (no `ICurrentTenant`) omit the tenant prefix:
 
 Subscribe via Wolverine handlers to react to blob lifecycle changes (e.g. trigger
 image processing after validation, notify the user on rejection).
+
+## Security hardening
+
+### Content type restrictions
+
+`BlobStorageOptions` exposes two properties for restricting accepted content types:
+
+| Property | Default | Description |
+| -------- | ------- | ----------- |
+| `AllowedContentTypes` | `[]` (allow all) | When non-empty, only blobs with a declared content type in this set are accepted. Case-insensitive. |
+| `RejectUnverifiedContentTypes` | `false` | When `true`, the magic-byte validator rejects files whose binary signature cannot be verified. |
+
+```json
+{
+  "BlobStorage": {
+    "AllowedContentTypes": ["application/pdf", "image/jpeg", "image/png"],
+    "RejectUnverifiedContentTypes": true
+  }
+}
+```
+
+The `ContentTypeAllowlistValidator` (Order 5) runs before magic-byte validation and
+rejects any blob whose declared content type is not in the allowlist. When the allowlist
+is empty, all content types are accepted (default behavior).
 
 ## Health check
 
@@ -730,6 +757,8 @@ Verifies GCS connectivity by listing one object in the default bucket. Tagged
 | -------- | ------- | ----------- |
 | `UploadUrlExpiry` | `00:15:00` | Presigned upload URL / proxy token TTL |
 | `DownloadUrlExpiry` | `00:05:00` | Presigned download URL / proxy token TTL |
+| `AllowedContentTypes` | `[]` | Content type allowlist (empty = allow all) |
+| `RejectUnverifiedContentTypes` | `false` | Reject files with unverifiable magic bytes |
 
 ## Public API summary
 

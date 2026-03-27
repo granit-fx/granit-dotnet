@@ -100,11 +100,24 @@ are defined in `BlobStoragePermissions`:
 
 | Permission | Description |
 | ---------- | ----------- |
-| `BlobStorage.Blobs.View` | View blob descriptors |
+| `BlobStorage.Blobs.Read` | Read blob descriptors |
 | `BlobStorage.Blobs.Upload` | Upload blobs |
 | `BlobStorage.Blobs.Download` | Download blobs |
 | `BlobStorage.Blobs.Delete` | Delete blobs |
 | `BlobStorage.Blobs.Manage` | Manage blobs (confirm uploads, cleanup orphans) |
+
+## Rate limiting
+
+Upload, download, and admin endpoints are protected by `BlobStorageRateLimitPolicies`:
+
+| Policy | Applies to | Description |
+| ------ | ---------- | ----------- |
+| `Upload` | `POST /upload`, `POST /{id}/confirm` | Limits upload initiation and confirmation rate |
+| `Download` | `POST /{id}/download-url` | Limits download URL generation rate |
+| `Admin` | `POST /cleanup-orphans` | Limits admin operations rate |
+
+Rate-limited responses return `429 Too Many Requests` with a `Retry-After` header.
+Configure policies via `Granit.RateLimiting` options.
 
 ## Validation
 

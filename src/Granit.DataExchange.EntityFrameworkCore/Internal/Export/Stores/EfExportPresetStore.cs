@@ -5,6 +5,7 @@ using Granit.DataExchange.Export;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Timing;
+using Granit.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Export.Stores;
@@ -17,7 +18,8 @@ internal sealed class EfExportPresetStore(
     IDbContextFactory<DataExchangeDbContext> contextFactory,
     IClock clock,
     IGuidGenerator guidGenerator,
-    ICurrentTenant currentTenant) : IExportPresetReader, IExportPresetWriter
+    ICurrentTenant currentTenant,
+    ICurrentUserService currentUser) : IExportPresetReader, IExportPresetWriter
 {
     /// <inheritdoc/>
     public async Task<ExportPreset?> GetAsync(
@@ -84,7 +86,7 @@ internal sealed class EfExportPresetStore(
                 Format = preset.Format,
                 IncludeIdForImport = preset.IncludeIdForImport,
                 SavedAt = clock.Now,
-                SavedBy = "system",
+                SavedBy = currentUser.UserId ?? "system",
             });
         }
 

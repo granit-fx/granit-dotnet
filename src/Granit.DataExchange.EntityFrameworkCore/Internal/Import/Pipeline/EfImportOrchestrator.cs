@@ -82,7 +82,8 @@ internal sealed class EfImportOrchestrator(
                 FinalStatus = ImportJobStatus.Failed,
                 RowErrors =
                 [
-                    new ImportRowError(0, ImportRowErrorKind.Persistence, ["Granit:DataExchange:PipelineError"], ex.Message),
+                    new ImportRowError(0, ImportRowErrorKind.Persistence, ["Granit:DataExchange:PipelineError"],
+                        ex.Message.Length > 500 ? string.Concat(ex.Message.AsSpan(0, 500), "… [truncated]") : ex.Message),
                 ],
             };
 

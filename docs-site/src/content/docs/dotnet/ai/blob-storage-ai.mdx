@@ -204,6 +204,29 @@ classification.
 | `TimeoutSeconds` | `int` | `10` | LLM call timeout |
 | `EnablePiiDetection` | `bool` | `true` | Flag filenames containing PII patterns |
 
+## Quota guard
+
+Every AI call passes through an `IAIQuotaGuard` check before invoking the LLM.
+The default `InMemoryAIQuotaGuard` enforces a per-tenant, per-hour request limit
+configured via `AIQuotaOptions`:
+
+```json
+{
+  "AI": {
+    "Quota": {
+      "MaxRequestsPerTenantPerHour": 1000
+    }
+  }
+}
+```
+
+When the quota is exceeded, classification returns `UnknownClassification` with a
+warning log instead of calling the LLM. Set `MaxRequestsPerTenantPerHour` to `0`
+(the default) to disable quota enforcement.
+
+For distributed deployments, replace the in-memory guard with a Redis-backed
+implementation by registering a custom `IAIQuotaGuard` in DI.
+
 ## Risks and limitations
 
 | Risk | Mitigation |
@@ -212,6 +235,8 @@ classification.
 | **False positives on PII** | `ContainsPiiInFileName` is informational; blocking requires an explicit validator (see example above) |
 | **MIME type spoofing** | AI only sees the declared MIME type, not file content — combine with byte-level validators for security-critical uploads |
 | **Cost** | Called once per upload; filename + MIME type = small prompt, minimal token cost |
+| **Denial-of-wallet** | `IAIQuotaGuard` enforces per-tenant request limits to prevent runaway LLM costs from bulk uploads |
+| **Prompt injection** | `PromptBuilder` sanitizes user-supplied filename and content type; the LLM receives structured metadata, not raw file content |
 
 ## See also
 

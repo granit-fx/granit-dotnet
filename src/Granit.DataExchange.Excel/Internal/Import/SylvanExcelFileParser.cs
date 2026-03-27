@@ -14,7 +14,6 @@ internal sealed class SylvanExcelFileParser : IFileParser
     [
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "application/vnd.ms-excel",
-        "application/vnd.ms-excel.sheet.binary.macroenabled.12",
     ];
 
     /// <inheritdoc/>
@@ -134,8 +133,6 @@ internal sealed class SylvanExcelFileParser : IFileParser
                 => ExcelWorkbookType.ExcelXml,
             "application/vnd.ms-excel"
                 => ExcelWorkbookType.Excel,
-            "application/vnd.ms-excel.sheet.binary.macroenabled.12"
-                => ExcelWorkbookType.ExcelBinary,
             _ => ExcelWorkbookType.ExcelXml,
         };
 }

@@ -62,7 +62,7 @@ public static class ServiceCollectionExtensions
         services.AddGranitEvents();
 
         // Channel-based async dispatch (default). Replaced by Wolverine if installed.
-        services.TryAddSingleton(Channel.CreateUnbounded<ExecuteImportCommand>());
+        services.TryAddSingleton(Channel.CreateBounded<ExecuteImportCommand>(new BoundedChannelOptions(100) { FullMode = BoundedChannelFullMode.Wait }));
         services.TryAddSingleton<IImportCommandDispatcher, ChannelImportCommandDispatcher>();
         services.AddHostedService<ImportCommandWorker>();
 
@@ -126,7 +126,7 @@ public static class ServiceCollectionExtensions
         services.AddGranitEvents();
 
         // Channel-based async dispatch (default). Replaced by Wolverine if installed.
-        services.TryAddSingleton(Channel.CreateUnbounded<ExecuteExportCommand>());
+        services.TryAddSingleton(Channel.CreateBounded<ExecuteExportCommand>(new BoundedChannelOptions(100) { FullMode = BoundedChannelFullMode.Wait }));
         services.TryAddSingleton<IExportCommandDispatcher, ChannelExportCommandDispatcher>();
         services.AddHostedService<ExportCommandWorker>();
 

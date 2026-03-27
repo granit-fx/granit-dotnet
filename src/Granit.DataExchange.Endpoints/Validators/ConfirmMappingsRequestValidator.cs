@@ -12,12 +12,14 @@ internal sealed class ConfirmMappingsRequestValidator : GranitValidator<ConfirmM
     public ConfirmMappingsRequestValidator()
     {
         RuleFor(x => x.Mappings)
-            .NotEmpty();
+            .NotEmpty()
+            .Must(m => m.Any(mapping => mapping.TargetProperty is not null))
+            .WithMessage("At least one mapping must have a non-null TargetProperty.");
 
         RuleForEach(x => x.Mappings).ChildRules(mapping =>
         {
-            mapping.RuleFor(m => m.SourceColumn).NotEmpty();
-
+            mapping.RuleFor(m => m.SourceColumn).NotEmpty().MaximumLength(500);
+            mapping.RuleFor(m => m.TargetProperty).MaximumLength(500);
             mapping.RuleFor(m => m.Confidence).IsInEnum();
         });
     }

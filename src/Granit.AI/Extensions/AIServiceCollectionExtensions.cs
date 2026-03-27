@@ -54,6 +54,13 @@ public static class AIServiceCollectionExtensions
         // Usage queryable (no-op by default, overridden by EF Core package)
         builder.Services.TryAddTransient<IAIUsageQueryableProvider, NullAIUsageQueryableProvider>();
 
+        // Quota guard: InMemory by default (no-op when MaxRequestsPerTenantPerHour=0)
+        builder.Services
+            .AddOptions<Options.AIQuotaOptions>()
+            .BindConfiguration(Options.AIQuotaOptions.SectionName);
+
+        builder.Services.TryAddSingleton<IAIQuotaGuard, InMemoryAIQuotaGuard>();
+
         return builder;
     }
 }

@@ -231,15 +231,20 @@ public sealed class LogoutTokenValidatorTests : IDisposable
     }
 
     [Fact]
-    public async Task ValidateAsync_KeyNotFound_ReturnsNull()
+    public async Task ValidateAsync_EmptyJwks_ReturnsNull()
     {
         string token = BuildSignedToken(
             issuer: Authority,
             audience: ClientId,
-            includeBackChannelEvent: true,
-            kid: "unknown-kid");
+            includeBackChannelEvent: true);
 
-        SetupCacheWithJwks(kid: "different-kid");
+        // Cache returns an empty key set — no signing key can be found
+        _cache.GetOrSetAsync<List<JsonElement>>(
+                Arg.Any<string>(),
+                Arg.Any<Func<FusionCacheFactoryExecutionContext<List<JsonElement>>, CancellationToken, Task<List<JsonElement>>>>(),
+                Arg.Any<FusionCacheEntryOptions?>(),
+                Arg.Any<CancellationToken>())
+            .ReturnsForAnyArgs(new List<JsonElement>());
 
         ValidatedLogoutToken? result = await _validator.ValidateAsync(
             token, ClientId, TestContext.Current.CancellationToken);

@@ -1,10 +1,12 @@
+using Granit.Domain;
+
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Import.Entities;
 
 /// <summary>
 /// Persisted column mappings for a given import definition and tenant.
 /// Enables the "Saved" tier of the mapping suggestion pipeline.
 /// </summary>
-internal sealed class SavedMappingEntity
+internal sealed class SavedMappingEntity : IMultiTenant
 {
     /// <summary>Unique identifier.</summary>
     public Guid Id { get; set; }

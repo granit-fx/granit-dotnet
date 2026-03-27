@@ -56,7 +56,10 @@ internal sealed partial class AISemanticMappingService(
         DataExchangeAIOptions opts = options.Value;
 
         // Only include preview rows if the option is explicitly enabled (GDPR opt-in)
-        IReadOnlyList<string[]>? effectivePreview = opts.IncludePreviewRows ? previewRows : null;
+        // Truncate to configured limit to prevent unbounded prompt size (VULN-209)
+        IReadOnlyList<string[]>? effectivePreview = opts.IncludePreviewRows && previewRows is not null
+            ? (previewRows.Count <= opts.PreviewRowCount ? previewRows : previewRows.Take(opts.PreviewRowCount).ToList())
+            : null;
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(opts.TimeoutSeconds));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
@@ -79,8 +82,14 @@ internal sealed partial class AISemanticMappingService(
 
             IReadOnlyList<SemanticMappingSuggestion> suggestions = ParseSuggestions(responseText);
 
+            // Validate LLM output against known properties and headers (VULN-105)
+            HashSet<string> validTargets = new(targetFields.Select(f => f.PropertyPath), StringComparer.OrdinalIgnoreCase);
+            HashSet<string> validSources = new(headers, StringComparer.OrdinalIgnoreCase);
+
             var filtered = suggestions
-                .Where(s => s.Score >= opts.MinConfidenceScore)
+                .Where(s => s.Score >= opts.MinConfidenceScore
+                            && validTargets.Contains(s.TargetProperty)
+                            && validSources.Contains(s.SourceColumn))
                 .OrderByDescending(s => s.Score)
                 .ToList();
 
@@ -129,9 +138,9 @@ internal sealed partial class AISemanticMappingService(
             sb.Append(" | ");
             sb.Append(field.ClrTypeName);
             sb.Append(" | ");
-            sb.Append(field.DisplayName ?? "-");
+            sb.Append(SanitizeCellValue(field.DisplayName ?? "-"));
             sb.Append(" | ");
-            sb.Append(field.Description ?? "-");
+            sb.Append(SanitizeCellValue(field.Description ?? "-"));
             sb.Append(" | ");
             sb.Append(field.IsRequired ? "Yes" : "No");
             sb.AppendLine(" |");
@@ -162,7 +171,8 @@ internal sealed partial class AISemanticMappingService(
             sb.Append("| ");
             for (int i = 0; i < headers.Count; i++)
             {
-                sb.Append(i < row.Length ? row[i] : "-");
+                string cellValue = i < row.Length ? row[i] : "-";
+                sb.Append(SanitizeCellValue(cellValue));
                 sb.Append(i < headers.Count - 1 ? " | " : " |");
             }
 
@@ -194,9 +204,16 @@ internal sealed partial class AISemanticMappingService(
 
         return dtos
             .Where(d => d.Source is not null && d.Target is not null)
-            .Select(d => new SemanticMappingSuggestion(d.Source!, d.Target!, d.Score))
+            .Select(d => new SemanticMappingSuggestion(d.Source!, d.Target!, Math.Clamp(d.Score, 0.0, 1.0)))
             .ToList();
     }
+
+    private static string SanitizeCellValue(string value) =>
+        value.Replace("<", "&lt;", StringComparison.Ordinal)
+             .Replace(">", "&gt;", StringComparison.Ordinal)
+             .Replace("|", "\\|", StringComparison.Ordinal)
+             .Replace("\n", " ", StringComparison.Ordinal)
+             .Replace("\r", " ", StringComparison.Ordinal);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "LLM response received for semantic mapping ({ResponseLength} chars)")]
     private partial void LogLlmResponseReceived(int responseLength);

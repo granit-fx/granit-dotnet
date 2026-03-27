@@ -170,6 +170,21 @@ public sealed class MagicBytesValidatorTests
     }
 
     [Fact]
+    public async Task ValidateAsync_UnknownBytes_RejectUnverified_ReturnsFailure()
+    {
+        var opts = new Options.BlobStorageOptions { RejectUnverifiedContentTypes = true };
+        MagicBytesValidator validator = new(Microsoft.Extensions.Options.Options.Create(opts));
+        byte[] unknownBytes = new byte[50];
+        BlobValidationContext context = MakeContext(MakeDescriptor("application/octet-stream"), unknownBytes);
+
+        BlobValidationResult result = await validator.ValidateAsync(
+            context, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.FailureReason!.ShouldContain("Unverified");
+    }
+
+    [Fact]
     public void Order_Is10() =>
-        new MagicBytesValidator().Order.ShouldBe(10);
+        new MagicBytesValidator(Microsoft.Extensions.Options.Options.Create(new Options.BlobStorageOptions())).Order.ShouldBe(10);
 }

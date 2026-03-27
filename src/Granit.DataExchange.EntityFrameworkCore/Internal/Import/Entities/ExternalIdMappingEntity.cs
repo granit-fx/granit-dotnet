@@ -1,10 +1,12 @@
+using Granit.Domain;
+
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Import.Entities;
 
 /// <summary>
 /// Maps an external identifier from a source system to an internal entity ID.
 /// Used by the <c>ExternalIdResolver</c> for roundtrip INSERT/UPDATE resolution.
 /// </summary>
-internal sealed class ExternalIdMappingEntity
+internal sealed class ExternalIdMappingEntity : IMultiTenant
 {
     /// <summary>Unique identifier.</summary>
     public Guid Id { get; set; }

@@ -1,4 +1,6 @@
 using Granit.BlobStorage.Endpoints.Dtos;
+using Granit.BlobStorage.Endpoints.Permissions;
+using Granit.RateLimiting.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -18,7 +20,9 @@ internal static class BlobWriteEndpoints
                 "Creates a new blob descriptor and generates a pre-signed URL for direct client-side upload. "
                 + "The response includes the upload URL, required HTTP headers, and expiration time. "
                 + "After uploading, call the confirm endpoint to trigger the validation pipeline.")
-            .Produces<BlobUploadInitiateResponse>(StatusCodes.Status201Created);
+            .Produces<BlobUploadInitiateResponse>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status429TooManyRequests)
+            .RequireGranitRateLimiting(BlobStorageRateLimitPolicies.Upload);
 
         group.MapDelete("/{id:guid}", DeleteAsync)
             .WithName("DeleteBlob")

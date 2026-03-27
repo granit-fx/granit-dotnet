@@ -15,7 +15,9 @@ internal sealed class CreateExportJobRequestValidator : GranitValidator<CreateEx
 {
     public CreateExportJobRequestValidator()
     {
-        RuleFor(x => x.DefinitionName).NotEmpty();
-        RuleFor(x => x.Format).NotEmpty();
+        RuleFor(x => x.DefinitionName).NotEmpty().MaximumLength(500);
+        RuleFor(x => x.Format).NotEmpty().MaximumLength(10);
+        RuleFor(x => x.Sort).MaximumLength(2000);
+        RuleFor(x => x.Search).MaximumLength(1000);
     }
 }

@@ -94,14 +94,15 @@ internal static class ImportUploadEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
+        string safeFileName = Path.GetFileName(file.FileName);
         await using Stream stream = file.OpenReadStream();
-        string blobReference = await fileProvider.SaveAsync(file.FileName, stream, cancellationToken).ConfigureAwait(false);
+        string blobReference = await fileProvider.SaveAsync(safeFileName, stream, cancellationToken).ConfigureAwait(false);
 
         var job = ImportJob.Create(
             guidGenerator.Create(),
             descriptor.Name,
             descriptor.EntityType.Name,
-            file.FileName,
+            safeFileName,
             file.ContentType,
             file.Length,
             blobReference);

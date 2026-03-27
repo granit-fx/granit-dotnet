@@ -1,5 +1,7 @@
 using Granit.BlobStorage.Endpoints.Dtos;
+using Granit.BlobStorage.Endpoints.Permissions;
 using Granit.BlobStorage.Options;
+using Granit.RateLimiting.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -19,7 +21,9 @@ internal static class BlobOperationEndpoints
                 "Triggers content-type verification and size validation on an uploaded blob. "
                 + "The response includes the validation result: verified content type, actual size, "
                 + "and an optional rejection reason if the blob failed validation.")
-            .Produces<BlobConfirmUploadResponse>();
+            .Produces<BlobConfirmUploadResponse>()
+            .ProducesProblem(StatusCodes.Status429TooManyRequests)
+            .RequireGranitRateLimiting(BlobStorageRateLimitPolicies.Upload);
 
         group.MapPost("/{id:guid}/download-url", GenerateDownloadUrlAsync)
             .WithName("GenerateBlobDownloadUrl")
@@ -28,7 +32,9 @@ internal static class BlobOperationEndpoints
                 "Creates a pre-signed URL for direct client-side download of the blob content. "
                 + "An optional custom file name can be specified to override the Content-Disposition header. "
                 + "The URL expires after the provider-configured duration.")
-            .Produces<BlobDownloadUrlResponse>();
+            .Produces<BlobDownloadUrlResponse>()
+            .ProducesProblem(StatusCodes.Status429TooManyRequests)
+            .RequireGranitRateLimiting(BlobStorageRateLimitPolicies.Download);
 
         group.MapPost("/cleanup-orphans", CleanupOrphansAsync)
             .WithName("CleanupOrphanedBlobs")
@@ -37,7 +43,9 @@ internal static class BlobOperationEndpoints
                 "Scans for blobs that never completed the upload/confirm cycle and deletes them. "
                 + "Returns the number of orphaned blobs removed. "
                 + "Typically called on a schedule or via the admin dashboard.")
-            .Produces<BlobCleanupOrphansResponse>();
+            .Produces<BlobCleanupOrphansResponse>()
+            .ProducesProblem(StatusCodes.Status429TooManyRequests)
+            .RequireGranitRateLimiting(BlobStorageRateLimitPolicies.Admin);
 
         return group;
     }

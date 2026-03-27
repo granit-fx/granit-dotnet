@@ -1,10 +1,12 @@
+using Granit.Domain;
+
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Export.Entities;
 
 /// <summary>
 /// Persisted export preset for a given export definition and tenant.
 /// Stores the user's field selection, format preference, and roundtrip option.
 /// </summary>
-internal sealed class ExportPresetEntity
+internal sealed class ExportPresetEntity : IMultiTenant
 {
     /// <summary>Unique identifier.</summary>
     public Guid Id { get; set; }

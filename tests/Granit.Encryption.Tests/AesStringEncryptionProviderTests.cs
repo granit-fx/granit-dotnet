@@ -137,7 +137,8 @@ public sealed class AesStringEncryptionProviderTests
     {
         IOptions<StringEncryptionOptions> options = Microsoft.Extensions.Options.Options.Create(new StringEncryptionOptions
         {
-            PassPhrase = string.Empty
+            PassPhrase = string.Empty,
+            AllowEphemeralPassPhrase = true
         });
 
         AesStringEncryptionProvider provider = new(options, NullLogger<AesStringEncryptionProvider>.Instance);
@@ -163,7 +164,8 @@ public sealed class AesStringEncryptionProviderTests
     {
         IOptions<StringEncryptionOptions> options = Microsoft.Extensions.Options.Options.Create(new StringEncryptionOptions
         {
-            PassPhrase = null!
+            PassPhrase = null!,
+            AllowEphemeralPassPhrase = true
         });
 
         AesStringEncryptionProvider provider = new(options, NullLogger<AesStringEncryptionProvider>.Instance);
