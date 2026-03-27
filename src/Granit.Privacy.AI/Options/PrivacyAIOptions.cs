@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Granit.Privacy.AI.Options;
 
 /// <summary>
@@ -31,5 +33,26 @@ public sealed class PrivacyAIOptions
     /// <summary>
     /// Maximum time in seconds to wait for PII detection to complete. Defaults to <c>15</c>.
     /// </summary>
+    [Range(1, 120)]
     public int TimeoutSeconds { get; set; } = 15;
+
+    /// <summary>
+    /// Behavior when PII detection fails (LLM timeout, deserialization error, provider outage).
+    /// <see cref="PiiDetectionFailMode.Closed"/> assumes PII is present (conservative — recommended for production).
+    /// <see cref="PiiDetectionFailMode.Open"/> assumes no PII (permissive — for development/testing).
+    /// Defaults to <see cref="PiiDetectionFailMode.Closed"/>.
+    /// </summary>
+    public PiiDetectionFailMode FailMode { get; set; } = PiiDetectionFailMode.Closed;
+}
+
+/// <summary>
+/// Defines the behavior when PII detection fails.
+/// </summary>
+public enum PiiDetectionFailMode
+{
+    /// <summary>Assume PII is present on failure (conservative — safe default).</summary>
+    Closed = 0,
+
+    /// <summary>Assume no PII on failure (permissive — for development/testing only).</summary>
+    Open = 1,
 }

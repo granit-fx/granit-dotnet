@@ -1,6 +1,8 @@
 using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.Persistence.Diagnostics;
 using Granit.Persistence.Interceptors;
+using Granit.Testing.EntityFrameworkCore.Internal;
 using Granit.Testing.Fakes;
 using Granit.Timing;
 using Granit.Users;
@@ -41,10 +43,11 @@ public static class TestDbContextServiceCollectionExtensions
             IClock clock = sp.GetRequiredService<IClock>();
             IGuidGenerator guidGenerator = sp.GetRequiredService<IGuidGenerator>();
 
-            AuditedEntityInterceptor auditInterceptor = new(user, clock, guidGenerator, tenant);
+            PersistenceMetrics metrics = new(new TestMeterFactory());
+            AuditedEntityInterceptor auditInterceptor = new(user, clock, guidGenerator, tenant, metrics);
             VersioningInterceptor versioningInterceptor = new(guidGenerator);
             ConcurrencyStampInterceptor concurrencyStampInterceptor = new();
-            SoftDeleteInterceptor softDeleteInterceptor = new(user, clock);
+            SoftDeleteInterceptor softDeleteInterceptor = new(user, clock, tenant, metrics);
 
             options.UseInMemoryDatabase(guidGenerator.Create().ToString())
                 .AddInterceptors(auditInterceptor, versioningInterceptor, concurrencyStampInterceptor, softDeleteInterceptor);

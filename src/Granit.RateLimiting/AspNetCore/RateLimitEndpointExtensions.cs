@@ -27,7 +27,9 @@ public static class RateLimitEndpointExtensions
             TenantPartitionedRateLimiter limiter = context.HttpContext.RequestServices
                 .GetRequiredService<TenantPartitionedRateLimiter>();
 
-            RateLimitResult? result = await limiter.CheckAsync(policyName, context.HttpContext.RequestAborted)
+            string? clientIp = context.HttpContext.Connection.RemoteIpAddress?.ToString();
+
+            RateLimitResult? result = await limiter.CheckAsync(policyName, clientIp, context.HttpContext.RequestAborted)
                 .ConfigureAwait(false);
 
             if (result is { IsAllowed: false })
@@ -35,16 +37,25 @@ public static class RateLimitEndpointExtensions
                 context.HttpContext.Response.Headers[HeaderNames.RetryAfter] = ((int)Math.Ceiling(result.RetryAfter.TotalSeconds)).ToString();
 
                 return TypedResults.Problem(
-                    detail: $"Rate limit exceeded for policy '{policyName}'. Retry after {result.RetryAfter.TotalSeconds:F0}s.",
+                    detail: "Too many requests. Please retry later.",
                     statusCode: StatusCodes.Status429TooManyRequests,
                     title: "Too Many Requests",
                     extensions: new Dictionary<string, object?>
                     {
-                        ["policy"] = policyName,
                         ["limit"] = result.Limit,
                         ["remaining"] = result.Remaining,
                         ["retryAfter"] = (int)Math.Ceiling(result.RetryAfter.TotalSeconds),
                     });
+            }
+
+            if (result is not null)
+            {
+                context.HttpContext.Response.OnStarting(() =>
+                {
+                    context.HttpContext.Response.Headers["X-RateLimit-Limit"] = result.Limit.ToString();
+                    context.HttpContext.Response.Headers["X-RateLimit-Remaining"] = result.Remaining.ToString();
+                    return Task.CompletedTask;
+                });
             }
 
             return await next(context).ConfigureAwait(false);

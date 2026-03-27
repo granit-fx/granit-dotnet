@@ -3,10 +3,8 @@
   "texts": {
     "Permission:Privacy.Agreements.Create": "Zaakceptowanie umowy prawnej",
     "Permission:Privacy.Agreements.Read": "Wyświetlanie dokumentów prawnych i statusu zgody",
-    "Permission:Privacy.Deletion.Read": "Wyświetlanie statusu i historii żądań usunięcia",
     "Permission:Privacy.Deletion.Execute": "Żądanie usunięcia danych osobowych",
     "Permission:Privacy.Export.Execute": "Żądanie eksportu danych osobowych",
-    "Permission:Privacy.Export.Read": "Wyświetlanie statusu eksportu danych osobowych",
     "PermissionGroup:Privacy": "Prywatność (RODO)"
   }
 }

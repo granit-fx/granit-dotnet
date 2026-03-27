@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.Privacy.DataDeletion.Events;
 using Granit.Privacy.Diagnostics;
 using Granit.Privacy.Options;
@@ -40,6 +41,7 @@ public sealed class GdprDeletionSaga : Saga
     public string RequestedBy { get; set; } = string.Empty;
 
     /// <summary>Reason provided by the user for deletion.</summary>
+    [SensitiveData(Level = Sensitivity.Confidential)]
     public string Reason { get; set; } = string.Empty;
 
     /// <summary>When the deletion was originally requested.</summary>

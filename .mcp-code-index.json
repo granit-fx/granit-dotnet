@@ -21179,7 +21179,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 22,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitOpenIddict",
@@ -22169,7 +22169,7 @@
       "kind": "class",
       "project": "Granit.Persistence",
       "file": "src/Granit.Persistence/Extensions/PersistenceDbContextServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 12,
       "members": []
     },
     {
@@ -23119,12 +23119,21 @@
       ]
     },
     {
+      "name": "PiiDetectionFailMode",
+      "fqn": "Granit.Privacy.AI.Options.PiiDetectionFailMode",
+      "kind": "enum",
+      "project": "Granit.Privacy.AI",
+      "file": "src/Granit.Privacy.AI/Options/PrivacyAIOptions.cs",
+      "line": 51,
+      "members": []
+    },
+    {
       "name": "PrivacyAIOptions",
       "fqn": "Granit.Privacy.AI.Options.PrivacyAIOptions",
       "kind": "class",
       "project": "Granit.Privacy.AI",
       "file": "src/Granit.Privacy.AI/Options/PrivacyAIOptions.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "WorkspaceName",
@@ -23137,6 +23146,12 @@
           "kind": "property",
           "signature": "int TimeoutSeconds",
           "returnType": "int"
+        },
+        {
+          "name": "FailMode",
+          "kind": "property",
+          "signature": "PiiDetectionFailMode FailMode",
+          "returnType": "PiiDetectionFailMode"
         }
       ]
     },
@@ -23281,7 +23296,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataDeletion/GdprDeletionSaga.cs",
-      "line": 31,
+      "line": 32,
       "members": [
         {
           "name": "Id",
@@ -23724,7 +23739,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
-      "line": 33,
+      "line": 27,
       "members": []
     },
     {
@@ -23733,7 +23748,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
-      "line": 23,
+      "line": 20,
       "members": []
     },
     {
@@ -24015,7 +24030,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/Options/GranitPrivacyOptions.cs",
-      "line": 6,
+      "line": 8,
       "members": [
         {
           "name": "ExportTimeoutMinutes",
@@ -25013,7 +25028,7 @@
       "kind": "class",
       "project": "Granit.RateLimiting",
       "file": "src/Granit.RateLimiting/Extensions/RateLimitingServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitRateLimiting",
@@ -25098,6 +25113,15 @@
       "members": []
     },
     {
+      "name": "RateLimitPartition",
+      "fqn": "Granit.RateLimiting.Options.RateLimitPartition",
+      "kind": "enum",
+      "project": "Granit.RateLimiting",
+      "file": "src/Granit.RateLimiting/Options/RateLimitPartition.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "RateLimitPolicyOptions",
       "fqn": "Granit.RateLimiting.Options.RateLimitPolicyOptions",
       "kind": "class",
@@ -25110,6 +25134,12 @@
           "kind": "property",
           "signature": "RateLimitAlgorithm Algorithm",
           "returnType": "RateLimitAlgorithm"
+        },
+        {
+          "name": "PartitionBy",
+          "kind": "property",
+          "signature": "RateLimitPartition PartitionBy",
+          "returnType": "RateLimitPartition"
         },
         {
           "name": "PermitLimit",
@@ -25160,7 +25190,7 @@
         {
           "name": "CheckAsync",
           "kind": "method",
-          "signature": "CheckAsync(string policyName, CancellationToken cancellationToken)",
+          "signature": "CheckAsync(string policyName, string? clientIp, CancellationToken cancellationToken)",
           "returnType": "Task<RateLimitResult?>"
         }
       ]
@@ -27326,7 +27356,7 @@
       "kind": "class",
       "project": "Granit.Testing.EntityFrameworkCore",
       "file": "src/Granit.Testing.EntityFrameworkCore/Extensions/TestDbContextServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": []
     },
     {
@@ -27344,7 +27374,7 @@
       "kind": "class",
       "project": "Granit.Testing.EntityFrameworkCore",
       "file": "src/Granit.Testing.EntityFrameworkCore/InMemoryDbContextFactory.cs",
-      "line": 29,
+      "line": 31,
       "members": []
     },
     {
@@ -27353,7 +27383,7 @@
       "kind": "class",
       "project": "Granit.Testing.EntityFrameworkCore",
       "file": "src/Granit.Testing.EntityFrameworkCore/SqliteDbContextFactory.cs",
-      "line": 29,
+      "line": 31,
       "members": []
     },
     {

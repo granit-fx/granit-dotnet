@@ -1,5 +1,7 @@
+using Granit.Persistence.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Persistence.Extensions;
 
@@ -50,6 +52,29 @@ public static class PersistenceDbContextServiceCollectionExtensions
             configure(options);
             options.UseGranitInterceptors(sp);
         }, ServiceLifetime.Scoped);
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers a generic <see cref="IInternalDbContextEnsurer"/> for the specified
+    /// <typeparamref name="TContext"/> so that its tables are created automatically
+    /// during <c>--migrate</c>.
+    /// </summary>
+    /// <remarks>
+    /// Call this after <see cref="AddGranitDbContext{TContext}"/> for any isolated DbContext
+    /// whose tables are not included in the host application's EF Core migrations.
+    /// Uses <c>TryAddEnumerable</c> — safe to call multiple times for the same context.
+    /// </remarks>
+    /// <typeparam name="TContext">The isolated DbContext type.</typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddInternalDbContextEnsurer<TContext>(
+        this IServiceCollection services)
+        where TContext : DbContext
+    {
+        services.TryAddEnumerable(
+            ServiceDescriptor.Scoped<IInternalDbContextEnsurer, InternalDbContextEnsurer<TContext>>());
 
         return services;
     }

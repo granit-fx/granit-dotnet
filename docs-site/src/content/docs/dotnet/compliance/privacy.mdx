@@ -171,8 +171,8 @@ api.MapGranitPrivacy(); // → /api/v1/privacy/...
 | Method | Route | Operation | Permission |
 | ------ | ----- | --------- | ---------- |
 | <Badge text="POST" variant="success" /> | `/export` | RequestPrivacyExport | `Privacy.Export.Execute` |
-| <Badge text="GET" variant="note" /> | `/export/{requestId}` | GetPrivacyExportStatus | `Privacy.Export.Read` |
-| <Badge text="GET" variant="note" /> | `/export` | ListPrivacyExports | `Privacy.Export.Read` |
+| <Badge text="GET" variant="note" /> | `/export/{requestId}` | GetPrivacyExportStatus | *(owner only)* |
+| <Badge text="GET" variant="note" /> | `/export` | ListPrivacyExports | *(owner only)* |
 
 The POST endpoint triggers the scatter-gather saga. Each registered data provider
 prepares its fragment asynchronously. Poll the status endpoint or wire a
@@ -192,9 +192,9 @@ the HTTP surface from the internal Wolverine saga state.
 | Method | Route | Operation | Permission |
 | ------ | ----- | --------- | ---------- |
 | <Badge text="POST" variant="success" /> | `/deletion` | RequestPrivacyDeletion | `Privacy.Deletion.Execute` |
-| <Badge text="POST" variant="success" /> | `/deletion/{requestId}/cancel` | CancelPrivacyDeletion | `Privacy.Deletion.Cancel` |
-| <Badge text="GET" variant="note" /> | `/deletion/{requestId}` | GetPrivacyDeletionStatus | `Privacy.Deletion.Read` |
-| <Badge text="GET" variant="note" /> | `/deletion` | ListPrivacyDeletions | `Privacy.Deletion.Read` |
+| <Badge text="POST" variant="success" /> | `/deletion/{requestId}/cancel` | CancelPrivacyDeletion | `Privacy.Deletion.Execute` |
+| <Badge text="GET" variant="note" /> | `/deletion/{requestId}` | GetPrivacyDeletionStatus | *(owner only)* |
+| <Badge text="GET" variant="note" /> | `/deletion` | ListPrivacyDeletions | *(owner only)* |
 
 When `defer` is false (default), publishes `PersonalDataDeletionRequestedEto`
 immediately. When `defer` is true, starts the `GdprDeletionSaga` with a cooling-off
@@ -226,8 +226,7 @@ running behind a reverse proxy (Aspire, Docker, Nginx), enable
 | Permission | Scope |
 | ---------- | ----- |
 | `Privacy.Export.Execute` | Request personal data export |
-| `Privacy.Export.Read` | View export status and history |
-| `Privacy.Deletion.Execute` | Request, view, and cancel personal data deletion |
+| `Privacy.Deletion.Execute` | Request and cancel personal data deletion |
 | `Privacy.Agreements.Read` | View legal documents and consent status |
 | `Privacy.Agreements.Create` | Accept a legal agreement |
 

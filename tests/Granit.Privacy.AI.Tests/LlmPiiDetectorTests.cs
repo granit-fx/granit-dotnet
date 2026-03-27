@@ -118,9 +118,9 @@ public sealed class LlmPiiDetectorTests
     }
 
     [Fact]
-    public async Task ScanAsync_LLMFailure_ReturnsNoPii()
+    public async Task ScanAsync_LLMFailure_FailClosed_AssumesPiiPresent()
     {
-        // Arrange
+        // Arrange — default FailMode is Closed
         _chatClient
             .GetResponseAsync(
                 Arg.Any<IEnumerable<ChatMessage>>(),
@@ -133,9 +133,9 @@ public sealed class LlmPiiDetectorTests
             "Some text to scan.",
             TestContext.Current.CancellationToken);
 
-        // Assert — graceful degradation: failure returns no-PII result
-        result.ContainsPii.ShouldBeFalse();
-        result.Items.ShouldBeEmpty();
+        // Assert — fail-closed: assume PII present when detection fails
+        result.ContainsPii.ShouldBeTrue();
+        result.Items.Count.ShouldBe(1);
     }
 
     [Fact]

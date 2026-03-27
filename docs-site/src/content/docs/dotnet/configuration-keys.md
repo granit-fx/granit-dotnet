@@ -534,7 +534,7 @@ Each entry in `ThirdPartyServices`:
 | **Package** | -- | `Granit.RateLimiting` | |
 | `Enabled` | `bool` | `true` | Enable rate limiting. |
 | `KeyPrefix` | `string` | `"rl"` | Redis key prefix for counters. |
-| `FallbackOnCounterStoreFailure` | `CounterStoreFailureBehavior` | `Allow` | Behavior when Redis is unavailable. |
+| `FallbackOnCounterStoreFailure` | `CounterStoreFailureBehavior` | `Deny` | Behavior when Redis is unavailable. |
 | `BypassRoles` | `string[]` | `[]` | Roles exempt from rate limiting. |
 | `UseFeatureBasedQuotas` | `bool` | `false` | Use `Granit.Features` for plan-based quotas. |
 | `Policies` | `Dictionary` | `{}` | Named rate limit policies (see below). |
@@ -544,6 +544,7 @@ Each entry in `Policies`:
 | Key | Type | Default | Description |
 |---|---|---|---|
 | `Algorithm` | `RateLimitAlgorithm` | `SlidingWindow` | `SlidingWindow`, `FixedWindow`, or `TokenBucket`. |
+| `PartitionBy` | `RateLimitPartition` | `Tenant` | Key partition: `Tenant`, `TenantAndIp`, `Ip`, `User`, `TenantAndUser`. |
 | `PermitLimit` | `int` | `1000` | Max permits per window. |
 | `Window` | `TimeSpan` | `00:01:00` | Time window for sliding/fixed algorithms. |
 | `SegmentsPerWindow` | `int` | `6` | Segments per sliding window (1--60). |

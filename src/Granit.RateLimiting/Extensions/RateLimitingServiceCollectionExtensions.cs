@@ -8,6 +8,7 @@ using Granit.RateLimiting.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Granit.RateLimiting.Extensions;
@@ -17,6 +18,7 @@ namespace Granit.RateLimiting.Extensions;
 /// </summary>
 public static class RateLimitingServiceCollectionExtensions
 {
+    private static volatile bool s_inMemoryWarningLogged;
     /// <summary>
     /// Registers Granit rate limiting services using the <c>"RateLimiting"</c> configuration section.
     /// </summary>
@@ -70,7 +72,14 @@ public static class RateLimitingServiceCollectionExtensions
                 return new RedisRateLimitCounterStore(
                     redis,
                     sp.GetRequiredService<IOptions<GranitRateLimitingOptions>>(),
-                    sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<RedisRateLimitCounterStore>>());
+                    sp.GetRequiredService<ILogger<RedisRateLimitCounterStore>>());
+            }
+
+            if (!s_inMemoryWarningLogged)
+            {
+                s_inMemoryWarningLogged = true;
+                RateLimitingLog.LogInMemoryFallback(
+                    sp.GetRequiredService<ILogger<InMemoryRateLimitCounterStore>>());
             }
 
             return new InMemoryRateLimitCounterStore(

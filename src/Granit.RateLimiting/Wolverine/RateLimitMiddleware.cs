@@ -43,7 +43,7 @@ public static class RateLimitMiddleware
             return;
         }
 
-        RateLimitResult? result = await limiter.CheckAsync(attribute.PolicyName, cancellationToken)
+        RateLimitResult? result = await limiter.CheckAsync(attribute.PolicyName, clientIp: null, cancellationToken)
             .ConfigureAwait(false);
 
         if (result is { IsAllowed: false })

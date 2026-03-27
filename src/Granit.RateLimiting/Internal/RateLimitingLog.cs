@@ -18,4 +18,8 @@ internal static partial class RateLimitingLog
     [LoggerMessage(Level = LogLevel.Trace,
         Message = "Rate limit checked for policy '{PolicyName}' (tenant: {TenantId}). Remaining: {Remaining}/{Limit}.")]
     public static partial void LogRateLimitChecked(ILogger logger, string policyName, string? tenantId, int remaining, int limit);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Rate limiting using in-memory counter store. Counters are NOT shared across instances. Register IConnectionMultiplexer for production use.")]
+    public static partial void LogInMemoryFallback(ILogger logger);
 }

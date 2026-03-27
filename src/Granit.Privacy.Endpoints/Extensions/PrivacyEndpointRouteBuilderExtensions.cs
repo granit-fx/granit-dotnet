@@ -73,19 +73,18 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .Produces<PrivacyExportRequestResponse>(StatusCodes.Status202Accepted);
 
         group.MapGet("/export/{requestId:guid}", HandleGetExportStatusAsync)
-             .RequireAuthorization(PrivacyPermissions.Export.Read)
              .WithName("GetPrivacyExportStatus")
              .WithSummary("Returns the status of a personal data export request.")
              .WithDescription(
                  "Queries the export request tracker for the specified request ID. "
+                 + "Only the user who created the request can view its status. "
                  + "Returns the current state (Pending, Completed, PartiallyCompleted, TimedOut), "
                  + "the archive blob reference when available, and any missing providers. "
-                 + "Returns 404 if the request ID is not found.")
+                 + "Returns 404 if the request ID is not found or belongs to another user.")
              .Produces<PrivacyExportStatusResponse>()
              .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/export", HandleGetMyExportsAsync)
-             .RequireAuthorization(PrivacyPermissions.Export.Read)
              .WithName("ListPrivacyExports")
              .WithSummary("Lists all export requests for the current user.")
              .WithDescription(
@@ -126,18 +125,17 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapGet("/deletion/{requestId:guid}", HandleGetDeletionStatusAsync)
-             .RequireAuthorization(PrivacyPermissions.Deletion.Read)
              .WithName("GetPrivacyDeletionStatus")
              .WithSummary("Returns the status of a deferred deletion request.")
              .WithDescription(
                  "Queries the deletion request tracker for the specified request ID. "
+                 + "Only the user who created the request can view its status. "
                  + "Returns the current state (Deferred, Executed, Cancelled), scheduled deletion date, "
-                 + "and timestamps. Returns 404 if the request is not found.")
+                 + "and timestamps. Returns 404 if the request is not found or belongs to another user.")
              .Produces<PrivacyDeletionStatusResponse>()
              .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/deletion", HandleGetMyDeletionsAsync)
-             .RequireAuthorization(PrivacyPermissions.Deletion.Read)
              .WithName("ListPrivacyDeletions")
              .WithSummary("Lists all deletion requests for the current user.")
              .WithDescription(
@@ -239,14 +237,20 @@ public static class PrivacyEndpointRouteBuilderExtensions
 
     private static async Task<Results<Ok<PrivacyExportStatusResponse>, ProblemHttpResult>> HandleGetExportStatusAsync(
         Guid requestId,
+        [FromServices] ICurrentUserService currentUser,
         [FromServices] IExportRequestTrackerReader tracker,
         CancellationToken cancellationToken)
     {
+        if (!TryGetUserId(currentUser, out Guid userId))
+        {
+            return UserNotAuthenticated();
+        }
+
         ExportRequestStatus? status = await tracker
             .GetStatusAsync(requestId, cancellationToken)
             .ConfigureAwait(false);
 
-        if (status is null)
+        if (status is null || status.UserId != userId)
         {
             return TypedResults.Problem(
                 detail: $"Export request '{requestId}' not found.",
@@ -402,14 +406,20 @@ public static class PrivacyEndpointRouteBuilderExtensions
 
     private static async Task<Results<Ok<PrivacyDeletionStatusResponse>, ProblemHttpResult>> HandleGetDeletionStatusAsync(
         Guid requestId,
+        [FromServices] ICurrentUserService currentUser,
         [FromServices] IDeletionRequestTrackerReader tracker,
         CancellationToken cancellationToken)
     {
+        if (!TryGetUserId(currentUser, out Guid userId))
+        {
+            return UserNotAuthenticated();
+        }
+
         DeletionRequestStatus? status = await tracker
             .GetStatusAsync(requestId, cancellationToken)
             .ConfigureAwait(false);
 
-        if (status is null)
+        if (status is null || status.UserId != userId)
         {
             return TypedResults.Problem(
                 detail: $"Deletion request '{requestId}' not found.",

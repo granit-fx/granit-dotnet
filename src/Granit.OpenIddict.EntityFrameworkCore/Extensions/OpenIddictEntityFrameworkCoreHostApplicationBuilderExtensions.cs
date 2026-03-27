@@ -4,13 +4,11 @@ using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Server.Extensions;
-using Granit.Persistence;
 using Granit.Persistence.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Extensions;
@@ -43,8 +41,7 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
         builder.Services.AddGranitDbContext<OpenIddictDbContext>(configure);
 
         // Register the internal DbContext ensurer for --migrate table auto-creation
-        builder.Services.TryAddEnumerable(
-            ServiceDescriptor.Scoped<IInternalDbContextEnsurer, OpenIddictDbEnsurer>());
+        builder.Services.AddInternalDbContextEnsurer<OpenIddictDbContext>();
 
         // 2. Register ASP.NET Core Identity
         builder.Services

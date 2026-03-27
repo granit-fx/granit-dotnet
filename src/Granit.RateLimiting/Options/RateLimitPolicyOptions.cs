@@ -10,6 +10,9 @@ public sealed class RateLimitPolicyOptions
     /// <summary>Algorithm to use. Default: <see cref="RateLimitAlgorithm.SlidingWindow"/>.</summary>
     public RateLimitAlgorithm Algorithm { get; set; } = RateLimitAlgorithm.SlidingWindow;
 
+    /// <summary>Key partitioning strategy. Default: <see cref="RateLimitPartition.Tenant"/>.</summary>
+    public RateLimitPartition PartitionBy { get; set; } = RateLimitPartition.Tenant;
+
     /// <summary>Maximum number of permits in the window. Required for all algorithms except <see cref="RateLimitAlgorithm.TokenBucket"/>.</summary>
     [Range(1, int.MaxValue)]
     public int PermitLimit { get; set; } = 1000;
