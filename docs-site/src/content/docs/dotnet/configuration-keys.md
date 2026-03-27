@@ -288,7 +288,7 @@ Wolverine__RetryDelays__1=00:00:30
 |---|---|---|---|
 | **Section** | -- | `IdentityWebhook` | |
 | **Package** | -- | `Granit.Identity.Endpoints` | |
-| `Secret` | `string` | `""` | HMAC-SHA256 shared secret for webhook validation. |
+| `Secret` | `string` | `""` | **Required.** HMAC-SHA256 shared secret. Webhook rejects all requests when empty (fail-closed). |
 | `SignatureHeaderName` | `string` | `"X-Webhook-Signature"` | HTTP header carrying the signature. |
 
 ---

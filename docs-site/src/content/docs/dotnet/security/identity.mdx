@@ -471,8 +471,16 @@ duplication.
 ### Webhook
 
 The webhook endpoint receives events from the identity provider (user created, updated,
-deleted) and updates the local cache accordingly. Payload authenticity is verified
-via HMAC signature validation.
+deleted) and updates the local cache accordingly.
+
+:::caution[Secret required]
+The webhook endpoint is **fail-closed**: all requests are rejected with `401 Unauthorized`
+unless `IdentityWebhook:Secret` is configured. A warning is logged at startup when the
+secret is missing. Payloads are limited to **64 KB**.
+:::
+
+Payload authenticity is verified via HMAC-SHA256 signature validation using the shared
+secret configured in `IdentityWebhookOptions`.
 
 ## GDPR operations
 
