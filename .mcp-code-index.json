@@ -10199,6 +10199,12 @@
           "kind": "property",
           "signature": "string? ChromiumExecutablePath",
           "returnType": "string?"
+        },
+        {
+          "name": "MaxConcurrentPages",
+          "kind": "property",
+          "signature": "int MaxConcurrentPages",
+          "returnType": "int"
         }
       ]
     },

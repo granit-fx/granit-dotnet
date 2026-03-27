@@ -192,6 +192,75 @@ public sealed class GranitHealthCheckWriterTests
     }
 
     [Fact]
+    public async Task WriteAsync_SetsCacheControl_ToNoStore()
+    {
+        DefaultHttpContext httpContext = new();
+        httpContext.Response.Body = new MemoryStream();
+        HealthReport report = BuildReport(HealthStatus.Healthy);
+
+        await GranitHealthCheckWriter.WriteAsync(httpContext, report);
+
+        httpContext.Response.Headers.CacheControl.ToString().ShouldBe("no-store");
+    }
+
+    [Fact]
+    public async Task WriteMinimalAsync_OmitsDescription_EvenWhenPresent()
+    {
+        DefaultHttpContext httpContext = new();
+        httpContext.Response.Body = new MemoryStream();
+
+        Dictionary<string, HealthReportEntry> entries = new()
+        {
+            ["db"] = new HealthReportEntry(HealthStatus.Degraded, "Connection pool exhausted", TimeSpan.FromMilliseconds(5), null, null, [])
+        };
+        HealthReport report = new(entries, TimeSpan.FromMilliseconds(5));
+
+        await GranitHealthCheckWriter.WriteMinimalAsync(httpContext, report);
+
+        JsonDocument json = ParseResponse(httpContext);
+        JsonElement check = json.RootElement.GetProperty("checks").EnumerateArray().First();
+        check.TryGetProperty("description", out _).ShouldBeFalse("Minimal writer should always omit description");
+    }
+
+    [Fact]
+    public async Task WriteMinimalAsync_SetsCacheControl_ToNoStore()
+    {
+        DefaultHttpContext httpContext = new();
+        httpContext.Response.Body = new MemoryStream();
+        HealthReport report = BuildReport(HealthStatus.Healthy);
+
+        await GranitHealthCheckWriter.WriteMinimalAsync(httpContext, report);
+
+        httpContext.Response.Headers.CacheControl.ToString().ShouldBe("no-store");
+    }
+
+    [Fact]
+    public async Task WriteMinimalAsync_PreservesStatusDurationAndTags()
+    {
+        DefaultHttpContext httpContext = new();
+        httpContext.Response.Body = new MemoryStream();
+
+        Dictionary<string, HealthReportEntry> entries = new()
+        {
+            ["db"] = new HealthReportEntry(HealthStatus.Healthy, "Active", TimeSpan.FromMilliseconds(12.789), null, null, ["readiness"])
+        };
+        HealthReport report = new(entries, TimeSpan.FromMilliseconds(12.789));
+
+        await GranitHealthCheckWriter.WriteMinimalAsync(httpContext, report);
+
+        JsonDocument json = ParseResponse(httpContext);
+        json.RootElement.GetProperty("status").GetString().ShouldBe("Healthy");
+        json.RootElement.GetProperty("duration").GetDouble().ShouldBe(12.8);
+
+        JsonElement check = json.RootElement.GetProperty("checks").EnumerateArray().First();
+        check.GetProperty("name").GetString().ShouldBe("db");
+        check.GetProperty("status").GetString().ShouldBe("Healthy");
+        check.GetProperty("duration").GetDouble().ShouldBe(12.8);
+        check.GetProperty("tags")[0].GetString().ShouldBe("readiness");
+        check.TryGetProperty("description", out _).ShouldBeFalse();
+    }
+
+    [Fact]
     public async Task WriteAsync_UsesWebDefaults_ForCamelCasePropertyNames()
     {
         DefaultHttpContext httpContext = new();

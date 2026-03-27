@@ -42,7 +42,7 @@ public static class DiagnosticsEndpointRouteBuilderExtensions
         endpoints.MapHealthChecks(options.LivenessPath, new HealthCheckOptions
         {
             Predicate = _ => false,
-            ResponseWriter = GranitHealthCheckWriter.WriteAsync
+            ResponseWriter = GranitHealthCheckWriter.WriteMinimalAsync
         }).AllowAnonymous();
 
         // Readiness: the application can serve traffic
@@ -52,7 +52,7 @@ public static class DiagnosticsEndpointRouteBuilderExtensions
         endpoints.MapHealthChecks(options.ReadinessPath, new HealthCheckOptions
         {
             Predicate = check => check.Tags.Contains("readiness"),
-            ResponseWriter = GranitHealthCheckWriter.WriteAsync,
+            ResponseWriter = GranitHealthCheckWriter.WriteMinimalAsync,
             ResultStatusCodes =
             {
                 [HealthStatus.Healthy] = 200,
@@ -66,7 +66,7 @@ public static class DiagnosticsEndpointRouteBuilderExtensions
         endpoints.MapHealthChecks(options.StartupPath, new HealthCheckOptions
         {
             Predicate = check => check.Tags.Contains("startup"),
-            ResponseWriter = GranitHealthCheckWriter.WriteAsync,
+            ResponseWriter = GranitHealthCheckWriter.WriteMinimalAsync,
             ResultStatusCodes =
             {
                 [HealthStatus.Healthy] = 200,

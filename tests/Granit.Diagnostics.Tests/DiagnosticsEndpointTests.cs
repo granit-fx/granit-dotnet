@@ -117,6 +117,42 @@ public sealed class DiagnosticsEndpointTests
     }
 
     [Fact]
+    public async Task ProbeEndpoints_SetCacheControl_ToNoStore()
+    {
+        using HttpClient client = BuildTestClient(dependencyStatus: HealthStatus.Healthy);
+
+        HttpResponseMessage response = await client.GetAsync("/health/live", TestContext.Current.CancellationToken);
+
+        response.Headers.CacheControl.ShouldNotBeNull();
+        response.Headers.CacheControl!.NoStore.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task ReadinessEndpoint_OmitsDescription_FromResponseBody()
+    {
+        IHealthCheck fakeCheck = Substitute.For<IHealthCheck>();
+        fakeCheck.CheckHealthAsync(Arg.Any<HealthCheckContext>(), Arg.Any<CancellationToken>())
+            .Returns(HealthCheckResult.Degraded("sensitive connection info"));
+
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseTestServer();
+        builder.Services
+            .AddHealthChecks()
+            .Add(new HealthCheckRegistration("dep", _ => fakeCheck, null, ["readiness"]));
+        builder.Services.AddGranitDiagnostics();
+
+        WebApplication app = builder.Build();
+        app.MapGranitHealthChecks();
+        await app.StartAsync(TestContext.Current.CancellationToken);
+
+        using HttpClient client = app.GetTestClient();
+        HttpResponseMessage response = await client.GetAsync("/health/ready", TestContext.Current.CancellationToken);
+
+        string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        body.ShouldNotContain("sensitive connection info");
+    }
+
+    [Fact]
     public async Task MapGranitHealthChecks_WithConfigure_UsesCustomPaths()
     {
         // Arrange — override the liveness path via the configure delegate
