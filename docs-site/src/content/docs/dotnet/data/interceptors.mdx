@@ -105,11 +105,13 @@ Collects and dispatches domain events transactionally:
 2. **SavedChanges** — dispatches events after commit via `IDomainEventDispatcher`
 3. **SaveChangesFailed** — discards events (transaction rolled back)
 
-Uses `AsyncLocal<List<IDomainEvent>>` for thread safety across concurrent
-`SaveChanges` calls in the same async flow.
+Uses a static `ConcurrentDictionary` keyed by `DbContext.ContextId.InstanceId`
+for thread safety across concurrent `SaveChanges` calls (avoids `AsyncLocal`
+cross-request leaks on singleton interceptors).
 
-Default dispatcher is `NullDomainEventDispatcher` (no-op). `Granit.Wolverine`
-replaces it with real message bus dispatch.
+Default dispatcher is `NullDomainEventDispatcher` (no-op). `Granit.Events.Wolverine`
+replaces it with `WolverineDomainEventDispatcher` which routes events through
+the Wolverine message bus.
 
 ## VersioningInterceptor
 

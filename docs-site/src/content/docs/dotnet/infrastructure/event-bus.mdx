@@ -33,13 +33,14 @@ gives you both — and lets you swap the transport without touching business cod
 - Granit.Events.Wolverine/ Wolverine-backed providers (production)
   - WolverineLocalEventBus publishes to Wolverine local queue
   - WolverineDistributedEventBus publishes via IMessageBus with outbox
+  - WolverineDomainEventDispatcher dispatches aggregate root domain events via IMessageBus
 </FileTree>
 
 | Package | Role | When to use |
 | ------- | ---- | ----------- |
 | `Granit` | `ILocalEventBus`, `IDistributedEventBus` interfaces | Always available — no extra dependency |
 | `Granit.Events` | `InProcessLocalEventBus`, `InProcessDistributedEventBus` | Monoliths, unit tests, development |
-| `Granit.Events.Wolverine` | `WolverineLocalEventBus`, `WolverineDistributedEventBus` | Production — outbox-backed delivery |
+| `Granit.Events.Wolverine` | `WolverineLocalEventBus`, `WolverineDistributedEventBus`, `WolverineDomainEventDispatcher` | Production — outbox-backed delivery |
 
 ## When to use Local vs Distributed
 
@@ -450,7 +451,7 @@ exactly-once processing. Use the module-specific Wolverine dispatchers for comma
 | Integration marker | `IIntegrationEvent` | `Granit` |
 | Integration dispatcher | `IIntegrationEventDispatcher` | `Granit` |
 | In-process providers | `InProcessLocalEventBus`, `InProcessDistributedEventBus` | `Granit.Events` |
-| Wolverine providers | `WolverineLocalEventBus`, `WolverineDistributedEventBus`, `WolverineIntegrationEventDispatcher` | `Granit.Events.Wolverine` |
+| Wolverine providers | `WolverineLocalEventBus`, `WolverineDistributedEventBus`, `WolverineDomainEventDispatcher`, `WolverineIntegrationEventDispatcher` | `Granit.Events.Wolverine` |
 | DI extension | `AddGranitEvents()` | `Granit.Events` |
 | Modules | `GranitEventsModule`, `GranitEventsWolverineModule` | respective packages |
 

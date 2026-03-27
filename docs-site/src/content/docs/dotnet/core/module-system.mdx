@@ -390,8 +390,8 @@ state when multi-tenancy is not installed.
 
 Domain events are collected on aggregate roots via `AddDomainEvent()` and dispatched
 by `IDomainEventDispatcher`. The default implementation is `NullDomainEventDispatcher`
-(no-op). `Granit.Wolverine` replaces it with a real dispatcher that routes events
-through the Wolverine message bus.
+(no-op). `Granit.Events.Wolverine` replaces it with `WolverineDomainEventDispatcher`
+that routes events through the Wolverine message bus.
 
 :::tip
 Integration events must be flat, serializable DTOs. Never include entities or
