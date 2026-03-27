@@ -203,7 +203,7 @@ Wolverine__RetryDelays__1=00:00:30
 | **Package** | -- | `Granit.Vault.Azure` | |
 | `VaultUri` | `string` | `""` | Azure Key Vault URI (e.g. `https://my-vault.vault.azure.net/`). |
 | `EncryptionKeyName` | `string` | `"string-encryption"` | Key name for encrypt/decrypt operations. |
-| `EncryptionAlgorithm` | `string` | `"RSA-OAEP-256"` | Algorithm: `RSA-OAEP-256`, `RSA-OAEP`, or `RSA1_5`. |
+| `EncryptionAlgorithm` | `string` | `"RSA-OAEP-256"` | Algorithm: `RSA-OAEP-256` or `RSA-OAEP`. |
 | `DatabaseSecretName` | `string?` | `null` | Secret name for DB credentials. Omit to disable credential rotation. |
 | `RotationCheckIntervalMinutes` | `int` | `5` | Secret version polling interval (minutes). |
 | `TimeoutSeconds` | `int` | `30` | Azure SDK operation timeout. |

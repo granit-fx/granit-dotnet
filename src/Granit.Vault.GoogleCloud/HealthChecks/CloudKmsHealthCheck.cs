@@ -33,9 +33,9 @@ internal sealed class CloudKmsHealthCheck(
                 ? HealthCheckResult.Healthy()
                 : HealthCheckResult.Unhealthy("Cloud KMS key is disabled");
         }
-        catch (Exception ex)
+        catch
         {
-            return HealthCheckResult.Unhealthy($"Cloud KMS unreachable: {ex.GetType().Name}");
+            return HealthCheckResult.Unhealthy("Cloud KMS unreachable");
         }
     }
 }

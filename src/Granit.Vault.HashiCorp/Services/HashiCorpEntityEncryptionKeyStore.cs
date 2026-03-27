@@ -164,7 +164,11 @@ internal sealed partial class HashiCorpEntityEncryptionKeyStore(
             .DeleteMetadataAsync(path, mountPoint: _kvMountPoint)
             .WaitAsync(cancellationToken).ConfigureAwait(false);
 
-        _cache.TryRemove(cacheKey, out _);
+        if (_cache.TryRemove(cacheKey, out byte[]? removedKey))
+        {
+            CryptographicOperations.ZeroMemory(removedKey);
+        }
+
         LogKeyDeleted(logger, entityType, entityId);
     }
 

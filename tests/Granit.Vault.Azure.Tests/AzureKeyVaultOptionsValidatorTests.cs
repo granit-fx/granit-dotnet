@@ -79,7 +79,6 @@ public sealed class AzureKeyVaultOptionsValidatorTests
     [Theory]
     [InlineData("RSA-OAEP")]
     [InlineData("RSA-OAEP-256")]
-    [InlineData("RSA1_5")]
     public void Validate_SupportedAlgorithm_ReturnsSuccess(string algorithm)
     {
         AzureKeyVaultOptions options = new()
@@ -94,14 +93,16 @@ public sealed class AzureKeyVaultOptionsValidatorTests
         result.Succeeded.ShouldBeTrue();
     }
 
-    [Fact]
-    public void Validate_UnsupportedAlgorithm_ReturnsFail()
+    [Theory]
+    [InlineData("AES-256")]
+    [InlineData("RSA1_5")]
+    public void Validate_UnsupportedAlgorithm_ReturnsFail(string algorithm)
     {
         AzureKeyVaultOptions options = new()
         {
             VaultUri = "https://my-vault.vault.azure.net/",
             EncryptionKeyName = "key",
-            EncryptionAlgorithm = "AES-256",
+            EncryptionAlgorithm = algorithm,
         };
 
         ValidateOptionsResult result = _validator.Validate(null, options);
@@ -143,7 +144,7 @@ public sealed class AzureKeyVaultOptionsValidatorTests
     }
 
     [Fact]
-    public void Validate_HttpUri_ReturnsSuccess()
+    public void Validate_HttpUri_ReturnsFail()
     {
         AzureKeyVaultOptions options = new()
         {
@@ -153,6 +154,7 @@ public sealed class AzureKeyVaultOptionsValidatorTests
 
         ValidateOptionsResult result = _validator.Validate(null, options);
 
-        result.Succeeded.ShouldBeTrue();
+        result.Failed.ShouldBeTrue();
+        result.FailureMessage.ShouldContain("HTTPS");
     }
 }

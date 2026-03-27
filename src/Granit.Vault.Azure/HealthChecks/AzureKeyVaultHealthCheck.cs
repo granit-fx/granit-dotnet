@@ -30,9 +30,9 @@ internal sealed class AzureKeyVaultHealthCheck(
                 ? HealthCheckResult.Healthy()
                 : HealthCheckResult.Unhealthy("Azure Key Vault key is disabled");
         }
-        catch (Exception ex)
+        catch
         {
-            return HealthCheckResult.Unhealthy($"Azure Key Vault unreachable: {ex.GetType().Name}");
+            return HealthCheckResult.Unhealthy("Azure Key Vault unreachable");
         }
     }
 }

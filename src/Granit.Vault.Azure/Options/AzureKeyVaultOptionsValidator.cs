@@ -6,7 +6,7 @@ namespace Granit.Vault.Azure.Options;
 internal sealed class AzureKeyVaultOptionsValidator : IValidateOptions<AzureKeyVaultOptions>
 {
     private static readonly HashSet<string> s_supportedAlgorithms =
-        ["RSA-OAEP", "RSA-OAEP-256", "RSA1_5"];
+        ["RSA-OAEP", "RSA-OAEP-256"];
 
     /// <inheritdoc />
     public ValidateOptionsResult Validate(string? name, AzureKeyVaultOptions options)
@@ -17,9 +17,9 @@ internal sealed class AzureKeyVaultOptionsValidator : IValidateOptions<AzureKeyV
         }
 
         if (!Uri.TryCreate(options.VaultUri, UriKind.Absolute, out Uri? uri) ||
-            (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp))
+            uri.Scheme != Uri.UriSchemeHttps)
         {
-            return ValidateOptionsResult.Fail("AzureKeyVaultOptions.VaultUri must be a valid absolute URI.");
+            return ValidateOptionsResult.Fail("AzureKeyVaultOptions.VaultUri must be a valid absolute HTTPS URI.");
         }
 
         if (string.IsNullOrWhiteSpace(options.EncryptionKeyName))

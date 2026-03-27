@@ -43,10 +43,10 @@ internal sealed class VaultHealthCheck(IVaultClient vaultClient) : IHealthCheck
 
             return HealthCheckResult.Healthy();
         }
-        catch (Exception ex)
+        catch
         {
             // Sanitize: never expose connection details or tokens in the message
-            return HealthCheckResult.Unhealthy($"Vault unreachable: {ex.GetType().Name}");
+            return HealthCheckResult.Unhealthy("Vault unreachable");
         }
     }
 }

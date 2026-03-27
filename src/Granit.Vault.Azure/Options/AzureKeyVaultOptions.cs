@@ -18,7 +18,7 @@ public sealed class AzureKeyVaultOptions
 
     /// <summary>
     /// Encryption algorithm to use. Default: "RSA-OAEP-256".
-    /// Supported values: "RSA-OAEP", "RSA-OAEP-256", "RSA1_5".
+    /// Supported values: "RSA-OAEP", "RSA-OAEP-256".
     /// </summary>
     public string EncryptionAlgorithm { get; set; } = "RSA-OAEP-256";
 
