@@ -1,4 +1,5 @@
 using Granit.Webhooks.Abstractions;
+using Granit.Webhooks.Domain;
 using Granit.Webhooks.Endpoints.Dtos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -43,20 +44,34 @@ internal static class WebhookSubscriptionOperationEndpoints
         return group;
     }
 
-    private static async Task<Ok<WebhookSubscriptionRotateSecretResponse>> RotateSecret(
+    private static async Task<Results<Ok<WebhookSubscriptionRotateSecretResponse>, ProblemHttpResult>> RotateSecret(
         Guid id,
+        [FromServices] IWebhookSubscriptionReader reader,
         [FromServices] IWebhookSubscriptionWriter writer,
         CancellationToken cancellationToken)
     {
+        WebhookSubscription? subscription = await reader.FindByIdAsync(id, cancellationToken).ConfigureAwait(false);
+        if (subscription is null)
+        {
+            return TypedResults.Problem(detail: "Webhook subscription not found.", statusCode: StatusCodes.Status404NotFound);
+        }
+
         string plainSecret = await writer.RotateSecretAsync(id, cancellationToken).ConfigureAwait(false);
         return TypedResults.Ok(new WebhookSubscriptionRotateSecretResponse(plainSecret));
     }
 
-    private static async Task<Ok<WebhookSubscriptionTestPingResponse>> TestPing(
+    private static async Task<Results<Ok<WebhookSubscriptionTestPingResponse>, ProblemHttpResult>> TestPing(
         Guid id,
+        [FromServices] IWebhookSubscriptionReader reader,
         [FromServices] IWebhookTestPingService testPingService,
         CancellationToken cancellationToken)
     {
+        WebhookSubscription? subscription = await reader.FindByIdAsync(id, cancellationToken).ConfigureAwait(false);
+        if (subscription is null)
+        {
+            return TypedResults.Problem(detail: "Webhook subscription not found.", statusCode: StatusCodes.Status404NotFound);
+        }
+
         WebhookTestPingResult result = await testPingService
             .SendTestPingAsync(id, cancellationToken)
             .ConfigureAwait(false);

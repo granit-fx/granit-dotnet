@@ -39,6 +39,9 @@ internal sealed partial class HashiCorpEntityEncryptionKeyStore(
         string entityId,
         CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(entityType);
+        ArgumentException.ThrowIfNullOrWhiteSpace(entityId);
+
         string cacheKey = BuildCacheKey(entityType, entityId);
 
         if (_cache.TryGetValue(cacheKey, out byte[]? cached))
@@ -120,6 +123,9 @@ internal sealed partial class HashiCorpEntityEncryptionKeyStore(
         string entityId,
         CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(entityType);
+        ArgumentException.ThrowIfNullOrWhiteSpace(entityId);
+
         string cacheKey = BuildCacheKey(entityType, entityId);
 
         if (_cache.TryGetValue(cacheKey, out byte[]? cached))
@@ -156,6 +162,9 @@ internal sealed partial class HashiCorpEntityEncryptionKeyStore(
         string entityId,
         CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(entityType);
+        ArgumentException.ThrowIfNullOrWhiteSpace(entityId);
+
         string path = BuildPath(entityType, entityId);
         string cacheKey = BuildCacheKey(entityType, entityId);
 
@@ -177,6 +186,9 @@ internal sealed partial class HashiCorpEntityEncryptionKeyStore(
         string entityId,
         CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(entityType);
+        ArgumentException.ThrowIfNullOrWhiteSpace(entityId);
+
         string cacheKey = BuildCacheKey(entityType, entityId);
 
         if (_cache.ContainsKey(cacheKey))

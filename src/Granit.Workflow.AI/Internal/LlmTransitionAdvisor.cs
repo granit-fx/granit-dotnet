@@ -55,10 +55,7 @@ internal sealed partial class LlmTransitionAdvisor(
 
             string prompt = BuildPrompt(entityType, currentState, entityContext, allowedTransitions);
 
-            var messages = new List<ChatMessage>
-            {
-                new(ChatRole.User, prompt),
-            };
+            List<ChatMessage> messages = [new ChatMessage(ChatRole.User, prompt)];
 
             ChatResponse response = await chatClient
                 .GetResponseAsync(messages, cancellationToken: linkedCts.Token)

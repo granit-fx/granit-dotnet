@@ -17,6 +17,7 @@ namespace Granit.Timeline.AI.Internal;
 /// Fetches timeline entries via <see cref="ITimelineReader"/> and asks the LLM to produce
 /// a concise natural language summary.
 /// </summary>
+#pragma warning disable CA1001 // Lifetime managed by DI container — SemaphoreSlim does not hold unmanaged resources
 internal sealed partial class LlmTimelineSummarizer(
     IAIChatClientFactory chatClientFactory,
     ITimelineReader timelineReader,
@@ -24,9 +25,11 @@ internal sealed partial class LlmTimelineSummarizer(
     ICurrentTenant currentTenant,
     TimelineAIMetrics metrics,
     ILogger<LlmTimelineSummarizer> logger) : ITimelineSummarizer
+#pragma warning restore CA1001
 {
-    // VULN-103: Shared concurrency limiter to prevent denial-of-wallet via unbounded LLM calls
-    private static readonly SemaphoreSlim ConcurrencyLimiter = new(3, 3);
+    // VULN-103: Concurrency limiter to prevent denial-of-wallet via unbounded LLM calls
+    private readonly SemaphoreSlim _concurrencyLimiter = new(
+        options.Value.MaxConcurrentRequests, options.Value.MaxConcurrentRequests);
 
     private static readonly TimelineSummary EmptySummary = new(
         Text: "No timeline entries found.",
@@ -55,7 +58,7 @@ internal sealed partial class LlmTimelineSummarizer(
         }
 
         // VULN-103: Concurrency limiter to prevent denial-of-wallet
-        await ConcurrencyLimiter.WaitAsync(ct).ConfigureAwait(false);
+        await _concurrencyLimiter.WaitAsync(ct).ConfigureAwait(false);
         try
         {
             IChatClient chatClient = await chatClientFactory
@@ -107,7 +110,7 @@ internal sealed partial class LlmTimelineSummarizer(
         }
         finally
         {
-            ConcurrencyLimiter.Release();
+            _concurrencyLimiter.Release();
         }
     }
 

@@ -14,6 +14,9 @@ namespace Granit.Validation.ServerValidation;
 public sealed class DelegatingServerValidator(string errorCode, Func<string?, bool> validateFunc, bool isSensitive = false)
     : IServerValidator
 {
+    private readonly Func<string?, bool> _validateFunc = validateFunc
+        ?? throw new ArgumentNullException(nameof(validateFunc));
+
     /// <inheritdoc />
     public string ErrorCode { get; } = errorCode
         ?? throw new ArgumentNullException(nameof(errorCode));
@@ -22,5 +25,5 @@ public sealed class DelegatingServerValidator(string errorCode, Func<string?, bo
     public bool IsSensitive { get; } = isSensitive;
 
     /// <inheritdoc />
-    public bool Validate(string? value) => validateFunc(value);
+    public bool Validate(string? value) => _validateFunc(value);
 }

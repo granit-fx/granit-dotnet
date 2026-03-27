@@ -47,10 +47,7 @@ internal sealed partial class LlmApprovalEvaluator(
 
             string prompt = BuildPrompt(entityType, transition, entityContext);
 
-            var messages = new List<ChatMessage>
-            {
-                new(ChatRole.User, prompt),
-            };
+            List<ChatMessage> messages = [new ChatMessage(ChatRole.User, prompt)];
 
             ChatResponse response = await chatClient
                 .GetResponseAsync(messages, cancellationToken: linkedCts.Token)
@@ -80,7 +77,7 @@ internal sealed partial class LlmApprovalEvaluator(
         catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
         {
             LogTimeout(entityType, transition, workflowOptions.TimeoutSeconds);
-            return new RiskAssessment(1.0, $"Risk evaluation timed out after {workflowOptions.TimeoutSeconds} seconds.", []);
+            return new RiskAssessment(1.0, "Risk evaluation timed out.", []);
         }
         catch (OperationCanceledException)
         {
@@ -89,12 +86,12 @@ internal sealed partial class LlmApprovalEvaluator(
         catch (JsonException ex)
         {
             LogJsonError(entityType, transition, ex.Message);
-            return new RiskAssessment(1.0, $"Failed to parse LLM response: {ex.Message}", []);
+            return new RiskAssessment(1.0, "Failed to parse LLM response.", []);
         }
         catch (Exception ex)
         {
             LogError(entityType, transition, ex.Message);
-            return new RiskAssessment(1.0, $"Risk evaluation failed: {ex.Message}", []);
+            return new RiskAssessment(1.0, "Risk evaluation failed due to an internal error.", []);
         }
     }
 

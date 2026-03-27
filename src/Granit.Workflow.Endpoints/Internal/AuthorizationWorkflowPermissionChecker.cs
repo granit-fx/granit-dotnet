@@ -11,9 +11,7 @@ namespace Granit.Workflow.Endpoints.Internal;
 internal sealed class AuthorizationWorkflowPermissionChecker(
     IPermissionChecker permissionChecker) : IWorkflowPermissionChecker
 {
-    private readonly IPermissionChecker _permissionChecker = permissionChecker;
-
     /// <inheritdoc/>
     public Task<bool> IsGrantedAsync(string permissionName, CancellationToken cancellationToken = default) =>
-        _permissionChecker.IsGrantedAsync(permissionName, cancellationToken);
+        permissionChecker.IsGrantedAsync(permissionName, cancellationToken);
 }

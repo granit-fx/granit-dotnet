@@ -1,6 +1,7 @@
 using FluentValidation;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Endpoints.Dtos;
+using Granit.Validation.Extensions;
 
 namespace Granit.Timeline.Endpoints.Validators;
 
@@ -17,6 +18,7 @@ internal sealed class PostTimelineEntryRequestValidator : AbstractValidator<Post
             .IsInEnum()
             .NotEqual(TimelineEntryType.SystemLog);
         RuleFor(x => x.AttachmentBlobIds)
-            .Must(ids => ids is null || ids.Count <= 20);
+            .Must(ids => ids is null || ids.Count <= 20)
+            .WithErrorCodeAndMessage("Granit:Validation:TooManyAttachments");
     }
 }

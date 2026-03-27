@@ -305,7 +305,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
     // GET /{name} — Template detail
     // -------------------------------------------------------------------------
 
-    private static async Task<Results<Ok<TemplateDetailResponse>, NotFound, ProblemHttpResult>> HandleGetDetailAsync(
+    private static async Task<Results<Ok<TemplateDetailResponse>, ProblemHttpResult>> HandleGetDetailAsync(
         HttpContext context,
         string name,
         string? culture,
@@ -341,7 +341,9 @@ public static class TemplatingEndpointRouteBuilderExtensions
 
         if (draft is null && published is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(
+                detail: "Template not found.",
+                statusCode: StatusCodes.Status404NotFound);
         }
 
         // For published, we need the full revision to build the response.
@@ -645,7 +647,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
     // GET /{name}/lifecycle — Lifecycle status and available transitions
     // -------------------------------------------------------------------------
 
-    private static async Task<Results<Ok<TemplateLifecycleResponse>, NotFound, ProblemHttpResult>> HandleGetLifecycleAsync(
+    private static async Task<Results<Ok<TemplateLifecycleResponse>, ProblemHttpResult>> HandleGetLifecycleAsync(
         HttpContext context,
         string name,
         string? culture,
@@ -681,7 +683,9 @@ public static class TemplatingEndpointRouteBuilderExtensions
 
         if (draft is null && published is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(
+                detail: "Template not found.",
+                statusCode: StatusCodes.Status404NotFound);
         }
 
         // Determine the current status (Draft takes precedence for display)
@@ -790,7 +794,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
     // GET /{name}/history/{revisionId} — Full detail of a specific revision
     // -------------------------------------------------------------------------
 
-    private static async Task<Results<Ok<TemplateRevisionResponse>, NotFound, ProblemHttpResult>> HandleGetRevisionDetailAsync(
+    private static async Task<Results<Ok<TemplateRevisionResponse>, ProblemHttpResult>> HandleGetRevisionDetailAsync(
         HttpContext context,
         string name,
         Guid revisionId,
@@ -827,7 +831,9 @@ public static class TemplatingEndpointRouteBuilderExtensions
         TemplateRevision? revision = history.FirstOrDefault(r => r.RevisionId == revisionId);
         if (revision is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(
+                detail: "Template revision not found.",
+                statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(ToRevisionResponse(revision));

@@ -42,7 +42,7 @@ internal static class WebhookSsrfConnectCallback
                 .ConfigureAwait(false);
             return new NetworkStream(socket, ownsSocket: true);
         }
-        catch
+        catch (Exception)
         {
             socket.Dispose();
             throw;

@@ -33,9 +33,9 @@ internal sealed class KmsHealthCheck(
                 ? HealthCheckResult.Healthy()
                 : HealthCheckResult.Unhealthy("KMS key is disabled");
         }
-        catch
+        catch (Exception ex)
         {
-            return HealthCheckResult.Unhealthy("KMS unreachable");
+            return HealthCheckResult.Unhealthy($"KMS unreachable: {ex.GetType().Name}");
         }
     }
 }

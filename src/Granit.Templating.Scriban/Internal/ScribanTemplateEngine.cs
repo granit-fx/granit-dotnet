@@ -32,6 +32,7 @@ internal sealed class ScribanTemplateEngine : ITemplateEngine
 
     // Parsed Template objects are immutable and thread-safe — bounded cache to prevent memory exhaustion.
     private readonly ConcurrentDictionary<string, Template> _templateCache = new();
+    private readonly Lock _evictionLock = new();
 
     /// <inheritdoc/>
     public bool CanRender(TemplateDescriptor descriptor) =>
@@ -49,12 +50,19 @@ internal sealed class ScribanTemplateEngine : ITemplateEngine
         string cacheKey = descriptor.RevisionId?.ToString() ?? descriptor.Content;
 
         // Evict oldest entries when cache exceeds size limit to prevent memory exhaustion.
+        // Lock to prevent TOCTOU race between Count check and TryRemove.
         if (_templateCache.Count >= MaxCachedTemplates && !_templateCache.ContainsKey(cacheKey))
         {
-            string? firstKey = _templateCache.Keys.FirstOrDefault();
-            if (firstKey is not null)
+            lock (_evictionLock)
             {
-                _templateCache.TryRemove(firstKey, out _);
+                if (_templateCache.Count >= MaxCachedTemplates)
+                {
+                    string? firstKey = _templateCache.Keys.FirstOrDefault();
+                    if (firstKey is not null)
+                    {
+                        _templateCache.TryRemove(firstKey, out _);
+                    }
+                }
             }
         }
 

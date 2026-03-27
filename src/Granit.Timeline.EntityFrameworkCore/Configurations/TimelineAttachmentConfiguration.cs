@@ -22,7 +22,7 @@ internal sealed class TimelineAttachmentConfiguration : IEntityTypeConfiguration
         builder.Property(x => x.SizeBytes).IsRequired();
         builder.Property(x => x.CreatedBy).HasMaxLength(256).IsRequired();
 
-        // Lookup attachments for a given entry (tenant-partitioned) (tenant-partitioned)
+        // Lookup attachments for a given entry (tenant-partitioned)
         builder.HasIndex(x => new { x.EntryId, x.TenantId })
             .HasDatabaseName($"ix_{GranitTimelineDbProperties.DbTablePrefix}attachments_entry");
     }

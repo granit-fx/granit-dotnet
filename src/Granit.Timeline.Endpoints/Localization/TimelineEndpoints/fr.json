@@ -6,6 +6,7 @@
     "Permission:Timeline.Entries.Create": "Poster des commentaires et suivre/ne plus suivre des entités",
     "Permission:Timeline.Entries.Manage": "Gérer (supprimer) toute entrée de fil d'activité quel que soit le propriétaire",
     "Permission:Timeline.InternalNotes.Read": "Consulter les notes internes réservées au personnel",
-    "Permission:Timeline.Followers.Manage": "Suivre et ne plus suivre des entités dans les fils d'activité"
+    "Permission:Timeline.Followers.Manage": "Suivre et ne plus suivre des entités dans les fils d'activité",
+    "Granit:Validation:TooManyAttachments": "Impossible de joindre plus de 20 fichiers."
   }
 }

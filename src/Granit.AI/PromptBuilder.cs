@@ -132,7 +132,7 @@ public sealed partial class PromptBuilder
     internal static string StripControlCharacters(string input) =>
         ControlCharacterRegex().Replace(input, string.Empty);
 
-    [GeneratedRegex(@"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\u200B-\u200F\u202A-\u202E\uFEFF]")]
+    [GeneratedRegex(@"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\u200B-\u200F\u202A-\u202E\uFEFF]", RegexOptions.None, 100)]
     private static partial Regex ControlCharacterRegex();
 
     private static string StripDangerousPatterns(string input) =>

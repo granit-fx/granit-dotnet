@@ -52,6 +52,7 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(TimelinePermissions.Entries.Read, policy => policy.RequireRole(UserRole))
             .AddPolicy(TimelinePermissions.Entries.Create, policy => policy.RequireRole(UserRole))
+            .AddPolicy(TimelinePermissions.Entries.Manage, policy => policy.RequireRole(UserRole))
             .AddPolicy(TimelinePermissions.Followers.Manage, policy => policy.RequireRole(UserRole));
         builder.Services.AddSingleton(_writer);
         builder.Services.AddSingleton(_reader);

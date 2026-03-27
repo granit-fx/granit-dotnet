@@ -20,7 +20,8 @@ internal static class WebhookSubscriptionWriteEndpoints
                 "Registers a new webhook subscription for the specified event type. "
                 + "The response includes the plain-text signing secret which is only returned once. "
                 + "The subscription starts in the Active status.")
-            .Produces<WebhookSubscriptionCreatedResponse>(StatusCodes.Status201Created);
+            .Produces<WebhookSubscriptionCreatedResponse>(StatusCodes.Status201Created)
+            .ProducesValidationProblem();
 
         group.MapPut("/subscriptions/{id:guid}", Update)
             .WithName("UpdateWebhookSubscription")
@@ -30,7 +31,8 @@ internal static class WebhookSubscriptionWriteEndpoints
                 + "The subscription keeps its current status, secret, and event type. "
                 + "Returns 404 if the subscription does not exist.")
             .Produces<WebhookSubscriptionResponse>()
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesValidationProblem();
 
         group.MapDelete("/subscriptions/{id:guid}", Delete)
             .WithName("DeleteWebhookSubscription")
@@ -59,7 +61,7 @@ internal static class WebhookSubscriptionWriteEndpoints
         return TypedResults.Created($"/subscriptions/{sub.Id}", response);
     }
 
-    private static async Task<Results<Ok<WebhookSubscriptionResponse>, NotFound>> Update(
+    private static async Task<Results<Ok<WebhookSubscriptionResponse>, ProblemHttpResult>> Update(
         Guid id,
         WebhookSubscriptionUpdateRequest request,
         [FromServices] IWebhookSubscriptionWriter writer,
@@ -74,7 +76,7 @@ internal static class WebhookSubscriptionWriteEndpoints
 
         if (subscription is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(detail: "Webhook subscription not found.", statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(WebhookSubscriptionReadEndpoints.MapToResponse(subscription));

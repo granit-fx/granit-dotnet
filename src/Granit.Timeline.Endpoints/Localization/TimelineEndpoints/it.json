@@ -6,6 +6,7 @@
     "Permission:Timeline.Entries.Create": "Pubblicare commenti e seguire/smettere di seguire entità",
     "Permission:Timeline.Entries.Manage": "Gestire (eliminare) qualsiasi voce della timeline indipendentemente dal proprietario",
     "Permission:Timeline.InternalNotes.Read": "Visualizzare le note interne riservate al personale nei feed di attività",
-    "Permission:Timeline.Followers.Manage": "Seguire e smettere di seguire entità nei feed di attività"
+    "Permission:Timeline.Followers.Manage": "Seguire e smettere di seguire entità nei feed di attività",
+    "Granit:Validation:TooManyAttachments": "Non è possibile allegare più di 20 file."
   }
 }

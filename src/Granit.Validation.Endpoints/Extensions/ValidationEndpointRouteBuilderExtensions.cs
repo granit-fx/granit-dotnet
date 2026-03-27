@@ -55,13 +55,15 @@ public static class ValidationEndpointRouteBuilderExtensions
              .WithSummary("Validates a single field value against a registered server-side validator.")
              .WithDescription("Looks up the validator by error code and returns the validation result. Returns 404 if no validator is registered for the specified error code. Use the GET /validators endpoint to discover available validators.")
              .Produces<ValidationFieldValidateResponse>()
-             .ProducesProblem(StatusCodes.Status404NotFound);
+             .ProducesProblem(StatusCodes.Status404NotFound)
+             .ProducesValidationProblem();
 
         group.MapPost("/validate-batch", HandleValidateBatch)
              .WithName("ValidateFieldBatch")
              .WithSummary("Validates multiple field values in a single round-trip (max 20).")
              .WithDescription("For each field, looks up the validator by error code and returns the result. Unknown error codes return ValidatorNotFound status instead of failing the entire batch.")
-             .Produces<ValidationFieldValidateBatchResponse>();
+             .Produces<ValidationFieldValidateBatchResponse>()
+             .ProducesValidationProblem();
 
         group.MapGet("/validators", HandleGetValidators)
              .WithName("GetRegisteredValidators")

@@ -47,7 +47,7 @@ internal static class WebhookSubscriptionLifecycleEndpoints
         return group;
     }
 
-    private static async Task<Ok<WebhookSubscriptionResponse>> Activate(
+    private static async Task<Results<Ok<WebhookSubscriptionResponse>, ProblemHttpResult>> Activate(
         Guid id,
         [FromServices] IWebhookSubscriptionWriter writer,
         [FromServices] IWebhookSubscriptionReader reader,
@@ -59,10 +59,15 @@ internal static class WebhookSubscriptionLifecycleEndpoints
             .FindByIdAsync(id, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(WebhookSubscriptionReadEndpoints.MapToResponse(subscription!));
+        if (subscription is null)
+        {
+            return TypedResults.Problem(detail: "Webhook subscription not found.", statusCode: StatusCodes.Status404NotFound);
+        }
+
+        return TypedResults.Ok(WebhookSubscriptionReadEndpoints.MapToResponse(subscription));
     }
 
-    private static async Task<Ok<WebhookSubscriptionResponse>> Suspend(
+    private static async Task<Results<Ok<WebhookSubscriptionResponse>, ProblemHttpResult>> Suspend(
         Guid id,
         ClaimsPrincipal user,
         [FromServices] IWebhookSubscriptionWriter writer,
@@ -78,10 +83,15 @@ internal static class WebhookSubscriptionLifecycleEndpoints
             .FindByIdAsync(id, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(WebhookSubscriptionReadEndpoints.MapToResponse(subscription!));
+        if (subscription is null)
+        {
+            return TypedResults.Problem(detail: "Webhook subscription not found.", statusCode: StatusCodes.Status404NotFound);
+        }
+
+        return TypedResults.Ok(WebhookSubscriptionReadEndpoints.MapToResponse(subscription));
     }
 
-    private static async Task<Ok<WebhookSubscriptionResponse>> Deactivate(
+    private static async Task<Results<Ok<WebhookSubscriptionResponse>, ProblemHttpResult>> Deactivate(
         Guid id,
         WebhookSubscriptionDeactivateRequest request,
         [FromServices] IWebhookSubscriptionWriter writer,
@@ -94,6 +104,11 @@ internal static class WebhookSubscriptionLifecycleEndpoints
             .FindByIdAsync(id, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(WebhookSubscriptionReadEndpoints.MapToResponse(subscription!));
+        if (subscription is null)
+        {
+            return TypedResults.Problem(detail: "Webhook subscription not found.", statusCode: StatusCodes.Status404NotFound);
+        }
+
+        return TypedResults.Ok(WebhookSubscriptionReadEndpoints.MapToResponse(subscription));
     }
 }

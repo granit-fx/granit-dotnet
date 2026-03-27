@@ -4,8 +4,8 @@ using Granit.Vault.HashiCorp.Providers;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using VaultSharp.Core;
 using Shouldly;
+using VaultSharp.Core;
 using Xunit;
 
 namespace Granit.Vault.HashiCorp.Tests.Providers;

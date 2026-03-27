@@ -71,9 +71,8 @@ public sealed class VaultHealthCheckTests
         HealthCheckResult result = await sut.CheckHealthAsync(BuildContext(), TestContext.Current.CancellationToken);
 
         result.Status.ShouldBe(MsHealthStatus.Unhealthy);
-        result.Description.ShouldBe("Vault unreachable");
+        result.Description.ShouldBe("Vault unreachable: HttpRequestException");
         result.Description!.ShouldNotContain("vault:8200");
         result.Description!.ShouldNotContain("token");
-        result.Description!.ShouldNotContain("HttpRequestException");
     }
 }

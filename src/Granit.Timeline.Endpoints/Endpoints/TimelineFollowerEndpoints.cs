@@ -21,14 +21,16 @@ internal static class TimelineFollowerEndpoints
             .WithName("FollowTimelineEntity")
             .WithSummary("Subscribes the current user as a follower of an entity.")
             .WithDescription("Adds the authenticated user to the follower list for the specified entity. Followers receive notifications when new timeline entries are posted. Idempotent.")
-            .Produces(StatusCodes.Status204NoContent);
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapDelete("/{entityType}/{entityId}/follow", UnfollowAsync)
             .RequireAuthorization(TimelinePermissions.Followers.Manage)
             .WithName("UnfollowTimelineEntity")
             .WithSummary("Unsubscribes the current user from an entity.")
             .WithDescription("Removes the authenticated user from the follower list. Idempotent.")
-            .Produces(StatusCodes.Status204NoContent);
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapGet("/{entityType}/{entityId}/followers", GetFollowersAsync)
             .WithName("GetTimelineFollowers")
@@ -39,28 +41,34 @@ internal static class TimelineFollowerEndpoints
         return group;
     }
 
-    private static async Task<NoContent> FollowAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> FollowAsync(
         string entityType,
         string entityId,
         [FromServices] ITimelineFollowerService followerService,
         [FromServices] ICurrentUserService currentUser,
         CancellationToken cancellationToken)
     {
-        string userId = currentUser.UserId
-            ?? throw new UnauthorizedAccessException("User ID is required to follow an entity.");
+        if (currentUser.UserId is not { } userId)
+        {
+            return TypedResults.Problem(detail: "User ID is required to follow an entity.", statusCode: StatusCodes.Status401Unauthorized);
+        }
+
         await followerService.FollowAsync(userId, entityType, entityId, cancellationToken).ConfigureAwait(false);
         return TypedResults.NoContent();
     }
 
-    private static async Task<NoContent> UnfollowAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> UnfollowAsync(
         string entityType,
         string entityId,
         [FromServices] ITimelineFollowerService followerService,
         [FromServices] ICurrentUserService currentUser,
         CancellationToken cancellationToken)
     {
-        string userId = currentUser.UserId
-            ?? throw new UnauthorizedAccessException("User ID is required to unfollow an entity.");
+        if (currentUser.UserId is not { } userId)
+        {
+            return TypedResults.Problem(detail: "User ID is required to unfollow an entity.", statusCode: StatusCodes.Status401Unauthorized);
+        }
+
         await followerService.UnfollowAsync(userId, entityType, entityId, cancellationToken).ConfigureAwait(false);
         return TypedResults.NoContent();
     }

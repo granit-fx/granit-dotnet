@@ -1,4 +1,3 @@
-using Granit.DataProtection;
 using Granit.Domain;
 using Granit.Webhooks.Options;
 

@@ -18,7 +18,7 @@ namespace Granit.Templating.Store;
 internal sealed partial class NullTemplateTransitionHook(
     ILogger<NullTemplateTransitionHook> logger) : ITemplateTransitionHook
 {
-    private bool _warningLogged;
+    private int _warningLogged;
 
     /// <inheritdoc/>
     public bool IsWorkflowEnabled => false;
@@ -29,10 +29,9 @@ internal sealed partial class NullTemplateTransitionHook(
         TemplateLifecycleStatus target,
         CancellationToken cancellationToken = default)
     {
-        if (!_warningLogged)
+        if (Interlocked.CompareExchange(ref _warningLogged, 1, 0) == 0)
         {
             LogNoWorkflowModule();
-            _warningLogged = true;
         }
 
         return Task.FromResult((from, target) is

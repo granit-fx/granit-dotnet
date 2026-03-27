@@ -6,6 +6,7 @@
     "Permission:Timeline.Entries.Create": "コメントの投稿とエンティティのフォロー/フォロー解除",
     "Permission:Timeline.Entries.Manage": "所有者に関係なくタイムラインエントリを管理（削除）",
     "Permission:Timeline.InternalNotes.Read": "アクティビティフィードでスタッフ限定の内部メモを表示",
-    "Permission:Timeline.Followers.Manage": "アクティビティフィードでエンティティのフォロー・フォロー解除"
+    "Permission:Timeline.Followers.Manage": "アクティビティフィードでエンティティのフォロー・フォロー解除",
+    "Granit:Validation:TooManyAttachments": "添付ファイルは20個までです。"
   }
 }

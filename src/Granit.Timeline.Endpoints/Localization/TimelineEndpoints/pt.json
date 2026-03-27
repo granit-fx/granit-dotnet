@@ -6,6 +6,7 @@
     "Permission:Timeline.Entries.Create": "Publicar comentários e seguir/deixar de seguir entidades",
     "Permission:Timeline.Entries.Manage": "Gerir (eliminar) qualquer entrada de cronologia independentemente do proprietário",
     "Permission:Timeline.InternalNotes.Read": "Ver notas internas apenas para funcionários nos feeds de atividade",
-    "Permission:Timeline.Followers.Manage": "Seguir e deixar de seguir entidades nos feeds de atividade"
+    "Permission:Timeline.Followers.Manage": "Seguir e deixar de seguir entidades nos feeds de atividade",
+    "Granit:Validation:TooManyAttachments": "Não é possível anexar mais de 20 ficheiros."
   }
 }

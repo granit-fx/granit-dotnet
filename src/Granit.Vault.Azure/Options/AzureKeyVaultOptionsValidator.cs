@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Vault.Azure.Options;
@@ -5,8 +6,8 @@ namespace Granit.Vault.Azure.Options;
 /// <summary>Validates <see cref="AzureKeyVaultOptions"/>.</summary>
 internal sealed class AzureKeyVaultOptionsValidator : IValidateOptions<AzureKeyVaultOptions>
 {
-    private static readonly HashSet<string> s_supportedAlgorithms =
-        ["RSA-OAEP", "RSA-OAEP-256"];
+    private static readonly FrozenSet<string> s_supportedAlgorithms =
+        ((string[])["RSA-OAEP", "RSA-OAEP-256"]).ToFrozenSet(StringComparer.Ordinal);
 
     /// <inheritdoc />
     public ValidateOptionsResult Validate(string? name, AzureKeyVaultOptions options)

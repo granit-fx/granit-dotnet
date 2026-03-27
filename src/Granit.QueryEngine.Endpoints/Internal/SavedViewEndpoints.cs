@@ -53,7 +53,8 @@ internal static class SavedViewEndpoints
             .WithName($"CreateSavedView_{entityType}")
             .WithSummary("Creates a new saved view.")
             .WithDescription("Creates a new saved view for the current user and entity type. The view stores a reusable query configuration (filters, sort, column selection). Returns 201 Created with the saved view details.")
-            .Produces<SavedViewResponse>(StatusCodes.Status201Created);
+            .Produces<SavedViewResponse>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status429TooManyRequests);
 
         savedViews.MapPut("/{id:guid}", (
             Guid id,
