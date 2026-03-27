@@ -16,6 +16,11 @@ using Xunit;
 
 namespace Granit.Auditing.EntityFrameworkCore.Tests.Extensions;
 
+/// <summary>
+/// Tests that mutate <see cref="GranitAuditingDbProperties.DbTablePrefix"/> must not
+/// run in parallel with other classes that build EF Core models using the same static.
+/// </summary>
+[Collection("AuditingDbProperties")]
 public sealed class AuditingModelBuilderExtensionsTests : IDisposable
 {
     private readonly string _originalPrefix;
@@ -117,9 +122,12 @@ public sealed class AuditingModelBuilderExtensionsTests : IDisposable
         // Arrange
         GranitAuditingDbProperties.DbTablePrefix = "custom_";
 
-        // Act
-        IModel model = BuildModel();
-        IEntityType? entityType = model.FindEntityType(typeof(AuditEntry));
+        // Act — use a distinct DbContext type to avoid EF Core model cache
+        // collision with other tests that use the default prefix.
+        DbContextOptionsBuilder<CustomPrefixContext> optionsBuilder = new();
+        optionsBuilder.UseInMemoryDatabase(Guid.NewGuid().ToString());
+        using CustomPrefixContext context = new(optionsBuilder.Options);
+        IEntityType? entityType = context.Model.FindEntityType(typeof(AuditEntry));
 
         // Assert
         entityType.ShouldNotBeNull();
@@ -303,6 +311,19 @@ public sealed class AuditingModelBuilderExtensionsTests : IDisposable
     }
 
     private sealed class TestModelContext(DbContextOptions<TestModelContext> options) : DbContext(options)
+    {
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.ConfigureAuditingModule();
+        }
+    }
+
+    /// <summary>
+    /// Separate DbContext type used exclusively by the custom-prefix test to avoid
+    /// EF Core model cache collision with <see cref="TestModelContext"/>.
+    /// </summary>
+    private sealed class CustomPrefixContext(DbContextOptions<CustomPrefixContext> options) : DbContext(options)
     {
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

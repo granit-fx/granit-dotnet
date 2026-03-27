@@ -25999,7 +25999,7 @@
       "kind": "class",
       "project": "Granit.Settings.EntityFrameworkCore",
       "file": "src/Granit.Settings.EntityFrameworkCore/Extensions/SettingsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": []
     },
     {
@@ -26357,7 +26357,7 @@
       "kind": "class",
       "project": "Granit.Settings",
       "file": "src/Granit.Settings/Services/SettingManager.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "SetGlobalAsync",

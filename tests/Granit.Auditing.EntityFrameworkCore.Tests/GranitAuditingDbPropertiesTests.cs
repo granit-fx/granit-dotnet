@@ -3,6 +3,7 @@ using Xunit;
 
 namespace Granit.Auditing.EntityFrameworkCore.Tests;
 
+[Collection("AuditingDbProperties")]
 public sealed class GranitAuditingDbPropertiesTests : IDisposable
 {
     private readonly string _originalPrefix;
