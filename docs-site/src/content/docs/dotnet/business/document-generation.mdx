@@ -174,7 +174,9 @@ Bound from configuration section `DocumentGeneration:Pdf`:
       "FooterTemplate": "<div style='font-size:9px;text-align:center;width:100%'><span class='pageNumber'></span>/<span class='totalPages'></span></div>",
       "PrintBackground": true,
       "ChromiumExecutablePath": null,
-      "MaxConcurrentPages": 4
+      "RenderTimeoutMs": 30000,
+      "MaxConcurrentPages": 4,
+      "DisableSandbox": false
     }
   }
 }
@@ -188,8 +190,10 @@ Bound from configuration section `DocumentGeneration:Pdf`:
 | `HeaderTemplate` | `null` | HTML header (supports `pageNumber`, `totalPages` classes) |
 | `FooterTemplate` | `null` | HTML footer (same classes as header) |
 | `PrintBackground` | `true` | Print background graphics |
-| `ChromiumExecutablePath` | `null` | Custom Chromium path (auto-download if null) |
+| `ChromiumExecutablePath` | `null` | Custom Chromium path; validated at startup (auto-download if null) |
+| `RenderTimeoutMs` | `30000` | Maximum rendering time in ms (1 000--300 000) |
 | `MaxConcurrentPages` | `4` | Max parallel Chromium tabs (1--32) |
+| `DisableSandbox` | `false` | Disable Chromium OS sandbox (see [Security](#security) below) |
 
 ## Public API summary
 
@@ -199,7 +203,76 @@ Bound from configuration section `DocumentGeneration:Pdf`:
 | Keys | `DocumentTemplateType<TData>`, `DocumentFormat` | `Granit.DocumentGeneration` |
 | Generator | `IDocumentGenerator`, `IDocumentRenderer`, `DocumentResult` | `Granit.DocumentGeneration` |
 | PDF | `PdfRenderOptions`, `IPdfAConverter`, `PdfAConversionOptions` | `Granit.DocumentGeneration.Pdf` |
+| Diagnostics | `DocumentGenerationMetrics` (meter: `Granit.DocumentGeneration`) | `Granit.DocumentGeneration` |
 | Extensions | `AddGranitDocumentGeneration()`, `AddGranitDocumentGenerationPdf()`, `AddGranitDocumentGenerationExcel()` | -- |
+
+## Security
+
+The document generation pipeline includes several hardening measures:
+
+### Chromium sandbox (PDF)
+
+The headless Chromium browser runs with OS-level process sandboxing **enabled by
+default**. This isolates the rendering process and prevents arbitrary code
+execution from malicious HTML content.
+
+In containerized environments that cannot grant `CAP_SYS_ADMIN` or configure a
+`seccomp` profile for Chromium, set `DisableSandbox: true` explicitly:
+
+```json
+{
+  "DocumentGeneration": {
+    "Pdf": {
+      "DisableSandbox": true
+    }
+  }
+}
+```
+
+:::caution[Warning]
+Disabling the sandbox reduces process isolation. Only use this setting in
+containers with network-level isolation. A warning is logged at startup when the
+sandbox is disabled.
+:::
+
+### SSRF prevention (PDF)
+
+All outbound network requests from the Chromium rendering page are blocked via
+request interception. HTML content is injected directly via the Chrome DevTools
+Protocol without triggering network navigation. Templates must embed all
+resources inline (base64 images, inline CSS/fonts) rather than referencing
+external URLs.
+
+### Rendering timeout (PDF)
+
+Both the HTML content injection and PDF byte generation are bounded by
+`RenderTimeoutMs` (default 30 seconds). This prevents denial-of-service from
+complex CSS layouts or infinite JavaScript loops. The caller's
+`CancellationToken` is also respected.
+
+### Formula injection protection (Excel)
+
+The ClosedXML engine detects values starting with formula trigger characters
+(`=`, `+`, `-`, `@`, tab, carriage return) and forces them through the rich-text
+API path, which guarantees text-only cell interpretation. This matches the
+protection applied in the CSV export module (CWE-1236 defense-in-depth).
+
+### Nesting depth limit (Excel)
+
+The JSON flattening algorithm that converts `TData` into template substitution
+values enforces a maximum nesting depth of 32. Deeply nested data structures
+throw `InvalidOperationException` instead of causing a `StackOverflowException`.
+
+### Observability
+
+`DocumentGenerationMetrics` (meter `Granit.DocumentGeneration`) records three
+instruments for every generation call:
+
+| Metric | Type | Tags |
+| ------ | ---- | ---- |
+| `granit.document_generation.document.generated` | Counter | `tenant_id`, `template_type`, `format` |
+| `granit.document_generation.document.failed` | Counter | `tenant_id`, `template_type`, `format` |
+| `granit.document_generation.document.duration` | Histogram (s) | `tenant_id`, `template_type`, `format` |
 
 ## See also
 

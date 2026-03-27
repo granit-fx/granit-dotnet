@@ -65,9 +65,23 @@ public sealed class PdfRenderOptions
     public string? ChromiumExecutablePath { get; set; }
 
     /// <summary>
+    /// Maximum time in milliseconds for page rendering and PDF generation.
+    /// Default is <c>30000</c> (30 seconds).
+    /// </summary>
+    [Range(1_000, 300_000)]
+    public int RenderTimeoutMs { get; set; } = 30_000;
+
+    /// <summary>
     /// Maximum number of concurrent Chromium pages (tabs) for parallel rendering.
     /// Default is <c>4</c>.
     /// </summary>
     [Range(1, 32)]
     public int MaxConcurrentPages { get; set; } = 4;
+
+    /// <summary>
+    /// Disables the Chromium OS-level process sandbox. Only enable in containerized
+    /// environments that cannot grant <c>CAP_SYS_ADMIN</c> or configure a
+    /// <c>seccomp</c> profile for Chromium. Default is <see langword="false"/>.
+    /// </summary>
+    public bool DisableSandbox { get; set; }
 }

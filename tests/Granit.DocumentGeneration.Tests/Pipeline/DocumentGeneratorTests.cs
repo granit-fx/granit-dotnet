@@ -1,6 +1,9 @@
+using System.Diagnostics.Metrics;
+using Granit.DocumentGeneration.Diagnostics;
 using Granit.DocumentGeneration.Exceptions;
 using Granit.DocumentGeneration.Internal;
 using Granit.DocumentGeneration.Pipeline;
+using Granit.MultiTenancy;
 using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
 using NSubstitute;
@@ -22,6 +25,23 @@ public sealed class DocumentGeneratorTests
     private static readonly InvoiceTemplateType TemplateType = new();
 
     private static readonly byte[] PdfBytes = [0x25, 0x50, 0x44, 0x46]; // %PDF magic
+
+    private static readonly DocumentGenerationMetrics Metrics = CreateMetrics();
+    private static readonly ICurrentTenant Tenant = CreateTenant();
+
+    private static DocumentGenerationMetrics CreateMetrics()
+    {
+        IMeterFactory factory = Substitute.For<IMeterFactory>();
+        factory.Create(Arg.Any<MeterOptions>()).Returns(new Meter("test"));
+        return new DocumentGenerationMetrics(factory);
+    }
+
+    private static ICurrentTenant CreateTenant()
+    {
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        tenant.IsAvailable.Returns(false);
+        return tenant;
+    }
 
     [Fact]
     public async Task GenerateAsync_WithMatchingRenderer_ReturnsDocumentResult()
@@ -45,7 +65,7 @@ public sealed class DocumentGeneratorTests
                 Arg.Any<CancellationToken>())
             .Returns(new DocumentResult(PdfBytes, DocumentFormat.Pdf));
 
-        DocumentGenerator sut = new(textRenderer, [pdfRenderer]);
+        DocumentGenerator sut = new(textRenderer, [pdfRenderer], Metrics, Tenant);
 
         // Act
         DocumentResult result = await sut.GenerateAsync(
@@ -78,7 +98,7 @@ public sealed class DocumentGeneratorTests
                 Arg.Any<CancellationToken>())
             .Returns(new DocumentResult(PdfBytes, DocumentFormat.Pdf));
 
-        DocumentGenerator sut = new(textRenderer, [pdfRenderer]);
+        DocumentGenerator sut = new(textRenderer, [pdfRenderer], Metrics, Tenant);
 
         // Act — no targetFormat parameter
         DocumentResult result = await sut.GenerateAsync(
@@ -115,7 +135,7 @@ public sealed class DocumentGeneratorTests
                 Arg.Any<CancellationToken>())
             .Returns(new DocumentResult(new byte[] { 0x50, 0x4B }, DocumentFormat.Excel));
 
-        DocumentGenerator sut = new(textRenderer, [excelRenderer]);
+        DocumentGenerator sut = new(textRenderer, [excelRenderer], Metrics, Tenant);
 
         // Act — override default Pdf with Excel
         DocumentResult result = await sut.GenerateAsync(
@@ -145,7 +165,7 @@ public sealed class DocumentGeneratorTests
         excelOnly.CanRender(DocumentFormat.Pdf).Returns(false);
         excelOnly.CanRender(DocumentFormat.Excel).Returns(true);
 
-        DocumentGenerator sut = new(textRenderer, [excelOnly]);
+        DocumentGenerator sut = new(textRenderer, [excelOnly], Metrics, Tenant);
 
         // Act
         Func<Task> act = async () =>
@@ -183,7 +203,7 @@ public sealed class DocumentGeneratorTests
                 Arg.Any<CancellationToken>())
             .Returns(new DocumentResult(PdfBytes, DocumentFormat.Pdf));
 
-        DocumentGenerator sut = new(textRenderer, [renderer]);
+        DocumentGenerator sut = new(textRenderer, [renderer], Metrics, Tenant);
 
         // Act
         await sut.GenerateAsync(
@@ -210,7 +230,7 @@ public sealed class DocumentGeneratorTests
 
         IDocumentRenderer renderer = Substitute.For<IDocumentRenderer>();
 
-        DocumentGenerator sut = new(textRenderer, [renderer]);
+        DocumentGenerator sut = new(textRenderer, [renderer], Metrics, Tenant);
 
         // Act
         DocumentResult result = await sut.GenerateAsync(

@@ -364,15 +364,43 @@ Configure PDF rendering options in `appsettings.json`:
       "MarginLeft": "10mm",
       "MarginRight": "10mm",
       "PrintBackground": true,
+      "RenderTimeoutMs": 30000,
       "MaxConcurrentPages": 4,
-      "ChromiumExecutablePath": null
+      "ChromiumExecutablePath": null,
+      "DisableSandbox": false
     }
   }
 }
 ```
 
-For Docker deployments, install Chromium system-wide and set
-`ChromiumExecutablePath` to `/usr/bin/chromium`.
+For Docker deployments, install Chromium system-wide, set
+`ChromiumExecutablePath` to `/usr/bin/chromium`, and enable `DisableSandbox` if
+the container cannot run with `CAP_SYS_ADMIN` or a Chromium `seccomp` profile:
+
+```json
+{
+  "DocumentGeneration": {
+    "Pdf": {
+      "ChromiumExecutablePath": "/usr/bin/chromium",
+      "DisableSandbox": true
+    }
+  }
+}
+```
+
+:::caution[Warning]
+Disabling the sandbox reduces OS-level process isolation. Only use this in
+containers with proper network isolation. See the
+[Security section](/dotnet/business/document-generation/#security) in the module
+reference for details.
+:::
+
+:::note[Inline resources only]
+The PDF renderer blocks all outbound network requests from the Chromium page to
+prevent SSRF. Templates must embed all resources inline (base64 images, inline
+CSS and fonts). External `<link>`, `<script>`, or `<img src="http://...">` tags
+will not load.
+:::
 
 ## Next steps
 

@@ -305,7 +305,6 @@
       "name": "Granit.Bff.EntityFrameworkCore",
       "deps": [
         "Granit.Bff",
-        "Granit.Encryption",
         "Granit.Guids",
         "Granit.Persistence"
       ],
@@ -364,7 +363,6 @@
         "Granit.Authorization",
         "Granit.BlobStorage",
         "Granit.QueryEngine.Endpoints",
-        "Granit.RateLimiting",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -1645,6 +1643,28 @@
       "members": []
     },
     {
+      "name": "AIQuotaResult",
+      "fqn": "Granit.AI.AIQuotaResult",
+      "kind": "record",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/AIQuotaResult.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(true)",
+          "returnType": "AIQuotaResult Allowed ="
+        },
+        {
+          "name": "Denied",
+          "kind": "method",
+          "signature": "Denied(string reason)",
+          "returnType": "AIQuotaResult"
+        }
+      ]
+    },
+    {
       "name": "AIUsageRecord",
       "fqn": "Granit.AI.AIUsageRecord",
       "kind": "record",
@@ -2202,6 +2222,22 @@
       ]
     },
     {
+      "name": "IAIQuotaGuard",
+      "fqn": "Granit.AI.IAIQuotaGuard",
+      "kind": "interface",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/IAIQuotaGuard.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "CheckAsync",
+          "kind": "method",
+          "signature": "CheckAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<AIQuotaResult>"
+        }
+      ]
+    },
+    {
       "name": "IAIUsageQueryableProvider",
       "fqn": "Granit.AI.IAIUsageQueryableProvider",
       "kind": "interface",
@@ -2405,6 +2441,31 @@
           "kind": "property",
           "signature": "string DefaultEmbeddingModel",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "AIQuotaExceededBehavior",
+      "fqn": "Granit.AI.Options.AIQuotaExceededBehavior",
+      "kind": "enum",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Options/AIQuotaOptions.cs",
+      "line": 38,
+      "members": []
+    },
+    {
+      "name": "AIQuotaOptions",
+      "fqn": "Granit.AI.Options.AIQuotaOptions",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Options/AIQuotaOptions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "MaxRequestsPerTenantPerHour",
+          "kind": "property",
+          "signature": "int MaxRequestsPerTenantPerHour",
+          "returnType": "int"
         }
       ]
     },
@@ -6999,7 +7060,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/GranitBlobStorageEndpointsModule.cs",
-      "line": 18,
+      "line": 16,
       "members": []
     },
     {
@@ -7285,7 +7346,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage",
       "file": "src/Granit.BlobStorage/GranitBlobStorageModule.cs",
-      "line": 24,
+      "line": 25,
       "members": [
         {
           "name": "ConfigureServices",
@@ -7789,7 +7850,7 @@
       "kind": "class",
       "project": "Granit.Caching",
       "file": "src/Granit.Caching/AesCacheValueEncryptor.cs",
-      "line": 22,
+      "line": 21,
       "members": []
     },
     {
@@ -8023,7 +8084,7 @@
       "kind": "class",
       "project": "Granit.Caching.StackExchangeRedis",
       "file": "src/Granit.Caching.StackExchangeRedis/Extensions/RedisCachingServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitCachingRedis",
@@ -8083,7 +8144,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.AI",
       "file": "src/Granit.DataExchange.AI/Extensions/DataExchangeAIHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitDataExchangeAI",
@@ -10000,18 +10061,12 @@
       "kind": "class",
       "project": "Granit.Diagnostics",
       "file": "src/Granit.Diagnostics/ResponseWriters/GranitHealthCheckWriter.cs",
-      "line": 26,
+      "line": 16,
       "members": [
         {
           "name": "WriteAsync",
           "kind": "method",
           "signature": "WriteAsync(HttpContext context, HealthReport report)",
-          "returnType": "Task"
-        },
-        {
-          "name": "WriteMinimalAsync",
-          "kind": "method",
-          "signature": "WriteMinimalAsync(HttpContext context, HealthReport report)",
           "returnType": "Task"
         }
       ]
@@ -10199,6 +10254,12 @@
           "kind": "property",
           "signature": "string? ChromiumExecutablePath",
           "returnType": "string?"
+        },
+        {
+          "name": "MaxConcurrentPages",
+          "kind": "property",
+          "signature": "int MaxConcurrentPages",
+          "returnType": "int"
         }
       ]
     },
@@ -11088,10 +11149,10 @@
           "returnType": "int"
         },
         {
-          "name": "ProviderName",
+          "name": "AllowEphemeralPassPhrase",
           "kind": "property",
-          "signature": "string ProviderName",
-          "returnType": "string"
+          "signature": "bool AllowEphemeralPassPhrase",
+          "returnType": "bool"
         },
         {
           "name": "VaultKeyName",

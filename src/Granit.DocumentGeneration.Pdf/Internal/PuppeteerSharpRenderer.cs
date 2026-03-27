@@ -34,9 +34,15 @@ internal sealed partial class PuppeteerSharpRenderer(
         {
             await using IPage page = await chromiumLifetime.Browser.NewPageAsync().ConfigureAwait(false);
 
+            // Block all outbound network requests to prevent SSRF (CWE-918).
+            // SetContentAsync injects HTML via CDP — no network request is needed.
+            await page.SetRequestInterceptionAsync(true).ConfigureAwait(false);
+            page.Request += (_, e) => _ = e.Request.AbortAsync();
+
             await page.SetContentAsync(html, new NavigationOptions
             {
-                WaitUntil = [WaitUntilNavigation.Networkidle0],
+                WaitUntil = [WaitUntilNavigation.DOMContentLoaded],
+                Timeout = opts.RenderTimeoutMs,
             }).ConfigureAwait(false);
 
             PdfOptions pdfOptions = new()
@@ -60,7 +66,9 @@ internal sealed partial class PuppeteerSharpRenderer(
                 pdfOptions.FooterTemplate = opts.FooterTemplate ?? "<span></span>";
             }
 
-            byte[] pdfBytes = await page.PdfDataAsync(pdfOptions).ConfigureAwait(false);
+            byte[] pdfBytes = await page.PdfDataAsync(pdfOptions)
+                .WaitAsync(TimeSpan.FromMilliseconds(opts.RenderTimeoutMs), cancellationToken)
+                .ConfigureAwait(false);
 
             LogPdfRendered(pdfBytes.Length, opts.PaperFormat);
 

@@ -199,7 +199,7 @@ public sealed class PuppeteerSharpRendererTests
     }
 
     [Fact]
-    public async Task RenderAsync_SetsContentWithNetworkidle0()
+    public async Task RenderAsync_SetsContentWithDomContentLoaded()
     {
         byte[] fakePdf = [0x25, 0x50, 0x44, 0x46];
         IPage page = Substitute.For<IPage>();
@@ -224,7 +224,7 @@ public sealed class PuppeteerSharpRendererTests
             Arg.Is<NavigationOptions>(o =>
                 o.WaitUntil != null &&
                 o.WaitUntil.Length == 1 &&
-                o.WaitUntil[0] == WaitUntilNavigation.Networkidle0));
+                o.WaitUntil[0] == WaitUntilNavigation.DOMContentLoaded));
     }
 
     [Fact]

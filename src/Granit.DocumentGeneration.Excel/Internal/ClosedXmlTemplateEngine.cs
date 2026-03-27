@@ -79,15 +79,23 @@ internal sealed class ClosedXmlTemplateEngine : ITemplateEngine
         return subs;
     }
 
+    private const int MaxNestingDepth = 32;
+
     private static void FlattenElement(
-        JsonElement element, string prefix, Dictionary<string, string> subs)
+        JsonElement element, string prefix, Dictionary<string, string> subs, int depth = 0)
     {
+        if (depth > MaxNestingDepth)
+        {
+            throw new InvalidOperationException(
+                $"Data structure exceeds maximum nesting depth of {MaxNestingDepth}.");
+        }
+
         switch (element.ValueKind)
         {
             case JsonValueKind.Object:
                 foreach (JsonProperty property in element.EnumerateObject())
                 {
-                    FlattenElement(property.Value, $"{prefix}.{property.Name}", subs);
+                    FlattenElement(property.Value, $"{prefix}.{property.Name}", subs, depth + 1);
                 }
 
                 break;
@@ -96,7 +104,7 @@ internal sealed class ClosedXmlTemplateEngine : ITemplateEngine
                 int i = 0;
                 foreach (JsonElement item in element.EnumerateArray())
                 {
-                    FlattenElement(item, $"{prefix}[{i++}]", subs);
+                    FlattenElement(item, $"{prefix}[{i++}]", subs, depth + 1);
                 }
 
                 break;
@@ -106,6 +114,12 @@ internal sealed class ClosedXmlTemplateEngine : ITemplateEngine
                 break;
         }
     }
+
+    /// <summary>
+    /// Characters that trigger formula interpretation in spreadsheet applications.
+    /// Matches the protection in <c>CsvExportWriter</c> (CWE-1236 defense-in-depth).
+    /// </summary>
+    private static readonly char[] FormulaTriggerChars = ['=', '+', '-', '@', '\t', '\r'];
 
     private static void ApplySubstitutions(
         XLWorkbook workbook, Dictionary<string, string> substitutions)
@@ -129,7 +143,22 @@ internal sealed class ClosedXmlTemplateEngine : ITemplateEngine
                     value = value.Replace(pattern, replacement, StringComparison.Ordinal);
                 }
 
-                cell.SetValue(value);
+                // Defense-in-depth against formula injection (CWE-1236):
+                // ClosedXML's SetValue(string) creates XLDataType.Text cells that are
+                // stored as shared strings in XLSX — Excel will NOT interpret them as
+                // formulas. The rich-text fallback below provides an additional guard
+                // against ClosedXML behavior changes for values starting with formula
+                // trigger characters (=, +, -, @, tab, CR).
+                if (value.Length > 0 && FormulaTriggerChars.Contains(value[0]))
+                {
+                    IXLRichText richText = cell.GetRichText();
+                    richText.ClearText();
+                    richText.AddText(value);
+                }
+                else
+                {
+                    cell.SetValue(value);
+                }
             }
         }
     }

@@ -40,15 +40,36 @@ internal sealed partial class ChromiumLifetimeService(
             await fetcher.DownloadAsync().ConfigureAwait(false);
         }
 
+        List<string> chromiumArgs =
+        [
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+            "--disable-extensions",
+            "--disable-background-networking",
+        ];
+
+        if (opts.DisableSandbox)
+        {
+            LogSandboxDisabled();
+            chromiumArgs.AddRange(["--no-sandbox", "--disable-setuid-sandbox"]);
+        }
+
         LaunchOptions launchOptions = new()
         {
             Headless = true,
-            Args = ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+            Args = [.. chromiumArgs],
         };
 
         if (!string.IsNullOrEmpty(opts.ChromiumExecutablePath))
         {
-            launchOptions.ExecutablePath = opts.ChromiumExecutablePath;
+            string fullPath = Path.GetFullPath(opts.ChromiumExecutablePath);
+            if (!File.Exists(fullPath))
+            {
+                throw new FileNotFoundException(
+                    $"Configured Chromium executable not found at '{fullPath}'.");
+            }
+
+            launchOptions.ExecutablePath = fullPath;
         }
 
         LogStartingChromium();
@@ -87,6 +108,10 @@ internal sealed partial class ChromiumLifetimeService(
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Headless Chromium started successfully")]
     private partial void LogChromiumStarted();
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Chromium sandbox is disabled via configuration. " +
+        "This reduces process isolation and should only be used in containerized environments")]
+    private partial void LogSandboxDisabled();
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Shutting down headless Chromium...")]
     private partial void LogShuttingDownChromium();
