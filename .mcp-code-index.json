@@ -20940,6 +20940,15 @@
       "members": []
     },
     {
+      "name": "AccountTwoFactorDisableRequest",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountTwoFactorDisableRequest",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountTwoFactorDisableRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "AccountTwoFactorEnableRequest",
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountTwoFactorEnableRequest",
       "kind": "record",
@@ -21216,7 +21225,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Events/PasswordResetRequestedEto.cs",
-      "line": 19,
+      "line": 29,
       "members": []
     },
     {
@@ -21234,7 +21243,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Events/UserRegisteredEto.cs",
-      "line": 11,
+      "line": 14,
       "members": []
     },
     {

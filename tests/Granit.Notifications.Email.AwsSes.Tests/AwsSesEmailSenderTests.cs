@@ -283,7 +283,7 @@ public sealed class AwsSesEmailSenderTests
         loggerSub.Received().Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString()!.Contains("recipient@example.com")),
+            Arg.Is<object>(o => o.ToString()!.Contains("rec***@example.com")),
             Arg.Any<Exception?>(),
             Arg.Any<Func<object, Exception?, string>>());
     }

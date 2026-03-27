@@ -179,7 +179,7 @@ public sealed class AcsSmsSenderTests
         loggerSub.Received().Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString()!.Contains("+15559876543")),
+            Arg.Is<object>(o => o.ToString()!.Contains("+155*****43")),
             Arg.Any<Exception?>(),
             Arg.Any<Func<object, Exception?, string>>());
     }
