@@ -24064,7 +24064,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.AI",
       "file": "src/Granit.QueryEngine.AI/Extensions/QueryEngineAIHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitQueryEngineAI",
@@ -24659,6 +24659,18 @@
           "kind": "property",
           "signature": "int MaxStreamSize",
           "returnType": "int"
+        },
+        {
+          "name": "MaxGroupCount",
+          "kind": "property",
+          "signature": "int MaxGroupCount",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxSavedViewsPerUser",
+          "kind": "property",
+          "signature": "int MaxSavedViewsPerUser",
+          "returnType": "int"
         }
       ]
     },
@@ -24811,6 +24823,12 @@
           "kind": "method",
           "signature": "GetAsync(Guid id, CancellationToken cancellationToken = default)",
           "returnType": "Task<SavedView?>"
+        },
+        {
+          "name": "GetCountAsync",
+          "kind": "method",
+          "signature": "GetCountAsync(string entityType, string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
         }
       ]
     },
@@ -25424,7 +25442,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData.EntityFrameworkCore",
       "file": "src/Granit.ReferenceData.EntityFrameworkCore/Extensions/ReferenceDataEfCoreServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": []
     },
     {

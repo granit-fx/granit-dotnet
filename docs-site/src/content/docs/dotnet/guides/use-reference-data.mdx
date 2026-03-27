@@ -215,7 +215,7 @@ app.MapReferenceDataEndpoints<Country>();
 app.MapReferenceDataEndpoints<Currency>(opts =>
 {
     opts.RoutePrefix = "api/ref";
-    opts.AdminPolicyName = "Custom.Admin";
+    opts.TagName = "Currencies";
 });
 ```
 
@@ -229,7 +229,7 @@ app.MapAllReferenceDataEndpoints();
 // Or map selectively
 app.MapReferenceDataEndpoints("Countries");
 app.MapReferenceDataEndpoints("Categories", opts =>
-    opts.AdminPolicyName = "Admin.Categories");
+    opts.TagName = "Categories");
 ```
 
 </TabItem>
@@ -237,7 +237,7 @@ app.MapReferenceDataEndpoints("Categories", opts =>
 
 ### Available endpoints
 
-**Read (authenticated):**
+**Read (requires `ReferenceData.Entries.Read`):**
 
 | Method | Route | Description |
 |--------|-------|-------------|
@@ -248,15 +248,16 @@ app.MapReferenceDataEndpoints("Categories", opts =>
 Query parameters: `activeOnly` (default `true`), `search`, `sortBy`, `descending`,
 `page`, `pageSize`.
 
-**Admin (protected by `ReferenceData.Admin` policy):**
+**Admin (requires `ReferenceData.Entries.Create` / `ReferenceData.Entries.Manage`):**
 
-| Method | Route | Description |
-|--------|-------|-------------|
-| `POST` | `/{prefix}/{entity}` | Create an entry |
-| `PUT` | `/{prefix}/{entity}/{code}` | Update an entry |
-| `DELETE` | `/{prefix}/{entity}/{code}` | Deactivate (soft delete) |
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| `POST` | `/{prefix}/{entity}` | `Entries.Create` | Create an entry |
+| `PUT` | `/{prefix}/{entity}/{code}` | `Entries.Manage` | Update an entry |
+| `DELETE` | `/{prefix}/{entity}/{code}` | `Entries.Manage` | Deactivate (soft delete) |
 
-Create and update requests accept optional `ExtraProperties` (dictionary) and `ParentCode`.
+Create and update requests accept optional `ExtraProperties` (max 50 entries) and `ParentCode`.
+The `Code` field must match `^[A-Za-z0-9_.\-]+$`.
 
 ## Step 7 -- Use ExtraProperties
 

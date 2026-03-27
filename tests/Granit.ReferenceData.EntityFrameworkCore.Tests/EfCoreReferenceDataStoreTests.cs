@@ -1,4 +1,6 @@
+using System.Diagnostics.Metrics;
 using Granit.QueryEngine;
+using Granit.ReferenceData.Diagnostics;
 using Granit.ReferenceData.EntityFrameworkCore.Extensions;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;
 using Granit.ReferenceData.Options;
@@ -34,6 +36,12 @@ public sealed class EfCoreReferenceDataStoreTests
         }
     }
 
+    private static ReferenceDataMetrics CreateMetrics()
+    {
+        TestMeterFactory factory = new();
+        return new ReferenceDataMetrics(factory);
+    }
+
     private static EfCoreReferenceDataStore<TestEntity, TestDbContext> CreateStore(string dbName)
     {
         ServiceCollection services = new();
@@ -47,7 +55,14 @@ public sealed class EfCoreReferenceDataStoreTests
         return new EfCoreReferenceDataStore<TestEntity, TestDbContext>(
             sp.GetRequiredService<IServiceScopeFactory>(),
             cache,
-            options);
+            options,
+            CreateMetrics());
+    }
+
+    private sealed class TestMeterFactory : IMeterFactory
+    {
+        public Meter Create(MeterOptions options) => new(options);
+        public void Dispose() { }
     }
 
     private static async Task SeedAsync(
@@ -361,7 +376,7 @@ public sealed class EfCoreReferenceDataStoreTests
         ServiceProvider sp = services.BuildServiceProvider();
         IServiceScopeFactory scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
 
-        EfCoreReferenceDataStore<TestEntity, TestDbContext> store = new(scopeFactory, cache, opts);
+        EfCoreReferenceDataStore<TestEntity, TestDbContext> store = new(scopeFactory, cache, opts, CreateMetrics());
 
         // Populate cache by querying
         await store.GetByCodeAsync("DE", TestContext.Current.CancellationToken);

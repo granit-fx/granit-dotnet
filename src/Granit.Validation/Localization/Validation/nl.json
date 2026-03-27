@@ -3,6 +3,7 @@
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "Aan de opgegeven voorwaarde voor '{PropertyName}' is niet voldaan.",
     "Granit:Validation:AtLeastOneMappingTarget": "Minstens één toewijzing moet een niet-null doeleigenschap hebben.",
+    "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' mag alleen letters, cijfers, koppeltekens, underscores of punten bevatten.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' is geen geldig creditcardnummer.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' en 'Page' sluiten elkaar uit.",
     "Granit:Validation:EmailValidator": "'{PropertyName}' is geen geldig e-mailadres.",
@@ -53,6 +54,7 @@
     "Granit:Validation:MaxCidrRanges": "Maximaal 50 CIDR-bereiken toegestaan.",
     "Granit:Validation:MaxCustomAttributes": "Het maximale aantal aangepaste attributen is overschreden.",
     "Granit:Validation:MaxEmbeddingInputs": "Maximaal aantal embedding-invoeren overschreden.",
+    "Granit:Validation:MaxExtraProperties": "Maximaal 50 extra eigenschappen toegestaan.",
     "Granit:Validation:MaxFilterEntries": "Maximaal 50 filteritems zijn toegestaan.",
     "Granit:Validation:MaxPermissions": "Maximaal 100 machtigingen toegestaan.",
     "Granit:Validation:MaxPresetEntries": "Maximaal 20 voorinstellingen zijn toegestaan.",

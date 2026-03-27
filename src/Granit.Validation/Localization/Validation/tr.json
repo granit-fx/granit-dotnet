@@ -3,6 +3,7 @@
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "'{PropertyName}' için belirtilen koşul karşılanmadı.",
     "Granit:Validation:AtLeastOneMappingTarget": "En az bir eşleme, boş olmayan bir hedef özelliğe sahip olmalıdır.",
+    "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' yalnızca harf, rakam, tire, alt çizgi veya nokta içerebilir.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' geçerli bir kredi kartı numarası değil.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' ve 'Page' birlikte kullanılamaz.",
     "Granit:Validation:EmailValidator": "'{PropertyName}' geçerli bir e-posta adresi değil.",
@@ -53,6 +54,7 @@
     "Granit:Validation:MaxCidrRanges": "En fazla 50 CIDR aralığına izin verilir.",
     "Granit:Validation:MaxCustomAttributes": "Maksimum özel öznitelik sayısı aşıldı.",
     "Granit:Validation:MaxEmbeddingInputs": "Maksimum gömme girişi sayısı aşıldı.",
+    "Granit:Validation:MaxExtraProperties": "En fazla 50 ek özellik izin verilmektedir.",
     "Granit:Validation:MaxFilterEntries": "En fazla 50 filtre girişine izin verilir.",
     "Granit:Validation:MaxPermissions": "En fazla 100 izne izin verilir.",
     "Granit:Validation:MaxPresetEntries": "En fazla 20 ön ayara izin verilir.",

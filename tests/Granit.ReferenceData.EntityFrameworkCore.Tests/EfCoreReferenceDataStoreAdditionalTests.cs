@@ -1,4 +1,6 @@
+using System.Diagnostics.Metrics;
 using Granit.QueryEngine;
+using Granit.ReferenceData.Diagnostics;
 using Granit.ReferenceData.EntityFrameworkCore.Extensions;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;
 using Granit.ReferenceData.Options;
@@ -34,6 +36,12 @@ public sealed class EfCoreReferenceDataStoreAdditionalTests
         }
     }
 
+    private static ReferenceDataMetrics CreateMetrics()
+    {
+        TestMeterFactory factory = new();
+        return new ReferenceDataMetrics(factory);
+    }
+
     private static EfCoreReferenceDataStore<TestEntity, TestDbContext> CreateStore(string dbName)
     {
         ServiceCollection services = new();
@@ -47,7 +55,14 @@ public sealed class EfCoreReferenceDataStoreAdditionalTests
         return new EfCoreReferenceDataStore<TestEntity, TestDbContext>(
             sp.GetRequiredService<IServiceScopeFactory>(),
             cache,
-            options);
+            options,
+            CreateMetrics());
+    }
+
+    private sealed class TestMeterFactory : IMeterFactory
+    {
+        public Meter Create(MeterOptions options) => new(options);
+        public void Dispose() { }
     }
 
     private static async Task SeedAsync(
@@ -270,7 +285,7 @@ public sealed class EfCoreReferenceDataStoreAdditionalTests
         ServiceProvider sp = services.BuildServiceProvider();
         IServiceScopeFactory scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
 
-        EfCoreReferenceDataStore<TestEntity, TestDbContext> store = new(scopeFactory, cache, opts);
+        EfCoreReferenceDataStore<TestEntity, TestDbContext> store = new(scopeFactory, cache, opts, CreateMetrics());
 
         // Create entity
         TestEntity entity = new()
@@ -293,7 +308,7 @@ public sealed class EfCoreReferenceDataStoreAdditionalTests
         await store.UpdateAsync(cached, TestContext.Current.CancellationToken);
 
         // Re-fetch — should get updated value
-        EfCoreReferenceDataStore<TestEntity, TestDbContext> freshStore = new(scopeFactory, cache, opts);
+        EfCoreReferenceDataStore<TestEntity, TestDbContext> freshStore = new(scopeFactory, cache, opts, CreateMetrics());
         TestEntity? updated = await freshStore.GetByCodeAsync("BE", TestContext.Current.CancellationToken);
 
         updated!.LabelEn.ShouldBe("Kingdom of Belgium");

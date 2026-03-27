@@ -3,6 +3,7 @@
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "'{PropertyName}' に対する指定された条件が満たされていません。",
     "Granit:Validation:AtLeastOneMappingTarget": "少なくとも1つのマッピングにnullでないターゲットプロパティが必要です。",
+    "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' には英数字、ハイフン、アンダースコア、ドットのみ使用できます。",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' は有効なクレジットカード番号ではありません。",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' と 'Page' は同時に使用できません。",
     "Granit:Validation:EmailValidator": "'{PropertyName}' は有効なメールアドレスではありません。",
@@ -53,6 +54,7 @@
     "Granit:Validation:MaxCidrRanges": "CIDR 範囲は最大50件までです。",
     "Granit:Validation:MaxCustomAttributes": "カスタム属性の最大数を超えました。",
     "Granit:Validation:MaxEmbeddingInputs": "エンベディング入力の最大数を超えました。",
+    "Granit:Validation:MaxExtraProperties": "追加プロパティは最大50個まで許可されています。",
     "Granit:Validation:MaxFilterEntries": "フィルター項目は最大50件までです。",
     "Granit:Validation:MaxPermissions": "権限は最大100件までです。",
     "Granit:Validation:MaxPresetEntries": "プリセット項目は最大20件までです。",

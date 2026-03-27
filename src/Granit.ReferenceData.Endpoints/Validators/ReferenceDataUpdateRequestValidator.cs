@@ -48,6 +48,11 @@ internal sealed class ReferenceDataUpdateRequestValidator : GranitValidator<Refe
             .MaximumLength(ReferenceDataCreateRequestValidator.MaxCodeLength)
             .When(x => x.ParentCode is not null);
 
+        RuleFor(x => x.ExtraProperties)
+            .Must(ep => ep is null || ep.Count <= ReferenceDataCreateRequestValidator.MaxExtraProperties)
+            .WithErrorCodeAndMessage("Granit:Validation:MaxExtraProperties")
+            .When(x => x.ExtraProperties is not null);
+
         RuleForEach(x => x.ExtraProperties)
             .ChildRules(kvp =>
             {

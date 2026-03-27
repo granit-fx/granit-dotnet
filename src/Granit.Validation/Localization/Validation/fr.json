@@ -3,6 +3,7 @@
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "La condition spécifiée n'a pas été remplie pour '{PropertyName}'.",
     "Granit:Validation:AtLeastOneMappingTarget": "Au moins un mappage doit avoir une propriété cible non nulle.",
+    "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' ne peut contenir que des lettres, des chiffres, des tirets, des underscores ou des points.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' n'est pas un numéro de carte bancaire valide.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' et 'Page' sont mutuellement exclusifs.",
     "Granit:Validation:EmailValidator": "'{PropertyName}' n'est pas une adresse e-mail valide.",
@@ -53,6 +54,7 @@
     "Granit:Validation:MaxCidrRanges": "50 plages CIDR maximum autorisées.",
     "Granit:Validation:MaxCustomAttributes": "Le nombre maximum d'attributs personnalisés est dépassé.",
     "Granit:Validation:MaxEmbeddingInputs": "Nombre maximum d'entrées d'embedding dépassé.",
+    "Granit:Validation:MaxExtraProperties": "50 propriétés supplémentaires maximum autorisées.",
     "Granit:Validation:MaxFilterEntries": "50 entrées de filtre maximum sont autorisées.",
     "Granit:Validation:MaxPermissions": "100 permissions maximum autorisées.",
     "Granit:Validation:MaxPresetEntries": "20 entrées de préréglage maximum sont autorisées.",

@@ -2,6 +2,7 @@ using Granit.QueryEngine;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Endpoints.Dtos;
 using Granit.ReferenceData.Endpoints.Internal;
+using Granit.ReferenceData.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -21,12 +22,14 @@ internal static class ReferenceDataReadEndpoints
         where TEntity : ReferenceDataEntity
     {
         group.MapGet("/", GetAllAsync<TEntity>)
+            .RequireAuthorization(ReferenceDataPermissions.Entries.Read)
             .WithName($"GetAll{typeof(TEntity).Name}")
             .WithSummary($"Returns a filtered, paginated list of {typeof(TEntity).Name} entries.")
             .WithDescription($"Lists {typeof(TEntity).Name} reference data entries with support for filtering (active-only, search term), sorting, and pagination. Labels are available in all 14 supported languages. By default, only active entries are returned.")
             .Produces<PagedResult<ReferenceDataResponse>>();
 
         group.MapGet("/{code}", GetByCodeAsync<TEntity>)
+            .RequireAuthorization(ReferenceDataPermissions.Entries.Read)
             .WithName($"Get{typeof(TEntity).Name}ByCode")
             .WithSummary($"Returns a single {typeof(TEntity).Name} entry by code.")
             .WithDescription($"Returns the full {typeof(TEntity).Name} entry identified by its unique code, including all localized labels and validity dates. Returns 404 if no entry matches the code.")
@@ -34,6 +37,7 @@ internal static class ReferenceDataReadEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/{code}/children", GetChildrenAsync<TEntity>)
+            .RequireAuthorization(ReferenceDataPermissions.Entries.Read)
             .WithName($"Get{typeof(TEntity).Name}Children")
             .WithSummary($"Returns direct children of a {typeof(TEntity).Name} entry.")
             .WithDescription($"Returns all active direct children of the {typeof(TEntity).Name} entry identified by its code, ordered by sort order then code. For hierarchical reference data types that use ParentCode. Returns 404 if the parent entry does not exist.")

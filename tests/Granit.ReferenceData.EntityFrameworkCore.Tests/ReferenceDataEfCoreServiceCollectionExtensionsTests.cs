@@ -1,4 +1,6 @@
+using System.Diagnostics.Metrics;
 using Granit.Persistence.DataSeeding;
+using Granit.ReferenceData.Diagnostics;
 using Granit.ReferenceData.EntityFrameworkCore.Extensions;
 using Granit.ReferenceData.Options;
 using Microsoft.EntityFrameworkCore;
@@ -38,10 +40,17 @@ public sealed class ReferenceDataEfCoreServiceCollectionExtensionsTests
         services.AddSingleton<IFusionCache>(new FusionCache(new FusionCacheOptions()));
         services.AddSingleton<IOptions<ReferenceDataOptions>>(
             Microsoft.Extensions.Options.Options.Create(new ReferenceDataOptions()));
+        services.AddSingleton(new ReferenceDataMetrics(new TestMeterFactory()));
         services.AddLogging();
         services.AddReferenceDataStore<TestEntity, TestDbContext>();
 
         return services.BuildServiceProvider();
+    }
+
+    private sealed class TestMeterFactory : IMeterFactory
+    {
+        public Meter Create(MeterOptions options) => new(options);
+        public void Dispose() { }
     }
 
     [Fact]

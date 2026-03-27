@@ -3,6 +3,7 @@
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "'{PropertyName}'에 대해 지정된 조건이 충족되지 않았습니다.",
     "Granit:Validation:AtLeastOneMappingTarget": "하나 이상의 매핑에 null이 아닌 대상 속성이 있어야 합니다.",
+    "Granit:Validation:CodeInvalidFormat": "'{PropertyName}'은(는) 문자, 숫자, 하이픈, 밑줄 또는 점만 포함할 수 있습니다.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}'은(는) 유효한 신용카드 번호가 아닙니다.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor'와 'Page'는 동시에 사용할 수 없습니다.",
     "Granit:Validation:EmailValidator": "'{PropertyName}'은(는) 유효한 이메일 주소가 아닙니다.",
@@ -53,6 +54,7 @@
     "Granit:Validation:MaxCidrRanges": "최대 50개의 CIDR 범위가 허용됩니다.",
     "Granit:Validation:MaxCustomAttributes": "사용자 정의 속성의 최대 수를 초과했습니다.",
     "Granit:Validation:MaxEmbeddingInputs": "최대 임베딩 입력 수를 초과했습니다.",
+    "Granit:Validation:MaxExtraProperties": "추가 속성은 최대 50개까지 허용됩니다.",
     "Granit:Validation:MaxFilterEntries": "필터 항목은 최대 50개까지 허용됩니다.",
     "Granit:Validation:MaxPermissions": "최대 100개의 권한이 허용됩니다.",
     "Granit:Validation:MaxPresetEntries": "프리셋 항목은 최대 20개까지 허용됩니다.",

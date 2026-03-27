@@ -20,11 +20,16 @@ internal sealed class ReferenceDataCreateRequestValidator : GranitValidator<Refe
     /// <summary>Maximum length for label fields (must match <c>ReferenceDataEntityTypeConfiguration</c>).</summary>
     internal const int MaxLabelLength = 250;
 
+    /// <summary>Maximum number of extra properties per entry.</summary>
+    internal const int MaxExtraProperties = 50;
+
     public ReferenceDataCreateRequestValidator()
     {
         RuleFor(x => x.Code)
             .NotEmpty()
-            .MaximumLength(MaxCodeLength);
+            .MaximumLength(MaxCodeLength)
+            .Matches(@"^[A-Za-z0-9_.\-]+$")
+            .WithErrorCodeAndMessage("Granit:Validation:CodeInvalidFormat");
 
         RuleFor(x => x.LabelEn)
             .NotEmpty()
@@ -55,6 +60,11 @@ internal sealed class ReferenceDataCreateRequestValidator : GranitValidator<Refe
         RuleFor(x => x.ParentCode)
             .MaximumLength(MaxCodeLength)
             .When(x => x.ParentCode is not null);
+
+        RuleFor(x => x.ExtraProperties)
+            .Must(ep => ep is null || ep.Count <= MaxExtraProperties)
+            .WithErrorCodeAndMessage("Granit:Validation:MaxExtraProperties")
+            .When(x => x.ExtraProperties is not null);
 
         RuleForEach(x => x.ExtraProperties)
             .ChildRules(kvp =>

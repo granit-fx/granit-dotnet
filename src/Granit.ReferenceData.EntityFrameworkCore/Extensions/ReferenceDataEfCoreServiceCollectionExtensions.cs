@@ -1,6 +1,7 @@
 using Granit.Persistence.DataSeeding;
 using Granit.Persistence.ExtraProperties;
 using Granit.QueryEngine;
+using Granit.ReferenceData.Diagnostics;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;
 using Granit.ReferenceData.Options;
@@ -34,7 +35,8 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
             new EfCoreReferenceDataStore<TEntity, TDbContext>(
                 sp.GetRequiredService<IServiceScopeFactory>(),
                 sp.GetRequiredService<IFusionCache>(),
-                sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>()));
+                sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>(),
+                sp.GetRequiredService<ReferenceDataMetrics>()));
         services.AddScoped<IReferenceDataStoreReader<TEntity>>(sp =>
             sp.GetRequiredService<EfCoreReferenceDataStore<TEntity, TDbContext>>());
         services.AddScoped<IReferenceDataStoreWriter<TEntity>>(sp =>
@@ -123,14 +125,16 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
                 (sp, _) => new EfCoreReferenceDataStore<DynamicReferenceDataEntity, TDbContext>(
                     sp.GetRequiredService<IServiceScopeFactory>(),
                     sp.GetRequiredService<IFusionCache>(),
-                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>()));
+                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>(),
+                    sp.GetRequiredService<ReferenceDataMetrics>()));
 
             services.AddKeyedScoped<IReferenceDataStoreWriter<DynamicReferenceDataEntity>>(
                 registration.TypeName,
                 (sp, _) => new EfCoreReferenceDataStore<DynamicReferenceDataEntity, TDbContext>(
                     sp.GetRequiredService<IServiceScopeFactory>(),
                     sp.GetRequiredService<IFusionCache>(),
-                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>()));
+                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>(),
+                    sp.GetRequiredService<ReferenceDataMetrics>()));
 
             // 2. Register ExtraProperty mappings for shadow columns
             if (registration.Options.PropertyMappings.Count > 0)

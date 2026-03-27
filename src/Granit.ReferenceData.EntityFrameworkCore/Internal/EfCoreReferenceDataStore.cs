@@ -1,4 +1,5 @@
 using Granit.QueryEngine;
+using Granit.ReferenceData.Diagnostics;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Options;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,8 @@ namespace Granit.ReferenceData.EntityFrameworkCore.Internal;
 internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
     IServiceScopeFactory scopeFactory,
     IFusionCache cache,
-    IOptions<ReferenceDataOptions> options) : IReferenceDataStoreReader<TEntity>, IReferenceDataStoreWriter<TEntity>
+    IOptions<ReferenceDataOptions> options,
+    ReferenceDataMetrics metrics) : IReferenceDataStoreReader<TEntity>, IReferenceDataStoreWriter<TEntity>
     where TEntity : ReferenceDataEntity
     where TDbContext : DbContext
 {
@@ -33,6 +35,7 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
     private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
     private readonly IFusionCache _cache = cache;
     private readonly ReferenceDataOptions _options = options.Value;
+    private readonly ReferenceDataMetrics _metrics = metrics;
 
     /// <inheritdoc/>
     public async Task<PagedResult<TEntity>> GetAllAsync(
@@ -55,7 +58,7 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         // Search filter (Code or any label, case-insensitive)
         if (!string.IsNullOrWhiteSpace(query.SearchTerm))
         {
-            string term = query.SearchTerm;
+            string term = EscapeLikePattern(query.SearchTerm);
             queryable = queryable.Where(e =>
                 EF.Functions.Like(e.Code, $"%{term}%") ||
                 EF.Functions.Like(e.LabelEn, $"%{term}%") ||
@@ -100,6 +103,8 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
 
         List<TEntity> items = await queryable.ToListAsync(cancellationToken).ConfigureAwait(false);
 
+        _metrics.RecordEntryQueried(null, EntityName);
+
         return new PagedResult<TEntity>(items, totalCount, HasMore: skip + items.Count < totalCount);
     }
 
@@ -115,6 +120,8 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         {
             return maybe.Value;
         }
+
+        _metrics.RecordCacheMiss(null, EntityName);
 
         await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
         TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
@@ -140,6 +147,7 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         context.Set<TEntity>().Add(entity);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
+        _metrics.RecordEntryCreated(null, EntityName);
         InvalidateCache(entity.Code);
     }
 
@@ -152,6 +160,7 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         context.Set<TEntity>().Update(entity);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
+        _metrics.RecordEntryUpdated(null, EntityName);
         InvalidateCache(entity.Code);
     }
 
@@ -171,6 +180,11 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         {
             entity.IsActive = isActive;
             await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            if (!isActive)
+            {
+                _metrics.RecordEntryDeactivated(null, EntityName);
+            }
         }
 
         InvalidateCache(code);
@@ -200,4 +214,11 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         _cache.Expire(CodeCacheKey(code));
         _cache.Expire(AllCacheKey);
     }
+
+    /// <summary>
+    /// Escapes LIKE-special characters (<c>%</c>, <c>_</c>, <c>[</c>) to prevent
+    /// wildcard injection in search terms.
+    /// </summary>
+    private static string EscapeLikePattern(string input) =>
+        input.Replace("[", "[[]").Replace("%", "[%]").Replace("_", "[_]");
 }

@@ -52,6 +52,8 @@ public sealed class ReferenceDataEndpointsTests : IAsyncDisposable
                 TestAuthHandler.SchemeName, _ => { });
 
         builder.Services.AddAuthorizationBuilder()
+            .AddPolicy(Permissions.ReferenceDataPermissions.Entries.Read,
+                policy => policy.RequireAuthenticatedUser())
             .AddPolicy(Permissions.ReferenceDataPermissions.Entries.Create,
                 policy => policy.RequireRole(AdminRole))
             .AddPolicy(Permissions.ReferenceDataPermissions.Entries.Manage,

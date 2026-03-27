@@ -3,6 +3,7 @@
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "Det angivna villkoret uppfylldes inte för '{PropertyName}'.",
     "Granit:Validation:AtLeastOneMappingTarget": "Minst en mappning måste ha en icke-null målegenskap.",
+    "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' får bara innehålla bokstäver, siffror, bindestreck, understreck eller punkter.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' är inte ett giltigt kreditkortsnummer.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' och 'Page' kan inte användas samtidigt.",
     "Granit:Validation:EmailValidator": "'{PropertyName}' är inte en giltig e-postadress.",
@@ -53,6 +54,7 @@
     "Granit:Validation:MaxCidrRanges": "Högst 50 CIDR-intervall är tillåtna.",
     "Granit:Validation:MaxCustomAttributes": "Det maximala antalet anpassade attribut har överskridits.",
     "Granit:Validation:MaxEmbeddingInputs": "Maximalt antal embedding-indata har överskridits.",
+    "Granit:Validation:MaxExtraProperties": "Maximalt 50 extra egenskaper tillåtna.",
     "Granit:Validation:MaxFilterEntries": "Högst 50 filterposter är tillåtna.",
     "Granit:Validation:MaxPermissions": "Högst 100 behörigheter är tillåtna.",
     "Granit:Validation:MaxPresetEntries": "Högst 20 förinställningar är tillåtna.",

@@ -27,6 +27,7 @@ internal static class ReferenceDataDynamicEndpoints
         string typeName)
     {
         group.MapGet("/", GetAllAsync)
+            .RequireAuthorization(ReferenceDataPermissions.Entries.Read)
             .WithName($"GetAll{typeName}")
             .WithSummary($"Returns a filtered, paginated list of {typeName} entries.")
             .WithDescription($"Lists {typeName} reference data entries with support for filtering, sorting, and pagination.")
@@ -34,6 +35,7 @@ internal static class ReferenceDataDynamicEndpoints
             .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
         group.MapGet("/{code}", GetByCodeAsync)
+            .RequireAuthorization(ReferenceDataPermissions.Entries.Read)
             .WithName($"Get{typeName}ByCode")
             .WithSummary($"Returns a single {typeName} entry by code.")
             .WithDescription($"Returns the full {typeName} entry identified by its unique code. Returns 404 if not found.")
@@ -42,6 +44,7 @@ internal static class ReferenceDataDynamicEndpoints
             .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
         group.MapGet("/{code}/children", GetChildrenAsync)
+            .RequireAuthorization(ReferenceDataPermissions.Entries.Read)
             .WithName($"Get{typeName}Children")
             .WithSummary($"Returns direct children of a {typeName} entry.")
             .WithDescription($"Returns all active direct children ordered by sort order. Returns 404 if the parent does not exist.")

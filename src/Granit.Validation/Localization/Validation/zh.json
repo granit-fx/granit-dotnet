@@ -3,6 +3,7 @@
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "'{PropertyName}' 的指定条件未满足。",
     "Granit:Validation:AtLeastOneMappingTarget": "至少一个映射必须具有非空的目标属性。",
+    "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' 只能包含字母、数字、连字符、下划线或点。",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' 不是有效的信用卡号。",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' 和 'Page' 不能同时使用。",
     "Granit:Validation:EmailValidator": "'{PropertyName}' 不是有效的电子邮件地址。",
@@ -53,6 +54,7 @@
     "Granit:Validation:MaxCidrRanges": "最多允许 50 个 CIDR 范围。",
     "Granit:Validation:MaxCustomAttributes": "已超过自定义属性的最大数量。",
     "Granit:Validation:MaxEmbeddingInputs": "嵌入输入数量已超过上限。",
+    "Granit:Validation:MaxExtraProperties": "最多允许 50 个额外属性。",
     "Granit:Validation:MaxFilterEntries": "最多允许 50 个筛选条目。",
     "Granit:Validation:MaxPermissions": "最多允许 100 个权限。",
     "Granit:Validation:MaxPresetEntries": "最多允许 20 个预设条目。",
