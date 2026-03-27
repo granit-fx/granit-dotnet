@@ -762,10 +762,20 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.Local",
+      "deps": [
+        "Granit",
+        "Granit.Events",
+        "Granit.Guids",
+        "Granit.Identity",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Identity.Local.AspNetIdentity",
       "deps": [
-        "Granit.Identity",
-        "Granit.OpenIddict.EntityFrameworkCore"
+        "Granit.Identity.Local"
       ],
       "framework": "net10.0"
     },
@@ -1088,12 +1098,8 @@
     {
       "name": "Granit.OpenIddict",
       "deps": [
-        "Granit",
-        "Granit.Events",
-        "Granit.Guids",
-        "Granit.Identity",
-        "Granit.QueryEngine",
-        "Granit.Timing"
+        "Granit.Identity.Local",
+        "Granit.QueryEngine"
       ],
       "framework": "net10.0"
     },
@@ -1123,6 +1129,7 @@
       "name": "Granit.OpenIddict.EntityFrameworkCore",
       "deps": [
         "Granit.Encryption",
+        "Granit.Identity.Local",
         "Granit.MultiTenancy",
         "Granit.OpenIddict.Server",
         "Granit.Persistence"
@@ -15354,6 +15361,459 @@
       ]
     },
     {
+      "name": "GranitUserGroup",
+      "fqn": "Granit.Identity.Local.Domain.GranitUserGroup",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Domain/GranitUserGroup.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitUserGroupMember",
+      "fqn": "Granit.Identity.Local.Domain.GranitUserGroupMember",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Domain/GranitUserGroupMember.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "GranitRole",
+      "fqn": "Granit.Identity.Local.Entities.GranitRole",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Entities/GranitRole.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "GranitUser",
+      "fqn": "Granit.Identity.Local.Entities.GranitUser",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Entities/GranitUser.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "FirstName",
+          "kind": "property",
+          "signature": "string? FirstName",
+          "returnType": "string?"
+        },
+        {
+          "name": "ToString",
+          "kind": "method",
+          "signature": "ToString()",
+          "returnType": "DateTimeOffset? ModifiedAt { get; set; } public string? ModifiedBy { get; set; } string IIdentityUser.UserId => Id."
+        }
+      ]
+    },
+    {
+      "name": "AccountDeletedEto",
+      "fqn": "Granit.Identity.Local.Events.AccountDeletedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Events/AccountDeletedEto.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "PasswordResetRequestedEto",
+      "fqn": "Granit.Identity.Local.Events.PasswordResetRequestedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Events/PasswordResetRequestedEto.cs",
+      "line": 29,
+      "members": []
+    },
+    {
+      "name": "UserImpersonatedEto",
+      "fqn": "Granit.Identity.Local.Events.UserImpersonatedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Events/UserImpersonatedEto.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "UserRegisteredEto",
+      "fqn": "Granit.Identity.Local.Events.UserRegisteredEto",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Events/UserRegisteredEto.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "GranitIdentityLocalModule",
+      "fqn": "Granit.Identity.Local.GranitIdentityLocalModule",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/GranitIdentityLocalModule.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "GranitPasskeyOptions",
+      "fqn": "Granit.Identity.Local.Options.GranitPasskeyOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Options/GranitPasskeyOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "ServerDomain",
+          "kind": "property",
+          "signature": "string ServerDomain",
+          "returnType": "string"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan AuthenticatorTimeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "ChallengeSize",
+          "kind": "property",
+          "signature": "int ChallengeSize",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "AuthenticatorKeyInfo",
+      "fqn": "Granit.Identity.Local.Services.AuthenticatorKeyInfo",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/ITwoFactorService.cs",
+      "line": 41,
+      "members": []
+    },
+    {
+      "name": "ExternalLoginInfo",
+      "fqn": "Granit.Identity.Local.Services.ExternalLoginInfo",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IExternalLoginService.cs",
+      "line": 51,
+      "members": []
+    },
+    {
+      "name": "IAccountDeletionService",
+      "fqn": "Granit.Identity.Local.Services.IAccountDeletionService",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IAccountDeletionService.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "InitiateAsync",
+          "kind": "method",
+          "signature": "InitiateAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IEmailConfirmationService",
+      "fqn": "Granit.Identity.Local.Services.IEmailConfirmationService",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IEmailConfirmationService.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "SendConfirmationEmailAsync",
+          "kind": "method",
+          "signature": "SendConfirmationEmailAsync(string userId, string email, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ConfirmAsync",
+          "kind": "method",
+          "signature": "ConfirmAsync(string userId, string token, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "IExternalLoginService",
+      "fqn": "Granit.Identity.Local.Services.IExternalLoginService",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IExternalLoginService.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "GetLoginsAsync",
+          "kind": "method",
+          "signature": "GetLoginsAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ExternalLoginInfo>>"
+        },
+        {
+          "name": "AddLoginAsync",
+          "kind": "method",
+          "signature": "AddLoginAsync(string userId, ExternalLoginInfo info, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RemoveLoginAsync",
+          "kind": "method",
+          "signature": "RemoveLoginAsync(string userId, string provider, string providerKey, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ProcessCallbackAsync",
+          "kind": "method",
+          "signature": "ProcessCallbackAsync(ClaimsPrincipal principal, string provider, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ProcessCallbackResult>"
+        }
+      ]
+    },
+    {
+      "name": "IImpersonationService",
+      "fqn": "Granit.Identity.Local.Services.IImpersonationService",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IImpersonationService.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "ImpersonateAsync",
+          "kind": "method",
+          "signature": "ImpersonateAsync(string targetUserId, string impersonatorId, string impersonatorName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ImpersonationResult>"
+        },
+        {
+          "name": "BackToImpersonatorAsync",
+          "kind": "method",
+          "signature": "BackToImpersonatorAsync(string impersonatorId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ImpersonationResult>"
+        }
+      ]
+    },
+    {
+      "name": "ILocalIdentityGroupStore",
+      "fqn": "Granit.Identity.Local.Services.ILocalIdentityGroupStore",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/ILocalIdentityGroupStore.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "GetGroupsAsync",
+          "kind": "method",
+          "signature": "GetGroupsAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<IdentityGroup>>"
+        },
+        {
+          "name": "GetUserGroupsAsync",
+          "kind": "method",
+          "signature": "GetUserGroupsAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<IdentityGroup>>"
+        },
+        {
+          "name": "AddUserToGroupAsync",
+          "kind": "method",
+          "signature": "AddUserToGroupAsync(string userId, string groupId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RemoveUserFromGroupAsync",
+          "kind": "method",
+          "signature": "RemoveUserFromGroupAsync(string userId, string groupId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IPasskeyService",
+      "fqn": "Granit.Identity.Local.Services.IPasskeyService",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IPasskeyService.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "GetPasskeysAsync",
+          "kind": "method",
+          "signature": "GetPasskeysAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<PasskeyInfo>>"
+        },
+        {
+          "name": "BeginRegistrationAsync",
+          "kind": "method",
+          "signature": "BeginRegistrationAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
+        },
+        {
+          "name": "CompleteRegistrationAsync",
+          "kind": "method",
+          "signature": "CompleteRegistrationAsync(string userId, string credentialJson, string? name = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PasskeyInfo>"
+        },
+        {
+          "name": "BeginAssertionAsync",
+          "kind": "method",
+          "signature": "BeginAssertionAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
+        },
+        {
+          "name": "RenameAsync",
+          "kind": "method",
+          "signature": "RenameAsync(string userId, Guid passkeyId, string newName, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(string userId, Guid passkeyId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IPasswordResetService",
+      "fqn": "Granit.Identity.Local.Services.IPasswordResetService",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IPasswordResetService.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RequestResetAsync",
+          "kind": "method",
+          "signature": "RequestResetAsync(string email, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "ResetPasswordAsync",
+          "kind": "method",
+          "signature": "ResetPasswordAsync(string userId, string token, string newPassword, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ITotpService",
+      "fqn": "Granit.Identity.Local.Services.ITotpService",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/ITotpService.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "GenerateSharedKey",
+          "kind": "method",
+          "signature": "GenerateSharedKey()",
+          "returnType": "string"
+        },
+        {
+          "name": "GetQrCodeUri",
+          "kind": "method",
+          "signature": "GetQrCodeUri(string email, string sharedKey)",
+          "returnType": "string"
+        },
+        {
+          "name": "ValidateCode",
+          "kind": "method",
+          "signature": "ValidateCode(string sharedKey, string code)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ITwoFactorService",
+      "fqn": "Granit.Identity.Local.Services.ITwoFactorService",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/ITwoFactorService.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "GetStatusAsync",
+          "kind": "method",
+          "signature": "GetStatusAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TwoFactorStatus>"
+        },
+        {
+          "name": "GetAuthenticatorKeyAsync",
+          "kind": "method",
+          "signature": "GetAuthenticatorKeyAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<AuthenticatorKeyInfo>"
+        },
+        {
+          "name": "EnableAsync",
+          "kind": "method",
+          "signature": "EnableAsync(string userId, string code, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
+        },
+        {
+          "name": "DisableAsync",
+          "kind": "method",
+          "signature": "DisableAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ResetAuthenticatorAsync",
+          "kind": "method",
+          "signature": "ResetAuthenticatorAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GenerateRecoveryCodesAsync",
+          "kind": "method",
+          "signature": "GenerateRecoveryCodesAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
+        }
+      ]
+    },
+    {
+      "name": "ImpersonationResult",
+      "fqn": "Granit.Identity.Local.Services.ImpersonationResult",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IImpersonationService.cs",
+      "line": 56,
+      "members": []
+    },
+    {
+      "name": "PasskeyInfo",
+      "fqn": "Granit.Identity.Local.Services.PasskeyInfo",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IPasskeyService.cs",
+      "line": 65,
+      "members": []
+    },
+    {
+      "name": "ProcessCallbackResult",
+      "fqn": "Granit.Identity.Local.Services.ProcessCallbackResult",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IExternalLoginService.cs",
+      "line": 58,
+      "members": []
+    },
+    {
+      "name": "TwoFactorStatus",
+      "fqn": "Granit.Identity.Local.Services.TwoFactorStatus",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/ITwoFactorService.cs",
+      "line": 35,
+      "members": []
+    },
+    {
       "name": "IdentityDeviceActivity",
       "fqn": "Granit.Identity.Models.IdentityDeviceActivity",
       "kind": "record",
@@ -20759,31 +21219,6 @@
       ]
     },
     {
-      "name": "GranitUserGroup",
-      "fqn": "Granit.OpenIddict.Domain.GranitUserGroup",
-      "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Domain/GranitUserGroup.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "GranitUserGroupMember",
-      "fqn": "Granit.OpenIddict.Domain.GranitUserGroupMember",
-      "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Domain/GranitUserGroupMember.cs",
-      "line": 8,
-      "members": []
-    },
-    {
       "name": "SigningKey",
       "fqn": "Granit.OpenIddict.Domain.SigningKey",
       "kind": "class",
@@ -21108,37 +21543,6 @@
       ]
     },
     {
-      "name": "GranitRole",
-      "fqn": "Granit.OpenIddict.Entities.GranitRole",
-      "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Entities/GranitRole.cs",
-      "line": 21,
-      "members": []
-    },
-    {
-      "name": "GranitUser",
-      "fqn": "Granit.OpenIddict.Entities.GranitUser",
-      "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Entities/GranitUser.cs",
-      "line": 29,
-      "members": [
-        {
-          "name": "FirstName",
-          "kind": "property",
-          "signature": "string? FirstName",
-          "returnType": "string?"
-        },
-        {
-          "name": "ToString",
-          "kind": "method",
-          "signature": "ToString()",
-          "returnType": "DateTimeOffset? ModifiedAt { get; set; } public string? ModifiedBy { get; set; } string IIdentityUser.UserId => Id."
-        }
-      ]
-    },
-    {
       "name": "GranitOpenIddictApplication",
       "fqn": "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictApplication",
       "kind": "class",
@@ -21196,7 +21600,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictModelBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureOpenIddictModule",
@@ -21228,7 +21632,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/GranitOpenIddictEntityFrameworkCoreModule.cs",
-      "line": 41,
+      "line": 45,
       "members": [
         {
           "name": "ConfigureServices",
@@ -21237,42 +21641,6 @@
           "returnType": "void"
         }
       ]
-    },
-    {
-      "name": "AccountDeletedEto",
-      "fqn": "Granit.OpenIddict.Events.AccountDeletedEto",
-      "kind": "record",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Events/AccountDeletedEto.cs",
-      "line": 10,
-      "members": []
-    },
-    {
-      "name": "PasswordResetRequestedEto",
-      "fqn": "Granit.OpenIddict.Events.PasswordResetRequestedEto",
-      "kind": "record",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Events/PasswordResetRequestedEto.cs",
-      "line": 29,
-      "members": []
-    },
-    {
-      "name": "UserImpersonatedEto",
-      "fqn": "Granit.OpenIddict.Events.UserImpersonatedEto",
-      "kind": "record",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Events/UserImpersonatedEto.cs",
-      "line": 16,
-      "members": []
-    },
-    {
-      "name": "UserRegisteredEto",
-      "fqn": "Granit.OpenIddict.Events.UserRegisteredEto",
-      "kind": "record",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Events/UserRegisteredEto.cs",
-      "line": 14,
-      "members": []
     },
     {
       "name": "ClaimsPrincipalDestinationExtensions",
@@ -21312,7 +21680,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 27,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",
@@ -21484,34 +21852,6 @@
       ]
     },
     {
-      "name": "GranitPasskeyOptions",
-      "fqn": "Granit.OpenIddict.Options.GranitPasskeyOptions",
-      "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Options/GranitPasskeyOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "ServerDomain",
-          "kind": "property",
-          "signature": "string ServerDomain",
-          "returnType": "string"
-        },
-        {
-          "name": "FromMinutes",
-          "kind": "method",
-          "signature": "FromMinutes(5)",
-          "returnType": "TimeSpan AuthenticatorTimeout { get; set; } = TimeSpan."
-        },
-        {
-          "name": "ChallengeSize",
-          "kind": "property",
-          "signature": "int ChallengeSize",
-          "returnType": "int"
-        }
-      ]
-    },
-    {
       "name": "OidcApplicationSeedDescriptor",
       "fqn": "Granit.OpenIddict.Options.OidcApplicationSeedDescriptor",
       "kind": "record",
@@ -21600,15 +21940,6 @@
       "members": []
     },
     {
-      "name": "AuthenticatorKeyInfo",
-      "fqn": "Granit.OpenIddict.Services.AuthenticatorKeyInfo",
-      "kind": "record",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/ITwoFactorService.cs",
-      "line": 41,
-      "members": []
-    },
-    {
       "name": "ClaimsDestinations",
       "fqn": "Granit.OpenIddict.Services.ClaimsDestinations",
       "kind": "class",
@@ -21650,15 +21981,6 @@
       ]
     },
     {
-      "name": "ExternalLoginInfo",
-      "fqn": "Granit.OpenIddict.Services.ExternalLoginInfo",
-      "kind": "record",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/IExternalLoginService.cs",
-      "line": 51,
-      "members": []
-    },
-    {
       "name": "ExternalUserProperties",
       "fqn": "Granit.OpenIddict.Services.ExternalUserProperties",
       "kind": "class",
@@ -21666,22 +21988,6 @@
       "file": "src/Granit.OpenIddict/Services/ExternalClaimsMapper.cs",
       "line": 42,
       "members": []
-    },
-    {
-      "name": "IAccountDeletionService",
-      "fqn": "Granit.OpenIddict.Services.IAccountDeletionService",
-      "kind": "interface",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/IAccountDeletionService.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "InitiateAsync",
-          "kind": "method",
-          "signature": "InitiateAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
     },
     {
       "name": "IClaimsDestinationProvider",
@@ -21700,84 +22006,6 @@
       ]
     },
     {
-      "name": "IEmailConfirmationService",
-      "fqn": "Granit.OpenIddict.Services.IEmailConfirmationService",
-      "kind": "interface",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/IEmailConfirmationService.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "SendConfirmationEmailAsync",
-          "kind": "method",
-          "signature": "SendConfirmationEmailAsync(string userId, string email, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "ConfirmAsync",
-          "kind": "method",
-          "signature": "ConfirmAsync(string userId, string token, CancellationToken cancellationToken = default)",
-          "returnType": "Task<bool>"
-        }
-      ]
-    },
-    {
-      "name": "IExternalLoginService",
-      "fqn": "Granit.OpenIddict.Services.IExternalLoginService",
-      "kind": "interface",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/IExternalLoginService.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "GetLoginsAsync",
-          "kind": "method",
-          "signature": "GetLoginsAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<ExternalLoginInfo>>"
-        },
-        {
-          "name": "AddLoginAsync",
-          "kind": "method",
-          "signature": "AddLoginAsync(string userId, ExternalLoginInfo info, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "RemoveLoginAsync",
-          "kind": "method",
-          "signature": "RemoveLoginAsync(string userId, string provider, string providerKey, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "ProcessCallbackAsync",
-          "kind": "method",
-          "signature": "ProcessCallbackAsync(ClaimsPrincipal principal, string provider, CancellationToken cancellationToken = default)",
-          "returnType": "Task<ProcessCallbackResult>"
-        }
-      ]
-    },
-    {
-      "name": "IImpersonationService",
-      "fqn": "Granit.OpenIddict.Services.IImpersonationService",
-      "kind": "interface",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/IImpersonationService.cs",
-      "line": 22,
-      "members": [
-        {
-          "name": "ImpersonateAsync",
-          "kind": "method",
-          "signature": "ImpersonateAsync(string targetUserId, string impersonatorId, string impersonatorName, CancellationToken cancellationToken = default)",
-          "returnType": "Task<ImpersonationResult>"
-        },
-        {
-          "name": "BackToImpersonatorAsync",
-          "kind": "method",
-          "signature": "BackToImpersonatorAsync(string impersonatorId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<ImpersonationResult>"
-        }
-      ]
-    },
-    {
       "name": "IKeyRotationService",
       "fqn": "Granit.OpenIddict.Services.IKeyRotationService",
       "kind": "interface",
@@ -21790,74 +22018,6 @@
           "kind": "method",
           "signature": "RotateAsync(CancellationToken cancellationToken = default)",
           "returnType": "Task<KeyRotationResult>"
-        }
-      ]
-    },
-    {
-      "name": "IPasskeyService",
-      "fqn": "Granit.OpenIddict.Services.IPasskeyService",
-      "kind": "interface",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/IPasskeyService.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "GetPasskeysAsync",
-          "kind": "method",
-          "signature": "GetPasskeysAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<PasskeyInfo>>"
-        },
-        {
-          "name": "BeginRegistrationAsync",
-          "kind": "method",
-          "signature": "BeginRegistrationAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<string>"
-        },
-        {
-          "name": "CompleteRegistrationAsync",
-          "kind": "method",
-          "signature": "CompleteRegistrationAsync(string userId, string credentialJson, string? name = null, CancellationToken cancellationToken = default)",
-          "returnType": "Task<PasskeyInfo>"
-        },
-        {
-          "name": "BeginAssertionAsync",
-          "kind": "method",
-          "signature": "BeginAssertionAsync(CancellationToken cancellationToken = default)",
-          "returnType": "Task<string>"
-        },
-        {
-          "name": "RenameAsync",
-          "kind": "method",
-          "signature": "RenameAsync(string userId, Guid passkeyId, string newName, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "DeleteAsync",
-          "kind": "method",
-          "signature": "DeleteAsync(string userId, Guid passkeyId, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "IPasswordResetService",
-      "fqn": "Granit.OpenIddict.Services.IPasswordResetService",
-      "kind": "interface",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/IPasswordResetService.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "RequestResetAsync",
-          "kind": "method",
-          "signature": "RequestResetAsync(string email, CancellationToken cancellationToken = default)",
-          "returnType": "Task<bool>"
-        },
-        {
-          "name": "ResetPasswordAsync",
-          "kind": "method",
-          "signature": "ResetPasswordAsync(string userId, string token, string newPassword, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
         }
       ]
     },
@@ -21908,122 +22068,12 @@
       ]
     },
     {
-      "name": "ITotpService",
-      "fqn": "Granit.OpenIddict.Services.ITotpService",
-      "kind": "interface",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/ITotpService.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "GenerateSharedKey",
-          "kind": "method",
-          "signature": "GenerateSharedKey()",
-          "returnType": "string"
-        },
-        {
-          "name": "GetQrCodeUri",
-          "kind": "method",
-          "signature": "GetQrCodeUri(string email, string sharedKey)",
-          "returnType": "string"
-        },
-        {
-          "name": "ValidateCode",
-          "kind": "method",
-          "signature": "ValidateCode(string sharedKey, string code)",
-          "returnType": "bool"
-        }
-      ]
-    },
-    {
-      "name": "ITwoFactorService",
-      "fqn": "Granit.OpenIddict.Services.ITwoFactorService",
-      "kind": "interface",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/ITwoFactorService.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "GetStatusAsync",
-          "kind": "method",
-          "signature": "GetStatusAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<TwoFactorStatus>"
-        },
-        {
-          "name": "GetAuthenticatorKeyAsync",
-          "kind": "method",
-          "signature": "GetAuthenticatorKeyAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<AuthenticatorKeyInfo>"
-        },
-        {
-          "name": "EnableAsync",
-          "kind": "method",
-          "signature": "EnableAsync(string userId, string code, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<string>>"
-        },
-        {
-          "name": "DisableAsync",
-          "kind": "method",
-          "signature": "DisableAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "ResetAuthenticatorAsync",
-          "kind": "method",
-          "signature": "ResetAuthenticatorAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "GenerateRecoveryCodesAsync",
-          "kind": "method",
-          "signature": "GenerateRecoveryCodesAsync(string userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<string>>"
-        }
-      ]
-    },
-    {
-      "name": "ImpersonationResult",
-      "fqn": "Granit.OpenIddict.Services.ImpersonationResult",
-      "kind": "record",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/IImpersonationService.cs",
-      "line": 56,
-      "members": []
-    },
-    {
       "name": "KeyRotationResult",
       "fqn": "Granit.OpenIddict.Services.KeyRotationResult",
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Services/IKeyRotationService.cs",
       "line": 29,
-      "members": []
-    },
-    {
-      "name": "PasskeyInfo",
-      "fqn": "Granit.OpenIddict.Services.PasskeyInfo",
-      "kind": "record",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/IPasskeyService.cs",
-      "line": 65,
-      "members": []
-    },
-    {
-      "name": "ProcessCallbackResult",
-      "fqn": "Granit.OpenIddict.Services.ProcessCallbackResult",
-      "kind": "record",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/IExternalLoginService.cs",
-      "line": 58,
-      "members": []
-    },
-    {
-      "name": "TwoFactorStatus",
-      "fqn": "Granit.OpenIddict.Services.TwoFactorStatus",
-      "kind": "record",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/ITwoFactorService.cs",
-      "line": 35,
       "members": []
     },
     {

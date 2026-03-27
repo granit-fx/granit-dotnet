@@ -72,7 +72,7 @@ public static class PersistenceMigrationsHostApplicationBuilderExtensions
         builder.Services.AddDbContextFactory<MigrationProgressDbContext>(configureProgressDb);
 
         // Ensurer — decouples Granit.Persistence.Hosting from the internal MigrationProgressDbContext.
-        builder.Services.TryAddScoped<IMigrationProgressDbEnsurer, MigrationProgressDbEnsurer>();
+        builder.Services.TryAddSingleton<IMigrationProgressDbEnsurer, MigrationProgressDbEnsurer>();
 
         // Thread-safe singleton registry — populated at startup via Register<TContext>().
         builder.Services.TryAddSingleton<IMigrationCycleRegistry, MigrationCycleRegistry>();
