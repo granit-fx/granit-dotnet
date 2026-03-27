@@ -1,7 +1,6 @@
 using Granit.MultiTenancy;
-using Granit.Persistence.Interceptors;
+using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Persistence.MultiTenancy;
 
@@ -62,14 +61,7 @@ internal sealed class TenantPerSchemaDbContextFactory<TContext>(
 
         TenantSchemaConnectionInterceptor schemaInterceptor = new(currentTenant, schemaProvider, schemaActivator);
         optionsBuilder.AddInterceptors(schemaInterceptor);
-
-        AuditedEntityInterceptor? auditInterceptor =
-            serviceProvider.GetService<AuditedEntityInterceptor>();
-
-        if (auditInterceptor is not null)
-        {
-            optionsBuilder.AddInterceptors(auditInterceptor);
-        }
+        optionsBuilder.UseGranitInterceptors(serviceProvider);
 
         return (TContext)Activator.CreateInstance(typeof(TContext), optionsBuilder.Options)!;
     }

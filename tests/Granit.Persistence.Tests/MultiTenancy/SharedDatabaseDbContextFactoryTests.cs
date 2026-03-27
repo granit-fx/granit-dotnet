@@ -1,8 +1,10 @@
 using Granit.MultiTenancy;
+using Granit.Persistence.Diagnostics;
 using Granit.Persistence.Interceptors;
 using Granit.Persistence.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -59,6 +61,9 @@ public sealed class SharedDatabaseDbContextFactoryTests
         services.AddSingleton(Substitute.For<Granit.Guids.IGuidGenerator>());
         services.AddSingleton(Substitute.For<Granit.Users.ICurrentUserService>());
         services.AddSingleton(Substitute.For<ICurrentTenant>());
+        services.AddLogging();
+        services.AddMetrics();
+        services.TryAddSingleton<PersistenceMetrics>();
         services.AddScoped<AuditedEntityInterceptor>();
         using ServiceProvider sp = services.BuildServiceProvider();
         using IServiceScope scope = sp.CreateScope();

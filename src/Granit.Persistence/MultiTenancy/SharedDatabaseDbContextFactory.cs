@@ -1,6 +1,5 @@
-using Granit.Persistence.Interceptors;
+using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Persistence.MultiTenancy;
 
@@ -26,15 +25,7 @@ internal sealed class SharedDatabaseDbContextFactory<TContext>(
     {
         DbContextOptionsBuilder<TContext> optionsBuilder = new();
         _options.Configure(optionsBuilder);
-
-        AuditedEntityInterceptor? auditInterceptor =
-            _serviceProvider.GetService<AuditedEntityInterceptor>();
-
-        if (auditInterceptor is not null)
-        {
-            optionsBuilder.AddInterceptors(auditInterceptor);
-        }
-
+        optionsBuilder.UseGranitInterceptors(_serviceProvider);
         return (TContext)Activator.CreateInstance(typeof(TContext), optionsBuilder.Options)!;
     }
 

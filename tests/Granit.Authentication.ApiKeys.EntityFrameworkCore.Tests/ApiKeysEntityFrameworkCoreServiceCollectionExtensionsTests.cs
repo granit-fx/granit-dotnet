@@ -1,7 +1,9 @@
+using System.Diagnostics.Metrics;
 using Granit.Authentication.ApiKeys.EntityFrameworkCore.Extensions;
 using Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
 using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.Persistence.Diagnostics;
 using Granit.Persistence.Interceptors;
 using Granit.Timing;
 using Granit.Users;
@@ -71,14 +73,21 @@ public sealed class ApiKeysEntityFrameworkCoreServiceCollectionExtensionsTests
         var services = new ServiceCollection();
 
         // Register real interceptors with substituted dependencies
+        IMeterFactory meterFactory = Substitute.For<IMeterFactory>();
+        meterFactory.Create(Arg.Any<MeterOptions>()).Returns(new Meter("test"));
+        PersistenceMetrics metrics = new(meterFactory);
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         services.AddSingleton(new AuditedEntityInterceptor(
             Substitute.For<ICurrentUserService>(),
             Substitute.For<IClock>(),
             Substitute.For<IGuidGenerator>(),
-            Substitute.For<ICurrentTenant>()));
+            currentTenant,
+            metrics));
         services.AddSingleton(new SoftDeleteInterceptor(
             Substitute.For<ICurrentUserService>(),
-            Substitute.For<IClock>()));
+            Substitute.For<IClock>(),
+            currentTenant,
+            metrics));
 
         services.AddGranitApiKeysEntityFrameworkCore(
             options => options.UseSqlite("DataSource=:memory:"));

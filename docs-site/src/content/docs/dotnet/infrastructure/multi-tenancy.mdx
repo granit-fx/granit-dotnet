@@ -231,6 +231,13 @@ context.Services.AddTenantPerDatabaseDbContext<AppDbContext>(
 </TabItem>
 </Tabs>
 
+:::note[Interceptor wiring]
+All three per-tenant factories (`SharedDatabaseDbContextFactory`, `TenantPerSchemaDbContextFactory`,
+`TenantPerDatabaseDbContextFactory`) call `UseGranitInterceptors()` internally, wiring the
+full interceptor chain — audit, versioning, concurrency stamp, domain events, entity lifecycle
+events, and soft delete — identically to `AddGranitDbContext<T>()`.
+:::
+
 :::danger
 Schema activators execute on every connection open. Pooled connections retain the
 previous tenant's schema — failing to reset is a **data isolation breach** (ISO 27001).

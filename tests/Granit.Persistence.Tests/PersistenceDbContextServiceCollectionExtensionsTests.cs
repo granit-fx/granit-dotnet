@@ -78,5 +78,7 @@ public sealed class PersistenceDbContextServiceCollectionExtensionsTests
         services.AddSingleton(NSubstitute.Substitute.For<Granit.Guids.IGuidGenerator>());
         services.AddSingleton(NSubstitute.Substitute.For<Granit.Users.ICurrentUserService>());
         services.AddSingleton(NSubstitute.Substitute.For<ICurrentTenant>());
+        services.AddLogging();
+        services.AddMetrics();
     }
 }

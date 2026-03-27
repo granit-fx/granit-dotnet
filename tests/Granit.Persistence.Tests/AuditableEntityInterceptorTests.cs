@@ -9,9 +9,11 @@
 // IClock is mocked for exact assertions (no BeCloseTo).
 // =============================================================================
 
+using System.Diagnostics.Metrics;
 using Granit.Domain;
 using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.Persistence.Diagnostics;
 using Granit.Persistence.Interceptors;
 using Granit.Timing;
 using Granit.Users;
@@ -31,6 +33,7 @@ public sealed class AuditableEntityInterceptorTests
     private readonly IClock _clock;
     private readonly IGuidGenerator _guidGenerator;
     private readonly ICurrentTenant _currentTenant;
+    private readonly PersistenceMetrics _metrics;
 
     public AuditableEntityInterceptorTests()
     {
@@ -45,6 +48,10 @@ public sealed class AuditableEntityInterceptorTests
 
         _currentTenant = Substitute.For<ICurrentTenant>();
         _currentTenant.IsAvailable.Returns(false);
+
+        IMeterFactory meterFactory = Substitute.For<IMeterFactory>();
+        meterFactory.Create(Arg.Any<MeterOptions>()).Returns(new Meter("test"));
+        _metrics = new PersistenceMetrics(meterFactory);
     }
 
     [Fact]
@@ -143,7 +150,7 @@ public sealed class AuditableEntityInterceptorTests
 
     private TestDbContext CreateContext()
     {
-        var interceptor = new AuditedEntityInterceptor(_currentUserService, _clock, _guidGenerator, _currentTenant);
+        var interceptor = new AuditedEntityInterceptor(_currentUserService, _clock, _guidGenerator, _currentTenant, _metrics);
         DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .AddInterceptors(interceptor)

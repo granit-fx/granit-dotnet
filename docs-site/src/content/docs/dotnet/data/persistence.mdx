@@ -312,7 +312,9 @@ await dbContext.PurgeSoftDeletedBeforeAsync<Patient>(
     cancellationToken);
 ```
 
-Uses `ExecuteDeleteAsync()` with `IgnoreQueryFilters()` — provider-agnostic,
+Uses `ExecuteDeleteAsync()` with `IgnoreQueryFilters([GranitFilterNames.SoftDelete])`
+— only the soft-delete filter is bypassed; the multi-tenant filter remains active,
+ensuring purge operations stay scoped to the current tenant. Provider-agnostic,
 bypasses interceptors.
 
 ## Multi-tenancy strategies
@@ -386,7 +388,7 @@ public async Task Soft_deleted_entities_are_filtered_out()
     patients.ShouldBeEmpty();
 
     // Assert — visible when filter is disabled
-    var all = await context.Patients.IgnoreQueryFilters().ToListAsync();
+    var all = await context.Patients.IgnoreQueryFilters([GranitFilterNames.SoftDelete]).ToListAsync();
     all.Count.ShouldBe(1);
 }
 ```

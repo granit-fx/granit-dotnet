@@ -157,6 +157,8 @@ public sealed class DbContextOptionsBuilderExtensionsTests
         services.AddSingleton(NSubstitute.Substitute.For<Granit.Guids.IGuidGenerator>());
         services.AddSingleton(NSubstitute.Substitute.For<Granit.Users.ICurrentUserService>());
         services.AddSingleton(NSubstitute.Substitute.For<ICurrentTenant>());
+        services.AddLogging();
+        services.AddMetrics();
     }
 
     /// <summary>Minimal test DbContext for AddGranitDbContext tests.</summary>

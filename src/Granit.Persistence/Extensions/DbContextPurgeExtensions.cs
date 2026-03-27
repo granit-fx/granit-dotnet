@@ -61,7 +61,7 @@ public static class DbContextPurgeExtensions
         CancellationToken cancellationToken)
         where TEntity : class, ISoftDeletable =>
         await context.Set<TEntity>()
-            .IgnoreQueryFilters()
+            .IgnoreQueryFilters([GranitFilterNames.SoftDelete])
             .Where(e => e.IsDeleted && e.DeletedAt != null && e.DeletedAt < cutoff)
             .Take(batchSize)
             .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);

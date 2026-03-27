@@ -2,6 +2,7 @@ using Granit.Events;
 using Granit.Persistence.Events;
 using Granit.Persistence.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -13,7 +14,7 @@ public sealed class NullIntegrationEventDispatcherTests
     [Fact]
     public async Task DispatchAsync_WithEvents_CompletesWithoutError()
     {
-        NullIntegrationEventDispatcher dispatcher = new();
+        NullIntegrationEventDispatcher dispatcher = new(Substitute.For<ILogger<NullIntegrationEventDispatcher>>());
 
         IIntegrationEvent fakeEvent = Substitute.For<IIntegrationEvent>();
         List<IIntegrationEvent> events = [fakeEvent];
@@ -26,7 +27,7 @@ public sealed class NullIntegrationEventDispatcherTests
     [Fact]
     public async Task DispatchAsync_WithEmptyList_CompletesWithoutError()
     {
-        NullIntegrationEventDispatcher dispatcher = new();
+        NullIntegrationEventDispatcher dispatcher = new(Substitute.For<ILogger<NullIntegrationEventDispatcher>>());
 
         Func<Task> act = () => dispatcher.DispatchAsync([], TestContext.Current.CancellationToken);
 
@@ -37,6 +38,8 @@ public sealed class NullIntegrationEventDispatcherTests
     public void AddGranitPersistence_RegistersNullIntegrationEventDispatcher_ByDefault()
     {
         ServiceCollection services = new();
+        services.AddLogging();
+        services.AddMetrics();
 
         services.AddGranitPersistence();
 

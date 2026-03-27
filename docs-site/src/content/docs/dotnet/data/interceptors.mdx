@@ -204,6 +204,20 @@ configuration. For read-heavy entities that rarely conflict, the overhead is
 negligible but unnecessary.
 :::
 
+## Metrics
+
+`AuditedEntityInterceptor` and `SoftDeleteInterceptor` emit counters via `PersistenceMetrics`
+(meter name: `Granit.Persistence`):
+
+| Metric | Tags | Description |
+|--------|------|-------------|
+| `granit.persistence.entity.audited` | `tenant_id`, `operation` (`created` / `modified`) | Entities processed by audit interceptor |
+| `granit.persistence.entity.soft_deleted` | `tenant_id` | Entities converted from hard delete to soft delete |
+
+Both counters include the current `tenant_id` tag (coalesced to `"global"` when no
+tenant is active). Use these to monitor write throughput per tenant and detect
+anomalous deletion spikes.
+
 ## See also
 
 - [Persistence overview](./persistence/) — setup, isolated DbContext, host-owned migrations
