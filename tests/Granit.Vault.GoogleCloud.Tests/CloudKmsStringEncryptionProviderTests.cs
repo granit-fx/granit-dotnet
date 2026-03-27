@@ -1,6 +1,7 @@
 using Granit.Encryption;
 using Granit.Encryption.Options;
 using Granit.Vault.GoogleCloud.Providers;
+using Grpc.Core;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -67,7 +68,7 @@ public sealed class CloudKmsStringEncryptionProviderTests
     public void Decrypt_WhenExceptionThrown_ReturnsNull()
     {
         _transitEncryption.DecryptAsync("test-key", "bad-cipher", Arg.Any<CancellationToken>())
-            .Returns<string>(x => throw new InvalidOperationException("KMS error"));
+            .Returns<string>(x => throw new RpcException(new Status(StatusCode.InvalidArgument, "KMS error")));
 
         string? result = _sut.Decrypt("bad-cipher");
 
