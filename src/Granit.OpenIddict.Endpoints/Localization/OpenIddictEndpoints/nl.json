@@ -4,14 +4,10 @@
     "PermissionGroup:OpenIddict": "OpenIddict Identiteit",
     "Permission:OpenIddict.Users.Impersonate": "Zich voordoen als een gebruiker",
     "Permission:OpenIddict.Applications.Read": "OIDC-applicaties raadplegen",
-    "Permission:OpenIddict.Applications.Create": "OIDC-applicaties aanmaken",
     "Permission:OpenIddict.Applications.Manage": "OIDC-applicaties beheren (raadplegen, wijzigen)",
-    "Permission:OpenIddict.Applications.Delete": "OIDC-applicaties verwijderen",
     "Permission:OpenIddict.Applications.Rotate": "Applicatiegeheimen roteren",
     "Permission:OpenIddict.Scopes.Read": "OIDC-scopes raadplegen",
-    "Permission:OpenIddict.Scopes.Create": "OIDC-scopes aanmaken",
     "Permission:OpenIddict.Scopes.Manage": "OIDC-scopes beheren (raadplegen, wijzigen)",
-    "Permission:OpenIddict.Scopes.Delete": "OIDC-scopes verwijderen",
     "Permission:OpenIddict.Authorizations.Read": "OIDC-autorisaties raadplegen",
     "Permission:OpenIddict.Authorizations.Revoke": "OIDC-autorisaties intrekken"
   }

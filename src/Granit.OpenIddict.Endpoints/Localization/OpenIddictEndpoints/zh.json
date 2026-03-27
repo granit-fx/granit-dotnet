@@ -4,14 +4,10 @@
     "PermissionGroup:OpenIddict": "OpenIddict 身份认证",
     "Permission:OpenIddict.Users.Impersonate": "模拟用户身份",
     "Permission:OpenIddict.Applications.Read": "查看 OIDC 应用",
-    "Permission:OpenIddict.Applications.Create": "创建 OIDC 应用",
     "Permission:OpenIddict.Applications.Manage": "管理 OIDC 应用（查看、修改）",
-    "Permission:OpenIddict.Applications.Delete": "删除 OIDC 应用",
     "Permission:OpenIddict.Applications.Rotate": "轮换应用密钥",
     "Permission:OpenIddict.Scopes.Read": "查看 OIDC 作用域",
-    "Permission:OpenIddict.Scopes.Create": "创建 OIDC 作用域",
     "Permission:OpenIddict.Scopes.Manage": "管理 OIDC 作用域（查看、修改）",
-    "Permission:OpenIddict.Scopes.Delete": "删除 OIDC 作用域",
     "Permission:OpenIddict.Authorizations.Read": "查看 OIDC 授权",
     "Permission:OpenIddict.Authorizations.Revoke": "撤销 OIDC 授权"
   }

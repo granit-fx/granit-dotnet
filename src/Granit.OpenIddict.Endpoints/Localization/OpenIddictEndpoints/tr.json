@@ -4,14 +4,10 @@
     "PermissionGroup:OpenIddict": "OpenIddict Kimlik",
     "Permission:OpenIddict.Users.Impersonate": "Kullanıcının kimliğine bürün",
     "Permission:OpenIddict.Applications.Read": "OIDC uygulamalarını görüntüle",
-    "Permission:OpenIddict.Applications.Create": "OIDC uygulaması oluştur",
     "Permission:OpenIddict.Applications.Manage": "OIDC uygulamalarını yönet (görüntüle, düzenle)",
-    "Permission:OpenIddict.Applications.Delete": "OIDC uygulamalarını sil",
     "Permission:OpenIddict.Applications.Rotate": "Uygulama gizli anahtarlarını döndür",
     "Permission:OpenIddict.Scopes.Read": "OIDC kapsamlarını görüntüle",
-    "Permission:OpenIddict.Scopes.Create": "OIDC kapsamı oluştur",
     "Permission:OpenIddict.Scopes.Manage": "OIDC kapsamlarını yönet (görüntüle, düzenle)",
-    "Permission:OpenIddict.Scopes.Delete": "OIDC kapsamlarını sil",
     "Permission:OpenIddict.Authorizations.Read": "OIDC yetkilendirmelerini görüntüle",
     "Permission:OpenIddict.Authorizations.Revoke": "OIDC yetkilendirmelerini iptal et"
   }

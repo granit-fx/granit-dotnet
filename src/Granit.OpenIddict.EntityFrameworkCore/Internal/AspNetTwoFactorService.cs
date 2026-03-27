@@ -1,5 +1,5 @@
-using Granit.OpenIddict.Entities;
-using Granit.OpenIddict.Services;
+using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Identity;
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Internal;

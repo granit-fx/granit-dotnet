@@ -1,5 +1,5 @@
 using Granit.Identity;
-using Granit.OpenIddict.Entities;
+using Granit.Identity.Local.Domain;
 using Granit.QueryEngine;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

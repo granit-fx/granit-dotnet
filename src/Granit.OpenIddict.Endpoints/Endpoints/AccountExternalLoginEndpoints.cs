@@ -1,5 +1,5 @@
+using Granit.Identity.Local.Services;
 using Granit.OpenIddict.Options;
-using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

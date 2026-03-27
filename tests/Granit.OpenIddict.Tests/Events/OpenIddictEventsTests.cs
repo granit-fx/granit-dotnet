@@ -1,4 +1,4 @@
-using Granit.OpenIddict.Events;
+using Granit.Identity.Local.Events;
 using Shouldly;
 using Xunit;
 

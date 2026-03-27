@@ -26,14 +26,8 @@ public static class OpenIddictPermissions
         /// <summary>Permission to list and view OIDC applications.</summary>
         public const string Read = "OpenIddict.Applications.Read";
 
-        /// <summary>Permission to create new OIDC applications.</summary>
-        public const string Create = "OpenIddict.Applications.Create";
-
         /// <summary>Permission to manage OIDC application details.</summary>
         public const string Manage = "OpenIddict.Applications.Manage";
-
-        /// <summary>Permission to delete OIDC applications.</summary>
-        public const string Delete = "OpenIddict.Applications.Delete";
 
         /// <summary>Permission to rotate OIDC application secrets.</summary>
         public const string Rotate = "OpenIddict.Applications.Rotate";
@@ -45,14 +39,8 @@ public static class OpenIddictPermissions
         /// <summary>Permission to list and view OIDC scopes.</summary>
         public const string Read = "OpenIddict.Scopes.Read";
 
-        /// <summary>Permission to create new OIDC scopes.</summary>
-        public const string Create = "OpenIddict.Scopes.Create";
-
         /// <summary>Permission to manage OIDC scope details.</summary>
         public const string Manage = "OpenIddict.Scopes.Manage";
-
-        /// <summary>Permission to delete OIDC scopes.</summary>
-        public const string Delete = "OpenIddict.Scopes.Delete";
     }
 
     /// <summary>Permissions for OIDC authorization administration.</summary>

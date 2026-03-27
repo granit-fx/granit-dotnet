@@ -231,6 +231,7 @@
         "tests/Granit.Identity.Federated.GoogleCloud.Tests",
         "tests/Granit.Identity.Federated.Keycloak.Tests",
         "tests/Granit.Identity.Local.AspNetIdentity.Tests",
+        "tests/Granit.Identity.Local.Tests",
         "tests/Granit.Identity.Tests",
         "tests/Granit.Authentication.DPoP.Tests",
         "tests/Granit.Authentication.OpenIddict.Tests",

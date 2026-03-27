@@ -1,14 +1,12 @@
 using Granit.Identity;
+using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Services;
 using Granit.Identity.Models;
-using Granit.OpenIddict.Domain;
-using Granit.OpenIddict.Entities;
-using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using GranitIdentityGroup = Granit.Identity.Models.IdentityGroup;
 using GranitIdentityRole = Granit.Identity.Models.IdentityRole;
-#pragma warning disable EF1001 // OpenIddictDbContext is internal but accessible via InternalsVisibleTo
 
 namespace Granit.Identity.Local.AspNetIdentity.Internal;
 
@@ -25,7 +23,7 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 internal sealed partial class AspNetIdentityProvider(
     UserManager<GranitUser> _userManager,
     RoleManager<GranitRole> _roleManager,
-    IDbContextFactory<OpenIddictDbContext> _dbFactory,
+    ILocalIdentityGroupStore _groupStore,
     ILogger<AspNetIdentityProvider> _logger) : IIdentityProvider
 {
     // ──── IIdentityUserReader ────
@@ -217,68 +215,24 @@ internal sealed partial class AspNetIdentityProvider(
     // ──── IIdentityGroupManager ────
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<GranitIdentityGroup>> GetGroupsAsync(
-        CancellationToken cancellationToken = default)
-    {
-        await using OpenIddictDbContext db = await _dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        List<GranitUserGroup> groups = await db.UserGroups.AsNoTracking()
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-        return groups.Select(g => new GranitIdentityGroup(g.Id.ToString(), g.Name, null, [])).ToList();
-    }
+    public Task<IReadOnlyList<GranitIdentityGroup>> GetGroupsAsync(
+        CancellationToken cancellationToken = default) =>
+        _groupStore.GetGroupsAsync(cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<GranitIdentityGroup>> GetUserGroupsAsync(
-        string userId, CancellationToken cancellationToken = default)
-    {
-        Guid userGuid = ParseGuid(userId, nameof(userId));
-
-        await using OpenIddictDbContext db = await _dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        List<Guid> groupIds = await db.UserGroupMembers.AsNoTracking()
-            .Where(m => m.UserId == userGuid)
-            .Select(m => m.GroupId)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-
-        List<GranitUserGroup> groups = await db.UserGroups.AsNoTracking()
-            .Where(g => groupIds.Contains(g.Id))
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-
-        return groups.Select(g => new GranitIdentityGroup(g.Id.ToString(), g.Name, null, [])).ToList();
-    }
+    public Task<IReadOnlyList<GranitIdentityGroup>> GetUserGroupsAsync(
+        string userId, CancellationToken cancellationToken = default) =>
+        _groupStore.GetUserGroupsAsync(userId, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task AddUserToGroupAsync(
-        string userId, string groupId, CancellationToken cancellationToken = default)
-    {
-        Guid userGuid = ParseGuid(userId, nameof(userId));
-        Guid groupGuid = ParseGuid(groupId, nameof(groupId));
-
-        await using OpenIddictDbContext db = await _dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        db.UserGroupMembers.Add(new GranitUserGroupMember
-        {
-            GroupId = groupGuid,
-            UserId = userGuid,
-        });
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+    public Task AddUserToGroupAsync(
+        string userId, string groupId, CancellationToken cancellationToken = default) =>
+        _groupStore.AddUserToGroupAsync(userId, groupId, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task RemoveUserFromGroupAsync(
-        string userId, string groupId, CancellationToken cancellationToken = default)
-    {
-        Guid userGuid = ParseGuid(userId, nameof(userId));
-        Guid groupGuid = ParseGuid(groupId, nameof(groupId));
-
-        await using OpenIddictDbContext db = await _dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        GranitUserGroupMember? member = await db.UserGroupMembers
-            .FirstOrDefaultAsync(m => m.GroupId == groupGuid && m.UserId == userGuid,
-                cancellationToken).ConfigureAwait(false);
-
-        if (member is not null)
-        {
-            db.UserGroupMembers.Remove(member);
-            await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        }
-    }
+    public Task RemoveUserFromGroupAsync(
+        string userId, string groupId, CancellationToken cancellationToken = default) =>
+        _groupStore.RemoveUserFromGroupAsync(userId, groupId, cancellationToken);
 
     // ──── IIdentitySessionManager ────
     // ASP.NET Core Identity does not support individual session termination.
@@ -311,17 +265,10 @@ internal sealed partial class AspNetIdentityProvider(
         Task.FromResult<DateTimeOffset?>(null);
 
     /// <inheritdoc/>
-#pragma warning disable GRSEC003 // Method name contains "Password" — not a secret
-    public async Task SendPasswordResetEmailAsync(
-        string userId, CancellationToken cancellationToken = default)
-    {
-        GranitUser user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
-            ?? throw new InvalidOperationException($"User {userId} not found.");
-
-        // Generate reset token; the caller (endpoint layer) is responsible for sending the email.
-        _ = await _userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(false);
-    }
-#pragma warning restore GRSEC003
+    // SupportsNativePasswordResetEmail is false — the framework routes through IPasswordResetService instead.
+    public Task SendPasswordResetEmailAsync(
+        string userId, CancellationToken cancellationToken = default) =>
+        Task.CompletedTask;
 
     /// <inheritdoc/>
 #pragma warning disable GRSEC003 // Method name contains "Password" — not a secret

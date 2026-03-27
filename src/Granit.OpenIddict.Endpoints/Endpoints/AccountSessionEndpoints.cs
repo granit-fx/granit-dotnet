@@ -1,3 +1,4 @@
+using Granit.Identity.Local.Services;
 using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Builder;

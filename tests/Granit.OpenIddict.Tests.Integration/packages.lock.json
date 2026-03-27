@@ -641,11 +641,22 @@
           "Granit.QueryEngine": "[0.1.0-dev, )"
         }
       },
+      "granit.identity.local": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Events": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Identity": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
       "granit.identity.local.aspnetidentity": {
         "type": "Project",
         "dependencies": {
           "Granit.Identity": "[0.1.0-dev, )",
-          "Granit.OpenIddict.EntityFrameworkCore": "[0.1.0-dev, )"
+          "Granit.Identity.Local": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore": "[10.*, )"
         }
       },
       "granit.localization": {
@@ -665,12 +676,8 @@
       "granit.openiddict": {
         "type": "Project",
         "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Events": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Identity": "[0.1.0-dev, )",
+          "Granit.Identity.Local": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
           "OpenIddict.EntityFrameworkCore": "[7.*, )"
         }
       },
@@ -689,6 +696,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Encryption": "[0.1.0-dev, )",
+          "Granit.Identity.Local": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )",
           "Granit.OpenIddict.Server": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",

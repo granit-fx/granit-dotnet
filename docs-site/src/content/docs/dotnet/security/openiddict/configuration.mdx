@@ -385,7 +385,7 @@ public static class OpenIddictFeatureNames
 
 ## Permissions
 
-All 23 permission constants are defined in `OpenIddictPermissions` and follow the
+All 19 permission constants are defined in `OpenIddictPermissions` and follow the
 `[Group].[Resource].[Action]` convention. They are registered via
 `OpenIddictPermissionDefinitionProvider` (auto-discovered by `GranitAuthorizationModule`).
 
@@ -421,9 +421,7 @@ All 23 permission constants are defined in `OpenIddictPermissions` and follow th
 | Constant | Value | Description |
 |----------|-------|-------------|
 | `OpenIddictPermissions.Applications.Read` | `OpenIddict.Applications.Read` | List and view OIDC applications |
-| `OpenIddictPermissions.Applications.Create` | `OpenIddict.Applications.Create` | Create new OIDC applications |
-| `OpenIddictPermissions.Applications.Manage` | `OpenIddict.Applications.Manage` | Manage OIDC application details |
-| `OpenIddictPermissions.Applications.Delete` | `OpenIddict.Applications.Delete` | Delete OIDC applications |
+| `OpenIddictPermissions.Applications.Manage` | `OpenIddict.Applications.Manage` | Create, update, and delete OIDC applications |
 | `OpenIddictPermissions.Applications.Rotate` | `OpenIddict.Applications.Rotate` | Rotate client secrets |
 
 ### Scopes
@@ -431,9 +429,7 @@ All 23 permission constants are defined in `OpenIddictPermissions` and follow th
 | Constant | Value | Description |
 |----------|-------|-------------|
 | `OpenIddictPermissions.Scopes.Read` | `OpenIddict.Scopes.Read` | List and view OIDC scopes |
-| `OpenIddictPermissions.Scopes.Create` | `OpenIddict.Scopes.Create` | Create new OIDC scopes |
-| `OpenIddictPermissions.Scopes.Manage` | `OpenIddict.Scopes.Manage` | Manage OIDC scope details |
-| `OpenIddictPermissions.Scopes.Delete` | `OpenIddict.Scopes.Delete` | Delete OIDC scopes |
+| `OpenIddictPermissions.Scopes.Manage` | `OpenIddict.Scopes.Manage` | Create, update, and delete OIDC scopes |
 
 ### Authorizations
 

@@ -1,11 +1,11 @@
 using System.Collections.Immutable;
 using System.Security.Claims;
 using Granit.Events;
+using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Events;
+using Granit.Identity.Local.Services;
 using Granit.OpenIddict.Diagnostics;
-using Granit.OpenIddict.Entities;
-using Granit.OpenIddict.Events;
 using Granit.OpenIddict.Extensions;
-using Granit.OpenIddict.Services;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;

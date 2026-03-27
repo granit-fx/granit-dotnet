@@ -422,8 +422,8 @@ and admin management (permission-protected).
 | Method | Route | Operation | Permission | Response |
 |--------|-------|-----------|------------|----------|
 | <Badge text="GET" variant="note" /> | `/oidc/applications` | ListOidcApplications | `OpenIddict.Applications.Read` | `OidcApplicationResponse[]` |
-| <Badge text="POST" variant="success" /> | `/oidc/applications` | CreateOidcApplication | `OpenIddict.Applications.Create` | 201 / 409 |
-| <Badge text="DELETE" variant="danger" /> | `/oidc/applications/{clientId}` | DeleteOidcApplication | `OpenIddict.Applications.Delete` | 204 / 404 |
+| <Badge text="POST" variant="success" /> | `/oidc/applications` | CreateOidcApplication | `OpenIddict.Applications.Manage` | 201 / 409 |
+| <Badge text="DELETE" variant="danger" /> | `/oidc/applications/{clientId}` | DeleteOidcApplication | `OpenIddict.Applications.Manage` | 204 / 404 |
 | <Badge text="POST" variant="success" /> | `/oidc/applications/{clientId}/rotate-secret` | RotateOidcApplicationSecret | `OpenIddict.Applications.Rotate` | `OidcSecretRotationResponse` / 404 |
 
 **Response types:**
@@ -447,8 +447,8 @@ interface OidcSecretRotationResponse {
 | Method | Route | Operation | Permission | Response |
 |--------|-------|-----------|------------|----------|
 | <Badge text="GET" variant="note" /> | `/oidc/scopes` | ListOidcScopes | `OpenIddict.Scopes.Read` | `OidcScopeResponse[]` |
-| <Badge text="POST" variant="success" /> | `/oidc/scopes` | CreateOidcScope | `OpenIddict.Scopes.Create` | 201 / 409 |
-| <Badge text="DELETE" variant="danger" /> | `/oidc/scopes/{scopeName}` | DeleteOidcScope | `OpenIddict.Scopes.Delete` | 204 / 404 |
+| <Badge text="POST" variant="success" /> | `/oidc/scopes` | CreateOidcScope | `OpenIddict.Scopes.Manage` | 201 / 409 |
+| <Badge text="DELETE" variant="danger" /> | `/oidc/scopes/{scopeName}` | DeleteOidcScope | `OpenIddict.Scopes.Manage` | 204 / 404 |
 
 ```typescript
 interface OidcScopeResponse {

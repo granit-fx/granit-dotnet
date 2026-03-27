@@ -1,7 +1,7 @@
 using Granit.DataFiltering;
+using Granit.Identity.Local.Domain;
 using Granit.MultiTenancy;
 using Granit.OpenIddict.Domain;
-using Granit.OpenIddict.Entities;
 using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.EntityFrameworkCore.Extensions;
 using Granit.Persistence.Extensions;

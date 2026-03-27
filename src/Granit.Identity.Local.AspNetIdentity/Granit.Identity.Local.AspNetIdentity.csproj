@@ -17,8 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Granit.Identity\Granit.Identity.csproj" />
-    <ProjectReference Include="..\Granit.OpenIddict.EntityFrameworkCore\Granit.OpenIddict.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.Identity.Local\Granit.Identity.Local.csproj" />
   </ItemGroup>
 
 </Project>

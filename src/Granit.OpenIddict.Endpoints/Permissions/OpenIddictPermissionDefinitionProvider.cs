@@ -31,17 +31,9 @@ internal sealed class OpenIddictPermissionDefinitionProvider : IPermissionDefini
             LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
                 "Permission:OpenIddict.Applications.Read"));
         group.AddPermission(
-            OpenIddictPermissions.Applications.Create,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Applications.Create"));
-        group.AddPermission(
             OpenIddictPermissions.Applications.Manage,
             LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
                 "Permission:OpenIddict.Applications.Manage"));
-        group.AddPermission(
-            OpenIddictPermissions.Applications.Delete,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Applications.Delete"));
         group.AddPermission(
             OpenIddictPermissions.Applications.Rotate,
             LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
@@ -53,17 +45,9 @@ internal sealed class OpenIddictPermissionDefinitionProvider : IPermissionDefini
             LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
                 "Permission:OpenIddict.Scopes.Read"));
         group.AddPermission(
-            OpenIddictPermissions.Scopes.Create,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Scopes.Create"));
-        group.AddPermission(
             OpenIddictPermissions.Scopes.Manage,
             LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
                 "Permission:OpenIddict.Scopes.Manage"));
-        group.AddPermission(
-            OpenIddictPermissions.Scopes.Delete,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Scopes.Delete"));
 
         // OIDC Authorizations
         group.AddPermission(

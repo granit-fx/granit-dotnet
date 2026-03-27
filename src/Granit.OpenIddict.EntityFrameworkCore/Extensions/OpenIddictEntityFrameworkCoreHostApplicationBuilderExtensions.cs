@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using Granit.OpenIddict.Entities;
+using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Services;
 using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.Options;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Extensions;
@@ -77,6 +79,9 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
 
         // 4. Register OpenIddict Server + Validation (delegated to Granit.OpenIddict.Server)
         builder.AddGranitOpenIddictServer();
+
+        // 5. Register group store — required by AspNetIdentityProvider
+        builder.Services.TryAddScoped<ILocalIdentityGroupStore, OpenIddictGroupStore>();
 
         return builder;
     }

@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
-using Granit.OpenIddict.Services;
+using Granit.Identity.Local.Services;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;

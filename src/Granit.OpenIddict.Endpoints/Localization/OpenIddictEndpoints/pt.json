@@ -4,14 +4,10 @@
     "PermissionGroup:OpenIddict": "Identidade OpenIddict",
     "Permission:OpenIddict.Users.Impersonate": "Personificar um utilizador",
     "Permission:OpenIddict.Applications.Read": "Consultar aplicações OIDC",
-    "Permission:OpenIddict.Applications.Create": "Criar aplicações OIDC",
     "Permission:OpenIddict.Applications.Manage": "Gerir aplicações OIDC (consultar, modificar)",
-    "Permission:OpenIddict.Applications.Delete": "Eliminar aplicações OIDC",
     "Permission:OpenIddict.Applications.Rotate": "Rodar segredos de aplicação",
     "Permission:OpenIddict.Scopes.Read": "Consultar scopes OIDC",
-    "Permission:OpenIddict.Scopes.Create": "Criar scopes OIDC",
     "Permission:OpenIddict.Scopes.Manage": "Gerir scopes OIDC (consultar, modificar)",
-    "Permission:OpenIddict.Scopes.Delete": "Eliminar scopes OIDC",
     "Permission:OpenIddict.Authorizations.Read": "Consultar autorizações OIDC",
     "Permission:OpenIddict.Authorizations.Revoke": "Revogar autorizações OIDC"
   }

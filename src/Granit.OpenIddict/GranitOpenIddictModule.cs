@@ -1,13 +1,12 @@
 using Granit.Diagnostics;
-using Granit.Events;
-using Granit.Guids;
-using Granit.Identity;
+using Granit.Identity.Local;
+using Granit.Identity.Local.Options;
+using Granit.Identity.Local.Services;
 using Granit.Modularity;
 using Granit.OpenIddict.Diagnostics;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Services;
 using Granit.QueryEngine;
-using Granit.Timing;
 using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -19,11 +18,8 @@ namespace Granit.OpenIddict;
 /// Registers OIDC abstractions, service interfaces, and integration event types.
 /// </summary>
 [DependsOn(
-    typeof(GranitEventsModule),
-    typeof(GranitGuidsModule),
-    typeof(GranitIdentityModule),
-    typeof(GranitQueryEngineModule),
-    typeof(GranitTimingModule))]
+    typeof(GranitIdentityLocalModule),
+    typeof(GranitQueryEngineModule))]
 public sealed class GranitOpenIddictModule : GranitModule
 {
     /// <inheritdoc/>

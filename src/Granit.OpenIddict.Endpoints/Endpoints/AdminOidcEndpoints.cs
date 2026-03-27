@@ -31,7 +31,7 @@ internal static class AdminOidcEndpoints
             .WithDescription("Registers a new OIDC client with the specified permissions and redirect URIs.")
             .Produces<AdminOidcApplicationResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
-            .RequireAuthorization(OpenIddictPermissions.Applications.Create);
+            .RequireAuthorization(OpenIddictPermissions.Applications.Manage);
 
         apps.MapDelete("/{clientId}", DeleteApplicationAsync)
             .WithName("DeleteOidcApplication")
@@ -39,7 +39,7 @@ internal static class AdminOidcEndpoints
             .WithDescription("Removes the OIDC client and all associated authorizations and tokens.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(OpenIddictPermissions.Applications.Delete);
+            .RequireAuthorization(OpenIddictPermissions.Applications.Manage);
 
 #pragma warning disable GRSEC003 // Endpoint path constant, not a secret
         apps.MapPost("/{clientId}/rotate-secret", RotateSecretAsync)
@@ -69,7 +69,7 @@ internal static class AdminOidcEndpoints
             .WithDescription("Registers a new scope with the specified name, display name, and resources.")
             .Produces<AdminOidcScopeResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
-            .RequireAuthorization(OpenIddictPermissions.Scopes.Create);
+            .RequireAuthorization(OpenIddictPermissions.Scopes.Manage);
 
         scopes.MapDelete("/{scopeName}", DeleteScopeAsync)
             .WithName("DeleteOidcScope")
@@ -77,7 +77,7 @@ internal static class AdminOidcEndpoints
             .WithDescription("Removes the scope. Existing authorizations using this scope are not affected.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(OpenIddictPermissions.Scopes.Delete);
+            .RequireAuthorization(OpenIddictPermissions.Scopes.Manage);
 
         // ──── Authorizations ────
         RouteGroupBuilder auths = group.MapGroup("/oidc/authorizations");

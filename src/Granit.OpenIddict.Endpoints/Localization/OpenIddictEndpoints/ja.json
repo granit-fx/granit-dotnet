@@ -4,14 +4,10 @@
     "PermissionGroup:OpenIddict": "OpenIddict ID管理",
     "Permission:OpenIddict.Users.Impersonate": "ユーザーの代理ログイン",
     "Permission:OpenIddict.Applications.Read": "OIDCアプリケーションの閲覧",
-    "Permission:OpenIddict.Applications.Create": "OIDCアプリケーションの作成",
     "Permission:OpenIddict.Applications.Manage": "OIDCアプリケーションの管理（閲覧、編集）",
-    "Permission:OpenIddict.Applications.Delete": "OIDCアプリケーションの削除",
     "Permission:OpenIddict.Applications.Rotate": "アプリケーションシークレットのローテーション",
     "Permission:OpenIddict.Scopes.Read": "OIDCスコープの閲覧",
-    "Permission:OpenIddict.Scopes.Create": "OIDCスコープの作成",
     "Permission:OpenIddict.Scopes.Manage": "OIDCスコープの管理（閲覧、編集）",
-    "Permission:OpenIddict.Scopes.Delete": "OIDCスコープの削除",
     "Permission:OpenIddict.Authorizations.Read": "OIDC認可の閲覧",
     "Permission:OpenIddict.Authorizations.Revoke": "OIDC認可の取り消し"
   }

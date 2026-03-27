@@ -1,10 +1,10 @@
 using Granit.Events;
 using Granit.Identity;
+using Granit.Identity.Local.Events;
+using Granit.Identity.Local.Services;
 using Granit.Identity.Models;
 using Granit.OpenIddict.Diagnostics;
 using Granit.OpenIddict.Endpoints.Dtos;
-using Granit.OpenIddict.Events;
-using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

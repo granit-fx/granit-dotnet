@@ -1,3 +1,4 @@
+using Granit.Identity.Local.Options;
 using Granit.OpenIddict.Options;
 using Shouldly;
 using Xunit;

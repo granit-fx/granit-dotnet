@@ -4,14 +4,10 @@
     "PermissionGroup:OpenIddict": "OpenIddict 인증",
     "Permission:OpenIddict.Users.Impersonate": "사용자 대리 로그인",
     "Permission:OpenIddict.Applications.Read": "OIDC 애플리케이션 조회",
-    "Permission:OpenIddict.Applications.Create": "OIDC 애플리케이션 생성",
     "Permission:OpenIddict.Applications.Manage": "OIDC 애플리케이션 관리 (조회, 수정)",
-    "Permission:OpenIddict.Applications.Delete": "OIDC 애플리케이션 삭제",
     "Permission:OpenIddict.Applications.Rotate": "애플리케이션 비밀키 순환",
     "Permission:OpenIddict.Scopes.Read": "OIDC 스코프 조회",
-    "Permission:OpenIddict.Scopes.Create": "OIDC 스코프 생성",
     "Permission:OpenIddict.Scopes.Manage": "OIDC 스코프 관리 (조회, 수정)",
-    "Permission:OpenIddict.Scopes.Delete": "OIDC 스코프 삭제",
     "Permission:OpenIddict.Authorizations.Read": "OIDC 인가 조회",
     "Permission:OpenIddict.Authorizations.Revoke": "OIDC 인가 취소"
   }

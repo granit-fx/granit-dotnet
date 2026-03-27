@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
 using System.Text.Json;
-using Granit.OpenIddict.Entities;
-using Granit.OpenIddict.Options;
-using Granit.OpenIddict.Services;
+using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Options;
+using Granit.Identity.Local.Services;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;

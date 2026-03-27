@@ -1,6 +1,6 @@
 using Granit.Domain;
+using Granit.Identity.Local.Domain;
 using Granit.OpenIddict.Domain;
-using Granit.OpenIddict.Entities;
 using Granit.OpenIddict.Entities.OpenIddict;
 using Shouldly;
 using Xunit;

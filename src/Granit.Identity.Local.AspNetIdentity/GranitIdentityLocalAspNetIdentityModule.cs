@@ -1,8 +1,8 @@
 using Granit.Identity;
 using Granit.Identity.Extensions;
+using Granit.Identity.Local;
 using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Modularity;
-using Granit.OpenIddict.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -22,8 +22,8 @@ namespace Granit.Identity.Local.AspNetIdentity;
 /// </para>
 /// </remarks>
 [DependsOn(
-    typeof(GranitIdentityModule),
-    typeof(GranitOpenIddictEntityFrameworkCoreModule))]
+    typeof(GranitIdentityLocalModule),
+    typeof(GranitIdentityModule))]
 public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModule
 {
     /// <inheritdoc/>

@@ -1,7 +1,8 @@
 using Granit.Encryption;
+using Granit.Identity.Local.Options;
+using Granit.Identity.Local.Services;
 using Granit.Modularity;
 using Granit.MultiTenancy;
-using Granit.OpenIddict.Entities;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.EntityFrameworkCore.Seeding;
 using Granit.OpenIddict.Options;
@@ -53,6 +54,7 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
 
         context.Services.AddTransient<IDataSeedContributor, OpenIddictSeedContributor>();
 
+        context.Services.TryAddScoped<ILocalIdentityGroupStore, OpenIddictGroupStore>();
         context.Services.TryAddScoped<ExternalClaimsMapper>();
         context.Services.TryAddScoped<IExternalLoginService, AspNetExternalLoginService>();
         context.Services.TryAddScoped<ITotpService, TotpService>();

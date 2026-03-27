@@ -1,12 +1,13 @@
 using System.Security.Claims;
 using Granit.Events;
-using Granit.OpenIddict.Entities;
-using Granit.OpenIddict.Events;
+using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Events;
+using Granit.Identity.Local.Services;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using GranitExternalLoginInfo = Granit.OpenIddict.Services.ExternalLoginInfo;
+using GranitExternalLoginInfo = Granit.Identity.Local.Services.ExternalLoginInfo;
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 
