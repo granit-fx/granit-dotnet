@@ -1,6 +1,7 @@
 using FluentValidation;
 using Granit.DataExchange.Endpoints.Dtos.Import;
 using Granit.Validation;
+using Granit.Validation.Extensions;
 
 namespace Granit.DataExchange.Endpoints.Validators;
 
@@ -14,7 +15,7 @@ internal sealed class ConfirmMappingsRequestValidator : GranitValidator<ConfirmM
         RuleFor(x => x.Mappings)
             .NotEmpty()
             .Must(m => m.Any(mapping => mapping.TargetProperty is not null))
-            .WithMessage("At least one mapping must have a non-null TargetProperty.");
+            .WithErrorCodeAndMessage("Granit:Validation:AtLeastOneMappingTarget");
 
         RuleForEach(x => x.Mappings).ChildRules(mapping =>
         {

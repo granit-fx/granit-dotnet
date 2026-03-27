@@ -1,8 +1,9 @@
 {
   "culture": "fr-CA",
   "texts": {
-    "Granit:Validation:InvalidEmail": "'{PropertyName}' n'est pas une adresse courriel valide.",
+    "Granit:Validation:AtLeastOneMappingTarget": "Au moins un mappage doit avoir une propriété cible non nulle.",
+    "Granit:Validation:CreditCardValidator": "'{PropertyName}' n'est pas un numéro de carte de crédit valide.",
     "Granit:Validation:EmailValidator": "'{PropertyName}' n'est pas une adresse courriel valide.",
-    "Granit:Validation:CreditCardValidator": "'{PropertyName}' n'est pas un numéro de carte de crédit valide."
+    "Granit:Validation:InvalidEmail": "'{PropertyName}' n'est pas une adresse courriel valide."
   }
 }

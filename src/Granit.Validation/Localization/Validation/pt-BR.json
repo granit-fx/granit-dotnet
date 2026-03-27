@@ -1,4 +1,6 @@
 {
   "culture": "pt-BR",
-  "texts": {}
+  "texts": {
+    "Granit:Validation:AtLeastOneMappingTarget": "Pelo menos um mapeamento deve ter uma propriedade de destino não nula."
+  }
 }

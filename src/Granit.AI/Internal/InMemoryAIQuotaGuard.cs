@@ -13,7 +13,7 @@ namespace Granit.AI.Internal;
 /// <remarks>
 /// Uses <see cref="ConcurrentDictionary{TKey,TValue}"/> with timestamp-based cleanup.
 /// Suitable for single-instance deployments. For multi-instance, replace with a
-/// distributed implementation backed by Redis or <c>IDistributedCache</c>.
+/// distributed implementation backed by Redis or a distributed cache abstraction.
 /// </remarks>
 internal sealed class InMemoryAIQuotaGuard(
     IOptions<AIQuotaOptions> options,

@@ -1,6 +1,7 @@
 {
   "culture": "en-GB",
   "texts": {
+    "Granit:Validation:AtLeastOneMappingTarget": "At least one mapping must have a non-null target property.",
     "Granit:Validation:InvalidEmail": "'{PropertyName}' is not a valid email address."
   }
 }
