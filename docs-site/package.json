@@ -38,7 +38,9 @@
       "sharp"
     ],
     "overrides": {
-      "fast-xml-parser": ">=5.5.7"
+      "fast-xml-parser": ">=5.5.7",
+      "picomatch": ">=4.0.4",
+      "yaml": ">=2.8.3"
     }
   }
 }
