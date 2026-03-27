@@ -1,5 +1,6 @@
 using Granit.Features.Cache;
 using Granit.Features.Definitions;
+using Granit.Features.Diagnostics;
 using Granit.Features.Exceptions;
 using Granit.Features.ValueProviders;
 using Granit.MultiTenancy;
@@ -16,13 +17,15 @@ internal sealed class FeatureChecker(
     IFeatureDefinitionStore definitionStore,
     IEnumerable<IFeatureValueProvider> valueProviders,
     IServiceProvider serviceProvider,
-    IFusionCache cache) : IFeatureChecker
+    IFusionCache cache,
+    FeaturesMetrics metrics) : IFeatureChecker
 {
     private readonly IFeatureDefinitionStore _definitionStore = definitionStore;
     private readonly IReadOnlyList<IFeatureValueProvider> _providers =
         [.. valueProviders.OrderBy(p => p.Order)];
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly IFusionCache _cache = cache;
+    private readonly FeaturesMetrics _metrics = metrics;
 
     /// <inheritdoc/>
     public async Task<bool> IsEnabledAsync(string featureName, CancellationToken cancellationToken = default)
@@ -45,12 +48,14 @@ internal sealed class FeatureChecker(
         ICurrentTenant? currentTenant = _serviceProvider.GetService<ICurrentTenant>();
         Guid? tenantId = currentTenant?.IsAvailable == true ? currentTenant.Id : null;
         string cacheKey = FeatureCacheKey.Build(tenantId, featureName);
+        string? tenantIdStr = tenantId?.ToString();
 
         string resolved = await _cache.GetOrSetAsync<string>(
             cacheKey,
             async (_, ct) =>
             {
-                string? value = await ResolveAsync(definition, ct).ConfigureAwait(false);
+                (string? value, string providerName) = await ResolveAsync(definition, ct).ConfigureAwait(false);
+                _metrics.RecordValueResolved(tenantIdStr, featureName, providerName);
                 return value ?? definition.DefaultValue;
             },
             token: cancellationToken).ConfigureAwait(false);
@@ -68,17 +73,19 @@ internal sealed class FeatureChecker(
         }
     }
 
-    private async Task<string?> ResolveAsync(FeatureDefinition definition, CancellationToken cancellationToken)
+    private async Task<(string? Value, string ProviderName)> ResolveAsync(
+        FeatureDefinition definition,
+        CancellationToken cancellationToken)
     {
         foreach (IFeatureValueProvider provider in _providers)
         {
             string? value = await provider.GetOrNullAsync(definition, cancellationToken).ConfigureAwait(false);
             if (value is not null)
             {
-                return value;
+                return (value, provider.Name);
             }
         }
 
-        return null;
+        return (null, "Default");
     }
 }

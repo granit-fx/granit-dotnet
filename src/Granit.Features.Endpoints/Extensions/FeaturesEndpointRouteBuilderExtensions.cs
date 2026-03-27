@@ -268,7 +268,7 @@ public static class FeaturesEndpointRouteBuilderExtensions
 
     internal static ProblemHttpResult FeatureNotFound(string name) =>
         TypedResults.Problem(
-            detail: $"Feature '{name}' is not declared in any definition provider.",
+            detail: "The requested feature is not declared in any definition provider.",
             statusCode: StatusCodes.Status404NotFound);
 
     private static FeatureDefinitionResponse MapDefinition(FeatureDefinition definition) =>

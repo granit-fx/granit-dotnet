@@ -1,5 +1,9 @@
+using System.Diagnostics.Metrics;
+using Granit.Features.Diagnostics;
 using Granit.Features.Exceptions;
 using Granit.Features.Internal;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -8,12 +12,22 @@ namespace Granit.Features.Tests.Limits;
 
 public sealed class FeatureLimitGuardTests
 {
+    private sealed class TestMeterFactory : IMeterFactory
+    {
+        private readonly List<Meter> _meters = [];
+        public Meter Create(MeterOptions options) { Meter m = new(options); _meters.Add(m); return m; }
+        public void Dispose() { foreach (Meter m in _meters) { m.Dispose(); } }
+    }
+
     private static FeatureLimitGuard BuildGuard(long resolvedLimit)
     {
         IFeatureChecker checker = Substitute.For<IFeatureChecker>();
         checker.GetNumericAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(resolvedLimit);
-        return new FeatureLimitGuard(checker);
+        ServiceCollection sc = new();
+        ServiceProvider sp = sc.BuildServiceProvider();
+        FeaturesMetrics metrics = new(new TestMeterFactory());
+        return new FeatureLimitGuard(checker, sp, metrics, NullLogger<FeatureLimitGuard>.Instance);
     }
 
     [Fact]

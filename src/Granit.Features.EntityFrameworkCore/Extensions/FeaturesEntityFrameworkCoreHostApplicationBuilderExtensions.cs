@@ -1,5 +1,6 @@
 using Granit.Events;
 using Granit.Events.Extensions;
+using Granit.Features.Diagnostics;
 using Granit.Features.EntityFrameworkCore.Internal;
 using Granit.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -39,10 +40,11 @@ public static class FeaturesEntityFrameworkCoreHostApplicationBuilderExtensions
     {
         builder.Services.AddGranitDbContext<FeaturesDbContext>(configure);
 
-        // Fallbacks: ensure event bus and TimeProvider are available even if
+        // Fallbacks: ensure event bus, TimeProvider, and metrics are available even if
         // AddGranitFeatures() / AddGranitEvents() was not called (e.g. in tests).
         builder.Services.AddGranitEvents();
         builder.Services.TryAddSingleton(TimeProvider.System);
+        builder.Services.TryAddSingleton<FeaturesMetrics>();
 
         builder.Services.Replace(
             ServiceDescriptor.Scoped<IFeatureStoreReader, EfCoreFeatureStore>());

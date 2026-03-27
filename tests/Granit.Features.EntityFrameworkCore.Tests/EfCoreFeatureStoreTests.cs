@@ -1,7 +1,10 @@
+using System.Diagnostics.Metrics;
 using Granit.Events;
+using Granit.Features.Diagnostics;
 using Granit.Features.EntityFrameworkCore.Internal;
 using Granit.Features.Events;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -13,6 +16,13 @@ public sealed class EfCoreFeatureStoreTests
     // -------------------------------------------------------------------------
     // Test infrastructure
     // -------------------------------------------------------------------------
+
+    private sealed class TestMeterFactory : IMeterFactory
+    {
+        private readonly List<Meter> _meters = [];
+        public Meter Create(MeterOptions options) { Meter m = new(options); _meters.Add(m); return m; }
+        public void Dispose() { foreach (Meter m in _meters) { m.Dispose(); } }
+    }
 
     private sealed class InMemoryContextFactory(string dbName) : IDbContextFactory<FeaturesDbContext>
     {
@@ -28,7 +38,9 @@ public sealed class EfCoreFeatureStoreTests
     private static EfCoreFeatureStore CreateStore(string dbName, ILocalEventBus? eventBus = null) =>
         new(new InMemoryContextFactory(dbName),
             eventBus ?? Substitute.For<ILocalEventBus>(),
-            TimeProvider.System);
+            TimeProvider.System,
+            new FeaturesMetrics(new TestMeterFactory()),
+            NullLogger<EfCoreFeatureStore>.Instance);
 
     private static async Task SeedAsync(
         string dbName,

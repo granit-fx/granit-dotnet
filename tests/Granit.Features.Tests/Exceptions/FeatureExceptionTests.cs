@@ -137,8 +137,8 @@ public sealed class FeatureExceptionTests
         FeatureValueValidationException ex = new("App.MaxPatients", "abc", "must be integer");
 
         ex.Message.ShouldContain("App.MaxPatients");
-        ex.Message.ShouldContain("abc");
         ex.Message.ShouldContain("must be integer");
+        ex.Message.ShouldNotContain("abc");
     }
 
     [Fact]

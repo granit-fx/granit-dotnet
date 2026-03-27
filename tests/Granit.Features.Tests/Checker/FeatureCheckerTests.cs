@@ -1,4 +1,6 @@
+using System.Diagnostics.Metrics;
 using Granit.Features.Definitions;
+using Granit.Features.Diagnostics;
 using Granit.Features.Exceptions;
 using Granit.Features.Internal;
 using Granit.Features.ValueProviders;
@@ -46,13 +48,23 @@ public sealed class FeatureCheckerTests
         return sc.BuildServiceProvider();
     }
 
+    private static FeaturesMetrics CreateTestMetrics() =>
+        new(new TestMeterFactory());
+
+    private sealed class TestMeterFactory : IMeterFactory
+    {
+        private readonly List<Meter> _meters = [];
+        public Meter Create(MeterOptions options) { Meter m = new(options); _meters.Add(m); return m; }
+        public void Dispose() { foreach (Meter m in _meters) { m.Dispose(); } }
+    }
+
     private static FeatureChecker BuildChecker(
         IFeatureDefinitionStore store,
         ICurrentTenant? currentTenant,
         params IFeatureValueProvider[] providers)
     {
         ServiceProvider sp = BuildServiceProvider(currentTenant);
-        return new(store, providers, sp, CreateNoopCache());
+        return new(store, providers, sp, CreateNoopCache(), CreateTestMetrics());
     }
 
     // -------------------------------------------------------------------------
@@ -154,7 +166,8 @@ public sealed class FeatureCheckerTests
         FeatureChecker checker = new(store,
             [tenantProvider, new DefaultValueFeatureValueProvider()],
             sp,
-            CreateNoopCache());
+            CreateNoopCache(),
+            CreateTestMetrics());
 
         bool result = await checker.IsEnabledAsync("App.VideoConsultation", TestContext.Current.CancellationToken);
 
@@ -175,7 +188,8 @@ public sealed class FeatureCheckerTests
         FeatureChecker checker = new(store,
             [tenantProvider, new DefaultValueFeatureValueProvider()],
             sp,
-            CreateNoopCache());
+            CreateNoopCache(),
+            CreateTestMetrics());
 
         bool result = await checker.IsEnabledAsync("App.VideoConsultation", TestContext.Current.CancellationToken);
 
@@ -200,7 +214,8 @@ public sealed class FeatureCheckerTests
         FeatureChecker checker = new(store,
             [tenantProvider, new DefaultValueFeatureValueProvider()],
             sp,
-            CreateNoopCache());
+            CreateNoopCache(),
+            CreateTestMetrics());
 
         bool result = await checker.IsEnabledAsync("App.VideoConsultation", TestContext.Current.CancellationToken);
 
@@ -225,7 +240,8 @@ public sealed class FeatureCheckerTests
         FeatureChecker checker = new(store,
             [tenantProvider, new DefaultValueFeatureValueProvider()],
             sp,
-            CreateNoopCache());
+            CreateNoopCache(),
+            CreateTestMetrics());
 
         bool result = await checker.IsEnabledAsync("App.VideoConsultation", TestContext.Current.CancellationToken);
 

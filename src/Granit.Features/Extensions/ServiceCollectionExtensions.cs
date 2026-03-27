@@ -1,4 +1,6 @@
+using Granit.Diagnostics;
 using Granit.Features.Definitions;
+using Granit.Features.Diagnostics;
 using Granit.Features.Internal;
 using Granit.Features.ValueProviders;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +24,7 @@ public static class ServiceCollectionExtensions
     ///   <item>Value providers: Default, Plan, Tenant (scoped).</item>
     ///   <item><see cref="IFeatureChecker"/> (scoped) — resolves feature values with hybrid cache.</item>
     ///   <item><see cref="IFeatureLimitGuard"/> (scoped) — enforces numeric feature limits.</item>
+    ///   <item><see cref="FeaturesMetrics"/> (singleton) — OpenTelemetry counters.</item>
     /// </list>
     /// <para>
     /// To activate plan-level resolution, the application must additionally register
@@ -36,6 +39,8 @@ public static class ServiceCollectionExtensions
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddGranitFeatures(this IServiceCollection services)
     {
+        GranitActivitySourceRegistry.Register(FeaturesActivitySource.Name);
+
         services.AddSingleton<IFeatureDefinitionStore, FeatureDefinitionStore>();
 
         // Default in-memory store — register concrete type, then forward both interfaces to same instance.
@@ -50,6 +55,8 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IFeatureChecker, FeatureChecker>();
         services.AddScoped<IFeatureLimitGuard, FeatureLimitGuard>();
+
+        services.TryAddSingleton<FeaturesMetrics>();
 
         return services;
     }

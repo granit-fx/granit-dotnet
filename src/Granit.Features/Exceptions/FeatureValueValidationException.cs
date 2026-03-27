@@ -21,7 +21,7 @@ public sealed class FeatureValueValidationException : BusinessException
     /// <param name="invalidValue">The value that failed validation.</param>
     /// <param name="reason">Human-readable validation failure reason.</param>
     public FeatureValueValidationException(string featureName, string invalidValue, string reason)
-        : base("Features:InvalidValue", $"Invalid value '{invalidValue}' for feature '{featureName}': {reason}")
+        : base("Features:InvalidValue", $"Invalid value for feature '{featureName}': {reason}")
     {
         FeatureName = featureName;
         InvalidValue = invalidValue;

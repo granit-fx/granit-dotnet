@@ -93,25 +93,26 @@ Implement `IFeatureDefinitionProvider` to declare features. Features are grouped
 admin UI organization.
 
 ```csharp
-public sealed class AcmeFeatureDefinitionProvider : FeatureDefinitionProvider
+public sealed class AcmeFeatureDefinitionProvider : IFeatureDefinitionProvider
 {
-    public override void Define(IFeatureDefinitionContext context)
+    public void Define(IFeatureDefinitionContext context)
     {
         FeatureGroupDefinition group = context.AddGroup("Acme", "Acme Application");
 
         group.AddToggle("Acme.VideoConsultation",
-            defaultValue: "false",
+            defaultValue: false,
             displayName: "Video Consultation");
 
         group.AddNumeric("Acme.MaxUsersCount",
-            defaultValue: "50",
-            displayName: "Maximum Users",
-            numericConstraint: new NumericConstraint(Min: 1, Max: 10_000));
+            defaultValue: 50,
+            min: 1,
+            max: 10_000,
+            displayName: "Maximum Users");
 
         group.AddSelection("Acme.StorageTier",
             defaultValue: "standard",
-            displayName: "Storage Tier",
-            selectionValues: new SelectionValues("standard", "premium", "enterprise"));
+            ["standard", "premium", "enterprise"],
+            displayName: "Storage Tier");
     }
 }
 ```
@@ -250,11 +251,11 @@ resolved values, and managing tenant-level overrides.
 
 | Scope | Method | Route | Permission |
 |-------|--------|-------|------------|
-| Definitions | `GET` | `/features/definitions` | `Features.Read` |
+| Definitions | `GET` | `/features/definitions` | `Features.Flags.Read` |
 | Values | `GET` | `/features/values` | Authenticated |
 | Values | `GET` | `/features/values/{name}` | Authenticated |
-| Overrides | `PUT` | `/features/overrides/{name}` | `Features.Manage` |
-| Overrides | `DELETE` | `/features/overrides/{name}` | `Features.Manage` |
+| Overrides | `PUT` | `/features/overrides/{name}` | `Features.Flags.Manage` |
+| Overrides | `DELETE` | `/features/overrides/{name}` | `Features.Flags.Manage` |
 
 Override values are validated against the feature's value type before persistence:
 
@@ -270,9 +271,33 @@ Invalid values return HTTP 422 with a descriptive `ProblemDetails` response.
 |----------|-----------|---------|
 | Modules | `GranitFeaturesModule`, `GranitFeaturesEntityFrameworkCoreModule`, `GranitFeaturesEndpointsModule` | -- |
 | Abstractions | `IFeatureChecker`, `IFeatureLimitGuard`, `IFeatureStoreReader`, `IFeatureStoreWriter` | `Granit.Features` |
-| Definitions | `FeatureDefinition`, `FeatureDefinitionProvider`, `FeatureValueType`, `NumericConstraint`, `SelectionValues` | `Granit.Features` |
+| Definitions | `FeatureDefinition`, `IFeatureDefinitionProvider`, `FeatureValueType`, `NumericConstraint`, `SelectionValues` | `Granit.Features` |
 | Gating | `[RequiresFeature]`, `.RequiresFeature()`, `RequiresFeatureMiddleware` | `Granit.Features` |
 | Endpoints | `MapGranitFeatures()`, `FeaturesPermissions`, `FeaturesEndpointsOptions` | `Granit.Features.Endpoints` |
+
+## Diagnostics
+
+The module registers `FeaturesMetrics` (singleton) with `IMeterFactory` and a
+`FeaturesActivitySource` in the `GranitActivitySourceRegistry`.
+
+| Metric | Type | Tags | Description |
+|--------|------|------|-------------|
+| `granit.features.value.resolved` | Counter | `tenant_id`, `feature_name`, `value_provider` | Feature values resolved through the cascade |
+| `granit.features.override.changed` | Counter | `tenant_id`, `feature_name`, `operation` | Override mutations (set or delete) |
+| `granit.features.limit.checked` | Counter | `tenant_id`, `feature_name` | Limit guard checks |
+| `granit.features.limit.exceeded` | Counter | `tenant_id`, `feature_name` | Limit guard checks that exceeded the plan limit |
+
+Structured log messages use `[LoggerMessage]` in `FeaturesLog`:
+
+- Override changes (feature name, tenant, old/new value)
+- Limit exceeded warnings
+- Startup warning when `InMemoryFeatureStore` is active outside Development
+
+:::caution[InMemoryFeatureStore]
+Without `Granit.Features.EntityFrameworkCore`, feature overrides are stored in-memory
+and lost on restart. The module logs a warning at startup if this happens outside a
+Development environment.
+:::
 
 ## See also
 
