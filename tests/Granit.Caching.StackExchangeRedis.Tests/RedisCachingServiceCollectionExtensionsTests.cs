@@ -57,8 +57,10 @@ public sealed class RedisCachingServiceCollectionExtensionsTests
     [Fact]
     public void AddGranitCachingRedis_EncryptValues_True_RegistersAesEncryptor()
     {
-        // Arrange — a valid 256-bit (32-byte) AES key encoded in base64
-        string testAesKey = Convert.ToBase64String(new byte[32]);
+        // Arrange — a valid 256-bit (32-byte) non-zero AES key encoded in base64
+        byte[] keyBytes = new byte[32];
+        System.Security.Cryptography.RandomNumberGenerator.Fill(keyBytes);
+        string testAesKey = Convert.ToBase64String(keyBytes);
 
         IConfiguration configuration = BuildConfiguration(new Dictionary<string, string?>
         {

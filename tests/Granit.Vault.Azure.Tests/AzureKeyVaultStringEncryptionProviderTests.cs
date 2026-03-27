@@ -1,3 +1,4 @@
+using Azure;
 using Granit.Encryption;
 using Granit.Encryption.Options;
 using Granit.Vault.Azure.Providers;
@@ -69,7 +70,7 @@ public sealed class AzureKeyVaultStringEncryptionProviderTests
     public void Decrypt_WhenExceptionThrown_ReturnsNull()
     {
         _transitEncryption.DecryptAsync("test-key", "bad-cipher", Arg.Any<CancellationToken>())
-            .Returns<string>(x => throw new InvalidOperationException("Azure Key Vault error"));
+            .Returns<string>(x => throw new RequestFailedException(400, "Bad request — invalid ciphertext"));
 
         string? result = _sut.Decrypt("bad-cipher");
 

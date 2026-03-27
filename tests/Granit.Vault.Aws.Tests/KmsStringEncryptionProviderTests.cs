@@ -1,3 +1,4 @@
+using Amazon.KeyManagementService.Model;
 using Granit.Encryption;
 using Granit.Encryption.Options;
 using Granit.Vault.Aws.Providers;
@@ -68,7 +69,7 @@ public sealed class KmsStringEncryptionProviderTests
     public void Decrypt_WhenExceptionThrown_ReturnsNull()
     {
         _transitEncryption.DecryptAsync("test-key", "bad-cipher", Arg.Any<CancellationToken>())
-            .Returns<string>(x => throw new InvalidOperationException("KMS error"));
+            .Returns<string>(x => throw new InvalidCiphertextException("Invalid ciphertext"));
 
         string? result = _sut.Decrypt("bad-cipher");
 
