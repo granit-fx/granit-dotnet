@@ -111,7 +111,7 @@ public sealed class EfCoreUserNotificationStoreTests : IDisposable
         await _store.InsertAsync(notification, TestContext.Current.CancellationToken);
 
         DateTimeOffset readAt = DateTimeOffset.UtcNow;
-        await _store.MarkAsReadAsync(notification.Id, readAt, TestContext.Current.CancellationToken);
+        await _store.MarkAsReadAsync(notification.Id, notification.RecipientUserId, readAt, TestContext.Current.CancellationToken);
 
         UserNotification? result = await _store.GetAsync(notification.Id, TestContext.Current.CancellationToken);
         result.ShouldNotBeNull();

@@ -20,6 +20,12 @@ dotnet add package Granit.OpenIddict.EntityFrameworkCore
 - **ASP.NET Core Identity** — fully configured with `AddIdentity<GranitUser, GranitRole>()`
 - **OpenIddict Core** — EF Core stores with `DisableEntityCaching()` (multi-tenant safe)
 
+## Migrations
+
+`OpenIddictDbContext` tables are created automatically during `--migrate` via
+`IInternalDbContextEnsurer`. No `dotnet ef migrations add` is required — the
+framework handles table creation idempotently using `CreateTablesAsync()`.
+
 ## Key constraints
 
 - `GranitUser` does NOT implement `ISoftDeletable` — uses manual `IsDeleted` + named query filter

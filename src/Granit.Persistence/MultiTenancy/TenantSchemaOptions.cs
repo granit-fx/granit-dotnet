@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Granit.Persistence.MultiTenancy;
 
 /// <summary>
@@ -42,7 +44,11 @@ public sealed class TenantSchemaOptions
 
     /// <summary>
     /// Prefix prepended to every schema name.
+    /// Must contain only lowercase letters, digits, and underscores (PostgreSQL safe identifier).
     /// Defaults to <c>"tenant_"</c>.
     /// </summary>
+    [Required]
+    [RegularExpression(@"^[a-z][a-z0-9_]*$", ErrorMessage = "Prefix must be a safe PostgreSQL identifier: lowercase letters, digits, and underscores, starting with a letter.")]
+    [StringLength(20, MinimumLength = 1)]
     public string Prefix { get; set; } = "tenant_";
 }

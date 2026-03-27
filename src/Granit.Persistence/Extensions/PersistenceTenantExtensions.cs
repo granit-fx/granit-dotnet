@@ -99,7 +99,9 @@ public static class PersistenceTenantExtensions
         where TContext : DbContext
     {
         services.AddOptions<TenantSchemaOptions>()
-            .Configure(configureTenantSchema ?? (_ => { }));
+            .Configure(configureTenantSchema ?? (_ => { }))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         services.TryAddSingleton<ITenantSchemaProvider, DefaultTenantSchemaProvider>();
 
@@ -211,7 +213,9 @@ public static class PersistenceTenantExtensions
         if (configureSchemaPerTenant is not null)
         {
             services.AddOptions<TenantSchemaOptions>()
-                .Configure(configureTenantSchema ?? (_ => { }));
+                .Configure(configureTenantSchema ?? (_ => { }))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
 
             services.TryAddSingleton<ITenantSchemaProvider, DefaultTenantSchemaProvider>();
 

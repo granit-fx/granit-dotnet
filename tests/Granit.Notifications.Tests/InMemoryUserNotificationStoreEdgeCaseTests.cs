@@ -130,7 +130,7 @@ public sealed class InMemoryUserNotificationStoreEdgeCaseTests
     [Fact]
     public async Task MarkAsReadAsync_NonExistentId_DoesNotThrow()
     {
-        Func<Task> act = () => _store.MarkAsReadAsync(Guid.NewGuid(), DateTimeOffset.UtcNow, TestContext.Current.CancellationToken);
+        Func<Task> act = () => _store.MarkAsReadAsync(Guid.NewGuid(), "non-existent-user", DateTimeOffset.UtcNow, TestContext.Current.CancellationToken);
 
         await Should.NotThrowAsync(act);
     }

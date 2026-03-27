@@ -273,6 +273,52 @@ public sealed partial class SourceCodeAntiPatternTests
             + $"Violators: {string.Join(", ", violations)}");
     }
 
+    /// <summary>
+    /// Parameterless <c>IgnoreQueryFilters()</c> disables ALL query filters — including the
+    /// multi-tenant filter — creating a cross-tenant data leak risk (VULN-202).
+    /// Use named filters instead: <c>.IgnoreQueryFilters([GranitFilterNames.SoftDelete])</c>.
+    /// Only <c>DbContextPurgeExtensions.cs</c> is exempt (intentional global archival).
+    /// </summary>
+    [Fact]
+    public void IgnoreQueryFilters_without_named_filter_should_not_exist_in_src()
+    {
+        string srcDir = Path.Join(RepoRoot, "src");
+
+        // DbContextPurgeExtensions intentionally bypasses all filters for global archival (ISO 27001).
+        HashSet<string> allowedFiles = ["DbContextPurgeExtensions.cs"];
+
+        List<string> violations = [];
+
+        foreach (string csFile in Directory.GetFiles(srcDir, "*.cs", SearchOption.AllDirectories))
+        {
+            if (csFile.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar)
+                || csFile.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar))
+            {
+                continue;
+            }
+
+            if (allowedFiles.Contains(Path.GetFileName(csFile)))
+            {
+                continue;
+            }
+
+            string content = File.ReadAllText(csFile);
+
+            foreach (Match match in ParameterlessIgnoreQueryFilters().Matches(content))
+            {
+                string relativePath = Path.GetRelativePath(RepoRoot, csFile);
+                int lineNumber = content[..match.Index].Count(c => c == '\n') + 1;
+                violations.Add($"{relativePath}:{lineNumber}");
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Parameterless .IgnoreQueryFilters() disables ALL query filters including multi-tenant isolation, "
+            + "creating a cross-tenant data leak risk. Use named filters instead: "
+            + ".IgnoreQueryFilters([GranitFilterNames.SoftDelete]). "
+            + $"Violators: {string.Join(", ", violations)}");
+    }
+
     private static string FindRepoRoot()
     {
         string? dir = Path.GetDirectoryName(typeof(SourceCodeAntiPatternTests).Assembly.Location);
@@ -317,4 +363,12 @@ public sealed partial class SourceCodeAntiPatternTests
     /// </summary>
     [GeneratedRegex(@"\.Cookies\.(Append|Delete)\s*\(")]
     private static partial Regex DirectCookieAccess();
+
+    /// <summary>
+    /// Matches parameterless <c>.IgnoreQueryFilters()</c> — the form that disables ALL
+    /// query filters. Does NOT match <c>.IgnoreQueryFilters([...])</c> or
+    /// <c>.IgnoreQueryFilters(filterName)</c> which are the safe named-filter forms.
+    /// </summary>
+    [GeneratedRegex(@"\.IgnoreQueryFilters\(\)")]
+    private static partial Regex ParameterlessIgnoreQueryFilters();
 }

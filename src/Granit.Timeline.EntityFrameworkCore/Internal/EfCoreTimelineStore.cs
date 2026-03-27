@@ -1,5 +1,6 @@
 using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.Persistence;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Internal;
@@ -50,7 +51,7 @@ internal sealed class EfCoreTimelineStore(
     {
         await using TimelineDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         TimelineEntry entry = await db.TimelineEntries
-            .IgnoreQueryFilters()
+            .IgnoreQueryFilters([GranitFilterNames.SoftDelete])
             .FirstOrDefaultAsync(e => e.Id == entryId, cancellationToken).ConfigureAwait(false)
             ?? throw new KeyNotFoundException($"Timeline entry '{entryId}' not found.");
 
@@ -70,7 +71,7 @@ internal sealed class EfCoreTimelineStore(
         await using TimelineDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         bool entryExists = await db.TimelineEntries
-            .IgnoreQueryFilters()
+            .IgnoreQueryFilters([GranitFilterNames.SoftDelete])
             .AnyAsync(e => e.Id == entryId, cancellationToken).ConfigureAwait(false);
 
         if (!entryExists)

@@ -17140,7 +17140,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Middleware/TenantResolutionMiddleware.cs",
-      "line": 12,
+      "line": 15,
       "members": [
         {
           "name": "InvokeAsync",
@@ -17156,7 +17156,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Options/MultiTenancyOptions.cs",
-      "line": 6,
+      "line": 25,
       "members": [
         {
           "name": "IsEnabled",
@@ -17175,6 +17175,37 @@
           "kind": "property",
           "signature": "string TenantIdHeaderName",
           "returnType": "string"
+        },
+        {
+          "name": "HeaderTrustMode",
+          "kind": "property",
+          "signature": "TenantHeaderTrustMode HeaderTrustMode",
+          "returnType": "TenantHeaderTrustMode"
+        }
+      ]
+    },
+    {
+      "name": "TenantHeaderTrustMode",
+      "fqn": "Granit.MultiTenancy.Options.TenantHeaderTrustMode",
+      "kind": "enum",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Options/MultiTenancyOptions.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TenantResolutionResult",
+      "fqn": "Granit.MultiTenancy.Pipeline.TenantResolutionResult",
+      "kind": "record",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Pipeline/TenantResolverPipeline.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(HttpContext context, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TenantResolutionResult>"
         }
       ]
     },
@@ -17184,13 +17215,13 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Pipeline/TenantResolverPipeline.cs",
-      "line": 10,
+      "line": 17,
       "members": [
         {
           "name": "ResolveAsync",
           "kind": "method",
           "signature": "ResolveAsync(HttpContext context, CancellationToken cancellationToken = default)",
-          "returnType": "Task<TenantInfo?>"
+          "returnType": "Task<TenantResolutionResult>"
         }
       ]
     },
@@ -22848,7 +22879,7 @@
       "kind": "enum",
       "project": "Granit.Persistence",
       "file": "src/Granit.Persistence/MultiTenancy/TenantSchemaOptions.cs",
-      "line": 6,
+      "line": 8,
       "members": []
     },
     {
@@ -22857,7 +22888,7 @@
       "kind": "class",
       "project": "Granit.Persistence",
       "file": "src/Granit.Persistence/MultiTenancy/TenantSchemaOptions.cs",
-      "line": 31,
+      "line": 33,
       "members": [
         {
           "name": "NamingConvention",

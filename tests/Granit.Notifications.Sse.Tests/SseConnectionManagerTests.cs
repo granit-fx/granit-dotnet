@@ -7,6 +7,8 @@
 
 using Granit.Guids;
 using Granit.Notifications.Sse.Internal;
+using Granit.Notifications.Sse.Options;
+using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
@@ -14,12 +16,15 @@ namespace Granit.Notifications.Sse.Tests;
 
 public sealed class SseConnectionManagerTests : IDisposable
 {
-    private readonly SseConnectionManager _manager = new(SimpleGuidGenerator.Instance);
+    private static readonly IOptions<SseChannelOptions> s_options =
+        Microsoft.Extensions.Options.Options.Create(new SseChannelOptions());
+
+    private readonly SseConnectionManager _manager = new(SimpleGuidGenerator.Instance, s_options);
 
     [Fact]
     public void Connect_ReturnsConnectionWithUserId()
     {
-        SseConnection connection = _manager.Connect("user-1");
+        SseConnection connection = _manager.Connect("user-1")!;
 
         connection.UserId.ShouldBe("user-1");
         connection.ConnectionId.ShouldNotBe(Guid.Empty);
@@ -28,8 +33,8 @@ public sealed class SseConnectionManagerTests : IDisposable
     [Fact]
     public void Connect_CreatesDistinctConnectionIds()
     {
-        SseConnection conn1 = _manager.Connect("user-1");
-        SseConnection conn2 = _manager.Connect("user-1");
+        SseConnection conn1 = _manager.Connect("user-1")!;
+        SseConnection conn2 = _manager.Connect("user-1")!;
 
         conn1.ConnectionId.ShouldNotBe(conn2.ConnectionId);
     }
@@ -56,7 +61,7 @@ public sealed class SseConnectionManagerTests : IDisposable
     [Fact]
     public void Disconnect_RemovesConnection()
     {
-        SseConnection connection = _manager.Connect("user-1");
+        SseConnection connection = _manager.Connect("user-1")!;
         _manager.Disconnect(connection);
 
         _manager.GetConnectionCount("user-1").ShouldBe(0);
@@ -65,7 +70,7 @@ public sealed class SseConnectionManagerTests : IDisposable
     [Fact]
     public void Disconnect_CompletesChannel()
     {
-        SseConnection connection = _manager.Connect("user-1");
+        SseConnection connection = _manager.Connect("user-1")!;
         _manager.Disconnect(connection);
 
         connection.Channel.Reader.Completion.IsCompleted.ShouldBeTrue();
@@ -74,7 +79,7 @@ public sealed class SseConnectionManagerTests : IDisposable
     [Fact]
     public void Disconnect_OnlyRemovesTargetConnection()
     {
-        SseConnection conn1 = _manager.Connect("user-1");
+        SseConnection conn1 = _manager.Connect("user-1")!;
         _manager.Connect("user-1");
 
         _manager.Disconnect(conn1);
@@ -89,8 +94,8 @@ public sealed class SseConnectionManagerTests : IDisposable
     [Fact]
     public async Task SendToUserAsync_WritesToAllConnections()
     {
-        SseConnection conn1 = _manager.Connect("user-1");
-        SseConnection conn2 = _manager.Connect("user-1");
+        SseConnection conn1 = _manager.Connect("user-1")!;
+        SseConnection conn2 = _manager.Connect("user-1")!;
         SseNotificationMessage message = BuildMessage();
 
         await _manager.SendToUserAsync("user-1", message, TestContext.Current.CancellationToken);
@@ -109,8 +114,8 @@ public sealed class SseConnectionManagerTests : IDisposable
     [Fact]
     public async Task SendToUserAsync_SkipsCompletedChannels()
     {
-        SseConnection conn1 = _manager.Connect("user-1");
-        SseConnection conn2 = _manager.Connect("user-1");
+        SseConnection conn1 = _manager.Connect("user-1")!;
+        SseConnection conn2 = _manager.Connect("user-1")!;
         conn1.Channel.Writer.TryComplete();
 
         SseNotificationMessage message = BuildMessage();
@@ -125,8 +130,8 @@ public sealed class SseConnectionManagerTests : IDisposable
     [Fact]
     public void Dispose_CompletesAllChannels()
     {
-        SseConnection conn1 = _manager.Connect("user-1");
-        SseConnection conn2 = _manager.Connect("user-2");
+        SseConnection conn1 = _manager.Connect("user-1")!;
+        SseConnection conn2 = _manager.Connect("user-2")!;
 
         _manager.Dispose();
 

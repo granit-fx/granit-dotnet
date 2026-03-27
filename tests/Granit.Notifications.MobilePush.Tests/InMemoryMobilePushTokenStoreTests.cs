@@ -25,7 +25,7 @@ public sealed class InMemoryMobilePushTokenStoreTests
     {
         var token = new MobilePushTokenInfo { UserId = "user-1", DeviceToken = "device-token-1", Platform = MobilePlatform.Ios };
         await _store.RegisterAsync(token, TestContext.Current.CancellationToken);
-        await _store.RemoveAsync("device-token-1", null, TestContext.Current.CancellationToken);
+        await _store.RemoveAsync("device-token-1", "user-1", null, TestContext.Current.CancellationToken);
 
         IReadOnlyList<MobilePushTokenInfo> result = await _store.GetTokensAsync("user-1", null, TestContext.Current.CancellationToken);
         result.ShouldBeEmpty();
