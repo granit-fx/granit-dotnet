@@ -98,16 +98,23 @@ internal sealed partial class DatabaseSigningKeyPostConfigure(
         }
 
         byte[] keyBytes = Convert.FromBase64String(decrypted);
-        var rsa = RSA.Create();
         try
         {
-            rsa.ImportRSAPrivateKey(keyBytes, out _);
-            return new RsaSecurityKey(rsa) { KeyId = key.KeyId };
+            var rsa = RSA.Create();
+            try
+            {
+                rsa.ImportRSAPrivateKey(keyBytes, out _);
+                return new RsaSecurityKey(rsa) { KeyId = key.KeyId };
+            }
+            catch
+            {
+                rsa.Dispose();
+                throw;
+            }
         }
-        catch
+        finally
         {
-            rsa.Dispose();
-            throw;
+            CryptographicOperations.ZeroMemory(keyBytes);
         }
     }
 

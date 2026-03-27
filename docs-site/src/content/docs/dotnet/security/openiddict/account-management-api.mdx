@@ -51,16 +51,9 @@ Publishes `UserRegisteredEto` via `IDistributedEventBus`. Increments
 
 **Responses:**
 
-- `201 Created` with body:
-
-```json
-{
-  "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "requiresEmailConfirmation": true
-}
-```
-
-- `409 Conflict` -- email already taken
+- **Always returns `202 Accepted`** regardless of whether the email is new or already
+  taken, to prevent user enumeration attacks. If the email already exists, the request
+  is silently ignored (the existing user is not affected).
 - `422 Validation Problem` -- invalid email or weak password
 
 ### Confirm email
@@ -233,12 +226,37 @@ authenticator app (Google Authenticator, Authy, 1Password, etc.).
 
 Returns `400 Bad Request` if the TOTP code is invalid.
 
-4. **Disable 2FA**: `POST /api/account/two-factor/disable` -- returns `204 No Content`
+4. **Disable 2FA**: `POST /api/account/two-factor/disable`
+
+Requires password confirmation as step-up authentication (OWASP ASVS V2.8.1).
+Invalidates the security stamp, forcing re-authentication on all existing sessions.
+
+**Request:**
+
+```json
+{
+  "password": "MyCurrentP@ss123"
+}
+```
+
+Returns `204 No Content` on success. Returns `400 Bad Request` if the password is
+incorrect.
 
 5. **Regenerate recovery codes**: `POST /api/account/two-factor/recovery-codes`
 
 Generates 10 new single-use recovery codes. **Previously generated codes are
-invalidated.** Recovery codes can be used instead of a TOTP code during login.
+invalidated.** Requires password confirmation as step-up authentication.
+Recovery codes can be used instead of a TOTP code during login.
+
+**Request:**
+
+```json
+{
+  "password": "MyCurrentP@ss123"
+}
+```
+
+Returns `400 Bad Request` if the password is incorrect.
 
 ### Login flow with 2FA
 
@@ -451,9 +469,10 @@ prevent accidental or unauthorized deletion.
 
 1. Password verification via `IIdentityCredentialVerifier`
 2. Soft-delete: `IsDeleted = true`, `DeletedAt = now`, `DeletedBy = userId`
-3. All active tokens and authorizations revoked
-4. `AccountDeletedEto` published via `IDistributedEventBus` for downstream cleanup
-5. Audit log entry written
+3. Account locked: `LockoutEnd = DateTimeOffset.MaxValue`
+4. Security stamp invalidated: forces all existing JWT claims validations to fail
+5. All active OpenIddict tokens revoked via `IOpenIddictTokenManager` (immediate access termination)
+6. `AccountDeletedEto` published via `IDistributedEventBus` for downstream cleanup
 
 Returns `202 Accepted` (downstream cleanup is asynchronous via event subscribers).
 Returns `400 Bad Request` if the password is incorrect.
@@ -472,9 +491,12 @@ All request DTOs have corresponding FluentValidation validators auto-discovered 
 | `AccountPasswordResetRequestValidator` | `AccountPasswordResetRequest` |
 | `AccountForgotPasswordRequestValidator` | `AccountForgotPasswordRequest` |
 | `AccountTwoFactorEnableRequestValidator` | `AccountTwoFactorEnableRequest` |
+| `AccountTwoFactorDisableRequestValidator` | `AccountTwoFactorDisableRequest` |
 | `AccountDeleteRequestValidator` | `AccountDeleteRequest` |
 | `PasskeyRegistrationRequestValidator` | `PasskeyRegistrationRequest` |
 | `PasskeyRenameRequestValidator` | `PasskeyRenameRequest` |
+| `AdminOidcCreateApplicationRequestValidator` | `AdminOidcCreateApplicationRequest` |
+| `AdminOidcCreateScopeRequestValidator` | `AdminOidcCreateScopeRequest` |
 | `AdminUserCreateRequestValidator` | `AdminUserCreateRequest` |
 
 ## Endpoint route customization

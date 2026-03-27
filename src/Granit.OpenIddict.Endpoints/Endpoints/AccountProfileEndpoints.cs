@@ -1,5 +1,6 @@
 using Granit.Identity;
 using Granit.OpenIddict.Endpoints.Dtos;
+using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -36,7 +37,9 @@ internal static class AccountProfileEndpoints
 
     private static async Task<Ok<AccountProfileResponse>> GetProfileAsync(
         HttpContext httpContext,
-[FromServices] IIdentityUserReader userReader,
+        [FromServices] IIdentityUserReader userReader,
+        [FromServices] ITwoFactorService twoFactorService,
+        [FromServices] IExternalLoginService externalLoginService,
         CancellationToken cancellationToken)
     {
         httpContext.Response.Headers.CacheControl = "private, no-cache, no-store";
@@ -45,14 +48,20 @@ internal static class AccountProfileEndpoints
         IIdentityUser? user = await userReader
             .GetUserAsync(userId, cancellationToken).ConfigureAwait(false);
 
-        return TypedResults.Ok(MapToProfile(user!, userId));
+        AccountProfileResponse profile = await MapToProfileAsync(
+            user!, userId, httpContext, twoFactorService, externalLoginService, cancellationToken)
+            .ConfigureAwait(false);
+
+        return TypedResults.Ok(profile);
     }
 
     private static async Task<Results<Ok<AccountProfileResponse>, ProblemHttpResult>> UpdateProfileAsync(
         AccountProfileUpdateRequest request,
         HttpContext httpContext,
-[FromServices] IIdentityUserWriter userWriter,
+        [FromServices] IIdentityUserWriter userWriter,
         [FromServices] IIdentityUserReader userReader,
+        [FromServices] ITwoFactorService twoFactorService,
+        [FromServices] IExternalLoginService externalLoginService,
         CancellationToken cancellationToken)
     {
         string userId = httpContext.User.FindFirst("sub")!.Value;
@@ -69,18 +78,38 @@ internal static class AccountProfileEndpoints
         IIdentityUser? updated = await userReader
             .GetUserAsync(userId, cancellationToken).ConfigureAwait(false);
 
-        return TypedResults.Ok(MapToProfile(updated!, userId));
+        AccountProfileResponse profile = await MapToProfileAsync(
+            updated!, userId, httpContext, twoFactorService, externalLoginService, cancellationToken)
+            .ConfigureAwait(false);
+
+        return TypedResults.Ok(profile);
     }
 
-    private static AccountProfileResponse MapToProfile(
-        IIdentityUser user, string userId) =>
-        new(
+    private static async Task<AccountProfileResponse> MapToProfileAsync(
+        IIdentityUser user,
+        string userId,
+        HttpContext httpContext,
+        ITwoFactorService twoFactorService,
+        IExternalLoginService externalLoginService,
+        CancellationToken cancellationToken)
+    {
+        // Resolve email_verified from token claims (standard OIDC claim)
+        bool emailConfirmed = httpContext.User.FindFirst("email_verified")?.Value is "true";
+
+        TwoFactorStatus twoFactorStatus = await twoFactorService
+            .GetStatusAsync(userId, cancellationToken).ConfigureAwait(false);
+
+        IReadOnlyList<ExternalLoginInfo> externalLogins = await externalLoginService
+            .GetLoginsAsync(userId, cancellationToken).ConfigureAwait(false);
+
+        return new AccountProfileResponse(
             Guid.Parse(userId),
             user.Email ?? string.Empty,
-            true, // EmailConfirmed — resolved from claims in production
+            emailConfirmed,
             user.FirstName,
             user.LastName,
-            false, // TwoFactorEnabled — resolved from UserManager in production
-            true, // HasPassword
-            []); // ExternalLogins
+            twoFactorStatus.IsEnabled,
+            true, // HasPassword — not resolvable without UserManager; safe default
+            externalLogins.Select(l => l.LoginProvider).ToList());
+    }
 }

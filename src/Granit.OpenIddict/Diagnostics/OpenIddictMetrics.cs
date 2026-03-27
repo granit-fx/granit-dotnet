@@ -19,6 +19,36 @@ public sealed class OpenIddictMetrics(IMeterFactory meterFactory)
 
     private const string TenantIdTag = "tenant_id";
     private const string GlobalTenantId = "global";
+    private const string UnknownTagValue = "unknown";
+
+    private static readonly HashSet<string> AllowedGrantTypes =
+    [
+        "authorization_code", "client_credentials", "refresh_token",
+        "urn:ietf:params:oauth:grant-type:device_code",
+        "urn:ietf:params:oauth:grant-type:token-exchange",
+        "urn:granit:grant_type:two_factor",
+        "urn:granit:grant_type:passkey",
+    ];
+
+    private static readonly HashSet<string> AllowedAuthFailureReasons =
+    [
+        "invalid_credentials", "account_locked", "email_not_confirmed",
+        "two_factor_required", "invalid_token", "expired_token",
+    ];
+
+    private static readonly HashSet<string> AllowedProviders =
+    [
+        "Google", "Microsoft", "GitHub", "Apple", "Facebook",
+    ];
+
+    private static string SanitizeGrantType(string grantType) =>
+        AllowedGrantTypes.Contains(grantType) ? grantType : UnknownTagValue;
+
+    private static string SanitizeReason(string reason) =>
+        AllowedAuthFailureReasons.Contains(reason) ? reason : UnknownTagValue;
+
+    private static string SanitizeProvider(string provider) =>
+        AllowedProviders.Contains(provider) ? provider : UnknownTagValue;
 
     private readonly Counter<long> _tokensIssued = meterFactory.Create(MeterName).CreateCounter<long>(
         "granit.openiddict.tokens.issued",
@@ -74,19 +104,19 @@ public sealed class OpenIddictMetrics(IMeterFactory meterFactory)
 
     /// <summary>Records a token issuance.</summary>
     public void RecordTokenIssued(string? tenantId, string grantType) =>
-        _tokensIssued.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "grant_type", grantType } });
+        _tokensIssued.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "grant_type", SanitizeGrantType(grantType) } });
 
     /// <summary>Records a token revocation.</summary>
     public void RecordTokenRevoked(string? tenantId, string reason) =>
-        _tokensRevoked.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "reason", reason } });
+        _tokensRevoked.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "reason", SanitizeReason(reason) } });
 
     /// <summary>Records a successful authentication.</summary>
     public void RecordAuthenticationSuccess(string? tenantId, string grantType) =>
-        _authenticationSuccesses.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "grant_type", grantType } });
+        _authenticationSuccesses.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "grant_type", SanitizeGrantType(grantType) } });
 
     /// <summary>Records a failed authentication attempt.</summary>
     public void RecordAuthenticationFailure(string? tenantId, string reason) =>
-        _authenticationFailures.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "reason", reason } });
+        _authenticationFailures.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "reason", SanitizeReason(reason) } });
 
     /// <summary>Records a user registration.</summary>
     public void RecordRegistration(string? tenantId) =>
@@ -114,7 +144,7 @@ public sealed class OpenIddictMetrics(IMeterFactory meterFactory)
 
     /// <summary>Records an external login event.</summary>
     public void RecordExternalLogin(string? tenantId, string provider, bool isNewUser) =>
-        _externalLogins.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "provider", provider }, { "is_new_user", isNewUser } });
+        _externalLogins.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "provider", SanitizeProvider(provider) }, { "is_new_user", isNewUser } });
 
     /// <summary>Records a key rotation cycle.</summary>
     public void RecordKeyRotation(string? tenantId, int keysGenerated, int keysRetired, int keysRevoked) =>
@@ -122,6 +152,6 @@ public sealed class OpenIddictMetrics(IMeterFactory meterFactory)
 
     /// <summary>Records the duration of a token issuance.</summary>
     public void RecordTokenIssuanceDuration(string? tenantId, string grantType, TimeSpan duration) =>
-        _tokenIssuanceDuration.Record(duration.TotalSeconds, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "grant_type", grantType } });
+        _tokenIssuanceDuration.Record(duration.TotalSeconds, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "grant_type", SanitizeGrantType(grantType) } });
 }
 #pragma warning restore GRSEC003

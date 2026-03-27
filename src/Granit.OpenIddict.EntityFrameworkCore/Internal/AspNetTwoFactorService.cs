@@ -68,6 +68,9 @@ internal sealed class AspNetTwoFactorService(
     {
         GranitUser user = await FindUserAsync(userId).ConfigureAwait(false);
         await userManager.SetTwoFactorEnabledAsync(user, false).ConfigureAwait(false);
+
+        // Invalidate security stamp to force re-authentication on existing sessions
+        await userManager.UpdateSecurityStampAsync(user).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

@@ -20994,6 +20994,33 @@
       "members": []
     },
     {
+      "name": "AdminOidcCreateApplicationRequest",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcCreateApplicationRequest",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcCreateApplicationRequest.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "AdminOidcCreateScopeRequest",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcCreateScopeRequest",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcCreateScopeRequest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "AdminOidcRotateSecretResponse",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcRotateSecretResponse",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcRotateSecretResponse.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "AdminOidcScopeResponse",
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcScopeResponse",
       "kind": "record",
@@ -22450,7 +22477,7 @@
       "kind": "class",
       "project": "Granit.Persistence",
       "file": "src/Granit.Persistence/Interceptors/AuditedEntityInterceptor.cs",
-      "line": 26,
+      "line": 27,
       "members": [
         {
           "name": "SavingChanges",
@@ -22514,7 +22541,7 @@
       "kind": "class",
       "project": "Granit.Persistence",
       "file": "src/Granit.Persistence/Interceptors/SoftDeleteInterceptor.cs",
-      "line": 21,
+      "line": 23,
       "members": [
         {
           "name": "SavingChanges",

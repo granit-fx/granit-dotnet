@@ -4,16 +4,18 @@ using Granit.OpenIddict.Events;
 using Granit.OpenIddict.Services;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
+using OpenIddict.Abstractions;
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// <see cref="IAccountDeletionService"/> implementation backed by ASP.NET Core Identity.
-/// Soft-deletes the user and publishes <see cref="AccountDeletedEto"/>
+/// Soft-deletes the user, revokes all active tokens, and publishes <see cref="AccountDeletedEto"/>
 /// via <see cref="IDistributedEventBus"/>.
 /// </summary>
 internal sealed class AspNetAccountDeletionService(
     UserManager<GranitUser> userManager,
+    IOpenIddictTokenManager tokenManager,
     IDistributedEventBus eventBus,
     IClock clock) : IAccountDeletionService
 {
@@ -37,6 +39,15 @@ internal sealed class AspNetAccountDeletionService(
 
         // Lock the account to prevent login
         await userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue).ConfigureAwait(false);
+
+        // Invalidate the security stamp so existing cookie/JWT claims validation fails
+        await userManager.UpdateSecurityStampAsync(user).ConfigureAwait(false);
+
+        // Revoke all active OpenIddict tokens for this user (GDPR Art. 17 — immediate access termination)
+        await foreach (object token in tokenManager.FindBySubjectAsync(userId, cancellationToken).ConfigureAwait(false))
+        {
+            await tokenManager.TryRevokeAsync(token, cancellationToken).ConfigureAwait(false);
+        }
 
         // Publish integration event for downstream cleanup
         await eventBus.PublishAsync(

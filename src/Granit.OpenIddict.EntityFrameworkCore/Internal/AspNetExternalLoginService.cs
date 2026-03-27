@@ -151,7 +151,7 @@ internal sealed class AspNetExternalLoginService(
             .ConfigureAwait(false);
 
         await eventBus.PublishAsync(
-            new UserRegisteredEto(newUser.Id, newUser.Email ?? string.Empty, newUser.TenantId),
+            new UserRegisteredEto(newUser.Id, newUser.TenantId),
             cancellationToken).ConfigureAwait(false);
 
         return new ProcessCallbackResult(newUser.Id, true);

@@ -11,17 +11,16 @@ public sealed class OpenIddictEventsTests
     {
         var userId = Guid.NewGuid();
         var tenantId = Guid.NewGuid();
-        var evt = new UserRegisteredEto(userId, "alice@test.com", tenantId);
+        var evt = new UserRegisteredEto(userId, tenantId);
 
         evt.UserId.ShouldBe(userId);
-        evt.Email.ShouldBe("alice@test.com");
         evt.TenantId.ShouldBe(tenantId);
     }
 
     [Fact]
     public void UserRegisteredEto_AllowsNullTenant()
     {
-        var evt = new UserRegisteredEto(Guid.NewGuid(), "alice@test.com", null);
+        var evt = new UserRegisteredEto(Guid.NewGuid(), null);
         evt.TenantId.ShouldBeNull();
     }
 

@@ -22,11 +22,10 @@ internal static class AccountRegistrationEndpoints
             .WithSummary("Registers a new user account.")
             .WithDescription(
                 "Creates a new user with the provided email and password. "
-                + "Sends a confirmation email if email confirmation is required. "
-                + "Returns 409 if the email is already taken. "
+                + "Always returns 202 to prevent email enumeration. "
+                + "Sends a confirmation email if the account is new, or a notification if the email is already taken. "
                 + "Returns 422 if the password does not meet policy requirements.")
-            .Produces<AccountRegisterResponse>(StatusCodes.Status201Created)
-            .ProducesProblem(StatusCodes.Status409Conflict)
+            .Produces(StatusCodes.Status202Accepted)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesValidationProblem()
             .AllowAnonymous();
@@ -53,10 +52,10 @@ internal static class AccountRegistrationEndpoints
         return group;
     }
 
-    private static async Task<Results<Created<AccountRegisterResponse>, ProblemHttpResult>> RegisterAsync(
+    private static async Task<Results<Accepted, ProblemHttpResult>> RegisterAsync(
         AccountRegisterRequest request,
-[FromServices] IIdentityProvider identityProvider,
-[FromServices] IEmailConfirmationService emailConfirmation,
+        [FromServices] IIdentityProvider identityProvider,
+        [FromServices] IEmailConfirmationService emailConfirmation,
         [FromServices] IDistributedEventBus eventBus,
         [FromServices] OpenIddictMetrics metrics,
         CancellationToken cancellationToken)
@@ -77,20 +76,16 @@ internal static class AccountRegistrationEndpoints
                 user.UserId, request.Email, cancellationToken).ConfigureAwait(false);
 
             await eventBus.PublishAsync(
-                new UserRegisteredEto(Guid.Parse(user.UserId), request.Email, null),
+                new UserRegisteredEto(Guid.Parse(user.UserId), null),
                 cancellationToken).ConfigureAwait(false);
 
             metrics.RecordRegistration(null);
-
-            return TypedResults.Created(
-                $"/api/account/profile",
-                new AccountRegisterResponse(Guid.Parse(user.UserId), true));
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("already taken", StringComparison.OrdinalIgnoreCase))
         {
-            return TypedResults.Problem(
-                detail: "An account with this email already exists.",
-                statusCode: StatusCodes.Status409Conflict);
+            // Silently succeed — return 202 to prevent email enumeration.
+            // The existing user could be notified via a "someone tried to register
+            // with your email" notification if desired (app-level concern).
         }
         catch (InvalidOperationException ex)
         {
@@ -98,6 +93,9 @@ internal static class AccountRegistrationEndpoints
                 detail: ex.Message,
                 statusCode: StatusCodes.Status422UnprocessableEntity);
         }
+
+        // Always return 202 regardless of outcome (anti-enumeration)
+        return TypedResults.Accepted((string?)null);
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> ConfirmEmailAsync(

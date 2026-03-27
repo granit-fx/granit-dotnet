@@ -82,7 +82,7 @@ internal static class AccountExternalLoginEndpoints
         {
             return Task.FromResult<Results<Ok, ProblemHttpResult>>(
                 TypedResults.Problem(
-                    detail: $"External login provider '{provider}' is not configured.",
+                    detail: "The specified external login provider is not configured.",
                     statusCode: StatusCodes.Status400BadRequest));
         }
 

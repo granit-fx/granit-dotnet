@@ -36,6 +36,21 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
             granitOptions.WithFapi2Profile();
         }
 
+        // Entity caching uses ClientId as sole cache key — incompatible with multi-tenancy
+        // (two tenants with the same ClientId would share cached data → cross-tenant leak).
+        if (granitOptions.EnableEntityCaching)
+        {
+            bool hasMultiTenancy = builder.Services.Any(
+                s => s.ServiceType.FullName == "Granit.MultiTenancy.ICurrentTenant");
+            if (hasMultiTenancy)
+            {
+                throw new InvalidOperationException(
+                    "OpenIddict entity caching is incompatible with multi-tenancy. "
+                    + "OpenIddict uses ClientId as cache key, which causes cross-tenant data pollution. "
+                    + "Set EnableEntityCaching = false (default) or remove multi-tenancy.");
+            }
+        }
+
         OpenIddictBuilder openIddict = builder.Services.AddOpenIddict();
 
         // ──── Server — OIDC authorization server ────
@@ -80,6 +95,9 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
             {
                 // Authorization code lifetime ≤ 60s (FAPI 2.0 §5.3.2.1)
                 options.SetAuthorizationCodeLifetime(TimeSpan.FromSeconds(60));
+
+                // Access token lifetime ≤ 10 min (FAPI 2.0 tight token binding)
+                options.SetAccessTokenLifetime(TimeSpan.FromMinutes(10));
             }
 
             // ──── Signing & encryption ────

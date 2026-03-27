@@ -44,7 +44,12 @@ public sealed class GranitKeyRotationOptions
 
     /// <summary>
     /// Gets or sets the signing algorithm.
-    /// Default: <c>"RS256"</c>.
+    /// Default: <c>"RS256"</c>. Use <c>"PS256"</c> (RSASSA-PSS) for FAPI 2.0 compliance.
     /// </summary>
+    /// <remarks>
+    /// When <see cref="GranitOpenIddictOptions.EnableFapi2Profile"/> is <see langword="true"/>,
+    /// this is automatically overridden to <c>"PS256"</c> if still set to the default <c>"RS256"</c>.
+    /// FAPI 2.0 §5.2.2 requires PS256 or ES256.
+    /// </remarks>
     public string SigningAlgorithm { get; set; } = "RS256";
 }

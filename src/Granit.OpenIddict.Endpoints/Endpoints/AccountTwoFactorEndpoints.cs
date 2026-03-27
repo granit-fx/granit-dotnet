@@ -1,3 +1,4 @@
+using Granit.Identity;
 using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Builder;
@@ -42,20 +43,27 @@ internal static class AccountTwoFactorEndpoints
             .ProducesValidationProblem()
             .RequireAuthorization();
 
-        group.MapPost("/two-factor/disable", (Delegate)DisableAsync)
+        group.MapPost("/two-factor/disable", DisableAsync)
             .WithName("DisableTwoFactor")
             .WithSummary("Disables 2FA for the authenticated user.")
-            .WithDescription("Disables TOTP-based two-factor authentication.")
+            .WithDescription(
+                "Disables TOTP-based two-factor authentication. "
+                + "Requires password confirmation as step-up authentication (OWASP ASVS V2.8.1).")
             .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesValidationProblem()
             .RequireAuthorization();
 
-        group.MapPost("/two-factor/recovery-codes", (Delegate)GenerateRecoveryCodesAsync)
+        group.MapPost("/two-factor/recovery-codes", GenerateRecoveryCodesAsync)
             .WithName("GenerateRecoveryCodes")
             .WithSummary("Generates new recovery codes.")
             .WithDescription(
                 "Generates 10 new single-use recovery codes. Previously generated codes "
-                + "are invalidated. Recovery codes can be used instead of a TOTP code during login.")
+                + "are invalidated. Requires password confirmation as step-up authentication. "
+                + "Recovery codes can be used instead of a TOTP code during login.")
             .Produces<AccountRecoveryCodesResponse>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesValidationProblem()
             .RequireAuthorization();
 
         return group;
@@ -104,22 +112,68 @@ internal static class AccountTwoFactorEndpoints
         }
     }
 
-    private static async Task<NoContent> DisableAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> DisableAsync(
+        AccountTwoFactorDisableRequest request,
         HttpContext httpContext,
+        [FromServices] IIdentityCredentialVerifier credentialVerifier,
         [FromServices] ITwoFactorService twoFactorService,
         CancellationToken cancellationToken)
     {
         string userId = httpContext.User.FindFirst("sub")!.Value;
+        string? username = httpContext.User.FindFirst("preferred_username")?.Value
+                           ?? httpContext.User.FindFirst("name")?.Value;
+
+        if (username is null)
+        {
+            return TypedResults.Problem(
+                detail: "Unable to determine username from token claims.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        bool isValid = await credentialVerifier
+            .VerifyUserCredentialsAsync(username, request.Password, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!isValid)
+        {
+            return TypedResults.Problem(
+                detail: "Password is incorrect.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
         await twoFactorService.DisableAsync(userId, cancellationToken).ConfigureAwait(false);
         return TypedResults.NoContent();
     }
 
-    private static async Task<Ok<AccountRecoveryCodesResponse>> GenerateRecoveryCodesAsync(
+    private static async Task<Results<Ok<AccountRecoveryCodesResponse>, ProblemHttpResult>> GenerateRecoveryCodesAsync(
+        AccountTwoFactorDisableRequest request,
         HttpContext httpContext,
+        [FromServices] IIdentityCredentialVerifier credentialVerifier,
         [FromServices] ITwoFactorService twoFactorService,
         CancellationToken cancellationToken)
     {
         string userId = httpContext.User.FindFirst("sub")!.Value;
+        string? username = httpContext.User.FindFirst("preferred_username")?.Value
+                           ?? httpContext.User.FindFirst("name")?.Value;
+
+        if (username is null)
+        {
+            return TypedResults.Problem(
+                detail: "Unable to determine username from token claims.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        bool isValid = await credentialVerifier
+            .VerifyUserCredentialsAsync(username, request.Password, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!isValid)
+        {
+            return TypedResults.Problem(
+                detail: "Password is incorrect.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
         IReadOnlyList<string> codes = await twoFactorService
             .GenerateRecoveryCodesAsync(userId, cancellationToken).ConfigureAwait(false);
         return TypedResults.Ok(new AccountRecoveryCodesResponse(codes));

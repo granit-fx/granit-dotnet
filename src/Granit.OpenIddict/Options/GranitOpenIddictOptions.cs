@@ -111,7 +111,7 @@ public static class GranitOpenIddictOptionsExtensions
     /// <summary>
     /// Enables the FAPI 2.0 Security Profile on the OpenIddict server.
     /// Enforces PAR, PKCE S256, DPoP sender-constraining, private_key_jwt,
-    /// and issuer verification — all mandatory FAPI 2.0 requirements.
+    /// PS256 signing algorithm, and issuer verification — all mandatory FAPI 2.0 requirements.
     /// </summary>
     /// <param name="options">The OpenIddict options.</param>
     /// <returns>The options for chaining.</returns>
@@ -119,6 +119,7 @@ public static class GranitOpenIddictOptionsExtensions
     {
         options.EnableFapi2Profile = true;
         options.RequirePar = true;
+        options.UseReferenceTokens = true;
         return options;
     }
 }

@@ -60,8 +60,15 @@ internal static class AccountPasswordEndpoints
         string? username = httpContext.User.FindFirst("preferred_username")?.Value
                            ?? httpContext.User.FindFirst("name")?.Value;
 
+        if (username is null)
+        {
+            return TypedResults.Problem(
+                detail: "Unable to determine username from token claims.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
         bool isValid = await credentialVerifier
-            .VerifyUserCredentialsAsync(username ?? string.Empty, request.CurrentPassword, cancellationToken)
+            .VerifyUserCredentialsAsync(username, request.CurrentPassword, cancellationToken)
             .ConfigureAwait(false);
 
         if (!isValid)

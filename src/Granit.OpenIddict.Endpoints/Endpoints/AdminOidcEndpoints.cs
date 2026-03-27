@@ -1,9 +1,13 @@
+using System.Security.Cryptography;
 using Granit.OpenIddict.Endpoints.Dtos;
+using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using OpenIddict.Abstractions;
 
 namespace Granit.OpenIddict.Endpoints.Endpoints;
 
@@ -105,37 +109,219 @@ internal static class AdminOidcEndpoints
 
     // ──── Application handlers ────
 
-    private static Task<Ok> ListApplicationsAsync() => Task.FromResult(TypedResults.Ok());
+    private static async Task<Ok<IReadOnlyList<AdminOidcApplicationResponse>>> ListApplicationsAsync(
+        [FromServices] IOpenIddictApplicationManager applicationManager,
+        CancellationToken cancellationToken)
+    {
+        var results = new List<AdminOidcApplicationResponse>();
 
-    private static Task<Created> CreateApplicationAsync() =>
-        Task.FromResult(TypedResults.Created("/api/admin/oidc/applications/{clientId}"));
+        await foreach (object app in applicationManager.ListAsync(100, 0, cancellationToken).ConfigureAwait(false))
+        {
+            string? clientId = await applicationManager.GetClientIdAsync(app, cancellationToken).ConfigureAwait(false);
+            string? displayName = await applicationManager.GetDisplayNameAsync(app, cancellationToken).ConfigureAwait(false);
+            string? type = await applicationManager.GetApplicationTypeAsync(app, cancellationToken).ConfigureAwait(false);
 
-#pragma warning disable S1172 // Route-bound parameters required for minimal API binding
-    private static Task<Results<NoContent, NotFound>> DeleteApplicationAsync(string clientId) =>
-        Task.FromResult<Results<NoContent, NotFound>>(TypedResults.NoContent());
+            Guid? tenantId = app is GranitOpenIddictApplication granitApp ? granitApp.TenantId : null;
+            results.Add(new AdminOidcApplicationResponse(clientId, displayName, type, tenantId));
+        }
 
-    private static Task<Results<Ok, NotFound>> RotateSecretAsync(string clientId) =>
-        Task.FromResult<Results<Ok, NotFound>>(TypedResults.Ok());
+        return TypedResults.Ok<IReadOnlyList<AdminOidcApplicationResponse>>(results);
+    }
+
+    private static async Task<Created<AdminOidcApplicationResponse>> CreateApplicationAsync(
+        AdminOidcCreateApplicationRequest request,
+        [FromServices] IOpenIddictApplicationManager applicationManager,
+        CancellationToken cancellationToken)
+    {
+        var descriptor = new OpenIddictApplicationDescriptor
+        {
+            ClientId = request.ClientId,
+            DisplayName = request.DisplayName,
+            ApplicationType = request.Type ?? OpenIddictConstants.ApplicationTypes.Web,
+        };
+
+        if (!string.IsNullOrEmpty(request.ClientSecret))
+        {
+            descriptor.ClientSecret = request.ClientSecret;
+            descriptor.ClientType = OpenIddictConstants.ClientTypes.Confidential;
+        }
+        else
+        {
+            descriptor.ClientType = OpenIddictConstants.ClientTypes.Public;
+        }
+
+        object app = await applicationManager.CreateAsync(descriptor, cancellationToken).ConfigureAwait(false);
+
+        string? clientId = await applicationManager.GetClientIdAsync(app, cancellationToken).ConfigureAwait(false);
+        string? displayName = await applicationManager.GetDisplayNameAsync(app, cancellationToken).ConfigureAwait(false);
+        string? type = await applicationManager.GetApplicationTypeAsync(app, cancellationToken).ConfigureAwait(false);
+        Guid? tenantId = app is GranitOpenIddictApplication granitApp ? granitApp.TenantId : null;
+
+        return TypedResults.Created(
+            $"/api/admin/oidc/applications/{clientId}",
+            new AdminOidcApplicationResponse(clientId, displayName, type, tenantId));
+    }
+
+    private static async Task<Results<NoContent, NotFound>> DeleteApplicationAsync(
+        string clientId,
+        [FromServices] IOpenIddictApplicationManager applicationManager,
+        CancellationToken cancellationToken)
+    {
+        object? app = await applicationManager.FindByClientIdAsync(clientId, cancellationToken).ConfigureAwait(false);
+        if (app is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        await applicationManager.DeleteAsync(app, cancellationToken).ConfigureAwait(false);
+        return TypedResults.NoContent();
+    }
+
+#pragma warning disable GRSEC003 // Secret generation and rotation logic, not a stored secret
+    private static async Task<Results<Ok<AdminOidcRotateSecretResponse>, NotFound>> RotateSecretAsync(
+        string clientId,
+        [FromServices] IOpenIddictApplicationManager applicationManager,
+        CancellationToken cancellationToken)
+    {
+        object? app = await applicationManager.FindByClientIdAsync(clientId, cancellationToken).ConfigureAwait(false);
+        if (app is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        // Generate a cryptographically random 256-bit secret
+        string newSecret = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+
+        var descriptor = new OpenIddictApplicationDescriptor();
+        await applicationManager.PopulateAsync(descriptor, app, cancellationToken).ConfigureAwait(false);
+        descriptor.ClientSecret = newSecret;
+        descriptor.ClientType = OpenIddictConstants.ClientTypes.Confidential;
+
+        await applicationManager.UpdateAsync(app, descriptor, cancellationToken).ConfigureAwait(false);
+
+        string? displayName = await applicationManager.GetDisplayNameAsync(app, cancellationToken).ConfigureAwait(false);
+
+        return TypedResults.Ok(new AdminOidcRotateSecretResponse(clientId, displayName, newSecret));
+    }
+#pragma warning restore GRSEC003
 
     // ──── Scope handlers ────
 
-    private static Task<Ok> ListScopesAsync() => Task.FromResult(TypedResults.Ok());
+    private static async Task<Ok<IReadOnlyList<AdminOidcScopeResponse>>> ListScopesAsync(
+        [FromServices] IOpenIddictScopeManager scopeManager,
+        CancellationToken cancellationToken)
+    {
+        var results = new List<AdminOidcScopeResponse>();
 
-    private static Task<Created> CreateScopeAsync() =>
-        Task.FromResult(TypedResults.Created("/api/admin/oidc/scopes/{name}"));
+        await foreach (object scope in scopeManager.ListAsync(100, 0, cancellationToken).ConfigureAwait(false))
+        {
+            string? name = await scopeManager.GetNameAsync(scope, cancellationToken).ConfigureAwait(false);
+            string? displayName = await scopeManager.GetDisplayNameAsync(scope, cancellationToken).ConfigureAwait(false);
+            string? description = await scopeManager.GetDescriptionAsync(scope, cancellationToken).ConfigureAwait(false);
+            results.Add(new AdminOidcScopeResponse(name, displayName, description));
+        }
 
-    private static Task<Results<NoContent, NotFound>> DeleteScopeAsync(string scopeName) =>
-        Task.FromResult<Results<NoContent, NotFound>>(TypedResults.NoContent());
+        return TypedResults.Ok<IReadOnlyList<AdminOidcScopeResponse>>(results);
+    }
+
+    private static async Task<Created<AdminOidcScopeResponse>> CreateScopeAsync(
+        AdminOidcCreateScopeRequest request,
+        [FromServices] IOpenIddictScopeManager scopeManager,
+        CancellationToken cancellationToken)
+    {
+        var descriptor = new OpenIddictScopeDescriptor
+        {
+            Name = request.Name,
+            DisplayName = request.DisplayName,
+            Description = request.Description,
+        };
+
+        object scope = await scopeManager.CreateAsync(descriptor, cancellationToken).ConfigureAwait(false);
+
+        string? name = await scopeManager.GetNameAsync(scope, cancellationToken).ConfigureAwait(false);
+        string? displayName = await scopeManager.GetDisplayNameAsync(scope, cancellationToken).ConfigureAwait(false);
+        string? description = await scopeManager.GetDescriptionAsync(scope, cancellationToken).ConfigureAwait(false);
+
+        return TypedResults.Created(
+            $"/api/admin/oidc/scopes/{name}",
+            new AdminOidcScopeResponse(name, displayName, description));
+    }
+
+    private static async Task<Results<NoContent, NotFound>> DeleteScopeAsync(
+        string scopeName,
+        [FromServices] IOpenIddictScopeManager scopeManager,
+        CancellationToken cancellationToken)
+    {
+        object? scope = await scopeManager.FindByNameAsync(scopeName, cancellationToken).ConfigureAwait(false);
+        if (scope is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        await scopeManager.DeleteAsync(scope, cancellationToken).ConfigureAwait(false);
+        return TypedResults.NoContent();
+    }
 
     // ──── Authorization handlers ────
 
-    private static Task<Ok> ListAuthorizationsAsync() =>
-        Task.FromResult(TypedResults.Ok());
+    private static async Task<Ok<IReadOnlyList<AdminOidcAuthorizationResponse>>> ListAuthorizationsAsync(
+        [FromServices] IOpenIddictAuthorizationManager authorizationManager,
+        CancellationToken cancellationToken)
+    {
+        var results = new List<AdminOidcAuthorizationResponse>();
 
-    private static Task<Results<NoContent, NotFound>> RevokeAuthorizationAsync(Guid authorizationId) =>
-        Task.FromResult<Results<NoContent, NotFound>>(TypedResults.NoContent());
+        await foreach (object auth in authorizationManager.ListAsync(100, 0, cancellationToken).ConfigureAwait(false))
+        {
+            string? id = await authorizationManager.GetIdAsync(auth, cancellationToken).ConfigureAwait(false);
+            string? subject = await authorizationManager.GetSubjectAsync(auth, cancellationToken).ConfigureAwait(false);
+            string? status = await authorizationManager.GetStatusAsync(auth, cancellationToken).ConfigureAwait(false);
+            string? type = await authorizationManager.GetTypeAsync(auth, cancellationToken).ConfigureAwait(false);
 
-    private static Task<NoContent> RevokeUserAuthorizationsAsync(Guid userId) =>
-        Task.FromResult(TypedResults.NoContent());
-#pragma warning restore S1172
+            results.Add(new AdminOidcAuthorizationResponse(
+                Guid.TryParse(id, out Guid parsedId) ? parsedId : Guid.Empty,
+                subject, null, status, type));
+        }
+
+        return TypedResults.Ok<IReadOnlyList<AdminOidcAuthorizationResponse>>(results);
+    }
+
+    private static async Task<Results<NoContent, NotFound>> RevokeAuthorizationAsync(
+        Guid authorizationId,
+        [FromServices] IOpenIddictAuthorizationManager authorizationManager,
+        [FromServices] IOpenIddictTokenManager tokenManager,
+        CancellationToken cancellationToken)
+    {
+        object? auth = await authorizationManager.FindByIdAsync(
+            authorizationId.ToString(), cancellationToken).ConfigureAwait(false);
+
+        if (auth is null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        // Revoke all tokens associated with this authorization
+        await foreach (object token in tokenManager.FindByAuthorizationIdAsync(
+            authorizationId.ToString(), cancellationToken).ConfigureAwait(false))
+        {
+            await tokenManager.TryRevokeAsync(token, cancellationToken).ConfigureAwait(false);
+        }
+
+        await authorizationManager.DeleteAsync(auth, cancellationToken).ConfigureAwait(false);
+        return TypedResults.NoContent();
+    }
+
+    private static async Task<NoContent> RevokeUserAuthorizationsAsync(
+        Guid userId,
+        [FromServices] IOpenIddictTokenManager tokenManager,
+        CancellationToken cancellationToken)
+    {
+        // Revoke all tokens for this user (security incident / GDPR erasure)
+        await foreach (object token in tokenManager.FindBySubjectAsync(
+            userId.ToString(), cancellationToken).ConfigureAwait(false))
+        {
+            await tokenManager.TryRevokeAsync(token, cancellationToken).ConfigureAwait(false);
+        }
+
+        return TypedResults.NoContent();
+    }
 }

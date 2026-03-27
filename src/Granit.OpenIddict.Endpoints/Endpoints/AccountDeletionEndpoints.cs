@@ -41,9 +41,16 @@ internal static class AccountDeletionEndpoints
         string? username = httpContext.User.FindFirst("preferred_username")?.Value
                            ?? httpContext.User.FindFirst("name")?.Value;
 
+        if (username is null)
+        {
+            return TypedResults.Problem(
+                detail: "Unable to determine username from token claims.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
         // Verify password before deletion
         bool isValid = await credentialVerifier
-            .VerifyUserCredentialsAsync(username ?? string.Empty, request.Password, cancellationToken)
+            .VerifyUserCredentialsAsync(username, request.Password, cancellationToken)
             .ConfigureAwait(false);
 
         if (!isValid)
