@@ -261,6 +261,15 @@ public sealed class AppSettingDefinitionProvider : ISettingDefinitionProvider
 }
 ```
 
+The `EfCoreSettingStore` calls `IStringEncryptionService.Encrypt()` on write and
+`Decrypt()` on read -- application code always works with plaintext.
+
+:::caution[API masking]
+All `GET` settings endpoints return `"***"` for encrypted settings.
+`SettingChangedEvent` also masks `OldValue` / `NewValue` to prevent sensitive data
+from leaking into audit logs or event consumers.
+:::
+
 ## Encryption architecture summary
 
 | Layer | Mechanism | Scope | Key management |

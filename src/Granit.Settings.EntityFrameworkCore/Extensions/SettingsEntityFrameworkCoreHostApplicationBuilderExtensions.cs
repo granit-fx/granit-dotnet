@@ -1,3 +1,4 @@
+using Granit.Settings.Definitions;
 using Granit.Settings.EntityFrameworkCore.Internal;
 using Granit.Settings.Values;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +39,8 @@ public static class SettingsEntityFrameworkCoreHostApplicationBuilderExtensions
     {
         builder.Services.AddSingleton<EfCoreSettingStore<TDbContext>>(sp =>
             new EfCoreSettingStore<TDbContext>(
-                sp.GetRequiredService<IServiceScopeFactory>()));
+                sp.GetRequiredService<IServiceScopeFactory>(),
+                sp.GetRequiredService<SettingDefinitionManager>()));
         builder.Services.Replace(ServiceDescriptor.Singleton<ISettingStoreReader>(sp =>
             sp.GetRequiredService<EfCoreSettingStore<TDbContext>>()));
         builder.Services.Replace(ServiceDescriptor.Singleton<ISettingStoreWriter>(sp =>

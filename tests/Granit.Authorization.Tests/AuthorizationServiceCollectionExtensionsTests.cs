@@ -87,4 +87,98 @@ public sealed class AuthorizationServiceCollectionExtensionsTests
         // Assert
         returned.ShouldBeSameAs(services);
     }
+
+    // =========================================================================
+    // DynamicPermissionPolicyProvider registration
+    // =========================================================================
+
+    [Fact]
+    public void AddGranitAuthorization_RegistersDynamicPolicyProvider()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        services.AddGranitAuthorization();
+
+        // Assert
+        services.ShouldContain(sd => sd.ServiceType == typeof(IAuthorizationPolicyProvider));
+    }
+
+    // =========================================================================
+    // AuthorizationMetrics registration
+    // =========================================================================
+
+    [Fact]
+    public void AddGranitAuthorization_RegistersAuthorizationMetrics()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        services.AddGranitAuthorization();
+
+        // Assert
+        services.ShouldContain(sd =>
+            sd.ServiceType == typeof(Granit.Authorization.Diagnostics.AuthorizationMetrics));
+    }
+
+    // =========================================================================
+    // Options validation registration
+    // =========================================================================
+
+    [Fact]
+    public void AddGranitAuthorization_RegistersOptionsValidator()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        services.AddGranitAuthorization();
+
+        // Assert
+        services.ShouldContain(sd =>
+            sd.ServiceType == typeof(Microsoft.Extensions.Options.IValidateOptions<
+                Granit.Authorization.Options.GranitAuthorizationOptions>));
+    }
+
+    // =========================================================================
+    // TryAdd semantics — custom store not overwritten
+    // =========================================================================
+
+    [Fact]
+    public void AddGranitAuthorization_CustomStoreAlreadyRegistered_DoesNotOverwrite()
+    {
+        // Arrange
+        ServiceCollection services = new();
+        services.AddSingleton<IPermissionGrantStore>(
+            NSubstitute.Substitute.For<IPermissionGrantStore>());
+
+        // Act
+        services.AddGranitAuthorization();
+
+        // Assert — there should be exactly one IPermissionGrantStore registration
+        // and it should be the custom one (added first), not NullPermissionGrantStore
+        services.Count(sd => sd.ServiceType == typeof(IPermissionGrantStore)).ShouldBe(1);
+    }
+
+    // =========================================================================
+    // Idempotent registration
+    // =========================================================================
+
+    [Fact]
+    public void AddGranitAuthorization_CalledTwice_DoesNotDuplicateTryAddRegistrations()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        services.AddGranitAuthorization();
+        services.AddGranitAuthorization();
+
+        // Assert — TryAdd services should appear once
+        services.Count(sd => sd.ServiceType == typeof(IPermissionGrantStore)).ShouldBe(1);
+        services.Count(sd =>
+            sd.ServiceType == typeof(Granit.Authorization.Diagnostics.AuthorizationMetrics)).ShouldBe(1);
+    }
 }

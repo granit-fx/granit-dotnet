@@ -111,6 +111,123 @@ public sealed class PermissionDefinitionManagerTests
         manager.GetGroups().Where(g => g.Name == "Administration").Count().ShouldBe(1);
     }
 
+    // =========================================================================
+    // Find — case sensitivity
+    // =========================================================================
+
+    [Fact]
+    public void Find_CaseSensitive_DifferentCaseReturnsNull()
+    {
+        // Arrange — permission names are ordinal-matched
+        IPermissionDefinitionProvider[] providers = [new InvoicesPermissionProvider()];
+        PermissionDefinitionManager manager = new(providers);
+
+        // Act
+        PermissionDefinition? result = manager.Find("invoices.read");
+
+        // Assert — ordinal comparison means different casing is a different key
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Exists_CaseSensitive_DifferentCaseReturnsFalse()
+    {
+        IPermissionDefinitionProvider[] providers = [new InvoicesPermissionProvider()];
+        PermissionDefinitionManager manager = new(providers);
+
+        manager.Exists("INVOICES.READ").ShouldBeFalse();
+    }
+
+    // =========================================================================
+    // GetAll — ordering and content
+    // =========================================================================
+
+    [Fact]
+    public void GetAll_ReturnsDistinctPermissions()
+    {
+        IPermissionDefinitionProvider[] providers =
+        [
+            new InvoicesPermissionProvider(),
+            new AdminPermissionProvider1(),
+            new AdminPermissionProvider2()
+        ];
+
+        PermissionDefinitionManager manager = new(providers);
+        IReadOnlyList<PermissionDefinition> all = manager.GetAll();
+
+        // Should have 5 total: 3 (Invoices) + 1 (Admin1) + 1 (Admin2)
+        all.Count.ShouldBe(5);
+        all.Select(p => p.Name).ShouldBeUnique();
+    }
+
+    // =========================================================================
+    // GetGroups — multiple providers
+    // =========================================================================
+
+    [Fact]
+    public void GetGroups_MultipleProvidersDifferentGroups_ReturnsAllGroups()
+    {
+        IPermissionDefinitionProvider[] providers =
+        [
+            new InvoicesPermissionProvider(),
+            new AdminPermissionProvider1()
+        ];
+
+        PermissionDefinitionManager manager = new(providers);
+        IReadOnlyList<PermissionGroup> groups = manager.GetGroups();
+
+        groups.Count.ShouldBe(2);
+        groups.Select(g => g.Name).ShouldContain("Invoices");
+        groups.Select(g => g.Name).ShouldContain("Administration");
+    }
+
+    // =========================================================================
+    // Find — returns correct group association
+    // =========================================================================
+
+    [Fact]
+    public void Find_ReturnsPermissionWithCorrectGroupName()
+    {
+        IPermissionDefinitionProvider[] providers =
+        [
+            new InvoicesPermissionProvider(),
+            new AdminPermissionProvider1()
+        ];
+
+        PermissionDefinitionManager manager = new(providers);
+
+        PermissionDefinition? invoicesPerm = manager.Find("Invoices.Read");
+        PermissionDefinition? adminPerm = manager.Find("Administration.Users.Read");
+
+        invoicesPerm.ShouldNotBeNull();
+        invoicesPerm!.GroupName.ShouldBe("Invoices");
+
+        adminPerm.ShouldNotBeNull();
+        adminPerm!.GroupName.ShouldBe("Administration");
+    }
+
+    // =========================================================================
+    // Constructor — provider ordering
+    // =========================================================================
+
+    [Fact]
+    public void Constructor_ThreeProvidersAddingToSameGroup_AllPermissionsRegistered()
+    {
+        IPermissionDefinitionProvider[] providers =
+        [
+            new AdminPermissionProvider1(),
+            new AdminPermissionProvider2(),
+            new AdminPermissionProvider3()
+        ];
+
+        PermissionDefinitionManager manager = new(providers);
+
+        manager.Exists("Administration.Users.Read").ShouldBeTrue();
+        manager.Exists("Administration.Reports.Export").ShouldBeTrue();
+        manager.Exists("Administration.Settings.Manage").ShouldBeTrue();
+        manager.GetGroups().Where(g => g.Name == "Administration").Count().ShouldBe(1);
+    }
+
     // --- Test doubles ---
 
     private sealed class InvoicesPermissionProvider : IPermissionDefinitionProvider
@@ -139,6 +256,15 @@ public sealed class PermissionDefinitionManagerTests
         {
             PermissionGroup group = context.AddGroup("Administration"); // même groupe — GetOrAdd
             group.AddPermission("Administration.Reports.Export");
+        }
+    }
+
+    private sealed class AdminPermissionProvider3 : IPermissionDefinitionProvider
+    {
+        public void DefinePermissions(IPermissionDefinitionContext context)
+        {
+            PermissionGroup group = context.AddGroup("Administration");
+            group.AddPermission("Administration.Settings.Manage");
         }
     }
 }

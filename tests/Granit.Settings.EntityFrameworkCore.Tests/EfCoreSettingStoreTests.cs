@@ -5,6 +5,7 @@
 // Each test uses an isolated database name to prevent state leakage.
 // =============================================================================
 
+using Granit.Settings.Definitions;
 using Granit.Settings.EntityFrameworkCore.Entities;
 using Granit.Settings.EntityFrameworkCore.Extensions;
 using Granit.Settings.EntityFrameworkCore.Internal;
@@ -42,7 +43,8 @@ public sealed class EfCoreSettingStoreTests
 
         ServiceProvider sp = services.BuildServiceProvider();
         return new EfCoreSettingStore<TestSettingsDbContext>(
-            sp.GetRequiredService<IServiceScopeFactory>());
+            sp.GetRequiredService<IServiceScopeFactory>(),
+            new SettingDefinitionManager([]));
     }
 
     private static async Task SeedAsync(

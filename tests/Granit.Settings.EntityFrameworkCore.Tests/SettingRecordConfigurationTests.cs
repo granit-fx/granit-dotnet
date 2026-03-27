@@ -110,4 +110,14 @@ public sealed class SettingRecordConfigurationTests
         IProperty value = entity.FindProperty(nameof(SettingRecord.Value))!;
         value.IsNullable.ShouldBeTrue();
     }
+
+    [Fact]
+    public void SettingRecord_Value_HasMaxLength4000()
+    {
+        IModel model = BuildModel();
+        IEntityType entity = model.FindEntityType(typeof(SettingRecord))!;
+
+        IProperty value = entity.FindProperty(nameof(SettingRecord.Value))!;
+        value.GetMaxLength().ShouldBe(4000);
+    }
 }

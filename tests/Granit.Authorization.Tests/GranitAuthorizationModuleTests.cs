@@ -1,4 +1,5 @@
 using Granit.Authorization.Abstractions;
+using Granit.Caching;
 using Granit.Modularity;
 using Shouldly;
 using Xunit;
@@ -35,5 +36,31 @@ public sealed class GranitAuthorizationModuleTests
         typeof(GranitAuthorizationModule)
             .GetMethod("ConfigureServices")
             .ShouldNotBeNull();
+    }
+
+    // =========================================================================
+    // DependsOn — GranitCachingModule
+    // =========================================================================
+
+    [Fact]
+    public void DependsOn_IncludesCachingModule()
+    {
+        DependsOnAttribute[] attrs = typeof(GranitAuthorizationModule)
+            .GetCustomAttributes(typeof(DependsOnAttribute), false)
+            .Cast<DependsOnAttribute>()
+            .ToArray();
+
+        attrs.SelectMany(a => a.DependedTypes)
+            .ShouldContain(typeof(Granit.Caching.GranitCachingModule));
+    }
+
+    // =========================================================================
+    // Module class — sealed
+    // =========================================================================
+
+    [Fact]
+    public void ModuleClass_IsSealed()
+    {
+        typeof(GranitAuthorizationModule).IsSealed.ShouldBeTrue();
     }
 }

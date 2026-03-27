@@ -232,6 +232,178 @@ public sealed class PermissionCheckerTests
         key.ShouldBe("perm:global:editor:Invoices.Delete");
     }
 
+    // --- AdminRole bypass (case-insensitive) ---
+
+    [Theory]
+    [InlineData("Admin")]
+    [InlineData("ADMIN")]
+    [InlineData("aDmIn")]
+    public async Task IsGrantedAsync_AdminRoleCaseInsensitive_ReturnsTrueRegardlessOfCasing(string roleCasing)
+    {
+        // Arrange
+        IFusionCache cache = Substitute.For<IFusionCache>();
+        IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
+        PermissionChecker checker = BuildChecker(
+            isAuthenticated: true,
+            roles: [roleCasing],
+            cache: cache,
+            store: store);
+
+        // Act
+        bool result = await checker.IsGrantedAsync(DefinedPermission, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.ShouldBeTrue();
+        await store.DidNotReceive().IsGrantedAsync(
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+    }
+
+    // --- AlwaysAllow requires authentication ---
+
+    [Fact]
+    public async Task IsGrantedAsync_AlwaysAllowButNotAuthenticated_ReturnsFalse()
+    {
+        // Arrange — VULN-001: AlwaysAllow must NOT bypass authentication check
+        PermissionChecker checker = BuildChecker(
+            alwaysAllow: true,
+            isAuthenticated: false);
+
+        // Act
+        bool result = await checker.IsGrantedAsync(DefinedPermission, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.ShouldBeFalse();
+    }
+
+    // --- Tenant-aware cache key ---
+
+    [Fact]
+    public async Task IsGrantedAsync_WithTenant_PassesTenantIdToStore()
+    {
+        // Arrange
+        IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
+        store.IsGrantedAsync("editor", DefinedPermission, TenantId, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        PermissionChecker checker = BuildChecker(
+            isAuthenticated: true,
+            roles: ["editor"],
+            tenantId: TenantId,
+            store: store,
+            cache: BuildPassThroughCache());
+
+        // Act
+        bool result = await checker.IsGrantedAsync(DefinedPermission, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.ShouldBeTrue();
+        await store.Received(1).IsGrantedAsync(
+            "editor", DefinedPermission, TenantId, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task IsGrantedAsync_WithoutTenant_PassesNullToStore()
+    {
+        // Arrange
+        IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
+        store.IsGrantedAsync("editor", DefinedPermission, null, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        PermissionChecker checker = BuildChecker(
+            isAuthenticated: true,
+            roles: ["editor"],
+            tenantId: null,
+            store: store,
+            cache: BuildPassThroughCache());
+
+        // Act
+        bool result = await checker.IsGrantedAsync(DefinedPermission, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.ShouldBeTrue();
+        await store.Received(1).IsGrantedAsync(
+            "editor", DefinedPermission, null, Arg.Any<CancellationToken>());
+    }
+
+    // --- AdminRole with multiple admin roles configured ---
+
+    [Fact]
+    public async Task IsGrantedAsync_MultipleAdminRolesConfigured_AnyMatchReturnsTrue()
+    {
+        // Arrange
+        ICurrentUserService user = Substitute.For<ICurrentUserService>();
+        user.IsAuthenticated.Returns(true);
+        user.GetRoles().Returns(["superadmin"]);
+
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        tenant.IsAvailable.Returns(false);
+
+        IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
+        manager.Exists(DefinedPermission).Returns(true);
+
+        IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
+        IFusionCache cache = Substitute.For<IFusionCache>();
+
+        GranitAuthorizationOptions opts = new()
+        {
+            AdminRoles = [AdminRoleName, "superadmin", "root"],
+            CacheDuration = TimeSpan.FromMinutes(5)
+        };
+
+        IMeterFactory meterFactory = Substitute.For<IMeterFactory>();
+        meterFactory.Create(Arg.Any<MeterOptions>()).Returns(new Meter("test"));
+        AuthorizationMetrics metrics = new(meterFactory);
+
+        PermissionChecker checker = new(user, tenant, manager, store, cache, metrics,
+            Microsoft.Extensions.Options.Options.Create(opts));
+
+        // Act
+        bool result = await checker.IsGrantedAsync(DefinedPermission, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.ShouldBeTrue();
+        await store.DidNotReceive().IsGrantedAsync(
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+    }
+
+    // --- Empty roles list ---
+
+    [Fact]
+    public async Task IsGrantedAsync_EmptyRolesList_ReturnsFalse()
+    {
+        // Arrange
+        IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
+        PermissionChecker checker = BuildChecker(
+            isAuthenticated: true,
+            roles: [],
+            store: store,
+            cache: BuildPassThroughCache());
+
+        // Act
+        bool result = await checker.IsGrantedAsync(DefinedPermission, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.ShouldBeFalse();
+    }
+
+    // --- BuildCacheKey edge cases ---
+
+    [Fact]
+    public void BuildCacheKey_EmptyRoleName_IncludesEmptySegment()
+    {
+        string key = PermissionChecker.BuildCacheKey(null, "", "Invoices.Delete");
+
+        key.ShouldBe("perm:global::Invoices.Delete");
+    }
+
+    [Fact]
+    public void BuildCacheKey_EmptyPermissionName_IncludesEmptySegment()
+    {
+        string key = PermissionChecker.BuildCacheKey(null, "editor", "");
+
+        key.ShouldBe("perm:global:editor:");
+    }
+
     // --- Helpers ---
 
     private static PermissionChecker BuildChecker(

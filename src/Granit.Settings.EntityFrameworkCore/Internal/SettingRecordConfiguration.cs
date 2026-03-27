@@ -30,7 +30,8 @@ internal sealed class SettingRecordConfiguration : IEntityTypeConfiguration<Sett
         builder.Property(e => e.ProviderKey)
                .HasMaxLength(256);
 
-        builder.Property(e => e.Value);
+        builder.Property(e => e.Value)
+               .HasMaxLength(4000);
 
         // ISO 27001 audit columns — populated automatically by AuditedEntityInterceptor
         builder.Property(e => e.CreatedAt)

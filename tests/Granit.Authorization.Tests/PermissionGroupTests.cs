@@ -95,4 +95,48 @@ public sealed class PermissionGroupTests
 
         group.Permissions.ShouldBeAssignableTo<IReadOnlyList<PermissionDefinition>>();
     }
+
+    // =========================================================================
+    // AddPermission — returned definition details
+    // =========================================================================
+
+    [Fact]
+    public void AddPermission_WithoutDisplayName_DisplayNameIsNull()
+    {
+        PermissionGroup group = new("Invoices");
+
+        PermissionDefinition definition = group.AddPermission("Invoices.Read");
+
+        definition.DisplayName.ShouldBeNull();
+    }
+
+    [Fact]
+    public void AddPermission_ReturnedDefinition_HasGroupNameSet()
+    {
+        PermissionGroup group = new("Orders");
+
+        PermissionDefinition definition = group.AddPermission("Orders.Create", LocalizableString.Fixed("Create"));
+
+        definition.GroupName.ShouldBe("Orders");
+        definition.Name.ShouldBe("Orders.Create");
+        definition.DisplayName.ShouldNotBeNull();
+    }
+
+    // =========================================================================
+    // Permissions — list isolation
+    // =========================================================================
+
+    [Fact]
+    public void Permissions_TwoDifferentGroups_HaveIndependentLists()
+    {
+        PermissionGroup invoices = new("Invoices");
+        PermissionGroup orders = new("Orders");
+
+        invoices.AddPermission("Invoices.Read");
+        orders.AddPermission("Orders.Read");
+        orders.AddPermission("Orders.Create");
+
+        invoices.Permissions.Count.ShouldBe(1);
+        orders.Permissions.Count.ShouldBe(2);
+    }
 }

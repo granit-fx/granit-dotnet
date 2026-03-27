@@ -82,4 +82,75 @@ public sealed class PermissionDefinitionContextTests
 
         context.ShouldBeAssignableTo<IPermissionDefinitionContext>();
     }
+
+    // =========================================================================
+    // AddGroup — permission chaining
+    // =========================================================================
+
+    [Fact]
+    public void AddGroup_ThenAddPermissions_PermissionsVisibleViaGroup()
+    {
+        PermissionDefinitionContext context = new();
+
+        PermissionGroup group = context.AddGroup("Orders");
+        group.AddPermission("Orders.Read");
+        group.AddPermission("Orders.Create");
+
+        context.Groups["Orders"].Permissions.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    public void AddGroup_SameGroupFromTwoCallers_PermissionsAccumulateOnSameInstance()
+    {
+        PermissionDefinitionContext context = new();
+
+        PermissionGroup first = context.AddGroup("Shared");
+        first.AddPermission("Shared.Alpha");
+
+        PermissionGroup second = context.AddGroup("Shared");
+        second.AddPermission("Shared.Beta");
+
+        // Same instance, so both permissions are visible
+        first.Permissions.Count.ShouldBe(2);
+        second.Permissions.Count.ShouldBe(2);
+        first.ShouldBeSameAs(second);
+    }
+
+    // =========================================================================
+    // Groups — empty context
+    // =========================================================================
+
+    [Fact]
+    public void Groups_EmptyContext_ReturnsEmptyDictionary()
+    {
+        PermissionDefinitionContext context = new();
+
+        context.Groups.ShouldBeEmpty();
+    }
+
+    // =========================================================================
+    // AddGroup — ordinal key comparison
+    // =========================================================================
+
+    [Fact]
+    public void AddGroup_DifferentCase_CreatesSeparateGroups()
+    {
+        PermissionDefinitionContext context = new();
+
+        PermissionGroup lower = context.AddGroup("invoices");
+        PermissionGroup upper = context.AddGroup("Invoices");
+
+        lower.ShouldNotBeSameAs(upper);
+        context.Groups.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    public void AddGroup_WithoutDisplayName_GroupHasNullDisplayName()
+    {
+        PermissionDefinitionContext context = new();
+
+        PermissionGroup group = context.AddGroup("NoDisplay");
+
+        group.DisplayName.ShouldBeNull();
+    }
 }

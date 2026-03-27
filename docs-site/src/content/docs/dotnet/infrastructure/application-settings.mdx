@@ -197,6 +197,12 @@ public class AdminService(ISettingManager settingManager)
 | Tenant | `GET` | `/settings/tenant` | `Settings.Tenant.Read` |
 | Tenant | `PUT` | `/settings/tenant/{name}` | `Settings.Tenant.Manage` |
 
+:::note[Encrypted settings]
+All `GET` endpoints mask settings declared with `IsEncrypted = true` -- their values
+are returned as `"***"` instead of the decrypted plaintext. `PUT` endpoints accept
+plaintext values which are encrypted transparently by the store layer.
+:::
+
 ## SettingsCultureMiddleware
 
 Hydrates `CultureInfo.CurrentUICulture` and `ICurrentTimezoneProvider` from the
@@ -223,6 +229,40 @@ app.UseAuthorization();
 | Property | Default | Description |
 |----------|---------|-------------|
 | `CacheExpiration` | `00:30:00` | Cache entry TTL for resolved setting values |
+
+## Security
+
+### Encryption at rest
+
+Settings declared with `IsEncrypted = true` are encrypted by `IStringEncryptionService`
+(AES-256 or Vault Transit) in the `EfCoreSettingStore` layer before database persistence.
+The FusionCache layer stores plaintext to avoid double encryption -- Redis is protected
+by `AesCacheValueEncryptor` independently.
+
+### Value masking
+
+Encrypted setting values are never exposed via HTTP:
+
+- **GET endpoints** return `"***"` for encrypted settings (all scopes: User, Global, Tenant)
+- **`SettingChangedEvent`** masks `OldValue` and `NewValue` for encrypted settings,
+  preventing sensitive values from leaking into audit log handlers or event consumers
+
+### Input validation
+
+Setting values are limited to **4000 characters** (enforced both by endpoint validation
+and a database column constraint).
+
+### Observability
+
+`SettingsMetrics` emits three counters via `IMeterFactory` (meter: `Granit.Settings`):
+
+| Metric | Description |
+|--------|-------------|
+| `granit.settings.value.changed` | Setting values created or updated |
+| `granit.settings.value.deleted` | Setting values deleted |
+| `granit.settings.cache.invalidated` | Cache entries invalidated after a write |
+
+All counters include `tenant_id`, `provider_name`, and `setting_name` tags.
 
 ## Public API summary
 

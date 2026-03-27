@@ -1,3 +1,13 @@
+// =============================================================================
+// DefaultCryptoShredderTests - Crypto-shredding service (GDPR Art. 17)
+// =============================================================================
+// Verifies:
+//   - ShredAsync delegates to IEntityEncryptionKeyStore and audit recorders
+//   - ShredBatchAsync iterates and delegates for each entity ID
+//   - Argument validation (null, empty, whitespace)
+//   - No-op behavior with empty collections and no audit recorders
+// =============================================================================
+
 using Granit.Encryption.CryptoShredding;
 using Granit.Encryption.Diagnostics;
 using Granit.Encryption.Services;
@@ -102,6 +112,31 @@ public sealed class DefaultCryptoShredderTests
         await _keyStore.DidNotReceive().DeleteKeyAsync(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
+
+    [Fact]
+    public async Task ShredBatchAsync_WithNullEntityType_ThrowsArgumentException() =>
+        await Should.ThrowAsync<ArgumentException>(
+            () => _sut.ShredBatchAsync(null!, ["id-1"], TestContext.Current.CancellationToken));
+
+    [Fact]
+    public async Task ShredBatchAsync_WithWhitespaceEntityType_ThrowsArgumentException() =>
+        await Should.ThrowAsync<ArgumentException>(
+            () => _sut.ShredBatchAsync("   ", ["id-1"], TestContext.Current.CancellationToken));
+
+    [Fact]
+    public async Task ShredBatchAsync_WithNullEntityIds_ThrowsArgumentNullException() =>
+        await Should.ThrowAsync<ArgumentNullException>(
+            () => _sut.ShredBatchAsync("Patient", null!, TestContext.Current.CancellationToken));
+
+    [Fact]
+    public async Task ShredAsync_WithWhitespaceEntityType_ThrowsArgumentException() =>
+        await Should.ThrowAsync<ArgumentException>(
+            () => _sut.ShredAsync("   ", "id-1", TestContext.Current.CancellationToken));
+
+    [Fact]
+    public async Task ShredAsync_WithWhitespaceEntityId_ThrowsArgumentException() =>
+        await Should.ThrowAsync<ArgumentException>(
+            () => _sut.ShredAsync("Patient", "   ", TestContext.Current.CancellationToken));
 
     /// <summary>Minimal IMeterFactory for testing.</summary>
     private sealed class TestMeterFactory : System.Diagnostics.Metrics.IMeterFactory

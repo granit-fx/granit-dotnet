@@ -270,6 +270,12 @@ app.MapGranitTenantSettings();
 Deleting a user-level setting causes the cascade to fall through to Tenant, then
 Global, then Configuration, then Default.
 
+:::note[Encrypted settings]
+Settings declared with `IsEncrypted = true` are stored encrypted in the database
+and returned as `"***"` by all `GET` endpoints. `PUT` endpoints accept plaintext
+values -- encryption is handled transparently by the store layer.
+:::
+
 ## Next steps
 
 - [Encrypt sensitive data](/dotnet/guides/encrypt-sensitive-data/) -- encrypt settings with `IsEncrypted = true`

@@ -116,7 +116,8 @@ public static class AdminSettingsEndpointRouteBuilderExtensions
         Dictionary<string, string?> result = new(StringComparer.Ordinal);
         foreach (SettingValue sv in values)
         {
-            result[sv.Name] = sv.Value;
+            bool isEncrypted = definitionManager.GetOrNull(sv.Name) is { IsEncrypted: true };
+            result[sv.Name] = isEncrypted ? "***" : sv.Value;
         }
 
         return TypedResults.Ok<IReadOnlyDictionary<string, string?>>(result);
@@ -185,7 +186,8 @@ public static class AdminSettingsEndpointRouteBuilderExtensions
         Dictionary<string, string?> result = new(StringComparer.Ordinal);
         foreach (SettingValue sv in values)
         {
-            result[sv.Name] = sv.Value;
+            bool isEncrypted = definitionManager.GetOrNull(sv.Name) is { IsEncrypted: true };
+            result[sv.Name] = isEncrypted ? "***" : sv.Value;
         }
 
         return TypedResults.Ok<IReadOnlyDictionary<string, string?>>(result);

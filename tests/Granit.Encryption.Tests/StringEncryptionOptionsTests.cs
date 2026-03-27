@@ -1,3 +1,12 @@
+// =============================================================================
+// StringEncryptionOptionsTests - Configuration option defaults and properties
+// =============================================================================
+// Verifies:
+//   - Default values for all option properties
+//   - All properties are settable
+//   - Constants match expected configuration section names
+// =============================================================================
+
 using Granit.Encryption.Options;
 using Shouldly;
 using Xunit;
@@ -48,6 +57,14 @@ public sealed class StringEncryptionOptionsTests
     }
 
     [Fact]
+    public void Defaults_AllowEphemeralPassPhrase_IsFalse()
+    {
+        StringEncryptionOptions options = new();
+
+        options.AllowEphemeralPassPhrase.ShouldBeFalse();
+    }
+
+    [Fact]
     public void AllProperties_AreSettable()
     {
         StringEncryptionOptions options = new()
@@ -55,12 +72,14 @@ public sealed class StringEncryptionOptionsTests
             PassPhrase = "my-secret",
             KeySize = 128,
             ProviderName = "Vault",
-            VaultKeyName = "custom-key"
+            VaultKeyName = "custom-key",
+            AllowEphemeralPassPhrase = true
         };
 
         options.PassPhrase.ShouldBe("my-secret");
         options.KeySize.ShouldBe(128);
         options.ProviderName.ShouldBe("Vault");
         options.VaultKeyName.ShouldBe("custom-key");
+        options.AllowEphemeralPassPhrase.ShouldBeTrue();
     }
 }

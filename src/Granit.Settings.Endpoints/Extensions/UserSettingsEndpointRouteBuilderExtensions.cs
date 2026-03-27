@@ -99,7 +99,8 @@ public static class UserSettingsEndpointRouteBuilderExtensions
         Dictionary<string, string?> result = new(StringComparer.Ordinal);
         foreach (SettingValue sv in values)
         {
-            result[sv.Name] = sv.Value;
+            bool isEncrypted = definitionManager.GetOrNull(sv.Name) is { IsEncrypted: true };
+            result[sv.Name] = isEncrypted ? "***" : sv.Value;
         }
 
         return TypedResults.Ok<IReadOnlyDictionary<string, string?>>(result);
@@ -127,7 +128,8 @@ public static class UserSettingsEndpointRouteBuilderExtensions
             .GetOrNullAsync(name, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(new SettingValueResponse(name, value));
+        return TypedResults.Ok(new SettingValueResponse(
+            name, definition.IsEncrypted ? "***" : value));
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> HandlePutUserSettingAsync(

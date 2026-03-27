@@ -287,4 +287,73 @@ public sealed class AesStringEncryptionProviderTests
 
         result.ShouldBeNull();
     }
+
+    // ──── Constructor validation ────
+
+    [Fact]
+    public void Constructor_EmptyPassPhrase_WithoutEphemeral_Throws_InvalidOperationException()
+    {
+        IOptions<StringEncryptionOptions> options = Microsoft.Extensions.Options.Options.Create(new StringEncryptionOptions
+        {
+            PassPhrase = string.Empty,
+            AllowEphemeralPassPhrase = false
+        });
+
+        Action act = () => _ = new AesStringEncryptionProvider(options, NullLogger<AesStringEncryptionProvider>.Instance);
+
+        Should.Throw<InvalidOperationException>(act).Message.ShouldContain("PassPhrase");
+    }
+
+    [Theory]
+    [InlineData(64)]
+    [InlineData(512)]
+    [InlineData(0)]
+    [InlineData(100)]
+    public void Constructor_InvalidKeySize_Throws_ArgumentException(int keySize)
+    {
+        IOptions<StringEncryptionOptions> options = Microsoft.Extensions.Options.Options.Create(new StringEncryptionOptions
+        {
+            PassPhrase = "ValidPassPhraseForTest!",
+            KeySize = keySize
+        });
+
+        Action act = () => _ = new AesStringEncryptionProvider(options, NullLogger<AesStringEncryptionProvider>.Instance);
+
+        Should.Throw<ArgumentException>(act).Message.ShouldContain(keySize.ToString());
+    }
+
+    // ──── Dispose ────
+
+    [Fact]
+    public void Dispose_DoesNotThrow()
+    {
+        AesStringEncryptionProvider provider = CreateProvider();
+
+        Should.NotThrow(() => provider.Dispose());
+    }
+
+    [Fact]
+    public void Dispose_CanBeCalledMultipleTimes()
+    {
+        AesStringEncryptionProvider provider = CreateProvider();
+
+        provider.Dispose();
+        Should.NotThrow(() => provider.Dispose());
+    }
+
+    [Fact]
+    public void ImplementsIDisposable()
+    {
+        using AesStringEncryptionProvider provider = CreateProvider();
+
+        provider.ShouldBeAssignableTo<IDisposable>();
+    }
+
+    [Fact]
+    public void ImplementsIStringEncryptionProvider()
+    {
+        using AesStringEncryptionProvider provider = CreateProvider();
+
+        provider.ShouldBeAssignableTo<IStringEncryptionProvider>();
+    }
 }

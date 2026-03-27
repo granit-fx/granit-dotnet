@@ -1,5 +1,6 @@
 using Granit.Events;
 using Granit.Settings.Definitions;
+using Granit.Settings.Diagnostics;
 using Granit.Settings.Events;
 using Granit.Settings.Providers;
 using Granit.Settings.Values;
@@ -17,7 +18,8 @@ public sealed class SettingManager(
     IFusionCache cache,
     SettingDefinitionManager definitions,
     ILocalEventBus eventBus,
-    TimeProvider timeProvider) : ISettingManager
+    TimeProvider timeProvider,
+    SettingsMetrics metrics) : ISettingManager
 {
     private readonly ISettingStoreWriter _storeWriter = storeWriter;
     private readonly ISettingStoreReader _storeReader = storeReader;
@@ -25,11 +27,12 @@ public sealed class SettingManager(
     private readonly SettingDefinitionManager _definitions = definitions;
     private readonly ILocalEventBus _eventBus = eventBus;
     private readonly TimeProvider _timeProvider = timeProvider;
+    private readonly SettingsMetrics _metrics = metrics;
 
     /// <inheritdoc/>
     public async Task SetGlobalAsync(string name, string? value, CancellationToken cancellationToken = default)
     {
-        _definitions.Get(name); // Validates that the setting is declared
+        SettingDefinition definition = _definitions.Get(name);
         string providerName = GlobalSettingValueProvider.ProviderName;
 
         SettingValue? oldValue = await _storeReader
@@ -39,15 +42,22 @@ public sealed class SettingManager(
         await _cache.ExpireAsync(
             SettingCacheKey.Build(providerName, null, name), token: cancellationToken).ConfigureAwait(false);
 
+        _metrics.RecordValueChanged(null, providerName, name);
+        _metrics.RecordCacheInvalidated(null, providerName);
+
         await _eventBus.PublishAsync(
-            new SettingChangedEvent(name, providerName, null, oldValue?.Value, value, _timeProvider.GetUtcNow()),
+            new SettingChangedEvent(
+                name, providerName, null,
+                MaskIfEncrypted(definition, oldValue?.Value),
+                MaskIfEncrypted(definition, value),
+                _timeProvider.GetUtcNow()),
             cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async Task SetForTenantAsync(Guid tenantId, string name, string? value, CancellationToken cancellationToken = default)
     {
-        _definitions.Get(name);
+        SettingDefinition definition = _definitions.Get(name);
         string providerName = TenantSettingValueProvider.ProviderName;
         string tenantKey = tenantId.ToString();
 
@@ -58,8 +68,15 @@ public sealed class SettingManager(
         await _cache.ExpireAsync(
             SettingCacheKey.Build(providerName, tenantKey, name), token: cancellationToken).ConfigureAwait(false);
 
+        _metrics.RecordValueChanged(tenantKey, providerName, name);
+        _metrics.RecordCacheInvalidated(tenantKey, providerName);
+
         await _eventBus.PublishAsync(
-            new SettingChangedEvent(name, providerName, tenantKey, oldValue?.Value, value, _timeProvider.GetUtcNow()),
+            new SettingChangedEvent(
+                name, providerName, tenantKey,
+                MaskIfEncrypted(definition, oldValue?.Value),
+                MaskIfEncrypted(definition, value),
+                _timeProvider.GetUtcNow()),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -67,7 +84,7 @@ public sealed class SettingManager(
     public async Task SetForUserAsync(string userId, string name, string? value, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
-        _definitions.Get(name);
+        SettingDefinition definition = _definitions.Get(name);
         string providerName = UserSettingValueProvider.ProviderName;
 
         SettingValue? oldValue = await _storeReader
@@ -77,8 +94,15 @@ public sealed class SettingManager(
         await _cache.ExpireAsync(
             SettingCacheKey.Build(providerName, userId, name), token: cancellationToken).ConfigureAwait(false);
 
+        _metrics.RecordValueChanged(null, providerName, name);
+        _metrics.RecordCacheInvalidated(null, providerName);
+
         await _eventBus.PublishAsync(
-            new SettingChangedEvent(name, providerName, userId, oldValue?.Value, value, _timeProvider.GetUtcNow()),
+            new SettingChangedEvent(
+                name, providerName, userId,
+                MaskIfEncrypted(definition, oldValue?.Value),
+                MaskIfEncrypted(definition, value),
+                _timeProvider.GetUtcNow()),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -89,6 +113,8 @@ public sealed class SettingManager(
         string? providerKey = null,
         CancellationToken cancellationToken = default)
     {
+        SettingDefinition definition = _definitions.Get(name);
+
         SettingValue? oldValue = await _storeReader
             .GetOrNullAsync(name, providerName, providerKey, cancellationToken).ConfigureAwait(false);
 
@@ -96,8 +122,19 @@ public sealed class SettingManager(
         await _cache.ExpireAsync(
             SettingCacheKey.Build(providerName, providerKey, name), token: cancellationToken).ConfigureAwait(false);
 
+        string? tenantId = providerName == TenantSettingValueProvider.ProviderName ? providerKey : null;
+        _metrics.RecordValueDeleted(tenantId, providerName, name);
+        _metrics.RecordCacheInvalidated(tenantId, providerName);
+
         await _eventBus.PublishAsync(
-            new SettingChangedEvent(name, providerName, providerKey, oldValue?.Value, null, _timeProvider.GetUtcNow()),
+            new SettingChangedEvent(
+                name, providerName, providerKey,
+                MaskIfEncrypted(definition, oldValue?.Value),
+                null,
+                _timeProvider.GetUtcNow()),
             cancellationToken).ConfigureAwait(false);
     }
+
+    private static string? MaskIfEncrypted(SettingDefinition definition, string? value) =>
+        definition.IsEncrypted && value is not null ? "***" : value;
 }
