@@ -31,6 +31,10 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
         where TEntity : ReferenceDataEntity
         where TDbContext : DbContext
     {
+        // Defensive: ensure metrics are available even if the caller registers the store
+        // before GranitReferenceDataModule has loaded (TryAdd is idempotent).
+        services.TryAddSingleton<ReferenceDataMetrics>();
+
         services.AddScoped<EfCoreReferenceDataStore<TEntity, TDbContext>>(sp =>
             new EfCoreReferenceDataStore<TEntity, TDbContext>(
                 sp.GetRequiredService<IServiceScopeFactory>(),
@@ -103,6 +107,10 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configure);
+
+        // Defensive: ensure metrics are available even if the caller registers stores
+        // before GranitReferenceDataModule has loaded (TryAdd is idempotent).
+        services.TryAddSingleton<ReferenceDataMetrics>();
 
         // Build the registrations
         ReferenceDataBuilder builder = new();
