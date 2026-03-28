@@ -19,7 +19,7 @@ public sealed class SharedDatabaseDbContextFactoryTests
     [Fact]
     public void CreateDbContext_ReturnsNonNullContext()
     {
-        ServiceCollection services = new();
+        ServiceCollection services = [];
         using ServiceProvider sp = services.BuildServiceProvider();
 
         SharedDatabaseDbContextOptions<StubSharedDbContext> opts = new()
@@ -37,7 +37,7 @@ public sealed class SharedDatabaseDbContextFactoryTests
     [Fact]
     public async Task CreateDbContextAsync_ReturnsNonNullContext()
     {
-        ServiceCollection services = new();
+        ServiceCollection services = [];
         using ServiceProvider sp = services.BuildServiceProvider();
 
         SharedDatabaseDbContextOptions<StubSharedDbContext> opts = new()
@@ -56,7 +56,7 @@ public sealed class SharedDatabaseDbContextFactoryTests
     [Fact]
     public void CreateDbContext_WithAuditInterceptorRegistered_ReturnsNonNullContext()
     {
-        ServiceCollection services = new();
+        ServiceCollection services = [];
         services.AddSingleton(Substitute.For<Granit.Timing.IClock>());
         services.AddSingleton(Substitute.For<Granit.Guids.IGuidGenerator>());
         services.AddSingleton(Substitute.For<Granit.Users.ICurrentUserService>());
@@ -85,7 +85,7 @@ public sealed class SharedDatabaseDbContextFactoryTests
     [Fact]
     public void CreateDbContext_WithoutAuditInterceptor_DoesNotThrow()
     {
-        ServiceCollection services = new();
+        ServiceCollection services = [];
         using ServiceProvider sp = services.BuildServiceProvider();
 
         SharedDatabaseDbContextOptions<StubSharedDbContext> opts = new()

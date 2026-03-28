@@ -11,11 +11,11 @@ internal sealed class GranitBffOptionsValidator
 {
     public ValidateOptionsResult Validate(string? name, GranitBffOptions options)
     {
-        List<string>? failures = null;
+        List<string> failures = [];
 
         if (options.Authority is null)
         {
-            (failures ??= []).Add(
+            failures.Add(
                 "Authority must not be null — set the OIDC authority URL in the 'Bff' configuration section.");
         }
 
@@ -28,18 +28,18 @@ internal sealed class GranitBffOptionsValidator
             }
             catch (FormatException)
             {
-                (failures ??= []).Add(
+                failures.Add(
                     "CsrfHmacKey is not valid base64. Provide a 32-byte key encoded as base64 (44 characters).");
             }
 
             if (decoded is not null && decoded.Length != 32)
             {
-                (failures ??= []).Add(
+                failures.Add(
                     $"CsrfHmacKey must decode to exactly 32 bytes (256 bits), got {decoded.Length} bytes.");
             }
         }
 
-        return failures is null
+        return failures.Count == 0
             ? ValidateOptionsResult.Success
             : ValidateOptionsResult.Fail(failures);
     }

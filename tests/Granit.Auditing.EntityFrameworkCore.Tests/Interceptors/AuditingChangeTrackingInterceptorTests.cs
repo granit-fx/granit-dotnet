@@ -32,16 +32,12 @@ public sealed class AuditingChangeTrackingInterceptorTests
     }
 
     [Fact]
-    public void Interceptor_IsSealed()
-    {
+    public void Interceptor_IsSealed() =>
         typeof(AuditingChangeTrackingInterceptor).IsSealed.ShouldBeTrue();
-    }
 
     [Fact]
-    public void Interceptor_IsPublic()
-    {
+    public void Interceptor_IsPublic() =>
         typeof(AuditingChangeTrackingInterceptor).IsPublic.ShouldBeTrue();
-    }
 
     // -------------------------------------------------------------------------
     // Integration — interceptor registered in context does not cause errors

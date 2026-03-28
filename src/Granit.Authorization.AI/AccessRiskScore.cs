@@ -27,7 +27,5 @@ public sealed record AccessRiskScore(
     /// Always <c>true</c>. AI-generated risk scores are advisory only and MUST NOT
     /// be used as the sole factor in authorization deny decisions (OWASP LLM09).
     /// </summary>
-#pragma warning disable CA1822 // Instance property by design — signals to callers that this score is advisory
-    public bool IsAdvisoryOnly => true;
-#pragma warning restore CA1822
+    public static bool IsAdvisoryOnly => true;
 }

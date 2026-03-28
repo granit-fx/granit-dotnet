@@ -28,30 +28,22 @@ public sealed class LogRedactionTests
     [InlineData("ab@example.com", "ab***@example.com")]
     [InlineData("a@example.com", "a***@example.com")]
     [InlineData("alice.wonderland@corp.net", "ali***@corp.net")]
-    public void Email_RedactsLocalPart_PreservesDomain(string input, string expected)
-    {
+    public void Email_RedactsLocalPart_PreservesDomain(string input, string expected) =>
         LogRedaction.Email(input).ShouldBe(expected);
-    }
 
     [Fact]
-    public void Email_NoAtSign_ReturnsMask()
-    {
+    public void Email_NoAtSign_ReturnsMask() =>
         LogRedaction.Email("invalid-email").ShouldBe("***");
-    }
 
     [Fact]
-    public void Email_AtSignAtStart_ReturnsMask()
-    {
-        // "@example.com" has atIndex == 0, which is <= 0
+    // "@example.com" has atIndex == 0, which is <= 0
+    public void Email_AtSignAtStart_ReturnsMask() =>
         LogRedaction.Email("@example.com").ShouldBe("***");
-    }
 
     [Fact]
-    public void Email_ShortLocalPart_PreservesEntireLocalPart()
-    {
-        // "ab" has length 2, min(3, 2) = 2
+    // "ab" has length 2, min(3, 2) = 2
+    public void Email_ShortLocalPart_PreservesEntireLocalPart() =>
         LogRedaction.Email("ab@test.org").ShouldBe("ab***@test.org");
-    }
 
     // -------------------------------------------------------------------------
     // EmailDomain
@@ -60,16 +52,12 @@ public sealed class LogRedactionTests
     [Theory]
     [InlineData("john.doe@example.com", "example.com")]
     [InlineData("user@sub.domain.co.uk", "sub.domain.co.uk")]
-    public void EmailDomain_ExtractsDomainPart(string input, string expected)
-    {
+    public void EmailDomain_ExtractsDomainPart(string input, string expected) =>
         LogRedaction.EmailDomain(input).ShouldBe(expected);
-    }
 
     [Fact]
-    public void EmailDomain_NoAtSign_ReturnsUnknown()
-    {
+    public void EmailDomain_NoAtSign_ReturnsUnknown() =>
         LogRedaction.EmailDomain("no-at-sign").ShouldBe("unknown");
-    }
 
     // -------------------------------------------------------------------------
     // Phone
@@ -78,20 +66,16 @@ public sealed class LogRedactionTests
     [Theory]
     [InlineData("+33612345678", "+336*****78")]
     [InlineData("+1234567890", "+123*****90")]
-    public void Phone_PreservesPrefixAndLastTwoDigits(string input, string expected)
-    {
+    public void Phone_PreservesPrefixAndLastTwoDigits(string input, string expected) =>
         LogRedaction.Phone(input).ShouldBe(expected);
-    }
 
     [Theory]
     [InlineData("1234")]
     [InlineData("123")]
     [InlineData("12")]
     [InlineData("")]
-    public void Phone_ShortInput_ReturnsMask(string input)
-    {
+    public void Phone_ShortInput_ReturnsMask(string input) =>
         LogRedaction.Phone(input).ShouldBe("***");
-    }
 
     [Fact]
     public void Phone_FiveChars_PreservesPrefixAndSuffix()
@@ -106,27 +90,21 @@ public sealed class LogRedactionTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void Token_LongToken_PreservesPrefixAndSuffix()
-    {
+    public void Token_LongToken_PreservesPrefixAndSuffix() =>
         LogRedaction.Token("dLkj3FDmAbCdEfGh").ShouldBe("dLkj...fGh");
-    }
 
     [Fact]
-    public void Token_ExactlyNineChars_PreservesPrefixAndSuffix()
-    {
-        // Length 9: prefix 4, suffix 3 => "ABCD...GHI"
+    // Length 9: prefix 4, suffix 3 => "ABCD...GHI"
+    public void Token_ExactlyNineChars_PreservesPrefixAndSuffix() =>
         LogRedaction.Token("ABCDEFGHI").ShouldBe("ABCD...GHI");
-    }
 
     [Theory]
     [InlineData("12345678")]
     [InlineData("1234567")]
     [InlineData("short")]
     [InlineData("")]
-    public void Token_ShortToken_ReturnsMask(string input)
-    {
+    public void Token_ShortToken_ReturnsMask(string input) =>
         LogRedaction.Token(input).ShouldBe("***");
-    }
 
     // -------------------------------------------------------------------------
     // IpAddress — IPv4
@@ -136,10 +114,8 @@ public sealed class LogRedactionTests
     [InlineData("192.168.1.42", "192.168.1.***")]
     [InlineData("10.0.0.1", "10.0.0.***")]
     [InlineData("255.255.255.255", "255.255.255.***")]
-    public void IpAddress_IPv4_MasksLastOctet(string input, string expected)
-    {
+    public void IpAddress_IPv4_MasksLastOctet(string input, string expected) =>
         LogRedaction.IpAddress(input).ShouldBe(expected);
-    }
 
     // -------------------------------------------------------------------------
     // IpAddress — IPv6
@@ -164,17 +140,13 @@ public sealed class LogRedactionTests
     }
 
     [Fact]
-    public void IpAddress_NoDotsOrColons_ReturnsMask()
-    {
+    public void IpAddress_NoDotsOrColons_ReturnsMask() =>
         LogRedaction.IpAddress("localhost").ShouldBe("***");
-    }
 
     [Fact]
-    public void IpAddress_IPv6_FewerThanFourColons_ReturnsMask()
-    {
-        // "a:b:c:d" has only 3 colons — never reaches colonCount == 4 — falls through to mask.
+    // "a:b:c:d" has only 3 colons — never reaches colonCount == 4 — falls through to mask.
+    public void IpAddress_IPv6_FewerThanFourColons_ReturnsMask() =>
         LogRedaction.IpAddress("a:b:c:d").ShouldBe("***");
-    }
 
     // -------------------------------------------------------------------------
     // Username
@@ -184,26 +156,20 @@ public sealed class LogRedactionTests
     [InlineData("john_admin", "joh***")]
     [InlineData("alice", "ali***")]
     [InlineData("abcdefghij", "abc***")]
-    public void Username_PreservesThreeCharPrefix(string input, string expected)
-    {
+    public void Username_PreservesThreeCharPrefix(string input, string expected) =>
         LogRedaction.Username(input).ShouldBe(expected);
-    }
 
     [Theory]
     [InlineData("abc")]
     [InlineData("ab")]
     [InlineData("a")]
     [InlineData("")]
-    public void Username_ThreeOrFewerChars_ReturnsMask(string input)
-    {
+    public void Username_ThreeOrFewerChars_ReturnsMask(string input) =>
         LogRedaction.Username(input).ShouldBe("***");
-    }
 
     [Fact]
-    public void Username_ExactlyFourChars_PreservesPrefix()
-    {
+    public void Username_ExactlyFourChars_PreservesPrefix() =>
         LogRedaction.Username("abcd").ShouldBe("abc***");
-    }
 
     // -------------------------------------------------------------------------
     // HashPrefix

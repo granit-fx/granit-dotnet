@@ -59,8 +59,6 @@ public sealed class GranitAuthorizationModuleTests
     // =========================================================================
 
     [Fact]
-    public void ModuleClass_IsSealed()
-    {
+    public void ModuleClass_IsSealed() =>
         typeof(GranitAuthorizationModule).IsSealed.ShouldBeTrue();
-    }
 }

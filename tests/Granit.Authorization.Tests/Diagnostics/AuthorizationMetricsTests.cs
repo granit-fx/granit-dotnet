@@ -177,8 +177,6 @@ public sealed class AuthorizationMetricsTests : IDisposable
     // =========================================================================
 
     [Fact]
-    public void MeterName_IsGranitAuthorization()
-    {
+    public void MeterName_IsGranitAuthorization() =>
         AuthorizationMetrics.MeterName.ShouldBe("Granit.Authorization");
-    }
 }

@@ -10,21 +10,21 @@ internal sealed class QueryEngineAIOptionsValidator : IValidateOptions<QueryEngi
 {
     public ValidateOptionsResult Validate(string? name, QueryEngineAIOptions options)
     {
-        List<string>? failures = null;
+        List<string> failures = [];
 
         if (string.IsNullOrWhiteSpace(options.WorkspaceName))
         {
-            (failures ??= []).Add(
+            failures.Add(
                 "WorkspaceName must not be empty — it identifies the AI workspace for NLQ translation.");
         }
 
         if (options.TimeoutSeconds <= 0)
         {
-            (failures ??= []).Add(
+            failures.Add(
                 $"TimeoutSeconds must be a positive integer, got {options.TimeoutSeconds}.");
         }
 
-        return failures is null
+        return failures.Count == 0
             ? ValidateOptionsResult.Success
             : ValidateOptionsResult.Fail(failures);
     }

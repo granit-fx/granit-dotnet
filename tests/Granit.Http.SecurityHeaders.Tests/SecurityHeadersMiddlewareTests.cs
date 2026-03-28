@@ -175,7 +175,7 @@ public sealed class SecurityHeadersMiddlewareTests
     [Fact]
     public void ApplyHeaders_IsIdempotent()
     {
-        HeaderDictionary headers = new();
+        HeaderDictionary headers = [];
         GranitSecurityHeadersOptions options = new();
 
         SecurityHeadersMiddleware.ApplyHeaders(headers, options);

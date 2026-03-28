@@ -136,25 +136,9 @@ internal sealed partial class LlmTimelineSummarizer(
                 break;
             }
 
-            foreach (TimelineStreamEntry entry in result.Items)
+            if (!CollectEntries(allEntries, result.Items, maxEntries, since))
             {
-                if (since.HasValue && entry.OccurredAt < since.Value)
-                {
-                    return allEntries;
-                }
-
-                // VULN-102: Exclude staff-only InternalNote entries from LLM prompts
-                if (entry.EntryType == TimelineStreamEntryType.InternalNote)
-                {
-                    continue;
-                }
-
-                allEntries.Add(entry);
-
-                if (allEntries.Count >= maxEntries)
-                {
-                    return allEntries;
-                }
+                return allEntries;
             }
 
             if (!result.HasMore)
@@ -166,6 +150,39 @@ internal sealed partial class LlmTimelineSummarizer(
         }
 
         return allEntries;
+    }
+
+    /// <summary>
+    /// Appends eligible entries to <paramref name="target"/>.
+    /// Returns <c>false</c> when the since-cutoff or maxEntries limit was hit (caller should stop paging).
+    /// </summary>
+    private static bool CollectEntries(
+        List<TimelineStreamEntry> target,
+        IReadOnlyList<TimelineStreamEntry> items,
+        int maxEntries,
+        DateTimeOffset? since)
+    {
+        foreach (TimelineStreamEntry entry in items)
+        {
+            if (since.HasValue && entry.OccurredAt < since.Value)
+            {
+                return false;
+            }
+
+            // VULN-102: Exclude staff-only InternalNote entries from LLM prompts
+            if (entry.EntryType == TimelineStreamEntryType.InternalNote)
+            {
+                continue;
+            }
+
+            target.Add(entry);
+
+            if (target.Count >= maxEntries)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     internal static string BuildSummarizationPrompt(

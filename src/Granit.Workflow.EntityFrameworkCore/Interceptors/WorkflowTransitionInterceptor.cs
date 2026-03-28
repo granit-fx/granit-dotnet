@@ -141,7 +141,7 @@ public sealed class WorkflowTransitionInterceptor(
         PropertyInfo? property = type.GetProperty(
             propertyName, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
 
-        if (property is null) // NOSONAR S3011 — intentional: explicit static abstract interface members resolved via reflection
+        if (property is null)
         {
             // Explicit interface implementation — CLR stores these as private static properties
             // with the fully-qualified interface name prefix (e.g., "Granit.Workflow.Domain.IWorkflowStateful.StatusPropertyName").
@@ -150,7 +150,7 @@ public sealed class WorkflowTransitionInterceptor(
             for (Type? t = type; t is not null; t = t.BaseType)
             {
                 property = Array.Find(
-                    t.GetProperties(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly),
+                    t.GetProperties(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly), // NOSONAR S3011 — intentional: resolving explicit static abstract interface members via reflection
                     p => p.Name.EndsWith(suffix, StringComparison.Ordinal));
 
                 if (property is not null)

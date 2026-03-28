@@ -283,8 +283,6 @@ public sealed class GranitAuthorizationOptionsValidatorTests
     // =========================================================================
 
     [Fact]
-    public void ImplementsIValidateOptions()
-    {
+    public void ImplementsIValidateOptions() =>
         _validator.ShouldBeAssignableTo<IValidateOptions<GranitAuthorizationOptions>>();
-    }
 }

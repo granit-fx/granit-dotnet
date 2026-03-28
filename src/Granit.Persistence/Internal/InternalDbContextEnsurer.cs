@@ -83,7 +83,7 @@ internal sealed partial class InternalDbContextEnsurer<TContext>(
             // ISqlGenerationHelper, so string concatenation is safe here.
             string probeSql = string.Concat("SELECT 1 FROM ", qualifiedName, " WHERE 1=0");
             await db.Database
-                .ExecuteSqlRawAsync(probeSql, cancellationToken)
+                .ExecuteSqlRawAsync(probeSql, cancellationToken) // NOSONAR S2077 — table name from EF model (not user input), delimiter-escaped via ISqlGenerationHelper
                 .ConfigureAwait(false);
 
             return true;

@@ -27,10 +27,8 @@ public sealed class GranitAuditingEntityFrameworkCoreModuleTests
     }
 
     [Fact]
-    public void Module_IsSealed()
-    {
+    public void Module_IsSealed() =>
         typeof(GranitAuditingEntityFrameworkCoreModule).IsSealed.ShouldBeTrue();
-    }
 
     [Fact]
     public void Module_DependsOnGranitAuditingModule()

@@ -19,15 +19,13 @@ internal static class WebhookSsrfConnectCallback
 
         // Validate ALL resolved IPs before connecting — a multi-homed host might mix
         // public and private addresses.
-        foreach (IPAddress ip in entry.AddressList)
+        IPAddress? blocked = Array.Find(entry.AddressList, WebhookSsrfGuard.IsBlockedIpAddress);
+        if (blocked is not null)
         {
-            if (WebhookSsrfGuard.IsBlockedIpAddress(ip))
-            {
-                throw new HttpRequestException(
-                    $"Webhook delivery blocked: '{context.DnsEndPoint.Host}' resolved to " +
-                    $"blocked address {ip}. Private, loopback, and link-local addresses " +
-                    "are not permitted for webhook target URLs (SSRF protection).");
-            }
+            throw new HttpRequestException(
+                $"Webhook delivery blocked: '{context.DnsEndPoint.Host}' resolved to " +
+                $"blocked address {blocked}. Private, loopback, and link-local addresses " +
+                "are not permitted for webhook target URLs (SSRF protection).");
         }
 
         // Connect to the first available address.

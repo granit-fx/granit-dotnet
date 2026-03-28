@@ -54,5 +54,5 @@ public sealed class WorkflowTransitionRecord : Entity, IMultiTenant
 
     /// <inheritdoc />
     /// <remarks>Explicit implementation to satisfy <see cref="IMultiTenant"/> setter while keeping <c>init</c> on the public property.</remarks>
-    Guid? IMultiTenant.TenantId { get => TenantId; set { } }
+    Guid? IMultiTenant.TenantId { get => TenantId; set => _ = value; }
 }
