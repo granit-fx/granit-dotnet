@@ -86,12 +86,79 @@ internal sealed partial class OpenIddictSeedContributor(
             await applicationManager.PopulateAsync(appDescriptor, existing, cancellationToken)
                 .ConfigureAwait(false);
 
+            // Skip update when values are already up to date — prevents ConcurrencyException
+            // when migrator and API both execute seeders concurrently at startup.
+            if (!ApplicationNeedsUpdate(appDescriptor, descriptor))
+            {
+                Log.ApplicationUnchanged(logger, descriptor.ClientId);
+                return;
+            }
+
             PopulateDescriptor(appDescriptor, descriptor);
 
             await applicationManager.UpdateAsync(existing, appDescriptor, cancellationToken)
                 .ConfigureAwait(false);
             Log.ApplicationUpdated(logger, descriptor.ClientId);
         }
+    }
+
+    private static bool ApplicationNeedsUpdate(
+        OpenIddictApplicationDescriptor current, OidcApplicationSeedDescriptor desired)
+    {
+        if (current.DisplayName != desired.DisplayName)
+        {
+            return true;
+        }
+
+        if (!current.Permissions.SetEquals(desired.Permissions))
+        {
+            return true;
+        }
+
+        if (!current.RedirectUris.SetEquals(desired.RedirectUris.Select(u => new Uri(u))))
+        {
+            return true;
+        }
+
+        if (!current.PostLogoutRedirectUris.SetEquals(desired.PostLogoutRedirectUris.Select(u => new Uri(u))))
+        {
+            return true;
+        }
+
+        JsonWebKeySet? desiredJwks = !string.IsNullOrEmpty(desired.SigningKeyJwk)
+            ? BuildJsonWebKeySet(desired.SigningKeyJwk)
+            : null;
+
+        return !JwksEqual(current.JsonWebKeySet, desiredJwks);
+    }
+
+    /// <summary>
+    /// Compares two <see cref="JsonWebKeySet"/> instances by public key material
+    /// (Kty, Crv, N, E, X, Y, Use). Private key parameters are never stored.
+    /// </summary>
+    private static bool JwksEqual(JsonWebKeySet? a, JsonWebKeySet? b)
+    {
+        if (a is null && b is null)
+        {
+            return true;
+        }
+
+        if (a is null || b is null)
+        {
+            return false;
+        }
+
+        if (a.Keys.Count != b.Keys.Count)
+        {
+            return false;
+        }
+
+        IEnumerable<string> Fingerprints(JsonWebKeySet ks) =>
+            ks.Keys
+              .Select(k => $"{k.Kty}:{k.Crv}:{k.N}:{k.E}:{k.X}:{k.Y}:{k.Use}")
+              .Order(StringComparer.Ordinal);
+
+        return Fingerprints(a).SequenceEqual(Fingerprints(b));
     }
 
     /// <summary>
@@ -157,6 +224,15 @@ internal sealed partial class OpenIddictSeedContributor(
             await scopeManager.PopulateAsync(scopeDescriptor, existing, cancellationToken)
                 .ConfigureAwait(false);
 
+            // Skip update when values are already up to date — prevents ConcurrencyException
+            // when migrator and API both execute seeders concurrently at startup.
+            if (scopeDescriptor.DisplayName == descriptor.DisplayName
+                && scopeDescriptor.Resources.SetEquals(descriptor.Resources))
+            {
+                Log.ScopeUnchanged(logger, descriptor.Name);
+                return;
+            }
+
             scopeDescriptor.DisplayName = descriptor.DisplayName;
 
             scopeDescriptor.Resources.Clear();
@@ -206,10 +282,16 @@ internal sealed partial class OpenIddictSeedContributor(
         [LoggerMessage(Level = LogLevel.Debug, Message = "Updated OIDC application '{ClientId}'.")]
         public static partial void ApplicationUpdated(ILogger logger, string clientId);
 
+        [LoggerMessage(Level = LogLevel.Debug, Message = "OIDC application '{ClientId}' is already up to date — skipping update.")]
+        public static partial void ApplicationUnchanged(ILogger logger, string clientId);
+
         [LoggerMessage(Level = LogLevel.Debug, Message = "Created OIDC scope '{ScopeName}'.")]
         public static partial void ScopeCreated(ILogger logger, string scopeName);
 
         [LoggerMessage(Level = LogLevel.Debug, Message = "Updated OIDC scope '{ScopeName}'.")]
         public static partial void ScopeUpdated(ILogger logger, string scopeName);
+
+        [LoggerMessage(Level = LogLevel.Debug, Message = "OIDC scope '{ScopeName}' is already up to date — skipping update.")]
+        public static partial void ScopeUnchanged(ILogger logger, string scopeName);
     }
 }
