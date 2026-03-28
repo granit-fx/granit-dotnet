@@ -51,7 +51,7 @@ internal sealed class FeatureChecker(
             cacheKey,
             async (_, ct) =>
             {
-                (string? value, string _providerName) = await ResolveAsync(definition, ct).ConfigureAwait(false);
+                string? value = (await ResolveAsync(definition, ct).ConfigureAwait(false)).Value;
                 return value ?? definition.DefaultValue;
             },
             token: cancellationToken).ConfigureAwait(false);
