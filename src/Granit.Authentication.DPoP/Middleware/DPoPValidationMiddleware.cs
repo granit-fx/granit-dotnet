@@ -40,9 +40,13 @@ internal sealed partial class DPoPValidationMiddleware(
             LogMiddlewareOrderingError(logger);
         }
 
-        // Extract DPoP proof JWT
-        string? proofJwt = context.Request.Headers["DPoP"].ToString();
-        if (string.IsNullOrEmpty(proofJwt))
+        // Extract DPoP proof JWT — dedicated DPoP header takes precedence;
+        // when using Authorization: DPoP <proof> (e.g. token endpoint), extract from there.
+        string? proofJwt = hasDPoPHeader
+            ? context.Request.Headers["DPoP"].ToString()
+            : context.Request.Headers.Authorization.ToString()["DPoP ".Length..];
+
+        if (string.IsNullOrWhiteSpace(proofJwt))
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;

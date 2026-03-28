@@ -130,7 +130,7 @@ public sealed class DPoPValidationMiddlewareTests
     {
         bool nextCalled = false;
         DefaultHttpContext context = new();
-        context.Request.Headers.Append("DPoP", string.Empty);
+        context.Request.Headers.Append("DPoP", " ");
 
         DPoPValidationMiddleware middleware = CreateMiddleware(new DPoPValidationOptions(), _ =>
         {
