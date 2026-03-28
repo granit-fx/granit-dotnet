@@ -5,7 +5,8 @@
     <IsPackable>false</IsPackable>
     <!-- EF1001 fires when testing internal types via InternalsVisibleTo — expected for internal infrastructure tests -->
     <!-- CA5350: HMAC-SHA1 is mandated by RFC 6238 for TOTP interoperability — test helper mirrors the production algorithm -->
-    <NoWarn>$(NoWarn);EF1001;CA5350</NoWarn>
+    <!-- CA2012: NSubstitute's .Returns() chain on ValueTask-returning methods is a known false positive -->
+    <NoWarn>$(NoWarn);EF1001;CA5350;CA2012</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
