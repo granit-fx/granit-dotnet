@@ -1,3 +1,4 @@
+using Granit.Persistence;
 using Granit.QueryEngine;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Options;
@@ -137,11 +138,11 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
         TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
 
-        // IgnoreQueryFilters ensures inactive records are also detected, preventing a
+        // Bypass the Active filter so inactive records are detected, preventing a
         // duplicate-key error when the seeder runs a second time against an existing
         // (possibly inactive) entry with the same Code.
         bool exists = await context.Set<TEntity>()
-            .IgnoreQueryFilters()
+            .IgnoreQueryFilters([GranitFilterNames.Active])
             .AnyAsync(e => e.Code == entity.Code, cancellationToken)
             .ConfigureAwait(false);
 
@@ -177,9 +178,9 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
         TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
 
-        // IgnoreQueryFilters allows reactivating records that are currently inactive.
+        // Bypass the Active filter so inactive records can be found and reactivated.
         TEntity? entity = await context.Set<TEntity>()
-            .IgnoreQueryFilters()
+            .IgnoreQueryFilters([GranitFilterNames.Active])
             .FirstOrDefaultAsync(e => e.Code == code, cancellationToken).ConfigureAwait(false);
 
         if (entity is not null)
