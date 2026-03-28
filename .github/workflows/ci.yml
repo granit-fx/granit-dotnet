@@ -26,6 +26,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Default all permissions to read — each job declares write only where needed.
+# Required by OpenSSF Scorecard: Token-Permissions check.
+permissions: read-all
+
 env:
   DOTNET_VERSION: "10.0.x"
   CONFIGURATION: Release
@@ -234,6 +238,7 @@ jobs:
   codeql:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       security-events: write
     steps:
       - uses: actions/checkout@v6
@@ -367,6 +372,10 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: read
+      id-token: write      # required for SLSA provenance attestation
+      attestations: write  # required for SLSA provenance attestation
     steps:
       - uses: actions/checkout@v6
 
@@ -404,13 +413,62 @@ jobs:
           path: nupkgs/
           retention-days: 7
 
+      - name: Attest build provenance (SLSA Level 2)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: nupkgs/*.nupkg
+
   # ---------------------------------------------------------------------------
   # PUBLISH
   # ---------------------------------------------------------------------------
 
+  # ---------------------------------------------------------------------------
+  # SBOM — CycloneDX JSON, uploaded as artifact and attached to GitHub releases
+  # ---------------------------------------------------------------------------
+  sbom:
+    needs: pack
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write  # read for checkout, write for release asset upload
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: NuGet cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Install CycloneDX
+        run: dotnet tool install --global CycloneDX
+
+      - name: Generate SBOM
+        run: dotnet CycloneDX Granit.slnx -o ./sbom --json
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: sbom
+          path: sbom/bom.json
+          retention-days: 90
+
+      - name: Attach SBOM to release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ github.ref_name }} sbom/bom.json --clobber
+
   # GitHub Packages — dev packages on develop/main
   publish-github:
-    needs: pack
+    needs: [pack, sbom]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
     permissions:
@@ -438,7 +496,7 @@ jobs:
 
   # nuget.org — release packages on version tags
   publish-nuget:
-    needs: pack
+    needs: [pack, sbom]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     environment: nuget-publish

@@ -102,7 +102,7 @@ public sealed class FeaturesDbContextTests
             FeatureName = "Acme.MaxUsersCount",
             Value = "5000",
             CreatedAt = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
-            CreatedBy = "admin@digitaldynamics.be",
+            CreatedBy = "info@granit-fx.dev",
         };
 
         ctx.FeatureOverrides.Add(entity);
@@ -116,7 +116,7 @@ public sealed class FeaturesDbContextTests
         loaded!.TenantId.ShouldBe(tenantId);
         loaded.FeatureName.ShouldBe("Acme.MaxUsersCount");
         loaded.Value.ShouldBe("5000");
-        loaded.CreatedBy.ShouldBe("admin@digitaldynamics.be");
+        loaded.CreatedBy.ShouldBe("info@granit-fx.dev");
         loaded.CreatedAt.ShouldBe(entity.CreatedAt);
     }
 }
