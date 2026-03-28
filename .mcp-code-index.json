@@ -5343,12 +5343,6 @@
       "line": 10,
       "members": [
         {
-          "name": "RecordCheckDenied",
-          "kind": "method",
-          "signature": "RecordCheckDenied(string? tenantId)",
-          "returnType": "void"
-        },
-        {
           "name": "RecordCacheHit",
           "kind": "method",
           "signature": "RecordCacheHit(string? tenantId)",
@@ -11851,26 +11845,7 @@
       "project": "Granit.Features",
       "file": "src/Granit.Features/Diagnostics/FeaturesMetrics.cs",
       "line": 13,
-      "members": [
-        {
-          "name": "RecordOverrideChanged",
-          "kind": "method",
-          "signature": "RecordOverrideChanged(string? tenantId, string featureName, string operation)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordLimitChecked",
-          "kind": "method",
-          "signature": "RecordLimitChecked(string? tenantId, string featureName)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordLimitExceeded",
-          "kind": "method",
-          "signature": "RecordLimitExceeded(string? tenantId, string featureName)",
-          "returnType": "void"
-        }
-      ]
+      "members": []
     },
     {
       "name": "FeatureDefinitionResponse",
@@ -16371,34 +16346,6 @@
       "file": "src/Granit.Localization.AI/TranslationSuggestion.cs",
       "line": 8,
       "members": []
-    },
-    {
-      "name": "LocalizationMetrics",
-      "fqn": "Granit.Localization.Diagnostics.LocalizationMetrics",
-      "kind": "class",
-      "project": "Granit.Localization",
-      "file": "src/Granit.Localization/Diagnostics/LocalizationMetrics.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "RecordOverrideSet",
-          "kind": "method",
-          "signature": "RecordOverrideSet(string? tenantId, string resourceName, string culture)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordOverrideRemoved",
-          "kind": "method",
-          "signature": "RecordOverrideRemoved(string? tenantId, string resourceName, string culture)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordCacheMiss",
-          "kind": "method",
-          "signature": "RecordCacheMiss(string? tenantId, string resourceName, string culture)",
-          "returnType": "void"
-        }
-      ]
     },
     {
       "name": "ApplicationLocalizationResponse",
@@ -22134,38 +22081,7 @@
       "project": "Granit.Persistence",
       "file": "src/Granit.Persistence/Diagnostics/PersistenceMetrics.cs",
       "line": 13,
-      "members": [
-        {
-          "name": "RecordEntitySoftDeleted",
-          "kind": "method",
-          "signature": "RecordEntitySoftDeleted(string? tenantId)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordConcurrencyStampGenerated",
-          "kind": "method",
-          "signature": "RecordConcurrencyStampGenerated(string? tenantId)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordDomainEventDispatched",
-          "kind": "method",
-          "signature": "RecordDomainEventDispatched(string? tenantId, string eventType)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordIntegrationEventDispatched",
-          "kind": "method",
-          "signature": "RecordIntegrationEventDispatched(string? tenantId, string eventType)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordEntitiesPurged",
-          "kind": "method",
-          "signature": "RecordEntitiesPurged(string? tenantId, int count)",
-          "returnType": "void"
-        }
-      ]
+      "members": []
     },
     {
       "name": "DbContextOptionsBuilderExtensions",
@@ -22529,7 +22445,7 @@
       "kind": "class",
       "project": "Granit.Persistence",
       "file": "src/Granit.Persistence/Interceptors/AuditedEntityInterceptor.cs",
-      "line": 27,
+      "line": 26,
       "members": [
         {
           "name": "SavingChanges",
@@ -22593,7 +22509,7 @@
       "kind": "class",
       "project": "Granit.Persistence",
       "file": "src/Granit.Persistence/Interceptors/SoftDeleteInterceptor.cs",
-      "line": 23,
+      "line": 21,
       "members": [
         {
           "name": "SavingChanges",
@@ -25264,46 +25180,6 @@
       ]
     },
     {
-      "name": "ReferenceDataMetrics",
-      "fqn": "Granit.ReferenceData.Diagnostics.ReferenceDataMetrics",
-      "kind": "class",
-      "project": "Granit.ReferenceData",
-      "file": "src/Granit.ReferenceData/Diagnostics/ReferenceDataMetrics.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "RecordEntryCreated",
-          "kind": "method",
-          "signature": "RecordEntryCreated(string? tenantId, string entityType)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordEntryUpdated",
-          "kind": "method",
-          "signature": "RecordEntryUpdated(string? tenantId, string entityType)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordEntryDeactivated",
-          "kind": "method",
-          "signature": "RecordEntryDeactivated(string? tenantId, string entityType)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordCacheMiss",
-          "kind": "method",
-          "signature": "RecordCacheMiss(string? tenantId, string entityType)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordSeedExecuted",
-          "kind": "method",
-          "signature": "RecordSeedExecuted(string? tenantId, string entityType, string seederName)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
       "name": "DynamicReferenceDataEntity",
       "fqn": "Granit.ReferenceData.Domain.DynamicReferenceDataEntity",
       "kind": "class",
@@ -25524,7 +25400,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData.EntityFrameworkCore",
       "file": "src/Granit.ReferenceData.EntityFrameworkCore/Extensions/ReferenceDataEfCoreServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 17,
       "members": []
     },
     {
@@ -25837,28 +25713,6 @@
           "kind": "method",
           "signature": "GetAll()",
           "returnType": "IReadOnlyCollection<SettingDefinition>"
-        }
-      ]
-    },
-    {
-      "name": "SettingsMetrics",
-      "fqn": "Granit.Settings.Diagnostics.SettingsMetrics",
-      "kind": "class",
-      "project": "Granit.Settings",
-      "file": "src/Granit.Settings/Diagnostics/SettingsMetrics.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "RecordValueDeleted",
-          "kind": "method",
-          "signature": "RecordValueDeleted(string? tenantId, string providerName, string settingName)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordCacheInvalidated",
-          "kind": "method",
-          "signature": "RecordCacheInvalidated(string? tenantId, string providerName)",
-          "returnType": "void"
         }
       ]
     },
@@ -26409,7 +26263,7 @@
       "kind": "class",
       "project": "Granit.Settings",
       "file": "src/Granit.Settings/Services/SettingManager.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "SetGlobalAsync",
@@ -26596,38 +26450,7 @@
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Diagnostics/TemplatingMetrics.cs",
       "line": 10,
-      "members": [
-        {
-          "name": "RecordDraftUpdated",
-          "kind": "method",
-          "signature": "RecordDraftUpdated(string? tenantId, string templateName)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordDraftDeleted",
-          "kind": "method",
-          "signature": "RecordDraftDeleted(string? tenantId, string templateName)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordPublished",
-          "kind": "method",
-          "signature": "RecordPublished(string? tenantId, string templateName)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordUnpublished",
-          "kind": "method",
-          "signature": "RecordUnpublished(string? tenantId, string templateName)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordRenderCompleted",
-          "kind": "method",
-          "signature": "RecordRenderCompleted(string? tenantId, string templateName, TimeSpan duration)",
-          "returnType": "void"
-        }
-      ]
+      "members": []
     },
     {
       "name": "SaveTemplateCategoryRequest",
