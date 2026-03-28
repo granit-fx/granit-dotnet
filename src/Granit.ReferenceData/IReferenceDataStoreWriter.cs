@@ -9,7 +9,9 @@ namespace Granit.ReferenceData;
 public interface IReferenceDataStoreWriter<in TEntity> where TEntity : ReferenceDataEntity
 {
     /// <summary>
-    /// Creates a new reference data entry. The <see cref="ReferenceDataEntity.Code"/> must be unique.
+    /// Creates a new reference data entry. Idempotent: if an entry with the same
+    /// <see cref="ReferenceDataEntity.Code"/> already exists (even when inactive),
+    /// the call is a no-op and no exception is thrown.
     /// </summary>
     /// <param name="entity">The entity to persist.</param>
     /// <param name="cancellationToken">Cancellation token.</param>

@@ -255,6 +255,77 @@ public sealed class EfCoreReferenceDataStoreAdditionalTests
     }
 
     // -------------------------------------------------------------------------
+    // CreateAsync — idempotency
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task CreateAsync_DuplicateCode_ActiveRecord_IsNoOp()
+    {
+        string db = Guid.NewGuid().ToString();
+        await SeedAsync(db, "BE", "Belgium", isActive: true, cancellationToken: TestContext.Current.CancellationToken);
+
+        EfCoreReferenceDataStore<TestEntity, TestDbContext> store = CreateStore(db);
+
+        // Second create with same Code must not throw
+        await Should.NotThrowAsync(() => store.CreateAsync(new TestEntity
+        {
+            Id = Guid.NewGuid(),
+            Code = "BE",
+            LabelEn = "Belgium (duplicate)",
+            IsActive = true,
+            CreatedAt = DateTimeOffset.UtcNow,
+            CreatedBy = "test",
+        }, TestContext.Current.CancellationToken));
+
+        // Original record is preserved
+        TestEntity? entity = await store.GetByCodeAsync("BE", TestContext.Current.CancellationToken);
+        entity!.LabelEn.ShouldBe("Belgium");
+    }
+
+    [Fact]
+    public async Task CreateAsync_DuplicateCode_InactiveRecord_IsNoOp()
+    {
+        // This is the exact scenario seen in production: seeder runs a second time,
+        // the existing record has IsActive=false (bypassed by the query filter in
+        // GetByCodeAsync), so the seeder calls CreateAsync which must not throw 23505.
+        string db = Guid.NewGuid().ToString();
+        await SeedAsync(db, "BE", "Belgium", isActive: false, cancellationToken: TestContext.Current.CancellationToken);
+
+        EfCoreReferenceDataStore<TestEntity, TestDbContext> store = CreateStore(db);
+
+        await Should.NotThrowAsync(() => store.CreateAsync(new TestEntity
+        {
+            Id = Guid.NewGuid(),
+            Code = "BE",
+            LabelEn = "Belgium",
+            IsActive = true,
+            CreatedAt = DateTimeOffset.UtcNow,
+            CreatedBy = "test",
+        }, TestContext.Current.CancellationToken));
+    }
+
+    // -------------------------------------------------------------------------
+    // SetActiveAsync — reactivating an inactive record
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task SetActiveAsync_InactiveRecord_CanBeReactivated()
+    {
+        string db = Guid.NewGuid().ToString();
+        await SeedAsync(db, "BE", "Belgium", isActive: false, cancellationToken: TestContext.Current.CancellationToken);
+
+        EfCoreReferenceDataStore<TestEntity, TestDbContext> store = CreateStore(db);
+
+        // Should succeed even though the record is filtered out by IsActive=false
+        await store.SetActiveAsync("BE", true, TestContext.Current.CancellationToken);
+
+        PagedResult<TestEntity> result = await store.GetAllAsync(
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        result.Items.ShouldContain(e => e.Code == "BE" && e.IsActive);
+    }
+
+    // -------------------------------------------------------------------------
     // UpdateAsync — invalidates cache
     // -------------------------------------------------------------------------
 

@@ -137,6 +137,19 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
         TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
 
+        // IgnoreQueryFilters ensures inactive records are also detected, preventing a
+        // duplicate-key error when the seeder runs a second time against an existing
+        // (possibly inactive) entry with the same Code.
+        bool exists = await context.Set<TEntity>()
+            .IgnoreQueryFilters()
+            .AnyAsync(e => e.Code == entity.Code, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (exists)
+        {
+            return;
+        }
+
         context.Set<TEntity>().Add(entity);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
@@ -164,7 +177,9 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
         TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
 
+        // IgnoreQueryFilters allows reactivating records that are currently inactive.
         TEntity? entity = await context.Set<TEntity>()
+            .IgnoreQueryFilters()
             .FirstOrDefaultAsync(e => e.Code == code, cancellationToken).ConfigureAwait(false);
 
         if (entity is not null)
