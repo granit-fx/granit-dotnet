@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 
 using Granit.Domain;
@@ -92,7 +91,6 @@ public abstract class ReferenceDataEntity : AuditedEntity, IActive, IHasExtraPro
     /// code and API responses where culture-specific labels are needed.
     /// Override in derived entities to provide custom resolution logic.
     /// </remarks>
-    [NotMapped]
     public virtual string Label => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName switch
     {
         "fr" when LabelFr.Length > 0 => LabelFr,

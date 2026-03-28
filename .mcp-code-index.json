@@ -25318,7 +25318,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData",
       "file": "src/Granit.ReferenceData/Domain/ReferenceDataEntity.cs",
-      "line": 32,
+      "line": 31,
       "members": [
         {
           "name": "Code",
