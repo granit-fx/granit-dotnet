@@ -46,12 +46,12 @@ NIS 2 Art. 21 §3 requires that you know what is in your software and can demons
 
 ```mermaid
 graph LR
-    TAG[\"Tagged release\"] --> SBOM[\"CycloneDX\\nSBOM\"]
-    TAG --> SLSA[\"SLSA Level 2\\nProvenance\"]
-    PR[\"Pull Request\"] --> CQ[\"CodeQL\\nSAST\"]
-    PR --> TV[\"Trivy\\nDependency CVEs\"]
-    PR --> GL[\"Gitleaks\\nSecret scan\"]
-    SBOM --> REL[\"GitHub Release\\nartifact\"]
+    TAG[\"Tagged release\"] --> SBOM[\"CycloneDX<br/>SBOM\"]
+    TAG --> SLSA[\"SLSA Level 2<br/>Provenance\"]
+    PR[\"Pull Request\"] --> CQ[\"CodeQL<br/>SAST\"]
+    PR --> TV[\"Trivy<br/>Dependency CVEs\"]
+    PR --> GL[\"Gitleaks<br/>Secret scan\"]
+    SBOM --> REL[\"GitHub Release<br/>artifact\"]
     SLSA --> REL
 
     style TAG fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
