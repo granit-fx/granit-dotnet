@@ -38,7 +38,6 @@ public static class LocalizationServiceCollectionExtensions
         services.TryAddSingleton<ILocalizationOverrideStoreReader>(sp => sp.GetRequiredService<CachedLocalizationOverrideStore>());
         services.TryAddSingleton<ILocalizationOverrideStoreWriter>(sp => sp.GetRequiredService<CachedLocalizationOverrideStore>());
 
-        services.TryAddSingleton<LocalizationMetrics>();
         GranitActivitySourceRegistry.Register(LocalizationActivitySource.Name);
 
         if (configure is not null)

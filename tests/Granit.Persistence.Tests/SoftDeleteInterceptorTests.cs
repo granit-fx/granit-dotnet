@@ -8,11 +8,9 @@
 // SaveChangesAsync is called directly. IClock is mocked for exact assertions.
 // =============================================================================
 
-using System.Diagnostics.Metrics;
 using Granit.Domain;
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Persistence.Diagnostics;
 using Granit.Persistence.Interceptors;
 using Granit.Timing;
 using Granit.Users;
@@ -29,7 +27,6 @@ public sealed class SoftDeleteInterceptorTests
 
     private readonly ICurrentUserService _currentUserService;
     private readonly IClock _clock;
-    private readonly PersistenceMetrics _metrics;
 
     public SoftDeleteInterceptorTests()
     {
@@ -38,10 +35,6 @@ public sealed class SoftDeleteInterceptorTests
 
         _clock = Substitute.For<IClock>();
         _clock.Now.Returns(FixedNow);
-
-        IMeterFactory meterFactory = Substitute.For<IMeterFactory>();
-        meterFactory.Create(Arg.Any<MeterOptions>()).Returns(new Meter("test"));
-        _metrics = new PersistenceMetrics(meterFactory);
     }
 
     [Fact]
@@ -106,8 +99,8 @@ public sealed class SoftDeleteInterceptorTests
         IGuidGenerator guidGenerator = Substitute.For<IGuidGenerator>();
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         currentTenant.IsAvailable.Returns(false);
-        var auditInterceptor = new AuditedEntityInterceptor(_currentUserService, _clock, guidGenerator, currentTenant, _metrics);
-        var softDeleteInterceptor = new SoftDeleteInterceptor(_currentUserService, _clock, currentTenant, _metrics);
+        var auditInterceptor = new AuditedEntityInterceptor(_currentUserService, _clock, guidGenerator, currentTenant);
+        var softDeleteInterceptor = new SoftDeleteInterceptor(_currentUserService, _clock);
         DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .AddInterceptors(auditInterceptor, softDeleteInterceptor)

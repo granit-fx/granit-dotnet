@@ -27231,7 +27231,7 @@
       "kind": "class",
       "project": "Granit.Testing.EntityFrameworkCore",
       "file": "src/Granit.Testing.EntityFrameworkCore/Extensions/TestDbContextServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 16,
       "members": []
     },
     {
@@ -27249,7 +27249,7 @@
       "kind": "class",
       "project": "Granit.Testing.EntityFrameworkCore",
       "file": "src/Granit.Testing.EntityFrameworkCore/InMemoryDbContextFactory.cs",
-      "line": 31,
+      "line": 29,
       "members": []
     },
     {
@@ -27258,7 +27258,7 @@
       "kind": "class",
       "project": "Granit.Testing.EntityFrameworkCore",
       "file": "src/Granit.Testing.EntityFrameworkCore/SqliteDbContextFactory.cs",
-      "line": 31,
+      "line": 29,
       "members": []
     },
     {

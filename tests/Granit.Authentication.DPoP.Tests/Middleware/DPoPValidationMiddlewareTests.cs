@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
+using MsOptions = Microsoft.Extensions.Options;
 
 namespace Granit.Authentication.DPoP.Tests.Middleware;
 
@@ -15,7 +16,7 @@ public sealed class DPoPValidationMiddlewareTests
     private readonly IDPoPProofValidator _validator = Substitute.For<IDPoPProofValidator>();
 
     private DPoPValidationMiddleware CreateMiddleware(DPoPValidationOptions options, RequestDelegate next) =>
-        new(next, _validator, Options.Create(options), NullLogger<DPoPValidationMiddleware>.Instance);
+        new(next, _validator, MsOptions.Options.Create(options), NullLogger<DPoPValidationMiddleware>.Instance);
 
     [Fact]
     public async Task InvokeAsync_NoDPoPHeader_RequireDPoPFalse_CallsNext()

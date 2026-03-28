@@ -1,6 +1,4 @@
-using Granit.Persistence.Diagnostics;
 using Granit.Persistence.Interceptors;
-using Granit.Testing.EntityFrameworkCore.Internal;
 using Granit.Testing.Fakes;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +34,6 @@ public sealed class SqliteDbContextFactory<TContext> : IDisposable
     private readonly FakeCurrentUser _user;
     private readonly FakeClock _clock;
     private readonly FakeGuidGenerator _guidGenerator;
-    private readonly PersistenceMetrics _metrics;
     private readonly Action<DbContextOptionsBuilder>? _configureOptions;
     private bool _disposed;
 
@@ -60,7 +57,6 @@ public sealed class SqliteDbContextFactory<TContext> : IDisposable
         _user = user ?? new FakeCurrentUser();
         _clock = clock ?? new FakeClock();
         _guidGenerator = guidGenerator ?? new FakeGuidGenerator();
-        _metrics = new PersistenceMetrics(new TestMeterFactory());
         _configureOptions = configureOptions;
 
         _connection = new SqliteConnection("DataSource=:memory:");
@@ -81,10 +77,10 @@ public sealed class SqliteDbContextFactory<TContext> : IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        AuditedEntityInterceptor auditInterceptor = new(_user, _clock, _guidGenerator, _tenant, _metrics);
+        AuditedEntityInterceptor auditInterceptor = new(_user, _clock, _guidGenerator, _tenant);
         VersioningInterceptor versioningInterceptor = new(_guidGenerator);
         ConcurrencyStampInterceptor concurrencyStampInterceptor = new();
-        SoftDeleteInterceptor softDeleteInterceptor = new(_user, _clock, _tenant, _metrics);
+        SoftDeleteInterceptor softDeleteInterceptor = new(_user, _clock);
 
         DbContextOptionsBuilder<TContext> optionsBuilder = new DbContextOptionsBuilder<TContext>()
             .UseSqlite(_connection)

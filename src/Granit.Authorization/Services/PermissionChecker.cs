@@ -78,7 +78,6 @@ internal sealed class PermissionChecker(
 
             if (result.IsGranted)
             {
-                metrics.RecordCheckGranted(tenantIdStr);
                 return true;
             }
         }

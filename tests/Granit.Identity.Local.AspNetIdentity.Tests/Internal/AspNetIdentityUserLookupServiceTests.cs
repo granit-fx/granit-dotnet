@@ -1,8 +1,10 @@
+using Granit.Identity;
 using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 using Shouldly;
+using Xunit;
 
 namespace Granit.Identity.Local.AspNetIdentity.Tests.Internal;
 
@@ -22,7 +24,7 @@ public sealed class AspNetIdentityUserLookupServiceTests
         userManager.FindByIdAsync(Arg.Any<string>()).Returns((GranitUser?)null);
         AspNetIdentityUserLookupService sut = new(userManager);
 
-        var result = await sut.FindByIdAsync("nonexistent", TestContext.Current.CancellationToken);
+        IIdentityUser? result = await sut.FindByIdAsync("nonexistent", TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -35,7 +37,7 @@ public sealed class AspNetIdentityUserLookupServiceTests
         userManager.FindByIdAsync("user-id").Returns(user);
         AspNetIdentityUserLookupService sut = new(userManager);
 
-        var result = await sut.FindByIdAsync("user-id", TestContext.Current.CancellationToken);
+        IIdentityUser? result = await sut.FindByIdAsync("user-id", TestContext.Current.CancellationToken);
 
         result.ShouldBeSameAs(user);
     }

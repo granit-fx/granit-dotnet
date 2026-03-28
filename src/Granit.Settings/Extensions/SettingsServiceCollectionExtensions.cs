@@ -34,7 +34,6 @@ public static class SettingsServiceCollectionExtensions
 
         // Diagnostics
         GranitActivitySourceRegistry.Register(SettingsActivitySource.Name);
-        services.TryAddSingleton<SettingsMetrics>();
 
         // Definition registry (Singleton — loaded once at startup)
         services.TryAddSingleton<SettingDefinitionManager>();

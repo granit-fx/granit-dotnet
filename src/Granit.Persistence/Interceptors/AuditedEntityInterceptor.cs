@@ -1,7 +1,6 @@
 using Granit.Domain;
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Persistence.Diagnostics;
 using Granit.Timing;
 using Granit.Users;
 using Microsoft.EntityFrameworkCore;
@@ -28,8 +27,7 @@ public sealed class AuditedEntityInterceptor(
     ICurrentUserService currentUserService,
     IClock clock,
     IGuidGenerator guidGenerator,
-    ICurrentTenant currentTenant,
-    PersistenceMetrics metrics) : SaveChangesInterceptor
+    ICurrentTenant currentTenant) : SaveChangesInterceptor
 {
 
     public override InterceptionResult<int> SavingChanges(
@@ -58,7 +56,6 @@ public sealed class AuditedEntityInterceptor(
 
         DateTimeOffset now = clock.Now;
         string userId = currentUserService.UserId ?? "system";
-        string? tenantIdStr = currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null;
 
         foreach (EntityEntry<CreationAuditedEntity> entry in context.ChangeTracker.Entries<CreationAuditedEntity>())
         {
@@ -66,12 +63,10 @@ public sealed class AuditedEntityInterceptor(
             {
                 case EntityState.Added:
                     ApplyCreationFields(entry, now, userId);
-                    metrics.RecordEntityAudited(tenantIdStr, "created");
                     break;
 
                 case EntityState.Modified:
                     ApplyModificationFields(entry, now, userId);
-                    metrics.RecordEntityAudited(tenantIdStr, "modified");
                     break;
             }
         }

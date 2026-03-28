@@ -10,10 +10,12 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
+using Xunit;
 using Yarp.ReverseProxy.Configuration;
 using Yarp.ReverseProxy.Forwarder;
 using Yarp.ReverseProxy.Model;
 using Yarp.ReverseProxy.Transforms;
+using MsOptions = Microsoft.Extensions.Options;
 
 namespace Granit.Bff.Yarp.Tests.Internal;
 
@@ -51,7 +53,7 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
 
     private BffTokenInjectionTransform CreateTransform() => new(
         _tokenStore,
-        Options.Create(_bffOptions),
+        MsOptions.Options.Create(_bffOptions),
         _httpClientFactory,
         _dpopService,
         _metrics,

@@ -14,7 +14,6 @@ public sealed class AuthorizationMetrics
     private const string TagTenantId = "tenant_id";
     private const string DefaultTenant = "global";
 
-    private readonly Counter<long> _checksGranted;
     private readonly Counter<long> _checksDenied;
     private readonly Counter<long> _cacheHits;
     private readonly Counter<long> _cacheMisses;
@@ -22,10 +21,6 @@ public sealed class AuthorizationMetrics
     public AuthorizationMetrics(IMeterFactory meterFactory)
     {
         Meter meter = meterFactory.Create(MeterName);
-
-        _checksGranted = meter.CreateCounter<long>(
-            "granit.authorization.check.granted",
-            description: "Number of permission checks that were granted.");
 
         _checksDenied = meter.CreateCounter<long>(
             "granit.authorization.check.denied",
@@ -39,12 +34,6 @@ public sealed class AuthorizationMetrics
             "granit.authorization.cache.miss",
             description: "Number of permission grant cache misses.");
     }
-
-    public void RecordCheckGranted(string? tenantId) =>
-        _checksGranted.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
-        });
 
     public void RecordCheckDenied(string? tenantId) =>
         _checksDenied.Add(1, new TagList

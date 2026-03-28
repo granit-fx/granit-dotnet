@@ -1,7 +1,6 @@
 using Granit.Persistence.DataSeeding;
 using Granit.Persistence.ExtraProperties;
 using Granit.QueryEngine;
-using Granit.ReferenceData.Diagnostics;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;
 using Granit.ReferenceData.Options;
@@ -31,16 +30,11 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
         where TEntity : ReferenceDataEntity
         where TDbContext : DbContext
     {
-        // Defensive: ensure metrics are available even if the caller registers the store
-        // before GranitReferenceDataModule has loaded (TryAdd is idempotent).
-        services.TryAddSingleton<ReferenceDataMetrics>();
-
         services.AddScoped<EfCoreReferenceDataStore<TEntity, TDbContext>>(sp =>
             new EfCoreReferenceDataStore<TEntity, TDbContext>(
                 sp.GetRequiredService<IServiceScopeFactory>(),
                 sp.GetRequiredService<IFusionCache>(),
-                sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>(),
-                sp.GetRequiredService<ReferenceDataMetrics>()));
+                sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>()));
         services.AddScoped<IReferenceDataStoreReader<TEntity>>(sp =>
             sp.GetRequiredService<EfCoreReferenceDataStore<TEntity, TDbContext>>());
         services.AddScoped<IReferenceDataStoreWriter<TEntity>>(sp =>
@@ -108,10 +102,6 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configure);
 
-        // Defensive: ensure metrics are available even if the caller registers stores
-        // before GranitReferenceDataModule has loaded (TryAdd is idempotent).
-        services.TryAddSingleton<ReferenceDataMetrics>();
-
         // Build the registrations
         ReferenceDataBuilder builder = new();
         configure(builder);
@@ -133,16 +123,14 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
                 (sp, _) => new EfCoreReferenceDataStore<DynamicReferenceDataEntity, TDbContext>(
                     sp.GetRequiredService<IServiceScopeFactory>(),
                     sp.GetRequiredService<IFusionCache>(),
-                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>(),
-                    sp.GetRequiredService<ReferenceDataMetrics>()));
+                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>()));
 
             services.AddKeyedScoped<IReferenceDataStoreWriter<DynamicReferenceDataEntity>>(
                 registration.TypeName,
                 (sp, _) => new EfCoreReferenceDataStore<DynamicReferenceDataEntity, TDbContext>(
                     sp.GetRequiredService<IServiceScopeFactory>(),
                     sp.GetRequiredService<IFusionCache>(),
-                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>(),
-                    sp.GetRequiredService<ReferenceDataMetrics>()));
+                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>()));
 
             // 2. Register ExtraProperty mappings for shadow columns
             if (registration.Options.PropertyMappings.Count > 0)

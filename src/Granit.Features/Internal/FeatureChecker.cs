@@ -17,15 +17,13 @@ internal sealed class FeatureChecker(
     IFeatureDefinitionStore definitionStore,
     IEnumerable<IFeatureValueProvider> valueProviders,
     IServiceProvider serviceProvider,
-    IFusionCache cache,
-    FeaturesMetrics metrics) : IFeatureChecker
+    IFusionCache cache) : IFeatureChecker
 {
     private readonly IFeatureDefinitionStore _definitionStore = definitionStore;
     private readonly IReadOnlyList<IFeatureValueProvider> _providers =
         [.. valueProviders.OrderBy(p => p.Order)];
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly IFusionCache _cache = cache;
-    private readonly FeaturesMetrics _metrics = metrics;
 
     /// <inheritdoc/>
     public async Task<bool> IsEnabledAsync(string featureName, CancellationToken cancellationToken = default)
@@ -48,14 +46,12 @@ internal sealed class FeatureChecker(
         ICurrentTenant? currentTenant = _serviceProvider.GetService<ICurrentTenant>();
         Guid? tenantId = currentTenant?.IsAvailable == true ? currentTenant.Id : null;
         string cacheKey = FeatureCacheKey.Build(tenantId, featureName);
-        string? tenantIdStr = tenantId?.ToString();
 
         string resolved = await _cache.GetOrSetAsync<string>(
             cacheKey,
             async (_, ct) =>
             {
-                (string? value, string providerName) = await ResolveAsync(definition, ct).ConfigureAwait(false);
-                _metrics.RecordValueResolved(tenantIdStr, featureName, providerName);
+                (string? value, string _providerName) = await ResolveAsync(definition, ct).ConfigureAwait(false);
                 return value ?? definition.DefaultValue;
             },
             token: cancellationToken).ConfigureAwait(false);

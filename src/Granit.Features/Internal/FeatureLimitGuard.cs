@@ -26,8 +26,6 @@ internal sealed class FeatureLimitGuard(
         long limit = await _featureChecker.GetNumericAsync(featureName, cancellationToken).ConfigureAwait(false);
         string? tenantId = ResolveTenantId();
 
-        _metrics.RecordLimitChecked(tenantId, featureName);
-
         if (currentCount >= limit)
         {
             _metrics.RecordLimitExceeded(tenantId, featureName);

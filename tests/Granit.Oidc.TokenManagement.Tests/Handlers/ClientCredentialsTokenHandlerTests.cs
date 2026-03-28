@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
+using MsOptions = Microsoft.Extensions.Options;
 
 namespace Granit.Oidc.TokenManagement.Tests.Handlers;
 
@@ -62,7 +63,7 @@ public sealed class ClientCredentialsTokenHandlerTests : IDisposable
             _tokenCache,
             _dpopProofService,
             _optionsMonitor,
-            Options.Create(new TokenManagementOptions()),
+            MsOptions.Options.Create(new TokenManagementOptions()),
             _clock,
             _metrics,
             NullLogger<ClientCredentialsTokenHandler>.Instance)
@@ -111,7 +112,7 @@ public sealed class ClientCredentialsTokenHandlerTests : IDisposable
             _tokenCache,
             _dpopProofService,
             _optionsMonitor,
-            Options.Create(new TokenManagementOptions()),
+            MsOptions.Options.Create(new TokenManagementOptions()),
             _clock,
             _metrics,
             NullLogger<ClientCredentialsTokenHandler>.Instance)
@@ -159,7 +160,7 @@ public sealed class ClientCredentialsTokenHandlerTests : IDisposable
             _tokenCache,
             _dpopProofService,
             _optionsMonitor,
-            Options.Create(new TokenManagementOptions()),
+            MsOptions.Options.Create(new TokenManagementOptions()),
             _clock,
             _metrics,
             NullLogger<ClientCredentialsTokenHandler>.Instance)
@@ -195,7 +196,7 @@ public sealed class ClientCredentialsTokenHandlerTests : IDisposable
             _tokenCache,
             _dpopProofService,
             _optionsMonitor,
-            Options.Create(new TokenManagementOptions()),
+            MsOptions.Options.Create(new TokenManagementOptions()),
             _clock,
             _metrics,
             NullLogger<ClientCredentialsTokenHandler>.Instance)

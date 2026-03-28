@@ -1,6 +1,4 @@
-using System.Diagnostics.Metrics;
 using Granit.Events;
-using Granit.Features.Diagnostics;
 using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.EntityFrameworkCore.Internal;
 using Granit.Features.Events;
@@ -18,13 +16,6 @@ public sealed class EfCoreFeatureStoreTests
     // Test infrastructure
     // -------------------------------------------------------------------------
 
-    private sealed class TestMeterFactory : IMeterFactory
-    {
-        private readonly List<Meter> _meters = [];
-        public Meter Create(MeterOptions options) { Meter m = new(options); _meters.Add(m); return m; }
-        public void Dispose() { foreach (Meter m in _meters) { m.Dispose(); } }
-    }
-
     private sealed class InMemoryContextFactory(string dbName) : IDbContextFactory<FeaturesDbContext>
     {
         public FeaturesDbContext CreateDbContext() =>
@@ -40,7 +31,6 @@ public sealed class EfCoreFeatureStoreTests
         new(new InMemoryContextFactory(dbName),
             eventBus ?? Substitute.For<ILocalEventBus>(),
             TimeProvider.System,
-            new FeaturesMetrics(new TestMeterFactory()),
             NullLogger<EfCoreFeatureStore>.Instance);
 
     private static async Task SeedAsync(

@@ -34,52 +34,6 @@ public sealed class AuthorizationMetricsTests : IDisposable
     public void Dispose() => _sp.Dispose();
 
     // =========================================================================
-    // RecordCheckGranted
-    // =========================================================================
-
-    [Fact]
-    public void RecordCheckGranted_WithTenant_IncrementsWithCorrectTags()
-    {
-        using var collector = new MetricCollector<long>(
-            _meterFactory, AuthorizationMetrics.MeterName, "granit.authorization.check.granted");
-
-        _metrics.RecordCheckGranted("tenant-abc");
-
-        IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
-        snapshot.ShouldHaveSingleItem();
-        snapshot[0].Value.ShouldBe(1);
-        snapshot[0].Tags["tenant_id"].ShouldBe("tenant-abc");
-    }
-
-    [Fact]
-    public void RecordCheckGranted_NullTenant_UsesGlobal()
-    {
-        using var collector = new MetricCollector<long>(
-            _meterFactory, AuthorizationMetrics.MeterName, "granit.authorization.check.granted");
-
-        _metrics.RecordCheckGranted(null);
-
-        IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
-        snapshot.ShouldHaveSingleItem();
-        snapshot[0].Tags["tenant_id"].ShouldBe("global");
-    }
-
-    [Fact]
-    public void RecordCheckGranted_MultipleCalls_AccumulatesCount()
-    {
-        using var collector = new MetricCollector<long>(
-            _meterFactory, AuthorizationMetrics.MeterName, "granit.authorization.check.granted");
-
-        _metrics.RecordCheckGranted("tenant-1");
-        _metrics.RecordCheckGranted("tenant-1");
-        _metrics.RecordCheckGranted("tenant-1");
-
-        IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
-        snapshot.Count.ShouldBe(3);
-        snapshot.All(m => m.Value == 1).ShouldBeTrue();
-    }
-
-    // =========================================================================
     // RecordCheckDenied
     // =========================================================================
 

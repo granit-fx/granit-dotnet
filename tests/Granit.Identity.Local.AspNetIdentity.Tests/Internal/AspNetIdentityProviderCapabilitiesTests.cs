@@ -1,5 +1,6 @@
 using Granit.Identity.Local.AspNetIdentity.Internal;
 using Shouldly;
+using Xunit;
 
 namespace Granit.Identity.Local.AspNetIdentity.Tests.Internal;
 

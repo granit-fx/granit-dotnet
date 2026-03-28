@@ -1,6 +1,4 @@
-using Granit.Persistence.Diagnostics;
 using Granit.Persistence.Interceptors;
-using Granit.Testing.EntityFrameworkCore.Internal;
 using Granit.Testing.Fakes;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,7 +33,6 @@ public sealed class InMemoryDbContextFactory<TContext>
     private readonly FakeCurrentUser _user;
     private readonly FakeClock _clock;
     private readonly FakeGuidGenerator _guidGenerator;
-    private readonly PersistenceMetrics _metrics;
     private readonly string _databaseName;
     private readonly Action<DbContextOptionsBuilder>? _configureOptions;
 
@@ -58,7 +55,6 @@ public sealed class InMemoryDbContextFactory<TContext>
         _user = user ?? new FakeCurrentUser();
         _clock = clock ?? new FakeClock();
         _guidGenerator = guidGenerator ?? new FakeGuidGenerator();
-        _metrics = new PersistenceMetrics(new TestMeterFactory());
 #pragma warning disable GRSEC002 // DB name needs uniqueness, not sequential generation
         _databaseName = Guid.NewGuid().ToString();
 #pragma warning restore GRSEC002
@@ -72,10 +68,10 @@ public sealed class InMemoryDbContextFactory<TContext>
     /// <returns>A configured <typeparamref name="TContext"/> instance.</returns>
     public TContext CreateContext()
     {
-        AuditedEntityInterceptor auditInterceptor = new(_user, _clock, _guidGenerator, _tenant, _metrics);
+        AuditedEntityInterceptor auditInterceptor = new(_user, _clock, _guidGenerator, _tenant);
         VersioningInterceptor versioningInterceptor = new(_guidGenerator);
         ConcurrencyStampInterceptor concurrencyStampInterceptor = new();
-        SoftDeleteInterceptor softDeleteInterceptor = new(_user, _clock, _tenant, _metrics);
+        SoftDeleteInterceptor softDeleteInterceptor = new(_user, _clock);
 
         DbContextOptionsBuilder<TContext> optionsBuilder = new DbContextOptionsBuilder<TContext>()
             .UseInMemoryDatabase(_databaseName)

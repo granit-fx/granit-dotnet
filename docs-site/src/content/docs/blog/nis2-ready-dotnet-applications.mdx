@@ -16,8 +16,6 @@ excerpt: >
   key obligations out of the box.
 ---
 
-import { Tabs, TabItem } from "@astrojs/starlight/components";
-
 NIS 2 is not a checklist you fill in before an audit. It is a legal obligation that applies **now** — Belgium transposed the directive in April 2024, and most EU member states followed by October 2024. If your application serves a regulated sector, or if your customers do, you are in scope.
 
 This article maps NIS 2's technical requirements to concrete Granit controls — both in the CI/CD pipeline and in the framework modules themselves.
@@ -44,7 +42,27 @@ NIS 2 does not mandate a specific standard. But ISO 27001 is widely accepted as 
 
 ## Supply chain security — the pipeline
 
-NIS 2 Art. 21 §3 requires that you know what is in your software and can demonstrate its integrity. Granit's CI/CD pipeline provides four layers of supply chain assurance.
+NIS 2 Art. 21 §3 requires that you know what is in your software and can demonstrate its integrity. Granit's CI/CD pipeline provides five layers of supply chain assurance.
+
+```mermaid
+graph LR
+    TAG[\"Tagged release\"] --> SBOM[\"CycloneDX\\nSBOM\"]
+    TAG --> SLSA[\"SLSA Level 2\\nProvenance\"]
+    PR[\"Pull Request\"] --> CQ[\"CodeQL\\nSAST\"]
+    PR --> TV[\"Trivy\\nDependency CVEs\"]
+    PR --> GL[\"Gitleaks\\nSecret scan\"]
+    SBOM --> REL[\"GitHub Release\\nartifact\"]
+    SLSA --> REL
+
+    style TAG fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style PR fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
+    style SBOM fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c
+    style SLSA fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c
+    style CQ fill:#fce4ec,stroke:#880e4f,color:#560027
+    style TV fill:#fce4ec,stroke:#880e4f,color:#560027
+    style GL fill:#fce4ec,stroke:#880e4f,color:#560027
+    style REL fill:#fff3e0,stroke:#e65100,color:#bf360c
+```
 
 ### SBOM — know every dependency
 
@@ -118,6 +136,10 @@ graph LR
 
 `packages.lock.json` pins the exact resolved version of every transitive dependency. CI runs in locked mode — any undeclared version drift fails the build. This prevents dependency confusion attacks and ensures the build you tested is the build you shipped.
 
+### License inventory
+
+`THIRD-PARTY-NOTICES.md` lists every third-party dependency with its SPDX license identifier and copyright notice. It is updated on every dependency change as part of the contribution process. For NIS 2 Art. 21 §3, it provides the legal component of the supply chain inventory — alongside the technical CycloneDX SBOM — confirming that no dependency introduces a license incompatible with commercial distribution or an unreviewed legal obligation.
+
 ### Least-privilege CI tokens
 
 ```yaml title=".github/workflows/ci.yml"
@@ -149,7 +171,7 @@ For modern OAuth 2.0 flows, `Granit.Bff` and `Granit.Authentication.DPoP` implem
 | DPoP | Token replay + theft | RFC 9449 |
 | `private_key_jwt` | Client authentication without shared secrets | RFC 7523 |
 
-Tokens never reach the browser. The BFF pattern keeps `access_token` and `refresh_token` server-side in an encrypted session cookie (`HttpOnly`, `Secure`, `SameSite=Strict`).
+Tokens never reach the browser. The BFF pattern keeps `access_token` and `refresh_token` server-side in an encrypted session cookie (`HttpOnly`, `Secure`, `SameSite=Strict`). This directly satisfies NIS 2 Art. 21 §2(i): a compromised client — including a malicious npm package injected via a supply chain attack — cannot exfiltrate authentication tokens that the browser never held.
 
 ### Audit trail (Art. 21 §2(b))
 

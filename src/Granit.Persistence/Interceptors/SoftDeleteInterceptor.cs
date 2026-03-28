@@ -1,6 +1,4 @@
 using Granit.Domain;
-using Granit.MultiTenancy;
-using Granit.Persistence.Diagnostics;
 using Granit.Timing;
 using Granit.Users;
 using Microsoft.EntityFrameworkCore;
@@ -22,9 +20,7 @@ namespace Granit.Persistence.Interceptors;
 /// </remarks>
 public sealed class SoftDeleteInterceptor(
     ICurrentUserService currentUserService,
-    IClock clock,
-    ICurrentTenant currentTenant,
-    PersistenceMetrics metrics) : SaveChangesInterceptor
+    IClock clock) : SaveChangesInterceptor
 {
 
     public override InterceptionResult<int> SavingChanges(
@@ -53,7 +49,6 @@ public sealed class SoftDeleteInterceptor(
 
         DateTimeOffset now = clock.Now;
         string userId = currentUserService.UserId ?? "system";
-        string? tenantIdStr = currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null;
 
         foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<ISoftDeletable> entry in context.ChangeTracker.Entries<ISoftDeletable>())
         {
@@ -67,7 +62,6 @@ public sealed class SoftDeleteInterceptor(
             entry.Entity.IsDeleted = true;
             entry.Entity.DeletedAt = now;
             entry.Entity.DeletedBy = userId;
-            metrics.RecordEntitySoftDeleted(tenantIdStr);
         }
     }
 }

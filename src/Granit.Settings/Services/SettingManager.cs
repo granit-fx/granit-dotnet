@@ -1,6 +1,5 @@
 using Granit.Events;
 using Granit.Settings.Definitions;
-using Granit.Settings.Diagnostics;
 using Granit.Settings.Events;
 using Granit.Settings.Providers;
 using Granit.Settings.Values;
@@ -18,8 +17,7 @@ public sealed class SettingManager(
     IFusionCache cache,
     SettingDefinitionManager definitions,
     ILocalEventBus eventBus,
-    TimeProvider timeProvider,
-    SettingsMetrics metrics) : ISettingManager
+    TimeProvider timeProvider) : ISettingManager
 {
     private readonly ISettingStoreWriter _storeWriter = storeWriter;
     private readonly ISettingStoreReader _storeReader = storeReader;
@@ -27,7 +25,6 @@ public sealed class SettingManager(
     private readonly SettingDefinitionManager _definitions = definitions;
     private readonly ILocalEventBus _eventBus = eventBus;
     private readonly TimeProvider _timeProvider = timeProvider;
-    private readonly SettingsMetrics _metrics = metrics;
 
     /// <inheritdoc/>
     public async Task SetGlobalAsync(string name, string? value, CancellationToken cancellationToken = default)
@@ -41,9 +38,6 @@ public sealed class SettingManager(
         await _storeWriter.SetAsync(name, providerName, null, value, cancellationToken).ConfigureAwait(false);
         await _cache.ExpireAsync(
             SettingCacheKey.Build(providerName, null, name), token: cancellationToken).ConfigureAwait(false);
-
-        _metrics.RecordValueChanged(null, providerName, name);
-        _metrics.RecordCacheInvalidated(null, providerName);
 
         await _eventBus.PublishAsync(
             new SettingChangedEvent(
@@ -68,9 +62,6 @@ public sealed class SettingManager(
         await _cache.ExpireAsync(
             SettingCacheKey.Build(providerName, tenantKey, name), token: cancellationToken).ConfigureAwait(false);
 
-        _metrics.RecordValueChanged(tenantKey, providerName, name);
-        _metrics.RecordCacheInvalidated(tenantKey, providerName);
-
         await _eventBus.PublishAsync(
             new SettingChangedEvent(
                 name, providerName, tenantKey,
@@ -93,9 +84,6 @@ public sealed class SettingManager(
         await _storeWriter.SetAsync(name, providerName, userId, value, cancellationToken).ConfigureAwait(false);
         await _cache.ExpireAsync(
             SettingCacheKey.Build(providerName, userId, name), token: cancellationToken).ConfigureAwait(false);
-
-        _metrics.RecordValueChanged(null, providerName, name);
-        _metrics.RecordCacheInvalidated(null, providerName);
 
         await _eventBus.PublishAsync(
             new SettingChangedEvent(
@@ -121,10 +109,6 @@ public sealed class SettingManager(
         await _storeWriter.DeleteAsync(name, providerName, providerKey, cancellationToken).ConfigureAwait(false);
         await _cache.ExpireAsync(
             SettingCacheKey.Build(providerName, providerKey, name), token: cancellationToken).ConfigureAwait(false);
-
-        string? tenantId = providerName == TenantSettingValueProvider.ProviderName ? providerKey : null;
-        _metrics.RecordValueDeleted(tenantId, providerName, name);
-        _metrics.RecordCacheInvalidated(tenantId, providerName);
 
         await _eventBus.PublishAsync(
             new SettingChangedEvent(

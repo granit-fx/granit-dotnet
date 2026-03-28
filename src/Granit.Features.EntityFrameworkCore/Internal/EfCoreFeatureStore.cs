@@ -33,7 +33,6 @@ internal sealed class EfCoreFeatureStore(
     IDbContextFactory<FeaturesDbContext> contextFactory,
     ILocalEventBus eventBus,
     TimeProvider timeProvider,
-    FeaturesMetrics metrics,
     ILogger<EfCoreFeatureStore> logger,
     IDataFilter? dataFilter = null) : IFeatureStoreReader, IFeatureStoreWriter
 {
@@ -112,7 +111,6 @@ internal sealed class EfCoreFeatureStore(
         }
 
         string tenantStr = tenantGuid?.ToString() ?? "global";
-        metrics.RecordOverrideChanged(tenantStr, featureName, "set");
         FeaturesLog.FeatureOverrideChanged(logger, featureName, tenantStr, oldValue, value);
 
         await eventBus.PublishAsync(
@@ -149,7 +147,6 @@ internal sealed class EfCoreFeatureStore(
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         string tenantStr = tenantGuid?.ToString() ?? "global";
-        metrics.RecordOverrideChanged(tenantStr, featureName, "delete");
         FeaturesLog.FeatureOverrideChanged(logger, featureName, tenantStr, oldValue, null);
 
         await eventBus.PublishAsync(

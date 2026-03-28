@@ -16,11 +16,9 @@ excerpt: >
   framework cannot replace.
 ---
 
-import { Tabs, TabItem } from "@astrojs/starlight/components";
-
 You close a deal with a large enterprise customer. Their security team sends a vendor assessment form. Question 3: "Do you have a SOC 2 Type 2 report?" If the answer is no, you go on a watch list. If it stays no for six months, the deal dies.
 
-SOC 2 is not a regulation — but it is effectively a gate for selling to enterprise, healthcare, and financial services customers in North America and increasingly in Europe. This article maps Granit's modules to the five **Trust Service Criteria (TSC)** so you know exactly which technical controls you already have in place when you start your audit preparation.
+SOC 2 is not a regulation — but it is effectively a gate for selling to enterprise, healthcare, and financial services customers in North America and increasingly in Europe. This article maps Granit's modules to the five **Trust Service Criteria (TSC)** so you know exactly which technical controls you already have in place when you start your audit preparation. The focus is on what the framework provides out of the box — and what your team must still build around it.
 
 ## SOC 2 Type 2 in 90 seconds
 
@@ -54,6 +52,10 @@ graph TD
 ```
 
 **Security (CC)** is mandatory. The other four are optional — but most enterprise customers require Availability and Confidentiality as a minimum.
+
+:::note
+**Processing Integrity (PI)** — ensuring that system processing is complete, valid, accurate, timely, and authorized — is not covered in this article. PI controls are highly application-specific (financial calculations, order processing, data pipelines) and cannot be addressed by a general-purpose framework. If your audit scope includes PI, you will need to instrument your own business logic with idempotency checks, reconciliation jobs, and processing logs.
+:::
 
 :::note
 A SOC 2 audit certifies your **processes and controls**, not your code. The auditor reviews your policies, interviews your team, samples your logs, and tests your controls over the observation window. Granit gives you the *technical* controls. The *operational* controls around them — incident response runbooks, access review cadence, employee training — are on you.
@@ -97,9 +99,9 @@ For machine-to-machine and third-party integrations, `Granit.OpenIddict` impleme
 | DPoP | Token replay + theft | RFC 9449 |
 | `private_key_jwt` | Client impersonation without shared secrets | RFC 7523 |
 
-### CC6.8 — Malware and supply chain protection
+### CC6.8 — Browser-side supply chain protection
 
-`Granit.Bff` implements the Backend For Frontend pattern: tokens are stored server-side in an encrypted, `HttpOnly`, `SameSite=Strict` session cookie. The browser never receives an `access_token` or `refresh_token`. A successful XSS attack — including a compromised npm dependency — cannot exfiltrate tokens that the browser never had access to.
+CC6.8 covers protection against malicious software, including supply chain attacks that target the browser. `Granit.Bff` implements the Backend For Frontend pattern: tokens are stored server-side in an encrypted, `HttpOnly`, `SameSite=Strict` session cookie. The browser never receives an `access_token` or `refresh_token`. A successful XSS attack — including a compromised npm dependency injected via a supply chain attack — cannot exfiltrate tokens that the browser never had access to.
 
 :::tip
 This is the most underrated SOC 2 control in frontend-heavy applications. Most auditors specifically ask about token storage in SPAs. "Tokens live server-side in HttpOnly cookies managed by Granit.Bff" is a much stronger answer than "stored in localStorage with CSP headers."

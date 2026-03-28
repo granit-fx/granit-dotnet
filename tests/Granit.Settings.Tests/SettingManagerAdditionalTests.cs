@@ -1,7 +1,5 @@
-using System.Diagnostics.Metrics;
 using Granit.Events;
 using Granit.Settings.Definitions;
-using Granit.Settings.Diagnostics;
 using Granit.Settings.Events;
 using Granit.Settings.Services;
 using Granit.Settings.Stores;
@@ -28,13 +26,6 @@ public sealed class SettingManagerAdditionalTests
         }
     }
 
-    private sealed class TestMeterFactory : IMeterFactory
-    {
-        private readonly List<Meter> _meters = [];
-        public Meter Create(MeterOptions options) { Meter m = new(options); _meters.Add(m); return m; }
-        public void Dispose() { foreach (Meter m in _meters) { m.Dispose(); } }
-    }
-
     private static (SettingManager manager, InMemorySettingStore store, IFusionCache cache, ILocalEventBus eventBus)
         CreateManager(params SettingDefinition[] defs)
     {
@@ -42,8 +33,7 @@ public sealed class SettingManagerAdditionalTests
         IFusionCache cache = Substitute.For<IFusionCache>();
         ILocalEventBus eventBus = Substitute.For<ILocalEventBus>();
         SettingDefinitionManager defManager = ManagerWith(defs);
-        SettingsMetrics metrics = new(new TestMeterFactory());
-        SettingManager manager = new(store, store, cache, defManager, eventBus, TimeProvider.System, metrics);
+        SettingManager manager = new(store, store, cache, defManager, eventBus, TimeProvider.System);
         return (manager, store, cache, eventBus);
     }
 

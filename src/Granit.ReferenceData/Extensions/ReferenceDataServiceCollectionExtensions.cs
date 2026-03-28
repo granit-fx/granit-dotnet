@@ -34,7 +34,6 @@ public static class ReferenceDataServiceCollectionExtensions
 
         services.AddMemoryCache();
 
-        services.TryAddSingleton<ReferenceDataMetrics>();
         GranitActivitySourceRegistry.Register(ReferenceDataActivitySource.Name);
 
         return services;

@@ -15,11 +15,6 @@ public sealed class TemplatingMetrics
     private const string DefaultTenant = "global";
     private const string TemplateNameTag = "template_name";
 
-    private readonly Counter<long> _draftsCreated;
-    private readonly Counter<long> _draftsUpdated;
-    private readonly Counter<long> _draftsDeleted;
-    private readonly Counter<long> _templatesPublished;
-    private readonly Counter<long> _templatesUnpublished;
     private readonly Counter<long> _rendersCompleted;
     private readonly Counter<long> _rendersFailed;
     private readonly Histogram<double> _renderDuration;
@@ -27,26 +22,6 @@ public sealed class TemplatingMetrics
     public TemplatingMetrics(IMeterFactory meterFactory)
     {
         Meter meter = meterFactory.Create(MeterName);
-
-        _draftsCreated = meter.CreateCounter<long>(
-            "granit.templating.drafts.created",
-            description: "Number of template drafts created.");
-
-        _draftsUpdated = meter.CreateCounter<long>(
-            "granit.templating.drafts.updated",
-            description: "Number of template drafts updated.");
-
-        _draftsDeleted = meter.CreateCounter<long>(
-            "granit.templating.drafts.deleted",
-            description: "Number of template drafts deleted.");
-
-        _templatesPublished = meter.CreateCounter<long>(
-            "granit.templating.templates.published",
-            description: "Number of templates published.");
-
-        _templatesUnpublished = meter.CreateCounter<long>(
-            "granit.templating.templates.unpublished",
-            description: "Number of templates unpublished (archived).");
 
         _rendersCompleted = meter.CreateCounter<long>(
             "granit.templating.renders.completed",
@@ -61,41 +36,6 @@ public sealed class TemplatingMetrics
             unit: "s",
             description: "Duration of template rendering in seconds.");
     }
-
-    public void RecordDraftCreated(string? tenantId, string templateName) =>
-        _draftsCreated.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
-            { TemplateNameTag, templateName },
-        });
-
-    public void RecordDraftUpdated(string? tenantId, string templateName) =>
-        _draftsUpdated.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
-            { TemplateNameTag, templateName },
-        });
-
-    public void RecordDraftDeleted(string? tenantId, string templateName) =>
-        _draftsDeleted.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
-            { TemplateNameTag, templateName },
-        });
-
-    public void RecordPublished(string? tenantId, string templateName) =>
-        _templatesPublished.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
-            { TemplateNameTag, templateName },
-        });
-
-    public void RecordUnpublished(string? tenantId, string templateName) =>
-        _templatesUnpublished.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
-            { TemplateNameTag, templateName },
-        });
 
     public void RecordRenderCompleted(string? tenantId, string templateName, TimeSpan duration)
     {
