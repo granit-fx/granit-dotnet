@@ -22946,7 +22946,7 @@
       "kind": "class",
       "project": "Granit.Persistence.Postgres",
       "file": "src/Granit.Persistence.Postgres/Extensions/PersistencePostgresHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitPostgres",
