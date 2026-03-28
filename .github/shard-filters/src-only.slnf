@@ -96,6 +96,7 @@
       "src/Granit.Identity.Federated.Keycloak/Granit.Identity.Federated.Keycloak.csproj",
       "src/Granit.Identity.Federated/Granit.Identity.Federated.csproj",
       "src/Granit.Identity.Local.AspNetIdentity/Granit.Identity.Local.AspNetIdentity.csproj",
+      "src/Granit.Identity.Local/Granit.Identity.Local.csproj",
       "src/Granit.Identity/Granit.Identity.csproj",
       "src/Granit.Imaging.AI/Granit.Imaging.AI.csproj",
       "src/Granit.Imaging.MagickNet/Granit.Imaging.MagickNet.csproj",
