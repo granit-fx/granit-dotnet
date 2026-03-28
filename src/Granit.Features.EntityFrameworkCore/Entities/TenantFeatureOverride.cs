@@ -1,6 +1,6 @@
 using Granit.Domain;
 
-namespace Granit.Features.EntityFrameworkCore.Internal;
+namespace Granit.Features.EntityFrameworkCore.Entities;
 
 /// <summary>
 /// Represents a tenant-level override for a feature value.

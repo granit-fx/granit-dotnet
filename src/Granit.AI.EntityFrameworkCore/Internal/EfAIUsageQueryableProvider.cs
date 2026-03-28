@@ -1,3 +1,4 @@
+using Granit.AI.EntityFrameworkCore.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.AI.EntityFrameworkCore.Internal;

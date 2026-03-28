@@ -1,3 +1,4 @@
+using Granit.AI.EntityFrameworkCore.Entities;
 using Granit.AI.EntityFrameworkCore.Extensions;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;

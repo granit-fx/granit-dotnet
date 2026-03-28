@@ -1,3 +1,4 @@
+using Granit.AI.EntityFrameworkCore.Entities;
 using Granit.AI.Workspaces;
 using Microsoft.EntityFrameworkCore;
 

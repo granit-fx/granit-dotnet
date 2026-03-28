@@ -1,3 +1,4 @@
+using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.EntityFrameworkCore.Extensions;
 using Granit.Features.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;

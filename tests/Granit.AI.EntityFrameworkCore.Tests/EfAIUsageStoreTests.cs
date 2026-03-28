@@ -1,5 +1,6 @@
 using System.Diagnostics.Metrics;
 using Granit.AI.Diagnostics;
+using Granit.AI.EntityFrameworkCore.Entities;
 using Granit.AI.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,6 +1,6 @@
 using Granit.Domain;
 
-namespace Granit.Templating.EntityFrameworkCore.Internal;
+namespace Granit.Templating.EntityFrameworkCore.Entities;
 
 /// <summary>
 /// EF Core entity for template categories used to organize templates by domain.

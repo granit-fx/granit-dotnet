@@ -1,3 +1,4 @@
+using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.Store;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

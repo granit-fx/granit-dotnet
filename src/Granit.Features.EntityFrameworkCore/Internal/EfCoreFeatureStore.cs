@@ -2,6 +2,7 @@ using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Events;
 using Granit.Features.Diagnostics;
+using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

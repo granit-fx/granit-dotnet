@@ -1,7 +1,7 @@
 using Granit.AI.Workspaces;
 using Granit.Domain;
 
-namespace Granit.AI.EntityFrameworkCore.Internal;
+namespace Granit.AI.EntityFrameworkCore.Entities;
 
 /// <summary>
 /// EF Core entity for dynamic AI workspace configurations.

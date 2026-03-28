@@ -1,6 +1,6 @@
 using Granit.Domain;
 
-namespace Granit.AI.EntityFrameworkCore.Internal;
+namespace Granit.AI.EntityFrameworkCore.Entities;
 
 /// <summary>
 /// EF Core entity for AI usage tracking records. Immutable after creation.

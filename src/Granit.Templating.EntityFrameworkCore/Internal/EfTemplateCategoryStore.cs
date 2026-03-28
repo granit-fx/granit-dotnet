@@ -2,6 +2,7 @@ using Granit.Domain;
 using Granit.Exceptions;
 using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.Store;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;

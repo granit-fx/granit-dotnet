@@ -1,6 +1,7 @@
 using System.Diagnostics.Metrics;
 using Granit.Events;
 using Granit.Features.Diagnostics;
+using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.EntityFrameworkCore.Internal;
 using Granit.Features.Events;
 using Microsoft.EntityFrameworkCore;

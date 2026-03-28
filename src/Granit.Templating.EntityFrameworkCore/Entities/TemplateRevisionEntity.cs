@@ -1,7 +1,7 @@
 using Granit.Domain;
 using Granit.Templating.Store;
 
-namespace Granit.Templating.EntityFrameworkCore.Internal;
+namespace Granit.Templating.EntityFrameworkCore.Entities;
 
 /// <summary>
 /// EF Core entity mapping a single revision of a template.

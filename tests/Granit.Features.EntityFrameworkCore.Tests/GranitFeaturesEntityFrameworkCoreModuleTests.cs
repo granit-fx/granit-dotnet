@@ -1,5 +1,5 @@
+using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.EntityFrameworkCore.Extensions;
-using Granit.Features.EntityFrameworkCore.Internal;
 using Granit.Modularity;
 using Granit.Persistence;
 using Microsoft.EntityFrameworkCore;

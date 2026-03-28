@@ -1,5 +1,6 @@
 using Granit.Exceptions;
 using Granit.Guids;
+using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.EntityFrameworkCore.Internal;
 using Granit.Templating.Exceptions;
 using Granit.Templating.Keys;

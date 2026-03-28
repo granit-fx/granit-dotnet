@@ -2006,7 +2006,7 @@
       "kind": "class",
       "project": "Granit.AI.EntityFrameworkCore",
       "file": "src/Granit.AI.EntityFrameworkCore/Extensions/AIModelBuilderExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "ConfigureAIModule",
@@ -26867,7 +26867,7 @@
       "kind": "class",
       "project": "Granit.Templating.EntityFrameworkCore",
       "file": "src/Granit.Templating.EntityFrameworkCore/Extensions/TemplatingModelBuilderExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "ConfigureTemplatingModule",

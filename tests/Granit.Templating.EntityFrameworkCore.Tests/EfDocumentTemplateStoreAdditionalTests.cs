@@ -1,4 +1,5 @@
 using Granit.Guids;
+using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.EntityFrameworkCore.Internal;
 using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
