@@ -52,13 +52,13 @@ internal static partial class ConnectTokenEndpoints
         if (request.IsAuthorizationCodeGrantType() || request.IsRefreshTokenGrantType())
         {
             return await HandleCodeOrRefreshAsync(
-                context, request, principalFactory, metrics, logger, tenantId)
+                context, request, principalFactory, metrics, tenantId)
                 .ConfigureAwait(false);
         }
 
         if (request.IsClientCredentialsGrantType())
         {
-            return HandleClientCredentials(request, principalFactory, metrics, logger, tenantId);
+            return HandleClientCredentials(context, request, principalFactory, metrics, tenantId);
         }
 
         LogUnsupportedGrantType(logger, request.GrantType ?? "(null)");
@@ -71,9 +71,12 @@ internal static partial class ConnectTokenEndpoints
         OpenIddictRequest request,
         OidcPrincipalFactory principalFactory,
         OpenIddictMetrics metrics,
-        ILogger logger,
         string? tenantId)
     {
+        ILogger logger = context.RequestServices
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Granit.OpenIddict.Endpoints.ConnectTokenEndpoints");
+
         // OpenIddict has already validated the code/refresh_token — authenticate to get the principal.
         AuthenticateResult authenticateResult = await context.AuthenticateAsync(
             OpenIddictServerAspNetCoreDefaults.AuthenticationScheme).ConfigureAwait(false);
@@ -121,12 +124,16 @@ internal static partial class ConnectTokenEndpoints
     }
 
     private static IResult HandleClientCredentials(
+        HttpContext context,
         OpenIddictRequest request,
         OidcPrincipalFactory principalFactory,
         OpenIddictMetrics metrics,
-        ILogger logger,
         string? tenantId)
     {
+        ILogger logger = context.RequestServices
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Granit.OpenIddict.Endpoints.ConnectTokenEndpoints");
+
         ClaimsPrincipal principal = OidcPrincipalFactory.CreateClientPrincipal(
             request.ClientId!,
             request.GetScopes(),

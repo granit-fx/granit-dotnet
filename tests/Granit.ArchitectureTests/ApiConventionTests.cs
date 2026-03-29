@@ -29,6 +29,13 @@ public sealed partial class ApiConventionTests
         "QueryEndpointHandler",
         "WebhookRedeliveryEndpoint",
         "LocalizationEndpointRouteBuilderExtensions",
+
+        // OIDC passthrough endpoints — use Results.SignIn/Forbid/Challenge/SignOut
+        // which are protocol-level flows incompatible with Results<...> union types.
+        "ConnectAuthorizationEndpoints",
+        "ConnectTokenEndpoints",
+        "ConnectLogoutEndpoints",
+        "ConnectUserInfoEndpoints",
     };
 
     /// <summary>
@@ -160,6 +167,12 @@ public sealed partial class ApiConventionTests
             {
                 int lineNumber = content[..match.Index].Count(c => c == '\n') + 1;
                 string chain = ExtractFluentChain(content, match.Index);
+
+                // Endpoints excluded from OpenAPI description don't need metadata.
+                if (chain.Contains(".ExcludeFromDescription(", StringComparison.Ordinal))
+                {
+                    continue;
+                }
 
                 List<string> missing = [];
                 if (!chain.Contains(".WithName(", StringComparison.Ordinal))

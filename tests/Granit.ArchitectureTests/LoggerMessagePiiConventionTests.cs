@@ -47,6 +47,8 @@ public sealed partial class LoggerMessagePiiConventionTests
         "BffSessionEndpoints.SessionId",
         "BffLogoutEndpoints.SessionId",
         "BffBackChannelLogoutEndpoints.Subject",
+        "ConnectAuthorizationEndpoints.Subject",
+        "ConnectTokenEndpoints.Subject",
         "BffTokenInjectionTransform.SessionId",
         "KeycloakUserTokenExchangeService.UserId",
         "BackgroundJobManager.UserId",
