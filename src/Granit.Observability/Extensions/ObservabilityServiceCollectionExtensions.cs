@@ -27,7 +27,7 @@ public static class ObservabilityServiceCollectionExtensions
             .BindConfiguration(ObservabilityOptions.SectionName)
             // Apply smart fallbacks when the Observability section is absent or incomplete.
             // PostConfigure runs after BindConfiguration so explicit config always wins.
-            .PostConfigure<IHostEnvironment>((opts, env) =>
+            .PostConfigure<IHostEnvironment, IConfiguration>((opts, env, config) =>
             {
                 if (string.IsNullOrWhiteSpace(opts.ServiceName) || opts.ServiceName is "unknown-service")
                 {
@@ -37,6 +37,17 @@ public static class ObservabilityServiceCollectionExtensions
                 if (string.IsNullOrWhiteSpace(opts.Environment) || opts.Environment is "development")
                 {
                     opts.Environment = env.EnvironmentName.ToLowerInvariant();
+                }
+
+                // Respect OTEL_EXPORTER_OTLP_ENDPOINT injected by Aspire when OtlpEndpoint
+                // is not explicitly configured (still at default value).
+                if (opts.OtlpEndpoint is "http://localhost:4317")
+                {
+                    string? envEndpoint = config["OTEL_EXPORTER_OTLP_ENDPOINT"];
+                    if (!string.IsNullOrWhiteSpace(envEndpoint))
+                    {
+                        opts.OtlpEndpoint = envEndpoint;
+                    }
                 }
             })
             .ValidateDataAnnotations()
@@ -58,6 +69,17 @@ public static class ObservabilityServiceCollectionExtensions
         if (string.IsNullOrWhiteSpace(options.Environment) || options.Environment is "development")
         {
             options.Environment = builder.Environment.EnvironmentName.ToLowerInvariant();
+        }
+
+        // Respect OTEL_EXPORTER_OTLP_ENDPOINT injected by Aspire when OtlpEndpoint
+        // is not explicitly configured (still at default value).
+        if (options.OtlpEndpoint is "http://localhost:4317")
+        {
+            string? envEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+            if (!string.IsNullOrWhiteSpace(envEndpoint))
+            {
+                options.OtlpEndpoint = envEndpoint;
+            }
         }
 
         ConfigureSerilog(builder, options);
