@@ -28,6 +28,9 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      exclude: ["starlight-blog"],
+    },
   },
   integrations: [
     starlight({

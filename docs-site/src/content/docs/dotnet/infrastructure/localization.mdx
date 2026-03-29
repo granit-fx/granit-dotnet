@@ -184,6 +184,155 @@ public class PatientHandler(IStringLocalizer<AcmeLocalizationResource> l)
 }
 ```
 
+## Localization key naming convention
+
+Granit localization keys follow a **PascalCase, dot-separated** structure
+with an optional **colon-separated namespace prefix**:
+
+```text
+[Prefix:]Feature.Section.Key
+```
+
+| Separator | Role | Example |
+|-----------|------|---------|
+| `:` colon | Namespace boundary (resource scope) | `Showcase:Admin:`, `Granit:Validation:` |
+| `.` dot | Hierarchy within a scope | `Users.Columns.Email` |
+
+Backend JSON files include the full prefix:
+
+```json title="Localization/ShowcaseAdmin/en.json"
+{
+  "culture": "en",
+  "texts": {
+    "Showcase:Admin:Users.Title": "User Management",
+    "Showcase:Admin:Users.Columns.Email": "Email"
+  }
+}
+```
+
+:::note[Frontend keys omit the prefix]
+Frontend `t()` calls omit the namespace prefix — `applyTranslations()`
+merges all resources by module, stripping the prefix automatically:
+
+```tsx
+t('Users.Title')        // resolves "User Management"
+t('Users.Columns.Email') // resolves "Email"
+```
+
+:::
+
+### Casing rules
+
+All key segments use **PascalCase**, following Microsoft .NET naming
+guidelines for acronyms:
+
+| Rule | Example | Counter-example |
+|------|---------|-----------------|
+| Standard words → PascalCase | `Users`, `Columns`, `Title` | ~~`users`~~, ~~`columns`~~ |
+| Acronyms ≤ 2 letters → ALL CAPS | `AI`, `UI`, `ID` | ~~`Ai`~~, ~~`Ui`~~, ~~`Id`~~ |
+| Acronyms ≥ 3 letters → PascalCase | `Api`, `Url`, `Html` | ~~`API`~~, ~~`URL`~~ |
+| Compound words → PascalCase | `ApiKeys`, `BackgroundJobs` | ~~`APIKeys`~~, ~~`BGJobs`~~ |
+
+:::tip[Acronym rule]
+This follows Microsoft's .NET naming guidelines: two-letter acronyms stay
+uppercase (`AI`, `ID`, `UI`), three or more letters use PascalCase
+(`Api`, `Url`, `Html`). Apply this to all key segments.
+:::
+
+### Namespace prefixes
+
+Each application defines its own prefix using the `{App}:{Scope}:`
+pattern:
+
+| Application | Prefix | Example key |
+|-------------|--------|-------------|
+| Granit framework | `Granit:` | `Granit:EntityNotFound` |
+| Granit validation | `Granit:Validation:` | `Granit:Validation:NotEmptyValidator` |
+| Granit permissions | `Permission:` / `PermissionGroup:` | `Permission:Settings.Global.Read` |
+| Guava admin | `Guava:Admin:` | `Guava:Admin:Users.Title` |
+| Showcase admin | `Showcase:Admin:` | `Showcase:Admin:Auth.Login` |
+| Webhook events | `WebhookEventType:` | `WebhookEventType:order.created` |
+
+### Feature keys (admin UI)
+
+For admin frontend applications, keys are organized by **feature**
+(matching the frontend feature module structure):
+
+```text
+{Prefix}:{Feature}.{Section}.{Key}
+```
+
+Standard sections:
+
+| Section | Purpose | Example |
+|---------|---------|---------|
+| `Title` | Page title | `Users.Title` → "User Management" |
+| `Subtitle` | Page description | `Users.Subtitle` → "Manage platform users..." |
+| `SearchPlaceholder` | Search input placeholder | `Users.SearchPlaceholder` → "Search by name..." |
+| `Columns.*` | Table column headers | `Users.Columns.Email` → "Email" |
+| `Form.*` | Form field labels | `Countries.Form.Alpha3` → "Alpha-3 Code" |
+| `Actions.*` | Button/action labels | `Countries.Actions.Deactivate` → "Deactivate" |
+| `Status.*` | Status/enum values | `Users.Status.Enabled` → "Enabled" |
+| `Filters.*` | Filter labels | `Countries.Filters.Region` → "Region" |
+| `Detail.*` | Detail page elements | `Users.Detail.BackToUsers` → "Back to users" |
+| `*Dialog.*` | Dialog title/message | `Countries.DeactivateDialog.Title` → "Deactivate Country" |
+| `*Success` | Toast success message | `Countries.SaveSuccess` → "Country saved successfully" |
+| `*Error` | Toast error message | `Countries.SaveError` → "Failed to save country" |
+
+### Shared keys
+
+Keys shared across features use these namespaces:
+
+| Namespace | Scope | Examples |
+|-----------|-------|---------|
+| `Common.*` | Buttons, labels reused everywhere | `Common.Save`, `Common.Cancel`, `Common.Close` |
+| `Navigation.*` | Sidebar menu items | `Navigation.Users`, `Navigation.Countries` |
+| `Navigation.Groups.*` | Sidebar group headings | `Navigation.Groups.Identity` |
+| `Auth.*` | Authentication flow | `Auth.Login`, `Auth.AccessDenied` |
+| `Header.*` / `Footer.*` | App chrome | `Header.AdminConsole` |
+| `Components.*` | Reusable UI components | `Components.Querying.Columns.Label` |
+
+### Complete example
+
+```json title="Localization/ShowcaseAdmin/en.json"
+{
+  "culture": "en",
+  "texts": {
+    "Showcase:Admin:Common.AppName": "Granit Showcase Admin",
+    "Showcase:Admin:Common.Save": "Save",
+    "Showcase:Admin:Common.Cancel": "Cancel",
+    "Showcase:Admin:Navigation.Users": "Users",
+    "Showcase:Admin:Navigation.Groups.AI": "Artificial Intelligence",
+    "Showcase:Admin:Auth.Login": "Sign in",
+    "Showcase:Admin:Auth.LoginPage.Subtitle": "Sign in with your administrator account.",
+    "Showcase:Admin:Users.Title": "User Management",
+    "Showcase:Admin:Users.Columns.Name": "Name",
+    "Showcase:Admin:Users.Columns.Email": "Email",
+    "Showcase:Admin:Users.Status.Enabled": "Enabled",
+    "Showcase:Admin:Users.Status.Disabled": "Disabled",
+    "Showcase:Admin:Users.Actions.Enable": "Enable user",
+    "Showcase:Admin:Users.SaveSuccess": "User saved successfully",
+    "Showcase:Admin:Countries.Form.Code": "Alpha-2 Code",
+    "Showcase:Admin:Countries.DeactivateDialog.Title": "Deactivate Country",
+    "Showcase:Admin:AI.Workspaces.Title": "AI Workspaces"
+  }
+}
+```
+
+```tsx title="Frontend usage"
+import { useTranslation } from '@granit/react-localization';
+
+function UsersPage() {
+  const { t } = useTranslation();
+  return (
+    <>
+      <h1>{t('Users.Title')}</h1>
+      <p>{t('Users.Subtitle')}</p>
+    </>
+  );
+}
+```
+
 ## LanguageInfo
 
 Available languages are declared via `GranitLocalizationOptions.Languages`:

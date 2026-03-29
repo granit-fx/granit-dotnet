@@ -94,6 +94,17 @@ culture.
 There is no need for an `en-US.json` file since `en.json` is already US English
 (native fallback: `en-US` -> `en`).
 
+### Key naming convention
+
+Localization keys use **PascalCase** segments separated by `.` (dots) for
+hierarchy, with an optional `:` (colon) namespace prefix for resource scoping
+(e.g., `Showcase:Admin:Users.Columns.Email`). Two-letter acronyms stay
+uppercase (`AI`, `ID`); three or more letters use PascalCase (`Api`, `Url`).
+
+See the [key naming convention reference](/dotnet/infrastructure/localization/#localization-key-naming-convention)
+for the full specification including standard sections, shared key namespaces,
+and complete examples.
+
 ### Embed as resources
 
 Mark the files as embedded resources in your `.csproj`:
