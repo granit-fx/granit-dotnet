@@ -12,5 +12,5 @@ namespace Granit.Notifications.Zulip;
 /// </remarks>
 [DependsOn(
     typeof(GranitHttpResilienceModule),
-    typeof(GranitNotificationsModule))]
+    typeof(GranitNotificationsAbstractionsModule))]
 public sealed class GranitNotificationsZulipModule : GranitModule;

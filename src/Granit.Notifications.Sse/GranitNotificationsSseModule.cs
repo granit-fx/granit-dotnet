@@ -9,5 +9,5 @@ namespace Granit.Notifications.Sse;
 /// Registration is done via <c>AddGranitNotificationsSse()</c>.
 /// Registers <c>SseConnectionManager</c> and <c>SseNotificationChannel</c>.
 /// </remarks>
-[DependsOn(typeof(GranitNotificationsModule))]
+[DependsOn(typeof(GranitNotificationsAbstractionsModule))]
 public sealed class GranitNotificationsSseModule : GranitModule;

@@ -34,6 +34,7 @@
       "src/Granit.Mcp.Server/Granit.Mcp.Server.csproj",
       "src/Granit.Mcp/Granit.Mcp.csproj",
       "src/Granit.MultiTenancy/Granit.MultiTenancy.csproj",
+      "src/Granit.Notifications.Abstractions/Granit.Notifications.Abstractions.csproj",
       "src/Granit.Notifications.Email.Smtp/Granit.Notifications.Email.Smtp.csproj",
       "src/Granit.Notifications.Email/Granit.Notifications.Email.csproj",
       "src/Granit.Notifications.Endpoints/Granit.Notifications.Endpoints.csproj",

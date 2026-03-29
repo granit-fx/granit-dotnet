@@ -200,6 +200,7 @@
     <Project Path="src/Granit.Notifications.WhatsApp/Granit.Notifications.WhatsApp.csproj" />
     <Project Path="src/Granit.Notifications.Wolverine/Granit.Notifications.Wolverine.csproj" />
     <Project Path="src/Granit.Notifications.Zulip/Granit.Notifications.Zulip.csproj" />
+    <Project Path="src/Granit.Notifications.Abstractions/Granit.Notifications.Abstractions.csproj" />
     <Project Path="src/Granit.Notifications/Granit.Notifications.csproj" />
   </Folder>
   <Folder Name="/src/">
@@ -435,6 +436,7 @@
     <Project Path="tests/Granit.Notifications.Sms.AzureCommunicationServices.Tests/Granit.Notifications.Sms.AzureCommunicationServices.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Sms.Tests/Granit.Notifications.Sms.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Sse.Tests/Granit.Notifications.Sse.Tests.csproj" />
+    <Project Path="tests/Granit.Notifications.Abstractions.Tests/Granit.Notifications.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Tests/Granit.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Twilio.Tests/Granit.Notifications.Twilio.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.WebPush.Tests/Granit.Notifications.WebPush.Tests.csproj" />

@@ -463,7 +463,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Configuration.Binder": "[10.*, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
@@ -471,11 +471,18 @@
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
         }
       },
+      "granit.notifications.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.notifications.zulip": {
         "type": "Project",
         "dependencies": {
           "Granit.Http.Resilience": "[0.1.0-dev, )",
-          "Granit.Notifications": "[0.1.0-dev, )",
+          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Diagnostics.HealthChecks": "[10.*, )",
           "Microsoft.Extensions.Http": "[10.*, )",

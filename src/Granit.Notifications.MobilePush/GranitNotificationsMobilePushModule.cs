@@ -9,5 +9,5 @@ namespace Granit.Notifications.MobilePush;
 /// Registration is done via <c>AddGranitNotificationsMobilePush()</c>.
 /// Providers (FCM, APNs) register keyed <c>IMobilePushSender</c> implementations.
 /// </remarks>
-[DependsOn(typeof(GranitNotificationsModule))]
+[DependsOn(typeof(GranitNotificationsAbstractionsModule))]
 public sealed class GranitNotificationsMobilePushModule : GranitModule;

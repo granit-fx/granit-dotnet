@@ -22,7 +22,7 @@ public sealed class GranitTimelineNotificationsModuleTests
             .ToArray();
 
         Type[] allDeps = attributes.SelectMany(a => a.DependedTypes).ToArray();
-        allDeps.ShouldContain(typeof(GranitNotificationsModule));
+        allDeps.ShouldContain(typeof(GranitNotificationsAbstractionsModule));
     }
 
     [Fact]

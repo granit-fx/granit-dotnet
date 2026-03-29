@@ -51,12 +51,11 @@
           "SmartFormat": "[3.*, )"
         }
       },
-      "granit.notifications": {
+      "granit.notifications.abstractions": {
         "type": "Project",
         "dependencies": {
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.queryengine.abstractions": {

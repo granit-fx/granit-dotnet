@@ -869,7 +869,7 @@
       "name": "Granit.Notifications",
       "deps": [
         "Granit.Guids",
-        "Granit.QueryEngine.Abstractions",
+        "Granit.Notifications.Abstractions",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -878,7 +878,15 @@
       "name": "Granit.Notifications.AI",
       "deps": [
         "Granit.AI",
-        "Granit.Notifications"
+        "Granit.Notifications.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Notifications.Abstractions",
+      "deps": [
+        "Granit",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -895,7 +903,7 @@
     {
       "name": "Granit.Notifications.Email",
       "deps": [
-        "Granit.Notifications",
+        "Granit.Notifications.Abstractions",
         "Granit.Templating"
       ],
       "framework": "net10.0"
@@ -961,7 +969,7 @@
     {
       "name": "Granit.Notifications.MobilePush",
       "deps": [
-        "Granit.Notifications"
+        "Granit.Notifications.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -990,14 +998,14 @@
     {
       "name": "Granit.Notifications.SignalR",
       "deps": [
-        "Granit.Notifications"
+        "Granit.Notifications.Abstractions"
       ],
       "framework": "net10.0"
     },
     {
       "name": "Granit.Notifications.Sms",
       "deps": [
-        "Granit.Notifications"
+        "Granit.Notifications.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1018,7 +1026,8 @@
     {
       "name": "Granit.Notifications.Sse",
       "deps": [
-        "Granit.Notifications",
+        "Granit.Guids",
+        "Granit.Notifications.Abstractions",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -1035,14 +1044,14 @@
     {
       "name": "Granit.Notifications.WebPush",
       "deps": [
-        "Granit.Notifications"
+        "Granit.Notifications.Abstractions"
       ],
       "framework": "net10.0"
     },
     {
       "name": "Granit.Notifications.WhatsApp",
       "deps": [
-        "Granit.Notifications"
+        "Granit.Notifications.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1058,7 +1067,7 @@
       "name": "Granit.Notifications.Zulip",
       "deps": [
         "Granit.Http.Resilience",
-        "Granit.Notifications"
+        "Granit.Notifications.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1229,7 +1238,7 @@
       "name": "Granit.Privacy.Notifications",
       "deps": [
         "Granit.Privacy",
-        "Granit.Notifications"
+        "Granit.Notifications.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1450,7 +1459,7 @@
       "name": "Granit.Timeline.Notifications",
       "deps": [
         "Granit.Timeline",
-        "Granit.Notifications"
+        "Granit.Notifications.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1648,7 +1657,7 @@
         "Granit.Authorization",
         "Granit.Identity",
         "Granit.Workflow",
-        "Granit.Notifications"
+        "Granit.Notifications.Abstractions"
       ],
       "framework": "net10.0"
     }
@@ -17799,8 +17808,8 @@
       "name": "INotificationChannel",
       "fqn": "Granit.Notifications.Abstractions.INotificationChannel",
       "kind": "interface",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Abstractions/INotificationChannel.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationChannel.cs",
       "line": 6,
       "members": [
         {
@@ -17815,8 +17824,8 @@
       "name": "INotificationDefinitionContext",
       "fqn": "Granit.Notifications.Abstractions.INotificationDefinitionContext",
       "kind": "interface",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Abstractions/INotificationDefinitionContext.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationDefinitionContext.cs",
       "line": 6,
       "members": [
         {
@@ -17831,8 +17840,8 @@
       "name": "INotificationDefinitionProvider",
       "fqn": "Granit.Notifications.Abstractions.INotificationDefinitionProvider",
       "kind": "interface",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Abstractions/INotificationDefinitionProvider.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationDefinitionProvider.cs",
       "line": 7,
       "members": [
         {
@@ -17847,8 +17856,8 @@
       "name": "INotificationDefinitionStore",
       "fqn": "Granit.Notifications.Abstractions.INotificationDefinitionStore",
       "kind": "interface",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Abstractions/INotificationDefinitionStore.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationDefinitionStore.cs",
       "line": 6,
       "members": [
         {
@@ -17869,8 +17878,8 @@
       "name": "INotificationDeliveryWriter",
       "fqn": "Granit.Notifications.Abstractions.INotificationDeliveryWriter",
       "kind": "interface",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Abstractions/INotificationDeliveryWriter.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationDeliveryWriter.cs",
       "line": 13,
       "members": [
         {
@@ -17891,8 +17900,8 @@
       "name": "INotificationPreferenceReader",
       "fqn": "Granit.Notifications.Abstractions.INotificationPreferenceReader",
       "kind": "interface",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Abstractions/INotificationPreferenceReader.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationPreferenceReader.cs",
       "line": 8,
       "members": [
         {
@@ -17919,8 +17928,8 @@
       "name": "INotificationPreferenceWriter",
       "fqn": "Granit.Notifications.Abstractions.INotificationPreferenceWriter",
       "kind": "interface",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Abstractions/INotificationPreferenceWriter.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationPreferenceWriter.cs",
       "line": 8,
       "members": [
         {
@@ -17935,8 +17944,8 @@
       "name": "INotificationPublisher",
       "fqn": "Granit.Notifications.Abstractions.INotificationPublisher",
       "kind": "interface",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Abstractions/INotificationPublisher.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationPublisher.cs",
       "line": 8,
       "members": []
     },
@@ -17944,8 +17953,8 @@
       "name": "INotificationSubscriptionReader",
       "fqn": "Granit.Notifications.Abstractions.INotificationSubscriptionReader",
       "kind": "interface",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Abstractions/INotificationSubscriptionReader.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationSubscriptionReader.cs",
       "line": 8,
       "members": [
         {
@@ -17984,8 +17993,8 @@
       "name": "INotificationSubscriptionWriter",
       "fqn": "Granit.Notifications.Abstractions.INotificationSubscriptionWriter",
       "kind": "interface",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Abstractions/INotificationSubscriptionWriter.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationSubscriptionWriter.cs",
       "line": 6,
       "members": [
         {
@@ -18018,8 +18027,8 @@
       "name": "IRecipientResolver",
       "fqn": "Granit.Notifications.Abstractions.IRecipientResolver",
       "kind": "interface",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Abstractions/IRecipientResolver.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/IRecipientResolver.cs",
       "line": 7,
       "members": [
         {
@@ -18034,8 +18043,8 @@
       "name": "IUserNotificationReader",
       "fqn": "Granit.Notifications.Abstractions.IUserNotificationReader",
       "kind": "interface",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Abstractions/IUserNotificationReader.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/IUserNotificationReader.cs",
       "line": 9,
       "members": [
         {
@@ -18068,8 +18077,8 @@
       "name": "IUserNotificationWriter",
       "fqn": "Granit.Notifications.Abstractions.IUserNotificationWriter",
       "kind": "interface",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Abstractions/IUserNotificationWriter.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Abstractions/IUserNotificationWriter.cs",
       "line": 8,
       "members": [
         {
@@ -18195,8 +18204,8 @@
       "name": "NotificationDeliveryAttempt",
       "fqn": "Granit.Notifications.Domain.NotificationDeliveryAttempt",
       "kind": "class",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Domain/NotificationDeliveryAttempt.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Domain/NotificationDeliveryAttempt.cs",
       "line": 9,
       "members": [
         {
@@ -18223,8 +18232,8 @@
       "name": "NotificationPreference",
       "fqn": "Granit.Notifications.Domain.NotificationPreference",
       "kind": "class",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Domain/NotificationPreference.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Domain/NotificationPreference.cs",
       "line": 9,
       "members": [
         {
@@ -18257,8 +18266,8 @@
       "name": "NotificationSubscription",
       "fqn": "Granit.Notifications.Domain.NotificationSubscription",
       "kind": "class",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Domain/NotificationSubscription.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Domain/NotificationSubscription.cs",
       "line": 9,
       "members": [
         {
@@ -18279,8 +18288,8 @@
       "name": "UserNotification",
       "fqn": "Granit.Notifications.Domain.UserNotification",
       "kind": "class",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Domain/UserNotification.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Domain/UserNotification.cs",
       "line": 10,
       "members": [
         {
@@ -18319,8 +18328,8 @@
       "name": "UserNotificationState",
       "fqn": "Granit.Notifications.Domain.UserNotificationState",
       "kind": "enum",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Domain/UserNotificationState.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Domain/UserNotificationState.cs",
       "line": 4,
       "members": []
     },
@@ -18958,8 +18967,8 @@
       "name": "EntityReference",
       "fqn": "Granit.Notifications.EntityReference",
       "kind": "record",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/EntityReference.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/EntityReference.cs",
       "line": 6,
       "members": []
     },
@@ -18976,8 +18985,8 @@
       "name": "UserNotificationCreatedEvent",
       "fqn": "Granit.Notifications.Events.UserNotificationCreatedEvent",
       "kind": "record",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Events/UserNotificationCreatedEvent.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Events/UserNotificationCreatedEvent.cs",
       "line": 15,
       "members": []
     },
@@ -18985,8 +18994,8 @@
       "name": "UserNotificationReadEvent",
       "fqn": "Granit.Notifications.Events.UserNotificationReadEvent",
       "kind": "record",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/Events/UserNotificationReadEvent.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/Events/UserNotificationReadEvent.cs",
       "line": 12,
       "members": []
     },
@@ -19014,6 +19023,15 @@
           "returnType": "IHostApplicationBuilder"
         }
       ]
+    },
+    {
+      "name": "GranitNotificationsAbstractionsModule",
+      "fqn": "Granit.Notifications.GranitNotificationsAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/GranitNotificationsAbstractionsModule.cs",
+      "line": 14,
+      "members": []
     },
     {
       "name": "GranitNotificationsModule",
@@ -19440,8 +19458,8 @@
       "name": "NotificationChannels",
       "fqn": "Granit.Notifications.NotificationChannels",
       "kind": "class",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/NotificationChannels.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/NotificationChannels.cs",
       "line": 4,
       "members": []
     },
@@ -19449,8 +19467,8 @@
       "name": "NotificationDefinition",
       "fqn": "Granit.Notifications.NotificationDefinition",
       "kind": "class",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/NotificationDefinition.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/NotificationDefinition.cs",
       "line": 6,
       "members": [
         {
@@ -19477,8 +19495,8 @@
       "name": "NotificationDeliveryContext",
       "fqn": "Granit.Notifications.NotificationDeliveryContext",
       "kind": "record",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/NotificationDeliveryContext.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/NotificationDeliveryContext.cs",
       "line": 8,
       "members": []
     },
@@ -19486,8 +19504,8 @@
       "name": "NotificationSeverity",
       "fqn": "Granit.Notifications.NotificationSeverity",
       "kind": "enum",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/NotificationSeverity.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/NotificationSeverity.cs",
       "line": 4,
       "members": []
     },
@@ -19495,8 +19513,8 @@
       "name": "NotificationType",
       "fqn": "Granit.Notifications.NotificationType",
       "kind": "class",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/NotificationType.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/NotificationType.cs",
       "line": 8,
       "members": [
         {
@@ -19533,8 +19551,8 @@
       "name": "RecipientInfo",
       "fqn": "Granit.Notifications.RecipientInfo",
       "kind": "record",
-      "project": "Granit.Notifications",
-      "file": "src/Granit.Notifications/RecipientInfo.cs",
+      "project": "Granit.Notifications.Abstractions",
+      "file": "src/Granit.Notifications.Abstractions/RecipientInfo.cs",
       "line": 6,
       "members": []
     },

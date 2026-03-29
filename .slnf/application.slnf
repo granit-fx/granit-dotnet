@@ -32,7 +32,7 @@
       "src/Granit.Localization.EntityFrameworkCore/Granit.Localization.EntityFrameworkCore.csproj",
       "src/Granit.Localization.SourceGenerator/Granit.Localization.SourceGenerator.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
-      "src/Granit.Notifications/Granit.Notifications.csproj",
+      "src/Granit.Notifications.Abstractions/Granit.Notifications.Abstractions.csproj",
       "src/Granit.Persistence/Granit.Persistence.csproj",
       "src/Granit.QueryEngine.AI/Granit.QueryEngine.AI.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",

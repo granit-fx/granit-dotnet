@@ -8,6 +8,6 @@ namespace Granit.Privacy.Notifications;
 /// Routes deletion reminder and confirmation events to users via <c>Granit.Notifications</c>.
 /// </summary>
 [DependsOn(
-    typeof(GranitNotificationsModule),
+    typeof(GranitNotificationsAbstractionsModule),
     typeof(GranitPrivacyModule))]
 public sealed class GranitPrivacyNotificationsModule : GranitModule;

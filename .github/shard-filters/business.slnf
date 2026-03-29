@@ -22,7 +22,7 @@
       "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
       "src/Granit.Identity/Granit.Identity.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
-      "src/Granit.Notifications/Granit.Notifications.csproj",
+      "src/Granit.Notifications.Abstractions/Granit.Notifications.Abstractions.csproj",
       "src/Granit.Persistence/Granit.Persistence.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
       "src/Granit.QueryEngine.Endpoints/Granit.QueryEngine.Endpoints.csproj",

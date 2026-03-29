@@ -9,5 +9,5 @@ namespace Granit.Notifications.WhatsApp;
 /// Registration is done via <c>AddGranitNotificationsWhatsApp()</c>.
 /// Providers register keyed <c>IWhatsAppSender</c> implementations.
 /// </remarks>
-[DependsOn(typeof(GranitNotificationsModule))]
+[DependsOn(typeof(GranitNotificationsAbstractionsModule))]
 public sealed class GranitNotificationsWhatsAppModule : GranitModule;

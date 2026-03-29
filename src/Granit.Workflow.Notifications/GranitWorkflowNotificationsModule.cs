@@ -26,7 +26,7 @@ namespace Granit.Workflow.Notifications;
 [DependsOn(
     typeof(GranitAuthorizationModule),
     typeof(GranitIdentityModule),
-    typeof(GranitNotificationsModule),
+    typeof(GranitNotificationsAbstractionsModule),
     typeof(GranitWorkflowModule))]
 public sealed class GranitWorkflowNotificationsModule : GranitModule
 {

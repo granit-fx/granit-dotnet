@@ -17,5 +17,5 @@ namespace Granit.Notifications.AI;
 /// Requires <c>Granit.AI</c> core services and at least one AI provider to be registered.
 /// </para>
 /// </remarks>
-[DependsOn(typeof(GranitAIModule), typeof(GranitNotificationsModule))]
+[DependsOn(typeof(GranitAIModule), typeof(GranitNotificationsAbstractionsModule))]
 public sealed class GranitNotificationsAIModule : GranitModule;

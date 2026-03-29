@@ -26,6 +26,6 @@ public sealed class GranitNotificationsSmsModuleTests
             .Cast<DependsOnAttribute>()
             .ToArray();
 
-        attributes.ShouldContain(a => a.DependedTypes.Contains(typeof(GranitNotificationsModule)));
+        attributes.ShouldContain(a => a.DependedTypes.Contains(typeof(GranitNotificationsAbstractionsModule)));
     }
 }

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Notifications.Abstractions</PackageId>
+    <Description>Inter-module contracts for Granit.Notifications: INotificationPublisher, INotificationChannel, NotificationType, domain entities, and delivery context. Reference this package instead of Granit.Notifications when you only need notification contracts without the engine implementation.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Notifications.Abstractions.Tests" />
+    <InternalsVisibleTo Include="Granit.Notifications" />
+    <InternalsVisibleTo Include="Granit.Notifications.Tests" />
+    <InternalsVisibleTo Include="Granit.Notifications.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Notifications.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

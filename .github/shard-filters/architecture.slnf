@@ -110,6 +110,7 @@
       "src/Granit.Mcp/Granit.Mcp.csproj",
       "src/Granit.MultiTenancy/Granit.MultiTenancy.csproj",
       "src/Granit.Notifications.AI/Granit.Notifications.AI.csproj",
+      "src/Granit.Notifications.Abstractions/Granit.Notifications.Abstractions.csproj",
       "src/Granit.Notifications.Brevo/Granit.Notifications.Brevo.csproj",
       "src/Granit.Notifications.Email.AwsSes/Granit.Notifications.Email.AwsSes.csproj",
       "src/Granit.Notifications.Email.AzureCommunicationServices/Granit.Notifications.Email.AzureCommunicationServices.csproj",

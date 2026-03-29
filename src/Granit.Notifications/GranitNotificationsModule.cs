@@ -1,7 +1,7 @@
 using Granit.Guids;
 using Granit.Modularity;
 using Granit.Notifications.Extensions;
-using Granit.QueryEngine;
+
 using Granit.Timing;
 
 namespace Granit.Notifications;
@@ -17,7 +17,7 @@ namespace Granit.Notifications;
 /// </remarks>
 [DependsOn(
     typeof(GranitGuidsModule),
-    typeof(GranitQueryEngineAbstractionsModule),
+    typeof(GranitNotificationsAbstractionsModule),
     typeof(GranitTimingModule))]
 public sealed class GranitNotificationsModule : GranitModule
 {

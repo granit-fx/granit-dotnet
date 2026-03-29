@@ -9,5 +9,5 @@ namespace Granit.Notifications.Email;
 /// Registration is done via <c>AddGranitNotificationsEmail()</c>.
 /// Providers (SMTP, Brevo) register keyed <c>IEmailSender</c> implementations.
 /// </remarks>
-[DependsOn(typeof(GranitNotificationsModule))]
+[DependsOn(typeof(GranitNotificationsAbstractionsModule))]
 public sealed class GranitNotificationsEmailModule : GranitModule;

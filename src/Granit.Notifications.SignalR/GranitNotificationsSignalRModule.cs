@@ -9,5 +9,5 @@ namespace Granit.Notifications.SignalR;
 /// Registration is done via <c>AddGranitNotificationsSignalR()</c>.
 /// Registers <c>SignalRNotificationChannel</c> and the associated SignalR hub infrastructure.
 /// </remarks>
-[DependsOn(typeof(GranitNotificationsModule))]
+[DependsOn(typeof(GranitNotificationsAbstractionsModule))]
 public sealed class GranitNotificationsSignalRModule : GranitModule;

@@ -23,7 +23,7 @@
       "src/Granit.Http.Cookies/Granit.Http.Cookies.csproj",
       "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
-      "src/Granit.Notifications/Granit.Notifications.csproj",
+      "src/Granit.Notifications.Abstractions/Granit.Notifications.Abstractions.csproj",
       "src/Granit.Persistence/Granit.Persistence.csproj",
       "src/Granit.Privacy.AI/Granit.Privacy.AI.csproj",
       "src/Granit.Privacy.BackgroundJobs/Granit.Privacy.BackgroundJobs.csproj",

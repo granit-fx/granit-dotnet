@@ -19,7 +19,7 @@
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
     <ProjectReference Include="..\Granit.Identity\Granit.Identity.csproj" />
     <ProjectReference Include="..\Granit.Workflow\Granit.Workflow.csproj" />
-    <ProjectReference Include="..\Granit.Notifications\Granit.Notifications.csproj" />
+    <ProjectReference Include="..\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

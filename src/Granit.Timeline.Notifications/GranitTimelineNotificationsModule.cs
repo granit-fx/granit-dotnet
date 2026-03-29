@@ -10,7 +10,7 @@ namespace Granit.Timeline.Notifications;
 /// notification-backed implementations.
 /// </summary>
 [DependsOn(
-    typeof(GranitNotificationsModule),
+    typeof(GranitNotificationsAbstractionsModule),
     typeof(GranitTimelineModule))]
 public sealed class GranitTimelineNotificationsModule : GranitModule
 {

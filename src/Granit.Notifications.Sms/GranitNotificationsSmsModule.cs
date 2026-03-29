@@ -9,5 +9,5 @@ namespace Granit.Notifications.Sms;
 /// Registration is done via <c>AddGranitNotificationsSms()</c>.
 /// Providers register keyed <c>ISmsSender</c> implementations.
 /// </remarks>
-[DependsOn(typeof(GranitNotificationsModule))]
+[DependsOn(typeof(GranitNotificationsAbstractionsModule))]
 public sealed class GranitNotificationsSmsModule : GranitModule;
