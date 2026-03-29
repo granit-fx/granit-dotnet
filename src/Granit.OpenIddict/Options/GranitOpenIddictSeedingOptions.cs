@@ -29,6 +29,7 @@ public sealed class GranitOpenIddictSeedingOptions
 /// <param name="RedirectUris">Allowed redirect URIs.</param>
 /// <param name="PostLogoutRedirectUris">Allowed post-logout redirect URIs.</param>
 /// <param name="SigningKeyJwk">Optional public signing key as JWK JSON for <c>private_key_jwt</c> client authentication (RFC 7523). When set, the client authenticates with a signed JWT assertion instead of a shared secret.</param>
+/// <param name="ConsentType">The consent type for the application (<c>"implicit"</c>, <c>"explicit"</c>, or <c>"systematic"</c>). Default: <c>"implicit"</c> (auto-grant for first-party apps).</param>
 public sealed record OidcApplicationSeedDescriptor(
     string ClientId,
     string? ClientSecret,
@@ -36,7 +37,8 @@ public sealed record OidcApplicationSeedDescriptor(
     string[] Permissions,
     string[] RedirectUris,
     string[] PostLogoutRedirectUris,
-    string? SigningKeyJwk = null);
+    string? SigningKeyJwk = null,
+    string? ConsentType = null);
 
 /// <summary>
 /// Describes an OIDC scope to seed.

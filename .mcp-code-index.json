@@ -1121,6 +1121,7 @@
         "Granit.Caching",
         "Granit.Http.ApiDocumentation",
         "Granit.OpenIddict",
+        "Granit.OpenIddict.Server",
         "Granit.QueryEngine",
         "Granit.Validation"
       ],
@@ -21453,8 +21454,15 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/GranitOpenIddictEndpointsModule.cs",
-      "line": 29,
-      "members": []
+      "line": 32,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "OpenIddictEndpointsOptions",
@@ -21486,6 +21494,28 @@
           "name": "AdminTagName",
           "kind": "property",
           "signature": "string AdminTagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "OpenIddictServerEndpointsOptions",
+      "fqn": "Granit.OpenIddict.Endpoints.Options.OpenIddictServerEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Options/OpenIddictServerEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "LoginPath",
+          "kind": "property",
+          "signature": "string LoginPath",
+          "returnType": "string"
+        },
+        {
+          "name": "PostLogoutRedirectPath",
+          "kind": "property",
+          "signature": "string PostLogoutRedirectPath",
           "returnType": "string"
         }
       ]
@@ -21805,7 +21835,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 32,
+      "line": 33,
       "members": []
     },
     {
@@ -21814,7 +21844,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 47,
+      "line": 49,
       "members": []
     },
     {

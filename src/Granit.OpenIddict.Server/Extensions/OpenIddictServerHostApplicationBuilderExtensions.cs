@@ -125,7 +125,7 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
             }
 
             // ──── ASP.NET Core integration ────
-            options
+            OpenIddictServerAspNetCoreBuilder aspNetCore = options
                 .UseAspNetCore()
                 .EnableAuthorizationEndpointPassthrough()
                 .EnableTokenEndpointPassthrough()
@@ -133,6 +133,11 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
                 .EnableEndSessionEndpointPassthrough()
                 .EnableEndUserVerificationEndpointPassthrough()
                 .EnableStatusCodePagesIntegration();
+
+            if (builder.Environment.IsDevelopment())
+            {
+                aspNetCore.DisableTransportSecurityRequirement();
+            }
 
             // ──── Custom grant types ────
             options.AllowCustomFlow("urn:granit:grant_type:two_factor");

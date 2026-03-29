@@ -47,4 +47,40 @@ public static class OpenIddictEndpointRouteBuilderExtensions
 
         return accountGroup;
     }
+
+    /// <summary>
+    /// Maps the OIDC server protocol endpoints (<c>/connect/authorize</c>,
+    /// <c>/connect/token</c>, <c>/connect/userinfo</c>, <c>/connect/logout</c>,
+    /// <c>/connect/verify</c>).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// These are OpenIddict passthrough handlers — the OpenIddict middleware validates
+    /// protocol parameters (client authentication, scopes, PKCE, redirect URIs) and
+    /// passes through to these handlers for business logic (user authentication,
+    /// consent, token issuance).
+    /// </para>
+    /// <para>
+    /// Routes are mapped at the root path (<c>/connect/*</c>) without API versioning
+    /// or group prefix. They are excluded from OpenAPI documentation.
+    /// </para>
+    /// </remarks>
+    /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="configure">Optional delegate to customize <see cref="OpenIddictServerEndpointsOptions"/>.</param>
+    /// <returns>The endpoint route builder for chaining.</returns>
+    public static IEndpointRouteBuilder MapOpenIddictServerEndpoints(
+        this IEndpointRouteBuilder endpoints,
+        Action<OpenIddictServerEndpointsOptions>? configure = null)
+    {
+        OpenIddictServerEndpointsOptions options = new();
+        configure?.Invoke(options);
+
+        endpoints.MapConnectAuthorizationEndpoints(options);
+        endpoints.MapConnectTokenEndpoints();
+        endpoints.MapConnectUserInfoEndpoints();
+        endpoints.MapConnectLogoutEndpoints(options);
+        endpoints.MapConnectVerifyEndpoints();
+
+        return endpoints;
+    }
 }

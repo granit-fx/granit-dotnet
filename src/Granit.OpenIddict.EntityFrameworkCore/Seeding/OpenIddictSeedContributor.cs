@@ -194,6 +194,9 @@ internal sealed partial class OpenIddictSeedContributor(
         appDescriptor.JsonWebKeySet = !string.IsNullOrEmpty(source.SigningKeyJwk)
             ? BuildJsonWebKeySet(source.SigningKeyJwk)
             : null;
+
+        // Consent type (default: implicit — auto-grant for first-party apps)
+        appDescriptor.ConsentType = source.ConsentType ?? OpenIddictConstants.ConsentTypes.Implicit;
     }
 
     private async Task SeedScopeAsync(
