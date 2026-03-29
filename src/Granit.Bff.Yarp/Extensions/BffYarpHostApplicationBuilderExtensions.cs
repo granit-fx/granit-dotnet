@@ -1,6 +1,7 @@
 using Granit.Bff.Options;
 using Granit.Bff.Yarp.Internal;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Yarp.ReverseProxy.Transforms;
@@ -30,18 +31,36 @@ public static class BffYarpHostApplicationBuilderExtensions
             .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
             .AddTransforms(context =>
             {
+                // Resolve transforms from the request scope, not the root provider.
+                // YARP calls AddTransforms during InitialLoadAsync (startup, no scope).
+                // ScopedRequestTransform defers resolution to HttpContext.RequestServices.
+
                 // CSRF validation runs first (blocks 403 before token injection)
                 context.RequestTransforms.Add(
-                    context.Services.GetRequiredService<BffCsrfValidationTransform>());
+                    new ScopedRequestTransform<BffCsrfValidationTransform>());
 
                 // Token injection + silent refresh
                 context.RequestTransforms.Add(
-                    context.Services.GetRequiredService<BffTokenInjectionTransform>());
+                    new ScopedRequestTransform<BffTokenInjectionTransform>());
             });
 
         builder.Services.AddScoped<BffTokenInjectionTransform>();
         builder.Services.AddScoped<BffCsrfValidationTransform>();
 
         return builder;
+    }
+
+    /// <summary>
+    /// Delegating transform that resolves a scoped <typeparamref name="T"/> from
+    /// <see cref="HttpContext.RequestServices"/> at request time, avoiding the
+    /// "Cannot resolve scoped service from root provider" error during YARP startup.
+    /// </summary>
+    private sealed class ScopedRequestTransform<T> : RequestTransform where T : RequestTransform
+    {
+        public override ValueTask ApplyAsync(RequestTransformContext context)
+        {
+            T transform = context.HttpContext.RequestServices.GetRequiredService<T>();
+            return transform.ApplyAsync(context);
+        }
     }
 }

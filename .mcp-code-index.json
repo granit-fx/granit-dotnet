@@ -1250,6 +1250,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.QueryEngine.Abstractions",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.QueryEngine.Endpoints",
       "deps": [
         "Granit.Http.ApiDocumentation",
@@ -6544,7 +6551,7 @@
       "kind": "class",
       "project": "Granit.Bff.Yarp",
       "file": "src/Granit.Bff.Yarp/Extensions/BffYarpHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitBffYarp",
@@ -22976,7 +22983,7 @@
       "kind": "class",
       "project": "Granit.Persistence.Postgres",
       "file": "src/Granit.Persistence.Postgres/Extensions/PersistencePostgresHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitPostgres",
@@ -24478,6 +24485,15 @@
       "project": "Granit.QueryEngine",
       "file": "src/Granit.QueryEngine/Filtering/QuickFilterDescriptor.cs",
       "line": 11,
+      "members": []
+    },
+    {
+      "name": "GranitQueryEngineAbstractionsModule",
+      "fqn": "Granit.QueryEngine.GranitQueryEngineAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/GranitQueryEngineAbstractionsModule.cs",
+      "line": 13,
       "members": []
     },
     {

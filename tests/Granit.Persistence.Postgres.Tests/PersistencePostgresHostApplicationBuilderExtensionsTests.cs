@@ -1,3 +1,4 @@
+using System.Data.Common;
 using Granit.Persistence.Hosting;
 using Granit.Persistence.Migrations;
 using Granit.Persistence.MultiTenancy;
@@ -52,6 +53,18 @@ public sealed class PersistencePostgresHostApplicationBuilderExtensionsTests
         IHostApplicationBuilder result = builder.AddGranitPostgres();
 
         result.ShouldBeSameAs(builder);
+    }
+
+    [Fact]
+    public void AddGranitPostgres_RegistersNpgsqlProviderFactory()
+    {
+        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+
+        builder.AddGranitPostgres();
+
+        DbProviderFactories.TryGetFactory("Npgsql", out DbProviderFactory? factory)
+            .ShouldBeTrue("NpgsqlFactory must be registered so NpgsqlAdvisoryMigrationLock can resolve it");
+        factory.ShouldNotBeNull();
     }
 
     [Fact]
