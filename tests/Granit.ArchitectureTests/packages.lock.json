@@ -93,8 +93,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.3.23",
-        "contentHash": "H5c8YSn8U0zSBAk9mRP/w1shbowfmkdW7nWidHt/4GNSq2VLtNptDTTKkqmTPYvUxC9i3hMHnlQxe1mCXHyXwA=="
+        "resolved": "4.0.3.24",
+        "contentHash": "Bq3mONgVTGheBWfqiVxPDgy/qpcEbsHuH9ColyGFgIiW4Smr/zizfPWI5OjUmxFJ2wlsX/Ooa5654C9bZh2wvg=="
       },
       "Azure.Core": {
         "type": "Transitive",
@@ -2433,6 +2433,7 @@
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.OpenIddict": "[0.1.0-dev, )",
+          "Granit.OpenIddict.Server": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
@@ -2964,55 +2965,55 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.6.4",
-        "contentHash": "xERfZcf91tApUKMECoGb8FKVibxW8h/18TdQp6KQU0JEQ7MsICEyzs/NsGBHGfLOILlJnZuQOfN6TQAPxCSfGA==",
+        "resolved": "4.0.6.5",
+        "contentHash": "lB5OUn7w4nu53TRah+r51L+vtSiFpRxnluII0B52Wn/fTqlJY1UGebFZtkOPTDdKYP9Kk2/cAoVRnVPjk0e8UQ==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.23, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.24, 5.0.0)"
         }
       },
       "AWSSDK.KeyManagementService": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.9.5",
-        "contentHash": "eph5TNRjldo+f0/CpGiGDgJI5JTlZu0g+qRqpdxTAjRtYBwfyVjFdtsdzKcdanua6Bj8wqqq5a01zKWlWLcEjQ==",
+        "resolved": "4.0.9.6",
+        "contentHash": "G1FOTRbIY8BZF7JsnhdYfCu8oK7RvlNFaJdr8kYt/piQHMSX60XFspZF+w2wN1NU/vB0rsEiu6Xfcb2eEdueZw==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.23, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.24, 5.0.0)"
         }
       },
       "AWSSDK.S3": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.19.3",
-        "contentHash": "aa/ChYJBQVU8xQ4wmAQdFxS0C3jQJUztZgaCb++fxsmSsZkimg8wHfzaWyAfxMIIqN4DXX2/pSkkI9gXC+7Hvw==",
+        "resolved": "4.0.19.4",
+        "contentHash": "kzyjlrmwJk6vTtNCTSyMi3JLiwXlY4pXyVcWo998/a++nAk50DGxIvk6ZXr1fAgdm8AWwdZI4glBTGhbzhfY7Q==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.23, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.24, 5.0.0)"
         }
       },
       "AWSSDK.SecretsManager": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.4.11",
-        "contentHash": "VP/aew8LGB4mk5CU9nDBGy4LoGeIy2ge/kgPIdNyCE+PT7Ov+15/HdTuMix3jHVAw7yAfJwbZtxeVom1gcd8AQ==",
+        "resolved": "4.0.4.12",
+        "contentHash": "Bp+7XSvN3kMelRfW3S4n51NjHusQsp1byoXu6Cow55zSA/CxRuMMek19P8V1bCOToygSjtUUH8ejHw3UxCPaVg==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.23, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.24, 5.0.0)"
         }
       },
       "AWSSDK.SimpleEmailV2": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.12.4",
-        "contentHash": "62pJUxvEaNK7OWTEAGRO9vO1akB/yKvZAxy/TIh/WiFfvoM9RmgR/Mu2pRWwNWnT03h+iyOwPmI75rvdzWOIvQ==",
+        "resolved": "4.0.12.5",
+        "contentHash": "pC7JyOEcYI2YdVi+bGVss/ic74m7GKCL83oTGQKqkXIgzlm8l1slwxkDBQ35nHRNlHhY/9pdCXAjvt0zjmvWnw==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.23, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.24, 5.0.0)"
         }
       },
       "AWSSDK.SimpleNotificationService": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.2.21",
-        "contentHash": "5mSY3oQ9A933OvwxjgE9RMFhopI9WJBjDUvzNP1vUbQ1Y2nYOunfIwnsnske4UyU2zRdGKDmpPQ8I1JG8epGAA==",
+        "resolved": "4.0.2.22",
+        "contentHash": "1sfTjDluaplIcQ4fXV7a+3UA8eNrORg0OaxtIMiu9Hnbfx3CCHDg5JRL3zLglCPxLw13WtA1HWRN/WQJMEQ9QA==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.23, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.24, 5.0.0)"
         }
       },
       "Azure.AI.OpenAI": {
@@ -3581,14 +3582,14 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.15",
-        "contentHash": "ufSBk0vdDnrhn+YLGElUdegUkM+hb7xUoySH+oaZrNHi2fAm+oeSCr60Lqmm4OeLBhPKd2htr/DANOvjuNT6rg=="
+        "resolved": "2.13.16",
+        "contentHash": "zOWRQLnD7RbcbqnEeP6oUQNy+JeyXDcgmyz3ui7O5QntW7CdbItSC+KOZYRgzaFqh9hPNgSlp1uuTn96Y+gfww=="
       },
       "Scriban": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
-        "resolved": "7.0.5",
-        "contentHash": "GmK0nHYvmUV7ue93eaEWwVU4NQLcW1MlBckAT6BTUIIJm9UA92pVWdcJH5BGqzgWkrA+xVt065gjP2vpQ47h6g=="
+        "resolved": "7.0.6",
+        "contentHash": "bOtHyk30sjl0y3+KYImIJv0ETZYLuFFJvlBF2ks2YLNtydhJqxRTGe4WaBDvg/3VRhhI6uf+qVfixuFROsOi+w=="
       },
       "Sep": {
         "type": "CentralTransitive",
