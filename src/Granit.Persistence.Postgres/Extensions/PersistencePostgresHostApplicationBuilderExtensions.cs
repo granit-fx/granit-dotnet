@@ -1,3 +1,4 @@
+using System.Data.Common;
 using Granit.Persistence.Hosting;
 using Granit.Persistence.Migrations;
 using Granit.Persistence.MultiTenancy;
@@ -5,6 +6,7 @@ using Granit.Persistence.Postgres.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Npgsql;
 
 namespace Granit.Persistence.Postgres.Extensions;
 
@@ -31,6 +33,10 @@ public static class PersistencePostgresHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddGranitPostgres(
         this IHostApplicationBuilder builder)
     {
+        // Register the Npgsql provider factory so NpgsqlAdvisoryMigrationLock can
+        // resolve it via DbProviderFactories.TryGetFactory("Npgsql", ...).
+        DbProviderFactories.RegisterFactory("Npgsql", NpgsqlFactory.Instance);
+
         builder.Services.TryAddSingleton<IGranitMigrationLock, NpgsqlAdvisoryMigrationLock>();
         builder.Services.TryAddSingleton<ITenantSchemaActivator, NpgsqlTenantSchemaActivator>();
         builder.Services.TryAddSingleton<ITenantDbIsolator, NpgsqlTenantDbIsolator>();

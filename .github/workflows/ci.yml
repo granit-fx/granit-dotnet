@@ -427,9 +427,9 @@ jobs:
   # SBOM — CycloneDX JSON, uploaded as artifact and attached to GitHub releases
   # ---------------------------------------------------------------------------
   sbom:
-    needs: pack
+    needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     permissions:
       contents: write  # read for checkout, write for release asset upload
     steps:
