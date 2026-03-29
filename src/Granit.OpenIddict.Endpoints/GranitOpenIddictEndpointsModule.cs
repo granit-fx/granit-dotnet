@@ -27,7 +27,7 @@ namespace Granit.OpenIddict.Endpoints;
     typeof(GranitCachingModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitOpenIddictModule),
-    typeof(GranitQueryEngineModule),
+    typeof(GranitQueryEngineAbstractionsModule),
     typeof(GranitValidationModule))]
 public sealed class GranitOpenIddictEndpointsModule : GranitModule
 {

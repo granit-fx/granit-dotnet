@@ -80,7 +80,7 @@
       "name": "Granit.Auditing",
       "deps": [
         "Granit",
-        "Granit.QueryEngine"
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -121,7 +121,7 @@
         "Granit.Timing",
         "Granit.Guids",
         "Granit.Http.ExceptionHandling",
-        "Granit.QueryEngine",
+        "Granit.QueryEngine.Abstractions",
         "Granit"
       ],
       "framework": "net10.0"
@@ -249,7 +249,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.BackgroundJobs",
-        "Granit.QueryEngine",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -698,7 +698,7 @@
       "name": "Granit.Identity",
       "deps": [
         "Granit",
-        "Granit.QueryEngine"
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -869,7 +869,7 @@
       "name": "Granit.Notifications",
       "deps": [
         "Granit.Guids",
-        "Granit.QueryEngine",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1100,7 +1100,7 @@
       "name": "Granit.OpenIddict",
       "deps": [
         "Granit.Identity.Local",
-        "Granit.QueryEngine"
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1122,7 +1122,7 @@
         "Granit.Http.ApiDocumentation",
         "Granit.OpenIddict",
         "Granit.OpenIddict.Server",
-        "Granit.QueryEngine",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -1236,7 +1236,8 @@
     {
       "name": "Granit.QueryEngine",
       "deps": [
-        "Granit"
+        "Granit",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1244,7 +1245,7 @@
       "name": "Granit.QueryEngine.AI",
       "deps": [
         "Granit.AI",
-        "Granit.QueryEngine",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1289,7 +1290,7 @@
       "name": "Granit.ReferenceData",
       "deps": [
         "Granit",
-        "Granit.QueryEngine"
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1309,6 +1310,7 @@
       "deps": [
         "Granit.Caching",
         "Granit.Persistence",
+        "Granit.QueryEngine",
         "Granit.ReferenceData"
       ],
       "framework": "net10.0"
@@ -1413,7 +1415,7 @@
       "deps": [
         "Granit",
         "Granit.Guids",
-        "Granit.QueryEngine",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1609,7 +1611,7 @@
     {
       "name": "Granit.Workflow",
       "deps": [
-        "Granit.QueryEngine",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -24177,8 +24179,8 @@
       "name": "DatePeriod",
       "fqn": "Granit.QueryEngine.DatePeriod",
       "kind": "enum",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/DatePeriod.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/DatePeriod.cs",
       "line": 6,
       "members": []
     },
@@ -24362,8 +24364,8 @@
       "name": "AggregateDescriptor",
       "fqn": "Granit.QueryEngine.Filtering.AggregateDescriptor",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Filtering/AggregateDescriptor.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/AggregateDescriptor.cs",
       "line": 6,
       "members": []
     },
@@ -24371,8 +24373,8 @@
       "name": "AggregateFunction",
       "fqn": "Granit.QueryEngine.Filtering.AggregateFunction",
       "kind": "enum",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Filtering/AggregateFunction.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/AggregateFunction.cs",
       "line": 6,
       "members": []
     },
@@ -24389,8 +24391,8 @@
       "name": "FilterCriteria",
       "fqn": "Granit.QueryEngine.Filtering.FilterCriteria",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Filtering/FilterCriteria.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/FilterCriteria.cs",
       "line": 9,
       "members": []
     },
@@ -24423,8 +24425,8 @@
       "name": "FilterOperator",
       "fqn": "Granit.QueryEngine.Filtering.FilterOperator",
       "kind": "enum",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Filtering/FilterOperator.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/FilterOperator.cs",
       "line": 6,
       "members": []
     },
@@ -24457,8 +24459,8 @@
       "name": "IQueryFilter",
       "fqn": "Granit.QueryEngine.Filtering.IQueryFilter",
       "kind": "interface",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Filtering/IQueryFilter.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/IQueryFilter.cs",
       "line": 10,
       "members": [
         {
@@ -24502,7 +24504,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine",
       "file": "src/Granit.QueryEngine/GranitQueryEngineModule.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -24516,8 +24518,8 @@
       "name": "GroupEntry",
       "fqn": "Granit.QueryEngine.GroupEntry",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/GroupedResult.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/GroupedResult.cs",
       "line": 17,
       "members": []
     },
@@ -24525,8 +24527,8 @@
       "name": "GroupedResult",
       "fqn": "Granit.QueryEngine.GroupedResult",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/GroupedResult.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/GroupedResult.cs",
       "line": 9,
       "members": []
     },
@@ -24534,8 +24536,8 @@
       "name": "IQueryDefinitionDescriptor",
       "fqn": "Granit.QueryEngine.IQueryDefinitionDescriptor",
       "kind": "interface",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/IQueryDefinitionDescriptor.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/IQueryDefinitionDescriptor.cs",
       "line": 7,
       "members": []
     },
@@ -24543,8 +24545,8 @@
       "name": "IQueryEngine",
       "fqn": "Granit.QueryEngine.IQueryEngine",
       "kind": "interface",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/IQueryEngine.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/IQueryEngine.cs",
       "line": 12,
       "members": [
         {
@@ -24577,8 +24579,8 @@
       "name": "ColumnDefinition",
       "fqn": "Granit.QueryEngine.Meta.ColumnDefinition",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Meta/ColumnDefinition.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Meta/ColumnDefinition.cs",
       "line": 14,
       "members": []
     },
@@ -24586,8 +24588,8 @@
       "name": "DateFilterMeta",
       "fqn": "Granit.QueryEngine.Meta.DateFilterMeta",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Meta/DateFilterMeta.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Meta/DateFilterMeta.cs",
       "line": 9,
       "members": []
     },
@@ -24595,8 +24597,8 @@
       "name": "FilterGroupMeta",
       "fqn": "Granit.QueryEngine.Meta.FilterGroupMeta",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Meta/FilterGroupMeta.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Meta/FilterGroupMeta.cs",
       "line": 9,
       "members": []
     },
@@ -24604,8 +24606,8 @@
       "name": "FilterableField",
       "fqn": "Granit.QueryEngine.Meta.FilterableField",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Meta/FilterableField.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Meta/FilterableField.cs",
       "line": 11,
       "members": []
     },
@@ -24613,8 +24615,8 @@
       "name": "GroupByField",
       "fqn": "Granit.QueryEngine.Meta.GroupByField",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Meta/GroupByField.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Meta/GroupByField.cs",
       "line": 8,
       "members": []
     },
@@ -24622,8 +24624,8 @@
       "name": "PaginationMeta",
       "fqn": "Granit.QueryEngine.Meta.PaginationMeta",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Meta/PaginationMeta.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Meta/PaginationMeta.cs",
       "line": 10,
       "members": []
     },
@@ -24631,8 +24633,8 @@
       "name": "PresetMeta",
       "fqn": "Granit.QueryEngine.Meta.PresetMeta",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Meta/FilterGroupMeta.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Meta/FilterGroupMeta.cs",
       "line": 20,
       "members": []
     },
@@ -24640,8 +24642,8 @@
       "name": "QueryMetadata",
       "fqn": "Granit.QueryEngine.Meta.QueryMetadata",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Meta/QueryMetadata.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Meta/QueryMetadata.cs",
       "line": 7,
       "members": []
     },
@@ -24649,8 +24651,8 @@
       "name": "QuickFilterMeta",
       "fqn": "Granit.QueryEngine.Meta.QuickFilterMeta",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Meta/QuickFilterMeta.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Meta/QuickFilterMeta.cs",
       "line": 10,
       "members": []
     },
@@ -24658,8 +24660,8 @@
       "name": "SortableField",
       "fqn": "Granit.QueryEngine.Meta.SortableField",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Meta/SortableField.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Meta/SortableField.cs",
       "line": 7,
       "members": []
     },
@@ -24707,8 +24709,8 @@
       "name": "PagedResult",
       "fqn": "Granit.QueryEngine.PagedResult",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/PagedResult.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/PagedResult.cs",
       "line": 22,
       "members": []
     },
@@ -24801,8 +24803,8 @@
       "name": "QueryEngineDefaults",
       "fqn": "Granit.QueryEngine.QueryEngineDefaults",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/QueryEngineDefaults.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/QueryEngineDefaults.cs",
       "line": 6,
       "members": []
     },
@@ -24810,8 +24812,8 @@
       "name": "QueryRequest",
       "fqn": "Granit.QueryEngine.QueryRequest",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/QueryRequest.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/QueryRequest.cs",
       "line": 16,
       "members": []
     },
@@ -24819,8 +24821,8 @@
       "name": "CreateSavedViewRequest",
       "fqn": "Granit.QueryEngine.SavedViews.CreateSavedViewRequest",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/SavedViews/CreateSavedViewRequest.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/SavedViews/CreateSavedViewRequest.cs",
       "line": 6,
       "members": []
     },
@@ -24828,8 +24830,8 @@
       "name": "SavedView",
       "fqn": "Granit.QueryEngine.SavedViews.Domain.SavedView",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/SavedViews/Domain/SavedView.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/SavedViews/Domain/SavedView.cs",
       "line": 10,
       "members": []
     },
@@ -24837,8 +24839,8 @@
       "name": "ISavedViewStoreReader",
       "fqn": "Granit.QueryEngine.SavedViews.ISavedViewStoreReader",
       "kind": "interface",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/SavedViews/ISavedViewStoreReader.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/SavedViews/ISavedViewStoreReader.cs",
       "line": 10,
       "members": [
         {
@@ -24865,8 +24867,8 @@
       "name": "ISavedViewStoreWriter",
       "fqn": "Granit.QueryEngine.SavedViews.ISavedViewStoreWriter",
       "kind": "interface",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/SavedViews/ISavedViewStoreWriter.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/SavedViews/ISavedViewStoreWriter.cs",
       "line": 10,
       "members": [
         {
@@ -24899,8 +24901,8 @@
       "name": "SavedViewSummary",
       "fqn": "Granit.QueryEngine.SavedViews.SavedViewSummary",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/SavedViews/SavedViewSummary.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/SavedViews/SavedViewSummary.cs",
       "line": 10,
       "members": []
     },
@@ -24908,8 +24910,8 @@
       "name": "UpdateSavedViewRequest",
       "fqn": "Granit.QueryEngine.SavedViews.UpdateSavedViewRequest",
       "kind": "record",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/SavedViews/UpdateSavedViewRequest.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/SavedViews/UpdateSavedViewRequest.cs",
       "line": 6,
       "members": []
     },
@@ -24917,8 +24919,8 @@
       "name": "IGlobalSearchStrategy",
       "fqn": "Granit.QueryEngine.Search.IGlobalSearchStrategy",
       "kind": "interface",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Search/IGlobalSearchStrategy.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Search/IGlobalSearchStrategy.cs",
       "line": 10,
       "members": [
         {

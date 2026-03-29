@@ -17,7 +17,7 @@ namespace Granit.Notifications;
 /// </remarks>
 [DependsOn(
     typeof(GranitGuidsModule),
-    typeof(GranitQueryEngineModule),
+    typeof(GranitQueryEngineAbstractionsModule),
     typeof(GranitTimingModule))]
 public sealed class GranitNotificationsModule : GranitModule
 {

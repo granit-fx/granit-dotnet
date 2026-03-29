@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
     <ProjectReference Include="..\Granit.Persistence\Granit.Persistence.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine\Granit.QueryEngine.csproj" />
     <ProjectReference Include="..\Granit.ReferenceData\Granit.ReferenceData.csproj" />
   </ItemGroup>
 

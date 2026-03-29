@@ -27,7 +27,7 @@ Every Granit package that registers services exposes a **module class** — a se
 ```csharp title="GranitNotificationsModule.cs"
 [DependsOn(
     typeof(GranitGuidsModule),
-    typeof(GranitQueryEngineModule),
+    typeof(GranitQueryEngineAbstractionsModule),
     typeof(GranitTimingModule))]
 public sealed class GranitNotificationsModule : GranitModule
 {

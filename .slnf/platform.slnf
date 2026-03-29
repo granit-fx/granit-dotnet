@@ -46,7 +46,7 @@
       "src/Granit.Oidc.TokenManagement/Granit.Oidc.TokenManagement.csproj",
       "src/Granit.Oidc/Granit.Oidc.csproj",
       "src/Granit.Persistence/Granit.Persistence.csproj",
-      "src/Granit.QueryEngine/Granit.QueryEngine.csproj",
+      "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
       "src/Granit.RateLimiting/Granit.RateLimiting.csproj",
       "src/Granit.Templating.EntityFrameworkCore/Granit.Templating.EntityFrameworkCore.csproj",
       "src/Granit.Templating.Scriban/Granit.Templating.Scriban.csproj",

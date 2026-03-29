@@ -101,7 +101,7 @@
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
         }
       },
-      "granit.queryengine": {
+      "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
@@ -118,7 +118,7 @@
       "granit.workflow": {
         "type": "Project",
         "dependencies": {
-          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
         }

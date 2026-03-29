@@ -22,7 +22,7 @@ public sealed class GranitWorkflowModuleTests
     }
 
     [Fact]
-    public void Module_ShouldDependOnGranitQueryEngineModule()
+    public void Module_ShouldDependOnGranitQueryEngineAbstractionsModule()
     {
         // Arrange
         var attr = (DependsOnAttribute?)Attribute.GetCustomAttribute(
@@ -30,7 +30,7 @@ public sealed class GranitWorkflowModuleTests
 
         // Assert
         attr.ShouldNotBeNull();
-        attr.DependedTypes.ShouldContain(typeof(GranitQueryEngineModule));
+        attr.DependedTypes.ShouldContain(typeof(GranitQueryEngineAbstractionsModule));
     }
 
     [Fact]

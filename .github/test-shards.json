@@ -61,6 +61,7 @@
         "tests/Granit.DocumentGeneration.Excel.Tests",
         "tests/Granit.DocumentGeneration.Pdf.Tests",
         "tests/Granit.DocumentGeneration.Tests",
+        "tests/Granit.QueryEngine.Abstractions.Tests",
         "tests/Granit.QueryEngine.Endpoints.Tests",
         "tests/Granit.QueryEngine.Endpoints.Tests.Integration",
         "tests/Granit.QueryEngine.EntityFrameworkCore.Tests",

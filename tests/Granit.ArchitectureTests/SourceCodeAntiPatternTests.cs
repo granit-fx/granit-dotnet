@@ -137,6 +137,14 @@ public sealed partial class SourceCodeAntiPatternTests
         // parts[0] = project name, parts[1..^1] = subfolders, parts[^1] = filename
         string projectName = parts[0];
 
+        // *.Abstractions packages use the parent namespace following the
+        // Microsoft.Extensions.*.Abstractions convention (e.g.
+        // Granit.QueryEngine.Abstractions → namespace Granit.QueryEngine).
+        if (projectName.EndsWith(".Abstractions", StringComparison.Ordinal))
+        {
+            projectName = projectName[..^".Abstractions".Length];
+        }
+
         if (parts.Length <= 2)
         {
             // File at module root: namespace = project name

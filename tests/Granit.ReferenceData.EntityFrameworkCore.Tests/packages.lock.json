@@ -290,6 +290,13 @@
       "granit.queryengine": {
         "type": "Project",
         "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.queryengine.abstractions": {
+        "type": "Project",
+        "dependencies": {
           "Granit": "[0.1.0-dev, )"
         }
       },
@@ -297,7 +304,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )"
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.referencedata.entityframeworkcore": {
@@ -305,6 +312,7 @@
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",
+          "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.ReferenceData": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }

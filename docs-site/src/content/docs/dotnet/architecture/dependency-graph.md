@@ -37,41 +37,51 @@ flowchart TD
     CORE["Core (1)"]:::core
 
     subgraph Foundation
-        UTILS["Utilities (14)"]:::core
-        SEC["Security (18)"]:::security
+        UTILS["Utilities (16)"]:::core
+        EVT["Events (2)"]:::core
+        SEC["Security (22)"]:::security
         CACHE["Caching (2)"]:::dataLyr
-        IDENT["Identity (7)"]:::security
+        IDENT["Identity (9)"]:::security
     end
 
     subgraph Data
-        PERS["Persistence (3)"]:::dataLyr
-        STORAGE["Storage (10)"]:::dataLyr
+        PERS["Persistence (6)"]:::dataLyr
+        STORAGE["Storage (14)"]:::dataLyr
     end
 
     subgraph Infrastructure
         WOL["Wolverine (3)"]:::infra
-        LOC["Localization (4)"]:::infra
-        CONFIG["Configuration (8)"]:::infra
+        LOC["Localization (5)"]:::infra
+        CONFIG["Configuration (9)"]:::infra
         JOBS["Background Jobs (4)"]:::infra
         NOTIF["Notifications (28)"]:::infra
     end
 
     subgraph API["API & Http"]
-        WEB["Web, API, Webhooks (9)"]:::api
+        WEB["Web, API, Webhooks (14)"]:::api
+        BFF["BFF (5)"]:::api
+    end
+
+    subgraph AuthServer["Auth Server"]
+        OIDC["OIDC (2)"]:::security
+        OPENID["OpenIddict (5)"]:::security
     end
 
     subgraph Business
         TMPL["Templating (8)"]:::business
-        QRY["QueryEngine (3)"]:::business
-        DX["DataExchange (6)"]:::business
-        WF["Workflow (4)"]:::business
-        TL["Timeline (4)"]:::business
+        QRY["QueryEngine (4)"]:::business
+        DX["DataExchange (7)"]:::business
+        WF["Workflow (5)"]:::business
+        TL["Timeline (5)"]:::business
+        AUDIT["Auditing (4)"]:::business
+        MCP["MCP (3)"]:::business
     end
 
     AI["AI (21)"]:::ai
     ANLZ["Analyzers (2)"]:::core
 
     CORE --> UTILS
+    CORE --> EVT
     CORE --> SEC
     CORE --> CACHE
     CORE --> LOC
@@ -84,8 +94,8 @@ flowchart TD
     SEC --> WOL
     PERS --> WOL
     PERS --> LOC
-    PERS --> QRY
-    PERS --> WF
+    CORE --> QRY
+    QRY --> WF
     CORE --> IDENT
     PERS --> IDENT
 
@@ -94,13 +104,18 @@ flowchart TD
     CACHE --> CONFIG
     LOC --> CONFIG
     PERS --> CONFIG
+    CACHE --> BFF
+    OIDC --> BFF
+    IDENT --> OPENID
+    OIDC --> OPENID
 
     UTILS --> TMPL
     QRY --> NOTIF
+    EVT --> DX
     WOL --> DX
     WOL --> JOBS
-    SEC --> TL
-    SEC --> JOBS
+    QRY --> AUDIT
+    QRY --> TL
     QRY --> DX
     WF --> TMPL
     NOTIF --> WF
@@ -110,26 +125,38 @@ flowchart TD
     CORE --> AI
     PERS --> AI
     SEC --> AI
+    CORE --> MCP
 ```
 
 ### Domain composition
 
 | Domain | Packages |
 |--------|----------|
-| Utilities | Timing, Guids, Diagnostics, Validation, Validation.Europe, Validation.NorthAmerica, Validation.UnitedKingdom, Http.ExceptionHandling, Observability, MultiTenancy, Privacy, Cors, Bulkhead, RateLimiting |
-| Identity | Identity, Identity.Keycloak, Identity.EntraId, Identity.Cognito, Identity.GoogleCloud, Identity.EntityFrameworkCore, Identity.Endpoints |
-| Security | Security, Encryption, Vault, Vault.HashiCorp, Vault.Azure, Vault.Aws, Vault.GoogleCloud, Authentication.JwtBearer, Authentication.Keycloak, Authentication.EntraId, Authentication.Cognito, Authentication.GoogleCloud, Authentication.ApiKeys (3), Authorization, Authorization.EntityFrameworkCore, Authorization.Endpoints |
-| Configuration | Settings (3), Features (2), ReferenceData (3) |
-| Web, API, and Webhooks | ApiVersioning, ApiDocumentation, Cookies, Cookies.Klaro, Cookies.Endpoints, Http.Idempotency, Webhooks (3) |
-| Storage | BlobStorage (8 incl. GoogleCloud), Imaging (2) |
+| Utilities | Timing, Guids, Diagnostics, Diagnostics.Endpoints, Validation (4), Http.ExceptionHandling, Observability, MultiTenancy, Privacy (4), Cors, Bulkhead, RateLimiting, Testing (2) |
+| Events | Events, Events.Wolverine |
+| Identity | Identity, Identity.Endpoints, Identity.Federated (5 incl. Keycloak, EntraId, Cognito, GoogleCloud, EntityFrameworkCore), Identity.Local, Identity.Local.AspNetIdentity |
+| Security | Encryption (3), Vault (5), Authentication.JwtBearer (5 incl. Keycloak, EntraId, Cognito, GoogleCloud), Authentication.ApiKeys (3), Authentication.DPoP, Authentication.OpenIddict, Authorization (3) |
+| OpenIddict | OpenIddict, OpenIddict.Server, OpenIddict.Endpoints, OpenIddict.EntityFrameworkCore, OpenIddict.BackgroundJobs |
+| OIDC | Oidc, Oidc.TokenManagement |
+| BFF | Bff, Bff.BackgroundJobs, Bff.Endpoints, Bff.EntityFrameworkCore, Bff.Yarp |
+| Configuration | Settings (3), Features (3), ReferenceData (3) |
+| Web, API, and Webhooks | ApiVersioning, ApiDocumentation, Cookies (3), Http.Idempotency, Http.OutputCaching (2), Http.Resilience, Http.ResponseCompression, Http.SecurityHeaders, Webhooks (4) |
+| Storage | BlobStorage (11 incl. AI, BackgroundJobs, Database, Endpoints), Imaging (3) |
+| Persistence | Persistence, Persistence.Hosting, Persistence.Migrations (2), Persistence.Postgres, Persistence.SqlServer |
+| Caching | Caching, Caching.StackExchangeRedis |
 | Background Jobs | BackgroundJobs (4) |
 | Localization | Localization, Localization.EntityFrameworkCore, Localization.Endpoints, Localization.SourceGenerator |
-| Templating | Templating, Templating.Scriban, Templating.EntityFrameworkCore, Templating.Endpoints, Templating.Workflow, DocumentGeneration, DocumentGeneration.Pdf, DocumentGeneration.Excel |
-| Notifications | Notifications, Notifications.EntityFrameworkCore, Notifications.Endpoints, Notifications.Wolverine, Email (7 providers), Sms (3 providers), WhatsApp, WebPush, SignalR, Sse, Zulip, Brevo, Twilio, MobilePush (4 providers) |
-| Workflow | Workflow, Workflow.EntityFrameworkCore, Workflow.Endpoints, Workflow.Notifications |
-| Timeline | Timeline, Timeline.EntityFrameworkCore, Timeline.Endpoints, Timeline.Notifications |
-| DataExchange | DataExchange, DataExchange.Csv, DataExchange.Excel, DataExchange.EntityFrameworkCore, DataExchange.Endpoints, DataExchange.Wolverine |
-| AI | AI, AI.OpenAI, AI.AzureOpenAI, AI.Anthropic, AI.Ollama, AI.VectorData, AI.Extraction, AI.EntityFrameworkCore, and 13 cross-cutting `*.AI` packages |
+| Templating | Templating (5), DocumentGeneration (3) |
+| Notifications | Notifications (4), Email (6), Sms (3), WhatsApp, WebPush, SignalR, Sse, Zulip, Brevo, Twilio, MobilePush (4) |
+| Auditing | Auditing (4), AuditLog (4) |
+| MCP | Mcp, Mcp.Client, Mcp.Server |
+| Workflow | Workflow (4), Workflow.Notifications |
+| Timeline | Timeline (4), Timeline.Notifications |
+| DataExchange | DataExchange (5), DataExchange.Wolverine |
+| QueryEngine | QueryEngine, QueryEngine.Endpoints, QueryEngine.EntityFrameworkCore |
+| Wolverine | Wolverine, Wolverine.Postgresql, Wolverine.SqlServer |
+| AI | AI (8 incl. Endpoints, Mcp, VectorData, Extraction), and 13 cross-cutting `*.AI` packages |
+| Analyzers | Analyzers, Analyzers.CodeFixes |
 
 ## Core layer dependencies
 
@@ -238,7 +265,6 @@ flowchart TD
 | Package | Depends on |
 |---------|------------|
 | `Granit.Timing` | `Core` |
-| `Granit.Users` | `Core` |
 | `Granit.Http.ExceptionHandling` | `Core` |
 | `Granit.Observability` | `Core` |
 | `Granit.MultiTenancy` | `Core` |
@@ -246,26 +272,38 @@ flowchart TD
 | `Granit.Http.Cors` | `Core` |
 | `Granit.Guids` | `Timing` |
 | `Granit.Diagnostics` | `Timing` |
+| `Granit.Diagnostics.Endpoints` | `Diagnostics`, `Authorization` |
+| `Granit.Testing` | `Core` |
+| `Granit.Testing.EntityFrameworkCore` | `Testing`, `Persistence` |
 | `Granit.Validation` | `ExceptionHandling`, `Localization` |
+| `Granit.Validation.Endpoints` | `Validation`, `Authorization` |
 | `Granit.Validation.Europe` | `Validation`, `Localization` |
 | `Granit.Validation.NorthAmerica` | `Validation`, `Localization` |
 | `Granit.Validation.UnitedKingdom` | `Validation`, `Localization` |
 | `Granit.Http.Bulkhead` | `Core`, `ExceptionHandling`, `Features`, `Security` |
 | `Granit.RateLimiting` | `Core`, `ExceptionHandling`, `Features`, `Security` |
 
+### Events
+
+| Package | Depends on |
+|---------|------------|
+| `Granit.Events` | `Core` |
+| `Granit.Events.Wolverine` | `Events`, `Wolverine` |
+
 ### Identity
 
 | Package | Depends on |
 |---------|------------|
-| `Granit.Identity` | `QueryEngine` |
+| `Granit.Identity` | `Core`, `QueryEngine` |
+| `Granit.Identity.Endpoints` | `Identity`, `Authorization` |
 | `Granit.Identity.Federated` | `Identity` |
 | `Granit.Identity.Federated.Keycloak` | `Identity.Federated` |
 | `Granit.Identity.Federated.EntraId` | `Identity.Federated`, `Timing` |
 | `Granit.Identity.Federated.Cognito` | `Identity.Federated` |
 | `Granit.Identity.Federated.GoogleCloud` | `Identity.Federated` |
-| `Granit.Identity.Federated.EntityFrameworkCore` | `Identity.Federated`, `Persistence`, `Security` |
-| `Granit.Identity.Local.AspNetIdentity` | `Identity`, `OpenIddict.EntityFrameworkCore` |
-| `Granit.Identity.Endpoints` | `Identity`, `Authorization` |
+| `Granit.Identity.Federated.EntityFrameworkCore` | `Identity.Federated`, `Persistence` |
+| `Granit.Identity.Local` | `Identity`, `Events`, `Guids`, `Timing` |
+| `Granit.Identity.Local.AspNetIdentity` | `Identity`, `Identity.Local` |
 
 ### Localization
 
@@ -280,11 +318,12 @@ flowchart TD
 
 | Package | Depends on |
 |---------|------------|
-| `Granit.Settings` | `Caching`, `Encryption`, `Security` |
+| `Granit.Settings` | `Caching`, `Encryption`, `Events` |
 | `Granit.Settings.EntityFrameworkCore` | `Settings`, `Persistence` |
 | `Granit.Settings.Endpoints` | `Settings`, `Authorization`, `Timing`, `Validation` |
 | `Granit.Features` | `Caching`, `Localization` |
 | `Granit.Features.EntityFrameworkCore` | `Features`, `Persistence` |
+| `Granit.Features.Endpoints` | `Features`, `Authorization` |
 | `Granit.ReferenceData` | `QueryEngine` |
 | `Granit.ReferenceData.Endpoints` | `ReferenceData` |
 | `Granit.ReferenceData.EntityFrameworkCore` | `ReferenceData`, `Persistence` |
@@ -299,22 +338,41 @@ flowchart TD
 | `Granit.Http.Cookies.Klaro` | `Cookies` |
 | `Granit.Http.Cookies.Endpoints` | `Cookies`, `Core` |
 | `Granit.Http.Idempotency` | `Caching`, `Security` |
-| `Granit.Webhooks` | `Timing`, `Wolverine` |
+| `Granit.Http.OutputCaching` | `Core` |
+| `Granit.Http.OutputCaching.StackExchangeRedis` | `OutputCaching` |
+| `Granit.Http.Resilience` | `Core` |
+| `Granit.Http.ResponseCompression` | `Core` |
+| `Granit.Http.SecurityHeaders` | `Core` |
+| `Granit.Webhooks` | `Core`, `Guids`, `Http.Resilience`, `Encryption`, `Timing` |
 | `Granit.Webhooks.EntityFrameworkCore` | `Webhooks`, `Persistence` |
+| `Granit.Webhooks.Endpoints` | `Webhooks`, `Authorization` |
 | `Granit.Webhooks.Wolverine` | `Webhooks`, `Wolverine` |
+
+### Persistence
+
+| Package | Depends on |
+|---------|------------|
+| `Granit.Persistence` | `Core`, `Guids`, `ExceptionHandling`, `Security` |
+| `Granit.Persistence.Migrations` | `Persistence` |
+| `Granit.Persistence.Migrations.Wolverine` | `Persistence.Migrations`, `Wolverine` |
+| `Granit.Persistence.Hosting` | `Persistence`, `Persistence.Migrations` |
+| `Granit.Persistence.Postgres` | `Persistence.Hosting` |
+| `Granit.Persistence.SqlServer` | `Persistence.Hosting` |
 
 ### Storage and Imaging
 
 | Package | Depends on |
 |---------|------------|
-| `Granit.BlobStorage` | `Guids` |
+| `Granit.BlobStorage` | `Core`, `Guids` |
 | `Granit.BlobStorage.S3` | `BlobStorage` |
 | `Granit.BlobStorage.AzureBlob` | `BlobStorage` |
 | `Granit.BlobStorage.GoogleCloud` | `BlobStorage` |
 | `Granit.BlobStorage.FileSystem` | `BlobStorage` |
-| `Granit.BlobStorage.DbStore` | `BlobStorage`, `Persistence` |
+| `Granit.BlobStorage.Database` | `BlobStorage`, `Persistence` |
 | `Granit.BlobStorage.Proxy` | `BlobStorage` |
 | `Granit.BlobStorage.EntityFrameworkCore` | `BlobStorage`, `Persistence` |
+| `Granit.BlobStorage.BackgroundJobs` | `BlobStorage`, `BackgroundJobs` |
+| `Granit.BlobStorage.Endpoints` | `BlobStorage`, `Authorization`, `QueryEngine.Endpoints`, `RateLimiting`, `Validation` |
 | `Granit.Imaging` | `Core` |
 | `Granit.Imaging.MagickNet` | `Imaging` |
 
@@ -418,11 +476,11 @@ These two domains share cross-module dependencies with Notifications and Identit
 
 | Package | Depends on |
 |---------|------------|
-| `Granit.Workflow` | `Timing` |
+| `Granit.Workflow` | `QueryEngine`, `Timing` |
 | `Granit.Workflow.EntityFrameworkCore` | `Workflow`, `Persistence` |
 | `Granit.Workflow.Endpoints` | `Workflow`, `Authorization` |
 | `Granit.Workflow.Notifications` | `Workflow`, `Authorization`, `Identity`, `Notifications` |
-| `Granit.Timeline` | `Guids`, `Security` |
+| `Granit.Timeline` | `Core`, `Guids`, `QueryEngine`, `Timing` |
 | `Granit.Timeline.EntityFrameworkCore` | `Timeline`, `Persistence` |
 | `Granit.Timeline.Endpoints` | `Timeline`, `Authorization` |
 | `Granit.Timeline.Notifications` | `Timeline`, `Notifications` |
@@ -431,7 +489,7 @@ These two domains share cross-module dependencies with Notifications and Identit
 
 | Package | Depends on |
 |---------|------------|
-| `Granit.BackgroundJobs` | `Timing`, `Wolverine` |
+| `Granit.BackgroundJobs` | `Core`, `Guids`, `Timing` |
 | `Granit.BackgroundJobs.EntityFrameworkCore` | `BackgroundJobs` |
 | `Granit.BackgroundJobs.Endpoints` | `BackgroundJobs`, `Authorization` |
 | `Granit.BackgroundJobs.Wolverine` | `BackgroundJobs`, `Wolverine` |
@@ -462,12 +520,59 @@ flowchart LR
 
 | Package | Depends on |
 |---------|------------|
-| `Granit.DataExchange` | `QueryEngine`, `Timing`, `Validation` |
+| `Granit.DataExchange` | `Events`, `Guids`, `QueryEngine`, `Timing`, `Validation` |
 | `Granit.DataExchange.Csv` | `DataExchange` |
 | `Granit.DataExchange.Excel` | `DataExchange` |
 | `Granit.DataExchange.EntityFrameworkCore` | `DataExchange`, `Persistence` |
 | `Granit.DataExchange.Endpoints` | `DataExchange`, `Authorization` |
 | `Granit.DataExchange.Wolverine` | `DataExchange`, `Wolverine` |
+
+### Auditing
+
+| Package | Depends on |
+|---------|------------|
+| `Granit.Auditing` | `Core`, `QueryEngine` |
+| `Granit.Auditing.ConfigurationChanges` | `Auditing`, `Features`, `Guids`, `Settings` |
+| `Granit.Auditing.EntityFrameworkCore` | `Auditing`, `Caching`, `Persistence` |
+| `Granit.Auditing.Endpoints` | `Auditing`, `Authorization`, `Validation` |
+
+### Privacy and Encryption extensions
+
+| Package | Depends on |
+|---------|------------|
+| `Granit.Privacy` | `Core` |
+| `Granit.Privacy.BackgroundJobs` | `Privacy`, `BackgroundJobs` |
+| `Granit.Privacy.Endpoints` | `Privacy`, `Authorization`, `Validation` |
+| `Granit.Privacy.Notifications` | `Privacy`, `Notifications` |
+| `Granit.Encryption.EntityFrameworkCore` | `Core`, `Encryption`, `Persistence` |
+| `Granit.Encryption.BackgroundJobs` | `Encryption.EntityFrameworkCore` |
+
+### Auth server (OpenIddict, OIDC, BFF)
+
+| Package | Depends on |
+|---------|------------|
+| `Granit.Oidc` | `Core`, `Caching`, `Timing` |
+| `Granit.Oidc.TokenManagement` | `Oidc`, `Caching`, `Timing` |
+| `Granit.OpenIddict` | `Identity.Local`, `QueryEngine` |
+| `Granit.OpenIddict.Server` | `OpenIddict` |
+| `Granit.OpenIddict.EntityFrameworkCore` | `OpenIddict.Server`, `Encryption`, `Identity.Local`, `MultiTenancy`, `Persistence` |
+| `Granit.OpenIddict.Endpoints` | `OpenIddict`, `OpenIddict.Server`, `Authorization`, `Caching`, `QueryEngine`, `Validation` |
+| `Granit.OpenIddict.BackgroundJobs` | `OpenIddict`, `BackgroundJobs`, `Caching`, `Settings` |
+| `Granit.Authentication.OpenIddict` | `OpenIddict` |
+| `Granit.Authentication.DPoP` | `Core` |
+| `Granit.Bff` | `Core`, `Caching`, `Oidc`, `Timing` |
+| `Granit.Bff.Endpoints` | `Bff`, `Caching`, `Cookies`, `Oidc`, `Validation` |
+| `Granit.Bff.EntityFrameworkCore` | `Bff`, `Encryption`, `Guids`, `Persistence` |
+| `Granit.Bff.BackgroundJobs` | `Bff.EntityFrameworkCore`, `BackgroundJobs` |
+| `Granit.Bff.Yarp` | `Bff`, `Oidc` |
+
+### MCP
+
+| Package | Depends on |
+|---------|------------|
+| `Granit.Mcp` | `Core` |
+| `Granit.Mcp.Client` | `Mcp` |
+| `Granit.Mcp.Server` | `Mcp`, `Authorization` |
 
 ### AI
 
@@ -479,10 +584,11 @@ flowchart LR
     AI["AI"] --> AI_EF["AI.EntityFrameworkCore"]
     AI --> AI_OAI["AI.OpenAI"]
     AI --> AI_AOAI["AI.AzureOpenAI"]
-    AI --> AI_ANT["AI.Anthropic"]
     AI --> AI_OLL["AI.Ollama"]
     AI --> AI_VEC["AI.VectorData"]
     AI --> AI_EXT["AI.Extraction"]
+    AI --> AI_EP["AI.Endpoints"]
+    AI --> AI_MCP["AI.Mcp"]
 
     AI --> AUTH_AI["Authorization.AI"]
     AI --> BLOB_AI["BlobStorage.AI"]
@@ -500,7 +606,6 @@ flowchart LR
 
     style AI_OAI fill:#e8f5e9,stroke:#43a047,color:#1b5e20
     style AI_AOAI fill:#e8f5e9,stroke:#43a047,color:#1b5e20
-    style AI_ANT fill:#e8f5e9,stroke:#43a047,color:#1b5e20
     style AI_OLL fill:#e8f5e9,stroke:#43a047,color:#1b5e20
 ```
 
@@ -510,10 +615,11 @@ flowchart LR
 | `Granit.AI.EntityFrameworkCore` | `AI`, `Persistence` |
 | `Granit.AI.OpenAI` | `AI` |
 | `Granit.AI.AzureOpenAI` | `AI` |
-| `Granit.AI.Anthropic` | `AI` |
 | `Granit.AI.Ollama` | `AI` |
 | `Granit.AI.VectorData` | `AI` |
 | `Granit.AI.Extraction` | `AI` |
+| `Granit.AI.Endpoints` | `AI`, `Authorization` |
+| `Granit.AI.Mcp` | `AI`, `Mcp` |
 | `Granit.Authorization.AI` | `AI`, `Authorization` |
 | `Granit.BlobStorage.AI` | `AI`, `BlobStorage` |
 | `Granit.DataExchange.AI` | `AI`, `DataExchange` |
@@ -544,8 +650,12 @@ null-object default is used.
 
 | Interface | Declared in | Implemented by | Default behavior |
 |-----------|-------------|----------------|------------------|
-| `ICurrentTenant` | `Granit.MultiTenancy` | `Granit.MultiTenancy` | `NullTenantContext` (`IsAvailable = false`) |
-| `IDataFilter` | `Granit.DataFiltering` | `Granit.Persistence` | No-op (all data visible) |
+| `ICurrentTenant` | `Granit` | `Granit.MultiTenancy` | `NullTenantContext` (`IsAvailable = false`) |
+| `ICurrentUserService` | `Granit` | `Granit.Authentication.JwtBearer` | `SystemCurrentUserService` |
+| `ILocalEventBus` | `Granit` | `Granit.Events` | In-process dispatcher |
+| `IDistributedEventBus` | `Granit` | `Granit.Events` | In-process fallback |
+| `IDomainEventDispatcher` | `Granit` | `Granit.Events.Wolverine` | `NullDomainEventDispatcher` |
+| `IDataFilter` | `Granit` | `Granit.Persistence` | No-op (all data visible) |
 
 Modules that access `ICurrentTenant` use `using Granit.MultiTenancy;` and check
 `IsAvailable` before reading `Id`. They do NOT declare `[DependsOn(typeof(GranitMultiTenancyModule))]`
@@ -554,7 +664,7 @@ must enforce strict tenant isolation (e.g., BlobStorage for GDPR compliance).
 
 ## Bundle composition
 
-Five meta-packages provide curated sets of modules for common application profiles.
+Six meta-packages provide curated sets of modules for common application profiles.
 Bundles contain no code -- they are `ProjectReference`-only `.csproj` files.
 
 ### Granit.Bundle.Essentials
@@ -566,11 +676,13 @@ Minimal API foundation.
 | `Granit` |
 | `Granit.Timing` |
 | `Granit.Guids` |
-| `Granit.Users` |
 | `Granit.Validation` |
 | `Granit.Persistence` |
 | `Granit.Observability` |
+| `Granit.Http.Cors` |
 | `Granit.Http.ExceptionHandling` |
+| `Granit.Http.ResponseCompression` |
+| `Granit.Http.SecurityHeaders` |
 | `Granit.Diagnostics` |
 
 ### Granit.Bundle.Api
@@ -581,11 +693,10 @@ Complete REST API. Includes everything in `Bundle.Essentials` plus:
 |------------------|
 | `Granit.Http.ApiVersioning` |
 | `Granit.Http.ApiDocumentation` |
-| `Granit.Http.Cors` |
 | `Granit.Http.Idempotency` |
 | `Granit.Localization` |
 | `Granit.Localization.EntityFrameworkCore` |
-| `Granit.Caching` |
+| `Granit.Caching.StackExchangeRedis` |
 
 ### Granit.Bundle.Documents
 
@@ -624,6 +735,20 @@ Multi-tenant SaaS extensions.
 | `Granit.Features.EntityFrameworkCore` |
 | `Granit.RateLimiting` |
 | `Granit.Http.Bulkhead` |
+
+### Granit.Bundle.OpenIddict
+
+OpenID Connect server with local identity management.
+
+| Included package |
+|------------------|
+| `Granit.Authentication.OpenIddict` |
+| `Granit.OpenIddict` |
+| `Granit.OpenIddict.Server` |
+| `Granit.OpenIddict.EntityFrameworkCore` |
+| `Granit.Identity.Local.AspNetIdentity` |
+| `Granit.OpenIddict.Endpoints` |
+| `Granit.OpenIddict.BackgroundJobs` |
 
 ## Dependency rules
 
@@ -667,7 +792,7 @@ in the repository.
   are almost always leaves
 - **Root packages with no dependencies**: `Granit`, `Granit.Analyzers`,
   `Granit.Localization.SourceGenerator`
-- **5 bundle meta-packages**: Essentials, Api, Documents, Notifications, SaaS
+- **6 bundle meta-packages**: Essentials, Api, Documents, Notifications, SaaS, OpenIddict
 
 ## Intentional design decisions
 

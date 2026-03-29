@@ -661,7 +661,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
@@ -739,7 +739,7 @@
           "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": "[10.*, )"
         }
       },
-      "granit.queryengine": {
+      "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
@@ -1000,14 +1000,14 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.15",
-        "contentHash": "ufSBk0vdDnrhn+YLGElUdegUkM+hb7xUoySH+oaZrNHi2fAm+oeSCr60Lqmm4OeLBhPKd2htr/DANOvjuNT6rg=="
+        "resolved": "2.13.16",
+        "contentHash": "zOWRQLnD7RbcbqnEeP6oUQNy+JeyXDcgmyz3ui7O5QntW7CdbItSC+KOZYRgzaFqh9hPNgSlp1uuTn96Y+gfww=="
       },
       "Scriban": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
-        "resolved": "7.0.5",
-        "contentHash": "GmK0nHYvmUV7ue93eaEWwVU4NQLcW1MlBckAT6BTUIIJm9UA92pVWdcJH5BGqzgWkrA+xVt065gjP2vpQ47h6g=="
+        "resolved": "7.0.6",
+        "contentHash": "bOtHyk30sjl0y3+KYImIJv0ETZYLuFFJvlBF2ks2YLNtydhJqxRTGe4WaBDvg/3VRhhI6uf+qVfixuFROsOi+w=="
       },
       "Serilog.AspNetCore": {
         "type": "CentralTransitive",

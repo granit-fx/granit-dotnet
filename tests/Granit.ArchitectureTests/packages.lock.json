@@ -1438,7 +1438,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )"
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.auditing.configurationchanges": {
@@ -1474,7 +1474,7 @@
           "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
@@ -1595,7 +1595,7 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
@@ -2024,7 +2024,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )"
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.identity.endpoints": {
@@ -2185,7 +2185,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
@@ -2412,7 +2412,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Identity.Local": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "OpenIddict.EntityFrameworkCore": "[7.*, )"
         }
       },
@@ -2434,7 +2434,7 @@
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.OpenIddict": "[0.1.0-dev, )",
           "Granit.OpenIddict.Server": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
@@ -2550,6 +2550,13 @@
       "granit.queryengine": {
         "type": "Project",
         "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.queryengine.abstractions": {
+        "type": "Project",
+        "dependencies": {
           "Granit": "[0.1.0-dev, )"
         }
       },
@@ -2557,7 +2564,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.AI": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
@@ -2593,7 +2600,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )"
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.referencedata.endpoints": {
@@ -2611,6 +2618,7 @@
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",
+          "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.ReferenceData": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
@@ -2712,7 +2720,7 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
@@ -2908,7 +2916,7 @@
       "granit.workflow": {
         "type": "Project",
         "dependencies": {
-          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },

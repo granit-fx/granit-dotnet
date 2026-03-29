@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.AI\Granit.AI.csproj" />
-    <ProjectReference Include="..\Granit.QueryEngine\Granit.QueryEngine.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
   </ItemGroup>
 

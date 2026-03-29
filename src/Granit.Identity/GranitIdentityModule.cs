@@ -10,7 +10,7 @@ namespace Granit.Identity;
 /// Install a provider package (e.g. <c>Granit.Identity.Federated.Keycloak</c>) to connect
 /// to a real identity system.
 /// </summary>
-[DependsOn(typeof(GranitQueryEngineModule))]
+[DependsOn(typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitIdentityModule : GranitModule
 {
     /// <inheritdoc/>

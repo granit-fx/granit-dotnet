@@ -19,7 +19,7 @@ namespace Granit.OpenIddict;
 /// </summary>
 [DependsOn(
     typeof(GranitIdentityLocalModule),
-    typeof(GranitQueryEngineModule))]
+    typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitOpenIddictModule : GranitModule
 {
     /// <inheritdoc/>

@@ -30,7 +30,7 @@
       "src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj",
       "src/Granit.Privacy.Notifications/Granit.Privacy.Notifications.csproj",
       "src/Granit.Privacy/Granit.Privacy.csproj",
-      "src/Granit.QueryEngine/Granit.QueryEngine.csproj",
+      "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",

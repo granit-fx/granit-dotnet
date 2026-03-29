@@ -55,6 +55,7 @@
       "src/Granit.OpenIddict.Server/Granit.OpenIddict.Server.csproj",
       "src/Granit.OpenIddict/Granit.OpenIddict.csproj",
       "src/Granit.Persistence/Granit.Persistence.csproj",
+      "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
       "src/Granit.QueryEngine.Endpoints/Granit.QueryEngine.Endpoints.csproj",
       "src/Granit.QueryEngine/Granit.QueryEngine.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",

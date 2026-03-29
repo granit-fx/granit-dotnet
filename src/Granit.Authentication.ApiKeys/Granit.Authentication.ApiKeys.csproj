@@ -24,7 +24,7 @@
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
-    <ProjectReference Include="..\Granit.QueryEngine\Granit.QueryEngine.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
   </ItemGroup>
 

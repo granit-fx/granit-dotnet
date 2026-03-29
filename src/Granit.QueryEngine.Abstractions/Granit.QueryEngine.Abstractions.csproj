@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.QueryEngine.Abstractions</PackageId>
+    <Description>Inter-module contracts for Granit.QueryEngine: PagedResult, QueryRequest, FilterOperator, QueryMetadata, SavedView abstractions. Reference this package instead of Granit.QueryEngine when you only need query contracts without the engine implementation.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.QueryEngine.Abstractions.Tests" />
+    <InternalsVisibleTo Include="Granit.QueryEngine" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>

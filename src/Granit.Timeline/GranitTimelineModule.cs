@@ -17,7 +17,7 @@ namespace Granit.Timeline;
 /// </remarks>
 [DependsOn(
     typeof(GranitGuidsModule),
-    typeof(GranitQueryEngineModule),
+    typeof(GranitQueryEngineAbstractionsModule),
     typeof(GranitTimingModule))]
 public sealed class GranitTimelineModule : GranitModule
 {

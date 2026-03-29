@@ -45,7 +45,14 @@ public sealed partial class NamingHomogeneityTests
             // Namespace must start with the project directory name.
             // Sub-namespaces (Granit.BlobStorage.Internal) are fine as long
             // as they start with the project name (Granit.BlobStorage).
-            if (!ns.StartsWith(projectName, StringComparison.Ordinal))
+            // Exception: *.Abstractions packages use the parent namespace
+            // (e.g. Granit.QueryEngine.Abstractions → namespace Granit.QueryEngine)
+            // following the Microsoft.Extensions.*.Abstractions convention.
+            string effectiveProjectName = projectName.EndsWith(".Abstractions", StringComparison.Ordinal)
+                ? projectName[..^".Abstractions".Length]
+                : projectName;
+
+            if (!ns.StartsWith(effectiveProjectName, StringComparison.Ordinal))
             {
                 string rel = Path.GetRelativePath(SrcRoot, csFile);
                 violations.Add($"{rel}: namespace '{ns}' does not start with '{projectName}'");

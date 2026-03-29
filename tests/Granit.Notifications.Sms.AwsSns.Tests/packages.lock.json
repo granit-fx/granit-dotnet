@@ -66,8 +66,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.3.23",
-        "contentHash": "H5c8YSn8U0zSBAk9mRP/w1shbowfmkdW7nWidHt/4GNSq2VLtNptDTTKkqmTPYvUxC9i3hMHnlQxe1mCXHyXwA=="
+        "resolved": "4.0.3.24",
+        "contentHash": "Bq3mONgVTGheBWfqiVxPDgy/qpcEbsHuH9ColyGFgIiW4Smr/zizfPWI5OjUmxFJ2wlsX/Ooa5654C9bZh2wvg=="
       },
       "Castle.Core": {
         "type": "Transitive",
@@ -299,7 +299,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Configuration.Binder": "[10.*, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
@@ -323,7 +323,7 @@
           "Granit.Notifications.Sms": "[0.1.0-dev, )"
         }
       },
-      "granit.queryengine": {
+      "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
@@ -340,10 +340,10 @@
       "AWSSDK.SimpleNotificationService": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.2.21",
-        "contentHash": "5mSY3oQ9A933OvwxjgE9RMFhopI9WJBjDUvzNP1vUbQ1Y2nYOunfIwnsnske4UyU2zRdGKDmpPQ8I1JG8epGAA==",
+        "resolved": "4.0.2.22",
+        "contentHash": "1sfTjDluaplIcQ4fXV7a+3UA8eNrORg0OaxtIMiu9Hnbfx3CCHDg5JRL3zLglCPxLw13WtA1HWRN/WQJMEQ9QA==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.23, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.24, 5.0.0)"
         }
       },
       "Microsoft.Extensions.Configuration.Binder": {

@@ -26,6 +26,7 @@
     <Project Path="src/Granit.QueryEngine.AI/Granit.QueryEngine.AI.csproj" />
     <Project Path="src/Granit.QueryEngine.Endpoints/Granit.QueryEngine.Endpoints.csproj" />
     <Project Path="src/Granit.QueryEngine.EntityFrameworkCore/Granit.QueryEngine.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj" />
     <Project Path="src/Granit.QueryEngine/Granit.QueryEngine.csproj" />
     <Project Path="src/Granit.RateLimiting/Granit.RateLimiting.csproj" />
     <Project Path="src/Granit.Timing/Granit.Timing.csproj" />
@@ -258,6 +259,7 @@
     <Project Path="tests/Granit.QueryEngine.Endpoints.Tests.Integration/Granit.QueryEngine.Endpoints.Tests.Integration.csproj" />
     <Project Path="tests/Granit.QueryEngine.Endpoints.Tests/Granit.QueryEngine.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.QueryEngine.EntityFrameworkCore.Tests/Granit.QueryEngine.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.QueryEngine.Abstractions.Tests/Granit.QueryEngine.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.QueryEngine.Tests/Granit.QueryEngine.Tests.csproj" />
     <Project Path="tests/Granit.RateLimiting.Tests/Granit.RateLimiting.Tests.csproj" />
     <Project Path="tests/Granit.Tests/Granit.Tests.csproj" />

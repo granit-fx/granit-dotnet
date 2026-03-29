@@ -398,6 +398,13 @@
       "granit.queryengine": {
         "type": "Project",
         "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.queryengine.abstractions": {
+        "type": "Project",
+        "dependencies": {
           "Granit": "[0.1.0-dev, )"
         }
       },
@@ -583,8 +590,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.15",
-        "contentHash": "ufSBk0vdDnrhn+YLGElUdegUkM+hb7xUoySH+oaZrNHi2fAm+oeSCr60Lqmm4OeLBhPKd2htr/DANOvjuNT6rg=="
+        "resolved": "2.13.16",
+        "contentHash": "zOWRQLnD7RbcbqnEeP6oUQNy+JeyXDcgmyz3ui7O5QntW7CdbItSC+KOZYRgzaFqh9hPNgSlp1uuTn96Y+gfww=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",

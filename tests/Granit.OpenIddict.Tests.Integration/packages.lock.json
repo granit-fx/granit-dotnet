@@ -638,7 +638,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )"
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.identity.local": {
@@ -677,7 +677,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Identity.Local": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "OpenIddict.EntityFrameworkCore": "[7.*, )"
         }
       },
@@ -689,7 +689,7 @@
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.OpenIddict": "[0.1.0-dev, )",
           "Granit.OpenIddict.Server": "[0.1.0-dev, )",
-          "Granit.QueryEngine": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
@@ -728,7 +728,7 @@
           "Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore": "[10.*, )"
         }
       },
-      "granit.queryengine": {
+      "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
