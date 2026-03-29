@@ -6543,7 +6543,7 @@
       "kind": "class",
       "project": "Granit.Bff.Yarp",
       "file": "src/Granit.Bff.Yarp/Extensions/BffYarpHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitBffYarp",
