@@ -171,6 +171,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
     private static async Task<Results<Created<PrivacyOptOutStatusResponse>, ProblemHttpResult>> HandleOptOutAsync(
         HttpContext httpContext,
         [FromServices] IDistributedEventBus eventBus,
+        [FromServices] IOptOutRecordReader? optOutReader,
         [FromServices] IOptOutRecordWriter? optOutWriter,
         [FromServices] IPrivacyRegulationResolver? regulationResolver,
         [FromServices] ICurrentTenant currentTenant,
@@ -197,7 +198,11 @@ public static class PrivacyEndpointRouteBuilderExtensions
 
         if (userId is null)
         {
-            // Anonymous: read existing cookie or generate new tracking ID
+            // Anonymous: read existing cookie or generate new tracking ID.
+            // This cookie is written via Response.Cookies.Append directly because
+            // Granit.Privacy.Endpoints intentionally does not depend on Granit.Http.Cookies
+            // (the cookie module is optional). Applications using Granit.Http.Cookies should
+            // register this cookie as StrictlyNecessary — see OptOutConstants.CookieName docs.
             anonymousTrackId = httpContext.Request.Cookies[OptOutConstants.CookieName]
                 ?? guidGenerator.Create().ToString();
 
@@ -209,6 +214,19 @@ public static class PrivacyEndpointRouteBuilderExtensions
                 Path = "/",
                 MaxAge = TimeSpan.FromDays(OptOutConstants.RetentionDays),
             });
+        }
+
+        // Idempotency: return existing opt-out if already active
+        if (optOutReader is not null)
+        {
+            bool alreadyOptedOut = await optOutReader.IsOptedOutAsync(userId, anonymousTrackId, cancellationToken)
+                .ConfigureAwait(false);
+            if (alreadyOptedOut)
+            {
+                return TypedResults.Created(
+                    (string?)null,
+                    new PrivacyOptOutStatusResponse(true, null, regulation));
+            }
         }
 
         OptOutRecord record = new(recordId, userId, anonymousTrackId, OptOutState.Active, now, null, tenantId, regulation);
