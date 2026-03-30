@@ -38,6 +38,7 @@ public sealed class PersonalDataDeletionSaga : Saga
     public Guid UserId { get; set; }
 
     /// <summary>Who requested the deletion (email or identifier).</summary>
+    [SensitiveData(Level = Sensitivity.Confidential)]
     public string RequestedBy { get; set; } = string.Empty;
 
     /// <summary>Reason provided by the user for deletion.</summary>
@@ -133,7 +134,7 @@ public sealed class PersonalDataDeletionSaga : Saga
 
         return
         [
-            new PersonalDataDeletionRequestedEto(Id, UserId, RequestedBy, now, Reason, Regulation),
+            new PersonalDataDeletionRequestedEto(Id, UserId, RequestedBy, now, Reason, Regulation, TenantId),
             new DeletionExecutedEto(Id, UserId, now),
         ];
     }

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Granit.AI;
 using Granit.AI.Internal;
 using Granit.Privacy.AI.Options;
@@ -165,8 +166,9 @@ internal sealed partial class LlmPiiDetector(
     };
 
     /// <summary>
-    /// Truncates LLM description to prevent PII echo.
+    /// Truncates and redacts LLM description to prevent PII echo.
     /// The LLM may include actual PII values in description fields despite prompt instructions.
+    /// Common PII patterns (emails, card numbers, long digit sequences) are redacted post-LLM.
     /// </summary>
     private static string SanitizeDescription(string? description)
     {
@@ -177,10 +179,26 @@ internal sealed partial class LlmPiiDetector(
 
         // Truncate to prevent verbose descriptions that may echo PII
         const int maxLength = 200;
-        return description.Length > maxLength
+        string sanitized = description.Length > maxLength
             ? description[..maxLength]
             : description;
+
+        // Redact common PII patterns the LLM may have echoed despite system prompt instructions
+        sanitized = EmailPattern().Replace(sanitized, "[REDACTED]");
+        sanitized = CardNumberPattern().Replace(sanitized, "[REDACTED]");
+        sanitized = LongDigitPattern().Replace(sanitized, "[REDACTED]");
+
+        return sanitized;
     }
+
+    [GeneratedRegex(@"[\w.+-]+@[\w.-]+\.\w{2,}", RegexOptions.None, matchTimeoutMilliseconds: 100)]
+    private static partial Regex EmailPattern();
+
+    [GeneratedRegex(@"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b", RegexOptions.None, matchTimeoutMilliseconds: 100)]
+    private static partial Regex CardNumberPattern();
+
+    [GeneratedRegex(@"\b\d{8,}\b", RegexOptions.None, matchTimeoutMilliseconds: 100)]
+    private static partial Regex LongDigitPattern();
 
     /// <summary>
     /// Internal DTO for deserializing LLM JSON response.

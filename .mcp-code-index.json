@@ -23146,7 +23146,7 @@
       "kind": "class",
       "project": "Granit.Privacy.AI",
       "file": "src/Granit.Privacy.AI/Extensions/PrivacyAIHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitPrivacyAI",
@@ -23278,7 +23278,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataDeletion/DeletionRequestStatus.cs",
-      "line": 6,
+      "line": 8,
       "members": []
     },
     {
@@ -23305,7 +23305,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataDeletion/Events/DeletionDeferredEto.cs",
-      "line": 9,
+      "line": 10,
       "members": []
     },
     {
@@ -23350,7 +23350,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataDeletion/Events/PersonalDataDeletionRequestedEto.cs",
-      "line": 9,
+      "line": 10,
       "members": []
     },
     {
@@ -23405,6 +23405,12 @@
           "name": "MarkCancelledAsync",
           "kind": "method",
           "signature": "MarkCancelledAsync(Guid requestId, DateTimeOffset cancelledAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RecordImmediateDeletionAsync",
+          "kind": "method",
+          "signature": "RecordImmediateDeletionAsync(Guid requestId, Guid userId, string reason, DateTimeOffset executedAt, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -23700,7 +23706,7 @@
       "kind": "record",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyDeletionStatusResponse.cs",
-      "line": 13,
+      "line": 15,
       "members": []
     },
     {

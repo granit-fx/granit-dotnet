@@ -1,10 +1,12 @@
+using Granit.DataProtection;
+
 namespace Granit.Privacy.Endpoints.Dtos;
 
 /// <summary>
-/// Status of a deferred deletion request.
+/// Status of a deletion request.
 /// </summary>
 /// <param name="RequestId">Unique identifier for the deletion request.</param>
-/// <param name="State">Current state: Deferred, Executed, or Cancelled.</param>
+/// <param name="State">Current state: Deferred, Executed, Cancelled, or ImmediatelyExecuted.</param>
 /// <param name="Reason">User-provided reason for the deletion request.</param>
 /// <param name="RequestedAt">When the deletion was originally requested.</param>
 /// <param name="ScheduledDeletionAt">When the data will be permanently deleted.</param>
@@ -13,6 +15,7 @@ namespace Granit.Privacy.Endpoints.Dtos;
 public sealed record PrivacyDeletionStatusResponse(
     Guid RequestId,
     string State,
+    [property: SensitiveData(Level = Sensitivity.Confidential)]
     string Reason,
     DateTimeOffset RequestedAt,
     DateTimeOffset ScheduledDeletionAt,

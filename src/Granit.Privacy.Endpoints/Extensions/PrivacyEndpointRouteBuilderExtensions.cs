@@ -49,6 +49,11 @@ public static class PrivacyEndpointRouteBuilderExtensions
             .RequireAuthorization()
             .WithTags(options.TagName);
 
+        if (!string.IsNullOrEmpty(options.RateLimitingPolicy))
+        {
+            group.RequireRateLimiting(options.RateLimitingPolicy);
+        }
+
         MapRegulationEndpoints(group);
         MapExportEndpoints(group);
         MapDeletionEndpoints(group);
@@ -157,7 +162,8 @@ public static class PrivacyEndpointRouteBuilderExtensions
                  + "When Defer is false, deletion is immediate. When Defer is true, a cooling-off "
                  + "period starts — the user receives a reminder email before the "
                  + "deadline and can cancel via POST /deletion/{requestId}/cancel. "
-                 + "A confirmation email is sent in both cases after deletion is executed.")
+                 + "A confirmation email is sent in both cases after deletion is executed. "
+                 + "Do not include personally identifiable information in the Reason field.")
              .Produces<PrivacyDeletionRequestResponse>(StatusCodes.Status202Accepted)
              .ProducesProblem(StatusCodes.Status409Conflict)
              .ProducesValidationProblem();
@@ -341,6 +347,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
         [FromServices] ICurrentUserService currentUser,
         [FromServices] IDistributedEventBus eventBus,
         [FromServices] IDeletionRequestTrackerReader deletionTracker,
+        [FromServices] IDeletionRequestTrackerWriter? deletionTrackerWriter,
         [FromServices] PrivacyMetrics metrics,
         [FromServices] TimeProvider timeProvider,
         [FromServices] ICurrentTenant currentTenant,
@@ -389,10 +396,17 @@ public static class PrivacyEndpointRouteBuilderExtensions
                 new PrivacyDeletionRequestResponse(requestId, scheduledDeletionAt));
         }
 
-        // Immediate deletion (existing behavior) + confirmation event
+        // Immediate deletion + confirmation event + audit trail (GDPR Art. 5(2))
+        if (deletionTrackerWriter is not null)
+        {
+            await deletionTrackerWriter
+                .RecordImmediateDeletionAsync(requestId, userId, body.Reason, now, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         await eventBus
             .PublishAsync(
-                new PersonalDataDeletionRequestedEto(requestId, userId, requestedBy, now, body.Reason, regulation),
+                new PersonalDataDeletionRequestedEto(requestId, userId, requestedBy, now, body.Reason, regulation, tenantId),
                 cancellationToken)
             .ConfigureAwait(false);
 
@@ -402,8 +416,8 @@ public static class PrivacyEndpointRouteBuilderExtensions
                 cancellationToken)
             .ConfigureAwait(false);
 
-        metrics.RecordDeletionRequested(tenantId);
-        metrics.RecordDeletionExecuted(tenantId);
+        metrics.RecordDeletionRequested(tenantId, regulation);
+        metrics.RecordDeletionExecuted(tenantId, regulation);
 
         return TypedResults.Accepted((string?)null);
     }
@@ -695,8 +709,10 @@ public static class PrivacyEndpointRouteBuilderExtensions
             status.ExecutedAt);
 
     /// <summary>
-    /// Pseudonymizes an IP address by masking the last octet (IPv4) or last group (IPv6).
+    /// Pseudonymizes an IP address using <see cref="System.Net.IPAddress"/> for reliable parsing.
+    /// IPv4: masks to /16 (last 2 octets zeroed). IPv6: masks to /48 (last 80 bits zeroed).
     /// GDPR requires data minimization — the full IP is not stored.
+    /// Compliant with CNIL guidance on IP anonymization (2020) and WP29 Opinion 05/2014.
     /// </summary>
     internal static string? PseudonymizeIpAddress(string? ipAddress)
     {
@@ -705,18 +721,30 @@ public static class PrivacyEndpointRouteBuilderExtensions
             return null;
         }
 
-        // IPv4: replace last octet with 0
-        int lastDot = ipAddress.LastIndexOf('.');
-        if (lastDot > 0)
+        if (!System.Net.IPAddress.TryParse(ipAddress, out System.Net.IPAddress? ip))
         {
-            return $"{ipAddress[..lastDot]}.0";
+            return null;
         }
 
-        // IPv6: replace last group with 0
-        int lastColon = ipAddress.LastIndexOf(':');
-        if (lastColon > 0)
+        byte[] bytes = ip.GetAddressBytes();
+
+        if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
         {
-            return $"{ipAddress[..lastColon]}:0";
+            // IPv4: mask to /16 — zero last 2 octets
+            bytes[2] = 0;
+            bytes[3] = 0;
+            return new System.Net.IPAddress(bytes).ToString();
+        }
+
+        if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+        {
+            // IPv6: mask to /48 — zero last 10 bytes (80 bits)
+            for (int i = 6; i < 16; i++)
+            {
+                bytes[i] = 0;
+            }
+
+            return new System.Net.IPAddress(bytes).ToString();
         }
 
         return null;

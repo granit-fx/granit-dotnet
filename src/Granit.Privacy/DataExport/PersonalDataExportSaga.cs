@@ -96,8 +96,8 @@ public sealed class PersonalDataExportSaga : Saga
     public ExportCompletedEto? Handle(PersonalDataPreparedEto @event, PrivacyMetrics metrics)
     {
         ReceivedFragments.Add(new ReceivedFragment(@event.ProviderName, @event.BlobReferenceId, @event.ContentType));
-        PendingProviders.Remove(@event.ProviderName);
-        metrics.RecordFragmentReceived(TenantId, @event.ProviderName, Regulation);
+        bool expected = PendingProviders.Remove(@event.ProviderName);
+        metrics.RecordFragmentReceived(TenantId, expected ? @event.ProviderName : "unknown", Regulation);
 
         if (ReceivedFragments.Count < ExpectedCount)
         {

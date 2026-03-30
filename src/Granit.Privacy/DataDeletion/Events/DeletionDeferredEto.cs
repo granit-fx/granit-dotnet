@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.Events;
 
 namespace Granit.Privacy.DataDeletion.Events;
@@ -9,8 +10,10 @@ namespace Granit.Privacy.DataDeletion.Events;
 public sealed record DeletionDeferredEto(
     Guid RequestId,
     Guid UserId,
+    [property: SensitiveData(Level = Sensitivity.Confidential)]
     string RequestedBy,
     DateTimeOffset RequestedAt,
+    [property: SensitiveData(Level = Sensitivity.Confidential)]
     string Reason,
     DateTimeOffset ScheduledDeletionAt,
     string Regulation,

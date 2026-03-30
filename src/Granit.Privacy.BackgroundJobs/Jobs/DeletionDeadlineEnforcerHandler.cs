@@ -42,6 +42,8 @@ internal static partial class DeletionDeadlineEnforcerHandler
             // the outbox is not committed — both operations roll back cleanly on retry.
             // This ordering prevents a GDPR compliance gap where the request is marked
             // "Executed" but the deletion event was never enqueued.
+            string regulation = request.Regulation ?? "EU_GDPR";
+
             await eventBus.PublishAsync(
                 new PersonalDataDeletionRequestedEto(
                     request.RequestId,
@@ -49,7 +51,8 @@ internal static partial class DeletionDeadlineEnforcerHandler
                     "system:deadline-enforcer",
                     now,
                     request.Reason,
-                    request.Regulation ?? "EU_GDPR"),
+                    regulation,
+                    request.TenantId),
                 cancellationToken).ConfigureAwait(false);
 
             await eventBus.PublishAsync(
@@ -58,7 +61,7 @@ internal static partial class DeletionDeadlineEnforcerHandler
 
             await trackerWriter.MarkExecutedAsync(request.RequestId, now, cancellationToken).ConfigureAwait(false);
 
-            metrics.RecordDeletionExecuted(null);
+            metrics.RecordDeletionExecuted(request.TenantId, regulation);
             Log.DeletionEnforced(logger, request.RequestId, request.UserId);
         }
     }

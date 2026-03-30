@@ -16,4 +16,12 @@ public sealed class PrivacyEndpointsOptions
     /// Default: <c>"Privacy"</c>.
     /// </summary>
     public string TagName { get; set; } = "Privacy";
+
+    /// <summary>
+    /// Rate limiting policy name applied to all Privacy endpoints.
+    /// When <c>null</c> (default), no rate limiting is applied.
+    /// Set to a policy name registered via <c>AddRateLimiter()</c> to protect against
+    /// resource exhaustion through excessive export/deletion requests (OWASP API4).
+    /// </summary>
+    public string? RateLimitingPolicy { get; set; }
 }
