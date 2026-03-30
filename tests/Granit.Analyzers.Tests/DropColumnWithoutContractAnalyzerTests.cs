@@ -39,7 +39,7 @@ public sealed class DropColumnWithoutContractAnalyzerTests
     public async Task GR_MIGA001_silent_when_migration_has_contract_annotation()
     {
         string source = """
-            using Granit.Persistence.EntityFrameworkCore.Migrations;
+            using Granit.Persistence.Migrations;
             using Microsoft.EntityFrameworkCore.Migrations;
 
             [MigrationCycle(MigrationPhase.Contract, "patient-v2")]

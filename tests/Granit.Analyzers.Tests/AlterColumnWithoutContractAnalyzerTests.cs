@@ -39,7 +39,7 @@ public sealed class AlterColumnWithoutContractAnalyzerTests
     public async Task GR_MIGA004_silent_when_contract_annotation_present()
     {
         string source = """
-            using Granit.Persistence.EntityFrameworkCore.Migrations;
+            using Granit.Persistence.Migrations;
             using Microsoft.EntityFrameworkCore.Migrations;
 
             [MigrationCycle(MigrationPhase.Contract, "patient-v2")]

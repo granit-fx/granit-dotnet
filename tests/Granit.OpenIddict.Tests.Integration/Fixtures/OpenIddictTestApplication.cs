@@ -109,6 +109,7 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
         builder.Services.TryAddSingleton<IMeterFactory>(
             _ => new TestMeterFactory());
         builder.Services.TryAddSingleton<OpenIddictMetrics>();
+        builder.Services.TryAddSingleton<Granit.Identity.Local.Diagnostics.IdentityLocalMetrics>();
 
         // 5. Authorization (required by admin endpoints)
         builder.Services.AddAuthorization();
