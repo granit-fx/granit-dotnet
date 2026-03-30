@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Privacy.Endpoints.Extensions;
@@ -57,6 +58,8 @@ public static class PrivacyEndpointRouteBuilderExtensions
         {
             group.RequireRateLimiting(options.RateLimitingPolicy);
         }
+
+        RegisterOptOutCookie(endpoints.ServiceProvider.GetRequiredService<ICookieRegistry>());
 
         MapRegulationEndpoints(group);
         MapPurposeEndpoints(group);
@@ -179,7 +182,6 @@ public static class PrivacyEndpointRouteBuilderExtensions
         [FromServices] IGuidGenerator guidGenerator,
         [FromServices] TimeProvider timeProvider,
         [FromServices] PrivacyMetrics metrics,
-        [FromServices] ICookieRegistry cookieRegistry,
         [FromServices] IGranitCookieManager cookieManager,
         CancellationToken cancellationToken)
     {
@@ -204,10 +206,6 @@ public static class PrivacyEndpointRouteBuilderExtensions
             // Anonymous: read existing cookie or generate new tracking ID
             anonymousTrackId = httpContext.Request.Cookies[OptOutConstants.CookieName]
                 ?? guidGenerator.Create().ToString();
-
-            // Register the cookie in the Strict Cookie Registry (idempotent) so it
-            // appears in GET /cookies/config and compliance audit tools.
-            EnsureOptOutCookieRegistered(cookieRegistry);
 
             await cookieManager.SetCookieAsync(httpContext, OptOutConstants.CookieName, anonymousTrackId)
                 .ConfigureAwait(false);
@@ -841,22 +839,13 @@ public static class PrivacyEndpointRouteBuilderExtensions
     private static string? ResolveTenantId(ICurrentTenant currentTenant) =>
         currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null;
 
-    /// <summary>
-    /// Ensures the opt-out tracking cookie is registered in the Strict Cookie Registry.
-    /// Idempotent — CookieRegistry.Register is a no-op if the same definition is already registered.
-    /// </summary>
-    private static void EnsureOptOutCookieRegistered(ICookieRegistry registry)
-    {
-        if (!registry.IsRegistered(OptOutConstants.CookieName))
-        {
-            registry.Register(new CookieDefinition(
-                OptOutConstants.CookieName,
-                CookieCategory.StrictlyNecessary,
-                OptOutConstants.RetentionDays,
-                true,
-                "CCPA anonymous opt-out tracking identifier"));
-        }
-    }
+    private static void RegisterOptOutCookie(ICookieRegistry registry) =>
+        registry.Register(new CookieDefinition(
+            OptOutConstants.CookieName,
+            CookieCategory.StrictlyNecessary,
+            OptOutConstants.RetentionDays,
+            true,
+            "CCPA anonymous opt-out tracking identifier"));
 
     private static async Task<string> ResolveRegulationAsync(
         IPrivacyRegulationResolver? resolver,

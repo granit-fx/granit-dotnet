@@ -1,0 +1,117 @@
+---
+title: "Cookies — Secure Cookie Management"
+description: Strict cookie registry with consent category enforcement, GPC signal support, and Klaro CMP integration. Every cookie must be declared at startup.
+sidebar:
+  order: 4
+  label: Overview
+---
+
+## Why a cookie module?
+
+Granit.Http.Cookies enforces a strict cookie registry: every cookie must be declared at
+startup with a consent category. Writing an undeclared cookie throws
+`UnregisteredCookieException`. Consent is resolved per-category via a pluggable
+`IConsentResolver`.
+
+## Package structure
+
+| Package | Role | Depends on |
+| ------- | ---- | ---------- |
+| `Granit.Http.Cookies` | Cookie registry, consent enforcement, GPC signal | `Granit` |
+| `Granit.Http.Cookies.Klaro` | Klaro CMP consent resolver | `Granit.Http.Cookies` |
+| `Granit.Http.Cookies.Endpoints` | Cookie configuration API endpoint | `Granit.Http.Cookies` |
+| `Granit.Privacy.Regulations.Cookies` | Regulation-aware consent model bridge | `Granit.Http.Cookies`, `Granit.Privacy.Regulations` |
+
+## Setup
+
+```csharp
+[DependsOn(typeof(GranitHttpCookiesModule))]
+public class AppModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.AddGranitCookies(cookies =>
+        {
+            cookies.RegisterCookie(new CookieDefinition(
+                "session_id", CookieCategory.StrictlyNecessary,
+                1, true, "Session identification"));
+
+            cookies.RegisterCookie(new CookieDefinition(
+                "analytics_consent", CookieCategory.Analytics,
+                365, false, "Analytics tracking preference"));
+
+            cookies.UseKlaro();
+        });
+    }
+}
+```
+
+## Cookie categories
+
+| Category | Consent required | Description |
+| -------- | ---------------- | ----------- |
+| `StrictlyNecessary` | No | Session, CSRF, authentication, opt-out tracking |
+| `Preferences` | Yes | Language, theme, layout |
+| `Analytics` | Yes | Usage tracking (first-party) |
+| `Marketing` | Yes | Advertising, retargeting |
+| `SaleOrSharing` | Yes | CCPA "Do Not Sell or Share" — third-party data sharing |
+
+## Managed cookie operations
+
+Always use `IGranitCookieManager` instead of `IResponseCookies`:
+
+```csharp
+public class SessionService(IGranitCookieManager cookieManager)
+{
+    public async Task SetSessionCookieAsync(
+        HttpContext httpContext, string sessionId)
+    {
+        // Checks registry, verifies consent, applies security defaults
+        await cookieManager.SetCookieAsync(
+            httpContext, "session_id", sessionId)
+            .ConfigureAwait(false);
+    }
+}
+```
+
+**Security defaults applied automatically:**
+
+- `Secure = true` (HTTPS only)
+- `SameSite = Lax` (CSRF protection, configurable per cookie)
+- `MaxAge` calculated from `RetentionDays`
+- `HttpOnly` per cookie definition
+
+## Configuration reference
+
+```json
+{
+  "Cookies": {
+    "ThrowOnUnregistered": true,
+    "DefaultRetentionDays": 365,
+    "ThirdPartyServices": [
+      {
+        "Name": "Google Analytics",
+        "Category": "Analytics",
+        "CookiePatterns": ["_ga*", "_gid"]
+      }
+    ]
+  }
+}
+```
+
+## Public API summary
+
+| Category | Key types | Package |
+| -------- | --------- | ------- |
+| Modules | `GranitHttpCookiesModule`, `GranitHttpCookiesKlaroModule` | -- |
+| Registry | `ICookieRegistry`, `CookieDefinition`, `CookieCategory`, `GranitCookiesBuilder` | `Granit.Http.Cookies` |
+| Manager | `IGranitCookieManager`, `IConsentResolver` | `Granit.Http.Cookies` |
+| GPC | `IGlobalPrivacyControlSignal`, `ICookieConsentModelProvider`, `ConsentModelInfo` | `Granit.Http.Cookies` |
+| Klaro | `KlaroConsentResolver`, `KlaroOptions` | `Granit.Http.Cookies.Klaro` |
+
+## See also
+
+- [Consent & GPC](/dotnet/compliance/cookies/consent/) -- Consent models, Global Privacy Control
+- [Klaro CMP](/dotnet/compliance/cookies/klaro/) -- Klaro integration
+- [Regulation Bridge](/dotnet/compliance/cookies/regulation-bridge/) -- Privacy.Regulations bridge
+- [Privacy module](/dotnet/compliance/privacy/) -- Data export, erasure, legal agreements

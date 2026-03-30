@@ -1,0 +1,123 @@
+---
+title: "Privacy — Multi-Regulation Data Subject Rights"
+description: Privacy module — multi-regulation support (GDPR, LGPD, CCPA, PIPL, and 10+ more), cross-module data export, right to erasure with cascading handlers, legal agreement versioning, per-tenant regulation resolution.
+sidebar:
+  order: 1
+  label: Overview
+---
+
+import { FileTree } from "@astrojs/starlight/components";
+
+## Why a privacy module?
+
+Privacy regulations give every user the right to request a full export of their
+personal data and the right to be forgotten. In a modular application, personal
+data is scattered across multiple modules — patient records, uploaded documents,
+notification logs, audit trails. Implementing these rights manually means every
+module needs custom export/deletion logic, and missing one module means a
+compliance violation.
+
+Granit.Privacy turns this into a framework concern: modules register as data
+providers, and a saga orchestrates collection or deletion across all of them.
+Legal agreement tracking (privacy policy versions, consent records) is built in.
+
+With `Granit.Privacy.Regulations`, the module supports **14 jurisdictions
+out of the box** — from EU GDPR to Brazil LGPD, USA CCPA, China PIPL, and more.
+Each tenant can operate under a different regulation, resolved at runtime.
+
+## Package structure
+
+<FileTree>
+- Granit.Privacy Data export saga, deletion with cooling-off, legal agreements
+  - Granit.Privacy.Regulations Regulation registry, 14 built-in profiles, per-tenant resolver
+  - Granit.Privacy.Regulations.Cookies Bridge — regulation-aware cookie consent model
+  - Granit.Privacy.Endpoints Minimal API endpoints for export, deletion, consent, regulation
+  - Granit.Privacy.BackgroundJobs Deletion deadline enforcer job
+  - Granit.Privacy.Notifications Deletion reminder and confirmation emails
+  - Granit.Privacy.AI AI-powered PII detection in free-text fields
+</FileTree>
+
+| Package | Role | Depends on |
+| ------- | ---- | ---------- |
+| `Granit.Privacy` | Data export/deletion orchestration, legal agreements, opt-out | `Granit` |
+| `Granit.Privacy.Regulations` | Regulation registry, 14 built-in profiles, per-tenant resolver | `Granit` |
+| `Granit.Privacy.Regulations.Cookies` | Bridge: regulation-aware cookie consent model | `Granit.Http.Cookies`, `Granit.Privacy.Regulations` |
+| `Granit.Privacy.Endpoints` | HTTP endpoints for data subject rights + regulation profile | `Granit.Privacy`, `Granit.Privacy.Regulations`, `Granit.Http.Cookies`, `Granit.Authorization`, `Granit.Validation` |
+| `Granit.Privacy.BackgroundJobs` | Deletion deadline enforcer | `Granit.Privacy`, `Granit.BackgroundJobs` |
+| `Granit.Privacy.Notifications` | Deletion reminder and confirmation notification bridge | `Granit.Privacy`, `Granit.Notifications` |
+| `Granit.Privacy.AI` | LLM-powered PII detection (`IAIPiiDetector`) | `Granit.Privacy`, `Granit.AI` |
+
+## Setup
+
+```csharp
+[DependsOn(typeof(GranitPrivacyModule))]
+public class AppModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.AddGranitPrivacy(privacy =>
+        {
+            privacy.RegisterDataProvider("PatientModule");
+            privacy.RegisterDataProvider("BlobStorageModule");
+            privacy.RegisterDocument(
+                "privacy-policy", "2.1", "Privacy Policy");
+            privacy.RegisterProcessingPurpose(
+                "marketing-emails", "Marketing Communications",
+                "Sending promotional emails", "CONSENT",
+                requiresExplicitConsent: true);
+        });
+
+        // Register the multi-regulation engine
+        context.Services.AddGranitPrivacyRegulations(
+            context.Configuration);
+    }
+}
+```
+
+## Data provider registry
+
+Modules register themselves as data providers to participate in data export
+and deletion workflows:
+
+```csharp
+privacy.RegisterDataProvider("PatientModule");
+```
+
+When a data subject requests export or deletion, the saga queries all registered
+providers and waits for each to complete.
+
+## Permissions summary
+
+| Permission | Scope |
+| ---------- | ----- |
+| `Privacy.Export.Execute` | Request personal data export |
+| `Privacy.Deletion.Execute` | Request and cancel personal data deletion |
+| `Privacy.Purposes.Read` | Read registered processing purposes |
+| `Privacy.Agreements.Read` | View legal documents and consent status |
+| `Privacy.Agreements.Create` | Accept a legal agreement |
+
+## Public API summary
+
+| Category | Key types | Package |
+| -------- | --------- | ------- |
+| Module | `GranitPrivacyModule`, `GranitPrivacyRegulationsModule`, `GranitPrivacyEndpointsModule` | -- |
+| Regulation | `PrivacyRegulation`, `LegalBasis`, `ConsentModel`, `PrivacyRegulationProfile` | `Granit.Privacy.Regulations` |
+| Resolution | `IPrivacyRegulationResolver`, `IRegulationProfileProvider`, `IRegulationProfileRegistry` | `Granit.Privacy.Regulations` |
+| Deadlines | `IResponseDeadlineTracker`, `PrivacyRequestType`, `UpcomingDeadline` | `Granit.Privacy.Regulations` |
+| Registry | `IDataProviderRegistry`, `ILegalDocumentRegistry`, `ILegalAgreementChecker` | `Granit.Privacy` |
+| Purposes | `IProcessingPurposeRegistry`, `ProcessingPurposeDefinition` | `Granit.Privacy` |
+| Opt-out | `IOptOutRecordReader`, `IOptOutRecordWriter`, `OptOutRecord` | `Granit.Privacy` |
+| Builder | `GranitPrivacyBuilder`, `GranitPrivacyOptions`, `PrivacyRegulationOverrides` | `Granit.Privacy` |
+| Events | `PersonalDataRequestedEto`, `PersonalDataDeletionRequestedEto`, `DeletionDeferredEto`, `OptOutRequestedEto` | `Granit.Privacy` |
+| Endpoints | `MapGranitPrivacy()`, `PrivacyEndpointsOptions`, `PrivacyPermissions` | `Granit.Privacy.Endpoints` |
+
+## See also
+
+- [Regulations](/dotnet/compliance/privacy/regulations/) -- Multi-regulation engine (14 profiles)
+- [Data Export](/dotnet/compliance/privacy/data-export/) -- Scatter-gather export saga
+- [Data Deletion](/dotnet/compliance/privacy/data-deletion/) -- Deletion with cooling-off
+- [Legal Agreements](/dotnet/compliance/privacy/legal-agreements/) -- Consent versioning
+- [Opt-Out (CCPA)](/dotnet/compliance/privacy/opt-out/) -- CCPA anonymous opt-out
+- [Processing Purposes](/dotnet/compliance/privacy/processing-purposes/) -- Legal basis tracking
+- [Crypto-shredding](/dotnet/compliance/crypto-shredding/) -- GDPR erasure without deleting rows
+- [Cookies](/dotnet/compliance/cookies/) -- Cookie consent, GPC, Klaro CMP

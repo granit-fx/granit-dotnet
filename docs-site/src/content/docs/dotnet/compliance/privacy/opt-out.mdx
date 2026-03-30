@@ -1,0 +1,66 @@
+---
+title: "Opt-Out (CCPA)"
+description: CCPA "Do Not Sell or Share" opt-out with anonymous visitor support, cart merge pattern, and granit_optout_id cookie.
+sidebar:
+  order: 6
+  label: Opt-Out (CCPA)
+---
+
+import { Aside, Badge } from "@astrojs/starlight/components";
+
+## CCPA guest opt-out
+
+The CCPA requires that users can opt out of data sale/sharing **without creating
+an account or logging in**. The opt-out system supports both authenticated users
+and anonymous visitors.
+
+### Flow
+
+1. `POST /privacy/opt-out` is `[AllowAnonymous]`
+2. If authenticated → opt-out recorded against `UserId`
+3. If anonymous → `AnonymousTrackId` generated, stored in `granit_optout_id` HTTP-Only cookie
+4. Idempotent — repeated requests return existing opt-out status
+
+### Cookie `granit_optout_id`
+
+| Property | Value |
+| -------- | ----- |
+| Category | `StrictlyNecessary` (registered in `ICookieRegistry`) |
+| HttpOnly | `true` |
+| Secure | `true` |
+| SameSite | `Lax` |
+| Retention | 730 days (2 years) |
+
+### Cart merge (anonymous → authenticated)
+
+When a visitor logs in after opting out anonymously, the application should merge
+the anonymous opt-out with their user profile:
+
+```csharp
+// In your login handler (e.g., Wolverine handler on UserLoggedInEto)
+await optOutWriter.MergeAnonymousAsync(anonymousTrackId, userId);
+```
+
+The framework provides the `IOptOutRecordWriter.MergeAnonymousAsync()` interface;
+the merge call is application-level logic, not auto-triggered.
+
+## Endpoints
+
+| Method | Route | Operation | Auth |
+| ------ | ----- | --------- | ---- |
+| <Badge text="POST" variant="success" /> | `/opt-out` | RequestOptOut | Anonymous |
+| <Badge text="GET" variant="note" /> | `/opt-out/status` | GetOptOutStatus | Anonymous |
+
+<Aside type="tip">
+Applications must provide an opt-out store implementation via
+`privacy.UseOptOutRecordStore<T>()`. Without it, the opt-out endpoints return 501.
+</Aside>
+
+## Setup
+
+```csharp
+context.Services.AddGranitPrivacy(privacy =>
+{
+    privacy.UseOptOutRecordStore<EfCoreOptOutRecordStore>();
+});
+```

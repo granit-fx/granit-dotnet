@@ -1,0 +1,62 @@
+---
+title: "Personal Data Export"
+description: PersonalDataExportSaga — scatter-gather pattern for cross-module data export (GDPR Art. 15/20, LGPD Art. 18, CCPA).
+sidebar:
+  order: 3
+  label: Data Export
+---
+
+import { Aside, Badge } from "@astrojs/starlight/components";
+
+## Export saga
+
+```mermaid
+stateDiagram-v2
+    [*] --> Requested: PersonalDataRequestedEto
+    Requested --> Collecting: Query all providers
+    Collecting --> Prepared: PersonalDataPreparedEto
+    Prepared --> Completed: ExportCompletedEto
+    Collecting --> TimedOut: ExportTimedOutEvent
+    Completed --> [*]
+    TimedOut --> [*]
+```
+
+The `PersonalDataExportSaga` orchestrates data collection across all registered
+data providers using a scatter-gather pattern. Each provider prepares its data
+independently, and the saga assembles the final export package. The saga carries
+the `Regulation` and `TenantId` from the starting event for per-tenant metrics.
+
+## Endpoints
+
+| Method | Route | Operation | Permission |
+| ------ | ----- | --------- | ---------- |
+| <Badge text="POST" variant="success" /> | `/export` | RequestPrivacyExport | `Privacy.Export.Execute` |
+| <Badge text="GET" variant="note" /> | `/export/{requestId}` | GetPrivacyExportStatus | *(owner only)* |
+| <Badge text="GET" variant="note" /> | `/export` | ListPrivacyExports | *(owner only)* |
+
+The POST endpoint triggers the scatter-gather saga. Each registered data provider
+prepares its fragment asynchronously. Poll the status endpoint or wire a
+`Granit.Notifications` handler on `ExportCompletedEto` to notify the user.
+
+When the export is ready, `ArchiveBlobReferenceId` in the response references the
+archive blob. Use the BlobStorage download endpoint to obtain a pre-signed URL.
+
+<Aside type="tip">
+The application must provide an `IExportRequestTrackerReader` / `IExportRequestTrackerWriter`
+implementation via `builder.UseExportRequestTracker<T>()`. This read model decouples
+the HTTP surface from the internal Wolverine saga state.
+</Aside>
+
+## Configuration
+
+```json
+{
+  "Privacy": {
+    "ExportTimeoutMinutes": 5,
+    "ExportMaxSizeMb": 100,
+    "RegulationOverrides": {
+      "BR_LGPD": { "ExportTimeoutMinutes": 3 }
+    }
+  }
+}
+```

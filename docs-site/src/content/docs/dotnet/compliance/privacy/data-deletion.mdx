@@ -1,0 +1,74 @@
+---
+title: "Personal Data Deletion"
+description: PersonalDataDeletionSaga — immediate and deferred deletion with cooling-off period (GDPR Art. 17, LGPD Art. 18, CCPA).
+sidebar:
+  order: 4
+  label: Data Deletion
+---
+
+import { Aside, Badge } from "@astrojs/starlight/components";
+
+## Deletion modes
+
+Two modes are supported — **immediate** (default) and **deferred** with an opt-in
+cooling-off period:
+
+```mermaid
+flowchart TD
+    A["POST /privacy/deletion"] --> B{defer?}
+    B -->|false| C[PersonalDataDeletionRequestedEto]
+    C --> D[Providers delete immediately]
+    D --> E[DeletionExecutedEto]
+    E --> F["Confirmation email"]
+    B -->|true| G[DeletionDeferredEto]
+    G --> H["PersonalDataDeletionSaga starts"]
+    H --> I["Schedule reminder"]
+    H --> J["Schedule deadline"]
+    I --> K["Reminder email"]
+    J --> L{Cancelled?}
+    L -->|No| M[PersonalDataDeletionRequestedEto]
+    M --> N["Confirmation email"]
+    L -->|Yes| O["Saga completed, data preserved"]
+```
+
+## Cooling-off period
+
+When the user sets `defer: true`, the deletion is postponed for a configurable
+grace period (default from the regulation profile). During this period the user
+can cancel via `POST /privacy/deletion/{requestId}/cancel`. A reminder email is
+sent a few days before the deadline. A daily safety-net job
+(`DeletionDeadlineEnforcerJob`) catches any requests that the saga might have
+missed.
+
+## Endpoints
+
+| Method | Route | Operation | Permission |
+| ------ | ----- | --------- | ---------- |
+| <Badge text="POST" variant="success" /> | `/deletion` | RequestPrivacyDeletion | `Privacy.Deletion.Execute` |
+| <Badge text="POST" variant="success" /> | `/deletion/{requestId}/cancel` | CancelPrivacyDeletion | `Privacy.Deletion.Execute` |
+| <Badge text="GET" variant="note" /> | `/deletion/{requestId}` | GetPrivacyDeletionStatus | *(owner only)* |
+| <Badge text="GET" variant="note" /> | `/deletion` | ListPrivacyDeletions | *(owner only)* |
+
+## Configuration
+
+Grace periods default from the regulation profile. Override globally or per-regulation:
+
+```json
+{
+  "Privacy": {
+    "DefaultGracePeriodDays": 30,
+    "MaxGracePeriodDays": 90,
+    "ReminderDaysBefore": 3,
+    "RegulationOverrides": {
+      "BR_LGPD": { "DefaultGracePeriodDays": 15 },
+      "US_CCPA": { "DefaultGracePeriodDays": 45, "MaxGracePeriodDays": 90 }
+    }
+  }
+}
+```
+
+Applications must provide a tracker implementation for deferred deletion state:
+
+```csharp
+privacy.UseDeletionRequestTracker<EfCoreDeletionRequestTracker>();
+```

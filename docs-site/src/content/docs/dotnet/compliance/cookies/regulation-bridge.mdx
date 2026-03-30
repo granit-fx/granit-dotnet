@@ -1,0 +1,53 @@
+---
+title: "Regulation Bridge"
+description: Granit.Privacy.Regulations.Cookies — bridges regulation profiles to cookie consent models for GPC enforcement and opt-in/opt-out handling.
+sidebar:
+  order: 4
+  label: Regulation Bridge
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Why a bridge?
+
+`Granit.Http.Cookies` must not depend on `Granit.Privacy.Regulations` — the cookie
+module is a general-purpose HTTP concern, not a privacy-specific one. The bridge
+package `Granit.Privacy.Regulations.Cookies` connects them using the Dependency
+Inversion Principle.
+
+```text
+Granit.Http.Cookies
+  defines: ICookieConsentModelProvider (interface)
+  uses:    ConsentModelInfo (DTO)
+
+Granit.Privacy.Regulations.Cookies (bridge)
+  implements: RegulationBasedCookieConsentModelProvider
+  reads:      IPrivacyRegulationResolver → PrivacyRegulationProfile
+  maps:       ConsentModel → CookieConsentMode
+```
+
+## Setup
+
+```csharp
+// In your application module
+context.Services.AddGranitRegulationCookiesBridge();
+```
+
+This replaces the default `NullCookieConsentModelProvider` with the regulation-aware
+provider. The `GranitCookieManager` will then consult the tenant's regulation profile
+to determine GPC enforcement and consent model.
+
+## How it works
+
+1. `GranitCookieManager` calls `ICookieConsentModelProvider.GetConsentModelAsync()`
+2. `RegulationBasedCookieConsentModelProvider` resolves the tenant's regulation via `IPrivacyRegulationResolver`
+3. Maps `ConsentModel.OptOut` → `CookieConsentMode.OptOut` (and similar)
+4. Returns `ConsentModelInfo(Mode, HonorGlobalPrivacyControl)` to the cookie manager
+5. Result is **memoized per request** in `HttpContext.Items` to avoid repeated resolver calls
+
+<Aside type="tip">
+Without the bridge package, the cookie module works in its default mode — GPC is
+detected but has no effect (no regulation context available). This is safe: the
+default `NullCookieConsentModelProvider` returns `null`, and the cookie manager
+skips GPC suppression.
+</Aside>

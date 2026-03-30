@@ -1,0 +1,55 @@
+---
+title: "Klaro CMP"
+description: Klaro consent management platform integration — EU-sovereign, open-source CMP for GDPR cookie consent.
+sidebar:
+  order: 3
+  label: Klaro CMP
+---
+
+## What is Klaro?
+
+[Klaro](https://klaro.org/) is a self-hosted, EU-sovereign consent management platform.
+`Granit.Http.Cookies.Klaro` provides `KlaroConsentResolver` which reads the Klaro consent
+cookie and maps service-level consent to Granit cookie categories.
+
+## Setup
+
+```csharp
+context.Services.AddGranitCookies(cookies =>
+{
+    // ... register cookies ...
+    cookies.UseKlaro();
+});
+```
+
+## Configuration
+
+```json
+{
+  "Klaro": {
+    "CookieName": "klaro"
+  },
+  "Cookies": {
+    "ThirdPartyServices": [
+      {
+        "Name": "matomo",
+        "Category": "Analytics",
+        "CookiePatterns": ["^_pk_"]
+      },
+      {
+        "Name": "hubspot",
+        "Category": "Marketing",
+        "CookiePatterns": ["^__hs"]
+      }
+    ]
+  }
+}
+```
+
+## Resolution logic
+
+1. Read the Klaro cookie from the request (name from `KlaroOptions.CookieName`)
+2. Parse as JSON: `{"serviceName": true/false, ...}`
+3. Find all service names mapped to the requested `CookieCategory` via `IThirdPartyServiceRegistry`
+4. Return `true` only if **all** mapped services have consent granted
+5. If no services are mapped for the category → return `false` (fail-safe)

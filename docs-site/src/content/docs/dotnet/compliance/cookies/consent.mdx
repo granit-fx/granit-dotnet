@@ -1,0 +1,67 @@
+---
+title: "Consent Models & GPC"
+description: IConsentResolver, opt-in and opt-out consent models, Global Privacy Control (Sec-GPC) signal support for CCPA compliance.
+sidebar:
+  order: 2
+  label: Consent & GPC
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## IConsentResolver
+
+The consent resolver determines if a user has consented to a cookie category:
+
+```csharp
+public interface IConsentResolver
+{
+    Task<bool> HasConsentAsync(HttpContext httpContext, CookieCategory category);
+}
+```
+
+`StrictlyNecessary` cookies bypass consent checks entirely — the cookie manager
+never calls `HasConsentAsync` for essential cookies.
+
+## Consent models
+
+The cookie system supports four consent models, configured per tenant via the
+regulation profile:
+
+| Model | Behavior | Regulation |
+| ----- | -------- | ---------- |
+| **OptIn** | Cookies blocked until explicit consent | GDPR, LGPD |
+| **OptOut** | Cookies allowed by default, blocked on explicit opt-out | CCPA |
+| **Hybrid** | OptIn for sensitive categories, OptOut for non-sensitive | Some US states |
+| **None** | No specific consent requirement | Jurisdictions without cookie law |
+
+The consent model is resolved via `ICookieConsentModelProvider` — an optional
+interface provided by the bridge package `Granit.Privacy.Regulations.Cookies`.
+
+## Global Privacy Control (GPC)
+
+The [GPC signal](https://globalprivacycontrol.github.io/gpc-spec/) (`Sec-GPC: 1`
+HTTP header) indicates the user prefers not to have their data sold or shared.
+
+`IGlobalPrivacyControlSignal` detects the header. The `GranitCookieManager`
+suppresses cookies based on the consent model:
+
+| Consent model | GPC active | Effect |
+| ------------- | ---------- | ------ |
+| **OptOut** (CCPA) | Yes | Suppress `SaleOrSharing` + `Marketing` only |
+| **OptIn** (GDPR) | Yes | Suppress ALL non-essential categories |
+| **Hybrid** | Yes | Suppress `SaleOrSharing` + `Marketing` only |
+| Any | No | No effect — fall through to `IConsentResolver` |
+
+<Aside type="tip">
+CCPA (OptOut) only suppresses `SaleOrSharing` and `Marketing` when GPC is active.
+First-party `Analytics` cookies are preserved — GPC means "Do Not Sell", not
+"Do Not Track".
+</Aside>
+
+## Default implementations
+
+| Implementation | Behavior |
+| -------------- | -------- |
+| `NullConsentResolver` | Denies consent for all non-essential categories (default) |
+| `NullCookieConsentModelProvider` | Returns `null` — no GPC suppression (default) |
+| `GlobalPrivacyControlHeaderSignal` | Reads `Sec-GPC: 1` header (always registered) |

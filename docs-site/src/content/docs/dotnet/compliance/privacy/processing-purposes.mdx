@@ -1,0 +1,54 @@
+---
+title: "Processing Purposes"
+description: Legal basis tracking — declare processing purposes at startup with their legal basis for GDPR Art. 6, LGPD Art. 7, and other regulations.
+sidebar:
+  order: 7
+  label: Processing Purposes
+---
+
+import { Badge } from "@astrojs/starlight/components";
+
+## Purpose registry
+
+Declare processing purposes at application startup:
+
+```csharp
+context.Services.AddGranitPrivacy(privacy =>
+{
+    privacy.RegisterProcessingPurpose(
+        "marketing-emails", "Marketing Communications",
+        "Sending promotional emails based on user preferences",
+        "CONSENT", requiresExplicitConsent: true);
+
+    privacy.RegisterProcessingPurpose(
+        "order-fulfillment", "Order Processing",
+        "Processing orders placed by the user",
+        "CONTRACT");
+
+    privacy.RegisterProcessingPurpose(
+        "analytics", "Usage Analytics",
+        "Tracking application usage for improvement",
+        "LEGITIMATE_INTEREST");
+});
+```
+
+The `IProcessingPurposeRegistry` is backed by `FrozenDictionary` for thread-safe,
+read-optimized access at runtime.
+
+## Legal bases by regulation
+
+| Regulation | Legal bases |
+| ---------- | ----------- |
+| **GDPR** (6) | Consent, Contract, Legal Obligation, Vital Interest, Public Interest, Legitimate Interest |
+| **LGPD** (10) | GDPR 6 + Credit Protection, Health Protection, Research, Life Protection |
+| **PIPL** (7) | Consent, Contract, Legal Obligation, Vital Interest, Public Interest, HR Management, Statutory Duty |
+| **CCPA** | No legal basis concept (consumer rights model) |
+
+## Endpoint
+
+| Method | Route | Operation | Permission |
+| ------ | ----- | --------- | ---------- |
+| <Badge text="GET" variant="note" /> | `/purposes` | ListProcessingPurposes | `Privacy.Purposes.Read` |
+
+Returns all registered processing purposes with their legal basis, consent
+requirement, and optional data category.

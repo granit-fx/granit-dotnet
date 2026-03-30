@@ -1,0 +1,140 @@
+---
+title: "Multi-Regulation Engine"
+description: Granit.Privacy.Regulations — 14 built-in regulation profiles (GDPR, LGPD, CCPA, PIPL, DPDPA, and more) with per-tenant resolution via IPrivacyRegulationResolver.
+sidebar:
+  order: 2
+  label: Regulations
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Per-tenant regulation resolution
+
+Each tenant can operate under a different regulation. The resolver checks:
+
+1. Per-tenant override in `appsettings.json`
+2. Default regulation
+
+```json
+{
+  "Privacy": {
+    "Regulations": {
+      "DefaultRegulation": "EU_GDPR",
+      "TenantRegulations": {
+        "tenant-brazil": "BR_LGPD",
+        "tenant-california": "US_CCPA",
+        "tenant-china": "CN_PIPL"
+      }
+    }
+  }
+}
+```
+
+## Built-in profiles
+
+`Granit.Privacy.Regulations` ships **14 built-in profiles** across two tiers:
+
+| Tier | Regulations |
+| ---- | ----------- |
+| **Tier 1** (fully supported) | EU GDPR, UK GDPR, Brazil LGPD, USA CCPA/CPRA, Canada PIPEDA, Quebec Law 25, Switzerland nFADP |
+| **Tier 2** (configurable) | China PIPL, India DPDPA, Japan APPI, South Korea PIPA, Australia Privacy Act, South Africa POPIA, Thailand PDPA |
+| **Tier 3** (extensible) | Any custom regulation via `IRegulationProfileProvider` |
+
+## Regulation profile
+
+Each profile is an immutable `PrivacyRegulationProfile` record containing:
+
+- **Consent model** — `OptIn` (GDPR, LGPD), `OptOut` (CCPA), `Hybrid`, `None`
+- **Legal bases** — 6 for GDPR, 10 for LGPD (adds credit protection, health, research, life protection)
+- **Response timelines** — SAR deadline (30d GDPR, 15d LGPD, 45d CCPA), extensions, deletion, rectification
+- **Deletion grace period** — default and maximum days for deferred deletion
+- **Breach notification** — hours to notify authority (72h GDPR, 24h PIPL) and individuals
+- **Age verification** — minimum consent age (16 GDPR, 18 LGPD/DPDPA, 13 UK GDPR)
+- **Cookie consent** — opt-in (EU), opt-out (CCPA), GPC signal support
+- **Cross-border transfers** — required assessment, mechanisms (SCC, BCR, Adequacy, CAC)
+- **Data localization** — required for China PIPL (critical infrastructure)
+- **DPO requirements** — whether a DPO or local representative is needed
+
+## Regulation comparison
+
+| Feature | EU GDPR | Brazil LGPD | USA CCPA | China PIPL | India DPDPA |
+| ------- | ------- | ----------- | -------- | ---------- | ----------- |
+| Consent model | Opt-in | Opt-in | Opt-out | Opt-in | Opt-in |
+| Legal bases | 6 | 10 | N/A | 7 | 4 |
+| SAR deadline | 30 days | 15 days | 45 days | 30 days | 30 days |
+| Breach notify | 72h | Prompt | Unreasonable delay | 24h | TBD |
+| Min. consent age | 16 | 18 | 16 | 14 | 18 |
+| GPC required | No | No | Yes | No | No |
+| Data localization | No | No | No | Conditional | No |
+
+## Custom regulations (Tier 3)
+
+```csharp
+public class SaudiPdplProfileProvider : IRegulationProfileProvider
+{
+    public void Define(IRegulationProfileContext context) =>
+        context.Register(new PrivacyRegulationProfile
+        {
+            Regulation = PrivacyRegulation.Create("SA_PDPL"),
+            DisplayName = "Saudi Arabia Personal Data Protection Law",
+            JurisdictionCode = "SA",
+            ConsentModel = ConsentModel.OptIn,
+            // ... all fields explicitly set
+        });
+}
+
+// Register at startup:
+services.AddGranitPrivacyRegulations(configuration, regulations =>
+{
+    regulations.AddProvider<SaudiPdplProfileProvider>();
+});
+```
+
+## Composite profiles for multi-regulation tenants
+
+When a tenant operates under multiple regulations simultaneously (e.g., EU SaaS
+serving California users), create an explicit composite profile rather than relying
+on automatic merging:
+
+```csharp
+public class EuGdprUsCcpaCompositeProvider : IRegulationProfileProvider
+{
+    public void Define(IRegulationProfileContext context) =>
+        context.Register(new PrivacyRegulationProfile
+        {
+            Regulation = PrivacyRegulation.Create("EU_GDPR+US_CCPA"),
+            DisplayName = "EU GDPR + US CCPA Composite",
+            JurisdictionCode = "EU",
+            ConsentModel = ConsentModel.OptIn,  // GDPR wins
+            HonorGlobalPrivacyControl = true,   // CCPA requirement added
+            // ... all fields set by deliberate business decision
+        });
+}
+```
+
+## Regulation endpoint
+
+| Method | Route | Operation |
+| ------ | ----- | --------- |
+| `GET` | `/regulation` | GetApplicableRegulation |
+
+Returns the full `PrivacyRegulationProfile` for the current tenant — consent model,
+response timelines, breach notification deadlines, age thresholds, cookie consent
+rules, cross-border transfer requirements, and more.
+
+## Response deadline tracking
+
+`IResponseDeadlineTracker` calculates regulation-mandated response deadlines:
+
+```csharp
+DateTimeOffset deadline = await deadlineTracker.CalculateDeadlineAsync(
+    PrivacyRequestType.SubjectAccessRequest,
+    profile,
+    requestedAt);
+// GDPR → requestedAt + 30 days
+// LGPD → requestedAt + 15 days
+// CCPA → requestedAt + 45 days
+```
+
+All Tier 1 and Tier 2 regulations use calendar days. Applications needing business
+day calculation can provide a custom `IResponseDeadlineTracker` implementation.

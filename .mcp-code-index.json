@@ -23849,7 +23849,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Extensions/PrivacyEndpointRouteBuilderExtensions.cs",
-      "line": 35,
+      "line": 36,
       "members": [
         {
           "name": "MapGranitPrivacy",

@@ -1,0 +1,47 @@
+---
+title: "Legal Agreements"
+description: Consent versioning for privacy policies and terms of service, with ILegalAgreementChecker for GDPR Art. 7 proof of consent.
+sidebar:
+  order: 5
+  label: Legal Agreements
+---
+
+import { Aside, Badge } from "@astrojs/starlight/components";
+
+## Consent versioning
+
+Track consent to legal documents (privacy policy, terms of service):
+
+```csharp
+privacy.RegisterDocument("privacy-policy", "2.1", "Privacy Policy");
+privacy.RegisterDocument("terms-of-service", "1.0", "Terms of Service");
+```
+
+Provide a store implementation to persist agreement records:
+
+```csharp
+privacy.UseLegalAgreementStore<EfCoreLegalAgreementStore>();
+```
+
+`ILegalAgreementChecker` verifies if a user has signed the current version of a
+document — useful for middleware that blocks access until consent is renewed after
+a policy update.
+
+## Endpoints
+
+| Method | Route | Operation | Permission |
+| ------ | ----- | --------- | ---------- |
+| <Badge text="GET" variant="note" /> | `/agreements/documents` | ListPrivacyLegalDocuments | `Privacy.Agreements.Read` |
+| <Badge text="GET" variant="note" /> | `/agreements/status` | GetPrivacyConsentStatus | `Privacy.Agreements.Read` |
+| <Badge text="GET" variant="note" /> | `/agreements/history` | ListPrivacyAgreementHistory | `Privacy.Agreements.Read` |
+| <Badge text="POST" variant="success" /> | `/agreements/accept` | AcceptPrivacyAgreement | `Privacy.Agreements.Create` |
+
+The accept endpoint validates that the submitted version matches the current version
+(rejects stale consent with 422), checks for duplicate acceptance (409), captures and
+pseudonymizes the client IP for the audit trail.
+
+<Aside type="caution">
+The consent endpoint reads `RemoteIpAddress` from `HttpContext.Connection`. When
+running behind a reverse proxy (Aspire, Docker, Nginx), enable
+`ForwardedHeadersMiddleware` to capture the real client IP.
+</Aside>
