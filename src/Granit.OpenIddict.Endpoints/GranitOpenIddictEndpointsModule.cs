@@ -3,6 +3,7 @@ using Granit.Caching;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
 using Granit.OpenIddict.Endpoints.Internal;
+using Granit.OpenIddict.Server;
 using Granit.QueryEngine;
 using Granit.Validation;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,7 @@ namespace Granit.OpenIddict.Endpoints;
     typeof(GranitCachingModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitOpenIddictModule),
+    typeof(GranitOpenIddictServerModule),
     typeof(GranitQueryEngineAbstractionsModule),
     typeof(GranitValidationModule))]
 public sealed class GranitOpenIddictEndpointsModule : GranitModule

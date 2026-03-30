@@ -1,6 +1,8 @@
 using System.Collections.Immutable;
 using System.Security.Claims;
 using Granit.Identity.Local.Domain;
+using Granit.MultiTenancy;
+using Granit.OpenIddict.Diagnostics;
 using Granit.OpenIddict.Endpoints.Internal;
 using Granit.OpenIddict.Endpoints.Options;
 using Microsoft.AspNetCore;
@@ -53,16 +55,16 @@ internal static partial class ConnectAuthorizationEndpoints
 
         if (!authenticateResult.Succeeded || authenticateResult.Principal is null)
         {
-            // Not authenticated — challenge to redirect to the login page.
-            // The cookie handler appends ReturnUrl with the current request URI.
+            // Not authenticated — redirect to the configured login page.
+            // In headless/BFF mode this points to the SPA login route; in MVC mode
+            // it points to a Razor page. The returnUrl lets the login page redirect
+            // back to /connect/authorize after successful authentication.
+            string returnUrl = context.Request.PathBase + context.Request.Path + context.Request.QueryString;
+            string loginUrl = $"{options.LoginPath}?returnUrl={Uri.EscapeDataString(returnUrl)}";
+
             LogUnauthenticatedRedirect(logger, request.ClientId ?? "(null)");
 
-            return Results.Challenge(
-                new AuthenticationProperties
-                {
-                    RedirectUri = context.Request.PathBase + context.Request.Path + context.Request.QueryString,
-                },
-                [IdentityConstants.ApplicationScheme]);
+            return Results.Redirect(loginUrl);
         }
 
         // Resolve the application to check consent type.
@@ -139,7 +141,7 @@ internal static partial class ConnectAuthorizationEndpoints
             authorizations.Add(auth);
         }
 
-        authorization = authorizations.Find(_ => true);
+        authorization = authorizations.FirstOrDefault();
 
         if (authorization is null)
         {
@@ -158,6 +160,11 @@ internal static partial class ConnectAuthorizationEndpoints
         principal.SetAuthorizationId(authorizationId);
 
         LogAuthorizationGranted(logger, user.Id.ToString(), request.ClientId!);
+
+        ICurrentTenant? currentTenant = context.RequestServices.GetService<ICurrentTenant>();
+        string? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id?.ToString() : null;
+        OpenIddictMetrics metrics = context.RequestServices.GetRequiredService<OpenIddictMetrics>();
+        metrics.RecordAuthenticationSuccess(tenantId, "authorization_code");
 
         return Results.SignIn(principal,
             authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);

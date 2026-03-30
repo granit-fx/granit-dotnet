@@ -49,7 +49,7 @@ internal static class AdminOidcEndpoints
             .WithDescription(
                 "Generates a new client secret, invalidating the old one immediately. "
                 + "The new plaintext secret is returned once in the response (never stored in plaintext).")
-            .Produces<AdminOidcApplicationResponse>()
+            .Produces<AdminOidcRotateSecretResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(OpenIddictPermissions.Applications.Rotate);
 
@@ -312,14 +312,24 @@ internal static class AdminOidcEndpoints
 
     private static async Task<NoContent> RevokeUserAuthorizationsAsync(
         Guid userId,
+        [FromServices] IOpenIddictAuthorizationManager authorizationManager,
         [FromServices] IOpenIddictTokenManager tokenManager,
         CancellationToken cancellationToken)
     {
+        string subject = userId.ToString();
+
         // Revoke all tokens for this user (security incident / GDPR erasure)
         await foreach (object token in tokenManager.FindBySubjectAsync(
-            userId.ToString(), cancellationToken).ConfigureAwait(false))
+            subject, cancellationToken).ConfigureAwait(false))
         {
             await tokenManager.TryRevokeAsync(token, cancellationToken).ConfigureAwait(false);
+        }
+
+        // Revoke all authorizations for this user
+        await foreach (object authorization in authorizationManager.FindBySubjectAsync(
+            subject, cancellationToken).ConfigureAwait(false))
+        {
+            await authorizationManager.DeleteAsync(authorization, cancellationToken).ConfigureAwait(false);
         }
 
         return TypedResults.NoContent();

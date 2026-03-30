@@ -28,6 +28,7 @@ public static class OpenIddictEndpointRouteBuilderExtensions
         RouteGroupBuilder accountGroup = endpoints
             .MapGranitGroup(options.AccountRoutePrefix);
 
+        accountGroup.MapAccountLoginEndpoints();
         accountGroup.MapAccountRegistrationEndpoints();
         accountGroup.MapAccountProfileEndpoints();
         accountGroup.MapAccountPasswordEndpoints();

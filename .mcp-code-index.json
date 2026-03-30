@@ -21289,6 +21289,24 @@
       "members": []
     },
     {
+      "name": "AccountLoginRequest",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountLoginRequest",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountLoginRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "AccountLoginResponse",
+      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountLoginResponse",
+      "kind": "record",
+      "project": "Granit.OpenIddict.Endpoints",
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountLoginResponse.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "AccountPasswordChangeRequest",
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountPasswordChangeRequest",
       "kind": "record",
@@ -21320,8 +21338,8 @@
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountProfileUpdateRequest",
       "kind": "record",
       "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountProfileResponse.cs",
-      "line": 29,
+      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountProfileUpdateRequest.cs",
+      "line": 8,
       "members": []
     },
     {
@@ -21481,7 +21499,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/GranitOpenIddictEndpointsModule.cs",
-      "line": 32,
+      "line": 34,
       "members": [
         {
           "name": "ConfigureServices",
@@ -21509,18 +21527,6 @@
           "name": "AdminRoutePrefix",
           "kind": "property",
           "signature": "string AdminRoutePrefix",
-          "returnType": "string"
-        },
-        {
-          "name": "AccountTagName",
-          "kind": "property",
-          "signature": "string AccountTagName",
-          "returnType": "string"
-        },
-        {
-          "name": "AdminTagName",
-          "kind": "property",
-          "signature": "string AdminTagName",
           "returnType": "string"
         }
       ]
