@@ -9,7 +9,7 @@ namespace Granit.Privacy.OptOut.Events;
 public sealed record OptOutRevokedEto(
     Guid Id,
     Guid? UserId,
-    [property: SensitiveData(Level = Sensitivity.Confidential)]
+    [property: SensitiveData(Level = Sensitivity.Internal)]
     string? AnonymousTrackId,
     DateTimeOffset RevokedAt,
     string Regulation,

@@ -1229,6 +1229,7 @@
         "Granit.Authorization",
         "Granit.Guids",
         "Granit.Http.ApiDocumentation",
+        "Granit.Http.Cookies",
         "Granit.Privacy",
         "Granit.Privacy.Regulations",
         "Granit.Validation"
@@ -23848,7 +23849,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Extensions/PrivacyEndpointRouteBuilderExtensions.cs",
-      "line": 34,
+      "line": 35,
       "members": [
         {
           "name": "MapGranitPrivacy",
@@ -23864,7 +23865,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/GranitPrivacyEndpointsModule.cs",
-      "line": 35,
+      "line": 37,
       "members": []
     },
     {

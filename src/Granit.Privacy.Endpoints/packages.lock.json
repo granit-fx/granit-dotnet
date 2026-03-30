@@ -274,6 +274,12 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.http.cookies": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {
@@ -419,8 +425,8 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.25.0",
-        "contentHash": "lsk+cDGVfFKKUTuV7mq3FgDKccVLqv3vB/Q+h/e/a86hN6BDJ72ARtpsOcqdIp5r+BK2E515j0YJ2UjW6RJjYw==",
+        "resolved": "5.26.0",
+        "contentHash": "UwdixZuuDDomNaItrjjKhjNjiRD2QrsalwhyQbWHWIdoSflYprAqcnD+qF+khQZQjHHfOCwkUKSLSHzTVd3B8w==",
         "dependencies": {
           "JasperFx": "1.22.0",
           "JasperFx.Events": "1.24.1",

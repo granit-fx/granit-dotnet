@@ -1,6 +1,7 @@
 using Granit.Authorization;
 using Granit.Guids;
 using Granit.Http.ApiDocumentation;
+using Granit.Http.Cookies;
 using Granit.Modularity;
 using Granit.Privacy.Regulations;
 using Granit.Validation;
@@ -29,6 +30,7 @@ namespace Granit.Privacy.Endpoints;
     typeof(GranitAuthorizationModule),
     typeof(GranitGuidsModule),
     typeof(GranitHttpApiDocumentationModule),
+    typeof(GranitHttpCookiesModule),
     typeof(GranitPrivacyModule),
     typeof(GranitPrivacyRegulationsModule),
     typeof(GranitValidationModule))]
