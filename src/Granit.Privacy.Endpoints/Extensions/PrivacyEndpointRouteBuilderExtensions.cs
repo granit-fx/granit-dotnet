@@ -276,7 +276,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
             .ConfigureAwait(false);
 
         await eventBus
-            .PublishAsync(new PersonalDataRequestedEto(requestId, userId, now, regulation), cancellationToken)
+            .PublishAsync(new PersonalDataRequestedEto(requestId, userId, now, regulation, tenantId), cancellationToken)
             .ConfigureAwait(false);
 
         metrics.RecordExportRequested(tenantId, regulation);
@@ -378,7 +378,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
 
             await eventBus
                 .PublishAsync(
-                    new DeletionDeferredEto(requestId, userId, requestedBy, now, body.Reason, scheduledDeletionAt, regulation),
+                    new DeletionDeferredEto(requestId, userId, requestedBy, now, body.Reason, scheduledDeletionAt, regulation, tenantId),
                     cancellationToken)
                 .ConfigureAwait(false);
 

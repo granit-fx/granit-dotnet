@@ -13,4 +13,5 @@ public sealed record DeletionDeferredEto(
     DateTimeOffset RequestedAt,
     string Reason,
     DateTimeOffset ScheduledDeletionAt,
-    string Regulation) : IIntegrationEvent;
+    string Regulation,
+    string? TenantId = null) : IIntegrationEvent;

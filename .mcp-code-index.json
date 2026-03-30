@@ -23439,7 +23439,7 @@
           "name": "StartAsync",
           "kind": "method",
           "signature": "StartAsync(DeletionDeferredEto @event, IOptions<GranitPrivacyOptions> options, IMessageContext context, IDeletionRequestTrackerWriter tracker, PrivacyMetrics metrics)",
-          "returnType": "bool ReminderSent { get; set; } public Task"
+          "returnType": "string? TenantId { get; set; } public bool ReminderSent { get; set; } public Task"
         }
       ]
     },
@@ -23593,7 +23593,7 @@
           "name": "StartAsync",
           "kind": "method",
           "signature": "StartAsync(PersonalDataRequestedEto @event, IDataProviderRegistry registry, IOptions<GranitPrivacyOptions> options, IMessageContext context, PrivacyMetrics metrics)",
-          "returnType": "Task<ExportCompletedEto?>"
+          "returnType": "string? TenantId { get; set; } public Task<ExportCompletedEto?>"
         }
       ]
     },

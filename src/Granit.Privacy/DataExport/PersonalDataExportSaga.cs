@@ -53,6 +53,9 @@ public sealed class PersonalDataExportSaga : Saga
     /// <summary>Applicable privacy regulation code for this export request.</summary>
     public string Regulation { get; set; } = string.Empty;
 
+    /// <summary>Tenant identifier propagated from the starting event for metrics tagging.</summary>
+    public string? TenantId { get; set; }
+
     /// <summary>
     /// Starts the Saga when a data subject requests export of their personal data.
     /// If no providers are registered, completes immediately.
@@ -68,8 +71,9 @@ public sealed class PersonalDataExportSaga : Saga
         Id = @event.RequestId;
         UserId = @event.UserId;
         Regulation = @event.Regulation;
+        TenantId = @event.TenantId;
         ExpectedCount = registry.Count;
-        metrics.RecordExportRequested(null);
+        metrics.RecordExportRequested(TenantId, Regulation);
         PendingProviders = [.. registry.GetAll()];
 
         if (ExpectedCount == 0)
@@ -93,7 +97,7 @@ public sealed class PersonalDataExportSaga : Saga
     {
         ReceivedFragments.Add(new ReceivedFragment(@event.ProviderName, @event.BlobReferenceId, @event.ContentType));
         PendingProviders.Remove(@event.ProviderName);
-        metrics.RecordFragmentReceived(null, @event.ProviderName);
+        metrics.RecordFragmentReceived(TenantId, @event.ProviderName, Regulation);
 
         if (ReceivedFragments.Count < ExpectedCount)
         {
@@ -110,7 +114,7 @@ public sealed class PersonalDataExportSaga : Saga
     /// </summary>
     public ExportCompletedEto Handle(ExportTimedOutEvent @event, PrivacyMetrics metrics)
     {
-        metrics.RecordExportCompleted(null, "timeout", TimeSpan.Zero);
+        metrics.RecordExportCompleted(TenantId, "timeout", TimeSpan.Zero, Regulation);
         MarkCompleted();
         return new ExportCompletedEto(
             Id,

@@ -53,6 +53,9 @@ public sealed class PersonalDataDeletionSaga : Saga
     /// <summary>Applicable privacy regulation code for this deletion request.</summary>
     public string Regulation { get; set; } = string.Empty;
 
+    /// <summary>Tenant identifier propagated from the starting event for metrics tagging.</summary>
+    public string? TenantId { get; set; }
+
     /// <summary>Whether the reminder notification has been sent.</summary>
     public bool ReminderSent { get; set; }
 
@@ -72,13 +75,14 @@ public sealed class PersonalDataDeletionSaga : Saga
         RequestedBy = @event.RequestedBy;
         Reason = @event.Reason;
         Regulation = @event.Regulation;
+        TenantId = @event.TenantId;
         RequestedAt = @event.RequestedAt;
         ScheduledDeletionAt = @event.ScheduledDeletionAt;
 
         await tracker.RecordDeferredAsync(
             Id, UserId, Reason, RequestedAt, ScheduledDeletionAt).ConfigureAwait(false);
 
-        metrics.RecordDeletionDeferred(null);
+        metrics.RecordDeletionDeferred(TenantId, Regulation);
 
         TimeSpan gracePeriod = ScheduledDeletionAt - RequestedAt;
         int reminderDaysBefore = options.Value.ReminderDaysBefore;
@@ -105,7 +109,7 @@ public sealed class PersonalDataDeletionSaga : Saga
     public DeletionReminderDueEto Handle(DeletionReminderDueEvent @event, PrivacyMetrics metrics)
     {
         ReminderSent = true;
-        metrics.RecordDeletionReminderSent(null);
+        metrics.RecordDeletionReminderSent(TenantId, Regulation);
 
         return new DeletionReminderDueEto(Id, UserId, ScheduledDeletionAt);
     }
@@ -124,7 +128,7 @@ public sealed class PersonalDataDeletionSaga : Saga
         DateTimeOffset now = timeProvider.GetUtcNow();
 
         await tracker.MarkExecutedAsync(Id, now).ConfigureAwait(false);
-        metrics.RecordDeletionExecuted(null);
+        metrics.RecordDeletionExecuted(TenantId, Regulation);
         MarkCompleted();
 
         return
@@ -144,7 +148,7 @@ public sealed class PersonalDataDeletionSaga : Saga
         PrivacyMetrics metrics)
     {
         await tracker.MarkCancelledAsync(Id, @event.CancelledAt).ConfigureAwait(false);
-        metrics.RecordDeletionCancelled(null);
+        metrics.RecordDeletionCancelled(TenantId, Regulation);
         MarkCompleted();
     }
 }

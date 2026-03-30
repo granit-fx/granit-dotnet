@@ -11,4 +11,5 @@ public sealed record PersonalDataRequestedEto(
     Guid UserId,
     DateTimeOffset RequestedAt,
     string Regulation,
+    string? TenantId = null,
     string RequestedFormat = "JSON") : IIntegrationEvent;
