@@ -781,6 +781,17 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.Local.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Caching",
+        "Granit.Http.ApiDocumentation",
+        "Granit.Identity.Local",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Imaging",
       "deps": [
         "Granit"
@@ -1155,8 +1166,17 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Persistence",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Persistence.EntityFrameworkCore",
       "deps": [
+        "Granit.Persistence",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Guids",
         "Granit.Timing",
         "Granit.Http.ExceptionHandling"
@@ -15423,6 +15443,70 @@
       ]
     },
     {
+      "name": "IdentityLocalMetrics",
+      "fqn": "Granit.Identity.Local.Diagnostics.IdentityLocalMetrics",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Diagnostics/IdentityLocalMetrics.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "RecordAuthenticationSuccess",
+          "kind": "method",
+          "signature": "RecordAuthenticationSuccess(string? tenantId, string grantType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAuthenticationFailure",
+          "kind": "method",
+          "signature": "RecordAuthenticationFailure(string? tenantId, string reason)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordRegistration",
+          "kind": "method",
+          "signature": "RecordRegistration(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordPasswordChange",
+          "kind": "method",
+          "signature": "RecordPasswordChange(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordPasswordReset",
+          "kind": "method",
+          "signature": "RecordPasswordReset(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAccountDeletion",
+          "kind": "method",
+          "signature": "RecordAccountDeletion(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordImpersonation",
+          "kind": "method",
+          "signature": "RecordImpersonation(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordTwoFactorEvent",
+          "kind": "method",
+          "signature": "RecordTwoFactorEvent(string? tenantId, string action)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordExternalLogin",
+          "kind": "method",
+          "signature": "RecordExternalLogin(string? tenantId, string provider, bool isNewUser)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "GranitRole",
       "fqn": "Granit.Identity.Local.Domain.GranitRole",
       "kind": "class",
@@ -15479,6 +15563,233 @@
       "members": []
     },
     {
+      "name": "AccountAuthenticatorKeyResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountAuthenticatorKeyResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountAuthenticatorKeyResponse.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "AccountDeleteRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountDeleteRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountDeleteRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "AccountForgotPasswordRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountForgotPasswordRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountForgotPasswordRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "AccountLoginRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountLoginRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountLoginRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "AccountLoginResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountLoginResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountLoginResponse.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "AccountPasswordChangeRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountPasswordChangeRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountPasswordChangeRequest.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "AccountPasswordResetRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountPasswordResetRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountPasswordResetRequest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "AccountProfileResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountProfileResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountProfileResponse.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "AccountProfileUpdateRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountProfileUpdateRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountProfileUpdateRequest.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "AccountRecoveryCodesResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountRecoveryCodesResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountRecoveryCodesResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "AccountRegisterRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountRegisterRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountRegisterRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "AccountRegisterResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountRegisterResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountRegisterRequest.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "AccountTwoFactorDisableRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountTwoFactorDisableRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountTwoFactorDisableRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "AccountTwoFactorEnableRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountTwoFactorEnableRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountTwoFactorEnableRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "AccountTwoFactorEnableResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountTwoFactorEnableResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountTwoFactorEnableResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "AccountTwoFactorStatusResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountTwoFactorStatusResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountTwoFactorStatusResponse.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "PasskeyRegistrationRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.PasskeyRegistrationRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/PasskeyRegistrationRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PasskeyRenameRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.PasskeyRenameRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/PasskeyRenameRequest.cs",
+      "line": 5,
+      "members": []
+    },
+    {
+      "name": "AccountEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Identity.Local.Endpoints.Extensions.AccountEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Extensions/AccountEndpointRouteBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "MapAccountEndpoints",
+          "kind": "method",
+          "signature": "MapAccountEndpoints(this IEndpointRouteBuilder endpoints, Action<AccountEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitIdentityLocalEndpointsModule",
+      "fqn": "Granit.Identity.Local.Endpoints.GranitIdentityLocalEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/GranitIdentityLocalEndpointsModule.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "AccountEndpointsOptions",
+      "fqn": "Granit.Identity.Local.Endpoints.Options.AccountEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Options/AccountEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AccountRoutePrefix",
+          "kind": "property",
+          "signature": "string AccountRoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "AdminRoutePrefix",
+          "kind": "property",
+          "signature": "string AdminRoutePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "IdentityLocalPermissions",
+      "fqn": "Granit.Identity.Local.Endpoints.Permissions.IdentityLocalPermissions",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Permissions/IdentityLocalPermissions.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "Users",
+      "fqn": "Granit.Identity.Local.Endpoints.Permissions.Users",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Permissions/IdentityLocalPermissions.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "AccountDeletedEto",
       "fqn": "Granit.Identity.Local.Events.AccountDeletedEto",
       "kind": "record",
@@ -15513,6 +15824,22 @@
       "file": "src/Granit.Identity.Local/Events/UserRegisteredEto.cs",
       "line": 14,
       "members": []
+    },
+    {
+      "name": "ClaimsPrincipalExtensions",
+      "fqn": "Granit.Identity.Local.Extensions.ClaimsPrincipalExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Extensions/ClaimsPrincipalExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "IsImpersonated",
+          "kind": "method",
+          "signature": "IsImpersonated(this ClaimsPrincipal principal)",
+          "returnType": "bool"
+        }
+      ]
     },
     {
       "name": "GranitIdentityLocalModule",
@@ -15638,6 +15965,28 @@
           "kind": "method",
           "signature": "ProcessCallbackAsync(ClaimsPrincipal principal, string provider, CancellationToken cancellationToken = default)",
           "returnType": "Task<ProcessCallbackResult>"
+        }
+      ]
+    },
+    {
+      "name": "IExternalProviderRegistry",
+      "fqn": "Granit.Identity.Local.Services.IExternalProviderRegistry",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IExternalProviderRegistry.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "GetConfiguredProviderNames",
+          "kind": "method",
+          "signature": "GetConfiguredProviderNames()",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "IsProviderConfigured",
+          "kind": "method",
+          "signature": "IsProviderConfigured(string providerName)",
+          "returnType": "bool"
         }
       ]
     },
@@ -15873,6 +16222,15 @@
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Services/ITwoFactorService.cs",
       "line": 35,
+      "members": []
+    },
+    {
+      "name": "UserSessionActivity",
+      "fqn": "Granit.Identity.Local.Services.UserSessionActivity",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/UserSessionActivity.cs",
+      "line": 13,
       "members": []
     },
     {
@@ -21203,7 +21561,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Diagnostics/OpenIddictMetrics.cs",
-      "line": 15,
+      "line": 21,
       "members": [
         {
           "name": "RecordTokenIssued",
@@ -21227,48 +21585,6 @@
           "name": "RecordAuthenticationFailure",
           "kind": "method",
           "signature": "RecordAuthenticationFailure(string? tenantId, string reason)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordRegistration",
-          "kind": "method",
-          "signature": "RecordRegistration(string? tenantId)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordPasswordChange",
-          "kind": "method",
-          "signature": "RecordPasswordChange(string? tenantId)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordPasswordReset",
-          "kind": "method",
-          "signature": "RecordPasswordReset(string? tenantId)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordAccountDeletion",
-          "kind": "method",
-          "signature": "RecordAccountDeletion(string? tenantId)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordImpersonation",
-          "kind": "method",
-          "signature": "RecordImpersonation(string? tenantId)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordTwoFactorEvent",
-          "kind": "method",
-          "signature": "RecordTwoFactorEvent(string? tenantId, string action)",
-          "returnType": "void"
-        },
-        {
-          "name": "RecordExternalLogin",
-          "kind": "method",
-          "signature": "RecordExternalLogin(string? tenantId, string provider, bool isNewUser)",
           "returnType": "void"
         },
         {
@@ -21353,150 +21669,6 @@
       "members": []
     },
     {
-      "name": "AccountAuthenticatorKeyResponse",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountAuthenticatorKeyResponse",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountAuthenticatorKeyResponse.cs",
-      "line": 8,
-      "members": []
-    },
-    {
-      "name": "AccountDeleteRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountDeleteRequest",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountDeleteRequest.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "AccountForgotPasswordRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountForgotPasswordRequest",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountForgotPasswordRequest.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "AccountLoginRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountLoginRequest",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountLoginRequest.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "AccountLoginResponse",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountLoginResponse",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountLoginResponse.cs",
-      "line": 10,
-      "members": []
-    },
-    {
-      "name": "AccountPasswordChangeRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountPasswordChangeRequest",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountPasswordChangeRequest.cs",
-      "line": 8,
-      "members": []
-    },
-    {
-      "name": "AccountPasswordResetRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountPasswordResetRequest",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountPasswordResetRequest.cs",
-      "line": 9,
-      "members": []
-    },
-    {
-      "name": "AccountProfileResponse",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountProfileResponse",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountProfileResponse.cs",
-      "line": 14,
-      "members": []
-    },
-    {
-      "name": "AccountProfileUpdateRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountProfileUpdateRequest",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountProfileUpdateRequest.cs",
-      "line": 8,
-      "members": []
-    },
-    {
-      "name": "AccountRecoveryCodesResponse",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountRecoveryCodesResponse",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountRecoveryCodesResponse.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "AccountRegisterRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountRegisterRequest",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountRegisterRequest.cs",
-      "line": 10,
-      "members": []
-    },
-    {
-      "name": "AccountRegisterResponse",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountRegisterResponse",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountRegisterRequest.cs",
-      "line": 21,
-      "members": []
-    },
-    {
-      "name": "AccountTwoFactorDisableRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountTwoFactorDisableRequest",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountTwoFactorDisableRequest.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "AccountTwoFactorEnableRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountTwoFactorEnableRequest",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountTwoFactorEnableRequest.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "AccountTwoFactorEnableResponse",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountTwoFactorEnableResponse",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountTwoFactorEnableResponse.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "AccountTwoFactorStatusResponse",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.AccountTwoFactorStatusResponse",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/AccountTwoFactorStatusResponse.cs",
-      "line": 9,
-      "members": []
-    },
-    {
       "name": "AdminOidcApplicationResponse",
       "fqn": "Granit.OpenIddict.Endpoints.Dtos.AdminOidcApplicationResponse",
       "kind": "record",
@@ -21548,24 +21720,6 @@
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Dtos/AdminOidcScopeResponse.cs",
       "line": 9,
-      "members": []
-    },
-    {
-      "name": "PasskeyRegistrationRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.PasskeyRegistrationRequest",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/PasskeyRegistrationRequest.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "PasskeyRenameRequest",
-      "fqn": "Granit.OpenIddict.Endpoints.Dtos.PasskeyRenameRequest",
-      "kind": "record",
-      "project": "Granit.OpenIddict.Endpoints",
-      "file": "src/Granit.OpenIddict.Endpoints/Dtos/PasskeyRenameRequest.cs",
-      "line": 5,
       "members": []
     },
     {
@@ -21757,22 +21911,6 @@
           "kind": "method",
           "signature": "SetDestinations(this ClaimsPrincipal principal, IClaimsDestinationProvider destinationProvider)",
           "returnType": "ClaimsPrincipal"
-        }
-      ]
-    },
-    {
-      "name": "ClaimsPrincipalExtensions",
-      "fqn": "Granit.OpenIddict.Extensions.ClaimsPrincipalExtensions",
-      "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Extensions/ClaimsPrincipalExtensions.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "IsImpersonated",
-          "kind": "method",
-          "signature": "IsImpersonated(this ClaimsPrincipal principal)",
-          "returnType": "bool"
         }
       ]
     },
@@ -21977,7 +22115,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
-      "line": 24,
+      "line": 17,
       "members": []
     },
     {
@@ -21986,7 +22124,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
-      "line": 47,
+      "line": 40,
       "members": []
     },
     {
@@ -22004,16 +22142,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
-      "line": 37,
-      "members": []
-    },
-    {
-      "name": "Users",
-      "fqn": "Granit.OpenIddict.Permissions.Users",
-      "kind": "class",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
-      "line": 17,
+      "line": 30,
       "members": []
     },
     {
@@ -22179,15 +22308,6 @@
       "members": []
     },
     {
-      "name": "UserSessionActivity",
-      "fqn": "Granit.OpenIddict.Services.UserSessionActivity",
-      "kind": "record",
-      "project": "Granit.OpenIddict",
-      "file": "src/Granit.OpenIddict/Services/UserSessionActivity.cs",
-      "line": 13,
-      "members": []
-    },
-    {
       "name": "DataSeedContext",
       "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.DataSeedContext",
       "kind": "class",
@@ -22235,6 +22355,15 @@
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Diagnostics/PersistenceMetrics.cs",
       "line": 13,
+      "members": []
+    },
+    {
+      "name": "EfStoreBase",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.EfStoreBase",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/EfStoreBase.cs",
+      "line": 26,
       "members": []
     },
     {
@@ -22317,6 +22446,15 @@
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/PersistenceTenantExtensions.cs",
       "line": 14,
+      "members": []
+    },
+    {
+      "name": "QueryablePaginationExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.QueryablePaginationExtensions",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/QueryablePaginationExtensions.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -23127,6 +23265,15 @@
       ]
     },
     {
+      "name": "SpecificationEvaluator",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.SpecificationEvaluator",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Specification/SpecificationEvaluator.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "PersistenceSqlServerHostApplicationBuilderExtensions",
       "fqn": "Granit.Persistence.EntityFrameworkCore.SqlServer.Extensions.PersistenceSqlServerHostApplicationBuilderExtensions",
       "kind": "class",
@@ -23187,6 +23334,120 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitPersistenceAbstractionsModule",
+      "fqn": "Granit.Persistence.GranitPersistenceAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.Persistence",
+      "file": "src/Granit.Persistence/GranitPersistenceAbstractionsModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "InlineSpecification",
+      "fqn": "Granit.Persistence.InlineSpecification",
+      "kind": "class",
+      "project": "Granit.Persistence",
+      "file": "src/Granit.Persistence/Spec.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Where",
+          "kind": "method",
+          "signature": "Where(Expression<Func<T, bool>> predicate)",
+          "returnType": "InlineSpecification<T>"
+        },
+        {
+          "name": "OrderBy",
+          "kind": "method",
+          "signature": "OrderBy(Expression<Func<T, object>> key)",
+          "returnType": "InlineSpecification<T>"
+        },
+        {
+          "name": "OrderByDescending",
+          "kind": "method",
+          "signature": "OrderByDescending(Expression<Func<T, object>> key)",
+          "returnType": "InlineSpecification<T>"
+        },
+        {
+          "name": "Paginate",
+          "kind": "method",
+          "signature": "Paginate(int page, int pageSize)",
+          "returnType": "InlineSpecification<T>"
+        },
+        {
+          "name": "Limit",
+          "kind": "method",
+          "signature": "Limit(int count)",
+          "returnType": "InlineSpecification<T>"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "InlineSpecification<T>"
+        }
+      ]
+    },
+    {
+      "name": "SortExpression",
+      "fqn": "Granit.Persistence.SortExpression",
+      "kind": "record",
+      "project": "Granit.Persistence",
+      "file": "src/Granit.Persistence/SortExpression.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "Spec",
+      "fqn": "Granit.Persistence.Spec",
+      "kind": "class",
+      "project": "Granit.Persistence",
+      "file": "src/Granit.Persistence/Spec.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "class",
+          "kind": "property",
+          "signature": "InlineSpecification<T> For<T>() where T : class",
+          "returnType": "InlineSpecification<T> For<T>() where T :"
+        }
+      ]
+    },
+    {
+      "name": "Specification",
+      "fqn": "Granit.Persistence.Specification",
+      "kind": "class",
+      "project": "Granit.Persistence",
+      "file": "src/Granit.Persistence/Specification.cs",
+      "line": 40,
+      "members": [
+        {
+          "name": "Criteria",
+          "kind": "property",
+          "signature": "IReadOnlyList<Expression<Func<T, bool>>> Criteria",
+          "returnType": "IReadOnlyList<Expression<Func<T, bool>>>"
+        },
+        {
+          "name": "OrderExpressions",
+          "kind": "property",
+          "signature": "IReadOnlyList<SortExpression<T>> OrderExpressions",
+          "returnType": "IReadOnlyList<SortExpression<T>>"
+        },
+        {
+          "name": "Where",
+          "kind": "method",
+          "signature": "Where(Expression<Func<T, bool>> predicate)",
+          "returnType": "int? Skip { get; private set; } public int? Take { get; private set; } public bool IsReadOnly { get; private set; } protected void"
+        },
+        {
+          "name": "Select",
+          "kind": "method",
+          "signature": "Select(Expression<Func<T, TResult>> selector)",
+          "returnType": "Expression<Func<T, TResult>>? Selector { get; private set; } protected void"
         }
       ]
     },

@@ -1,0 +1,7 @@
+{
+  "culture": "fr",
+  "texts": {
+    "PermissionGroup:IdentityLocal": "Identit\u00e9 locale",
+    "Permission:IdentityLocal.Users.Impersonate": "Se faire passer pour un utilisateur"
+  }
+}

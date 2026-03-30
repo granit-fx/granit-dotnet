@@ -13,13 +13,6 @@ public static class OpenIddictPermissions
     /// <summary>Permission group name.</summary>
     public const string GroupName = "OpenIddict";
 
-    /// <summary>Permissions for user impersonation (token issuance).</summary>
-    public static class Users
-    {
-        /// <summary>Permission to impersonate a user by issuing a short-lived token.</summary>
-        public const string Impersonate = "OpenIddict.Users.Impersonate";
-    }
-
     /// <summary>Permissions for OIDC application administration.</summary>
     public static class Applications
     {

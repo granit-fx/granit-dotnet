@@ -1,11 +1,11 @@
 using System.Collections.Immutable;
 using System.Security.Claims;
 using Granit.Events;
+using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Events;
+using Granit.Identity.Local.Extensions;
 using Granit.Identity.Local.Services;
-using Granit.OpenIddict.Diagnostics;
-using Granit.OpenIddict.Extensions;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -24,7 +24,7 @@ internal sealed partial class AspNetImpersonationService(
     UserManager<GranitUser> userManager,
     IOpenIddictTokenManager tokenManager,
     IDistributedEventBus eventBus,
-    OpenIddictMetrics metrics,
+    IdentityLocalMetrics metrics,
     IClock clock,
     ILogger<AspNetImpersonationService> logger) : IImpersonationService
 {

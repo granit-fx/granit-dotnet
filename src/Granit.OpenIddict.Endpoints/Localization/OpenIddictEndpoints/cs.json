@@ -2,7 +2,6 @@
   "culture": "cs",
   "texts": {
     "PermissionGroup:OpenIddict": "OpenIddict Identita",
-    "Permission:OpenIddict.Users.Impersonate": "Přihlásit se jako uživatel",
     "Permission:OpenIddict.Applications.Read": "Zobrazit OIDC aplikace",
     "Permission:OpenIddict.Applications.Manage": "Spravovat OIDC aplikace (zobrazit, upravit)",
     "Permission:OpenIddict.Applications.Rotate": "Rotovat tajné klíče aplikací",

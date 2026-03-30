@@ -2,7 +2,6 @@
   "culture": "tr",
   "texts": {
     "PermissionGroup:OpenIddict": "OpenIddict Kimlik",
-    "Permission:OpenIddict.Users.Impersonate": "Kullanıcının kimliğine bürün",
     "Permission:OpenIddict.Applications.Read": "OIDC uygulamalarını görüntüle",
     "Permission:OpenIddict.Applications.Manage": "OIDC uygulamalarını yönet (görüntüle, düzenle)",
     "Permission:OpenIddict.Applications.Rotate": "Uygulama gizli anahtarlarını döndür",

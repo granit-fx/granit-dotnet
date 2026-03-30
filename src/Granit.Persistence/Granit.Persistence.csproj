@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Persistence</PackageId>
+    <Description>Persistence-agnostic abstractions for Granit: Specification&lt;T&gt;, PagedResult&lt;T&gt;, SortExpression&lt;T&gt;. No ORM dependency — consumed by EF Core, MongoDB, and Dapper implementations.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Persistence.Tests" />
+    <InternalsVisibleTo Include="Granit.Persistence.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>

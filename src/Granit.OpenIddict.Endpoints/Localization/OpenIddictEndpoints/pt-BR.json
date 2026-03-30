@@ -2,7 +2,6 @@
   "culture": "pt-BR",
   "texts": {
     "PermissionGroup:OpenIddict": "OpenIddict — Provedor de Identidade",
-    "Permission:OpenIddict.Users.Impersonate": "Personificar um usuário",
     "Permission:OpenIddict.Applications.Read": "Consultar aplicações OIDC",
     "Permission:OpenIddict.Applications.Manage": "Gerenciar aplicações OIDC (consultar, modificar)",
     "Permission:OpenIddict.Applications.Rotate": "Rotacionar segredos de aplicação",

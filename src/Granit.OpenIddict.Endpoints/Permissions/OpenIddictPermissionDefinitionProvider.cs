@@ -19,12 +19,6 @@ internal sealed class OpenIddictPermissionDefinitionProvider : IPermissionDefini
             LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
                 "PermissionGroup:OpenIddict"));
 
-        // Users (impersonation only — user CRUD is handled by Granit.Identity.Endpoints)
-        group.AddPermission(
-            OpenIddictPermissions.Users.Impersonate,
-            LocalizableString.Create<OpenIddictEndpointsLocalizationResource>(
-                "Permission:OpenIddict.Users.Impersonate"));
-
         // OIDC Applications
         group.AddPermission(
             OpenIddictPermissions.Applications.Read,

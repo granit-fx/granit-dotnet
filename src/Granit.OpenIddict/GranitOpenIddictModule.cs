@@ -46,5 +46,6 @@ public sealed class GranitOpenIddictModule : GranitModule
 
         context.Services.TryAddScoped<IClaimsDestinationProvider, DefaultClaimsDestinationProvider>();
         context.Services.TryAddScoped<ITotpService, DefaultTotpService>();
+        context.Services.TryAddSingleton<IExternalProviderRegistry, OpenIddictExternalProviderRegistry>();
     }
 }

@@ -1,8 +1,7 @@
 {
   "culture": "en",
   "texts": {
-    "PermissionGroup:OpenIddict": "OpenIddict Identity",
-    "Permission:OpenIddict.Users.Impersonate": "Impersonate users",
+    "PermissionGroup:OpenIddict": "OpenIddict OIDC",
     "Permission:OpenIddict.Applications.Read": "Read OIDC applications",
     "Permission:OpenIddict.Applications.Manage": "Manage OIDC applications (read, update)",
     "Permission:OpenIddict.Applications.Rotate": "Rotate application secrets",

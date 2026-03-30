@@ -2,7 +2,6 @@
   "culture": "zh",
   "texts": {
     "PermissionGroup:OpenIddict": "OpenIddict 身份认证",
-    "Permission:OpenIddict.Users.Impersonate": "模拟用户身份",
     "Permission:OpenIddict.Applications.Read": "查看 OIDC 应用",
     "Permission:OpenIddict.Applications.Manage": "管理 OIDC 应用（查看、修改）",
     "Permission:OpenIddict.Applications.Rotate": "轮换应用密钥",

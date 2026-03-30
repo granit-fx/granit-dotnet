@@ -12,11 +12,18 @@ namespace Granit.OpenIddict.Endpoints.Extensions;
 public static class OpenIddictEndpointRouteBuilderExtensions
 {
     /// <summary>
-    /// Maps the OpenIddict account self-service and admin management endpoints.
+    /// Maps the OpenIddict admin management endpoints (OIDC application/scope/authorization CRUD).
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Account self-service endpoints (login, registration, profile, etc.) have moved to
+    /// <c>Granit.Identity.Local.Endpoints</c>. Use <c>MapAccountEndpoints()</c> from that
+    /// module instead.
+    /// </para>
+    /// </remarks>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize endpoint options.</param>
-    /// <returns>The account <see cref="RouteGroupBuilder"/> for further chaining.</returns>
+    /// <returns>The admin <see cref="RouteGroupBuilder"/> for further chaining.</returns>
     public static RouteGroupBuilder MapOpenIddictEndpoints(
         this IEndpointRouteBuilder endpoints,
         Action<OpenIddictEndpointsOptions>? configure = null)
@@ -24,35 +31,19 @@ public static class OpenIddictEndpointRouteBuilderExtensions
         OpenIddictEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        // ──── Account self-service (/api/account) ────
-        RouteGroupBuilder accountGroup = endpoints
-            .MapGranitGroup(options.AccountRoutePrefix);
-
-        accountGroup.MapAccountLoginEndpoints();
-        accountGroup.MapAccountRegistrationEndpoints();
-        accountGroup.MapAccountProfileEndpoints();
-        accountGroup.MapAccountPasswordEndpoints();
-        accountGroup.MapAccountTwoFactorEndpoints();
-        accountGroup.MapAccountExternalLoginEndpoints();
-        accountGroup.MapAccountPasskeyEndpoints();
-        accountGroup.MapAccountDeletionEndpoints();
-        accountGroup.MapAccountSessionEndpoints();
-
-        // ──── Admin management (/api/admin) ────
+        // ──── Admin OIDC management (/api/admin) ────
         RouteGroupBuilder adminGroup = endpoints
             .MapGranitGroup(options.AdminRoutePrefix)
             .RequireAuthorization();
 
-        adminGroup.MapAdminImpersonationEndpoints();
         adminGroup.MapAdminOidcEndpoints();
 
-        return accountGroup;
+        return adminGroup;
     }
 
     /// <summary>
     /// Maps the OIDC server protocol endpoints (<c>/connect/authorize</c>,
-    /// <c>/connect/token</c>, <c>/connect/userinfo</c>, <c>/connect/logout</c>,
-    /// <c>/connect/verify</c>).
+    /// <c>/connect/token</c>, <c>/connect/userinfo</c>, <c>/connect/logout</c>).
     /// </summary>
     /// <remarks>
     /// <para>
@@ -80,7 +71,6 @@ public static class OpenIddictEndpointRouteBuilderExtensions
         endpoints.MapConnectTokenEndpoints();
         endpoints.MapConnectUserInfoEndpoints();
         endpoints.MapConnectLogoutEndpoints(options);
-        endpoints.MapConnectVerifyEndpoints();
 
         return endpoints;
     }

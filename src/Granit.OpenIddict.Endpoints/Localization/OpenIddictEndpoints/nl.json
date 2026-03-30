@@ -2,7 +2,6 @@
   "culture": "nl",
   "texts": {
     "PermissionGroup:OpenIddict": "OpenIddict Identiteit",
-    "Permission:OpenIddict.Users.Impersonate": "Zich voordoen als een gebruiker",
     "Permission:OpenIddict.Applications.Read": "OIDC-applicaties raadplegen",
     "Permission:OpenIddict.Applications.Manage": "OIDC-applicaties beheren (raadplegen, wijzigen)",
     "Permission:OpenIddict.Applications.Rotate": "Applicatiegeheimen roteren",

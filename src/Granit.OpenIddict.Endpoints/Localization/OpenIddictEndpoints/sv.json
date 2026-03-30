@@ -2,7 +2,6 @@
   "culture": "sv",
   "texts": {
     "PermissionGroup:OpenIddict": "OpenIddict Identitet",
-    "Permission:OpenIddict.Users.Impersonate": "Agera som en användare",
     "Permission:OpenIddict.Applications.Read": "Visa OIDC-applikationer",
     "Permission:OpenIddict.Applications.Manage": "Hantera OIDC-applikationer (visa, redigera)",
     "Permission:OpenIddict.Applications.Rotate": "Rotera applikationshemligheter",

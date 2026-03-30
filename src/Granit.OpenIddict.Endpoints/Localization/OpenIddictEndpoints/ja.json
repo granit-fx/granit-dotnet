@@ -2,7 +2,6 @@
   "culture": "ja",
   "texts": {
     "PermissionGroup:OpenIddict": "OpenIddict ID管理",
-    "Permission:OpenIddict.Users.Impersonate": "ユーザーの代理ログイン",
     "Permission:OpenIddict.Applications.Read": "OIDCアプリケーションの閲覧",
     "Permission:OpenIddict.Applications.Manage": "OIDCアプリケーションの管理（閲覧、編集）",
     "Permission:OpenIddict.Applications.Rotate": "アプリケーションシークレットのローテーション",

@@ -2,7 +2,6 @@
   "culture": "it",
   "texts": {
     "PermissionGroup:OpenIddict": "Identità OpenIddict",
-    "Permission:OpenIddict.Users.Impersonate": "Impersonare un utente",
     "Permission:OpenIddict.Applications.Read": "Consultare le applicazioni OIDC",
     "Permission:OpenIddict.Applications.Manage": "Gestire le applicazioni OIDC (consultare, modificare)",
     "Permission:OpenIddict.Applications.Rotate": "Ruotare i segreti dell'applicazione",

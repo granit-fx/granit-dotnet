@@ -1,0 +1,29 @@
+namespace Granit.Identity.Local.Services;
+
+/// <summary>
+/// Registry for configured external authentication providers (Google, Microsoft, GitHub, etc.).
+/// </summary>
+/// <remarks>
+/// <para>
+/// Implementations read from the auth server's configuration:
+/// <c>Granit.OpenIddict</c> reads from <c>GranitOpenIddictClientOptions.Providers</c>,
+/// a future Duende module would read from its own config.
+/// </para>
+/// <para>
+/// Used by account self-service endpoints to validate that a requested external
+/// provider is actually configured before initiating an OAuth challenge.
+/// </para>
+/// </remarks>
+public interface IExternalProviderRegistry
+{
+    /// <summary>
+    /// Returns the names of all configured external providers.
+    /// </summary>
+    IReadOnlyList<string> GetConfiguredProviderNames();
+
+    /// <summary>
+    /// Returns <see langword="true"/> if the given provider name is configured.
+    /// </summary>
+    /// <param name="providerName">The provider name (e.g., "Google", "Microsoft").</param>
+    bool IsProviderConfigured(string providerName);
+}
