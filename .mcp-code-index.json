@@ -6270,7 +6270,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 163,
+      "line": 172,
       "members": [
         {
           "name": "InvokeAsync",

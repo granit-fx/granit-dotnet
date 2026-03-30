@@ -18,6 +18,8 @@ namespace Granit.Bff.Endpoints.Extensions;
 /// </summary>
 public static class BffEndpointRouteBuilderExtensions
 {
+    private static bool s_bffEndpointsMapped;
+
     /// <summary>
     /// Maps BFF authentication endpoints for each configured frontend.
     /// Each frontend gets its own route group under <c>/{pathPrefix}/bff</c> with
@@ -28,6 +30,13 @@ public static class BffEndpointRouteBuilderExtensions
     /// <returns>The endpoint route builder for further chaining.</returns>
     public static IEndpointRouteBuilder MapGranitBffEndpoints(this IEndpointRouteBuilder endpoints)
     {
+        if (s_bffEndpointsMapped)
+        {
+            return endpoints;
+        }
+
+        s_bffEndpointsMapped = true;
+
         GranitBffOptions options = endpoints.ServiceProvider
             .GetRequiredService<IOptions<GranitBffOptions>>().Value;
         ICookieRegistry cookieRegistry = endpoints.ServiceProvider

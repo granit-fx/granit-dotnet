@@ -24,14 +24,25 @@ public sealed class CookieRegistryTests
     }
 
     [Fact]
-    public void Register_DuplicateName_ThrowsInvalidOperationException()
+    public void Register_SameDefinitionTwice_IsIdempotent()
     {
         CookieDefinition definition = CreateDefinition();
         _sut.Register(definition);
 
-        Action act = () => _sut.Register(definition);
+        _sut.Register(definition);
 
-        Should.Throw<InvalidOperationException>(act).Message.ShouldContain("already registered");
+        _sut.GetDefinition("test_cookie").ShouldBe(definition);
+    }
+
+    [Fact]
+    public void Register_DifferentDefinitionSameName_ThrowsInvalidOperationException()
+    {
+        _sut.Register(CreateDefinition());
+        CookieDefinition different = new("test_cookie", CookieCategory.Marketing, 30, false, "Different");
+
+        Action act = () => _sut.Register(different);
+
+        Should.Throw<InvalidOperationException>(act).Message.ShouldContain("different definition");
     }
 
     [Fact]
