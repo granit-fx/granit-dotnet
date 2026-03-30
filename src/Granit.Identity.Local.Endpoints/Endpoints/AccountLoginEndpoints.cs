@@ -34,7 +34,25 @@ internal static partial class AccountLoginEndpoints
             .Produces<AccountLoginResponse>()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status423Locked)
-            .AllowAnonymous();
+            .AllowAnonymous()
+            .RequireRateLimiting("authentication");
+
+        group.MapPost("/login/two-factor", HandleTwoFactorLoginAsync)
+            .WithName("AccountTwoFactorLogin")
+            .WithSummary("Completes login with a TOTP code or recovery code.")
+            .WithDescription(
+                "Finalizes the two-factor authentication challenge after a successful "
+                + "password-based login returned requiresTwoFactor: true. "
+                + "The Identity.TwoFactorUserId cookie (set by the initial login) identifies "
+                + "the user. Accepts either a 6-digit TOTP code from an authenticator app "
+                + "or a single-use recovery code (when useRecoveryCode is true). "
+                + "On success, sets the Identity authentication cookie and returns 200. "
+                + "Returns 401 if the code is invalid or the 2FA session has expired.")
+            .Produces<AccountLoginResponse>()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesValidationProblem()
+            .AllowAnonymous()
+            .RequireRateLimiting("authentication");
 
         return group;
     }
@@ -49,7 +67,7 @@ internal static partial class AccountLoginEndpoints
     {
         ILogger logger = httpContext.RequestServices
             .GetRequiredService<ILoggerFactory>()
-            .CreateLogger("Granit.OpenIddict.Endpoints.AccountLoginEndpoints");
+            .CreateLogger("Granit.Identity.Local.Endpoints.AccountLoginEndpoints");
         IdentityLocalMetrics? metrics = httpContext.RequestServices.GetService<IdentityLocalMetrics>();
 
         // Resolve user by email or username
@@ -115,6 +133,62 @@ internal static partial class AccountLoginEndpoints
     }
 #pragma warning restore GRSEC003
 
+    private static async Task<Results<Ok<AccountLoginResponse>, ProblemHttpResult>> HandleTwoFactorLoginAsync(
+        AccountTwoFactorLoginRequest request,
+        [FromServices] SignInManager<GranitUser> signInManager,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
+    {
+        ILogger logger = httpContext.RequestServices
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Granit.Identity.Local.Endpoints.AccountLoginEndpoints");
+        IdentityLocalMetrics? metrics = httpContext.RequestServices.GetService<IdentityLocalMetrics>();
+
+        // Strip whitespace and dashes from the code (authenticator apps often format codes with spaces)
+        string sanitizedCode = request.Code.Replace(" ", string.Empty, StringComparison.Ordinal)
+            .Replace("-", string.Empty, StringComparison.Ordinal);
+
+        Microsoft.AspNetCore.Identity.SignInResult result;
+
+        if (request.UseRecoveryCode)
+        {
+            result = await signInManager
+                .TwoFactorRecoveryCodeSignInAsync(sanitizedCode)
+                .ConfigureAwait(false);
+        }
+        else
+        {
+            result = await signInManager
+                .TwoFactorAuthenticatorSignInAsync(sanitizedCode, isPersistent: false, rememberClient: false)
+                .ConfigureAwait(false);
+        }
+
+        if (result.Succeeded)
+        {
+            LogTwoFactorSuccess(logger, request.UseRecoveryCode ? "recovery_code" : "totp");
+            metrics?.RecordAuthenticationSuccess(null, request.UseRecoveryCode ? "recovery_code" : "totp");
+
+            return TypedResults.Ok(new AccountLoginResponse(Succeeded: true));
+        }
+
+        if (result.IsLockedOut)
+        {
+            LogLoginLockedOut(logger, "two-factor-user");
+            metrics?.RecordAuthenticationFailure(null, "account_locked");
+
+            return TypedResults.Problem(
+                detail: "Account is locked out. Try again later.",
+                statusCode: StatusCodes.Status423Locked);
+        }
+
+        LogTwoFactorFailed(logger, request.UseRecoveryCode ? "invalid_recovery_code" : "invalid_totp_code");
+        metrics?.RecordAuthenticationFailure(null, "invalid_token");
+
+        return TypedResults.Problem(
+            detail: "Invalid verification code.",
+            statusCode: StatusCodes.Status401Unauthorized);
+    }
+
     // ──── Source-generated log messages ────
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Headless login: user {UserId} authenticated successfully")]
@@ -131,4 +205,10 @@ internal static partial class AccountLoginEndpoints
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Headless login: failed for '{Login}' — {Reason}")]
     private static partial void LogLoginFailed(ILogger logger, string login, string reason);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Headless login: two-factor completed via {Method}")]
+    private static partial void LogTwoFactorSuccess(ILogger logger, string method);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Headless login: two-factor failed — {Reason}")]
+    private static partial void LogTwoFactorFailed(ILogger logger, string reason);
 }

@@ -1,5 +1,7 @@
 {
   "culture": "zh",
   "texts": {
+    "PermissionGroup:IdentityLocal": "本地身份",
+    "Permission:IdentityLocal.Users.Impersonate": "模拟用户"
   }
 }

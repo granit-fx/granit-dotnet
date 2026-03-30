@@ -1,5 +1,7 @@
 {
   "culture": "pl",
   "texts": {
+    "PermissionGroup:IdentityLocal": "Tożsamość lokalna",
+    "Permission:IdentityLocal.Users.Impersonate": "Podszywanie się pod użytkowników"
   }
 }

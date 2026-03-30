@@ -1,5 +1,7 @@
 {
   "culture": "nl",
   "texts": {
+    "PermissionGroup:IdentityLocal": "Lokale identiteit",
+    "Permission:IdentityLocal.Users.Impersonate": "Gebruikers nabootsen"
   }
 }

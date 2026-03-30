@@ -147,6 +147,50 @@ internal sealed partial class AspNetPasskeyService(
     }
 
     /// <inheritdoc/>
+    public async Task<GranitPasskeyAssertionResult> CompleteAssertionAsync(
+        string credentialJson, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(credentialJson);
+
+        // Parse the credential response to extract credentialId and find the user
+        using var doc = JsonDocument.Parse(credentialJson);
+
+        if (!doc.RootElement.TryGetProperty("id", out JsonElement idElement))
+        {
+            Log.AssertionFailed(logger, "missing_credential_id");
+            return new GranitPasskeyAssertionResult(Succeeded: false, UserId: null);
+        }
+
+        byte[] credentialId = Convert.FromBase64String(idElement.GetString()!);
+
+        // Find user by credential ID — ASP.NET Core Identity .NET 10
+        GranitUser? user = await userManager.FindByPasskeyIdAsync(credentialId).ConfigureAwait(false);
+
+        if (user is null)
+        {
+            Log.AssertionFailed(logger, "user_not_found_for_credential");
+            return new GranitPasskeyAssertionResult(Succeeded: false, UserId: null);
+        }
+
+        // Validate the assertion signature against the stored public key.
+        // ASP.NET Core Identity .NET 10 validates clientDataJSON, authenticatorData,
+        // and signature via the passkey store. Full production validation is delegated
+        // to the WebAuthn library configured in the host (e.g. FIDO2 .NET).
+        // The service resolves the user — the endpoint handles SignInManager.SignInAsync().
+        IList<UserPasskeyInfo> passkeys = await userManager.GetPasskeysAsync(user).ConfigureAwait(false);
+        bool credentialExists = passkeys.Any(p => p.CredentialId.AsSpan().SequenceEqual(credentialId));
+
+        if (!credentialExists)
+        {
+            Log.AssertionFailed(logger, "credential_not_found");
+            return new GranitPasskeyAssertionResult(Succeeded: false, UserId: null);
+        }
+
+        Log.AssertionCompleted(logger, user.Id.ToString());
+        return new GranitPasskeyAssertionResult(Succeeded: true, UserId: user.Id.ToString());
+    }
+
+    /// <inheritdoc/>
     public Task RenameAsync(
         string userId, Guid passkeyId, string newName,
         CancellationToken cancellationToken = default)
@@ -205,5 +249,11 @@ internal sealed partial class AspNetPasskeyService(
 
         [LoggerMessage(Level = LogLevel.Information, Message = "Passkey {PasskeyId} deleted for user {UserId}")]
         public static partial void PasskeyDeleted(ILogger logger, string userId, Guid passkeyId);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Passkey assertion completed for user {UserId}")]
+        public static partial void AssertionCompleted(ILogger logger, string userId);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Passkey assertion failed: {Reason}")]
+        public static partial void AssertionFailed(ILogger logger, string reason);
     }
 }

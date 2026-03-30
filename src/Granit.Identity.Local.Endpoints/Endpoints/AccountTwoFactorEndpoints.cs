@@ -146,7 +146,7 @@ internal static class AccountTwoFactorEndpoints
     }
 
     private static async Task<Results<Ok<AccountRecoveryCodesResponse>, ProblemHttpResult>> GenerateRecoveryCodesAsync(
-        AccountTwoFactorDisableRequest request,
+        AccountGenerateRecoveryCodesRequest request,
         HttpContext httpContext,
         [FromServices] IIdentityCredentialVerifier credentialVerifier,
         [FromServices] ITwoFactorService twoFactorService,

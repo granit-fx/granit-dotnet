@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Granit.OpenIddict.Extensions;
+using Granit.Identity.Local.Extensions;
 using Shouldly;
 using Xunit;
 

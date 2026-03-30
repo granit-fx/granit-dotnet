@@ -33,7 +33,8 @@ internal static class AccountPasswordEndpoints
                 "Sends a password reset link to the specified email if the account exists. "
                 + "Always returns 202 to prevent user enumeration.")
             .Produces(StatusCodes.Status202Accepted)
-            .AllowAnonymous();
+            .AllowAnonymous()
+            .RequireRateLimiting("authentication");
 
         group.MapPost("/reset-password", ResetPasswordAsync)
             .WithName("ResetPassword")
@@ -44,7 +45,8 @@ internal static class AccountPasswordEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
-            .AllowAnonymous();
+            .AllowAnonymous()
+            .RequireRateLimiting("authentication");
 
         return group;
     }

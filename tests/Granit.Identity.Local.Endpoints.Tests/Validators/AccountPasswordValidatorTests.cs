@@ -1,9 +1,9 @@
 using FluentValidation.TestHelper;
-using Granit.OpenIddict.Endpoints.Dtos;
-using Granit.OpenIddict.Endpoints.Validators;
+using Granit.Identity.Local.Endpoints.Dtos;
+using Granit.Identity.Local.Endpoints.Validators;
 using Xunit;
 
-namespace Granit.OpenIddict.Endpoints.Tests.Validators;
+namespace Granit.Identity.Local.Endpoints.Tests.Validators;
 
 public sealed class AccountPasswordValidatorTests
 {

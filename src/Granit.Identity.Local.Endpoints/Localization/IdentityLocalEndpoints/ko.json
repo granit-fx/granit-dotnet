@@ -1,5 +1,7 @@
 {
   "culture": "ko",
   "texts": {
+    "PermissionGroup:IdentityLocal": "로컬 ID",
+    "Permission:IdentityLocal.Users.Impersonate": "사용자 가장"
   }
 }

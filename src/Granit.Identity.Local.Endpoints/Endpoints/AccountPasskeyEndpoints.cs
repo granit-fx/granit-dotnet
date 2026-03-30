@@ -1,10 +1,14 @@
+using Granit.Identity.Local.Diagnostics;
+using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Identity.Local.Endpoints.Endpoints;
 
@@ -43,7 +47,22 @@ internal static class AccountPasskeyEndpoints
                 "Returns PublicKeyCredentialRequestOptions with mediation: conditional "
                 + "and empty allowCredentials for Conditional UI autofill.")
             .Produces<string>(StatusCodes.Status200OK, "application/json")
-            .AllowAnonymous();
+            .AllowAnonymous()
+            .RequireRateLimiting("authentication");
+
+        group.MapPost("/passkeys/assertion/complete", CompleteAssertionAsync)
+            .WithName("CompletePasskeyAssertion")
+            .WithSummary("Completes a WebAuthn passkey assertion ceremony (login).")
+            .WithDescription(
+                "Validates the AuthenticatorAssertionResponse from the browser against "
+                + "stored public keys. On success, signs in the user via ASP.NET Core Identity "
+                + "and returns the login response. Returns 401 if the credential is invalid "
+                + "or no matching user is found.")
+            .Produces<AccountLoginResponse>()
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesValidationProblem()
+            .AllowAnonymous()
+            .RequireRateLimiting("authentication");
 
         group.MapPatch("/passkeys/{id:guid}", RenamePasskeyAsync)
             .WithName("RenamePasskey")
@@ -117,6 +136,44 @@ internal static class AccountPasskeyEndpoints
         string optionsJson = await passkeyService
             .BeginAssertionAsync(cancellationToken).ConfigureAwait(false);
         return TypedResults.Ok(optionsJson);
+    }
+
+    private static async Task<Results<Ok<AccountLoginResponse>, ProblemHttpResult>> CompleteAssertionAsync(
+        AccountPasskeyLoginRequest request,
+        HttpContext httpContext,
+        [FromServices] IPasskeyService passkeyService,
+        [FromServices] SignInManager<GranitUser> signInManager,
+        [FromServices] UserManager<GranitUser> userManager,
+        CancellationToken cancellationToken)
+    {
+        IdentityLocalMetrics? metrics = httpContext.RequestServices.GetService<IdentityLocalMetrics>();
+
+        GranitPasskeyAssertionResult assertion = await passkeyService
+            .CompleteAssertionAsync(request.CredentialJson, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!assertion.Succeeded || assertion.UserId is null)
+        {
+            metrics?.RecordAuthenticationFailure(null, "invalid_token");
+
+            return TypedResults.Problem(
+                detail: "Passkey authentication failed.",
+                statusCode: StatusCodes.Status401Unauthorized);
+        }
+
+        GranitUser? user = await userManager.FindByIdAsync(assertion.UserId).ConfigureAwait(false);
+
+        if (user is null)
+        {
+            return TypedResults.Problem(
+                detail: "User not found.",
+                statusCode: StatusCodes.Status401Unauthorized);
+        }
+
+        await signInManager.SignInAsync(user, isPersistent: false).ConfigureAwait(false);
+        metrics?.RecordAuthenticationSuccess(null, "passkey");
+
+        return TypedResults.Ok(new AccountLoginResponse(Succeeded: true));
     }
 
     private static async Task<Results<NoContent, NotFound>> RenamePasskeyAsync(

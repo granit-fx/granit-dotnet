@@ -42,6 +42,16 @@ public interface IPasskeyService
     Task<string> BeginAssertionAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Completes a WebAuthn assertion ceremony (login).
+    /// Validates the <c>AuthenticatorAssertionResponse</c> against stored credentials
+    /// and returns the user ID on success.
+    /// </summary>
+    /// <param name="credentialJson">The WebAuthn <c>AuthenticatorAssertionResponse</c> JSON from the browser.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The assertion result containing the user ID if successful.</returns>
+    Task<GranitPasskeyAssertionResult> CompleteAssertionAsync(string credentialJson, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Renames a passkey.
     /// </summary>
     Task RenameAsync(string userId, Guid passkeyId, string newName, CancellationToken cancellationToken = default);
@@ -67,3 +77,10 @@ public sealed record PasskeyInfo(
     string? Name,
     DateTimeOffset CreatedAt,
     DateTimeOffset? LastUsedAt);
+
+/// <summary>
+/// Result of a WebAuthn assertion (passkey login) ceremony.
+/// </summary>
+/// <param name="Succeeded">Whether the assertion was valid.</param>
+/// <param name="UserId">The authenticated user's ID (null if failed).</param>
+public sealed record GranitPasskeyAssertionResult(bool Succeeded, string? UserId);

@@ -54,42 +54,6 @@ public sealed class OpenIddictMetricsTests : IDisposable
         Should.NotThrow(() => _metrics.RecordAuthenticationFailure(null, "invalid_credentials"));
 
     [Fact]
-    public void RecordRegistration_DoesNotThrow() =>
-        Should.NotThrow(() => _metrics.RecordRegistration("tenant-1"));
-
-    [Fact]
-    public void RecordRegistration_WithNullTenant_DoesNotThrow() =>
-        Should.NotThrow(() => _metrics.RecordRegistration(null));
-
-    [Fact]
-    public void RecordPasswordChange_DoesNotThrow() =>
-        Should.NotThrow(() => _metrics.RecordPasswordChange("tenant-1"));
-
-    [Fact]
-    public void RecordPasswordReset_DoesNotThrow() =>
-        Should.NotThrow(() => _metrics.RecordPasswordReset("tenant-1"));
-
-    [Fact]
-    public void RecordAccountDeletion_DoesNotThrow() =>
-        Should.NotThrow(() => _metrics.RecordAccountDeletion("tenant-1"));
-
-    [Fact]
-    public void RecordImpersonation_DoesNotThrow() =>
-        Should.NotThrow(() => _metrics.RecordImpersonation("tenant-1"));
-
-    [Fact]
-    public void RecordTwoFactorEvent_DoesNotThrow() =>
-        Should.NotThrow(() => _metrics.RecordTwoFactorEvent("tenant-1", "enable"));
-
-    [Fact]
-    public void RecordExternalLogin_DoesNotThrow() =>
-        Should.NotThrow(() => _metrics.RecordExternalLogin("tenant-1", "Google", false));
-
-    [Fact]
-    public void RecordExternalLogin_NewUser_DoesNotThrow() =>
-        Should.NotThrow(() => _metrics.RecordExternalLogin("tenant-1", "Microsoft", true));
-
-    [Fact]
     public void RecordKeyRotation_DoesNotThrow() =>
         Should.NotThrow(() => _metrics.RecordKeyRotation("tenant-1", 1, 2, 0));
 

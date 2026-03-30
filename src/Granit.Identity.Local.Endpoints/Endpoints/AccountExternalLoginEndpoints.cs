@@ -24,10 +24,11 @@ internal static class AccountExternalLoginEndpoints
             .WithName("ChallengeExternalLogin")
             .WithSummary("Initiates an OAuth flow with an external provider.")
             .WithDescription(
-                "Redirects the user to the specified external provider's authorization page. "
-                + "The provider must be configured in GranitOpenIddictClientOptions. "
+                "Validates that the specified provider is registered in IExternalProviderRegistry "
+                + "and returns 200 with metadata for the frontend to initiate the redirect "
+                + "via the standard OAuth client flow. "
                 + "Returns 400 if the provider is not configured.")
-            .Produces(StatusCodes.Status302Found)
+            .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .AllowAnonymous();
 
@@ -37,9 +38,11 @@ internal static class AccountExternalLoginEndpoints
             .WithDescription(
                 "Handles the redirect from the external provider. Links the external account "
                 + "to an existing user or creates a new one if AutoRegisterExternalUsers is enabled. "
+                + "Returns 400 if the provider query parameter is missing. "
                 + "Returns 409 if the email is taken by another account. "
                 + "Returns 403 if auto-registration is disabled and no account exists.")
-            .Produces(StatusCodes.Status200OK)
+            .Produces<ProcessCallbackResult>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status409Conflict)
             .AllowAnonymous();
@@ -83,11 +86,11 @@ internal static class AccountExternalLoginEndpoints
                     statusCode: StatusCodes.Status400BadRequest));
         }
 
-        // The actual OAuth challenge is initiated by OpenIddict Client middleware.
+        // The actual OAuth challenge is initiated by the auth server's client middleware.
         // The host application configures challenge properties and calls ChallengeAsync()
         // on the authentication scheme corresponding to the provider.
         // This endpoint validates the provider and returns metadata for the frontend
-        // to initiate the redirect via the standard OpenIddict client flow.
+        // to initiate the redirect via the standard OAuth client flow.
         return Task.FromResult<Results<Ok, ProblemHttpResult>>(TypedResults.Ok());
     }
 
@@ -96,7 +99,7 @@ internal static class AccountExternalLoginEndpoints
         [FromServices] IExternalLoginService externalLoginService,
         CancellationToken cancellationToken)
     {
-        // The OpenIddict client middleware populates HttpContext.User with the external
+        // The auth server's client middleware populates HttpContext.User with the external
         // provider's claims after a successful OAuth callback. The provider name is
         // available from the authentication scheme or a query parameter.
         string provider = httpContext.Request.Query["provider"].ToString();

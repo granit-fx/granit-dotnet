@@ -1,5 +1,7 @@
 {
   "culture": "pt",
   "texts": {
+    "PermissionGroup:IdentityLocal": "Identidade local",
+    "Permission:IdentityLocal.Users.Impersonate": "Personificar utilizadores"
   }
 }

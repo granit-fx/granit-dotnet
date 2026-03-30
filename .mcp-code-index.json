@@ -15590,6 +15590,15 @@
       "members": []
     },
     {
+      "name": "AccountGenerateRecoveryCodesRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountGenerateRecoveryCodesRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountGenerateRecoveryCodesRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "AccountLoginRequest",
       "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountLoginRequest",
       "kind": "record",
@@ -15604,6 +15613,15 @@
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountLoginResponse.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "AccountPasskeyLoginRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountPasskeyLoginRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountPasskeyLoginRequest.cs",
       "line": 10,
       "members": []
     },
@@ -15662,15 +15680,6 @@
       "members": []
     },
     {
-      "name": "AccountRegisterResponse",
-      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountRegisterResponse",
-      "kind": "record",
-      "project": "Granit.Identity.Local.Endpoints",
-      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountRegisterRequest.cs",
-      "line": 21,
-      "members": []
-    },
-    {
       "name": "AccountTwoFactorDisableRequest",
       "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountTwoFactorDisableRequest",
       "kind": "record",
@@ -15695,6 +15704,15 @@
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountTwoFactorEnableResponse.cs",
       "line": 7,
+      "members": []
+    },
+    {
+      "name": "AccountTwoFactorLoginRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountTwoFactorLoginRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountTwoFactorLoginRequest.cs",
+      "line": 11,
       "members": []
     },
     {
@@ -15897,6 +15915,15 @@
       "members": []
     },
     {
+      "name": "GranitPasskeyAssertionResult",
+      "fqn": "Granit.Identity.Local.Services.GranitPasskeyAssertionResult",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IPasskeyService.cs",
+      "line": 86,
+      "members": []
+    },
+    {
       "name": "IAccountDeletionService",
       "fqn": "Granit.Identity.Local.Services.IAccountDeletionService",
       "kind": "interface",
@@ -16079,6 +16106,12 @@
           "returnType": "Task<string>"
         },
         {
+          "name": "CompleteAssertionAsync",
+          "kind": "method",
+          "signature": "CompleteAssertionAsync(string credentialJson, CancellationToken cancellationToken = default)",
+          "returnType": "Task<GranitPasskeyAssertionResult>"
+        },
+        {
           "name": "RenameAsync",
           "kind": "method",
           "signature": "RenameAsync(string userId, Guid passkeyId, string newName, CancellationToken cancellationToken = default)",
@@ -16203,7 +16236,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Services/IPasskeyService.cs",
-      "line": 65,
+      "line": 75,
       "members": []
     },
     {

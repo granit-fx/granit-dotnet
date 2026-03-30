@@ -8,12 +8,6 @@
         "resolved": "8.0.1",
         "contentHash": "heVQl5tKYnnIDYlR1QMVGueYH6iriZTcZB6AjDczQNwZzxkjDIt9C84Pt4cCiZYrbo7jkZOYGWbs6Lo9wAtVLg=="
       },
-      "FluentValidation": {
-        "type": "Direct",
-        "requested": "[12.*, )",
-        "resolved": "12.1.1",
-        "contentHash": "EPpkIe1yh1a0OXyC100oOA8WMbZvqUu5plwhvYcb7oSELfyUZzfxV48BLhvs3kKo4NwG7MGLNgy1RJiYtT8Dpw=="
-      },
       "JunitXml.TestLogger": {
         "type": "Direct",
         "requested": "[7.*, )",
@@ -641,6 +635,12 @@
           "Asp.Versioning.Mvc": "10.0.0-preview.2"
         }
       },
+      "FluentValidation": {
+        "type": "CentralTransitive",
+        "requested": "[12.*, )",
+        "resolved": "12.1.1",
+        "contentHash": "EPpkIe1yh1a0OXyC100oOA8WMbZvqUu5plwhvYcb7oSELfyUZzfxV48BLhvs3kKo4NwG7MGLNgy1RJiYtT8Dpw=="
+      },
       "FluentValidation.DependencyInjectionExtensions": {
         "type": "CentralTransitive",
         "requested": "[12.*, )",
@@ -755,8 +755,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.16",
-        "contentHash": "zOWRQLnD7RbcbqnEeP6oUQNy+JeyXDcgmyz3ui7O5QntW7CdbItSC+KOZYRgzaFqh9hPNgSlp1uuTn96Y+gfww=="
+        "resolved": "2.13.17",
+        "contentHash": "v44WF0m58HBwaUiZVrvuetICcoaf2ZvIYu8JxsaJRRtsrNLlCIqjCcncTTDIy7pUiC2r2EO3eCJqcqGaTKZplQ=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",

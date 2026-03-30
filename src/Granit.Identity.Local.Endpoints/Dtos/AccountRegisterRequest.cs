@@ -12,12 +12,3 @@ public sealed record AccountRegisterRequest(
     string Password,
     string? FirstName,
     string? LastName);
-
-/// <summary>
-/// Response DTO for user registration.
-/// </summary>
-/// <param name="UserId">The newly created user's identifier.</param>
-/// <param name="RequiresEmailConfirmation">Whether email confirmation is required.</param>
-public sealed record AccountRegisterResponse(
-    Guid UserId,
-    bool RequiresEmailConfirmation);

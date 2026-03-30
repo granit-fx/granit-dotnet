@@ -1,5 +1,7 @@
 {
   "culture": "ja",
   "texts": {
+    "PermissionGroup:IdentityLocal": "ローカル ID",
+    "Permission:IdentityLocal.Users.Impersonate": "ユーザーになりすます"
   }
 }

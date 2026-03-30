@@ -28,7 +28,8 @@ internal static class AccountRegistrationEndpoints
             .Produces(StatusCodes.Status202Accepted)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesValidationProblem()
-            .AllowAnonymous();
+            .AllowAnonymous()
+            .RequireRateLimiting("authentication");
 
         group.MapGet("/confirm-email", ConfirmEmailAsync)
             .WithName("ConfirmEmail")

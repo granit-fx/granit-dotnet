@@ -1,5 +1,7 @@
 {
   "culture": "cs",
   "texts": {
+    "PermissionGroup:IdentityLocal": "Místní identita",
+    "Permission:IdentityLocal.Users.Impersonate": "Vydávat se za uživatele"
   }
 }
