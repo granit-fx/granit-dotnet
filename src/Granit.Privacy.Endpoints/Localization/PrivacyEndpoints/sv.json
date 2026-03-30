@@ -5,6 +5,7 @@
     "Permission:Privacy.Agreements.Read": "Visa juridiska dokument och samtycksstatus",
     "Permission:Privacy.Deletion.Execute": "Begär radering av personuppgifter",
     "Permission:Privacy.Export.Execute": "Begär export av personuppgifter",
+    "Permission:Privacy.Purposes.Read": "Visa registrerade behandlingsändamål",
     "PermissionGroup:Privacy": "Integritet (GDPR)"
   }
 }

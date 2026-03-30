@@ -5,6 +5,7 @@
     "Permission:Privacy.Agreements.Read": "Yasal belgeleri ve onay durumunu görüntüle",
     "Permission:Privacy.Deletion.Execute": "Kişisel veri silme talep et",
     "Permission:Privacy.Export.Execute": "Kişisel veri dışa aktarımı talep et",
+    "Permission:Privacy.Purposes.Read": "Kayıtlı işleme amaçlarını görüntüle",
     "PermissionGroup:Privacy": "Gizlilik (KVKK)"
   }
 }

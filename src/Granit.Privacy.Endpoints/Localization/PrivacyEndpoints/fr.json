@@ -5,6 +5,7 @@
     "Permission:Privacy.Agreements.Read": "Consulter les documents légaux et le statut de consentement",
     "Permission:Privacy.Deletion.Execute": "Demander la suppression des données personnelles",
     "Permission:Privacy.Export.Execute": "Demander l'export des données personnelles",
+    "Permission:Privacy.Purposes.Read": "Consulter les finalités de traitement",
     "PermissionGroup:Privacy": "Confidentialité (RGPD)"
   }
 }

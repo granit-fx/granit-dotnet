@@ -245,6 +245,7 @@
         "tests/Granit.OpenIddict.Tests",
         "tests/Granit.OpenIddict.Tests.Integration",
         "tests/Granit.Privacy.BackgroundJobs.Tests",
+        "tests/Granit.Privacy.Regulations.Cookies.Tests",
         "tests/Granit.Privacy.Regulations.Tests",
         "tests/Granit.Privacy.Tests",
         "tests/Granit.Privacy.Endpoints.Tests",

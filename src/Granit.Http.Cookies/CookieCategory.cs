@@ -1,7 +1,7 @@
 namespace Granit.Http.Cookies;
 
 /// <summary>
-/// RGPD cookie consent categories.
+/// Cookie consent categories aligned with privacy regulations.
 /// </summary>
 public enum CookieCategory
 {
@@ -15,5 +15,8 @@ public enum CookieCategory
     Analytics = 2,
 
     /// <summary>Cookies used for advertising and marketing.</summary>
-    Marketing = 3
+    Marketing = 3,
+
+    /// <summary>Cookies used for selling or sharing personal information (CCPA "Do Not Sell or Share").</summary>
+    SaleOrSharing = 4,
 }

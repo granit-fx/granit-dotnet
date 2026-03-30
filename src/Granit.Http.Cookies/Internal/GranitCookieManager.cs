@@ -6,11 +6,14 @@ using Microsoft.AspNetCore.Http;
 namespace Granit.Http.Cookies.Internal;
 
 /// <summary>
-/// Scoped cookie manager enforcing the Strict Registry Pattern and RGPD consent.
+/// Scoped cookie manager enforcing the Strict Registry Pattern and consent rules.
+/// Supports GPC (Global Privacy Control) signal and regulation-aware consent models.
 /// </summary>
 internal sealed class GranitCookieManager(
     ICookieRegistry registry,
-    IConsentResolver consentResolver) : IGranitCookieManager
+    IConsentResolver consentResolver,
+    IGlobalPrivacyControlSignal gpcSignal,
+    ICookieConsentModelProvider consentModelProvider) : IGranitCookieManager
 {
     /// <inheritdoc/>
     public async Task SetCookieAsync(HttpContext httpContext, string cookieName, string value)
@@ -20,7 +23,20 @@ internal sealed class GranitCookieManager(
 
         if (definition.Category != CookieCategory.StrictlyNecessary)
         {
-            bool hasConsent = await consentResolver.ResolveAsync(httpContext, definition.Category).ConfigureAwait(false);
+            // GPC check — suppress cookies when GPC is active and jurisdiction requires it
+            if (gpcSignal.IsActive(httpContext))
+            {
+                ConsentModelInfo? model = await consentModelProvider
+                    .GetConsentModelAsync(httpContext)
+                    .ConfigureAwait(false);
+
+                if (model is not null && ShouldGpcSuppressCategory(model, definition.Category))
+                {
+                    return;
+                }
+            }
+
+            bool hasConsent = await consentResolver.HasConsentAsync(httpContext, definition.Category).ConfigureAwait(false);
             if (!hasConsent)
             {
                 return;
@@ -66,5 +82,35 @@ internal sealed class GranitCookieManager(
             SameSite = definition.SameSite,
             Path = definition.Path,
         });
+    }
+
+    /// <summary>
+    /// Determines whether GPC should suppress a cookie category based on the consent model.
+    /// CCPA (OptOut): GPC suppresses SaleOrSharing + Marketing only (first-party Analytics preserved).
+    /// GDPR (OptIn): GPC suppresses ALL non-essential categories.
+    /// </summary>
+    private static bool ShouldGpcSuppressCategory(ConsentModelInfo model, CookieCategory category)
+    {
+        if (!model.HonorGlobalPrivacyControl)
+        {
+            return false;
+        }
+
+        return model.Mode switch
+        {
+            // CCPA: GPC = "Do Not Sell or Share" — only SaleOrSharing + Marketing
+            CookieConsentMode.OptOut => category is CookieCategory.SaleOrSharing or CookieCategory.Marketing,
+
+            // GDPR/LGPD: GPC interpreted as withdrawal of consent for all non-essential
+            CookieConsentMode.OptIn => true,
+
+            // Hybrid: same as OptOut — suppress sale/sharing + marketing
+            CookieConsentMode.Hybrid => category is CookieCategory.SaleOrSharing or CookieCategory.Marketing,
+
+            // None: no specific consent requirement — respect GPC broadly
+            CookieConsentMode.None => true,
+
+            _ => false,
+        };
     }
 }

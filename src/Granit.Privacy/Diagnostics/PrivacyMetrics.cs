@@ -23,6 +23,8 @@ public sealed class PrivacyMetrics
     private readonly Counter<long> _deletionCancelled;
     private readonly Counter<long> _deletionExecuted;
     private readonly Counter<long> _deletionReminders;
+    private readonly Counter<long> _optOutRequests;
+    private readonly Counter<long> _optOutRevocations;
     private readonly Histogram<double> _exportDuration;
 
     public PrivacyMetrics(IMeterFactory meterFactory)
@@ -56,6 +58,14 @@ public sealed class PrivacyMetrics
         _deletionReminders = meter.CreateCounter<long>(
             "granit.privacy.deletion.reminders",
             description: "Number of deletion reminder notifications sent.");
+
+        _optOutRequests = meter.CreateCounter<long>(
+            "granit.privacy.optout.requests",
+            description: "Number of opt-out requests (CCPA 'Do Not Sell or Share').");
+
+        _optOutRevocations = meter.CreateCounter<long>(
+            "granit.privacy.optout.revocations",
+            description: "Number of opt-out revocations.");
 
         _exportDuration = meter.CreateHistogram<double>(
             "granit.privacy.export.duration",
@@ -104,6 +114,14 @@ public sealed class PrivacyMetrics
             { TagRegulation, regulation ?? DefaultRegulation },
             { "status", status },
         });
+
+    /// <summary>Records an opt-out request.</summary>
+    public void RecordOptOutRequested(string? tenantId, string? regulation = null) =>
+        _optOutRequests.Add(1, CreateTags(tenantId, regulation));
+
+    /// <summary>Records an opt-out revocation.</summary>
+    public void RecordOptOutRevoked(string? tenantId, string? regulation = null) =>
+        _optOutRevocations.Add(1, CreateTags(tenantId, regulation));
 
     private static TagList CreateTags(string? tenantId, string? regulation) => new()
     {

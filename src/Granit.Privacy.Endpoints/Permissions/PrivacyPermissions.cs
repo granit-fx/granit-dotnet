@@ -23,6 +23,13 @@ public static class PrivacyPermissions
         public const string Execute = "Privacy.Deletion.Execute";
     }
 
+    /// <summary>Permissions for processing purpose management.</summary>
+    public static class Purposes
+    {
+        /// <summary>Read registered processing purposes.</summary>
+        public const string Read = "Privacy.Purposes.Read";
+    }
+
     /// <summary>Permissions for legal agreement consent management (GDPR Art. 7).</summary>
     public static class Agreements
     {

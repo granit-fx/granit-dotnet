@@ -11,11 +11,13 @@ public sealed class GranitCookieManagerTests
 {
     private readonly CookieRegistry _registry = new();
     private readonly IConsentResolver _consentResolver = Substitute.For<IConsentResolver>();
+    private readonly IGlobalPrivacyControlSignal _gpcSignal = Substitute.For<IGlobalPrivacyControlSignal>();
+    private readonly ICookieConsentModelProvider _consentModelProvider = Substitute.For<ICookieConsentModelProvider>();
     private readonly GranitCookieManager _sut;
 
     public GranitCookieManagerTests()
     {
-        _sut = new GranitCookieManager(_registry, _consentResolver);
+        _sut = new GranitCookieManager(_registry, _consentResolver, _gpcSignal, _consentModelProvider);
     }
 
     private static DefaultHttpContext CreateHttpContext() => new();
@@ -26,7 +28,7 @@ public sealed class GranitCookieManagerTests
         CookieDefinition definition = new("analytics_id", CookieCategory.Analytics, 365, false, "Analytics");
         _registry.Register(definition);
         DefaultHttpContext httpContext = CreateHttpContext();
-        _consentResolver.ResolveAsync(httpContext, CookieCategory.Analytics).Returns(true);
+        _consentResolver.HasConsentAsync(httpContext, CookieCategory.Analytics).Returns(true);
 
         await _sut.SetCookieAsync(httpContext, "analytics_id", "abc123");
 
@@ -45,7 +47,7 @@ public sealed class GranitCookieManagerTests
 
         string? setCookieHeader = httpContext.Response.Headers.SetCookie.ToString();
         setCookieHeader.ShouldContain("session_id=sess_xyz");
-        await _consentResolver.DidNotReceive().ResolveAsync(Arg.Any<HttpContext>(), Arg.Any<CookieCategory>());
+        await _consentResolver.DidNotReceive().HasConsentAsync(Arg.Any<HttpContext>(), Arg.Any<CookieCategory>());
     }
 
     [Fact]
@@ -54,7 +56,7 @@ public sealed class GranitCookieManagerTests
         CookieDefinition definition = new("marketing_id", CookieCategory.Marketing, 365, false, "Marketing");
         _registry.Register(definition);
         DefaultHttpContext httpContext = CreateHttpContext();
-        _consentResolver.ResolveAsync(httpContext, CookieCategory.Marketing).Returns(false);
+        _consentResolver.HasConsentAsync(httpContext, CookieCategory.Marketing).Returns(false);
 
         await _sut.SetCookieAsync(httpContext, "marketing_id", "mkt_123");
 
@@ -79,7 +81,7 @@ public sealed class GranitCookieManagerTests
         CookieDefinition definition = new("pref_cookie", CookieCategory.Preferences, 30, true, "Preferences");
         _registry.Register(definition);
         DefaultHttpContext httpContext = CreateHttpContext();
-        _consentResolver.ResolveAsync(httpContext, CookieCategory.Preferences).Returns(true);
+        _consentResolver.HasConsentAsync(httpContext, CookieCategory.Preferences).Returns(true);
 
         await _sut.SetCookieAsync(httpContext, "pref_cookie", "value");
 

@@ -26,7 +26,7 @@ internal sealed partial class KlaroConsentResolver(
     ILogger<KlaroConsentResolver> logger) : IConsentResolver
 {
     /// <inheritdoc/>
-    public Task<bool> ResolveAsync(HttpContext httpContext, CookieCategory category)
+    public Task<bool> HasConsentAsync(HttpContext httpContext, CookieCategory category)
     {
         if (category == CookieCategory.StrictlyNecessary)
         {

@@ -1251,6 +1251,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Privacy.Regulations.Cookies",
+      "deps": [
+        "Granit.Http.Cookies",
+        "Granit.Privacy.Regulations"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.QueryEngine",
       "deps": [
         "Granit",
@@ -12984,12 +12992,30 @@
       ]
     },
     {
+      "name": "ConsentModelInfo",
+      "fqn": "Granit.Http.Cookies.ConsentModelInfo",
+      "kind": "record",
+      "project": "Granit.Http.Cookies",
+      "file": "src/Granit.Http.Cookies/ConsentModelInfo.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "CookieCategory",
       "fqn": "Granit.Http.Cookies.CookieCategory",
       "kind": "enum",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/CookieCategory.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "CookieConsentMode",
+      "fqn": "Granit.Http.Cookies.CookieConsentMode",
+      "kind": "enum",
+      "project": "Granit.Http.Cookies",
+      "file": "src/Granit.Http.Cookies/CookieConsentMode.cs",
+      "line": 7,
       "members": []
     },
     {
@@ -13163,10 +13189,26 @@
       "line": 9,
       "members": [
         {
-          "name": "ResolveAsync",
+          "name": "HasConsentAsync",
           "kind": "method",
-          "signature": "ResolveAsync(HttpContext httpContext, CookieCategory category)",
+          "signature": "HasConsentAsync(HttpContext httpContext, CookieCategory category)",
           "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "ICookieConsentModelProvider",
+      "fqn": "Granit.Http.Cookies.ICookieConsentModelProvider",
+      "kind": "interface",
+      "project": "Granit.Http.Cookies",
+      "file": "src/Granit.Http.Cookies/ICookieConsentModelProvider.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "GetConsentModelAsync",
+          "kind": "method",
+          "signature": "GetConsentModelAsync(HttpContext httpContext)",
+          "returnType": "Task<ConsentModelInfo?>"
         }
       ]
     },
@@ -13207,6 +13249,22 @@
           "kind": "method",
           "signature": "GetAll()",
           "returnType": "IReadOnlyList<CookieDefinition>"
+        }
+      ]
+    },
+    {
+      "name": "IGlobalPrivacyControlSignal",
+      "fqn": "Granit.Http.Cookies.IGlobalPrivacyControlSignal",
+      "kind": "interface",
+      "project": "Granit.Http.Cookies",
+      "file": "src/Granit.Http.Cookies/IGlobalPrivacyControlSignal.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "IsActive",
+          "kind": "method",
+          "signature": "IsActive(HttpContext httpContext)",
+          "returnType": "bool"
         }
       ]
     },
@@ -23661,6 +23719,18 @@
           "kind": "method",
           "signature": "RecordExportCompleted(string? tenantId, string status, TimeSpan duration, string? regulation = null)",
           "returnType": "void"
+        },
+        {
+          "name": "RecordOptOutRequested",
+          "kind": "method",
+          "signature": "RecordOptOutRequested(string? tenantId, string? regulation = null)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordOptOutRevoked",
+          "kind": "method",
+          "signature": "RecordOptOutRevoked(string? tenantId, string? regulation = null)",
+          "returnType": "void"
         }
       ]
     },
@@ -23737,6 +23807,24 @@
       "members": []
     },
     {
+      "name": "PrivacyOptOutStatusResponse",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyOptOutStatusResponse",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyOptOutStatusResponse.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PrivacyProcessingPurposeResponse",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyProcessingPurposeResponse",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyProcessingPurposeResponse.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "PrivacyRegulationProfileResponse",
       "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyRegulationProfileResponse",
       "kind": "record",
@@ -23760,7 +23848,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Extensions/PrivacyEndpointRouteBuilderExtensions.cs",
-      "line": 31,
+      "line": 34,
       "members": [
         {
           "name": "MapGranitPrivacy",
@@ -23807,7 +23895,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
-      "line": 27,
+      "line": 34,
       "members": []
     },
     {
@@ -23838,12 +23926,21 @@
       "members": []
     },
     {
+      "name": "Purposes",
+      "fqn": "Granit.Privacy.Endpoints.Permissions.Purposes",
+      "kind": "class",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
+      "line": 27,
+      "members": []
+    },
+    {
       "name": "PrivacyServiceCollectionExtensions",
       "fqn": "Granit.Privacy.Extensions.PrivacyServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/Extensions/PrivacyServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitPrivacy",
@@ -23859,7 +23956,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/GranitPrivacyBuilder.cs",
-      "line": 14,
+      "line": 17,
       "members": [
         {
           "name": "RegisterDataProvider",
@@ -24093,6 +24190,107 @@
       ]
     },
     {
+      "name": "OptOutRequestedEto",
+      "fqn": "Granit.Privacy.OptOut.Events.OptOutRequestedEto",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/OptOut/Events/OptOutRequestedEto.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "OptOutRevokedEto",
+      "fqn": "Granit.Privacy.OptOut.Events.OptOutRevokedEto",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/OptOut/Events/OptOutRevokedEto.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "IOptOutRecordReader",
+      "fqn": "Granit.Privacy.OptOut.IOptOutRecordReader",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/OptOut/IOptOutRecordReader.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "GetByUserAsync",
+          "kind": "method",
+          "signature": "GetByUserAsync(Guid userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<OptOutRecord?>"
+        },
+        {
+          "name": "GetByAnonymousTrackAsync",
+          "kind": "method",
+          "signature": "GetByAnonymousTrackAsync(string trackId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<OptOutRecord?>"
+        },
+        {
+          "name": "IsOptedOutAsync",
+          "kind": "method",
+          "signature": "IsOptedOutAsync(Guid? userId, string? anonymousTrackId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "IOptOutRecordWriter",
+      "fqn": "Granit.Privacy.OptOut.IOptOutRecordWriter",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/OptOut/IOptOutRecordWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RecordOptOutAsync",
+          "kind": "method",
+          "signature": "RecordOptOutAsync(OptOutRecord record, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RevokeOptOutAsync",
+          "kind": "method",
+          "signature": "RevokeOptOutAsync(Guid recordId, DateTimeOffset revokedAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "MergeAnonymousAsync",
+          "kind": "method",
+          "signature": "MergeAnonymousAsync(string anonymousTrackId, Guid userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "OptOutConstants",
+      "fqn": "Granit.Privacy.OptOut.OptOutConstants",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/OptOut/OptOutConstants.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "OptOutRecord",
+      "fqn": "Granit.Privacy.OptOut.OptOutRecord",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/OptOut/OptOutRecord.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "OptOutState",
+      "fqn": "Granit.Privacy.OptOut.OptOutState",
+      "kind": "enum",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/OptOut/OptOutState.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "GranitPrivacyOptions",
       "fqn": "Granit.Privacy.Options.GranitPrivacyOptions",
       "kind": "class",
@@ -24148,6 +24346,43 @@
       "members": []
     },
     {
+      "name": "IProcessingPurposeRegistry",
+      "fqn": "Granit.Privacy.ProcessingPurposes.IProcessingPurposeRegistry",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/ProcessingPurposes/IProcessingPurposeRegistry.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "GetAll",
+          "kind": "method",
+          "signature": "GetAll()",
+          "returnType": "IReadOnlyList<ProcessingPurposeDefinition>"
+        },
+        {
+          "name": "GetPurpose",
+          "kind": "method",
+          "signature": "GetPurpose(string purposeId)",
+          "returnType": "ProcessingPurposeDefinition?"
+        },
+        {
+          "name": "GetByLegalBasis",
+          "kind": "method",
+          "signature": "GetByLegalBasis(string legalBasis)",
+          "returnType": "IReadOnlyList<ProcessingPurposeDefinition>"
+        }
+      ]
+    },
+    {
+      "name": "ProcessingPurposeDefinition",
+      "fqn": "Granit.Privacy.ProcessingPurposes.ProcessingPurposeDefinition",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/ProcessingPurposes/ProcessingPurposeDefinition.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "ConsentModel",
       "fqn": "Granit.Privacy.Regulations.ConsentModel",
       "kind": "enum",
@@ -24157,12 +24392,37 @@
       "members": []
     },
     {
+      "name": "RegulationCookiesServiceCollectionExtensions",
+      "fqn": "Granit.Privacy.Regulations.Cookies.Extensions.RegulationCookiesServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Privacy.Regulations.Cookies",
+      "file": "src/Granit.Privacy.Regulations.Cookies/Extensions/RegulationCookiesServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitRegulationCookiesBridge",
+          "kind": "method",
+          "signature": "AddGranitRegulationCookiesBridge(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitPrivacyRegulationsCookiesModule",
+      "fqn": "Granit.Privacy.Regulations.Cookies.GranitPrivacyRegulationsCookiesModule",
+      "kind": "class",
+      "project": "Granit.Privacy.Regulations.Cookies",
+      "file": "src/Granit.Privacy.Regulations.Cookies/GranitPrivacyRegulationsCookiesModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "PrivacyRegulationsServiceCollectionExtensions",
       "fqn": "Granit.Privacy.Regulations.Extensions.PrivacyRegulationsServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Privacy.Regulations",
       "file": "src/Granit.Privacy.Regulations/Extensions/PrivacyRegulationsServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitPrivacyRegulations",
@@ -24521,6 +24781,40 @@
           "returnType": "IReadOnlyList<PrivacyRegulationProfile>"
         }
       ]
+    },
+    {
+      "name": "IResponseDeadlineTracker",
+      "fqn": "Granit.Privacy.Regulations.ResponseDeadline.IResponseDeadlineTracker",
+      "kind": "interface",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/ResponseDeadline/IResponseDeadlineTracker.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "CalculateDeadlineAsync",
+          "kind": "method",
+          "signature": "CalculateDeadlineAsync(PrivacyRequestType requestType, PrivacyRegulationProfile profile, DateTimeOffset requestedAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DateTimeOffset>"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyRequestType",
+      "fqn": "Granit.Privacy.Regulations.ResponseDeadline.PrivacyRequestType",
+      "kind": "enum",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/ResponseDeadline/PrivacyRequestType.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "UpcomingDeadline",
+      "fqn": "Granit.Privacy.Regulations.ResponseDeadline.UpcomingDeadline",
+      "kind": "record",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/ResponseDeadline/UpcomingDeadline.cs",
+      "line": 9,
+      "members": []
     },
     {
       "name": "QueryEngineAIMetrics",

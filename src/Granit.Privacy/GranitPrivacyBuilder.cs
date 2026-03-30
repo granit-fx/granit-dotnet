@@ -3,13 +3,16 @@ using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Internal;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Internal;
+using Granit.Privacy.OptOut;
+using Granit.Privacy.ProcessingPurposes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Privacy;
 
 /// <summary>
 /// Builder for configuring the Granit.Privacy module.
-/// Used within <c>AddGranitPrivacy()</c> to register data providers and legal documents.
+/// Used within <c>AddGranitPrivacy()</c> to register data providers, legal documents,
+/// processing purposes, and opt-out tracking.
 /// </summary>
 public sealed class GranitPrivacyBuilder(IServiceCollection services)
 {
@@ -21,6 +24,9 @@ public sealed class GranitPrivacyBuilder(IServiceCollection services)
 
     /// <summary>Legal document definitions to register at startup.</summary>
     internal List<LegalDocumentDefinition> LegalDocuments { get; } = [];
+
+    /// <summary>Processing purpose definitions to register at startup.</summary>
+    internal List<ProcessingPurposeDefinition> ProcessingPurposes { get; } = [];
 
     /// <summary>
     /// Registers a data provider that participates in GDPR export and deletion.
@@ -38,6 +44,44 @@ public sealed class GranitPrivacyBuilder(IServiceCollection services)
     public GranitPrivacyBuilder RegisterDocument(string documentId, string currentVersion, string displayName)
     {
         LegalDocuments.Add(new LegalDocumentDefinition(documentId, currentVersion, displayName));
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a processing purpose with its legal basis.
+    /// </summary>
+    /// <param name="purposeId">Unique identifier (e.g., <c>"marketing-emails"</c>).</param>
+    /// <param name="displayName">Human-readable name.</param>
+    /// <param name="description">Description of the processing activity.</param>
+    /// <param name="legalBasis">Legal basis code (e.g., <c>"CONSENT"</c>).</param>
+    /// <param name="requiresExplicitConsent">Whether this purpose requires explicit opt-in consent.</param>
+    /// <param name="dataCategory">Optional data category label.</param>
+    public GranitPrivacyBuilder RegisterProcessingPurpose(
+        string purposeId,
+        string displayName,
+        string description,
+        string legalBasis,
+        bool requiresExplicitConsent = false,
+        string? dataCategory = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(purposeId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(displayName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(legalBasis);
+        ProcessingPurposes.Add(new ProcessingPurposeDefinition(
+            purposeId, displayName, description, legalBasis, requiresExplicitConsent, dataCategory));
+        return this;
+    }
+
+    /// <summary>
+    /// Registers the opt-out record store implementation (provided by the application).
+    /// Required for CCPA "Do Not Sell or Share" functionality.
+    /// </summary>
+    public GranitPrivacyBuilder UseOptOutRecordStore<TStore>()
+        where TStore : class, IOptOutRecordReader, IOptOutRecordWriter
+    {
+        Services.AddScoped<TStore>();
+        Services.AddScoped<IOptOutRecordReader>(sp => sp.GetRequiredService<TStore>());
+        Services.AddScoped<IOptOutRecordWriter>(sp => sp.GetRequiredService<TStore>());
         return this;
     }
 

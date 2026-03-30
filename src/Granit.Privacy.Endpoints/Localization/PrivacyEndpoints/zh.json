@@ -5,6 +5,7 @@
     "Permission:Privacy.Agreements.Read": "查看法律文件和同意状态",
     "Permission:Privacy.Deletion.Execute": "请求删除个人数据",
     "Permission:Privacy.Export.Execute": "请求导出个人数据",
+    "Permission:Privacy.Purposes.Read": "查看已注册的处理目的",
     "PermissionGroup:Privacy": "隐私 (GDPR)"
   }
 }

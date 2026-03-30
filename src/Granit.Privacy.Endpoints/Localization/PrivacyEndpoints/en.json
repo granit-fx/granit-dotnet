@@ -5,6 +5,7 @@
     "Permission:Privacy.Agreements.Read": "View legal documents and consent status",
     "Permission:Privacy.Deletion.Execute": "Request personal data deletion",
     "Permission:Privacy.Export.Execute": "Request personal data export",
-    "PermissionGroup:Privacy": "Privacy (GDPR)"
+    "Permission:Privacy.Purposes.Read": "Read registered processing purposes",
+    "PermissionGroup:Privacy": "Privacy"
   }
 }

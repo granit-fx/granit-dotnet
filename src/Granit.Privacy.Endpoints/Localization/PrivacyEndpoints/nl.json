@@ -5,6 +5,7 @@
     "Permission:Privacy.Agreements.Read": "Juridische documenten en toestemmingsstatus bekijken",
     "Permission:Privacy.Deletion.Execute": "Verwijdering van persoonsgegevens aanvragen",
     "Permission:Privacy.Export.Execute": "Export van persoonsgegevens aanvragen",
+    "Permission:Privacy.Purposes.Read": "Geregistreerde verwerkingsdoeleinden bekijken",
     "PermissionGroup:Privacy": "Privacy (AVG)"
   }
 }

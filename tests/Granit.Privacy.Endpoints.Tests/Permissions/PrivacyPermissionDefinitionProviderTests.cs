@@ -40,7 +40,7 @@ public sealed class PrivacyPermissionDefinitionProviderTests
     }
 
     [Fact]
-    public void DefinePermissions_RegistersExactlyFourPermissions()
+    public void DefinePermissions_RegistersExactlyFivePermissions()
     {
         IPermissionDefinitionContext context = Substitute.For<IPermissionDefinitionContext>();
         PermissionGroup group = new(PrivacyPermissions.GroupName);
@@ -49,6 +49,6 @@ public sealed class PrivacyPermissionDefinitionProviderTests
         PrivacyPermissionDefinitionProvider provider = new();
         provider.DefinePermissions(context);
 
-        group.Permissions.Count.ShouldBe(4);
+        group.Permissions.Count.ShouldBe(5);
     }
 }

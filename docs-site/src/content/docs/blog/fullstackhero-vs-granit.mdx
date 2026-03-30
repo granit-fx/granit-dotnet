@@ -1,0 +1,435 @@
+---
+title: "FullStackHero vs Granit: Two Modular .NET Frameworks, Two Philosophies"
+date: 2026-04-03
+sidebar:
+  order: 17
+authors:
+  - jfmeyers
+tags:
+  - comparison
+  - architecture
+  - decision
+description: "An honest, technical comparison of FullStackHero and Granit — two open-source modular .NET 10 frameworks with very different scopes and trade-offs."
+excerpt: >
+  FullStackHero and Granit both target modular .NET applications, but their
+  architectures, compliance stories, and extension models diverge sharply.
+  Here is a fair, side-by-side comparison for architects choosing their next foundation.
+---
+
+
+You are evaluating .NET frameworks for your next enterprise project. Two names keep
+coming up: **FullStackHero** and **Granit**. Both are open-source, both target .NET 10,
+both embrace modularity. But the similarities end quickly once you look under the hood.
+
+This article is a **fair, technical comparison** — not a sales pitch. We will cover
+architecture, module systems, persistence, multi-tenancy, security, compliance,
+observability, messaging, and developer experience. Where one framework does something
+better, we will say so. Where trade-offs are subjective, we will lay out the facts and
+let you decide.
+
+## At a glance
+
+| Dimension | FullStackHero | Granit |
+| --------- | ------------- | ------ |
+| **License** | MIT | Apache-2.0 |
+| **Architecture** | Modular Monolith + Vertical Slices | Modular Monolith + Layered Modules |
+| **NuGet packages** | ~15 internal projects (not published) | 214 published packages |
+| **Built-in modules** | 4 (Identity, Multitenancy, Auditing, Webhooks) | 40+ domains (Security, AI, Notifications, Workflow, Privacy...) |
+| **Distribution** | Fork / clone the template repo | `dotnet add package Granit.{Module}` |
+| **CQRS** | Mediator (source-generated) | Interface-level (`IXxxReader` / `IXxxWriter`) |
+| **Messaging** | RabbitMQ + Outbox | Wolverine + transactional outbox |
+| **Multi-tenancy** | Finbuckle (database-per-tenant) | Custom (shared, schema, or database) |
+| **Identity** | Self-contained JWT (ASP.NET Identity) | 4 IdP providers + OpenIddict OIDC server + BFF + DPoP |
+| **Compliance** | Soft delete + basic audit | GDPR engine (14 regulations) + ISO 27001 + crypto-shredding |
+| **Observability** | OpenTelemetry + Serilog + Aspire | OpenTelemetry + Serilog + per-module metrics/tracing |
+| **AI integration** | None | 13+ `.AI` companion packages + MCP server |
+| **Roslyn analyzers** | SonarAnalyzer (third-party) | 14 custom rules (security, PII, patterns) |
+| **Primary maintainer** | Mukesh Murugan (solo) | JF Meyers (solo) |
+| **GitHub stars** | ~6,400 | Growing (newer project) |
+| **Target audience** | Developers who want a ready-to-run starter kit | Teams building enterprise SaaS with compliance requirements |
+
+## Architecture
+
+### FullStackHero: vertical slices inside a modular host
+
+FullStackHero follows **Vertical Slice Architecture** with **CQRS via Mediator** (Martin
+Othamar's source-generated library — not MediatR). Each module contains its own commands,
+queries, handlers, endpoints, and data access co-located in a single folder. Horizontal
+concerns (caching, persistence, eventing) live in 11 **Building Blocks** that modules
+depend on through abstractions.
+
+```text
+src/
+  BuildingBlocks/       # 11 shared concern packages
+    Core/               # DDD primitives, abstractions
+    Persistence/        # EF Core base contexts, interceptors
+    Eventing/           # InMemory, RabbitMQ, Outbox
+    ...
+  Modules/              # 4 vertical slice modules
+    Identity/
+    Multitenancy/
+    Auditing/
+    Webhooks/
+```
+
+The host wires everything at startup:
+
+```csharp title="Program.cs (FullStackHero)"
+builder.AddModules(typeof(IdentityModule).Assembly, ...);
+app.UseHeroPlatform(p => p.MapModules = true);
+```
+
+This approach is **fast to understand** and works well for small-to-medium applications
+where you control all modules in one repository.
+
+### Granit: isolated packages with dependency graph enforcement
+
+Granit uses a **layered module split** where each domain is broken into dedicated NuGet
+packages: abstractions, persistence, endpoints, providers, messaging, and background
+jobs. A `GranitModule` + `[DependsOn]` attribute system declares the dependency graph,
+which is validated at startup using **Kahn's algorithm** (topological sort) — circular
+dependencies crash the application immediately.
+
+```text
+src/
+  Granit.BlobStorage/                  # Abstractions + DI
+  Granit.BlobStorage.Endpoints/        # Minimal API routes
+  Granit.BlobStorage.EntityFrameworkCore/  # Isolated DbContext
+  Granit.BlobStorage.S3/               # AWS S3 provider
+  Granit.BlobStorage.AzureBlob/        # Azure provider
+  Granit.BlobStorage.BackgroundJobs/   # Scheduled cleanup
+```
+
+```csharp title="Program.cs (Granit)"
+var builder = WebApplication.CreateBuilder(args);
+builder.AddGranit(granit => granit.AddModule<BlobStorageModule>());
+var app = builder.Build();
+app.UseGranit();
+app.Run();
+```
+
+The trade-off is clear: **more packages to manage**, but each one is independently
+versioned, testable, and extractable to a microservice by changing a connection string.
+
+:::tip[Key difference]
+FullStackHero modules live **inside your repository** — you fork and modify them directly.
+Granit modules are **external NuGet packages** you compose — your code stays in your
+application project, and framework updates are a package bump.
+:::
+
+## Persistence
+
+Both frameworks use **EF Core 10** with interceptors for audit fields and domain event
+dispatch. The differences are in isolation and filtering.
+
+### DbContext strategy
+
+| Aspect | FullStackHero | Granit |
+| ------ | ------------- | ------ |
+| **DbContext scope** | Shared base context hierarchy | Isolated DbContext per module |
+| **Cross-module queries** | Possible (same context) | Impossible by design (separate contexts) |
+| **Migration ownership** | Centralized `Migrations.PostgreSQL` project | Each module owns its migrations |
+| **Query filters** | Soft delete + tenant (Finbuckle) | 5 named filters (SoftDelete, Active, MultiTenant, ProcessingRestrictable, Publishable) |
+| **Filter bypass** | Finbuckle's `IgnoreQueryFilters` | Per-filter toggle via `IDataFilter.Disable("SoftDelete")` |
+| **ID generation** | Standard GUIDs | UUIDv7 (sequential, no index fragmentation) |
+
+Granit's isolated DbContext approach prevents accidental cross-module coupling. If module A
+cannot `JOIN` module B's tables, developers are forced to use events for cross-module
+communication — which is exactly what you need for a clean extraction path. FullStackHero's
+shared context is simpler but creates implicit coupling that becomes painful when you try
+to split modules later.
+
+### CQRS approach
+
+FullStackHero uses the **Mediator pattern** with source-generated dispatch. Commands and
+queries are explicit record types sent through a pipeline with behaviors (validation,
+logging, tracing):
+
+```csharp title="GetUser.cs (FullStackHero)"
+public sealed record GetUserQuery(Guid Id) : IQuery<UserResponse>;
+
+public sealed class GetUserHandler(AppDbContext db)
+    : IQueryHandler<GetUserQuery, UserResponse>
+{
+    public async ValueTask<UserResponse> Handle(GetUserQuery query, CancellationToken ct)
+        => await db.Users.Where(u => u.Id == query.Id)
+            .Select(u => new UserResponse(u.Id, u.Name))
+            .FirstOrDefaultAsync(ct);
+}
+```
+
+Granit uses **interface-level CQRS** without a mediator. Read and write operations are
+separated at the DI boundary with `IXxxReader` and `IXxxWriter` interfaces, injected
+directly into endpoints:
+
+```csharp title="BlobEndpoints.cs (Granit)"
+group.MapGet("/{id:guid}", async (
+    Guid id,
+    IBlobDescriptorReader reader,
+    CancellationToken ct) =>
+{
+    var blob = await reader.GetByIdAsync(id, ct);
+    return blob is null
+        ? TypedResults.NotFound()
+        : TypedResults.Ok(blob.ToResponse());
+});
+```
+
+Neither approach is objectively better. Mediator gives you a uniform pipeline with
+cross-cutting behaviors. Interface CQRS is simpler and more explicit — no dispatcher
+magic, but you wire cross-cutting concerns differently (interceptors, middleware).
+
+## Multi-tenancy
+
+### FullStackHero: Finbuckle-powered, database-per-tenant
+
+FullStackHero delegates multi-tenancy to **Finbuckle.MultiTenant v10**, a mature,
+well-tested library. The default strategy is **database-per-tenant**: a root database
+stores tenant metadata (including connection strings), and each tenant gets its own
+isolated database, created and migrated at startup.
+
+Tenant resolution flows through JWT claims or HTTP headers. The `AppTenantInfo` entity
+stores per-tenant configuration including tier and status.
+
+### Granit: custom, three-strategy model
+
+Granit implements multi-tenancy from scratch with three configurable strategies:
+
+1. **Shared database** — discriminator column (`TenantId`) with automatic query filter
+2. **Schema per tenant** — PostgreSQL `SET search_path` per connection
+3. **Database per tenant** — connection string resolved from Vault at runtime
+
+The tenant context propagates through `AsyncLocal<TenantInfo?>` and flows automatically
+into Wolverine messages, background jobs, and notification channels. A
+`HeaderTrustMode.CrossValidate` option rejects requests where the header tenant does not
+match the JWT claim — a security hardening feature that Finbuckle does not provide
+out-of-the-box.
+
+:::note[Which to choose?]
+If database-per-tenant is your only requirement, Finbuckle (FullStackHero) is battle-tested
+and well-documented. If you need shared-database or schema-per-tenant strategies — or if
+tenant isolation is a compliance requirement — Granit's built-in model gives you more control.
+:::
+
+## Security
+
+This is where the two frameworks diverge most sharply.
+
+### FullStackHero: self-contained identity
+
+FullStackHero is its own identity provider. A custom `TokenService` issues JWT access
+tokens and refresh tokens. ASP.NET Identity manages users, roles, and permissions.
+A **SimpleBffAuth** pattern stores tokens in HttpOnly cookies for the Blazor frontend.
+
+This works well for **standalone applications** where you control the entire auth stack.
+But it means no OIDC federation, no external IdP integration, and no standards-based
+token exchange.
+
+### Granit: federated identity with full OIDC stack
+
+Granit separates **authentication** (who are you?) from **identity** (where are you stored?):
+
+| Layer | Packages |
+| ----- | -------- |
+| **JWT Bearer** | 4 providers: Keycloak, Entra ID, Cognito, Google Cloud |
+| **OIDC Server** | OpenIddict (full OAuth2/OIDC server with endpoints, EF Core, background jobs) |
+| **BFF** | Server-side token storage + YARP reverse proxy + DPoP proof injection |
+| **DPoP** | RFC 9449 sender-constrained tokens (EC P-256, 30s proof lifetime) |
+| **PAR** | RFC 9126 Pushed Authorization Requests |
+| **API Keys** | Persisted API key authentication with EF Core storage |
+| **Authorization** | RBAC with three-segment permissions (`[Group].[Resource].[Action]`) |
+| **Vault** | 4 providers: HashiCorp, Azure Key Vault, AWS, Google Cloud |
+| **Encryption** | Field-level AES-256-CBC with `[Encrypted]` attribute + key rotation |
+
+The BFF + DPoP + PAR combination achieves **FAPI 2.0 Security Profile** compliance —
+a requirement for financial services and healthcare. FullStackHero's JWT-only approach
+cannot meet these standards without significant custom development.
+
+## Compliance
+
+### FullStackHero: audit + soft delete
+
+FullStackHero provides:
+
+- `IAuditableEntity` — auto-populated `CreatedBy`, `ModifiedBy`, timestamps
+- `ISoftDeletable` — logical delete with automatic query filter
+- `Auditing` module — logs security events (logins, permission changes)
+
+This covers basic audit trail needs but does not address GDPR erasure rights, data
+subject requests, or jurisdiction-specific regulations.
+
+### Granit: multi-regulation privacy engine
+
+Granit ships a dedicated **Privacy module** with a **multi-regulation engine** containing
+14 built-in jurisdiction profiles:
+
+| Tier | Regulations |
+| ---- | ----------- |
+| **Tier 1** | EU GDPR, UK GDPR, Brazil LGPD, USA CCPA/CPRA, Canada PIPEDA, Quebec Law 25, Switzerland nFADP |
+| **Tier 2** | China PIPL, India DPDPA, Japan APPI, South Korea PIPA, Australia Privacy Act, South Africa POPIA, Thailand PDPA |
+
+Each profile encodes consent models, legal bases, SAR deadlines, breach notification
+windows, cross-border transfer rules, and DPO requirements. Combined with
+**crypto-shredding** (destroy the Vault encryption key to erase data without deleting
+audit trail rows), this gives you GDPR Art. 17 compliance without losing ISO 27001
+traceability.
+
+FullStackHero does not have an equivalent. If your project has regulatory obligations
+beyond basic auditing, this is a significant differentiator.
+
+## Observability
+
+Both frameworks embrace the **three pillars** (logs, metrics, traces) with OpenTelemetry
+and Serilog. The implementation depth differs.
+
+| Aspect | FullStackHero | Granit |
+| ------ | ------------- | ------ |
+| **Tracing** | Auto-instrumentation + Mediator spans | `ActivitySource` per module, registered in central registry |
+| **Metrics** | Custom `Meter` per module | `IMeterFactory` injection, naming convention enforced (`granit.{module}.{entity}.{action}`) |
+| **Logging** | Serilog + enrichers | Serilog + `[LoggerMessage]` source generation (enforced by analyzer) |
+| **PII protection** | Manual | Roslyn analyzers: GRSEC010 (PII in metrics), GRSEC011 (PII in logs) |
+| **Dashboard** | .NET Aspire | Grafana LGTM (Loki, Grafana, Tempo, Mimir) |
+| **Health checks** | Per-module | Per-module |
+
+FullStackHero's .NET Aspire integration gives you a **zero-config local dashboard** out
+of the box — excellent for development. Granit's enforced conventions (naming, PII
+detection, mandatory `IMeterFactory`) are more opinionated but prevent observability
+drift as the team grows.
+
+## Messaging and events
+
+### FullStackHero: Mediator + RabbitMQ + Outbox
+
+Domain events are raised on entities via `AddDomainEvent()` and dispatched after
+`SaveChanges` through the `DomainEventsInterceptor` into Mediator's `IPublisher`. For
+distributed messaging, a RabbitMQ event bus with an EF Core outbox pattern ensures
+at-least-once delivery.
+
+### Granit: Wolverine + dual event model
+
+Granit distinguishes two event categories enforced by architecture tests:
+
+- **`*Event`** (local, in-process) — dispatched after commit via `ILocalEventBus` or
+  `AddDomainEvent()` on aggregate roots
+- **`*Eto`** (Event Transfer Object, distributed) — persisted atomically in a Wolverine
+  transactional outbox via `AddDistributedEvent()` or `IDistributedEventBus`
+
+Wolverine provides automatic retry policies, dead-letter handling, and tenant/user
+context propagation. The naming convention (enforced at build time) makes it impossible
+to accidentally send a local event over the wire.
+
+## DDD support
+
+| Feature | FullStackHero | Granit |
+| ------- | ------------- | ------ |
+| **Entity base** | `BaseEntity<TId>` | `Entity`, `AuditedEntity` |
+| **Aggregate root** | `AggregateRoot<TId>` (thin wrapper) | `AggregateRoot`, `AuditedAggregateRoot` (enforced conventions) |
+| **Value objects** | No dedicated base class | `SingleValueObject<T>` with EF Core converters |
+| **Private setters** | Not enforced | Architecture test: no public setters on aggregates |
+| **Factory methods** | Not enforced | Architecture test: `Create(...)` required |
+| **Domain events** | `AddDomainEvent()` | `AddDomainEvent()` + `AddDistributedEvent()` |
+| **Specifications** | `ISpecification<T>` | Not used (direct EF Core queries) |
+
+FullStackHero gives you the primitives and trusts you to apply DDD correctly. Granit
+enforces DDD conventions through 27 architecture test classes — if you forget a private
+setter on an aggregate property, the build fails.
+
+## AI integration
+
+FullStackHero has **no AI integration** at the time of writing.
+
+Granit ships **13+ `.AI` companion packages** that add AI capabilities to existing modules
+without modifying their core APIs:
+
+- **QueryEngine.AI** — natural language queries translated to filter expressions
+- **DataExchange.AI** — AI-powered column mapping for CSV/Excel imports
+- **Localization.AI** — LLM-powered translation suggestions
+- **Imaging.AI** — image analysis and metadata extraction
+- **Mcp.Server** — expose any Granit module as an MCP tool for AI agents (Claude, Copilot)
+
+This is a forward-looking bet. If your roadmap includes AI-assisted features, having the
+plumbing already wired saves significant integration effort.
+
+## Developer experience
+
+| Aspect | FullStackHero | Granit |
+| ------ | ------------- | ------ |
+| **Getting started** | Fork repo, run with Aspire | `dotnet new granit-api`, add modules |
+| **CLI tooling** | FSH CLI (`fsh new`) | `dotnet new` templates (3 templates) |
+| **Local dev** | .NET Aspire AppHost (Postgres + Redis + OTLP) | Docker Compose or Aspire |
+| **API docs** | Scalar UI | Scalar UI |
+| **Code analysis** | SonarAnalyzer + `EnforceCodeStyleInBuild` | 14 custom Roslyn analyzers + SonarAnalyzer |
+| **Architecture tests** | NetArchTest (module boundaries) | NetArchTest (27 test classes, 200+ rules) |
+| **Localization** | Not built-in | 17 cultures, source-generated keys, runtime overrides |
+| **Notifications** | MailKit/SendGrid | 9 channels with fan-out + preference filtering |
+| **Documentation** | Mintlify + blog articles | Astro + Starlight (57 patterns, 18 ADRs) |
+
+FullStackHero's **Aspire-first local development** is genuinely excellent. One `dotnet run`
+on the AppHost spins up PostgreSQL, Redis, the API, the Blazor UI, and the OTLP
+collector with a dashboard at `localhost:17273`. Granit's local experience requires more
+setup but offers more infrastructure flexibility.
+
+## When to choose FullStackHero
+
+- You want a **ready-to-run starter kit** with UI (Blazor + MudBlazor) included
+- Your project is a **standalone application** without external IdP federation needs
+- You prefer **vertical slice architecture** and the Mediator pattern
+- Compliance requirements are limited to **basic audit trail and soft delete**
+- You value a **quick start** over deep customization
+- You are comfortable **forking** and owning the framework code in your repo
+
+## When to choose Granit
+
+- You are building **enterprise SaaS** with multi-tenancy and regulatory obligations
+- You need **GDPR, CCPA, LGPD** (or other jurisdiction) compliance out of the box
+- Your security requirements include **OIDC federation, DPoP, BFF**, or FAPI 2.0
+- You want to **compose modules via NuGet** rather than fork a template
+- Your architecture requires **isolated DbContexts** with a microservice extraction path
+- You need **AI integration**, MCP support, or multi-channel notifications
+- You want **build-time enforcement** of conventions via Roslyn analyzers and architecture tests
+
+## The honest trade-offs
+
+Neither framework is universally "better." They optimize for different scenarios.
+
+**FullStackHero is simpler.** Fewer packages, fewer abstractions, faster ramp-up. If you
+are a solo developer or a small team building a product without heavy compliance needs,
+FullStackHero gets you to production faster. The MIT license is maximally permissive.
+The Aspire integration is best-in-class for local development.
+
+**Granit is deeper.** 214 packages means more surface area to learn, but also more
+problems already solved. If your RFP mentions GDPR, ISO 27001, multi-tenancy isolation,
+or OIDC federation, Granit addresses these structurally — not as afterthoughts. The
+convention enforcement (analyzers, architecture tests) pays dividends as the team scales.
+
+**FullStackHero is a starter kit.** You fork it, make it yours, and maintain the result.
+Framework updates require manual merging. **Granit is a package ecosystem.** You consume
+it via NuGet, and updates are dependency bumps. The ownership boundary is clearer, but
+you have less control over framework internals.
+
+Both are **open-source**, **actively maintained**, and targeting **.NET 10**. Both use
+**Scalar UI** over Swagger. Both run **architecture tests** with NetArchTest. The
+.NET ecosystem is better for having both.
+
+## Key takeaways
+
+- **FullStackHero** excels as a batteries-included starter kit with Blazor UI, Aspire
+  orchestration, and a low barrier to entry. Best for standalone apps and small teams.
+- **Granit** excels as a composable framework with deep compliance, federated security,
+  and build-time convention enforcement. Best for enterprise SaaS and regulated industries.
+- **Multi-tenancy**: Finbuckle (FSH) is proven for database-per-tenant; Granit offers
+  three strategies with security hardening.
+- **Security**: FSH is self-contained JWT; Granit supports full OIDC federation with
+  DPoP and BFF.
+- **Compliance**: FSH covers audit basics; Granit ships a 14-regulation privacy engine
+  with crypto-shredding.
+- Choose based on your **actual requirements**, not feature counts. A starter kit you
+  ship beats a framework you spend months learning.
+
+## Further reading
+
+- [Why We Chose Modular Monolith Over Microservices](/blog/why-modular-monolith/)
+- [Isolated DbContext Per Module](/blog/isolated-dbcontext-per-module/)
+- [Crypto-shredding: GDPR Erasure Without Deleting Rows](/blog/crypto-shredding-gdpr-erasure-without-deleting-rows/)
+- [Why Your React App Should Never Touch an Access Token](/blog/why-your-react-app-should-never-touch-an-access-token/)
+- [FullStackHero GitHub Repository](https://github.com/fullstackhero/dotnet-starter-kit)

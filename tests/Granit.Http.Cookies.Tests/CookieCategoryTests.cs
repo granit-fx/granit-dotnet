@@ -22,6 +22,10 @@ public sealed class CookieCategoryTests
         ((int)CookieCategory.Marketing).ShouldBe(3);
 
     [Fact]
-    public void Enum_HasFourValues() =>
-        Enum.GetValues<CookieCategory>().Length.ShouldBe(4);
+    public void SaleOrSharing_HasValue4() =>
+        ((int)CookieCategory.SaleOrSharing).ShouldBe(4);
+
+    [Fact]
+    public void Enum_HasFiveValues() =>
+        Enum.GetValues<CookieCategory>().Length.ShouldBe(5);
 }

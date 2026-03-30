@@ -80,7 +80,7 @@ public sealed class KlaroConsentResolverTests
         KlaroConsentResolver resolver = CreateResolver();
         DefaultHttpContext httpContext = CreateHttpContextNoCookie();
 
-        bool result = await resolver.ResolveAsync(httpContext, CookieCategory.StrictlyNecessary);
+        bool result = await resolver.HasConsentAsync(httpContext, CookieCategory.StrictlyNecessary);
 
         result.ShouldBeTrue();
     }
@@ -91,7 +91,7 @@ public sealed class KlaroConsentResolverTests
         KlaroConsentResolver resolver = CreateResolver();
         DefaultHttpContext httpContext = CreateHttpContextNoCookie();
 
-        bool result = await resolver.ResolveAsync(httpContext, CookieCategory.Analytics);
+        bool result = await resolver.HasConsentAsync(httpContext, CookieCategory.Analytics);
 
         result.ShouldBeFalse();
     }
@@ -102,7 +102,7 @@ public sealed class KlaroConsentResolverTests
         KlaroConsentResolver resolver = CreateResolver();
         DefaultHttpContext httpContext = CreateHttpContext("klaro", "");
 
-        bool result = await resolver.ResolveAsync(httpContext, CookieCategory.Analytics);
+        bool result = await resolver.HasConsentAsync(httpContext, CookieCategory.Analytics);
 
         result.ShouldBeFalse();
     }
@@ -118,7 +118,7 @@ public sealed class KlaroConsentResolverTests
         });
         DefaultHttpContext httpContext = CreateHttpContext("klaro", json);
 
-        bool result = await resolver.ResolveAsync(httpContext, CookieCategory.Analytics);
+        bool result = await resolver.HasConsentAsync(httpContext, CookieCategory.Analytics);
 
         result.ShouldBeTrue();
     }
@@ -134,7 +134,7 @@ public sealed class KlaroConsentResolverTests
         });
         DefaultHttpContext httpContext = CreateHttpContext("klaro", json);
 
-        bool result = await resolver.ResolveAsync(httpContext, CookieCategory.Analytics);
+        bool result = await resolver.HasConsentAsync(httpContext, CookieCategory.Analytics);
 
         result.ShouldBeFalse();
     }
@@ -150,7 +150,7 @@ public sealed class KlaroConsentResolverTests
         });
         DefaultHttpContext httpContext = CreateHttpContext("klaro", json);
 
-        bool result = await resolver.ResolveAsync(httpContext, CookieCategory.Analytics);
+        bool result = await resolver.HasConsentAsync(httpContext, CookieCategory.Analytics);
 
         result.ShouldBeFalse();
     }
@@ -169,7 +169,7 @@ public sealed class KlaroConsentResolverTests
         DefaultHttpContext httpContext = CreateHttpContext("klaro", json);
 
         // Marketing has no mappings
-        bool result = await resolver.ResolveAsync(httpContext, CookieCategory.Marketing);
+        bool result = await resolver.HasConsentAsync(httpContext, CookieCategory.Marketing);
 
         result.ShouldBeFalse();
     }
@@ -180,7 +180,7 @@ public sealed class KlaroConsentResolverTests
         KlaroConsentResolver resolver = CreateResolver();
         DefaultHttpContext httpContext = CreateHttpContext("klaro", "not-valid-json{{{");
 
-        bool result = await resolver.ResolveAsync(httpContext, CookieCategory.Analytics);
+        bool result = await resolver.HasConsentAsync(httpContext, CookieCategory.Analytics);
 
         result.ShouldBeFalse();
     }
@@ -199,7 +199,7 @@ public sealed class KlaroConsentResolverTests
         });
         DefaultHttpContext httpContext = CreateHttpContext("my-consent", json);
 
-        bool result = await resolver.ResolveAsync(httpContext, CookieCategory.Marketing);
+        bool result = await resolver.HasConsentAsync(httpContext, CookieCategory.Marketing);
 
         result.ShouldBeTrue();
     }
@@ -216,7 +216,7 @@ public sealed class KlaroConsentResolverTests
         });
         DefaultHttpContext httpContext = CreateHttpContext("klaro", json);
 
-        bool result = await resolver.ResolveAsync(httpContext, CookieCategory.Analytics);
+        bool result = await resolver.HasConsentAsync(httpContext, CookieCategory.Analytics);
 
         // Should return false because JSON property names are case-sensitive
         result.ShouldBeFalse();

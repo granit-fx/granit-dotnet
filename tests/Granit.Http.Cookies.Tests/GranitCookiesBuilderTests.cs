@@ -83,7 +83,7 @@ public sealed class GranitCookiesBuilderTests
 
     private sealed class FakeConsentResolver : IConsentResolver
     {
-        public Task<bool> ResolveAsync(Microsoft.AspNetCore.Http.HttpContext httpContext, CookieCategory category) =>
+        public Task<bool> HasConsentAsync(Microsoft.AspNetCore.Http.HttpContext httpContext, CookieCategory category) =>
             Task.FromResult(true);
     }
 }

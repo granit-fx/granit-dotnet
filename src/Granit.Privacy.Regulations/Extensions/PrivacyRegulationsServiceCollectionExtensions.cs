@@ -2,6 +2,8 @@ using Granit.Privacy.Regulations.Internal;
 using Granit.Privacy.Regulations.Options;
 using Granit.Privacy.Regulations.Profiles;
 using Granit.Privacy.Regulations.Profiles.Internal;
+using Granit.Privacy.Regulations.ResponseDeadline;
+using Granit.Privacy.Regulations.ResponseDeadline.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -52,6 +54,9 @@ public static class PrivacyRegulationsServiceCollectionExtensions
 
         // Resolver (scoped — depends on ICurrentTenant)
         services.TryAddScoped<IPrivacyRegulationResolver, TenantBasedRegulationResolver>();
+
+        // Deadline tracker
+        services.TryAddSingleton<IResponseDeadlineTracker, DefaultResponseDeadlineTracker>();
 
         return services;
     }

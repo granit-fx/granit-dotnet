@@ -10,6 +10,6 @@ namespace Granit.Http.Cookies.Internal;
 internal sealed class NullConsentResolver : IConsentResolver
 {
     /// <inheritdoc/>
-    public Task<bool> ResolveAsync(HttpContext httpContext, CookieCategory category) =>
+    public Task<bool> HasConsentAsync(HttpContext httpContext, CookieCategory category) =>
         Task.FromResult(false);
 }

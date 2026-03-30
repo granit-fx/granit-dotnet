@@ -5,6 +5,7 @@
     "Permission:Privacy.Agreements.Read": "Visualizzare documenti legali e stato del consenso",
     "Permission:Privacy.Deletion.Execute": "Richiedere la cancellazione dei dati personali",
     "Permission:Privacy.Export.Execute": "Richiedere l'esportazione dei dati personali",
+    "Permission:Privacy.Purposes.Read": "Consultare le finalità del trattamento",
     "PermissionGroup:Privacy": "Privacy (GDPR)"
   }
 }

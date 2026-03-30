@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Privacy.Regulations.Cookies</PackageId>
+    <Description>Bridge between Granit.Privacy.Regulations and Granit.Http.Cookies. Provides regulation-aware cookie consent model resolution — maps PrivacyRegulationProfile to CookieConsentMode for GPC signal enforcement and opt-in/opt-out cookie handling.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Privacy.Regulations.Cookies.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Http.Cookies\Granit.Http.Cookies.csproj" />
+    <ProjectReference Include="..\Granit.Privacy.Regulations\Granit.Privacy.Regulations.csproj" />
+  </ItemGroup>
+
+</Project>

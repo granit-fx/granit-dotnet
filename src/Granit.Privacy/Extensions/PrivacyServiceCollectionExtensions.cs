@@ -5,6 +5,8 @@ using Granit.Privacy.Diagnostics;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Internal;
 using Granit.Privacy.Options;
+using Granit.Privacy.ProcessingPurposes;
+using Granit.Privacy.ProcessingPurposes.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -50,8 +52,11 @@ public static class PrivacyServiceCollectionExtensions
             legalDocumentRegistry.Register(document);
         }
 
+        ProcessingPurposeRegistry purposeRegistry = new(builder.ProcessingPurposes);
+
         services.TryAddSingleton<IDataProviderRegistry>(dataProviderRegistry);
         services.TryAddSingleton<ILegalDocumentRegistry>(legalDocumentRegistry);
+        services.TryAddSingleton<IProcessingPurposeRegistry>(purposeRegistry);
 
         // Only register the checker when a store implementation has been provided
         // via UseLegalAgreementStore<T>(). Without a store the checker cannot work
