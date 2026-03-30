@@ -467,10 +467,16 @@ jobs:
         run: gh release upload ${{ github.ref_name }} sbom/bom.json --clobber
 
   # GitHub Packages — dev packages on develop/main
+  # sbom is kept in needs for ordering on main, but skipped on develop.
+  # The if condition uses always() so the job runs even when sbom is skipped.
   publish-github:
     needs: [pack, sbom]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+    if: |
+      always()
+      && needs.pack.result == 'success'
+      && (needs.sbom.result == 'success' || needs.sbom.result == 'skipped')
+      && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
     permissions:
       packages: write
     steps:
