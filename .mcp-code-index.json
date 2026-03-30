@@ -22396,7 +22396,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/EfStoreBase.cs",
-      "line": 26,
+      "line": 27,
       "members": []
     },
     {
@@ -23299,7 +23299,7 @@
     },
     {
       "name": "SpecificationEvaluator",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.SpecificationEvaluator",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Specification.SpecificationEvaluator",
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Specification/SpecificationEvaluator.cs",

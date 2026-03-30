@@ -1,7 +1,7 @@
 using Granit.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Granit.Persistence.EntityFrameworkCore;
+namespace Granit.Persistence.EntityFrameworkCore.Specification;
 
 /// <summary>
 /// Applies a <see cref="Specification{T}"/> to an <see cref="IQueryable{T}"/> source.

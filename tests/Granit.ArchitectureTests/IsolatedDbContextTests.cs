@@ -70,6 +70,13 @@ public sealed partial class IsolatedDbContextTests
                         continue;
                     }
 
+                    // Granit.Persistence.EntityFrameworkCore itself implements ApplyGranitConventions
+                    // — it is the centralized filter registration, not a manual override.
+                    if (rel.Contains("Granit.Persistence.EntityFrameworkCore", StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+
                     violations.Add(rel);
                 }
             }

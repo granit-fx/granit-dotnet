@@ -448,8 +448,10 @@
     <Project Path="tests/Granit.Notifications.Zulip.Tests/Granit.Notifications.Zulip.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="src/Granit.Persistence/Granit.Persistence.csproj" />
     <Project Path="tests/Granit.Http.SecurityHeaders.Tests/Granit.Http.SecurityHeaders.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.Endpoints.Tests/Granit.Identity.Local.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.Persistence.Tests/Granit.Persistence.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Regulations.Cookies.Tests/Granit.Privacy.Regulations.Cookies.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Regulations.Tests/Granit.Privacy.Regulations.Tests.csproj" />
   </Folder>

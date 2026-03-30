@@ -123,6 +123,7 @@
         "tests/Granit.Http.SecurityHeaders.Tests",
         "tests/Granit.Imaging.MagickNet.Tests",
         "tests/Granit.Imaging.Tests",
+        "tests/Granit.Persistence.Tests",
         "tests/Granit.Persistence.EntityFrameworkCore.Hosting.Tests",
         "tests/Granit.Persistence.EntityFrameworkCore.Migrations.Tests",
         "tests/Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine.Tests",

@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Granit.Domain;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Specification;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
