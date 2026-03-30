@@ -8,23 +8,94 @@ sidebar:
 
 import { Tabs, TabItem, Badge } from "@astrojs/starlight/components";
 
-The account self-service API is available at `/api/account` (configurable via
-`OpenIddictEndpointsOptions.AccountRoutePrefix`). All endpoints use `MapGranitGroup()`
-for automatic FluentValidation. Endpoints are registered by calling
-`app.MapOpenIddictEndpoints()`.
+The account self-service API lives in `Granit.Identity.Local.Endpoints` -- a
+provider-agnostic module shared between OpenIddict and any future auth provider
+(e.g. Duende Identity Server). Endpoints are available at `/api/account`
+(configurable via `AccountEndpointsOptions.AccountRoutePrefix`). All endpoints
+use `MapGranitGroup()` for automatic FluentValidation. Register them by calling
+`app.MapAccountEndpoints()`.
 
 ## Endpoint summary
 
 | Group | Endpoints | Auth required |
 |-------|-----------|---------------|
+| [Login](#login) | 2 | Anonymous |
 | [Registration](#registration-and-email-confirmation) | 3 | Anonymous / Authenticated |
 | [Profile](#profile) | 2 | Authenticated |
 | [Password](#password-management) | 3 | Mixed |
-| [Two-factor](#two-factor-authentication-totp) | 5 | Authenticated |
+| [Two-factor setup](#two-factor-authentication-totp) | 5 | Authenticated |
 | [External logins](#external-logins) | 4 | Mixed |
-| [Passkeys](#passkeys-webauthn--fido2) | 6 | Mixed |
+| [Passkeys](#passkeys-webauthn--fido2) | 7 | Mixed |
 | [Session](#session-management) | 2 | Authenticated |
 | [Deletion](#account-deletion-gdpr) | 1 | Authenticated |
+
+## Login
+
+### Password login
+
+```text
+POST /api/account/login
+```
+
+Authenticates via ASP.NET Core Identity and sets the session cookie. Designed for
+headless/BFF architectures where the SPA handles the login UI and redirects back
+to `/connect/authorize` after successful authentication.
+
+**Request:**
+
+```json
+{
+  "login": "alice@example.com",
+  "password": "MyStr0ng!Pass"
+}
+```
+
+**Responses:**
+
+- `200 OK` with `{ "succeeded": true }` on success
+- `200 OK` with `{ "succeeded": false, "requiresTwoFactor": true }` when 2FA is
+  enabled -- the client must call the two-factor login endpoint next
+- `401 Unauthorized` for invalid credentials or unconfirmed email
+- `423 Locked` when the account is locked out after too many failed attempts
+
+Rate-limited via the `authentication` policy (soft dependency on
+`Granit.RateLimiting`).
+
+### Two-factor login
+
+```text
+POST /api/account/login/two-factor
+```
+
+Completes the 2FA challenge after a successful password login returned
+`requiresTwoFactor: true`. The `Identity.TwoFactorUserId` cookie (set
+automatically by the initial login) identifies the user.
+
+**Request (TOTP code):**
+
+```json
+{
+  "code": "123456"
+}
+```
+
+**Request (recovery code):**
+
+```json
+{
+  "code": "ABCD-1234",
+  "useRecoveryCode": true
+}
+```
+
+Spaces and dashes are automatically stripped from the code.
+
+**Responses:**
+
+- `200 OK` with `{ "succeeded": true }` on success (session cookie set)
+- `401 Unauthorized` if the code is invalid or the 2FA session expired
+
+Rate-limited via the `authentication` policy.
 
 ## Registration and email confirmation
 
@@ -36,7 +107,7 @@ POST /api/account/register
 
 Creates a new user account. Sends a confirmation email via `IEmailConfirmationService`.
 Publishes `UserRegisteredEto` via `IDistributedEventBus`. Increments
-`granit.openiddict.registrations` metric.
+`granit.identity.local.users.registered` metric.
 
 **Request:**
 
@@ -260,22 +331,22 @@ Returns `400 Bad Request` if the password is incorrect.
 
 ### Login flow with 2FA
 
-When a user with 2FA enabled logs in via `POST /connect/token` (authorization code flow):
+When a user with 2FA enabled logs in via the headless account API:
 
-1. Server returns a `challenge_token` (short-lived JWT, 5 min TTL)
-2. Client sends `POST /connect/token` with:
-   - `grant_type=urn:granit:grant_type:two_factor`
-   - `challenge_token=...`
-   - `totp_code=123456` (or a recovery code)
-3. Server validates the TOTP code and issues standard access + refresh tokens
+1. `POST /api/account/login` returns `{ "requiresTwoFactor": true }` and sets
+   the `Identity.TwoFactorUserId` cookie
+2. Client prompts for TOTP code (or recovery code)
+3. `POST /api/account/login/two-factor` with the code -- sets the session
+   cookie on success
 
-This flow is stateless -- no server-side sessions or cookies are required.
+For the OIDC token endpoint (`POST /connect/token`), the `urn:granit:grant_type:two_factor`
+custom grant type is also supported for stateless flows.
 
 ## External logins
 
 External login support is gated behind the `OpenIddict.ExternalLogins` feature flag
 (default: `true`). Supported providers are configured in
-[`GranitOpenIddictClientOptions`](./configuration/#granitopeniddictclientoptions).
+[`IExternalProviderRegistry`](./configuration/#granitopeniddictclientoptions).
 
 ### List linked providers
 
@@ -301,7 +372,7 @@ GET /api/account/external-logins
 POST /api/account/external-logins/challenge/{provider}
 ```
 
-Validates that the provider is configured in `GranitOpenIddictClientOptions.Providers`.
+Validates that the provider is configured in `IExternalProviderRegistry.Providers`.
 Returns `400` if not configured. The actual OAuth redirect is handled by the OpenIddict
 client middleware.
 
@@ -312,7 +383,7 @@ GET /api/account/external-logins/callback?provider=Google
 ```
 
 Processes the OAuth callback. Behavior depends on
-`GranitOpenIddictClientOptions.AutoRegisterExternalUsers`:
+`IExternalProviderRegistry.AutoRegisterExternalUsers`:
 
 | Scenario | `AutoRegister = true` | `AutoRegister = false` |
 |----------|----------------------|------------------------|
@@ -364,6 +435,7 @@ configuration. Uses ASP.NET Core Identity's built-in .NET 10 WebAuthn support.
 | `POST` | `/api/account/passkeys/register/begin` | Required | Begin WebAuthn registration ceremony |
 | `POST` | `/api/account/passkeys/register/complete` | Required | Complete registration with attestation |
 | `POST` | `/api/account/passkeys/assertion/begin` | Anonymous | Begin WebAuthn assertion ceremony (login) |
+| `POST` | `/api/account/passkeys/assertion/complete` | Anonymous | Complete assertion and sign in |
 | `PATCH` | `/api/account/passkeys/{id}` | Required | Rename a passkey |
 | `DELETE` | `/api/account/passkeys/{id}` | Required | Delete a passkey |
 
@@ -398,9 +470,25 @@ configuration. Uses ASP.NET Core Identity's built-in .NET 10 WebAuthn support.
 ### Assertion flow (login)
 
 `POST /api/account/passkeys/assertion/begin` returns `PublicKeyCredentialRequestOptions`
-JSON with empty `allowCredentials` for Conditional UI autofill. The actual assertion
-verification is handled by the `urn:granit:grant_type:passkey` custom grant at the
-`/connect/token` endpoint.
+JSON with empty `allowCredentials` for Conditional UI autofill.
+
+`POST /api/account/passkeys/assertion/complete` validates the `AuthenticatorAssertionResponse`
+from the browser, resolves the user, and signs them in via ASP.NET Core Identity.
+
+**Request:**
+
+```json
+{
+  "credentialJson": "{...WebAuthn assertion response JSON...}"
+}
+```
+
+**Responses:**
+
+- `200 OK` with `{ "succeeded": true }` on success (session cookie set)
+- `401 Unauthorized` if the credential is invalid or no matching user is found
+
+Both assertion endpoints are rate-limited via the `authentication` policy.
 
 ### Management
 
@@ -493,23 +581,20 @@ All request DTOs have corresponding FluentValidation validators auto-discovered 
 | `AccountTwoFactorEnableRequestValidator` | `AccountTwoFactorEnableRequest` |
 | `AccountTwoFactorDisableRequestValidator` | `AccountTwoFactorDisableRequest` |
 | `AccountDeleteRequestValidator` | `AccountDeleteRequest` |
+| `AccountTwoFactorLoginRequestValidator` | `AccountTwoFactorLoginRequest` |
+| `AccountPasskeyLoginRequestValidator` | `AccountPasskeyLoginRequest` |
 | `PasskeyRegistrationRequestValidator` | `PasskeyRegistrationRequest` |
 | `PasskeyRenameRequestValidator` | `PasskeyRenameRequest` |
-| `AdminOidcCreateApplicationRequestValidator` | `AdminOidcCreateApplicationRequest` |
-| `AdminOidcCreateScopeRequestValidator` | `AdminOidcCreateScopeRequest` |
-| `AdminUserCreateRequestValidator` | `AdminUserCreateRequest` |
 
 ## Endpoint route customization
 
 Route prefixes and OpenAPI tags are configurable:
 
 ```csharp
-app.MapOpenIddictEndpoints(options =>
+app.MapAccountEndpoints(options =>
 {
     options.AccountRoutePrefix = "api/account";    // default
     options.AdminRoutePrefix = "api/admin";        // default
-    options.AccountTagName = "Account";            // OpenAPI tag
-    options.AdminTagName = "Administration";       // OpenAPI tag
 });
 ```
 
