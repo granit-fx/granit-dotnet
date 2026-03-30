@@ -25,6 +25,7 @@ public static class AIMcpServiceCollectionExtensions
 
         services.TryAddSingleton<IMcpToolSourceProvider, McpToolSourceProvider>();
         services.TryAddSingleton<SamplingGuard>();
+        services.TryAddScoped<McpSamplingChatClientAdapter>();
 
         return services;
     }

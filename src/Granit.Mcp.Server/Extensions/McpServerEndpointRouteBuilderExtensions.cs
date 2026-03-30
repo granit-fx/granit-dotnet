@@ -1,6 +1,8 @@
+using Granit.Mcp.Server.Endpoints;
 using Granit.Mcp.Server.Options;
 using Granit.Mcp.Server.Permissions;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -37,6 +39,17 @@ public static class McpServerEndpointRouteBuilderExtensions
         if (options.RequireAuthentication)
         {
             mcpEndpoint.RequireAuthorization(McpPermissions.Server.Access);
+        }
+
+        // Admin endpoints: tool listing and scope mapping
+        if (options.MapAdminEndpoints)
+        {
+            RouteGroupBuilder adminGroup = endpoints
+                .MapGroup($"{options.RoutePrefix}/admin")
+                .WithTags(options.AdminTagName)
+                .RequireAuthorization(McpPermissions.Tools.Read);
+
+            adminGroup.MapAdminEndpoints();
         }
 
         return endpoints;

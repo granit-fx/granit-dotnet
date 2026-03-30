@@ -26,6 +26,12 @@ public sealed class McpToolTypeRegistry
         _toolTypes.TryGetValue(toolName, out Type? type) ? type : null;
 
     /// <summary>
+    /// Returns all registered tool name → CLR type mappings.
+    /// </summary>
+    public IReadOnlyDictionary<string, Type> GetAllRegistrations() =>
+        _toolTypes;
+
+    /// <summary>
     /// Registers all <c>[McpServerToolType]</c> classes from the given assemblies.
     /// </summary>
     internal void RegisterFromAssemblies(IEnumerable<System.Reflection.Assembly> assemblies)

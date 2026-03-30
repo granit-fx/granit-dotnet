@@ -17092,6 +17092,12 @@
           "kind": "method",
           "signature": "Resolve(string toolName)",
           "returnType": "Type?"
+        },
+        {
+          "name": "GetAllRegistrations",
+          "kind": "method",
+          "signature": "GetAllRegistrations()",
+          "returnType": "IReadOnlyDictionary<string, Type>"
         }
       ]
     },
@@ -17155,12 +17161,30 @@
       ]
     },
     {
+      "name": "McpScopeMappingResponse",
+      "fqn": "Granit.Mcp.Server.Endpoints.McpScopeMappingResponse",
+      "kind": "record",
+      "project": "Granit.Mcp.Server",
+      "file": "src/Granit.Mcp.Server/Endpoints/McpAdminEndpoints.cs",
+      "line": 73,
+      "members": []
+    },
+    {
+      "name": "McpToolInfoResponse",
+      "fqn": "Granit.Mcp.Server.Endpoints.McpToolInfoResponse",
+      "kind": "record",
+      "project": "Granit.Mcp.Server",
+      "file": "src/Granit.Mcp.Server/Endpoints/McpAdminEndpoints.cs",
+      "line": 68,
+      "members": []
+    },
+    {
       "name": "McpServerEndpointRouteBuilderExtensions",
       "fqn": "Granit.Mcp.Server.Extensions.McpServerEndpointRouteBuilderExtensions",
       "kind": "class",
       "project": "Granit.Mcp.Server",
       "file": "src/Granit.Mcp.Server/Extensions/McpServerEndpointRouteBuilderExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitMcpServer",
