@@ -38,8 +38,8 @@
       },
       "JasperFx": {
         "type": "Transitive",
-        "resolved": "1.21.3",
-        "contentHash": "gRVPfkXd0dqt7jDJP+y1bAJD5fCvY3Aq4C0MmYFt3DR0OrBlQJufVMXJS+p8Fy+vQ3oAzHBA7uHakL16V+4dWA==",
+        "resolved": "1.22.0",
+        "contentHash": "Z36/wMQ7g7aKu2CQpTfn2xkXgLl//71pv1L01m25GJ3f/VeO45WeMTK0/wn2gvRjw4uq57k4BivRduoevcHq+w==",
         "dependencies": {
           "FastExpressionCompiler": "5.3.0",
           "ImTools": "4.0.0",
@@ -295,6 +295,12 @@
           "WolverineFx": "[5.*, )"
         }
       },
+      "granit.privacy.regulations": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
@@ -392,8 +398,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.15",
-        "contentHash": "ufSBk0vdDnrhn+YLGElUdegUkM+hb7xUoySH+oaZrNHi2fAm+oeSCr60Lqmm4OeLBhPKd2htr/DANOvjuNT6rg=="
+        "resolved": "2.13.17",
+        "contentHash": "v44WF0m58HBwaUiZVrvuetICcoaf2ZvIYu8JxsaJRRtsrNLlCIqjCcncTTDIy7pUiC2r2EO3eCJqcqGaTKZplQ=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",
@@ -413,10 +419,10 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.24.0",
-        "contentHash": "ZHzuuMMT7hwsctvIko2U24Oi0as16NmgVIF+ZF5BgasZVGivJUq/iHdUzqbpe9XC/8Vm3gQXruHAQXxF+yzCwA==",
+        "resolved": "5.25.0",
+        "contentHash": "lsk+cDGVfFKKUTuV7mq3FgDKccVLqv3vB/Q+h/e/a86hN6BDJ72ARtpsOcqdIp5r+BK2E515j0YJ2UjW6RJjYw==",
         "dependencies": {
-          "JasperFx": "1.21.3",
+          "JasperFx": "1.22.0",
           "JasperFx.Events": "1.24.1",
           "JasperFx.RuntimeCompiler": "4.4.0",
           "NewId": "4.0.1",

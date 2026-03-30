@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Privacy.Regulations</PackageId>
+    <Description>Privacy regulation registry and policy engine. Provides PrivacyRegulationProfile definitions for 14+ jurisdictions (GDPR, LGPD, CCPA, PIPL, DPDPA, etc.) with per-tenant resolution via IPrivacyRegulationResolver.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Privacy.Regulations.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>

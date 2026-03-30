@@ -1230,6 +1230,7 @@
         "Granit.Guids",
         "Granit.Http.ApiDocumentation",
         "Granit.Privacy",
+        "Granit.Privacy.Regulations",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -1239,6 +1240,13 @@
       "deps": [
         "Granit.Privacy",
         "Granit.Notifications.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Privacy.Regulations",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -23346,34 +23354,6 @@
       "members": []
     },
     {
-      "name": "GdprDeletionSaga",
-      "fqn": "Granit.Privacy.DataDeletion.GdprDeletionSaga",
-      "kind": "class",
-      "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/DataDeletion/GdprDeletionSaga.cs",
-      "line": 32,
-      "members": [
-        {
-          "name": "Id",
-          "kind": "property",
-          "signature": "Guid Id",
-          "returnType": "Guid"
-        },
-        {
-          "name": "Reason",
-          "kind": "property",
-          "signature": "string Reason",
-          "returnType": "string"
-        },
-        {
-          "name": "StartAsync",
-          "kind": "method",
-          "signature": "StartAsync(DeletionDeferredEto @event, IOptions<GranitPrivacyOptions> options, IMessageContext context, IDeletionRequestTrackerWriter tracker, PrivacyMetrics metrics)",
-          "returnType": "DateTimeOffset RequestedAt { get; set; } public DateTimeOffset ScheduledDeletionAt { get; set; } public bool ReminderSent { get; set; } public Task"
-        }
-      ]
-    },
-    {
       "name": "IDeletionRequestTrackerReader",
       "fqn": "Granit.Privacy.DataDeletion.IDeletionRequestTrackerReader",
       "kind": "interface",
@@ -23430,6 +23410,40 @@
       ]
     },
     {
+      "name": "PersonalDataDeletionSaga",
+      "fqn": "Granit.Privacy.DataDeletion.PersonalDataDeletionSaga",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataDeletion/PersonalDataDeletionSaga.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "Id",
+          "kind": "property",
+          "signature": "Guid Id",
+          "returnType": "Guid"
+        },
+        {
+          "name": "Reason",
+          "kind": "property",
+          "signature": "string Reason",
+          "returnType": "string"
+        },
+        {
+          "name": "RequestedAt",
+          "kind": "property",
+          "signature": "DateTimeOffset RequestedAt",
+          "returnType": "DateTimeOffset"
+        },
+        {
+          "name": "StartAsync",
+          "kind": "method",
+          "signature": "StartAsync(DeletionDeferredEto @event, IOptions<GranitPrivacyOptions> options, IMessageContext context, IDeletionRequestTrackerWriter tracker, PrivacyMetrics metrics)",
+          "returnType": "bool ReminderSent { get; set; } public Task"
+        }
+      ]
+    },
+    {
       "name": "ExportCompletedEto",
       "fqn": "Granit.Privacy.DataExport.Events.ExportCompletedEto",
       "kind": "record",
@@ -23482,56 +23496,6 @@
       "file": "src/Granit.Privacy/DataExport/ExportRequestStatus.cs",
       "line": 16,
       "members": []
-    },
-    {
-      "name": "GdprExportSaga",
-      "fqn": "Granit.Privacy.DataExport.GdprExportSaga",
-      "kind": "class",
-      "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/DataExport/GdprExportSaga.cs",
-      "line": 36,
-      "members": [
-        {
-          "name": "Id",
-          "kind": "property",
-          "signature": "Guid Id",
-          "returnType": "Guid"
-        },
-        {
-          "name": "PendingProviders",
-          "kind": "property",
-          "signature": "List<string> PendingProviders",
-          "returnType": "List<string>"
-        },
-        {
-          "name": "StartAsync",
-          "kind": "method",
-          "signature": "StartAsync(PersonalDataRequestedEto @event, IDataProviderRegistry registry, IOptions<GranitPrivacyOptions> options, IMessageContext context, PrivacyMetrics metrics)",
-          "returnType": "Task<ExportCompletedEto?>"
-        }
-      ]
-    },
-    {
-      "name": "GdprExportSagaState",
-      "fqn": "Granit.Privacy.DataExport.GdprExportSagaState",
-      "kind": "class",
-      "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/DataExport/GdprExportSagaState.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "RequestId",
-          "kind": "property",
-          "signature": "Guid RequestId",
-          "returnType": "Guid"
-        },
-        {
-          "name": "AllProviders",
-          "kind": "property",
-          "signature": "List<string> AllProviders",
-          "returnType": "List<string>"
-        }
-      ]
     },
     {
       "name": "IDataProviderRegistry",
@@ -23600,12 +23564,46 @@
       ]
     },
     {
+      "name": "PersonalDataExportSaga",
+      "fqn": "Granit.Privacy.DataExport.PersonalDataExportSaga",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/PersonalDataExportSaga.cs",
+      "line": 36,
+      "members": [
+        {
+          "name": "Id",
+          "kind": "property",
+          "signature": "Guid Id",
+          "returnType": "Guid"
+        },
+        {
+          "name": "PendingProviders",
+          "kind": "property",
+          "signature": "List<string> PendingProviders",
+          "returnType": "List<string>"
+        },
+        {
+          "name": "Regulation",
+          "kind": "property",
+          "signature": "string Regulation",
+          "returnType": "string"
+        },
+        {
+          "name": "StartAsync",
+          "kind": "method",
+          "signature": "StartAsync(PersonalDataRequestedEto @event, IDataProviderRegistry registry, IOptions<GranitPrivacyOptions> options, IMessageContext context, PrivacyMetrics metrics)",
+          "returnType": "Task<ExportCompletedEto?>"
+        }
+      ]
+    },
+    {
       "name": "ReceivedFragment",
       "fqn": "Granit.Privacy.DataExport.ReceivedFragment",
       "kind": "record",
       "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/DataExport/GdprExportSagaState.cs",
-      "line": 31,
+      "file": "src/Granit.Privacy/DataExport/PersonalDataExportSagaState.cs",
+      "line": 6,
       "members": []
     },
     {
@@ -23619,43 +23617,43 @@
         {
           "name": "RecordFragmentReceived",
           "kind": "method",
-          "signature": "RecordFragmentReceived(string? tenantId, string provider)",
+          "signature": "RecordFragmentReceived(string? tenantId, string provider, string? regulation = null)",
           "returnType": "void"
         },
         {
           "name": "RecordDeletionRequested",
           "kind": "method",
-          "signature": "RecordDeletionRequested(string? tenantId)",
+          "signature": "RecordDeletionRequested(string? tenantId, string? regulation = null)",
           "returnType": "void"
         },
         {
           "name": "RecordDeletionDeferred",
           "kind": "method",
-          "signature": "RecordDeletionDeferred(string? tenantId)",
+          "signature": "RecordDeletionDeferred(string? tenantId, string? regulation = null)",
           "returnType": "void"
         },
         {
           "name": "RecordDeletionCancelled",
           "kind": "method",
-          "signature": "RecordDeletionCancelled(string? tenantId)",
+          "signature": "RecordDeletionCancelled(string? tenantId, string? regulation = null)",
           "returnType": "void"
         },
         {
           "name": "RecordDeletionExecuted",
           "kind": "method",
-          "signature": "RecordDeletionExecuted(string? tenantId)",
+          "signature": "RecordDeletionExecuted(string? tenantId, string? regulation = null)",
           "returnType": "void"
         },
         {
           "name": "RecordDeletionReminderSent",
           "kind": "method",
-          "signature": "RecordDeletionReminderSent(string? tenantId)",
+          "signature": "RecordDeletionReminderSent(string? tenantId, string? regulation = null)",
           "returnType": "void"
         },
         {
           "name": "RecordExportCompleted",
           "kind": "method",
-          "signature": "RecordExportCompleted(string? tenantId, string status, TimeSpan duration)",
+          "signature": "RecordExportCompleted(string? tenantId, string status, TimeSpan duration, string? regulation = null)",
           "returnType": "void"
         }
       ]
@@ -23733,6 +23731,15 @@
       "members": []
     },
     {
+      "name": "PrivacyRegulationProfileResponse",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyRegulationProfileResponse",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyRegulationProfileResponse.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "PrivacyUserAgreementResponse",
       "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyUserAgreementResponse",
       "kind": "record",
@@ -23747,7 +23754,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Extensions/PrivacyEndpointRouteBuilderExtensions.cs",
-      "line": 29,
+      "line": 31,
       "members": [
         {
           "name": "MapGranitPrivacy",
@@ -23763,7 +23770,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/GranitPrivacyEndpointsModule.cs",
-      "line": 30,
+      "line": 35,
       "members": []
     },
     {
@@ -24116,6 +24123,396 @@
           "kind": "property",
           "signature": "int ReminderDaysBefore",
           "returnType": "int"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(StringComparer.OrdinalIgnoreCase)",
+          "returnType": "Dictionary<string, PrivacyRegulationOverrides> RegulationOverrides { get; set; } ="
+        }
+      ]
+    },
+    {
+      "name": "PrivacyRegulationOverrides",
+      "fqn": "Granit.Privacy.Options.PrivacyRegulationOverrides",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/Options/GranitPrivacyOptions.cs",
+      "line": 66,
+      "members": []
+    },
+    {
+      "name": "ConsentModel",
+      "fqn": "Granit.Privacy.Regulations.ConsentModel",
+      "kind": "enum",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/ConsentModel.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PrivacyRegulationsServiceCollectionExtensions",
+      "fqn": "Granit.Privacy.Regulations.Extensions.PrivacyRegulationsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/Extensions/PrivacyRegulationsServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitPrivacyRegulations",
+          "kind": "method",
+          "signature": "AddGranitPrivacyRegulations(this IServiceCollection services, IConfiguration configuration, Action<GranitPrivacyRegulationsBuilder>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitPrivacyRegulationsBuilder",
+      "fqn": "Granit.Privacy.Regulations.GranitPrivacyRegulationsBuilder",
+      "kind": "class",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/GranitPrivacyRegulationsBuilder.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "GranitPrivacyRegulationsModule",
+      "fqn": "Granit.Privacy.Regulations.GranitPrivacyRegulationsModule",
+      "kind": "class",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/GranitPrivacyRegulationsModule.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "IPrivacyRegulationResolver",
+      "fqn": "Granit.Privacy.Regulations.IPrivacyRegulationResolver",
+      "kind": "interface",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/IPrivacyRegulationResolver.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<PrivacyRegulationProfile>"
+        },
+        {
+          "name": "ResolveAllAsync",
+          "kind": "method",
+          "signature": "ResolveAllAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<PrivacyRegulationProfile>>"
+        }
+      ]
+    },
+    {
+      "name": "LegalBasis",
+      "fqn": "Granit.Privacy.Regulations.LegalBasis",
+      "kind": "class",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/LegalBasis.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "LegalBasis",
+          "kind": "method",
+          "signature": "LegalBasis()",
+          "returnType": "required string Value { get; init; } private"
+        },
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string code)",
+          "returnType": "LegalBasis"
+        },
+        {
+          "name": "LegalBasis",
+          "kind": "method",
+          "signature": "LegalBasis(string code)",
+          "returnType": "implicit operator"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "LegalBasis Consent ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "LegalBasis Contract ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "LegalBasis LegalObligation ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "LegalBasis VitalInterest ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "LegalBasis PublicInterest ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "LegalBasis LegitimateInterest ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "LegalBasis CreditProtection ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "LegalBasis HealthProtection ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "LegalBasis ResearchByStudyBodies ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "LegalBasis LifeProtection ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "LegalBasis HumanResourceManagement ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "LegalBasis StatutoryDuty ="
+        }
+      ]
+    },
+    {
+      "name": "PrivacyRegulationsOptions",
+      "fqn": "Granit.Privacy.Regulations.Options.PrivacyRegulationsOptions",
+      "kind": "class",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/Options/PrivacyRegulationsOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(StringComparer.OrdinalIgnoreCase)",
+          "returnType": "Dictionary<string, string> TenantRegulations { get; set; } ="
+        }
+      ]
+    },
+    {
+      "name": "PrivacyRegulation",
+      "fqn": "Granit.Privacy.Regulations.PrivacyRegulation",
+      "kind": "class",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/PrivacyRegulation.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "PrivacyRegulation",
+          "kind": "method",
+          "signature": "PrivacyRegulation()",
+          "returnType": "required string Value { get; init; } private"
+        },
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string code)",
+          "returnType": "PrivacyRegulation"
+        },
+        {
+          "name": "PrivacyRegulation",
+          "kind": "method",
+          "signature": "PrivacyRegulation(string code)",
+          "returnType": "implicit operator"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyRegulation EuGdpr ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyRegulation UkGdpr ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyRegulation BrLgpd ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyRegulation UsCcpa ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyRegulation CaPipeda ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyRegulation CaQuebec25 ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyRegulation ChNfadp ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyRegulation CnPipl ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyRegulation InDpdpa ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyRegulation JpAppi ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyRegulation KrPipa ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyRegulation AuPrivacyAct ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyRegulation ZaPopia ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyRegulation ThPdpa ="
+        }
+      ]
+    },
+    {
+      "name": "PrivacyRegulationProfile",
+      "fqn": "Granit.Privacy.Regulations.PrivacyRegulationProfile",
+      "kind": "record",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/PrivacyRegulationProfile.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Regulation",
+          "kind": "property",
+          "signature": "required PrivacyRegulation Regulation",
+          "returnType": "required PrivacyRegulation"
+        },
+        {
+          "name": "BreachNotifyAuthorityHours",
+          "kind": "property",
+          "signature": "int? BreachNotifyAuthorityHours",
+          "returnType": "int?"
+        },
+        {
+          "name": "DataLocalizationRequired",
+          "kind": "property",
+          "signature": "bool DataLocalizationRequired",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "IRegulationProfileContext",
+      "fqn": "Granit.Privacy.Regulations.Profiles.IRegulationProfileContext",
+      "kind": "interface",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/Profiles/IRegulationProfileContext.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Register",
+          "kind": "method",
+          "signature": "Register(PrivacyRegulationProfile profile)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IRegulationProfileProvider",
+      "fqn": "Granit.Privacy.Regulations.Profiles.IRegulationProfileProvider",
+      "kind": "interface",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/Profiles/IRegulationProfileProvider.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Define",
+          "kind": "method",
+          "signature": "Define(IRegulationProfileContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IRegulationProfileRegistry",
+      "fqn": "Granit.Privacy.Regulations.Profiles.IRegulationProfileRegistry",
+      "kind": "interface",
+      "project": "Granit.Privacy.Regulations",
+      "file": "src/Granit.Privacy.Regulations/Profiles/IRegulationProfileRegistry.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "GetProfile",
+          "kind": "method",
+          "signature": "GetProfile(PrivacyRegulation regulation)",
+          "returnType": "PrivacyRegulationProfile?"
+        },
+        {
+          "name": "GetAll",
+          "kind": "method",
+          "signature": "GetAll()",
+          "returnType": "IReadOnlyList<PrivacyRegulationProfile>"
         }
       ]
     },

@@ -11,4 +11,5 @@ public sealed record DeletionRequestStatus(
     DateTimeOffset RequestedAt,
     DateTimeOffset ScheduledDeletionAt,
     DateTimeOffset? CancelledAt,
-    DateTimeOffset? ExecutedAt);
+    DateTimeOffset? ExecutedAt,
+    string? Regulation = null);

@@ -205,6 +205,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Granit.Http.SecurityHeaders/Granit.Http.SecurityHeaders.csproj" />
+    <Project Path="src/Granit.Privacy.Regulations/Granit.Privacy.Regulations.csproj" />
   </Folder>
   <Folder Name="/src/AI/">
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
@@ -446,6 +447,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Granit.Http.SecurityHeaders.Tests/Granit.Http.SecurityHeaders.Tests.csproj" />
+    <Project Path="tests/Granit.Privacy.Regulations.Tests/Granit.Privacy.Regulations.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />

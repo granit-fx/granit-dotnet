@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Privacy.Endpoints</PackageId>
-    <Description>Minimal API endpoints for GDPR data subject rights: personal data export (Art. 15/20), data deletion (Art. 17), and legal agreement consent management (Art. 7). Backed by Granit.Privacy scatter-gather saga, deletion orchestration, and consent versioning.</Description>
+    <Description>Minimal API endpoints for privacy data subject rights: regulation profile resolution, personal data export, data deletion, and legal agreement consent management. Supports GDPR, LGPD, CCPA, and 14+ regulations via Granit.Privacy.Regulations.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\Granit.Privacy\Granit.Privacy.csproj" />
+    <ProjectReference Include="..\Granit.Privacy.Regulations\Granit.Privacy.Regulations.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
   </ItemGroup>
 

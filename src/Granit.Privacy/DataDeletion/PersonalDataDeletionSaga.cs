@@ -8,7 +8,7 @@ using Wolverine;
 namespace Granit.Privacy.DataDeletion;
 
 /// <summary>
-/// Stateful Saga implementing the GDPR deletion cooling-off period (RGPD Art. 17).
+/// Stateful Saga implementing the privacy deletion cooling-off period (GDPR Art. 17, LGPD Art. 18, CCPA).
 /// </summary>
 /// <remarks>
 /// <para>
@@ -29,7 +29,7 @@ namespace Granit.Privacy.DataDeletion;
 /// second (cancel vs deadline) is silently discarded.
 /// </para>
 /// </remarks>
-public sealed class GdprDeletionSaga : Saga
+public sealed class PersonalDataDeletionSaga : Saga
 {
     /// <summary>Saga correlation ID — equals <see cref="DeletionDeferredEto.RequestId"/>.</summary>
     public Guid Id { get; set; }
@@ -50,6 +50,9 @@ public sealed class GdprDeletionSaga : Saga
     /// <summary>When the data will be permanently deleted if not cancelled.</summary>
     public DateTimeOffset ScheduledDeletionAt { get; set; }
 
+    /// <summary>Applicable privacy regulation code for this deletion request.</summary>
+    public string Regulation { get; set; } = string.Empty;
+
     /// <summary>Whether the reminder notification has been sent.</summary>
     public bool ReminderSent { get; set; }
 
@@ -68,6 +71,7 @@ public sealed class GdprDeletionSaga : Saga
         UserId = @event.UserId;
         RequestedBy = @event.RequestedBy;
         Reason = @event.Reason;
+        Regulation = @event.Regulation;
         RequestedAt = @event.RequestedAt;
         ScheduledDeletionAt = @event.ScheduledDeletionAt;
 
@@ -125,7 +129,7 @@ public sealed class GdprDeletionSaga : Saga
 
         return
         [
-            new PersonalDataDeletionRequestedEto(Id, UserId, RequestedBy, now, Reason),
+            new PersonalDataDeletionRequestedEto(Id, UserId, RequestedBy, now, Reason, Regulation),
             new DeletionExecutedEto(Id, UserId, now),
         ];
     }

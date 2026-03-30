@@ -11,7 +11,7 @@ public sealed class GranitPrivacyOptions
     public const string SectionName = "Privacy";
 
     /// <summary>
-    /// Timeout in minutes for the GDPR export Saga.
+    /// Timeout in minutes for the privacy export Saga.
     /// If not all providers respond within this time, a partial export is generated.
     /// Default: 5 minutes.
     /// </summary>
@@ -47,4 +47,33 @@ public sealed class GranitPrivacyOptions
     /// </summary>
     [Range(0, 30)]
     public int ReminderDaysBefore { get; set; } = 3;
+
+    // ── Per-regulation overrides ────────────────────────────────────────────
+
+    /// <summary>
+    /// Per-regulation overrides for timeline and deletion settings.
+    /// Key: regulation code (e.g., <c>"BR_LGPD"</c>). Values override the global defaults above.
+    /// When <c>Granit.Privacy.Regulations</c> is loaded, the regulation profile provides the defaults
+    /// and these overrides take precedence over profile values.
+    /// </summary>
+    public Dictionary<string, PrivacyRegulationOverrides> RegulationOverrides { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+}
+
+/// <summary>
+/// Per-regulation option overrides. Null properties fall back to the regulation profile defaults,
+/// then to the global <see cref="GranitPrivacyOptions"/> defaults.
+/// </summary>
+public sealed class PrivacyRegulationOverrides
+{
+    /// <summary>Override for the default grace period (calendar days).</summary>
+    public int? DefaultGracePeriodDays { get; set; }
+
+    /// <summary>Override for the maximum grace period (calendar days).</summary>
+    public int? MaxGracePeriodDays { get; set; }
+
+    /// <summary>Override for the export timeout (minutes).</summary>
+    public int? ExportTimeoutMinutes { get; set; }
+
+    /// <summary>Override for the reminder lead time (days before deadline).</summary>
+    public int? ReminderDaysBefore { get; set; }
 }

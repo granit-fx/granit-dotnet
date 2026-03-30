@@ -7,7 +7,7 @@ namespace Granit.Privacy.Notifications.Handlers;
 /// Handles <see cref="DeletionReminderDueEto"/> by sending a reminder notification
 /// to the user before the deletion deadline.
 /// </summary>
-internal static class DeletionReminderHandler
+internal static partial class DeletionReminderHandler
 {
     public static async Task HandleAsync(
         DeletionReminderDueEto evt,

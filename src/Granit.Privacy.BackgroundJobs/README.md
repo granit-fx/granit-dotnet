@@ -16,7 +16,7 @@ dotnet add package Granit.Privacy.BackgroundJobs
 | --- | --- | --- |
 | `privacy-deletion-deadline-enforcer` | `0 2 * * *` (daily at 2 AM) | Enforces deletion deadlines for deferred GDPR requests |
 
-Safety-net job that catches any deferred deletion requests the `GdprDeletionSaga`
+Safety-net job that catches any deferred deletion requests the `PersonalDataDeletionSaga`
 might have missed (e.g., due to outbox issues).
 
 Cron schedules are overridable via `BackgroundJobs:Jobs:{job-name}` in configuration.

@@ -102,7 +102,7 @@ flowchart TD
     D --> E[DeletionExecutedEto]
     E --> F["Confirmation email"]
     B -->|true| G[DeletionDeferredEto]
-    G --> H["GdprDeletionSaga starts"]
+    G --> H["PersonalDataDeletionSaga starts"]
     H --> I["Schedule reminder"]
     H --> J["Schedule deadline"]
     I --> K["Reminder email"]
@@ -197,7 +197,7 @@ the HTTP surface from the internal Wolverine saga state.
 | <Badge text="GET" variant="note" /> | `/deletion` | ListPrivacyDeletions | *(owner only)* |
 
 When `defer` is false (default), publishes `PersonalDataDeletionRequestedEto`
-immediately. When `defer` is true, starts the `GdprDeletionSaga` with a cooling-off
+immediately. When `defer` is true, starts the `PersonalDataDeletionSaga` with a cooling-off
 period. Each module handles its own data: physical delete, soft delete,
 anonymization, or retention with legal justification. A confirmation email is sent
 in both cases via `DeletionExecutedEto`.

@@ -48,7 +48,8 @@ internal static partial class DeletionDeadlineEnforcerHandler
                     request.UserId,
                     "system:deadline-enforcer",
                     now,
-                    request.Reason),
+                    request.Reason,
+                    request.Regulation ?? "EU_GDPR"),
                 cancellationToken).ConfigureAwait(false);
 
             await eventBus.PublishAsync(

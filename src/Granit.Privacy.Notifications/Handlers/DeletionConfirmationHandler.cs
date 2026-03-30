@@ -7,7 +7,7 @@ namespace Granit.Privacy.Notifications.Handlers;
 /// Handles <see cref="DeletionExecutedEto"/> by sending a confirmation notification
 /// after data has been permanently deleted. Triggered in both immediate and deferred paths.
 /// </summary>
-internal static class DeletionConfirmationHandler
+internal static partial class DeletionConfirmationHandler
 {
     public static async Task HandleAsync(
         DeletionExecutedEto evt,

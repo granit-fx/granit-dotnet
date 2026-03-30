@@ -352,7 +352,7 @@ stateDiagram-v2
 
     Direct --> Shredding: ICryptoShredder.ShredAsync
 
-    state "Deferred flow (GdprDeletionSaga)" as DeferredFlow {
+    state "Deferred flow (PersonalDataDeletionSaga)" as DeferredFlow {
         Waiting --> Reminder: T minus 3 days
         Reminder --> Deadline: T (30 days)
         Waiting --> Cancelled: User cancels
@@ -371,7 +371,7 @@ required (e.g., internal data cleanup, test data, or when the DPO has already
 validated the request).
 
 **Deferred flow** — the recommended approach for end-user erasure requests.
-`GdprDeletionSaga` enforces a configurable cooling-off period (default: 30 days,
+`PersonalDataDeletionSaga` enforces a configurable cooling-off period (default: 30 days,
 max: 90 days per CNIL guidance). The user can cancel during this period. When the
 deadline expires, the saga publishes `PersonalDataDeletionRequestedEto` — your data
 provider handler catches it and calls `ICryptoShredder`.

@@ -12,7 +12,9 @@ public sealed class PrivacyMetrics
     public const string MeterName = "Granit.Privacy";
 
     private const string TagTenantId = "tenant_id";
+    private const string TagRegulation = "regulation";
     private const string DefaultTenant = "global";
+    private const string DefaultRegulation = "EU_GDPR";
 
     private readonly Counter<long> _exportRequests;
     private readonly Counter<long> _fragmentsReceived;
@@ -61,53 +63,51 @@ public sealed class PrivacyMetrics
             description: "Duration of personal data export in seconds.");
     }
 
-    public void RecordExportRequested(string? tenantId) =>
-        _exportRequests.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
-        });
+    /// <summary>Records an export request.</summary>
+    public void RecordExportRequested(string? tenantId, string? regulation = null) =>
+        _exportRequests.Add(1, CreateTags(tenantId, regulation));
 
-    public void RecordFragmentReceived(string? tenantId, string provider) =>
+    /// <summary>Records a fragment received from a data provider.</summary>
+    public void RecordFragmentReceived(string? tenantId, string provider, string? regulation = null) =>
         _fragmentsReceived.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
+            { TagRegulation, regulation ?? DefaultRegulation },
             { "provider", provider },
         });
 
-    public void RecordDeletionRequested(string? tenantId) =>
-        _deletionRequests.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
-        });
+    /// <summary>Records a deletion request.</summary>
+    public void RecordDeletionRequested(string? tenantId, string? regulation = null) =>
+        _deletionRequests.Add(1, CreateTags(tenantId, regulation));
 
-    public void RecordDeletionDeferred(string? tenantId) =>
-        _deletionDeferred.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
-        });
+    /// <summary>Records a deferred deletion request.</summary>
+    public void RecordDeletionDeferred(string? tenantId, string? regulation = null) =>
+        _deletionDeferred.Add(1, CreateTags(tenantId, regulation));
 
-    public void RecordDeletionCancelled(string? tenantId) =>
-        _deletionCancelled.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
-        });
+    /// <summary>Records a cancelled deferred deletion.</summary>
+    public void RecordDeletionCancelled(string? tenantId, string? regulation = null) =>
+        _deletionCancelled.Add(1, CreateTags(tenantId, regulation));
 
-    public void RecordDeletionExecuted(string? tenantId) =>
-        _deletionExecuted.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
-        });
+    /// <summary>Records an executed deletion.</summary>
+    public void RecordDeletionExecuted(string? tenantId, string? regulation = null) =>
+        _deletionExecuted.Add(1, CreateTags(tenantId, regulation));
 
-    public void RecordDeletionReminderSent(string? tenantId) =>
-        _deletionReminders.Add(1, new TagList
-        {
-            { TagTenantId, tenantId ?? DefaultTenant },
-        });
+    /// <summary>Records a deletion reminder notification sent.</summary>
+    public void RecordDeletionReminderSent(string? tenantId, string? regulation = null) =>
+        _deletionReminders.Add(1, CreateTags(tenantId, regulation));
 
-    public void RecordExportCompleted(string? tenantId, string status, TimeSpan duration) =>
+    /// <summary>Records the duration and status of a completed export.</summary>
+    public void RecordExportCompleted(string? tenantId, string status, TimeSpan duration, string? regulation = null) =>
         _exportDuration.Record(duration.TotalSeconds, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
+            { TagRegulation, regulation ?? DefaultRegulation },
             { "status", status },
         });
+
+    private static TagList CreateTags(string? tenantId, string? regulation) => new()
+    {
+        { TagTenantId, tenantId ?? DefaultTenant },
+        { TagRegulation, regulation ?? DefaultRegulation },
+    };
 }

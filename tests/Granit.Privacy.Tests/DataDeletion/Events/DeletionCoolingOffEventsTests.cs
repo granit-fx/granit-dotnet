@@ -16,7 +16,7 @@ public sealed class DeletionCoolingOffEventsTests
     {
         var sut = new DeletionDeferredEto(
             Guid.NewGuid(), Guid.NewGuid(), "user@example.com",
-            DateTimeOffset.UtcNow, "reason", DateTimeOffset.UtcNow.AddDays(30));
+            DateTimeOffset.UtcNow, "reason", DateTimeOffset.UtcNow.AddDays(30), "EU_GDPR");
 
         sut.ShouldBeAssignableTo<IIntegrationEvent>();
     }
@@ -29,7 +29,7 @@ public sealed class DeletionCoolingOffEventsTests
         DateTimeOffset now = DateTimeOffset.UtcNow;
         DateTimeOffset deadline = now.AddDays(30);
 
-        var sut = new DeletionDeferredEto(requestId, userId, "admin@test.com", now, "Account closure", deadline);
+        var sut = new DeletionDeferredEto(requestId, userId, "admin@test.com", now, "Account closure", deadline, "EU_GDPR");
 
         sut.RequestId.ShouldBe(requestId);
         sut.UserId.ShouldBe(userId);

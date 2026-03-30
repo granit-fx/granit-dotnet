@@ -155,6 +155,7 @@
       "src/Granit.Privacy.BackgroundJobs/Granit.Privacy.BackgroundJobs.csproj",
       "src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj",
       "src/Granit.Privacy.Notifications/Granit.Privacy.Notifications.csproj",
+      "src/Granit.Privacy.Regulations/Granit.Privacy.Regulations.csproj",
       "src/Granit.Privacy/Granit.Privacy.csproj",
       "src/Granit.QueryEngine.AI/Granit.QueryEngine.AI.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",

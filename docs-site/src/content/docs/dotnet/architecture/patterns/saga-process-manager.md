@@ -31,7 +31,7 @@ stateDiagram-v2
 ```mermaid
 sequenceDiagram
     participant App
-    participant Saga as GdprExportSaga
+    participant Saga as PersonalDataExportSaga
     participant P1 as Provider A
     participant P2 as Provider B
     participant Blob as BlobStorage
@@ -51,14 +51,14 @@ sequenceDiagram
 
 Granit uses the Saga / Process Manager pattern in 4 distinct contexts:
 
-### 1. GdprExportSaga -- scatter-gather (Wolverine Saga)
+### 1. PersonalDataExportSaga -- scatter-gather (Wolverine Saga)
 
 GDPR Article 15/20 orchestration (right of access/portability). Collects
 personal data fragments from multiple providers, with configurable timeout.
 
 | Element | Detail |
 | --- | --- |
-| Class | `GdprExportSaga` (extends `Saga`) |
+| Class | `PersonalDataExportSaga` (extends `Saga`) |
 | Package | `Granit.Privacy` |
 | Persisted state | `ExpectedCount`, `ReceivedFragments`, `PendingProviders` |
 | Correlation | `RequestId` (Guid) |
@@ -133,8 +133,8 @@ Business workflow orchestration with transitions, permissions, and routing to a
 
 | File | Role |
 | --- | --- |
-| `src/Granit.Privacy/DataExport/GdprExportSaga.cs` | GDPR scatter-gather saga |
-| `src/Granit.Privacy/DataExport/GdprExportSagaState.cs` | Saga state |
+| `src/Granit.Privacy/DataExport/PersonalDataExportSaga.cs` | GDPR scatter-gather saga |
+| `src/Granit.Privacy/DataExport/PersonalDataExportSagaState.cs` | Saga state |
 | `src/Granit.DataExchange.EntityFrameworkCore/Internal/Import/Pipeline/EfImportOrchestrator.cs` | Import pipeline |
 | `src/Granit.DataExchange/Export/Internal/ExportOrchestrator.cs` | Export pipeline |
 | `src/Granit.Workflow/WorkflowManager.cs` | FSM with approval |
@@ -159,7 +159,7 @@ await messageBus.PublishAsync(
         UserId: patient.Id),
     cancellationToken).ConfigureAwait(false);
 
-// The GdprExportSaga collects fragments from each provider.
+// The PersonalDataExportSaga collects fragments from each provider.
 // When all fragments are received (or timeout):
 // -> ExportCompletedEto { BlobReferences, IsPartial }
 

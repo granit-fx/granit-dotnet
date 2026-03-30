@@ -18,13 +18,15 @@ public sealed class PersonalDataDeletionRequestedEtoTests
             userId,
             "dpo@example.com",
             requestedAt,
-            "GDPR Art. 17 request");
+            "GDPR Art. 17 request",
+            "EU_GDPR");
 
         sut.RequestId.ShouldBe(requestId);
         sut.UserId.ShouldBe(userId);
         sut.RequestedBy.ShouldBe("dpo@example.com");
         sut.RequestedAt.ShouldBe(requestedAt);
         sut.Reason.ShouldBe("GDPR Art. 17 request");
+        sut.Regulation.ShouldBe("EU_GDPR");
     }
 
     [Fact]
@@ -34,8 +36,8 @@ public sealed class PersonalDataDeletionRequestedEtoTests
         var userId = Guid.NewGuid();
         DateTimeOffset requestedAt = DateTimeOffset.UtcNow;
 
-        var a = new PersonalDataDeletionRequestedEto(requestId, userId, "admin", requestedAt, "reason");
-        var b = new PersonalDataDeletionRequestedEto(requestId, userId, "admin", requestedAt, "reason");
+        var a = new PersonalDataDeletionRequestedEto(requestId, userId, "admin", requestedAt, "reason", "EU_GDPR");
+        var b = new PersonalDataDeletionRequestedEto(requestId, userId, "admin", requestedAt, "reason", "EU_GDPR");
 
         a.ShouldBe(b);
     }
@@ -45,8 +47,8 @@ public sealed class PersonalDataDeletionRequestedEtoTests
     {
         DateTimeOffset requestedAt = DateTimeOffset.UtcNow;
 
-        PersonalDataDeletionRequestedEto a = new(Guid.NewGuid(), Guid.NewGuid(), "a", requestedAt, "r1");
-        PersonalDataDeletionRequestedEto b = new(Guid.NewGuid(), Guid.NewGuid(), "b", requestedAt, "r2");
+        PersonalDataDeletionRequestedEto a = new(Guid.NewGuid(), Guid.NewGuid(), "a", requestedAt, "r1", "EU_GDPR");
+        PersonalDataDeletionRequestedEto b = new(Guid.NewGuid(), Guid.NewGuid(), "b", requestedAt, "r2", "BR_LGPD");
 
         a.ShouldNotBe(b);
     }

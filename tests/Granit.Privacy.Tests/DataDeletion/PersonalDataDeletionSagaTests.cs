@@ -12,14 +12,14 @@ using Xunit;
 
 namespace Granit.Privacy.Tests.DataDeletion;
 
-public sealed class GdprDeletionSagaTests : IDisposable
+public sealed class PersonalDataDeletionSagaTests : IDisposable
 {
     private readonly ServiceProvider _sp;
     private readonly PrivacyMetrics _metrics;
     private readonly IDeletionRequestTrackerWriter _tracker;
     private readonly TimeProvider _timeProvider;
 
-    public GdprDeletionSagaTests()
+    public PersonalDataDeletionSagaTests()
     {
         ServiceCollection services = new();
         services.AddMetrics();
@@ -46,7 +46,7 @@ public sealed class GdprDeletionSagaTests : IDisposable
 
         return new DeletionDeferredEto(
             id, uid, "user@example.com", now, "Account closure",
-            now.AddDays(graceDays));
+            now.AddDays(graceDays), "EU_GDPR");
     }
 
     // ── StartAsync ───────────────────────────────────────────────────────────
@@ -54,7 +54,7 @@ public sealed class GdprDeletionSagaTests : IDisposable
     [Fact]
     public async Task StartAsync_InitializesState_FromEvent()
     {
-        GdprDeletionSaga saga = new();
+        PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DeletionDeferredEto evt = CreateDeferredEvent();
 
@@ -70,7 +70,7 @@ public sealed class GdprDeletionSagaTests : IDisposable
     [Fact]
     public async Task StartAsync_RecordsDeferredRequest_InTracker()
     {
-        GdprDeletionSaga saga = new();
+        PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DeletionDeferredEto evt = CreateDeferredEvent();
 
@@ -84,7 +84,7 @@ public sealed class GdprDeletionSagaTests : IDisposable
     [Fact]
     public async Task StartAsync_SchedulesReminderAndDeadline()
     {
-        GdprDeletionSaga saga = new();
+        PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DeletionDeferredEto evt = CreateDeferredEvent(graceDays: 30);
 
@@ -99,7 +99,7 @@ public sealed class GdprDeletionSagaTests : IDisposable
     [Fact]
     public async Task StartAsync_SkipsReminder_WhenGracePeriodShorterThanReminderDays()
     {
-        GdprDeletionSaga saga = new();
+        PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DeletionDeferredEto evt = CreateDeferredEvent(graceDays: 2); // < 3 days reminder
 
@@ -116,7 +116,7 @@ public sealed class GdprDeletionSagaTests : IDisposable
     [Fact]
     public async Task Handle_ReminderDueEvent_PublishesReminderEto()
     {
-        GdprDeletionSaga saga = new();
+        PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DeletionDeferredEto startEvt = CreateDeferredEvent();
         await saga.StartAsync(startEvt, DefaultOptions(), context, _tracker, _metrics);
@@ -133,7 +133,7 @@ public sealed class GdprDeletionSagaTests : IDisposable
     [Fact]
     public async Task Handle_ReminderDueEvent_SetsReminderSent()
     {
-        GdprDeletionSaga saga = new();
+        PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         await saga.StartAsync(CreateDeferredEvent(), DefaultOptions(), context, _tracker, _metrics);
 
@@ -147,7 +147,7 @@ public sealed class GdprDeletionSagaTests : IDisposable
     [Fact]
     public async Task HandleAsync_DeadlineReached_PublishesDeletionAndExecutedEvents()
     {
-        GdprDeletionSaga saga = new();
+        PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DeletionDeferredEto startEvt = CreateDeferredEvent();
         await saga.StartAsync(startEvt, DefaultOptions(), context, _tracker, _metrics);
@@ -164,7 +164,7 @@ public sealed class GdprDeletionSagaTests : IDisposable
     [Fact]
     public async Task HandleAsync_DeadlineReached_MarksTrackerExecuted()
     {
-        GdprDeletionSaga saga = new();
+        PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         await saga.StartAsync(CreateDeferredEvent(), DefaultOptions(), context, _tracker, _metrics);
 
@@ -181,7 +181,7 @@ public sealed class GdprDeletionSagaTests : IDisposable
     [Fact]
     public async Task HandleAsync_Cancelled_MarksTrackerCancelled()
     {
-        GdprDeletionSaga saga = new();
+        PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         await saga.StartAsync(CreateDeferredEvent(), DefaultOptions(), context, _tracker, _metrics);
 
@@ -197,7 +197,7 @@ public sealed class GdprDeletionSagaTests : IDisposable
     [Fact]
     public async Task HandleAsync_Cancelled_DoesNotPublishDeletionEvent()
     {
-        GdprDeletionSaga saga = new();
+        PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DeletionDeferredEto startEvt = CreateDeferredEvent();
         await saga.StartAsync(startEvt, DefaultOptions(), context, _tracker, _metrics);

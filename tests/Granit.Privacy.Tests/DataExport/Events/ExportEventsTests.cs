@@ -15,7 +15,7 @@ public sealed class ExportEventsTests
         var userId = Guid.NewGuid();
         DateTimeOffset requestedAt = DateTimeOffset.UtcNow;
 
-        PersonalDataRequestedEto sut = new(requestId, userId, requestedAt);
+        PersonalDataRequestedEto sut = new(requestId, userId, requestedAt, "EU_GDPR");
 
         sut.RequestId.ShouldBe(requestId);
         sut.UserId.ShouldBe(userId);
@@ -29,8 +29,8 @@ public sealed class ExportEventsTests
         var userId = Guid.NewGuid();
         DateTimeOffset requestedAt = DateTimeOffset.UtcNow;
 
-        PersonalDataRequestedEto a = new(requestId, userId, requestedAt);
-        PersonalDataRequestedEto b = new(requestId, userId, requestedAt);
+        PersonalDataRequestedEto a = new(requestId, userId, requestedAt, "EU_GDPR");
+        PersonalDataRequestedEto b = new(requestId, userId, requestedAt, "EU_GDPR");
 
         a.ShouldBe(b);
     }
@@ -40,8 +40,8 @@ public sealed class ExportEventsTests
     {
         DateTimeOffset requestedAt = DateTimeOffset.UtcNow;
 
-        PersonalDataRequestedEto a = new(Guid.NewGuid(), Guid.NewGuid(), requestedAt);
-        PersonalDataRequestedEto b = new(Guid.NewGuid(), Guid.NewGuid(), requestedAt);
+        PersonalDataRequestedEto a = new(Guid.NewGuid(), Guid.NewGuid(), requestedAt, "EU_GDPR");
+        PersonalDataRequestedEto b = new(Guid.NewGuid(), Guid.NewGuid(), requestedAt, "EU_GDPR");
 
         a.ShouldNotBe(b);
     }

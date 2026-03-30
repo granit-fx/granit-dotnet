@@ -7,7 +7,7 @@ using Wolverine;
 namespace Granit.Privacy.DataExport;
 
 /// <summary>
-/// Stateful Saga implementing the GDPR export scatter-gather pattern (RGPD Art. 15/20).
+/// Stateful Saga implementing the privacy export scatter-gather pattern (GDPR Art. 15/20, LGPD Art. 18, CCPA).
 /// </summary>
 /// <remarks>
 /// <para>
@@ -29,11 +29,11 @@ namespace Granit.Privacy.DataExport;
 /// </para>
 /// <para>
 /// The <c>ArchiveBlobReferenceId</c> in <see cref="ExportCompletedEto"/> uses the convention
-/// <c>"gdpr-export/{RequestId}"</c>. The application assembles the final archive under this key
+/// <c>"personal-data-export/{RequestId}"</c>. The application assembles the final archive under this key
 /// using the individual fragment references.
 /// </para>
 /// </remarks>
-public sealed class GdprExportSaga : Saga
+public sealed class PersonalDataExportSaga : Saga
 {
     /// <summary>Saga correlation ID — equals <see cref="PersonalDataRequestedEto.RequestId"/>.</summary>
     public Guid Id { get; set; }
@@ -50,6 +50,9 @@ public sealed class GdprExportSaga : Saga
     /// <summary>Provider names that have not yet responded.</summary>
     public List<string> PendingProviders { get; set; } = [];
 
+    /// <summary>Applicable privacy regulation code for this export request.</summary>
+    public string Regulation { get; set; } = string.Empty;
+
     /// <summary>
     /// Starts the Saga when a data subject requests export of their personal data.
     /// If no providers are registered, completes immediately.
@@ -64,6 +67,7 @@ public sealed class GdprExportSaga : Saga
     {
         Id = @event.RequestId;
         UserId = @event.UserId;
+        Regulation = @event.Regulation;
         ExpectedCount = registry.Count;
         metrics.RecordExportRequested(null);
         PendingProviders = [.. registry.GetAll()];
@@ -71,7 +75,7 @@ public sealed class GdprExportSaga : Saga
         if (ExpectedCount == 0)
         {
             MarkCompleted();
-            return new ExportCompletedEto(Id, UserId, $"gdpr-export/{Id}", IsPartial: false, []);
+            return new ExportCompletedEto(Id, UserId, $"personal-data-export/{Id}", IsPartial: false, []);
         }
 
         await context.ScheduleAsync(
@@ -97,7 +101,7 @@ public sealed class GdprExportSaga : Saga
         }
 
         MarkCompleted();
-        return new ExportCompletedEto(Id, UserId, $"gdpr-export/{Id}", IsPartial: false, []);
+        return new ExportCompletedEto(Id, UserId, $"personal-data-export/{Id}", IsPartial: false, []);
     }
 
     /// <summary>
@@ -111,7 +115,7 @@ public sealed class GdprExportSaga : Saga
         return new ExportCompletedEto(
             Id,
             UserId,
-            $"gdpr-export/{Id}",
+            $"personal-data-export/{Id}",
             IsPartial: true,
             PendingProviders.AsReadOnly());
     }

@@ -9,7 +9,7 @@ namespace Granit.Privacy.DataExport;
 /// <param name="RequestedAt">Timestamp when the export was requested (UTC).</param>
 /// <param name="CompletedAt">Timestamp when the saga completed (UTC), or <c>null</c> if still pending.</param>
 /// <param name="ArchiveBlobReferenceId">
-/// Blob reference ID of the completed archive (convention: <c>gdpr-export/{RequestId}</c>).
+/// Blob reference ID of the completed archive (convention: <c>personal-data-export/{RequestId}</c>).
 /// Use the BlobStorage download endpoint to obtain a pre-signed URL.
 /// </param>
 /// <param name="MissingProviders">Providers that did not respond before timeout (empty if fully completed).</param>

@@ -14,12 +14,12 @@ using Xunit.v3;
 
 namespace Granit.Privacy.Tests;
 
-public sealed class GdprExportSagaTests : IDisposable
+public sealed class PersonalDataExportSagaTests : IDisposable
 {
     private readonly ServiceProvider _sp;
     private readonly PrivacyMetrics _metrics;
 
-    public GdprExportSagaTests()
+    public PersonalDataExportSagaTests()
     {
         ServiceCollection services = new();
         services.AddMetrics();
@@ -50,12 +50,12 @@ public sealed class GdprExportSagaTests : IDisposable
     [Fact]
     public async Task StartAsync_InitializesState_FromEvent()
     {
-        GdprExportSaga saga = new();
+        PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("patients", "billing");
         var requestId = Guid.NewGuid();
         var userId = Guid.NewGuid();
-        PersonalDataRequestedEto evt = new(requestId, userId, DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto evt = new(requestId, userId, DateTimeOffset.UtcNow, "EU_GDPR");
 
         await saga.StartAsync(evt, registry, DefaultOptions(), context, _metrics);
 
@@ -69,11 +69,11 @@ public sealed class GdprExportSagaTests : IDisposable
     [Fact]
     public async Task StartAsync_SchedulesTimeout_ViaPublishAsync()
     {
-        GdprExportSaga saga = new();
+        PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("patients", "billing");
         var requestId = Guid.NewGuid();
-        PersonalDataRequestedEto evt = new(requestId, Guid.NewGuid(), DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto evt = new(requestId, Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
 
         await saga.StartAsync(evt, registry, DefaultOptions(), context, _metrics);
 
@@ -87,10 +87,10 @@ public sealed class GdprExportSagaTests : IDisposable
     [Fact]
     public async Task Handle_PreparedEvent_ReturnsNullUntilAllFragmentsArrived()
     {
-        GdprExportSaga saga = new();
+        PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("patients", "billing", "appointments");
-        PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
         await saga.StartAsync(startEvt, registry, DefaultOptions(), context, _metrics);
 
         ExportCompletedEto? result1 = saga.Handle(
@@ -107,10 +107,10 @@ public sealed class GdprExportSagaTests : IDisposable
     [Fact]
     public async Task Handle_PreparedEvent_ReturnsCompletedEvent_WhenAllFragmentsArrived()
     {
-        GdprExportSaga saga = new();
+        PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("patients", "billing");
-        PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
         await saga.StartAsync(startEvt, registry, DefaultOptions(), context, _metrics);
 
         saga.Handle(new PersonalDataPreparedEto(startEvt.RequestId, "patients", "blob-patients", "application/json"), _metrics);
@@ -122,7 +122,7 @@ public sealed class GdprExportSagaTests : IDisposable
         result.UserId.ShouldBe(startEvt.UserId);
         result.IsPartial.ShouldBeFalse();
         result.MissingProviders.ShouldBeEmpty();
-        result.ArchiveBlobReferenceId.ShouldBe($"gdpr-export/{startEvt.RequestId}");
+        result.ArchiveBlobReferenceId.ShouldBe($"personal-data-export/{startEvt.RequestId}");
     }
 
     // -------------------------------------------------------------------------
@@ -132,10 +132,10 @@ public sealed class GdprExportSagaTests : IDisposable
     [Fact]
     public async Task Handle_Timeout_ReturnsPartialEvent_WithMissingProviders()
     {
-        GdprExportSaga saga = new();
+        PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("patients", "billing", "appointments");
-        PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
         await saga.StartAsync(startEvt, registry, DefaultOptions(), context, _metrics);
 
         saga.Handle(new PersonalDataPreparedEto(startEvt.RequestId, "patients", "blob-patients", "application/json"), _metrics);
@@ -144,7 +144,7 @@ public sealed class GdprExportSagaTests : IDisposable
 
         result.IsPartial.ShouldBeTrue();
         result.MissingProviders.ShouldContain("appointments");
-        result.ArchiveBlobReferenceId.ShouldBe($"gdpr-export/{startEvt.RequestId}");
+        result.ArchiveBlobReferenceId.ShouldBe($"personal-data-export/{startEvt.RequestId}");
     }
 
     // -------------------------------------------------------------------------
@@ -154,10 +154,10 @@ public sealed class GdprExportSagaTests : IDisposable
     [Fact]
     public async Task StartAsync_NoProviders_CompletesImmediately_WithEmptyEvent()
     {
-        GdprExportSaga saga = new();
+        PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry emptyRegistry = new();
-        PersonalDataRequestedEto evt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto evt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
 
         ExportCompletedEto? result = await saga.StartAsync(evt, emptyRegistry, DefaultOptions(), context, _metrics);
 
@@ -199,12 +199,12 @@ public sealed class GdprExportSagaTests : IDisposable
     [Fact]
     public async Task StartAsync_UsesConfiguredTimeout_InScheduledTime()
     {
-        GdprExportSaga saga = new();
+        PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         IOptions<GranitPrivacyOptions> options = Microsoft.Extensions.Options.Options.Create(
             new GranitPrivacyOptions { ExportTimeoutMinutes = 10 });
         DataProviderRegistry registry = BuildRegistry("auth");
-        PersonalDataRequestedEto evt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto evt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
 
         await saga.StartAsync(evt, registry, options, context, _metrics);
 
@@ -223,15 +223,15 @@ public sealed class GdprExportSagaTests : IDisposable
     [Fact]
     public async Task ExportCompletedEto_ArchiveBlobReferenceId_UsesGdprExportConvention()
     {
-        GdprExportSaga saga = new();
+        PersonalDataExportSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("auth");
-        PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
+        PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
         await saga.StartAsync(startEvt, registry, DefaultOptions(), context, _metrics);
 
         ExportCompletedEto? result = saga.Handle(
             new PersonalDataPreparedEto(startEvt.RequestId, "auth", "blob-auth", "application/json"), _metrics);
 
-        result!.ArchiveBlobReferenceId.ShouldBe($"gdpr-export/{startEvt.RequestId}");
+        result!.ArchiveBlobReferenceId.ShouldBe($"personal-data-export/{startEvt.RequestId}");
     }
 }
