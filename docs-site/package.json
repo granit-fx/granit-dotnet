@@ -16,7 +16,7 @@
     "@lorenzo_lewis/starlight-utils": "^0.3.2",
     "@tailwindcss/vite": "^4.2.2",
     "astro": "^6.1.1",
-    "astro-mermaid": "^1.3.1",
+    "astro-mermaid": "^2.0.1",
     "mermaid": "^11.13.0",
     "rehype-external-links": "^3.0.0",
     "sharp": "^0.34.5",
@@ -30,7 +30,7 @@
   "devDependencies": {
     "markdownlint-cli2": "^0.22.0",
     "starlight-image-zoom": "^0.14.1",
-    "starlight-links-validator": "^0.20.1"
+    "starlight-links-validator": "^0.21.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
