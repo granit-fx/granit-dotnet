@@ -24,14 +24,16 @@ public sealed class CookieRegistryTests
     }
 
     [Fact]
-    public void Register_DuplicateName_ThrowsInvalidOperationException()
+    public void Register_DuplicateName_ReplacesDefinition()
     {
-        CookieDefinition definition = CreateDefinition();
-        _sut.Register(definition);
+        CookieDefinition original = CreateDefinition();
+        CookieDefinition replacement = new("test_cookie", CookieCategory.Marketing, 30, false, "Updated purpose");
+        _sut.Register(original);
 
-        Action act = () => _sut.Register(definition);
+        _sut.Register(replacement);
 
-        Should.Throw<InvalidOperationException>(act).Message.ShouldContain("already registered");
+        CookieDefinition? result = _sut.GetDefinition("test_cookie");
+        result.ShouldBe(replacement);
     }
 
     [Fact]
