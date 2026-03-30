@@ -616,8 +616,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.16",
-        "contentHash": "zOWRQLnD7RbcbqnEeP6oUQNy+JeyXDcgmyz3ui7O5QntW7CdbItSC+KOZYRgzaFqh9hPNgSlp1uuTn96Y+gfww=="
+        "resolved": "2.13.17",
+        "contentHash": "v44WF0m58HBwaUiZVrvuetICcoaf2ZvIYu8JxsaJRRtsrNLlCIqjCcncTTDIy7pUiC2r2EO3eCJqcqGaTKZplQ=="
       }
     }
   }
