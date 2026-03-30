@@ -16,7 +16,8 @@ internal sealed class CookieRegistry : ICookieRegistry
 
         if (!_cookies.TryAdd(definition.Name, definition))
         {
-            throw new InvalidOperationException($"Cookie '{definition.Name}' is already registered.");
+            // Idempotent: allow re-registration of the same cookie (hot-reload, module restart).
+            _cookies[definition.Name] = definition;
         }
     }
 
