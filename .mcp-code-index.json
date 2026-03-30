@@ -23602,7 +23602,7 @@
       "fqn": "Granit.Privacy.DataExport.ReceivedFragment",
       "kind": "record",
       "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/DataExport/PersonalDataExportSagaState.cs",
+      "file": "src/Granit.Privacy/DataExport/ReceivedFragment.cs",
       "line": 6,
       "members": []
     },

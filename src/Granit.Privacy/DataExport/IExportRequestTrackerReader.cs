@@ -1,7 +1,7 @@
 namespace Granit.Privacy.DataExport;
 
 /// <summary>
-/// Read-only abstraction for querying GDPR export request status.
+/// Read-only abstraction for querying personal data export request status.
 /// Implemented by the application's persistence layer (EF Core, etc.).
 /// </summary>
 /// <remarks>

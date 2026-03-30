@@ -26,12 +26,12 @@ using Microsoft.Extensions.Options;
 namespace Granit.Privacy.Endpoints.Extensions;
 
 /// <summary>
-/// Extension methods for mapping GDPR privacy endpoints.
+/// Extension methods for mapping privacy endpoints.
 /// </summary>
 public static class PrivacyEndpointRouteBuilderExtensions
 {
     /// <summary>
-    /// Maps GDPR privacy endpoints under <c>/{prefix}/privacy</c>: data export (Art. 15/20),
+    /// Maps privacy endpoints under <c>/{prefix}/privacy</c>: data export (Art. 15/20),
     /// data deletion (Art. 17), and legal agreement consent (Art. 7).
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>

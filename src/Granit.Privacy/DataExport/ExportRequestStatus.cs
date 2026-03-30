@@ -1,7 +1,7 @@
 namespace Granit.Privacy.DataExport;
 
 /// <summary>
-/// Read model for a GDPR export request, used by endpoints to report progress.
+/// Read model for a personal data export request, used by endpoints to report progress.
 /// </summary>
 /// <param name="RequestId">Correlation ID of the export saga.</param>
 /// <param name="UserId">Identifier of the data subject.</param>

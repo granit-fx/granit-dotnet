@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 namespace Granit.Privacy.DataExport.Internal;
 
 /// <summary>
-/// Thread-safe singleton registry of data providers participating in GDPR export/deletion.
+/// Thread-safe singleton registry of data providers participating in personal data export/deletion.
 /// </summary>
 internal sealed class DataProviderRegistry : IDataProviderRegistry
 {

@@ -1,7 +1,7 @@
 namespace Granit.Privacy.DataExport;
 
 /// <summary>
-/// Write abstraction for tracking GDPR export requests.
+/// Write abstraction for tracking personal data export requests.
 /// Implemented by the application's persistence layer (EF Core, etc.).
 /// </summary>
 /// <remarks>

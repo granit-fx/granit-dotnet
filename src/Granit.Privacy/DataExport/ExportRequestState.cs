@@ -1,7 +1,7 @@
 namespace Granit.Privacy.DataExport;
 
 /// <summary>
-/// State of a GDPR personal data export request (Art. 15/20).
+/// State of a personal data export request (Art. 15/20).
 /// </summary>
 public enum ExportRequestState
 {
