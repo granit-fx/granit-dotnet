@@ -1,4 +1,6 @@
 using Granit.BlobStorage.Domain;
+using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.BlobStorage.EntityFrameworkCore.Internal;
@@ -13,67 +15,52 @@ namespace Granit.BlobStorage.EntityFrameworkCore.Internal;
 /// <see cref="IDbContextFactory{TContext}"/>, making it safe for concurrent request handling.
 /// </remarks>
 internal sealed class EfBlobDescriptorStore(
-    IDbContextFactory<BlobStorageDbContext> contextFactory) : IBlobDescriptorStore
+    IDbContextFactory<BlobStorageDbContext> contextFactory)
+    : EfStoreBase<BlobDescriptor, BlobStorageDbContext>(contextFactory), IBlobDescriptorStore
 {
     /// <inheritdoc/>
-    public async Task<BlobDescriptor?> FindAsync(
+    public Task<BlobDescriptor?> FindAsync(
         Guid blobId,
-        CancellationToken cancellationToken = default)
-    {
-        await using BlobStorageDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await context.Blobs
-            .FirstOrDefaultAsync(b => b.Id == blobId, cancellationToken).ConfigureAwait(false);
-    }
+        CancellationToken cancellationToken = default) =>
+        FirstOrDefaultAsync(b => b.Id == blobId, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task SaveAsync(
+    public Task SaveAsync(
         BlobDescriptor descriptor,
-        CancellationToken cancellationToken = default)
-    {
-        await using BlobStorageDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        context.Blobs.Add(descriptor);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+        CancellationToken cancellationToken = default) =>
+        AddAsync(descriptor, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task UpdateAsync(
+    public new Task UpdateAsync(
         BlobDescriptor descriptor,
-        CancellationToken cancellationToken = default)
-    {
-        await using BlobStorageDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        context.Blobs.Update(descriptor);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+        CancellationToken cancellationToken = default) =>
+        base.UpdateAsync(descriptor, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<BlobDescriptor>> FindOrphanedAsync(
+    public Task<IReadOnlyList<BlobDescriptor>> FindOrphanedAsync(
         DateTimeOffset cutoff,
         int batchSize,
-        CancellationToken cancellationToken = default)
-    {
-        await using BlobStorageDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await context.Blobs
-            .Where(b => (b.Status == BlobStatus.Pending || b.Status == BlobStatus.Uploading)
-                        && b.CreatedAt < cutoff)
-            .OrderBy(b => b.CreatedAt)
-            .Take(batchSize)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-    }
+        CancellationToken cancellationToken = default) =>
+        ListAsync(
+            Spec.For<BlobDescriptor>()
+                .Where(b => (b.Status == BlobStatus.Pending || b.Status == BlobStatus.Uploading)
+                            && b.CreatedAt < cutoff)
+                .OrderBy(b => (object)b.CreatedAt)
+                .Limit(batchSize),
+            cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<BlobDescriptor>> FindByContainerBeforeAsync(
+    public Task<IReadOnlyList<BlobDescriptor>> FindByContainerBeforeAsync(
         string containerName,
         DateTimeOffset cutoff,
         int batchSize,
-        CancellationToken cancellationToken = default)
-    {
-        await using BlobStorageDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await context.Blobs
-            .Where(b => b.ContainerName == containerName
-                        && b.Status == BlobStatus.Valid
-                        && b.CreatedAt < cutoff)
-            .OrderBy(b => b.CreatedAt)
-            .Take(batchSize)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-    }
+        CancellationToken cancellationToken = default) =>
+        ListAsync(
+            Spec.For<BlobDescriptor>()
+                .Where(b => b.ContainerName == containerName
+                            && b.Status == BlobStatus.Valid
+                            && b.CreatedAt < cutoff)
+                .OrderBy(b => (object)b.CreatedAt)
+                .Limit(batchSize),
+            cancellationToken);
 }
