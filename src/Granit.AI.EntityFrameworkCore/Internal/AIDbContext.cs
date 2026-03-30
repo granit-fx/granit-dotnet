@@ -2,7 +2,7 @@ using Granit.AI.EntityFrameworkCore.Entities;
 using Granit.AI.EntityFrameworkCore.Extensions;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.AI.EntityFrameworkCore.Internal;

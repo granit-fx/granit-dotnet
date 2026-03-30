@@ -1,4 +1,4 @@
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Options;

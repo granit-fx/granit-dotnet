@@ -168,7 +168,7 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.persistence": {
+      "granit.persistence.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
@@ -191,7 +191,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Persistence": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Templating": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
@@ -389,8 +389,8 @@
       "Scriban": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
-        "resolved": "7.0.5",
-        "contentHash": "GmK0nHYvmUV7ue93eaEWwVU4NQLcW1MlBckAT6BTUIIJm9UA92pVWdcJH5BGqzgWkrA+xVt065gjP2vpQ47h6g=="
+        "resolved": "7.0.6",
+        "contentHash": "bOtHyk30sjl0y3+KYImIJv0ETZYLuFFJvlBF2ks2YLNtydhJqxRTGe4WaBDvg/3VRhhI6uf+qVfixuFROsOi+w=="
       }
     }
   }

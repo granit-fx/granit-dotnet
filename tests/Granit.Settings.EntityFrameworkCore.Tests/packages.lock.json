@@ -351,7 +351,7 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.persistence": {
+      "granit.persistence.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
@@ -375,7 +375,7 @@
       "granit.settings.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
-          "Granit.Persistence": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }

@@ -8,9 +8,9 @@ using Granit.OpenIddict.EntityFrameworkCore.Seeding;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Server;
 using Granit.OpenIddict.Services;
-using Granit.Persistence;
-using Granit.Persistence.DataSeeding;
-using Granit.Persistence.ExtraProperties;
+using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -38,7 +38,7 @@ namespace Granit.OpenIddict.EntityFrameworkCore;
     typeof(GranitEncryptionModule),
     typeof(GranitMultiTenancyModule),
     typeof(GranitOpenIddictServerModule),
-    typeof(GranitPersistenceModule))]
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
 {
     /// <inheritdoc/>

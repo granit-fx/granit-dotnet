@@ -1,4 +1,4 @@
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;

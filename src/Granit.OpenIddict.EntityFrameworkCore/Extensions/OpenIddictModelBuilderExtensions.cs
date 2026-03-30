@@ -4,7 +4,7 @@ using Granit.Domain;
 using Granit.Identity.Local.Domain;
 using Granit.OpenIddict.Domain;
 using Granit.OpenIddict.Entities.OpenIddict;
-using Granit.Persistence.ExtraProperties;
+using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -78,7 +78,7 @@ public static class OpenIddictModelBuilderExtensions
             var filter =
                 Expression.Lambda<Func<GranitUser, bool>>(Expression.OrElse(bypass, notDeleted), param);
 
-            b.HasQueryFilter(Granit.Persistence.GranitFilterNames.SoftDelete, filter);
+            b.HasQueryFilter(Granit.Persistence.EntityFrameworkCore.GranitFilterNames.SoftDelete, filter);
 
             b.HasIndex(u => u.TenantId)
                 .HasDatabaseName($"ix_{prefix}users_tenant_id");

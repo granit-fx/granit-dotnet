@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 
@@ -19,14 +19,14 @@ public sealed class GranitSettingsEntityFrameworkCoreModuleTests
     }
 
     [Fact]
-    public void Module_DependsOn_GranitPersistenceModule()
+    public void Module_DependsOn_GranitPersistenceEntityFrameworkCoreModule()
     {
         var attributes = (DependsOnAttribute[])typeof(GranitSettingsEntityFrameworkCoreModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false);
 
         Type[] dependedTypes = attributes.SelectMany(a => a.DependedTypes).ToArray();
 
-        dependedTypes.ShouldContain(typeof(GranitPersistenceModule));
+        dependedTypes.ShouldContain(typeof(GranitPersistenceEntityFrameworkCoreModule));
     }
 
     [Fact]

@@ -1,6 +1,6 @@
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Persistence.Interceptors;
+using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Granit.Testing.Fakes;
 using Granit.Timing;
 using Granit.Users;

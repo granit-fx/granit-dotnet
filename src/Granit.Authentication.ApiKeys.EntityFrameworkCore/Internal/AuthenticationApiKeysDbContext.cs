@@ -2,7 +2,7 @@ using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.EntityFrameworkCore.Extensions;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;

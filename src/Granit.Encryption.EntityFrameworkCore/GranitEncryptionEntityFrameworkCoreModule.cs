@@ -1,6 +1,6 @@
 using Granit.Encryption.EntityFrameworkCore.Interceptors;
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -18,7 +18,7 @@ namespace Granit.Encryption.EntityFrameworkCore;
 /// </remarks>
 [DependsOn(
     typeof(GranitEncryptionModule),
-    typeof(GranitPersistenceModule))]
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitEncryptionEntityFrameworkCoreModule : GranitModule
 {
     /// <inheritdoc/>

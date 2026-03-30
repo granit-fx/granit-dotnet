@@ -19,7 +19,7 @@ using Granit.Notifications.Email;
 using Granit.Notifications.EntityFrameworkCore;
 using Granit.Notifications.SignalR;
 using Granit.Observability;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.RateLimiting;
 using Granit.Templating;
 using Granit.Templating.EntityFrameworkCore;
@@ -46,7 +46,7 @@ public sealed class BundleTransitiveDependencyTests
         typeof(IGuidGenerator).Assembly.ShouldNotBeNull();               // Guids
         typeof(ICurrentUserService).Assembly.ShouldNotBeNull();          // Security
         typeof(GranitValidationModule).Assembly.ShouldNotBeNull();       // Validation
-        typeof(GranitPersistenceModule).Assembly.ShouldNotBeNull();      // Persistence
+        typeof(GranitPersistenceEntityFrameworkCoreModule).Assembly.ShouldNotBeNull();      // Persistence
         typeof(GranitObservabilityModule).Assembly.ShouldNotBeNull();    // Observability
         typeof(GranitHttpExceptionHandlingModule).Assembly.ShouldNotBeNull(); // ExceptionHandling
         typeof(GranitDiagnosticsModule).Assembly.ShouldNotBeNull();      // Diagnostics

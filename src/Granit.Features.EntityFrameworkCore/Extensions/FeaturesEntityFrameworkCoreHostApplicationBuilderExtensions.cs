@@ -2,7 +2,7 @@ using Granit.Events;
 using Granit.Events.Extensions;
 using Granit.Features.Diagnostics;
 using Granit.Features.EntityFrameworkCore.Internal;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

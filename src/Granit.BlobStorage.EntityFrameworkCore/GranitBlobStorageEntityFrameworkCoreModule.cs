@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 
 namespace Granit.BlobStorage.EntityFrameworkCore;
 
@@ -9,5 +9,5 @@ namespace Granit.BlobStorage.EntityFrameworkCore;
 /// </summary>
 [DependsOn(
     typeof(GranitBlobStorageModule),
-    typeof(GranitPersistenceModule))]
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitBlobStorageEntityFrameworkCoreModule : GranitModule;

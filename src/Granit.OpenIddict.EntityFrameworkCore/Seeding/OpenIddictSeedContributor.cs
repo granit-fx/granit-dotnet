@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Granit.OpenIddict.Options;
-using Granit.Persistence.DataSeeding;
+using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

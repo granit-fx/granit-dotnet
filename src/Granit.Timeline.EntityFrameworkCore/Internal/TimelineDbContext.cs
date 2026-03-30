@@ -1,6 +1,6 @@
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;

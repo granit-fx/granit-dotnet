@@ -6,7 +6,7 @@ using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.DataExchange.EntityFrameworkCore.Internal;

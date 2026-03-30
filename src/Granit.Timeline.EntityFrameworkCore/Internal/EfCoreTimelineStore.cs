@@ -1,6 +1,6 @@
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Internal;

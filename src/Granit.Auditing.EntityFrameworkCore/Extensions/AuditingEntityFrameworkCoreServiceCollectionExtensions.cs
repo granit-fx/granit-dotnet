@@ -7,7 +7,7 @@ using Granit.Auditing.EntityFrameworkCore.Internal;
 using Granit.Auditing.EntityFrameworkCore.Internal.Services;
 using Granit.Auditing.Messages;
 using Granit.Auditing.Options;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

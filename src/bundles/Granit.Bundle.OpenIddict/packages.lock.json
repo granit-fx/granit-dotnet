@@ -619,7 +619,7 @@
           "Granit.Identity.Local": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )",
           "Granit.OpenIddict.Server": "[0.1.0-dev, )",
-          "Granit.Persistence": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[10.*, )",
           "Microsoft.EntityFrameworkCore": "[10.*, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
@@ -636,7 +636,7 @@
           "OpenIddict.Validation.AspNetCore": "[7.*, )"
         }
       },
-      "granit.persistence": {
+      "granit.persistence.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
@@ -974,8 +974,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.16",
-        "contentHash": "zOWRQLnD7RbcbqnEeP6oUQNy+JeyXDcgmyz3ui7O5QntW7CdbItSC+KOZYRgzaFqh9hPNgSlp1uuTn96Y+gfww=="
+        "resolved": "2.13.17",
+        "contentHash": "v44WF0m58HBwaUiZVrvuetICcoaf2ZvIYu8JxsaJRRtsrNLlCIqjCcncTTDIy7pUiC2r2EO3eCJqcqGaTKZplQ=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",

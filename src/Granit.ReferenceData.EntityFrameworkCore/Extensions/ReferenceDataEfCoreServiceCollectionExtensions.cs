@@ -1,5 +1,5 @@
-using Granit.Persistence.DataSeeding;
-using Granit.Persistence.ExtraProperties;
+using Granit.Persistence.EntityFrameworkCore.DataSeeding;
+using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
 using Granit.QueryEngine;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;

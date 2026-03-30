@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Webhooks.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +14,7 @@ namespace Granit.Webhooks.EntityFrameworkCore;
 /// <c>AddGranitWebhooksEntityFrameworkCore(opts => opts.UseNpgsql(connectionString))</c>
 /// instead of using this module directly when custom DbContext options are needed.
 /// </remarks>
-[DependsOn(typeof(GranitPersistenceModule))]
+[DependsOn(typeof(GranitPersistenceEntityFrameworkCoreModule))]
 [DependsOn(typeof(GranitWebhooksModule))]
 public sealed class GranitWebhooksEntityFrameworkCoreModule : GranitModule
 {

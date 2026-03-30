@@ -57,7 +57,7 @@
       "src/Granit.OpenIddict.EntityFrameworkCore/Granit.OpenIddict.EntityFrameworkCore.csproj",
       "src/Granit.OpenIddict.Server/Granit.OpenIddict.Server.csproj",
       "src/Granit.OpenIddict/Granit.OpenIddict.csproj",
-      "src/Granit.Persistence/Granit.Persistence.csproj",
+      "src/Granit.Persistence.EntityFrameworkCore/Granit.Persistence.EntityFrameworkCore.csproj",
       "src/Granit.Privacy.BackgroundJobs/Granit.Privacy.BackgroundJobs.csproj",
       "src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj",
       "src/Granit.Privacy.Notifications/Granit.Privacy.Notifications.csproj",

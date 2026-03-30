@@ -26,6 +26,6 @@ public sealed class GranitTestingEntityFrameworkCoreModuleTests
 
         attributes.ShouldNotBeEmpty();
         attributes.SelectMany(a => a.DependedTypes)
-            .ShouldContain(typeof(Granit.Persistence.GranitPersistenceModule));
+            .ShouldContain(typeof(Granit.Persistence.EntityFrameworkCore.GranitPersistenceEntityFrameworkCoreModule));
     }
 }

@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 
 namespace Granit.DataExchange.EntityFrameworkCore;
 
@@ -12,5 +12,5 @@ namespace Granit.DataExchange.EntityFrameworkCore;
 /// </summary>
 [DependsOn(
     typeof(GranitDataExchangeModule),
-    typeof(GranitPersistenceModule))]
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitDataExchangeEntityFrameworkCoreModule : GranitModule;

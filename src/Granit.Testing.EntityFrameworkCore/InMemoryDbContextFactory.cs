@@ -1,4 +1,4 @@
-using Granit.Persistence.Interceptors;
+using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Granit.Testing.Fakes;
 using Microsoft.EntityFrameworkCore;
 

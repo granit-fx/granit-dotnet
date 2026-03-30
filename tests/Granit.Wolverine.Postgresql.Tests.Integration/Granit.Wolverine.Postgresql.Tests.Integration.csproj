@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.Persistence\Granit.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Wolverine.Postgresql\Granit.Wolverine.Postgresql.csproj" />
   </ItemGroup>
 

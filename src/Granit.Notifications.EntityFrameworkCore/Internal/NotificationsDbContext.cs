@@ -3,7 +3,7 @@ using Granit.MultiTenancy;
 using Granit.Notifications.Domain;
 using Granit.Notifications.EntityFrameworkCore.Entities;
 using Granit.Notifications.EntityFrameworkCore.Extensions;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Notifications.EntityFrameworkCore.Internal;

@@ -3,7 +3,7 @@ using Granit.Http.ExceptionHandling;
 using Granit.Http.SecurityHeaders;
 using Granit.Modularity;
 using Granit.Observability;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
 using Granit.Users;
 using Granit.Validation;
@@ -23,7 +23,7 @@ public static class GranitBuilderEssentialsExtensions
     {
         builder.AddModule<GranitTimingModule>();
         builder.AddModule<GranitValidationModule>();
-        builder.AddModule<GranitPersistenceModule>();
+        builder.AddModule<GranitPersistenceEntityFrameworkCoreModule>();
         builder.AddModule<GranitObservabilityModule>();
         builder.AddModule<GranitHttpExceptionHandlingModule>();
         builder.AddModule<GranitHttpSecurityModule>();

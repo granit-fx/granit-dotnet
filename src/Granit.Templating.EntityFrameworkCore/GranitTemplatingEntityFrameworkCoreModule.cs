@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 
 namespace Granit.Templating.EntityFrameworkCore;
 
@@ -17,5 +17,5 @@ namespace Granit.Templating.EntityFrameworkCore;
 /// </remarks>
 [DependsOn(
     typeof(GranitTemplatingModule),
-    typeof(GranitPersistenceModule))]
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitTemplatingEntityFrameworkCoreModule : GranitModule;

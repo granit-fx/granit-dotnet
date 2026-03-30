@@ -56,7 +56,7 @@
           "Granit.Identity": "[0.1.0-dev, )"
         }
       },
-      "granit.persistence": {
+      "granit.persistence.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",

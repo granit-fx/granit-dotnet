@@ -1,6 +1,6 @@
 using Granit.BackgroundJobs.EntityFrameworkCore;
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 
@@ -18,7 +18,7 @@ public sealed class GranitBackgroundJobsEntityFrameworkCoreModuleTests
 
         attribute.ShouldNotBeNull();
         attribute!.DependedTypes.ShouldContain(typeof(GranitBackgroundJobsModule));
-        attribute.DependedTypes.ShouldContain(typeof(GranitPersistenceModule));
+        attribute.DependedTypes.ShouldContain(typeof(GranitPersistenceEntityFrameworkCoreModule));
     }
 
     [Fact]

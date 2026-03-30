@@ -5,7 +5,7 @@ using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Stores;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Pipeline;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

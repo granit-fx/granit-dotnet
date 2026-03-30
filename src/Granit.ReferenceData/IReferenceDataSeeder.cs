@@ -11,7 +11,7 @@ namespace Granit.ReferenceData;
 /// <para>
 /// Seeders are executed by the <c>ReferenceDataSeedContributor</c> bridge in
 /// <c>Granit.ReferenceData.EntityFrameworkCore</c> which integrates with the
-/// <c>IDataSeedContributor</c> infrastructure from <c>Granit.Persistence</c>.
+/// <c>IDataSeedContributor</c> infrastructure from <c>Granit.Persistence.EntityFrameworkCore</c>.
 /// </para>
 /// <para>
 /// Implementations must be <b>idempotent</b>: running the seeder multiple times must

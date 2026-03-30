@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 
 namespace Granit.Authentication.ApiKeys.EntityFrameworkCore;
 
@@ -12,5 +12,5 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore;
 /// </remarks>
 [DependsOn(
     typeof(GranitAuthenticationApiKeysModule),
-    typeof(GranitPersistenceModule))]
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitAuthenticationApiKeysEntityFrameworkCoreModule : GranitModule;

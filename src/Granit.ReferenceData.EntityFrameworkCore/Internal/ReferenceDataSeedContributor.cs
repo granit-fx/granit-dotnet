@@ -1,4 +1,4 @@
-using Granit.Persistence.DataSeeding;
+using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.ReferenceData.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

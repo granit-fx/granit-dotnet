@@ -1,7 +1,7 @@
 using Granit.Bff.EntityFrameworkCore.Internal;
 using Granit.Encryption;
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Bff.EntityFrameworkCore;
@@ -18,7 +18,7 @@ namespace Granit.Bff.EntityFrameworkCore;
 [DependsOn(
     typeof(GranitBffModule),
     typeof(GranitEncryptionModule),
-    typeof(GranitPersistenceModule))]
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitBffEntityFrameworkCoreModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context) =>

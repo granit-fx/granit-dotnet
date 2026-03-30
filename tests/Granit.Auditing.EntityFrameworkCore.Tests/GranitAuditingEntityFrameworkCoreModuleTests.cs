@@ -2,7 +2,7 @@
 // GranitAuditingEntityFrameworkCoreModuleTests - Module declaration
 // =============================================================================
 // Verifies:
-//   - DependsOn includes GranitAuditingModule, GranitCachingModule, GranitPersistenceModule
+//   - DependsOn includes GranitAuditingModule, GranitCachingModule, GranitPersistenceEntityFrameworkCoreModule
 //   - Module class is sealed
 //   - Module inherits from GranitModule
 // =============================================================================
@@ -10,7 +10,7 @@
 using Granit.Auditing;
 using Granit.Caching;
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 
@@ -56,7 +56,7 @@ public sealed class GranitAuditingEntityFrameworkCoreModuleTests
     }
 
     [Fact]
-    public void Module_DependsOnGranitPersistenceModule()
+    public void Module_DependsOnGranitPersistenceEntityFrameworkCoreModule()
     {
         DependsOnAttribute[] attributes = typeof(GranitAuditingEntityFrameworkCoreModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), true)
@@ -64,7 +64,7 @@ public sealed class GranitAuditingEntityFrameworkCoreModuleTests
             .ToArray();
 
         attributes.SelectMany(a => a.DependedTypes)
-            .ShouldContain(typeof(GranitPersistenceModule));
+            .ShouldContain(typeof(GranitPersistenceEntityFrameworkCoreModule));
     }
 
     [Fact]

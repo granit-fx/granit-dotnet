@@ -4,7 +4,7 @@ namespace Granit.Events;
 /// Dispatches integration events collected from aggregate roots before persistence commits.
 /// </summary>
 /// <remarks>
-/// The default implementation is a no-op registered in <c>Granit.Persistence</c>.
+/// The default implementation is a no-op registered in <c>Granit.Persistence.EntityFrameworkCore</c>.
 /// The Wolverine implementation (<c>WolverineIntegrationEventDispatcher</c>) routes events
 /// to <c>IMessageBus</c> so that Wolverine persists outbox envelopes atomically within the
 /// current EF Core transaction.

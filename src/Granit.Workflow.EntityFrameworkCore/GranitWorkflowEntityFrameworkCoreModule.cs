@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Workflow.EntityFrameworkCore.Extensions;
 
 namespace Granit.Workflow.EntityFrameworkCore;
@@ -24,7 +24,7 @@ namespace Granit.Workflow.EntityFrameworkCore;
 /// </para>
 /// </remarks>
 [DependsOn(
-    typeof(GranitPersistenceModule),
+    typeof(GranitPersistenceEntityFrameworkCoreModule),
     typeof(GranitWorkflowModule))]
 public sealed class GranitWorkflowEntityFrameworkCoreModule : GranitModule
 {

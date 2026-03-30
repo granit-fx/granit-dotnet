@@ -23,7 +23,7 @@ namespace Granit.Identity.Local.Domain;
 /// <para>
 /// Implements <see cref="IHasExtraProperties"/> via explicit interface mapping to
 /// <see cref="CustomAttributesJson"/>. The generic <c>ExtraPropertySyncInterceptor</c>
-/// in <c>Granit.Persistence</c> handles Shadow Property synchronization.
+/// in <c>Granit.Persistence.EntityFrameworkCore</c> handles Shadow Property synchronization.
 /// </para>
 /// </remarks>
 public class GranitUser : IdentityUser<Guid>, IMultiTenant, IIdentityUser, IHasExtraProperties

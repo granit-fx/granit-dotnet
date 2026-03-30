@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Authentication.ApiKeys\Granit.Authentication.ApiKeys.csproj" />
-    <ProjectReference Include="..\Granit.Persistence\Granit.Persistence.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

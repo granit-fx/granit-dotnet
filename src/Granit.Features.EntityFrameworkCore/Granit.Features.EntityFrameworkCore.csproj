@@ -19,7 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.Events\Granit.Events.csproj" />
     <ProjectReference Include="..\Granit.Features\Granit.Features.csproj" />
-    <ProjectReference Include="..\Granit.Persistence\Granit.Persistence.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

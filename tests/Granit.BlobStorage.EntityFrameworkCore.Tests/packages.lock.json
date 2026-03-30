@@ -340,7 +340,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.BlobStorage": "[0.1.0-dev, )",
-          "Granit.Persistence": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
         }
@@ -359,7 +359,7 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.persistence": {
+      "granit.persistence.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",

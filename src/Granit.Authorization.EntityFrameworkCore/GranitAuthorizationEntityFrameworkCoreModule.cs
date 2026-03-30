@@ -1,6 +1,6 @@
 using Granit.Authorization;
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 
 namespace Granit.Authorization.EntityFrameworkCore;
 
@@ -16,5 +16,5 @@ namespace Granit.Authorization.EntityFrameworkCore;
 /// </remarks>
 [DependsOn(
     typeof(GranitAuthorizationModule),
-    typeof(GranitPersistenceModule))]
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitAuthorizationEntityFrameworkCoreModule : GranitModule;

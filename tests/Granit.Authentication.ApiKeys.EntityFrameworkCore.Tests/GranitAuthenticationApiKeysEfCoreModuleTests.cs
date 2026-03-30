@@ -1,6 +1,6 @@
 using Granit.Authentication.ApiKeys.EntityFrameworkCore;
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 
@@ -35,6 +35,6 @@ public sealed class GranitAuthenticationApiKeysEfCoreModuleTests
             .ToArray();
 
         deps.SelectMany(d => d.DependedTypes)
-            .ShouldContain(typeof(GranitPersistenceModule));
+            .ShouldContain(typeof(GranitPersistenceEntityFrameworkCoreModule));
     }
 }

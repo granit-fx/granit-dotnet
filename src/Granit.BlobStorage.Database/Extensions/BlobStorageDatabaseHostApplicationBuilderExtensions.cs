@@ -5,7 +5,7 @@ using Granit.BlobStorage.Database.Options;
 using Granit.BlobStorage.Internal;
 using Granit.BlobStorage.Options;
 using Granit.Diagnostics;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

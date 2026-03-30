@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Wolverine.SqlServer.Extensions;
 using Granit.Wolverine.SqlServer.Options;
 
@@ -21,7 +21,7 @@ namespace Granit.Wolverine.SqlServer;
 /// instead of the standard <c>services.AddDbContext&lt;TContext&gt;()</c>.
 /// </para>
 /// </remarks>
-[DependsOn(typeof(GranitWolverineModule), typeof(GranitPersistenceModule))]
+[DependsOn(typeof(GranitWolverineModule), typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitWolverineSqlServerModule : GranitModule
 {
     /// <inheritdoc/>

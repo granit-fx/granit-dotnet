@@ -24,6 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Identity.Federated\Granit.Identity.Federated.csproj" />
-    <ProjectReference Include="..\Granit.Persistence\Granit.Persistence.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
   </ItemGroup>
 </Project>

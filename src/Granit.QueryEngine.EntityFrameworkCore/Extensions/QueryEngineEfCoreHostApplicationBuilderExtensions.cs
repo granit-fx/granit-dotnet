@@ -1,4 +1,4 @@
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.QueryEngine.EntityFrameworkCore.Internal;
 using Granit.QueryEngine.SavedViews;
 using Microsoft.EntityFrameworkCore;

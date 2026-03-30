@@ -1,6 +1,6 @@
 using Granit.Identity.Federated;
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 
 namespace Granit.Identity.Federated.EntityFrameworkCore;
 
@@ -16,5 +16,5 @@ namespace Granit.Identity.Federated.EntityFrameworkCore;
 /// </remarks>
 [DependsOn(
     typeof(GranitIdentityFederatedModule),
-    typeof(GranitPersistenceModule))]
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitIdentityFederatedEntityFrameworkCoreModule : GranitModule;

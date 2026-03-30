@@ -1,6 +1,6 @@
 using Granit.Diagnostics;
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine.Diagnostics;
 using Granit.QueryEngine.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +14,7 @@ namespace Granit.QueryEngine.EntityFrameworkCore;
 /// and <c>EfCoreSavedViewStore</c>.
 /// </summary>
 [DependsOn(
-    typeof(GranitPersistenceModule),
+    typeof(GranitPersistenceEntityFrameworkCoreModule),
     typeof(GranitQueryEngineModule))]
 public sealed class GranitQueryEngineEntityFrameworkCoreModule : GranitModule
 {

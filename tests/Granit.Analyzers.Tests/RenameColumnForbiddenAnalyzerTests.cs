@@ -65,7 +65,7 @@ public sealed class RenameColumnForbiddenAnalyzerTests
     public async Task GR_MIGA002_fires_even_with_contract_annotation()
     {
         string source = """
-            using Granit.Persistence.Migrations;
+            using Granit.Persistence.EntityFrameworkCore.Migrations;
             using Microsoft.EntityFrameworkCore.Migrations;
 
             [MigrationCycle(MigrationPhase.Contract, "patient-v2")]

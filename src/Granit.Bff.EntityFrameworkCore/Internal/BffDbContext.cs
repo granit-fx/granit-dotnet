@@ -1,6 +1,6 @@
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Bff.EntityFrameworkCore.Internal;

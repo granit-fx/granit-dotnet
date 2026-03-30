@@ -35,6 +35,6 @@ public sealed class GranitAuthorizationEntityFrameworkCoreModuleTests
             .ToArray();
 
         attrs.SelectMany(a => a.DependedTypes)
-            .ShouldContain(typeof(Granit.Persistence.GranitPersistenceModule));
+            .ShouldContain(typeof(Granit.Persistence.EntityFrameworkCore.GranitPersistenceEntityFrameworkCoreModule));
     }
 }

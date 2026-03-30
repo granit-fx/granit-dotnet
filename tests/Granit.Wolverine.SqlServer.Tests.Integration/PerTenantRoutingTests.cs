@@ -12,8 +12,8 @@
 // =============================================================================
 
 using Granit.MultiTenancy;
-using Granit.Persistence;
-using Granit.Persistence.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

@@ -268,7 +268,7 @@
         "dependencies": {
           "Granit.Notifications": "[0.1.0-dev, )",
           "Granit.Notifications.MobilePush": "[0.1.0-dev, )",
-          "Granit.Persistence": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
@@ -289,7 +289,7 @@
           "Microsoft.AspNetCore.SignalR.StackExchangeRedis": "[10.*, )"
         }
       },
-      "granit.persistence": {
+      "granit.persistence.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",

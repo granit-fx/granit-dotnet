@@ -35,7 +35,7 @@
       "name": "Granit.AI.EntityFrameworkCore",
       "deps": [
         "Granit.AI",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -109,7 +109,7 @@
       "deps": [
         "Granit.Auditing",
         "Granit.Caching",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -142,7 +142,7 @@
       "name": "Granit.Authentication.ApiKeys.EntityFrameworkCore",
       "deps": [
         "Granit.Authentication.ApiKeys",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -231,7 +231,7 @@
       "name": "Granit.Authorization.EntityFrameworkCore",
       "deps": [
         "Granit.Authorization",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -259,7 +259,7 @@
       "deps": [
         "Granit.BackgroundJobs",
         "Granit.Guids",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -307,7 +307,7 @@
         "Granit.Bff",
         "Granit.Encryption",
         "Granit.Guids",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -354,7 +354,7 @@
       "name": "Granit.BlobStorage.Database",
       "deps": [
         "Granit.BlobStorage",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -373,7 +373,7 @@
       "name": "Granit.BlobStorage.EntityFrameworkCore",
       "deps": [
         "Granit.BlobStorage",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -462,7 +462,7 @@
       "name": "Granit.DataExchange.EntityFrameworkCore",
       "deps": [
         "Granit.DataExchange",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -538,7 +538,7 @@
       "deps": [
         "Granit",
         "Granit.Encryption",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -580,7 +580,7 @@
       "deps": [
         "Granit.Events",
         "Granit.Features",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -732,7 +732,7 @@
       "name": "Granit.Identity.Federated.EntityFrameworkCore",
       "deps": [
         "Granit.Identity.Federated",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -831,7 +831,7 @@
     {
       "name": "Granit.Localization.EntityFrameworkCore",
       "deps": [
-        "Granit.Persistence",
+        "Granit.Persistence.EntityFrameworkCore",
         "Granit.Localization"
       ],
       "framework": "net10.0"
@@ -962,7 +962,7 @@
       "deps": [
         "Granit.Notifications",
         "Granit.Notifications.MobilePush",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -1143,7 +1143,7 @@
         "Granit.Identity.Local",
         "Granit.MultiTenancy",
         "Granit.OpenIddict.Server",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -1155,7 +1155,7 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Persistence",
+      "name": "Granit.Persistence.EntityFrameworkCore",
       "deps": [
         "Granit.Guids",
         "Granit.Timing",
@@ -1164,39 +1164,39 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Persistence.Hosting",
+      "name": "Granit.Persistence.EntityFrameworkCore.Hosting",
       "deps": [
-        "Granit.Persistence",
-        "Granit.Persistence.Migrations"
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Persistence.EntityFrameworkCore.Migrations"
       ],
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Persistence.Migrations",
+      "name": "Granit.Persistence.EntityFrameworkCore.Migrations",
       "deps": [
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Persistence.Migrations.Wolverine",
+      "name": "Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine",
       "deps": [
-        "Granit.Persistence.Migrations",
+        "Granit.Persistence.EntityFrameworkCore.Migrations",
         "Granit.Wolverine"
       ],
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Persistence.Postgres",
+      "name": "Granit.Persistence.EntityFrameworkCore.Postgres",
       "deps": [
-        "Granit.Persistence.Hosting"
+        "Granit.Persistence.EntityFrameworkCore.Hosting"
       ],
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Persistence.SqlServer",
+      "name": "Granit.Persistence.EntityFrameworkCore.SqlServer",
       "deps": [
-        "Granit.Persistence.Hosting"
+        "Granit.Persistence.EntityFrameworkCore.Hosting"
       ],
       "framework": "net10.0"
     },
@@ -1299,7 +1299,7 @@
       "name": "Granit.QueryEngine.EntityFrameworkCore",
       "deps": [
         "Granit.QueryEngine",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -1335,7 +1335,7 @@
       "name": "Granit.ReferenceData.EntityFrameworkCore",
       "deps": [
         "Granit.Caching",
-        "Granit.Persistence",
+        "Granit.Persistence.EntityFrameworkCore",
         "Granit.QueryEngine",
         "Granit.ReferenceData"
       ],
@@ -1364,7 +1364,7 @@
     {
       "name": "Granit.Settings.EntityFrameworkCore",
       "deps": [
-        "Granit.Persistence",
+        "Granit.Persistence.EntityFrameworkCore",
         "Granit.Settings"
       ],
       "framework": "net10.0"
@@ -1398,7 +1398,7 @@
       "name": "Granit.Templating.EntityFrameworkCore",
       "deps": [
         "Granit.Guids",
-        "Granit.Persistence",
+        "Granit.Persistence.EntityFrameworkCore",
         "Granit.Templating",
         "Granit.Timing"
       ],
@@ -1431,7 +1431,7 @@
     {
       "name": "Granit.Testing.EntityFrameworkCore",
       "deps": [
-        "Granit.Persistence",
+        "Granit.Persistence.EntityFrameworkCore",
         "Granit.Testing"
       ],
       "framework": "net10.0"
@@ -1468,7 +1468,7 @@
       "name": "Granit.Timeline.EntityFrameworkCore",
       "deps": [
         "Granit.Timeline",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -1595,7 +1595,7 @@
       "name": "Granit.Webhooks.EntityFrameworkCore",
       "deps": [
         "Granit.Webhooks",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -1622,7 +1622,7 @@
       "name": "Granit.Wolverine.Postgresql",
       "deps": [
         "Granit.Wolverine",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -1630,7 +1630,7 @@
       "name": "Granit.Wolverine.SqlServer",
       "deps": [
         "Granit.Wolverine",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -1664,7 +1664,7 @@
       "name": "Granit.Workflow.EntityFrameworkCore",
       "deps": [
         "Granit.Workflow",
-        "Granit.Persistence"
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -22189,19 +22189,19 @@
     },
     {
       "name": "DataSeedContext",
-      "fqn": "Granit.Persistence.DataSeeding.DataSeedContext",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.DataSeedContext",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/DataSeeding/DataSeedContext.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/DataSeedContext.cs",
       "line": 18,
       "members": []
     },
     {
       "name": "IDataSeedContributor",
-      "fqn": "Granit.Persistence.DataSeeding.IDataSeedContributor",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.IDataSeedContributor",
       "kind": "interface",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/DataSeeding/IDataSeedContributor.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/IDataSeedContributor.cs",
       "line": 24,
       "members": [
         {
@@ -22214,10 +22214,10 @@
     },
     {
       "name": "IDataSeeder",
-      "fqn": "Granit.Persistence.DataSeeding.IDataSeeder",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.IDataSeeder",
       "kind": "interface",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/DataSeeding/IDataSeeder.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/IDataSeeder.cs",
       "line": 16,
       "members": [
         {
@@ -22230,19 +22230,19 @@
     },
     {
       "name": "PersistenceMetrics",
-      "fqn": "Granit.Persistence.Diagnostics.PersistenceMetrics",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Diagnostics.PersistenceMetrics",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/Diagnostics/PersistenceMetrics.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Diagnostics/PersistenceMetrics.cs",
       "line": 13,
       "members": []
     },
     {
       "name": "DbContextOptionsBuilderExtensions",
-      "fqn": "Granit.Persistence.Extensions.DbContextOptionsBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.DbContextOptionsBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/Extensions/DbContextOptionsBuilderExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/DbContextOptionsBuilderExtensions.cs",
       "line": 11,
       "members": [
         {
@@ -22255,10 +22255,10 @@
     },
     {
       "name": "DbContextPurgeExtensions",
-      "fqn": "Granit.Persistence.Extensions.DbContextPurgeExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.DbContextPurgeExtensions",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/Extensions/DbContextPurgeExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/DbContextPurgeExtensions.cs",
       "line": 16,
       "members": [
         {
@@ -22271,10 +22271,10 @@
     },
     {
       "name": "ModelBuilderExtensions",
-      "fqn": "Granit.Persistence.Extensions.ModelBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.ModelBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/Extensions/ModelBuilderExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/ModelBuilderExtensions.cs",
       "line": 15,
       "members": [
         {
@@ -22287,19 +22287,19 @@
     },
     {
       "name": "PersistenceDbContextServiceCollectionExtensions",
-      "fqn": "Granit.Persistence.Extensions.PersistenceDbContextServiceCollectionExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.PersistenceDbContextServiceCollectionExtensions",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/Extensions/PersistenceDbContextServiceCollectionExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/PersistenceDbContextServiceCollectionExtensions.cs",
       "line": 12,
       "members": []
     },
     {
       "name": "PersistenceServiceCollectionExtensions",
-      "fqn": "Granit.Persistence.Extensions.PersistenceServiceCollectionExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.PersistenceServiceCollectionExtensions",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/Extensions/PersistenceServiceCollectionExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/PersistenceServiceCollectionExtensions.cs",
       "line": 20,
       "members": [
         {
@@ -22312,37 +22312,37 @@
     },
     {
       "name": "PersistenceTenantExtensions",
-      "fqn": "Granit.Persistence.Extensions.PersistenceTenantExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.PersistenceTenantExtensions",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/Extensions/PersistenceTenantExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/PersistenceTenantExtensions.cs",
       "line": 14,
       "members": []
     },
     {
       "name": "TranslatableQueryExtensions",
-      "fqn": "Granit.Persistence.Extensions.TranslatableQueryExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.TranslatableQueryExtensions",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/Extensions/TranslatableQueryExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/TranslatableQueryExtensions.cs",
       "line": 15,
       "members": []
     },
     {
       "name": "ExtraPropertyMapping",
-      "fqn": "Granit.Persistence.ExtraProperties.ExtraPropertyMapping",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.ExtraProperties.ExtraPropertyMapping",
       "kind": "record",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/ExtraProperties/ExtraPropertyMapping.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/ExtraProperties/ExtraPropertyMapping.cs",
       "line": 12,
       "members": []
     },
     {
       "name": "ExtraPropertyMappingOptions",
-      "fqn": "Granit.Persistence.ExtraProperties.ExtraPropertyMappingOptions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.ExtraProperties.ExtraPropertyMappingOptions",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/ExtraProperties/ExtraPropertyMappingOptions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/ExtraProperties/ExtraPropertyMappingOptions.cs",
       "line": 32,
       "members": [
         {
@@ -22355,19 +22355,19 @@
     },
     {
       "name": "ExtraPropertyModelBuilderExtensions",
-      "fqn": "Granit.Persistence.ExtraProperties.ExtraPropertyModelBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.ExtraProperties.ExtraPropertyModelBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/ExtraProperties/ExtraPropertyModelBuilderExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/ExtraProperties/ExtraPropertyModelBuilderExtensions.cs",
       "line": 11,
       "members": []
     },
     {
       "name": "ExtraPropertyServiceCollectionExtensions",
-      "fqn": "Granit.Persistence.ExtraProperties.ExtraPropertyServiceCollectionExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.ExtraProperties.ExtraPropertyServiceCollectionExtensions",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/ExtraProperties/ExtraPropertyServiceCollectionExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/ExtraProperties/ExtraPropertyServiceCollectionExtensions.cs",
       "line": 12,
       "members": [
         {
@@ -22380,10 +22380,10 @@
     },
     {
       "name": "IExtraPropertyMappingRegistry",
-      "fqn": "Granit.Persistence.ExtraProperties.IExtraPropertyMappingRegistry",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.ExtraProperties.IExtraPropertyMappingRegistry",
       "kind": "interface",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/ExtraProperties/IExtraPropertyMappingRegistry.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/ExtraProperties/IExtraPropertyMappingRegistry.cs",
       "line": 8,
       "members": [
         {
@@ -22402,19 +22402,19 @@
     },
     {
       "name": "GranitFilterNames",
-      "fqn": "Granit.Persistence.GranitFilterNames",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.GranitFilterNames",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/GranitFilterNames.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/GranitFilterNames.cs",
       "line": 13,
       "members": []
     },
     {
-      "name": "GranitPersistenceModule",
-      "fqn": "Granit.Persistence.GranitPersistenceModule",
+      "name": "GranitPersistenceEntityFrameworkCoreModule",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.GranitPersistenceEntityFrameworkCoreModule",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/GranitPersistenceModule.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/GranitPersistenceEntityFrameworkCoreModule.cs",
       "line": 20,
       "members": [
         {
@@ -22427,10 +22427,10 @@
     },
     {
       "name": "PersistenceHostingHostApplicationBuilderExtensions",
-      "fqn": "Granit.Persistence.Hosting.Extensions.PersistenceHostingHostApplicationBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Hosting.Extensions.PersistenceHostingHostApplicationBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Persistence.Hosting",
-      "file": "src/Granit.Persistence.Hosting/Extensions/PersistenceHostingHostApplicationBuilderExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/Extensions/PersistenceHostingHostApplicationBuilderExtensions.cs",
       "line": 12,
       "members": [
         {
@@ -22443,10 +22443,10 @@
     },
     {
       "name": "PersistenceHostingWebApplicationExtensions",
-      "fqn": "Granit.Persistence.Hosting.Extensions.PersistenceHostingWebApplicationExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Hosting.Extensions.PersistenceHostingWebApplicationExtensions",
       "kind": "class",
-      "project": "Granit.Persistence.Hosting",
-      "file": "src/Granit.Persistence.Hosting/Extensions/PersistenceHostingWebApplicationExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/Extensions/PersistenceHostingWebApplicationExtensions.cs",
       "line": 11,
       "members": [
         {
@@ -22458,11 +22458,11 @@
       ]
     },
     {
-      "name": "GranitPersistenceHostingModule",
-      "fqn": "Granit.Persistence.Hosting.GranitPersistenceHostingModule",
+      "name": "GranitPersistenceEntityFrameworkCoreHostingModule",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Hosting.GranitPersistenceEntityFrameworkCoreHostingModule",
       "kind": "class",
-      "project": "Granit.Persistence.Hosting",
-      "file": "src/Granit.Persistence.Hosting/GranitPersistenceHostingModule.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/GranitPersistenceEntityFrameworkCoreHostingModule.cs",
       "line": 16,
       "members": [
         {
@@ -22475,10 +22475,10 @@
     },
     {
       "name": "IGranitMigrationLock",
-      "fqn": "Granit.Persistence.Hosting.IGranitMigrationLock",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Hosting.IGranitMigrationLock",
       "kind": "interface",
-      "project": "Granit.Persistence.Hosting",
-      "file": "src/Granit.Persistence.Hosting/IGranitMigrationLock.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/IGranitMigrationLock.cs",
       "line": 11,
       "members": [
         {
@@ -22491,10 +22491,10 @@
     },
     {
       "name": "IGranitMigrationRunner",
-      "fqn": "Granit.Persistence.Hosting.IGranitMigrationRunner",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Hosting.IGranitMigrationRunner",
       "kind": "interface",
-      "project": "Granit.Persistence.Hosting",
-      "file": "src/Granit.Persistence.Hosting/IGranitMigrationRunner.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/IGranitMigrationRunner.cs",
       "line": 7,
       "members": [
         {
@@ -22507,10 +22507,10 @@
     },
     {
       "name": "IMigratableModule",
-      "fqn": "Granit.Persistence.Hosting.IMigratableModule",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Hosting.IMigratableModule",
       "kind": "interface",
-      "project": "Granit.Persistence.Hosting",
-      "file": "src/Granit.Persistence.Hosting/IMigratableModule.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/IMigratableModule.cs",
       "line": 10,
       "members": [
         {
@@ -22523,10 +22523,10 @@
     },
     {
       "name": "GranitMigrateOptions",
-      "fqn": "Granit.Persistence.Hosting.Options.GranitMigrateOptions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Hosting.Options.GranitMigrateOptions",
       "kind": "class",
-      "project": "Granit.Persistence.Hosting",
-      "file": "src/Granit.Persistence.Hosting/Options/GranitMigrateOptions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/Options/GranitMigrateOptions.cs",
       "line": 6,
       "members": [
         {
@@ -22563,10 +22563,10 @@
     },
     {
       "name": "IInternalDbContextEnsurer",
-      "fqn": "Granit.Persistence.IInternalDbContextEnsurer",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.IInternalDbContextEnsurer",
       "kind": "interface",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/IInternalDbContextEnsurer.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/IInternalDbContextEnsurer.cs",
       "line": 21,
       "members": [
         {
@@ -22579,10 +22579,10 @@
     },
     {
       "name": "ISoftDeletePurgeTarget",
-      "fqn": "Granit.Persistence.ISoftDeletePurgeTarget",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.ISoftDeletePurgeTarget",
       "kind": "interface",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/ISoftDeletePurgeTarget.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/ISoftDeletePurgeTarget.cs",
       "line": 12,
       "members": [
         {
@@ -22595,10 +22595,10 @@
     },
     {
       "name": "AuditedEntityInterceptor",
-      "fqn": "Granit.Persistence.Interceptors.AuditedEntityInterceptor",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Interceptors.AuditedEntityInterceptor",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/Interceptors/AuditedEntityInterceptor.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Interceptors/AuditedEntityInterceptor.cs",
       "line": 26,
       "members": [
         {
@@ -22611,10 +22611,10 @@
     },
     {
       "name": "ConcurrencyStampInterceptor",
-      "fqn": "Granit.Persistence.Interceptors.ConcurrencyStampInterceptor",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Interceptors.ConcurrencyStampInterceptor",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/Interceptors/ConcurrencyStampInterceptor.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Interceptors/ConcurrencyStampInterceptor.cs",
       "line": 33,
       "members": [
         {
@@ -22627,10 +22627,10 @@
     },
     {
       "name": "DomainEventDispatcherInterceptor",
-      "fqn": "Granit.Persistence.Interceptors.DomainEventDispatcherInterceptor",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Interceptors.DomainEventDispatcherInterceptor",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/Interceptors/DomainEventDispatcherInterceptor.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Interceptors/DomainEventDispatcherInterceptor.cs",
       "line": 34,
       "members": [
         {
@@ -22643,10 +22643,10 @@
     },
     {
       "name": "EntityLifecycleEventInterceptor",
-      "fqn": "Granit.Persistence.Interceptors.EntityLifecycleEventInterceptor",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Interceptors.EntityLifecycleEventInterceptor",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/Interceptors/EntityLifecycleEventInterceptor.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Interceptors/EntityLifecycleEventInterceptor.cs",
       "line": 40,
       "members": [
         {
@@ -22659,10 +22659,10 @@
     },
     {
       "name": "SoftDeleteInterceptor",
-      "fqn": "Granit.Persistence.Interceptors.SoftDeleteInterceptor",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Interceptors.SoftDeleteInterceptor",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/Interceptors/SoftDeleteInterceptor.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Interceptors/SoftDeleteInterceptor.cs",
       "line": 21,
       "members": [
         {
@@ -22675,10 +22675,10 @@
     },
     {
       "name": "VersioningInterceptor",
-      "fqn": "Granit.Persistence.Interceptors.VersioningInterceptor",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Interceptors.VersioningInterceptor",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/Interceptors/VersioningInterceptor.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Interceptors/VersioningInterceptor.cs",
       "line": 32,
       "members": [
         {
@@ -22691,19 +22691,19 @@
     },
     {
       "name": "MigrationCycleRegistryExtensions",
-      "fqn": "Granit.Persistence.Migrations.Extensions.MigrationCycleRegistryExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.Extensions.MigrationCycleRegistryExtensions",
       "kind": "class",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/Extensions/MigrationCycleRegistryExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/Extensions/MigrationCycleRegistryExtensions.cs",
       "line": 9,
       "members": []
     },
     {
       "name": "PersistenceMigrationsHostApplicationBuilderExtensions",
-      "fqn": "Granit.Persistence.Migrations.Extensions.PersistenceMigrationsHostApplicationBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.Extensions.PersistenceMigrationsHostApplicationBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/Extensions/PersistenceMigrationsHostApplicationBuilderExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/Extensions/PersistenceMigrationsHostApplicationBuilderExtensions.cs",
       "line": 15,
       "members": [
         {
@@ -22715,11 +22715,11 @@
       ]
     },
     {
-      "name": "GranitPersistenceMigrationsModule",
-      "fqn": "Granit.Persistence.Migrations.GranitPersistenceMigrationsModule",
+      "name": "GranitPersistenceEntityFrameworkCoreMigrationsModule",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.GranitPersistenceEntityFrameworkCoreMigrationsModule",
       "kind": "class",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/GranitPersistenceMigrationsModule.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/GranitPersistenceEntityFrameworkCoreMigrationsModule.cs",
       "line": 32,
       "members": [
         {
@@ -22732,10 +22732,10 @@
     },
     {
       "name": "IMigrationBatchDispatcher",
-      "fqn": "Granit.Persistence.Migrations.IMigrationBatchDispatcher",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.IMigrationBatchDispatcher",
       "kind": "interface",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/IMigrationBatchDispatcher.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/IMigrationBatchDispatcher.cs",
       "line": 18,
       "members": [
         {
@@ -22754,10 +22754,10 @@
     },
     {
       "name": "IMigrationCycleRegistry",
-      "fqn": "Granit.Persistence.Migrations.IMigrationCycleRegistry",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.IMigrationCycleRegistry",
       "kind": "interface",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/IMigrationCycleRegistry.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/IMigrationCycleRegistry.cs",
       "line": 7,
       "members": [
         {
@@ -22776,10 +22776,10 @@
     },
     {
       "name": "IMigrationProgressDbEnsurer",
-      "fqn": "Granit.Persistence.Migrations.IMigrationProgressDbEnsurer",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.IMigrationProgressDbEnsurer",
       "kind": "interface",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/IMigrationProgressDbEnsurer.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/IMigrationProgressDbEnsurer.cs",
       "line": 11,
       "members": [
         {
@@ -22792,10 +22792,10 @@
     },
     {
       "name": "ITenantDbIsolator",
-      "fqn": "Granit.Persistence.Migrations.ITenantDbIsolator",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.ITenantDbIsolator",
       "kind": "interface",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/ITenantDbIsolator.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/ITenantDbIsolator.cs",
       "line": 39,
       "members": [
         {
@@ -22808,10 +22808,10 @@
     },
     {
       "name": "ITenantEnumerator",
-      "fqn": "Granit.Persistence.Migrations.ITenantEnumerator",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.ITenantEnumerator",
       "kind": "interface",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/ITenantEnumerator.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/ITenantEnumerator.cs",
       "line": 45,
       "members": [
         {
@@ -22824,37 +22824,37 @@
     },
     {
       "name": "RunMigrationBatchCommand",
-      "fqn": "Granit.Persistence.Migrations.Messages.RunMigrationBatchCommand",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.Messages.RunMigrationBatchCommand",
       "kind": "record",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/Messages/RunMigrationBatchCommand.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/Messages/RunMigrationBatchCommand.cs",
       "line": 17,
       "members": []
     },
     {
       "name": "MigrationBatchContext",
-      "fqn": "Granit.Persistence.Migrations.MigrationBatchContext",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.MigrationBatchContext",
       "kind": "record",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/MigrationBatchContext.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/MigrationBatchContext.cs",
       "line": 14,
       "members": []
     },
     {
       "name": "MigrationBatchResult",
-      "fqn": "Granit.Persistence.Migrations.MigrationBatchResult",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.MigrationBatchResult",
       "kind": "record",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/MigrationBatchResult.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/MigrationBatchResult.cs",
       "line": 14,
       "members": []
     },
     {
       "name": "MigrationCycleAttribute",
-      "fqn": "Granit.Persistence.Migrations.MigrationCycleAttribute",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.MigrationCycleAttribute",
       "kind": "class",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/MigrationCycleAttribute.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/MigrationCycleAttribute.cs",
       "line": 19,
       "members": [
         {
@@ -22873,37 +22873,37 @@
     },
     {
       "name": "MigrationCycleRegistration",
-      "fqn": "Granit.Persistence.Migrations.MigrationCycleRegistration",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.MigrationCycleRegistration",
       "kind": "record",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/MigrationCycleRegistration.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/MigrationCycleRegistration.cs",
       "line": 14,
       "members": []
     },
     {
       "name": "MigrationPhase",
-      "fqn": "Granit.Persistence.Migrations.MigrationPhase",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.MigrationPhase",
       "kind": "enum",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/MigrationPhase.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/MigrationPhase.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "MigrationStatus",
-      "fqn": "Granit.Persistence.Migrations.MigrationStatus",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.MigrationStatus",
       "kind": "enum",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/MigrationStatus.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/MigrationStatus.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "MigrationStartupOptions",
-      "fqn": "Granit.Persistence.Migrations.Options.MigrationStartupOptions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.Options.MigrationStartupOptions",
       "kind": "class",
-      "project": "Granit.Persistence.Migrations",
-      "file": "src/Granit.Persistence.Migrations/Options/MigrationStartupOptions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/Options/MigrationStartupOptions.cs",
       "line": 7,
       "members": [
         {
@@ -22921,11 +22921,11 @@
       ]
     },
     {
-      "name": "GranitPersistenceMigrationsWolverineModule",
-      "fqn": "Granit.Persistence.Migrations.Wolverine.GranitPersistenceMigrationsWolverineModule",
+      "name": "GranitPersistenceEntityFrameworkCoreMigrationsWolverineModule",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine.GranitPersistenceEntityFrameworkCoreMigrationsWolverineModule",
       "kind": "class",
-      "project": "Granit.Persistence.Migrations.Wolverine",
-      "file": "src/Granit.Persistence.Migrations.Wolverine/GranitPersistenceMigrationsWolverineModule.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine/GranitPersistenceEntityFrameworkCoreMigrationsWolverineModule.cs",
       "line": 28,
       "members": [
         {
@@ -22938,10 +22938,10 @@
     },
     {
       "name": "ITenantConnectionStringProvider",
-      "fqn": "Granit.Persistence.MultiTenancy.ITenantConnectionStringProvider",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.MultiTenancy.ITenantConnectionStringProvider",
       "kind": "interface",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/MultiTenancy/ITenantConnectionStringProvider.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/MultiTenancy/ITenantConnectionStringProvider.cs",
       "line": 23,
       "members": [
         {
@@ -22954,10 +22954,10 @@
     },
     {
       "name": "ITenantIsolationStrategyProvider",
-      "fqn": "Granit.Persistence.MultiTenancy.ITenantIsolationStrategyProvider",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.MultiTenancy.ITenantIsolationStrategyProvider",
       "kind": "interface",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/MultiTenancy/ITenantIsolationStrategyProvider.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/MultiTenancy/ITenantIsolationStrategyProvider.cs",
       "line": 13,
       "members": [
         {
@@ -22970,10 +22970,10 @@
     },
     {
       "name": "ITenantSchemaActivator",
-      "fqn": "Granit.Persistence.MultiTenancy.ITenantSchemaActivator",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.MultiTenancy.ITenantSchemaActivator",
       "kind": "interface",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/MultiTenancy/ITenantSchemaActivator.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/MultiTenancy/ITenantSchemaActivator.cs",
       "line": 40,
       "members": [
         {
@@ -22992,10 +22992,10 @@
     },
     {
       "name": "ITenantSchemaProvider",
-      "fqn": "Granit.Persistence.MultiTenancy.ITenantSchemaProvider",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.MultiTenancy.ITenantSchemaProvider",
       "kind": "interface",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/MultiTenancy/ITenantSchemaProvider.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/MultiTenancy/ITenantSchemaProvider.cs",
       "line": 14,
       "members": [
         {
@@ -23008,10 +23008,10 @@
     },
     {
       "name": "TenantIsolationOptions",
-      "fqn": "Granit.Persistence.MultiTenancy.TenantIsolationOptions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.MultiTenancy.TenantIsolationOptions",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/MultiTenancy/TenantIsolationOptions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/MultiTenancy/TenantIsolationOptions.cs",
       "line": 7,
       "members": [
         {
@@ -23024,28 +23024,28 @@
     },
     {
       "name": "TenantIsolationStrategy",
-      "fqn": "Granit.Persistence.MultiTenancy.TenantIsolationStrategy",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.MultiTenancy.TenantIsolationStrategy",
       "kind": "enum",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/MultiTenancy/TenantIsolationStrategy.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/MultiTenancy/TenantIsolationStrategy.cs",
       "line": 6,
       "members": []
     },
     {
       "name": "TenantSchemaNamingConvention",
-      "fqn": "Granit.Persistence.MultiTenancy.TenantSchemaNamingConvention",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.MultiTenancy.TenantSchemaNamingConvention",
       "kind": "enum",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/MultiTenancy/TenantSchemaOptions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/MultiTenancy/TenantSchemaOptions.cs",
       "line": 8,
       "members": []
     },
     {
       "name": "TenantSchemaOptions",
-      "fqn": "Granit.Persistence.MultiTenancy.TenantSchemaOptions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.MultiTenancy.TenantSchemaOptions",
       "kind": "class",
-      "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/MultiTenancy/TenantSchemaOptions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/MultiTenancy/TenantSchemaOptions.cs",
       "line": 33,
       "members": [
         {
@@ -23064,10 +23064,10 @@
     },
     {
       "name": "NpgsqlDbContextOptionsExtensions",
-      "fqn": "Granit.Persistence.Postgres.Extensions.NpgsqlDbContextOptionsExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Postgres.Extensions.NpgsqlDbContextOptionsExtensions",
       "kind": "class",
-      "project": "Granit.Persistence.Postgres",
-      "file": "src/Granit.Persistence.Postgres/Extensions/NpgsqlDbContextOptionsExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Postgres",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Postgres/Extensions/NpgsqlDbContextOptionsExtensions.cs",
       "line": 10,
       "members": [
         {
@@ -23080,10 +23080,10 @@
     },
     {
       "name": "NpgsqlHealthChecksBuilderExtensions",
-      "fqn": "Granit.Persistence.Postgres.Extensions.NpgsqlHealthChecksBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Postgres.Extensions.NpgsqlHealthChecksBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Persistence.Postgres",
-      "file": "src/Granit.Persistence.Postgres/Extensions/NpgsqlHealthChecksBuilderExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Postgres",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Postgres/Extensions/NpgsqlHealthChecksBuilderExtensions.cs",
       "line": 10,
       "members": [
         {
@@ -23096,10 +23096,10 @@
     },
     {
       "name": "PersistencePostgresHostApplicationBuilderExtensions",
-      "fqn": "Granit.Persistence.Postgres.Extensions.PersistencePostgresHostApplicationBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Postgres.Extensions.PersistencePostgresHostApplicationBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Persistence.Postgres",
-      "file": "src/Granit.Persistence.Postgres/Extensions/PersistencePostgresHostApplicationBuilderExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Postgres",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Postgres/Extensions/PersistencePostgresHostApplicationBuilderExtensions.cs",
       "line": 16,
       "members": [
         {
@@ -23111,11 +23111,11 @@
       ]
     },
     {
-      "name": "GranitPersistencePostgresModule",
-      "fqn": "Granit.Persistence.Postgres.GranitPersistencePostgresModule",
+      "name": "GranitPersistenceEntityFrameworkCorePostgresModule",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Postgres.GranitPersistenceEntityFrameworkCorePostgresModule",
       "kind": "class",
-      "project": "Granit.Persistence.Postgres",
-      "file": "src/Granit.Persistence.Postgres/GranitPersistencePostgresModule.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.Postgres",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Postgres/GranitPersistenceEntityFrameworkCorePostgresModule.cs",
       "line": 22,
       "members": [
         {
@@ -23128,10 +23128,10 @@
     },
     {
       "name": "PersistenceSqlServerHostApplicationBuilderExtensions",
-      "fqn": "Granit.Persistence.SqlServer.Extensions.PersistenceSqlServerHostApplicationBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.SqlServer.Extensions.PersistenceSqlServerHostApplicationBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Persistence.SqlServer",
-      "file": "src/Granit.Persistence.SqlServer/Extensions/PersistenceSqlServerHostApplicationBuilderExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.SqlServer",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.SqlServer/Extensions/PersistenceSqlServerHostApplicationBuilderExtensions.cs",
       "line": 12,
       "members": [
         {
@@ -23144,10 +23144,10 @@
     },
     {
       "name": "SqlServerDbContextOptionsExtensions",
-      "fqn": "Granit.Persistence.SqlServer.Extensions.SqlServerDbContextOptionsExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.SqlServer.Extensions.SqlServerDbContextOptionsExtensions",
       "kind": "class",
-      "project": "Granit.Persistence.SqlServer",
-      "file": "src/Granit.Persistence.SqlServer/Extensions/SqlServerDbContextOptionsExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.SqlServer",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.SqlServer/Extensions/SqlServerDbContextOptionsExtensions.cs",
       "line": 10,
       "members": [
         {
@@ -23160,10 +23160,10 @@
     },
     {
       "name": "SqlServerHealthChecksBuilderExtensions",
-      "fqn": "Granit.Persistence.SqlServer.Extensions.SqlServerHealthChecksBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.SqlServer.Extensions.SqlServerHealthChecksBuilderExtensions",
       "kind": "class",
-      "project": "Granit.Persistence.SqlServer",
-      "file": "src/Granit.Persistence.SqlServer/Extensions/SqlServerHealthChecksBuilderExtensions.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.SqlServer",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.SqlServer/Extensions/SqlServerHealthChecksBuilderExtensions.cs",
       "line": 10,
       "members": [
         {
@@ -23175,11 +23175,11 @@
       ]
     },
     {
-      "name": "GranitPersistenceSqlServerModule",
-      "fqn": "Granit.Persistence.SqlServer.GranitPersistenceSqlServerModule",
+      "name": "GranitPersistenceEntityFrameworkCoreSqlServerModule",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.SqlServer.GranitPersistenceEntityFrameworkCoreSqlServerModule",
       "kind": "class",
-      "project": "Granit.Persistence.SqlServer",
-      "file": "src/Granit.Persistence.SqlServer/GranitPersistenceSqlServerModule.cs",
+      "project": "Granit.Persistence.EntityFrameworkCore.SqlServer",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.SqlServer/GranitPersistenceEntityFrameworkCoreSqlServerModule.cs",
       "line": 16,
       "members": [
         {

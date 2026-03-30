@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Persistence.EntityFrameworkCore.SqlServer</PackageId>
+    <Description>SQL Server-specific persistence extensions for Granit: sp_getapplock-based distributed migration lock and future SQL Server-specific helpers.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Persistence.EntityFrameworkCore.SqlServer.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore.Hosting\Granit.Persistence.EntityFrameworkCore.Hosting.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,6 +1,6 @@
 using Granit.BackgroundJobs.EntityFrameworkCore.Internal;
 using Granit.BackgroundJobs.Internal;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

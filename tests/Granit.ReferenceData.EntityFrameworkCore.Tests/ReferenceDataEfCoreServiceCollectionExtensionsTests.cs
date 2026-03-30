@@ -1,4 +1,4 @@
-using Granit.Persistence.DataSeeding;
+using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.ReferenceData.EntityFrameworkCore.Extensions;
 using Granit.ReferenceData.Options;
 using Microsoft.EntityFrameworkCore;

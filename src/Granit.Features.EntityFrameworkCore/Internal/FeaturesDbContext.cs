@@ -2,7 +2,7 @@ using Granit.DataFiltering;
 using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Features.EntityFrameworkCore.Internal;

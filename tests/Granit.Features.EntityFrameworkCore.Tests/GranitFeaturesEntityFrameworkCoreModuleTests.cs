@@ -1,7 +1,7 @@
 using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.EntityFrameworkCore.Extensions;
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,7 +26,7 @@ public sealed class GranitFeaturesEntityFrameworkCoreModuleTests
     }
 
     [Fact]
-    public void Module_DependsOn_GranitPersistenceModule()
+    public void Module_DependsOn_GranitPersistenceEntityFrameworkCoreModule()
     {
         DependsOnAttribute[] attrs = typeof(GranitFeaturesEntityFrameworkCoreModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false)
@@ -34,7 +34,7 @@ public sealed class GranitFeaturesEntityFrameworkCoreModuleTests
             .ToArray();
 
         attrs.SelectMany(a => a.DependedTypes)
-            .ShouldContain(typeof(GranitPersistenceModule));
+            .ShouldContain(typeof(GranitPersistenceEntityFrameworkCoreModule));
     }
 
     [Fact]

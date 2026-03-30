@@ -3,7 +3,7 @@ using Granit.Notifications.EntityFrameworkCore.Internal;
 using Granit.Notifications.Internal;
 using Granit.Notifications.MobilePush;
 using Granit.Notifications.MobilePush.Internal;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

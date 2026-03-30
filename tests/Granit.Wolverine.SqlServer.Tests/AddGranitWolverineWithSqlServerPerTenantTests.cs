@@ -84,7 +84,7 @@ public sealed class AddGranitWolverineWithSqlServerPerTenantTests
         ServiceDescriptor? descriptor = builder.Services.FirstOrDefault(
             s => s.ServiceType == typeof(IDbContextFactory<StubTenantDbContext>));
 
-        // The concrete factory type is internal to Granit.Persistence; we verify
+        // The concrete factory type is internal to Granit.Persistence.EntityFrameworkCore; we verify
         // a named implementation type is registered (not a factory lambda).
         descriptor.ShouldNotBeNull();
         descriptor!.ImplementationType.ShouldNotBeNull();

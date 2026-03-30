@@ -9,7 +9,7 @@ namespace Granit.Http.ExceptionHandling;
 /// The first non-null result wins (chain of responsibility).
 /// </remarks>
 /// <example>
-/// Custom mapper in Granit.Persistence:
+/// Custom mapper in Granit.Persistence.EntityFrameworkCore:
 /// <code>
 /// internal sealed class EfCoreExceptionStatusCodeMapper : IExceptionStatusCodeMapper
 /// {

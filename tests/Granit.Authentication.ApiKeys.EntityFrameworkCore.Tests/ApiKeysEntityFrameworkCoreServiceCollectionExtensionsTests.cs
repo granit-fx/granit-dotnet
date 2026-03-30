@@ -2,7 +2,7 @@ using Granit.Authentication.ApiKeys.EntityFrameworkCore.Extensions;
 using Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
 using Granit.Guids;
 using Granit.MultiTenancy;
-using Granit.Persistence.Interceptors;
+using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Granit.Timing;
 using Granit.Users;
 using Microsoft.EntityFrameworkCore;

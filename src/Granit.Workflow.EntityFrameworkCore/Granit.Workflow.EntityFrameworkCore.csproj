@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Workflow\Granit.Workflow.csproj" />
-    <ProjectReference Include="..\Granit.Persistence\Granit.Persistence.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

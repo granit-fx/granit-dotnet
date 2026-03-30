@@ -1,7 +1,7 @@
 using Granit.BlobStorage;
 using Granit.BlobStorage.Database;
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 
@@ -27,6 +27,6 @@ public sealed class GranitBlobStorageDatabaseModuleTests
         Type[] allDependencies = [.. attributes.SelectMany(a => a.DependedTypes)];
 
         allDependencies.ShouldContain(typeof(GranitBlobStorageModule));
-        allDependencies.ShouldContain(typeof(GranitPersistenceModule));
+        allDependencies.ShouldContain(typeof(GranitPersistenceEntityFrameworkCoreModule));
     }
 }

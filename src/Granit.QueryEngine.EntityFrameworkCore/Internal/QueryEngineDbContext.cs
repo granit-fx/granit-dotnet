@@ -1,6 +1,6 @@
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.QueryEngine.EntityFrameworkCore.Extensions;
 using Granit.QueryEngine.SavedViews;
 using Granit.QueryEngine.SavedViews.Domain;

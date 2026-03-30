@@ -259,7 +259,7 @@
           "Granit.Http.ResponseCompression": "[0.1.0-dev, )",
           "Granit.Http.SecurityHeaders": "[0.1.0-dev, )",
           "Granit.Observability": "[0.1.0-dev, )",
-          "Granit.Persistence": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
@@ -364,7 +364,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.Persistence": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
@@ -383,7 +383,7 @@
           "Serilog.Sinks.OpenTelemetry": "[4.*, )"
         }
       },
-      "granit.persistence": {
+      "granit.persistence.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
@@ -687,8 +687,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.15",
-        "contentHash": "ufSBk0vdDnrhn+YLGElUdegUkM+hb7xUoySH+oaZrNHi2fAm+oeSCr60Lqmm4OeLBhPKd2htr/DANOvjuNT6rg=="
+        "resolved": "2.13.17",
+        "contentHash": "v44WF0m58HBwaUiZVrvuetICcoaf2ZvIYu8JxsaJRRtsrNLlCIqjCcncTTDIy7pUiC2r2EO3eCJqcqGaTKZplQ=="
       },
       "Serilog.AspNetCore": {
         "type": "CentralTransitive",

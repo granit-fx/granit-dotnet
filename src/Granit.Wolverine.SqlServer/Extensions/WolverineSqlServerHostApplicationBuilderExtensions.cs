@@ -1,5 +1,5 @@
-using Granit.Persistence.Extensions;
-using Granit.Persistence.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Granit.Wolverine.Internal;
 using Granit.Wolverine.SqlServer.Internal;
 using Granit.Wolverine.SqlServer.Options;

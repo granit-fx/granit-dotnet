@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.BlobStorage\Granit.BlobStorage.csproj" />
-    <ProjectReference Include="..\Granit.Persistence\Granit.Persistence.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

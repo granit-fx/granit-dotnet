@@ -12,7 +12,7 @@ namespace Granit.Domain;
 /// </para>
 /// <para>
 /// The (<see cref="ParentId"/>, <see cref="Culture"/>) pair is enforced unique
-/// by <c>ApplyGranitConventions()</c> in <c>Granit.Persistence</c>.
+/// by <c>ApplyGranitConventions()</c> in <c>Granit.Persistence.EntityFrameworkCore</c>.
 /// </para>
 /// </remarks>
 /// <typeparam name="TParent">The parent entity type.</typeparam>

@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Persistence.EntityFrameworkCore.Migrations</PackageId>
+    <Description>Zero-downtime Expand &amp; Contract migrations framework for EF Core. Progress tracking, provider-agnostic multi-tenant isolation and batch orchestration.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Persistence.EntityFrameworkCore.Migrations.Tests" />
+    <InternalsVisibleTo Include="Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine" />
+    <InternalsVisibleTo Include="Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine.Tests" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -6,7 +6,7 @@
 // =============================================================================
 
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Wolverine.Extensions;
 using Granit.Wolverine.SqlServer.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -41,7 +41,7 @@ public sealed class GranitWolverineSqlServerModuleTests
         var attributes = (DependsOnAttribute[])
             typeof(GranitWolverineSqlServerModule).GetCustomAttributes(typeof(DependsOnAttribute), inherit: false);
 
-        attributes.ShouldContain(a => a.DependedTypes.Contains(typeof(GranitPersistenceModule)));
+        attributes.ShouldContain(a => a.DependedTypes.Contains(typeof(GranitPersistenceEntityFrameworkCoreModule)));
     }
 
     [Fact]

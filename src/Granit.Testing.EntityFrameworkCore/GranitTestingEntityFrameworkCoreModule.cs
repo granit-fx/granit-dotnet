@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Testing;
 
 namespace Granit.Testing.EntityFrameworkCore;
@@ -14,6 +14,6 @@ namespace Granit.Testing.EntityFrameworkCore;
 /// This is a utility module with no runtime service registration.
 /// </remarks>
 [DependsOn(
-    typeof(GranitPersistenceModule),
+    typeof(GranitPersistenceEntityFrameworkCoreModule),
     typeof(GranitTestingModule))]
 public sealed class GranitTestingEntityFrameworkCoreModule : GranitModule;

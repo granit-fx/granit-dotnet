@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Shouldly;
 using Xunit;
 
@@ -33,7 +33,7 @@ public sealed class GranitWorkflowEntityFrameworkCoreModuleTests
     }
 
     [Fact]
-    public void Module_ShouldDependOnGranitPersistenceModule()
+    public void Module_ShouldDependOnGranitPersistenceEntityFrameworkCoreModule()
     {
         // Arrange
         var attr = (DependsOnAttribute?)Attribute.GetCustomAttribute(
@@ -41,6 +41,6 @@ public sealed class GranitWorkflowEntityFrameworkCoreModuleTests
 
         // Assert
         attr.ShouldNotBeNull();
-        attr.DependedTypes.ShouldContain(typeof(GranitPersistenceModule));
+        attr.DependedTypes.ShouldContain(typeof(GranitPersistenceEntityFrameworkCoreModule));
     }
 }

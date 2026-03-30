@@ -1,4 +1,4 @@
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;

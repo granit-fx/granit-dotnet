@@ -5,7 +5,7 @@ using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Server.Extensions;
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

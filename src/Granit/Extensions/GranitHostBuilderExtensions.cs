@@ -35,7 +35,7 @@ public static class GranitHostBuilderExtensions
     /// <example>
     /// <code>
     /// builder.AddGranit(granit => granit
-    ///     .AddModule&lt;GranitPersistenceModule&gt;()
+    ///     .AddModule&lt;GranitPersistenceEntityFrameworkCoreModule&gt;()
     ///     .AddModule&lt;GranitObservabilityModule&gt;()
     ///     .AddModule&lt;AppHostModule&gt;()
     /// );

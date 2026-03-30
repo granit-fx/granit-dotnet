@@ -59,7 +59,7 @@
       "src/Granit.Notifications/Granit.Notifications.csproj",
       "src/Granit.Observability.AI/Granit.Observability.AI.csproj",
       "src/Granit.Observability/Granit.Observability.csproj",
-      "src/Granit.Persistence/Granit.Persistence.csproj",
+      "src/Granit.Persistence.EntityFrameworkCore/Granit.Persistence.EntityFrameworkCore.csproj",
       "src/Granit.Privacy.AI/Granit.Privacy.AI.csproj",
       "src/Granit.Privacy/Granit.Privacy.csproj",
       "src/Granit.QueryEngine.AI/Granit.QueryEngine.AI.csproj",

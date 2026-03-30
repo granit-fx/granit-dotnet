@@ -1,7 +1,7 @@
 using Granit.Auditing;
 using Granit.Caching;
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 
 namespace Granit.Auditing.EntityFrameworkCore;
 
@@ -21,5 +21,5 @@ namespace Granit.Auditing.EntityFrameworkCore;
 [DependsOn(
     typeof(GranitAuditingModule),
     typeof(GranitCachingModule),
-    typeof(GranitPersistenceModule))]
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitAuditingEntityFrameworkCoreModule : GranitModule;

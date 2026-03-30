@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 
 namespace Granit.BlobStorage.Database;
 
@@ -11,5 +11,5 @@ namespace Granit.BlobStorage.Database;
 /// Pre-signed URLs require <c>Granit.BlobStorage.Proxy</c>.
 /// </remarks>
 [DependsOn(typeof(GranitBlobStorageModule))]
-[DependsOn(typeof(GranitPersistenceModule))]
+[DependsOn(typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitBlobStorageDatabaseModule : GranitModule;

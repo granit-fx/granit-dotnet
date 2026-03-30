@@ -6,7 +6,7 @@
       "src/Granit.Analyzers/Granit.Analyzers.csproj",
       "src/Granit.Guids/Granit.Guids.csproj",
       "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
-      "src/Granit.Persistence/Granit.Persistence.csproj",
+      "src/Granit.Persistence.EntityFrameworkCore/Granit.Persistence.EntityFrameworkCore.csproj",
       "src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj",
       "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",

@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Wolverine.Postgresql.Extensions;
 using Granit.Wolverine.Postgresql.Options;
 
@@ -21,7 +21,7 @@ namespace Granit.Wolverine.Postgresql;
 /// instead of the standard <c>services.AddDbContext&lt;TContext&gt;()</c>.
 /// </para>
 /// </remarks>
-[DependsOn(typeof(GranitWolverineModule), typeof(GranitPersistenceModule))]
+[DependsOn(typeof(GranitWolverineModule), typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitWolverinePostgresqlModule : GranitModule
 {
     /// <inheritdoc/>

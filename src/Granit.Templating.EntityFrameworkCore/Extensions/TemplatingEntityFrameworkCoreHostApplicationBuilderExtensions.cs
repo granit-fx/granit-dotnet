@@ -1,4 +1,4 @@
-using Granit.Persistence.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Templating.EntityFrameworkCore.Internal;
 using Granit.Templating.Pipeline;
 using Granit.Templating.Store;

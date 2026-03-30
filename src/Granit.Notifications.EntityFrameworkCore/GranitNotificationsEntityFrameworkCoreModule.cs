@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 
 namespace Granit.Notifications.EntityFrameworkCore;
 
@@ -13,7 +13,7 @@ namespace Granit.Notifications.EntityFrameworkCore;
 /// instead of using this module directly when custom DbContext options are needed.
 /// </remarks>
 [DependsOn(typeof(GranitNotificationsModule))]
-[DependsOn(typeof(GranitPersistenceModule))]
+[DependsOn(typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitNotificationsEntityFrameworkCoreModule : GranitModule
 {
     // Services are registered via AddGranitNotificationsEntityFrameworkCore() extension method
