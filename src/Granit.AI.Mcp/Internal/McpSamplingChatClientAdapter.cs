@@ -81,18 +81,8 @@ internal sealed partial class McpSamplingChatClientAdapter(
         return messages;
     }
 
-    private static string ExtractText(IList<ContentBlock> content)
-    {
-        foreach (ContentBlock block in content)
-        {
-            if (block is TextContentBlock textBlock)
-            {
-                return textBlock.Text;
-            }
-        }
-
-        return string.Empty;
-    }
+    private static string ExtractText(IList<ContentBlock> content) =>
+        content.OfType<TextContentBlock>().FirstOrDefault()?.Text ?? string.Empty;
 
     private static ChatOptions BuildChatOptions(CreateMessageRequestParams request)
     {
