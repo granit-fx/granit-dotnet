@@ -12,7 +12,7 @@ internal sealed class DefaultResponseDeadlineTracker : IResponseDeadlineTracker
         DateTimeOffset requestedAt,
         CancellationToken cancellationToken = default)
     {
-        int? days = requestType switch
+        int days = requestType switch
         {
             PrivacyRequestType.SubjectAccessRequest => profile.SubjectAccessRequestDays,
             PrivacyRequestType.DeletionRequest => profile.DeletionRequestDays ?? profile.SubjectAccessRequestDays,
@@ -23,7 +23,7 @@ internal sealed class DefaultResponseDeadlineTracker : IResponseDeadlineTracker
             _ => profile.SubjectAccessRequestDays,
         };
 
-        DateTimeOffset deadline = requestedAt.AddDays(days ?? 30);
+        DateTimeOffset deadline = requestedAt.AddDays(days);
         return Task.FromResult(deadline);
     }
 }

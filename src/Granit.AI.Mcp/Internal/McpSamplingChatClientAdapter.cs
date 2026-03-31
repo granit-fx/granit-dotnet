@@ -95,7 +95,7 @@ internal sealed partial class McpSamplingChatClientAdapter(
 
         if (request.Temperature.HasValue)
         {
-            chatOptions.Temperature = (float)request.Temperature.Value;
+            chatOptions.Temperature = request.Temperature.Value;
         }
 
         if (request.ModelPreferences?.Hints is { Count: > 0 } hints)

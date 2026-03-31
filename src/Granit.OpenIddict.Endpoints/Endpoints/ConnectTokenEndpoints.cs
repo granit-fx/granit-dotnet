@@ -58,7 +58,7 @@ internal static partial class ConnectTokenEndpoints
 
         if (request.IsClientCredentialsGrantType())
         {
-            return HandleClientCredentials(context, request, principalFactory, metrics, tenantId);
+            return HandleClientCredentials(context, request, metrics, tenantId);
         }
 
         LogUnsupportedGrantType(logger, request.GrantType ?? "(null)");
@@ -126,7 +126,6 @@ internal static partial class ConnectTokenEndpoints
     private static IResult HandleClientCredentials(
         HttpContext context,
         OpenIddictRequest request,
-        OidcPrincipalFactory principalFactory,
         OpenIddictMetrics metrics,
         string? tenantId)
     {

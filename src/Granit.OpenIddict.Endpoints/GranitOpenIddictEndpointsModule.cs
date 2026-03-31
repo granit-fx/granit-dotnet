@@ -34,8 +34,6 @@ namespace Granit.OpenIddict.Endpoints;
 public sealed class GranitOpenIddictEndpointsModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.TryAddScoped<OidcPrincipalFactory>();
-    }
 }

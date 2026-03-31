@@ -17,10 +17,8 @@ public sealed class BuiltInRegulationProfileProviderTests
     }
 
     [Fact]
-    public void Registry_Contains14BuiltInProfiles()
-    {
+    public void Registry_Contains14BuiltInProfiles() =>
         _registry.GetAll().Count.ShouldBe(14);
-    }
 
     [Theory]
     [InlineData("EU_GDPR", "EU", 30, 72)]

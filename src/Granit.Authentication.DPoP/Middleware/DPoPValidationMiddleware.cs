@@ -40,8 +40,8 @@ internal sealed partial class DPoPValidationMiddleware(
             LogMiddlewareOrderingError(logger);
         }
 
-        // Extract DPoP proof JWT — dedicated DPoP header takes precedence;
-        // when using Authorization: DPoP <proof> (e.g. token endpoint), extract from there.
+        // Extract DPoP proof JWT: dedicated DPoP header takes precedence over
+        // the Authorization header with DPoP scheme (used at the token endpoint).
         string? proofJwt = hasDPoPHeader
             ? context.Request.Headers["DPoP"].ToString()
             : context.Request.Headers.Authorization.ToString()["DPoP ".Length..];
