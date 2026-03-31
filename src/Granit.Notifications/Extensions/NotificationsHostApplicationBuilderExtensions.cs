@@ -58,8 +58,20 @@ public static class NotificationsHostApplicationBuilderExtensions
 
         builder.Services.AddScoped<INotificationDeliveryWriter, NullNotificationDeliveryWriter>();
 
-        // Definition store (singleton)
-        builder.Services.AddSingleton<NotificationDefinitionStore>();
+        // Definition store (singleton) — initialized eagerly from all registered providers
+        builder.Services.AddSingleton<NotificationDefinitionStore>(sp =>
+        {
+            NotificationDefinitionStore store = new();
+            IEnumerable<INotificationDefinitionProvider> providers = sp.GetServices<INotificationDefinitionProvider>();
+            NotificationDefinitionContext ctx = new();
+            foreach (INotificationDefinitionProvider provider in providers)
+            {
+                provider.Define(ctx);
+            }
+
+            store.Initialize(ctx.GetDefinitions());
+            return store;
+        });
         builder.Services.AddSingleton<INotificationDefinitionStore>(sp => sp.GetRequiredService<NotificationDefinitionStore>());
 
         // Handlers (scoped — required by the Channel-based worker)
