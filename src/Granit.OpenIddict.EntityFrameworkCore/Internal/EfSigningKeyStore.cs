@@ -52,7 +52,7 @@ internal sealed class EfSigningKeyStore(
     /// <inheritdoc/>
     public Task<int> PruneRevokedAsync(
         DateTimeOffset olderThan, CancellationToken cancellationToken = default) =>
-        ReadAsync(
+        WriteAsync(
             db => db.SigningKeys
                 .Where(k => k.Status == SigningKeyStatus.Revoked && k.RetiredAt < olderThan)
                 .ExecuteDeleteAsync(cancellationToken),

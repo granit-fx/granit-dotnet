@@ -16,20 +16,23 @@ internal sealed class EfCoreNotificationSubscriptionStore(
     : EfStoreBase<NotificationSubscription, NotificationsDbContext>(contextFactory), INotificationSubscriptionReader, INotificationSubscriptionWriter
 {
     /// <inheritdoc/>
-    public async Task SubscribeAsync(string userId, string notificationTypeName, Guid? tenantId, CancellationToken cancellationToken = default)
-    {
-        bool exists = await AnyAsync(s => s.UserId == userId && s.NotificationTypeName == notificationTypeName && s.TenantId == tenantId && s.EntityType == null, cancellationToken).ConfigureAwait(false);
-        if (!exists)
+    public Task SubscribeAsync(string userId, string notificationTypeName, Guid? tenantId, CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
         {
-            await AddAsync(new NotificationSubscription
+            bool exists = await db.Subscriptions
+                .AnyAsync(s => s.UserId == userId && s.NotificationTypeName == notificationTypeName && s.TenantId == tenantId && s.EntityType == null, cancellationToken)
+                .ConfigureAwait(false);
+            if (!exists)
             {
-                Id = guidGenerator.Create(),
-                UserId = userId,
-                NotificationTypeName = notificationTypeName,
-                TenantId = tenantId,
-            }, cancellationToken).ConfigureAwait(false);
-        }
-    }
+                db.Subscriptions.Add(new NotificationSubscription
+                {
+                    Id = guidGenerator.Create(),
+                    UserId = userId,
+                    NotificationTypeName = notificationTypeName,
+                    TenantId = tenantId,
+                });
+            }
+        }, cancellationToken);
 
     /// <inheritdoc/>
     public async Task UnsubscribeAsync(string userId, string notificationTypeName, Guid? tenantId, CancellationToken cancellationToken = default)
@@ -64,22 +67,25 @@ internal sealed class EfCoreNotificationSubscriptionStore(
             cancellationToken);
 
     /// <inheritdoc/>
-    public async Task FollowEntityAsync(string userId, string entityType, string entityId, Guid? tenantId, CancellationToken cancellationToken = default)
-    {
-        bool exists = await AnyAsync(s => s.UserId == userId && s.EntityType == entityType && s.EntityId == entityId && s.TenantId == tenantId, cancellationToken).ConfigureAwait(false);
-        if (!exists)
+    public Task FollowEntityAsync(string userId, string entityType, string entityId, Guid? tenantId, CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
         {
-            await AddAsync(new NotificationSubscription
+            bool exists = await db.Subscriptions
+                .AnyAsync(s => s.UserId == userId && s.EntityType == entityType && s.EntityId == entityId && s.TenantId == tenantId, cancellationToken)
+                .ConfigureAwait(false);
+            if (!exists)
             {
-                Id = guidGenerator.Create(),
-                UserId = userId,
-                NotificationTypeName = string.Empty,
-                EntityType = entityType,
-                EntityId = entityId,
-                TenantId = tenantId,
-            }, cancellationToken).ConfigureAwait(false);
-        }
-    }
+                db.Subscriptions.Add(new NotificationSubscription
+                {
+                    Id = guidGenerator.Create(),
+                    UserId = userId,
+                    NotificationTypeName = string.Empty,
+                    EntityType = entityType,
+                    EntityId = entityId,
+                    TenantId = tenantId,
+                });
+            }
+        }, cancellationToken);
 
     /// <inheritdoc/>
     public async Task UnfollowEntityAsync(string userId, string entityType, string entityId, Guid? tenantId, CancellationToken cancellationToken = default)

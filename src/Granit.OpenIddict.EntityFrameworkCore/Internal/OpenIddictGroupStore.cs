@@ -56,6 +56,7 @@ internal sealed class OpenIddictGroupStore(
                 GroupId = groupGuid,
                 UserId = userGuid,
             });
+
             return Task.CompletedTask;
         }, cancellationToken);
     }
