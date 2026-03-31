@@ -1,5 +1,6 @@
 using Granit.AI.Diagnostics;
 using Granit.AI.EntityFrameworkCore.Entities;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.AI.EntityFrameworkCore.Internal;
@@ -13,17 +14,16 @@ namespace Granit.AI.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class EfAIUsageStore(
     IDbContextFactory<AIDbContext> contextFactory,
-    AIMetrics metrics) : IAIUsageTracker
+    AIMetrics metrics)
+    : EfStoreBase<AIUsageRecordEntity, AIDbContext>(contextFactory), IAIUsageTracker
 {
     /// <inheritdoc/>
     public async Task RecordAsync(
         AIUsageRecord record,
         CancellationToken cancellationToken = default)
     {
-        await using AIDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         var entity = AIUsageRecordEntity.FromRecord(record);
-        context.UsageRecords.Add(entity);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await AddAsync(entity, cancellationToken).ConfigureAwait(false);
 
         string? tenantId = record.TenantId?.ToString();
         metrics.RecordRequestCompleted(tenantId, record.Model, record.Provider, "success");

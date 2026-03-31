@@ -1,5 +1,8 @@
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
+using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,55 +13,34 @@ namespace Granit.DataExchange.EntityFrameworkCore.Internal.Export.Stores;
 /// Performs CRUD operations on <see cref="ExportJob"/> via <see cref="DataExchangeDbContext"/>.
 /// </summary>
 internal sealed class EfExportJobStore(
-    IDbContextFactory<DataExchangeDbContext> contextFactory) : IExportJobReader, IExportJobWriter
+    IDbContextFactory<DataExchangeDbContext> contextFactory)
+    : EfStoreBase<ExportJob, DataExchangeDbContext>(contextFactory), IExportJobReader, IExportJobWriter
 {
     /// <inheritdoc/>
-    public async Task<ExportJob?> GetAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        await using DataExchangeDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await context.ExportJobs
-            .AsNoTracking()
-            .FirstOrDefaultAsync(j => j.Id == id, cancellationToken).ConfigureAwait(false);
-    }
+    public Task<ExportJob?> GetAsync(Guid id, CancellationToken cancellationToken = default) =>
+        FindByIdAsync(id, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<PagedResult<ExportJob>> ListAsync(
+    public Task<PagedResult<ExportJob>> ListAsync(
         ExportJobStatus? status = null, int page = 1, int pageSize = 20, CancellationToken cancellationToken = default)
     {
-        await using DataExchangeDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        IQueryable<ExportJob> query = context.ExportJobs.AsNoTracking();
+        InlineSpecification<ExportJob> spec = Spec.For<ExportJob>();
 
         if (status.HasValue)
         {
-            query = query.Where(j => j.Status == status.Value);
+            spec.Where(j => j.Status == status.Value);
         }
 
-        int totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+        spec.OrderByDescending(j => (object)j.CreatedAt);
 
-        List<ExportJob> items = await query
-            .OrderByDescending(j => j.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        return new PagedResult<ExportJob>(items, totalCount, HasMore: (page - 1) * pageSize + items.Count < totalCount);
+        return PagedAsync(spec, page, pageSize, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task CreateAsync(ExportJob job, CancellationToken cancellationToken = default)
-    {
-        await using DataExchangeDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        context.ExportJobs.Add(job);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+    public Task CreateAsync(ExportJob job, CancellationToken cancellationToken = default) =>
+        AddAsync(job, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task UpdateAsync(ExportJob job, CancellationToken cancellationToken = default)
-    {
-        await using DataExchangeDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        context.ExportJobs.Update(job);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+    public new Task UpdateAsync(ExportJob job, CancellationToken cancellationToken = default) =>
+        base.UpdateAsync(job, cancellationToken);
 }

@@ -1,6 +1,8 @@
 using Granit.BackgroundJobs.Domain;
 using Granit.BackgroundJobs.Internal;
 using Granit.Guids;
+using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.BackgroundJobs.EntityFrameworkCore.Internal;
@@ -18,128 +20,125 @@ namespace Granit.BackgroundJobs.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class EfBackgroundJobStore(
     IDbContextFactory<BackgroundJobsDbContext> contextFactory,
-    IGuidGenerator guidGenerator) : IBackgroundJobStoreReader, IBackgroundJobStoreWriter
+    IGuidGenerator guidGenerator)
+    : EfStoreBase<BackgroundJobDefinition, BackgroundJobsDbContext>(contextFactory),
+      IBackgroundJobStoreReader, IBackgroundJobStoreWriter
 {
     /// <inheritdoc/>
-    public async Task<BackgroundJobDefinition?> FindAsync(string jobName, CancellationToken cancellationToken = default)
-    {
-        await using BackgroundJobsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await context.Jobs.FirstOrDefaultAsync(j => j.JobName == jobName, cancellationToken).ConfigureAwait(false);
-    }
+    public Task<BackgroundJobDefinition?> FindAsync(
+        string jobName,
+        CancellationToken cancellationToken = default) =>
+        FirstOrDefaultAsync(j => j.JobName == jobName, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<BackgroundJobDefinition>> GetEnabledJobsAsync(CancellationToken cancellationToken = default)
-    {
-        await using BackgroundJobsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await context.Jobs.Where(j => j.IsEnabled).ToListAsync(cancellationToken).ConfigureAwait(false);
-    }
+    public Task<IReadOnlyList<BackgroundJobDefinition>> GetEnabledJobsAsync(
+        CancellationToken cancellationToken = default) =>
+        ListAsync(
+            Spec.For<BackgroundJobDefinition>().Where(j => j.IsEnabled),
+            cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<BackgroundJobDefinition>> GetAllJobsAsync(CancellationToken cancellationToken = default)
-    {
-        await using BackgroundJobsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await context.Jobs.ToListAsync(cancellationToken).ConfigureAwait(false);
-    }
+    public Task<IReadOnlyList<BackgroundJobDefinition>> GetAllJobsAsync(
+        CancellationToken cancellationToken = default) =>
+        ListAsync(
+            Spec.For<BackgroundJobDefinition>(),
+            cancellationToken);
 
     /// <inheritdoc/>
-    public async Task SeedJobsAsync(IEnumerable<RecurringJobRegistration> registrations, CancellationToken cancellationToken = default)
-    {
-        await using BackgroundJobsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        foreach (RecurringJobRegistration reg in registrations)
-        {
-            BackgroundJobDefinition? existing =
-                await context.Jobs.FirstOrDefaultAsync(j => j.JobName == reg.JobName, cancellationToken).ConfigureAwait(false);
-
-            if (existing is null)
+    public Task SeedJobsAsync(
+        IEnumerable<RecurringJobRegistration> registrations,
+        CancellationToken cancellationToken = default) =>
+        WriteAsync(
+            async db =>
             {
-                context.Jobs.Add(BackgroundJobDefinition.Create(
-                    guidGenerator.Create(), reg.JobName, reg.CronExpression, reg.MessageType));
-            }
-            else
+                foreach (RecurringJobRegistration reg in registrations)
+                {
+                    BackgroundJobDefinition? existing =
+                        await db.Jobs.FirstOrDefaultAsync(j => j.JobName == reg.JobName, cancellationToken)
+                            .ConfigureAwait(false);
+
+                    if (existing is null)
+                    {
+                        db.Jobs.Add(BackgroundJobDefinition.Create(
+                            guidGenerator.Create(), reg.JobName, reg.CronExpression, reg.MessageType));
+                    }
+                    else
+                    {
+                        // Preserve administrative state — only sync scheduling metadata.
+                        existing.UpdateDefinition(reg.CronExpression, reg.MessageType);
+                    }
+                }
+            },
+            cancellationToken);
+
+    /// <inheritdoc/>
+    public Task RecordExecutionStartAsync(
+        string jobName,
+        DateTimeOffset startedAt,
+        CancellationToken cancellationToken = default) =>
+        MutateJobAsync(jobName, job => job.RecordExecutionStart(startedAt), cancellationToken);
+
+    /// <inheritdoc/>
+    public Task RecordNextExecutionAsync(
+        string jobName,
+        DateTimeOffset nextExecution,
+        CancellationToken cancellationToken = default) =>
+        MutateJobAsync(jobName, job => job.ScheduleNext(nextExecution), cancellationToken);
+
+    /// <inheritdoc/>
+    public Task RecordExecutionFailureAsync(
+        string jobName,
+        string errorMessage,
+        CancellationToken cancellationToken = default) =>
+        MutateJobAsync(jobName, job => job.RecordFailure(errorMessage), cancellationToken);
+
+    /// <inheritdoc/>
+    public Task SetEnabledAsync(
+        string jobName,
+        bool enabled,
+        CancellationToken cancellationToken = default) =>
+        MutateJobAsync(
+            jobName,
+            job =>
             {
-                // Preserve administrative state — only sync scheduling metadata.
-                existing.UpdateDefinition(reg.CronExpression, reg.MessageType);
-            }
-        }
-
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
-    public async Task RecordExecutionStartAsync(string jobName, DateTimeOffset startedAt, CancellationToken cancellationToken = default)
-    {
-        await using BackgroundJobsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        BackgroundJobDefinition? job = await context.Jobs.FirstOrDefaultAsync(j => j.JobName == jobName, cancellationToken).ConfigureAwait(false);
-        if (job is null)
-        {
-            return;
-        }
-
-        job.RecordExecutionStart(startedAt);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+                if (enabled)
+                {
+                    job.Resume();
+                }
+                else
+                {
+                    job.Pause();
+                }
+            },
+            cancellationToken);
 
     /// <inheritdoc/>
-    public async Task RecordNextExecutionAsync(string jobName, DateTimeOffset nextExecution, CancellationToken cancellationToken = default)
-    {
-        await using BackgroundJobsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        BackgroundJobDefinition? job = await context.Jobs.FirstOrDefaultAsync(j => j.JobName == jobName, cancellationToken).ConfigureAwait(false);
-        if (job is null)
-        {
-            return;
-        }
+    public Task SetTriggeredByAsync(
+        string jobName,
+        string? triggeredBy,
+        CancellationToken cancellationToken = default) =>
+        MutateJobAsync(jobName, job => job.SetTriggeredBy(triggeredBy), cancellationToken);
 
-        job.ScheduleNext(nextExecution);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+    /// <summary>
+    /// Fetches a job by name and applies a mutation. Silently no-ops if the job does not exist.
+    /// </summary>
+    private Task MutateJobAsync(
+        string jobName,
+        Action<BackgroundJobDefinition> mutation,
+        CancellationToken cancellationToken) =>
+        WriteAsync(
+            async db =>
+            {
+                BackgroundJobDefinition? job = await db.Jobs
+                    .FirstOrDefaultAsync(j => j.JobName == jobName, cancellationToken)
+                    .ConfigureAwait(false);
 
-    /// <inheritdoc/>
-    public async Task RecordExecutionFailureAsync(string jobName, string errorMessage, CancellationToken cancellationToken = default)
-    {
-        await using BackgroundJobsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        BackgroundJobDefinition? job = await context.Jobs.FirstOrDefaultAsync(j => j.JobName == jobName, cancellationToken).ConfigureAwait(false);
-        if (job is null)
-        {
-            return;
-        }
+                if (job is null)
+                {
+                    return;
+                }
 
-        job.RecordFailure(errorMessage);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
-    public async Task SetEnabledAsync(string jobName, bool enabled, CancellationToken cancellationToken = default)
-    {
-        await using BackgroundJobsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        BackgroundJobDefinition? job = await context.Jobs.FirstOrDefaultAsync(j => j.JobName == jobName, cancellationToken).ConfigureAwait(false);
-        if (job is null)
-        {
-            return;
-        }
-
-        if (enabled)
-        {
-            job.Resume();
-        }
-        else
-        {
-            job.Pause();
-        }
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
-    public async Task SetTriggeredByAsync(string jobName, string? triggeredBy, CancellationToken cancellationToken = default)
-    {
-        await using BackgroundJobsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        BackgroundJobDefinition? job = await context.Jobs.FirstOrDefaultAsync(j => j.JobName == jobName, cancellationToken).ConfigureAwait(false);
-        if (job is null)
-        {
-            return;
-        }
-
-        job.SetTriggeredBy(triggeredBy);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+                mutation(job);
+            },
+            cancellationToken);
 }

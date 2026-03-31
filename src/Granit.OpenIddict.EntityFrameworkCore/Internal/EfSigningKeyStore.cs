@@ -1,5 +1,6 @@
 using Granit.OpenIddict.Domain;
 using Granit.OpenIddict.Services;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
@@ -8,22 +9,21 @@ namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 /// EF Core implementation of <see cref="ISigningKeyStore"/>.
 /// </summary>
 internal sealed class EfSigningKeyStore(
-    IDbContextFactory<OpenIddictDbContext> dbFactory) : ISigningKeyStore
+    IDbContextFactory<OpenIddictDbContext> dbFactory)
+    : EfStoreBase<SigningKey, OpenIddictDbContext>(dbFactory), ISigningKeyStore
 {
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<SigningKey>> GetKeysAsync(
+    public Task<IReadOnlyList<SigningKey>> GetKeysAsync(
         SigningKeyStatus[] statuses,
-        CancellationToken cancellationToken = default)
-    {
-        await using OpenIddictDbContext db = await dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        return await db.SigningKeys
-            .AsNoTracking()
-            .Where(k => statuses.Contains(k.Status))
-            .OrderByDescending(k => k.CreatedAt)
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
-    }
+        CancellationToken cancellationToken = default) =>
+        ReadAsync(
+            async db => (IReadOnlyList<SigningKey>)await db.SigningKeys
+                .AsNoTracking()
+                .Where(k => statuses.Contains(k.Status))
+                .OrderByDescending(k => k.CreatedAt)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false),
+            cancellationToken);
 
     /// <inheritdoc/>
     public Task<IReadOnlyList<SigningKey>> GetKeysAsync(
@@ -31,43 +31,30 @@ internal sealed class EfSigningKeyStore(
         GetKeysAsync(statuses, CancellationToken.None);
 
     /// <inheritdoc/>
-    public async Task<SigningKey?> GetActiveKeyAsync(
-        string keyType, CancellationToken cancellationToken = default)
-    {
-        await using OpenIddictDbContext db = await dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        return await db.SigningKeys
-            .AsNoTracking()
-            .Where(k => k.KeyType == keyType && k.Status == SigningKeyStatus.Active)
-            .OrderByDescending(k => k.ActivatedAt)
-            .FirstOrDefaultAsync(cancellationToken)
-            .ConfigureAwait(false);
-    }
+    public Task<SigningKey?> GetActiveKeyAsync(
+        string keyType, CancellationToken cancellationToken = default) =>
+        ReadAsync(
+            db => db.SigningKeys
+                .AsNoTracking()
+                .Where(k => k.KeyType == keyType && k.Status == SigningKeyStatus.Active)
+                .OrderByDescending(k => k.ActivatedAt)
+                .FirstOrDefaultAsync(cancellationToken),
+            cancellationToken);
 
     /// <inheritdoc/>
-    public async Task CreateAsync(SigningKey key, CancellationToken cancellationToken = default)
-    {
-        await using OpenIddictDbContext db = await dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        db.SigningKeys.Add(key);
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+    public Task CreateAsync(SigningKey key, CancellationToken cancellationToken = default) =>
+        AddAsync(key, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task UpdateAsync(SigningKey key, CancellationToken cancellationToken = default)
-    {
-        await using OpenIddictDbContext db = await dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        db.SigningKeys.Update(key);
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+    public new Task UpdateAsync(SigningKey key, CancellationToken cancellationToken = default) =>
+        base.UpdateAsync(key, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<int> PruneRevokedAsync(
-        DateTimeOffset olderThan, CancellationToken cancellationToken = default)
-    {
-        await using OpenIddictDbContext db = await dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await db.SigningKeys
-            .Where(k => k.Status == SigningKeyStatus.Revoked && k.RetiredAt < olderThan)
-            .ExecuteDeleteAsync(cancellationToken)
-            .ConfigureAwait(false);
-    }
+    public Task<int> PruneRevokedAsync(
+        DateTimeOffset olderThan, CancellationToken cancellationToken = default) =>
+        ReadAsync(
+            db => db.SigningKeys
+                .Where(k => k.Status == SigningKeyStatus.Revoked && k.RetiredAt < olderThan)
+                .ExecuteDeleteAsync(cancellationToken),
+            cancellationToken);
 }

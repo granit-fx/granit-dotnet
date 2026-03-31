@@ -1,6 +1,7 @@
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
 using Granit.Identity.Models;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
@@ -9,14 +10,16 @@ namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 /// <see cref="ILocalIdentityGroupStore"/> implementation backed by <see cref="OpenIddictDbContext"/>.
 /// </summary>
 internal sealed class OpenIddictGroupStore(
-    IDbContextFactory<OpenIddictDbContext> _dbFactory) : ILocalIdentityGroupStore
+    IDbContextFactory<OpenIddictDbContext> dbFactory)
+    : EfStoreBase<GranitUserGroup, OpenIddictDbContext>(dbFactory), ILocalIdentityGroupStore
 {
     /// <inheritdoc/>
     public async Task<IReadOnlyList<IdentityGroup>> GetGroupsAsync(CancellationToken cancellationToken = default)
     {
-        await using OpenIddictDbContext db = await _dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        List<GranitUserGroup> groups = await db.UserGroups.AsNoTracking()
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<GranitUserGroup> groups = await ReadAsync(
+            db => db.UserGroups.AsNoTracking().ToListAsync(cancellationToken),
+            cancellationToken).ConfigureAwait(false);
+
         return groups.Select(g => new IdentityGroup(g.Id.ToString(), g.Name, null, [])).ToList();
     }
 
@@ -25,54 +28,59 @@ internal sealed class OpenIddictGroupStore(
     {
         Guid userGuid = ParseGuid(userId, nameof(userId));
 
-        await using OpenIddictDbContext db = await _dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        List<Guid> groupIds = await db.UserGroupMembers.AsNoTracking()
-            .Where(m => m.UserId == userGuid)
-            .Select(m => m.GroupId)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<GranitUserGroup> groups = await ReadAsync(async db =>
+        {
+            List<Guid> groupIds = await db.UserGroupMembers.AsNoTracking()
+                .Where(m => m.UserId == userGuid)
+                .Select(m => m.GroupId)
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-        List<GranitUserGroup> groups = await db.UserGroups.AsNoTracking()
-            .Where(g => groupIds.Contains(g.Id))
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
+            return (IReadOnlyList<GranitUserGroup>)await db.UserGroups.AsNoTracking()
+                .Where(g => groupIds.Contains(g.Id))
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+        }, cancellationToken).ConfigureAwait(false);
 
         return groups.Select(g => new IdentityGroup(g.Id.ToString(), g.Name, null, [])).ToList();
     }
 
     /// <inheritdoc/>
-    public async Task AddUserToGroupAsync(string userId, string groupId, CancellationToken cancellationToken = default)
+    public Task AddUserToGroupAsync(string userId, string groupId, CancellationToken cancellationToken = default)
     {
         Guid userGuid = ParseGuid(userId, nameof(userId));
         Guid groupGuid = ParseGuid(groupId, nameof(groupId));
 
-        await using OpenIddictDbContext db = await _dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        db.UserGroupMembers.Add(new GranitUserGroupMember
+        return WriteAsync(db =>
         {
-            GroupId = groupGuid,
-            UserId = userGuid,
-        });
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            db.UserGroupMembers.Add(new GranitUserGroupMember
+            {
+                GroupId = groupGuid,
+                UserId = userGuid,
+            });
+            return Task.CompletedTask;
+        }, cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public Task RemoveUserFromGroupAsync(string userId, string groupId, CancellationToken cancellationToken = default)
+    {
+        Guid userGuid = ParseGuid(userId, nameof(userId));
+        Guid groupGuid = ParseGuid(groupId, nameof(groupId));
+
+        return WriteAsync(async db =>
+        {
+            GranitUserGroupMember? member = await db.UserGroupMembers
+                .FirstOrDefaultAsync(m => m.GroupId == groupGuid && m.UserId == userGuid,
+                    cancellationToken).ConfigureAwait(false);
+
+            if (member is not null)
+            {
+                db.UserGroupMembers.Remove(member);
+            }
+        }, cancellationToken);
     }
 
     private static Guid ParseGuid(string value, string parameterName) =>
         Guid.TryParse(value, out Guid result)
             ? result
             : throw new ArgumentException($"'{value}' is not a valid GUID.", parameterName);
-
-    /// <inheritdoc/>
-    public async Task RemoveUserFromGroupAsync(string userId, string groupId, CancellationToken cancellationToken = default)
-    {
-        Guid userGuid = ParseGuid(userId, nameof(userId));
-        Guid groupGuid = ParseGuid(groupId, nameof(groupId));
-
-        await using OpenIddictDbContext db = await _dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        GranitUserGroupMember? member = await db.UserGroupMembers
-            .FirstOrDefaultAsync(m => m.GroupId == groupGuid && m.UserId == userGuid,
-                cancellationToken).ConfigureAwait(false);
-
-        if (member is not null)
-        {
-            db.UserGroupMembers.Remove(member);
-            await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        }
-    }
 }

@@ -1,3 +1,5 @@
+using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine.SavedViews;
 using Granit.QueryEngine.SavedViews.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -9,112 +11,76 @@ namespace Granit.QueryEngine.EntityFrameworkCore.Internal;
 /// Performs CRUD operations on <see cref="SavedView"/> via <see cref="QueryEngineDbContext"/>.
 /// </summary>
 internal sealed class EfCoreSavedViewStore(
-    IDbContextFactory<QueryEngineDbContext> contextFactory) : ISavedViewStoreReader, ISavedViewStoreWriter
+    IDbContextFactory<QueryEngineDbContext> contextFactory)
+    : EfStoreBase<SavedView, QueryEngineDbContext>(contextFactory), ISavedViewStoreReader, ISavedViewStoreWriter
 {
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<SavedView>> GetListAsync(
-        string entityType, string userId, Guid? tenantId, CancellationToken cancellationToken = default)
-    {
-        await using QueryEngineDbContext context = await contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        return await context.SavedViews
-            .AsNoTracking()
-            .Where(v => v.EntityType == entityType
-                && v.TenantId == tenantId
-                && (v.UserId == userId || v.IsShared))
-            .OrderBy(v => v.Name)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-    }
+    public Task<IReadOnlyList<SavedView>> GetListAsync(
+        string entityType, string userId, Guid? tenantId, CancellationToken cancellationToken = default) =>
+        ListAsync(
+            Spec.For<SavedView>()
+                .Where(v => v.EntityType == entityType
+                    && v.TenantId == tenantId
+                    && (v.UserId == userId || v.IsShared))
+                .OrderBy(v => v.Name),
+            cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<int> GetCountAsync(
-        string entityType, string userId, Guid? tenantId, CancellationToken cancellationToken = default)
-    {
-        await using QueryEngineDbContext context = await contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        return await context.SavedViews
-            .CountAsync(v => v.EntityType == entityType
-                && v.UserId == userId
-                && v.TenantId == tenantId, cancellationToken).ConfigureAwait(false);
-    }
+    public Task<int> GetCountAsync(
+        string entityType, string userId, Guid? tenantId, CancellationToken cancellationToken = default) =>
+        CountAsync(v => v.EntityType == entityType
+            && v.UserId == userId
+            && v.TenantId == tenantId, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<SavedView?> GetAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        await using QueryEngineDbContext context = await contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        return await context.SavedViews
-            .AsNoTracking()
-            .FirstOrDefaultAsync(v => v.Id == id, cancellationToken).ConfigureAwait(false);
-    }
+    public Task<SavedView?> GetAsync(Guid id, CancellationToken cancellationToken = default) =>
+        FindByIdAsync(id, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task CreateAsync(SavedView view, CancellationToken cancellationToken = default)
-    {
-        await using QueryEngineDbContext context = await contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        context.SavedViews.Add(view);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+    public Task CreateAsync(SavedView view, CancellationToken cancellationToken = default) =>
+        AddAsync(view, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task UpdateAsync(SavedView view, CancellationToken cancellationToken = default)
-    {
-        await using QueryEngineDbContext context = await contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        context.SavedViews.Update(view);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+    public new Task UpdateAsync(SavedView view, CancellationToken cancellationToken = default) =>
+        base.UpdateAsync(view, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        await using QueryEngineDbContext context = await contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        SavedView? view = await context.SavedViews
-            .FirstOrDefaultAsync(v => v.Id == id, cancellationToken).ConfigureAwait(false);
-
-        if (view is not null)
+    public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
         {
-            context.SavedViews.Remove(view);
-            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        }
-    }
+            SavedView? view = await db.SavedViews
+                .FirstOrDefaultAsync(v => v.Id == id, cancellationToken).ConfigureAwait(false);
+
+            if (view is not null)
+            {
+                db.SavedViews.Remove(view);
+            }
+        }, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task SetDefaultAsync(
-        Guid id, string userId, string entityType, CancellationToken cancellationToken = default)
-    {
-        await using QueryEngineDbContext context = await contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        // Unset any previous default for the same user and entity type
-        List<SavedView> previousDefaults = await context.SavedViews
-            .Where(v => v.EntityType == entityType
-                && v.UserId == userId
-                && v.IsDefault)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-
-        foreach (SavedView previous in previousDefaults)
+    public Task SetDefaultAsync(
+        Guid id, string userId, string entityType, CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
         {
-            previous.IsDefault = false;
-        }
+            // Unset any previous default for the same user and entity type
+            List<SavedView> previousDefaults = await db.SavedViews
+                .Where(v => v.EntityType == entityType
+                    && v.UserId == userId
+                    && v.IsDefault)
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-        // Set the new default
-        SavedView? target = await context.SavedViews
-            .FirstOrDefaultAsync(v => v.Id == id, cancellationToken).ConfigureAwait(false);
+            foreach (SavedView previous in previousDefaults)
+            {
+                previous.IsDefault = false;
+            }
 
-        if (target is not null)
-        {
-            target.IsDefault = true;
-        }
+            // Set the new default
+            SavedView? target = await db.SavedViews
+                .FirstOrDefaultAsync(v => v.Id == id, cancellationToken).ConfigureAwait(false);
 
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+            if (target is not null)
+            {
+                target.IsDefault = true;
+            }
+        }, cancellationToken);
 }

@@ -1,4 +1,5 @@
 using Granit.Authentication.ApiKeys.Domain;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,122 +10,101 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
 /// <see cref="IDbContextFactory{TContext}"/> for safe concurrent access.
 /// </summary>
 internal sealed class EfCoreApiKeyAdminStore(
-    IDbContextFactory<AuthenticationApiKeysDbContext> contextFactory) : IApiKeyAdminStore
+    IDbContextFactory<AuthenticationApiKeysDbContext> contextFactory)
+    : EfStoreBase<ApiKeyEntry, AuthenticationApiKeysDbContext>(contextFactory), IApiKeyAdminStore
 {
     /// <inheritdoc/>
-    public async Task<ApiKeyEntry?> FindByIdAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        await using AuthenticationApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        return await db.ApiKeys
-            .FirstOrDefaultAsync(k => k.Id == id, cancellationToken)
-            .ConfigureAwait(false);
-    }
+    public new Task<ApiKeyEntry?> FindByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
+        base.FindByIdAsync(id, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<PagedResult<ApiKeyEntry>> ListAsync(
+    public Task<PagedResult<ApiKeyEntry>> ListAsync(
         string? search = null,
         ApiKeyType? type = null,
         string? environment = null,
         bool includeRevoked = false,
         int page = 1,
         int pageSize = 20,
-        CancellationToken cancellationToken = default)
-    {
-        await using AuthenticationApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        IQueryable<ApiKeyEntry> query = db.ApiKeys.AsNoTracking();
-
-        if (!string.IsNullOrWhiteSpace(search))
+        CancellationToken cancellationToken = default) =>
+        ReadAsync(async db =>
         {
-            query = query.Where(k => k.Name.Contains(search));
-        }
+            IQueryable<ApiKeyEntry> query = db.ApiKeys.AsNoTracking();
 
-        if (type.HasValue)
-        {
-            query = query.Where(k => k.Type == type.Value);
-        }
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(k => k.Name.Contains(search));
+            }
 
-        if (!string.IsNullOrWhiteSpace(environment))
-        {
-            query = query.Where(k => k.Environment == environment);
-        }
+            if (type.HasValue)
+            {
+                query = query.Where(k => k.Type == type.Value);
+            }
 
-        if (!includeRevoked)
-        {
-            query = query.Where(k => k.RevokedAt == null);
-        }
+            if (!string.IsNullOrWhiteSpace(environment))
+            {
+                query = query.Where(k => k.Environment == environment);
+            }
 
-        int totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+            if (!includeRevoked)
+            {
+                query = query.Where(k => k.RevokedAt == null);
+            }
 
-        List<ApiKeyEntry> items = await query
-            .OrderByDescending(k => k.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
+            int totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
 
-        return new PagedResult<ApiKeyEntry>(items, totalCount, HasMore: (page - 1) * pageSize + items.Count < totalCount);
-    }
+            List<ApiKeyEntry> items = await query
+                .OrderByDescending(k => k.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            return new PagedResult<ApiKeyEntry>(items, totalCount, HasMore: (page - 1) * pageSize + items.Count < totalCount);
+        }, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task CreateAsync(ApiKeyEntry entry, CancellationToken cancellationToken = default)
+    public Task CreateAsync(ApiKeyEntry entry, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(entry);
-
-        await using AuthenticationApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        db.ApiKeys.Add(entry);
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return AddAsync(entry, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task<bool> RevokeAsync(Guid id, DateTimeOffset revokedAt, CancellationToken cancellationToken = default)
-    {
-        await using AuthenticationApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        ApiKeyEntry? entry = await db.ApiKeys
-            .FirstOrDefaultAsync(k => k.Id == id && k.RevokedAt == null, cancellationToken)
-            .ConfigureAwait(false);
-
-        if (entry is null)
+    public Task<bool> RevokeAsync(Guid id, DateTimeOffset revokedAt, CancellationToken cancellationToken = default) =>
+        WriteAsync<bool>(async db =>
         {
-            return false;
-        }
+            ApiKeyEntry? entry = await db.ApiKeys
+                .FirstOrDefaultAsync(k => k.Id == id && k.RevokedAt == null, cancellationToken)
+                .ConfigureAwait(false);
 
-        entry.Revoke(revokedAt);
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            if (entry is null)
+            {
+                return false;
+            }
 
-        return true;
-    }
+            entry.Revoke(revokedAt);
+            return true;
+        }, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<bool> UpdateScopesAsync(
+    public Task<bool> UpdateScopesAsync(
         Guid id,
         List<string> permissions,
         List<string> allowedCidrs,
-        CancellationToken cancellationToken = default)
-    {
-        await using AuthenticationApiKeysDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        ApiKeyEntry? entry = await db.ApiKeys
-            .FirstOrDefaultAsync(k => k.Id == id, cancellationToken)
-            .ConfigureAwait(false);
-
-        if (entry is null)
+        CancellationToken cancellationToken = default) =>
+        WriteAsync<bool>(async db =>
         {
-            return false;
-        }
+            ApiKeyEntry? entry = await db.ApiKeys
+                .FirstOrDefaultAsync(k => k.Id == id, cancellationToken)
+                .ConfigureAwait(false);
 
-        entry.UpdatePermissions(permissions);
-        entry.UpdateAllowedCidrs(allowedCidrs);
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            if (entry is null)
+            {
+                return false;
+            }
 
-        return true;
-    }
+            entry.UpdatePermissions(permissions);
+            entry.UpdateAllowedCidrs(allowedCidrs);
+            return true;
+        }, cancellationToken);
 }

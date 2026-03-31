@@ -1,4 +1,5 @@
 using Granit.Guids;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
@@ -16,124 +17,113 @@ namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 /// ISO 27001 compliance: <see cref="WebhookDeliveryAttempt"/> records are INSERT-only.
 /// This store never updates or deletes them.
 /// </remarks>
-internal sealed class EfWebhookDeliveryStore(IDbContextFactory<WebhooksDbContext> contextFactory, IClock clock, IGuidGenerator guidGenerator)
-    : IWebhookDeliveryWriter, IWebhookDeliveryReader
+internal sealed class EfWebhookDeliveryStore(
+    IDbContextFactory<WebhooksDbContext> contextFactory,
+    IClock clock,
+    IGuidGenerator guidGenerator)
+    : EfStoreBase<WebhookDeliveryAttempt, WebhooksDbContext>(contextFactory),
+      IWebhookDeliveryWriter, IWebhookDeliveryReader
 {
-    public async Task<WebhookDeliveryAttempt?> FindByDeliveryIdAsync(
+    public Task<WebhookDeliveryAttempt?> FindByDeliveryIdAsync(
         Guid deliveryId,
-        CancellationToken cancellationToken = default)
-    {
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await context.WebhookDeliveryAttempts
+        CancellationToken cancellationToken = default) =>
+        ReadAsync(db => db.WebhookDeliveryAttempts
             .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.DeliveryId == deliveryId, cancellationToken).ConfigureAwait(false);
-    }
+            .FirstOrDefaultAsync(a => a.DeliveryId == deliveryId, cancellationToken),
+        cancellationToken);
 
-    public async Task RecordSuccessAsync(
+    public Task RecordSuccessAsync(
         SendWebhookCommand command,
         int httpStatusCode,
         long durationMs,
         string payloadHash,
         string? payload,
-        CancellationToken cancellationToken = default)
-    {
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        context.WebhookDeliveryAttempts.Add(new WebhookDeliveryAttempt
+        CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
         {
-            Id = guidGenerator.Create(),
-            DeliveryId = command.DeliveryId,
-            SubscriptionId = command.SubscriptionId,
-            TenantId = command.Envelope.TenantId,
-            EventType = command.Envelope.EventType,
-            TargetUrl = command.TargetUrl,
-            HttpStatusCode = httpStatusCode,
-            PayloadHash = payloadHash,
-            Payload = payload,
-            OccurredAt = clock.Now,
-            DurationMs = durationMs,
-            IsSuccess = true,
-        });
+            db.WebhookDeliveryAttempts.Add(new WebhookDeliveryAttempt
+            {
+                Id = guidGenerator.Create(),
+                DeliveryId = command.DeliveryId,
+                SubscriptionId = command.SubscriptionId,
+                TenantId = command.Envelope.TenantId,
+                EventType = command.Envelope.EventType,
+                TargetUrl = command.TargetUrl,
+                HttpStatusCode = httpStatusCode,
+                PayloadHash = payloadHash,
+                Payload = payload,
+                OccurredAt = clock.Now,
+                DurationMs = durationMs,
+                IsSuccess = true,
+            });
 
-        WebhookSubscription? subscription = await context.WebhookSubscriptions
-            .FindAsync([command.SubscriptionId], cancellationToken).ConfigureAwait(false);
+            WebhookSubscription? subscription = await db.WebhookSubscriptions
+                .FirstOrDefaultAsync(s => s.Id == command.SubscriptionId, cancellationToken).ConfigureAwait(false);
 
-        if (subscription is not null)
-        {
-            subscription.RecordSuccess(clock.Now);
-        }
+            if (subscription is not null)
+            {
+                subscription.RecordSuccess(clock.Now);
+            }
+        }, cancellationToken);
 
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
-
-    public async Task RecordFailureAsync(
+    public Task RecordFailureAsync(
         SendWebhookCommand command,
         int? httpStatusCode,
         long durationMs,
         string errorMessage,
         string? payload,
-        CancellationToken cancellationToken = default)
-    {
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        context.WebhookDeliveryAttempts.Add(new WebhookDeliveryAttempt
+        CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
         {
-            Id = guidGenerator.Create(),
-            DeliveryId = command.DeliveryId,
-            SubscriptionId = command.SubscriptionId,
-            TenantId = command.Envelope.TenantId,
-            EventType = command.Envelope.EventType,
-            TargetUrl = command.TargetUrl,
-            HttpStatusCode = httpStatusCode,
-            PayloadHash = string.Empty,
-            Payload = payload,
-            OccurredAt = clock.Now,
-            DurationMs = durationMs,
-            ErrorMessage = errorMessage.Length > 2000 ? errorMessage[..2000] : errorMessage,
-            IsSuccess = false,
-        });
+            db.WebhookDeliveryAttempts.Add(new WebhookDeliveryAttempt
+            {
+                Id = guidGenerator.Create(),
+                DeliveryId = command.DeliveryId,
+                SubscriptionId = command.SubscriptionId,
+                TenantId = command.Envelope.TenantId,
+                EventType = command.Envelope.EventType,
+                TargetUrl = command.TargetUrl,
+                HttpStatusCode = httpStatusCode,
+                PayloadHash = string.Empty,
+                Payload = payload,
+                OccurredAt = clock.Now,
+                DurationMs = durationMs,
+                ErrorMessage = errorMessage.Length > 2000 ? errorMessage[..2000] : errorMessage,
+                IsSuccess = false,
+            });
 
-        WebhookSubscription? subscription = await context.WebhookSubscriptions
-            .FindAsync([command.SubscriptionId], cancellationToken).ConfigureAwait(false);
+            WebhookSubscription? subscription = await db.WebhookSubscriptions
+                .FirstOrDefaultAsync(s => s.Id == command.SubscriptionId, cancellationToken).ConfigureAwait(false);
 
-        if (subscription is not null)
-        {
-            subscription.RecordFailure();
-        }
+            if (subscription is not null)
+            {
+                subscription.RecordFailure();
+            }
+        }, cancellationToken);
 
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
-
-    public async Task SuspendSubscriptionAsync(
+    public Task SuspendSubscriptionAsync(
         Guid subscriptionId,
         string reason,
-        CancellationToken cancellationToken = default)
-    {
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        WebhookSubscription? subscription = await context.WebhookSubscriptions
-            .FindAsync([subscriptionId], cancellationToken).ConfigureAwait(false);
-
-        if (subscription is null)
+        CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
         {
-            return;
-        }
+            WebhookSubscription? subscription = await db.WebhookSubscriptions
+                .FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken).ConfigureAwait(false);
 
-        subscription.Suspend(clock.Now, "system", reason);
+            if (subscription is null)
+            {
+                return;
+            }
 
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+            subscription.Suspend(clock.Now, "system", reason);
+        }, cancellationToken);
 
-    public async Task<int> CountBeforeAsync(
+    public Task<int> CountBeforeAsync(
         DateTimeOffset cutoff,
-        CancellationToken cancellationToken = default)
-    {
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await context.WebhookDeliveryAttempts
-            .CountAsync(a => a.OccurredAt < cutoff, cancellationToken).ConfigureAwait(false);
-    }
+        CancellationToken cancellationToken = default) =>
+        CountAsync(a => a.OccurredAt < cutoff, cancellationToken);
 
-    public async Task<int> DeleteBeforeAsync(
+    public Task<int> DeleteBeforeAsync(
         DateTimeOffset cutoff,
         int batchSize,
         CancellationToken cancellationToken = default)
@@ -147,11 +137,11 @@ internal sealed class EfWebhookDeliveryStore(IDbContextFactory<WebhooksDbContext
                 + $"Requested cutoff: {cutoff:O}, earliest allowed: {earliestAllowed:O}.");
         }
 
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await context.WebhookDeliveryAttempts
+        return WriteAsync(db => db.WebhookDeliveryAttempts
             .Where(a => a.OccurredAt < cutoff)
             .OrderBy(a => a.OccurredAt)
             .Take(batchSize)
-            .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
+            .ExecuteDeleteAsync(cancellationToken),
+        cancellationToken);
     }
 }

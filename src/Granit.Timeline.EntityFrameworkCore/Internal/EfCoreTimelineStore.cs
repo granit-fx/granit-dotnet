@@ -1,5 +1,6 @@
 using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
@@ -14,6 +15,8 @@ namespace Granit.Timeline.EntityFrameworkCore.Internal;
 /// EF Core implementation of <see cref="ITimelineWriter"/> backed by PostgreSQL.
 /// </summary>
 /// <remarks>
+/// All reads are implicitly scoped to the current tenant via the <see cref="IMultiTenant"/>
+/// query filter applied by <c>ApplyGranitConventions</c> on <see cref="TimelineDbContext"/>.
 /// Each operation creates and disposes its own <see cref="TimelineDbContext"/> via
 /// <see cref="IDbContextFactory{TContext}"/>, making it safe for concurrent request handling.
 /// </remarks>
@@ -22,12 +25,13 @@ internal sealed class EfCoreTimelineStore(
     IClock clock,
     ICurrentUserService currentUser,
     IGuidGenerator guidGenerator,
-    ICurrentTenant currentTenant) : ITimelineWriter
+    ICurrentTenant currentTenant)
+    : EfStoreBase<TimelineEntry, TimelineDbContext>(dbContextFactory), ITimelineWriter
 {
     private readonly AuditContext _audit = new(guidGenerator, clock, currentUser, currentTenant);
 
     /// <inheritdoc/>
-    public async Task<TimelineEntry> PostEntryAsync(
+    public Task<TimelineEntry> PostEntryAsync(
         string entityType,
         string entityId,
         TimelineEntryType entryType,
@@ -39,52 +43,54 @@ internal sealed class EfCoreTimelineStore(
             entityType, entityId, entryType, body, parentEntryId, _audit);
         entry.RaisePostedEvent();
 
-        await using TimelineDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        db.TimelineEntries.Add(entry);
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-        return entry;
+        return WriteAsync(
+            async db =>
+            {
+                db.TimelineEntries.Add(entry);
+                return entry;
+            },
+            cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task DeleteEntryAsync(Guid entryId, CancellationToken cancellationToken = default)
-    {
-        await using TimelineDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        TimelineEntry entry = await db.TimelineEntries
-            .IgnoreQueryFilters([GranitFilterNames.SoftDelete])
-            .FirstOrDefaultAsync(e => e.Id == entryId, cancellationToken).ConfigureAwait(false)
-            ?? throw new KeyNotFoundException($"Timeline entry '{entryId}' not found.");
+    public Task DeleteEntryAsync(Guid entryId, CancellationToken cancellationToken = default) =>
+        WriteAsync(
+            async db =>
+            {
+                TimelineEntry entry = await db.TimelineEntries
+                    .IgnoreQueryFilters([GranitFilterNames.SoftDelete])
+                    .FirstOrDefaultAsync(e => e.Id == entryId, cancellationToken).ConfigureAwait(false)
+                    ?? throw new KeyNotFoundException($"Timeline entry '{entryId}' not found.");
 
-        entry.SoftDelete(clock.Now, currentUser.UserId);
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+                entry.SoftDelete(clock.Now, currentUser.UserId);
+            },
+            cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<TimelineAttachment> AddAttachmentAsync(
+    public Task<TimelineAttachment> AddAttachmentAsync(
         Guid entryId,
         Guid blobId,
         string fileName,
         string contentType,
         long sizeBytes,
-        CancellationToken cancellationToken = default)
-    {
-        await using TimelineDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        CancellationToken cancellationToken = default) =>
+        WriteAsync(
+            async db =>
+            {
+                // VULN-209: Do not bypass soft-delete filter — reject attachments on deleted entries
+                bool entryExists = await db.TimelineEntries
+                    .AnyAsync(e => e.Id == entryId, cancellationToken).ConfigureAwait(false);
 
-        // VULN-209: Do not bypass soft-delete filter — reject attachments on deleted entries
-        bool entryExists = await db.TimelineEntries
-            .AnyAsync(e => e.Id == entryId, cancellationToken).ConfigureAwait(false);
+                if (!entryExists)
+                {
+                    throw new KeyNotFoundException($"Timeline entry '{entryId}' not found.");
+                }
 
-        if (!entryExists)
-        {
-            throw new KeyNotFoundException($"Timeline entry '{entryId}' not found.");
-        }
+                TimelineAttachment attachment = TimelineEntityFactory.CreateAttachment(
+                    entryId, blobId, fileName, contentType, sizeBytes, _audit);
 
-        TimelineAttachment attachment = TimelineEntityFactory.CreateAttachment(
-            entryId, blobId, fileName, contentType, sizeBytes, _audit);
-
-        db.TimelineAttachments.Add(attachment);
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-        return attachment;
-    }
+                db.TimelineAttachments.Add(attachment);
+                return attachment;
+            },
+            cancellationToken);
 }

@@ -4,6 +4,7 @@ using Granit.Events;
 using Granit.Features.Diagnostics;
 using Granit.Features.EntityFrameworkCore.Entities;
 using Granit.Features.Events;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -34,7 +35,8 @@ internal sealed class EfCoreFeatureStore(
     ILocalEventBus eventBus,
     TimeProvider timeProvider,
     ILogger<EfCoreFeatureStore> logger,
-    IDataFilter? dataFilter = null) : IFeatureStoreReader, IFeatureStoreWriter
+    IDataFilter? dataFilter = null)
+    : EfStoreBase<TenantFeatureOverride, FeaturesDbContext>(contextFactory), IFeatureStoreReader, IFeatureStoreWriter
 {
     /// <inheritdoc/>
     public async Task<string?> GetOrNullAsync(
@@ -44,13 +46,14 @@ internal sealed class EfCoreFeatureStore(
     {
         Guid? tenantGuid = ParseTenantId(tenantId);
         using IDisposable? _ = dataFilter?.Disable<IMultiTenant>();
-        await using FeaturesDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        TenantFeatureOverride? row = await context.FeatureOverrides
-            .AsNoTracking()
-            .FirstOrDefaultAsync(
-                o => o.TenantId == tenantGuid && o.FeatureName == featureName,
-                cancellationToken).ConfigureAwait(false);
+        TenantFeatureOverride? row = await ReadAsync(
+            async db => await db.FeatureOverrides
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    o => o.TenantId == tenantGuid && o.FeatureName == featureName,
+                    cancellationToken).ConfigureAwait(false),
+            cancellationToken).ConfigureAwait(false);
 
         return row?.Value;
     }
@@ -64,51 +67,59 @@ internal sealed class EfCoreFeatureStore(
     {
         Guid? tenantGuid = ParseTenantId(tenantId);
         using IDisposable? _ = dataFilter?.Disable<IMultiTenant>();
-        await using FeaturesDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        TenantFeatureOverride? existing = await context.FeatureOverrides
-            .FirstOrDefaultAsync(
-                o => o.TenantId == tenantGuid && o.FeatureName == featureName,
-                cancellationToken).ConfigureAwait(false);
-
-        string? oldValue = existing?.Value;
-
-        if (existing is null)
+        // WriteAsync auto-calls SaveChangesAsync, but TOCTOU recovery needs manual
+        // save control — use ReadAsync-style context access with explicit saves.
+        string? oldValue = await WriteAsync<string?>(async db =>
         {
-            context.FeatureOverrides.Add(new TenantFeatureOverride
-            {
-                TenantId = tenantGuid,
-                FeatureName = featureName,
-                Value = value,
-            });
-        }
-        else
-        {
-            existing.Value = value;
-        }
-
-        try
-        {
-            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        }
-        catch (DbUpdateException) when (existing is null)
-        {
-            // TOCTOU race: concurrent insert for the same (tenant, feature) tuple hit
-            // the unique index. Treat as idempotent — re-read and update instead.
-            context.ChangeTracker.Clear();
-
-            existing = await context.FeatureOverrides
+            TenantFeatureOverride? existing = await db.FeatureOverrides
                 .FirstOrDefaultAsync(
                     o => o.TenantId == tenantGuid && o.FeatureName == featureName,
                     cancellationToken).ConfigureAwait(false);
 
-            if (existing is not null)
+            string? old = existing?.Value;
+
+            if (existing is null)
             {
-                oldValue = existing.Value;
-                existing.Value = value;
-                await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                db.FeatureOverrides.Add(new TenantFeatureOverride
+                {
+                    TenantId = tenantGuid,
+                    FeatureName = featureName,
+                    Value = value,
+                });
             }
-        }
+            else
+            {
+                existing.Value = value;
+            }
+
+            try
+            {
+                // SaveChangesAsync is called by WriteAsync after this delegate returns,
+                // but we need to intercept DbUpdateException for TOCTOU recovery.
+                // Call it explicitly here and return — WriteAsync's save will be a no-op.
+                await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (DbUpdateException) when (existing is null)
+            {
+                // TOCTOU race: concurrent insert for the same (tenant, feature) tuple hit
+                // the unique index. Treat as idempotent — re-read and update instead.
+                db.ChangeTracker.Clear();
+
+                existing = await db.FeatureOverrides
+                    .FirstOrDefaultAsync(
+                        o => o.TenantId == tenantGuid && o.FeatureName == featureName,
+                        cancellationToken).ConfigureAwait(false);
+
+                if (existing is not null)
+                {
+                    old = existing.Value;
+                    existing.Value = value;
+                }
+            }
+
+            return old;
+        }, cancellationToken).ConfigureAwait(false);
 
         string tenantStr = tenantGuid?.ToString() ?? "global";
         FeaturesLog.FeatureOverrideChanged(logger, featureName, tenantStr, oldValue, value);
@@ -130,21 +141,28 @@ internal sealed class EfCoreFeatureStore(
     {
         Guid? tenantGuid = ParseTenantId(tenantId);
         using IDisposable? _ = dataFilter?.Disable<IMultiTenant>();
-        await using FeaturesDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        TenantFeatureOverride? existing = await context.FeatureOverrides
-            .FirstOrDefaultAsync(
-                o => o.TenantId == tenantGuid && o.FeatureName == featureName,
-                cancellationToken).ConfigureAwait(false);
+        string? oldValue = await WriteAsync<string?>(async db =>
+        {
+            TenantFeatureOverride? existing = await db.FeatureOverrides
+                .FirstOrDefaultAsync(
+                    o => o.TenantId == tenantGuid && o.FeatureName == featureName,
+                    cancellationToken).ConfigureAwait(false);
 
-        if (existing is null)
+            if (existing is null)
+            {
+                return null;
+            }
+
+            string old = existing.Value;
+            db.FeatureOverrides.Remove(existing);
+            return old;
+        }, cancellationToken).ConfigureAwait(false);
+
+        if (oldValue is null)
         {
             return;
         }
-
-        string oldValue = existing.Value;
-        context.FeatureOverrides.Remove(existing);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         string tenantStr = tenantGuid?.ToString() ?? "global";
         FeaturesLog.FeatureOverrideChanged(logger, featureName, tenantStr, oldValue, null);

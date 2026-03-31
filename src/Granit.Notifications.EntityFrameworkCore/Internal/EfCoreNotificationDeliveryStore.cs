@@ -1,5 +1,6 @@
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Notifications.EntityFrameworkCore.Internal;
@@ -13,27 +14,25 @@ namespace Granit.Notifications.EntityFrameworkCore.Internal;
 /// <see cref="DeleteBeforeAsync"/> enables RGPD-compliant data minimization.
 /// </para>
 /// </remarks>
-internal sealed class EfCoreNotificationDeliveryStore(IDbContextFactory<NotificationsDbContext> dbContextFactory) : INotificationDeliveryWriter
+internal sealed class EfCoreNotificationDeliveryStore(
+    IDbContextFactory<NotificationsDbContext> contextFactory)
+    : EfStoreBase<NotificationDeliveryAttempt, NotificationsDbContext>(contextFactory), INotificationDeliveryWriter
 {
     /// <inheritdoc/>
-    public async Task RecordAsync(NotificationDeliveryAttempt attempt, CancellationToken cancellationToken = default)
-    {
-        await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        db.DeliveryAttempts.Add(attempt);
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+    public Task RecordAsync(NotificationDeliveryAttempt attempt, CancellationToken cancellationToken = default) =>
+        AddAsync(attempt, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<int> DeleteBeforeAsync(
+    public Task<int> DeleteBeforeAsync(
         DateTimeOffset cutoff,
         int batchSize,
-        CancellationToken cancellationToken = default)
-    {
-        await using NotificationsDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await db.DeliveryAttempts
-            .Where(a => a.OccurredAt < cutoff)
-            .OrderBy(a => a.OccurredAt)
-            .Take(batchSize)
-            .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
-    }
+        CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
+            await db.DeliveryAttempts
+                .Where(a => a.OccurredAt < cutoff)
+                .OrderBy(a => a.OccurredAt)
+                .Take(batchSize)
+                .ExecuteDeleteAsync(cancellationToken)
+                .ConfigureAwait(false),
+            cancellationToken);
 }

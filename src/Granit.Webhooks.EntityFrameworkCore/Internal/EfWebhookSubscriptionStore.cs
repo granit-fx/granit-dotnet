@@ -2,6 +2,8 @@ using System.Security.Cryptography;
 using Granit.Domain.ValueObjects;
 using Granit.Exceptions;
 using Granit.Guids;
+using Granit.Persistence;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
@@ -18,39 +20,28 @@ internal sealed class EfWebhookSubscriptionStore(
     IGuidGenerator guidGenerator,
     IWebhookSecretProtector secretProtector,
     IClock clock)
-    : IWebhookSubscriptionReader, IWebhookSubscriptionWriter
+    : EfStoreBase<WebhookSubscription, WebhooksDbContext>(contextFactory),
+      IWebhookSubscriptionReader, IWebhookSubscriptionWriter
 {
-    public async Task<IReadOnlyList<WebhookSubscription>> GetActiveSubscriptionsAsync(
+    public Task<IReadOnlyList<WebhookSubscription>> GetActiveSubscriptionsAsync(
         string eventType,
         Guid? tenantId,
-        CancellationToken cancellationToken = default)
-    {
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        return await context.WebhookSubscriptions
+        CancellationToken cancellationToken = default) =>
+        ReadAsync(async db => (IReadOnlyList<WebhookSubscription>)await db.WebhookSubscriptions
             .Where(s => s.Status == WebhookSubscriptionStatus.Active
                      && s.EventType == eventType
                      && (s.TenantId == null || s.TenantId == tenantId))
             .AsNoTracking()
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-    }
+            .ToListAsync(cancellationToken).ConfigureAwait(false),
+        cancellationToken);
 
-    public async Task<WebhookSubscription?> FindByIdAsync(
+    public new Task<WebhookSubscription?> FindByIdAsync(
         Guid subscriptionId,
-        CancellationToken cancellationToken = default)
-    {
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await context.WebhookSubscriptions.FindAsync([subscriptionId], cancellationToken).ConfigureAwait(false);
-    }
+        CancellationToken cancellationToken = default) =>
+        base.FindByIdAsync(subscriptionId, cancellationToken);
 
-    public async Task<IReadOnlyList<WebhookSubscription>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        return await context.WebhookSubscriptions
-            .AsNoTracking()
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-    }
+    public Task<IReadOnlyList<WebhookSubscription>> GetAllAsync(CancellationToken cancellationToken = default) =>
+        ListAsync(Spec.For<WebhookSubscription>(), cancellationToken);
 
     public async Task<WebhookSubscriptionCreatedResult> CreateAsync(
         HttpsUrl targetUrl,
@@ -70,107 +61,92 @@ internal sealed class EfWebhookSubscriptionStore(
             protectedSecret,
             tenantId);
 
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        context.WebhookSubscriptions.Add(subscription);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await AddAsync(subscription, cancellationToken).ConfigureAwait(false);
 
         return new WebhookSubscriptionCreatedResult(subscription, plainSecret);
     }
 
-    public async Task UpdateTargetUrlAsync(
+    public Task UpdateTargetUrlAsync(
         Guid subscriptionId,
         HttpsUrl targetUrl,
-        CancellationToken cancellationToken = default)
-    {
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        WebhookSubscription subscription = await FindOrThrowAsync(context, subscriptionId, cancellationToken).ConfigureAwait(false);
-        subscription.UpdateTargetUrl(targetUrl);
-
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
-
-    public async Task ActivateAsync(Guid subscriptionId, CancellationToken cancellationToken = default)
-    {
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        WebhookSubscription subscription = await FindOrThrowAsync(context, subscriptionId, cancellationToken).ConfigureAwait(false);
-
-        if (subscription.Status != WebhookSubscriptionStatus.Suspended)
+        CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
         {
-            throw new ConflictException(
-                "Webhooks:InvalidStateTransition",
-                $"Cannot activate a subscription with status '{subscription.Status}'. Only 'Suspended' subscriptions can be activated.");
-        }
+            WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
+            subscription.UpdateTargetUrl(targetUrl);
+        }, cancellationToken);
 
-        subscription.Activate();
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+    public Task ActivateAsync(Guid subscriptionId, CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
+        {
+            WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
 
-    public async Task SuspendAsync(
+            if (subscription.Status != WebhookSubscriptionStatus.Suspended)
+            {
+                throw new ConflictException(
+                    "Webhooks:InvalidStateTransition",
+                    $"Cannot activate a subscription with status '{subscription.Status}'. Only 'Suspended' subscriptions can be activated.");
+            }
+
+            subscription.Activate();
+        }, cancellationToken);
+
+    public Task SuspendAsync(
         Guid subscriptionId,
         string suspendedBy,
         string reason,
-        CancellationToken cancellationToken = default)
-    {
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        WebhookSubscription subscription = await FindOrThrowAsync(context, subscriptionId, cancellationToken).ConfigureAwait(false);
-
-        if (subscription.Status != WebhookSubscriptionStatus.Active)
+        CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
         {
-            throw new ConflictException(
-                "Webhooks:InvalidStateTransition",
-                $"Cannot suspend a subscription with status '{subscription.Status}'. Only 'Active' subscriptions can be suspended.");
-        }
+            WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
 
-        subscription.Suspend(clock.Now, suspendedBy, reason);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+            if (subscription.Status != WebhookSubscriptionStatus.Active)
+            {
+                throw new ConflictException(
+                    "Webhooks:InvalidStateTransition",
+                    $"Cannot suspend a subscription with status '{subscription.Status}'. Only 'Active' subscriptions can be suspended.");
+            }
 
-    public async Task DeactivateAsync(
+            subscription.Suspend(clock.Now, suspendedBy, reason);
+        }, cancellationToken);
+
+    public Task DeactivateAsync(
         Guid subscriptionId,
         string reason,
-        CancellationToken cancellationToken = default)
-    {
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        WebhookSubscription subscription = await FindOrThrowAsync(context, subscriptionId, cancellationToken).ConfigureAwait(false);
-
-        if (subscription.Status == WebhookSubscriptionStatus.Deactivated)
+        CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
         {
-            throw new ConflictException(
-                "Webhooks:AlreadyDeactivated",
-                "Subscription is already deactivated.");
-        }
+            WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
 
-        subscription.Deactivate(reason);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+            if (subscription.Status == WebhookSubscriptionStatus.Deactivated)
+            {
+                throw new ConflictException(
+                    "Webhooks:AlreadyDeactivated",
+                    "Subscription is already deactivated.");
+            }
 
-    public async Task DeleteAsync(Guid subscriptionId, CancellationToken cancellationToken = default)
-    {
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+            subscription.Deactivate(reason);
+        }, cancellationToken);
 
-        WebhookSubscription subscription = await FindOrThrowAsync(context, subscriptionId, cancellationToken).ConfigureAwait(false);
-
-        context.WebhookSubscriptions.Remove(subscription);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-    }
+    public Task DeleteAsync(Guid subscriptionId, CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
+        {
+            WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
+            db.WebhookSubscriptions.Remove(subscription);
+        }, cancellationToken);
 
     public async Task<string> RotateSecretAsync(Guid subscriptionId, CancellationToken cancellationToken = default)
     {
-        await using WebhooksDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        WebhookSubscription subscription = await FindOrThrowAsync(context, subscriptionId, cancellationToken).ConfigureAwait(false);
-
         string plainSecret = GenerateSigningSecret();
         string protectedSecret = await secretProtector
             .ProtectAsync(plainSecret, cancellationToken)
             .ConfigureAwait(false);
 
-        subscription.RotateSecret(protectedSecret);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await WriteAsync(async db =>
+        {
+            WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
+            subscription.RotateSecret(protectedSecret);
+        }, cancellationToken).ConfigureAwait(false);
 
         return plainSecret;
     }
@@ -181,7 +157,7 @@ internal sealed class EfWebhookSubscriptionStore(
         CancellationToken cancellationToken)
     {
         WebhookSubscription? subscription = await context.WebhookSubscriptions
-            .FindAsync([subscriptionId], cancellationToken).ConfigureAwait(false);
+            .FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken).ConfigureAwait(false);
 
         return subscription ?? throw new EntityNotFoundException(typeof(WebhookSubscription), subscriptionId);
     }
