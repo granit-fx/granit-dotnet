@@ -145,7 +145,7 @@ public static class BffEndpointRouteBuilderExtensions
         .ExcludeFromDescription();
     }
 
-    private static string GetContentType(string path) =>
+    internal static string GetContentType(string path) =>
         Path.GetExtension(path).ToLowerInvariant() switch
         {
             ".html" => "text/html",

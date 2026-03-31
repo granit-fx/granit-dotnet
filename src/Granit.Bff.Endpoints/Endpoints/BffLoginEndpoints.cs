@@ -370,7 +370,7 @@ internal static partial class BffLoginEndpoints
     }
 #pragma warning restore GRSEC003
 
-    private static string BuildDirectAuthorizeUrl(
+    internal static string BuildDirectAuthorizeUrl(
         string authorityBase, string clientId, string callbackUrl,
         string scopes, string state, string codeChallenge) =>
         $"{authorityBase}/connect/authorize"
@@ -499,7 +499,7 @@ internal static partial class BffLoginEndpoints
         }
     }
 
-    private static string GenerateCodeVerifier()
+    internal static string GenerateCodeVerifier()
     {
         byte[] bytes = RandomNumberGenerator.GetBytes(CodeVerifierLength);
         return Convert.ToBase64String(bytes)
@@ -508,7 +508,7 @@ internal static partial class BffLoginEndpoints
             .TrimEnd('=');
     }
 
-    private static string ComputeCodeChallenge(string codeVerifier)
+    internal static string ComputeCodeChallenge(string codeVerifier)
     {
         byte[] hash = SHA256.HashData(Encoding.ASCII.GetBytes(codeVerifier));
         return Convert.ToBase64String(hash)
@@ -521,7 +521,7 @@ internal static partial class BffLoginEndpoints
     /// Extracts the <c>sub</c> claim from an ID token JWT payload without full validation
     /// (token was already validated by the authorization server during exchange).
     /// </summary>
-    private static string? ExtractSubFromIdToken(string? idToken)
+    internal static string? ExtractSubFromIdToken(string? idToken)
     {
         if (string.IsNullOrEmpty(idToken))
         {
@@ -558,10 +558,10 @@ internal static partial class BffLoginEndpoints
         }
     }
 
-    private static string MaskSessionId(string sessionId) =>
+    internal static string MaskSessionId(string sessionId) =>
         sessionId.Length > 8 ? $"{sessionId[..4]}...{sessionId[^4..]}" : "****";
 
-    private sealed record PkceState(string CodeVerifier, string State, string FrontendName, string? DPoPPrivateKeyJwk = null);
+    internal sealed record PkceState(string CodeVerifier, string State, string FrontendName, string? DPoPPrivateKeyJwk = null);
 
     private static IClientAuthenticationStrategy ResolveClientAuth(BffFrontendOptions frontend, IClock clock) =>
         frontend.ClientAuthenticationMethod == BffClientAuthenticationMethod.PrivateKeyJwt

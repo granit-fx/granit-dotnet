@@ -192,7 +192,7 @@ internal static partial class BffSessionEndpoints
     }
 #pragma warning restore GRAPI003
 
-    private static string MaskSessionId(string sessionId) =>
+    internal static string MaskSessionId(string sessionId) =>
         sessionId.Length > 8 ? $"{sessionId[..4]}...{sessionId[^4..]}" : "****";
 
     // ──── Source-generated log messages ────

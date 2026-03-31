@@ -263,7 +263,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
         return TypedResults.Ok(new PrivacyOptOutStatusResponse(isOptedOut, null, regulation));
     }
 
-    private static Guid? TryGetUserIdOrNull(HttpContext httpContext)
+    internal static Guid? TryGetUserIdOrNull(HttpContext httpContext)
     {
         System.Security.Claims.Claim? sub = httpContext.User.FindFirst("sub")
             ?? httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
@@ -819,7 +819,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
     // Helpers
     // -------------------------------------------------------------------------
 
-    private static bool TryGetUserId(ICurrentUserService currentUser, out Guid userId)
+    internal static bool TryGetUserId(ICurrentUserService currentUser, out Guid userId)
     {
         userId = Guid.Empty;
 
@@ -831,15 +831,15 @@ public static class PrivacyEndpointRouteBuilderExtensions
         return Guid.TryParse(currentUser.UserId, out userId);
     }
 
-    private static ProblemHttpResult UserNotAuthenticated() =>
+    internal static ProblemHttpResult UserNotAuthenticated() =>
         TypedResults.Problem(
             detail: "User is not authenticated or has no valid user ID.",
             statusCode: StatusCodes.Status401Unauthorized);
 
-    private static string? ResolveTenantId(ICurrentTenant currentTenant) =>
+    internal static string? ResolveTenantId(ICurrentTenant currentTenant) =>
         currentTenant.IsAvailable ? currentTenant.Id?.ToString() : null;
 
-    private static void RegisterOptOutCookie(ICookieRegistry registry) =>
+    internal static void RegisterOptOutCookie(ICookieRegistry registry) =>
         registry.Register(new CookieDefinition(
             OptOutConstants.CookieName,
             CookieCategory.StrictlyNecessary,
@@ -847,7 +847,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
             true,
             "CCPA anonymous opt-out tracking identifier"));
 
-    private static async Task<string> ResolveRegulationAsync(
+    internal static async Task<string> ResolveRegulationAsync(
         IPrivacyRegulationResolver? resolver,
         CancellationToken cancellationToken)
     {
@@ -860,7 +860,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
         return profile.Regulation.Value;
     }
 
-    private static PrivacyExportStatusResponse MapExportStatus(ExportRequestStatus status) =>
+    internal static PrivacyExportStatusResponse MapExportStatus(ExportRequestStatus status) =>
         new(
             status.RequestId,
             status.State.ToString(),
@@ -869,7 +869,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
             status.ArchiveBlobReferenceId,
             status.MissingProviders);
 
-    private static PrivacyDeletionStatusResponse MapDeletionStatus(DeletionRequestStatus status) =>
+    internal static PrivacyDeletionStatusResponse MapDeletionStatus(DeletionRequestStatus status) =>
         new(
             status.RequestId,
             status.State.ToString(),

@@ -87,7 +87,7 @@ internal static class BffUserEndpoints
     /// Decodes the payload of a JWT without validation (the token was already validated
     /// server-side during the token exchange). Extracts claims as a dictionary.
     /// </summary>
-    private static Dictionary<string, string>? DecodeIdTokenClaims(string? idToken)
+    internal static Dictionary<string, string>? DecodeIdTokenClaims(string? idToken)
     {
         if (string.IsNullOrEmpty(idToken))
         {
@@ -134,7 +134,7 @@ internal static class BffUserEndpoints
         }
     }
 
-    private static string[] ExtractStringArray(Dictionary<string, string> claims, string key)
+    internal static string[] ExtractStringArray(Dictionary<string, string> claims, string key)
     {
         // Try requested key first, then "role" (singular) as a fallback — common in many OIDC providers
         if (!claims.TryGetValue(key, out string? value) && !claims.TryGetValue("role", out value))
