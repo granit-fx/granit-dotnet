@@ -12,7 +12,6 @@ using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -60,10 +59,10 @@ internal static partial class BffLoginEndpoints
             .ExcludeFromDescription();
 
         group.MapGet("/callback", (HttpContext httpContext,
-                [FromQuery] string? code,
-                [FromQuery] string? state,
-                [FromQuery] string? error,
-                [FromQuery] string? iss,
+                string? code,
+                string? state,
+                string? error,
+                string? iss,
                 CancellationToken cancellationToken) =>
                 HandleCallbackAsync(httpContext, frontend, code, state, error, iss, cancellationToken))
             .WithName($"BffCallback_{frontend.Name}")
@@ -71,16 +70,15 @@ internal static partial class BffLoginEndpoints
             .WithDescription(
                 "Receives the authorization code from the OIDC provider, exchanges it for tokens "
                 + "using the stored PKCE code verifier, stores the tokens server-side, sets a session "
-                + "cookie, and redirects to the configured post-login path. Returns 400 if the "
-                + "authorization code or state is missing or invalid.")
+                + "cookie, and redirects to the configured post-login path. On error, redirects to "
+                + "the frontend error page with an error code query parameter.")
             .Produces(StatusCodes.Status302Found)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ExcludeFromDescription();
 
         return group;
     }
 
-    private static async Task<Results<RedirectHttpResult, ProblemHttpResult>> HandleLoginAsync(
+    private static async Task<RedirectHttpResult> HandleLoginAsync(
         HttpContext httpContext,
         BffFrontendOptions frontend,
         CancellationToken cancellationToken)
@@ -140,9 +138,7 @@ internal static partial class BffLoginEndpoints
             {
                 // PAR is mandatory (FAPI 2.0 strict) — do not fall back
                 LogParFallback(logger, frontend.Name);
-                return TypedResults.Problem(
-                    detail: "Pushed Authorization Request failed and is required by configuration.",
-                    statusCode: StatusCodes.Status502BadGateway);
+                return RedirectToError(frontend, "par_failed");
             }
             else
             {
@@ -164,7 +160,7 @@ internal static partial class BffLoginEndpoints
         return TypedResults.Redirect(authorizeUrl);
     }
 
-    private static async Task<Results<RedirectHttpResult, ProblemHttpResult>> HandleCallbackAsync(
+    private static async Task<RedirectHttpResult> HandleCallbackAsync(
         HttpContext httpContext,
         BffFrontendOptions frontend,
         string? code,
@@ -188,16 +184,12 @@ internal static partial class BffLoginEndpoints
         {
             string safeError = KnownOidcErrors.Contains(error) ? error : "unknown_error";
             LogCallbackError(logger, safeError, frontend.Name);
-            return TypedResults.Problem(
-                detail: $"OIDC authorization error: {safeError}",
-                statusCode: StatusCodes.Status400BadRequest);
+            return RedirectToError(frontend, safeError);
         }
 
         if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(state))
         {
-            return TypedResults.Problem(
-                detail: "Missing authorization code or state parameter.",
-                statusCode: StatusCodes.Status400BadRequest);
+            return RedirectToError(frontend, "missing_code_or_state");
         }
 
         // Verify authorization response issuer (RFC 9207, FAPI 2.0 §5.3.3.2)
@@ -208,17 +200,13 @@ internal static partial class BffLoginEndpoints
             if (string.IsNullOrEmpty(iss))
             {
                 LogIssuerMissing(logger, frontend.Name);
-                return TypedResults.Problem(
-                    detail: "Missing iss parameter in authorization response (RFC 9207).",
-                    statusCode: StatusCodes.Status400BadRequest);
+                return RedirectToError(frontend, "issuer_missing");
             }
 
             if (!string.Equals(iss.TrimEnd('/'), expectedIssuer, StringComparison.OrdinalIgnoreCase))
             {
                 LogIssuerMismatch(logger, iss, expectedIssuer, frontend.Name);
-                return TypedResults.Problem(
-                    detail: "Authorization response issuer does not match expected authority.",
-                    statusCode: StatusCodes.Status400BadRequest);
+                return RedirectToError(frontend, "issuer_mismatch");
             }
         }
 
@@ -229,9 +217,7 @@ internal static partial class BffLoginEndpoints
 
         if (!maybePkce.HasValue)
         {
-            return TypedResults.Problem(
-                detail: "Invalid or expired state parameter.",
-                statusCode: StatusCodes.Status400BadRequest);
+            return RedirectToError(frontend, "invalid_state");
         }
 
         await cache.RemoveAsync(pkceKey, token: cancellationToken).ConfigureAwait(false);
@@ -249,9 +235,7 @@ internal static partial class BffLoginEndpoints
         if (tokens is null)
         {
             LogTokenExchangeFailed(logger, frontend.Name);
-            return TypedResults.Problem(
-                detail: "Failed to exchange authorization code for tokens.",
-                statusCode: StatusCodes.Status400BadRequest);
+            return RedirectToError(frontend, "token_exchange_failed");
         }
 
         // Enrich token set with user context for session management (#621)
@@ -562,6 +546,12 @@ internal static partial class BffLoginEndpoints
         sessionId.Length > 8 ? $"{sessionId[..4]}...{sessionId[^4..]}" : "****";
 
     internal sealed record PkceState(string CodeVerifier, string State, string FrontendName, string? DPoPPrivateKeyJwk = null);
+
+    /// <summary>
+    /// Builds a redirect to the frontend error page with the given error code as a query parameter.
+    /// </summary>
+    private static RedirectHttpResult RedirectToError(BffFrontendOptions frontend, string errorCode) =>
+        TypedResults.Redirect($"{frontend.EffectiveErrorRedirectPath}?error={Uri.EscapeDataString(errorCode)}");
 
     private static IClientAuthenticationStrategy ResolveClientAuth(BffFrontendOptions frontend, IClock clock) =>
         frontend.ClientAuthenticationMethod == BffClientAuthenticationMethod.PrivateKeyJwt

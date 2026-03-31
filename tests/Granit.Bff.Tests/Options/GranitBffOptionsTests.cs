@@ -199,4 +199,40 @@ public sealed class BffFrontendOptionsTests
 
         frontend.PostLogoutRedirectPath.ShouldBeNull();
     }
+
+    [Fact]
+    public void DefaultErrorRedirectPath_IsNull()
+    {
+        var frontend = new BffFrontendOptions();
+
+        frontend.ErrorRedirectPath.ShouldBeNull();
+    }
+
+    [Fact]
+    public void EffectiveErrorRedirectPath_UsesExplicitValue_WhenSet()
+    {
+        var frontend = new BffFrontendOptions
+        {
+            PathPrefix = "/admin",
+            ErrorRedirectPath = "/admin/error",
+        };
+
+        frontend.EffectiveErrorRedirectPath.ShouldBe("/admin/error");
+    }
+
+    [Fact]
+    public void EffectiveErrorRedirectPath_DefaultsToPathPrefixLogin_WhenPathPrefixSet()
+    {
+        var frontend = new BffFrontendOptions { PathPrefix = "/admin" };
+
+        frontend.EffectiveErrorRedirectPath.ShouldBe("/admin/login");
+    }
+
+    [Fact]
+    public void EffectiveErrorRedirectPath_DefaultsToLogin_WhenPathPrefixEmpty()
+    {
+        var frontend = new BffFrontendOptions { PathPrefix = string.Empty };
+
+        frontend.EffectiveErrorRedirectPath.ShouldBe("/login");
+    }
 }

@@ -123,6 +123,13 @@ public sealed class BffFrontendOptions
     public string? PostLogoutRedirectPath { get; set; }
 
     /// <summary>
+    /// Path to redirect to when the OIDC callback encounters an error. An <c>?error={code}</c>
+    /// query parameter is appended so the SPA can display a localized error message.
+    /// Default: <c>{PathPrefix}/login</c>.
+    /// </summary>
+    public string? ErrorRedirectPath { get; set; }
+
+    /// <summary>
     /// Gets the session cookie name for this frontend.
     /// Format: <c>__Host-granit-bff-{name}</c>.
     /// </summary>
@@ -139,6 +146,12 @@ public sealed class BffFrontendOptions
     /// </summary>
     public string EffectivePostLogoutRedirectPath =>
         PostLogoutRedirectPath ?? (string.IsNullOrEmpty(PathPrefix) ? "/" : $"{PathPrefix}/");
+
+    /// <summary>
+    /// Gets the effective error redirect path (without the <c>?error=</c> query parameter).
+    /// </summary>
+    public string EffectiveErrorRedirectPath =>
+        ErrorRedirectPath ?? (string.IsNullOrEmpty(PathPrefix) ? "/login" : $"{PathPrefix}/login");
 
     /// <summary>
     /// Gets or sets a value indicating whether the BFF should use Pushed Authorization

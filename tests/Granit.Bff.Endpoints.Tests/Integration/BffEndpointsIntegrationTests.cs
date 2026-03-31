@@ -710,7 +710,7 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GetCallback_TokenExchangeFails_Returns400()
+    public async Task GetCallback_TokenExchangeFails_RedirectsToErrorPage()
     {
         string testState = "test-state-fail";
 
@@ -726,31 +726,34 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
             new HttpRequestMessage(HttpMethod.Get, $"/app/bff/callback?code=bad-code&state={testState}"),
             TestContext.Current.CancellationToken);
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.Headers.Location!.ToString().ShouldBe("/app/login?error=token_exchange_failed");
     }
 
     [Fact]
-    public async Task GetCallback_MissingCode_Returns400()
+    public async Task GetCallback_MissingCode_RedirectsToErrorPage()
     {
         HttpResponseMessage response = await _server.SendWithoutRedirectAsync(
             new HttpRequestMessage(HttpMethod.Get, "/app/bff/callback?state=some-state"),
             TestContext.Current.CancellationToken);
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.Headers.Location!.ToString().ShouldBe("/app/login?error=missing_code_or_state");
     }
 
     [Fact]
-    public async Task GetCallback_MissingState_Returns400()
+    public async Task GetCallback_MissingState_RedirectsToErrorPage()
     {
         HttpResponseMessage response = await _server.SendWithoutRedirectAsync(
             new HttpRequestMessage(HttpMethod.Get, "/app/bff/callback?code=some-code"),
             TestContext.Current.CancellationToken);
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.Headers.Location!.ToString().ShouldBe("/app/login?error=missing_code_or_state");
     }
 
     [Fact]
-    public async Task GetCallback_InvalidState_Returns400()
+    public async Task GetCallback_InvalidState_RedirectsToErrorPage()
     {
         // Cache returns empty (state not found)
         _server.Cache.TryGetAsync<BffLoginEndpoints.PkceState>(
@@ -763,34 +766,32 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
             new HttpRequestMessage(HttpMethod.Get, "/app/bff/callback?code=test-code&state=unknown-state"),
             TestContext.Current.CancellationToken);
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.Headers.Location!.ToString().ShouldBe("/app/login?error=invalid_state");
     }
 
     [Fact]
-    public async Task GetCallback_OidcError_Returns400WithSafeError()
+    public async Task GetCallback_OidcError_RedirectsWithSafeErrorCode()
     {
         HttpResponseMessage response = await _server.SendWithoutRedirectAsync(
             new HttpRequestMessage(HttpMethod.Get, "/app/bff/callback?error=access_denied"),
             TestContext.Current.CancellationToken);
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-
-        string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        body.ShouldContain("access_denied");
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.Headers.Location!.ToString().ShouldBe("/app/login?error=access_denied");
     }
 
     [Fact]
-    public async Task GetCallback_UnknownOidcError_ReplacedWithUnknownError()
+    public async Task GetCallback_UnknownOidcError_RedirectsWithUnknownError()
     {
         HttpResponseMessage response = await _server.SendWithoutRedirectAsync(
             new HttpRequestMessage(HttpMethod.Get, "/app/bff/callback?error=xss_attempt"),
             TestContext.Current.CancellationToken);
 
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-
-        string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        body.ShouldContain("unknown_error");
-        body.ShouldNotContain("xss_attempt");
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        string location = response.Headers.Location!.ToString();
+        location.ShouldContain("error=unknown_error");
+        location.ShouldNotContain("xss_attempt");
     }
 
     [Fact]
