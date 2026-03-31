@@ -1,8 +1,11 @@
 using Granit.Events;
 using Granit.Guids;
 using Granit.Identity;
+using Granit.Identity.Local.Diagnostics;
 using Granit.Modularity;
 using Granit.Timing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Identity.Local;
 
@@ -23,4 +26,9 @@ namespace Granit.Identity.Local;
     typeof(GranitTimingModule))]
 public sealed class GranitIdentityLocalModule : GranitModule
 {
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddSingleton<IdentityLocalMetrics>();
+    }
 }

@@ -1,4 +1,5 @@
 using Granit.Encryption;
+using Granit.Identity.Local;
 using Granit.Identity.Local.Options;
 using Granit.Identity.Local.Services;
 using Granit.Modularity;
@@ -36,6 +37,7 @@ namespace Granit.OpenIddict.EntityFrameworkCore;
 /// </remarks>
 [DependsOn(
     typeof(GranitEncryptionModule),
+    typeof(GranitIdentityLocalModule),
     typeof(GranitMultiTenancyModule),
     typeof(GranitOpenIddictServerModule),
     typeof(GranitPersistenceEntityFrameworkCoreModule))]
