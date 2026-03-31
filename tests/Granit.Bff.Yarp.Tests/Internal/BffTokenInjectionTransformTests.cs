@@ -186,9 +186,407 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
         context.HttpContext.Response.StatusCode.ShouldBe(StatusCodes.Status401Unauthorized);
     }
 
+    // ──── Token refresh ────
+
+    [Fact]
+    public async Task ApplyAsync_TokenAboutToExpire_RefreshesAndInjectsNewToken()
+    {
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        _clock.Now.Returns(now);
+
+        BffTokenSet expiringSoonTokens = new(
+            "old-access-token", "refresh-token-123", null,
+            now.AddSeconds(10)) // expires in 10s, within 30s grace period
+        {
+            SessionCreatedAt = now.AddHours(-1),
+        };
+        _tokenStore.GetAsync("main", "session-abc", Arg.Any<CancellationToken>())
+            .Returns(expiringSoonTokens);
+
+        // Setup refresh HTTP call
+        string refreshJson = System.Text.Json.JsonSerializer.Serialize(new
+        {
+            access_token = "new-access-token",
+            refresh_token = "new-refresh-token",
+            expires_in = 3600,
+        });
+        FakeHttpMessageHandler handler = new(_ => new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.OK)
+        {
+            Content = new StringContent(refreshJson, System.Text.Encoding.UTF8, "application/json"),
+        });
+        HttpClient httpClient = new(handler);
+        _httpClientFactory.CreateClient("Granit.Bff").Returns(httpClient);
+
+        RequestTransformContext context = CreateTransformContext(new Dictionary<string, string>
+        {
+            ["Granit.Bff.RequireAuth"] = "true",
+            ["Granit.Bff.Frontend"] = "main",
+        });
+        context.HttpContext.Request.Cookies = CreateCookies(
+            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+
+        await CreateTransform().ApplyAsync(context);
+
+        context.HttpContext.Response.StatusCode.ShouldBe(200);
+        context.ProxyRequest.Headers.Authorization?.Parameter.ShouldBe("new-access-token");
+        context.HttpContext.Response.Headers["X-Bff-Session-Refreshed"].ToString().ShouldBe("true");
+
+        // Verify the new tokens were stored
+        await _tokenStore.Received(1).StoreAsync(
+            "main", "session-abc",
+            Arg.Is<BffTokenSet>(t => t.AccessToken == "new-access-token"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ApplyAsync_RefreshFails_Returns401()
+    {
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        _clock.Now.Returns(now);
+
+        BffTokenSet expiringSoonTokens = new(
+            "old-access-token", "refresh-token-123", null,
+            now.AddSeconds(10))
+        {
+            SessionCreatedAt = now.AddHours(-1),
+        };
+        _tokenStore.GetAsync("main", "session-abc", Arg.Any<CancellationToken>())
+            .Returns(expiringSoonTokens);
+
+        // Refresh fails
+        FakeHttpMessageHandler handler = new(_ =>
+            new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+            {
+                Content = new StringContent("{\"error\":\"invalid_grant\"}", System.Text.Encoding.UTF8, "application/json"),
+            });
+        HttpClient httpClient = new(handler);
+        _httpClientFactory.CreateClient("Granit.Bff").Returns(httpClient);
+
+        RequestTransformContext context = CreateTransformContext(new Dictionary<string, string>
+        {
+            ["Granit.Bff.RequireAuth"] = "true",
+            ["Granit.Bff.Frontend"] = "main",
+        });
+        context.HttpContext.Request.Cookies = CreateCookies(
+            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+
+        await CreateTransform().ApplyAsync(context);
+
+        context.HttpContext.Response.StatusCode.ShouldBe(StatusCodes.Status401Unauthorized);
+    }
+
+    [Fact]
+    public async Task ApplyAsync_RefreshThrowsException_Returns401()
+    {
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        _clock.Now.Returns(now);
+
+        BffTokenSet expiringSoonTokens = new(
+            "old-access-token", "refresh-token-123", null,
+            now.AddSeconds(10))
+        {
+            SessionCreatedAt = now.AddHours(-1),
+        };
+        _tokenStore.GetAsync("main", "session-abc", Arg.Any<CancellationToken>())
+            .Returns(expiringSoonTokens);
+
+        // HTTP client throws
+        FakeHttpMessageHandler handler = new(_ =>
+            throw new HttpRequestException("Connection refused"));
+        HttpClient httpClient = new(handler);
+        _httpClientFactory.CreateClient("Granit.Bff").Returns(httpClient);
+
+        RequestTransformContext context = CreateTransformContext(new Dictionary<string, string>
+        {
+            ["Granit.Bff.RequireAuth"] = "true",
+            ["Granit.Bff.Frontend"] = "main",
+        });
+        context.HttpContext.Request.Cookies = CreateCookies(
+            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+
+        await CreateTransform().ApplyAsync(context);
+
+        context.HttpContext.Response.StatusCode.ShouldBe(StatusCodes.Status401Unauthorized);
+    }
+
+    [Fact]
+    public async Task ApplyAsync_TokenNotExpiring_DoesNotRefresh()
+    {
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        _clock.Now.Returns(now);
+
+        // Token expires in 2 hours (well beyond 30s grace period) — no refresh needed
+        BffTokenSet tokens = new("access-token", "refresh-token", null, now.AddHours(2))
+        {
+            SessionCreatedAt = now.AddHours(-1),
+        };
+        _tokenStore.GetAsync("main", "session-abc", Arg.Any<CancellationToken>())
+            .Returns(tokens);
+
+        RequestTransformContext context = CreateTransformContext(new Dictionary<string, string>
+        {
+            ["Granit.Bff.RequireAuth"] = "true",
+            ["Granit.Bff.Frontend"] = "main",
+        });
+        context.HttpContext.Request.Cookies = CreateCookies(
+            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+
+        await CreateTransform().ApplyAsync(context);
+
+        context.ProxyRequest.Headers.Authorization?.Parameter.ShouldBe("access-token");
+        // No refresh call to HTTP client
+        _httpClientFactory.DidNotReceive().CreateClient("Granit.Bff");
+    }
+
+    [Fact]
+    public async Task ApplyAsync_NoRefreshToken_DoesNotAttemptRefresh()
+    {
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        _clock.Now.Returns(now);
+
+        // Token about to expire but no refresh token
+        BffTokenSet tokens = new("access-token", null, null, now.AddSeconds(10))
+        {
+            SessionCreatedAt = now.AddHours(-1),
+        };
+        _tokenStore.GetAsync("main", "session-abc", Arg.Any<CancellationToken>())
+            .Returns(tokens);
+
+        RequestTransformContext context = CreateTransformContext(new Dictionary<string, string>
+        {
+            ["Granit.Bff.RequireAuth"] = "true",
+            ["Granit.Bff.Frontend"] = "main",
+        });
+        context.HttpContext.Request.Cookies = CreateCookies(
+            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+
+        await CreateTransform().ApplyAsync(context);
+
+        // Should still inject the token without refresh
+        context.ProxyRequest.Headers.Authorization?.Parameter.ShouldBe("access-token");
+        _httpClientFactory.DidNotReceive().CreateClient("Granit.Bff");
+    }
+
+    // ──── Frontend resolution ────
+
+    [Fact]
+    public async Task ApplyAsync_NoFrontendMetadata_FallsBackToSingleFrontend()
+    {
+        BffTokenSet tokens = new("access-token", null, null, DateTimeOffset.UtcNow.AddHours(1));
+        _tokenStore.GetAsync("main", "session-abc", Arg.Any<CancellationToken>())
+            .Returns(tokens);
+
+        // No Granit.Bff.Frontend metadata — should fall back to the single configured frontend
+        RequestTransformContext context = CreateTransformContext(new Dictionary<string, string>
+        {
+            ["Granit.Bff.RequireAuth"] = "true",
+        });
+        context.HttpContext.Request.Cookies = CreateCookies(
+            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+
+        await CreateTransform().ApplyAsync(context);
+
+        context.ProxyRequest.Headers.Authorization?.Parameter.ShouldBe("access-token");
+    }
+
+    [Fact]
+    public async Task ApplyAsync_NoFrontendMetadata_MultipleFrontends_Returns401()
+    {
+        // Configure multiple frontends
+        _bffOptions.Frontends.Add(
+            new BffFrontendOptions { Name = "secondary", ClientId = "client2", ClientSecret = "s" });
+
+        RequestTransformContext context = CreateTransformContext(new Dictionary<string, string>
+        {
+            ["Granit.Bff.RequireAuth"] = "true",
+        });
+
+        await CreateTransform().ApplyAsync(context);
+
+        context.HttpContext.Response.StatusCode.ShouldBe(StatusCodes.Status401Unauthorized);
+
+        // Cleanup
+        _bffOptions.Frontends.RemoveAt(1);
+    }
+
+    // ──── Sliding session ────
+
+    [Fact]
+    public async Task ApplyAsync_SlidingExpiration_ExtensionPastHalfway_ReStoresTokens()
+    {
+        _bffOptions.UseSessionSlidingExpiration = true;
+        _bffOptions.SessionDuration = TimeSpan.FromHours(2);
+        _bffOptions.SessionAbsoluteMaxDuration = TimeSpan.FromHours(12);
+
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        _clock.Now.Returns(now);
+
+        BffTokenSet tokens = new("access-token", null, null, now.AddHours(1))
+        {
+            // Session created 1.5 hours ago, past halfway (1 hour) of 2-hour duration
+            SessionCreatedAt = now.AddHours(-1.5),
+        };
+        _tokenStore.GetAsync("main", "session-abc", Arg.Any<CancellationToken>())
+            .Returns(tokens);
+
+        RequestTransformContext context = CreateTransformContext(new Dictionary<string, string>
+        {
+            ["Granit.Bff.RequireAuth"] = "true",
+            ["Granit.Bff.Frontend"] = "main",
+        });
+        context.HttpContext.Request.Cookies = CreateCookies(
+            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+
+        await CreateTransform().ApplyAsync(context);
+
+        // Should have stored tokens for sliding extension
+        await _tokenStore.Received().StoreAsync(
+            "main", "session-abc", tokens, Arg.Any<CancellationToken>());
+
+        _bffOptions.UseSessionSlidingExpiration = false;
+    }
+
+    [Fact]
+    public async Task ApplyAsync_SlidingExpiration_BeforeHalfway_DoesNotExtend()
+    {
+        _bffOptions.UseSessionSlidingExpiration = true;
+        _bffOptions.SessionDuration = TimeSpan.FromHours(2);
+        _bffOptions.SessionAbsoluteMaxDuration = TimeSpan.FromHours(12);
+
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        _clock.Now.Returns(now);
+
+        BffTokenSet tokens = new("access-token", null, null, now.AddHours(1))
+        {
+            // Session created 30 minutes ago, before halfway (1 hour)
+            SessionCreatedAt = now.AddMinutes(-30),
+        };
+        _tokenStore.GetAsync("main", "session-abc", Arg.Any<CancellationToken>())
+            .Returns(tokens);
+
+        RequestTransformContext context = CreateTransformContext(new Dictionary<string, string>
+        {
+            ["Granit.Bff.RequireAuth"] = "true",
+            ["Granit.Bff.Frontend"] = "main",
+        });
+        context.HttpContext.Request.Cookies = CreateCookies(
+            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+
+        await CreateTransform().ApplyAsync(context);
+
+        // Should NOT have stored tokens (no sliding extension needed)
+        await _tokenStore.DidNotReceive().StoreAsync(
+            "main", "session-abc", tokens, Arg.Any<CancellationToken>());
+
+        _bffOptions.UseSessionSlidingExpiration = false;
+    }
+
+    // ──── DPoP refresh ────
+
+    [Fact]
+    public async Task ApplyAsync_DPoPTokenRefresh_AttachesDPoPProofToRefreshRequest()
+    {
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        _clock.Now.Returns(now);
+
+        BffTokenSet expiringSoonTokens = new(
+            "old-access-token", "refresh-token-dpop", null,
+            now.AddSeconds(10))
+        {
+            DPoPPrivateKeyJwk = """{"kty":"EC","crv":"P-256"}""",
+            DPoPNonce = "old-nonce",
+            SessionCreatedAt = now.AddHours(-1),
+        };
+        _tokenStore.GetAsync("main", "session-abc", Arg.Any<CancellationToken>())
+            .Returns(expiringSoonTokens);
+
+        _dpopService.CreateProof(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string?>())
+            .Returns("dpop-proof-for-refresh");
+
+        HttpRequestMessage? capturedRefreshRequest = null;
+        FakeHttpMessageHandler handler = new(req =>
+        {
+            capturedRefreshRequest = req;
+            string json = System.Text.Json.JsonSerializer.Serialize(new
+            {
+                access_token = "new-dpop-token",
+                expires_in = 3600,
+            });
+            HttpResponseMessage resp = new(System.Net.HttpStatusCode.OK)
+            {
+                Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json"),
+            };
+            resp.Headers.Add("DPoP-Nonce", "updated-nonce");
+            return resp;
+        });
+        HttpClient httpClient = new(handler);
+        _httpClientFactory.CreateClient("Granit.Bff").Returns(httpClient);
+
+        RequestTransformContext context = CreateTransformContext(new Dictionary<string, string>
+        {
+            ["Granit.Bff.RequireAuth"] = "true",
+            ["Granit.Bff.Frontend"] = "main",
+        });
+        context.HttpContext.Request.Cookies = CreateCookies(
+            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+
+        await CreateTransform().ApplyAsync(context);
+
+        // DPoP proof attached to refresh request
+        capturedRefreshRequest.ShouldNotBeNull();
+        capturedRefreshRequest.Headers.TryGetValues("DPoP", out IEnumerable<string>? proofValues).ShouldBeTrue();
+        proofValues!.Single().ShouldBe("dpop-proof-for-refresh");
+
+        // Stored tokens should have updated DPoP nonce
+        await _tokenStore.Received(1).StoreAsync(
+            "main", "session-abc",
+            Arg.Is<BffTokenSet>(t =>
+                t.AccessToken == "new-dpop-token" &&
+                t.DPoPNonce == "updated-nonce"),
+            Arg.Any<CancellationToken>());
+    }
+
+    // ──── MaskSessionId ────
+
+    [Fact]
+    public async Task ApplyAsync_ShortSessionId_MasksCorrectly()
+    {
+        // Session ID shorter than 8 chars — should be masked as "****"
+        _tokenStore.GetAsync("main", "abc", Arg.Any<CancellationToken>())
+            .Returns((BffTokenSet?)null);
+
+        RequestTransformContext context = CreateTransformContext(new Dictionary<string, string>
+        {
+            ["Granit.Bff.RequireAuth"] = "true",
+            ["Granit.Bff.Frontend"] = "main",
+        });
+        context.HttpContext.Request.Cookies = CreateCookies(
+            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "abc" });
+
+        await CreateTransform().ApplyAsync(context);
+
+        // Should return 401 (session not found) — test ensures masking code path does not throw
+        context.HttpContext.Response.StatusCode.ShouldBe(StatusCodes.Status401Unauthorized);
+    }
+
     private static RequestTransformContext CreateTransformContext(Dictionary<string, string> metadata)
     {
-        DefaultHttpContext httpContext = new() { Request = { Method = "GET" } };
+        return CreateTransformContextWithPath(metadata, "/");
+    }
+
+    private sealed class FakeHttpMessageHandler(Func<HttpRequestMessage, HttpResponseMessage> responseFactory)
+        : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken) =>
+            Task.FromResult(responseFactory(request));
+    }
+
+    private static RequestTransformContext CreateTransformContextWithPath(
+        Dictionary<string, string> metadata, string path = "/")
+    {
+        DefaultHttpContext httpContext = new() { Request = { Method = "GET", Path = path } };
 
         RouteConfig routeConfig = new()
         {

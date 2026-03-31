@@ -10,10 +10,12 @@ using Granit.Notifications.Abstractions;
 using Granit.Notifications.Email;
 using Granit.Notifications.Email.Internal;
 using Granit.Notifications.Email.Options;
+using Granit.Templating.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using Shouldly;
 using Xunit;
 
@@ -108,6 +110,362 @@ public sealed class EmailNotificationChannelTests
     [Fact]
     public void Name_ReturnsEmail() =>
         _channel.Name.ShouldBe(NotificationChannels.Email);
+
+    // ──── Template rendering branch tests ────
+
+    [Fact]
+    public async Task SendAsync_WithTemplateRendered_UsesRenderedHtmlAndSubject()
+    {
+        NotificationDeliveryContext context = BuildContext();
+        SetupRecipient("user-1", email: "user@test.com");
+
+        // Setup template resolver
+        ITemplateResolver resolver = Substitute.For<ITemplateResolver>();
+        resolver.Priority.Returns(100);
+        resolver.TryResolveAsync(Arg.Any<Granit.Templating.Keys.TemplateKey>(), Arg.Any<CancellationToken>())
+            .Returns(new Granit.Templating.Pipeline.TemplateDescriptor
+            {
+                Content = "<html><title>Welcome</title><body>Hello {{ model.key }}</body></html>",
+                MimeType = "text/html",
+            });
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns(new[] { resolver });
+
+        // Setup template engine
+        ITemplateEngine engine = Substitute.For<ITemplateEngine>();
+        engine.CanRender(Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>()).Returns(true);
+        engine.RenderAsync(
+                Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>(),
+                Arg.Any<Dictionary<string, object?>>(),
+                Arg.Any<Granit.Templating.Keys.DocumentFormat>(),
+                Arg.Any<IReadOnlyList<Granit.Templating.GlobalContext.ITemplateGlobalContext>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new Granit.Templating.Pipeline.TextRenderedContent(
+                "<html><title>Welcome</title><body>Hello world</body></html>",
+                Granit.Templating.Keys.DocumentFormat.Html));
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateEngine>))
+            .Returns(new[] { engine });
+
+        _serviceProvider.GetService(typeof(IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>))
+            .Returns((IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>?)null);
+
+        EmailMessage? captured = null;
+        _emailSender.SendAsync(Arg.Any<EmailMessage>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                captured = callInfo.Arg<EmailMessage>();
+                return Task.CompletedTask;
+            });
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Subject.ShouldBe("Welcome");
+        captured.HtmlBody.ShouldContain("Hello world");
+    }
+
+    [Fact]
+    public async Task SendAsync_NoResolversRegistered_UsesFallbackSubjectAndBody()
+    {
+        NotificationDeliveryContext context = BuildContext();
+        SetupRecipient("user-1", email: "user@test.com");
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns((IEnumerable<ITemplateResolver>?)null);
+
+        EmailMessage? captured = null;
+        _emailSender.SendAsync(Arg.Any<EmailMessage>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                captured = callInfo.Arg<EmailMessage>();
+                return Task.CompletedTask;
+            });
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        // Fallback subject replaces dots with spaces
+        captured.Subject.ShouldBe("test notification");
+        captured.HtmlBody.ShouldContain("test.notification");
+    }
+
+    [Fact]
+    public async Task SendAsync_ResolverReturnsNull_UsesFallback()
+    {
+        NotificationDeliveryContext context = BuildContext();
+        SetupRecipient("user-1", email: "user@test.com");
+
+        ITemplateResolver resolver = Substitute.For<ITemplateResolver>();
+        resolver.Priority.Returns(100);
+        resolver.TryResolveAsync(Arg.Any<Granit.Templating.Keys.TemplateKey>(), Arg.Any<CancellationToken>())
+            .Returns((Granit.Templating.Pipeline.TemplateDescriptor?)null);
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns(new[] { resolver });
+
+        EmailMessage? captured = null;
+        _emailSender.SendAsync(Arg.Any<EmailMessage>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                captured = callInfo.Arg<EmailMessage>();
+                return Task.CompletedTask;
+            });
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Subject.ShouldBe("test notification");
+    }
+
+    [Fact]
+    public async Task SendAsync_NoMatchingEngine_UsesFallback()
+    {
+        NotificationDeliveryContext context = BuildContext();
+        SetupRecipient("user-1", email: "user@test.com");
+
+        ITemplateResolver resolver = Substitute.For<ITemplateResolver>();
+        resolver.Priority.Returns(100);
+        resolver.TryResolveAsync(Arg.Any<Granit.Templating.Keys.TemplateKey>(), Arg.Any<CancellationToken>())
+            .Returns(new Granit.Templating.Pipeline.TemplateDescriptor
+            {
+                Content = "template content",
+                MimeType = "text/html",
+            });
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns(new[] { resolver });
+
+        // No engines registered
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateEngine>))
+            .Returns((IEnumerable<ITemplateEngine>?)null);
+
+        EmailMessage? captured = null;
+        _emailSender.SendAsync(Arg.Any<EmailMessage>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                captured = callInfo.Arg<EmailMessage>();
+                return Task.CompletedTask;
+            });
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Subject.ShouldBe("test notification");
+    }
+
+    [Fact]
+    public async Task SendAsync_EngineCannotRender_UsesFallback()
+    {
+        NotificationDeliveryContext context = BuildContext();
+        SetupRecipient("user-1", email: "user@test.com");
+
+        ITemplateResolver resolver = Substitute.For<ITemplateResolver>();
+        resolver.Priority.Returns(100);
+        resolver.TryResolveAsync(Arg.Any<Granit.Templating.Keys.TemplateKey>(), Arg.Any<CancellationToken>())
+            .Returns(new Granit.Templating.Pipeline.TemplateDescriptor
+            {
+                Content = "template content",
+                MimeType = "application/xml",
+            });
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns(new[] { resolver });
+
+        ITemplateEngine engine = Substitute.For<ITemplateEngine>();
+        engine.CanRender(Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>()).Returns(false);
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateEngine>))
+            .Returns(new[] { engine });
+
+        EmailMessage? captured = null;
+        _emailSender.SendAsync(Arg.Any<EmailMessage>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                captured = callInfo.Arg<EmailMessage>();
+                return Task.CompletedTask;
+            });
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Subject.ShouldBe("test notification");
+    }
+
+    [Fact]
+    public async Task SendAsync_EngineThrows_UsesFallback()
+    {
+        NotificationDeliveryContext context = BuildContext();
+        SetupRecipient("user-1", email: "user@test.com");
+
+        ITemplateResolver resolver = Substitute.For<ITemplateResolver>();
+        resolver.Priority.Returns(100);
+        resolver.TryResolveAsync(Arg.Any<Granit.Templating.Keys.TemplateKey>(), Arg.Any<CancellationToken>())
+            .Returns(new Granit.Templating.Pipeline.TemplateDescriptor
+            {
+                Content = "template content",
+                MimeType = "text/html",
+            });
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns(new[] { resolver });
+
+        ITemplateEngine engine = Substitute.For<ITemplateEngine>();
+        engine.CanRender(Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>()).Returns(true);
+        engine.RenderAsync(
+                Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>(),
+                Arg.Any<Dictionary<string, object?>>(),
+                Arg.Any<Granit.Templating.Keys.DocumentFormat>(),
+                Arg.Any<IReadOnlyList<Granit.Templating.GlobalContext.ITemplateGlobalContext>>(),
+                Arg.Any<CancellationToken>())
+            .ThrowsAsync(new InvalidOperationException("Scriban parse error"));
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateEngine>))
+            .Returns(new[] { engine });
+
+        _serviceProvider.GetService(typeof(IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>))
+            .Returns((IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>?)null);
+
+        EmailMessage? captured = null;
+        _emailSender.SendAsync(Arg.Any<EmailMessage>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                captured = callInfo.Arg<EmailMessage>();
+                return Task.CompletedTask;
+            });
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Subject.ShouldBe("test notification");
+    }
+
+    [Fact]
+    public async Task SendAsync_RenderedHtmlWithoutTitle_UsesRenderedHtmlWithFallbackSubject()
+    {
+        NotificationDeliveryContext context = BuildContext();
+        SetupRecipient("user-1", email: "user@test.com");
+
+        ITemplateResolver resolver = Substitute.For<ITemplateResolver>();
+        resolver.Priority.Returns(100);
+        resolver.TryResolveAsync(Arg.Any<Granit.Templating.Keys.TemplateKey>(), Arg.Any<CancellationToken>())
+            .Returns(new Granit.Templating.Pipeline.TemplateDescriptor
+            {
+                Content = "<html><body>No title here</body></html>",
+                MimeType = "text/html",
+            });
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns(new[] { resolver });
+
+        ITemplateEngine engine = Substitute.For<ITemplateEngine>();
+        engine.CanRender(Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>()).Returns(true);
+        engine.RenderAsync(
+                Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>(),
+                Arg.Any<Dictionary<string, object?>>(),
+                Arg.Any<Granit.Templating.Keys.DocumentFormat>(),
+                Arg.Any<IReadOnlyList<Granit.Templating.GlobalContext.ITemplateGlobalContext>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new Granit.Templating.Pipeline.TextRenderedContent(
+                "<html><body>No title here</body></html>",
+                Granit.Templating.Keys.DocumentFormat.Html));
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateEngine>))
+            .Returns(new[] { engine });
+
+        _serviceProvider.GetService(typeof(IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>))
+            .Returns((IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>?)null);
+
+        EmailMessage? captured = null;
+        _emailSender.SendAsync(Arg.Any<EmailMessage>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                captured = callInfo.Arg<EmailMessage>();
+                return Task.CompletedTask;
+            });
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        // No <title> in rendered HTML => falls back to notification type name
+        captured.Subject.ShouldBe("test notification");
+        captured.HtmlBody.ShouldContain("No title here");
+    }
+
+    [Fact]
+    public async Task SendAsync_EmptyTitleTag_UsesFallbackSubject()
+    {
+        NotificationDeliveryContext context = BuildContext();
+        SetupRecipient("user-1", email: "user@test.com");
+
+        ITemplateResolver resolver = Substitute.For<ITemplateResolver>();
+        resolver.Priority.Returns(100);
+        resolver.TryResolveAsync(Arg.Any<Granit.Templating.Keys.TemplateKey>(), Arg.Any<CancellationToken>())
+            .Returns(new Granit.Templating.Pipeline.TemplateDescriptor
+            {
+                Content = "<html><title>   </title><body>Body</body></html>",
+                MimeType = "text/html",
+            });
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns(new[] { resolver });
+
+        ITemplateEngine engine = Substitute.For<ITemplateEngine>();
+        engine.CanRender(Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>()).Returns(true);
+        engine.RenderAsync(
+                Arg.Any<Granit.Templating.Pipeline.TemplateDescriptor>(),
+                Arg.Any<Dictionary<string, object?>>(),
+                Arg.Any<Granit.Templating.Keys.DocumentFormat>(),
+                Arg.Any<IReadOnlyList<Granit.Templating.GlobalContext.ITemplateGlobalContext>>(),
+                Arg.Any<CancellationToken>())
+            .Returns(new Granit.Templating.Pipeline.TextRenderedContent(
+                "<html><title>   </title><body>Body</body></html>",
+                Granit.Templating.Keys.DocumentFormat.Html));
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateEngine>))
+            .Returns(new[] { engine });
+
+        _serviceProvider.GetService(typeof(IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>))
+            .Returns((IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>?)null);
+
+        EmailMessage? captured = null;
+        _emailSender.SendAsync(Arg.Any<EmailMessage>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                captured = callInfo.Arg<EmailMessage>();
+                return Task.CompletedTask;
+            });
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        // Empty <title> after trim => null => fallback
+        captured.Subject.ShouldBe("test notification");
+    }
+
+    [Fact]
+    public async Task SendAsync_EmptyResolverList_UsesFallback()
+    {
+        NotificationDeliveryContext context = BuildContext();
+        SetupRecipient("user-1", email: "user@test.com");
+
+        _serviceProvider.GetService(typeof(IEnumerable<ITemplateResolver>))
+            .Returns(Array.Empty<ITemplateResolver>());
+
+        EmailMessage? captured = null;
+        _emailSender.SendAsync(Arg.Any<EmailMessage>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                captured = callInfo.Arg<EmailMessage>();
+                return Task.CompletedTask;
+            });
+
+        await _channel.SendAsync(context, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Subject.ShouldBe("test notification");
+    }
 
     // -------------------------------------------------------------------------
     // Helpers

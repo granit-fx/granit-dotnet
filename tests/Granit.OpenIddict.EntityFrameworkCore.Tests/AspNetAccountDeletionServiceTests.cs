@@ -1,0 +1,254 @@
+using Granit.Events;
+using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Events;
+using Granit.Identity.Local.Services;
+using Granit.OpenIddict.EntityFrameworkCore.Internal;
+using Granit.Timing;
+using Microsoft.AspNetCore.Identity;
+using NSubstitute;
+using OpenIddict.Abstractions;
+using Shouldly;
+using Xunit;
+
+namespace Granit.OpenIddict.EntityFrameworkCore.Tests;
+
+public sealed class AspNetAccountDeletionServiceTests
+{
+    private static readonly DateTimeOffset FixedNow = new(2025, 6, 15, 10, 0, 0, TimeSpan.Zero);
+
+    private readonly UserManager<GranitUser> _userManager;
+    private readonly IOpenIddictTokenManager _tokenManager = Substitute.For<IOpenIddictTokenManager>();
+    private readonly IDistributedEventBus _eventBus = Substitute.For<IDistributedEventBus>();
+    private readonly IClock _clock = Substitute.For<IClock>();
+    private readonly AspNetAccountDeletionService _sut;
+
+    public AspNetAccountDeletionServiceTests()
+    {
+        IUserStore<GranitUser> store = Substitute.For<IUserStore<GranitUser>>();
+        _userManager = Substitute.For<UserManager<GranitUser>>(
+            store, null, null, null, null, null, null, null, null);
+
+        _clock.Now.Returns(FixedNow);
+
+        _sut = new AspNetAccountDeletionService(
+            _userManager,
+            _tokenManager,
+            _eventBus,
+            _clock);
+    }
+
+    // ────────────────────── InitiateAsync — happy path ──────────────────────
+
+    [Fact]
+    public async Task InitiateAsync_UserExists_SoftDeletesUser()
+    {
+        GranitUser user = CreateUser();
+        string userId = user.Id.ToString();
+
+        _userManager.FindByIdAsync(userId).Returns(user);
+        _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
+        _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue).Returns(IdentityResult.Success);
+        _userManager.UpdateSecurityStampAsync(user).Returns(IdentityResult.Success);
+        SetupEmptyTokenStream(userId);
+
+        await _sut.InitiateAsync(userId, TestContext.Current.CancellationToken);
+
+        user.IsDeleted.ShouldBeTrue();
+        user.DeletedAt.ShouldBe(FixedNow);
+        user.DeletedBy.ShouldBe(userId);
+    }
+
+    [Fact]
+    public async Task InitiateAsync_UserExists_LocksAccount()
+    {
+        GranitUser user = CreateUser();
+        string userId = user.Id.ToString();
+
+        _userManager.FindByIdAsync(userId).Returns(user);
+        _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
+        _userManager.SetLockoutEndDateAsync(user, Arg.Any<DateTimeOffset>()).Returns(IdentityResult.Success);
+        _userManager.UpdateSecurityStampAsync(user).Returns(IdentityResult.Success);
+        SetupEmptyTokenStream(userId);
+
+        await _sut.InitiateAsync(userId, TestContext.Current.CancellationToken);
+
+        await _userManager.Received(1).SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+    }
+
+    [Fact]
+    public async Task InitiateAsync_UserExists_UpdatesSecurityStamp()
+    {
+        GranitUser user = CreateUser();
+        string userId = user.Id.ToString();
+
+        _userManager.FindByIdAsync(userId).Returns(user);
+        _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
+        _userManager.SetLockoutEndDateAsync(user, Arg.Any<DateTimeOffset>()).Returns(IdentityResult.Success);
+        _userManager.UpdateSecurityStampAsync(user).Returns(IdentityResult.Success);
+        SetupEmptyTokenStream(userId);
+
+        await _sut.InitiateAsync(userId, TestContext.Current.CancellationToken);
+
+        await _userManager.Received(1).UpdateSecurityStampAsync(user);
+    }
+
+    [Fact]
+    public async Task InitiateAsync_UserExists_PublishesAccountDeletedEto()
+    {
+        GranitUser user = CreateUser();
+        var tenantId = Guid.NewGuid();
+        user.TenantId = tenantId;
+        string userId = user.Id.ToString();
+
+        _userManager.FindByIdAsync(userId).Returns(user);
+        _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
+        _userManager.SetLockoutEndDateAsync(user, Arg.Any<DateTimeOffset>()).Returns(IdentityResult.Success);
+        _userManager.UpdateSecurityStampAsync(user).Returns(IdentityResult.Success);
+        SetupEmptyTokenStream(userId);
+
+        await _sut.InitiateAsync(userId, TestContext.Current.CancellationToken);
+
+        await _eventBus.Received(1).PublishAsync(
+            Arg.Is<AccountDeletedEto>(e =>
+                e.UserId == user.Id &&
+                e.TenantId == tenantId),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitiateAsync_UserWithNoTenant_PublishesEventWithNullTenant()
+    {
+        GranitUser user = CreateUser();
+        user.TenantId = null;
+        string userId = user.Id.ToString();
+
+        _userManager.FindByIdAsync(userId).Returns(user);
+        _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
+        _userManager.SetLockoutEndDateAsync(user, Arg.Any<DateTimeOffset>()).Returns(IdentityResult.Success);
+        _userManager.UpdateSecurityStampAsync(user).Returns(IdentityResult.Success);
+        SetupEmptyTokenStream(userId);
+
+        await _sut.InitiateAsync(userId, TestContext.Current.CancellationToken);
+
+        await _eventBus.Received(1).PublishAsync(
+            Arg.Is<AccountDeletedEto>(e =>
+                e.UserId == user.Id &&
+                e.TenantId == null),
+            Arg.Any<CancellationToken>());
+    }
+
+    // ────────────────────── InitiateAsync — token revocation ──────────────────────
+
+    [Fact]
+    public async Task InitiateAsync_UserHasTokens_RevokesAllTokens()
+    {
+        GranitUser user = CreateUser();
+        string userId = user.Id.ToString();
+
+        _userManager.FindByIdAsync(userId).Returns(user);
+        _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
+        _userManager.SetLockoutEndDateAsync(user, Arg.Any<DateTimeOffset>()).Returns(IdentityResult.Success);
+        _userManager.UpdateSecurityStampAsync(user).Returns(IdentityResult.Success);
+
+        object token1 = new object();
+        object token2 = new object();
+        _tokenManager.FindBySubjectAsync(userId, Arg.Any<CancellationToken>())
+            .Returns(ToAsyncEnumerable(token1, token2));
+        _tokenManager.TryRevokeAsync(Arg.Any<object>(), Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        await _sut.InitiateAsync(userId, TestContext.Current.CancellationToken);
+
+        await _tokenManager.Received(1).TryRevokeAsync(token1, Arg.Any<CancellationToken>());
+        await _tokenManager.Received(1).TryRevokeAsync(token2, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task InitiateAsync_NoTokens_StillSucceeds()
+    {
+        GranitUser user = CreateUser();
+        string userId = user.Id.ToString();
+
+        _userManager.FindByIdAsync(userId).Returns(user);
+        _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
+        _userManager.SetLockoutEndDateAsync(user, Arg.Any<DateTimeOffset>()).Returns(IdentityResult.Success);
+        _userManager.UpdateSecurityStampAsync(user).Returns(IdentityResult.Success);
+        SetupEmptyTokenStream(userId);
+
+        await Should.NotThrowAsync(
+            () => _sut.InitiateAsync(userId, TestContext.Current.CancellationToken));
+    }
+
+    // ────────────────────── InitiateAsync — error paths ──────────────────────
+
+    [Fact]
+    public async Task InitiateAsync_UserNotFound_ThrowsInvalidOperation()
+    {
+        string unknownId = Guid.NewGuid().ToString();
+        _userManager.FindByIdAsync(unknownId).Returns((GranitUser?)null);
+
+        InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
+            () => _sut.InitiateAsync(unknownId, TestContext.Current.CancellationToken));
+
+        ex.Message.ShouldContain(unknownId);
+    }
+
+    [Fact]
+    public async Task InitiateAsync_UpdateFails_ThrowsInvalidOperation()
+    {
+        GranitUser user = CreateUser();
+        string userId = user.Id.ToString();
+
+        _userManager.FindByIdAsync(userId).Returns(user);
+        _userManager.UpdateAsync(user)
+            .Returns(IdentityResult.Failed(new IdentityError { Description = "Update failed" }));
+
+        InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
+            () => _sut.InitiateAsync(userId, TestContext.Current.CancellationToken));
+
+        ex.Message.ShouldContain("Update failed");
+    }
+
+    [Fact]
+    public async Task InitiateAsync_UpdateFails_DoesNotLockAccountOrRevokeTokens()
+    {
+        GranitUser user = CreateUser();
+        string userId = user.Id.ToString();
+
+        _userManager.FindByIdAsync(userId).Returns(user);
+        _userManager.UpdateAsync(user)
+            .Returns(IdentityResult.Failed(new IdentityError { Description = "Conflict" }));
+
+        await Should.ThrowAsync<InvalidOperationException>(
+            () => _sut.InitiateAsync(userId, TestContext.Current.CancellationToken));
+
+        await _userManager.DidNotReceive().SetLockoutEndDateAsync(Arg.Any<GranitUser>(), Arg.Any<DateTimeOffset>());
+        await _userManager.DidNotReceive().UpdateSecurityStampAsync(Arg.Any<GranitUser>());
+        await _eventBus.DidNotReceive().PublishAsync(Arg.Any<AccountDeletedEto>(), Arg.Any<CancellationToken>());
+    }
+
+    // ────────────────────── Helpers ──────────────────────
+
+    private static GranitUser CreateUser() => new()
+    {
+        Id = Guid.NewGuid(),
+        UserName = "testuser",
+        Email = "test@example.com",
+    };
+
+    private void SetupEmptyTokenStream(string userId)
+    {
+        _tokenManager.FindBySubjectAsync(userId, Arg.Any<CancellationToken>())
+            .Returns(ToAsyncEnumerable<object>());
+    }
+
+    private static async IAsyncEnumerable<T> ToAsyncEnumerable<T>(params T[] items)
+    {
+        foreach (T item in items)
+        {
+            yield return item;
+        }
+
+        await Task.CompletedTask;
+    }
+}

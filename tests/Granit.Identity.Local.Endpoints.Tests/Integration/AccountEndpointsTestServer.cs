@@ -31,6 +31,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
 {
     public static readonly Guid TestUserId = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
     public static readonly string TestUserIdString = TestUserId.ToString();
+    public static readonly Guid ImpersonatorUserId = Guid.Parse("11111111-2222-3333-4444-555555555555");
+    public static readonly string ImpersonatorUserIdString = ImpersonatorUserId.ToString();
     public static readonly DateTimeOffset FixedNow = new(2026, 1, 15, 10, 0, 0, TimeSpan.Zero);
 
     private const string AuthenticatedRole = "authenticated";
@@ -40,6 +42,11 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
 
     public HttpClient AuthenticatedClient { get; }
     public HttpClient AnonymousClient { get; }
+
+    /// <summary>
+    /// Client that simulates an impersonation session (has <c>impersonator_id</c> claim).
+    /// </summary>
+    public HttpClient ImpersonatedClient { get; }
 
     public IIdentityProvider IdentityProvider { get; }
     public IIdentityCredentialVerifier CredentialVerifier { get; }
@@ -64,6 +71,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         WebApplication app,
         HttpClient authenticatedClient,
         HttpClient anonymousClient,
+        HttpClient impersonatedClient,
         IIdentityProvider identityProvider,
         IIdentityCredentialVerifier credentialVerifier,
         IIdentityUserReader userReader,
@@ -86,6 +94,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         _app = app;
         AuthenticatedClient = authenticatedClient;
         AnonymousClient = anonymousClient;
+        ImpersonatedClient = impersonatedClient;
         IdentityProvider = identityProvider;
         CredentialVerifier = credentialVerifier;
         UserReader = userReader;
@@ -204,8 +213,13 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
 
         HttpClient anonymousClient = app.GetTestClient();
 
+        HttpClient impersonatedClient = app.GetTestClient();
+        impersonatedClient.DefaultRequestHeaders.Add(TestAuthHandler.RolesHeader, allRoles);
+        impersonatedClient.DefaultRequestHeaders.Add(
+            TestAuthHandler.ImpersonatorIdHeader, ImpersonatorUserIdString);
+
         return new AccountEndpointsTestServer(
-            app, authenticatedClient, anonymousClient,
+            app, authenticatedClient, anonymousClient, impersonatedClient,
             identityProvider, credentialVerifier, userReader, userWriter, passwordManager,
             emailConfirmation, passwordResetService, twoFactorService,
             externalLoginService, externalProviderRegistry,
@@ -218,6 +232,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
     {
         AuthenticatedClient.Dispose();
         AnonymousClient.Dispose();
+        ImpersonatedClient.Dispose();
         await _app.DisposeAsync().ConfigureAwait(false);
     }
 }
@@ -234,6 +249,7 @@ internal sealed class TestAuthHandler(
 {
     public const string SchemeName = "Test";
     public const string RolesHeader = "X-Test-Roles";
+    public const string ImpersonatorIdHeader = "X-Test-Impersonator-Id";
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -243,7 +259,7 @@ internal sealed class TestAuthHandler(
         }
 
         string[] roles = rolesHeader.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
-        Claim[] claims =
+        List<Claim> claims =
         [
             new("sub", AccountEndpointsTestServer.TestUserIdString),
             new(ClaimTypes.NameIdentifier, AccountEndpointsTestServer.TestUserIdString),
@@ -255,6 +271,14 @@ internal sealed class TestAuthHandler(
             new("jti", Guid.NewGuid().ToString()),
             .. roles.Select(r => new Claim(ClaimTypes.Role, r.Trim())),
         ];
+
+        // Support impersonation testing via X-Test-Impersonator-Id header
+        if (Request.Headers.TryGetValue(ImpersonatorIdHeader, out Microsoft.Extensions.Primitives.StringValues impersonatorId)
+            && !string.IsNullOrEmpty(impersonatorId.ToString()))
+        {
+            claims.Add(new Claim("impersonator_id", impersonatorId.ToString()));
+            claims.Add(new Claim("impersonator_name", "admin@example.com"));
+        }
 
         ClaimsIdentity identity = new(claims, SchemeName);
         ClaimsPrincipal principal = new(identity);

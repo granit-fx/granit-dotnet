@@ -252,7 +252,185 @@ public sealed class LogoutTokenValidatorTests : IDisposable
         result.ShouldBeNull();
     }
 
+    [Fact]
+    public async Task ValidateAsync_NullJwksFromCache_ReturnsNull()
+    {
+        string token = BuildSignedToken(
+            issuer: Authority,
+            audience: ClientId,
+            includeBackChannelEvent: true);
+
+        _cache.GetOrSetAsync<List<JsonElement>>(
+                Arg.Any<string>(),
+                Arg.Any<Func<FusionCacheFactoryExecutionContext<List<JsonElement>>, CancellationToken, Task<List<JsonElement>>>>(),
+                Arg.Any<FusionCacheEntryOptions?>(),
+                Arg.Any<CancellationToken>())
+            .ReturnsForAnyArgs((List<JsonElement>?)null!);
+
+        ValidatedLogoutToken? result = await _validator.ValidateAsync(
+            token, ClientId, TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
+
+    // ──── No kid in header (selects first sig-use key) ────
+
+    [Fact]
+    public async Task ValidateAsync_NoKidInHeader_SelectsFirstSigKey()
+    {
+        string token = BuildSignedToken(
+            issuer: Authority,
+            audience: ClientId,
+            includeBackChannelEvent: true,
+            kid: null);
+        SetupCacheWithJwks("any-kid");
+
+        ValidatedLogoutToken? result = await _validator.ValidateAsync(
+            token, ClientId, TestContext.Current.CancellationToken);
+
+        // The key should match via "use":"sig" even without kid
+        result.ShouldNotBeNull();
+    }
+
+    // ──── Audience: array with multiple values ────
+
+    [Fact]
+    public async Task ValidateAsync_AudienceArrayWithMultipleValues_Succeeds()
+    {
+        string token = BuildSignedTokenWithAudienceArray(
+            issuer: Authority,
+            audiences: ["other-client", ClientId],
+            includeBackChannelEvent: true);
+        SetupCacheWithJwks();
+
+        ValidatedLogoutToken? result = await _validator.ValidateAsync(
+            token, ClientId, TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.Audiences.ShouldNotBeNull();
+        result.Audiences!.ShouldContain(ClientId);
+        result.Audiences!.ShouldContain("other-client");
+    }
+
+    // ──── Audience: null (no aud claim) — succeeds ────
+
+    [Fact]
+    public async Task ValidateAsync_NoAudienceClaim_Succeeds()
+    {
+        string token = BuildSignedTokenWithNoAudience(
+            issuer: Authority,
+            includeBackChannelEvent: true);
+        SetupCacheWithJwks();
+
+        ValidatedLogoutToken? result = await _validator.ValidateAsync(
+            token, ClientId, TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.Audiences.ShouldBeNull();
+    }
+
+    // ──── Invalid base64 in payload ────
+
+    [Fact]
+    public async Task ValidateAsync_InvalidPayloadBase64_ReturnsNull()
+    {
+        string header = Base64UrlEncode(JsonSerializer.SerializeToUtf8Bytes(
+            new { alg = "RS256", kid = "test-key-1" }));
+        SetupCacheWithJwks();
+
+        // valid header + invalid payload + dummy signature
+        byte[] signingInput = System.Text.Encoding.ASCII.GetBytes($"{header}.!!!invalid!!!");
+        byte[] sig = _rsa.SignData(signingInput, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        string token = $"{header}.!!!invalid!!!.{Base64UrlEncode(sig)}";
+
+        ValidatedLogoutToken? result = await _validator.ValidateAsync(
+            token, ClientId, TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
+
+    // ──── Unsupported algorithm / key type ────
+
+    [Fact]
+    public async Task ValidateAsync_UnsupportedAlgorithm_ReturnsNull()
+    {
+        // Build token claiming HS256 (HMAC) — not supported
+        string token = BuildSignedToken(
+            issuer: Authority,
+            audience: ClientId,
+            includeBackChannelEvent: true,
+            algorithm: "HS256");
+        SetupCacheWithJwks();
+
+        ValidatedLogoutToken? result = await _validator.ValidateAsync(
+            token, ClientId, TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
+
     // ──── Helpers ────
+
+    private string BuildSignedTokenWithAudienceArray(
+        string issuer,
+        string[] audiences,
+        bool includeBackChannelEvent,
+        string? kid = "test-key-1")
+    {
+        var header = new Dictionary<string, object?> { ["alg"] = "RS256", ["typ"] = "JWT", ["kid"] = kid };
+        string headerB64 = Base64UrlEncode(JsonSerializer.SerializeToUtf8Bytes(header));
+
+        var payload = new Dictionary<string, object?>
+        {
+            ["iss"] = issuer,
+            ["sub"] = "user-1",
+            ["jti"] = "test-jti",
+            ["aud"] = audiences,
+        };
+
+        if (includeBackChannelEvent)
+        {
+            payload["events"] = new Dictionary<string, object>
+            {
+                ["http://schemas.openid.net/event/backchannel-logout"] = new { },
+            };
+        }
+
+        string payloadB64 = Base64UrlEncode(JsonSerializer.SerializeToUtf8Bytes(payload));
+        byte[] signingInput = System.Text.Encoding.ASCII.GetBytes($"{headerB64}.{payloadB64}");
+        byte[] signature = _rsa.SignData(signingInput, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+        return $"{headerB64}.{payloadB64}.{Base64UrlEncode(signature)}";
+    }
+
+    private string BuildSignedTokenWithNoAudience(
+        string issuer,
+        bool includeBackChannelEvent,
+        string? kid = "test-key-1")
+    {
+        var header = new Dictionary<string, object?> { ["alg"] = "RS256", ["typ"] = "JWT", ["kid"] = kid };
+        string headerB64 = Base64UrlEncode(JsonSerializer.SerializeToUtf8Bytes(header));
+
+        var payload = new Dictionary<string, object?>
+        {
+            ["iss"] = issuer,
+            ["sub"] = "user-1",
+            ["jti"] = "test-jti",
+        };
+
+        if (includeBackChannelEvent)
+        {
+            payload["events"] = new Dictionary<string, object>
+            {
+                ["http://schemas.openid.net/event/backchannel-logout"] = new { },
+            };
+        }
+
+        string payloadB64 = Base64UrlEncode(JsonSerializer.SerializeToUtf8Bytes(payload));
+        byte[] signingInput = System.Text.Encoding.ASCII.GetBytes($"{headerB64}.{payloadB64}");
+        byte[] signature = _rsa.SignData(signingInput, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+        return $"{headerB64}.{payloadB64}.{Base64UrlEncode(signature)}";
+    }
 
     private static string BuildUnsignedToken(string algorithm)
     {

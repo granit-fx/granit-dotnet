@@ -317,7 +317,7 @@ jobs:
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.token="${SONAR_TOKEN}" \
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
-            /d:sonar.exclusions=".nuget/**,docs-site/**" \
+            /d:sonar.exclusions=".nuget/**,docs-site/**,scripts/**" \
             /d:sonar.coverage.exclusions="**/Tests/**,**/test/**,**/bundles/**,**/*HostApplicationBuilderExtensions.cs,**/Granit*Module.cs" \
             /d:sonar.issue.ignore.multicriteria="e1,e2,e3,e4" \
             /d:sonar.issue.ignore.multicriteria.e1.ruleKey="csharpsquid:S6608" \
