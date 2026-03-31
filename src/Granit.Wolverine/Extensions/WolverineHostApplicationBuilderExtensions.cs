@@ -89,7 +89,17 @@ public static class WolverineHostApplicationBuilderExtensions
         {
             // Auto-discover assemblies decorated with [assembly: WolverineHandlerModule].
             // Granit library packages use this attribute to opt in to handler scanning.
-            opts.Discovery.IncludeHandlerModules = true;
+            //
+            // NOTE: opts.Discovery.IncludeHandlerModules = true does NOT work reliably
+            // in Wolverine 5.26.x — the flag is ignored during handler compilation.
+            // Workaround: explicitly scan AppDomain and include matching assemblies.
+            foreach (Assembly handlerAssembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (handlerAssembly.GetCustomAttributes(typeof(global::Wolverine.Attributes.WolverineHandlerModuleAttribute), false).Length > 0)
+                {
+                    opts.Discovery.IncludeAssembly(handlerAssembly);
+                }
+            }
 
             // Always include the entry assembly so application handlers are discovered
             // without requiring [assembly: WolverineHandlerModule] in application code.
