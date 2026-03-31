@@ -328,7 +328,7 @@ to accidentally send a local event over the wire.
 | **Private setters** | Not enforced | Architecture test: no public setters on aggregates |
 | **Factory methods** | Not enforced | Architecture test: `Create(...)` required |
 | **Domain events** | `AddDomainEvent()` | `AddDomainEvent()` + `AddDistributedEvent()` |
-| **Specifications** | `ISpecification<T>` | Not used (direct EF Core queries) |
+| **Specifications** | `ISpecification<T>` (Ardalis) | `Specification<T>` + `Spec.For<T>()` (built-in, ORM-agnostic) |
 
 FullStackHero gives you the primitives and trusts you to apply DDD correctly. Granit
 enforces DDD conventions through 27 architecture test classes — if you forget a private

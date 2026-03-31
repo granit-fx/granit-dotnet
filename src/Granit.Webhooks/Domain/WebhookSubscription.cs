@@ -134,8 +134,17 @@ public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
     /// <summary>
     /// Suspends the subscription and emits a <see cref="WebhookSubscriptionSuspendedEvent"/> domain event.
     /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the subscription is not in <see cref="WebhookSubscriptionStatus.Active"/> status.
+    /// </exception>
     internal void Suspend(DateTimeOffset suspendedAt, string suspendedBy, string reason)
     {
+        if (Status != WebhookSubscriptionStatus.Active)
+        {
+            throw new InvalidOperationException(
+                $"Cannot suspend a subscription with status '{Status}'. Only 'Active' subscriptions can be suspended.");
+        }
+
         Status = WebhookSubscriptionStatus.Suspended;
         DeactivationReason = reason;
         SuspendedAt = suspendedAt;
@@ -146,8 +155,16 @@ public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
     /// <summary>
     /// Permanently deactivates the subscription and emits a <see cref="WebhookSubscriptionDeactivatedEvent"/> domain event.
     /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the subscription is already in <see cref="WebhookSubscriptionStatus.Deactivated"/> status.
+    /// </exception>
     internal void Deactivate(string reason)
     {
+        if (Status == WebhookSubscriptionStatus.Deactivated)
+        {
+            throw new InvalidOperationException("Subscription is already deactivated.");
+        }
+
         Status = WebhookSubscriptionStatus.Deactivated;
         DeactivationReason = reason;
         AddDomainEvent(new WebhookSubscriptionDeactivatedEvent(Id, reason));
@@ -157,8 +174,17 @@ public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
     /// Activates a suspended subscription. Clears suspension audit fields and resets failure counters.
     /// Emits a <see cref="WebhookSubscriptionActivatedEvent"/> domain event.
     /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the subscription is not in <see cref="WebhookSubscriptionStatus.Suspended"/> status.
+    /// </exception>
     internal void Activate()
     {
+        if (Status != WebhookSubscriptionStatus.Suspended)
+        {
+            throw new InvalidOperationException(
+                $"Cannot activate a subscription with status '{Status}'. Only 'Suspended' subscriptions can be activated.");
+        }
+
         Status = WebhookSubscriptionStatus.Active;
         SuspendedAt = null;
         SuspendedBy = null;

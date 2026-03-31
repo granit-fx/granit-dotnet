@@ -85,14 +85,6 @@ internal sealed class EfWebhookSubscriptionStore(
         WriteAsync(async db =>
         {
             WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
-
-            if (subscription.Status != WebhookSubscriptionStatus.Suspended)
-            {
-                throw new ConflictException(
-                    "Webhooks:InvalidStateTransition",
-                    $"Cannot activate a subscription with status '{subscription.Status}'. Only 'Suspended' subscriptions can be activated.");
-            }
-
             subscription.Activate();
         }, cancellationToken);
 
@@ -105,14 +97,6 @@ internal sealed class EfWebhookSubscriptionStore(
         WriteAsync(async db =>
         {
             WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
-
-            if (subscription.Status != WebhookSubscriptionStatus.Active)
-            {
-                throw new ConflictException(
-                    "Webhooks:InvalidStateTransition",
-                    $"Cannot suspend a subscription with status '{subscription.Status}'. Only 'Active' subscriptions can be suspended.");
-            }
-
             subscription.Suspend(clock.Now, suspendedBy, reason);
         }, cancellationToken);
 
@@ -124,14 +108,6 @@ internal sealed class EfWebhookSubscriptionStore(
         WriteAsync(async db =>
         {
             WebhookSubscription subscription = await FindOrThrowAsync(db, subscriptionId, cancellationToken).ConfigureAwait(false);
-
-            if (subscription.Status == WebhookSubscriptionStatus.Deactivated)
-            {
-                throw new ConflictException(
-                    "Webhooks:AlreadyDeactivated",
-                    "Subscription is already deactivated.");
-            }
-
             subscription.Deactivate(reason);
         }, cancellationToken);
 
