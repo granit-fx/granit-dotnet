@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Granit.Diagnostics\Granit.Diagnostics.csproj" />
     <ProjectReference Include="..\Granit.Http.Resilience\Granit.Http.Resilience.csproj" />
     <ProjectReference Include="..\Granit.Notifications.Sms\Granit.Notifications.Sms.csproj" />
     <ProjectReference Include="..\Granit.Notifications.WhatsApp\Granit.Notifications.WhatsApp.csproj" />

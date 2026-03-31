@@ -10,6 +10,7 @@
       "src/Granit.BackgroundJobs.Wolverine/Granit.BackgroundJobs.Wolverine.csproj",
       "src/Granit.BackgroundJobs/Granit.BackgroundJobs.csproj",
       "src/Granit.Caching/Granit.Caching.csproj",
+      "src/Granit.Diagnostics/Granit.Diagnostics.csproj",
       "src/Granit.Encryption/Granit.Encryption.csproj",
       "src/Granit.Events.Wolverine/Granit.Events.Wolverine.csproj",
       "src/Granit.Events/Granit.Events.csproj",

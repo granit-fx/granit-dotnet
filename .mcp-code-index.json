@@ -739,6 +739,7 @@
     {
       "name": "Granit.Identity.Federated.EntraId",
       "deps": [
+        "Granit.Diagnostics",
         "Granit.Http.Resilience",
         "Granit.Identity.Federated",
         "Granit.Timing"
@@ -755,6 +756,7 @@
     {
       "name": "Granit.Identity.Federated.Keycloak",
       "deps": [
+        "Granit.Diagnostics",
         "Granit.Http.Resilience",
         "Granit.Identity.Federated",
         "Granit.Timing"
@@ -904,6 +906,7 @@
     {
       "name": "Granit.Notifications.Brevo",
       "deps": [
+        "Granit.Diagnostics",
         "Granit.Http.Resilience",
         "Granit.Notifications.Email",
         "Granit.Notifications.Sms",
@@ -936,6 +939,7 @@
     {
       "name": "Granit.Notifications.Email.Scaleway",
       "deps": [
+        "Granit.Diagnostics",
         "Granit.Http.Resilience",
         "Granit.Notifications.Email"
       ],
@@ -944,6 +948,7 @@
     {
       "name": "Granit.Notifications.Email.SendGrid",
       "deps": [
+        "Granit.Diagnostics",
         "Granit.Http.Resilience",
         "Granit.Notifications.Email"
       ],
@@ -1046,6 +1051,7 @@
     {
       "name": "Granit.Notifications.Twilio",
       "deps": [
+        "Granit.Diagnostics",
         "Granit.Http.Resilience",
         "Granit.Notifications.Sms",
         "Granit.Notifications.WhatsApp"
@@ -1077,6 +1083,7 @@
     {
       "name": "Granit.Notifications.Zulip",
       "deps": [
+        "Granit.Diagnostics",
         "Granit.Http.Resilience",
         "Granit.Notifications.Abstractions"
       ],
@@ -10073,6 +10080,22 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "HttpServiceHealthCheckBase",
+      "fqn": "Granit.Diagnostics.HealthChecks.HttpServiceHealthCheckBase",
+      "kind": "class",
+      "project": "Granit.Diagnostics",
+      "file": "src/Granit.Diagnostics/HealthChecks/HttpServiceHealthCheckBase.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "CheckHealthAsync",
+          "kind": "method",
+          "signature": "CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)",
+          "returnType": "Task<HealthCheckResult>"
         }
       ]
     },

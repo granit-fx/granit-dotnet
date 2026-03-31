@@ -1,4 +1,4 @@
-using System.Net;
+using Granit.Diagnostics.HealthChecks;
 using Granit.Identity.Federated.Keycloak.Options;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -19,44 +19,24 @@ namespace Granit.Identity.Federated.Keycloak.HealthChecks;
 /// </remarks>
 internal sealed class KeycloakHealthCheck(
     IHttpClientFactory httpClientFactory,
-    IOptions<KeycloakAdminOptions> options) : IHealthCheck
+    IOptions<KeycloakAdminOptions> options) : HttpServiceHealthCheckBase(httpClientFactory)
 {
-    private static readonly TimeSpan s_healthCheckTimeout = TimeSpan.FromSeconds(10);
+    protected override string ServiceName => "Keycloak";
 
-    public async Task<HealthCheckResult> CheckHealthAsync(
-        HealthCheckContext context,
-        CancellationToken cancellationToken = default)
+    protected override string HttpClientName => "KeycloakAdmin";
+
+    protected override HttpRequestMessage CreateRequest()
     {
-        try
-        {
-            KeycloakAdminOptions opts = options.Value;
-            using HttpClient client = httpClientFactory.CreateClient("KeycloakAdmin");
+        KeycloakAdminOptions opts = options.Value;
 
-            using FormUrlEncodedContent content = new(
+        return new HttpRequestMessage(HttpMethod.Post, opts.GetTokenEndpoint())
+        {
+            Content = new FormUrlEncodedContent(
             [
                 new KeyValuePair<string, string>("grant_type", "client_credentials"),
                 new KeyValuePair<string, string>("client_id", opts.ClientId),
                 new KeyValuePair<string, string>("client_secret", opts.ClientSecret),
-            ]);
-
-            using HttpResponseMessage response = await client
-                .PostAsync(opts.GetTokenEndpoint(), content, cancellationToken)
-                .WaitAsync(s_healthCheckTimeout, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return HealthCheckResult.Healthy();
-            }
-
-            return response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden
-                ? HealthCheckResult.Unhealthy($"Keycloak auth failed: {(int)response.StatusCode}")
-                : HealthCheckResult.Degraded($"Keycloak returned {(int)response.StatusCode}");
-        }
-        catch (Exception ex)
-        {
-            // Sanitize: never expose URLs, secrets, or tokens in the message
-            return HealthCheckResult.Unhealthy($"Keycloak unreachable: {ex.GetType().Name}");
-        }
+            ]),
+        };
     }
 }

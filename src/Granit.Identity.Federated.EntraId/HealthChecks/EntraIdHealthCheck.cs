@@ -1,4 +1,4 @@
-using System.Net;
+using Granit.Diagnostics.HealthChecks;
 using Granit.Identity.Federated.EntraId.Options;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -20,45 +20,25 @@ namespace Granit.Identity.Federated.EntraId.HealthChecks;
 /// </remarks>
 internal sealed class EntraIdHealthCheck(
     IHttpClientFactory httpClientFactory,
-    IOptions<EntraIdAdminOptions> options) : IHealthCheck
+    IOptions<EntraIdAdminOptions> options) : HttpServiceHealthCheckBase(httpClientFactory)
 {
-    private static readonly TimeSpan s_healthCheckTimeout = TimeSpan.FromSeconds(10);
+    protected override string ServiceName => "Entra ID";
 
-    public async Task<HealthCheckResult> CheckHealthAsync(
-        HealthCheckContext context,
-        CancellationToken cancellationToken = default)
+    protected override string HttpClientName => "MicrosoftGraph";
+
+    protected override HttpRequestMessage CreateRequest()
     {
-        try
-        {
-            EntraIdAdminOptions opts = options.Value;
-            using HttpClient client = httpClientFactory.CreateClient("MicrosoftGraph");
+        EntraIdAdminOptions opts = options.Value;
 
-            using FormUrlEncodedContent content = new(
+        return new HttpRequestMessage(HttpMethod.Post, opts.GetTokenEndpoint())
+        {
+            Content = new FormUrlEncodedContent(
             [
                 new KeyValuePair<string, string>("grant_type", "client_credentials"),
                 new KeyValuePair<string, string>("client_id", opts.ClientId),
                 new KeyValuePair<string, string>("client_secret", opts.ClientSecret),
                 new KeyValuePair<string, string>("scope", "https://graph.microsoft.com/.default"),
-            ]);
-
-            using HttpResponseMessage response = await client
-                .PostAsync(opts.GetTokenEndpoint(), content, cancellationToken)
-                .WaitAsync(s_healthCheckTimeout, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return HealthCheckResult.Healthy();
-            }
-
-            return response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden
-                ? HealthCheckResult.Unhealthy($"Entra ID auth failed: {(int)response.StatusCode}")
-                : HealthCheckResult.Degraded($"Entra ID returned {(int)response.StatusCode}");
-        }
-        catch (Exception ex)
-        {
-            // Sanitize: never expose tenant IDs, secrets, or tokens
-            return HealthCheckResult.Unhealthy($"Entra ID unreachable: {ex.GetType().Name}");
-        }
+            ]),
+        };
     }
 }
