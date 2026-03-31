@@ -455,6 +455,12 @@
       "granit": {
         "type": "Project"
       },
+      "granit.diagnostics": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
       "granit.http.resilience": {
         "type": "Project",
         "dependencies": {
@@ -478,6 +484,7 @@
       "granit.identity.federated.keycloak": {
         "type": "Project",
         "dependencies": {
+          "Granit.Diagnostics": "[0.1.0-dev, )",
           "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Identity.Federated": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",

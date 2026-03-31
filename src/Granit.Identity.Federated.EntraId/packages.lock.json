@@ -251,6 +251,12 @@
       "granit": {
         "type": "Project"
       },
+      "granit.diagnostics": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
       "granit.http.resilience": {
         "type": "Project",
         "dependencies": {

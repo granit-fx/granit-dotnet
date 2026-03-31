@@ -46,7 +46,7 @@ public sealed class ReferenceDataUpdateRequestValidatorTests
     [Fact]
     public void Validate_LabelEnExceedsMaxLength_Fails()
     {
-        string longLabel = new('x', ReferenceDataUpdateRequestValidator.MaxLabelLength + 1);
+        string longLabel = new('x', ReferenceDataMutableFieldsValidator<ReferenceDataUpdateRequest>.MaxLabelLength + 1);
         ReferenceDataUpdateRequest request = ValidRequest() with { LabelEn = longLabel };
 
         ValidationResult result = _validator.Validate(request);

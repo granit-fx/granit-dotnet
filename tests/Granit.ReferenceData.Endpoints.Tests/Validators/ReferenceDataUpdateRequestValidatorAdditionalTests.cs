@@ -33,7 +33,7 @@ public sealed class ReferenceDataUpdateRequestValidatorAdditionalTests
     [InlineData(nameof(ReferenceDataUpdateRequest.LabelCs))]
     public void Validate_OptionalLabelExceedsMaxLength_Fails(string propertyName)
     {
-        string longLabel = new('x', ReferenceDataUpdateRequestValidator.MaxLabelLength + 1);
+        string longLabel = new('x', ReferenceDataMutableFieldsValidator<ReferenceDataUpdateRequest>.MaxLabelLength + 1);
         ReferenceDataUpdateRequest request = propertyName switch
         {
             nameof(ReferenceDataUpdateRequest.LabelFr) => ValidRequest() with { LabelFr = longLabel },
@@ -65,7 +65,7 @@ public sealed class ReferenceDataUpdateRequestValidatorAdditionalTests
     [Fact]
     public void Validate_LabelEnAtMaxLength_Passes()
     {
-        string maxLabel = new('x', ReferenceDataUpdateRequestValidator.MaxLabelLength);
+        string maxLabel = new('x', ReferenceDataMutableFieldsValidator<ReferenceDataUpdateRequest>.MaxLabelLength);
         ReferenceDataUpdateRequest request = ValidRequest() with { LabelEn = maxLabel };
 
         ValidationResult result = _validator.Validate(request);

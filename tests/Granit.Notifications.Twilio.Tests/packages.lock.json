@@ -444,6 +444,12 @@
       "granit": {
         "type": "Project"
       },
+      "granit.diagnostics": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
       "granit.http.resilience": {
         "type": "Project",
         "dependencies": {
@@ -470,6 +476,7 @@
       "granit.notifications.twilio": {
         "type": "Project",
         "dependencies": {
+          "Granit.Diagnostics": "[0.1.0-dev, )",
           "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Notifications.Sms": "[0.1.0-dev, )",
           "Granit.Notifications.WhatsApp": "[0.1.0-dev, )",
@@ -493,6 +500,14 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.timing": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
       "Microsoft.Extensions.Configuration.Binder": {

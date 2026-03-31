@@ -276,6 +276,12 @@
       "granit": {
         "type": "Project"
       },
+      "granit.diagnostics": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
       "granit.http.resilience": {
         "type": "Project",
         "dependencies": {
@@ -294,6 +300,14 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.timing": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
       "Microsoft.Extensions.Configuration.Binder": {

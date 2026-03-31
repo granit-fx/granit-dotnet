@@ -46,7 +46,7 @@ public sealed class ReferenceDataCreateRequestValidatorTests
     [Fact]
     public void Validate_CodeExceedsMaxLength_Fails()
     {
-        string longCode = new('X', ReferenceDataCreateRequestValidator.MaxCodeLength + 1);
+        string longCode = new('X', ReferenceDataMutableFieldsValidator<ReferenceDataCreateRequest>.MaxCodeLength + 1);
         ReferenceDataCreateRequest request = ValidRequest() with { Code = longCode };
 
         ValidationResult result = _validator.Validate(request);
@@ -76,7 +76,7 @@ public sealed class ReferenceDataCreateRequestValidatorTests
     [Fact]
     public void Validate_LabelEnExceedsMaxLength_Fails()
     {
-        string longLabel = new('x', ReferenceDataCreateRequestValidator.MaxLabelLength + 1);
+        string longLabel = new('x', ReferenceDataMutableFieldsValidator<ReferenceDataCreateRequest>.MaxLabelLength + 1);
         ReferenceDataCreateRequest request = ValidRequest() with { LabelEn = longLabel };
 
         ValidationResult result = _validator.Validate(request);
@@ -97,7 +97,7 @@ public sealed class ReferenceDataCreateRequestValidatorTests
     [InlineData(nameof(ReferenceDataCreateRequest.LabelPt))]
     public void Validate_OptionalLabelExceedsMaxLength_Fails(string propertyName)
     {
-        string longLabel = new('x', ReferenceDataCreateRequestValidator.MaxLabelLength + 1);
+        string longLabel = new('x', ReferenceDataMutableFieldsValidator<ReferenceDataCreateRequest>.MaxLabelLength + 1);
         ReferenceDataCreateRequest request = propertyName switch
         {
             nameof(ReferenceDataCreateRequest.LabelFr) => ValidRequest() with { LabelFr = longLabel },
