@@ -3,7 +3,7 @@ namespace Granit.QueryEngine.SavedViews;
 /// <summary>
 /// Request payload for updating an existing saved view.
 /// </summary>
-public sealed record UpdateSavedViewRequest
+public sealed record UpdateSavedViewRequest : ISavedViewRequest
 {
     /// <summary>User-facing name of the saved view.</summary>
     public required string Name { get; init; }

@@ -15,4 +15,4 @@ public sealed record AIWorkspaceCreateRequest(
     string Model,
     string? SystemPrompt,
     float? Temperature,
-    int? MaxOutputTokens);
+    int? MaxOutputTokens) : IAIWorkspaceMutableFields;

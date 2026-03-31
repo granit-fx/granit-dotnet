@@ -1,3 +1,5 @@
+using Granit.ReferenceData;
+
 namespace Granit.ReferenceData.Endpoints.Dtos;
 
 /// <summary>
@@ -43,4 +45,4 @@ public sealed record ReferenceDataUpdateRequest(
     DateTimeOffset? ValidFrom = null,
     DateTimeOffset? ValidTo = null,
     string? ParentCode = null,
-    Dictionary<string, string>? ExtraProperties = null);
+    Dictionary<string, string>? ExtraProperties = null) : IReferenceDataMutableFields;

@@ -15,4 +15,4 @@ public sealed record AIWorkspaceUpdateRequest(
     string? SystemPrompt,
     float? Temperature,
     int? MaxOutputTokens,
-    bool IsActive);
+    bool IsActive) : IAIWorkspaceMutableFields;

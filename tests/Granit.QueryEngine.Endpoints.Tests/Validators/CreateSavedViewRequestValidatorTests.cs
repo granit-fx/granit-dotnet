@@ -72,7 +72,7 @@ public sealed class CreateSavedViewRequestValidatorTests
     {
         var request = new CreateSavedViewRequest
         {
-            Name = new string('A', CreateSavedViewRequestValidator.MaxNameLength),
+            Name = new string('A', SavedViewRequestValidator<CreateSavedViewRequest>.MaxNameLength),
         };
 
         ValidationResult result = _validator.Validate(request);
@@ -85,7 +85,7 @@ public sealed class CreateSavedViewRequestValidatorTests
     {
         var request = new CreateSavedViewRequest
         {
-            Name = new string('A', CreateSavedViewRequestValidator.MaxNameLength + 1),
+            Name = new string('A', SavedViewRequestValidator<CreateSavedViewRequest>.MaxNameLength + 1),
         };
 
         ValidationResult result = _validator.Validate(request);

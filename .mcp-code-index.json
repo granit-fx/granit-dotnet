@@ -1916,6 +1916,15 @@
       "members": []
     },
     {
+      "name": "IAIWorkspaceMutableFields",
+      "fqn": "Granit.AI.Endpoints.Dtos.IAIWorkspaceMutableFields",
+      "kind": "interface",
+      "project": "Granit.AI.Endpoints",
+      "file": "src/Granit.AI.Endpoints/Dtos/IAIWorkspaceMutableFields.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "AIEndpointRouteBuilderExtensions",
       "fqn": "Granit.AI.Endpoints.Extensions.AIEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -25899,6 +25908,15 @@
       "members": []
     },
     {
+      "name": "ISavedViewRequest",
+      "fqn": "Granit.QueryEngine.SavedViews.ISavedViewRequest",
+      "kind": "interface",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/SavedViews/ISavedViewRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "ISavedViewStoreReader",
       "fqn": "Granit.QueryEngine.SavedViews.ISavedViewStoreReader",
       "kind": "interface",
@@ -26417,7 +26435,7 @@
       "kind": "record",
       "project": "Granit.ReferenceData.Endpoints",
       "file": "src/Granit.ReferenceData.Endpoints/Dtos/ReferenceDataCreateRequest.cs",
-      "line": 26,
+      "line": 28,
       "members": []
     },
     {
@@ -26435,7 +26453,7 @@
       "kind": "record",
       "project": "Granit.ReferenceData.Endpoints",
       "file": "src/Granit.ReferenceData.Endpoints/Dtos/ReferenceDataUpdateRequest.cs",
-      "line": 26,
+      "line": 28,
       "members": []
     },
     {
@@ -26563,6 +26581,15 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "IReferenceDataMutableFields",
+      "fqn": "Granit.ReferenceData.IReferenceDataMutableFields",
+      "kind": "interface",
+      "project": "Granit.ReferenceData",
+      "file": "src/Granit.ReferenceData/IReferenceDataMutableFields.cs",
+      "line": 7,
+      "members": []
     },
     {
       "name": "IReferenceDataSeeder",

@@ -27,7 +27,7 @@ public sealed class ReferenceDataCreateRequestValidatorAdditionalTests
     [InlineData(nameof(ReferenceDataCreateRequest.LabelCs))]
     public void Validate_RemainingOptionalLabelExceedsMaxLength_Fails(string propertyName)
     {
-        string longLabel = new('x', ReferenceDataCreateRequestValidator.MaxLabelLength + 1);
+        string longLabel = new('x', ReferenceDataMutableFieldsValidator<ReferenceDataCreateRequest>.MaxLabelLength + 1);
         ReferenceDataCreateRequest request = propertyName switch
         {
             nameof(ReferenceDataCreateRequest.LabelZh) => ValidRequest() with { LabelZh = longLabel },
@@ -53,7 +53,7 @@ public sealed class ReferenceDataCreateRequestValidatorAdditionalTests
     [Fact]
     public void Validate_CodeAtMaxLength_Passes()
     {
-        string maxCode = new('X', ReferenceDataCreateRequestValidator.MaxCodeLength);
+        string maxCode = new('X', ReferenceDataMutableFieldsValidator<ReferenceDataCreateRequest>.MaxCodeLength);
         ReferenceDataCreateRequest request = ValidRequest() with { Code = maxCode };
 
         ValidationResult result = _validator.Validate(request);
@@ -68,7 +68,7 @@ public sealed class ReferenceDataCreateRequestValidatorAdditionalTests
     [Fact]
     public void Validate_LabelEnAtMaxLength_Passes()
     {
-        string maxLabel = new('x', ReferenceDataCreateRequestValidator.MaxLabelLength);
+        string maxLabel = new('x', ReferenceDataMutableFieldsValidator<ReferenceDataCreateRequest>.MaxLabelLength);
         ReferenceDataCreateRequest request = ValidRequest() with { LabelEn = maxLabel };
 
         ValidationResult result = _validator.Validate(request);
