@@ -10,4 +10,4 @@ namespace Granit.Persistence;
 /// This module has no ORM dependency. EF Core, MongoDB, and Dapper implementations
 /// depend on this module for shared abstractions.
 /// </remarks>
-public sealed class GranitPersistenceAbstractionsModule : GranitModule;
+public sealed class GranitPersistenceModule : GranitModule;

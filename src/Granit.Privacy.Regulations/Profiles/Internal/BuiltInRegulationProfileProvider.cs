@@ -6,6 +6,14 @@ namespace Granit.Privacy.Regulations.Profiles.Internal;
 /// </summary>
 internal sealed class BuiltInRegulationProfileProvider : IRegulationProfileProvider
 {
+    private const string Adequacy = "Adequate protection";
+    private const string AdequacyDecision = "Adequacy";
+    private const string Scc = "SCC";
+    private const string Bcr = "BCR";
+    private const string Consent = "Consent";
+    private const string Contract = "Contract";
+    private const string ContractualClauses = "Contractual clauses";
+
     public void Define(IRegulationProfileContext context)
     {
         RegisterTier1(context);
@@ -37,7 +45,7 @@ internal sealed class BuiltInRegulationProfileProvider : IRegulationProfileProvi
             MinimumConsentAge = 16,
             CookieConsentModel = ConsentModel.OptIn,
             RequiresCrossBorderAssessment = true,
-            TransferMechanisms = ["Adequacy", "SCC", "BCR", "EU-US DPF"],
+            TransferMechanisms = [AdequacyDecision, Scc, Bcr, "EU-US DPF"],
             RequiresDpoOrRepresentative = true,
             DpoNotes = "Required for public authorities, large-scale monitoring, or core processing of special categories.",
         });
@@ -66,7 +74,7 @@ internal sealed class BuiltInRegulationProfileProvider : IRegulationProfileProvi
             MinimumConsentAge = 13,
             CookieConsentModel = ConsentModel.OptIn,
             RequiresCrossBorderAssessment = true,
-            TransferMechanisms = ["Adequacy", "SCC", "BCR", "UK-US Data Bridge"],
+            TransferMechanisms = [AdequacyDecision, Scc, Bcr, "UK-US Data Bridge"],
             RequiresDpoOrRepresentative = true,
         });
 
@@ -94,7 +102,7 @@ internal sealed class BuiltInRegulationProfileProvider : IRegulationProfileProvi
             MinimumConsentAge = 18,
             CookieConsentModel = ConsentModel.OptIn,
             RequiresCrossBorderAssessment = true,
-            TransferMechanisms = ["ANPD-approved SCC", "Adequacy"],
+            TransferMechanisms = ["ANPD-approved SCC", AdequacyDecision],
             RequiresDpoOrRepresentative = true,
             DpoNotes = "DPO mandatory for all controllers (except micro-enterprises). Foreign companies must appoint a local representative.",
         });
@@ -140,7 +148,7 @@ internal sealed class BuiltInRegulationProfileProvider : IRegulationProfileProvi
             MinimumConsentAge = 13,
             CookieConsentModel = ConsentModel.OptIn,
             RequiresCrossBorderAssessment = true,
-            TransferMechanisms = ["Contractual clauses"],
+            TransferMechanisms = [ContractualClauses],
         });
 
         // ── Canada Quebec Law 25 ───────────────────────────────────────
@@ -163,7 +171,7 @@ internal sealed class BuiltInRegulationProfileProvider : IRegulationProfileProvi
             MinimumConsentAge = 14,
             CookieConsentModel = ConsentModel.OptIn,
             RequiresCrossBorderAssessment = true,
-            TransferMechanisms = ["Privacy impact assessment", "Contractual clauses"],
+            TransferMechanisms = ["Privacy impact assessment", ContractualClauses],
             RequiresDpoOrRepresentative = true,
             DpoNotes = "Privacy officer mandatory.",
         });
@@ -189,7 +197,7 @@ internal sealed class BuiltInRegulationProfileProvider : IRegulationProfileProvi
             BreachSeverityNotes = "Notification to FDPIC 'as soon as possible' when breach likely poses high risk.",
             CookieConsentModel = ConsentModel.OptIn,
             RequiresCrossBorderAssessment = true,
-            TransferMechanisms = ["Adequacy", "SCC", "BCR"],
+            TransferMechanisms = [AdequacyDecision, Scc, Bcr],
         });
     }
 
@@ -265,7 +273,7 @@ internal sealed class BuiltInRegulationProfileProvider : IRegulationProfileProvi
             BreachSeverityNotes = "Notification to PPC and affected individuals required for qualifying breaches.",
             CookieConsentModel = ConsentModel.None,
             RequiresCrossBorderAssessment = true,
-            TransferMechanisms = ["Consent", "EU adequacy"],
+            TransferMechanisms = [Consent, "EU adequacy"],
         });
 
         // ── South Korea PIPA ───────────────────────────────────────────
@@ -287,7 +295,7 @@ internal sealed class BuiltInRegulationProfileProvider : IRegulationProfileProvi
             BreachNotifyAuthorityHours = 72,
             CookieConsentModel = ConsentModel.OptIn,
             RequiresCrossBorderAssessment = true,
-            TransferMechanisms = ["Consent", "EU adequacy"],
+            TransferMechanisms = [Consent, "EU adequacy"],
         });
 
         // ── Australia Privacy Act ──────────────────────────────────────
@@ -333,7 +341,7 @@ internal sealed class BuiltInRegulationProfileProvider : IRegulationProfileProvi
             BreachSeverityNotes = "Notification to Information Regulator 'as soon as reasonably possible'.",
             CookieConsentModel = ConsentModel.None,
             RequiresCrossBorderAssessment = true,
-            TransferMechanisms = ["Adequate protection", "Consent", "Contract"],
+            TransferMechanisms = [Adequacy, Consent, Contract],
             RequiresDpoOrRepresentative = true,
             DpoNotes = "Information Officer required for all responsible parties.",
         });
@@ -359,7 +367,7 @@ internal sealed class BuiltInRegulationProfileProvider : IRegulationProfileProvi
             BreachSeverityNotes = "72h notification to PDPC for breaches likely to cause serious damage.",
             CookieConsentModel = ConsentModel.OptIn,
             RequiresCrossBorderAssessment = true,
-            TransferMechanisms = ["Adequate protection", "Consent", "Contract"],
+            TransferMechanisms = [Adequacy, Consent, Contract],
             RequiresDpoOrRepresentative = true,
         });
     }

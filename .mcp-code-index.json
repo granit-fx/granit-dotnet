@@ -23403,11 +23403,11 @@
       ]
     },
     {
-      "name": "GranitPersistenceAbstractionsModule",
-      "fqn": "Granit.Persistence.GranitPersistenceAbstractionsModule",
+      "name": "GranitPersistenceModule",
+      "fqn": "Granit.Persistence.GranitPersistenceModule",
       "kind": "class",
       "project": "Granit.Persistence",
-      "file": "src/Granit.Persistence/GranitPersistenceAbstractionsModule.cs",
+      "file": "src/Granit.Persistence/GranitPersistenceModule.cs",
       "line": 13,
       "members": []
     },

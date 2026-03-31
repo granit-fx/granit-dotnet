@@ -63,6 +63,14 @@ public abstract class HttpServiceHealthCheckBase(
                 ? HealthCheckResult.Unhealthy($"{ServiceName} auth failed: {(int)response.StatusCode}")
                 : HealthCheckResult.Degraded($"{ServiceName} returned {(int)response.StatusCode}");
         }
+        catch (OperationCanceledException)
+        {
+            return HealthCheckResult.Unhealthy($"{ServiceName} health check canceled");
+        }
+        catch (TimeoutException)
+        {
+            return HealthCheckResult.Unhealthy($"{ServiceName} unreachable: timeout");
+        }
         catch (Exception ex)
         {
             return HealthCheckResult.Unhealthy($"{ServiceName} unreachable: {ex.GetType().Name}");
