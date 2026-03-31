@@ -14,123 +14,33 @@ Usage (from granit-dotnet repo root):
 from __future__ import annotations
 
 import json
-import re
 import sys
-from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-SHARDS_PATH = REPO_ROOT / ".github" / "test-shards.json"
-FILTERS_DIR = REPO_ROOT / ".github" / "shard-filters"
-SLNX_PATH = REPO_ROOT / "Granit.slnx"
-
-# Analyzers are implicitly referenced by Directory.Build.props for every project.
-# They must be included in every shard filter so MSBuild can resolve them.
-IMPLICIT_PROJECTS = [
-    "src/Granit.Analyzers/Granit.Analyzers.csproj",
-    "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
-]
-
-# Regex to extract ProjectReference Include paths from .csproj XML.
-# Matches both forward-slash and backslash separators.
-PROJECT_REF_RE = re.compile(
-    r'<ProjectReference\s+Include="([^"]+\.csproj)"', re.IGNORECASE
+from _slnx_utils import (
+    REPO_ROOT,
+    SLNX_PATH,
+    load_slnx_projects,
+    resolve_csproj,
+    generate_slnf,
+    write_slnf,
+    to_slnx_path,
 )
 
-# Regex to extract project paths from .slnx (<Project Path="..." />)
-SLNX_PROJECT_RE = re.compile(r'<Project\s+Path="([^"]+\.csproj)"', re.IGNORECASE)
+SHARDS_PATH = REPO_ROOT / ".github" / "test-shards.json"
+FILTERS_DIR = REPO_ROOT / ".github" / "shard-filters"
+SOLUTION_PATH = "../../Granit.slnx"
 
 
-def load_slnx_projects() -> set[str]:
-    """Load all project paths from the .slnx solution file.
-
-    Returns a set of forward-slash relative paths (e.g. 'src/Granit.Core/Granit.Core.csproj').
-    """
-    text = SLNX_PATH.read_text(encoding="utf-8")
-    return set(SLNX_PROJECT_RE.findall(text))
-
-
-def resolve_csproj(project_dir: str) -> Path | None:
-    """Find the .csproj file in a project directory."""
-    d = REPO_ROOT / project_dir
-    if not d.is_dir():
-        return None
-    name = d.name + ".csproj"
-    csproj = d / name
-    return csproj if csproj.is_file() else None
-
-
-def parse_project_references(csproj: Path) -> list[Path]:
-    """Extract ProjectReference paths from a .csproj file, resolved to absolute."""
-    text = csproj.read_text(encoding="utf-8")
-    refs: list[Path] = []
-    for match in PROJECT_REF_RE.findall(text):
-        # Normalize backslashes and resolve relative to the .csproj directory
-        rel = match.replace("\\", "/")
-        # Skip MSBuild property references like $(MSBuildThisFileDirectory)
-        if "$(" in rel:
-            continue
-        resolved = (csproj.parent / rel).resolve()
-        if resolved.is_file():
-            refs.append(resolved)
-    return refs
-
-
-def collect_transitive_deps(csproj: Path, visited: set[Path] | None = None) -> set[Path]:
-    """Recursively collect all transitive ProjectReference dependencies."""
-    if visited is None:
-        visited = set()
-    if csproj in visited:
-        return visited
-    visited.add(csproj)
-    for ref in parse_project_references(csproj):
-        collect_transitive_deps(ref, visited)
-    return visited
-
-
-def to_slnx_path(csproj: Path) -> str:
-    """Convert an absolute .csproj path to a path relative to the repo root,
-    using forward slashes (as used in .slnx)."""
-    return str(csproj.relative_to(REPO_ROOT)).replace("\\", "/")
-
-
-def generate_filter(
-    project_dirs: list[str], slnx_projects: set[str]
-) -> dict:
-    """Generate a .slnf structure for a shard."""
-    all_projects: set[Path] = set()
-
-    for project_dir in project_dirs:
-        csproj = resolve_csproj(project_dir)
-        if csproj is None:
-            print(f"  WARNING: no .csproj found in {project_dir}, skipping", file=sys.stderr)
-            continue
-        # Collect the test project and all its transitive deps
-        collect_transitive_deps(csproj, all_projects)
-
-    # Add implicit analyzer projects
-    for implicit in IMPLICIT_PROJECTS:
-        p = (REPO_ROOT / implicit).resolve()
-        if p.is_file():
-            all_projects.add(p)
-
-    # Convert to slnx-relative paths and filter to only include projects
-    # that are actually listed in the .slnx solution file.
+def dirs_to_csproj_paths(project_dirs: list[str]) -> list[str]:
+    """Convert project directory names to slnx-relative .csproj paths."""
     paths: list[str] = []
-    for p in all_projects:
-        slnx_path = to_slnx_path(p)
-        if slnx_path in slnx_projects:
-            paths.append(slnx_path)
-        else:
-            print(f"  INFO: {slnx_path} not in .slnx, excluded from filter", file=sys.stderr)
-
-    paths.sort()
-
-    return {
-        "solution": {
-            "path": "../../Granit.slnx",
-            "projects": paths,
-        }
-    }
+    for d in project_dirs:
+        csproj = resolve_csproj(d)
+        if csproj is None:
+            print(f"  WARNING: no .csproj found in {d}, skipping", file=sys.stderr)
+            continue
+        paths.append(to_slnx_path(csproj))
+    return paths
 
 
 def main() -> None:
@@ -152,27 +62,22 @@ def main() -> None:
         name = shard["name"]
         projects = shard["projects"]
         print(f"Generating {name}.slnf ({len(projects)} test projects)...")
-        slnf = generate_filter(projects, slnx_projects)
+        csproj_paths = dirs_to_csproj_paths(projects)
+        slnf = generate_slnf(csproj_paths, slnx_projects, SOLUTION_PATH)
         out = FILTERS_DIR / f"{name}.slnf"
-        out.write_text(
-            json.dumps(slnf, indent=2, ensure_ascii=False) + "\n",
-            encoding="utf-8",
-        )
+        write_slnf(out, slnf)
         print(f"  -> {out.relative_to(REPO_ROOT)} ({len(slnf['solution']['projects'])} projects)")
 
     # ── src-only filter (build gate job) ──────────────────────────────────
     src_projects = sorted(p for p in slnx_projects if p.startswith("src/"))
     src_slnf = {
         "solution": {
-            "path": "../../Granit.slnx",
+            "path": SOLUTION_PATH,
             "projects": src_projects,
         }
     }
     src_out = FILTERS_DIR / "src-only.slnf"
-    src_out.write_text(
-        json.dumps(src_slnf, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
+    write_slnf(src_out, src_slnf)
     print("Generating src-only.slnf...")
     print(f"  -> {src_out.relative_to(REPO_ROOT)} ({len(src_projects)} projects)")
 

@@ -152,7 +152,33 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         }
 
         context.Set<TEntity>().Add(entity);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (DbUpdateException)
+        {
+            // A concurrent seed may have inserted the same Code between our AnyAsync
+            // check and the INSERT (TOCTOU race). Verify with a fresh context — the
+            // original DbContext is unusable after a failed SaveChangesAsync.
+            await using AsyncServiceScope verifyScope = _scopeFactory.CreateAsyncScope();
+            TDbContext verifyContext = verifyScope.ServiceProvider.GetRequiredService<TDbContext>();
+
+            bool concurrentInsert = await verifyContext.Set<TEntity>()
+                .IgnoreQueryFilters([GranitFilterNames.Active])
+                .AnyAsync(e => e.Code == entity.Code, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!concurrentInsert)
+            {
+                throw;
+            }
+
+            // Concurrent insert won the race — treat as idempotent success.
+            InvalidateCache(entity.Code);
+            return;
+        }
 
         InvalidateCache(entity.Code);
     }

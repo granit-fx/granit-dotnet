@@ -2,57 +2,9 @@
 """Reorganize Granit.slnx with nested solution folders by domain."""
 
 import re
-from pathlib import Path
 
-REPO = Path(__file__).resolve().parent.parent
-SLNX = REPO / "Granit.slnx"
-
-# ---------------------------------------------------------------------------
-# Module-family → domain mapping
-# ---------------------------------------------------------------------------
-SRC_DOMAINS = {
-    "Platform": {
-        "Diagnostics", "Guids", "Http", "MultiTenancy", "Observability",
-        "Oidc", "RateLimiting", "Timing", "Validation",
-    },
-    "Security": {
-        "Authentication", "Authorization", "Bff", "Encryption",
-        "Identity", "OpenIddict", "Security", "Vault",
-    },
-    "Application": {
-        "DataExchange", "DocumentGeneration", "Features", "Localization",
-        "QueryEngine", "ReferenceData", "Settings", "Templating",
-        "Timeline", "Workflow",
-    },
-    "Infrastructure": {
-        "BackgroundJobs", "BlobStorage", "Caching", "Events",
-        "Imaging", "Persistence", "Webhooks", "Wolverine",
-    },
-    "Compliance": {"Auditing", "Privacy"},
-    "Notifications": {"Notifications"},
-    "AI": {"AI"},
-    "Tooling": {"Analyzers", "Testing"},
-}
-
-# Special cases: projects classified by full directory name, not just module family.
-# Http.Cookies is Compliance (cookie consent / GDPR), not Platform.
-_SPECIAL_CASES: dict[str, str] = {
-    "Granit.Http.Cookies": "Compliance",
-    "Granit.Http.Cookies.Endpoints": "Compliance",
-    "Granit.Http.Cookies.Klaro": "Compliance",
-}
-
-# Build reverse lookup: module_family → domain
-_MODULE_TO_DOMAIN: dict[str, str] = {}
-for domain, modules in SRC_DOMAINS.items():
-    for m in modules:
-        _MODULE_TO_DOMAIN[m] = domain
-
-# Ordered domain list (determines output order)
-DOMAIN_ORDER = [
-    "Platform", "Security", "Application", "Infrastructure",
-    "Compliance", "Notifications", "AI", "Tooling",
-]
+from _slnx_utils import SLNX_PATH
+from _domain_map import DOMAIN_ORDER, classify_src, classify_test
 
 DOMAIN_LABELS = {
     "Platform": "Platform",
@@ -66,66 +18,6 @@ DOMAIN_LABELS = {
 }
 
 FOLDER_CLOSE = "  </Folder>"
-
-
-def classify_src(path: str) -> str:
-    """Classify a src/ project path into a domain."""
-    # Bundles handled separately
-    if "bundles/" in path:
-        return "Bundles"
-
-    # Extract directory name: src/Granit.Foo.Bar/... → Granit.Foo.Bar
-    parts = path.split("/")
-    if len(parts) < 2:
-        return "Platform"
-    proj_dir = parts[1]  # e.g., "Granit" or "Granit.AI.AzureOpenAI"
-
-    # Check special cases first (e.g., Http.Cookies → Compliance)
-    if proj_dir in _SPECIAL_CASES:
-        return _SPECIAL_CASES[proj_dir]
-
-    # Base package "Granit" (was Granit.Core) → Platform
-    if proj_dir == "Granit":
-        return "Platform"
-
-    segments = proj_dir.split(".")
-    if len(segments) < 2:
-        return "Platform"
-
-    module_family = segments[1]  # "AI", "BlobStorage", "Http", etc.
-    return _MODULE_TO_DOMAIN.get(module_family, "Platform")
-
-
-def classify_test(path: str) -> str:
-    """Classify a tests/ project path into a domain."""
-    parts = path.split("/")
-    if len(parts) < 2:
-        return "Platform"
-    proj_dir = parts[1]  # e.g., "Granit.AI.Tests"
-
-    # ArchitectureTests → dedicated folder
-    if proj_dir.startswith("Granit.ArchitectureTests"):
-        return "Architecture"
-
-    # Bundle.Tests → Platform
-    if proj_dir.startswith("Granit.Bundle"):
-        return "Platform"
-
-    # Granit.Tests (root module tests) → Platform
-    if proj_dir == "Granit.Tests":
-        return "Platform"
-
-    # Check special cases (strip .Tests suffix for matching)
-    base_name = re.sub(r"\.Tests(\.Integration)?$", "", proj_dir)
-    if base_name in _SPECIAL_CASES:
-        return _SPECIAL_CASES[base_name]
-
-    segments = proj_dir.split(".")
-    if len(segments) < 2:
-        return "Platform"
-
-    module_family = segments[1]
-    return _MODULE_TO_DOMAIN.get(module_family, "Platform")
 
 
 def parse_projects(content: str) -> tuple[list[str], list[str]]:
@@ -208,13 +100,13 @@ def build_slnx(src_projects: list[str], test_projects: list[str]) -> str:
 
 
 def main() -> None:
-    content = SLNX.read_text()
+    content = SLNX_PATH.read_text()
     src_projects, test_projects = parse_projects(content)
 
     print(f"Found {len(src_projects)} src projects, {len(test_projects)} test projects")
 
     new_content = build_slnx(src_projects, test_projects)
-    SLNX.write_text(new_content)
+    SLNX_PATH.write_text(new_content)
 
     # Print summary
     src_by_domain: dict[str, int] = {}
