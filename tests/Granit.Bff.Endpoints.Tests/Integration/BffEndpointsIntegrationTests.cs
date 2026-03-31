@@ -600,7 +600,7 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location.ShouldNotBeNull();
         string redirectUrl = response.Headers.Location.ToString();
-        redirectUrl.ShouldContain("auth.example.com/connect/endsession");
+        redirectUrl.ShouldContain("auth.example.com/connect/logout");
         redirectUrl.ShouldContain("client_id=test-client-id");
         redirectUrl.ShouldContain("id_token_hint=");
 
@@ -619,7 +619,7 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
 
         response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
         response.Headers.Location.ShouldNotBeNull();
-        response.Headers.Location.ToString().ShouldContain("auth.example.com/connect/endsession");
+        response.Headers.Location.ToString().ShouldContain("auth.example.com/connect/logout");
 
         // No session removal should occur since there was no session cookie
         await _server.TokenStore.DidNotReceive().RemoveAsync(
