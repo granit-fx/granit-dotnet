@@ -98,7 +98,7 @@ internal static partial class BffLogoutEndpoints
         // Build end_session URL
 #pragma warning disable GRSEC003 // Building OIDC end_session URL with client credentials
         string postLogoutRedirectUri = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{frontend.EffectivePostLogoutRedirectPath}";
-        string endSessionUrl = $"{bffOptions.Authority.ToString().TrimEnd('/')}/connect/endsession"
+        string endSessionUrl = $"{bffOptions.Authority.ToString().TrimEnd('/')}/connect/logout"
             + $"?post_logout_redirect_uri={Uri.EscapeDataString(postLogoutRedirectUri)}"
             + $"&client_id={Uri.EscapeDataString(frontend.ClientId)}";
 #pragma warning restore GRSEC003
