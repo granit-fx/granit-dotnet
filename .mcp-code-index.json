@@ -794,6 +794,16 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.Local.Notifications",
+      "deps": [
+        "Granit.Identity.Local",
+        "Granit.Identity",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Imaging",
       "deps": [
         "Granit"
@@ -15972,6 +15982,389 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AccountLockedNotificationData",
+      "fqn": "Granit.Identity.Local.Notifications.AccountLockedNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/AccountLockedNotificationType.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "AccountLockedNotificationType",
+      "fqn": "Granit.Identity.Local.Notifications.AccountLockedNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/AccountLockedNotificationType.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "AccountLockedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "EmailChangeAlertNotificationData",
+      "fqn": "Granit.Identity.Local.Notifications.EmailChangeAlertNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/EmailChangeAlertNotificationType.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "EmailChangeAlertNotificationType",
+      "fqn": "Granit.Identity.Local.Notifications.EmailChangeAlertNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/EmailChangeAlertNotificationType.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "EmailChangeAlertNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "EmailChangeConfirmationNotificationData",
+      "fqn": "Granit.Identity.Local.Notifications.EmailChangeConfirmationNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/EmailChangeConfirmationNotificationType.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "EmailChangeConfirmationNotificationType",
+      "fqn": "Granit.Identity.Local.Notifications.EmailChangeConfirmationNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/EmailChangeConfirmationNotificationType.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "EmailChangeConfirmationNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "EmailConfirmationNotificationData",
+      "fqn": "Granit.Identity.Local.Notifications.EmailConfirmationNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/EmailConfirmationNotificationType.cs",
+      "line": 27,
+      "members": []
+    },
+    {
+      "name": "EmailConfirmationNotificationType",
+      "fqn": "Granit.Identity.Local.Notifications.EmailConfirmationNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/EmailConfirmationNotificationType.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "EmailConfirmationNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitIdentityLocalNotificationsModule",
+      "fqn": "Granit.Identity.Local.Notifications.GranitIdentityLocalNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/GranitIdentityLocalNotificationsModule.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ImpersonationAlertNotificationData",
+      "fqn": "Granit.Identity.Local.Notifications.ImpersonationAlertNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/ImpersonationAlertNotificationType.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "ImpersonationAlertNotificationType",
+      "fqn": "Granit.Identity.Local.Notifications.ImpersonationAlertNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/ImpersonationAlertNotificationType.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "ImpersonationAlertNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "IdentityNotificationOptions",
+      "fqn": "Granit.Identity.Local.Notifications.Options.IdentityNotificationOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/Options/IdentityNotificationOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "FrontendBaseUrl",
+          "kind": "property",
+          "signature": "string FrontendBaseUrl",
+          "returnType": "string"
+        },
+        {
+          "name": "ResetPasswordPath",
+          "kind": "property",
+          "signature": "string ResetPasswordPath",
+          "returnType": "string"
+        },
+        {
+          "name": "ConfirmEmailPath",
+          "kind": "property",
+          "signature": "string ConfirmEmailPath",
+          "returnType": "string"
+        },
+        {
+          "name": "ChangeEmailPath",
+          "kind": "property",
+          "signature": "string ChangeEmailPath",
+          "returnType": "string"
+        },
+        {
+          "name": "BuildResetPasswordUrl",
+          "kind": "method",
+          "signature": "BuildResetPasswordUrl(string userId, string token)",
+          "returnType": "string"
+        },
+        {
+          "name": "BuildConfirmEmailUrl",
+          "kind": "method",
+          "signature": "BuildConfirmEmailUrl(string userId, string token)",
+          "returnType": "string"
+        },
+        {
+          "name": "BuildChangeEmailUrl",
+          "kind": "method",
+          "signature": "BuildChangeEmailUrl(string userId, string newEmail, string token)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PasswordChangedNotificationData",
+      "fqn": "Granit.Identity.Local.Notifications.PasswordChangedNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/PasswordChangedNotificationType.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "PasswordChangedNotificationType",
+      "fqn": "Granit.Identity.Local.Notifications.PasswordChangedNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/PasswordChangedNotificationType.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PasswordChangedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "PasswordResetNotificationData",
+      "fqn": "Granit.Identity.Local.Notifications.PasswordResetNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/PasswordResetNotificationType.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "PasswordResetNotificationType",
+      "fqn": "Granit.Identity.Local.Notifications.PasswordResetNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/PasswordResetNotificationType.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PasswordResetNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "TwoFactorChangedNotificationData",
+      "fqn": "Granit.Identity.Local.Notifications.TwoFactorChangedNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/TwoFactorChangedNotificationType.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "TwoFactorChangedNotificationType",
+      "fqn": "Granit.Identity.Local.Notifications.TwoFactorChangedNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/TwoFactorChangedNotificationType.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "TwoFactorChangedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "WelcomeNotificationData",
+      "fqn": "Granit.Identity.Local.Notifications.WelcomeNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/WelcomeNotificationType.cs",
+      "line": 26,
+      "members": []
+    },
+    {
+      "name": "WelcomeNotificationType",
+      "fqn": "Granit.Identity.Local.Notifications.WelcomeNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/WelcomeNotificationType.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "WelcomeNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },

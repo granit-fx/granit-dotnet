@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Identity.Local.Notifications</PackageId>
+    <Description>Notification handlers for local identity events: welcome, password reset, email confirmation, account lockout, 2FA changes, impersonation alerts. Wolverine event handlers, Scriban templates (17 cultures), RFC 8058 List-Unsubscribe support.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Identity.Local.Notifications.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\**\*.html" WithCulture="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Identity.Local\Granit.Identity.Local.csproj" />
+    <ProjectReference Include="..\Granit.Identity\Granit.Identity.csproj" />
+    <ProjectReference Include="..\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Templating\Granit.Templating.csproj" />
+  </ItemGroup>
+
+</Project>

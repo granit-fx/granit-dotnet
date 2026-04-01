@@ -1,0 +1,31 @@
+using Granit.Notifications;
+
+namespace Granit.Identity.Local.Notifications;
+
+/// <summary>
+/// Notification type for alerting a user that their account has been locked
+/// after exceeding the maximum number of failed login attempts.
+/// </summary>
+public sealed class AccountLockedNotificationType
+    : NotificationType<AccountLockedNotificationData>
+{
+    /// <summary>Singleton instance.</summary>
+    public static readonly AccountLockedNotificationType Instance = new();
+
+    /// <inheritdoc />
+    public override string Name => "Security.AccountLocked";
+
+    /// <inheritdoc />
+    public override NotificationSeverity DefaultSeverity => NotificationSeverity.Error;
+
+    /// <inheritdoc />
+    public override IReadOnlyList<string> DefaultChannels { get; } =
+        [NotificationChannels.Email, NotificationChannels.InApp];
+}
+
+/// <summary>
+/// Data payload for an account locked notification.
+/// </summary>
+/// <param name="Email">The user's email address.</param>
+/// <param name="FailedAttempts">Number of consecutive failed login attempts that triggered the lockout.</param>
+public sealed record AccountLockedNotificationData(string Email, int FailedAttempts);
