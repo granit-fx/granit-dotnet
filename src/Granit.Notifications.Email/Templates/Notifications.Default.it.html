@@ -1,13 +1,1 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="utf-8">
-    <title>{{ app.name }} — Nuova notifica</title>
-</head>
-<body>
-    <p>Hai ricevuto una nuova notifica di tipo <strong>{{ model.notification_type }}</strong>.</p>
-    {{- if app.base_url != "" }}
-    <p><a href="{{ app.base_url }}">Vai a {{ app.name }}</a></p>
-    {{- end }}
-</body>
-</html>
+<p>Hai ricevuto una nuova notifica di tipo <strong>{{ model.notification_type }}</strong>.</p>

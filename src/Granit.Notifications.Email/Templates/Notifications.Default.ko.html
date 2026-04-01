@@ -1,13 +1,1 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="utf-8">
-    <title>{{ app.name }} — 새 알림</title>
-</head>
-<body>
-    <p><strong>{{ model.notification_type }}</strong> 유형의 새 알림을 받았습니다.</p>
-    {{- if app.base_url != "" }}
-    <p><a href="{{ app.base_url }}">{{ app.name }}(으)로 이동</a></p>
-    {{- end }}
-</body>
-</html>
+<p><strong>{{ model.notification_type }}</strong> 유형의 새 알림을 받았습니다.</p>

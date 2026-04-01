@@ -1,13 +1,1 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="utf-8">
-    <title>{{ app.name }} — Nieuwe melding</title>
-</head>
-<body>
-    <p>U heeft een nieuwe melding ontvangen van het type <strong>{{ model.notification_type }}</strong>.</p>
-    {{- if app.base_url != "" }}
-    <p><a href="{{ app.base_url }}">Ga naar {{ app.name }}</a></p>
-    {{- end }}
-</body>
-</html>
+<p>U heeft een nieuwe melding ontvangen van het type <strong>{{ model.notification_type }}</strong>.</p>

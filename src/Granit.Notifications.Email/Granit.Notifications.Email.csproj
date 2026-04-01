@@ -12,6 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Templates/Layout.Email.html"
+        LogicalName="Granit.Notifications.Email.Templates.Layout.Email.html" />
     <EmbeddedResource Include="Templates/Notifications.Default.html"
         LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.html" />
     <EmbeddedResource Include="Templates/Notifications.Default.fr.html"

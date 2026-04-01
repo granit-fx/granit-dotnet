@@ -1,13 +1,1 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="utf-8">
-    <title>{{ app.name }} — 新しい通知</title>
-</head>
-<body>
-    <p>タイプ <strong>{{ model.notification_type }}</strong> の新しい通知を受信しました。</p>
-    {{- if app.base_url != "" }}
-    <p><a href="{{ app.base_url }}">{{ app.name }} を開く</a></p>
-    {{- end }}
-</body>
-</html>
+<p>タイプ <strong>{{ model.notification_type }}</strong> の新しい通知を受信しました。</p>

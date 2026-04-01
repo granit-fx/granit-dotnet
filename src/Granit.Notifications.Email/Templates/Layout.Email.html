@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="{{ context.culture }}">
+<head>
+    <meta charset="utf-8">
+    <title>{{ model.title }}</title>
+</head>
+<body>
+    {{- if app.logo_url != "" }}
+    <img src="{{ app.logo_url }}" alt="{{ app.name }}">
+    {{- end }}
+    {{ body | raw }}
+    {{- if app.base_url != "" }}
+    <p><a href="{{ app.base_url }}">{{ app.name }}</a></p>
+    {{- end }}
+</body>
+</html>

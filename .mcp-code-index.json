@@ -18983,7 +18983,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Email",
       "file": "src/Granit.Notifications.Email/Extensions/EmailNotificationsServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitNotificationsEmail",
