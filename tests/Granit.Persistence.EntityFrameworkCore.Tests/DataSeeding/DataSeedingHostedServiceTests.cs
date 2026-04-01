@@ -23,10 +23,8 @@ public sealed class DataSeedingHostedServiceTests
     private readonly IDataSeeder _seeder = Substitute.For<IDataSeeder>();
 
     [Fact]
-    public void ImplementsIHostedLifecycleService()
-    {
+    public void ImplementsIHostedLifecycleService() =>
         typeof(DataSeedingHostedService).IsAssignableTo(typeof(IHostedLifecycleService)).ShouldBeTrue();
-    }
 
     [Fact]
     public async Task StartedAsync_CallsSeederWithHostLevelContext()
