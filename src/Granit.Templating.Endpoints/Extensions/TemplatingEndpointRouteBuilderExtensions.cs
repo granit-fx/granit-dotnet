@@ -17,6 +17,7 @@ using Granit.Templating.Endpoints.Permissions;
 using Granit.Templating.Exceptions;
 using Granit.Templating.GlobalContext;
 using Granit.Templating.Keys;
+using Granit.Templating.Layouts;
 using Granit.Templating.Pipeline;
 using Granit.Templating.Store;
 using Granit.Users;
@@ -199,6 +200,15 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
+        // ----- Layouts — Read (Templates.Read) -----
+
+        group.MapGet("/layouts", HandleListLayoutsAsync)
+             .RequireAuthorization(TemplatingPermissions.Templates.Read)
+             .WithName("ListAvailableLayouts")
+             .WithSummary("Returns all available layout template names.")
+             .WithDescription("Returns a deduplicated list of layout template names from both the code-level ILayoutRegistry and database-assigned LayoutName values. Used by the admin UI to populate layout dropdowns.")
+             .Produces<IReadOnlyList<string>>();
+
         // ----- Categories — Read (Categories.Read) -----
 
         group.MapGet("/categories", HandleListCategoriesAsync)
@@ -295,7 +305,8 @@ public static class TemplatingEndpointRouteBuilderExtensions
                 s.CurrentStatus,
                 s.LastModifiedAt,
                 s.LastModifiedBy,
-                s.HasPublishedVersion))
+                s.HasPublishedVersion,
+                s.LayoutName))
             .ToList();
 
         return TypedResults.Ok(new TemplateListResponse(items, result.TotalCount));
@@ -366,7 +377,8 @@ public static class TemplatingEndpointRouteBuilderExtensions
             name,
             culture,
             draft is not null ? ToRevisionResponse(draft) : null,
-            publishedResponse));
+            publishedResponse,
+            draft?.LayoutName ?? published?.LayoutName));
     }
 
     // -------------------------------------------------------------------------
@@ -404,7 +416,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
         string userId = GetCurrentUserId(context);
         TemplateKey key = new(body.Name, body.Culture);
 
-        await storeWriter.SaveDraftAsync(key, body.Content, body.MimeType, userId, cancellationToken).ConfigureAwait(false);
+        await storeWriter.SaveDraftAsync(key, body.Content, body.MimeType, userId, body.LayoutName, cancellationToken).ConfigureAwait(false);
 
         TemplateRevision? draft = await storeReader.TryGetDraftAsync(key, cancellationToken).ConfigureAwait(false);
         Pipeline.TemplateDescriptor? published = await storeReader.TryGetPublishedAsync(key, cancellationToken).ConfigureAwait(false);
@@ -426,7 +438,8 @@ public static class TemplatingEndpointRouteBuilderExtensions
             body.Name,
             body.Culture,
             draft is not null ? ToRevisionResponse(draft) : null,
-            publishedResponse);
+            publishedResponse,
+            draft?.LayoutName);
 
         return TypedResults.Created($"{body.Name}", response);
     }
@@ -460,7 +473,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
         string userId = GetCurrentUserId(context);
         TemplateKey key = new(name, body.Culture);
 
-        await storeWriter.SaveDraftAsync(key, body.Content, body.MimeType, userId, cancellationToken).ConfigureAwait(false);
+        await storeWriter.SaveDraftAsync(key, body.Content, body.MimeType, userId, body.LayoutName, cancellationToken).ConfigureAwait(false);
 
         TemplateRevision? draft = await storeReader.TryGetDraftAsync(key, cancellationToken).ConfigureAwait(false);
         Pipeline.TemplateDescriptor? published = await storeReader.TryGetPublishedAsync(key, cancellationToken).ConfigureAwait(false);
@@ -482,7 +495,8 @@ public static class TemplatingEndpointRouteBuilderExtensions
             name,
             body.Culture,
             draft is not null ? ToRevisionResponse(draft) : null,
-            publishedResponse));
+            publishedResponse,
+            draft?.LayoutName));
     }
 
     // -------------------------------------------------------------------------
@@ -1135,6 +1149,25 @@ public static class TemplatingEndpointRouteBuilderExtensions
             category.SortOrder, category.TemplateCount);
 
     // -------------------------------------------------------------------------
+    // GET /layouts — List available layouts
+    // -------------------------------------------------------------------------
+
+    private static Task<Ok<IReadOnlyList<string>>> HandleListLayoutsAsync(
+        HttpContext context,
+        CancellationToken cancellationToken)
+    {
+        ILayoutRegistry? layoutRegistry = context.RequestServices.GetService<ILayoutRegistry>();
+
+        // Collect layout names from the code-level registry
+        List<string> layouts = layoutRegistry?.GetAllLayoutNames().ToList() ?? [];
+
+        // TODO: Add DISTINCT LayoutName from DB store when IDocumentTemplateStoreReader
+        // exposes a GetDistinctLayoutNamesAsync method. For now, code registry is sufficient.
+
+        return Task.FromResult(TypedResults.Ok<IReadOnlyList<string>>(layouts));
+    }
+
+    // -------------------------------------------------------------------------
     // Shared helpers
     // -------------------------------------------------------------------------
 
@@ -1155,7 +1188,8 @@ public static class TemplatingEndpointRouteBuilderExtensions
             revision.CreatedAt,
             revision.CreatedBy,
             revision.PublishedAt,
-            revision.PublishedBy);
+            revision.PublishedBy,
+            revision.LayoutName);
 
     private static async Task<TemplateDetailResponse> BuildDetailResponseAsync(
         IDocumentTemplateStoreReader storeReader,
@@ -1182,7 +1216,8 @@ public static class TemplatingEndpointRouteBuilderExtensions
             key.Name,
             key.Culture,
             draft is not null ? ToRevisionResponse(draft) : null,
-            publishedResponse);
+            publishedResponse,
+            draft?.LayoutName ?? published?.LayoutName);
     }
 
     private static ProblemHttpResult StoreNotRegistered() =>

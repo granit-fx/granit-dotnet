@@ -390,7 +390,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             "<h1>Hello</h1>",
             "text/html",
             Arg.Any<string>(),
-            Arg.Any<CancellationToken>());
+            cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -480,7 +480,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             "<h1>Updated</h1>",
             "text/html",
             Arg.Any<string>(),
-            Arg.Any<CancellationToken>());
+            cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Fact]

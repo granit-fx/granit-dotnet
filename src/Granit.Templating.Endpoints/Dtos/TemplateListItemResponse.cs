@@ -12,6 +12,10 @@ namespace Granit.Templating.Endpoints.Dtos;
 /// <param name="LastModifiedAt">UTC timestamp of the most recent modification.</param>
 /// <param name="LastModifiedBy">Identity of the user who last modified the template.</param>
 /// <param name="HasPublishedVersion">Whether a published version currently exists for this key.</param>
+/// <param name="LayoutName">
+/// Layout template name assigned to this template.
+/// <c>null</c> means the code-level <c>ILayoutRegistry</c> default applies.
+/// </param>
 public sealed record TemplateListItemResponse(
     string Name,
     string? Culture,
@@ -19,4 +23,5 @@ public sealed record TemplateListItemResponse(
     TemplateLifecycleStatus CurrentStatus,
     DateTimeOffset LastModifiedAt,
     string LastModifiedBy,
-    bool HasPublishedVersion);
+    bool HasPublishedVersion,
+    string? LayoutName);

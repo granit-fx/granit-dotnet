@@ -33,7 +33,7 @@ public sealed class TemplateCacheEntryTests
     public void From_CreatesFoundEntry()
     {
         var revisionId = Guid.NewGuid();
-        var entry = TemplateCacheEntry.From("<p>Hello</p>", "text/html", revisionId);
+        var entry = TemplateCacheEntry.From("<p>Hello</p>", "text/html", revisionId, null);
 
         entry.IsFound.ShouldBeTrue();
         entry.Content.ShouldBe("<p>Hello</p>");
@@ -45,7 +45,7 @@ public sealed class TemplateCacheEntryTests
     public void From_ToDescriptor_ReturnsDescriptorWithCorrectProperties()
     {
         var revisionId = Guid.NewGuid();
-        var entry = TemplateCacheEntry.From("<p>Content</p>", "text/html", revisionId);
+        var entry = TemplateCacheEntry.From("<p>Content</p>", "text/html", revisionId, null);
 
         TemplateDescriptor? descriptor = entry.ToDescriptor();
 
@@ -58,7 +58,7 @@ public sealed class TemplateCacheEntryTests
     [Fact]
     public void From_WithNullRevisionId_ToDescriptor_HasNullRevisionId()
     {
-        var entry = TemplateCacheEntry.From("<p>No revision</p>", "text/html", null);
+        var entry = TemplateCacheEntry.From("<p>No revision</p>", "text/html", null, null);
 
         TemplateDescriptor? descriptor = entry.ToDescriptor();
 

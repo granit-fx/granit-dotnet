@@ -94,9 +94,9 @@ public sealed class EfDocumentTemplateStoreTests
         TemplateKey key = new("Billing.Invoice");
 
         await store.SaveDraftAsync(key, "<p>Hello</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "bob",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         TemplateDescriptor? result = await store.TryGetPublishedAsync(key,
             TestContext.Current.CancellationToken);
@@ -116,11 +116,11 @@ public sealed class EfDocumentTemplateStoreTests
         TemplateKey key = new("Billing.Invoice");
 
         await store.SaveDraftAsync(key, "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "bob",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.UnpublishAsync(key, "carol",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         TemplateDescriptor? result = await store.TryGetPublishedAsync(key,
             TestContext.Current.CancellationToken);
@@ -137,9 +137,9 @@ public sealed class EfDocumentTemplateStoreTests
         TemplateKey neutralKey = new("Billing.Invoice");
 
         await store.SaveDraftAsync(frKey, "<p>Français</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(frKey, "bob",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         TemplateDescriptor? frResult = await store.TryGetPublishedAsync(frKey,
             TestContext.Current.CancellationToken);
@@ -160,16 +160,16 @@ public sealed class EfDocumentTemplateStoreTests
 
         // Publish v1 and read (populates cache)
         await store.SaveDraftAsync(key, "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "bob",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         TemplateDescriptor? v1 = await store.TryGetPublishedAsync(key,
             TestContext.Current.CancellationToken);
         v1!.Content.ShouldBe("<p>v1</p>");
 
         // Publish v2 — must invalidate the cache entry for v1
         await store.SaveDraftAsync(key, "<p>v2</p>", "text/html", "carol",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "dave",
             TestContext.Current.CancellationToken);
 
@@ -187,9 +187,9 @@ public sealed class EfDocumentTemplateStoreTests
         TemplateKey key = new("Cache.Unpublish");
 
         await store.SaveDraftAsync(key, "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "bob",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         // Read to populate cache
         TemplateDescriptor? cached = await store.TryGetPublishedAsync(key,
@@ -198,7 +198,7 @@ public sealed class EfDocumentTemplateStoreTests
 
         // Unpublish — must invalidate the cache entry
         await store.UnpublishAsync(key, "carol",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         TemplateDescriptor? result = await store.TryGetPublishedAsync(key,
             TestContext.Current.CancellationToken);
@@ -218,9 +218,9 @@ public sealed class EfDocumentTemplateStoreTests
         TemplateKey key = new("Notifications.Welcome");
 
         await store.SaveDraftAsync(key, "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.SaveDraftAsync(key, "<p>v2</p>", "text/html", "bob",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         // Verify only one draft exists (no duplicate rows)
         await using TemplatingDbContext ctx = new InMemoryContextFactory(db).CreateDbContext();
@@ -250,13 +250,13 @@ public sealed class EfDocumentTemplateStoreTests
 
         // First publication
         await store.SaveDraftAsync(key, "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "bob",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         // Second publication
         await store.SaveDraftAsync(key, "<p>v2</p>", "text/html", "carol",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "dave",
             TestContext.Current.CancellationToken);
 
@@ -279,7 +279,7 @@ public sealed class EfDocumentTemplateStoreTests
         TemplateKey key = new("Ghost.Template");
 
         Func<Task> act = () => store.PublishAsync(key, "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         (await Should.ThrowAsync<NotFoundException>(act)).Message.ShouldContain("no draft");
     }
@@ -296,10 +296,10 @@ public sealed class EfDocumentTemplateStoreTests
         TemplateKey key = new("Billing.Invoice");
 
         await store.SaveDraftAsync(key, "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         Func<Task> act = () => store.PublishAsync(key, "bob",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         TemplateTransitionDeniedException ex = await Should.ThrowAsync<TemplateTransitionDeniedException>(act);
         ex.From.ShouldBe(TemplateLifecycleStatus.Draft);
@@ -318,9 +318,9 @@ public sealed class EfDocumentTemplateStoreTests
         TemplateKey key = new("Billing.Invoice");
 
         await store.SaveDraftAsync(key, "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "bob",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         await hook.Received(1).OnTransitionedAsync(
             Arg.Any<Guid>(),
@@ -341,7 +341,7 @@ public sealed class EfDocumentTemplateStoreTests
         TemplateKey key = new("Ghost.Template");
 
         Func<Task> act = () => store.UnpublishAsync(key, "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         await Should.NotThrowAsync(act);
     }
@@ -360,12 +360,12 @@ public sealed class EfDocumentTemplateStoreTests
         TemplateKey key = new("Billing.Invoice");
 
         await store.SaveDraftAsync(key, "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "bob",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         Func<Task> act = () => store.UnpublishAsync(key, "carol",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         TemplateTransitionDeniedException ex = await Should.ThrowAsync<TemplateTransitionDeniedException>(act);
         ex.From.ShouldBe(TemplateLifecycleStatus.Published);
@@ -384,9 +384,9 @@ public sealed class EfDocumentTemplateStoreTests
         TemplateKey key = new("Billing.Invoice");
 
         await store.SaveDraftAsync(key, "<p>draft</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.DeleteDraftAsync(key, "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         await using TemplatingDbContext ctx = new InMemoryContextFactory(db).CreateDbContext();
         int count = await ctx.TemplateRevisions.CountAsync(
@@ -403,7 +403,7 @@ public sealed class EfDocumentTemplateStoreTests
         TemplateKey key = new("Ghost.Template");
 
         Func<Task> act = () => store.DeleteDraftAsync(key, "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         (await Should.ThrowAsync<NotFoundException>(act)).Message.ShouldContain("no draft");
     }
@@ -418,15 +418,15 @@ public sealed class EfDocumentTemplateStoreTests
 
         // Publish v1, then create a new draft and delete it
         await store.SaveDraftAsync(key, "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "bob",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.SaveDraftAsync(key, "<p>v2-draft</p>", "text/html", "carol",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.UnpublishAsync(key, "dave",
             TestContext.Current.CancellationToken);
         await store.DeleteDraftAsync(key, "carol",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         await using TemplatingDbContext ctx = new InMemoryContextFactory(db).CreateDbContext();
         int archivedCount = await ctx.TemplateRevisions.CountAsync(
@@ -448,11 +448,11 @@ public sealed class EfDocumentTemplateStoreTests
         TemplateKey key = new("Billing.Invoice");
 
         await store.SaveDraftAsync(key, "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "bob",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.SaveDraftAsync(key, "<p>v2</p>", "text/html", "carol",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         IReadOnlyList<TemplateRevision> history = await store.GetHistoryAsync(key,
             TestContext.Current.CancellationToken);

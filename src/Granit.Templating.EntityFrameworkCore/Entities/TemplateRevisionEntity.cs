@@ -52,6 +52,13 @@ internal sealed class TemplateRevisionEntity : IMultiTenant
     /// <summary>Optional category for organizing templates by domain.</summary>
     public Guid? CategoryId { get; set; }
 
+    /// <summary>
+    /// Layout template name assigned by an administrator.
+    /// Overrides the code-level <c>ILayoutRegistry</c> default.
+    /// <c>null</c> means "use the registry default".
+    /// </summary>
+    public string? LayoutName { get; set; }
+
     /// <inheritdoc/>
     public Guid? TenantId { get; set; }
 }

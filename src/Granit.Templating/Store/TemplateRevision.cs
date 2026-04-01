@@ -36,4 +36,10 @@ public sealed class TemplateRevision
 
     /// <summary>Identity of the user who published this revision. <c>null</c> if not yet published.</summary>
     public string? PublishedBy { get; init; }
+
+    /// <summary>
+    /// Layout template name assigned by an administrator.
+    /// <c>null</c> means "use the <see cref="Layouts.ILayoutRegistry"/> default".
+    /// </summary>
+    public string? LayoutName { get; init; }
 }

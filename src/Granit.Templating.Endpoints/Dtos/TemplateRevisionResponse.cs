@@ -13,6 +13,10 @@ namespace Granit.Templating.Endpoints.Dtos;
 /// <param name="CreatedBy">Identity of the user who created this revision.</param>
 /// <param name="PublishedAt">UTC timestamp when this revision was published, or <c>null</c>.</param>
 /// <param name="PublishedBy">Identity of the user who published this revision, or <c>null</c>.</param>
+/// <param name="LayoutName">
+/// Layout template name assigned to this template.
+/// <c>null</c> means the code-level <c>ILayoutRegistry</c> default applies.
+/// </param>
 public sealed record TemplateRevisionResponse(
     Guid RevisionId,
     string Content,
@@ -21,4 +25,5 @@ public sealed record TemplateRevisionResponse(
     DateTimeOffset CreatedAt,
     string CreatedBy,
     DateTimeOffset? PublishedAt,
-    string? PublishedBy);
+    string? PublishedBy,
+    string? LayoutName);

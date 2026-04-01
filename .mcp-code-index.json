@@ -27618,7 +27618,7 @@
       "kind": "record",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Dtos/SaveTemplateRequest.cs",
-      "line": 13,
+      "line": 17,
       "members": []
     },
     {
@@ -27636,7 +27636,7 @@
       "kind": "record",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Dtos/TemplateDetailResponse.cs",
-      "line": 10,
+      "line": 14,
       "members": []
     },
     {
@@ -27663,7 +27663,7 @@
       "kind": "record",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Dtos/TemplateListItemResponse.cs",
-      "line": 15,
+      "line": 19,
       "members": []
     },
     {
@@ -27699,7 +27699,7 @@
       "kind": "record",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Dtos/TemplateRevisionResponse.cs",
-      "line": 16,
+      "line": 20,
       "members": []
     },
     {
@@ -27735,7 +27735,7 @@
       "kind": "class",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Extensions/TemplatingEndpointRouteBuilderExtensions.cs",
-      "line": 35,
+      "line": 36,
       "members": [
         {
           "name": "MapGranitTemplating",
@@ -28255,7 +28255,7 @@
         {
           "name": "SaveDraftAsync",
           "kind": "method",
-          "signature": "SaveDraftAsync(TemplateKey key, string content, string mimeType, string updatedBy, CancellationToken cancellationToken = default)",
+          "signature": "SaveDraftAsync(TemplateKey key, string content, string mimeType, string updatedBy, string? layoutName = null, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {

@@ -29,4 +29,10 @@ public sealed class TemplateSummary
 
     /// <summary>Whether a published version currently exists for this key.</summary>
     public required bool HasPublishedVersion { get; init; }
+
+    /// <summary>
+    /// Layout template name assigned by an administrator.
+    /// <c>null</c> means "use the <see cref="Layouts.ILayoutRegistry"/> default".
+    /// </summary>
+    public string? LayoutName { get; init; }
 }

@@ -78,7 +78,7 @@ public sealed class TemplatingDtoTests
     [Fact]
     public void TemplateDetailResponse_WithNullDraftAndPublished_SetsCorrectly()
     {
-        TemplateDetailResponse response = new("Billing.Invoice", "fr", null, null);
+        TemplateDetailResponse response = new("Billing.Invoice", "fr", null, null, null);
 
         response.Name.ShouldBe("Billing.Invoice");
         response.Culture.ShouldBe("fr");
@@ -96,7 +96,7 @@ public sealed class TemplatingDtoTests
         TemplateListItemResponse item = new(
             "Billing.Invoice", null, "text/html",
             TemplateLifecycleStatus.Published,
-            DateTimeOffset.UtcNow, "alice", true);
+            DateTimeOffset.UtcNow, "alice", true, null);
 
         TemplateListResponse response = new([item], 1);
 
@@ -115,7 +115,7 @@ public sealed class TemplatingDtoTests
         TemplateListItemResponse item = new(
             "Billing.Invoice", "fr-BE", "text/html",
             TemplateLifecycleStatus.Draft,
-            lastModified, "bob", false);
+            lastModified, "bob", false, null);
 
         item.Name.ShouldBe("Billing.Invoice");
         item.Culture.ShouldBe("fr-BE");

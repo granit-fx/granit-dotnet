@@ -55,7 +55,7 @@ internal sealed class EfDocumentTemplateStore(
 
                 return entity is null
                     ? TemplateCacheEntry.NotFound
-                    : TemplateCacheEntry.From(entity.Content, entity.MimeType, entity.RevisionId);
+                    : TemplateCacheEntry.From(entity.Content, entity.MimeType, entity.RevisionId, entity.LayoutName);
             },
             cancellationToken: cancellationToken);
 
@@ -68,6 +68,7 @@ internal sealed class EfDocumentTemplateStore(
         string content,
         string mimeType,
         string updatedBy,
+        string? layoutName = null,
         CancellationToken cancellationToken = default)
     {
         await using TemplatingDbContext ctx = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
@@ -84,6 +85,7 @@ internal sealed class EfDocumentTemplateStore(
             existing.MimeType = mimeType;
             existing.CreatedBy = updatedBy;
             existing.CreatedAt = clock.Now;
+            existing.LayoutName = layoutName;
         }
         else
         {
@@ -97,6 +99,7 @@ internal sealed class EfDocumentTemplateStore(
                 Status = TemplateLifecycleStatus.Draft,
                 CreatedAt = clock.Now,
                 CreatedBy = updatedBy,
+                LayoutName = layoutName,
                 TenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id : null,
             });
         }
@@ -286,6 +289,7 @@ internal sealed class EfDocumentTemplateStore(
                 LastModifiedAt = g.Max(r => r.CreatedAt),
                 LastModifiedBy = g.OrderByDescending(r => r.CreatedAt).Select(r => r.CreatedBy).First(),
                 HasPublishedVersion = g.Any(r => r.Status == TemplateLifecycleStatus.Published),
+                LayoutName = g.OrderByDescending(r => r.CreatedAt).Select(r => r.LayoutName).First(),
             });
 
         int totalCount = await grouped.CountAsync(cancellationToken).ConfigureAwait(false);
@@ -306,6 +310,7 @@ internal sealed class EfDocumentTemplateStore(
             LastModifiedAt = g.LastModifiedAt,
             LastModifiedBy = g.LastModifiedBy,
             HasPublishedVersion = g.HasPublishedVersion,
+            LayoutName = g.LayoutName,
         });
 
         return new PagedTemplateResult(summaries, totalCount);
@@ -329,6 +334,7 @@ internal sealed class EfDocumentTemplateStore(
                 CreatedBy = r.CreatedBy,
                 PublishedAt = r.PublishedAt,
                 PublishedBy = r.PublishedBy,
+                LayoutName = r.LayoutName,
             })
             .ToListAsync(cancellationToken).ConfigureAwait(false);
     }
@@ -344,6 +350,7 @@ internal sealed class EfDocumentTemplateStore(
             CreatedBy = entity.CreatedBy,
             PublishedAt = entity.PublishedAt,
             PublishedBy = entity.PublishedBy,
+            LayoutName = entity.LayoutName,
         };
 
     private string CacheKey(TemplateKey key)

@@ -82,7 +82,7 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
         TemplateKey key = new("Notifications.Welcome");
 
         await store.SaveDraftAsync(key, "<p>Draft content</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         TemplateRevision? result = await store.TryGetDraftAsync(key,
             TestContext.Current.CancellationToken);
@@ -114,7 +114,7 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
         TemplateKey key = new("Billing.Invoice");
 
         await store.SaveDraftAsync(key, "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "bob",
             TestContext.Current.CancellationToken);
 
@@ -150,11 +150,11 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
 
         // Create draft, publish, then create a new draft and publish (archiving v1).
         await store.SaveDraftAsync(key, "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "bob",
             TestContext.Current.CancellationToken);
         await store.SaveDraftAsync(key, "<p>v2</p>", "text/html", "carol",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "dave",
             TestContext.Current.CancellationToken);
 
@@ -175,9 +175,9 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
         EfDocumentTemplateStore store = CreateStore(db);
 
         await store.SaveDraftAsync(new TemplateKey("Billing.Invoice"), "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.SaveDraftAsync(new TemplateKey("Notifications.Welcome"), "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         PagedTemplateResult result = await store.ListTemplatesAsync(
             new TemplateListFilter(Search: "Billing"),
@@ -194,9 +194,9 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
         EfDocumentTemplateStore store = CreateStore(db);
 
         await store.SaveDraftAsync(new TemplateKey("Draft.Only"), "<p>draft</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.SaveDraftAsync(new TemplateKey("Published.One"), "<p>published</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(new TemplateKey("Published.One"), "bob",
             TestContext.Current.CancellationToken);
 
@@ -215,9 +215,9 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
         EfDocumentTemplateStore store = CreateStore(db);
 
         await store.SaveDraftAsync(new TemplateKey("Invoice", "fr"), "<p>FR</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.SaveDraftAsync(new TemplateKey("Invoice", "en"), "<p>EN</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         PagedTemplateResult result = await store.ListTemplatesAsync(
             new TemplateListFilter(Culture: "fr"),
@@ -277,11 +277,11 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
 
         // Create 3 templates.
         await store.SaveDraftAsync(new TemplateKey("A.Template"), "<p>A</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.SaveDraftAsync(new TemplateKey("B.Template"), "<p>B</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.SaveDraftAsync(new TemplateKey("C.Template"), "<p>C</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         PagedTemplateResult page1 = await store.ListTemplatesAsync(
             new TemplateListFilter(Page: 1, PageSize: 2),
@@ -313,7 +313,7 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
 
         TemplateKey key = new("Billing.Invoice");
         await store.SaveDraftAsync(key, "<p>v1</p>", "text/html", "alice",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
         await store.PublishAsync(key, "bob",
             TestContext.Current.CancellationToken);
 
@@ -321,7 +321,7 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
         hook.ClearReceivedCalls();
 
         await store.UnpublishAsync(key, "carol",
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         await hook.Received(1).OnTransitionedAsync(
             Arg.Any<Guid>(),

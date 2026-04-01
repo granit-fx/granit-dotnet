@@ -10,8 +10,13 @@ namespace Granit.Templating.Endpoints.Dtos;
 /// <param name="Culture">Optional BCP 47 culture tag (e.g. <c>"fr-BE"</c>). <c>null</c> for culture-neutral.</param>
 /// <param name="Content">Template source content (Scriban HTML).</param>
 /// <param name="MimeType">MIME type of the content. Default: <c>"text/html"</c>.</param>
+/// <param name="LayoutName">
+/// Layout template name assigned to this template.
+/// <c>null</c> means the code-level <c>ILayoutRegistry</c> default applies.
+/// </param>
 public sealed record SaveTemplateRequest(
     string? Name,
     string? Culture,
     string Content,
-    string MimeType = "text/html");
+    string MimeType = "text/html",
+    string? LayoutName = null);
