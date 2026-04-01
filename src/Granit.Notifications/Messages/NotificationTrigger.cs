@@ -18,4 +18,10 @@ public sealed record NotificationTrigger
     public Guid? TenantId { get; init; }
     public required DateTimeOffset OccurredAt { get; init; }
     public string? Culture { get; init; }
+
+    /// <summary>
+    /// When set, bypasses <c>IRecipientResolver</c> and uses this contact info directly.
+    /// Used for sending to addresses not yet in the identity store (email change, invitations).
+    /// </summary>
+    public RecipientInfo? RecipientOverride { get; init; }
 }

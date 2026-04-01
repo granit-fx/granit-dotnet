@@ -40,6 +40,26 @@ internal sealed class ChannelNotificationPublisher(
         await channel.Writer.WriteAsync(trigger, cancellationToken).ConfigureAwait(false);
     }
 
+    public async ValueTask PublishAsync<TData>(
+        NotificationType<TData> notificationType,
+        TData data,
+        IReadOnlyList<string> recipientUserIds,
+        RecipientInfo recipientOverride,
+        EntityReference? relatedEntity = null,
+        CancellationToken cancellationToken = default) where TData : notnull
+    {
+        ArgumentNullException.ThrowIfNull(recipientOverride);
+        if (recipientUserIds.Count > 1)
+        {
+            throw new ArgumentException(
+                "RecipientOverride supports only a single recipient.", nameof(recipientUserIds));
+        }
+
+        NotificationTrigger trigger = BuildTrigger(notificationType, data, relatedEntity);
+        trigger = trigger with { RecipientUserIds = recipientUserIds, RecipientOverride = recipientOverride };
+        await channel.Writer.WriteAsync(trigger, cancellationToken).ConfigureAwait(false);
+    }
+
     public async ValueTask PublishToSubscribersAsync<TData>(
         NotificationType<TData> notificationType,
         TData data,

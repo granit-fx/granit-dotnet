@@ -19,4 +19,9 @@ public sealed record DeliverNotificationCommand
     public Guid? TenantId { get; init; }
     public required DateTimeOffset OccurredAt { get; init; }
     public string? Culture { get; init; }
+
+    /// <summary>
+    /// When set, bypasses <c>IRecipientResolver</c> for this delivery.
+    /// </summary>
+    public RecipientInfo? RecipientOverride { get; init; }
 }

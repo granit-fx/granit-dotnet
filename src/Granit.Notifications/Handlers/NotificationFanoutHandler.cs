@@ -85,6 +85,7 @@ public sealed class NotificationFanoutHandler(
                     TenantId = tenantId,
                     OccurredAt = trigger.OccurredAt,
                     Culture = trigger.Culture,
+                    RecipientOverride = trigger.RecipientOverride,
                 });
             }
         }

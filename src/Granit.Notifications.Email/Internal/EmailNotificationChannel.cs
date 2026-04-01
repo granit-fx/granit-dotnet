@@ -59,7 +59,8 @@ internal sealed partial class EmailNotificationChannel(
     {
         IEmailSender sender = serviceProvider.GetRequiredKeyedService<IEmailSender>(options.Value.Provider);
 
-        RecipientInfo? recipient = await recipientResolver.ResolveAsync(context.RecipientUserId, cancellationToken).ConfigureAwait(false);
+        RecipientInfo? recipient = context.RecipientOverride
+            ?? await recipientResolver.ResolveAsync(context.RecipientUserId, cancellationToken).ConfigureAwait(false);
         if (recipient?.Email is null)
         {
             return;

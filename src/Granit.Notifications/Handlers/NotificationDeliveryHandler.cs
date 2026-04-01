@@ -54,6 +54,7 @@ public sealed partial class NotificationDeliveryHandler(
             TenantId = command.TenantId,
             OccurredAt = command.OccurredAt,
             Culture = command.Culture,
+            RecipientOverride = command.RecipientOverride,
         };
 
         var stopwatch = Stopwatch.StartNew();
