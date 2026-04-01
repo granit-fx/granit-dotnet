@@ -24,12 +24,31 @@ internal sealed partial class MailKitEmailSender(
         SmtpOptions smtp = options.CurrentValue;
         int timeoutMs = smtp.TimeoutSeconds * 1000;
 
+        string fromEmail = message.FromEmailOverride ?? smtp.DefaultSenderEmail ?? smtp.Username ?? "noreply@localhost";
+        string fromName = message.FromNameOverride ?? smtp.DefaultSenderName ?? fromEmail;
+
         MimeMessage mimeMessage = new();
-        mimeMessage.From.Add(new MailboxAddress(
-            message.FromOverride ?? smtp.Username ?? "noreply",
-            message.FromOverride ?? smtp.Username ?? "noreply@localhost"));
-        mimeMessage.To.Add(MailboxAddress.Parse(message.To));
+        mimeMessage.From.Add(new MailboxAddress(fromName, fromEmail));
+
+        if (message.ToName is not null)
+        {
+            mimeMessage.To.Add(new MailboxAddress(message.ToName, message.To));
+        }
+        else
+        {
+            mimeMessage.To.Add(MailboxAddress.Parse(message.To));
+        }
+
         mimeMessage.Subject = message.Subject;
+
+        // Custom headers (e.g. List-Unsubscribe)
+        if (message.Headers is not null)
+        {
+            foreach (KeyValuePair<string, string> header in message.Headers)
+            {
+                mimeMessage.Headers.Add(header.Key, header.Value);
+            }
+        }
 
         BodyBuilder bodyBuilder = new()
         {

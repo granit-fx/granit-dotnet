@@ -11,6 +11,7 @@ using Granit.Notifications.Email;
 using Granit.Notifications.Email.Internal;
 using Granit.Notifications.Email.Options;
 using Granit.Templating.Pipeline;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -34,7 +35,7 @@ public sealed class EmailNotificationChannelTests
         _options = Microsoft.Extensions.Options.Options.Create(new EmailChannelOptions
         {
             Provider = "Smtp",
-            SenderAddress = "no-reply@test.com",
+            DefaultSenderEmail = "no-reply@test.com",
         });
 
         _serviceProvider.GetRequiredKeyedService(typeof(IEmailSender), "Smtp")
@@ -44,6 +45,7 @@ public sealed class EmailNotificationChannelTests
             _serviceProvider,
             _options,
             _recipientResolver,
+            new ConfigurationBuilder().Build(),
             Substitute.For<ILogger<EmailNotificationChannel>>());
     }
 
@@ -89,7 +91,7 @@ public sealed class EmailNotificationChannelTests
     }
 
     [Fact]
-    public async Task SendAsync_SetsFromOverrideFromOptions()
+    public async Task SendAsync_SetsFromEmailOverrideFromOptions()
     {
         NotificationDeliveryContext context = BuildContext();
         SetupRecipient("user-1", email: "user@test.com");
@@ -104,7 +106,7 @@ public sealed class EmailNotificationChannelTests
         await _channel.SendAsync(context, TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
-        captured!.FromOverride.ShouldBe("no-reply@test.com");
+        captured!.FromEmailOverride.ShouldBe("no-reply@test.com");
     }
 
     [Fact]

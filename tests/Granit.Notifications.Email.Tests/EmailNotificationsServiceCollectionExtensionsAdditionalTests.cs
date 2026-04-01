@@ -31,16 +31,16 @@ public sealed class EmailNotificationsServiceCollectionExtensionsAdditionalTests
         services.AddGranitNotificationsEmail(opts =>
         {
             opts.Provider = "Brevo";
-            opts.SenderAddress = "noreply@example.com";
-            opts.SenderName = "Test App";
+            opts.DefaultSenderEmail = "noreply@example.com";
+            opts.DefaultSenderName = "Test App";
         });
 
         using ServiceProvider sp = services.BuildServiceProvider();
         IOptions<EmailChannelOptions> options = sp.GetRequiredService<IOptions<EmailChannelOptions>>();
 
         options.Value.Provider.ShouldBe("Brevo");
-        options.Value.SenderAddress.ShouldBe("noreply@example.com");
-        options.Value.SenderName.ShouldBe("Test App");
+        options.Value.DefaultSenderEmail.ShouldBe("noreply@example.com");
+        options.Value.DefaultSenderName.ShouldBe("Test App");
     }
 
     [Fact]

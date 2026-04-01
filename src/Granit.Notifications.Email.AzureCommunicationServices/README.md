@@ -17,7 +17,7 @@ dotnet add package Granit.Notifications.Email.AzureCommunicationServices
   "AzureCommunicationServices": {
     "Email": {
       "ConnectionString": "endpoint=https://my-acs.communication.azure.com/;accesskey=...",
-      "SenderAddress": "noreply@example.com",
+      "DefaultSenderEmail": "noreply@example.com",
       "TimeoutSeconds": 30
     }
   }
@@ -31,7 +31,7 @@ When deployed on Azure (AKS, App Service, Container Apps), use `Endpoint` instea
   "AzureCommunicationServices": {
     "Email": {
       "Endpoint": "https://my-acs.communication.azure.com",
-      "SenderAddress": "noreply@example.com"
+      "DefaultSenderEmail": "noreply@example.com"
     }
   }
 }

@@ -19,19 +19,19 @@ public sealed class EmailChannelOptionsTests
     }
 
     [Fact]
-    public void Defaults_SenderAddressIsEmpty()
+    public void Defaults_DefaultSenderEmailIsEmpty()
     {
         EmailChannelOptions options = new();
 
-        options.SenderAddress.ShouldBe(string.Empty);
+        options.DefaultSenderEmail.ShouldBe(string.Empty);
     }
 
     [Fact]
-    public void Defaults_SenderNameIsEmpty()
+    public void Defaults_DefaultSenderNameIsEmpty()
     {
         EmailChannelOptions options = new();
 
-        options.SenderName.ShouldBe(string.Empty);
+        options.DefaultSenderName.ShouldBe(string.Empty);
     }
 
     [Fact]
@@ -40,12 +40,12 @@ public sealed class EmailChannelOptionsTests
         EmailChannelOptions options = new()
         {
             Provider = "Brevo",
-            SenderAddress = "no-reply@example.com",
-            SenderName = "My App",
+            DefaultSenderEmail = "no-reply@example.com",
+            DefaultSenderName = "My App",
         };
 
         options.Provider.ShouldBe("Brevo");
-        options.SenderAddress.ShouldBe("no-reply@example.com");
-        options.SenderName.ShouldBe("My App");
+        options.DefaultSenderEmail.ShouldBe("no-reply@example.com");
+        options.DefaultSenderName.ShouldBe("My App");
     }
 }

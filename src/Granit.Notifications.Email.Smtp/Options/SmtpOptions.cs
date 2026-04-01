@@ -17,6 +17,12 @@ public sealed class SmtpOptions
     /// <summary>Whether to use SSL/TLS.</summary>
     public bool UseSsl { get; set; } = true;
 
+    /// <summary>Default sender email address. Falls back to <see cref="Username"/> if not set.</summary>
+    public string? DefaultSenderEmail { get; set; }
+
+    /// <summary>Default sender display name.</summary>
+    public string? DefaultSenderName { get; set; }
+
     /// <summary>SMTP authentication username.</summary>
     public string? Username { get; set; }
 

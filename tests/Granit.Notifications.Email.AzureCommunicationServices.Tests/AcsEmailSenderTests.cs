@@ -21,7 +21,7 @@ public sealed class AcsEmailSenderTests
         AcsEmailOptions opts = options ?? new AcsEmailOptions
         {
             ConnectionString = "endpoint=https://test.communication.azure.com/;accesskey=dGVzdA==",
-            SenderAddress = "noreply@example.com",
+            DefaultSenderEmail = "noreply@example.com",
             TimeoutSeconds = 10,
         };
 
@@ -44,7 +44,7 @@ public sealed class AcsEmailSenderTests
             To = "recipient@example.com",
             Subject = "Test subject",
             HtmlBody = "<p>Hello</p>",
-            FromOverride = fromOverride,
+            FromEmailOverride = fromOverride,
             PlainTextBody = plainText,
         };
 
@@ -94,7 +94,7 @@ public sealed class AcsEmailSenderTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public async Task SendAsync_WithFromOverride_UsesSenderAddressFromOverride()
+    public async Task SendAsync_WithFromEmailOverride_UsesSenderAddressFromEmailOverride()
     {
         (AcsEmailSender sender, IAcsEmailTransport transport) = CreateSender();
         Azure.Communication.Email.EmailMessage? captured = null;
@@ -111,12 +111,12 @@ public sealed class AcsEmailSenderTests
     }
 
     [Fact]
-    public async Task SendAsync_WithoutFromOverride_UsesSenderAddress()
+    public async Task SendAsync_WithoutFromEmailOverride_UsesDefaultSenderEmail()
     {
         AcsEmailOptions opts = new()
         {
             ConnectionString = "endpoint=https://test.communication.azure.com/;accesskey=dGVzdA==",
-            SenderAddress = "sender@example.com",
+            DefaultSenderEmail = "sender@example.com",
             TimeoutSeconds = 5,
         };
         (AcsEmailSender sender, IAcsEmailTransport transport) = CreateSender(opts);
@@ -179,7 +179,7 @@ public sealed class AcsEmailSenderTests
         AcsEmailOptions opts = new()
         {
             ConnectionString = "endpoint=https://test.communication.azure.com/;accesskey=dGVzdA==",
-            SenderAddress = "sender@example.com",
+            DefaultSenderEmail = "sender@example.com",
             TimeoutSeconds = 5,
         };
 

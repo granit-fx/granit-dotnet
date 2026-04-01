@@ -40,14 +40,14 @@ public sealed class SesEmailServiceCollectionExtensionsTests
         services.AddGranitNotificationsEmailAwsSes(opts =>
         {
             opts.Region = "eu-central-1";
-            opts.FromAddress = "test@example.com";
+            opts.DefaultSenderEmail = "test@example.com";
         });
 
         ServiceProvider sp = services.BuildServiceProvider();
         AwsSesOptions options = sp.GetRequiredService<IOptions<AwsSesOptions>>().Value;
 
         options.Region.ShouldBe("eu-central-1");
-        options.FromAddress.ShouldBe("test@example.com");
+        options.DefaultSenderEmail.ShouldBe("test@example.com");
     }
 
     [Fact]

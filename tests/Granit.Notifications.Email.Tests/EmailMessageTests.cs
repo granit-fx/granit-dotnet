@@ -14,14 +14,14 @@ public sealed class EmailMessageTests
             Subject = "Test Subject",
             HtmlBody = "<p>Hello</p>",
             PlainTextBody = "Hello",
-            FromOverride = "sender@test.com",
+            FromEmailOverride = "sender@test.com",
         };
 
         message.To.ShouldBe("user@test.com");
         message.Subject.ShouldBe("Test Subject");
         message.HtmlBody.ShouldBe("<p>Hello</p>");
         message.PlainTextBody.ShouldBe("Hello");
-        message.FromOverride.ShouldBe("sender@test.com");
+        message.FromEmailOverride.ShouldBe("sender@test.com");
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public sealed class EmailMessageTests
         };
 
         message.PlainTextBody.ShouldBeNull();
-        message.FromOverride.ShouldBeNull();
+        message.FromEmailOverride.ShouldBeNull();
     }
 
     [Fact]

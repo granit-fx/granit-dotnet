@@ -41,14 +41,14 @@ public sealed class AcsEmailServiceCollectionExtensionsTests
         services.AddGranitNotificationsEmailAcs(opts =>
         {
             opts.ConnectionString = "endpoint=https://test.communication.azure.com/;accesskey=dGVzdA==";
-            opts.SenderAddress = "test@example.com";
+            opts.DefaultSenderEmail = "test@example.com";
         });
 
         ServiceProvider sp = services.BuildServiceProvider();
         AcsEmailOptions options = sp.GetRequiredService<IOptions<AcsEmailOptions>>().Value;
 
         options.ConnectionString.ShouldNotBeNull();
-        options.SenderAddress.ShouldBe("test@example.com");
+        options.DefaultSenderEmail.ShouldBe("test@example.com");
     }
 
     [Fact]

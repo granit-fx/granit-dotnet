@@ -28,7 +28,7 @@ internal sealed partial class AcsEmailSender(
             NotificationsEmailAcsActivitySource.Tags.SubjectLength,
             message.Subject.Length);
 
-        string senderAddress = message.FromOverride ?? opts.SenderAddress;
+        string senderAddress = message.FromEmailOverride ?? opts.DefaultSenderEmail;
 
         var emailContent = new Azure.Communication.Email.EmailContent(message.Subject)
         {
@@ -40,10 +40,26 @@ internal sealed partial class AcsEmailSender(
             emailContent.PlainText = message.PlainTextBody;
         }
 
+        string? senderName = message.FromNameOverride ?? opts.DefaultSenderName;
+
+        // ACS uses "Display Name <email>" format for sender
+        string formattedSender = !string.IsNullOrEmpty(senderName)
+            ? $"{senderName} <{senderAddress}>"
+            : senderAddress;
+
         var acsMessage = new Azure.Communication.Email.EmailMessage(
-            senderAddress,
+            formattedSender,
             message.To,
             emailContent);
+
+        // Custom headers (e.g. List-Unsubscribe)
+        if (message.Headers is not null)
+        {
+            foreach (KeyValuePair<string, string> header in message.Headers)
+            {
+                acsMessage.Headers.Add(header.Key, header.Value);
+            }
+        }
 
         await transport.SendAsync(acsMessage, cancellationToken).ConfigureAwait(false);
 

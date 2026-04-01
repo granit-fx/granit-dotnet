@@ -34,7 +34,7 @@ public sealed class ScalewayEmailSenderTests
             To = "recipient@example.com",
             Subject = "Test subject",
             HtmlBody = "<p>Hello</p>",
-            FromOverride = fromOverride,
+            FromEmailOverride = fromOverride,
             PlainTextBody = plainText,
         };
 
@@ -134,7 +134,7 @@ public sealed class ScalewayEmailSenderTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public async Task SendAsync_WithFromOverride_UsesOverrideAddress()
+    public async Task SendAsync_WithFromEmailOverride_UsesOverrideAddress()
     {
         (ScalewayEmailSender sender, MockHttpMessageHandler handler) = CreateSender();
 
@@ -148,7 +148,7 @@ public sealed class ScalewayEmailSenderTests
     }
 
     [Fact]
-    public async Task SendAsync_WithoutFromOverride_UsesDefaultSenderEmail()
+    public async Task SendAsync_WithoutFromEmailOverride_UsesDefaultSenderEmail()
     {
         (ScalewayEmailSender sender, MockHttpMessageHandler handler) = CreateSender();
 

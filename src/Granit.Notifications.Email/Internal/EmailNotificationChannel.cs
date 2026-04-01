@@ -4,6 +4,7 @@ using Granit.Notifications.Email.Options;
 using Granit.Templating.Keys;
 using Granit.Templating.Layouts;
 using Granit.Templating.Pipeline;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -31,11 +32,17 @@ namespace Granit.Notifications.Email.Internal;
 /// stored in the database (<c>Granit.Templating.EntityFrameworkCore</c>), or
 /// any custom <see cref="ITemplateResolver"/>.
 /// </para>
+/// <para>
+/// When <see cref="INotificationDefinitionStore"/> is available and the notification
+/// has <c>AllowUserOptOut = true</c>, RFC 2369 / RFC 8058 List-Unsubscribe headers
+/// are injected into the <see cref="EmailMessage.Headers"/>.
+/// </para>
 /// </remarks>
 internal sealed partial class EmailNotificationChannel(
     IServiceProvider serviceProvider,
     IOptions<EmailChannelOptions> options,
     IRecipientResolver recipientResolver,
+    IConfiguration configuration,
     ILogger<EmailNotificationChannel> logger) : INotificationChannel
 {
     /// <summary>
@@ -58,17 +65,41 @@ internal sealed partial class EmailNotificationChannel(
             return;
         }
 
+        // Resolve notification metadata for opt-out and group info
+        INotificationDefinitionStore? defStore = serviceProvider.GetService<INotificationDefinitionStore>();
+        NotificationDefinition? definition = defStore?.Get(context.NotificationTypeName);
+        bool allowOptOut = definition?.AllowUserOptOut ?? true;
+
+        // Build List-Unsubscribe headers (RFC 2369 + RFC 8058) when opt-out is allowed
+        Dictionary<string, string>? headers = null;
+        string unsubscribeUrl = "";
+        if (allowOptOut)
+        {
+            unsubscribeUrl = ResolveUnsubscribeUrl();
+            if (unsubscribeUrl.Length > 0)
+            {
+                headers = new()
+                {
+                    ["List-Unsubscribe"] = $"<{unsubscribeUrl}>",
+                    ["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click",
+                };
+            }
+        }
+
+        // Build enrichment context for templates
+        EmailEnrichment enrichment = new(definition, allowOptOut, unsubscribeUrl);
+
         // Try type-specific template first, then fall back to the built-in default template
         RenderedEmail? rendered = await TryRenderTemplateAsync(
-                context.NotificationTypeName, context, cancellationToken).ConfigureAwait(false)
+                context.NotificationTypeName, context, enrichment, cancellationToken).ConfigureAwait(false)
             ?? await TryRenderTemplateAsync(
-                FallbackTemplateName, context, cancellationToken).ConfigureAwait(false);
+                FallbackTemplateName, context, enrichment, cancellationToken).ConfigureAwait(false);
 
         // Apply layout wrapping (two-pass: content was rendered above, now wrap in layout)
         if (rendered is not null)
         {
             rendered = await TryApplyLayoutAsync(
-                context.NotificationTypeName, rendered, context, cancellationToken).ConfigureAwait(false)
+                context.NotificationTypeName, rendered, context, enrichment, cancellationToken).ConfigureAwait(false)
                 ?? rendered;
         }
 
@@ -76,13 +107,34 @@ internal sealed partial class EmailNotificationChannel(
         string htmlBody = rendered?.Html
             ?? $"<p>{context.NotificationTypeName}</p>";
 
+        EmailChannelOptions opts = options.Value;
+
         await sender.SendAsync(new EmailMessage
         {
             To = recipient.Email,
+            ToName = recipient.DisplayName,
             Subject = subject,
             HtmlBody = htmlBody,
-            FromOverride = options.Value.SenderAddress,
+            FromEmailOverride = opts.DefaultSenderEmail,
+            FromNameOverride = opts.DefaultSenderName,
+            Headers = headers,
         }, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Resolves the unsubscribe URL from <see cref="EmailChannelOptions.UnsubscribeUrl"/>
+    /// or falls back to <c>{BaseUrl}/notifications/preferences</c>.
+    /// </summary>
+    private string ResolveUnsubscribeUrl()
+    {
+        string? url = options.Value.UnsubscribeUrl;
+        if (!string.IsNullOrEmpty(url))
+        {
+            return url;
+        }
+
+        string? baseUrl = configuration["Granit:Templating:App:BaseUrl"];
+        return string.IsNullOrEmpty(baseUrl) ? "" : baseUrl.TrimEnd('/') + "/notifications/preferences";
     }
 
     /// <summary>
@@ -91,7 +143,7 @@ internal sealed partial class EmailNotificationChannel(
     /// Returns <see langword="null"/> if no template is found or templating is not configured.
     /// </summary>
     private async Task<RenderedEmail?> TryRenderTemplateAsync(
-        string templateName, NotificationDeliveryContext context, CancellationToken cancellationToken)
+        string templateName, NotificationDeliveryContext context, EmailEnrichment enrichment, CancellationToken cancellationToken)
     {
         // Resolve ITemplateResolver chain (optional — not all apps have Granit.Templating)
         IEnumerable<ITemplateResolver>? resolvers = serviceProvider.GetService<IEnumerable<ITemplateResolver>>();
@@ -127,9 +179,9 @@ internal sealed partial class EmailNotificationChannel(
             return null;
         }
 
-        // Convert JsonElement data to Dictionary for Scriban rendering
+        // Convert JsonElement data to Dictionary for Scriban rendering + enrich with metadata
         Dictionary<string, object?> dataDict = JsonElementToDictionary(context.Data);
-        dataDict.TryAdd("notification_type", context.NotificationTypeName);
+        EnrichModelData(dataDict, context, enrichment);
 
         try
         {
@@ -165,6 +217,7 @@ internal sealed partial class EmailNotificationChannel(
         string templateName,
         RenderedEmail contentEmail,
         NotificationDeliveryContext context,
+        EmailEnrichment enrichment,
         CancellationToken cancellationToken)
     {
         // Resolve layout name from registry (code-level defaults)
@@ -223,7 +276,7 @@ internal sealed partial class EmailNotificationChannel(
         }
 
         Dictionary<string, object?> dataDict = JsonElementToDictionary(context.Data);
-        dataDict.TryAdd("notification_type", context.NotificationTypeName);
+        EnrichModelData(dataDict, context, enrichment);
 
         // Inject body as ExtraVariable for {{ body | raw }} in layout
         TemplateDescriptor layoutWithBody = new()
@@ -257,6 +310,27 @@ internal sealed partial class EmailNotificationChannel(
 
         return null;
     }
+
+    /// <summary>
+    /// Enriches the template model data with notification metadata for the footer.
+    /// Uses defensive defaults (empty string / false) to avoid null issues in Scriban.
+    /// </summary>
+    private static void EnrichModelData(
+        Dictionary<string, object?> dataDict,
+        NotificationDeliveryContext context,
+        EmailEnrichment enrichment)
+    {
+        dataDict.TryAdd("notification_type", context.NotificationTypeName);
+        dataDict.TryAdd("notification_group", enrichment.Definition?.GroupName ?? "");
+        dataDict.TryAdd("allow_opt_out", enrichment.AllowOptOut);
+        dataDict.TryAdd("unsubscribe_url", enrichment.AllowOptOut ? enrichment.UnsubscribeUrl : "");
+    }
+
+    /// <summary>Notification metadata resolved once per send, threaded through render methods.</summary>
+    private sealed record EmailEnrichment(
+        NotificationDefinition? Definition,
+        bool AllowOptOut,
+        string UnsubscribeUrl);
 
     private static Dictionary<string, object?> JsonElementToDictionary(JsonElement element)
     {

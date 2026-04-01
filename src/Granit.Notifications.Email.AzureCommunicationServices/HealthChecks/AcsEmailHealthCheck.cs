@@ -37,7 +37,7 @@ internal sealed class AcsEmailHealthCheck(IOptions<AcsEmailOptions> options) : I
             // The service will reject it, but a successful rejection proves the endpoint is reachable.
             // We catch the expected RequestFailedException to confirm connectivity.
             var testMessage = new Azure.Communication.Email.EmailMessage(
-                opts.SenderAddress,
+                opts.DefaultSenderEmail,
                 "healthcheck@localhost",
                 new EmailContent("healthcheck"));
 

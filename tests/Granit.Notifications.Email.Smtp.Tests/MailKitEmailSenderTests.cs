@@ -2,7 +2,7 @@
 // Tests - MailKitEmailSender
 // =============================================================================
 // Verifies the MailKit SMTP email sender: MimeMessage construction, sender
-// address resolution (FromOverride > Username > fallback), body builder,
+// address resolution (FromEmailOverride > Username > fallback), body builder,
 // authentication branching, and successful send/disconnect flow.
 // Uses ISmtpTransportFactory + ISmtpTransport substitutes to avoid real SMTP.
 // =============================================================================
@@ -53,7 +53,7 @@ public sealed class MailKitEmailSenderTests
             To = "recipient@example.com",
             Subject = "Test subject",
             HtmlBody = "<p>Hello</p>",
-            FromOverride = fromOverride,
+            FromEmailOverride = fromOverride,
             PlainTextBody = plainText,
         };
 
@@ -223,7 +223,7 @@ public sealed class MailKitEmailSenderTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public async Task SendAsync_WithFromOverride_UsesSenderAddressFromOverride()
+    public async Task SendAsync_WithFromEmailOverride_UsesSenderAddressFromEmailOverride()
     {
         (MailKitEmailSender? sender, ISmtpTransport? transport) = CreateSender();
         MimeMessage? captured = null;
@@ -236,7 +236,7 @@ public sealed class MailKitEmailSenderTests
     }
 
     [Fact]
-    public async Task SendAsync_WithoutFromOverride_UsesUsername()
+    public async Task SendAsync_WithoutFromEmailOverride_UsesUsername()
     {
         SmtpOptions opts = new()
         {
@@ -257,7 +257,7 @@ public sealed class MailKitEmailSenderTests
     }
 
     [Fact]
-    public async Task SendAsync_WithoutFromOverrideOrUsername_FallsBackToNoreply()
+    public async Task SendAsync_WithoutFromEmailOverrideOrUsername_FallsBackToNoreply()
     {
         SmtpOptions opts = new()
         {
@@ -274,7 +274,7 @@ public sealed class MailKitEmailSenderTests
         await sender.SendAsync(SimpleMessage(), TestContext.Current.CancellationToken);
 
         captured.ShouldNotBeNull();
-        ((MailboxAddress)captured.From[0]).Name.ShouldBe("noreply");
+        ((MailboxAddress)captured.From[0]).Name.ShouldBe("noreply@localhost");
         ((MailboxAddress)captured.From[0]).Address.ShouldBe("noreply@localhost");
     }
 

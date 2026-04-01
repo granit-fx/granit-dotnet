@@ -33,21 +33,24 @@ internal sealed partial class ScalewayEmailSender(
         using Activity? activity = NotificationsEmailScalewayActivitySource.Source.StartActivity(
             NotificationsEmailScalewayActivitySource.Operations.Send);
 
-        string fromEmail = message.FromOverride ?? opts.DefaultSenderEmail;
-        string fromName = opts.DefaultSenderName;
+        string fromEmail = message.FromEmailOverride ?? opts.DefaultSenderEmail;
+        string fromName = message.FromNameOverride ?? opts.DefaultSenderName;
 
         object? textField = message.PlainTextBody is not null
             ? message.PlainTextBody
             : null;
 
+        var to = new { email = message.To, name = message.ToName };
+
         object payload = new
         {
             from = new { email = fromEmail, name = fromName },
-            to = new[] { new { email = message.To } },
+            to = new[] { to },
             subject = message.Subject,
             html = message.HtmlBody,
             text = textField,
             project_id = opts.ProjectId,
+            additional_headers = message.Headers,
         };
 
         using HttpClient client = httpClientFactory.CreateClient("Scaleway");

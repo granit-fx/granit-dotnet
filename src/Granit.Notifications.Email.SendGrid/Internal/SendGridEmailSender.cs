@@ -33,8 +33,8 @@ internal sealed partial class SendGridEmailSender(
         using Activity? activity = NotificationsEmailSendGridActivitySource.Source.StartActivity(
             NotificationsEmailSendGridActivitySource.Operations.Send);
 
-        string fromEmail = message.FromOverride ?? opts.DefaultSenderEmail;
-        string fromName = opts.DefaultSenderName;
+        string fromEmail = message.FromEmailOverride ?? opts.DefaultSenderEmail;
+        string fromName = message.FromNameOverride ?? opts.DefaultSenderName;
 
         List<object> content = [new { type = "text/html", value = message.HtmlBody }];
 
@@ -43,12 +43,15 @@ internal sealed partial class SendGridEmailSender(
             content.Insert(0, new { type = "text/plain", value = message.PlainTextBody });
         }
 
+        var to = new { email = message.To, name = message.ToName };
+
         object payload = new
         {
-            personalizations = new[] { new { to = new[] { new { email = message.To } } } },
+            personalizations = new[] { new { to = new[] { to } } },
             from = new { email = fromEmail, name = fromName },
             subject = message.Subject,
             content,
+            headers = message.Headers,
         };
 
         using HttpClient client = httpClientFactory.CreateClient("SendGrid");

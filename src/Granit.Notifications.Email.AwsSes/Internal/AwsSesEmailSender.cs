@@ -29,7 +29,13 @@ internal sealed partial class AwsSesEmailSender(
             NotificationsEmailAwsSesActivitySource.Operations.SendEmail);
         activity?.SetTag(NotificationsEmailAwsSesActivitySource.Tags.Region, ses.Region);
 
-        string fromAddress = message.FromOverride ?? ses.FromAddress ?? "noreply@localhost";
+        string fromEmail = message.FromEmailOverride ?? ses.DefaultSenderEmail ?? "noreply@localhost";
+        string? fromName = message.FromNameOverride ?? ses.DefaultSenderName;
+
+        // SES v2 uses RFC 5322 formatted From (e.g. "Display Name <email@example.com>")
+        string fromAddress = !string.IsNullOrEmpty(fromName)
+            ? $"\"{fromName}\" <{fromEmail}>"
+            : fromEmail;
 
         EmailContent content = new()
         {
@@ -40,6 +46,7 @@ internal sealed partial class AwsSesEmailSender(
                 {
                     Html = new Content { Data = message.HtmlBody },
                 },
+                Headers = BuildMessageHeaders(message.Headers),
             },
         };
 
@@ -64,6 +71,22 @@ internal sealed partial class AwsSesEmailSender(
         await transport.SendEmailAsync(request, cancellationToken).ConfigureAwait(false);
 
         LogEmailSent(LogRedaction.Email(message.To), ses.Region);
+    }
+
+    private static List<MessageHeader>? BuildMessageHeaders(IReadOnlyDictionary<string, string>? headers)
+    {
+        if (headers is null || headers.Count == 0)
+        {
+            return null;
+        }
+
+        List<MessageHeader> result = new(headers.Count);
+        foreach (KeyValuePair<string, string> header in headers)
+        {
+            result.Add(new MessageHeader { Name = header.Key, Value = header.Value });
+        }
+
+        return result;
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "SES email sent to {RedactedRecipient} via {Region}")]

@@ -13,7 +13,10 @@ public sealed class AwsSesOptions
     public string Region { get; set; } = string.Empty;
 
     /// <summary>Default sender email address (must be verified in SES).</summary>
-    public string? FromAddress { get; set; }
+    public string? DefaultSenderEmail { get; set; }
+
+    /// <summary>Default sender display name.</summary>
+    public string? DefaultSenderName { get; set; }
 
     /// <summary>Optional SES configuration set name for tracking (bounces, complaints).</summary>
     public string? ConfigurationSetName { get; set; }

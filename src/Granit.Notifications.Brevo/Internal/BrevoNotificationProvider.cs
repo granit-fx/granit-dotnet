@@ -33,17 +33,20 @@ internal sealed partial class BrevoNotificationProvider(
         BrevoOptions opts = options.CurrentValue;
         HttpClient client = httpClientFactory.CreateClient("Brevo");
 
+        var to = new { email = message.To, name = message.ToName };
+
         object payload = new
         {
             sender = new
             {
-                email = message.FromOverride ?? opts.DefaultSenderEmail,
-                name = opts.DefaultSenderName,
+                email = message.FromEmailOverride ?? opts.DefaultSenderEmail,
+                name = message.FromNameOverride ?? opts.DefaultSenderName,
             },
-            to = new[] { new { email = message.To } },
+            to = new[] { to },
             subject = message.Subject,
             htmlContent = message.HtmlBody,
             textContent = message.PlainTextBody,
+            headers = message.Headers,
         };
 
         using HttpResponseMessage response = await client.PostAsJsonAsync(

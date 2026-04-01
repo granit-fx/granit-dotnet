@@ -23,7 +23,10 @@ public sealed class AcsEmailOptions
 
     /// <summary>Default sender email address (must be verified in ACS). Required.</summary>
     [Required]
-    public string SenderAddress { get; set; } = string.Empty;
+    public string DefaultSenderEmail { get; set; } = string.Empty;
+
+    /// <summary>Default sender display name.</summary>
+    public string? DefaultSenderName { get; set; }
 
     /// <summary>Send timeout in seconds. Default: 30.</summary>
     [Range(1, 300)]

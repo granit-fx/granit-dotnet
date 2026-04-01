@@ -18924,9 +18924,9 @@
           "returnType": "string"
         },
         {
-          "name": "FromAddress",
+          "name": "DefaultSenderEmail",
           "kind": "property",
-          "signature": "string? FromAddress",
+          "signature": "string? DefaultSenderEmail",
           "returnType": "string?"
         }
       ]
@@ -18978,10 +18978,10 @@
           "returnType": "string?"
         },
         {
-          "name": "TimeoutSeconds",
+          "name": "DefaultSenderName",
           "kind": "property",
-          "signature": "int TimeoutSeconds",
-          "returnType": "int"
+          "signature": "string? DefaultSenderName",
+          "returnType": "string?"
         }
       ]
     },
@@ -19050,15 +19050,15 @@
           "returnType": "string"
         },
         {
-          "name": "SenderAddress",
+          "name": "DefaultSenderEmail",
           "kind": "property",
-          "signature": "string SenderAddress",
+          "signature": "string DefaultSenderEmail",
           "returnType": "string"
         },
         {
-          "name": "SenderName",
+          "name": "DefaultSenderName",
           "kind": "property",
-          "signature": "string SenderName",
+          "signature": "string DefaultSenderName",
           "returnType": "string"
         }
       ]
@@ -19271,9 +19271,9 @@
           "returnType": "bool"
         },
         {
-          "name": "Username",
+          "name": "DefaultSenderEmail",
           "kind": "property",
-          "signature": "string? Username",
+          "signature": "string? DefaultSenderEmail",
           "returnType": "string?"
         }
       ]

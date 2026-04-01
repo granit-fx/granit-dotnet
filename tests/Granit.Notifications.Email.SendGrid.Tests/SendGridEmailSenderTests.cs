@@ -33,7 +33,7 @@ public sealed class SendGridEmailSenderTests
             To = "recipient@example.com",
             Subject = "Test subject",
             HtmlBody = "<p>Hello</p>",
-            FromOverride = fromOverride,
+            FromEmailOverride = fromOverride,
             PlainTextBody = plainText,
         };
 
@@ -118,7 +118,7 @@ public sealed class SendGridEmailSenderTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public async Task SendAsync_WithFromOverride_UsesOverrideAddress()
+    public async Task SendAsync_WithFromEmailOverride_UsesOverrideAddress()
     {
         (SendGridEmailSender sender, MockHttpMessageHandler handler) = CreateSender();
 
@@ -132,7 +132,7 @@ public sealed class SendGridEmailSenderTests
     }
 
     [Fact]
-    public async Task SendAsync_WithoutFromOverride_UsesDefaultSenderEmail()
+    public async Task SendAsync_WithoutFromEmailOverride_UsesDefaultSenderEmail()
     {
         (SendGridEmailSender sender, MockHttpMessageHandler handler) = CreateSender();
 

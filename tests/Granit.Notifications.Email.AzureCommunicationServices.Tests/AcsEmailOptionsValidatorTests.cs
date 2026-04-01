@@ -15,7 +15,7 @@ public sealed class AcsEmailOptionsValidatorTests
         AcsEmailOptions options = new()
         {
             ConnectionString = "endpoint=https://test.communication.azure.com/;accesskey=dGVzdA==",
-            SenderAddress = "noreply@example.com",
+            DefaultSenderEmail = "noreply@example.com",
             TimeoutSeconds = 30,
         };
 
@@ -30,7 +30,7 @@ public sealed class AcsEmailOptionsValidatorTests
         AcsEmailOptions options = new()
         {
             Endpoint = "https://test.communication.azure.com",
-            SenderAddress = "noreply@example.com",
+            DefaultSenderEmail = "noreply@example.com",
             TimeoutSeconds = 30,
         };
 
@@ -43,19 +43,19 @@ public sealed class AcsEmailOptionsValidatorTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void Validate_EmptySenderAddress_ReturnsFail(string? senderAddress)
+    public void Validate_EmptyDefaultSenderEmail_ReturnsFail(string? defaultSenderEmail)
     {
         AcsEmailOptions options = new()
         {
             ConnectionString = "endpoint=https://test.communication.azure.com/;accesskey=dGVzdA==",
-            SenderAddress = senderAddress!,
+            DefaultSenderEmail = defaultSenderEmail!,
             TimeoutSeconds = 30,
         };
 
         ValidateOptionsResult result = _validator.Validate(null, options);
 
         result.Failed.ShouldBeTrue();
-        result.FailureMessage.ShouldContain("SenderAddress");
+        result.FailureMessage.ShouldContain("DefaultSenderEmail");
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public sealed class AcsEmailOptionsValidatorTests
         {
             ConnectionString = null,
             Endpoint = null,
-            SenderAddress = "noreply@example.com",
+            DefaultSenderEmail = "noreply@example.com",
             TimeoutSeconds = 30,
         };
 
@@ -81,7 +81,7 @@ public sealed class AcsEmailOptionsValidatorTests
         AcsEmailOptions options = new()
         {
             ConnectionString = "endpoint=https://test.communication.azure.com/;accesskey=dGVzdA==",
-            SenderAddress = "noreply@example.com",
+            DefaultSenderEmail = "noreply@example.com",
             TimeoutSeconds = 0,
         };
 
@@ -98,7 +98,7 @@ public sealed class AcsEmailOptionsValidatorTests
         {
             ConnectionString = "endpoint=https://test.communication.azure.com/;accesskey=dGVzdA==",
             Endpoint = "https://test.communication.azure.com",
-            SenderAddress = "noreply@example.com",
+            DefaultSenderEmail = "noreply@example.com",
             TimeoutSeconds = 30,
         };
 

@@ -102,7 +102,7 @@ public sealed class BrevoNotificationProviderTests : IDisposable
     }
 
     [Fact]
-    public async Task SendEmailAsync_UsesFromOverride_WhenProvided()
+    public async Task SendEmailAsync_UsesFromEmailOverride_WhenProvided()
     {
         IEmailSender emailSender = _provider;
 
@@ -112,7 +112,7 @@ public sealed class BrevoNotificationProviderTests : IDisposable
                 To = "user@test.com",
                 Subject = "Test",
                 HtmlBody = "<p>Hi</p>",
-                FromOverride = "custom@test.com",
+                FromEmailOverride = "custom@test.com",
             },
             TestContext.Current.CancellationToken);
 

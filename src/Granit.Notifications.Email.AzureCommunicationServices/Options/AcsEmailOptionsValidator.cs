@@ -8,9 +8,9 @@ internal sealed class AcsEmailOptionsValidator : IValidateOptions<AcsEmailOption
     /// <inheritdoc />
     public ValidateOptionsResult Validate(string? name, AcsEmailOptions options)
     {
-        if (string.IsNullOrWhiteSpace(options.SenderAddress))
+        if (string.IsNullOrWhiteSpace(options.DefaultSenderEmail))
         {
-            return ValidateOptionsResult.Fail("AcsEmailOptions.SenderAddress is required.");
+            return ValidateOptionsResult.Fail("AcsEmailOptions.DefaultSenderEmail is required.");
         }
 
         if (string.IsNullOrWhiteSpace(options.ConnectionString) &&
