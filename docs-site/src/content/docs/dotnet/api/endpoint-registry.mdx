@@ -26,14 +26,14 @@ for request/response types — this page focuses on **routes, methods, and permi
 // Application startup (e.g., Program.cs)
 RouteGroupBuilder api = app.MapGroup("api/v{version:apiVersion}");
 
-api.MapGranitBlobStorageEndpoints();   // → /api/v1/blobs/...
-api.MapGranitTemplatingEndpoints();    // → /api/v1/templates/...
-api.MapGranitIdentityEndpoints();      // → /api/v1/identity/users/...
+api.MapGranitBlobStorage();      // → /api/v1/blobs/...
+api.MapGranitTemplating();       // → /api/v1/templates/...
+api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 ```
 
 - **Permissions:** follow `[Group].[Resource].[Action]` (three segments)
 - **Error responses:** all endpoints return RFC 7807 Problem Details on errors
-- **Query endpoints** (`MapQueryEndpoints<T>`) are registered by the **application**,
+- **Query endpoints** (`MapGranitQuery<T>`) are registered by the **application**,
   not the framework — the route pattern is app-defined
 - **Routes below** show only the module-relative path (without the app prefix)
 
@@ -184,7 +184,7 @@ Identity uses **two separate endpoint groups** with distinct prefixes.
 
 ### User Cache (`identity/users`)
 
-**Module:** `Granit.Identity.Endpoints` — `MapGranitIdentityEndpoints()`
+**Module:** `Granit.Identity.Endpoints` — `MapGranitIdentityUserCache()`
 **Prefix:** `identity/users`
 
 | Method | Route | Operation | Permission |
@@ -201,7 +201,7 @@ Identity uses **two separate endpoint groups** with distinct prefixes.
 
 ### Identity Provider (`identity/provider`)
 
-**Module:** `Granit.Identity.Endpoints` — `MapGranitIdentityProviderEndpoints()`
+**Module:** `Granit.Identity.Endpoints` — `MapGranitIdentityProvider()`
 **Prefix:** `identity/provider`
 
 #### Users
@@ -319,7 +319,7 @@ and admin management (permission-protected).
 
 ### Account Self-Service (`account`)
 
-**Module:** `Granit.OpenIddict.Endpoints` — `MapOpenIddictEndpoints()`
+**Module:** `Granit.OpenIddict.Endpoints` — `MapGranitOpenIddict()`
 **Prefix:** `account`
 
 #### Registration & Email
@@ -385,7 +385,7 @@ and admin management (permission-protected).
 
 ### Admin Management (`admin`)
 
-**Module:** `Granit.OpenIddict.Endpoints` — `MapOpenIddictEndpoints()`
+**Module:** `Granit.OpenIddict.Endpoints` — `MapGranitOpenIddict()`
 **Prefix:** `admin`
 
 #### Users
@@ -513,11 +513,11 @@ interface OidcAuthorizationResponse {
 ## QueryEngine
 
 **Module:** `Granit.QueryEngine.Endpoints`
-**Prefix:** app-defined via `MapQueryEndpoints<T>(pattern)`
+**Prefix:** app-defined via `MapGranitQuery<T>(pattern)`
 
 <Aside type="caution">
 QueryEngine endpoints are registered by the **application**, not the framework.
-The route pattern is passed to `MapQueryEndpoints<T>()`. For consistency,
+The route pattern is passed to `MapGranitQuery<T>()`. For consistency,
 use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrides`).
 </Aside>
 
@@ -730,7 +730,7 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 
 <Aside type="caution">
 Reference Data endpoints are registered per entity type by the **application**
-via `MapGranitReferenceDataEndpoints<T>()`. Each entity gets its own sub-group
+via `MapGranitReferenceData<T>()`. Each entity gets its own sub-group
 under the prefix.
 </Aside>
 

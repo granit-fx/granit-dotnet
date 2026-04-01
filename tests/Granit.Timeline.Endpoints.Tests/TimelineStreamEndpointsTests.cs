@@ -57,7 +57,7 @@ public sealed class TimelineStreamEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(Substitute.For<Granit.Users.ICurrentUserService>());
 
         _app = builder.Build();
-        _app.MapTimelineEndpoints();
+        _app.MapGranitTimeline();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _authClient = BuildClient(UserRole);

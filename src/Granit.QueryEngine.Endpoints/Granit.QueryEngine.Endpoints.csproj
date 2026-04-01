@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.QueryEngine.Endpoints</PackageId>
-    <Description>Minimal API endpoints for Granit.QueryEngine. MapQueryEndpoints fluent API, filter[field.op]=value query string binding, GET /meta metadata endpoint, CRUD SavedViews endpoints, and OpenAPI conventions.</Description>
+    <Description>Minimal API endpoints for Granit.QueryEngine. MapGranitQuery fluent API, filter[field.op]=value query string binding, GET /meta metadata endpoint, CRUD SavedViews endpoints, and OpenAPI conventions.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

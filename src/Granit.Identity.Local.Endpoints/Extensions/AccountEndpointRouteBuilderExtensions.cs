@@ -17,7 +17,7 @@ public static class AccountEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize endpoint options.</param>
     /// <returns>The account <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapAccountEndpoints(
+    public static RouteGroupBuilder MapGranitAccount(
         this IEndpointRouteBuilder endpoints,
         Action<AccountEndpointsOptions>? configure = null)
     {

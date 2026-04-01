@@ -48,7 +48,7 @@ public sealed class IdentityUserCacheRgpdEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_cacheStats);
 
         _app = builder.Build();
-        _app.MapIdentityUserCacheEndpoints();
+        _app.MapGranitIdentityUserCache();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _adminClient = BuildClient(AdminRole);

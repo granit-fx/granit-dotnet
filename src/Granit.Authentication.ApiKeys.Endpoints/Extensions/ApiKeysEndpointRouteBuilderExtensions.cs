@@ -29,7 +29,7 @@ public static class ApiKeysEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="ApiKeysEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapApiKeysEndpoints(
+    public static RouteGroupBuilder MapGranitApiKeys(
         this IEndpointRouteBuilder endpoints,
         Action<ApiKeysEndpointsOptions>? configure = null)
     {

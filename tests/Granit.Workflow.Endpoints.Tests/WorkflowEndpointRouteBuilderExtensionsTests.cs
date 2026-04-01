@@ -15,13 +15,13 @@ using Xunit;
 namespace Granit.Workflow.Endpoints.Tests;
 
 /// <summary>
-/// Verifies that <see cref="WorkflowEndpointRouteBuilderExtensions.MapWorkflowEndpoints"/>
+/// Verifies that <see cref="WorkflowEndpointRouteBuilderExtensions.MapGranitWorkflow"/>
 /// correctly applies route prefix and authorization policy.
 /// </summary>
 public sealed class WorkflowEndpointRouteBuilderExtensionsTests
 {
     [Fact]
-    public async Task MapWorkflowEndpoints_with_custom_prefix_routes_correctly()
+    public async Task MapGranitWorkflow_with_custom_prefix_routes_correctly()
     {
         // Arrange
         IWorkflowHistoryQuery historyQuery = Substitute.For<IWorkflowHistoryQuery>();
@@ -44,7 +44,7 @@ public sealed class WorkflowEndpointRouteBuilderExtensionsTests
     }
 
     [Fact]
-    public async Task MapWorkflowEndpoints_default_prefix_is_workflow()
+    public async Task MapGranitWorkflow_default_prefix_is_workflow()
     {
         // Arrange
         IWorkflowHistoryQuery historyQuery = Substitute.For<IWorkflowHistoryQuery>();
@@ -63,7 +63,7 @@ public sealed class WorkflowEndpointRouteBuilderExtensionsTests
     }
 
     [Fact]
-    public async Task MapWorkflowEndpoints_returns_group_builder_for_chaining()
+    public async Task MapGranitWorkflow_returns_group_builder_for_chaining()
     {
         // Arrange
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -79,7 +79,7 @@ public sealed class WorkflowEndpointRouteBuilderExtensionsTests
         WebApplication app = builder.Build();
 
         // Act
-        Microsoft.AspNetCore.Routing.RouteGroupBuilder group = app.MapWorkflowEndpoints();
+        Microsoft.AspNetCore.Routing.RouteGroupBuilder group = app.MapGranitWorkflow();
 
         // Assert
         group.ShouldNotBeNull();
@@ -106,7 +106,7 @@ public sealed class WorkflowEndpointRouteBuilderExtensionsTests
         builder.Services.AddSingleton(historyQuery);
 
         WebApplication app = builder.Build();
-        app.MapWorkflowEndpoints(configure);
+        app.MapGranitWorkflow(configure);
         app.StartAsync().GetAwaiter().GetResult();
 
         return app;

@@ -22,10 +22,10 @@ public static class BlobStorageEndpointRouteBuilderExtensions
     /// <remarks>
     /// <para>Call this from your application route registration:</para>
     /// <code>
-    /// app.MapBlobStorageEndpoints();
+    /// app.MapGranitBlobStorage();
     ///
     /// // With custom options:
-    /// app.MapBlobStorageEndpoints(opts =>
+    /// app.MapGranitBlobStorage(opts =>
     /// {
     ///     opts.RoutePrefix = "admin/blobs";
     /// });
@@ -34,7 +34,7 @@ public static class BlobStorageEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="BlobStorageEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapBlobStorageEndpoints(
+    public static RouteGroupBuilder MapGranitBlobStorage(
         this IEndpointRouteBuilder endpoints,
         Action<BlobStorageEndpointsOptions>? configure = null)
     {
@@ -59,7 +59,7 @@ public static class BlobStorageEndpointRouteBuilderExtensions
 
         if (hasQueryableProvider)
         {
-            group.RequireAuthorization(BlobStoragePermissions.Administration.Read).MapQueryEndpoints<BlobDescriptor>(
+            group.RequireAuthorization(BlobStoragePermissions.Administration.Read).MapGranitQuery<BlobDescriptor>(
                 "query",
                 sp => sp.GetRequiredService<IBlobQueryableProvider>().GetDescriptors());
         }

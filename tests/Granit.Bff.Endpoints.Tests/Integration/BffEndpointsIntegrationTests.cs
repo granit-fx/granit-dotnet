@@ -267,7 +267,7 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
                 BffEndpointsTestServer.TestFrontendName,
                 "user-42",
                 Arg.Any<CancellationToken>())
-            .Returns(new List<string> { TestSessionId });
+            .Returns((IReadOnlyList<string>)[TestSessionId]);
 
         HttpResponseMessage response = await SendAnonymousWithSessionAsync(
             HttpMethod.Get, "/app/bff/sessions");
@@ -438,7 +438,7 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
                 BffEndpointsTestServer.TestFrontendName,
                 "user-42",
                 Arg.Any<CancellationToken>())
-            .Returns(new List<string> { TestSessionId, otherSessionId });
+            .Returns((IReadOnlyList<string>)[TestSessionId, otherSessionId]);
 
         HttpResponseMessage response = await SendAnonymousWithSessionAsync(
             HttpMethod.Delete, "/app/bff/sessions");
@@ -486,7 +486,7 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
                 BffEndpointsTestServer.TestFrontendName,
                 "user-42",
                 Arg.Any<CancellationToken>())
-            .Returns(new List<string> { "session-1", "session-2" });
+            .Returns((IReadOnlyList<string>)["session-1", "session-2"]);
 
         FormUrlEncodedContent content = new(new Dictionary<string, string>
         {
@@ -514,7 +514,7 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
     public async Task PostBackChannelLogout_MissingLogoutToken_Returns400()
     {
         // Post an empty form without the logout_token parameter
-        FormUrlEncodedContent content = new(new Dictionary<string, string>());
+        FormUrlEncodedContent content = new([]);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsync(
             "/app/bff/backchannel-logout", content, TestContext.Current.CancellationToken);

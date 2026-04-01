@@ -57,7 +57,7 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
         });
 
         _app = builder.Build();
-        _app.MapIdentityUserCacheEndpoints();
+        _app.MapGranitIdentityUserCache();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _client = _app.GetTestClient();
@@ -268,7 +268,7 @@ public sealed class IdentityWebhookEndpointsNoSecretTests : IAsyncDisposable
         // No secret configured — IdentityWebhookOptions.Secret remains ""
 
         _app = builder.Build();
-        _app.MapIdentityUserCacheEndpoints();
+        _app.MapGranitIdentityUserCache();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _client = _app.GetTestClient();

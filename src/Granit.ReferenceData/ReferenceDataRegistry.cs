@@ -8,7 +8,7 @@ namespace Granit.ReferenceData;
 /// Populated at DI registration time by <c>AddReferenceData&lt;TDbContext&gt;()</c>.
 /// </summary>
 /// <remarks>
-/// The registry is read at endpoint mapping time by <c>MapAllReferenceDataEndpoints()</c>
+/// The registry is read at endpoint mapping time by <c>MapGranitAllReferenceData()</c>
 /// and at model-building time to create EF Core SharedTypeEntity configurations.
 /// </remarks>
 public sealed class ReferenceDataRegistry

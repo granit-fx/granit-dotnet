@@ -59,7 +59,7 @@ services.AddDbContextFactory<AppDbContext>((sp, options) =>
 ### 4. Map endpoints (optional)
 
 ```csharp
-app.MapAuditingEndpoints();
+app.MapGranitAuditing();
 ```
 
 That's it. Every `SaveChanges` on your `AppDbContext` now produces audit entries automatically.

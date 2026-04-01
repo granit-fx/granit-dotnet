@@ -1933,9 +1933,9 @@
       "line": 16,
       "members": [
         {
-          "name": "MapAIEndpoints",
+          "name": "MapGranitAI",
           "kind": "method",
-          "signature": "MapAIEndpoints(this IEndpointRouteBuilder endpoints, Action<AIEndpointsOptions>? configure = null)",
+          "signature": "MapGranitAI(this IEndpointRouteBuilder endpoints, Action<AIEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -3551,9 +3551,9 @@
       "line": 14,
       "members": [
         {
-          "name": "MapAuditingEndpoints",
+          "name": "MapGranitAuditing",
           "kind": "method",
-          "signature": "MapAuditingEndpoints(this IEndpointRouteBuilder endpoints, Action<AuditingEndpointsOptions>? configure = null)",
+          "signature": "MapGranitAuditing(this IEndpointRouteBuilder endpoints, Action<AuditingEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -4050,9 +4050,9 @@
       "line": 14,
       "members": [
         {
-          "name": "MapApiKeysEndpoints",
+          "name": "MapGranitApiKeys",
           "kind": "method",
-          "signature": "MapApiKeysEndpoints(this IEndpointRouteBuilder endpoints, Action<ApiKeysEndpointsOptions>? configure = null)",
+          "signature": "MapGranitApiKeys(this IEndpointRouteBuilder endpoints, Action<ApiKeysEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -4775,9 +4775,9 @@
       "line": 14,
       "members": [
         {
-          "name": "MapBackChannelLogout",
+          "name": "MapGranitBackChannelLogout",
           "kind": "method",
-          "signature": "MapBackChannelLogout(this IEndpointRouteBuilder endpoints)",
+          "signature": "MapGranitBackChannelLogout(this IEndpointRouteBuilder endpoints)",
           "returnType": "IEndpointRouteBuilder"
         }
       ]
@@ -5473,9 +5473,9 @@
       "line": 13,
       "members": [
         {
-          "name": "MapAuthorizationEndpoints",
+          "name": "MapGranitAuthorization",
           "kind": "method",
-          "signature": "MapAuthorizationEndpoints(this IEndpointRouteBuilder endpoints, Action<AuthorizationEndpointsOptions>? configure = null)",
+          "signature": "MapGranitAuthorization(this IEndpointRouteBuilder endpoints, Action<AuthorizationEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -5842,9 +5842,9 @@
       "line": 14,
       "members": [
         {
-          "name": "MapBackgroundJobsEndpoints",
+          "name": "MapGranitBackgroundJobs",
           "kind": "method",
-          "signature": "MapBackgroundJobsEndpoints(this IEndpointRouteBuilder endpoints, Action<BackgroundJobsEndpointsOptions>? configure = null)",
+          "signature": "MapGranitBackgroundJobs(this IEndpointRouteBuilder endpoints, Action<BackgroundJobsEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -6310,9 +6310,9 @@
       "line": 19,
       "members": [
         {
-          "name": "MapGranitBffEndpoints",
+          "name": "MapGranitBff",
           "kind": "method",
-          "signature": "MapGranitBffEndpoints(this IEndpointRouteBuilder endpoints)",
+          "signature": "MapGranitBff(this IEndpointRouteBuilder endpoints)",
           "returnType": "IEndpointRouteBuilder"
         }
       ]
@@ -7130,9 +7130,9 @@
       "line": 17,
       "members": [
         {
-          "name": "MapBlobStorageEndpoints",
+          "name": "MapGranitBlobStorage",
           "kind": "method",
-          "signature": "MapBlobStorageEndpoints(this IEndpointRouteBuilder endpoints, Action<BlobStorageEndpointsOptions>? configure = null)",
+          "signature": "MapGranitBlobStorage(this IEndpointRouteBuilder endpoints, Action<BlobStorageEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -7693,9 +7693,9 @@
       "line": 17,
       "members": [
         {
-          "name": "MapGranitBlobProxyEndpoints",
+          "name": "MapGranitBlobProxy",
           "kind": "method",
-          "signature": "MapGranitBlobProxyEndpoints(this IEndpointRouteBuilder endpoints)",
+          "signature": "MapGranitBlobProxy(this IEndpointRouteBuilder endpoints)",
           "returnType": "IEndpointRouteBuilder"
         }
       ]
@@ -8420,9 +8420,9 @@
       "line": 15,
       "members": [
         {
-          "name": "MapDataExchangeEndpoints",
+          "name": "MapGranitDataExchange",
           "kind": "method",
-          "signature": "MapDataExchangeEndpoints(this IEndpointRouteBuilder endpoints, Action<DataExchangeEndpointsOptions>? configure = null)",
+          "signature": "MapGranitDataExchange(this IEndpointRouteBuilder endpoints, Action<DataExchangeEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -14400,9 +14400,9 @@
       "line": 14,
       "members": [
         {
-          "name": "MapIdentityUserCacheEndpoints",
+          "name": "MapGranitIdentityUserCache",
           "kind": "method",
-          "signature": "MapIdentityUserCacheEndpoints(this IEndpointRouteBuilder endpoints, Action<IdentityEndpointsOptions>? configure = null)",
+          "signature": "MapGranitIdentityUserCache(this IEndpointRouteBuilder endpoints, Action<IdentityEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -14432,9 +14432,9 @@
       "line": 15,
       "members": [
         {
-          "name": "MapIdentityProviderEndpoints",
+          "name": "MapGranitIdentityProvider",
           "kind": "method",
-          "signature": "MapIdentityProviderEndpoints(this IEndpointRouteBuilder endpoints, Action<IdentityProviderEndpointsOptions>? configure = null)",
+          "signature": "MapGranitIdentityProvider(this IEndpointRouteBuilder endpoints, Action<IdentityProviderEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -15789,9 +15789,9 @@
       "line": 12,
       "members": [
         {
-          "name": "MapAccountEndpoints",
+          "name": "MapGranitAccount",
           "kind": "method",
-          "signature": "MapAccountEndpoints(this IEndpointRouteBuilder endpoints, Action<AccountEndpointsOptions>? configure = null)",
+          "signature": "MapGranitAccount(this IEndpointRouteBuilder endpoints, Action<AccountEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -19333,9 +19333,9 @@
       "line": 19,
       "members": [
         {
-          "name": "MapMobilePushTokenEndpoints",
+          "name": "MapGranitMobilePushTokens",
           "kind": "method",
-          "signature": "MapMobilePushTokenEndpoints(this IEndpointRouteBuilder endpoints, string prefix = \"api/notifications/mobile-push/tokens\")",
+          "signature": "MapGranitMobilePushTokens(this IEndpointRouteBuilder endpoints, string prefix = \"api/notifications/mobile-push/tokens\")",
           "returnType": "IEndpointRouteBuilder"
         }
       ]
@@ -19349,9 +19349,9 @@
       "line": 23,
       "members": [
         {
-          "name": "MapGranitNotificationEndpoints",
+          "name": "MapGranitNotifications",
           "kind": "method",
-          "signature": "MapGranitNotificationEndpoints(this IEndpointRouteBuilder endpoints, Action<NotificationEndpointsOptions>? configure = null)",
+          "signature": "MapGranitNotifications(this IEndpointRouteBuilder endpoints, Action<NotificationEndpointsOptions>? configure = null)",
           "returnType": "IEndpointRouteBuilder"
         }
       ]
@@ -20338,9 +20338,9 @@
       "line": 15,
       "members": [
         {
-          "name": "MapGranitSseNotificationEndpoints",
+          "name": "MapGranitSseNotifications",
           "kind": "method",
-          "signature": "MapGranitSseNotificationEndpoints(this IEndpointRouteBuilder endpoints)",
+          "signature": "MapGranitSseNotifications(this IEndpointRouteBuilder endpoints)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -21809,9 +21809,9 @@
       "line": 12,
       "members": [
         {
-          "name": "MapOpenIddictEndpoints",
+          "name": "MapGranitOpenIddict",
           "kind": "method",
-          "signature": "MapOpenIddictEndpoints(this IEndpointRouteBuilder endpoints, Action<OpenIddictEndpointsOptions>? configure = null)",
+          "signature": "MapGranitOpenIddict(this IEndpointRouteBuilder endpoints, Action<OpenIddictEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -27738,9 +27738,9 @@
       "line": 35,
       "members": [
         {
-          "name": "MapGranitTemplatingAdmin",
+          "name": "MapGranitTemplating",
           "kind": "method",
-          "signature": "MapGranitTemplatingAdmin(this IEndpointRouteBuilder endpoints, Action<TemplatingEndpointsOptions>? configure = null)",
+          "signature": "MapGranitTemplating(this IEndpointRouteBuilder endpoints, Action<TemplatingEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -28977,9 +28977,9 @@
       "line": 14,
       "members": [
         {
-          "name": "MapTimelineEndpoints",
+          "name": "MapGranitTimeline",
           "kind": "method",
-          "signature": "MapTimelineEndpoints(this IEndpointRouteBuilder endpoints, Action<TimelineEndpointsOptions>? configure = null)",
+          "signature": "MapGranitTimeline(this IEndpointRouteBuilder endpoints, Action<TimelineEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -31381,9 +31381,9 @@
       "line": 18,
       "members": [
         {
-          "name": "MapWebhooksEndpoints",
+          "name": "MapGranitWebhooks",
           "kind": "method",
-          "signature": "MapWebhooksEndpoints(this IEndpointRouteBuilder endpoints, Action<WebhooksEndpointsOptions>? configure = null)",
+          "signature": "MapGranitWebhooks(this IEndpointRouteBuilder endpoints, Action<WebhooksEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -32439,9 +32439,9 @@
       "line": 14,
       "members": [
         {
-          "name": "MapWorkflowEndpoints",
+          "name": "MapGranitWorkflow",
           "kind": "method",
-          "signature": "MapWorkflowEndpoints(this IEndpointRouteBuilder endpoints, Action<WorkflowEndpointsOptions>? configure = null)",
+          "signature": "MapGranitWorkflow(this IEndpointRouteBuilder endpoints, Action<WorkflowEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]

@@ -291,7 +291,7 @@ environment variables. Never commit secrets to source control.
 
 ## OpenIddictEndpointsOptions
 
-**Configured in:** `MapOpenIddictEndpoints()` lambda
+**Configured in:** `MapGranitOpenIddict()` lambda
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -303,7 +303,7 @@ environment variables. Never commit secrets to source control.
 **Example:**
 
 ```csharp
-app.MapOpenIddictEndpoints(options =>
+app.MapGranitOpenIddict(options =>
 {
     options.AccountRoutePrefix = "api/v1/account";
     options.AdminRoutePrefix = "api/v1/admin";

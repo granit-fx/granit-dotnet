@@ -43,10 +43,10 @@ builder.AddGranitAIEntityFrameworkCore(o => ...) // Persistence (workspaces + us
 builder.AddGranitAIOpenAI();                     // Provider (or AzureOpenAI, Ollama...)
 
 // Route registration
-app.MapAIEndpoints();
+app.MapGranitAI();
 
 // With custom options:
-app.MapAIEndpoints(opts =>
+app.MapGranitAI(opts =>
 {
     opts.RoutePrefix = "api/ai";
     opts.AdminRole = "platform-admin";
@@ -81,7 +81,7 @@ returns `422 Unprocessable Entity` with `AI:Workspace:SystemImmutable`.
 ### Usage tracking (Admin) via Granit.QueryEngine
 
 Instead of custom listing endpoints, usage records are exposed through
-`MapQueryEndpoints<AIUsageRecord>` — providing filtering, sorting, pagination,
+`MapGranitQuery<AIUsageRecord>` — providing filtering, sorting, pagination,
 groupBy with aggregates, saved views, and metadata out of the box.
 
 | Route | Features |

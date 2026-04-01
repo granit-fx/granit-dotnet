@@ -67,7 +67,7 @@ public sealed class NotificationEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton<IGuidGenerator>(new SimpleGuidGenerator());
 
         _app = builder.Build();
-        _app.MapGranitNotificationEndpoints();
+        _app.MapGranitNotifications();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _authClient = BuildClient("user-123");

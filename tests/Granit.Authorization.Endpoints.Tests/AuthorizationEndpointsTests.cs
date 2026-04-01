@@ -85,7 +85,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_currentTenant);
 
         _app = builder.Build();
-        _app.MapAuthorizationEndpoints();
+        _app.MapGranitAuthorization();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _adminClient = BuildClient("admin");

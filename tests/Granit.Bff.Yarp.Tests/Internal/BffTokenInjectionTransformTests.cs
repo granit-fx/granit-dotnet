@@ -569,10 +569,8 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
         context.HttpContext.Response.StatusCode.ShouldBe(StatusCodes.Status401Unauthorized);
     }
 
-    private static RequestTransformContext CreateTransformContext(Dictionary<string, string> metadata)
-    {
-        return CreateTransformContextWithPath(metadata, "/");
-    }
+    private static RequestTransformContext CreateTransformContext(Dictionary<string, string> metadata) =>
+        CreateTransformContextWithPath(metadata, "/");
 
     private sealed class FakeHttpMessageHandler(Func<HttpRequestMessage, HttpResponseMessage> responseFactory)
         : HttpMessageHandler

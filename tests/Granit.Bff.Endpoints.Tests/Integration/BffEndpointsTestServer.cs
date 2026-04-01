@@ -22,7 +22,7 @@ namespace Granit.Bff.Endpoints.Tests.Integration;
 
 /// <summary>
 /// Test server that boots a minimal ASP.NET Core application with mocked services
-/// and the BFF endpoints registered via <see cref="BffEndpointRouteBuilderExtensions.MapGranitBffEndpoints"/>.
+/// and the BFF endpoints registered via <see cref="BffEndpointRouteBuilderExtensions.MapGranitBff"/>.
 /// </summary>
 internal sealed class BffEndpointsTestServer : IAsyncDisposable
 {
@@ -160,7 +160,7 @@ internal sealed class BffEndpointsTestServer : IAsyncDisposable
         builder.Services.AddHttpClient(); // default client for other uses
 
         WebApplication app = builder.Build();
-        app.MapGranitBffEndpoints();
+        app.MapGranitBff();
         await app.StartAsync().ConfigureAwait(false);
 
         TestServer testServer = app.GetTestServer();

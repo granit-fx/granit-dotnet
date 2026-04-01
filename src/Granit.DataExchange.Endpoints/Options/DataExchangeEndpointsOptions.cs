@@ -3,7 +3,7 @@ namespace Granit.DataExchange.Endpoints.Options;
 /// <summary>
 /// Configuration options for the data exchange endpoints (import + export).
 /// Bind from <c>"DataExchangeEndpoints"</c> or pass an action to
-/// <see cref="Extensions.DataExchangeEndpointRouteBuilderExtensions.MapDataExchangeEndpoints"/>.
+/// <see cref="Extensions.DataExchangeEndpointRouteBuilderExtensions.MapGranitDataExchange"/>.
 /// </summary>
 public sealed class DataExchangeEndpointsOptions
 {

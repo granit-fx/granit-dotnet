@@ -54,7 +54,7 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_clock);
 
         _app = builder.Build();
-        _app.MapMobilePushTokenEndpoints();
+        _app.MapGranitMobilePushTokens();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _authClient = BuildClient("user-456");

@@ -28,7 +28,7 @@ public static class BffEndpointRouteBuilderExtensions
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <returns>The endpoint route builder for further chaining.</returns>
-    public static IEndpointRouteBuilder MapGranitBffEndpoints(this IEndpointRouteBuilder endpoints)
+    public static IEndpointRouteBuilder MapGranitBff(this IEndpointRouteBuilder endpoints)
     {
         if (s_bffEndpointsMapped)
         {

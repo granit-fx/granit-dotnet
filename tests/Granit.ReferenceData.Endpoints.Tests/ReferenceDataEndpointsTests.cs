@@ -63,7 +63,7 @@ public sealed class ReferenceDataEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton<IGuidGenerator>(new SimpleGuidGenerator());
 
         _app = builder.Build();
-        _app.MapReferenceDataEndpoints<TestRefEntity>();
+        _app.MapGranitReferenceData<TestRefEntity>();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _adminClient = BuildClient(AdminRole);

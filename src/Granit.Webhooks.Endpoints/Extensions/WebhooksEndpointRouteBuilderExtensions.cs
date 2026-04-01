@@ -27,10 +27,10 @@ public static class WebhooksEndpointRouteBuilderExtensions
     /// </para>
     /// <para>Call this from your application route registration:</para>
     /// <code>
-    /// app.MapWebhooksEndpoints();
+    /// app.MapGranitWebhooks();
     ///
     /// // With custom options:
-    /// app.MapWebhooksEndpoints(opts =>
+    /// app.MapGranitWebhooks(opts =>
     /// {
     ///     opts.RoutePrefix = "admin/webhooks";
     /// });
@@ -39,7 +39,7 @@ public static class WebhooksEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="WebhooksEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapWebhooksEndpoints(
+    public static RouteGroupBuilder MapGranitWebhooks(
         this IEndpointRouteBuilder endpoints,
         Action<WebhooksEndpointsOptions>? configure = null)
     {
@@ -73,15 +73,16 @@ public static class WebhooksEndpointRouteBuilderExtensions
 
         if (hasQueryableProvider)
         {
-            group.MapQueryEndpoints<WebhookSubscription>(
+            group.MapGranitQuery<WebhookSubscription>(
                 "subscriptions/query",
                 sp => sp.GetRequiredService<IWebhookQueryableProvider>().GetSubscriptions());
 
-            group.MapQueryEndpoints<WebhookDeliveryAttempt>(
+            group.MapGranitQuery<WebhookDeliveryAttempt>(
                 "deliveries/query",
                 sp => sp.GetRequiredService<IWebhookQueryableProvider>().GetDeliveryAttempts());
         }
 
         return group;
     }
+
 }

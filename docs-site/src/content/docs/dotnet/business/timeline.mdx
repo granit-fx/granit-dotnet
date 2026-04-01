@@ -70,7 +70,7 @@ builder.AddGranitTimelineEntityFrameworkCore(
     opts => opts.UseNpgsql(connectionString));
 
 // Map endpoints in the app pipeline
-app.MapTimelineEndpoints();
+app.MapGranitTimeline();
 ```
 
 </TabItem>
@@ -210,7 +210,7 @@ await timeline.AddAttachmentAsync(
 | Timeline core | `ITimelined`, `ITimelineReader`, `ITimelineWriter`, `ITimelineFollowerService`, `ITimelineNotifier` | `Granit.Timeline` |
 | DTOs | `TimelineStreamEntry`, `TimelineStreamEntryType`, `TimelineAttachmentInfo`, `PostTimelineEntryRequest` | `Granit.Timeline` |
 | Permissions | `TimelinePermissions.Entries.{Read,Create,Manage}`, `.InternalNotes.Read`, `.Followers.Manage` | `Granit.Timeline.Endpoints` |
-| Extensions | `AddGranitTimeline()`, `AddGranitTimelineEntityFrameworkCore()`, `MapTimelineEndpoints()` | — |
+| Extensions | `AddGranitTimeline()`, `AddGranitTimelineEntityFrameworkCore()`, `MapGranitTimeline()` | — |
 
 ## See also
 

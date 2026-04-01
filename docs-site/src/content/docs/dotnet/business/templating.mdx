@@ -85,7 +85,7 @@ public class AppModule : GranitModule
 Map the admin endpoints in `Program.cs`:
 
 ```csharp
-app.MapGranitTemplatingAdmin(options =>
+app.MapGranitTemplating(options =>
 {
     options.RoutePrefix = "api/v1/templates";
     options.TagName = "Template Administration";
@@ -395,7 +395,7 @@ services.AddEmbeddedTemplates(typeof(AcmeTemplates).Assembly);
 
 ## Admin endpoints
 
-16 endpoints are registered via `MapGranitTemplatingAdmin()`. All require the
+16 endpoints are registered via `MapGranitTemplating()`. All require the
 `Templates.Manage` permission.
 
 ### Template endpoints
@@ -434,7 +434,7 @@ If `IDocumentTemplateStoreReader`/`IDocumentTemplateStoreWriter` is not register
 ### Endpoints
 
 ```csharp
-app.MapGranitTemplatingAdmin(options =>
+app.MapGranitTemplating(options =>
 {
     options.RoutePrefix = "api/v1/templates";  // default: "templates"
     options.TagName = "Template Administration"; // default: "Templates"
@@ -481,7 +481,7 @@ A discharge letter template stored in the EF Core store or as an embedded resour
 | Lifecycle | `TemplateLifecycleStatus`, `ITemplateTransitionHook`, `TemplateRevision` | `Granit.Templating` |
 | Permissions | `TemplatingPermissions.Manage` (`"Templates.Manage"`) | `Granit.Templating.Endpoints` |
 | Extensions | `AddGranitTemplating()`, `AddGranitTemplatingWithScriban()`, `AddEmbeddedTemplates()` | -- |
-| Extensions | `MapGranitTemplatingAdmin()` | `Granit.Templating.Endpoints` |
+| Extensions | `MapGranitTemplating()` | `Granit.Templating.Endpoints` |
 
 ## When to use — and when not to
 

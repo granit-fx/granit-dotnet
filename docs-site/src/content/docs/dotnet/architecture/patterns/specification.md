@@ -157,7 +157,7 @@ public sealed class InvoiceQueryDefinition : QueryDefinition<Invoice>
 
 // --- Usage (endpoint) ---
 // GET /api/invoices?filter[amount.gte]=1000&presets[status]=Sent,Paid&sort=-issuedAt&page=1
-group.MapQueryEndpoints<Invoice>("/api/invoices",
+group.MapGranitQuery<Invoice>("/api/invoices",
     sp => sp.GetRequiredService<BillingDbContext>().Invoices.AsNoTracking());
 ```
 

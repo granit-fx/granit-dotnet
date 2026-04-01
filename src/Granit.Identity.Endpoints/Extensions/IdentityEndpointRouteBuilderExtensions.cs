@@ -29,7 +29,7 @@ public static class IdentityEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="IdentityEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapIdentityUserCacheEndpoints(
+    public static RouteGroupBuilder MapGranitIdentityUserCache(
         this IEndpointRouteBuilder endpoints,
         Action<IdentityEndpointsOptions>? configure = null)
     {

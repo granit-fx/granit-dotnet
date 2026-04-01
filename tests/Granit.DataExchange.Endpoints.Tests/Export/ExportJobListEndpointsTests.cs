@@ -65,7 +65,7 @@ public sealed class ExportJobListEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton<IGuidGenerator>(new SimpleGuidGenerator());
 
         _app = builder.Build();
-        _app.MapDataExchangeEndpoints();
+        _app.MapGranitDataExchange();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _adminClient = BuildClient(AdminRole);

@@ -90,7 +90,7 @@ public class AppModule : GranitModule
 Route registration in `Program.cs`:
 
 ```csharp
-app.MapBackgroundJobsEndpoints();
+app.MapGranitBackgroundJobs();
 ```
 
 </TabItem>
@@ -380,7 +380,7 @@ operations and `BackgroundJobs.Jobs.Manage` for mutations:
 Default route prefix: `background-jobs`. Customize via `BackgroundJobsEndpointsOptions`:
 
 ```csharp
-app.MapBackgroundJobsEndpoints(opts =>
+app.MapGranitBackgroundJobs(opts =>
 {
     opts.RoutePrefix = "admin/jobs";
     opts.RequiredRole = "ops-team";
@@ -470,7 +470,7 @@ When `Granit.Observability` is loaded, the activity source is auto-discovered vi
 | Options | `BackgroundJobsOptions`, `BackgroundJobsEndpointsOptions` | -- |
 | Permissions | `BackgroundJobsPermissions.Jobs.Read`, `BackgroundJobsPermissions.Jobs.Manage` | `Granit.BackgroundJobs.Endpoints` |
 | Middleware | `RecurringJobSchedulingMiddleware` | `Granit.BackgroundJobs.Wolverine` |
-| Extensions | `AddGranitBackgroundJobs()`, `AddGranitBackgroundJobsEntityFrameworkCore()`, `MapBackgroundJobsEndpoints()` | -- |
+| Extensions | `AddGranitBackgroundJobs()`, `AddGranitBackgroundJobsEntityFrameworkCore()`, `MapGranitBackgroundJobs()` | -- |
 
 ## When to use — and when not to
 

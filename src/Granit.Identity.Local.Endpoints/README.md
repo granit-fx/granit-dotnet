@@ -13,11 +13,11 @@ provider (e.g. Duende Identity Server).
 builder.AddGranit(granit => granit.AddOpenIddict());
 
 // Map account self-service endpoints (/api/account)
-app.MapAccountEndpoints();
+app.MapGranitAccount();
 
 // Map OpenIddict OIDC endpoints (/connect/*, /api/admin/oidc)
-app.MapOpenIddictEndpoints();
-app.MapOpenIddictServerEndpoints();
+app.MapGranitOpenIddict();
+app.MapGranitOpenIddictServer();
 ```
 
 ## Key endpoints

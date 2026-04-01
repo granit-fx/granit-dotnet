@@ -15,7 +15,7 @@ Minimal API endpoints for BFF (Backend For Frontend) authentication.
 ## Usage
 
 ```csharp
-app.MapGranitBffEndpoints();
+app.MapGranitBff();
 ```
 
 ## Security

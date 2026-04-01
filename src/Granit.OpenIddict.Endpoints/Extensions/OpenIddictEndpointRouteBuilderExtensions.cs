@@ -17,14 +17,14 @@ public static class OpenIddictEndpointRouteBuilderExtensions
     /// <remarks>
     /// <para>
     /// Account self-service endpoints (login, registration, profile, etc.) have moved to
-    /// <c>Granit.Identity.Local.Endpoints</c>. Use <c>MapAccountEndpoints()</c> from that
+    /// <c>Granit.Identity.Local.Endpoints</c>. Use <c>MapGranitAccount()</c> from that
     /// module instead.
     /// </para>
     /// </remarks>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize endpoint options.</param>
     /// <returns>The admin <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapOpenIddictEndpoints(
+    public static RouteGroupBuilder MapGranitOpenIddict(
         this IEndpointRouteBuilder endpoints,
         Action<OpenIddictEndpointsOptions>? configure = null)
     {
@@ -60,7 +60,7 @@ public static class OpenIddictEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="OpenIddictServerEndpointsOptions"/>.</param>
     /// <returns>The endpoint route builder for chaining.</returns>
-    public static IEndpointRouteBuilder MapOpenIddictServerEndpoints(
+    public static IEndpointRouteBuilder MapGranitOpenIddictServer(
         this IEndpointRouteBuilder endpoints,
         Action<OpenIddictServerEndpointsOptions>? configure = null)
     {

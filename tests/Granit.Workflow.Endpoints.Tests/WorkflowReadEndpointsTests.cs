@@ -43,7 +43,7 @@ public sealed class WorkflowReadEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_historyQuery);
 
         _app = builder.Build();
-        _app.MapWorkflowEndpoints();
+        _app.MapGranitWorkflow();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _adminClient = BuildClient(AdminRole);

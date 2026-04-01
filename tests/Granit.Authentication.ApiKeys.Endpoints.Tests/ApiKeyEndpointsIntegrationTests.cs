@@ -71,7 +71,7 @@ public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
         builder.Services.AddSingleton(_permissionChecker);
 
         _app = builder.Build();
-        _app.MapApiKeysEndpoints();
+        _app.MapGranitApiKeys();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _adminClient = BuildClient(_app, AdminRole);

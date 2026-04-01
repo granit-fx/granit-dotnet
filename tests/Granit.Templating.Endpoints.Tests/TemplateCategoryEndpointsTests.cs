@@ -74,7 +74,7 @@ public sealed class TemplateCategoryEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(userService);
 
         _app = builder.Build();
-        _app.MapGranitTemplatingAdmin();
+        _app.MapGranitTemplating();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _adminClient = BuildClient(_app, ManageRole);
@@ -407,7 +407,7 @@ public sealed class TemplateCategoryEndpointsTests : IAsyncDisposable
                 policy => policy.RequireRole(ManageRole));
 
         WebApplication app = builder.Build();
-        app.MapGranitTemplatingAdmin();
+        app.MapGranitTemplating();
         await app.StartAsync(TestContext.Current.CancellationToken);
         return app;
     }

@@ -19,7 +19,7 @@ namespace Granit.Notifications.Endpoints.Endpoints;
 public static class MobilePushTokenEndpoints
 {
     /// <summary>Maps mobile push token management endpoints.</summary>
-    public static IEndpointRouteBuilder MapMobilePushTokenEndpoints(
+    public static IEndpointRouteBuilder MapGranitMobilePushTokens(
         this IEndpointRouteBuilder endpoints,
         string prefix = "api/notifications/mobile-push/tokens")
     {

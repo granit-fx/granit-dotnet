@@ -13,7 +13,7 @@ provider-agnostic module shared between OpenIddict and any future auth provider
 (e.g. Duende Identity Server). Endpoints are available at `/api/account`
 (configurable via `AccountEndpointsOptions.AccountRoutePrefix`). All endpoints
 use `MapGranitGroup()` for automatic FluentValidation. Register them by calling
-`app.MapAccountEndpoints()`.
+`app.MapGranitAccount()`.
 
 ## Endpoint summary
 
@@ -591,7 +591,7 @@ All request DTOs have corresponding FluentValidation validators auto-discovered 
 Route prefixes and OpenAPI tags are configurable:
 
 ```csharp
-app.MapAccountEndpoints(options =>
+app.MapGranitAccount(options =>
 {
     options.AccountRoutePrefix = "api/account";    // default
     options.AdminRoutePrefix = "api/admin";        // default

@@ -60,7 +60,7 @@ public sealed class BackgroundJobsEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_writer);
 
         _app = builder.Build();
-        _app.MapBackgroundJobsEndpoints();
+        _app.MapGranitBackgroundJobs();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _adminClient = BuildClient(AdminRole);

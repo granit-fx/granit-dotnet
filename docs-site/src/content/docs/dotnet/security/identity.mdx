@@ -78,7 +78,7 @@ public class AppModule : GranitModule
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
-        context.App.MapIdentityUserCacheEndpoints();
+        context.App.MapGranitIdentityUserCache();
     }
 }
 ```
@@ -100,7 +100,7 @@ public class AppModule : GranitModule
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
-        context.App.MapIdentityUserCacheEndpoints();
+        context.App.MapGranitIdentityUserCache();
     }
 }
 ```
@@ -123,7 +123,7 @@ public class AppModule : GranitModule
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
-        context.App.MapIdentityUserCacheEndpoints();
+        context.App.MapGranitIdentityUserCache();
     }
 }
 ```
@@ -519,7 +519,7 @@ Both operations emit Wolverine domain events (`IdentityUserDeletedEvent`,
 | Google Cloud Auth | `GoogleCloudClaimsTransformation`, `GoogleCloudAuthenticationOptions` | `Granit.Authentication.JwtBearer.GoogleCloud` |
 | EF Core | `UserCacheEntry`, `IUserCacheDbContext`, `UserCacheOptions` | `Granit.Identity.Federated.EntityFrameworkCore` |
 | Endpoints | `IdentityEndpointsOptions`, `IdentityWebhookOptions` | `Granit.Identity.Endpoints` |
-| Extensions | `AddGranitIdentity()`, `AddIdentityProvider<T>()`, `AddGranitIdentityKeycloak()`, `AddGranitIdentityCognito()`, `AddGranitIdentityGoogleCloud()`, `AddGranitGoogleCloudAuthentication()`, `AddGranitIdentityEntityFrameworkCore<T>()`, `AddGranitIdentityEndpoints()`, `MapIdentityUserCacheEndpoints()` | — |
+| Extensions | `AddGranitIdentity()`, `AddIdentityProvider<T>()`, `AddGranitIdentityKeycloak()`, `AddGranitIdentityCognito()`, `AddGranitIdentityGoogleCloud()`, `AddGranitGoogleCloudAuthentication()`, `AddGranitIdentityEntityFrameworkCore<T>()`, `AddGranitIdentityEndpoints()`, `MapGranitIdentityUserCache()` | — |
 
 ## See also
 

@@ -3,7 +3,7 @@ namespace Granit.Authorization.Endpoints.Options;
 /// <summary>
 /// Configuration options for the authorization management endpoints.
 /// Bind from <c>"AuthorizationEndpoints"</c> or pass an action to
-/// <see cref="Extensions.AuthorizationEndpointRouteBuilderExtensions.MapAuthorizationEndpoints"/>.
+/// <see cref="Extensions.AuthorizationEndpointRouteBuilderExtensions.MapGranitAuthorization"/>.
 /// </summary>
 public sealed class AuthorizationEndpointsOptions
 {

@@ -2,7 +2,7 @@ namespace Granit.QueryEngine.Endpoints.Options;
 
 /// <summary>
 /// Configuration options for query endpoints registered via
-/// <see cref="QueryEndpointRouteBuilderExtensions.MapQueryEndpoints{TEntity}"/>.
+/// <see cref="QueryEndpointRouteBuilderExtensions.MapGranitQuery{TEntity}"/>.
 /// </summary>
 public sealed class QueryEndpointOptions
 {

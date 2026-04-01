@@ -9,7 +9,7 @@ namespace Granit.DataExchange.Endpoints;
 /// </summary>
 /// <remarks>
 /// Exposes import management routes via
-/// <see cref="Extensions.DataExchangeEndpointRouteBuilderExtensions.MapDataExchangeEndpoints"/>.
+/// <see cref="Extensions.DataExchangeEndpointRouteBuilderExtensions.MapGranitDataExchange"/>.
 /// Requires both <see cref="GranitDataExchangeModule"/> (pipeline infrastructure)
 /// and <see cref="GranitAuthorizationModule"/> (permission policy enforcement).
 /// Permission definition providers are auto-discovered by <c>GranitAuthorizationModule</c>.

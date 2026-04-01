@@ -14,7 +14,7 @@ namespace Granit.Templating.Endpoints;
 /// <c>/api/v1/templates</c>, protected by the <c>Templates.Manage</c> permission.
 /// <para>
 /// The host application must call
-/// <see cref="Extensions.TemplatingEndpointRouteBuilderExtensions.MapGranitTemplatingAdmin"/>
+/// <see cref="Extensions.TemplatingEndpointRouteBuilderExtensions.MapGranitTemplating"/>
 /// to register the routes.
 /// </para>
 /// Permission definition providers are auto-discovered by <c>GranitAuthorizationModule</c>.

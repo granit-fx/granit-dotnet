@@ -23,10 +23,10 @@ public static class BackgroundJobsEndpointRouteBuilderExtensions
     /// </para>
     /// <para>Call this from your application route registration:</para>
     /// <code>
-    /// app.MapBackgroundJobsEndpoints();
+    /// app.MapGranitBackgroundJobs();
     ///
     /// // With a custom prefix:
-    /// app.MapBackgroundJobsEndpoints(opts =>
+    /// app.MapGranitBackgroundJobs(opts =>
     /// {
     ///     opts.RoutePrefix = "admin/jobs";
     /// });
@@ -40,7 +40,7 @@ public static class BackgroundJobsEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="BackgroundJobsEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapBackgroundJobsEndpoints(
+    public static RouteGroupBuilder MapGranitBackgroundJobs(
         this IEndpointRouteBuilder endpoints,
         Action<BackgroundJobsEndpointsOptions>? configure = null)
     {

@@ -220,7 +220,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 // Map BFF endpoints (/bff/login, /bff/callback, /bff/logout, /bff/user, /bff/csrf-token)
-app.MapGranitBffEndpoints();
+app.MapGranitBff();
 
 // Map YARP reverse proxy (with token injection)
 app.UseGranitBffYarp();
@@ -244,7 +244,7 @@ flowchart LR
 ```
 
 <Aside type="caution" title="Middleware order">
-`UseGranitBffYarp()` must come **after** `MapGranitBffEndpoints()`. If reversed,
+`UseGranitBffYarp()` must come **after** `MapGranitBff()`. If reversed,
 YARP may intercept BFF endpoint routes before they are handled.
 </Aside>
 

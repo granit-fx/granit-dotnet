@@ -366,6 +366,65 @@ public sealed partial class ApiConventionTests
         return types.All(t => simpleTypes.Contains(t));
     }
 
+    /// <summary>
+    /// Public <c>Map*</c> extension methods on <c>IEndpointRouteBuilder</c> or
+    /// <c>RouteGroupBuilder</c> in <c>src/Granit.*</c> must follow the
+    /// <c>MapGranit{Feature}()</c> naming convention to avoid collisions
+    /// with third-party or ASP.NET extensions.
+    /// </summary>
+    /// <remarks>
+    /// Exemptions:
+    /// <list type="bullet">
+    /// <item><c>MapGranitGroup</c> — infrastructure method, not a feature endpoint registration</item>
+    /// </list>
+    /// </remarks>
+    [Fact]
+    public void Public_Map_extension_methods_should_follow_MapGranit_convention()
+    {
+        string srcDir = Path.Join(RepoRoot, "src");
+
+        HashSet<string> exemptions = new(StringComparer.Ordinal)
+        {
+            "MapGranitGroup",
+        };
+
+        List<string> violations = [];
+
+        foreach (string csFile in Directory.GetFiles(srcDir, "*.cs", SearchOption.AllDirectories))
+        {
+            if (csFile.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar)
+                || csFile.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar))
+            {
+                continue;
+            }
+
+            string content = File.ReadAllText(csFile);
+
+            foreach (Match match in PublicMapExtensionMethod().Matches(content))
+            {
+                string methodName = match.Groups[1].Value;
+
+                if (exemptions.Contains(methodName))
+                {
+                    continue;
+                }
+
+                if (!methodName.StartsWith("MapGranit", StringComparison.Ordinal))
+                {
+                    string relativePath = Path.GetRelativePath(RepoRoot, csFile);
+                    int lineNumber = content[..match.Index].Count(c => c == '\n') + 1;
+                    violations.Add($"{relativePath}:{lineNumber} ({methodName}) — expected MapGranit{{Feature}}");
+                }
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Public Map* extension methods on IEndpointRouteBuilder or RouteGroupBuilder " +
+            "must follow the MapGranit{Feature}() naming convention to avoid collisions " +
+            "and ensure discoverability. See GitHub issue #792. " +
+            $"Violators: {string.Join("; ", violations)}");
+    }
+
     private static string FindRepoRoot()
     {
         string? dir = Path.GetDirectoryName(typeof(ApiConventionTests).Assembly.Location);
@@ -404,4 +463,15 @@ public sealed partial class ApiConventionTests
     /// </summary>
     [GeneratedRegex(@"\.Map(Get|Post|Put|Delete|Patch)\s*\(", RegexOptions.Multiline)]
     private static partial Regex EndpointRegistration();
+
+    /// <summary>
+    /// Matches <c>public static</c> methods named <c>Map*</c> that extend
+    /// <c>IEndpointRouteBuilder</c>. Only top-level entry points are validated —
+    /// sub-group helpers extending <c>RouteGroupBuilder</c> are internal wiring.
+    /// Captures the method name (group 1).
+    /// </summary>
+    [GeneratedRegex(
+        @"public\s+static\s+\S+\s+(Map\w+?)(?:<[^>]+>)?\s*\(\s*this\s+IEndpointRouteBuilder",
+        RegexOptions.Multiline)]
+    private static partial Regex PublicMapExtensionMethod();
 }

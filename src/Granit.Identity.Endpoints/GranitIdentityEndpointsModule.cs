@@ -17,7 +17,7 @@ namespace Granit.Identity.Endpoints;
 /// </para>
 /// <para>
 /// Exposes user cache management routes via
-/// <see cref="Extensions.IdentityEndpointRouteBuilderExtensions.MapIdentityUserCacheEndpoints"/>.
+/// <see cref="Extensions.IdentityEndpointRouteBuilderExtensions.MapGranitIdentityUserCache"/>.
 /// Permission definition providers are auto-discovered by <c>GranitAuthorizationModule</c>.
 /// </para>
 /// </remarks>

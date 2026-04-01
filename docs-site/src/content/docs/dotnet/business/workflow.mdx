@@ -68,7 +68,7 @@ public class AppModule : GranitModule
 
 ```csharp
 // Program.cs
-app.MapWorkflowEndpoints();
+app.MapGranitWorkflow();
 ```
 
 </TabItem>
@@ -389,7 +389,7 @@ This registers:
 
 ```csharp
 // Program.cs
-app.MapWorkflowEndpoints();
+app.MapGranitWorkflow();
 ```
 
 Query parameters: `page` (default 1), `pageSize` (default 20, max 100).
@@ -436,7 +436,7 @@ consumption (notifications, timeline).
 | Events | `WorkflowTransitionedEvent<TState>`, `WorkflowStateChangedEvent`, `WorkflowApprovalRequestedEvent` | `Granit.Workflow` |
 | EF Core | `IWorkflowDbContext`, `WorkflowTransitionInterceptor` | `Granit.Workflow.EntityFrameworkCore` |
 | Notifications | `IApproverResolver`, `WorkflowApprovalNotificationType`, `WorkflowStateChangedNotificationType` | `Granit.Workflow.Notifications` |
-| Extensions | `AddGranitWorkflow()`, `AddGranitWorkflowEntityFrameworkCore<T>()`, `AddGranitWorkflowEndpoints()`, `AddGranitWorkflowNotifications()`, `MapWorkflowEndpoints()` | -- |
+| Extensions | `AddGranitWorkflow()`, `AddGranitWorkflowEntityFrameworkCore<T>()`, `AddGranitWorkflowEndpoints()`, `AddGranitWorkflowNotifications()`, `MapGranitWorkflow()` | -- |
 
 ## When to use — and when not to
 

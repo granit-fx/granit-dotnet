@@ -129,13 +129,13 @@ All occurrences are calculated in UTC. If you need tenant-local time, use
 ## 6. Map administration endpoints
 
 ```csharp
-app.MapBackgroundJobsEndpoints();
+app.MapGranitBackgroundJobs();
 ```
 
 Or with custom options:
 
 ```csharp
-app.MapBackgroundJobsEndpoints(opts =>
+app.MapGranitBackgroundJobs(opts =>
 {
     opts.RoutePrefix = "admin/jobs";
     opts.RequiredRole = "ops-team";

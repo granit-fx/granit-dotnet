@@ -7,10 +7,10 @@ using Xunit;
 
 namespace Granit.Authorization.Endpoints.Tests;
 
-public sealed class MapAuthorizationEndpointsTests
+public sealed class MapGranitAuthorizationTests
 {
     [Fact]
-    public void MapAuthorizationEndpoints_WithDefaultOptions_ReturnsRouteGroupBuilder()
+    public void MapGranitAuthorization_WithDefaultOptions_ReturnsRouteGroupBuilder()
     {
         // Arrange
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -18,14 +18,14 @@ public sealed class MapAuthorizationEndpointsTests
         WebApplication app = builder.Build();
 
         // Act
-        RouteGroupBuilder group = app.MapAuthorizationEndpoints();
+        RouteGroupBuilder group = app.MapGranitAuthorization();
 
         // Assert
         group.ShouldNotBeNull();
     }
 
     [Fact]
-    public void MapAuthorizationEndpoints_WithCustomPrefix_ReturnsRouteGroupBuilder()
+    public void MapGranitAuthorization_WithCustomPrefix_ReturnsRouteGroupBuilder()
     {
         // Arrange
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -33,7 +33,7 @@ public sealed class MapAuthorizationEndpointsTests
         WebApplication app = builder.Build();
 
         // Act
-        RouteGroupBuilder group = app.MapAuthorizationEndpoints(
+        RouteGroupBuilder group = app.MapGranitAuthorization(
             opts => opts.RoutePrefix = "authorization");
 
         // Assert

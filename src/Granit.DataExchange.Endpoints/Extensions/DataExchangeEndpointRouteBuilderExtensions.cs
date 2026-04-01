@@ -24,10 +24,10 @@ public static class DataExchangeEndpointRouteBuilderExtensions
     /// </para>
     /// <para>Call this from your application route registration:</para>
     /// <code>
-    /// app.MapDataExchangeEndpoints();
+    /// app.MapGranitDataExchange();
     ///
     /// // With a custom prefix:
-    /// app.MapDataExchangeEndpoints(opts =>
+    /// app.MapGranitDataExchange(opts =>
     /// {
     ///     opts.RoutePrefix = "admin/imports";
     /// });
@@ -51,7 +51,7 @@ public static class DataExchangeEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="DataExchangeEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapDataExchangeEndpoints(
+    public static RouteGroupBuilder MapGranitDataExchange(
         this IEndpointRouteBuilder endpoints,
         Action<DataExchangeEndpointsOptions>? configure = null)
     {

@@ -21,10 +21,10 @@ public static class AIEndpointRouteBuilderExtensions
     /// <remarks>
     /// <para>Call this from your application route registration:</para>
     /// <code>
-    /// app.MapAIEndpoints();
+    /// app.MapGranitAI();
     ///
     /// // With custom options:
-    /// app.MapAIEndpoints(opts =>
+    /// app.MapGranitAI(opts =>
     /// {
     ///     opts.RoutePrefix = "api/ai";
     /// });
@@ -33,7 +33,7 @@ public static class AIEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="AIEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapAIEndpoints(
+    public static RouteGroupBuilder MapGranitAI(
         this IEndpointRouteBuilder endpoints,
         Action<AIEndpointsOptions>? configure = null)
     {
@@ -62,7 +62,7 @@ public static class AIEndpointRouteBuilderExtensions
             RouteGroupBuilder usageGroup = group.MapGroup("")
                 .WithTags(options.UsageTagName)
                 .RequireAuthorization(AIPermissions.Usage.Read);
-            usageGroup.MapQueryEndpoints<AIUsageRecord>(
+            usageGroup.MapGranitQuery<AIUsageRecord>(
                 "usage/query",
                 sp => sp.GetRequiredService<IAIUsageQueryableProvider>().GetUsageRecords());
         }

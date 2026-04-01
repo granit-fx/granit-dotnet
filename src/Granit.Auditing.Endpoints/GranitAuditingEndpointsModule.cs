@@ -11,7 +11,7 @@ namespace Granit.Auditing.Endpoints;
 /// <remarks>
 /// <para>
 /// This module does not auto-map routes. The host application must call
-/// <c>app.MapAuditingEndpoints()</c> in the pipeline configuration.
+/// <c>app.MapGranitAuditing()</c> in the pipeline configuration.
 /// </para>
 /// </remarks>
 [DependsOn(

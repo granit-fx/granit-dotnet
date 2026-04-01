@@ -78,10 +78,10 @@ public class AppModule : GranitModule
 
 ```csharp
 // Map endpoints in Program.cs
-app.MapDataExchangeEndpoints();
+app.MapGranitDataExchange();
 
 // Or with custom prefix and role
-app.MapDataExchangeEndpoints(opts =>
+app.MapGranitDataExchange(opts =>
 {
     opts.RoutePrefix = "admin/data-exchange";
     opts.RequiredRole = "ops-team";
@@ -495,7 +495,7 @@ dispatchers with Wolverine's `IMessageBus` for durable outbox-backed execution:
 | Mapping | `MappingConfidence`, `ImportColumnMapping`, `ISemanticMappingService` | `Granit.DataExchange` |
 | Options | `ImportOptions`, `ExportOptions`, `ImportExecutionOptions` | `Granit.DataExchange` |
 | Permissions | `DataExchangePermissions.Imports.{Read,Execute}`, `DataExchangePermissions.Exports.{Read,Execute}` | `Granit.DataExchange.Endpoints` |
-| Extensions | `AddImportDefinition<T, TDef>()`, `AddExportDefinition<T, TDef>()`, `AddSemanticMappingService<T>()`, `MapDataExchangeEndpoints()` | --- |
+| Extensions | `AddImportDefinition<T, TDef>()`, `AddExportDefinition<T, TDef>()`, `AddSemanticMappingService<T>()`, `MapGranitDataExchange()` | --- |
 
 ## Security
 

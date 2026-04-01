@@ -12,7 +12,7 @@ namespace Granit.Timeline.Endpoints;
 /// <remarks>
 /// Map endpoints in your application:
 /// <code>
-/// app.MapTimelineEndpoints();
+/// app.MapGranitTimeline();
 /// </code>
 /// Permission definition providers are auto-discovered by <c>GranitAuthorizationModule</c>.
 /// </remarks>

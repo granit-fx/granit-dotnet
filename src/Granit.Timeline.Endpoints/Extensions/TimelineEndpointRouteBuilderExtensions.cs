@@ -32,10 +32,10 @@ public static class TimelineEndpointRouteBuilderExtensions
     /// </list>
     /// <para>Call this from your application route registration:</para>
     /// <code>
-    /// app.MapTimelineEndpoints();
+    /// app.MapGranitTimeline();
     ///
     /// // With a custom prefix:
-    /// app.MapTimelineEndpoints(opts =&gt;
+    /// app.MapGranitTimeline(opts =&gt;
     /// {
     ///     opts.RoutePrefix = "admin/timeline";
     /// });
@@ -44,7 +44,7 @@ public static class TimelineEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize options.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapTimelineEndpoints(
+    public static RouteGroupBuilder MapGranitTimeline(
         this IEndpointRouteBuilder endpoints,
         Action<TimelineEndpointsOptions>? configure = null)
     {
@@ -62,4 +62,5 @@ public static class TimelineEndpointRouteBuilderExtensions
 
         return group;
     }
+
 }

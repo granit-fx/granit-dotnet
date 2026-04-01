@@ -57,7 +57,7 @@ public sealed class AspNetImpersonationServiceTests
         string impersonatorId = impersonatorGuid.ToString();
 
         _userManager.FindByIdAsync(targetId).Returns(target);
-        _userManager.GetRolesAsync(target).Returns(new List<string> { "Admin", "User" });
+        _userManager.GetRolesAsync(target).Returns(["Admin", "User"]);
 
         object accessTokenEntry = new object();
         object refreshTokenEntry = new object();
@@ -91,7 +91,7 @@ public sealed class AspNetImpersonationServiceTests
         string impersonatorId = impersonatorGuid.ToString();
 
         _userManager.FindByIdAsync(targetId).Returns(target);
-        _userManager.GetRolesAsync(target).Returns(new List<string>());
+        _userManager.GetRolesAsync(target).Returns([]);
         SetupTokenCreation();
 
         await _sut.ImpersonateAsync(
@@ -113,7 +113,7 @@ public sealed class AspNetImpersonationServiceTests
         var impersonatorGuid = Guid.NewGuid();
 
         _userManager.FindByIdAsync(targetId).Returns(target);
-        _userManager.GetRolesAsync(target).Returns(new List<string>());
+        _userManager.GetRolesAsync(target).Returns([]);
         SetupTokenCreation();
 
         await _sut.ImpersonateAsync(
@@ -187,7 +187,7 @@ public sealed class AspNetImpersonationServiceTests
         string targetId = target.Id.ToString();
 
         _userManager.FindByIdAsync(targetId).Returns(target);
-        _userManager.GetRolesAsync(target).Returns(new List<string>());
+        _userManager.GetRolesAsync(target).Returns([]);
 
         object tokenEntry = new object();
         _tokenManager.CreateAsync(Arg.Any<OpenIddictTokenDescriptor>(), Arg.Any<CancellationToken>())
@@ -209,7 +209,7 @@ public sealed class AspNetImpersonationServiceTests
         string targetId = target.Id.ToString();
 
         _userManager.FindByIdAsync(targetId).Returns(target);
-        _userManager.GetRolesAsync(target).Returns(new List<string>());
+        _userManager.GetRolesAsync(target).Returns([]);
         SetupTokenCreation();
 
         ImpersonationResult result = await _sut.ImpersonateAsync(
@@ -227,7 +227,7 @@ public sealed class AspNetImpersonationServiceTests
         string adminId = admin.Id.ToString();
 
         _userManager.FindByIdAsync(adminId).Returns(admin);
-        _userManager.GetRolesAsync(admin).Returns(new List<string> { "Admin" });
+        _userManager.GetRolesAsync(admin).Returns(["Admin"]);
 
         object accessTokenEntry = new object();
         object refreshTokenEntry = new object();
@@ -257,7 +257,7 @@ public sealed class AspNetImpersonationServiceTests
         string adminId = admin.Id.ToString();
 
         _userManager.FindByIdAsync(adminId).Returns(admin);
-        _userManager.GetRolesAsync(admin).Returns(new List<string>());
+        _userManager.GetRolesAsync(admin).Returns([]);
         SetupTokenCreation();
 
         await _sut.BackToImpersonatorAsync(adminId, TestContext.Current.CancellationToken);
@@ -306,7 +306,7 @@ public sealed class AspNetImpersonationServiceTests
         string adminId = admin.Id.ToString();
 
         _userManager.FindByIdAsync(adminId).Returns(admin);
-        _userManager.GetRolesAsync(admin).Returns(new List<string>());
+        _userManager.GetRolesAsync(admin).Returns([]);
 
         object tokenEntry = new object();
         _tokenManager.CreateAsync(Arg.Any<OpenIddictTokenDescriptor>(), Arg.Any<CancellationToken>())
@@ -329,7 +329,7 @@ public sealed class AspNetImpersonationServiceTests
         string adminId = admin.Id.ToString();
 
         _userManager.FindByIdAsync(adminId).Returns(admin);
-        _userManager.GetRolesAsync(admin).Returns(new List<string>());
+        _userManager.GetRolesAsync(admin).Returns([]);
         SetupTokenCreation();
 
         ImpersonationResult result = await _sut.BackToImpersonatorAsync(
@@ -346,7 +346,7 @@ public sealed class AspNetImpersonationServiceTests
         string adminId = admin.Id.ToString();
 
         _userManager.FindByIdAsync(adminId).Returns(admin);
-        _userManager.GetRolesAsync(admin).Returns(new List<string>());
+        _userManager.GetRolesAsync(admin).Returns([]);
         SetupTokenCreation();
 
         ImpersonationResult result = await _sut.BackToImpersonatorAsync(

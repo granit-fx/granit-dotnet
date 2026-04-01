@@ -231,10 +231,10 @@ automatically excluded by the EF Core global filter.
 `Granit.Timeline.Endpoints` provides a full Minimal API surface:
 
 ```csharp
-app.MapTimelineEndpoints();
+app.MapGranitTimeline();
 
 // With a custom route prefix:
-app.MapTimelineEndpoints(opts => opts.RoutePrefix = "admin/timeline");
+app.MapGranitTimeline(opts => opts.RoutePrefix = "admin/timeline");
 ```
 
 ### Available endpoints

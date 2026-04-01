@@ -62,7 +62,7 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_permissionChecker);
 
         _app = builder.Build();
-        _app.MapTimelineEndpoints();
+        _app.MapGranitTimeline();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _authClient = BuildClient(UserRole);

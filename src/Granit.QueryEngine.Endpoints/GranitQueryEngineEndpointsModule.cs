@@ -12,7 +12,7 @@ namespace Granit.QueryEngine.Endpoints;
 /// </summary>
 /// <remarks>
 /// Exposes query list routes via
-/// <c>MapQueryEndpoints&lt;TEntity, TDto&gt;()</c>,
+/// <c>MapGranitQuery&lt;TEntity&gt;()</c>,
 /// the <c>GET /meta</c> metadata endpoint, and CRUD saved view endpoints.
 /// Requires both <see cref="GranitQueryEngineModule"/> (core infrastructure)
 /// and <see cref="GranitAuthorizationModule"/> (permission policy enforcement).

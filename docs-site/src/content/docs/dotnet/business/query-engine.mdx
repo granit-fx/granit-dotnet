@@ -25,7 +25,7 @@ grid — no duplication.
 | ------- | ---- | ---------- |
 | `Granit.QueryEngine` | `IQueryEngine<T>`, `QueryDefinition<T>`, `QueryRequest`, `PagedResult<T>` | `Granit` |
 | `Granit.QueryEngine.EntityFrameworkCore` | EF Core query executor | `Granit.QueryEngine`, `Granit.Persistence` |
-| `Granit.QueryEngine.Endpoints` | `MapQueryEndpoints<T>()` generic search endpoint | `Granit.QueryEngine` |
+| `Granit.QueryEngine.Endpoints` | `MapGranitQuery<T>()` generic search endpoint | `Granit.QueryEngine` |
 | `Granit.QueryEngine.AI` | NL-to-query translation via LLM | `Granit.QueryEngine`, `Granit.AI` |
 
 ## Security hardening
@@ -34,18 +34,18 @@ The query engine applies defense-in-depth across multiple layers:
 
 ### Authentication by default
 
-All endpoints registered via `MapQueryEndpoints<T>()` require authentication by
+All endpoints registered via `MapGranitQuery<T>()` require authentication by
 default. To apply a named policy use `AuthorizationPolicy`; to opt out
 explicitly use `AllowAnonymous`:
 
 ```csharp
-endpoints.MapQueryEndpoints<Invoice>("/api/invoices", sp => ..., options =>
+endpoints.MapGranitQuery<Invoice>("/api/invoices", sp => ..., options =>
 {
     options.AuthorizationPolicy = "Invoices.Read"; // named policy
 });
 
 // Rare: anonymous access (public catalog)
-endpoints.MapQueryEndpoints<Product>("/api/products", sp => ..., options =>
+endpoints.MapGranitQuery<Product>("/api/products", sp => ..., options =>
 {
     options.AllowAnonymous = true;
 });

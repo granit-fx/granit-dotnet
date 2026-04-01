@@ -21,7 +21,7 @@ public static class SseNotificationEndpoints
     /// The returned <see cref="RouteGroupBuilder"/> can be further configured by the application
     /// (e.g. additional authorization policies).
     /// </summary>
-    public static RouteGroupBuilder MapGranitSseNotificationEndpoints(this IEndpointRouteBuilder endpoints)
+    public static RouteGroupBuilder MapGranitSseNotifications(this IEndpointRouteBuilder endpoints)
     {
         RouteGroupBuilder group = endpoints
             .MapGranitGroup("/notifications")

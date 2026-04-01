@@ -23,10 +23,10 @@ public static class AuditingEndpointRouteBuilderExtensions
     /// <para>All endpoints are protected by the <c>Auditing.AuditEntries.Read</c> permission.</para>
     /// <para>Call from your application:</para>
     /// <code>
-    /// app.MapAuditingEndpoints();
+    /// app.MapGranitAuditing();
     /// </code>
     /// </remarks>
-    public static RouteGroupBuilder MapAuditingEndpoints(
+    public static RouteGroupBuilder MapGranitAuditing(
         this IEndpointRouteBuilder endpoints,
         Action<AuditingEndpointsOptions>? configure = null)
     {

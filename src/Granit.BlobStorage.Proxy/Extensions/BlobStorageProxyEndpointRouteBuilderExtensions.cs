@@ -30,7 +30,7 @@ public static class BlobStorageProxyEndpointRouteBuilderExtensions
     /// </remarks>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <returns>The endpoint route builder for chaining.</returns>
-    public static IEndpointRouteBuilder MapGranitBlobProxyEndpoints(
+    public static IEndpointRouteBuilder MapGranitBlobProxy(
         this IEndpointRouteBuilder endpoints)
     {
         ProxyBlobOptions options = endpoints.ServiceProvider

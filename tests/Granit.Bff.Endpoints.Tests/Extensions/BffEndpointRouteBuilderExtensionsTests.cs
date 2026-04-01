@@ -8,13 +8,13 @@ namespace Granit.Bff.Endpoints.Tests.Extensions;
 public sealed class BffEndpointRouteBuilderExtensionsTests
 {
     [Fact]
-    public void MapGranitBffEndpoints_IsPublicExtensionMethod()
+    public void MapGranitBff_IsPublicExtensionMethod()
     {
         // Verify the extension method exists and is publicly accessible via reflection.
         // A full integration test requires a configured WebApplication with OIDC,
         // which is out of scope for unit tests. This validates the API surface.
         MethodInfo? method = typeof(BffEndpointRouteBuilderExtensions)
-            .GetMethod(nameof(BffEndpointRouteBuilderExtensions.MapGranitBffEndpoints));
+            .GetMethod(nameof(BffEndpointRouteBuilderExtensions.MapGranitBff));
 
         method.ShouldNotBeNull();
         method.IsStatic.ShouldBeTrue();

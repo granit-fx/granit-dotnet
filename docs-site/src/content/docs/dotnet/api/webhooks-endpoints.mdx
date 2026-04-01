@@ -34,10 +34,10 @@ operations (write, lifecycle, operations) additionally require
 
 ```csharp
 // In your application startup
-app.MapWebhooksEndpoints();
+app.MapGranitWebhooks();
 
 // With custom options:
-app.MapWebhooksEndpoints(opts =>
+app.MapGranitWebhooks(opts =>
 {
     opts.RoutePrefix = "admin/webhooks";
     opts.TagName = "Webhook Administration";

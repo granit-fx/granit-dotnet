@@ -77,7 +77,7 @@ public sealed class IdentityProviderUserEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_capabilities);
 
         _app = builder.Build();
-        _app.MapIdentityProviderEndpoints();
+        _app.MapGranitIdentityProvider();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _adminClient = BuildClient(AdminRole);

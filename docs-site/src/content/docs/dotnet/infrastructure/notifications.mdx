@@ -146,7 +146,7 @@ public class AppModule : GranitModule
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
-        context.App.MapGranitNotificationEndpoints();
+        context.App.MapGranitNotifications();
         context.App.MapHub<NotificationHub>("/hubs/notifications");
     }
 }
@@ -720,7 +720,7 @@ another user's notification as read or remove another user's device token.
 
 ### Mobile push tokens
 
-Mapped separately via `MapMobilePushTokenEndpoints()` under
+Mapped separately via `MapGranitMobilePushTokens()` under
 `api/notifications/mobile-push/tokens`:
 
 | Method | Route | Permission | Description |
@@ -1157,7 +1157,7 @@ Tags: `notifications.type`, `notifications.channel`, `notifications.delivery_id`
 | Zulip | `IZulipSender`, `ZulipMessage` | `Granit.Notifications.Zulip` |
 | Exceptions | `NotificationDeliveryException` | `Granit.Notifications` |
 | Endpoints | `NotificationEndpointsOptions`, `MobilePushTokenEndpoints` | `Granit.Notifications.Endpoints` |
-| Extensions | `AddGranitNotifications()`, `AddGranitNotificationsEntityFrameworkCore()`, `AddGranitNotificationsEmail()`, `AddGranitNotificationsEmailSmtp()`, `AddGranitNotificationsEmailAcs()`, `AddGranitNotificationsEmailScaleway()`, `AddGranitNotificationsEmailSendGrid()`, `AddGranitNotificationsBrevo()`, `AddGranitNotificationsSms()`, `AddGranitNotificationsSmsAcs()`, `AddGranitNotificationsSmsAwsSns()`, `AddGranitNotificationsTwilio()`, `AddGranitNotificationsWhatsApp()`, `AddGranitNotificationsMobilePush()`, `AddGranitNotificationsMobilePushGoogleFcm()`, `AddGranitNotificationsMobilePushAzureNotificationHubs()`, `AddGranitNotificationsMobilePushAwsSns()`, `AddGranitNotificationsSignalR()`, `AddGranitNotificationsPush()`, `AddGranitNotificationsSse()`, `AddGranitNotificationsZulip()`, `AddNotificationDefinitions<T>()`, `MapGranitNotificationEndpoints()`, `MapMobilePushTokenEndpoints()` | various |
+| Extensions | `AddGranitNotifications()`, `AddGranitNotificationsEntityFrameworkCore()`, `AddGranitNotificationsEmail()`, `AddGranitNotificationsEmailSmtp()`, `AddGranitNotificationsEmailAcs()`, `AddGranitNotificationsEmailScaleway()`, `AddGranitNotificationsEmailSendGrid()`, `AddGranitNotificationsBrevo()`, `AddGranitNotificationsSms()`, `AddGranitNotificationsSmsAcs()`, `AddGranitNotificationsSmsAwsSns()`, `AddGranitNotificationsTwilio()`, `AddGranitNotificationsWhatsApp()`, `AddGranitNotificationsMobilePush()`, `AddGranitNotificationsMobilePushGoogleFcm()`, `AddGranitNotificationsMobilePushAzureNotificationHubs()`, `AddGranitNotificationsMobilePushAwsSns()`, `AddGranitNotificationsSignalR()`, `AddGranitNotificationsPush()`, `AddGranitNotificationsSse()`, `AddGranitNotificationsZulip()`, `AddNotificationDefinitions<T>()`, `MapGranitNotifications()`, `MapGranitMobilePushTokens()` | various |
 
 ## Cross-module recipes
 

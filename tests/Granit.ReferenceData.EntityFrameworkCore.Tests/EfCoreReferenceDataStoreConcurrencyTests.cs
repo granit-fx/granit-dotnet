@@ -89,10 +89,8 @@ public sealed class EfCoreReferenceDataStoreConcurrencyTests : IAsyncLifetime
         await _keepAlive.OpenAsync();
     }
 
-    public async ValueTask DisposeAsync()
-    {
+    public async ValueTask DisposeAsync() =>
         await _keepAlive.DisposeAsync();
-    }
 
     private async Task<ServiceProvider> BuildProviderAsync(params IInterceptor[] interceptors)
     {

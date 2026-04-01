@@ -26,10 +26,10 @@ public static class WorkflowEndpointRouteBuilderExtensions
     /// </list>
     /// <para>Call this from your application route registration:</para>
     /// <code>
-    /// app.MapWorkflowEndpoints();
+    /// app.MapGranitWorkflow();
     ///
     /// // With a custom prefix:
-    /// app.MapWorkflowEndpoints(opts =&gt;
+    /// app.MapGranitWorkflow(opts =&gt;
     /// {
     ///     opts.RoutePrefix = "admin/workflow";
     /// });
@@ -38,7 +38,7 @@ public static class WorkflowEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize options.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapWorkflowEndpoints(
+    public static RouteGroupBuilder MapGranitWorkflow(
         this IEndpointRouteBuilder endpoints,
         Action<WorkflowEndpointsOptions>? configure = null)
     {
@@ -78,15 +78,16 @@ public static class WorkflowEndpointRouteBuilderExtensions
     /// </para>
     /// <para>Usage:</para>
     /// <code>
-    /// var group = app.MapWorkflowEndpoints();
-    /// group.MapWorkflowTransitionEndpoints&lt;DocumentStatus&gt;();
+    /// var group = app.MapGranitWorkflow();
+    /// group.MapGranitWorkflowTransition&lt;DocumentStatus&gt;();
     /// </code>
     /// </remarks>
-    public static RouteGroupBuilder MapWorkflowTransitionEndpoints<TState>(
+    public static RouteGroupBuilder MapGranitWorkflowTransition<TState>(
         this RouteGroupBuilder group)
         where TState : struct, Enum
     {
         WorkflowTransitionEndpoints<TState>.MapTransitionEndpoints(group);
         return group;
     }
+
 }

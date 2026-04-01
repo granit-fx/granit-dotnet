@@ -30,7 +30,7 @@ public static class IdentityProviderEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="IdentityProviderEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapIdentityProviderEndpoints(
+    public static RouteGroupBuilder MapGranitIdentityProvider(
         this IEndpointRouteBuilder endpoints,
         Action<IdentityProviderEndpointsOptions>? configure = null)
     {

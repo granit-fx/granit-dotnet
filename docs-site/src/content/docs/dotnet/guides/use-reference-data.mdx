@@ -211,8 +211,8 @@ services.AddTransient<IReferenceDataSeeder<Country>, CountrySeeder>();
 <TabItem label="Strongly-typed">
 
 ```csharp
-app.MapReferenceDataEndpoints<Country>();
-app.MapReferenceDataEndpoints<Currency>(opts =>
+app.MapGranitReferenceData<Country>();
+app.MapGranitReferenceData<Currency>(opts =>
 {
     opts.RoutePrefix = "api/ref";
     opts.TagName = "Currencies";
@@ -224,11 +224,11 @@ app.MapReferenceDataEndpoints<Currency>(opts =>
 
 ```csharp
 // Map all registered dynamic types in one call
-app.MapAllReferenceDataEndpoints();
+app.MapGranitAllReferenceData();
 
 // Or map selectively
-app.MapReferenceDataEndpoints("Countries");
-app.MapReferenceDataEndpoints("Categories", opts =>
+app.MapGranitReferenceData("Countries");
+app.MapGranitReferenceData("Categories", opts =>
     opts.TagName = "Categories");
 ```
 

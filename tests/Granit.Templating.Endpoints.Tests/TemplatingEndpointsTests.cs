@@ -73,7 +73,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(CreateTestUserService());
 
         _app = builder.Build();
-        _app.MapGranitTemplatingAdmin();
+        _app.MapGranitTemplating();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _adminClient = BuildClient(ManageRole);
@@ -1061,7 +1061,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     // =========================================================================
 
     [Fact]
-    public async Task MapGranitTemplatingAdmin_WithCustomPrefix_RespondsOnCustomRoute()
+    public async Task MapGranitTemplating_WithCustomPrefix_RespondsOnCustomRoute()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
@@ -1087,7 +1087,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             .Returns(new PagedTemplateResult([], 0));
 
         await using WebApplication app = builder.Build();
-        app.MapGranitTemplatingAdmin(opts =>
+        app.MapGranitTemplating(opts =>
         {
             opts.RoutePrefix = "custom-templates";
         });
@@ -1442,7 +1442,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(CreateTestUserService());
 
         WebApplication app = builder.Build();
-        app.MapGranitTemplatingAdmin();
+        app.MapGranitTemplating();
         await app.StartAsync(TestContext.Current.CancellationToken);
         return app;
     }
@@ -1498,7 +1498,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(CreateTestUserService());
 
         WebApplication app = builder.Build();
-        app.MapGranitTemplatingAdmin();
+        app.MapGranitTemplating();
         await app.StartAsync(TestContext.Current.CancellationToken);
         return app;
     }
@@ -1524,7 +1524,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 policy => policy.RequireRole(ManageRole));
 
         WebApplication app = builder.Build();
-        app.MapGranitTemplatingAdmin();
+        app.MapGranitTemplating();
         await app.StartAsync(TestContext.Current.CancellationToken);
         return app;
     }

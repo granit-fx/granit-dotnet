@@ -123,8 +123,8 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
         // then passes through to ASP.NET Core for token issuance (client_credentials).
         _app.MapPost("/connect/token", HandleTokenAsync);
 
-        _app.MapOpenIddictEndpoints();
-        _app.MapAccountEndpoints();
+        _app.MapGranitOpenIddict();
+        _app.MapGranitAccount();
 
         // 6. EnsureCreated + seed
         await using AsyncServiceScope scope = _app.Services.CreateAsyncScope();

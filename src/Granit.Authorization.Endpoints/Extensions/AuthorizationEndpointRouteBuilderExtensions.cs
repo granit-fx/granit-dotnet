@@ -24,10 +24,10 @@ public static class AuthorizationEndpointRouteBuilderExtensions
     /// </list>
     /// <para>Call this from your application route registration:</para>
     /// <code>
-    /// app.MapAuthorizationEndpoints();
+    /// app.MapGranitAuthorization();
     ///
     /// // With a custom prefix:
-    /// app.MapAuthorizationEndpoints(opts =>
+    /// app.MapGranitAuthorization(opts =>
     /// {
     ///     opts.ApiPrefix = "api/v1";
     ///     opts.RoutePrefix = "authorization";
@@ -37,7 +37,7 @@ public static class AuthorizationEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="AuthorizationEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapAuthorizationEndpoints(
+    public static RouteGroupBuilder MapGranitAuthorization(
         this IEndpointRouteBuilder endpoints,
         Action<AuthorizationEndpointsOptions>? configure = null)
     {

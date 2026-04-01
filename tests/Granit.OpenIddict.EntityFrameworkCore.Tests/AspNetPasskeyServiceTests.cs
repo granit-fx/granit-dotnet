@@ -55,7 +55,7 @@ public sealed class AspNetPasskeyServiceTests
 
         UserPasskeyInfo passkey = CreatePasskeyInfo(credentialId);
         _userManager.FindByIdAsync(userId).Returns(user);
-        _userManager.GetPasskeysAsync(user).Returns(new List<UserPasskeyInfo> { passkey });
+        _userManager.GetPasskeysAsync(user).Returns((IList<UserPasskeyInfo>)[passkey]);
 
         IReadOnlyList<PasskeyInfo> result = await _sut.GetPasskeysAsync(
             userId, TestContext.Current.CancellationToken);
@@ -99,11 +99,11 @@ public sealed class AspNetPasskeyServiceTests
         credId2[0] = 0x02;
 
         _userManager.FindByIdAsync(userId).Returns(user);
-        _userManager.GetPasskeysAsync(user).Returns(new List<UserPasskeyInfo>
-        {
+        _userManager.GetPasskeysAsync(user).Returns((IList<UserPasskeyInfo>)
+        [
             CreatePasskeyInfo(credId1),
             CreatePasskeyInfo(credId2),
-        });
+        ]);
 
         IReadOnlyList<PasskeyInfo> result = await _sut.GetPasskeysAsync(
             userId, TestContext.Current.CancellationToken);
@@ -118,7 +118,7 @@ public sealed class AspNetPasskeyServiceTests
         string userId = user.Id.ToString();
 
         _userManager.FindByIdAsync(userId).Returns(user);
-        _userManager.GetPasskeysAsync(user).Returns(new List<UserPasskeyInfo>());
+        _userManager.GetPasskeysAsync(user).Returns((IList<UserPasskeyInfo>)[]);
 
         IReadOnlyList<PasskeyInfo> result = await _sut.GetPasskeysAsync(
             userId, TestContext.Current.CancellationToken);
@@ -324,10 +324,10 @@ public sealed class AspNetPasskeyServiceTests
 
         _userManager.FindByPasskeyIdAsync(Arg.Is<byte[]>(b => b.Length == credentialId.Length))
             .Returns(user);
-        _userManager.GetPasskeysAsync(user).Returns(new List<UserPasskeyInfo>
-        {
+        _userManager.GetPasskeysAsync(user).Returns((IList<UserPasskeyInfo>)
+        [
             CreatePasskeyInfo(credentialId),
-        });
+        ]);
 
         GranitPasskeyAssertionResult result = await _sut.CompleteAssertionAsync(
             credentialJson, TestContext.Current.CancellationToken);
@@ -378,10 +378,10 @@ public sealed class AspNetPasskeyServiceTests
 
         byte[] differentCredentialId = new byte[32];
         differentCredentialId[0] = 0xCC;
-        _userManager.GetPasskeysAsync(user).Returns(new List<UserPasskeyInfo>
-        {
+        _userManager.GetPasskeysAsync(user).Returns((IList<UserPasskeyInfo>)
+        [
             CreatePasskeyInfo(differentCredentialId),
-        });
+        ]);
 
         GranitPasskeyAssertionResult result = await _sut.CompleteAssertionAsync(
             credentialJson, TestContext.Current.CancellationToken);
@@ -434,11 +434,11 @@ public sealed class AspNetPasskeyServiceTests
 
         _userManager.FindByIdAsync(userId).Returns(user);
         _userManager.HasPasswordAsync(user).Returns(false);
-        _userManager.GetPasskeysAsync(user).Returns(new List<UserPasskeyInfo>
-        {
+        _userManager.GetPasskeysAsync(user).Returns((IList<UserPasskeyInfo>)
+        [
             CreatePasskeyInfo(new byte[32]),
             CreatePasskeyInfo(new byte[32]),
-        });
+        ]);
         _userManager.RemovePasskeyAsync(user, Arg.Any<byte[]>()).Returns(IdentityResult.Success);
 
         await Should.NotThrowAsync(
@@ -454,10 +454,10 @@ public sealed class AspNetPasskeyServiceTests
 
         _userManager.FindByIdAsync(userId).Returns(user);
         _userManager.HasPasswordAsync(user).Returns(true);
-        _userManager.GetPasskeysAsync(user).Returns(new List<UserPasskeyInfo>
-        {
+        _userManager.GetPasskeysAsync(user).Returns((IList<UserPasskeyInfo>)
+        [
             CreatePasskeyInfo(new byte[32]),
-        });
+        ]);
         _userManager.RemovePasskeyAsync(user, Arg.Any<byte[]>()).Returns(IdentityResult.Success);
 
         await Should.NotThrowAsync(
@@ -473,10 +473,10 @@ public sealed class AspNetPasskeyServiceTests
 
         _userManager.FindByIdAsync(userId).Returns(user);
         _userManager.HasPasswordAsync(user).Returns(false);
-        _userManager.GetPasskeysAsync(user).Returns(new List<UserPasskeyInfo>
-        {
+        _userManager.GetPasskeysAsync(user).Returns((IList<UserPasskeyInfo>)
+        [
             CreatePasskeyInfo(new byte[32]),
-        });
+        ]);
 
         InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
             () => _sut.DeleteAsync(userId, passkeyId, TestContext.Current.CancellationToken));
@@ -493,11 +493,11 @@ public sealed class AspNetPasskeyServiceTests
 
         _userManager.FindByIdAsync(userId).Returns(user);
         _userManager.HasPasswordAsync(user).Returns(true);
-        _userManager.GetPasskeysAsync(user).Returns(new List<UserPasskeyInfo>
-        {
+        _userManager.GetPasskeysAsync(user).Returns((IList<UserPasskeyInfo>)
+        [
             CreatePasskeyInfo(new byte[32]),
             CreatePasskeyInfo(new byte[32]),
-        });
+        ]);
         _userManager.RemovePasskeyAsync(user, Arg.Any<byte[]>())
             .Returns(IdentityResult.Failed(new IdentityError { Description = "Passkey not found" }));
 
@@ -537,7 +537,7 @@ public sealed class AspNetPasskeyServiceTests
 
         _userManager.FindByIdAsync(userId).Returns(user);
         _userManager.HasPasswordAsync(user).Returns(false);
-        _userManager.GetPasskeysAsync(user).Returns(new List<UserPasskeyInfo>());
+        _userManager.GetPasskeysAsync(user).Returns((IList<UserPasskeyInfo>)[]);
 
         InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
             () => _sut.DeleteAsync(userId, Guid.NewGuid(), TestContext.Current.CancellationToken));

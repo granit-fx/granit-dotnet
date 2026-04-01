@@ -7,10 +7,8 @@ namespace Granit.Identity.Local.Endpoints.Tests;
 public sealed class IdentityLocalPermissionsTests
 {
     [Fact]
-    public void GroupName_IsIdentityLocal()
-    {
+    public void GroupName_IsIdentityLocal() =>
         IdentityLocalPermissions.GroupName.ShouldBe("IdentityLocal");
-    }
 
     [Fact]
     public void Impersonate_FollowsThreeSegmentFormat()
@@ -20,8 +18,6 @@ public sealed class IdentityLocalPermissionsTests
     }
 
     [Fact]
-    public void Impersonate_StartsWithGroupName()
-    {
+    public void Impersonate_StartsWithGroupName() =>
         IdentityLocalPermissions.Users.Impersonate.ShouldStartWith(IdentityLocalPermissions.GroupName + ".");
-    }
 }

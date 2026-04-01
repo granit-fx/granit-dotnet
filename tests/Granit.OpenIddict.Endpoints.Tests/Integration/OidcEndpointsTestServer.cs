@@ -17,7 +17,7 @@ namespace Granit.OpenIddict.Endpoints.Tests.Integration;
 
 /// <summary>
 /// Test server that boots a minimal ASP.NET Core application with mocked services
-/// and the OpenIddict admin endpoints registered via <see cref="OpenIddictEndpointRouteBuilderExtensions.MapOpenIddictEndpoints"/>.
+/// and the OpenIddict admin endpoints registered via <see cref="OpenIddictEndpointRouteBuilderExtensions.MapGranitOpenIddict"/>.
 /// </summary>
 internal sealed class OidcEndpointsTestServer : IAsyncDisposable
 {
@@ -109,7 +109,7 @@ internal sealed class OidcEndpointsTestServer : IAsyncDisposable
             ServiceLifetime.Singleton, includeInternalTypes: true);
 
         WebApplication app = builder.Build();
-        app.MapOpenIddictEndpoints();
+        app.MapGranitOpenIddict();
         await app.StartAsync().ConfigureAwait(false);
 
         HttpClient authenticatedClient = app.GetTestClient();

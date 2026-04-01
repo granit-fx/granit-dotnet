@@ -20,7 +20,7 @@ public static class JwtBearerEndpointRouteBuilderExtensions
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <returns>The <paramref name="endpoints"/> for chaining.</returns>
-    public static IEndpointRouteBuilder MapBackChannelLogout(this IEndpointRouteBuilder endpoints)
+    public static IEndpointRouteBuilder MapGranitBackChannelLogout(this IEndpointRouteBuilder endpoints)
     {
         JwtBearerAuthOptions options = endpoints.ServiceProvider
             .GetRequiredService<IOptions<JwtBearerAuthOptions>>().Value;
@@ -37,4 +37,5 @@ public static class JwtBearerEndpointRouteBuilderExtensions
 
         return endpoints;
     }
+
 }

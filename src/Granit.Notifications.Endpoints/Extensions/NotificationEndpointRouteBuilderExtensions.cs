@@ -28,7 +28,7 @@ public static class NotificationEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="NotificationEndpointsOptions"/>.</param>
     /// <returns>The endpoint route builder for chaining.</returns>
-    public static IEndpointRouteBuilder MapGranitNotificationEndpoints(
+    public static IEndpointRouteBuilder MapGranitNotifications(
         this IEndpointRouteBuilder endpoints,
         Action<NotificationEndpointsOptions>? configure = null)
     {

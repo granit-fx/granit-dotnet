@@ -25,7 +25,7 @@ namespace Granit.Identity.Local.Endpoints.Tests.Integration;
 /// <summary>
 /// Test server that boots a minimal ASP.NET Core application with mocked services
 /// and the account endpoints registered via
-/// <see cref="AccountEndpointRouteBuilderExtensions.MapAccountEndpoints"/>.
+/// <see cref="AccountEndpointRouteBuilderExtensions.MapGranitAccount"/>.
 /// </summary>
 internal sealed class AccountEndpointsTestServer : IAsyncDisposable
 {
@@ -203,7 +203,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
             ServiceLifetime.Singleton, includeInternalTypes: true);
 
         WebApplication app = builder.Build();
-        app.MapAccountEndpoints();
+        app.MapGranitAccount();
         await app.StartAsync().ConfigureAwait(false);
 
         string allRoles = string.Join(",", AuthenticatedRole, ImpersonateRole);

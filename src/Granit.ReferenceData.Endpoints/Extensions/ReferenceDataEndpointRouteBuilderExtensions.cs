@@ -28,16 +28,16 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
     /// </para>
     /// <para>
     /// The entity type name is converted to a kebab-case segment appended to the route prefix.
-    /// For example, <c>MapReferenceDataEndpoints&lt;Country&gt;()</c> creates routes under
+    /// For example, <c>MapGranitReferenceData&lt;Country&gt;()</c> creates routes under
     /// <c>/reference-data/country</c>.
     /// </para>
     /// <para>Call from your application:</para>
     /// <code>
-    /// app.MapReferenceDataEndpoints&lt;Country&gt;();
-    /// app.MapReferenceDataEndpoints&lt;Currency&gt;(opts => opts.TagName = "Currencies");
+    /// app.MapGranitReferenceData&lt;Country&gt;();
+    /// app.MapGranitReferenceData&lt;Currency&gt;(opts => opts.TagName = "Currencies");
     /// </code>
     /// </remarks>
-    public static RouteGroupBuilder MapReferenceDataEndpoints<TEntity>(
+    public static RouteGroupBuilder MapGranitReferenceData<TEntity>(
         this IEndpointRouteBuilder endpoints,
         Action<ReferenceDataEndpointsOptions>? configure = null)
         where TEntity : ReferenceDataEntity, new()
@@ -67,7 +67,7 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
     /// </param>
     /// <param name="configure">Optional delegate to customize <see cref="ReferenceDataEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapReferenceDataEndpoints(
+    public static RouteGroupBuilder MapGranitReferenceData(
         this IEndpointRouteBuilder endpoints,
         string typeName,
         Action<ReferenceDataEndpointsOptions>? configure = null)
@@ -96,7 +96,7 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize options for all types.</param>
     /// <returns>The endpoint route builder for chaining.</returns>
-    public static IEndpointRouteBuilder MapAllReferenceDataEndpoints(
+    public static IEndpointRouteBuilder MapGranitAllReferenceData(
         this IEndpointRouteBuilder endpoints,
         Action<ReferenceDataEndpointsOptions>? configure = null)
     {
@@ -104,7 +104,7 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
 
         foreach (ReferenceDataTypeRegistration registration in registry.Types)
         {
-            endpoints.MapReferenceDataEndpoints(registration.TypeName, configure);
+            endpoints.MapGranitReferenceData(registration.TypeName, configure);
         }
 
         return endpoints;

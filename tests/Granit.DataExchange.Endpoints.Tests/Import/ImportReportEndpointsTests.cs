@@ -80,7 +80,7 @@ public sealed class ImportReportEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(Substitute.For<IExportJobReader>());
 
         _app = builder.Build();
-        _app.MapDataExchangeEndpoints();
+        _app.MapGranitDataExchange();
         _app.StartAsync().GetAwaiter().GetResult();
 
         _adminClient = BuildClient(AdminRole);

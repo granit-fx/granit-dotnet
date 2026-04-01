@@ -7,10 +7,10 @@ using Xunit;
 
 namespace Granit.BackgroundJobs.Endpoints.Tests;
 
-public sealed class MapBackgroundJobsEndpointsTests
+public sealed class MapGranitBackgroundJobsTests
 {
     [Fact]
-    public void MapBackgroundJobsEndpoints_WithDefaultOptions_ReturnsRouteGroupBuilder()
+    public void MapGranitBackgroundJobs_WithDefaultOptions_ReturnsRouteGroupBuilder()
     {
         // Arrange
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -18,14 +18,14 @@ public sealed class MapBackgroundJobsEndpointsTests
         WebApplication app = builder.Build();
 
         // Act
-        RouteGroupBuilder group = app.MapBackgroundJobsEndpoints();
+        RouteGroupBuilder group = app.MapGranitBackgroundJobs();
 
         // Assert
         group.ShouldNotBeNull();
     }
 
     [Fact]
-    public void MapBackgroundJobsEndpoints_WithCustomPrefix_ReturnsRouteGroupBuilder()
+    public void MapGranitBackgroundJobs_WithCustomPrefix_ReturnsRouteGroupBuilder()
     {
         // Arrange
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
@@ -33,7 +33,7 @@ public sealed class MapBackgroundJobsEndpointsTests
         WebApplication app = builder.Build();
 
         // Act
-        RouteGroupBuilder group = app.MapBackgroundJobsEndpoints(
+        RouteGroupBuilder group = app.MapGranitBackgroundJobs(
             opts => opts.RoutePrefix = "admin/jobs");
 
         // Assert

@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
 // TemplatingEndpointRouteBuilderExtensions.cs
 // Minimal API extensions for Granit template administration:
-//   - MapGranitTemplatingAdmin: CRUD endpoints for template draft management
+//   - MapGranitTemplating: CRUD endpoints for template draft management
 //     (requires Templates.Manage permission)
 // ---------------------------------------------------------------------------
 
@@ -69,7 +69,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="TemplatingEndpointsOptions"/>.</param>
     /// <returns>The route group builder for further chaining.</returns>
-    public static RouteGroupBuilder MapGranitTemplatingAdmin(
+    public static RouteGroupBuilder MapGranitTemplating(
         this IEndpointRouteBuilder endpoints,
         Action<TemplatingEndpointsOptions>? configure = null)
     {
@@ -1341,4 +1341,5 @@ public static class TemplatingEndpointRouteBuilderExtensions
 
         return "object";
     }
+
 }

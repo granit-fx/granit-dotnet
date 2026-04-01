@@ -95,7 +95,7 @@ public sealed class CountryConfiguration
 
 // 3. Register store + endpoints
 services.AddReferenceDataStore<Country, AppDbContext>();
-app.MapReferenceDataEndpoints<Country>();
+app.MapGranitReferenceData<Country>();
 ```
 
 </TabItem>
@@ -123,7 +123,7 @@ services.AddReferenceData<AppDbContext>(rd =>
 });
 
 // 2. Map all registered types in one call
-app.MapAllReferenceDataEndpoints();
+app.MapGranitAllReferenceData();
 ```
 
 </TabItem>
@@ -310,7 +310,7 @@ public sealed class CountrySeeder : IReferenceDataSeeder<Country>
 | Entity | `ReferenceDataEntity`, `DynamicReferenceDataEntity`, `IHasExtraProperties` | `Granit.ReferenceData`, `Granit` |
 | Store | `IReferenceDataStoreReader<T>`, `IReferenceDataStoreWriter<T>`, `IReferenceDataSeeder<T>` | `Granit.ReferenceData` |
 | Registration | `AddReferenceDataStore<T, TDb>()`, `AddReferenceData<TDb>()`, `ReferenceDataBuilder` | `Granit.ReferenceData.EntityFrameworkCore` |
-| Endpoints | `MapReferenceDataEndpoints<T>()`, `MapAllReferenceDataEndpoints()` | `Granit.ReferenceData.Endpoints` |
+| Endpoints | `MapGranitReferenceData<T>()`, `MapGranitAllReferenceData()` | `Granit.ReferenceData.Endpoints` |
 | Registry | `ReferenceDataRegistry`, `ReferenceDataTypeRegistration` | `Granit.ReferenceData` |
 | ExtraProperties | `ExtraPropertyExtensions`, `ExtraPropertyMappingOptions<T>` | `Granit`, `Granit.Persistence` |
 

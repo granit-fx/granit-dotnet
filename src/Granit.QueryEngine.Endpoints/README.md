@@ -1,6 +1,6 @@
 # Granit.QueryEngine.Endpoints
 
-Minimal API endpoints for Granit.QueryEngine. Provides `MapQueryEndpoints<T, TDto>()`
+Minimal API endpoints for Granit.QueryEngine. Provides `MapGranitQuery<T, TDto>()`
 fluent API, `filter[field.op]=value` query string binding, `GET /meta` metadata
 endpoint, CRUD SavedViews endpoints, and OpenAPI documentation conventions.
 

@@ -226,7 +226,7 @@ specification. When the IdP sends a logout token, the session is revoked in dist
 
 ```csharp
 // In OnApplicationInitialization
-app.MapBackChannelLogout(); // POST /auth/back-channel-logout (anonymous)
+app.MapGranitBackChannelLogout(); // POST /auth/back-channel-logout (anonymous)
 ```
 
 The endpoint validates the logout token signature against the IdP's JWKS, extracts the `sid`
@@ -369,7 +369,7 @@ Enabling it while some clients still use plain Bearer tokens will lock those cli
 | Claims | `GoogleCloudClaimsTransformation` | `Granit.Authentication.JwtBearer.GoogleCloud` |
 | Options | `JwtBearerAuthOptions`, `KeycloakOptions`, `CognitoOptions`, `GoogleCloudOptions` | — |
 | DPoP | `IDPoPProofValidator`, `JwkThumbprintCalculator`, `DPoPValidationMiddleware` | `Granit.Authentication.DPoP` |
-| Extensions | `AddGranitJwtBearer()`, `AddGranitKeycloak()`, `AddGranitCognito()`, `MapBackChannelLogout()`, `UseGranitDPoPValidation()` | — |
+| Extensions | `AddGranitJwtBearer()`, `AddGranitKeycloak()`, `AddGranitCognito()`, `MapGranitBackChannelLogout()`, `UseGranitDPoPValidation()` | — |
 
 ## See also
 

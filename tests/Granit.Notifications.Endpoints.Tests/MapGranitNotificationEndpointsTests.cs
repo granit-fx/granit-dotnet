@@ -7,40 +7,40 @@ using Xunit;
 
 namespace Granit.Notifications.Endpoints.Tests;
 
-public sealed class MapGranitNotificationEndpointsTests
+public sealed class MapGranitNotificationsTests
 {
     [Fact]
-    public void MapGranitNotificationEndpoints_WithDefaultOptions_ReturnsEndpointRouteBuilder()
+    public void MapGranitNotifications_WithDefaultOptions_ReturnsEndpointRouteBuilder()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         WebApplication app = builder.Build();
 
-        IEndpointRouteBuilder result = app.MapGranitNotificationEndpoints();
+        IEndpointRouteBuilder result = app.MapGranitNotifications();
 
         result.ShouldNotBeNull();
     }
 
     [Fact]
-    public void MapGranitNotificationEndpoints_WithCustomPrefix_ReturnsEndpointRouteBuilder()
+    public void MapGranitNotifications_WithCustomPrefix_ReturnsEndpointRouteBuilder()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         WebApplication app = builder.Build();
 
-        IEndpointRouteBuilder result = app.MapGranitNotificationEndpoints(
+        IEndpointRouteBuilder result = app.MapGranitNotifications(
             opts => opts.RoutePrefix = "notif");
 
         result.ShouldNotBeNull();
     }
 
     [Fact]
-    public void MapGranitNotificationEndpoints_WithNullConfigure_DoesNotThrow()
+    public void MapGranitNotifications_WithNullConfigure_DoesNotThrow()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         WebApplication app = builder.Build();
 
-        Should.NotThrow(() => app.MapGranitNotificationEndpoints(configure: null));
+        Should.NotThrow(() => app.MapGranitNotifications(configure: null));
     }
 }

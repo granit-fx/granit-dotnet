@@ -14,7 +14,7 @@ namespace Granit.Workflow.Endpoints;
 /// <para>
 /// Map endpoints in your application:
 /// <code>
-/// app.MapWorkflowEndpoints();
+/// app.MapGranitWorkflow();
 /// </code>
 /// </para>
 /// <para>

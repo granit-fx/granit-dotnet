@@ -42,7 +42,7 @@ public static class QueryEndpointRouteBuilderExtensions
     ///   <item><c>POST /saved-views/{id}/set-default</c> — set default saved view</item>
     /// </list>
     /// </remarks>
-    public static RouteGroupBuilder MapQueryEndpoints<TEntity>(
+    public static RouteGroupBuilder MapGranitQuery<TEntity>(
         this IEndpointRouteBuilder endpoints,
         string pattern,
         Func<IServiceProvider, IQueryable<TEntity>> sourceProvider,
@@ -130,4 +130,5 @@ public static class QueryEndpointRouteBuilderExtensions
 
         return group;
     }
+
 }
