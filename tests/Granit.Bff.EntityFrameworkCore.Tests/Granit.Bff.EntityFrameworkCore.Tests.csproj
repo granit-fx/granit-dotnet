@@ -2,6 +2,9 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <!-- EF1001: false positive — EF Core 10 analyzer incorrectly flags our own internal types
+         accessed via InternalsVisibleTo (namespace contains EntityFrameworkCore) -->
+    <NoWarn>$(NoWarn);EF1001</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />

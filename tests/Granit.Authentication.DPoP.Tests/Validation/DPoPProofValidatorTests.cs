@@ -448,6 +448,413 @@ public sealed class DPoPProofValidatorTests : IDisposable
         result.IsValid.ShouldBeTrue();
     }
 
+    // ── Nonce validation ──
+
+    [Fact]
+    public async Task ValidateAsync_NonceRequired_MissingNonceClaim_ReturnsFailure()
+    {
+        _options.RequireNonce = true;
+
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        DateTimeOffset now = _clock.Now;
+
+        // Proof without nonce claim
+        string proof = CreateDPoPProof(key, DefaultMethod, DefaultUri, now);
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.Error.ShouldBe("Missing nonce claim (required by server).");
+        result.ServerNonce.ShouldNotBeNullOrEmpty("Server should issue a nonce even on failure");
+    }
+
+    [Fact]
+    public async Task ValidateAsync_NonceRequired_InvalidNonce_ReturnsFailure()
+    {
+        _options.RequireNonce = true;
+
+        // Cache returns nothing for the nonce lookup (invalid/expired nonce)
+        _cache.TryGetAsync<bool>(Arg.Any<string>(), Arg.Any<FusionCacheEntryOptions?>(), Arg.Any<CancellationToken>())
+            .Returns(new MaybeValue<bool>());
+
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        DateTimeOffset now = _clock.Now;
+
+        string proof = CreateDPoPProof(key, DefaultMethod, DefaultUri, now, nonce: "expired-nonce-value");
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.Error.ShouldBe("Invalid or expired nonce.");
+        result.ServerNonce.ShouldNotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task ValidateAsync_NonceRequired_ValidNonce_ReturnsSuccess()
+    {
+        _options.RequireNonce = true;
+        const string validNonce = "server-issued-nonce-abc";
+        string nonceCacheKey = $"dpop:nonce:{validNonce}";
+
+        // Simulate nonce exists in cache (valid server-issued nonce)
+        _cache.TryGetAsync<bool>(nonceCacheKey, Arg.Any<FusionCacheEntryOptions?>(), Arg.Any<CancellationToken>())
+            .Returns(MaybeValue<bool>.FromValue(true));
+
+        // Other cache keys (jti) should miss
+        _cache.TryGetAsync<bool>(Arg.Is<string>(k => !k.StartsWith("dpop:nonce:")), Arg.Any<FusionCacheEntryOptions?>(), Arg.Any<CancellationToken>())
+            .Returns(new MaybeValue<bool>());
+
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        DateTimeOffset now = _clock.Now;
+
+        string proof = CreateDPoPProof(key, DefaultMethod, DefaultUri, now, nonce: validNonce);
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeTrue();
+        result.ServerNonce.ShouldNotBeNullOrEmpty("Server should return a fresh nonce for the next request");
+    }
+
+    [Fact]
+    public async Task GenerateNonceAsync_WhenRequired_ReturnsNonce()
+    {
+        _options.RequireNonce = true;
+
+        string? nonce = await _validator.GenerateNonceAsync(TestContext.Current.CancellationToken);
+
+        nonce.ShouldNotBeNullOrEmpty();
+        nonce!.Length.ShouldBeGreaterThan(10, "Nonce should be a substantial base64url string");
+    }
+
+    // ── RSA signature verification ──
+
+    [Fact]
+    public async Task ValidateAsync_ValidRsaProof_ReturnsSuccess()
+    {
+        _options.AllowedAlgorithms = ["ES256", "PS256"];
+
+        using var rsaKey = RSA.Create(2048);
+        DateTimeOffset now = _clock.Now;
+
+        string proof = CreateDPoPProofRsa(rsaKey, DefaultMethod, DefaultUri, now);
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeTrue();
+        result.JwkThumbprint.ShouldNotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task ValidateAsync_RsaKeyTooSmall_ReturnsFailure()
+    {
+        _options.AllowedAlgorithms = ["ES256", "PS256"];
+        _options.MinimumRsaKeySize = 4096;
+
+        // Create a 2048-bit RSA key — below the 4096-bit minimum
+        using var rsaKey = RSA.Create(2048);
+        DateTimeOffset now = _clock.Now;
+
+        string proof = CreateDPoPProofRsa(rsaKey, DefaultMethod, DefaultUri, now);
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.Error.ShouldBe("Invalid proof signature.");
+    }
+
+    // ── Unsupported key type ──
+
+    [Fact]
+    public async Task ValidateAsync_UnsupportedKeyType_ReturnsFailure()
+    {
+        using var ecKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        DateTimeOffset now = _clock.Now;
+
+        // Create a proof but override the JWK kty to an unsupported value
+        string proof = CreateDPoPProof(ecKey, DefaultMethod, DefaultUri, now,
+            modifyHeader: header =>
+            {
+                var jwk = (Dictionary<string, object>)header["jwk"];
+                jwk["kty"] = "OKP"; // unsupported key type
+            });
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.Error.ShouldBe("Invalid proof signature.");
+    }
+
+    // ── URI normalization edge cases ──
+
+    [Fact]
+    public async Task ValidateAsync_HtuWithFragment_MatchesBaseUri()
+    {
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        DateTimeOffset now = _clock.Now;
+
+        // Proof uses URI without fragment, request URI has fragment
+        string proof = CreateDPoPProof(key, DefaultMethod, DefaultUri, now);
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, $"{DefaultUri}#section-1", TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task ValidateAsync_HtuWithQueryAndFragment_MatchesBaseUri()
+    {
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        DateTimeOffset now = _clock.Now;
+
+        string proof = CreateDPoPProof(key, DefaultMethod, DefaultUri, now);
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, $"{DefaultUri}?page=1#top", TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task ValidateAsync_HtuWithDefaultPort_MatchesWithout()
+    {
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        DateTimeOffset now = _clock.Now;
+
+        // Proof uses URI with explicit default port
+        string proof = CreateDPoPProof(key, DefaultMethod, "https://api.example.com:443/resource", now);
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    // ── Missing htu claim ──
+
+    [Fact]
+    public async Task ValidateAsync_MissingHtuClaim_ReturnsFailure()
+    {
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        DateTimeOffset now = _clock.Now;
+
+        string proof = CreateDPoPProof(key, DefaultMethod, DefaultUri, now,
+            modifyPayload: payload => payload.Remove("htu"));
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.Error.ShouldBe("Missing htu claim.");
+    }
+
+    // ── Invalid payload encoding ──
+
+    [Fact]
+    public async Task ValidateAsync_InvalidPayloadEncoding_ReturnsFailure()
+    {
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        ECParameters ecParams = key.ExportParameters(includePrivateParameters: false);
+        string x = Base64UrlEncodeBytes(ecParams.Q.X!);
+        string y = Base64UrlEncodeBytes(ecParams.Q.Y!);
+
+        string headerJson = JsonSerializer.Serialize(new Dictionary<string, object>
+        {
+            ["typ"] = "dpop+jwt",
+            ["alg"] = "ES256",
+            ["jwk"] = new Dictionary<string, object>
+            {
+                ["kty"] = "EC",
+                ["crv"] = "P-256",
+                ["x"] = x,
+                ["y"] = y,
+            },
+        });
+        string headerB64 = Base64UrlEncode(headerJson);
+
+        string jwt = $"{headerB64}.!!!invalid-payload!!!.signature";
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            jwt, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.Error.ShouldBe("Invalid JWT payload encoding.");
+    }
+
+    // ── Replay protection — first-use jti is accepted ──
+
+    [Fact]
+    public async Task ValidateAsync_ReplayProtection_FirstUseJti_Succeeds()
+    {
+        _options.EnableReplayProtection = true;
+
+        // Cache returns nothing for jti (first use)
+        _cache.TryGetAsync<bool>(Arg.Any<string>(), Arg.Any<FusionCacheEntryOptions?>(), Arg.Any<CancellationToken>())
+            .Returns(new MaybeValue<bool>());
+
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        DateTimeOffset now = _clock.Now;
+
+        string proof = CreateDPoPProof(key, DefaultMethod, DefaultUri, now);
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeTrue();
+
+        // Verify the jti was stored in the cache
+        await _cache.Received().SetAsync(
+            Arg.Is<string>(k => k.StartsWith("dpop:jti:")),
+            true,
+            Arg.Any<FusionCacheEntryOptions>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    // ── EC curve variations ──
+
+    [Fact]
+    public async Task ValidateAsync_ValidEcP384Proof_ReturnsSuccess()
+    {
+        _options.AllowedAlgorithms = ["ES256", "ES384", "PS256"];
+
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP384);
+        DateTimeOffset now = _clock.Now;
+
+        string proof = CreateDPoPProof(key, DefaultMethod, DefaultUri, now,
+            curve: "P-384", algorithm: "ES384", hashAlgorithm: HashAlgorithmName.SHA384);
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task ValidateAsync_ValidEcP521Proof_ReturnsSuccess()
+    {
+        _options.AllowedAlgorithms = ["ES256", "ES512", "PS256"];
+
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP521);
+        DateTimeOffset now = _clock.Now;
+
+        string proof = CreateDPoPProof(key, DefaultMethod, DefaultUri, now,
+            curve: "P-521", algorithm: "ES512", hashAlgorithm: HashAlgorithmName.SHA512);
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeTrue();
+    }
+
+    // ── Nonce in payload result includes ServerNonce even on payload failure ──
+
+    [Fact]
+    public async Task ValidateAsync_NonceRequired_PayloadFailure_IncludesServerNonce()
+    {
+        _options.RequireNonce = true;
+
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        DateTimeOffset now = _clock.Now;
+
+        // Create proof with mismatched method to trigger payload validation failure
+        string proof = CreateDPoPProof(key, "POST", DefaultUri, now);
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, "GET", DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.Error.ShouldBe("htm claim does not match request method.");
+        result.ServerNonce.ShouldNotBeNullOrEmpty("Nonce should be returned even when payload fails");
+    }
+
+    // ── Missing htm claim ──
+
+    [Fact]
+    public async Task ValidateAsync_MissingHtmClaim_ReturnsFailure()
+    {
+        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        DateTimeOffset now = _clock.Now;
+
+        string proof = CreateDPoPProof(key, DefaultMethod, DefaultUri, now,
+            modifyPayload: payload => payload.Remove("htm"));
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.Error.ShouldBe("htm claim does not match request method.");
+    }
+
+    // ── Signature failure includes ServerNonce when nonce is enabled ──
+
+    [Fact]
+    public async Task ValidateAsync_NonceRequired_SignatureFailure_IncludesServerNonce()
+    {
+        _options.RequireNonce = true;
+        const string validNonce = "nonce-for-sig-test";
+        string nonceCacheKey = $"dpop:nonce:{validNonce}";
+
+        _cache.TryGetAsync<bool>(nonceCacheKey, Arg.Any<FusionCacheEntryOptions?>(), Arg.Any<CancellationToken>())
+            .Returns(MaybeValue<bool>.FromValue(true));
+
+        using var signingKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        using var differentKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        DateTimeOffset now = _clock.Now;
+
+        // Build header with differentKey's public key but sign with signingKey
+        ECParameters differentParams = differentKey.ExportParameters(includePrivateParameters: false);
+        string x = Base64UrlEncodeBytes(differentParams.Q.X!);
+        string y = Base64UrlEncodeBytes(differentParams.Q.Y!);
+
+        var headerClaims = new Dictionary<string, object>
+        {
+            ["typ"] = "dpop+jwt",
+            ["alg"] = "ES256",
+            ["jwk"] = new Dictionary<string, object>
+            {
+                ["kty"] = "EC",
+                ["crv"] = "P-256",
+                ["x"] = x,
+                ["y"] = y,
+            },
+        };
+
+        long iat = now.ToUnixTimeSeconds();
+        var payloadClaims = new Dictionary<string, object>
+        {
+            ["htm"] = DefaultMethod,
+            ["htu"] = DefaultUri,
+            ["iat"] = iat,
+            ["jti"] = Guid.NewGuid().ToString(),
+            ["nonce"] = validNonce,
+        };
+
+        string headerJson = JsonSerializer.Serialize(headerClaims);
+        string payloadJson = JsonSerializer.Serialize(payloadClaims);
+        string headerB64 = Base64UrlEncode(headerJson);
+        string payloadB64 = Base64UrlEncode(payloadJson);
+
+        // Sign with WRONG key
+        byte[] signingInput = Encoding.ASCII.GetBytes($"{headerB64}.{payloadB64}");
+        byte[] signature = signingKey.SignData(signingInput, HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation);
+        string signatureB64 = Base64UrlEncodeBytes(signature);
+
+        string proof = $"{headerB64}.{payloadB64}.{signatureB64}";
+
+        DPoPValidationResult result = await _validator.ValidateAsync(
+            proof, DefaultMethod, DefaultUri, TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+        result.Error.ShouldBe("Invalid proof signature.");
+        result.ServerNonce.ShouldNotBeNullOrEmpty("ServerNonce should be present even on signature failure");
+    }
+
     // ── Helper: DPoP proof JWT builder ──
 
     private static string CreateDPoPProof(
@@ -458,7 +865,10 @@ public sealed class DPoPProofValidatorTests : IDisposable
         string? jti = null,
         string? nonce = null,
         Action<Dictionary<string, object>>? modifyHeader = null,
-        Action<Dictionary<string, object>>? modifyPayload = null)
+        Action<Dictionary<string, object>>? modifyPayload = null,
+        string curve = "P-256",
+        string algorithm = "ES256",
+        HashAlgorithmName? hashAlgorithm = null)
     {
         ECParameters ecParams = key.ExportParameters(includePrivateParameters: false);
         string x = Base64UrlEncodeBytes(ecParams.Q.X!);
@@ -467,11 +877,11 @@ public sealed class DPoPProofValidatorTests : IDisposable
         var headerClaims = new Dictionary<string, object>
         {
             ["typ"] = "dpop+jwt",
-            ["alg"] = "ES256",
+            ["alg"] = algorithm,
             ["jwk"] = new Dictionary<string, object>
             {
                 ["kty"] = "EC",
-                ["crv"] = "P-256",
+                ["crv"] = curve,
                 ["x"] = x,
                 ["y"] = y,
             },
@@ -498,8 +908,55 @@ public sealed class DPoPProofValidatorTests : IDisposable
         string headerB64 = Base64UrlEncode(headerJson);
         string payloadB64 = Base64UrlEncode(payloadJson);
 
+        HashAlgorithmName effectiveHash = hashAlgorithm ?? HashAlgorithmName.SHA256;
         byte[] signingInput = Encoding.ASCII.GetBytes($"{headerB64}.{payloadB64}");
-        byte[] signature = key.SignData(signingInput, HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation);
+        byte[] signature = key.SignData(signingInput, effectiveHash, DSASignatureFormat.IeeeP1363FixedFieldConcatenation);
+        string signatureB64 = Base64UrlEncodeBytes(signature);
+
+        return $"{headerB64}.{payloadB64}.{signatureB64}";
+    }
+
+    /// <summary>
+    /// Creates a DPoP proof signed with an RSA key (PS256 algorithm, RSA-PSS padding).
+    /// </summary>
+    private static string CreateDPoPProofRsa(
+        RSA key,
+        string method,
+        string uri,
+        DateTimeOffset iat,
+        string? jti = null)
+    {
+        RSAParameters rsaParams = key.ExportParameters(includePrivateParameters: false);
+        string n = Base64UrlEncodeBytes(rsaParams.Modulus!);
+        string e = Base64UrlEncodeBytes(rsaParams.Exponent!);
+
+        var headerClaims = new Dictionary<string, object>
+        {
+            ["typ"] = "dpop+jwt",
+            ["alg"] = "PS256",
+            ["jwk"] = new Dictionary<string, object>
+            {
+                ["kty"] = "RSA",
+                ["n"] = n,
+                ["e"] = e,
+            },
+        };
+
+        var payloadClaims = new Dictionary<string, object>
+        {
+            ["htm"] = method,
+            ["htu"] = uri,
+            ["iat"] = iat.ToUnixTimeSeconds(),
+            ["jti"] = jti ?? Guid.NewGuid().ToString(),
+        };
+
+        string headerJson = JsonSerializer.Serialize(headerClaims);
+        string payloadJson = JsonSerializer.Serialize(payloadClaims);
+        string headerB64 = Base64UrlEncode(headerJson);
+        string payloadB64 = Base64UrlEncode(payloadJson);
+
+        byte[] signingInput = Encoding.ASCII.GetBytes($"{headerB64}.{payloadB64}");
+        byte[] signature = key.SignData(signingInput, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
         string signatureB64 = Base64UrlEncodeBytes(signature);
 
         return $"{headerB64}.{payloadB64}.{signatureB64}";
