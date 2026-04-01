@@ -1,6 +1,6 @@
 ---
 title: "Opt-Out (CCPA)"
-description: CCPA "Do Not Sell or Share" opt-out with anonymous visitor support, cart merge pattern, and granit_optout_id cookie.
+description: CCPA "Do Not Sell or Share" opt-out with anonymous visitor support, cart merge pattern, and _optout_id cookie.
 sidebar:
   order: 6
   label: Opt-Out (CCPA)
@@ -18,10 +18,10 @@ and anonymous visitors.
 
 1. `POST /privacy/opt-out` is `[AllowAnonymous]`
 2. If authenticated → opt-out recorded against `UserId`
-3. If anonymous → `AnonymousTrackId` generated, stored in `granit_optout_id` HTTP-Only cookie
+3. If anonymous → `AnonymousTrackId` generated, stored in `_optout_id` HTTP-Only cookie
 4. Idempotent — repeated requests return existing opt-out status
 
-### Cookie `granit_optout_id`
+### Cookie `_optout_id`
 
 | Property | Value |
 | -------- | ----- |

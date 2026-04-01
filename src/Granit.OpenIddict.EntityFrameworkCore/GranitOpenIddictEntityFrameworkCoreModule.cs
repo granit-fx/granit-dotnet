@@ -58,6 +58,26 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
         context.Services.AddTransient<IDataSeedContributor, OpenIddictSeedContributor>();
         context.Services.AddSingleton<ICookieDefinitionContributor, IdentityCookieDefinitionContributor>();
 
+        // Override default ASP.NET Core Identity cookie names to avoid leaking the technology stack.
+        // Uses __Host- prefix for CSRF-hardening (Secure + Path=/ + no Domain).
+        context.Services.ConfigureAll<Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions>(
+            options =>
+            {
+                options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+            });
+
+        context.Services.Configure<Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions>(
+            Microsoft.AspNetCore.Identity.IdentityConstants.ApplicationScheme,
+            options => options.Cookie.Name = IdentityCookieDefinitionContributor.DefaultApplicationCookieName);
+
+        context.Services.Configure<Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions>(
+            Microsoft.AspNetCore.Identity.IdentityConstants.TwoFactorUserIdScheme,
+            options => options.Cookie.Name = IdentityCookieDefinitionContributor.DefaultTwoFactorCookieName);
+
+        context.Services.Configure<Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions>(
+            Microsoft.AspNetCore.Identity.IdentityConstants.ExternalScheme,
+            options => options.Cookie.Name = IdentityCookieDefinitionContributor.DefaultExternalCookieName);
+
         context.Services.TryAddScoped<ILocalIdentityGroupStore, OpenIddictGroupStore>();
         context.Services.TryAddScoped<ExternalClaimsMapper>();
         context.Services.TryAddScoped<IExternalLoginService, AspNetExternalLoginService>();

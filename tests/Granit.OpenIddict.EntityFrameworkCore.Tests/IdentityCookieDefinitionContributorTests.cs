@@ -54,9 +54,9 @@ public sealed class IdentityCookieDefinitionContributorTests
 
         definitions.Select(d => d.Name).ShouldBe(
         [
-            ".AspNetCore.Identity.Application",
-            ".AspNetCore.Identity.TwoFactorUserId",
-            ".AspNetCore.Identity.ExternalLogin",
+            IdentityCookieDefinitionContributor.DefaultApplicationCookieName,
+            IdentityCookieDefinitionContributor.DefaultTwoFactorCookieName,
+            IdentityCookieDefinitionContributor.DefaultExternalCookieName,
         ]);
     }
 
@@ -80,13 +80,13 @@ public sealed class IdentityCookieDefinitionContributorTests
 
         var definitions = sut.GetCookieDefinitions().ToList();
 
-        definitions[0].Name.ShouldBe(".AspNetCore.Identity.Application");
+        definitions[0].Name.ShouldBe(IdentityCookieDefinitionContributor.DefaultApplicationCookieName);
     }
 
     private static IOptionsMonitor<CookieAuthenticationOptions> CreateOptionsMonitor(
-        string? applicationCookieName = ".AspNetCore.Identity.Application",
-        string? twoFactorCookieName = ".AspNetCore.Identity.TwoFactorUserId",
-        string? externalCookieName = ".AspNetCore.Identity.ExternalLogin")
+        string? applicationCookieName = "__Host-id",
+        string? twoFactorCookieName = "__Host-id-2fa",
+        string? externalCookieName = "__Host-id-ext")
     {
         IOptionsMonitor<CookieAuthenticationOptions> monitor = Substitute.For<IOptionsMonitor<CookieAuthenticationOptions>>();
 

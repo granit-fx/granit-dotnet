@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Microsoft.AspNetCore.Http;
 
 namespace Granit.Http.Cookies.Internal;
 
@@ -13,6 +14,7 @@ internal sealed class CookieRegistry : ICookieRegistry
     public void Register(CookieDefinition definition)
     {
         ArgumentNullException.ThrowIfNull(definition);
+        ValidateHostPrefixCompliance(definition);
 
         if (!_cookies.TryAdd(definition.Name, definition))
         {
@@ -27,6 +29,30 @@ internal sealed class CookieRegistry : ICookieRegistry
             // Different definition with same name — genuine conflict between modules.
             throw new InvalidOperationException(
                 $"Cookie '{definition.Name}' is already registered with a different definition.");
+        }
+    }
+
+    /// <summary>
+    /// Validates that cookies with the <c>__Host-</c> prefix comply with RFC 6265bis §4.1.3.2:
+    /// Secure, Path="/", no Domain attribute (enforced by not setting Domain).
+    /// </summary>
+    private static void ValidateHostPrefixCompliance(CookieDefinition definition)
+    {
+        if (!definition.Name.StartsWith("__Host-", StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        if (definition.Path != "/")
+        {
+            throw new InvalidOperationException(
+                $"Cookie '{definition.Name}' uses the __Host- prefix but Path is '{definition.Path}' (must be '/').");
+        }
+
+        if (definition.SameSite == SameSiteMode.None && !definition.IsHttpOnly)
+        {
+            throw new InvalidOperationException(
+                $"Cookie '{definition.Name}' uses the __Host- prefix but SameSite=None without HttpOnly is insecure.");
         }
     }
 

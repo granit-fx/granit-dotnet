@@ -25,14 +25,23 @@ public sealed class GranitCookiesBuilder(IServiceCollection services)
     }
 
     /// <summary>
-    /// Registers the ASP.NET Core session cookie in the RGPD registry.
+    /// Registers the ASP.NET Core session cookie in the RGPD registry and overrides
+    /// the default cookie name to avoid leaking the technology stack.
     /// Call this when the application uses <c>AddSession()</c> / <c>UseSession()</c>.
-    /// The cookie name is read from <see cref="Microsoft.AspNetCore.Builder.SessionOptions"/>
-    /// at resolution time, defaulting to <c>.AspNetCore.Session</c>.
     /// </summary>
     public GranitCookiesBuilder RegisterSessionCookie()
     {
         Services.AddSingleton<ICookieDefinitionContributor, Internal.SessionCookieDefinitionContributor>();
+
+        // Override the default session cookie name (.AspNetCore.Session → __Host-session).
+        Services.Configure<Microsoft.AspNetCore.Builder.SessionOptions>(options =>
+        {
+            options.Cookie.Name = Internal.SessionCookieDefinitionContributor.DefaultCookieName;
+            options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+            options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+            options.Cookie.HttpOnly = true;
+        });
+
         return this;
     }
 

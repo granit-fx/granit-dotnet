@@ -158,7 +158,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .WithDescription(
                  "Records a 'Do Not Sell or Share My Personal Information' request. "
                  + "Supports both authenticated users and anonymous visitors (CCPA compliance). "
-                 + "For anonymous visitors, a granit_optout_id HTTP-Only cookie is set to track the opt-out.")
+                 + "For anonymous visitors, a _optout_id HTTP-Only cookie is set to track the opt-out.")
              .Produces<PrivacyOptOutStatusResponse>(StatusCodes.Status201Created)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
@@ -168,7 +168,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .WithSummary("Returns the current opt-out status.")
              .WithDescription(
                  "Checks whether the requesting user or visitor has an active opt-out. "
-                 + "For authenticated users, checks by UserId. For anonymous visitors, checks the granit_optout_id cookie.")
+                 + "For authenticated users, checks by UserId. For anonymous visitors, checks the _optout_id cookie.")
              .Produces<PrivacyOptOutStatusResponse>();
     }
 

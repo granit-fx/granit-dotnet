@@ -55,10 +55,10 @@ needed for framework cookies.
 | Module | Cookies auto-registered | Contributor |
 | ------ | ----------------------- | ----------- |
 | `Granit.Http.Cookies` | `__Host-xsrf` (antiforgery) | `AntiforgeryCookieDefinitionContributor` |
-| `Granit.OpenIddict.EntityFrameworkCore` | `.AspNetCore.Identity.Application`, `.TwoFactorUserId`, `.ExternalLogin` | `IdentityCookieDefinitionContributor` |
+| `Granit.OpenIddict.EntityFrameworkCore` | `__Host-id`, `__Host-id-2fa`, `__Host-id-ext` | `IdentityCookieDefinitionContributor` |
 | `Granit.Http.Cookies.Klaro` | `klaro` (configurable) | `KlaroCookieDefinitionContributor` |
 | `Granit.Bff.Endpoints` | `__Host-bff-{frontend}` (dynamic) | Runtime registration in `MapGranitBff()` |
-| `Granit.Privacy.Endpoints` | `granit_optout_id` | Runtime registration in `MapGranitPrivacy()` |
+| `Granit.Privacy.Endpoints` | `_optout_id` | Runtime registration in `MapGranitPrivacy()` |
 
 ### Implementing a contributor
 

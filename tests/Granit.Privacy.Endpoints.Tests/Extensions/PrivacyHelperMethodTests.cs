@@ -210,7 +210,7 @@ public sealed class PrivacyHelperMethodTests
         PrivacyEndpointRouteBuilderExtensions.RegisterOptOutCookie(registry);
 
         registry.Received(1).Register(Arg.Is<CookieDefinition>(c =>
-            c.Name == "granit_optout_id" &&
+            c.Name == "_optout_id" &&
             c.Category == CookieCategory.StrictlyNecessary &&
             c.IsHttpOnly));
     }

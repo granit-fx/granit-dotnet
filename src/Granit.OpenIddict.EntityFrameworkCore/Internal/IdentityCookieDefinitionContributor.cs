@@ -1,5 +1,6 @@
 using Granit.Http.Cookies;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
@@ -10,25 +11,38 @@ namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 /// Reads actual cookie names from <see cref="CookieAuthenticationOptions"/> to support
 /// application-level overrides via <c>ConfigureApplicationCookie()</c>.
 /// </summary>
+/// <remarks>
+/// Default cookie names are overridden by <see cref="GranitOpenIddictEntityFrameworkCoreModule"/>
+/// to avoid leaking the underlying technology stack via cookie names.
+/// </remarks>
 internal sealed class IdentityCookieDefinitionContributor(
     IOptionsMonitor<CookieAuthenticationOptions> cookieOptions) : ICookieDefinitionContributor
 {
+    /// <summary>Default identity session cookie name (avoids leaking ASP.NET Core).</summary>
+    internal const string DefaultApplicationCookieName = "__Host-id";
+
+    /// <summary>Default 2FA flow cookie name.</summary>
+    internal const string DefaultTwoFactorCookieName = "__Host-id-2fa";
+
+    /// <summary>Default external login correlation cookie name.</summary>
+    internal const string DefaultExternalCookieName = "__Host-id-ext";
+
     /// <inheritdoc/>
     public IEnumerable<CookieDefinition> GetCookieDefinitions()
     {
         yield return CreateDefinition(
             IdentityConstants.ApplicationScheme,
-            ".AspNetCore.Identity.Application",
-            "ASP.NET Core Identity authentication session.");
+            DefaultApplicationCookieName,
+            "Identity authentication session.");
 
         yield return CreateDefinition(
             IdentityConstants.TwoFactorUserIdScheme,
-            ".AspNetCore.Identity.TwoFactorUserId",
+            DefaultTwoFactorCookieName,
             "Temporary cookie for two-factor authentication flow.");
 
         yield return CreateDefinition(
             IdentityConstants.ExternalScheme,
-            ".AspNetCore.Identity.ExternalLogin",
+            DefaultExternalCookieName,
             "Temporary cookie for external login correlation.");
     }
 
@@ -38,6 +52,7 @@ internal sealed class IdentityCookieDefinitionContributor(
 
         return new CookieDefinition(name, CookieCategory.StrictlyNecessary, 1, true, purpose)
         {
+            SameSite = SameSiteMode.Strict,
             IsEssential = true,
         };
     }

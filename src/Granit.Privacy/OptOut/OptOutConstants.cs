@@ -15,7 +15,7 @@ public static class OptOutConstants
     ///     "CCPA anonymous opt-out tracking"));
     /// </code>
     /// </summary>
-    public const string CookieName = "granit_optout_id";
+    public const string CookieName = "_optout_id";
 
     /// <summary>Retention period for the opt-out cookie in days (2 years).</summary>
     public const int RetentionDays = 730;
