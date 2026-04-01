@@ -17,6 +17,14 @@ public sealed class GranitHttpCookiesModule : GranitModule
     {
         context.Services.AddGranitCookies(_ => { });
 
+        // Override the default antiforgery cookie name to avoid leaking the technology stack.
+        // Uses __Host- prefix for CSRF-hardening (Secure + Path=/ + no Domain).
+        context.Services.AddAntiforgery(options =>
+        {
+            options.Cookie.Name = AntiforgeryCookieDefinitionContributor.DefaultCookieName;
+            options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+        });
+
         context.Services.AddSingleton<ICookieDefinitionContributor, AntiforgeryCookieDefinitionContributor>();
     }
 }

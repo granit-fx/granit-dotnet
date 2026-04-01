@@ -11,20 +11,26 @@ namespace Granit.Http.Cookies.Internal;
 internal sealed class AntiforgeryCookieDefinitionContributor(
     IOptions<AntiforgeryOptions> options) : ICookieDefinitionContributor
 {
-    private const string FallbackName = ".AspNetCore.Antiforgery";
+    /// <summary>
+    /// Default antiforgery cookie name set by <see cref="GranitHttpCookiesModule"/>.
+    /// Uses the <c>__Host-</c> prefix for CSRF-hardening (RFC 6265bis §4.1.3.2)
+    /// and avoids leaking the underlying technology stack.
+    /// </summary>
+    internal const string DefaultCookieName = "__Host-granit-xsrf";
 
     /// <inheritdoc/>
     public IEnumerable<CookieDefinition> GetCookieDefinitions()
     {
-        string name = options.Value.Cookie.Name ?? FallbackName;
+        string name = options.Value.Cookie.Name ?? DefaultCookieName;
 
         yield return new CookieDefinition(
             name,
             CookieCategory.StrictlyNecessary,
             1,
             true,
-            "CSRF protection token (ASP.NET Core antiforgery).")
+            "CSRF protection token.")
         {
+            SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict,
             IsEssential = true,
         };
     }

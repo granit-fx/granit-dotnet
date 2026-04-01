@@ -1,3 +1,4 @@
+using Granit.Identity.Local.Notifications.NotificationTypes;
 using Granit.Notifications;
 using Granit.Notifications.Abstractions;
 
@@ -14,7 +15,7 @@ internal sealed class IdentityNotificationDefinitionProvider : INotificationDefi
     public void Define(INotificationDefinitionContext context)
     {
         // Welcome — the only identity notification users can opt out of
-        context.Add(new NotificationDefinition("Security.Welcome")
+        context.Add(new NotificationDefinition(WelcomeNotificationType.Instance.Name)
         {
             GroupName = GroupName,
             DisplayName = "Welcome",
@@ -25,7 +26,7 @@ internal sealed class IdentityNotificationDefinitionProvider : INotificationDefi
         });
 
         // Password reset — transactional, cannot be opted out
-        context.Add(new NotificationDefinition("Security.PasswordReset")
+        context.Add(new NotificationDefinition(PasswordResetNotificationType.Instance.Name)
         {
             GroupName = GroupName,
             DisplayName = "Password Reset",
@@ -36,7 +37,7 @@ internal sealed class IdentityNotificationDefinitionProvider : INotificationDefi
         });
 
         // Email confirmation — transactional, cannot be opted out
-        context.Add(new NotificationDefinition("Security.EmailConfirmation")
+        context.Add(new NotificationDefinition(EmailConfirmationNotificationType.Instance.Name)
         {
             GroupName = GroupName,
             DisplayName = "Email Confirmation",
@@ -47,7 +48,7 @@ internal sealed class IdentityNotificationDefinitionProvider : INotificationDefi
         });
 
         // Password changed — security alert, cannot be opted out
-        context.Add(new NotificationDefinition("Security.PasswordChanged")
+        context.Add(new NotificationDefinition(PasswordChangedNotificationType.Instance.Name)
         {
             GroupName = GroupName,
             DisplayName = "Password Changed",
@@ -58,7 +59,7 @@ internal sealed class IdentityNotificationDefinitionProvider : INotificationDefi
         });
 
         // Account locked — security alert, cannot be opted out
-        context.Add(new NotificationDefinition("Security.AccountLocked")
+        context.Add(new NotificationDefinition(AccountLockedNotificationType.Instance.Name)
         {
             GroupName = GroupName,
             DisplayName = "Account Locked",
@@ -69,7 +70,7 @@ internal sealed class IdentityNotificationDefinitionProvider : INotificationDefi
         });
 
         // Two-factor changed — security alert, cannot be opted out
-        context.Add(new NotificationDefinition("Security.TwoFactorChanged")
+        context.Add(new NotificationDefinition(TwoFactorChangedNotificationType.Instance.Name)
         {
             GroupName = GroupName,
             DisplayName = "Two-Factor Authentication Changed",
@@ -80,7 +81,7 @@ internal sealed class IdentityNotificationDefinitionProvider : INotificationDefi
         });
 
         // Email change alert — security alert to current email, cannot be opted out
-        context.Add(new NotificationDefinition("Security.EmailChangeAlert")
+        context.Add(new NotificationDefinition(EmailChangeAlertNotificationType.Instance.Name)
         {
             GroupName = GroupName,
             DisplayName = "Email Change Alert",
@@ -91,7 +92,7 @@ internal sealed class IdentityNotificationDefinitionProvider : INotificationDefi
         });
 
         // Email change confirmation — transactional to new email, cannot be opted out
-        context.Add(new NotificationDefinition("Security.EmailChangeConfirmation")
+        context.Add(new NotificationDefinition(EmailChangeConfirmationNotificationType.Instance.Name)
         {
             GroupName = GroupName,
             DisplayName = "Email Change Confirmation",
@@ -102,7 +103,7 @@ internal sealed class IdentityNotificationDefinitionProvider : INotificationDefi
         });
 
         // Impersonation alert — GDPR/SOC2 compliance, cannot be opted out
-        context.Add(new NotificationDefinition("Security.ImpersonationAlert")
+        context.Add(new NotificationDefinition(ImpersonationAlertNotificationType.Instance.Name)
         {
             GroupName = GroupName,
             DisplayName = "Impersonation Alert",
