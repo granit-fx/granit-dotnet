@@ -1152,19 +1152,29 @@ public static class TemplatingEndpointRouteBuilderExtensions
     // GET /layouts — List available layouts
     // -------------------------------------------------------------------------
 
-    private static Task<Ok<IReadOnlyList<string>>> HandleListLayoutsAsync(
+    private static async Task<Ok<IReadOnlyList<string>>> HandleListLayoutsAsync(
         HttpContext context,
         CancellationToken cancellationToken)
     {
         ILayoutRegistry? layoutRegistry = context.RequestServices.GetService<ILayoutRegistry>();
+        IDocumentTemplateStoreReader? storeReader = context.RequestServices.GetService<IDocumentTemplateStoreReader>();
 
-        // Collect layout names from the code-level registry
-        List<string> layouts = layoutRegistry?.GetAllLayoutNames().ToList() ?? [];
+        // Merge layout names from code registry + DB store, deduplicated
+        HashSet<string> layouts = new(layoutRegistry?.GetAllLayoutNames() ?? [], StringComparer.Ordinal);
 
-        // TODO: Add DISTINCT LayoutName from DB store when IDocumentTemplateStoreReader
-        // exposes a GetDistinctLayoutNamesAsync method. For now, code registry is sufficient.
+        if (storeReader is not null)
+        {
+            IReadOnlyList<string> dbLayouts = await storeReader
+                .GetDistinctLayoutNamesAsync(cancellationToken).ConfigureAwait(false);
 
-        return Task.FromResult(TypedResults.Ok<IReadOnlyList<string>>(layouts));
+            foreach (string name in dbLayouts)
+            {
+                layouts.Add(name);
+            }
+        }
+
+        IReadOnlyList<string> result = layouts.Order(StringComparer.Ordinal).ToList();
+        return TypedResults.Ok(result);
     }
 
     // -------------------------------------------------------------------------

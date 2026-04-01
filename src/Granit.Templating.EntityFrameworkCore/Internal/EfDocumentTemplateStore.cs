@@ -339,6 +339,19 @@ internal sealed class EfDocumentTemplateStore(
             .ToListAsync(cancellationToken).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<string>> GetDistinctLayoutNamesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        await using TemplatingDbContext ctx = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        return await ctx.TemplateRevisions
+            .Where(r => r.LayoutName != null)
+            .Select(r => r.LayoutName!)
+            .Distinct()
+            .OrderBy(n => n)
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
+    }
+
     private static TemplateRevision ToRevision(TemplateRevisionEntity entity) =>
         new()
         {

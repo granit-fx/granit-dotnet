@@ -43,4 +43,12 @@ public interface IDocumentTemplateStoreReader
     /// <param name="cancellationToken">Cancellation token.</param>
     Task<IReadOnlyList<TemplateRevision>> GetHistoryAsync(
         TemplateKey key, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns all distinct non-null layout names assigned to templates in the store.
+    /// Used by admin endpoints to populate layout dropdowns.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<IReadOnlyList<string>> GetDistinctLayoutNamesAsync(
+        CancellationToken cancellationToken = default);
 }

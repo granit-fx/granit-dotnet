@@ -28241,6 +28241,12 @@
           "kind": "method",
           "signature": "GetHistoryAsync(TemplateKey key, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<TemplateRevision>>"
+        },
+        {
+          "name": "GetDistinctLayoutNamesAsync",
+          "kind": "method",
+          "signature": "GetDistinctLayoutNamesAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
         }
       ]
     },
