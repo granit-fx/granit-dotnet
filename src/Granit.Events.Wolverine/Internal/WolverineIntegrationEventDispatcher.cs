@@ -1,4 +1,5 @@
 using Granit.Events;
+using Granit.Events.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Wolverine;
 
@@ -19,6 +20,7 @@ namespace Granit.Events.Wolverine.Internal;
 internal sealed partial class WolverineIntegrationEventDispatcher(
     IMessageBus bus,
     WolverineHostReadiness readiness,
+    EventsMetrics metrics,
     ILogger<WolverineIntegrationEventDispatcher> logger) : IIntegrationEventDispatcher
 {
     private int _skipWarned;
@@ -40,6 +42,11 @@ internal sealed partial class WolverineIntegrationEventDispatcher(
 
         // Wolverine not started — skip integration events (no consumers during seeding/migrate).
         // Skip before IMessageBus interaction to prevent outbox envelope writes.
+        foreach (IIntegrationEvent evt in integrationEvents)
+        {
+            metrics.RecordEventPublished(null, "integration-skipped", evt.GetType().Name);
+        }
+
         if (integrationEvents.Count > 0
             && Interlocked.CompareExchange(ref _skipWarned, 1, 0) == 0)
         {

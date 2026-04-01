@@ -1,4 +1,6 @@
+using System.Diagnostics.Metrics;
 using Granit.Events;
+using Granit.Events.Diagnostics;
 using Granit.Events.Wolverine.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,12 +28,20 @@ public sealed class WolverineDomainEventDispatcherTests
         return readiness;
     }
 
+    private static EventsMetrics CreateMetrics()
+    {
+        IMeterFactory meterFactory = Substitute.For<IMeterFactory>();
+        meterFactory.Create(Arg.Any<MeterOptions>())
+            .Returns(ci => new Meter(ci.Arg<MeterOptions>().Name));
+        return new EventsMetrics(meterFactory);
+    }
+
     [Fact]
     public async Task DispatchAsync_WhenReady_PublishesEachEventViaMessageBus()
     {
         ServiceCollection services = [];
         using ServiceProvider sp = services.BuildServiceProvider();
-        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(true),
+        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineDomainEventDispatcher>.Instance);
         TestDomainEvent evt1 = new();
         TestDomainEvent evt2 = new();
@@ -47,7 +57,7 @@ public sealed class WolverineDomainEventDispatcherTests
     {
         ServiceCollection services = [];
         using ServiceProvider sp = services.BuildServiceProvider();
-        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(true),
+        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineDomainEventDispatcher>.Instance);
 
         await sut.DispatchAsync([], TestContext.Current.CancellationToken);
@@ -60,7 +70,7 @@ public sealed class WolverineDomainEventDispatcherTests
     {
         ServiceCollection services = [];
         using ServiceProvider sp = services.BuildServiceProvider();
-        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(true),
+        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineDomainEventDispatcher>.Instance);
         IReadOnlyList<IDomainEvent> events = [new TestDomainEvent(), new TestDomainEvent(), new TestDomainEvent()];
 
@@ -76,7 +86,7 @@ public sealed class WolverineDomainEventDispatcherTests
         ServiceCollection services = [];
         services.AddSingleton<ILocalEventHandler<TestDomainEvent>>(handler);
         using ServiceProvider sp = services.BuildServiceProvider();
-        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(false),
+        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(false), CreateMetrics(),
             NullLogger<WolverineDomainEventDispatcher>.Instance);
         TestDomainEvent evt = new();
 
@@ -91,7 +101,7 @@ public sealed class WolverineDomainEventDispatcherTests
     {
         ServiceCollection services = [];
         using ServiceProvider sp = services.BuildServiceProvider();
-        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(false),
+        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(false), CreateMetrics(),
             NullLogger<WolverineDomainEventDispatcher>.Instance);
 
         await Should.NotThrowAsync(

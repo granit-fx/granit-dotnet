@@ -1,5 +1,6 @@
 using System.Reflection;
 using Granit.Events;
+using Granit.Events.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Wolverine;
@@ -21,6 +22,7 @@ internal sealed partial class WolverineDomainEventDispatcher(
     IMessageBus bus,
     IServiceProvider serviceProvider,
     WolverineHostReadiness readiness,
+    EventsMetrics metrics,
     ILogger<WolverineDomainEventDispatcher> logger) : IDomainEventDispatcher
 {
     private int _fallbackWarned;
@@ -43,6 +45,10 @@ internal sealed partial class WolverineDomainEventDispatcher(
         // Wolverine not started — fall back to direct handler invocation.
         // serviceProvider is the SCOPED provider (this class is registered Scoped),
         // so handlers share the same scope as the caller (same DbContext instance).
+        //
+        // SECURITY INVARIANT: this path bypasses the Wolverine middleware pipeline.
+        // Handlers invoked here MUST NOT rely on Wolverine middleware for authorization
+        // or tenant context — they must receive all required context via the event payload.
         if (Interlocked.CompareExchange(ref _fallbackWarned, 1, 0) == 0)
         {
             LogFallbackActivated();
@@ -60,6 +66,9 @@ internal sealed partial class WolverineDomainEventDispatcher(
         // Domain events are dispatched via the non-generic IDomainEvent, so we need
         // to build the generic handler type from the concrete event type.
         Type eventType = domainEvent.GetType();
+        string eventTypeName = eventType.Name;
+        metrics.RecordEventPublished(null, "domain-fallback", eventTypeName);
+
         Type handlerType = typeof(ILocalEventHandler<>).MakeGenericType(eventType);
         IEnumerable<object?> handlers = serviceProvider.GetServices(handlerType);
 
@@ -77,14 +86,17 @@ internal sealed partial class WolverineDomainEventDispatcher(
                     .GetMethod(nameof(ILocalEventHandler<IDomainEvent>.HandleAsync))!
                     .Invoke(handler, [domainEvent, cancellationToken])!;
                 await task.ConfigureAwait(false);
+                metrics.RecordHandlerExecuted(null, eventTypeName, "success");
             }
             catch (TargetInvocationException ex) when (ex.InnerException is not null and not OperationCanceledException)
             {
                 // Unwrap reflection wrapper to log the actual handler exception
+                metrics.RecordHandlerExecuted(null, eventTypeName, "error");
                 LogFallbackHandlerFailed(eventType.Name, handler.GetType().Name, ex.InnerException);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
+                metrics.RecordHandlerExecuted(null, eventTypeName, "error");
                 LogFallbackHandlerFailed(eventType.Name, handler.GetType().Name, ex);
             }
         }

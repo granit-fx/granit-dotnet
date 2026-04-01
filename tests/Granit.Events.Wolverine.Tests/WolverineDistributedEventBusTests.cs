@@ -1,4 +1,6 @@
+using System.Diagnostics.Metrics;
 using Granit.Events;
+using Granit.Events.Diagnostics;
 using Granit.Events.Wolverine.Internal;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -25,10 +27,18 @@ public sealed class WolverineDistributedEventBusTests
         return readiness;
     }
 
+    private static EventsMetrics CreateMetrics()
+    {
+        IMeterFactory meterFactory = Substitute.For<IMeterFactory>();
+        meterFactory.Create(Arg.Any<MeterOptions>())
+            .Returns(ci => new Meter(ci.Arg<MeterOptions>().Name));
+        return new EventsMetrics(meterFactory);
+    }
+
     [Fact]
     public async Task PublishAsync_WhenReady_DelegatesToMessageBus()
     {
-        WolverineDistributedEventBus sut = new(_bus, CreateReadiness(true),
+        WolverineDistributedEventBus sut = new(_bus, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineDistributedEventBus>.Instance);
         TestIntegrationEvent evt = new();
 
@@ -40,7 +50,7 @@ public sealed class WolverineDistributedEventBusTests
     [Fact]
     public async Task PublishAsync_WhenNotReady_SkipsWithoutCallingMessageBus()
     {
-        WolverineDistributedEventBus sut = new(_bus, CreateReadiness(false),
+        WolverineDistributedEventBus sut = new(_bus, CreateReadiness(false), CreateMetrics(),
             NullLogger<WolverineDistributedEventBus>.Instance);
         TestIntegrationEvent evt = new();
 
@@ -52,7 +62,7 @@ public sealed class WolverineDistributedEventBusTests
     [Fact]
     public async Task PublishAsync_NullEvent_ThrowsArgumentNullException()
     {
-        WolverineDistributedEventBus sut = new(_bus, CreateReadiness(true),
+        WolverineDistributedEventBus sut = new(_bus, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineDistributedEventBus>.Instance);
 
         await Should.ThrowAsync<ArgumentNullException>(

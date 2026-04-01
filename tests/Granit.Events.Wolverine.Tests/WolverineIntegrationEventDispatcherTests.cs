@@ -1,4 +1,6 @@
+using System.Diagnostics.Metrics;
 using Granit.Events;
+using Granit.Events.Diagnostics;
 using Granit.Events.Wolverine.Internal;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -25,10 +27,18 @@ public sealed class WolverineIntegrationEventDispatcherTests
         return readiness;
     }
 
+    private static EventsMetrics CreateMetrics()
+    {
+        IMeterFactory meterFactory = Substitute.For<IMeterFactory>();
+        meterFactory.Create(Arg.Any<MeterOptions>())
+            .Returns(ci => new Meter(ci.Arg<MeterOptions>().Name));
+        return new EventsMetrics(meterFactory);
+    }
+
     [Fact]
     public async Task DispatchAsync_WhenReady_PublishesEachEventViaMessageBus()
     {
-        WolverineIntegrationEventDispatcher sut = new(_bus, CreateReadiness(true),
+        WolverineIntegrationEventDispatcher sut = new(_bus, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineIntegrationEventDispatcher>.Instance);
         TestIntegrationEvent evt1 = new();
         TestIntegrationEvent evt2 = new();
@@ -42,7 +52,7 @@ public sealed class WolverineIntegrationEventDispatcherTests
     [Fact]
     public async Task DispatchAsync_WhenReady_EmptyList_DoesNotCallPublish()
     {
-        WolverineIntegrationEventDispatcher sut = new(_bus, CreateReadiness(true),
+        WolverineIntegrationEventDispatcher sut = new(_bus, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineIntegrationEventDispatcher>.Instance);
 
         await sut.DispatchAsync([], TestContext.Current.CancellationToken);
@@ -53,7 +63,7 @@ public sealed class WolverineIntegrationEventDispatcherTests
     [Fact]
     public async Task DispatchAsync_WhenReady_PublishesExpectedCount()
     {
-        WolverineIntegrationEventDispatcher sut = new(_bus, CreateReadiness(true),
+        WolverineIntegrationEventDispatcher sut = new(_bus, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineIntegrationEventDispatcher>.Instance);
         IReadOnlyList<IIntegrationEvent> events = [new TestIntegrationEvent(), new TestIntegrationEvent(), new TestIntegrationEvent()];
 
@@ -65,7 +75,7 @@ public sealed class WolverineIntegrationEventDispatcherTests
     [Fact]
     public async Task DispatchAsync_WhenNotReady_SkipsWithoutCallingMessageBus()
     {
-        WolverineIntegrationEventDispatcher sut = new(_bus, CreateReadiness(false),
+        WolverineIntegrationEventDispatcher sut = new(_bus, CreateReadiness(false), CreateMetrics(),
             NullLogger<WolverineIntegrationEventDispatcher>.Instance);
         TestIntegrationEvent evt = new();
 

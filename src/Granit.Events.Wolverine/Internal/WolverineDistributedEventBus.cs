@@ -1,4 +1,5 @@
 using Granit.Events;
+using Granit.Events.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Wolverine;
 
@@ -17,6 +18,7 @@ namespace Granit.Events.Wolverine.Internal;
 internal sealed partial class WolverineDistributedEventBus(
     IMessageBus bus,
     WolverineHostReadiness readiness,
+    EventsMetrics metrics,
     ILogger<WolverineDistributedEventBus> logger) : IDistributedEventBus
 {
     private int _skipWarned;
@@ -34,6 +36,8 @@ internal sealed partial class WolverineDistributedEventBus(
         }
 
         // Wolverine not started — skip distributed events (no consumers during seeding/migrate)
+        metrics.RecordEventPublished(null, "distributed-skipped", typeof(TEvent).Name);
+
         if (Interlocked.CompareExchange(ref _skipWarned, 1, 0) == 0)
         {
             LogSkippingDistributedEvents();

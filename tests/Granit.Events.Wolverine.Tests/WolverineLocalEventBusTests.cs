@@ -1,4 +1,6 @@
+using System.Diagnostics.Metrics;
 using Granit.Events;
+using Granit.Events.Diagnostics;
 using Granit.Events.Wolverine.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,13 +45,21 @@ public sealed class WolverineLocalEventBusTests
         return readiness;
     }
 
+    private static EventsMetrics CreateMetrics()
+    {
+        IMeterFactory meterFactory = Substitute.For<IMeterFactory>();
+        meterFactory.Create(Arg.Any<MeterOptions>())
+            .Returns(ci => new Meter(ci.Arg<MeterOptions>().Name));
+        return new EventsMetrics(meterFactory);
+    }
+
     [Fact]
     public async Task PublishAsync_WhenReady_DelegatesToMessageBus()
     {
         IMessageBus bus = Substitute.For<IMessageBus>();
         ServiceCollection services = [];
         using ServiceProvider sp = services.BuildServiceProvider();
-        WolverineLocalEventBus sut = new(bus, sp, CreateReadiness(true),
+        WolverineLocalEventBus sut = new(bus, sp, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineLocalEventBus>.Instance);
         TestEvent evt = new("test");
 
@@ -66,7 +76,7 @@ public sealed class WolverineLocalEventBusTests
         ServiceCollection services = [];
         services.AddSingleton<ILocalEventHandler<TestEvent>>(handler);
         using ServiceProvider sp = services.BuildServiceProvider();
-        WolverineLocalEventBus sut = new(bus, sp, CreateReadiness(false),
+        WolverineLocalEventBus sut = new(bus, sp, CreateReadiness(false), CreateMetrics(),
             NullLogger<WolverineLocalEventBus>.Instance);
         TestEvent evt = new("test");
 
@@ -83,7 +93,7 @@ public sealed class WolverineLocalEventBusTests
         ServiceCollection services = [];
         services.AddSingleton<ILocalEventHandler<TestEvent>, FailingTestEventHandler>();
         using ServiceProvider sp = services.BuildServiceProvider();
-        WolverineLocalEventBus sut = new(bus, sp, CreateReadiness(false),
+        WolverineLocalEventBus sut = new(bus, sp, CreateReadiness(false), CreateMetrics(),
             NullLogger<WolverineLocalEventBus>.Instance);
         TestEvent evt = new("test");
 
@@ -97,7 +107,7 @@ public sealed class WolverineLocalEventBusTests
         IMessageBus bus = Substitute.For<IMessageBus>();
         ServiceCollection services = [];
         using ServiceProvider sp = services.BuildServiceProvider();
-        WolverineLocalEventBus sut = new(bus, sp, CreateReadiness(true),
+        WolverineLocalEventBus sut = new(bus, sp, CreateReadiness(true), CreateMetrics(),
             NullLogger<WolverineLocalEventBus>.Instance);
 
         await Should.ThrowAsync<ArgumentNullException>(

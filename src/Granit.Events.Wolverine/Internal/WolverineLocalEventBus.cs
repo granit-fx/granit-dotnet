@@ -1,4 +1,5 @@
 using Granit.Events;
+using Granit.Events.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Wolverine;
@@ -21,6 +22,7 @@ internal sealed partial class WolverineLocalEventBus(
     IMessageBus bus,
     IServiceProvider serviceProvider,
     WolverineHostReadiness readiness,
+    EventsMetrics metrics,
     ILogger<WolverineLocalEventBus> logger) : ILocalEventBus
 {
     private int _fallbackWarned;
@@ -41,10 +43,17 @@ internal sealed partial class WolverineLocalEventBus(
         // serviceProvider is the SCOPED provider (this class is registered Scoped),
         // so handlers share the same scope as the caller — preserving transactional
         // consistency (e.g., same DbContext instance). Do NOT create a new scope here.
+        //
+        // SECURITY INVARIANT: this path bypasses the Wolverine middleware pipeline.
+        // Handlers invoked here MUST NOT rely on Wolverine middleware for authorization
+        // or tenant context — they must receive all required context via the event payload.
         if (Interlocked.CompareExchange(ref _fallbackWarned, 1, 0) == 0)
         {
             LogFallbackActivated();
         }
+
+        string eventType = typeof(TEvent).Name;
+        metrics.RecordEventPublished(null, "local-fallback", eventType);
 
         IEnumerable<ILocalEventHandler<TEvent>> handlers =
             serviceProvider.GetServices<ILocalEventHandler<TEvent>>();
@@ -54,9 +63,11 @@ internal sealed partial class WolverineLocalEventBus(
             try
             {
                 await handler.HandleAsync(localEvent, cancellationToken).ConfigureAwait(false);
+                metrics.RecordHandlerExecuted(null, eventType, "success");
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
+                metrics.RecordHandlerExecuted(null, eventType, "error");
                 LogFallbackHandlerFailed(typeof(TEvent).Name, handler.GetType().Name, ex);
             }
         }
