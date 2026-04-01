@@ -444,12 +444,8 @@ public sealed class EfCoreBffTokenStoreTests : IAsyncLifetime
     }
 
     [Fact]
-    public void Constructor_WithoutEncryption_DoesNotThrow()
-    {
-        // When no encryption service is registered, the store should initialize
-        // gracefully (logging a warning internally) and store tokens as plaintext.
+    public void Constructor_WithoutEncryption_DoesNotThrow() =>
         Should.NotThrow(() => CreateStore(encryptionService: null));
-    }
 
     [Fact]
     public void Constructor_WithEncryption_CreatesSuccessfully()

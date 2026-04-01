@@ -27,10 +27,7 @@ public sealed class WebhookTestPingServiceTests : IDisposable
         _guidGenerator.Create().Returns(_eventId);
     }
 
-    public void Dispose()
-    {
-        _httpClient?.Dispose();
-    }
+    public void Dispose() => _httpClient?.Dispose();
 
     private WebhookTestPingService CreateService(HttpStatusCode statusCode)
     {

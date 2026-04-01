@@ -271,7 +271,7 @@ public sealed class AspNetIdentityProviderTests
     {
         GranitUser user1 = new() { UserName = "alice" };
         GranitUser user2 = new() { UserName = "bob" };
-        _userManager.GetUsersInRoleAsync("admin").Returns(new List<GranitUser> { user1, user2 });
+        _userManager.GetUsersInRoleAsync("admin").Returns([user1, user2]);
 
         IReadOnlyList<IIdentityUser> result = await _sut.GetRoleMembersAsync(
             "admin", TestContext.Current.CancellationToken);
@@ -284,7 +284,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task GetRoleMembersAsync_WhenNoMembers_ReturnsEmptyList()
     {
-        _userManager.GetUsersInRoleAsync("empty-role").Returns(new List<GranitUser>());
+        _userManager.GetUsersInRoleAsync("empty-role").Returns((IList<GranitUser>)[]);
 
         IReadOnlyList<IIdentityUser> result = await _sut.GetRoleMembersAsync(
             "empty-role", TestContext.Current.CancellationToken);
@@ -299,7 +299,7 @@ public sealed class AspNetIdentityProviderTests
     {
         GranitUser user = new() { UserName = "alice" };
         _userManager.FindByIdAsync("user-1").Returns(user);
-        _userManager.GetRolesAsync(user).Returns(new List<string> { "admin", "editor" });
+        _userManager.GetRolesAsync(user).Returns((IList<string>)["admin", "editor"]);
 
         IReadOnlyList<GranitIdentityRole> result = await _sut.GetUserRolesAsync(
             "user-1", TestContext.Current.CancellationToken);

@@ -289,9 +289,7 @@ public sealed class BackgroundJobWorkerTests
         var envelope = new BackgroundJobEnvelope(new OrphanJob());
 
         // Should not throw — the outer catch logs the error.
-        await RunWorkerWithEnvelopeAsync(envelope);
-
-        // The error is logged, not thrown. We just verify it doesn't crash.
+        await Should.NotThrowAsync(() => RunWorkerWithEnvelopeAsync(envelope));
     }
 
     // =========================================================================
@@ -304,11 +302,12 @@ public sealed class BackgroundJobWorkerTests
         _channel.Writer.Complete();
 
         BackgroundJobWorker worker = CreateWorker();
-        await worker.StartAsync(TestContext.Current.CancellationToken);
-        await Task.Delay(100, TestContext.Current.CancellationToken);
-        await worker.StopAsync(TestContext.Current.CancellationToken);
-
-        // No exception means graceful exit.
+        await Should.NotThrowAsync(async () =>
+        {
+            await worker.StartAsync(TestContext.Current.CancellationToken);
+            await Task.Delay(100, TestContext.Current.CancellationToken);
+            await worker.StopAsync(TestContext.Current.CancellationToken);
+        });
     }
 
     // =========================================================================
