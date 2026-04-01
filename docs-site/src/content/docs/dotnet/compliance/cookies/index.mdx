@@ -46,6 +46,54 @@ public class AppModule : GranitModule
 }
 ```
 
+## Module auto-registration
+
+Granit modules that introduce cookies auto-declare them via `ICookieDefinitionContributor`.
+The cookie registry collects all contributors at first resolution — no manual declaration
+needed for framework cookies.
+
+| Module | Cookies auto-registered | Contributor |
+| ------ | ----------------------- | ----------- |
+| `Granit.OpenIddict.EntityFrameworkCore` | `.AspNetCore.Identity.Application`, `.TwoFactorUserId`, `.ExternalLogin` | `IdentityCookieDefinitionContributor` |
+| `Granit.Http.Cookies.Klaro` | `klaro` (configurable) | `KlaroCookieDefinitionContributor` |
+| `Granit.Bff.Endpoints` | `__Host-granit-bff-{frontend}` (dynamic) | Runtime registration in `MapGranitBff()` |
+| `Granit.Privacy.Endpoints` | `granit_optout_id` | Runtime registration in `MapGranitPrivacy()` |
+
+### Implementing a contributor
+
+```csharp
+internal sealed class MyCookieContributor : ICookieDefinitionContributor
+{
+    public IEnumerable<CookieDefinition> GetCookieDefinitions()
+    {
+        yield return new CookieDefinition(
+            "my_cookie", CookieCategory.StrictlyNecessary,
+            1, true, "Purpose description")
+        { IsEssential = true };
+    }
+}
+```
+
+Register it in your module's `ConfigureServices`:
+
+```csharp
+context.Services.AddSingleton<ICookieDefinitionContributor, MyCookieContributor>();
+```
+
+### Application-level cookies
+
+Cookies from optional ASP.NET Core middleware (Session, Antiforgery) are not auto-registered
+because no Granit module owns them. Declare them in the host's `AddGranitCookies()` callback:
+
+```csharp
+context.Services.AddGranitCookies(cookies =>
+{
+    cookies.RegisterCookie(new(".AspNetCore.Session",
+        CookieCategory.StrictlyNecessary, 1, true,
+        "ASP.NET Core distributed session identifier."));
+});
+```
+
 ## Cookie categories
 
 | Category | Consent required | Description |
@@ -105,6 +153,7 @@ public class SessionService(IGranitCookieManager cookieManager)
 | -------- | --------- | ------- |
 | Modules | `GranitHttpCookiesModule`, `GranitHttpCookiesKlaroModule` | -- |
 | Registry | `ICookieRegistry`, `CookieDefinition`, `CookieCategory`, `GranitCookiesBuilder` | `Granit.Http.Cookies` |
+| Contributors | `ICookieDefinitionContributor` | `Granit.Http.Cookies` |
 | Manager | `IGranitCookieManager`, `IConsentResolver` | `Granit.Http.Cookies` |
 | GPC | `IGlobalPrivacyControlSignal`, `ICookieConsentModelProvider`, `ConsentModelInfo` | `Granit.Http.Cookies` |
 | Klaro | `KlaroConsentResolver`, `KlaroOptions` | `Granit.Http.Cookies.Klaro` |

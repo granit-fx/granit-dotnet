@@ -21,6 +21,7 @@ public static class KlaroServiceCollectionExtensions
             .ValidateOnStart();
 
         services.AddScoped<IConsentResolver, KlaroConsentResolver>();
+        services.AddSingleton<ICookieDefinitionContributor, KlaroCookieDefinitionContributor>();
 
         return services;
     }

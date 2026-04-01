@@ -13,8 +13,19 @@ public static class CookiesServiceCollectionExtensions
 {
     /// <summary>
     /// Adds Granit.Http.Cookies services (ICookieRegistry, IGranitCookieManager, IThirdPartyServiceRegistry)
-    /// and registers cookie definitions declared in the builder.
+    /// and registers cookie definitions declared in the builder and contributed by modules.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method can be called multiple times safely. Cookie definitions from each call
+    /// accumulate additively. The <see cref="ICookieRegistry"/> is built lazily at first
+    /// resolution, collecting definitions from:
+    /// </para>
+    /// <list type="number">
+    /// <item>Builder callback definitions (from every <c>AddGranitCookies()</c> call)</item>
+    /// <item><see cref="ICookieDefinitionContributor"/> implementations registered by modules</item>
+    /// </list>
+    /// </remarks>
     public static IServiceCollection AddGranitCookies(
         this IServiceCollection services,
         Action<GranitCookiesBuilder> configure)
@@ -26,16 +37,40 @@ public static class CookiesServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        CookieRegistry registry = new();
         GranitCookiesBuilder builder = new(services);
         configure(builder);
 
+        // Additive registration — each call accumulates its definitions.
+        // GetServices<CookieDefinition>() collects them all at resolution time.
         foreach (CookieDefinition definition in builder.CookieDefinitions)
         {
-            registry.Register(definition);
+            services.AddSingleton(definition);
         }
 
-        services.TryAddSingleton<ICookieRegistry>(registry);
+        // Lazy factory — collects ALL definitions + contributors after DI build.
+        // TryAddSingleton ensures only the first factory wins, but it sees everything
+        // because GetServices<T>() returns all registrations regardless of call order.
+        services.TryAddSingleton<ICookieRegistry>(sp =>
+        {
+            CookieRegistry registry = new();
+
+            foreach (CookieDefinition definition in sp.GetServices<CookieDefinition>())
+            {
+                registry.Register(definition);
+            }
+
+            foreach (ICookieDefinitionContributor contributor in
+                sp.GetServices<ICookieDefinitionContributor>())
+            {
+                foreach (CookieDefinition definition in contributor.GetCookieDefinitions())
+                {
+                    registry.Register(definition);
+                }
+            }
+
+            return registry;
+        });
+
         services.TryAddScoped<IConsentResolver, NullConsentResolver>();
         services.TryAddSingleton<IGlobalPrivacyControlSignal, GlobalPrivacyControlHeaderSignal>();
         services.TryAddScoped<ICookieConsentModelProvider, NullCookieConsentModelProvider>();

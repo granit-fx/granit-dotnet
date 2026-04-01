@@ -1,4 +1,5 @@
 using Granit.Encryption;
+using Granit.Http.Cookies;
 using Granit.Identity.Local;
 using Granit.Identity.Local.Options;
 using Granit.Identity.Local.Services;
@@ -55,6 +56,7 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
             .BindConfiguration(GranitPasskeyOptions.SectionName);
 
         context.Services.AddTransient<IDataSeedContributor, OpenIddictSeedContributor>();
+        context.Services.AddSingleton<ICookieDefinitionContributor, IdentityCookieDefinitionContributor>();
 
         context.Services.TryAddScoped<ILocalIdentityGroupStore, OpenIddictGroupStore>();
         context.Services.TryAddScoped<ExternalClaimsMapper>();

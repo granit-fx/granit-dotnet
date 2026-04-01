@@ -1158,6 +1158,7 @@
       "name": "Granit.OpenIddict.EntityFrameworkCore",
       "deps": [
         "Granit.Encryption",
+        "Granit.Http.Cookies",
         "Granit.Identity.Local",
         "Granit.MultiTenancy",
         "Granit.OpenIddict.Server",
@@ -6339,15 +6340,8 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/GranitBffEndpointsModule.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
+      "line": 23,
+      "members": []
     },
     {
       "name": "GranitBffEntityFrameworkCoreModule",
@@ -13236,8 +13230,15 @@
       "kind": "class",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/GranitHttpCookiesModule.cs",
-      "line": 10,
-      "members": []
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IConsentResolver",
@@ -13268,6 +13269,22 @@
           "kind": "method",
           "signature": "GetConsentModelAsync(HttpContext httpContext)",
           "returnType": "Task<ConsentModelInfo?>"
+        }
+      ]
+    },
+    {
+      "name": "ICookieDefinitionContributor",
+      "fqn": "Granit.Http.Cookies.ICookieDefinitionContributor",
+      "kind": "interface",
+      "project": "Granit.Http.Cookies",
+      "file": "src/Granit.Http.Cookies/ICookieDefinitionContributor.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "GetCookieDefinitions",
+          "kind": "method",
+          "signature": "GetCookieDefinitions()",
+          "returnType": "IEnumerable<CookieDefinition>"
         }
       ]
     },
@@ -21966,7 +21983,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/GranitOpenIddictEntityFrameworkCoreModule.cs",
-      "line": 44,
+      "line": 45,
       "members": [
         {
           "name": "ConfigureServices",

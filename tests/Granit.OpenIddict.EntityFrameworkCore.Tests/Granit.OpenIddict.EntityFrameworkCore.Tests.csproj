@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.Http.Cookies\Granit.Http.Cookies.csproj" />
     <ProjectReference Include="..\..\src\Granit.OpenIddict.EntityFrameworkCore\Granit.OpenIddict.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
