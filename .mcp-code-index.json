@@ -19036,6 +19036,15 @@
       ]
     },
     {
+      "name": "NotificationsEmailLocalizationResource",
+      "fqn": "Granit.Notifications.Email.NotificationsEmailLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Notifications.Email",
+      "file": "src/Granit.Notifications.Email/NotificationsEmailLocalizationResource.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "EmailChannelOptions",
       "fqn": "Granit.Notifications.Email.Options.EmailChannelOptions",
       "kind": "class",

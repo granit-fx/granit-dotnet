@@ -1,0 +1,8 @@
+{
+  "culture": "de",
+  "texts": {
+    "NotificationsEmail:ManagePreferences": "Benachrichtigungseinstellungen verwalten",
+    "NotificationsEmail:SubscribedReason": "Sie erhalten diese E-Mail, weil Sie {0}-Benachrichtigungen abonniert haben.",
+    "NotificationsEmail:NoReply": "Bitte antworten Sie nicht auf diese E-Mail. Sie wurde von einer reinen Benachrichtigungsadresse gesendet."
+  }
+}

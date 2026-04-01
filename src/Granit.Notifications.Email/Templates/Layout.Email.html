@@ -114,13 +114,15 @@
                 {{- end }}
             </main>
             <footer role="contentinfo">
-                {{- if model.allow_opt_out && model.unsubscribe_url != "" }}
-                <p><a href="{{ model.unsubscribe_url }}">Manage notification preferences</a></p>
+                {{- if model.allow_opt_out && model.unsubscribe_url != "" && model.lbl_manage_preferences != "" }}
+                <p><a href="{{ model.unsubscribe_url }}">{{ model.lbl_manage_preferences }}</a></p>
                 {{- end }}
-                {{- if model.notification_group != "" }}
-                <p>You received this email because you are subscribed to {{ model.notification_group }} notifications.</p>
+                {{- if model.lbl_subscribed_reason != "" }}
+                <p>{{ model.lbl_subscribed_reason }}</p>
                 {{- end }}
-                <p>Please do not reply to this email. It was sent from a notification-only address.</p>
+                {{- if model.lbl_no_reply != "" }}
+                <p>{{ model.lbl_no_reply }}</p>
+                {{- end }}
                 {{- if app.support_email != "" }}
                 <p><a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a></p>
                 {{- end }}

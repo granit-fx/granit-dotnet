@@ -1,0 +1,8 @@
+{
+  "culture": "tr",
+  "texts": {
+    "NotificationsEmail:ManagePreferences": "Bildirim tercihlerini yönet",
+    "NotificationsEmail:SubscribedReason": "Bu e-postayı {0} bildirimlerine abone olduğunuz için aldınız.",
+    "NotificationsEmail:NoReply": "Lütfen bu e-postayı yanıtlamayın. Yalnızca bildirim gönderimi için kullanılan bir adresten gönderilmiştir."
+  }
+}

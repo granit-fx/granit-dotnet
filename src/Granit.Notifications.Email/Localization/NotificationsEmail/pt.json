@@ -1,0 +1,8 @@
+{
+  "culture": "pt",
+  "texts": {
+    "NotificationsEmail:ManagePreferences": "Gerir preferências de notificação",
+    "NotificationsEmail:SubscribedReason": "Recebeu este e-mail porque está subscrito às notificações de {0}.",
+    "NotificationsEmail:NoReply": "Por favor, não responda a este e-mail. Foi enviado a partir de um endereço exclusivo para notificações."
+  }
+}

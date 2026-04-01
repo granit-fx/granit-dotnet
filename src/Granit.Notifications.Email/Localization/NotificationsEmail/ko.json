@@ -1,0 +1,8 @@
+{
+  "culture": "ko",
+  "texts": {
+    "NotificationsEmail:ManagePreferences": "알림 환경설정 관리",
+    "NotificationsEmail:SubscribedReason": "{0} 알림을 구독하고 있기 때문에 이 이메일을 받으셨습니다.",
+    "NotificationsEmail:NoReply": "이 이메일에 회신하지 마십시오. 알림 전용 주소에서 발송된 메일입니다."
+  }
+}

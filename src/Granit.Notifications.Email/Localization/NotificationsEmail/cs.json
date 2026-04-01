@@ -1,0 +1,8 @@
+{
+  "culture": "cs",
+  "texts": {
+    "NotificationsEmail:ManagePreferences": "Spravovat předvolby oznámení",
+    "NotificationsEmail:SubscribedReason": "Tento e-mail jste obdrželi, protože jste přihlášeni k odběru oznámení {0}.",
+    "NotificationsEmail:NoReply": "Na tento e-mail prosím neodpovídejte. Byl odeslán z adresy určené pouze pro oznámení."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "culture": "zh",
+  "texts": {
+    "NotificationsEmail:ManagePreferences": "管理通知偏好设置",
+    "NotificationsEmail:SubscribedReason": "您收到此电子邮件是因为您订阅了{0}通知。",
+    "NotificationsEmail:NoReply": "请勿回复此电子邮件。此邮件由仅用于发送通知的地址发出。"
+  }
+}

@@ -6,6 +6,7 @@ using Granit.Templating.Layouts;
 using Granit.Templating.Pipeline;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -315,7 +316,7 @@ internal sealed partial class EmailNotificationChannel(
     /// Enriches the template model data with notification metadata for the footer.
     /// Uses defensive defaults (empty string / false) to avoid null issues in Scriban.
     /// </summary>
-    private static void EnrichModelData(
+    private void EnrichModelData(
         Dictionary<string, object?> dataDict,
         NotificationDeliveryContext context,
         EmailEnrichment enrichment)
@@ -324,6 +325,20 @@ internal sealed partial class EmailNotificationChannel(
         dataDict.TryAdd("notification_group", enrichment.Definition?.GroupName ?? "");
         dataDict.TryAdd("allow_opt_out", enrichment.AllowOptOut);
         dataDict.TryAdd("unsubscribe_url", enrichment.AllowOptOut ? enrichment.UnsubscribeUrl : "");
+
+        // Localized footer labels for Layout.Email
+        IStringLocalizer<NotificationsEmailLocalizationResource>? localizer =
+            serviceProvider.GetService<IStringLocalizer<NotificationsEmailLocalizationResource>>();
+
+        if (localizer is not null)
+        {
+            string group = enrichment.Definition?.GroupName ?? "";
+            dataDict.TryAdd("lbl_manage_preferences", localizer["NotificationsEmail:ManagePreferences"].Value);
+            dataDict.TryAdd("lbl_subscribed_reason", string.IsNullOrEmpty(group)
+                ? ""
+                : localizer["NotificationsEmail:SubscribedReason", group].Value);
+            dataDict.TryAdd("lbl_no_reply", localizer["NotificationsEmail:NoReply"].Value);
+        }
     }
 
     /// <summary>Notification metadata resolved once per send, threaded through render methods.</summary>

@@ -1,0 +1,8 @@
+{
+  "culture": "nl",
+  "texts": {
+    "NotificationsEmail:ManagePreferences": "Meldingsvoorkeuren beheren",
+    "NotificationsEmail:SubscribedReason": "U ontvangt deze e-mail omdat u geabonneerd bent op {0}-meldingen.",
+    "NotificationsEmail:NoReply": "Gelieve niet te antwoorden op deze e-mail. Deze is verzonden vanaf een adres dat alleen voor meldingen wordt gebruikt."
+  }
+}

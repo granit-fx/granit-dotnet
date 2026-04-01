@@ -1,0 +1,8 @@
+{
+  "culture": "en",
+  "texts": {
+    "NotificationsEmail:ManagePreferences": "Manage notification preferences",
+    "NotificationsEmail:SubscribedReason": "You received this email because you are subscribed to {0} notifications.",
+    "NotificationsEmail:NoReply": "Please do not reply to this email. It was sent from a notification-only address."
+  }
+}

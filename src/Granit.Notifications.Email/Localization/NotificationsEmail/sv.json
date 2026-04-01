@@ -1,0 +1,8 @@
+{
+  "culture": "sv",
+  "texts": {
+    "NotificationsEmail:ManagePreferences": "Hantera aviseringsinställningar",
+    "NotificationsEmail:SubscribedReason": "Du fick detta e-postmeddelande eftersom du prenumererar på {0}-aviseringar.",
+    "NotificationsEmail:NoReply": "Vänligen svara inte på detta e-postmeddelande. Det skickades från en adress som endast används för aviseringar."
+  }
+}

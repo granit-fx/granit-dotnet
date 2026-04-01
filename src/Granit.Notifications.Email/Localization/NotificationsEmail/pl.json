@@ -1,0 +1,8 @@
+{
+  "culture": "pl",
+  "texts": {
+    "NotificationsEmail:ManagePreferences": "Zarządzaj preferencjami powiadomień",
+    "NotificationsEmail:SubscribedReason": "Otrzymujesz tę wiadomość e-mail, ponieważ subskrybujesz powiadomienia {0}.",
+    "NotificationsEmail:NoReply": "Prosimy nie odpowiadać na tę wiadomość e-mail. Została wysłana z adresu przeznaczonego wyłącznie do powiadomień."
+  }
+}

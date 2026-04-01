@@ -1,0 +1,8 @@
+{
+  "culture": "ja",
+  "texts": {
+    "NotificationsEmail:ManagePreferences": "通知設定を管理",
+    "NotificationsEmail:SubscribedReason": "このメールは、{0}の通知を購読しているために送信されました。",
+    "NotificationsEmail:NoReply": "このメールには返信しないでください。通知専用アドレスから送信されています。"
+  }
+}
