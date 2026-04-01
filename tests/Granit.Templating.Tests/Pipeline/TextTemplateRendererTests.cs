@@ -5,6 +5,7 @@ using Granit.Templating.Internal;
 using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -53,7 +54,7 @@ public sealed class TextTemplateRendererTests
         IServiceProvider sp = services.BuildServiceProvider();
 
         TextTemplateRenderer sut = new(
-            [resolver], [engine], [], sp);
+            [resolver], [engine], [], sp, Substitute.For<ILogger<TextTemplateRenderer>>());
 
         // Act
         RenderedTextResult result = await sut.RenderAsync(
@@ -78,7 +79,7 @@ public sealed class TextTemplateRendererTests
         IServiceProvider sp = services.BuildServiceProvider();
 
         TextTemplateRenderer sut = new(
-            [resolver], [engine], [], sp);
+            [resolver], [engine], [], sp, Substitute.For<ILogger<TextTemplateRenderer>>());
 
         // Act
         Func<Task> act = async () =>
@@ -135,7 +136,7 @@ public sealed class TextTemplateRendererTests
         IServiceProvider sp = services.BuildServiceProvider();
 
         TextTemplateRenderer sut = new(
-            [resolver], [engine], [], sp);
+            [resolver], [engine], [], sp, Substitute.For<ILogger<TextTemplateRenderer>>());
 
         // Act
         await sut.RenderAsync(
@@ -172,7 +173,7 @@ public sealed class TextTemplateRendererTests
         IServiceProvider sp = services.BuildServiceProvider();
 
         TextTemplateRenderer sut = new(
-            [resolver], [engine], [], sp);
+            [resolver], [engine], [], sp, Substitute.For<ILogger<TextTemplateRenderer>>());
 
         // Act
         await sut.RenderAsync(TemplateType, data, TestContext.Current.CancellationToken);
@@ -210,7 +211,7 @@ public sealed class TextTemplateRendererTests
         IServiceProvider sp = services.BuildServiceProvider();
 
         TextTemplateRenderer sut = new(
-            [resolver], [engine], [], sp);
+            [resolver], [engine], [], sp, Substitute.For<ILogger<TextTemplateRenderer>>());
 
         // Act
         RenderedTextResult result = await sut.RenderAsync(

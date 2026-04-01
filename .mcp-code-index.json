@@ -27914,12 +27914,18 @@
       "kind": "class",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Extensions/ServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitTemplating",
           "kind": "method",
           "signature": "AddGranitTemplating(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        },
+        {
+          "name": "AddTemplateLayout",
+          "kind": "method",
+          "signature": "AddTemplateLayout(this IServiceCollection services, string templatePattern, string layoutTemplateName, int priority = 0)",
           "returnType": "IServiceCollection"
         }
       ]
@@ -28003,6 +28009,37 @@
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Keys/TextTemplateType.cs",
       "line": 15,
+      "members": []
+    },
+    {
+      "name": "ILayoutRegistry",
+      "fqn": "Granit.Templating.Layouts.ILayoutRegistry",
+      "kind": "interface",
+      "project": "Granit.Templating",
+      "file": "src/Granit.Templating/Layouts/ILayoutRegistry.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "GetLayoutName",
+          "kind": "method",
+          "signature": "GetLayoutName(string templateName)",
+          "returnType": "string?"
+        },
+        {
+          "name": "GetAllLayoutNames",
+          "kind": "method",
+          "signature": "GetAllLayoutNames()",
+          "returnType": "IReadOnlyList<string>"
+        }
+      ]
+    },
+    {
+      "name": "LayoutRegistration",
+      "fqn": "Granit.Templating.Layouts.LayoutRegistration",
+      "kind": "record",
+      "project": "Granit.Templating",
+      "file": "src/Granit.Templating/Layouts/LayoutRegistration.cs",
+      "line": 20,
       "members": []
     },
     {

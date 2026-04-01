@@ -4,6 +4,8 @@ using Granit.Templating.Diagnostics;
 using Granit.Templating.Enrichment;
 using Granit.Templating.GlobalContext;
 using Granit.Templating.Internal;
+using Granit.Templating.Layouts;
+using Granit.Templating.Layouts.Internal;
 using Granit.Templating.Pipeline;
 using Granit.Templating.Resolvers;
 using Granit.Templating.Store;
@@ -44,6 +46,11 @@ public static class ServiceCollectionExtensions
 
         services.TryAddScoped<ITextTemplateRenderer, TextTemplateRenderer>();
         services.TryAddSingleton<ITemplateTransitionHook, NullTemplateTransitionHook>();
+
+        // Layout registry — built from all AddTemplateLayout() registrations
+        services.TryAddSingleton<ILayoutRegistry>(sp =>
+            new LayoutRegistry(sp.GetServices<LayoutRegistration>()));
+
         return services;
     }
 
@@ -94,4 +101,42 @@ public static class ServiceCollectionExtensions
         where TData : notnull
         where TEnricher : class, ITemplateDataEnricher<TData> =>
         services.AddTransient<ITemplateDataEnricher<TData>, TEnricher>();
+
+    /// <summary>
+    /// Registers a layout mapping: templates matching <paramref name="templatePattern"/>
+    /// are automatically wrapped in the <paramref name="layoutTemplateName"/> layout
+    /// during rendering.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Patterns support exact names (<c>"Billing.Invoice"</c>) and prefix wildcards
+    /// (<c>"Billing.*"</c>). Exact matches always take precedence over prefix matches.
+    /// </para>
+    /// <para>
+    /// The layout template is resolved through the standard <see cref="ITemplateResolver"/>
+    /// chain — embedded resources or database store. A tenant can override a layout by
+    /// publishing their own version to the store.
+    /// </para>
+    /// </remarks>
+    /// <param name="services">The service collection.</param>
+    /// <param name="templatePattern">
+    /// Exact template name (<c>"Billing.Invoice"</c>) or prefix wildcard
+    /// (<c>"Billing.*"</c>) matching all templates in that namespace.
+    /// </param>
+    /// <param name="layoutTemplateName">
+    /// Logical name of the layout template (e.g. <c>"Layout.Email"</c>).
+    /// </param>
+    /// <param name="priority">
+    /// Resolution priority when multiple prefix patterns match. Higher wins. Default: 0.
+    /// </param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddTemplateLayout(
+        this IServiceCollection services,
+        string templatePattern,
+        string layoutTemplateName,
+        int priority = 0)
+    {
+        services.AddSingleton(new LayoutRegistration(templatePattern, layoutTemplateName, priority));
+        return services;
+    }
 }

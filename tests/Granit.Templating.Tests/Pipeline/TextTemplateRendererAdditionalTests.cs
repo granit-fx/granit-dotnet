@@ -3,6 +3,7 @@ using Granit.Templating.Internal;
 using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -47,7 +48,7 @@ public sealed class TextTemplateRendererAdditionalTests
         ServiceCollection services = new();
         IServiceProvider sp = services.BuildServiceProvider();
 
-        TextTemplateRenderer sut = new([resolver], [engine], [], sp);
+        TextTemplateRenderer sut = new([resolver], [engine], [], sp, Substitute.For<ILogger<TextTemplateRenderer>>());
 
         Func<Task> act = async () =>
             await sut.RenderAsync(DocType, new DocTestData("Test"),
@@ -71,7 +72,7 @@ public sealed class TextTemplateRendererAdditionalTests
         ServiceCollection services = new();
         IServiceProvider sp = services.BuildServiceProvider();
 
-        TextTemplateRenderer sut = new([resolver], [engine], [], sp);
+        TextTemplateRenderer sut = new([resolver], [engine], [], sp, Substitute.For<ILogger<TextTemplateRenderer>>());
 
         Func<Task> act = async () =>
             await sut.RenderAsync(DocType, new DocTestData("Test"),
@@ -103,7 +104,7 @@ public sealed class TextTemplateRendererAdditionalTests
         ServiceCollection services = new();
         IServiceProvider sp = services.BuildServiceProvider();
 
-        TextTemplateRenderer sut = new([resolver], [engine], [], sp);
+        TextTemplateRenderer sut = new([resolver], [engine], [], sp, Substitute.For<ILogger<TextTemplateRenderer>>());
 
         RenderedContent result = await sut.RenderDocumentAsync(
             DocType, new DocTestData("Test"), DocumentFormat.Pdf,
@@ -148,7 +149,7 @@ public sealed class TextTemplateRendererAdditionalTests
         ServiceCollection services = new();
         IServiceProvider sp = services.BuildServiceProvider();
 
-        TextTemplateRenderer sut = new([lowResolver, highResolver], [engine], [], sp);
+        TextTemplateRenderer sut = new([lowResolver, highResolver], [engine], [], sp, Substitute.For<ILogger<TextTemplateRenderer>>());
 
         RenderedTextResult result = await sut.RenderAsync(
             DocType, new DocTestData("Test"),
@@ -183,7 +184,7 @@ public sealed class TextTemplateRendererAdditionalTests
         ServiceCollection services = new();
         IServiceProvider sp = services.BuildServiceProvider();
 
-        TextTemplateRenderer sut = new([resolver], [engine], [globalCtx], sp);
+        TextTemplateRenderer sut = new([resolver], [engine], [globalCtx], sp, Substitute.For<ILogger<TextTemplateRenderer>>());
 
         await sut.RenderAsync(DocType, new DocTestData("Test"),
             TestContext.Current.CancellationToken);

@@ -3,21 +3,36 @@ using Granit.Templating.Enrichment;
 using Granit.Templating.Exceptions;
 using Granit.Templating.GlobalContext;
 using Granit.Templating.Keys;
+using Granit.Templating.Layouts;
 using Granit.Templating.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Granit.Templating.Internal;
 
 /// <summary>
 /// Internal implementation of <see cref="ITextTemplateRenderer"/>.
 /// Orchestrates the full text rendering pipeline:
-/// enrichment → resolution (with culture fallback) → engine render.
+/// enrichment → resolution (with culture fallback) → layout wrapping → engine render.
 /// </summary>
-internal sealed class TextTemplateRenderer(
+/// <remarks>
+/// <para>
+/// <strong>Layout wrapping:</strong> when a layout is configured (via
+/// <see cref="TemplateDescriptor.LayoutName"/> or <see cref="ILayoutRegistry"/>),
+/// the renderer performs two-pass rendering:
+/// <list type="number">
+///   <item>Render the content template → HTML string</item>
+///   <item>Render the layout template with <c>{{ body | raw }}</c> = content HTML</item>
+/// </list>
+/// </para>
+/// </remarks>
+internal sealed partial class TextTemplateRenderer(
     IEnumerable<ITemplateResolver> resolvers,
     IEnumerable<ITemplateEngine> engines,
     IEnumerable<ITemplateGlobalContext> globalContexts,
-    IServiceProvider serviceProvider) : ITextTemplateRenderer
+    IServiceProvider serviceProvider,
+    ILogger<TextTemplateRenderer> logger,
+    ILayoutRegistry? layoutRegistry = null) : ITextTemplateRenderer
 {
     private readonly IReadOnlyList<ITemplateResolver> _resolvers =
         [.. resolvers.OrderByDescending(r => r.Priority)];
@@ -70,7 +85,7 @@ internal sealed class TextTemplateRenderer(
             await ResolveAsync(templateType.Name, culture, cancellationToken).ConfigureAwait(false)
             ?? throw new TemplateNotFoundException(templateType.Name, culture);
 
-        // 3. Select engine by MIME type and render
+        // 3. Select engine by MIME type
         ITemplateEngine? engine = _engines.FirstOrDefault(e => e.CanRender(descriptor));
 
         if (engine is null)
@@ -80,7 +95,55 @@ internal sealed class TextTemplateRenderer(
                 "Register a compatible engine (e.g. AddGranitTemplatingWithScriban or AddGranitDocumentGenerationExcel).");
         }
 
-        return await engine.RenderAsync(descriptor, enrichedData, targetFormat, _globalContexts, cancellationToken).ConfigureAwait(false);
+        // 4. Resolve layout (DB override → code registry → no layout)
+        string? layoutName = descriptor.LayoutName
+            ?? layoutRegistry?.GetLayoutName(templateType.Name);
+
+        if (layoutName is null)
+        {
+            // No layout — render standalone (existing behavior)
+            return await engine.RenderAsync(
+                descriptor, enrichedData, targetFormat, _globalContexts, cancellationToken).ConfigureAwait(false);
+        }
+
+        TemplateDescriptor? layoutDescriptor = await ResolveAsync(
+            layoutName, culture, cancellationToken).ConfigureAwait(false);
+
+        if (layoutDescriptor is null)
+        {
+            Log.LayoutNotFound(logger, layoutName, templateType.Name);
+            return await engine.RenderAsync(
+                descriptor, enrichedData, targetFormat, _globalContexts, cancellationToken).ConfigureAwait(false);
+        }
+
+        // 5. Two-pass render: content first, then layout with body injection
+        RenderedContent contentResult = await engine.RenderAsync(
+            descriptor, enrichedData, targetFormat, _globalContexts, cancellationToken).ConfigureAwait(false);
+
+        // Binary engines (Excel) skip layout wrapping — layouts are HTML-only
+        if (contentResult is not TextRenderedContent contentText)
+        {
+            return contentResult;
+        }
+
+        // 6. Render layout with body = rendered content (pass 2 is always terminal)
+        TemplateDescriptor layoutWithBody = new()
+        {
+            Content = layoutDescriptor.Content,
+            MimeType = layoutDescriptor.MimeType,
+            RevisionId = layoutDescriptor.RevisionId,
+            ExtraVariables = new Dictionary<string, object> { ["body"] = contentText.Html },
+        };
+
+        return await engine.RenderAsync(
+            layoutWithBody, enrichedData, targetFormat, _globalContexts, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static partial class Log
+    {
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message = "Layout template '{LayoutName}' not found for content template '{TemplateName}'. Rendering without layout.")]
+        public static partial void LayoutNotFound(ILogger logger, string layoutName, string templateName);
     }
 
     private async Task<TData> EnrichAsync<TData>(TData data, CancellationToken cancellationToken)
