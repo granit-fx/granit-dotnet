@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Granit.Encryption\Granit.Encryption.csproj" />
     <ProjectReference Include="..\Granit.Notifications\Granit.Notifications.csproj" />
     <ProjectReference Include="..\Granit.Wolverine\Granit.Wolverine.csproj" />
   </ItemGroup>

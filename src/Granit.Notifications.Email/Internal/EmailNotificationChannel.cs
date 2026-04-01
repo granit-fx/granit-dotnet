@@ -66,6 +66,13 @@ internal sealed partial class EmailNotificationChannel(
             return;
         }
 
+        // Validate email format (defense against misuse of RecipientOverride)
+        if (!System.Net.Mail.MailAddress.TryCreate(recipient.Email, out _))
+        {
+            Log.InvalidRecipientEmail(logger, context.NotificationTypeName);
+            return;
+        }
+
         // Resolve notification metadata for opt-out and group info
         INotificationDefinitionStore? defStore = serviceProvider.GetService<INotificationDefinitionStore>();
         NotificationDefinition? definition = defStore?.Get(context.NotificationTypeName);
@@ -388,6 +395,10 @@ internal sealed partial class EmailNotificationChannel(
         [LoggerMessage(Level = LogLevel.Debug,
             Message = "Rendered email template '{NotificationType}' (culture: {Culture}).")]
         public static partial void TemplateRendered(ILogger logger, string notificationType, string? culture);
+
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message = "Invalid recipient email format for notification '{NotificationType}'. Skipping delivery.")]
+        public static partial void InvalidRecipientEmail(ILogger logger, string notificationType);
 
         [LoggerMessage(Level = LogLevel.Warning,
             Message = "No template engine can render template for notification '{NotificationType}'.")]

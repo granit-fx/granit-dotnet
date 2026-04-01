@@ -27,4 +27,7 @@ public sealed class ImpersonationAlertNotificationType
 /// Data payload for an impersonation alert notification.
 /// </summary>
 /// <param name="OccurredAt">The UTC timestamp of the impersonation.</param>
-public sealed record ImpersonationAlertNotificationData(DateTimeOffset OccurredAt);
+/// <param name="ImpersonatorDisplayName">The display name of the impersonating administrator, or <see langword="null"/> if unknown.</param>
+public sealed record ImpersonationAlertNotificationData(
+    DateTimeOffset OccurredAt,
+    string? ImpersonatorDisplayName);

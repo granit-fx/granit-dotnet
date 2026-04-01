@@ -1,4 +1,4 @@
 <p>こんにちは、</p>
-<p>アカウント <strong>{{ model.email }}</strong> は、連続 <strong>{{ model.failed_attempts }}</strong> 回のログイン失敗によりロックされました。</p>
+<p>アカウント <strong>{{ model.email | html.escape }}</strong> は、連続 <strong>{{ model.failed_attempts }}</strong> 回のログイン失敗によりロックされました。</p>
 <p>これはアカウントを保護するためのセキュリティ対策です。ロックは自動的に解除されます。</p>
 <p>これらのログイン試行が身に覚えのないものである場合は、ロックが解除され次第パスワードをリセットすることをお勧めします。</p>

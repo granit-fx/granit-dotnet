@@ -1,5 +1,5 @@
 <p>Dobrý den,</p>
-<p>Potvrďte prosím, že <strong>{{ model.new_email }}</strong> je vaše nová e-mailová adresa.</p>
+<p>Potvrďte prosím, že <strong>{{ model.new_email | html.escape }}</strong> je vaše nová e-mailová adresa.</p>
 <p style="text-align: center; margin: 32px 0;">
   <a href="{{ model.confirm_link }}" class="btn">Potvrdit nový e-mail</a>
 </p>

@@ -1,3 +1,3 @@
 <p>Hallo,</p>
-<p>Ihr Konto wurde mit der E-Mail-Adresse <strong>{{ model.email }}</strong> erstellt.</p>
+<p>Ihr Konto wurde mit der E-Mail-Adresse <strong>{{ model.email | html.escape }}</strong> erstellt.</p>
 <p>Sie können sich jetzt anmelden und die Plattform erkunden.</p>

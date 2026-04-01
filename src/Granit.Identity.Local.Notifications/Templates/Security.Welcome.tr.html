@@ -1,3 +1,3 @@
 <p>Merhaba,</p>
-<p>Hesabınız <strong>{{ model.email }}</strong> e-posta adresiyle oluşturuldu.</p>
+<p>Hesabınız <strong>{{ model.email | html.escape }}</strong> e-posta adresiyle oluşturuldu.</p>
 <p>Artık giriş yapabilir ve platformu keşfetmeye başlayabilirsiniz.</p>

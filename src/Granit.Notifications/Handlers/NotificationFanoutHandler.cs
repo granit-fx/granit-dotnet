@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Text.Json;
+using Granit.Encryption;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
@@ -17,7 +19,8 @@ public sealed class NotificationFanoutHandler(
     INotificationDefinitionStore definitionStore,
     IGuidGenerator guidGenerator,
     ICurrentTenant currentTenant,
-    NotificationsMetrics metrics)
+    NotificationsMetrics metrics,
+    IStringEncryptionService? encryptionService = null)
 {
     /// <summary>
     /// Resolves recipients, loads preferences, filters channels, and produces delivery commands.
@@ -28,6 +31,17 @@ public sealed class NotificationFanoutHandler(
     {
         using Activity? activity = NotificationsActivitySource.Source.StartActivity(NotificationsActivitySource.Fanout);
         activity?.SetTag("notifications.type", trigger.NotificationTypeName);
+
+        // Decrypt payload when encryption was applied by WolverineNotificationPublisher
+        JsonElement data = trigger.Data;
+        if (trigger.EncryptedData is not null && encryptionService is not null)
+        {
+            string? decrypted = encryptionService.Decrypt(trigger.EncryptedData);
+            if (decrypted is not null)
+            {
+                data = JsonDocument.Parse(decrypted).RootElement;
+            }
+        }
 
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : trigger.TenantId;
         NotificationDefinition? definition = definitionStore.Get(trigger.NotificationTypeName);
@@ -80,7 +94,7 @@ public sealed class NotificationFanoutHandler(
                     Severity = trigger.Severity,
                     RecipientUserId = userId,
                     ChannelName = channelName,
-                    Data = trigger.Data,
+                    Data = data,
                     RelatedEntity = trigger.RelatedEntity,
                     TenantId = tenantId,
                     OccurredAt = trigger.OccurredAt,

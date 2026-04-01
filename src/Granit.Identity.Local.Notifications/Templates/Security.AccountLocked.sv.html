@@ -1,4 +1,4 @@
 <p>Hej,</p>
-<p>Ditt konto <strong>{{ model.email }}</strong> har låsts efter <strong>{{ model.failed_attempts }}</strong> på varandra följande misslyckade inloggningsförsök.</p>
+<p>Ditt konto <strong>{{ model.email | html.escape }}</strong> har låsts efter <strong>{{ model.failed_attempts }}</strong> på varandra följande misslyckade inloggningsförsök.</p>
 <p>Detta är en säkerhetsåtgärd för att skydda ditt konto. Låsningen upphör automatiskt.</p>
 <p>Om dessa inloggningsförsök inte gjordes av dig rekommenderar vi att du återställer ditt lösenord så snart låsningen upphör.</p>

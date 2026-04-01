@@ -1,4 +1,4 @@
 <p>こんにちは、</p>
-<p>アカウントのメールアドレスを <strong>{{ model.email }}</strong> から <strong>{{ model.new_email }}</strong> に変更するリクエストがありました。</p>
+<p>アカウントのメールアドレスを <strong>{{ model.email | html.escape }}</strong> から <strong>{{ model.new_email | html.escape }}</strong> に変更するリクエストがありました。</p>
 <p>この変更をご自身で行った場合、確認メールが新しいアドレスに送信されています。</p>
 <p><strong>この変更をリクエストしていない場合</strong>、アカウントが不正アクセスを受けている可能性があります。直ちにパスワードをリセットし、サポートにご連絡ください。</p>

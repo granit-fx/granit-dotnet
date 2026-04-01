@@ -1,5 +1,5 @@
 <p>Merhaba,</p>
-<p>Lütfen <strong>{{ model.new_email }}</strong> adresinin yeni e-posta adresiniz olduğunu doğrulayın.</p>
+<p>Lütfen <strong>{{ model.new_email | html.escape }}</strong> adresinin yeni e-posta adresiniz olduğunu doğrulayın.</p>
 <p style="text-align: center; margin: 32px 0;">
   <a href="{{ model.confirm_link }}" class="btn">Yeni e-postayı doğrula</a>
 </p>

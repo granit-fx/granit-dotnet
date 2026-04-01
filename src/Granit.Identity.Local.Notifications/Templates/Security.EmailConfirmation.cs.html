@@ -1,5 +1,5 @@
 <p>Dobrý den,</p>
-<p>Potvrďte prosím svou e-mailovou adresu <strong>{{ model.email }}</strong> pro aktivaci účtu.</p>
+<p>Potvrďte prosím svou e-mailovou adresu <strong>{{ model.email | html.escape }}</strong> pro aktivaci účtu.</p>
 <p style="text-align: center; margin: 32px 0;">
   <a href="{{ model.confirm_link }}" class="btn">Potvrdit můj e-mail</a>
 </p>

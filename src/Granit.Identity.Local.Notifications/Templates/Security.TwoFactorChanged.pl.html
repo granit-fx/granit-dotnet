@@ -1,8 +1,8 @@
 <p>Witaj,</p>
 {{- if model.enabled }}
-<p>Uwierzytelnianie dwuskładnikowe zostało <strong>włączone</strong> na Twoim koncie <strong>{{ model.email }}</strong>.</p>
+<p>Uwierzytelnianie dwuskładnikowe zostało <strong>włączone</strong> na Twoim koncie <strong>{{ model.email | html.escape }}</strong>.</p>
 <p>Twoje konto jest teraz bezpieczniejsze. Podczas logowania będzie wymagany kod weryfikacyjny.</p>
 {{- else }}
-<p>Uwierzytelnianie dwuskładnikowe zostało <strong>wyłączone</strong> na Twoim koncie <strong>{{ model.email }}</strong>.</p>
+<p>Uwierzytelnianie dwuskładnikowe zostało <strong>wyłączone</strong> na Twoim koncie <strong>{{ model.email | html.escape }}</strong>.</p>
 <p><strong>Jeśli nie dokonałeś tej zmiany</strong>, Twoje konto mogło zostać przejęte. Włącz ponownie uwierzytelnianie dwuskładnikowe i natychmiast zresetuj hasło.</p>
 {{- end }}

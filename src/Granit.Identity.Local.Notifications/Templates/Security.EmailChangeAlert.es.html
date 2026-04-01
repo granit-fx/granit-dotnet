@@ -1,4 +1,4 @@
 <p>Hola,</p>
-<p>Se ha solicitado cambiar la dirección de correo electrónico de su cuenta de <strong>{{ model.email }}</strong> a <strong>{{ model.new_email }}</strong>.</p>
+<p>Se ha solicitado cambiar la dirección de correo electrónico de su cuenta de <strong>{{ model.email | html.escape }}</strong> a <strong>{{ model.new_email | html.escape }}</strong>.</p>
 <p>Si usted inició este cambio, se ha enviado un correo de confirmación a la nueva dirección.</p>
 <p><strong>Si no solicitó este cambio</strong>, su cuenta podría estar comprometida. Restablezca su contraseña inmediatamente y contacte con el soporte.</p>

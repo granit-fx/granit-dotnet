@@ -1,4 +1,4 @@
 <p>Hallo,</p>
-<p>Uw account <strong>{{ model.email }}</strong> is vergrendeld na <strong>{{ model.failed_attempts }}</strong> opeenvolgende mislukte aanmeldpogingen.</p>
+<p>Uw account <strong>{{ model.email | html.escape }}</strong> is vergrendeld na <strong>{{ model.failed_attempts }}</strong> opeenvolgende mislukte aanmeldpogingen.</p>
 <p>Dit is een beveiligingsmaatregel om uw account te beschermen. De vergrendeling verloopt automatisch.</p>
 <p>Als deze aanmeldpogingen niet door u zijn gedaan, raden wij u aan uw wachtwoord opnieuw in te stellen zodra de vergrendeling is verlopen.</p>

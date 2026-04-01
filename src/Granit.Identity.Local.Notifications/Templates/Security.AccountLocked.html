@@ -1,4 +1,4 @@
 <p>Hi,</p>
-<p>Your account <strong>{{ model.email }}</strong> has been locked after <strong>{{ model.failed_attempts }}</strong> consecutive failed login attempts.</p>
+<p>Your account <strong>{{ model.email | html.escape }}</strong> has been locked after <strong>{{ model.failed_attempts }}</strong> consecutive failed login attempts.</p>
 <p>This is a security measure to protect your account. The lockout will expire automatically.</p>
 <p>If these login attempts were not made by you, we recommend resetting your password as soon as the lockout expires.</p>

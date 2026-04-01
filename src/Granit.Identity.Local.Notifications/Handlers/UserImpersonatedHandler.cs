@@ -1,3 +1,4 @@
+using Granit.Identity;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Notifications.NotificationTypes;
 using Granit.Notifications.Abstractions;
@@ -12,13 +13,31 @@ internal static partial class UserImpersonatedHandler
 {
     public static async Task HandleAsync(
         UserImpersonatedEto evt,
+        IIdentityUserReader userReader,
         INotificationPublisher publisher,
         CancellationToken cancellationToken)
     {
+        IIdentityUser? impersonator = await userReader
+            .GetUserAsync(evt.ImpersonatorId.ToString(), cancellationToken)
+            .ConfigureAwait(false);
+
+        string? displayName = BuildDisplayName(impersonator);
+
         await publisher.PublishAsync(
             ImpersonationAlertNotificationType.Instance,
-            new ImpersonationAlertNotificationData(evt.OccurredAt),
+            new ImpersonationAlertNotificationData(evt.OccurredAt, displayName),
             [evt.TargetUserId.ToString()],
             cancellationToken).ConfigureAwait(false);
+    }
+
+    private static string? BuildDisplayName(IIdentityUser? user)
+    {
+        if (user is null)
+        {
+            return null;
+        }
+
+        string name = $"{user.FirstName} {user.LastName}".Trim();
+        return name.Length > 0 ? name : user.Username;
     }
 }

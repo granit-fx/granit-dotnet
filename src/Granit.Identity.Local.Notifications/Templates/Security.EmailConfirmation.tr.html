@@ -1,5 +1,5 @@
 <p>Merhaba,</p>
-<p>Hesabınızı etkinleştirmek için lütfen <strong>{{ model.email }}</strong> e-posta adresinizi doğrulayın.</p>
+<p>Hesabınızı etkinleştirmek için lütfen <strong>{{ model.email | html.escape }}</strong> e-posta adresinizi doğrulayın.</p>
 <p style="text-align: center; margin: 32px 0;">
   <a href="{{ model.confirm_link }}" class="btn">E-postamı doğrula</a>
 </p>

@@ -25,6 +25,18 @@ public sealed class GranitCookiesBuilder(IServiceCollection services)
     }
 
     /// <summary>
+    /// Registers the ASP.NET Core session cookie in the RGPD registry.
+    /// Call this when the application uses <c>AddSession()</c> / <c>UseSession()</c>.
+    /// The cookie name is read from <see cref="Microsoft.AspNetCore.Builder.SessionOptions"/>
+    /// at resolution time, defaulting to <c>.AspNetCore.Session</c>.
+    /// </summary>
+    public GranitCookiesBuilder RegisterSessionCookie()
+    {
+        Services.AddSingleton<ICookieDefinitionContributor, Internal.SessionCookieDefinitionContributor>();
+        return this;
+    }
+
+    /// <summary>
     /// Registers the consent resolver implementation.
     /// Applications must call this to provide their CMP integration (Axeptio, Cookiebot, etc.).
     /// </summary>

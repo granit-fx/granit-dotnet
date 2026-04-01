@@ -1,4 +1,4 @@
 <p>Olá,</p>
-<p>Foi feita uma solicitação para alterar o endereço de e-mail da sua conta de <strong>{{ model.email }}</strong> para <strong>{{ model.new_email }}</strong>.</p>
+<p>Foi feita uma solicitação para alterar o endereço de e-mail da sua conta de <strong>{{ model.email | html.escape }}</strong> para <strong>{{ model.new_email | html.escape }}</strong>.</p>
 <p>Se você iniciou essa alteração, um e-mail de confirmação foi enviado para o novo endereço.</p>
 <p><strong>Se você não solicitou essa alteração</strong>, sua conta pode estar comprometida. Redefina sua senha imediatamente e entre em contato com o suporte.</p>

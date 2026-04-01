@@ -20,6 +20,13 @@ public sealed record NotificationTrigger
     public string? Culture { get; init; }
 
     /// <summary>
+    /// When set, contains the AES-256-CBC encrypted JSON payload of <see cref="Data"/>.
+    /// Decrypted by <c>NotificationFanoutHandler</c> before delivery.
+    /// Falls back to unencrypted <see cref="Data"/> when encryption is not configured.
+    /// </summary>
+    public string? EncryptedData { get; init; }
+
+    /// <summary>
     /// When set, bypasses <c>IRecipientResolver</c> and uses this contact info directly.
     /// Used for sending to addresses not yet in the identity store (email change, invitations).
     /// </summary>

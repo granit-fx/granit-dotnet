@@ -1,8 +1,8 @@
 <p>Hallo,</p>
 {{- if model.enabled }}
-<p>Tweefactorauthenticatie is <strong>ingeschakeld</strong> op uw account <strong>{{ model.email }}</strong>.</p>
+<p>Tweefactorauthenticatie is <strong>ingeschakeld</strong> op uw account <strong>{{ model.email | html.escape }}</strong>.</p>
 <p>Uw account is nu beter beveiligd. Bij het inloggen wordt om een verificatiecode gevraagd.</p>
 {{- else }}
-<p>Tweefactorauthenticatie is <strong>uitgeschakeld</strong> op uw account <strong>{{ model.email }}</strong>.</p>
+<p>Tweefactorauthenticatie is <strong>uitgeschakeld</strong> op uw account <strong>{{ model.email | html.escape }}</strong>.</p>
 <p><strong>Als u deze wijziging niet heeft aangebracht</strong>, is uw account mogelijk gecompromitteerd. Schakel tweefactorauthenticatie opnieuw in en stel uw wachtwoord onmiddellijk opnieuw in.</p>
 {{- end }}

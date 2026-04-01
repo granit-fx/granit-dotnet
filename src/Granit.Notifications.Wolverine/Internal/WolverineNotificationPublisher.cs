@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Granit.Encryption;
 using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Messages;
@@ -15,7 +16,8 @@ namespace Granit.Notifications.Wolverine.Internal;
 internal sealed class WolverineNotificationPublisher(
     IMessageBus messageBus,
     ICurrentTenant currentTenant,
-    IClock clock) : INotificationPublisher
+    IClock clock,
+    IStringEncryptionService? encryptionService = null) : INotificationPublisher
 {
     public ValueTask PublishAsync<TData>(
         NotificationType<TData> notificationType,
@@ -78,13 +80,34 @@ internal sealed class WolverineNotificationPublisher(
     private NotificationTrigger BuildTrigger<TData>(
         NotificationType<TData> notificationType,
         TData data,
-        EntityReference? relatedEntity) where TData : notnull => new()
+        EntityReference? relatedEntity) where TData : notnull
+    {
+        JsonElement jsonData = JsonSerializer.SerializeToElement(data);
+
+        if (encryptionService is not null)
+        {
+            string plainJson = JsonSerializer.Serialize(data);
+            string encrypted = encryptionService.Encrypt(plainJson);
+            return new()
+            {
+                NotificationTypeName = notificationType.Name,
+                Severity = notificationType.DefaultSeverity,
+                Data = default,
+                EncryptedData = encrypted,
+                RelatedEntity = relatedEntity,
+                TenantId = currentTenant.IsAvailable ? currentTenant.Id : null,
+                OccurredAt = clock.Now,
+            };
+        }
+
+        return new()
         {
             NotificationTypeName = notificationType.Name,
             Severity = notificationType.DefaultSeverity,
-            Data = JsonSerializer.SerializeToElement(data),
+            Data = jsonData,
             RelatedEntity = relatedEntity,
             TenantId = currentTenant.IsAvailable ? currentTenant.Id : null,
             OccurredAt = clock.Now,
         };
+    }
 }

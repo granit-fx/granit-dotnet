@@ -1,8 +1,8 @@
 <p>Hi,</p>
 {{- if model.enabled }}
-<p>Two-factor authentication has been <strong>enabled</strong> on your account <strong>{{ model.email }}</strong>.</p>
+<p>Two-factor authentication has been <strong>enabled</strong> on your account <strong>{{ model.email | html.escape }}</strong>.</p>
 <p>Your account is now more secure. You will be asked for a verification code when signing in.</p>
 {{- else }}
-<p>Two-factor authentication has been <strong>disabled</strong> on your account <strong>{{ model.email }}</strong>.</p>
+<p>Two-factor authentication has been <strong>disabled</strong> on your account <strong>{{ model.email | html.escape }}</strong>.</p>
 <p><strong>If you did not make this change</strong>, your account may be compromised. Please re-enable two-factor authentication and reset your password immediately.</p>
 {{- end }}

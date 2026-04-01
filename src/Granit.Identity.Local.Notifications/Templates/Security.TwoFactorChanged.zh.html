@@ -1,8 +1,8 @@
 <p>您好，</p>
 {{- if model.enabled }}
-<p>您的账户 <strong>{{ model.email }}</strong> 已<strong>启用</strong>双因素认证。</p>
+<p>您的账户 <strong>{{ model.email | html.escape }}</strong> 已<strong>启用</strong>双因素认证。</p>
 <p>您的账户现在更加安全。登录时将需要输入验证码。</p>
 {{- else }}
-<p>您的账户 <strong>{{ model.email }}</strong> 已<strong>禁用</strong>双因素认证。</p>
+<p>您的账户 <strong>{{ model.email | html.escape }}</strong> 已<strong>禁用</strong>双因素认证。</p>
 <p><strong>如果您未进行此更改</strong>，您的账户可能已被盗用。请立即重新启用双因素认证并重置密码。</p>
 {{- end }}

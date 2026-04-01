@@ -1,5 +1,5 @@
 <p>Hallo,</p>
-<p>Bitte bestätigen Sie Ihre E-Mail-Adresse <strong>{{ model.email }}</strong>, um Ihr Konto zu aktivieren.</p>
+<p>Bitte bestätigen Sie Ihre E-Mail-Adresse <strong>{{ model.email | html.escape }}</strong>, um Ihr Konto zu aktivieren.</p>
 <p style="text-align: center; margin: 32px 0;">
   <a href="{{ model.confirm_link }}" class="btn">Meine E-Mail bestätigen</a>
 </p>

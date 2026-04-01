@@ -891,6 +891,7 @@
     {
       "name": "Granit.Notifications",
       "deps": [
+        "Granit.Encryption",
         "Granit.Guids",
         "Granit.Notifications.Abstractions",
         "Granit.Timing"
@@ -1085,6 +1086,7 @@
     {
       "name": "Granit.Notifications.Wolverine",
       "deps": [
+        "Granit.Encryption",
         "Granit.Notifications",
         "Granit.Wolverine"
       ],
@@ -13240,7 +13242,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/GranitHttpCookiesModule.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "ConfigureServices",
@@ -16143,7 +16145,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local.Notifications",
       "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/ImpersonationAlertNotificationType.cs",
-      "line": 30,
+      "line": 31,
       "members": []
     },
     {
@@ -20062,7 +20064,7 @@
       "kind": "class",
       "project": "Granit.Notifications",
       "file": "src/Granit.Notifications/Handlers/NotificationFanoutHandler.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "HandleAsync",

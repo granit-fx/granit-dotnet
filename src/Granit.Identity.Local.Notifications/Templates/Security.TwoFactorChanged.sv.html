@@ -1,8 +1,8 @@
 <p>Hej,</p>
 {{- if model.enabled }}
-<p>Tvåfaktorsautentisering har <strong>aktiverats</strong> på ditt konto <strong>{{ model.email }}</strong>.</p>
+<p>Tvåfaktorsautentisering har <strong>aktiverats</strong> på ditt konto <strong>{{ model.email | html.escape }}</strong>.</p>
 <p>Ditt konto är nu säkrare. Du kommer att bli ombedd att ange en verifieringskod vid inloggning.</p>
 {{- else }}
-<p>Tvåfaktorsautentisering har <strong>inaktiverats</strong> på ditt konto <strong>{{ model.email }}</strong>.</p>
+<p>Tvåfaktorsautentisering har <strong>inaktiverats</strong> på ditt konto <strong>{{ model.email | html.escape }}</strong>.</p>
 <p><strong>Om du inte gjorde denna ändring</strong> kan ditt konto vara komprometterat. Vänligen återaktivera tvåfaktorsautentisering och återställ ditt lösenord omedelbart.</p>
 {{- end }}

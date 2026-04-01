@@ -1,4 +1,4 @@
 <p>您好，</p>
-<p>有人请求将您账户的电子邮件地址从 <strong>{{ model.email }}</strong> 更改为 <strong>{{ model.new_email }}</strong>。</p>
+<p>有人请求将您账户的电子邮件地址从 <strong>{{ model.email | html.escape }}</strong> 更改为 <strong>{{ model.new_email | html.escape }}</strong>。</p>
 <p>如果此更改是您本人发起的，确认邮件已发送至新地址。</p>
 <p><strong>如果您未请求此更改</strong>，您的账户可能已被盗用。请立即重置密码并联系支持团队。</p>

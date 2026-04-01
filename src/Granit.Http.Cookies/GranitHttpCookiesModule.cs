@@ -1,5 +1,7 @@
 using Granit.Http.Cookies.Extensions;
+using Granit.Http.Cookies.Internal;
 using Granit.Modularity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Http.Cookies;
 
@@ -11,6 +13,10 @@ namespace Granit.Http.Cookies;
 public sealed class GranitHttpCookiesModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.AddGranitCookies(_ => { });
+
+        context.Services.AddSingleton<ICookieDefinitionContributor, AntiforgeryCookieDefinitionContributor>();
+    }
 }
