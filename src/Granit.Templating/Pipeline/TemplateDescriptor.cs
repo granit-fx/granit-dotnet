@@ -24,4 +24,17 @@ public sealed class TemplateDescriptor
     /// <c>null</c> for embedded (code-level) templates with no revision tracking.
     /// </summary>
     public Guid? RevisionId { get; init; }
+
+    /// <summary>
+    /// Layout template name assigned to this template by an administrator.
+    /// Takes precedence over <see cref="Layouts.ILayoutRegistry"/> code-level defaults.
+    /// <c>null</c> means "use the registry default" (or no layout if no match).
+    /// </summary>
+    public string? LayoutName { get; init; }
+
+    /// <summary>
+    /// Optional extra top-level variables injected into the template context.
+    /// Used by the layout system to inject <c>{{ body }}</c> with pre-rendered content.
+    /// </summary>
+    public IReadOnlyDictionary<string, object>? ExtraVariables { get; init; }
 }

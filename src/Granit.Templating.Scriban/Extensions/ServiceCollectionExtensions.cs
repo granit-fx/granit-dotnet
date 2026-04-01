@@ -4,6 +4,7 @@ using Granit.Templating.Scriban.GlobalContexts;
 using Granit.Templating.Scriban.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Templating.Scriban.Extensions;
 
@@ -19,8 +20,10 @@ public static class ServiceCollectionExtensions
     /// Registers the following services:
     /// <list type="bullet">
     ///   <item><see cref="ITemplateEngine"/> → <see cref="ScribanTemplateEngine"/> (singleton)</item>
+    ///   <item><see cref="GranitTemplateLoader"/> — enables <c>{{ include 'template_name' }}</c> via resolver chain</item>
     ///   <item><c>now.*</c> global context (singleton, uses <c>IClock</c>)</item>
     ///   <item><c>context.*</c> global context (singleton, soft-depends on <c>ICurrentTenant</c>)</item>
+    ///   <item><c>app.*</c> global context (singleton, bound to <c>Granit:Templating:App</c>)</item>
     /// </list>
     /// <para>
     /// Also calls <see cref="ServiceCollectionExtensions.AddGranitTemplating"/> to ensure the
@@ -34,10 +37,16 @@ public static class ServiceCollectionExtensions
     {
         services.AddGranitTemplating();
 
-        services.TryAddSingleton<ITemplateEngine, ScribanTemplateEngine>();
+        services.TryAddSingleton<GranitTemplateLoader>();
+        services.TryAddSingleton<ITemplateEngine>(sp =>
+            new ScribanTemplateEngine(sp.GetService<GranitTemplateLoader>()));
 
         services.AddTemplateGlobalContext<NowGlobalContext>();
         services.AddTemplateGlobalContext<ExecutionContextGlobalContext>();
+        services.AddTemplateGlobalContext<AppGlobalContext>();
+
+        services.AddOptions<AppGlobalContextOptions>()
+            .BindConfiguration(AppGlobalContextOptions.SectionName);
 
         return services;
     }

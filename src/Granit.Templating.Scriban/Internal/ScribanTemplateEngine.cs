@@ -23,8 +23,17 @@ namespace Granit.Templating.Scriban.Internal;
 /// (e.g. <c>{{ model.first_name }}</c>). Global contexts are injected under their
 /// <see cref="ITemplateGlobalContext.ContextName"/> (e.g. <c>{{ now.date }}</c>).
 /// </para>
+/// <para>
+/// <strong>Include support:</strong> when a <see cref="GranitTemplateLoader"/> is provided,
+/// templates can use <c>{{ include 'template_name' }}</c> to include other templates resolved
+/// through the standard <see cref="ITemplateResolver"/> chain.
+/// </para>
+/// <para>
+/// <strong>Extra variables:</strong> <see cref="TemplateDescriptor.ExtraVariables"/> are injected
+/// as top-level Scriban variables (e.g. <c>{{ body }}</c> for layout rendering).
+/// </para>
 /// </remarks>
-internal sealed class ScribanTemplateEngine : ITemplateEngine
+internal sealed class ScribanTemplateEngine(GranitTemplateLoader? templateLoader = null) : ITemplateEngine
 {
     private const int MaxLoopIterations = 500;
     private const int MaxRecursionDepth = 50;
@@ -77,7 +86,7 @@ internal sealed class ScribanTemplateEngine : ITemplateEngine
             return parsed;
         });
 
-        TemplateContext context = BuildContext(data, globalContexts, cancellationToken);
+        TemplateContext context = BuildContext(descriptor, data, globalContexts, cancellationToken);
         string rendered = await template.RenderAsync(context).ConfigureAwait(false);
 
         return new TextRenderedContent(rendered, targetFormat)
@@ -86,7 +95,8 @@ internal sealed class ScribanTemplateEngine : ITemplateEngine
         };
     }
 
-    private static TemplateContext BuildContext<TData>(
+    private TemplateContext BuildContext<TData>(
+        TemplateDescriptor descriptor,
         TData data,
         IReadOnlyList<ITemplateGlobalContext> globalContexts,
         CancellationToken cancellationToken) where TData : notnull
@@ -106,6 +116,15 @@ internal sealed class ScribanTemplateEngine : ITemplateEngine
             globals.SetValue(globalContext.ContextName, contextObj, readOnly: true);
         }
 
+        // Inject extra variables as top-level raw values (used by layout system for {{ body }})
+        if (descriptor.ExtraVariables is not null)
+        {
+            foreach ((string key, object value) in descriptor.ExtraVariables)
+            {
+                globals.SetValue(key, value, readOnly: true);
+            }
+        }
+
         TemplateContext templateContext = new(globals)
         {
             // Sandboxing: no bypass of member visibility restrictions
@@ -120,6 +139,9 @@ internal sealed class ScribanTemplateEngine : ITemplateEngine
 
             // Propagate cancellation to the Scriban render loop
             CancellationToken = cancellationToken,
+
+            // Enable {{ include 'template_name' }} via the resolver chain
+            TemplateLoader = templateLoader,
         };
 
         return templateContext;

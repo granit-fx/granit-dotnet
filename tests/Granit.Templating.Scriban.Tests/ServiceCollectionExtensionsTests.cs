@@ -22,7 +22,6 @@ public sealed class ServiceCollectionExtensionsTests
 
         services.ShouldContain(d =>
             d.ServiceType == typeof(ITemplateEngine) &&
-            d.ImplementationType == typeof(ScribanTemplateEngine) &&
             d.Lifetime == ServiceLifetime.Singleton);
     }
 
@@ -38,14 +37,14 @@ public sealed class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitTemplatingWithScriban_Registers_Two_ITemplateGlobalContexts()
+    public void AddGranitTemplatingWithScriban_Registers_Three_ITemplateGlobalContexts()
     {
         ServiceCollection services = new();
         services.AddGranitTemplatingWithScriban();
 
-        // NowGlobalContext + ExecutionContextGlobalContext
+        // NowGlobalContext + ExecutionContextGlobalContext + AppGlobalContext
         services.Count(d => d.ServiceType == typeof(ITemplateGlobalContext))
-                .ShouldBe(2, "NowGlobalContext and ExecutionContextGlobalContext must be registered");
+                .ShouldBe(3, "NowGlobalContext, ExecutionContextGlobalContext and AppGlobalContext must be registered");
     }
 
     [Fact]
