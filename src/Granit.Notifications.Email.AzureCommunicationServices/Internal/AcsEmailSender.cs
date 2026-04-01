@@ -42,9 +42,9 @@ internal sealed partial class AcsEmailSender(
 
         string? senderName = message.FromNameOverride ?? opts.DefaultSenderName;
 
-        // ACS uses "Display Name <email>" format for sender
+        // ACS uses RFC 5322 formatted From (e.g. "Display Name <email@example.com>")
         string formattedSender = !string.IsNullOrEmpty(senderName)
-            ? $"{senderName} <{senderAddress}>"
+            ? $"\"{senderName}\" <{senderAddress}>"
             : senderAddress;
 
         var acsMessage = new Azure.Communication.Email.EmailMessage(

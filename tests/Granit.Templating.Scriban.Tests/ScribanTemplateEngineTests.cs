@@ -4,6 +4,7 @@ using Granit.Templating.Pipeline;
 using Granit.Templating.Scriban;
 using Granit.Templating.Scriban.Exceptions;
 using Granit.Templating.Scriban.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -15,7 +16,7 @@ internal sealed record PersonModel(string FirstName, string LastName, int? Age =
 
 public sealed class ScribanTemplateEngineTests
 {
-    private static readonly ScribanTemplateEngine Sut = new();
+    private static readonly ScribanTemplateEngine Sut = new(new ServiceCollection().BuildServiceProvider());
 
     // ---- CanRender -------------------------------------------------------
 

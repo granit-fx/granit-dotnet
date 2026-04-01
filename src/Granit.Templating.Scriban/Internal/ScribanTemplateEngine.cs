@@ -3,6 +3,8 @@ using Granit.Templating.GlobalContext;
 using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
 using Granit.Templating.Scriban.Exceptions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Scriban;
 using Scriban.Runtime;
 
@@ -33,7 +35,9 @@ namespace Granit.Templating.Scriban.Internal;
 /// as top-level Scriban variables (e.g. <c>{{ body }}</c> for layout rendering).
 /// </para>
 /// </remarks>
-internal sealed class ScribanTemplateEngine(GranitTemplateLoader? templateLoader = null) : ITemplateEngine
+internal sealed class ScribanTemplateEngine(
+    IServiceProvider serviceProvider,
+    GranitTemplateLoader? templateLoader = null) : ITemplateEngine
 {
     private const int MaxLoopIterations = 500;
     private const int MaxRecursionDepth = 50;
@@ -123,6 +127,13 @@ internal sealed class ScribanTemplateEngine(GranitTemplateLoader? templateLoader
             {
                 globals.SetValue(key, value, readOnly: true);
             }
+        }
+
+        // Register {{ t "Resource:Key" arg1 arg2 }} localization function
+        IStringLocalizerFactory? localizerFactory = serviceProvider.GetService<IStringLocalizerFactory>();
+        if (localizerFactory is not null)
+        {
+            globals.SetValue("t", new TemplateLocalizationFunction(localizerFactory), readOnly: true);
         }
 
         TemplateContext templateContext = new(globals)

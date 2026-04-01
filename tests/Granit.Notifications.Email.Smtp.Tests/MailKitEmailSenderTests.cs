@@ -327,6 +327,85 @@ public sealed class MailKitEmailSenderTests
     }
 
     // -------------------------------------------------------------------------
+    // Custom headers
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task SendAsync_WithHeaders_AddsMimeHeaders()
+    {
+        (MailKitEmailSender? sender, ISmtpTransport? transport) = CreateSender();
+        MimeMessage? captured = null;
+        await transport.SendAsync(Arg.Do<MimeMessage>(m => captured = m), Arg.Any<CancellationToken>());
+
+        EmailMessage message = new()
+        {
+            To = "recipient@example.com",
+            Subject = "Test subject",
+            HtmlBody = "<p>Hello</p>",
+            Headers = new Dictionary<string, string>
+            {
+                ["List-Unsubscribe"] = "<https://example.com/unsub>",
+            },
+        };
+
+        await sender.SendAsync(message, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Headers["List-Unsubscribe"].ShouldBe("<https://example.com/unsub>");
+    }
+
+    // -------------------------------------------------------------------------
+    // ToName
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task SendAsync_WithToName_UsesMailboxAddressWithName()
+    {
+        (MailKitEmailSender? sender, ISmtpTransport? transport) = CreateSender();
+        MimeMessage? captured = null;
+        await transport.SendAsync(Arg.Do<MimeMessage>(m => captured = m), Arg.Any<CancellationToken>());
+
+        EmailMessage message = new()
+        {
+            To = "recipient@example.com",
+            Subject = "Test subject",
+            HtmlBody = "<p>Hello</p>",
+            ToName = "John Doe",
+        };
+
+        await sender.SendAsync(message, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        ((MailboxAddress)captured.To[0]).Name.ShouldBe("John Doe");
+    }
+
+    // -------------------------------------------------------------------------
+    // Sender name formatting
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task SendAsync_WithDefaultSenderName_UsesNameInFrom()
+    {
+        SmtpOptions opts = new()
+        {
+            Host = "mail.example.com",
+            Port = 587,
+            UseSsl = false,
+            DefaultSenderName = "My App",
+            DefaultSenderEmail = "noreply@example.com",
+            TimeoutSeconds = 5,
+        };
+        (MailKitEmailSender? sender, ISmtpTransport? transport) = CreateSender(opts);
+        MimeMessage? captured = null;
+        await transport.SendAsync(Arg.Do<MimeMessage>(m => captured = m), Arg.Any<CancellationToken>());
+
+        await sender.SendAsync(SimpleMessage(), TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        ((MailboxAddress)captured.From[0]).Name.ShouldBe("My App");
+    }
+
+    // -------------------------------------------------------------------------
     // Timeout calculation
     // -------------------------------------------------------------------------
 

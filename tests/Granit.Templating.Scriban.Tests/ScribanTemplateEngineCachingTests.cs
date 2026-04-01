@@ -2,6 +2,7 @@ using Granit.Templating.GlobalContext;
 using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
 using Granit.Templating.Scriban.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
@@ -14,7 +15,7 @@ public sealed class ScribanTemplateEngineCachingTests
     [Fact]
     public async Task RenderAsync_SameRevisionId_UsesCachedTemplate()
     {
-        ScribanTemplateEngine sut = new();
+        ScribanTemplateEngine sut = new(new ServiceCollection().BuildServiceProvider());
         var revisionId = Guid.NewGuid();
 
         TemplateDescriptor descriptor = new()
@@ -39,7 +40,7 @@ public sealed class ScribanTemplateEngineCachingTests
     [Fact]
     public async Task RenderAsync_NullRevisionId_CachesByContent()
     {
-        ScribanTemplateEngine sut = new();
+        ScribanTemplateEngine sut = new(new ServiceCollection().BuildServiceProvider());
 
         TemplateDescriptor descriptor = new()
         {
@@ -63,7 +64,7 @@ public sealed class ScribanTemplateEngineCachingTests
     [Fact]
     public async Task RenderAsync_PropagatesTargetFormat()
     {
-        ScribanTemplateEngine sut = new();
+        ScribanTemplateEngine sut = new(new ServiceCollection().BuildServiceProvider());
 
         TemplateDescriptor descriptor = new()
         {
@@ -82,7 +83,7 @@ public sealed class ScribanTemplateEngineCachingTests
     [Fact]
     public async Task RenderAsync_MultipleGlobalContexts_AllInjected()
     {
-        ScribanTemplateEngine sut = new();
+        ScribanTemplateEngine sut = new(new ServiceCollection().BuildServiceProvider());
 
         TemplateDescriptor descriptor = new()
         {

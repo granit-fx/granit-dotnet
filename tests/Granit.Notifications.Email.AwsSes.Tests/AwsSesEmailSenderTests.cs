@@ -289,6 +289,113 @@ public sealed class AwsSesEmailSenderTests
     }
 
     // -------------------------------------------------------------------------
+    // Custom headers
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task SendAsync_WithHeaders_BuildsMessageHeaders()
+    {
+        (AwsSesEmailSender sender, IAwsSesTransport transport) = CreateSender();
+        SendEmailRequest? captured = null;
+        await transport.SendEmailAsync(
+            Arg.Do<SendEmailRequest>(r => captured = r),
+            Arg.Any<CancellationToken>());
+
+        EmailMessage message = new()
+        {
+            To = "recipient@example.com",
+            Subject = "Test subject",
+            HtmlBody = "<p>Hello</p>",
+            Headers = new Dictionary<string, string>
+            {
+                ["List-Unsubscribe"] = "<https://example.com/unsub>",
+                ["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click",
+            },
+        };
+
+        await sender.SendAsync(message, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Content.Simple.Headers.ShouldNotBeNull();
+        captured.Content.Simple.Headers.Count.ShouldBe(2);
+        captured.Content.Simple.Headers.ShouldContain(h =>
+            h.Name == "List-Unsubscribe" && h.Value == "<https://example.com/unsub>");
+        captured.Content.Simple.Headers.ShouldContain(h =>
+            h.Name == "List-Unsubscribe-Post" && h.Value == "List-Unsubscribe=One-Click");
+    }
+
+    [Fact]
+    public async Task SendAsync_WithoutHeaders_DoesNotSetMessageHeaders()
+    {
+        (AwsSesEmailSender sender, IAwsSesTransport transport) = CreateSender();
+        SendEmailRequest? captured = null;
+        await transport.SendEmailAsync(
+            Arg.Do<SendEmailRequest>(r => captured = r),
+            Arg.Any<CancellationToken>());
+
+        await sender.SendAsync(SimpleMessage(), TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.Content.Simple.Headers.ShouldBeNull();
+    }
+
+    // -------------------------------------------------------------------------
+    // Sender name formatting
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task SendAsync_WithDefaultSenderName_FormatsRfc5322From()
+    {
+        AwsSesOptions opts = new()
+        {
+            Region = "eu-west-1",
+            DefaultSenderEmail = "noreply@example.com",
+            DefaultSenderName = "My App",
+            TimeoutSeconds = 5,
+        };
+        (AwsSesEmailSender sender, IAwsSesTransport transport) = CreateSender(opts);
+        SendEmailRequest? captured = null;
+        await transport.SendEmailAsync(
+            Arg.Do<SendEmailRequest>(r => captured = r),
+            Arg.Any<CancellationToken>());
+
+        await sender.SendAsync(SimpleMessage(), TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.FromEmailAddress.ShouldBe("\"My App\" <noreply@example.com>");
+    }
+
+    [Fact]
+    public async Task SendAsync_WithFromNameOverride_UsesOverrideName()
+    {
+        AwsSesOptions opts = new()
+        {
+            Region = "eu-west-1",
+            DefaultSenderEmail = "noreply@example.com",
+            DefaultSenderName = "Default",
+            TimeoutSeconds = 5,
+        };
+        (AwsSesEmailSender sender, IAwsSesTransport transport) = CreateSender(opts);
+        SendEmailRequest? captured = null;
+        await transport.SendEmailAsync(
+            Arg.Do<SendEmailRequest>(r => captured = r),
+            Arg.Any<CancellationToken>());
+
+        EmailMessage message = new()
+        {
+            To = "recipient@example.com",
+            Subject = "Test subject",
+            HtmlBody = "<p>Hello</p>",
+            FromNameOverride = "Override Name",
+        };
+
+        await sender.SendAsync(message, TestContext.Current.CancellationToken);
+
+        captured.ShouldNotBeNull();
+        captured.FromEmailAddress.ShouldBe("\"Override Name\" <noreply@example.com>");
+    }
+
+    // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
 

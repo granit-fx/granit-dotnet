@@ -39,7 +39,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<GranitTemplateLoader>();
         services.TryAddSingleton<ITemplateEngine>(sp =>
-            new ScribanTemplateEngine(sp.GetService<GranitTemplateLoader>()));
+            new ScribanTemplateEngine(sp, sp.GetService<GranitTemplateLoader>()));
 
         services.AddTemplateGlobalContext<NowGlobalContext>();
         services.AddTemplateGlobalContext<ExecutionContextGlobalContext>();

@@ -140,6 +140,56 @@ public sealed class BrevoNotificationProviderTests : IDisposable
     }
 
     [Fact]
+    public async Task SendEmailAsync_WithHeaders_IncludesHeadersInPayload()
+    {
+        IEmailSender emailSender = _provider;
+
+        await emailSender.SendAsync(
+            new EmailMessage
+            {
+                To = "user@test.com",
+                Subject = "Test",
+                HtmlBody = "<p>Hi</p>",
+                Headers = new Dictionary<string, string>
+                {
+                    ["List-Unsubscribe"] = "<https://example.com/unsub>",
+                    ["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click",
+                },
+            },
+            TestContext.Current.CancellationToken);
+
+        _handler.Requests.Count.ShouldBe(1);
+        string body = _handler.Requests[0].Body;
+        using var doc = JsonDocument.Parse(body);
+        JsonElement root = doc.RootElement;
+        JsonElement headers = root.GetProperty("headers");
+        headers.GetProperty("List-Unsubscribe").GetString().ShouldBe("<https://example.com/unsub>");
+        headers.GetProperty("List-Unsubscribe-Post").GetString().ShouldBe("List-Unsubscribe=One-Click");
+    }
+
+    [Fact]
+    public async Task SendEmailAsync_WithFromNameOverride_UsesOverrideName()
+    {
+        IEmailSender emailSender = _provider;
+
+        await emailSender.SendAsync(
+            new EmailMessage
+            {
+                To = "user@test.com",
+                Subject = "Test",
+                HtmlBody = "<p>Hi</p>",
+                FromNameOverride = "Override Sender",
+            },
+            TestContext.Current.CancellationToken);
+
+        _handler.Requests.Count.ShouldBe(1);
+        string body = _handler.Requests[0].Body;
+        using var doc = JsonDocument.Parse(body);
+        JsonElement root = doc.RootElement;
+        root.GetProperty("sender").GetProperty("name").GetString().ShouldBe("Override Sender");
+    }
+
+    [Fact]
     public async Task SendEmailAsync_ThrowsOnNon2xx()
     {
         _handler.ResponseStatusCode = HttpStatusCode.InternalServerError;

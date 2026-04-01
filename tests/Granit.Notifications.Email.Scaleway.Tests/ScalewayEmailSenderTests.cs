@@ -196,6 +196,38 @@ public sealed class ScalewayEmailSenderTests
     }
 
     // -------------------------------------------------------------------------
+    // Custom headers
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task SendAsync_WithHeaders_IncludesAdditionalHeadersInPayload()
+    {
+        (ScalewayEmailSender sender, MockHttpMessageHandler handler) = CreateSender();
+
+        EmailMessage message = new()
+        {
+            To = "recipient@example.com",
+            Subject = "Test subject",
+            HtmlBody = "<p>Hello</p>",
+            Headers = new Dictionary<string, string>
+            {
+                ["List-Unsubscribe"] = "<https://example.com/unsub>",
+                ["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click",
+            },
+        };
+
+        await sender.SendAsync(message, TestContext.Current.CancellationToken);
+
+        handler.LastRequest.ShouldNotBeNull();
+        string body = await handler.LastRequest.Content!.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        using var doc = JsonDocument.Parse(body);
+        JsonElement root = doc.RootElement;
+        JsonElement headers = root.GetProperty("additional_headers");
+        headers.GetProperty("List-Unsubscribe").GetString().ShouldBe("<https://example.com/unsub>");
+        headers.GetProperty("List-Unsubscribe-Post").GetString().ShouldBe("List-Unsubscribe=One-Click");
+    }
+
+    // -------------------------------------------------------------------------
     // Error handling
     // -------------------------------------------------------------------------
 
