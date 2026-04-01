@@ -130,8 +130,8 @@
       },
       "JasperFx": {
         "type": "Transitive",
-        "resolved": "1.22.0",
-        "contentHash": "Z36/wMQ7g7aKu2CQpTfn2xkXgLl//71pv1L01m25GJ3f/VeO45WeMTK0/wn2gvRjw4uq57k4BivRduoevcHq+w==",
+        "resolved": "1.23.0",
+        "contentHash": "Tr7fZJjPQegv+aCWEXQiZJuIqVcs+rBW0K4EkMAZ6Ns3AhfzRszySClEXIfnOOCJco5rZa07vf/oMsStpZYivQ==",
         "dependencies": {
           "FastExpressionCompiler": "5.3.0",
           "ImTools": "4.0.0",
@@ -145,10 +145,10 @@
       },
       "JasperFx.Events": {
         "type": "Transitive",
-        "resolved": "1.24.1",
-        "contentHash": "SsmuFZCutD9NNsZAH7t9Hbrmo6YccxPkf0E5OdQxitxmHx3f/OkNzplGyhEbPwoURcRJzYMCtk2oUkqQjdG6Ew==",
+        "resolved": "1.25.0",
+        "contentHash": "+CKFTEIcApGVbj24kZUGLf55KGrf86yQI4ARvRWRTD+d7d/S4oZDkbVUggOD9BjC14NmiigcU52pzPHY2D3eVA==",
         "dependencies": {
-          "JasperFx": "1.21.3"
+          "JasperFx": "1.23.0"
         }
       },
       "JasperFx.RuntimeCompiler": {
@@ -371,6 +371,11 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.5",
           "Microsoft.Extensions.Options": "10.0.5"
         }
+      },
+      "Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.0",
+        "contentHash": "jAhZbzDa117otUBMuQQ6JzSfuDbBBrfOs5jw5l7l9hKpzt+LjYKVjSauXG2yV9u7BqUSLUtKLwcerDQDeQ+0Xw=="
       },
       "Microsoft.Extensions.FileProviders.Abstractions": {
         "type": "Transitive",
@@ -1008,8 +1013,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.17",
-        "contentHash": "v44WF0m58HBwaUiZVrvuetICcoaf2ZvIYu8JxsaJRRtsrNLlCIqjCcncTTDIy7pUiC2r2EO3eCJqcqGaTKZplQ=="
+        "resolved": "2.13.18",
+        "contentHash": "SOe5I8KspXwmcMbey+6G4drRWhCa/ON/ZjyVKfm5FpXvcsCmb9MfiVcKAiQ8UYV+ki3fAaqcCFc5ahzx/NTXOw=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",
@@ -1029,17 +1034,18 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.26.0",
-        "contentHash": "UwdixZuuDDomNaItrjjKhjNjiRD2QrsalwhyQbWHWIdoSflYprAqcnD+qF+khQZQjHHfOCwkUKSLSHzTVd3B8w==",
+        "resolved": "5.27.0",
+        "contentHash": "cpuvQ7k0/ezc3pAIDYHydIhh+WE1VUKtQGkc9dLg01fj2bC0LHwvxTcrCYz2VfuTM1xCbR7rInNSXErGZydosQ==",
         "dependencies": {
-          "JasperFx": "1.22.0",
-          "JasperFx.Events": "1.24.1",
+          "JasperFx": "1.23.0",
+          "JasperFx.Events": "1.25.0",
           "JasperFx.RuntimeCompiler": "4.4.0",
           "Microsoft.Extensions.Caching.Memory": "10.0.0",
           "Microsoft.Extensions.Configuration": "10.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "10.0.0",
           "Microsoft.Extensions.Configuration.Binder": "10.0.0",
           "Microsoft.Extensions.Configuration.Json": "10.0.0",
+          "Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions": "10.0.0",
           "Microsoft.Extensions.Hosting": "10.0.0",
           "Microsoft.Extensions.Hosting.Abstractions": "10.0.0",
           "Microsoft.Extensions.ObjectPool": "10.0.2",

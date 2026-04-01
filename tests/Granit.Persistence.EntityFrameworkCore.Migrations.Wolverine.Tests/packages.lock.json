@@ -114,8 +114,8 @@
       },
       "JasperFx": {
         "type": "Transitive",
-        "resolved": "1.22.0",
-        "contentHash": "Z36/wMQ7g7aKu2CQpTfn2xkXgLl//71pv1L01m25GJ3f/VeO45WeMTK0/wn2gvRjw4uq57k4BivRduoevcHq+w==",
+        "resolved": "1.23.0",
+        "contentHash": "Tr7fZJjPQegv+aCWEXQiZJuIqVcs+rBW0K4EkMAZ6Ns3AhfzRszySClEXIfnOOCJco5rZa07vf/oMsStpZYivQ==",
         "dependencies": {
           "FastExpressionCompiler": "5.3.0",
           "ImTools": "4.0.0",
@@ -129,10 +129,10 @@
       },
       "JasperFx.Events": {
         "type": "Transitive",
-        "resolved": "1.24.1",
-        "contentHash": "SsmuFZCutD9NNsZAH7t9Hbrmo6YccxPkf0E5OdQxitxmHx3f/OkNzplGyhEbPwoURcRJzYMCtk2oUkqQjdG6Ew==",
+        "resolved": "1.25.0",
+        "contentHash": "+CKFTEIcApGVbj24kZUGLf55KGrf86yQI4ARvRWRTD+d7d/S4oZDkbVUggOD9BjC14NmiigcU52pzPHY2D3eVA==",
         "dependencies": {
-          "JasperFx": "1.21.3"
+          "JasperFx": "1.23.0"
         }
       },
       "JasperFx.RuntimeCompiler": {
@@ -1040,17 +1040,18 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.26.0",
-        "contentHash": "UwdixZuuDDomNaItrjjKhjNjiRD2QrsalwhyQbWHWIdoSflYprAqcnD+qF+khQZQjHHfOCwkUKSLSHzTVd3B8w==",
+        "resolved": "5.27.0",
+        "contentHash": "cpuvQ7k0/ezc3pAIDYHydIhh+WE1VUKtQGkc9dLg01fj2bC0LHwvxTcrCYz2VfuTM1xCbR7rInNSXErGZydosQ==",
         "dependencies": {
-          "JasperFx": "1.22.0",
-          "JasperFx.Events": "1.24.1",
+          "JasperFx": "1.23.0",
+          "JasperFx.Events": "1.25.0",
           "JasperFx.RuntimeCompiler": "4.4.0",
           "Microsoft.Extensions.Caching.Memory": "10.0.0",
           "Microsoft.Extensions.Configuration": "10.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "10.0.0",
           "Microsoft.Extensions.Configuration.Binder": "10.0.0",
           "Microsoft.Extensions.Configuration.Json": "10.0.0",
+          "Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions": "10.0.0",
           "Microsoft.Extensions.Hosting": "10.0.0",
           "Microsoft.Extensions.Hosting.Abstractions": "10.0.0",
           "Microsoft.Extensions.ObjectPool": "10.0.2",
@@ -1061,11 +1062,11 @@
       "WolverineFx.FluentValidation": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.26.0",
-        "contentHash": "VdcAjqrm4LOG3Py8LkaQr5YCNDo/wLxAjmeHM602YKIB3jgyZ+vu+ClxyyukNBH0AJ+gF+xr36n4dRyaPwoxDg==",
+        "resolved": "5.27.0",
+        "contentHash": "x3tFTfwhUDIohhglaLXAQ2DW3bF3HiT5RIcejtRrlrg9yGR48pe7DSkVlgK4tXTJ84CY7L3y1t0kJk+qkPC9WQ==",
         "dependencies": {
           "FluentValidation": "12.0.0",
-          "WolverineFx": "5.26.0"
+          "WolverineFx": "5.27.0"
         }
       },
       "ZiggyCreatures.FusionCache": {

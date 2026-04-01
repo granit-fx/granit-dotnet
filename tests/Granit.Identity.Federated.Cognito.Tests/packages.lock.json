@@ -66,8 +66,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.3.24",
-        "contentHash": "Bq3mONgVTGheBWfqiVxPDgy/qpcEbsHuH9ColyGFgIiW4Smr/zizfPWI5OjUmxFJ2wlsX/Ooa5654C9bZh2wvg=="
+        "resolved": "4.0.3.25",
+        "contentHash": "ug/C6csm8/GcRrMij9EtTA6k2MtRFV9EibhWNRFTISR8AGXQnSoxUKnddMpHah6ax/Tjg1GW0zk1i0/wcvEqmg=="
       },
       "Castle.Core": {
         "type": "Transitive",
@@ -300,10 +300,10 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.6.5",
-        "contentHash": "lB5OUn7w4nu53TRah+r51L+vtSiFpRxnluII0B52Wn/fTqlJY1UGebFZtkOPTDdKYP9Kk2/cAoVRnVPjk0e8UQ==",
+        "resolved": "4.0.6.6",
+        "contentHash": "jqKTmIw7x20SG5dYc5DnhdfM7961vZglkVn7/OUOcTS+a8mUya8I5ClmoiZpOqk6uqZxn4ZtvoNRC4vv/CnmAw==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.24, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.25, 5.0.0)"
         }
       },
       "Microsoft.Extensions.Configuration.Binder": {
