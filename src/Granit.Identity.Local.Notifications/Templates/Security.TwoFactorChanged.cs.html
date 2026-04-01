@@ -1,0 +1,8 @@
+<p>Dobrý den,</p>
+{{- if model.enabled }}
+<p>Dvoufaktorové ověření bylo na vašem účtu <strong>{{ model.email }}</strong> <strong>zapnuto</strong>.</p>
+<p>Váš účet je nyní bezpečnější. Při přihlášení budete požádáni o ověřovací kód.</p>
+{{- else }}
+<p>Dvoufaktorové ověření bylo na vašem účtu <strong>{{ model.email }}</strong> <strong>vypnuto</strong>.</p>
+<p><strong>Pokud jste tuto změnu neprovedli</strong>, váš účet mohl být kompromitován. Okamžitě znovu zapněte dvoufaktorové ověření a obnovte heslo.</p>
+{{- end }}

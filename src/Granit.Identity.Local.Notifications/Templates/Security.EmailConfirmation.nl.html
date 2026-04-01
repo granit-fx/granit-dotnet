@@ -1,0 +1,11 @@
+<p>Hallo,</p>
+<p>Bevestig uw e-mailadres <strong>{{ model.email }}</strong> om uw account te activeren.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.confirm_link }}" class="btn">Mijn e-mail bevestigen</a>
+</p>
+<p>Deze link vervalt over <strong>24 uur</strong>.</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  Als de knop niet werkt, kopieer en plak de volgende link in uw browser:<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
+</p>

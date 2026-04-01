@@ -1,0 +1,11 @@
+<p>Merhaba,</p>
+<p>Lütfen <strong>{{ model.new_email }}</strong> adresinin yeni e-posta adresiniz olduğunu doğrulayın.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.confirm_link }}" class="btn">Yeni e-postayı doğrula</a>
+</p>
+<p>Bu bağlantı <strong>24 saat</strong> içinde geçerliliğini yitirecektir. Bu değişikliği talep etmediyseniz bu e-postayı güvenle yok sayabilirsiniz.</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  Düğme çalışmıyorsa aşağıdaki bağlantıyı kopyalayıp tarayıcınıza yapıştırın:<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
+</p>

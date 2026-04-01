@@ -1,0 +1,11 @@
+<p>Hi,</p>
+<p>Please confirm your email address <strong>{{ model.email }}</strong> to activate your account.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.confirm_link }}" class="btn">Confirm my email</a>
+</p>
+<p>This link expires in <strong>24 hours</strong>.</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  If the button doesn't work, copy and paste the following link into your browser:<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
+</p>

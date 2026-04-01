@@ -1,0 +1,8 @@
+<p>Olá,</p>
+{{- if model.enabled }}
+<p>A autenticação de dois fatores foi <strong>ativada</strong> na sua conta <strong>{{ model.email }}</strong>.</p>
+<p>A sua conta está agora mais segura. Ser-lhe-á solicitado um código de verificação ao iniciar sessão.</p>
+{{- else }}
+<p>A autenticação de dois fatores foi <strong>desativada</strong> na sua conta <strong>{{ model.email }}</strong>.</p>
+<p><strong>Se não efetuou esta alteração</strong>, a sua conta pode estar comprometida. Reative a autenticação de dois fatores e reponha a sua palavra-passe imediatamente.</p>
+{{- end }}

@@ -1,0 +1,11 @@
+<p>Merhaba,</p>
+<p>Hesabınızı etkinleştirmek için lütfen <strong>{{ model.email }}</strong> e-posta adresinizi doğrulayın.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.confirm_link }}" class="btn">E-postamı doğrula</a>
+</p>
+<p>Bu bağlantı <strong>24 saat</strong> içinde geçerliliğini yitirecektir.</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  Düğme çalışmıyorsa aşağıdaki bağlantıyı kopyalayıp tarayıcınıza yapıştırın:<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
+</p>

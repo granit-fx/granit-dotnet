@@ -1,0 +1,11 @@
+<p>Hej,</p>
+<p>Vänligen bekräfta din e-postadress <strong>{{ model.email }}</strong> för att aktivera ditt konto.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.confirm_link }}" class="btn">Bekräfta min e-post</a>
+</p>
+<p>Denna länk upphör att gälla om <strong>24 timmar</strong>.</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  Om knappen inte fungerar, kopiera och klistra in följande länk i din webbläsare:<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
+</p>

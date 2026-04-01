@@ -1,0 +1,11 @@
+<p>Witaj,</p>
+<p>Potwierdź swój adres e-mail <strong>{{ model.email }}</strong>, aby aktywować swoje konto.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.confirm_link }}" class="btn">Potwierdź mój e-mail</a>
+</p>
+<p>Ten link wygasa za <strong>24 godziny</strong>.</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  Jeśli przycisk nie działa, skopiuj i wklej poniższy link do przeglądarki:<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
+</p>

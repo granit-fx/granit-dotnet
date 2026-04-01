@@ -1,0 +1,8 @@
+<p>Ciao,</p>
+{{- if model.enabled }}
+<p>L'autenticazione a due fattori è stata <strong>attivata</strong> sul tuo account <strong>{{ model.email }}</strong>.</p>
+<p>Il tuo account è ora più sicuro. Ti verrà richiesto un codice di verifica al momento dell'accesso.</p>
+{{- else }}
+<p>L'autenticazione a due fattori è stata <strong>disattivata</strong> sul tuo account <strong>{{ model.email }}</strong>.</p>
+<p><strong>Se non hai effettuato questa modifica</strong>, il tuo account potrebbe essere stato compromesso. Riattiva l'autenticazione a due fattori e reimposta la tua password immediatamente.</p>
+{{- end }}

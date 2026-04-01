@@ -1,0 +1,11 @@
+<p>こんにちは、</p>
+<p><strong>{{ model.new_email }}</strong> が新しいメールアドレスであることを確認してください。</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.confirm_link }}" class="btn">新しいメールを確認</a>
+</p>
+<p>このリンクは <strong>24 時間</strong>で有効期限が切れます。この変更をリクエストしていない場合は、このメールを無視してください。</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  ボタンが機能しない場合は、以下のリンクをコピーしてブラウザに貼り付けてください：<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
+</p>

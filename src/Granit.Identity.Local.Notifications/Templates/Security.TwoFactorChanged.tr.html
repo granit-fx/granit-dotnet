@@ -1,0 +1,8 @@
+<p>Merhaba,</p>
+{{- if model.enabled }}
+<p><strong>{{ model.email }}</strong> hesabınızda iki faktörlü kimlik doğrulama <strong>etkinleştirildi</strong>.</p>
+<p>Hesabınız artık daha güvenli. Giriş yaparken bir doğrulama kodu istenecektir.</p>
+{{- else }}
+<p><strong>{{ model.email }}</strong> hesabınızda iki faktörlü kimlik doğrulama <strong>devre dışı bırakıldı</strong>.</p>
+<p><strong>Bu değişikliği siz yapmadıysanız</strong>, hesabınız ele geçirilmiş olabilir. Lütfen iki faktörlü kimlik doğrulamayı yeniden etkinleştirin ve parolanızı hemen sıfırlayın.</p>
+{{- end }}

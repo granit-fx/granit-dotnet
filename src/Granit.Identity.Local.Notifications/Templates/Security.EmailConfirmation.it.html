@@ -1,0 +1,11 @@
+<p>Ciao,</p>
+<p>Conferma il tuo indirizzo e-mail <strong>{{ model.email }}</strong> per attivare il tuo account.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.confirm_link }}" class="btn">Conferma la mia e-mail</a>
+</p>
+<p>Questo link scade tra <strong>24 ore</strong>.</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  Se il pulsante non funziona, copia e incolla il seguente link nel tuo browser:<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
+</p>

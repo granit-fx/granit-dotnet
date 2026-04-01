@@ -1,0 +1,8 @@
+<p>Hallo,</p>
+{{- if model.enabled }}
+<p>Die Zwei-Faktor-Authentifizierung wurde für Ihr Konto <strong>{{ model.email }}</strong> <strong>aktiviert</strong>.</p>
+<p>Ihr Konto ist jetzt sicherer. Bei der Anmeldung werden Sie nach einem Bestätigungscode gefragt.</p>
+{{- else }}
+<p>Die Zwei-Faktor-Authentifizierung wurde für Ihr Konto <strong>{{ model.email }}</strong> <strong>deaktiviert</strong>.</p>
+<p><strong>Wenn Sie diese Änderung nicht vorgenommen haben</strong>, ist Ihr Konto möglicherweise kompromittiert. Bitte aktivieren Sie die Zwei-Faktor-Authentifizierung erneut und setzen Sie Ihr Passwort sofort zurück.</p>
+{{- end }}
