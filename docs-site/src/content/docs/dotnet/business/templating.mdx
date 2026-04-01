@@ -31,18 +31,18 @@ For binary document output (PDF, Excel), see
 
 <FileTree>
 - Granit.Templating/ Core pipeline: ITextTemplateRenderer, resolvers, engines, enrichers, global contexts, template store CQRS
-  - Granit.Templating.Scriban Scriban engine (sandboxed, no I/O or reflection), template caching, built-in global contexts
+  - Granit.Templating.Scriban Scriban engine (sandboxed, no I/O or reflection), template caching, built-in global contexts, include support
   - Granit.Templating.EntityFrameworkCore EF Core persistence (TemplatingDbContext), FusionCache-backed store, StoreTemplateResolver
-  - Granit.Templating.Endpoints 16 admin endpoints (CRUD, preview, publish, categories, history, variables)
+  - Granit.Templating.Endpoints 17 admin endpoints (CRUD, preview, publish, categories, layouts, history, variables)
   - Granit.Templating.Workflow Bridge to Granit.Workflow: FSM validation, approval routing, unified audit trail
 </FileTree>
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.Templating` | Core pipeline: rendering, resolution, enrichment, store interfaces | -- |
-| `Granit.Templating.Scriban` | Scriban template engine (sandboxed), `now.*` and `context.*` globals | `Granit.Templating` |
+| `Granit.Templating` | Core pipeline: rendering, resolution, enrichment, layout registry, store interfaces | -- |
+| `Granit.Templating.Scriban` | Scriban template engine (sandboxed), `now.*`, `context.*` and `app.*` globals, `{{ include }}` support | `Granit.Templating` |
 | `Granit.Templating.EntityFrameworkCore` | EF Core store, `StoreTemplateResolver` (Priority=100), FusionCache | `Granit.Templating`, `Granit.Persistence` |
-| `Granit.Templating.Endpoints` | 16 admin Minimal API endpoints, `Templates.Manage` permission | `Granit.Templating`, `Granit.Authorization` |
+| `Granit.Templating.Endpoints` | 17 admin Minimal API endpoints, `Templates.Manage` permission | `Granit.Templating`, `Granit.Authorization` |
 | `Granit.Templating.Workflow` | Workflow bridge: FSM validation, `IWorkflowTransitionRecorder` | `Granit.Templating`, `Granit.Workflow` |
 
 ## Dependency graph
@@ -128,7 +128,7 @@ enabling FSM-validated transitions and unified audit trail via `IWorkflowTransit
 
 ## Template rendering pipeline
 
-The text rendering pipeline executes three stages in sequence:
+The text rendering pipeline executes four stages in sequence:
 
 ```mermaid
 flowchart LR
@@ -143,10 +143,16 @@ flowchart LR
         R1 -->|hit| TD[TemplateDescriptor]
         R2 --> TD
     end
-    subgraph "3. Render"
+    subgraph "3. Layout"
+        TD -->|LayoutName?| LR["ILayoutRegistry"]
+        LR -->|resolve layout| LD[Layout Descriptor]
+        TD -->|no layout| ENG
+    end
+    subgraph "4. Render"
         TD --> ENG["ITemplateEngine<br/>(Scriban)"]
+        LD -->|"two-pass:<br/>content → {{ body | raw }}"| ENG
         ED --> ENG
-        GC["Global Contexts<br/>now.*, context.*"] --> ENG
+        GC["Global Contexts<br/>now.*, context.*, app.*"] --> ENG
         ENG --> RC[RenderedTextResult]
     end
 ```
@@ -165,7 +171,12 @@ Tenant scoping is the resolver's responsibility.
 | `StoreTemplateResolver` | 100 | EF Core database (published revisions, FusionCache) |
 | `EmbeddedTemplateResolver` | -100 | Assembly embedded resources (code-level fallback) |
 
-**Stage 3 -- Engine rendering.** `ITemplateEngine` selects itself via `CanRender(descriptor)`
+**Stage 3 -- Layout wrapping.** If a layout is configured (via `TemplateDescriptor.LayoutName`
+from the database, or via `ILayoutRegistry` code-level defaults), the renderer performs
+two-pass rendering: content first, then the layout with `{{ body | raw }}` = rendered content.
+See [Layouts](#layouts) below.
+
+**Stage 4 -- Engine rendering.** `ITemplateEngine` selects itself via `CanRender(descriptor)`
 based on MIME type. Scriban handles `text/html` and `text/plain`. Global contexts are injected
 under their `ContextName` namespace.
 
@@ -261,7 +272,7 @@ from `Granit.AI` to sanitize user-controlled input (prompt injection defense).
 ## Global contexts
 
 Global contexts inject ambient data into every template under a named variable.
-Two are registered by default when using `Granit.Templating.Scriban`:
+Three are registered by default when using `Granit.Templating.Scriban`:
 
 | Namespace | Variable | Example output |
 |-----------|----------|----------------|
@@ -275,6 +286,27 @@ Two are registered by default when using `Granit.Templating.Scriban`:
 | `context` | `{{ context.culture_name }}` | `fran\u00e7ais (Belgique)` |
 | `context` | `{{ context.tenant_id }}` | `3fa85f64-...` or empty |
 | `context` | `{{ context.tenant_name }}` | `Acme Corp` or empty |
+| `app` | `{{ app.name }}` | `Guava Admin` |
+| `app` | `{{ app.base_url }}` | `https://app.example.com` |
+| `app` | `{{ app.support_email }}` | `support@example.com` |
+| `app` | `{{ app.logo_url }}` | `https://cdn.example.com/logo.png` |
+
+The `app.*` context is bound to the `Granit:Templating:App` configuration section:
+
+```json
+{
+  "Granit": {
+    "Templating": {
+      "App": {
+        "Name": "Guava Admin",
+        "BaseUrl": "https://app.example.com",
+        "SupportEmail": "support@example.com",
+        "LogoUrl": "https://cdn.example.com/logo.png"
+      }
+    }
+  }
+}
+```
 
 :::caution
 User identity is intentionally **not** exposed in global contexts. Avoid injecting PII
@@ -315,6 +347,121 @@ The Scriban engine runs in strict sandboxed mode with explicit resource limits:
 - **CancellationToken propagation** -- long-running templates can be cancelled
 - **Content size limit** -- template body is capped at 1 MB via `SaveTemplateRequestValidator`
 - **MIME type allowlist** -- only `text/html` and `text/plain` are accepted
+
+## Layouts
+
+Layouts provide a shared HTML envelope (branding, header, footer) that wraps content
+templates automatically. Content templates contain only the body -- no `DOCTYPE`, no
+`<head>`, no boilerplate.
+
+### How it works
+
+The renderer performs **two-pass rendering** when a layout is configured:
+
+1. **Render content** -- the content template produces an HTML fragment
+2. **Render layout** -- the layout template receives the fragment as `{{ body | raw }}`
+   and wraps it in the full HTML structure
+
+### Layout resolution chain
+
+Layout is resolved in priority order:
+
+1. **`TemplateDescriptor.LayoutName`** (database) -- admin override per template
+2. **`ILayoutRegistry`** (code) -- pattern-based defaults registered at startup
+3. **No layout** -- template renders standalone
+
+### Registering layouts (code-level)
+
+```csharp
+// All notification emails use the email layout
+services.AddTemplateLayout("Notifications.*", "Layout.Email");
+
+// All billing templates use the document layout
+services.AddTemplateLayout("Billing.*", "Layout.Document");
+
+// Exact match takes precedence over prefix
+services.AddTemplateLayout("Billing.SpecialInvoice", "Layout.Custom");
+```
+
+Patterns support exact names (`"Billing.Invoice"`) and prefix wildcards (`"Billing.*"`).
+Exact matches always win. Among prefix matches, higher priority and longer prefix win.
+
+### Layout template example
+
+```html
+<!DOCTYPE html>
+<html lang="{{ context.culture }}">
+<head>
+    <meta charset="utf-8">
+    <title>{{ model.title }}</title>
+</head>
+<body>
+    {{- if app.logo_url != "" }}
+    <img src="{{ app.logo_url }}" alt="{{ app.name }}">
+    {{- end }}
+    {{ body | raw }}
+    {{- if app.base_url != "" }}
+    <p><a href="{{ app.base_url }}">{{ app.name }}</a></p>
+    {{- end }}
+</body>
+</html>
+```
+
+The content template is just the body:
+
+```html
+<p>You have received a new notification of type
+<strong>{{ model.notification_type }}</strong>.</p>
+```
+
+:::note[`{{ body | raw }}`]
+The `raw` filter prevents double-encoding if HTML escaping is enabled in the future.
+Today Scriban in Granit runs in raw text mode (no `HtmlEncoder`), but `raw` is a
+defensive best practice for layout templates.
+:::
+
+### Admin override
+
+An administrator can assign a specific layout to a template via the admin UI
+(`PUT /templates/{name}` with `layoutName` field). This overrides the code-level
+`ILayoutRegistry` default. Set `layoutName` to `null` to revert to the default.
+
+### Tenant override
+
+A tenant can override a layout by publishing their own version (e.g. `Layout.Email`)
+to the database template store. `StoreTemplateResolver` (priority 100) wins over the
+embedded default (priority -100). Multi-tenant query filters ensure isolation.
+
+### Safety guards
+
+- **Layout is always terminal** -- the layout render pass never resolves a layout for
+  itself, preventing infinite loops
+- **Graceful degradation** -- if the layout template cannot be resolved, a warning is
+  logged and the content renders standalone
+- **Binary skip** -- `BinaryRenderedContent` (Excel) skips layout wrapping
+
+## Template includes
+
+Templates can include other templates via `{{ include 'template_name' }}`. Included
+templates are resolved through the standard `ITemplateResolver` chain with culture
+fallback.
+
+```html
+{{ include 'Partial.EmailHeader' }}
+<p>Dear {{ model.patient_name }}, your appointment is confirmed.</p>
+{{ include 'Partial.EmailFooter' }}
+```
+
+Include support is provided by `GranitTemplateLoader`, which bridges Scriban's
+`ITemplateLoader` to Granit's resolver chain. It is registered automatically by
+`AddGranitTemplatingWithScriban()`.
+
+:::caution[Async-only]
+`GranitTemplateLoader.Load()` (sync) throws `NotSupportedException`. Always use
+`Template.RenderAsync` -- the async path calls `LoadAsync` which properly awaits
+scoped resolvers (e.g. database-backed templates). This prevents thread starvation
+under load.
+:::
 
 ## Template lifecycle
 
@@ -374,6 +521,7 @@ Templates are resolved by trying resolvers in descending priority order:
 | -100 | `EmbeddedTemplateResolver` | Assembly embedded resources | `Granit.Templating` |
 
 **Culture fallback strategy** (per resolver):
+
 1. `(Name, Culture)` -- e.g. `("Acme.Invoice", "fr-BE")`
 2. `(Name, null)` -- culture-neutral fallback
 
@@ -395,8 +543,8 @@ services.AddEmbeddedTemplates(typeof(AcmeTemplates).Assembly);
 
 ## Admin endpoints
 
-16 endpoints are registered via `MapGranitTemplating()`. All require the
-`Templates.Manage` permission.
+17 endpoints are registered via `MapGranitTemplating()`. All require the
+`Templates.Manage` permission (or `Templates.Read` for GET endpoints).
 
 ### Template endpoints
 
@@ -414,6 +562,12 @@ services.AddEmbeddedTemplates(typeof(AcmeTemplates).Assembly);
 | `GET` | `/{name}/variables` | `GetTemplateVariables` | Available variables for autocompletion |
 | `GET` | `/{name}/history` | `GetTemplateHistory` | Paginated revision history (summaries) |
 | `GET` | `/{name}/history/{revisionId}` | `GetTemplateRevisionDetail` | Full detail of a specific revision |
+
+### Layout endpoints
+
+| Method | Route | Name | Description |
+|--------|-------|------|-------------|
+| `GET` | `/layouts` | `ListAvailableLayouts` | Deduplicated list of layout names (code registry + DB) |
 
 ### Category endpoints
 
@@ -475,12 +629,13 @@ A discharge letter template stored in the EF Core store or as an embedded resour
 | Pipeline | `TemplateDescriptor`, `RenderedContent`, `TextRenderedContent`, `BinaryRenderedContent`, `RenderedTextResult` | `Granit.Templating` |
 | Keys | `TemplateType<TData>`, `TextTemplateType<TData>`, `TemplateKey`, `DocumentFormat` | `Granit.Templating` |
 | Enrichment | `ITemplateDataEnricher<TData>` | `Granit.Templating` |
-| Global context | `ITemplateGlobalContext` | `Granit.Templating` |
+| Layouts | `ILayoutRegistry`, `LayoutRegistration` | `Granit.Templating` |
+| Global context | `ITemplateGlobalContext`, `AppGlobalContextOptions` | `Granit.Templating`, `Granit.Templating.Scriban` |
 | Store (read) | `IDocumentTemplateStoreReader`, `ITemplateCategoryStoreReader` | `Granit.Templating` |
 | Store (write) | `IDocumentTemplateStoreWriter`, `ITemplateCategoryStoreWriter` | `Granit.Templating` |
 | Lifecycle | `TemplateLifecycleStatus`, `ITemplateTransitionHook`, `TemplateRevision` | `Granit.Templating` |
 | Permissions | `TemplatingPermissions.Manage` (`"Templates.Manage"`) | `Granit.Templating.Endpoints` |
-| Extensions | `AddGranitTemplating()`, `AddGranitTemplatingWithScriban()`, `AddEmbeddedTemplates()` | -- |
+| Extensions | `AddGranitTemplating()`, `AddGranitTemplatingWithScriban()`, `AddEmbeddedTemplates()`, `AddTemplateLayout()` | -- |
 | Extensions | `MapGranitTemplating()` | `Granit.Templating.Endpoints` |
 
 ## When to use — and when not to
