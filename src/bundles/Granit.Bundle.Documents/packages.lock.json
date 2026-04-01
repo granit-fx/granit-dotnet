@@ -217,6 +217,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Templating": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )",
           "Scriban": "[7.*, )"
         }
       },
