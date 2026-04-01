@@ -15872,12 +15872,57 @@
       "members": []
     },
     {
+      "name": "AccountLockedEto",
+      "fqn": "Granit.Identity.Local.Events.AccountLockedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Events/AccountLockedEto.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "EmailChangeRequestedEto",
+      "fqn": "Granit.Identity.Local.Events.EmailChangeRequestedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Events/EmailChangeRequestedEto.cs",
+      "line": 29,
+      "members": []
+    },
+    {
+      "name": "EmailConfirmationRequestedEto",
+      "fqn": "Granit.Identity.Local.Events.EmailConfirmationRequestedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Events/EmailConfirmationRequestedEto.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "PasswordChangedEto",
+      "fqn": "Granit.Identity.Local.Events.PasswordChangedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Events/PasswordChangedEto.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "PasswordResetRequestedEto",
       "fqn": "Granit.Identity.Local.Events.PasswordResetRequestedEto",
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Events/PasswordResetRequestedEto.cs",
       "line": 29,
+      "members": []
+    },
+    {
+      "name": "TwoFactorChangedEto",
+      "fqn": "Granit.Identity.Local.Events.TwoFactorChangedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Events/TwoFactorChangedEto.cs",
+      "line": 12,
       "members": []
     },
     {
