@@ -15,10 +15,15 @@ namespace Granit.Notifications.Email.Internal;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Template resolution: looks for a template named <c>{NotificationTypeName}</c>
-/// (e.g., <c>"Security.Welcome"</c>) via any registered <see cref="ITemplateResolver"/>.
-/// If found, renders with Scriban using the notification data as <c>{{ model.* }}</c>.
-/// If not found, falls back to a generic notification email.
+/// Template resolution order:
+/// <list type="number">
+///   <item>Looks for a template named <c>{NotificationTypeName}</c>
+///     (e.g., <c>"Security.Welcome"</c>) via any registered <see cref="ITemplateResolver"/>.</item>
+///   <item>Falls back to the built-in <c>Notifications.Default</c> embedded template
+///     (localized in 16 cultures) when no type-specific template exists.</item>
+/// </list>
+/// Both templates use Scriban syntax with <c>{{ model.* }}</c> for data binding.
+/// The fallback template additionally exposes <c>{{ model.notification_type }}</c>.
 /// </para>
 /// <para>
 /// Templates can be provided as embedded resources (<c>AddEmbeddedTemplates()</c>),
@@ -32,6 +37,12 @@ internal sealed partial class EmailNotificationChannel(
     IRecipientResolver recipientResolver,
     ILogger<EmailNotificationChannel> logger) : INotificationChannel
 {
+    /// <summary>
+    /// Name of the built-in fallback template embedded in this assembly.
+    /// Resolved when no type-specific template exists for the notification.
+    /// </summary>
+    internal const string FallbackTemplateName = "Notifications.Default";
+
     /// <inheritdoc />
     public string Name => NotificationChannels.Email;
 
@@ -46,12 +57,15 @@ internal sealed partial class EmailNotificationChannel(
             return;
         }
 
-        // Try to render a Scriban template for this notification type
-        RenderedEmail? rendered = await TryRenderTemplateAsync(context, cancellationToken).ConfigureAwait(false);
+        // Try type-specific template first, then fall back to the built-in default template
+        RenderedEmail? rendered = await TryRenderTemplateAsync(
+                context.NotificationTypeName, context, cancellationToken).ConfigureAwait(false)
+            ?? await TryRenderTemplateAsync(
+                FallbackTemplateName, context, cancellationToken).ConfigureAwait(false);
 
         string subject = rendered?.Subject ?? context.NotificationTypeName.Replace('.', ' ');
         string htmlBody = rendered?.Html
-            ?? $"<p>You have a new notification of type <strong>{context.NotificationTypeName}</strong>.</p>";
+            ?? $"<p>{context.NotificationTypeName}</p>";
 
         await sender.SendAsync(new EmailMessage
         {
@@ -63,12 +77,12 @@ internal sealed partial class EmailNotificationChannel(
     }
 
     /// <summary>
-    /// Attempts to resolve and render a Scriban template named after the notification type.
+    /// Attempts to resolve and render a Scriban template by name.
     /// Extracts the subject from the HTML <c>&lt;title&gt;</c> tag if present.
     /// Returns <see langword="null"/> if no template is found or templating is not configured.
     /// </summary>
     private async Task<RenderedEmail?> TryRenderTemplateAsync(
-        NotificationDeliveryContext context, CancellationToken cancellationToken)
+        string templateName, NotificationDeliveryContext context, CancellationToken cancellationToken)
     {
         // Resolve ITemplateResolver chain (optional — not all apps have Granit.Templating)
         IEnumerable<ITemplateResolver>? resolvers = serviceProvider.GetService<IEnumerable<ITemplateResolver>>();
@@ -77,7 +91,7 @@ internal sealed partial class EmailNotificationChannel(
             return null;
         }
 
-        TemplateKey key = new(context.NotificationTypeName, context.Culture);
+        TemplateKey key = new(templateName, context.Culture);
 
         // Try each resolver in priority order
         TemplateDescriptor? descriptor = null;
@@ -100,12 +114,13 @@ internal sealed partial class EmailNotificationChannel(
         ITemplateEngine? engine = engines?.FirstOrDefault(e => e.CanRender(descriptor));
         if (engine is null)
         {
-            Log.NoEngineForTemplate(logger, context.NotificationTypeName);
+            Log.NoEngineForTemplate(logger, templateName);
             return null;
         }
 
         // Convert JsonElement data to Dictionary for Scriban rendering
         Dictionary<string, object?> dataDict = JsonElementToDictionary(context.Data);
+        dataDict.TryAdd("notification_type", context.NotificationTypeName);
 
         try
         {
@@ -119,14 +134,14 @@ internal sealed partial class EmailNotificationChannel(
 
             if (rendered is TextRenderedContent textResult)
             {
-                Log.TemplateRendered(logger, context.NotificationTypeName, context.Culture);
+                Log.TemplateRendered(logger, templateName, context.Culture);
                 string? subject = ExtractTitleFromHtml(textResult.Html);
                 return new RenderedEmail(textResult.Html, subject);
             }
         }
         catch (Exception ex)
         {
-            Log.TemplateRenderFailed(logger, context.NotificationTypeName, ex);
+            Log.TemplateRenderFailed(logger, templateName, ex);
         }
 
         return null;

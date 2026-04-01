@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="utf-8">
+    <title>{{ app.name }} — Nove oznameni</title>
+</head>
+<body>
+    <p>Obdrzeli jste nove oznameni typu <strong>{{ model.notification_type }}</strong>.</p>
+    {{- if app.base_url != "" }}
+    <p><a href="{{ app.base_url }}">Prejit do {{ app.name }}</a></p>
+    {{- end }}
+</body>
+</html>

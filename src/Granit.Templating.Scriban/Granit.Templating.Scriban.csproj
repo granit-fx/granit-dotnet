@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Templating.Scriban</PackageId>
-    <Description>Scriban implementation of the Granit templating engine. Provides ScribanTemplateEngine (sandboxed, multi-tenant safe), NowGlobalContext ({{ now.date }}) and ExecutionContextGlobalContext ({{ context.culture }}).</Description>
+    <Description>Scriban implementation of the Granit templating engine. Provides ScribanTemplateEngine (sandboxed, multi-tenant safe), NowGlobalContext ({{ now.date }}), ExecutionContextGlobalContext ({{ context.culture }}) and AppGlobalContext ({{ app.name }}, {{ app.base_url }}).</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="Scriban" />
   </ItemGroup>
 

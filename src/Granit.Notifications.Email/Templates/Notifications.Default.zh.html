@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>{{ app.name }} — 新通知</title>
+</head>
+<body>
+    <p>您收到了一条类型为 <strong>{{ model.notification_type }}</strong> 的新通知。</p>
+    {{- if app.base_url != "" }}
+    <p><a href="{{ app.base_url }}">前往 {{ app.name }}</a></p>
+    {{- end }}
+</body>
+</html>

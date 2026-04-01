@@ -1,6 +1,7 @@
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Email.Internal;
 using Granit.Notifications.Email.Options;
+using Granit.Templating.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Notifications.Email.Extensions;
@@ -23,6 +24,7 @@ public static class EmailNotificationsServiceCollectionExtensions
         }
 
         services.AddScoped<INotificationChannel, EmailNotificationChannel>();
+        services.AddEmbeddedTemplates(typeof(EmailNotificationsServiceCollectionExtensions).Assembly);
         return services;
     }
 }

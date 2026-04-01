@@ -10,6 +10,7 @@ using Granit.Notifications.Abstractions;
 using Granit.Notifications.Email.Extensions;
 using Granit.Notifications.Email.Internal;
 using Granit.Notifications.Email.Options;
+using Granit.Templating.Pipeline;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -77,5 +78,16 @@ public sealed class EmailNotificationsServiceCollectionExtensionsTests
         ServiceCollection services = new();
 
         Should.NotThrow(() => services.AddGranitNotificationsEmail(configure: null));
+    }
+
+    [Fact]
+    public void AddGranitNotificationsEmail_RegistersEmbeddedTemplateResolver()
+    {
+        ServiceCollection services = new();
+        services.AddGranitNotificationsEmail();
+
+        services.ShouldContain(d =>
+            d.ServiceType == typeof(ITemplateResolver) &&
+            d.Lifetime == ServiceLifetime.Singleton);
     }
 }
