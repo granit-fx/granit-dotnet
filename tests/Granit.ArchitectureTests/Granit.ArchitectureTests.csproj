@@ -38,6 +38,10 @@
     <ProjectReference Include="..\..\src\Granit.AI.Ollama\Granit.AI.Ollama.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.OpenAI\Granit.AI.OpenAI.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.VectorData\Granit.AI.VectorData.csproj" />
+    <ProjectReference Include="..\..\src\Granit.AuditLog\Granit.AuditLog.csproj" />
+    <ProjectReference Include="..\..\src\Granit.AuditLog.ConfigurationChanges\Granit.AuditLog.ConfigurationChanges.csproj" />
+    <ProjectReference Include="..\..\src\Granit.AuditLog.Endpoints\Granit.AuditLog.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.AuditLog.EntityFrameworkCore\Granit.AuditLog.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Auditing\Granit.Auditing.csproj" />
     <ProjectReference Include="..\..\src\Granit.Auditing.ConfigurationChanges\Granit.Auditing.ConfigurationChanges.csproj" />
     <ProjectReference Include="..\..\src\Granit.Auditing.Endpoints\Granit.Auditing.Endpoints.csproj" />
@@ -127,6 +131,7 @@
     <ProjectReference Include="..\..\src\Granit.Identity.Local\Granit.Identity.Local.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Local.AspNetIdentity\Granit.Identity.Local.AspNetIdentity.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Local.Endpoints\Granit.Identity.Local.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.Local.Notifications\Granit.Identity.Local.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.Mcp\Granit.AI.Mcp.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging\Granit.Imaging.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging.AI\Granit.Imaging.AI.csproj" />
