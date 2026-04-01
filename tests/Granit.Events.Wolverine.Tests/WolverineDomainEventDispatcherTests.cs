@@ -1,6 +1,10 @@
 using Granit.Events;
 using Granit.Events.Wolverine.Internal;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
+using Shouldly;
 using Wolverine;
 using Xunit;
 
@@ -10,10 +14,25 @@ public sealed class WolverineDomainEventDispatcherTests
 {
     private readonly IMessageBus _bus = Substitute.For<IMessageBus>();
 
-    [Fact]
-    public async Task DispatchAsync_PublishesEachEventViaMessageBus()
+    private static WolverineHostReadiness CreateReadiness(bool isReady)
     {
-        WolverineDomainEventDispatcher sut = new(_bus);
+        WolverineHostReadiness readiness = new(NullLogger<WolverineHostReadiness>.Instance);
+        if (isReady)
+        {
+            ((IHostedLifecycleService)readiness).StartedAsync(CancellationToken.None)
+                .GetAwaiter().GetResult();
+        }
+
+        return readiness;
+    }
+
+    [Fact]
+    public async Task DispatchAsync_WhenReady_PublishesEachEventViaMessageBus()
+    {
+        ServiceCollection services = [];
+        using ServiceProvider sp = services.BuildServiceProvider();
+        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(true),
+            NullLogger<WolverineDomainEventDispatcher>.Instance);
         TestDomainEvent evt1 = new();
         TestDomainEvent evt2 = new();
 
@@ -24,9 +43,12 @@ public sealed class WolverineDomainEventDispatcherTests
     }
 
     [Fact]
-    public async Task DispatchAsync_EmptyList_DoesNotCallPublish()
+    public async Task DispatchAsync_WhenReady_EmptyList_DoesNotCallPublish()
     {
-        WolverineDomainEventDispatcher sut = new(_bus);
+        ServiceCollection services = [];
+        using ServiceProvider sp = services.BuildServiceProvider();
+        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(true),
+            NullLogger<WolverineDomainEventDispatcher>.Instance);
 
         await sut.DispatchAsync([], TestContext.Current.CancellationToken);
 
@@ -34,9 +56,12 @@ public sealed class WolverineDomainEventDispatcherTests
     }
 
     [Fact]
-    public async Task DispatchAsync_PublishesExpectedCount()
+    public async Task DispatchAsync_WhenReady_PublishesExpectedCount()
     {
-        WolverineDomainEventDispatcher sut = new(_bus);
+        ServiceCollection services = [];
+        using ServiceProvider sp = services.BuildServiceProvider();
+        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(true),
+            NullLogger<WolverineDomainEventDispatcher>.Instance);
         IReadOnlyList<IDomainEvent> events = [new TestDomainEvent(), new TestDomainEvent(), new TestDomainEvent()];
 
         await sut.DispatchAsync(events, TestContext.Current.CancellationToken);
@@ -44,5 +69,45 @@ public sealed class WolverineDomainEventDispatcherTests
         await _bus.Received(3).PublishAsync(Arg.Any<IDomainEvent>());
     }
 
+    [Fact]
+    public async Task DispatchAsync_WhenNotReady_FallsBackToLocalHandlers()
+    {
+        TestDomainEventHandler handler = new();
+        ServiceCollection services = [];
+        services.AddSingleton<ILocalEventHandler<TestDomainEvent>>(handler);
+        using ServiceProvider sp = services.BuildServiceProvider();
+        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(false),
+            NullLogger<WolverineDomainEventDispatcher>.Instance);
+        TestDomainEvent evt = new();
+
+        await sut.DispatchAsync([evt], TestContext.Current.CancellationToken);
+
+        await _bus.DidNotReceive().PublishAsync(Arg.Any<IDomainEvent>());
+        handler.Received.ShouldContain(evt);
+    }
+
+    [Fact]
+    public async Task DispatchAsync_WhenNotReady_NoHandlers_CompletesSuccessfully()
+    {
+        ServiceCollection services = [];
+        using ServiceProvider sp = services.BuildServiceProvider();
+        WolverineDomainEventDispatcher sut = new(_bus, sp, CreateReadiness(false),
+            NullLogger<WolverineDomainEventDispatcher>.Instance);
+
+        await Should.NotThrowAsync(
+            () => sut.DispatchAsync([new TestDomainEvent()], TestContext.Current.CancellationToken));
+    }
+
     private sealed record TestDomainEvent : IDomainEvent;
+
+    private sealed class TestDomainEventHandler : ILocalEventHandler<TestDomainEvent>
+    {
+        public List<TestDomainEvent> Received { get; } = [];
+
+        public Task HandleAsync(TestDomainEvent localEvent, CancellationToken cancellationToken = default)
+        {
+            Received.Add(localEvent);
+            return Task.CompletedTask;
+        }
+    }
 }

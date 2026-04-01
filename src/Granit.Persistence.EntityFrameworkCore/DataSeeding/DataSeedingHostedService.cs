@@ -7,16 +7,33 @@ namespace Granit.Persistence.EntityFrameworkCore.DataSeeding;
 /// Hosted service that triggers data seeding at application startup.
 /// </summary>
 /// <remarks>
-/// Calls <see cref="IDataSeeder.SeedAsync"/> once during <see cref="IHostedService.StartAsync"/>
-/// with a host-level <see cref="DataSeedContext"/> (<see cref="DataSeedContext.TenantId"/> = <c>null</c>).
+/// <para>
+/// Calls <see cref="IDataSeeder.SeedAsync"/> once during
+/// <see cref="IHostedLifecycleService.StartedAsync"/> with a host-level
+/// <see cref="DataSeedContext"/> (<see cref="DataSeedContext.TenantId"/> = <c>null</c>).
 /// Exceptions are caught and logged — seeding failures never block application startup.
+/// </para>
+/// <para>
+/// Seeding runs in <c>StartedAsync</c> (not <c>StartAsync</c>) to ensure all hosted
+/// services — including messaging infrastructure like Wolverine — have fully started
+/// before seed contributors execute. This prevents <c>WolverineHasNotStartedException</c>
+/// when seed contributors use services that publish events.
+/// </para>
 /// </remarks>
 internal sealed partial class DataSeedingHostedService(
     IDataSeeder seeder,
-    ILogger<DataSeedingHostedService> logger) : IHostedService
+    ILogger<DataSeedingHostedService> logger) : IHostedLifecycleService
 {
-    /// <inheritdoc/>
-    public async Task StartAsync(CancellationToken cancellationToken)
+    Task IHostedService.StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+    Task IHostedService.StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+    Task IHostedLifecycleService.StartingAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+    Task IHostedLifecycleService.StoppingAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+    Task IHostedLifecycleService.StoppedAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    /// <summary>
+    /// Executes data seeding after all hosted services have started.
+    /// </summary>
+    async Task IHostedLifecycleService.StartedAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -28,9 +45,6 @@ internal sealed partial class DataSeedingHostedService(
             LogSeedingError(ex);
         }
     }
-
-    /// <inheritdoc/>
-    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     [LoggerMessage(Level = LogLevel.Error,
         Message = "An error occurred during data seeding at startup. Startup continues.")]

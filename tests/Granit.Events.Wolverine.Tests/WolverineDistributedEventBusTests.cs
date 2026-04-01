@@ -1,5 +1,7 @@
 using Granit.Events;
 using Granit.Events.Wolverine.Internal;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
 using Wolverine;
@@ -11,10 +13,23 @@ public sealed class WolverineDistributedEventBusTests
 {
     private readonly IMessageBus _bus = Substitute.For<IMessageBus>();
 
-    [Fact]
-    public async Task PublishAsync_DelegatesToMessageBus()
+    private static WolverineHostReadiness CreateReadiness(bool isReady)
     {
-        WolverineDistributedEventBus sut = new(_bus);
+        WolverineHostReadiness readiness = new(NullLogger<WolverineHostReadiness>.Instance);
+        if (isReady)
+        {
+            ((IHostedLifecycleService)readiness).StartedAsync(CancellationToken.None)
+                .GetAwaiter().GetResult();
+        }
+
+        return readiness;
+    }
+
+    [Fact]
+    public async Task PublishAsync_WhenReady_DelegatesToMessageBus()
+    {
+        WolverineDistributedEventBus sut = new(_bus, CreateReadiness(true),
+            NullLogger<WolverineDistributedEventBus>.Instance);
         TestIntegrationEvent evt = new();
 
         await sut.PublishAsync(evt, TestContext.Current.CancellationToken);
@@ -23,9 +38,22 @@ public sealed class WolverineDistributedEventBusTests
     }
 
     [Fact]
+    public async Task PublishAsync_WhenNotReady_SkipsWithoutCallingMessageBus()
+    {
+        WolverineDistributedEventBus sut = new(_bus, CreateReadiness(false),
+            NullLogger<WolverineDistributedEventBus>.Instance);
+        TestIntegrationEvent evt = new();
+
+        await sut.PublishAsync(evt, TestContext.Current.CancellationToken);
+
+        await _bus.DidNotReceive().PublishAsync(Arg.Any<TestIntegrationEvent>());
+    }
+
+    [Fact]
     public async Task PublishAsync_NullEvent_ThrowsArgumentNullException()
     {
-        WolverineDistributedEventBus sut = new(_bus);
+        WolverineDistributedEventBus sut = new(_bus, CreateReadiness(true),
+            NullLogger<WolverineDistributedEventBus>.Instance);
 
         await Should.ThrowAsync<ArgumentNullException>(
             () => sut.PublishAsync<TestIntegrationEvent>(null!, TestContext.Current.CancellationToken));

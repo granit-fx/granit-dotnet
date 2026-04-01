@@ -29,6 +29,12 @@ public sealed class GranitEventsWolverineModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        // Host readiness indicator — enables graceful fallback before Wolverine starts.
+        // Registered as singleton + IHostedLifecycleService so StartedAsync fires after
+        // all IHostedService.StartAsync calls (including Wolverine's) have completed.
+        context.Services.AddSingleton<WolverineHostReadiness>();
+        context.Services.AddHostedService(sp => sp.GetRequiredService<WolverineHostReadiness>());
+
         context.Services.AddScoped<ILocalEventBus, WolverineLocalEventBus>();
         context.Services.AddScoped<IDistributedEventBus, WolverineDistributedEventBus>();
         context.Services.AddScoped<IDomainEventDispatcher, WolverineDomainEventDispatcher>();

@@ -1,4 +1,7 @@
+using System.Reflection;
 using Granit.Events;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Wolverine;
 
 namespace Granit.Events.Wolverine.Internal;
@@ -8,16 +11,90 @@ namespace Granit.Events.Wolverine.Internal;
 /// Publishes each domain event via <see cref="IMessageBus"/> using the non-generic
 /// overload so Wolverine routes by runtime type to locally discovered handlers.
 /// </summary>
-internal sealed class WolverineDomainEventDispatcher(IMessageBus bus) : IDomainEventDispatcher
+/// <remarks>
+/// When the host has not yet started (data seeding, <c>--migrate</c> mode),
+/// domain events are dispatched directly to <see cref="ILocalEventHandler{TEvent}"/>
+/// handlers resolved from the scoped DI container, bypassing the Wolverine pipeline.
+/// This preserves local side-effects (cache invalidation, denormalization) during seeding.
+/// </remarks>
+internal sealed partial class WolverineDomainEventDispatcher(
+    IMessageBus bus,
+    IServiceProvider serviceProvider,
+    WolverineHostReadiness readiness,
+    ILogger<WolverineDomainEventDispatcher> logger) : IDomainEventDispatcher
 {
+    private int _fallbackWarned;
+
     /// <inheritdoc/>
     public async Task DispatchAsync(
         IReadOnlyList<IDomainEvent> domainEvents,
         CancellationToken cancellationToken = default)
     {
+        if (readiness.IsReady)
+        {
+            foreach (IDomainEvent evt in domainEvents)
+            {
+                await bus.PublishAsync(evt).ConfigureAwait(false);
+            }
+
+            return;
+        }
+
+        // Wolverine not started — fall back to direct handler invocation.
+        // serviceProvider is the SCOPED provider (this class is registered Scoped),
+        // so handlers share the same scope as the caller (same DbContext instance).
+        if (Interlocked.CompareExchange(ref _fallbackWarned, 1, 0) == 0)
+        {
+            LogFallbackActivated();
+        }
+
         foreach (IDomainEvent evt in domainEvents)
         {
-            await bus.PublishAsync(evt).ConfigureAwait(false);
+            await DispatchToLocalHandlersAsync(evt, cancellationToken).ConfigureAwait(false);
         }
     }
+
+    private async Task DispatchToLocalHandlersAsync(IDomainEvent domainEvent, CancellationToken cancellationToken)
+    {
+        // Resolve ILocalEventHandler<TEvent> using the runtime type.
+        // Domain events are dispatched via the non-generic IDomainEvent, so we need
+        // to build the generic handler type from the concrete event type.
+        Type eventType = domainEvent.GetType();
+        Type handlerType = typeof(ILocalEventHandler<>).MakeGenericType(eventType);
+        IEnumerable<object?> handlers = serviceProvider.GetServices(handlerType);
+
+        foreach (object? handler in handlers)
+        {
+            if (handler is null)
+            {
+                continue;
+            }
+
+            try
+            {
+                // Invoke HandleAsync via the interface method
+                var task = (Task)handlerType
+                    .GetMethod(nameof(ILocalEventHandler<IDomainEvent>.HandleAsync))!
+                    .Invoke(handler, [domainEvent, cancellationToken])!;
+                await task.ConfigureAwait(false);
+            }
+            catch (TargetInvocationException ex) when (ex.InnerException is not null and not OperationCanceledException)
+            {
+                // Unwrap reflection wrapper to log the actual handler exception
+                LogFallbackHandlerFailed(eventType.Name, handler.GetType().Name, ex.InnerException);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                LogFallbackHandlerFailed(eventType.Name, handler.GetType().Name, ex);
+            }
+        }
+    }
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Wolverine host not started — domain events will be dispatched directly to local handlers (bypassing Wolverine pipeline). This is expected during data seeding or --migrate mode.")]
+    private partial void LogFallbackActivated();
+
+    [LoggerMessage(Level = LogLevel.Error,
+        Message = "Domain event handler {HandlerName} failed for event {EventName} during pre-host fallback dispatch.")]
+    private partial void LogFallbackHandlerFailed(string eventName, string handlerName, Exception exception);
 }
