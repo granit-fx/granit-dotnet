@@ -26,91 +26,94 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
             overflow: hidden;
         }
-        .header {
+        header {
             background-color: #1a1a2e;
             padding: 24px 32px;
             text-align: center;
         }
-        .header img {
+        header img {
             max-height: 40px;
             width: auto;
         }
-        .header .app-name {
+        header .app-name {
             color: #ffffff;
             font-size: 20px;
             font-weight: 600;
             letter-spacing: 0.5px;
         }
-        .content {
+        main {
             padding: 32px;
         }
-        .content p {
+        main p {
             margin: 0 0 16px;
-            font-size: 15px;
+            font-size: 16px;
             color: #374151;
         }
-        .content a {
-            color: #2563eb;
-            text-decoration: none;
-        }
-        .content a:hover {
+        main a {
+            color: #1d4ed8;
             text-decoration: underline;
+        }
+        main a:hover {
+            color: #1e40af;
         }
         .divider {
             border: none;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid #d1d5db;
             margin: 24px 0;
         }
-        .footer {
-            background-color: #f9fafb;
+        footer {
+            background-color: #f3f4f6;
             padding: 20px 32px;
             text-align: center;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid #d1d5db;
         }
-        .footer p {
+        footer p {
             margin: 0 0 6px;
-            font-size: 12px;
-            color: #9ca3af;
+            font-size: 13px;
+            color: #4b5563;
         }
-        .footer a {
-            color: #6b7280;
-            text-decoration: none;
-        }
-        .footer a:hover {
+        footer a {
+            color: #374151;
             text-decoration: underline;
+        }
+        footer a:hover {
+            color: #1f2937;
         }
         .btn {
             display: inline-block;
-            padding: 10px 24px;
-            background-color: #2563eb;
+            padding: 12px 28px;
+            background-color: #1d4ed8;
             color: #ffffff !important;
             text-decoration: none;
             border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .btn:hover {
+            background-color: #1e40af;
         }
     </style>
 </head>
 <body>
-    <div class="wrapper">
+    <div class="wrapper" role="presentation">
         <div class="container">
-            <div class="header">
+            <header role="banner">
                 {{- if app.logo_url != "" }}
                 <img src="{{ app.logo_url }}" alt="{{ app.name }}">
                 {{- else }}
-                <span class="app-name">{{ app.name }}</span>
+                <span class="app-name" aria-label="{{ app.name }}">{{ app.name }}</span>
                 {{- end }}
-            </div>
-            <div class="content">
+            </header>
+            <main role="main">
                 {{ body | raw }}
                 {{- if app.base_url != "" }}
-                <hr class="divider">
+                <hr class="divider" aria-hidden="true">
                 <p style="text-align: center;">
-                    <a href="{{ app.base_url }}" class="btn">{{ app.name }}</a>
+                    <a href="{{ app.base_url }}" class="btn" role="link">{{ app.name }}</a>
                 </p>
                 {{- end }}
-            </div>
-            <div class="footer">
+            </main>
+            <footer role="contentinfo">
                 {{- if model.allow_opt_out && model.unsubscribe_url != "" }}
                 <p><a href="{{ model.unsubscribe_url }}">Manage notification preferences</a></p>
                 {{- end }}
@@ -122,7 +125,7 @@
                 <p><a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a></p>
                 {{- end }}
                 <p>&copy; {{ now.year }} {{ app.name }}</p>
-            </div>
+            </footer>
         </div>
     </div>
 </body>
