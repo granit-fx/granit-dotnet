@@ -40,9 +40,9 @@ internal sealed class BffEndpointsTestServer : IAsyncDisposable
 
     /// <summary>
     /// The session cookie name used by the test frontend.
-    /// Computed from <see cref="BffFrontendOptions.SessionCookieName"/>: <c>__Host-granit-bff-{Name}</c>.
+    /// Computed from <see cref="BffFrontendOptions.SessionCookieName"/>: <c>__Host-bff-{Name}</c>.
     /// </summary>
-    internal const string TestSessionCookieName = "__Host-granit-bff-test-app";
+    internal const string TestSessionCookieName = "__Host-bff-test-app";
 
     private const string AuthenticatedRole = "authenticated";
 

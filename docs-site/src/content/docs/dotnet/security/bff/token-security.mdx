@@ -19,7 +19,7 @@ is critical for security.
 ### Cookie attributes
 
 ```http
-Set-Cookie: __Host-granit-bff=a1b2c3d4e5f6...;
+Set-Cookie: __Host-bff=a1b2c3d4e5f6...;
             HttpOnly;
             Secure;
             SameSite=Strict;
@@ -29,7 +29,7 @@ Set-Cookie: __Host-granit-bff=a1b2c3d4e5f6...;
 
 | Attribute | Value | Purpose |
 |-----------|-------|---------|
-| **Name** | `__Host-granit-bff` | `__Host-` prefix enforces Secure + Path=/ + no Domain |
+| **Name** | `__Host-bff` | `__Host-` prefix enforces Secure + Path=/ + no Domain |
 | **HttpOnly** | `true` | JavaScript cannot read the cookie (XSS-safe) |
 | **Secure** | `true` | Cookie only sent over HTTPS |
 | **SameSite** | `Strict` | Cookie never sent on cross-site requests (CSRF-safe) |
@@ -46,7 +46,7 @@ these conditions are met:
 
 ```mermaid
 flowchart TD
-    A["Set-Cookie: __Host-granit-bff=..."]
+    A["Set-Cookie: __Host-bff=..."]
     A --> B{Secure flag?}
     B -->|No| X["Browser REJECTS the cookie"]
     B -->|Yes| C{Path = / ?}
@@ -110,13 +110,13 @@ sequenceDiagram
 
     Note over SPA: After login, fetch CSRF token
 
-    SPA->>BFF: POST /bff/csrf-token<br/>Cookie: __Host-granit-bff={sessionId}
+    SPA->>BFF: POST /bff/csrf-token<br/>Cookie: __Host-bff={sessionId}
     BFF->>BFF: Generate HMAC-SHA256 token<br/>payload = sessionId + timestamp<br/>token = timestamp:hmac(key, payload)
     BFF->>SPA: { "csrfToken": "1711234567:a1b2c3..." }
 
     Note over SPA: Store token in memory<br/>(not localStorage)
 
-    SPA->>BFF: POST /api/orders<br/>Cookie: __Host-granit-bff={sessionId}<br/>X-CSRF-Token: 1711234567:a1b2c3...
+    SPA->>BFF: POST /api/orders<br/>Cookie: __Host-bff={sessionId}<br/>X-CSRF-Token: 1711234567:a1b2c3...
 
     BFF->>BFF: BffCsrfValidationTransform<br/>1. Extract sessionId from cookie<br/>2. Extract token from X-CSRF-Token header<br/>3. Parse timestamp from token<br/>4. Recompute HMAC with sessionId + timestamp<br/>5. Constant-time compare
 

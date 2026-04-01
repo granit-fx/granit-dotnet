@@ -23,7 +23,7 @@ graph LR
     API2["API Service 2"]
     REDIS["Redis<br/>(Session Store)"]
 
-    SPA -->|"Cookie<br/>(__Host-granit-bff)"| BFF
+    SPA -->|"Cookie<br/>(__Host-bff)"| BFF
     BFF -->|"OIDC<br/>(Authorization Code + PKCE)"| IDP
     BFF -->|"Bearer token<br/>(injected by YARP)"| API1
     BFF -->|"Bearer token<br/>(injected by YARP)"| API2
@@ -93,7 +93,7 @@ sequenceDiagram
 
     BFF->>Cache: Store BffTokenSet<br/>key: bff:session:{sessionId}<br/>TTL: SessionDuration (8h default)
 
-    BFF->>User: 302 Redirect to PostLoginRedirectPath<br/>Set-Cookie: __Host-granit-bff={sessionId};<br/>HttpOnly; Secure; SameSite=Strict; Path=/
+    BFF->>User: 302 Redirect to PostLoginRedirectPath<br/>Set-Cookie: __Host-bff={sessionId};<br/>HttpOnly; Secure; SameSite=Strict; Path=/
 
     Note over User: Cookie stored automatically<br/>by the browser. Invisible<br/>to JavaScript.
 
@@ -128,7 +128,7 @@ sequenceDiagram
     participant Cache as Redis Cache
     participant API as Backend API
 
-    SPA->>BFF: GET /api/products<br/>Cookie: __Host-granit-bff={sessionId}<br/>X-CSRF-Token: {csrfToken} (if mutating)
+    SPA->>BFF: GET /api/products<br/>Cookie: __Host-bff={sessionId}<br/>X-CSRF-Token: {csrfToken} (if mutating)
 
     Note over BFF: BffCsrfValidationTransform<br/>(only for POST/PUT/DELETE/PATCH)
 
@@ -189,7 +189,7 @@ sequenceDiagram
     participant IdP as Identity Provider
     participant API as Backend API
 
-    SPA->>BFF: GET /api/orders<br/>Cookie: __Host-granit-bff={sessionId}
+    SPA->>BFF: GET /api/orders<br/>Cookie: __Host-bff={sessionId}
 
     BFF->>Cache: Get bff:session:{sessionId}
     Cache->>BFF: BffTokenSet {expiresAt: 11:59:30}
@@ -258,7 +258,7 @@ sequenceDiagram
         BFF->>BFF: RecordLogout metric
     end
 
-    BFF->>SPA: Delete __Host-granit-bff cookie<br/>(Set-Cookie with MaxAge=0)
+    BFF->>SPA: Delete __Host-bff cookie<br/>(Set-Cookie with MaxAge=0)
 
     BFF->>SPA: 302 Redirect to IdP<br/>/connect/endsession?<br/>post_logout_redirect_uri=...&<br/>client_id=...&<br/>id_token_hint=... (if available)
 
@@ -356,7 +356,7 @@ A clear picture of where each piece of sensitive data resides:
 | **Access token** | Redis (`bff:session:{id}`) | JSON (serialized `BffTokenSet`) | `SessionDuration` (default 8h) | No |
 | **Refresh token** | Redis (`bff:session:{id}`) | JSON (serialized `BffTokenSet`) | `SessionDuration` (default 8h) | No |
 | **ID token** | Redis (`bff:session:{id}`) | JSON (serialized `BffTokenSet`) | `SessionDuration` (default 8h) | No |
-| **Session ID** | Browser cookie (`__Host-granit-bff`) | GUID (32 hex chars) | `SessionDuration` | No (`HttpOnly`) |
+| **Session ID** | Browser cookie (`__Host-bff`) | GUID (32 hex chars) | `SessionDuration` | No (`HttpOnly`) |
 | **CSRF token** | SPA memory (from `/bff/csrf-token`) | `{timestamp}:{hmac-hex}` | 24h sliding window | Yes (intentional) |
 | **PKCE code_verifier** | Redis (`bff:pkce:{state}`) | JSON | 10 minutes | No |
 

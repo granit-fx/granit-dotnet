@@ -90,7 +90,7 @@ sequenceDiagram
     BFF->>IdP: 4. Exchange code + client_secret + code_verifier
     IdP->>BFF: 5. Access token + refresh token + ID token
     Note over BFF: Tokens stored in Redis<br/>(encrypted, server-side only)
-    BFF->>SPA: 6. Set __Host-granit-bff cookie (HTTP-only)
+    BFF->>SPA: 6. Set __Host-bff cookie (HTTP-only)
     SPA->>BFF: 7. API call with cookie (automatic)
     BFF->>API: 8. Proxy with Bearer token injection
     API->>BFF: 9. Response

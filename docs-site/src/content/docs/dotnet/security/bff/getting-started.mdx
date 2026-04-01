@@ -117,7 +117,7 @@ Set `Authority` to `https://login.microsoftonline.com/{tenant-id}/v2.0`.
     "ClientId": "my-bff",
     "ClientSecret": "bff-secret-from-vault",
     "Scopes": ["openid", "profile", "email", "roles", "offline_access"],
-    "SessionCookieName": "__Host-granit-bff",
+    "SessionCookieName": "__Host-bff",
     "SessionDuration": "08:00:00",
     "RefreshGracePeriod": "00:01:00",
     "PostLoginRedirectPath": "/",
@@ -462,7 +462,7 @@ curl -s https://localhost:5001/bff/user | jq
 ```bash
 # After login — extract the session cookie and request a CSRF token
 curl -s -X POST https://localhost:5001/bff/csrf-token \
-  -b "__Host-granit-bff=your-session-id" | jq
+  -b "__Host-bff=your-session-id" | jq
 # {
 #   "csrfToken": "1711234567:a1b2c3d4..."
 # }
@@ -473,7 +473,7 @@ curl -s -X POST https://localhost:5001/bff/csrf-token \
 ```bash
 # After login — API calls are proxied with Bearer token injection
 curl -s https://localhost:5001/api/products \
-  -b "__Host-granit-bff=your-session-id" | jq
+  -b "__Host-bff=your-session-id" | jq
 # Response from your backend API — no tokens visible
 ```
 

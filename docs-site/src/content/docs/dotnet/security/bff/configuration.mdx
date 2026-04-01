@@ -85,7 +85,7 @@ When using multi-frontend (`Frontends[]` array), the properties below apply to e
 | `ClientId` | `string` | `""` | Client ID for the BFF confidential client. |
 | `ClientSecret` | `string` | `""` | Client secret. Use Vault in production. |
 | `Scopes` | `string[]` | `["openid", "profile", "email", "roles", "offline_access"]` | Scopes requested during authorization. |
-| `SessionCookieName` | `string` | `"__Host-granit-bff"` | Session cookie name. Must start with `__Host-` for security. |
+| `SessionCookieName` | `string` | `"__Host-bff"` | Session cookie name. Must start with `__Host-` for security. |
 | `SessionDuration` | `TimeSpan` | `08:00:00` (8 hours) | Absolute session lifetime. Controls both cookie `Max-Age` and cache TTL. |
 | `RefreshGracePeriod` | `TimeSpan` | `00:01:00` (1 minute) | Access token is refreshed this long before expiry. |
 | `PostLoginRedirectPath` | `string` | `"/"` | Path to redirect to after successful login. |

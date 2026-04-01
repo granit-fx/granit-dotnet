@@ -131,9 +131,9 @@ public sealed class BffFrontendOptions
 
     /// <summary>
     /// Gets the session cookie name for this frontend.
-    /// Format: <c>__Host-granit-bff-{name}</c>.
+    /// Format: <c>__Host-bff-{name}</c>.
     /// </summary>
-    public string SessionCookieName => $"__Host-granit-bff-{Name}";
+    public string SessionCookieName => $"__Host-bff-{Name}";
 
     /// <summary>
     /// Gets the effective post-login redirect path.

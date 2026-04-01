@@ -65,7 +65,7 @@ public sealed class BffFrontendOptionsTests
     {
         var frontend = new BffFrontendOptions { Name = "admin" };
 
-        frontend.SessionCookieName.ShouldBe("__Host-granit-bff-admin");
+        frontend.SessionCookieName.ShouldBe("__Host-bff-admin");
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public sealed class BffFrontendOptionsTests
     {
         var frontend = new BffFrontendOptions { Name = "patient" };
 
-        frontend.SessionCookieName.ShouldBe("__Host-granit-bff-patient");
+        frontend.SessionCookieName.ShouldBe("__Host-bff-patient");
     }
 
     [Fact]

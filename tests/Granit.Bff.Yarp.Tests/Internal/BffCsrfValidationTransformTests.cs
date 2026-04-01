@@ -55,7 +55,7 @@ public sealed class BffCsrfValidationTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "admin",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-admin"] = "session-1" });
+            new Dictionary<string, string> { ["__Host-bff-admin"] = "session-1" });
 
         await _transform.ApplyAsync(context);
 
@@ -74,7 +74,7 @@ public sealed class BffCsrfValidationTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "admin",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-admin"] = "session-1" });
+            new Dictionary<string, string> { ["__Host-bff-admin"] = "session-1" });
         context.HttpContext.Request.Headers["X-CSRF-Token"] = "valid-token";
 
         await _transform.ApplyAsync(context);
@@ -91,7 +91,7 @@ public sealed class BffCsrfValidationTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "admin",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-admin"] = "session-1" });
+            new Dictionary<string, string> { ["__Host-bff-admin"] = "session-1" });
         // No X-CSRF-Token header
 
         await _transform.ApplyAsync(context);
@@ -110,7 +110,7 @@ public sealed class BffCsrfValidationTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "admin",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-admin"] = "session-1" });
+            new Dictionary<string, string> { ["__Host-bff-admin"] = "session-1" });
         context.HttpContext.Request.Headers["X-CSRF-Token"] = "bad-token";
 
         await _transform.ApplyAsync(context);
@@ -186,7 +186,7 @@ public sealed class BffCsrfValidationTransformTests : IDisposable
             // No Granit.Bff.Frontend key — falls back to first if only 1 configured
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-admin"] = "session-1" });
+            new Dictionary<string, string> { ["__Host-bff-admin"] = "session-1" });
         context.HttpContext.Request.Headers["X-CSRF-Token"] = "valid-token";
 
         await _transform.ApplyAsync(context);
@@ -224,7 +224,7 @@ public sealed class BffCsrfValidationTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "admin",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-admin"] = "session-1" });
+            new Dictionary<string, string> { ["__Host-bff-admin"] = "session-1" });
         context.HttpContext.Request.Headers["X-CSRF-Token"] = "valid-token";
 
         await _transform.ApplyAsync(context);

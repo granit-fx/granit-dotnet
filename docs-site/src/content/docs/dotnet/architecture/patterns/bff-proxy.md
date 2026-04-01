@@ -60,7 +60,7 @@ sequenceDiagram
     IdP->>BFF: Callback with code
     BFF->>IdP: Exchange code → tokens (server-side)
     BFF->>BFF: Store tokens in Redis
-    BFF->>B: Set-Cookie: __Host-granit-bff
+    BFF->>B: Set-Cookie: __Host-bff
 
     Note over B,BFF: Subsequent API calls
 

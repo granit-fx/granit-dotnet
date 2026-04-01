@@ -114,7 +114,7 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "main",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+            new Dictionary<string, string> { ["__Host-bff-main"] = "session-abc" });
 
         await CreateTransform().ApplyAsync(context);
 
@@ -134,7 +134,7 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "main",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+            new Dictionary<string, string> { ["__Host-bff-main"] = "session-abc" });
 
         await CreateTransform().ApplyAsync(context);
 
@@ -162,7 +162,7 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "main",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+            new Dictionary<string, string> { ["__Host-bff-main"] = "session-abc" });
 
         await CreateTransform().ApplyAsync(context);
 
@@ -223,7 +223,7 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "main",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+            new Dictionary<string, string> { ["__Host-bff-main"] = "session-abc" });
 
         await CreateTransform().ApplyAsync(context);
 
@@ -268,7 +268,7 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "main",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+            new Dictionary<string, string> { ["__Host-bff-main"] = "session-abc" });
 
         await CreateTransform().ApplyAsync(context);
 
@@ -302,7 +302,7 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "main",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+            new Dictionary<string, string> { ["__Host-bff-main"] = "session-abc" });
 
         await CreateTransform().ApplyAsync(context);
 
@@ -329,7 +329,7 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "main",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+            new Dictionary<string, string> { ["__Host-bff-main"] = "session-abc" });
 
         await CreateTransform().ApplyAsync(context);
 
@@ -358,7 +358,7 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "main",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+            new Dictionary<string, string> { ["__Host-bff-main"] = "session-abc" });
 
         await CreateTransform().ApplyAsync(context);
 
@@ -382,7 +382,7 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
             ["Granit.Bff.RequireAuth"] = "true",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+            new Dictionary<string, string> { ["__Host-bff-main"] = "session-abc" });
 
         await CreateTransform().ApplyAsync(context);
 
@@ -435,7 +435,7 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "main",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+            new Dictionary<string, string> { ["__Host-bff-main"] = "session-abc" });
 
         await CreateTransform().ApplyAsync(context);
 
@@ -470,7 +470,7 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "main",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+            new Dictionary<string, string> { ["__Host-bff-main"] = "session-abc" });
 
         await CreateTransform().ApplyAsync(context);
 
@@ -528,7 +528,7 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "main",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "session-abc" });
+            new Dictionary<string, string> { ["__Host-bff-main"] = "session-abc" });
 
         await CreateTransform().ApplyAsync(context);
 
@@ -561,7 +561,7 @@ public sealed class BffTokenInjectionTransformTests : IDisposable
             ["Granit.Bff.Frontend"] = "main",
         });
         context.HttpContext.Request.Cookies = CreateCookies(
-            new Dictionary<string, string> { ["__Host-granit-bff-main"] = "abc" });
+            new Dictionary<string, string> { ["__Host-bff-main"] = "abc" });
 
         await CreateTransform().ApplyAsync(context);
 

@@ -78,7 +78,7 @@ sequenceDiagram
     BFF->>IDP: Exchange code for tokens (server-side)
     IDP-->>BFF: access_token + refresh_token
     Note over BFF: Stores tokens in<br/>distributed cache (Redis)
-    BFF-->>Browser: Set-Cookie: __Host-granit-bff-admin=sessionId<br/>(HttpOnly, Secure, SameSite=Strict)
+    BFF-->>Browser: Set-Cookie: __Host-bff-admin=sessionId<br/>(HttpOnly, Secure, SameSite=Strict)
     Browser->>BFF: GET /api/users (cookie attached automatically)
     BFF->>BFF: Read session → inject Bearer token
     BFF->>API: Authorization: Bearer {access_token}
@@ -159,7 +159,7 @@ Real-world platforms rarely have a single SPA. The [Guava platform](https://gran
 Granit.Bff supports this natively. Each frontend gets its own:
 
 - OIDC client (confidential, with its own client ID and scopes)
-- Session cookie (named `__Host-granit-bff-{name}`)
+- Session cookie (named `__Host-bff-{name}`)
 - Path prefix (e.g., `/admin`, `/patient`, `/physician`)
 - Post-login and post-logout redirects
 - Static file serving with SPA fallback

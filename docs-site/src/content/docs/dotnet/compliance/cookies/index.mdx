@@ -54,9 +54,10 @@ needed for framework cookies.
 
 | Module | Cookies auto-registered | Contributor |
 | ------ | ----------------------- | ----------- |
+| `Granit.Http.Cookies` | `__Host-xsrf` (antiforgery) | `AntiforgeryCookieDefinitionContributor` |
 | `Granit.OpenIddict.EntityFrameworkCore` | `.AspNetCore.Identity.Application`, `.TwoFactorUserId`, `.ExternalLogin` | `IdentityCookieDefinitionContributor` |
 | `Granit.Http.Cookies.Klaro` | `klaro` (configurable) | `KlaroCookieDefinitionContributor` |
-| `Granit.Bff.Endpoints` | `__Host-granit-bff-{frontend}` (dynamic) | Runtime registration in `MapGranitBff()` |
+| `Granit.Bff.Endpoints` | `__Host-bff-{frontend}` (dynamic) | Runtime registration in `MapGranitBff()` |
 | `Granit.Privacy.Endpoints` | `granit_optout_id` | Runtime registration in `MapGranitPrivacy()` |
 
 ### Implementing a contributor
@@ -82,15 +83,14 @@ context.Services.AddSingleton<ICookieDefinitionContributor, MyCookieContributor>
 
 ### Application-level cookies
 
-Cookies from optional ASP.NET Core middleware (Session, Antiforgery) are not auto-registered
-because no Granit module owns them. Declare them in the host's `AddGranitCookies()` callback:
+The antiforgery cookie (`__Host-xsrf`) is auto-registered by `GranitHttpCookiesModule`.
+The session cookie is opt-in because `AddSession()` is not always used. Call
+`RegisterSessionCookie()` in hosts that enable session middleware:
 
 ```csharp
 context.Services.AddGranitCookies(cookies =>
 {
-    cookies.RegisterCookie(new(".AspNetCore.Session",
-        CookieCategory.StrictlyNecessary, 1, true,
-        "ASP.NET Core distributed session identifier."));
+    cookies.RegisterSessionCookie();
 });
 ```
 
