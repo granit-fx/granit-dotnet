@@ -63,6 +63,9 @@ docs-site/.astro/
 node_modules/
 .astro/
 
+# --- Python (scripts/) ---
+__pycache__/
+
 # --- Temporary ---
 tmp/
 temp/
