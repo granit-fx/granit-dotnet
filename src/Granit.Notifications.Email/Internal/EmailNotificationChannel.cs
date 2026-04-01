@@ -2,6 +2,7 @@ using System.Text.Json;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Email.Options;
 using Granit.Templating.Keys;
+using Granit.Templating.Layouts;
 using Granit.Templating.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -62,6 +63,14 @@ internal sealed partial class EmailNotificationChannel(
                 context.NotificationTypeName, context, cancellationToken).ConfigureAwait(false)
             ?? await TryRenderTemplateAsync(
                 FallbackTemplateName, context, cancellationToken).ConfigureAwait(false);
+
+        // Apply layout wrapping (two-pass: content was rendered above, now wrap in layout)
+        if (rendered is not null)
+        {
+            rendered = await TryApplyLayoutAsync(
+                context.NotificationTypeName, rendered, context, cancellationToken).ConfigureAwait(false)
+                ?? rendered;
+        }
 
         string subject = rendered?.Subject ?? context.NotificationTypeName.Replace('.', ' ');
         string htmlBody = rendered?.Html
@@ -147,6 +156,108 @@ internal sealed partial class EmailNotificationChannel(
         return null;
     }
 
+    /// <summary>
+    /// Wraps rendered content in a layout template if one is registered for this notification type.
+    /// Uses the same two-pass pattern as <c>TextTemplateRenderer</c>: render layout with
+    /// <c>{{ body }}</c> = pre-rendered content HTML.
+    /// </summary>
+    private async Task<RenderedEmail?> TryApplyLayoutAsync(
+        string templateName,
+        RenderedEmail contentEmail,
+        NotificationDeliveryContext context,
+        CancellationToken cancellationToken)
+    {
+        // Resolve layout name from registry (code-level defaults)
+        ILayoutRegistry? layoutRegistry = serviceProvider.GetService<ILayoutRegistry>();
+        string? layoutName = layoutRegistry?.GetLayoutName(templateName);
+
+        if (layoutName is null)
+        {
+            return null;
+        }
+
+        // Resolve the layout template
+        IEnumerable<ITemplateResolver>? resolvers = serviceProvider.GetService<IEnumerable<ITemplateResolver>>();
+        if (resolvers is null)
+        {
+            return null;
+        }
+
+        TemplateKey layoutKey = new(layoutName, context.Culture);
+        TemplateDescriptor? layoutDescriptor = null;
+        foreach (ITemplateResolver resolver in resolvers.OrderByDescending(r => r.Priority))
+        {
+            layoutDescriptor = await resolver.TryResolveAsync(layoutKey, cancellationToken).ConfigureAwait(false);
+            if (layoutDescriptor is not null)
+            {
+                break;
+            }
+        }
+
+        // Culture-neutral fallback for layout
+        if (layoutDescriptor is null)
+        {
+            TemplateKey neutralKey = new(layoutName);
+            foreach (ITemplateResolver resolver in resolvers.OrderByDescending(r => r.Priority))
+            {
+                layoutDescriptor = await resolver.TryResolveAsync(neutralKey, cancellationToken).ConfigureAwait(false);
+                if (layoutDescriptor is not null)
+                {
+                    break;
+                }
+            }
+        }
+
+        if (layoutDescriptor is null)
+        {
+            Log.LayoutNotFound(logger, layoutName, templateName);
+            return null;
+        }
+
+        // Render layout with body injection
+        IEnumerable<ITemplateEngine>? engines = serviceProvider.GetService<IEnumerable<ITemplateEngine>>();
+        ITemplateEngine? engine = engines?.FirstOrDefault(e => e.CanRender(layoutDescriptor));
+        if (engine is null)
+        {
+            return null;
+        }
+
+        Dictionary<string, object?> dataDict = JsonElementToDictionary(context.Data);
+        dataDict.TryAdd("notification_type", context.NotificationTypeName);
+
+        // Inject body as ExtraVariable for {{ body | raw }} in layout
+        TemplateDescriptor layoutWithBody = new()
+        {
+            Content = layoutDescriptor.Content,
+            MimeType = layoutDescriptor.MimeType,
+            RevisionId = layoutDescriptor.RevisionId,
+            ExtraVariables = new Dictionary<string, object> { ["body"] = contentEmail.Html },
+        };
+
+        try
+        {
+            IReadOnlyList<Granit.Templating.GlobalContext.ITemplateGlobalContext> globalContexts =
+                serviceProvider.GetService<IEnumerable<Granit.Templating.GlobalContext.ITemplateGlobalContext>>()?.ToList()
+                ?? [];
+
+            RenderedContent rendered = await engine
+                .RenderAsync(layoutWithBody, dataDict, DocumentFormat.Html, globalContexts, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (rendered is TextRenderedContent textResult)
+            {
+                string? subject = ExtractTitleFromHtml(textResult.Html);
+                return new RenderedEmail(textResult.Html, subject);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.TemplateRenderFailed(logger, layoutName, ex);
+        }
+
+        return null;
+    }
+
     private static Dictionary<string, object?> JsonElementToDictionary(JsonElement element)
     {
         Dictionary<string, object?> dict = [];
@@ -210,5 +321,9 @@ internal sealed partial class EmailNotificationChannel(
         [LoggerMessage(Level = LogLevel.Warning,
             Message = "Failed to render email template for notification '{NotificationType}'.")]
         public static partial void TemplateRenderFailed(ILogger logger, string notificationType, Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message = "Layout template '{LayoutName}' not found for notification '{NotificationType}'. Sending without layout.")]
+        public static partial void LayoutNotFound(ILogger logger, string layoutName, string notificationType);
     }
 }

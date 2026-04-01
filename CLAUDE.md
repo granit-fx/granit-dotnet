@@ -437,6 +437,13 @@ edge case, GDPR/ISO 27001 constraint, third-party workaround.
 - Remove/change interface implementations on `ValueObject`/`Entity`/`AggregateRoot` for SonarQube — mark as won't fix
 - Reduce constructor params via wrapper types that aren't real domain concepts — mark `brain-overload` as won't fix
 
+### Git — CRITICAL
+
+- **NEVER `git push` to a PR branch without verifying the PR is still open first.**
+  Run `gh pr view <number> --json state -q .state` immediately before every `git push`.
+  If result is NOT `"OPEN"`, do NOT push. Instead: fetch develop, create a new branch,
+  cherry-pick changes, create a new PR. This is a **BLOCKING** check — never skip it.
+
 ## Compliance
 
 1. **GDPR**: Minimization, right to erasure, pseudonymization
