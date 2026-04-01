@@ -704,6 +704,15 @@
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
+      "granit.encryption": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+        }
+      },
       "granit.guids": {
         "type": "Project",
         "dependencies": {
@@ -731,6 +740,7 @@
       "granit.notifications": {
         "type": "Project",
         "dependencies": {
+          "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
@@ -750,6 +760,7 @@
       "granit.notifications.wolverine": {
         "type": "Project",
         "dependencies": {
+          "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.Notifications": "[0.1.0-dev, )",
           "Granit.Wolverine": "[0.1.0-dev, )",
           "Microsoft.Extensions.Configuration.Binder": "[10.*, )",
