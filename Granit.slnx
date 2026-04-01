@@ -455,7 +455,9 @@
     <Project Path="tests/Granit.Notifications.Wolverine.Tests/Granit.Notifications.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Zulip.Tests/Granit.Notifications.Zulip.Tests.csproj" />
   </Folder>
-  <Folder Name="/tests/" />
+  <Folder Name="/tests/">
+    <Project Path="tests/Granit.Identity.Local.Notifications.Tests/Granit.Identity.Local.Notifications.Tests.csproj" />
+  </Folder>
   <Folder Name="/tests/AI/">
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />
     <Project Path="tests/Granit.AI.Endpoints.Tests/Granit.AI.Endpoints.Tests.csproj" />

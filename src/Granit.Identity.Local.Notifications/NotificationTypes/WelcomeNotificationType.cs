@@ -1,6 +1,6 @@
 using Granit.Notifications;
 
-namespace Granit.Identity.Local.Notifications;
+namespace Granit.Identity.Local.Notifications.NotificationTypes;
 
 /// <summary>
 /// Notification type for the welcome email sent after user registration.

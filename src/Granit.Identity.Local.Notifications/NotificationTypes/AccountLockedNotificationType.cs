@@ -1,6 +1,6 @@
 using Granit.Notifications;
 
-namespace Granit.Identity.Local.Notifications;
+namespace Granit.Identity.Local.Notifications.NotificationTypes;
 
 /// <summary>
 /// Notification type for alerting a user that their account has been locked

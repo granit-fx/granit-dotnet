@@ -1,4 +1,5 @@
 using Granit.Identity.Local.Events;
+using Granit.Identity.Local.Notifications.NotificationTypes;
 using Granit.Identity.Local.Notifications.Options;
 using Granit.Notifications.Abstractions;
 using Microsoft.Extensions.Options;

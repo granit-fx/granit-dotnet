@@ -235,6 +235,7 @@
         "tests/Granit.Identity.Federated.Keycloak.Tests",
         "tests/Granit.Identity.Local.AspNetIdentity.Tests",
         "tests/Granit.Identity.Local.Endpoints.Tests",
+        "tests/Granit.Identity.Local.Notifications.Tests",
         "tests/Granit.Identity.Local.Tests",
         "tests/Granit.Identity.Tests",
         "tests/Granit.Authentication.DPoP.Tests",

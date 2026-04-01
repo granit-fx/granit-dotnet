@@ -94,6 +94,15 @@ public sealed class GranitNotificationsWolverineModuleTests
             CancellationToken cancellationToken = default) where TData : notnull =>
             ValueTask.CompletedTask;
 
+        public ValueTask PublishAsync<TData>(
+            NotificationType<TData> notificationType,
+            TData data,
+            IReadOnlyList<string> recipientUserIds,
+            RecipientInfo recipientOverride,
+            EntityReference? relatedEntity = null,
+            CancellationToken cancellationToken = default) where TData : notnull =>
+            ValueTask.CompletedTask;
+
         public ValueTask PublishToSubscribersAsync<TData>(
             NotificationType<TData> notificationType,
             TData data,

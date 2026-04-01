@@ -1,6 +1,6 @@
 using Granit.Notifications;
 
-namespace Granit.Identity.Local.Notifications;
+namespace Granit.Identity.Local.Notifications.NotificationTypes;
 
 /// <summary>
 /// Notification type for the confirmation link sent to the <b>new</b> email address
