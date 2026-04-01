@@ -7,6 +7,7 @@ using Granit.Modularity;
 using Granit.Oidc;
 using Granit.Timing;
 using Granit.Users;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -36,6 +37,16 @@ public sealed class GranitBffModule : GranitModule
         context.Services.TryAddScoped<IBffTokenStore, DistributedCacheBffTokenStore>();
         context.Services.TryAddSingleton<IBffCsrfTokenGenerator, HmacBffCsrfTokenGenerator>();
         context.Services.TryAddSingleton<ILogoutTokenValidator, LogoutTokenValidator>();
+
+        // Internal loopback handler — routes HTTP calls through the ASP.NET Core pipeline
+        // in-memory when the BFF authority is the same process (BFF + OpenIddict self-hosted).
+        // Auto-detects via IServer addresses; no-op when authority is a remote server.
+        BffLoopbackPipelineCapture pipelineCapture = new();
+        context.Services.AddSingleton(pipelineCapture);
+        context.Services.AddSingleton<IStartupFilter>(pipelineCapture);
+        context.Services.AddTransient<InternalLoopbackHandler>();
+        context.Services.AddHttpClient("Granit.Bff")
+            .AddHttpMessageHandler<InternalLoopbackHandler>();
 
         GranitActivitySourceRegistry.Register(BffActivitySource.Name);
     }

@@ -6371,7 +6371,7 @@
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/GranitBffModule.cs",
-      "line": 30,
+      "line": 31,
       "members": [
         {
           "name": "ConfigureServices",
