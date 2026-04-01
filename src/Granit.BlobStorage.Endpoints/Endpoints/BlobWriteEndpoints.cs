@@ -59,7 +59,7 @@ internal static class BlobWriteEndpoints
 
     private static async Task<NoContent> DeleteAsync(
         Guid id,
-        BlobDeleteRequest request,
+        [FromBody] BlobDeleteRequest request,
         [FromServices] IBlobStorage blobStorage,
         CancellationToken cancellationToken)
     {
