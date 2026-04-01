@@ -6371,7 +6371,7 @@
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/GranitBffModule.cs",
-      "line": 30,
+      "line": 31,
       "members": [
         {
           "name": "ConfigureServices",
@@ -18983,7 +18983,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Email",
       "file": "src/Granit.Notifications.Email/Extensions/EmailNotificationsServiceCollectionExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitNotificationsEmail",
@@ -18999,7 +18999,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Email",
       "file": "src/Granit.Notifications.Email/GranitNotificationsEmailModule.cs",
-      "line": 13,
+      "line": 17,
       "members": []
     },
     {
@@ -28113,13 +28113,47 @@
       "kind": "class",
       "project": "Granit.Templating.Scriban",
       "file": "src/Granit.Templating.Scriban/Extensions/ServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitTemplatingWithScriban",
           "kind": "method",
           "signature": "AddGranitTemplatingWithScriban(this IServiceCollection services)",
           "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "AppGlobalContextOptions",
+      "fqn": "Granit.Templating.Scriban.GlobalContexts.AppGlobalContextOptions",
+      "kind": "class",
+      "project": "Granit.Templating.Scriban",
+      "file": "src/Granit.Templating.Scriban/GlobalContexts/AppGlobalContextOptions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "BaseUrl",
+          "kind": "property",
+          "signature": "string BaseUrl",
+          "returnType": "string"
+        },
+        {
+          "name": "SupportEmail",
+          "kind": "property",
+          "signature": "string SupportEmail",
+          "returnType": "string"
+        },
+        {
+          "name": "LogoUrl",
+          "kind": "property",
+          "signature": "string LogoUrl",
+          "returnType": "string"
         }
       ]
     },
