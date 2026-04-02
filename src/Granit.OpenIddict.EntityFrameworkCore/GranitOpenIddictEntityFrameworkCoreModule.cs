@@ -109,7 +109,11 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
         IServiceCollection services, bool isDevelopment, string scheme,
         string prodCookieName, string devCookieName)
     {
-        services.Configure<Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions>(
+        // MUST use PostConfigure — AddIdentity<TUser, TRole>() registers its own
+        // PostConfigure that resets cookie names to ASP.NET Core defaults.
+        // Our PostConfigure runs after Identity's because the module [DependsOn]
+        // chain ensures registration order.
+        services.PostConfigure<Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions>(
             scheme,
             options =>
             {
