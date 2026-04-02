@@ -1,8 +1,11 @@
+using Granit.Bff.Options;
 using Granit.Caching;
 using Granit.Http.ApiDocumentation;
 using Granit.Http.Cookies;
 using Granit.Modularity;
 using Granit.Validation;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Granit.Bff.Endpoints;
 
@@ -20,4 +23,18 @@ namespace Granit.Bff.Endpoints;
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitHttpCookiesModule),
     typeof(GranitValidationModule))]
-public sealed class GranitBffEndpointsModule : GranitModule;
+public sealed class GranitBffEndpointsModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        bool isDevelopment = context.Builder!.Environment.IsDevelopment();
+
+        // In development (HTTP), disable __Host- prefix on BFF session cookies.
+        // __Host- requires HTTPS — browsers silently ignore the cookie on HTTP.
+        context.Services.PostConfigureAll<BffFrontendOptions>(options =>
+        {
+            options.UseHostPrefix = !isDevelopment;
+        });
+    }
+}
