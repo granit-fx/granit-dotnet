@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Encryption\Granit.Encryption.csproj" />
-    <ProjectReference Include="..\Granit.Http.Cookies\Granit.Http.Cookies.csproj" />
     <ProjectReference Include="..\Granit.Identity.Local\Granit.Identity.Local.csproj" />
     <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
     <ProjectReference Include="..\Granit.OpenIddict.Server\Granit.OpenIddict.Server.csproj" />

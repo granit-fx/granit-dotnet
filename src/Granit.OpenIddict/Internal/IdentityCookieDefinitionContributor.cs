@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
+namespace Granit.OpenIddict.Internal;
 
 /// <summary>
 /// Contributes ASP.NET Core Identity cookie definitions to the Granit cookie registry.

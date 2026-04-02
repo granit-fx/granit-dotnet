@@ -1,5 +1,5 @@
 using Granit.Http.Cookies;
-using Granit.OpenIddict.EntityFrameworkCore.Internal;
+using Granit.OpenIddict.Internal;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -7,7 +7,7 @@ using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Tests;
+namespace Granit.OpenIddict.Tests;
 
 public sealed class IdentityCookieDefinitionContributorTests
 {
