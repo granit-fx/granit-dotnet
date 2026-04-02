@@ -283,6 +283,12 @@
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
+      "granit.encryption": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.events": {
         "type": "Project",
         "dependencies": {
@@ -308,6 +314,12 @@
         "dependencies": {
           "Asp.Versioning.Mvc": "[10.0.0-preview.*, )",
           "Asp.Versioning.Mvc.ApiExplorer": "[10.0.0-preview.*, )",
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.http.cookies": {
+        "type": "Project",
+        "dependencies": {
           "Granit": "[0.1.0-dev, )"
         }
       },
@@ -345,6 +357,8 @@
       "granit.openiddict": {
         "type": "Project",
         "dependencies": {
+          "Granit.Encryption": "[0.1.0-dev, )",
+          "Granit.Http.Cookies": "[0.1.0-dev, )",
           "Granit.Identity.Local": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "OpenIddict.EntityFrameworkCore": "[7.*, )"
