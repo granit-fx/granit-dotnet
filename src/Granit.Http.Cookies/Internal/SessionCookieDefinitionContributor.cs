@@ -13,7 +13,7 @@ internal sealed class SessionCookieDefinitionContributor(
     IOptions<SessionOptions> options) : ICookieDefinitionContributor
 {
     /// <summary>Default session cookie name (avoids leaking ASP.NET Core).</summary>
-    internal const string DefaultCookieName = "__Host-session";
+    internal const string DefaultCookieName = ".session";
 
     /// <inheritdoc/>
     public IEnumerable<CookieDefinition> GetCookieDefinitions()

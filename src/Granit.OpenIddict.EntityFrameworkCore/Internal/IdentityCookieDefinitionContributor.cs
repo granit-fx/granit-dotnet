@@ -19,13 +19,13 @@ internal sealed class IdentityCookieDefinitionContributor(
     IOptionsMonitor<CookieAuthenticationOptions> cookieOptions) : ICookieDefinitionContributor
 {
     /// <summary>Default identity session cookie name (avoids leaking ASP.NET Core).</summary>
-    internal const string DefaultApplicationCookieName = "__Host-id";
+    internal const string DefaultApplicationCookieName = ".id";
 
     /// <summary>Default 2FA flow cookie name.</summary>
-    internal const string DefaultTwoFactorCookieName = "__Host-id-2fa";
+    internal const string DefaultTwoFactorCookieName = ".id-2fa";
 
     /// <summary>Default external login correlation cookie name.</summary>
-    internal const string DefaultExternalCookieName = "__Host-id-ext";
+    internal const string DefaultExternalCookieName = ".id-ext";
 
     /// <inheritdoc/>
     public IEnumerable<CookieDefinition> GetCookieDefinitions()

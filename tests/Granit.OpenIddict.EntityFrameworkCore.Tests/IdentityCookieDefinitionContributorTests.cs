@@ -84,9 +84,9 @@ public sealed class IdentityCookieDefinitionContributorTests
     }
 
     private static IOptionsMonitor<CookieAuthenticationOptions> CreateOptionsMonitor(
-        string? applicationCookieName = "__Host-id",
-        string? twoFactorCookieName = "__Host-id-2fa",
-        string? externalCookieName = "__Host-id-ext")
+        string? applicationCookieName = ".id",
+        string? twoFactorCookieName = ".id-2fa",
+        string? externalCookieName = ".id-ext")
     {
         IOptionsMonitor<CookieAuthenticationOptions> monitor = Substitute.For<IOptionsMonitor<CookieAuthenticationOptions>>();
 

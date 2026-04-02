@@ -33,11 +33,11 @@ public sealed class GranitCookiesBuilder(IServiceCollection services)
     {
         Services.AddSingleton<ICookieDefinitionContributor, Internal.SessionCookieDefinitionContributor>();
 
-        // Override the default session cookie name (.AspNetCore.Session → __Host-session).
+        // Override the default session cookie name (.AspNetCore.Session → .session).
         Services.Configure<Microsoft.AspNetCore.Builder.SessionOptions>(options =>
         {
             options.Cookie.Name = Internal.SessionCookieDefinitionContributor.DefaultCookieName;
-            options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+            options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
             options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
             options.Cookie.HttpOnly = true;
         });

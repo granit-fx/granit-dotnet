@@ -13,10 +13,9 @@ internal sealed class AntiforgeryCookieDefinitionContributor(
 {
     /// <summary>
     /// Default antiforgery cookie name set by <see cref="GranitHttpCookiesModule"/>.
-    /// Uses the <c>__Host-</c> prefix for CSRF-hardening (RFC 6265bis §4.1.3.2)
-    /// and avoids leaking the underlying technology stack.
+    /// Neutral name that avoids leaking the underlying technology stack.
     /// </summary>
-    internal const string DefaultCookieName = "__Host-xsrf";
+    internal const string DefaultCookieName = ".xsrf";
 
     /// <inheritdoc/>
     public IEnumerable<CookieDefinition> GetCookieDefinitions()
