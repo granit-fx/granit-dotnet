@@ -14,7 +14,7 @@ using OpenIddict.Abstractions;
 #pragma warning disable EF1001 // OpenIddictDbContext is internal but accessible via InternalsVisibleTo
 #pragma warning disable GRSEC003 // Token/claim constants, not secrets
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
+namespace Granit.OpenIddict.Internal;
 
 /// <summary>
 /// <see cref="IImpersonationService"/> implementation that issues OpenIddict tokens

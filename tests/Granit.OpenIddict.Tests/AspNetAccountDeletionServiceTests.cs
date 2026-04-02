@@ -2,7 +2,7 @@ using Granit.Events;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
-using Granit.OpenIddict.EntityFrameworkCore.Internal;
+using Granit.OpenIddict.Internal;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
@@ -10,7 +10,7 @@ using OpenIddict.Abstractions;
 using Shouldly;
 using Xunit;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Tests;
+namespace Granit.OpenIddict.Tests;
 
 public sealed class AspNetAccountDeletionServiceTests
 {

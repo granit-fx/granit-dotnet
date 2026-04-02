@@ -1,12 +1,12 @@
+using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
-using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Microsoft.AspNetCore.Identity;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Tests;
+namespace Granit.Identity.Local.AspNetIdentity.Tests;
 
 public sealed class AspNetTwoFactorServiceTests
 {

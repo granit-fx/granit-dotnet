@@ -1137,6 +1137,7 @@
     {
       "name": "Granit.OpenIddict",
       "deps": [
+        "Granit.Encryption",
         "Granit.Http.Cookies",
         "Granit.Identity.Local",
         "Granit.QueryEngine.Abstractions"
@@ -22438,7 +22439,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/GranitOpenIddictEntityFrameworkCoreModule.cs",
-      "line": 37,
+      "line": 33,
       "members": [
         {
           "name": "ConfigureServices",

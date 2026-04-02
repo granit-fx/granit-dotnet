@@ -3,7 +3,7 @@ using Granit.Events;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
-using Granit.OpenIddict.EntityFrameworkCore.Internal;
+using Granit.OpenIddict.Internal;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Services;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +12,7 @@ using Shouldly;
 using Xunit;
 using GranitExternalLoginInfo = Granit.Identity.Local.Services.ExternalLoginInfo;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Tests;
+namespace Granit.OpenIddict.Tests;
 
 public sealed class AspNetExternalLoginServiceTests
 {

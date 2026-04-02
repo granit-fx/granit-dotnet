@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using GranitExternalLoginInfo = Granit.Identity.Local.Services.ExternalLoginInfo;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
+namespace Granit.OpenIddict.Internal;
 
 /// <summary>
 /// <see cref="IExternalLoginService"/> implementation backed by ASP.NET Core Identity's

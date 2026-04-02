@@ -1,8 +1,8 @@
 using System.Text.Json;
+using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Options;
 using Granit.Identity.Local.Services;
-using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -10,7 +10,7 @@ using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Tests;
+namespace Granit.Identity.Local.AspNetIdentity.Tests;
 
 public sealed class AspNetPasskeyServiceTests
 {

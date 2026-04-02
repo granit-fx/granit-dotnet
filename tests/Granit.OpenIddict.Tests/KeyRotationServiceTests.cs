@@ -1,6 +1,6 @@
 using Granit.Encryption;
 using Granit.OpenIddict.Domain;
-using Granit.OpenIddict.EntityFrameworkCore.Internal;
+using Granit.OpenIddict.Internal;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Services;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -8,7 +8,7 @@ using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Tests;
+namespace Granit.OpenIddict.Tests;
 
 public sealed class KeyRotationServiceTests
 {

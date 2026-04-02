@@ -56,6 +56,10 @@ public sealed class GranitOpenIddictModule : GranitModule
         context.Services.TryAddScoped<IClaimsDestinationProvider, DefaultClaimsDestinationProvider>();
         context.Services.TryAddScoped<ITotpService, DefaultTotpService>();
         context.Services.TryAddScoped<ExternalClaimsMapper>();
+        context.Services.TryAddScoped<IExternalLoginService, Internal.AspNetExternalLoginService>();
+        context.Services.TryAddScoped<IAccountDeletionService, Internal.AspNetAccountDeletionService>();
+        context.Services.TryAddScoped<IImpersonationService, Internal.AspNetImpersonationService>();
+        context.Services.TryAddScoped<IKeyRotationService, Internal.KeyRotationService>();
         context.Services.TryAddSingleton<IExternalProviderRegistry, OpenIddictExternalProviderRegistry>();
 
         // Identity cookie configuration — neutral names to avoid leaking the technology stack.

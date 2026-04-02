@@ -4,7 +4,7 @@ using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Identity;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
+namespace Granit.Identity.Local.AspNetIdentity.Internal;
 
 /// <summary>
 /// <see cref="IPasswordResetService"/> implementation backed by ASP.NET Core Identity.

@@ -6,7 +6,7 @@ using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using OpenIddict.Abstractions;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
+namespace Granit.OpenIddict.Internal;
 
 /// <summary>
 /// <see cref="IAccountDeletionService"/> implementation backed by ASP.NET Core Identity.

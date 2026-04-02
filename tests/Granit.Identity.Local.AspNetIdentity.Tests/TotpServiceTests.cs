@@ -1,4 +1,4 @@
-using Granit.OpenIddict.EntityFrameworkCore.Internal;
+using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -6,7 +6,7 @@ using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Tests;
+namespace Granit.Identity.Local.AspNetIdentity.Tests;
 
 public sealed class TotpServiceTests
 {
@@ -195,6 +195,7 @@ public sealed class TotpServiceTests
     /// <summary>
     /// Replicates the TOTP algorithm to generate expected codes for testing.
     /// </summary>
+#pragma warning disable CA5350 // HMACSHA1 is required by RFC 6238 (TOTP standard)
     private static string GenerateCodeForKey(string base32Key, DateTimeOffset timestamp)
     {
         byte[] key = Base32Decode(base32Key);
@@ -215,6 +216,7 @@ public sealed class TotpServiceTests
         int otp = binaryCode % 1_000_000;
         return otp.ToString().PadLeft(6, '0');
     }
+#pragma warning restore CA5350
 
     private static byte[] Base32Decode(string base32)
     {

@@ -5,7 +5,7 @@ using Granit.Timing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
+namespace Granit.Identity.Local.AspNetIdentity.Internal;
 
 /// <summary>
 /// RFC 6238 TOTP implementation using <see cref="HMACSHA1"/> for two-factor authentication.

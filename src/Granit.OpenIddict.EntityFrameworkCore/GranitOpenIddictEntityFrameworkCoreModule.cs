@@ -18,15 +18,11 @@ using OpenIddict.Server;
 namespace Granit.OpenIddict.EntityFrameworkCore;
 
 /// <summary>
-/// Granit module that registers EF Core persistence and ASP.NET Core Identity
-/// service implementations for OpenIddict.
+/// Granit module that registers EF Core persistence for OpenIddict.
 /// </summary>
 /// <remarks>
-/// <para>
-/// Persistence: <see cref="Internal.OpenIddictDbContext"/>, EF stores, data seeding.
-/// Identity services: <c>AspNet*</c> implementations that depend on <c>UserManager&lt;GranitUser&gt;</c>
-/// (registered here because <c>AddIdentity()</c> is called in <c>AddGranitOpenIddict()</c>).
-/// </para>
+/// Registers <see cref="Internal.OpenIddictDbContext"/>, EF stores (groups, signing keys),
+/// data seeding, extra-property infrastructure, and signing key loading at startup.
 /// </remarks>
 [DependsOn(
     typeof(GranitEncryptionModule),
@@ -45,16 +41,6 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
         // EF Core stores
         context.Services.TryAddScoped<ILocalIdentityGroupStore, OpenIddictGroupStore>();
         context.Services.TryAddScoped<ISigningKeyStore, EfSigningKeyStore>();
-        context.Services.TryAddScoped<IKeyRotationService, KeyRotationService>();
-
-        // ASP.NET Core Identity service implementations (depend on UserManager<GranitUser>)
-        context.Services.TryAddScoped<IExternalLoginService, AspNetExternalLoginService>();
-        context.Services.TryAddScoped<ITotpService, TotpService>();
-        context.Services.TryAddScoped<ITwoFactorService, AspNetTwoFactorService>();
-        context.Services.TryAddScoped<IAccountDeletionService, AspNetAccountDeletionService>();
-        context.Services.TryAddScoped<IPasswordResetService, AspNetPasswordResetService>();
-        context.Services.TryAddScoped<IPasskeyService, AspNetPasskeyService>();
-        context.Services.TryAddScoped<IImpersonationService, AspNetImpersonationService>();
 
         // GranitUser implements IHasExtraProperties — apps can extend user properties
         // by calling AddExtraPropertyMappings<GranitUser> in their own module.

@@ -6,7 +6,7 @@ using Granit.OpenIddict.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
+namespace Granit.OpenIddict.Internal;
 
 /// <summary>
 /// <see cref="IKeyRotationService"/> implementation that manages the full signing key lifecycle.

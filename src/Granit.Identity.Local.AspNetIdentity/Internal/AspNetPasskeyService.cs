@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 #pragma warning disable GRSEC003 // Passkey/credential constants, not secrets
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
+namespace Granit.Identity.Local.AspNetIdentity.Internal;
 
 /// <summary>
 /// <see cref="IPasskeyService"/> implementation using ASP.NET Core Identity's

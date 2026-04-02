@@ -2,7 +2,7 @@ using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Identity;
 
-namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
+namespace Granit.Identity.Local.AspNetIdentity.Internal;
 
 /// <summary>
 /// <see cref="ITwoFactorService"/> implementation backed by <see cref="UserManager{TUser}"/>.
