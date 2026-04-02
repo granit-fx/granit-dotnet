@@ -76,6 +76,6 @@ internal sealed class TemplateLocalizationFunction(IStringLocalizerFactory local
     public ValueTask<object?> InvokeAsync(TemplateContext context, ScriptNode? callerContext, ScriptArray arguments, ScriptBlockStatement? blockStatement) =>
         new(Invoke(context, callerContext, arguments, blockStatement));
 
-    public int GetParameterIndexByName(string name) =>
+    public static int GetParameterIndexByName(string name) =>
         throw new NotImplementedException();
 }

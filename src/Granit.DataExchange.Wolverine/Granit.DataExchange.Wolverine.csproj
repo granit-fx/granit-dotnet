@@ -9,6 +9,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.DataExchange.Wolverine.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    <InternalsVisibleTo Include="WolverineHandlers" />
   </ItemGroup>
 
   <ItemGroup>

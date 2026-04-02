@@ -95,7 +95,7 @@
     </style>
 </head>
 <body>
-    <div class="wrapper" role="presentation">
+    <div class="wrapper">
         <div class="container">
             <header role="banner">
                 {{- if app.logo_url != "" }}
@@ -109,7 +109,7 @@
                 {{- if app.base_url != "" }}
                 <hr class="divider" aria-hidden="true">
                 <p style="text-align: center;">
-                    <a href="{{ app.base_url }}" class="btn" role="link">{{ app.name }}</a>
+                    <a href="{{ app.base_url }}" class="btn">{{ app.name }}</a>
                 </p>
                 {{- end }}
             </main>

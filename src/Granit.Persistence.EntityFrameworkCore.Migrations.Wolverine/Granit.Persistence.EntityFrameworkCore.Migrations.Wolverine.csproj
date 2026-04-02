@@ -11,6 +11,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    <InternalsVisibleTo Include="WolverineHandlers" />
   </ItemGroup>
 
   <ItemGroup>

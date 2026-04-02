@@ -48,25 +48,8 @@ public sealed class NotificationFanoutHandler(
         IReadOnlyList<string> defaultChannels = definition?.DefaultChannels ?? [NotificationChannels.InApp];
         bool allowOptOut = definition?.AllowUserOptOut ?? true;
 
-        // Resolve recipients: explicit list, or subscribers, or entity followers
-        IReadOnlyList<string> recipientUserIds = trigger.RecipientUserIds;
-
-        if (recipientUserIds.Count == 0 && trigger.RelatedEntity is not null)
-        {
-            recipientUserIds = await subscriptionReader.GetEntityFollowerIdsAsync(
-                trigger.RelatedEntity.EntityType,
-                trigger.RelatedEntity.EntityId,
-                tenantId,
-                cancellationToken).ConfigureAwait(false);
-        }
-
-        if (recipientUserIds.Count == 0)
-        {
-            recipientUserIds = await subscriptionReader.GetSubscriberIdsAsync(
-                trigger.NotificationTypeName,
-                tenantId,
-                cancellationToken).ConfigureAwait(false);
-        }
+        IReadOnlyList<string> recipientUserIds = await ResolveRecipientsAsync(
+            trigger, tenantId, cancellationToken).ConfigureAwait(false);
 
         if (recipientUserIds.Count == 0)
         {
@@ -112,6 +95,39 @@ public sealed class NotificationFanoutHandler(
             trigger.NotificationTypeName);
 
         return commands;
+    }
+
+    /// <summary>
+    /// Resolves recipients: explicit list → entity followers → topic subscribers.
+    /// </summary>
+    private async Task<IReadOnlyList<string>> ResolveRecipientsAsync(
+        NotificationTrigger trigger,
+        Guid? tenantId,
+        CancellationToken cancellationToken)
+    {
+        if (trigger.RecipientUserIds.Count > 0)
+        {
+            return trigger.RecipientUserIds;
+        }
+
+        if (trigger.RelatedEntity is not null)
+        {
+            IReadOnlyList<string> followers = await subscriptionReader.GetEntityFollowerIdsAsync(
+                trigger.RelatedEntity.EntityType,
+                trigger.RelatedEntity.EntityId,
+                tenantId,
+                cancellationToken).ConfigureAwait(false);
+
+            if (followers.Count > 0)
+            {
+                return followers;
+            }
+        }
+
+        return await subscriptionReader.GetSubscriberIdsAsync(
+            trigger.NotificationTypeName,
+            tenantId,
+            cancellationToken).ConfigureAwait(false);
     }
 
     private Task<bool> IsChannelEnabledAsync(
