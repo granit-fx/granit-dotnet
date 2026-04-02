@@ -176,27 +176,15 @@ segments). Enforced across all `*.Endpoints` modules.
 
 ### Events — naming convention (STRICT)
 
-Two suffixes, three dispatch mechanisms — enforced by architecture tests:
+Two suffixes — enforced by architecture tests:
 
 | Suffix | Interface | Dispatch | Example |
 | ------ | --------- | -------- | ------- |
-| `*Event` | `IDomainEvent` | `AddDomainEvent()` on aggregate root → after commit | `BlobValidatedEvent` |
-| `*Event` | _(none)_ | `ILocalEventBus.PublishAsync()` in services → explicit call | `SettingChangedEvent` |
-| `*Eto` | `IIntegrationEvent` | `AddDistributedEvent()` on aggregate root → Wolverine outbox | `PersonalDataDeletedEto` |
-| `*Eto` | `IIntegrationEvent` | `IDistributedEventBus.PublishAsync()` in services → outbox | `IdentityUserCreatedEto` |
+| `*Event` | `IDomainEvent` or none | `AddDomainEvent()` (aggregate) or `ILocalEventBus.PublishAsync()` (service) | `BlobValidatedEvent` |
+| `*Eto` | `IIntegrationEvent` | `AddDistributedEvent()` (aggregate) or `IDistributedEventBus.PublishAsync()` (service) → Wolverine outbox | `PersonalDataDeletedEto` |
 
-- **`*Event`** (local, in-process): either raised via `AddDomainEvent()` on an aggregate
-  root (dispatched after commit by `SavedChanges` interceptor), or published explicitly
-  via `ILocalEventBus.PublishAsync()` in service classes that operate on plain entities
-  without DDD behavior (Settings, Features, Authorization). Past-tense verb + `Event` suffix.
-- **`*Eto`** (Event Transfer Object, distributed): either raised via `AddDistributedEvent()`
-  on an aggregate root (persisted atomically in Wolverine outbox), or published explicitly
-  via `IDistributedEventBus.PublishAsync()` in services (at-least-once delivery, survives
-  pod crashes). Must implement `IIntegrationEvent`. Past-tense verb + `Eto` suffix.
-- **Generic lifecycle**: `EntityCreatedEvent<T>`, `EntityCreatedEto<T>` — automatic via
-  `IEmitEntityLifecycleEvents` marker interface.
-- **NEVER** use bare past-tense names without suffix (`BlobValidated` is wrong,
-  `BlobValidatedEvent` is correct).
+- Past-tense verb + suffix. NEVER bare names (`BlobValidated` → `BlobValidatedEvent`)
+- Generic lifecycle: `EntityCreatedEvent<T>` / `EntityCreatedEto<T>` via `IEmitEntityLifecycleEvents`
 
 ### Background Jobs — naming convention (STRICT)
 
@@ -238,27 +226,13 @@ group.MapGet("/{id:guid}", GetByIdAsync)
     .ProducesProblem(StatusCodes.Status404NotFound);        // One per error path
 ```
 
-**Return type → Produces mapping:**
+**Produces mapping:** Match handler return type → `Ok<T>` = `.Produces<T>()`,
+`Created<T>` = `.Produces<T>(201)`, `NotFound` = `.ProducesProblem(404)`,
+`ValidationProblem` = `.ProducesValidationProblem()`, `FileStreamHttpResult` =
+`.Produces(200, contentType: "application/octet-stream")`. Never omit `.Produces()`.
 
-| Handler return type | Produces | ProducesProblem |
-| ------------------- | -------- | --------------- |
-| `Ok<T>` | `.Produces<T>()` | — |
-| `Created<T>` | `.Produces<T>(StatusCodes.Status201Created)` | — |
-| `Created` (no body) | `.Produces(StatusCodes.Status201Created)` | — |
-| `NoContent` | `.Produces(StatusCodes.Status204NoContent)` | — |
-| `Accepted` | `.Produces(StatusCodes.Status202Accepted)` | — |
-| `NotFound` in `Results` | — | `.ProducesProblem(Status404NotFound)` |
-| `ProblemHttpResult` in `Results` | — | `.ProducesProblem(StatusXxx)` — read handler body |
-| `ValidationProblem` in `Results` | — | `.ProducesValidationProblem()` |
-| `FileStreamHttpResult` | `.Produces(Status200OK, contentType: "application/octet-stream")` | — |
-
-**Rules:**
-
-- **WithName**: PascalCase `VerbNoun` (e.g., `GetBlobDescriptor`, `CreateExportJob`)
-- **WithSummary**: imperative sentence ending with period, ~100 chars
-- **WithDescription**: 2-4 factual sentences — what, context/behavior, error codes
-- **ProducesProblem**: one call per distinct error status code (read handler body for exact code)
-- **Never omit** `.Produces()` — without it, OpenAPI schema has no response type
+**Rules:** WithName = PascalCase VerbNoun, WithSummary = imperative ~100 chars with period,
+WithDescription = 2-4 sentences, ProducesProblem = one per error status code.
 
 ### Validation
 
@@ -373,69 +347,28 @@ Shard mapping:
 
 ## Anti-patterns — NEVER do this
 
-### Code
+Code anti-patterns are the inverse of conventions above. Key additional rules:
 
-- `DateTime.Now`/`UtcNow` → inject `TimeProvider`
-- `new Regex(..., Compiled)` → `[GeneratedRegex]`
-- String interpolation in logs → `[LoggerMessage]`
+### Code (not covered above)
+
 - `new HttpClient()` → `IHttpClientFactory`
 - `async void` → always return `Task`
 - `.Result` / `.Wait()` → `await`
-- `Results.Ok()` → `TypedResults.Ok()` for OpenAPI
-- Return EF entities from endpoints → map to `*Response` DTOs
 - Bare `catch (Exception)` → catch specific types
-- `*Dto` suffix → use `*Request` / `*Response`
-- `TypedResults.BadRequest<string>()` → `TypedResults.Problem()` (RFC 7807)
-- `lock (object)` / `lock (collection)` → `lock (Lock)` with `System.Threading.Lock`
-- `new Meter(...)` → inject `IMeterFactory` and call `meterFactory.Create(...)`
-- `Array.Empty<T>()` / `new List<T>()` / `new T[] {}` → `[]` (collection expression)
-- `string.Concat(a, b, c)` → `$"{a}{b}{c}"` (string interpolation)
-- `params T[]` in non-attribute methods → `params ReadOnlySpan<T>`
-- `nameof(T)` on type parameter → `typeof(T).Name` (nameof returns `"T"`, not the type name)
-- Traditional constructors with only field assignments → primary constructors
-- Unnamed `HasQueryFilter(expr)` → named `HasQueryFilter(name, expr)` (EF Core 10)
-- Swashbuckle / NSwag → `Microsoft.AspNetCore.OpenApi` + Scalar UI
-- Domain event without `Event` suffix → `BlobValidatedEvent` (not `BlobValidated`)
-- Integration event without `Eto` suffix → `PersonalDataDeletedEto` (not `PersonalDataDeletedEvent`)
-- Public setters on aggregate roots → `private set` + behavior methods
-- Manual `IDomainEventSource` implementation → inherit from `AggregateRoot` (or variants)
-- `new XxxEntity { ... }` on aggregate roots → `XxxEntity.Create(...)` factory method
-- `.WithMessage("hardcoded string")` in validators → `.WithErrorCodeAndMessage("Granit:Validation:XxxCode")` + localization JSON
-- `View` action in permissions → `Read` (RBAC standard: `Read`, not `View`)
-- Two-segment permission names (`Features.Read`) → three-segment `Features.Flags.Read` (`[Group].[Resource].[Action]`)
-- Endpoint without `.WithName()` → always declare an operation ID
-- Endpoint without `.WithSummary()` / `.WithDescription()` → always document the endpoint
-- Endpoint without `.Produces<T>()` → always declare the success response type
-- Endpoint without `.ProducesProblem()` when handler returns `NotFound`/`ProblemHttpResult` → always declare error responses
 
 ### Architecture
 
-- Merge `I*Reader`/`I*Writer` into combined `I*Store` → CQRS, keep them separate
-- Share DbContext across modules → each module owns its isolated DbContext
-- Manual `HasQueryFilter` in entity configs → `ApplyGranitConventions` handles all filters
-- Cross-module direct method calls → use integration events (Wolverine)
+- Merge `I*Reader`/`I*Writer` into `I*Store` → CQRS, keep separate
+- Share DbContext across modules → isolated DbContext per module
+- Cross-module direct method calls → integration events (Wolverine)
 - Repository pattern over EF Core → use DbContext directly
-- Circular project references → restructure dependencies
 
 ### Refactoring
 
-Code that looks "weird" almost always exists for a reason: production fix, regulatory
-edge case, GDPR/ISO 27001 constraint, third-party workaround.
+See global `~/.claude/CLAUDE.md` for base rules. Additional Granit-specific:
 
-**Before any refactoring:**
-
-1. Read the entire file, not just the targeted function
-2. Check `git log -p -- <file>` to understand evolution
-3. If unclear, search for the linked GitHub issue before modifying
-4. When in doubt, **ask**
-
-**NEVER:**
-
-- Delete "dead" code without verifying dynamic references (reflection, DI, runtime config)
-- Simplify complex conditions without testing the edge cases they cover
-- Replace custom implementations with stdlib without understanding why stdlib wasn't used
-- Remove/change interface implementations on `ValueObject`/`Entity`/`AggregateRoot` for SonarQube — mark as won't fix
-- Reduce constructor params via wrapper types that aren't real domain concepts — mark `brain-overload` as won't fix
+- Remove/change interface implementations on `ValueObject`/`Entity`/`AggregateRoot` for SonarQube → mark as won't fix
+- Reduce constructor params via wrapper types that aren't real domain concepts → mark `brain-overload` as won't fix
 
 ### Git — CRITICAL
 
@@ -470,22 +403,12 @@ The docs live in `docs-site/` (Astro + Starlight). Key paths:
 
 **When creating a new module**: create `.mdx` in `reference/modules/`, update `PACKAGE_COUNT` in `constants.ts`, add "See also" links from related pages.
 
-## MCP — Roslyn Navigator
+## MCP & Code index
 
-Use `roslyn-navigator` MCP tools for semantic navigation — **prefer over Grep/Read for all C# code**.
-Full guide in global `~/.claude/CLAUDE.md`.
+MCP tools (roslyn-lens + granit-tools) — see global `~/.claude/CLAUDE.md`.
 
-## Code index (`.mcp-code-index.json`)
-
-A pre-commit hook regenerates `.mcp-code-index.json` when `.cs` or `.csproj`
-files are staged. This file is consumed by the `granit-tools-mcp` local dotnet
-tool for code navigation (`search_code`, `get_public_api`,
-`get_project_graph`).
-
-- **Script:** `python3 scripts/generate-code-index.py` (Python 3.8+, no deps)
-- **Hook:** `.husky/pre-commit` — runs automatically on `.cs`/`.csproj` changes
-- **CI:** drift check validates the file is up to date
-- **NEVER edit `.mcp-code-index.json` manually** — always regenerate
+`.mcp-code-index.json` is auto-regenerated by pre-commit hook on `.cs`/`.csproj` changes.
+Script: `python3 scripts/generate-code-index.py`. **NEVER edit manually.**
 
 ## Definition of Done
 
