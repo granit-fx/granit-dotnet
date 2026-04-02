@@ -1031,6 +1031,33 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Login_RememberMe_PassesPersistentFlag()
+    {
+        var fakeUser = new GranitUser { Id = AccountEndpointsTestServer.TestUserId };
+
+        _server.UserManager
+            .FindByEmailAsync("remember@example.com")
+            .Returns(fakeUser);
+
+        _server.SignInManager
+            .PasswordSignInAsync(fakeUser, "GoodP@ss1!", true, true)
+            .Returns(Microsoft.AspNetCore.Identity.SignInResult.Success);
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/api/account/login",
+            new AccountLoginRequest("remember@example.com", "GoodP@ss1!", RememberMe: true),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        AccountLoginResponse? result = await response.Content
+            .ReadFromJsonAsync<AccountLoginResponse>(TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.Succeeded.ShouldBeTrue();
+    }
+
+    [Fact]
     public async Task Login_Success_Returns200()
     {
         var fakeUser = new GranitUser { Id = AccountEndpointsTestServer.TestUserId };
@@ -1101,6 +1128,57 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
 
         result.ShouldNotBeNull();
         result.Succeeded.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task TwoFactorLogin_RememberMe_PassesPersistentFlag()
+    {
+        _server.SignInManager
+            .TwoFactorAuthenticatorSignInAsync("123456", true, false)
+            .Returns(Microsoft.AspNetCore.Identity.SignInResult.Success);
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/api/account/login/two-factor",
+            new AccountTwoFactorLoginRequest("123456", RememberMe: true),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        AccountLoginResponse? result = await response.Content
+            .ReadFromJsonAsync<AccountLoginResponse>(TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.Succeeded.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task TwoFactorLogin_RecoveryCode_RememberMe_ReSignsPersistent()
+    {
+        var fakeUser = new GranitUser { Id = AccountEndpointsTestServer.TestUserId };
+
+        _server.SignInManager
+            .TwoFactorRecoveryCodeSignInAsync("RECOVERY1")
+            .Returns(Microsoft.AspNetCore.Identity.SignInResult.Success);
+
+        _server.UserManager
+            .GetUserAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>())
+            .Returns(fakeUser);
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/api/account/login/two-factor",
+            new AccountTwoFactorLoginRequest("RECOVERY1", UseRecoveryCode: true, RememberMe: true),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        AccountLoginResponse? result = await response.Content
+            .ReadFromJsonAsync<AccountLoginResponse>(TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.Succeeded.ShouldBeTrue();
+
+        await _server.SignInManager.Received(1)
+            .SignInAsync(fakeUser, isPersistent: true, Arg.Any<string?>());
     }
 
     [Fact]

@@ -85,7 +85,7 @@ internal static partial class AccountLoginEndpoints
         }
 
         Microsoft.AspNetCore.Identity.SignInResult result = await signInManager
-            .PasswordSignInAsync(user, request.Password, isPersistent: false, lockoutOnFailure: true)
+            .PasswordSignInAsync(user, request.Password, isPersistent: request.RememberMe, lockoutOnFailure: true)
             .ConfigureAwait(false);
 
         if (result.Succeeded)
@@ -155,11 +155,25 @@ internal static partial class AccountLoginEndpoints
             result = await signInManager
                 .TwoFactorRecoveryCodeSignInAsync(sanitizedCode)
                 .ConfigureAwait(false);
+
+            // TwoFactorRecoveryCodeSignInAsync does not accept isPersistent,
+            // so re-sign the user with a persistent cookie when RememberMe is requested.
+            if (result.Succeeded && request.RememberMe)
+            {
+                GranitUser? user = await signInManager.UserManager
+                    .GetUserAsync(httpContext.User).ConfigureAwait(false);
+
+                if (user is not null)
+                {
+                    await signInManager.SignInAsync(user, isPersistent: true)
+                        .ConfigureAwait(false);
+                }
+            }
         }
         else
         {
             result = await signInManager
-                .TwoFactorAuthenticatorSignInAsync(sanitizedCode, isPersistent: false, rememberClient: false)
+                .TwoFactorAuthenticatorSignInAsync(sanitizedCode, isPersistent: request.RememberMe, rememberClient: false)
                 .ConfigureAwait(false);
         }
 

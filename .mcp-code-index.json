@@ -15505,7 +15505,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.AspNetIdentity",
       "file": "src/Granit.Identity.Local.AspNetIdentity/GranitIdentityLocalAspNetIdentityModule.cs",
-      "line": 27,
+      "line": 28,
       "members": [
         {
           "name": "ConfigureServices",
