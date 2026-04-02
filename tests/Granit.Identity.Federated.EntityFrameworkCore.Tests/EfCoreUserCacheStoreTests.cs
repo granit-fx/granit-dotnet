@@ -1,4 +1,4 @@
-using Granit.Identity.Federated.EntityFrameworkCore.Entities;
+using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;

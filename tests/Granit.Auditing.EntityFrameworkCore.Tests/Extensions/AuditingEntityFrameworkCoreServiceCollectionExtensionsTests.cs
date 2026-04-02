@@ -14,6 +14,8 @@ using Granit.Auditing.Diagnostics;
 using Granit.Auditing.EntityFrameworkCore.Extensions;
 using Granit.Auditing.EntityFrameworkCore.Interceptors;
 using Granit.Auditing.EntityFrameworkCore.Internal.Services;
+using Granit.Auditing.Extensions;
+using Granit.Auditing.Internal.Services;
 using Granit.Auditing.Messages;
 using Granit.Auditing.Options;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +39,7 @@ public sealed class AuditingEntityFrameworkCoreServiceCollectionExtensionsTests 
         _builder.Services.AddLogging();
         _builder.Services.AddSingleton(TimeProvider.System);
 
+        _builder.Services.AddGranitAuditing();
         _builder.AddGranitAuditingEntityFrameworkCore(
             options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
 
@@ -57,6 +60,7 @@ public sealed class AuditingEntityFrameworkCoreServiceCollectionExtensionsTests 
         builder.Services.AddLogging();
         builder.Services.AddSingleton(TimeProvider.System);
 
+        builder.Services.AddGranitAuditing();
         IHostApplicationBuilder result = builder.AddGranitAuditingEntityFrameworkCore(
             options => options.UseInMemoryDatabase("chaining-test"));
 
@@ -140,6 +144,28 @@ public sealed class AuditingEntityFrameworkCoreServiceCollectionExtensionsTests 
     }
 
     [Fact]
+    public void Registers_IAuditBatchPersister_AsScoped()
+    {
+        ServiceDescriptor? descriptor = _builder.Services
+            .FirstOrDefault(d => d.ServiceType == typeof(IAuditBatchPersister));
+
+        descriptor.ShouldNotBeNull();
+        descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
+        descriptor.ImplementationType.ShouldBe(typeof(EfCoreAuditBatchPersister));
+    }
+
+    [Fact]
+    public void Registers_IAuditingCleaner_AsScoped()
+    {
+        ServiceDescriptor? descriptor = _builder.Services
+            .FirstOrDefault(d => d.ServiceType == typeof(IAuditingCleaner));
+
+        descriptor.ShouldNotBeNull();
+        descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
+        descriptor.ImplementationType.ShouldBe(typeof(EfCoreAuditingCleaner));
+    }
+
+    [Fact]
     public void Registers_AuditingChangeTrackingInterceptor_AsScoped()
     {
         ServiceDescriptor? descriptor = _builder.Services
@@ -200,6 +226,7 @@ public sealed class AuditingEntityFrameworkCoreServiceCollectionExtensionsTests 
         builder.Services.AddLogging();
         builder.Services.AddSingleton(TimeProvider.System);
 
+        builder.Services.AddGranitAuditing();
         builder.AddGranitAuditingEntityFrameworkCore(
             o => o.UseInMemoryDatabase("dup-1"));
         builder.AddGranitAuditingEntityFrameworkCore(
@@ -222,6 +249,7 @@ public sealed class AuditingEntityFrameworkCoreServiceCollectionExtensionsTests 
         IHttpContextAccessor existing = new HttpContextAccessor();
         builder.Services.AddSingleton(existing);
 
+        builder.Services.AddGranitAuditing();
         builder.AddGranitAuditingEntityFrameworkCore(
             o => o.UseInMemoryDatabase("existing-accessor"));
 

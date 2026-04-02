@@ -1,6 +1,7 @@
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.EntityFrameworkCore.Extensions;
 using Granit.Identity.Federated.EntityFrameworkCore.Internal;
+using Granit.Identity.Federated.Internal;
 using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

@@ -36,6 +36,9 @@ public static class AuthorizationServiceCollectionExtensions
 
         services.AddScoped<IPermissionChecker, PermissionChecker>();
 
+        services.AddScoped<IPermissionManagerReader, PermissionManager>();
+        services.AddScoped<IPermissionManagerWriter, PermissionManager>();
+
         services.AddSingleton<IAuthorizationPolicyProvider, DynamicPermissionPolicyProvider>();
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 

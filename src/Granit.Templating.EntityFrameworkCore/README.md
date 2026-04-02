@@ -2,7 +2,7 @@
 
 EF Core persistence layer for Granit.Templating. Provides `TemplatingDbContext`,
 `EfDocumentTemplateStore` (Draft/Published/Deprecated lifecycle) and
-`StoreTemplateResolver` (Priority=100).
+`EfTemplateCategoryStore`.
 
 Part of the [granit](https://granit-fx.dev) framework.
 

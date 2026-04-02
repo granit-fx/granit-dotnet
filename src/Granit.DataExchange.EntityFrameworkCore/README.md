@@ -3,9 +3,9 @@
 EF Core persistence layer for `Granit.DataExchange`. Provides an isolated
 `DataExchangeDbContext` with both import and export stores.
 
-**Import**: `EfMappingStore`, `EfImportJobStore`, identity resolvers
+**Import**: `EfMappingStore`, `EfImportJobStore`, EF-backed identity resolvers
 (`BusinessKeyResolver`, `CompositeKeyResolver`, `ExternalIdResolver`),
-batched `EfImportExecutor`.
+and batched `EfImportExecutor`.
 
 **Export**: `EfExportPresetStore`, `EfExportJobStore`.
 

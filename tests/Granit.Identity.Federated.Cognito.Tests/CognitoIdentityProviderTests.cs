@@ -3,6 +3,7 @@ using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Runtime;
 using Granit.Events;
 using Granit.Identity;
+using Granit.Identity.Events;
 using Granit.Identity.Federated.Cognito.Internal;
 using Granit.Identity.Federated.Cognito.Options;
 using Granit.Identity.Models;
@@ -182,7 +183,7 @@ public sealed class CognitoIdentityProviderTests
             Arg.Any<CancellationToken>());
 
         await _distributedEventBus.Received(1).PublishAsync(
-            Arg.Any<Events.IdentityGroupMembershipChangedEto>(),
+            Arg.Any<IdentityGroupMembershipChangedEto>(),
             Arg.Any<CancellationToken>());
     }
 

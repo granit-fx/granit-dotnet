@@ -3,6 +3,10 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
+    <!-- CA1873 is a false positive in test code: NSubstitute logger.Received().Log(...) assertions
+         trigger the rule because the analyzer sees Arg.Any<T>() as "expensive" arguments to ILogger.Log.
+         This optimization rule is irrelevant in a test context. -->
+    <NoWarn>$(NoWarn);CA1873</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

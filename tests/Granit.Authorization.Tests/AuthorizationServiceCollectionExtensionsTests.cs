@@ -50,6 +50,32 @@ public sealed class AuthorizationServiceCollectionExtensionsTests
     }
 
     [Fact]
+    public void AddGranitAuthorization_RegistersPermissionManagerReader()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        services.AddGranitAuthorization();
+
+        // Assert
+        services.ShouldContain(sd => sd.ServiceType == typeof(IPermissionManagerReader));
+    }
+
+    [Fact]
+    public void AddGranitAuthorization_RegistersPermissionManagerWriter()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        services.AddGranitAuthorization();
+
+        // Assert
+        services.ShouldContain(sd => sd.ServiceType == typeof(IPermissionManagerWriter));
+    }
+
+    [Fact]
     public void AddGranitAuthorization_RegistersPermissionChecker()
     {
         // Arrange

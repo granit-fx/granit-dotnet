@@ -1,8 +1,8 @@
 // =============================================================================
 // Tests - NullPermissionGrantStore
 // =============================================================================
-// Vérifie que l'implémentation par défaut (no-op) refuse toujours toute
-// permission, quelle que soit la combinaison rôle / permission / tenant.
+// Verifies that the default no-op implementation always denies permissions,
+// returns empty collections, and reports no changes on write operations.
 // =============================================================================
 
 using Granit.Authorization.Services;
@@ -49,6 +49,62 @@ public sealed class NullPermissionGrantStoreTests
             permissionName,
             tenantId,
             TestContext.Current.CancellationToken);
+
+        // Assert
+        result.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task GetGrantedPermissionsAsync_ReturnsEmpty()
+    {
+        // Arrange
+        NullPermissionGrantStore store = new();
+
+        // Act
+        IReadOnlyList<string> result = await store.GetGrantedPermissionsAsync(
+            "admin", tenantId: null, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task GetGrantedRolesAsync_ReturnsEmpty()
+    {
+        // Arrange
+        NullPermissionGrantStore store = new();
+
+        // Act
+        IReadOnlyList<string> result = await store.GetGrantedRolesAsync(
+            "Invoices.Delete", tenantId: null, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task GrantAsync_ReturnsFalse()
+    {
+        // Arrange
+        NullPermissionGrantStore store = new();
+
+        // Act
+        bool result = await store.GrantAsync(
+            "Invoices.Delete", "admin", tenantId: null, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task RevokeAsync_ReturnsFalse()
+    {
+        // Arrange
+        NullPermissionGrantStore store = new();
+
+        // Act
+        bool result = await store.RevokeAsync(
+            "Invoices.Delete", "admin", tenantId: null, TestContext.Current.CancellationToken);
 
         // Assert
         result.ShouldBeFalse();

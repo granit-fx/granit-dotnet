@@ -1,16 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>Granit.Identity.Federated.EntityFrameworkCore</PackageId>
-    <Description>EF Core persistence for Granit.Identity user cache. Provides UserCacheEntry entity, IUserCacheDbContext, CachedUserLookupService with cache-aside strategy, login-time sync middleware, and Wolverine event handlers for real-time identity provider sync.</Description>
+    <Description>EF Core persistence for Granit.Identity user cache. Provides IUserCacheDbContext, EfCoreUserCacheStore, and EfCoreUserCacheStats implementations.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Identity.Federated.EntityFrameworkCore.Tests" />
-    <InternalsVisibleTo Include="Granit.Identity.Endpoints" />
-    <InternalsVisibleTo Include="Granit.Identity.Endpoints.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
-    <InternalsVisibleTo Include="WolverineHandlers" />
   </ItemGroup>
 
   <ItemGroup>

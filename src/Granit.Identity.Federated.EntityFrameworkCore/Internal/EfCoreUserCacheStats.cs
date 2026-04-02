@@ -1,4 +1,5 @@
-using Granit.Identity.Federated.EntityFrameworkCore.Options;
+using Granit.Identity.Federated.Internal;
+using Granit.Identity.Federated.Options;
 using Granit.MultiTenancy;
 using Microsoft.Extensions.Options;
 

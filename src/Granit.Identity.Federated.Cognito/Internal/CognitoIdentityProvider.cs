@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Granit.Events;
+using Granit.Identity.Events;
 using Granit.Identity.Federated;
 using Granit.Identity.Federated.Cognito.Diagnostics;
 using Granit.Identity.Federated.Cognito.Options;
@@ -131,7 +132,7 @@ internal sealed partial class CognitoIdentityProvider(
         }
 
         await distributedEventBus.PublishAsync(
-            new Events.IdentityUserEnabledChangedEto(userId, enabled),
+            new IdentityUserEnabledChangedEto(userId, enabled),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -189,7 +190,7 @@ internal sealed partial class CognitoIdentityProvider(
         }
 
         await distributedEventBus.PublishAsync(
-            new Events.IdentityUserProfileUpdatedEto(userId, update),
+            new IdentityUserProfileUpdatedEto(userId, update),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -239,7 +240,7 @@ internal sealed partial class CognitoIdentityProvider(
         }
 
         await distributedEventBus.PublishAsync(
-            new Events.IdentityUserCreatedEto(createdUser.UserId, createdUser.Username ?? user.Username, createdUser.Email),
+            new IdentityUserCreatedEto(createdUser.UserId, createdUser.Username ?? user.Username, createdUser.Email),
             cancellationToken).ConfigureAwait(false);
 
         return createdUser;
@@ -387,7 +388,7 @@ internal sealed partial class CognitoIdentityProvider(
             .ConfigureAwait(false);
 
         await distributedEventBus.PublishAsync(
-            new Events.IdentityGroupMembershipChangedEto(userId, groupId, true),
+            new IdentityGroupMembershipChangedEto(userId, groupId, true),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -413,7 +414,7 @@ internal sealed partial class CognitoIdentityProvider(
             .ConfigureAwait(false);
 
         await distributedEventBus.PublishAsync(
-            new Events.IdentityGroupMembershipChangedEto(userId, groupId, false),
+            new IdentityGroupMembershipChangedEto(userId, groupId, false),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -467,7 +468,7 @@ internal sealed partial class CognitoIdentityProvider(
             .ConfigureAwait(false);
 
         await distributedEventBus.PublishAsync(
-            new Events.IdentitySessionsRevokedEto(userId),
+            new IdentitySessionsRevokedEto(userId),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -500,7 +501,7 @@ internal sealed partial class CognitoIdentityProvider(
             .ConfigureAwait(false);
 
         await distributedEventBus.PublishAsync(
-            new Events.IdentityPasswordResetEto(userId),
+            new IdentityPasswordResetEto(userId),
             cancellationToken).ConfigureAwait(false);
     }
 

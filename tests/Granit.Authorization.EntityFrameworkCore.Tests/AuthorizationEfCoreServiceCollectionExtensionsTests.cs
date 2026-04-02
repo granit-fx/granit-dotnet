@@ -22,30 +22,6 @@ public sealed class AuthorizationEfCoreServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitAuthorizationEntityFrameworkCore_RegistersPermissionManagerReader()
-    {
-        ServiceCollection services = new();
-        services.AddDbContext<TestDbContext>(opts =>
-            opts.UseInMemoryDatabase(Guid.NewGuid().ToString()));
-
-        services.AddGranitAuthorizationEntityFrameworkCore<TestDbContext>();
-
-        services.ShouldContain(sd => sd.ServiceType == typeof(IPermissionManagerReader));
-    }
-
-    [Fact]
-    public void AddGranitAuthorizationEntityFrameworkCore_RegistersPermissionManagerWriter()
-    {
-        ServiceCollection services = new();
-        services.AddDbContext<TestDbContext>(opts =>
-            opts.UseInMemoryDatabase(Guid.NewGuid().ToString()));
-
-        services.AddGranitAuthorizationEntityFrameworkCore<TestDbContext>();
-
-        services.ShouldContain(sd => sd.ServiceType == typeof(IPermissionManagerWriter));
-    }
-
-    [Fact]
     public void AddGranitAuthorizationEntityFrameworkCore_ReturnsServices_ForChaining()
     {
         ServiceCollection services = new();

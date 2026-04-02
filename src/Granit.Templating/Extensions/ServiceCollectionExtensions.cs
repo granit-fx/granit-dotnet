@@ -45,6 +45,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<TemplatingMetrics>();
 
         services.TryAddScoped<ITextTemplateRenderer, TextTemplateRenderer>();
+        services.TryAddScoped<ITemplateResolver, StoreTemplateResolver>();
         services.TryAddSingleton<ITemplateTransitionHook, NullTemplateTransitionHook>();
 
         // Layout registry — built from all AddTemplateLayout() registrations

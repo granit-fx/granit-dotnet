@@ -1,6 +1,5 @@
 using Granit.DataExchange.EntityFrameworkCore.Internal;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Export.Stores;
-using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Pipeline;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Stores;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Import.Mapping;
@@ -19,7 +18,7 @@ public static class DataExchangeEfCoreHostBuilderExtensions
 {
     /// <summary>
     /// Registers the DataExchange EF Core persistence layer, including the isolated
-    /// <c>DataExchangeDbContext</c>, mapping store, import job store, orchestrator,
+    /// <c>DataExchangeDbContext</c>, mapping store, import job store,
     /// and export stores (job + presets).
     /// </summary>
     /// <param name="builder">The host application builder.</param>
@@ -37,7 +36,6 @@ public static class DataExchangeEfCoreHostBuilderExtensions
         builder.Services.AddScoped<IMappingWriter, EfMappingStore>();
         builder.Services.AddScoped<IImportJobReader, EfImportJobStore>();
         builder.Services.AddScoped<IImportJobWriter, EfImportJobStore>();
-        builder.Services.AddScoped<IImportOrchestrator, EfImportOrchestrator>();
 
         // Export stores (replace null-object defaults from Granit.DataExchange)
         builder.Services.AddScoped<IExportJobReader, EfExportJobStore>();

@@ -1,6 +1,5 @@
 using Granit.Authorization.Abstractions;
 using Granit.Authorization.EntityFrameworkCore.DbContext;
-using Granit.Authorization.EntityFrameworkCore.Services;
 using Granit.Authorization.EntityFrameworkCore.Stores;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -15,8 +14,9 @@ public static class AuthorizationEfCoreServiceCollectionExtensions
     /// <summary>
     /// Registers EF Core persistence for permission grants.
     /// Replaces the default <see cref="NullPermissionGrantStore"/> registered by
-    /// <c>Granit.Authorization</c> with <see cref="EfCorePermissionGrantStore{TContext}"/>,
-    /// and registers <see cref="IPermissionManagerReader"/> and <see cref="IPermissionManagerWriter"/>.
+    /// <c>Granit.Authorization</c> with <see cref="EfCorePermissionGrantStore{TContext}"/>.
+    /// <c>IPermissionManagerReader</c> and <c>IPermissionManagerWriter</c> are already registered
+    /// by <c>Granit.Authorization</c> and delegate to the store.
     /// </summary>
     /// <typeparam name="TContext">
     /// The application DbContext, which must implement <see cref="IPermissionGrantDbContext"/>.
@@ -28,10 +28,6 @@ public static class AuthorizationEfCoreServiceCollectionExtensions
         // Replace the NullPermissionGrantStore registered by Granit.Authorization
         services.Replace(ServiceDescriptor.Scoped<IPermissionGrantStore,
             EfCorePermissionGrantStore<TContext>>());
-
-        services.AddScoped<PermissionManager<TContext>>();
-        services.AddScoped<IPermissionManagerReader>(sp => sp.GetRequiredService<PermissionManager<TContext>>());
-        services.AddScoped<IPermissionManagerWriter>(sp => sp.GetRequiredService<PermissionManager<TContext>>());
 
         return services;
     }

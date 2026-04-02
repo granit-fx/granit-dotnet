@@ -14,7 +14,7 @@ namespace Granit.ReferenceData;
 /// services.AddGranitReferenceData();
 /// </code>
 /// </remarks>
-[DependsOn(typeof(GranitQueryEngineAbstractionsModule))]
+[DependsOn(typeof(GranitQueryEngineModule))]
 public sealed class GranitReferenceDataModule : GranitModule
 {
     /// <inheritdoc/>

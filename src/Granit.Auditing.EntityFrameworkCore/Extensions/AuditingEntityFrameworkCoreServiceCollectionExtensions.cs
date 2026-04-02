@@ -1,11 +1,9 @@
-using System.Threading.Channels;
 using Granit.Auditing.Abstractions;
-using Granit.Auditing.Diagnostics;
 using Granit.Auditing.Domain;
 using Granit.Auditing.EntityFrameworkCore.Interceptors;
 using Granit.Auditing.EntityFrameworkCore.Internal;
 using Granit.Auditing.EntityFrameworkCore.Internal.Services;
-using Granit.Auditing.Messages;
+using Granit.Auditing.Internal.Services;
 using Granit.Auditing.Options;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -27,9 +25,10 @@ public static class AuditingEntityFrameworkCoreServiceCollectionExtensions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Registers the <see cref="AuditingDbContext"/>, persistence workers,
-    /// <see cref="IAuditingReader"/>, <see cref="IAuditingWriter"/>, and the
-    /// <see cref="AuditingChangeTrackingInterceptor"/>.
+    /// Registers the <see cref="AuditingDbContext"/>,
+    /// <see cref="IAuditingReader"/>, <see cref="IAuditingWriter"/>,
+    /// <see cref="IAuditBatchPersister"/>, <see cref="IAuditingCleaner"/>,
+    /// and the <see cref="AuditingChangeTrackingInterceptor"/>.
     /// </para>
     /// <para>
     /// The interceptor must be added to the host application's DbContext separately
@@ -46,20 +45,7 @@ public static class AuditingEntityFrameworkCoreServiceCollectionExtensions
         // Isolated DbContext (no audit interceptor — prevents recursion).
         builder.Services.AddGranitDbContext<AuditingDbContext>(configure);
 
-        // Metrics.
-        builder.Services.TryAddSingleton<AuditingMetrics>();
-
-        // Publisher: async (Channel with backpressure) or strict (synchronous).
-        builder.Services.AddSingleton(sp =>
-        {
-            AuditingOptions opts = sp.GetRequiredService<IOptions<AuditingOptions>>().Value;
-            return Channel.CreateBounded<AuditingBatch>(new BoundedChannelOptions(opts.ChannelCapacity)
-            {
-                FullMode = BoundedChannelFullMode.Wait,
-                SingleReader = true,
-            });
-        });
-        builder.Services.AddScoped<ChannelAuditingPublisher>();
+        // Publisher: async (Channel) or strict (synchronous).
         builder.Services.AddScoped<StrictAuditingPublisher>();
         builder.Services.AddScoped<IAuditEntryPublisher>(sp =>
         {
@@ -69,9 +55,9 @@ public static class AuditingEntityFrameworkCoreServiceCollectionExtensions
                 : sp.GetRequiredService<ChannelAuditingPublisher>();
         });
 
-        // Background workers.
-        builder.Services.AddHostedService<AuditingPersistenceWorker>();
-        builder.Services.AddHostedService<AuditingCleanupWorker>();
+        // EF Core implementations of persistence abstractions.
+        builder.Services.AddScoped<IAuditBatchPersister, EfCoreAuditBatchPersister>();
+        builder.Services.AddScoped<IAuditingCleaner, EfCoreAuditingCleaner>();
 
         // CQRS services.
         builder.Services.AddScoped<IAuditingReader, EfCoreAuditingReader>();

@@ -13,6 +13,8 @@ using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using OpenIddict.Server;
 
 namespace Granit.OpenIddict;
 
@@ -61,6 +63,10 @@ public sealed class GranitOpenIddictModule : GranitModule
         context.Services.TryAddScoped<IImpersonationService, Internal.AspNetImpersonationService>();
         context.Services.TryAddScoped<IKeyRotationService, Internal.KeyRotationService>();
         context.Services.TryAddSingleton<IExternalProviderRegistry, OpenIddictExternalProviderRegistry>();
+
+        // Load signing/encryption keys from DB at startup (replaces ephemeral keys)
+        context.Services.AddSingleton<IPostConfigureOptions<OpenIddictServerOptions>,
+            DatabaseSigningKeyPostConfigure>();
 
         // Identity cookie configuration — neutral names to avoid leaking the technology stack.
         // PostConfigure is required because AddIdentity<TUser, TRole>() registers its own

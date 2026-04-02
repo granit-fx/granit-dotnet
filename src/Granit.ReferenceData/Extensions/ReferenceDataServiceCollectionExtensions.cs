@@ -1,8 +1,10 @@
 using Granit.Diagnostics;
 using Granit.ReferenceData.Diagnostics;
+using Granit.ReferenceData.Internal;
 using Granit.ReferenceData.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 
 namespace Granit.ReferenceData.Extensions;
 
@@ -33,6 +35,11 @@ public static class ReferenceDataServiceCollectionExtensions
         }
 
         services.AddMemoryCache();
+
+        // Ensure singleton registry + initializer exist (idempotent for multiple AddReferenceData calls)
+        services.TryAddSingleton<ReferenceDataRegistry>();
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IHostedService, ReferenceDataRegistryInitializer>());
 
         GranitActivitySourceRegistry.Register(ReferenceDataActivitySource.Name);
 

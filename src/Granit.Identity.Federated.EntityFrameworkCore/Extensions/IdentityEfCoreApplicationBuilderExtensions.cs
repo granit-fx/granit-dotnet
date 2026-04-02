@@ -1,4 +1,4 @@
-using Granit.Identity.Federated.EntityFrameworkCore.Middleware;
+using Granit.Identity.Federated.Middleware;
 using Microsoft.AspNetCore.Builder;
 
 namespace Granit.Identity.Federated.EntityFrameworkCore.Extensions;

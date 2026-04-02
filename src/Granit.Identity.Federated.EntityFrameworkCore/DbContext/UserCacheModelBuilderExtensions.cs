@@ -1,4 +1,4 @@
-using Granit.Identity.Federated.EntityFrameworkCore.Entities;
+using Granit.Identity.Federated.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Identity.Federated.EntityFrameworkCore.DbContext;

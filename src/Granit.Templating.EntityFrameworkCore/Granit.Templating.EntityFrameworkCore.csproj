@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Templating.EntityFrameworkCore</PackageId>
-    <Description>EF Core persistence layer for Granit.Templating. Provides TemplatingDbContext, EfDocumentTemplateStore (Draft/Published/Deprecated lifecycle) and StoreTemplateResolver (Priority=100).</Description>
+    <Description>EF Core persistence layer for Granit.Templating. Provides TemplatingDbContext, EfDocumentTemplateStore (Draft/Published/Deprecated lifecycle) and EfTemplateCategoryStore.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

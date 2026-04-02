@@ -235,6 +235,13 @@
       "granit": {
         "type": "Project"
       },
+      "granit.queryengine": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {
@@ -245,7 +252,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+          "Granit.QueryEngine": "[0.1.0-dev, )"
         }
       }
     }

@@ -12,8 +12,6 @@ using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
-using OpenIddict.Server;
 
 namespace Granit.OpenIddict.EntityFrameworkCore;
 
@@ -22,7 +20,7 @@ namespace Granit.OpenIddict.EntityFrameworkCore;
 /// </summary>
 /// <remarks>
 /// Registers <see cref="Internal.OpenIddictDbContext"/>, EF stores (groups, signing keys),
-/// data seeding, extra-property infrastructure, and signing key loading at startup.
+/// data seeding, and extra-property infrastructure.
 /// </remarks>
 [DependsOn(
     typeof(GranitEncryptionModule),
@@ -46,9 +44,5 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
         // by calling AddExtraPropertyMappings<GranitUser> in their own module.
         // The ExtraPropertySyncInterceptor in Granit.Persistence handles sync automatically.
         context.Services.AddExtraPropertyInfrastructure();
-
-        // Load signing/encryption keys from DB at startup (replaces ephemeral keys)
-        context.Services.AddSingleton<IPostConfigureOptions<OpenIddictServerOptions>,
-            DatabaseSigningKeyPostConfigure>();
     }
 }

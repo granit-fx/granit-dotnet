@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="OpenIddict" />
     <PackageReference Include="OpenIddict.EntityFrameworkCore" />
   </ItemGroup>
 

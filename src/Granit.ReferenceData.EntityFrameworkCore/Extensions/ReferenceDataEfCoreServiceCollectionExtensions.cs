@@ -3,6 +3,7 @@ using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
 using Granit.QueryEngine;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;
+using Granit.ReferenceData.Internal;
 using Granit.ReferenceData.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -106,11 +107,6 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
         ReferenceDataBuilder builder = new();
         configure(builder);
 
-        // Ensure singleton registry + initializer exist
-        services.TryAddSingleton<ReferenceDataRegistry>();
-        services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<Microsoft.Extensions.Hosting.IHostedService, ReferenceDataRegistryInitializer>());
-
         // Register the generic ExtraProperty infrastructure
         services.AddExtraPropertyInfrastructure();
 
@@ -159,18 +155,4 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
         return services;
     }
 
-    /// <summary>
-    /// Marker interface for deferred registry population at startup.
-    /// </summary>
-    internal interface IReferenceDataRegistryContributor
-    {
-        void Configure(ReferenceDataRegistry registry);
-    }
-
-    private sealed class ReferenceDataRegistryContributor(
-        ReferenceDataTypeRegistration registration) : IReferenceDataRegistryContributor
-    {
-        public void Configure(ReferenceDataRegistry registry) =>
-            registry.Register(registration);
-    }
 }
