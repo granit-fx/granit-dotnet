@@ -524,6 +524,8 @@
       "granit.openiddict": {
         "type": "Project",
         "dependencies": {
+          "Granit.Encryption": "[0.1.0-dev, )",
+          "Granit.Http.Cookies": "[0.1.0-dev, )",
           "Granit.Identity.Local": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "OpenIddict.EntityFrameworkCore": "[7.*, )"
@@ -533,7 +535,6 @@
         "type": "Project",
         "dependencies": {
           "Granit.Encryption": "[0.1.0-dev, )",
-          "Granit.Http.Cookies": "[0.1.0-dev, )",
           "Granit.Identity.Local": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )",
           "Granit.OpenIddict.Server": "[0.1.0-dev, )",
