@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentValidation;
 using Granit.Diagnostics;
+using Granit.Modularity;
 using Granit.Users;
 using Granit.Wolverine.Behaviors;
 using Granit.Wolverine.Diagnostics;
@@ -87,12 +88,24 @@ public static class WolverineHostApplicationBuilderExtensions
 
         builder.UseWolverine(opts =>
         {
-            // Auto-discover assemblies decorated with [assembly: WolverineHandlerModule].
-            // Granit library packages use this attribute to opt in to handler scanning.
-            //
-            // NOTE: opts.Discovery.IncludeHandlerModules = true does NOT work reliably
-            // in Wolverine 5.26.x — the flag is ignored during handler compilation.
-            // Workaround: explicitly scan AppDomain and include matching assemblies.
+            // Auto-discover handler assemblies from ALL loaded Granit modules.
+            // GranitApplication is registered as a singleton instance during AddGranit<T>()
+            // before UseWolverine() runs, so we can read it directly from the service collection.
+            // This eliminates the need for [assembly: WolverineHandlerModule] on every module.
+            var granitApp = builder.Services
+                .FirstOrDefault(d => d.ServiceType == typeof(GranitApplication))
+                ?.ImplementationInstance as GranitApplication;
+
+            if (granitApp is not null)
+            {
+                foreach (GranitModule module in granitApp.GetModuleInstances())
+                {
+                    opts.Discovery.IncludeAssembly(module.GetType().Assembly);
+                }
+            }
+
+            // Also honor [assembly: WolverineHandlerModule] for non-Granit assemblies
+            // (e.g. application handler modules that don't subclass GranitModule).
             foreach (Assembly handlerAssembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 if (handlerAssembly.GetCustomAttributes(typeof(global::Wolverine.Attributes.WolverineHandlerModuleAttribute), false).Length > 0)
@@ -103,8 +116,6 @@ public static class WolverineHostApplicationBuilderExtensions
 
             // Always include the entry assembly so application handlers are discovered
             // without requiring [assembly: WolverineHandlerModule] in application code.
-            // Library packages (Granit modules) still use the attribute; this only adds
-            // the host application assembly (e.g. MyService.exe).
             var entryAssembly = Assembly.GetEntryAssembly();
             if (entryAssembly is not null)
             {
