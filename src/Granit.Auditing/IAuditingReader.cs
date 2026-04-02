@@ -1,7 +1,7 @@
 using Granit.Auditing.Domain;
 using Granit.QueryEngine;
 
-namespace Granit.Auditing.Abstractions;
+namespace Granit.Auditing;
 
 /// <summary>
 /// Read-side abstraction for querying the audit trail.
@@ -32,5 +32,12 @@ public interface IAuditingReader
         string entityId,
         int page = 1,
         int pageSize = QueryEngineDefaults.DefaultPageSize,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves all audit log entries matching a distributed tracing correlation ID.
+    /// </summary>
+    Task<List<AuditEntry>> GetByCorrelationIdAsync(
+        string correlationId,
         CancellationToken cancellationToken = default);
 }

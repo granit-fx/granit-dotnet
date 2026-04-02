@@ -1,5 +1,4 @@
 using System.Threading.Channels;
-using Granit.Auditing.Abstractions;
 using Granit.Auditing.Messages;
 
 namespace Granit.Auditing.Internal.Services;

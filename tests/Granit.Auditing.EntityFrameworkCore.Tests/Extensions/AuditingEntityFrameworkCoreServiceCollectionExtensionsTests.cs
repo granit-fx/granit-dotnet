@@ -9,7 +9,6 @@
 // =============================================================================
 
 using System.Threading.Channels;
-using Granit.Auditing.Abstractions;
 using Granit.Auditing.Diagnostics;
 using Granit.Auditing.EntityFrameworkCore.Extensions;
 using Granit.Auditing.EntityFrameworkCore.Interceptors;

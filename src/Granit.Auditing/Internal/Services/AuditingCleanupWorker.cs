@@ -1,4 +1,4 @@
-using Granit.Auditing.Abstractions;
+using System.Diagnostics;
 using Granit.Auditing.Diagnostics;
 using Granit.Auditing.Domain;
 using Granit.Auditing.Options;
@@ -44,6 +44,9 @@ internal sealed partial class AuditingCleanupWorker(
 
     private async Task PurgeExpiredEntriesAsync(CancellationToken cancellationToken)
     {
+        using Activity? activity = AuditingActivitySource.Source.StartActivity(AuditingActivitySource.Cleanup);
+        activity?.SetTag("tenant_id", "global");
+
         AuditingOptions options = optionsMonitor.CurrentValue;
 
         foreach (AuditCategory category in Enum.GetValues<AuditCategory>())

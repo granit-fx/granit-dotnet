@@ -7,10 +7,14 @@
 //   - Propagates cancellation
 // =============================================================================
 
+using System.Diagnostics.Metrics;
+using System.Threading.Channels;
+using Granit.Auditing.Diagnostics;
 using Granit.Auditing.Domain;
 using Granit.Auditing.EntityFrameworkCore.Internal;
 using Granit.Auditing.EntityFrameworkCore.Internal.Services;
 using Granit.Auditing.Messages;
+using Granit.Events;
 using Granit.Guids;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,10 +46,11 @@ public sealed class StrictAuditingPublisherTests
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions));
         services.AddSingleton(guidGenerator);
+        services.AddSingleton(Substitute.For<IDistributedEventBus>());
         ServiceProvider sp = services.BuildServiceProvider();
 
         IServiceScopeFactory scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
-        StrictAuditingPublisher publisher = new(scopeFactory);
+        StrictAuditingPublisher publisher = new(scopeFactory, CreateMetrics());
 
         AuditingBatch batch = CreateBatch();
 
@@ -72,10 +77,11 @@ public sealed class StrictAuditingPublisherTests
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions));
         services.AddSingleton(guidGenerator);
+        services.AddSingleton(Substitute.For<IDistributedEventBus>());
         ServiceProvider sp = services.BuildServiceProvider();
 
         IServiceScopeFactory scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
-        StrictAuditingPublisher publisher = new(scopeFactory);
+        StrictAuditingPublisher publisher = new(scopeFactory, CreateMetrics());
 
         DateTimeOffset timestamp = new(2026, 3, 15, 10, 30, 0, TimeSpan.Zero);
         var tenantId = Guid.NewGuid();
@@ -135,10 +141,11 @@ public sealed class StrictAuditingPublisherTests
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions));
         services.AddSingleton(guidGenerator);
+        services.AddSingleton(Substitute.For<IDistributedEventBus>());
         ServiceProvider sp = services.BuildServiceProvider();
 
         IServiceScopeFactory scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
-        StrictAuditingPublisher publisher = new(scopeFactory);
+        StrictAuditingPublisher publisher = new(scopeFactory, CreateMetrics());
 
         // Act
         for (int i = 0; i < 3; i++)
@@ -167,10 +174,11 @@ public sealed class StrictAuditingPublisherTests
         IServiceCollection services = new ServiceCollection();
         services.AddSingleton<IDbContextFactory<AuditingDbContext>>(new TestDbContextFactory(dbOptions));
         services.AddSingleton(guidGenerator);
+        services.AddSingleton(Substitute.For<IDistributedEventBus>());
         ServiceProvider sp = services.BuildServiceProvider();
 
         IServiceScopeFactory scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
-        StrictAuditingPublisher publisher = new(scopeFactory);
+        StrictAuditingPublisher publisher = new(scopeFactory, CreateMetrics());
 
         AuditingBatch batch = CreateBatch();
 
@@ -203,9 +211,36 @@ public sealed class StrictAuditingPublisherTests
             CorrelationId: null,
             EntityChanges: []);
 
+    private static AuditingMetrics CreateMetrics()
+    {
+        var meterFactory = new TestMeterFactory();
+        var channel = Channel.CreateUnbounded<AuditingBatch>();
+        return new AuditingMetrics(meterFactory, channel);
+    }
+
     private sealed class TestDbContextFactory(DbContextOptions<AuditingDbContext> options)
         : IDbContextFactory<AuditingDbContext>
     {
         public AuditingDbContext CreateDbContext() => new(options);
+    }
+
+    private sealed class TestMeterFactory : IMeterFactory
+    {
+        private readonly List<Meter> _meters = [];
+
+        public Meter Create(MeterOptions options)
+        {
+            Meter meter = new(options);
+            _meters.Add(meter);
+            return meter;
+        }
+
+        public void Dispose()
+        {
+            foreach (Meter meter in _meters)
+            {
+                meter.Dispose();
+            }
+        }
     }
 }

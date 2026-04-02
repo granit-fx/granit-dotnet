@@ -19,4 +19,15 @@ public sealed class AuditingPermissionsTests
     [Fact]
     public void EntriesRead_StartsWithGroupName() =>
         AuditingPermissions.AuditEntries.Read.ShouldStartWith(AuditingPermissions.GroupName + ".");
+
+    [Fact]
+    public void EntriesManage_FollowsThreeSegmentFormat()
+    {
+        AuditingPermissions.AuditEntries.Manage.ShouldBe("Auditing.AuditEntries.Manage");
+        AuditingPermissions.AuditEntries.Manage.Split('.').Length.ShouldBe(3);
+    }
+
+    [Fact]
+    public void EntriesManage_StartsWithGroupName() =>
+        AuditingPermissions.AuditEntries.Manage.ShouldStartWith(AuditingPermissions.GroupName + ".");
 }

@@ -16,7 +16,7 @@
 // =============================================================================
 
 using System.Diagnostics.Metrics;
-using Granit.Auditing.Abstractions;
+using System.Threading.Channels;
 using Granit.Auditing.Attributes;
 using Granit.Auditing.Diagnostics;
 using Granit.Auditing.Domain;
@@ -56,7 +56,7 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         _currentTenant.IsAvailable.Returns(false);
 
         _meterFactory = new TestMeterFactory();
-        _metrics = new AuditingMetrics(_meterFactory);
+        _metrics = new AuditingMetrics(_meterFactory, Channel.CreateUnbounded<AuditingBatch>());
 
         _dbContext = CreateInMemoryDbContext();
     }
@@ -505,6 +505,103 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
     }
 
     // -------------------------------------------------------------------------
+    // Capture — property-level [AuditIgnore]
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task Capture_PropertyWithAuditIgnore_IsExcludedFromPropertyChanges()
+    {
+        // Arrange
+        _options.EnablePropertyTracking = true;
+        ChangeTrackingCaptureService service = CreateService();
+        _dbContext.Add(new PropertyIgnoredEntity { Id = 1, Name = "Visible", InternalNotes = "Hidden" });
+
+        // Act
+        service.Capture(_dbContext);
+        await service.PublishAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        await _publisher.Received(1).PublishAsync(
+            Arg.Is<AuditingBatch>(b =>
+                b.EntityChanges[0].PropertyChanges.Any(p => p.PropertyName == "Name") &&
+                !b.EntityChanges[0].PropertyChanges.Any(p => p.PropertyName == "InternalNotes")),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Capture_PropertyWithAuditIgnore_EntityStillCaptured()
+    {
+        // Arrange
+        ChangeTrackingCaptureService service = CreateService();
+        _dbContext.Add(new PropertyIgnoredEntity { Id = 1, Name = "Visible", InternalNotes = "Hidden" });
+
+        // Act
+        service.Capture(_dbContext);
+        await service.PublishAsync(TestContext.Current.CancellationToken);
+
+        // Assert — entity is captured (only class-level [AuditIgnore] skips entirely)
+        await _publisher.Received(1).PublishAsync(
+            Arg.Is<AuditingBatch>(b =>
+                b.EntityChanges.Count == 1 &&
+                b.EntityChanges[0].EntityType == "PropertyIgnoredEntity"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Capture_PropertyWithAuditIgnore_ModifiedIgnoredPropertyNotTracked()
+    {
+        // Arrange
+        _options.EnablePropertyTracking = true;
+        ChangeTrackingCaptureService service = CreateService();
+        var entity = new PropertyIgnoredEntity { Id = 1, Name = "Original", InternalNotes = "Note1" };
+        _dbContext.Add(entity);
+        _dbContext.SaveChanges();
+
+        entity.Name = "Updated";
+        entity.InternalNotes = "Note2";
+
+        // Act
+        service.Capture(_dbContext);
+        await service.PublishAsync(TestContext.Current.CancellationToken);
+
+        // Assert — Name change is captured, InternalNotes is excluded
+        await _publisher.Received(1).PublishAsync(
+            Arg.Is<AuditingBatch>(b =>
+                b.EntityChanges[0].PropertyChanges.Any(p => p.PropertyName == "Name") &&
+                !b.EntityChanges[0].PropertyChanges.Any(p => p.PropertyName == "InternalNotes")),
+            Arg.Any<CancellationToken>());
+    }
+
+    // -------------------------------------------------------------------------
+    // Capture — metadata cache consistency
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task Capture_SameEntityTypeTwice_UsesCachedMetadata()
+    {
+        // Arrange — two separate captures of the same entity type should produce
+        // consistent results, confirming the static metadata cache works correctly.
+        _options.EnablePropertyTracking = true;
+        ChangeTrackingCaptureService service = CreateService();
+
+        _dbContext.Add(new PropertyIgnoredEntity { Id = 1, Name = "First", InternalNotes = "Secret1" });
+        service.Capture(_dbContext);
+        await service.PublishAsync(TestContext.Current.CancellationToken);
+
+        // Second capture with a fresh DbContext entry
+        using DbContext secondContext = CreateInMemoryDbContext();
+        secondContext.Add(new PropertyIgnoredEntity { Id = 2, Name = "Second", InternalNotes = "Secret2" });
+        service.Capture(secondContext);
+        await service.PublishAsync(TestContext.Current.CancellationToken);
+
+        // Assert — both captures should exclude InternalNotes
+        await _publisher.Received(2).PublishAsync(
+            Arg.Is<AuditingBatch>(b =>
+                !b.EntityChanges[0].PropertyChanges.Any(p => p.PropertyName == "InternalNotes")),
+            Arg.Any<CancellationToken>());
+    }
+
+    // -------------------------------------------------------------------------
     // Capture — serialization of different value types
     // -------------------------------------------------------------------------
 
@@ -737,6 +834,7 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         public DbSet<SensitiveEntity> SensitiveEntities => Set<SensitiveEntity>();
         public DbSet<TypedEntity> TypedEntities => Set<TypedEntity>();
         public DbSet<TestEntityWithMultipleProps> MultiPropEntities => Set<TestEntityWithMultipleProps>();
+        public DbSet<PropertyIgnoredEntity> PropertyIgnoredEntities => Set<PropertyIgnoredEntity>();
     }
 
     private sealed class TestEntity
@@ -788,5 +886,14 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+    }
+
+    private sealed class PropertyIgnoredEntity
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+
+        [AuditIgnore]
+        public string InternalNotes { get; set; } = string.Empty;
     }
 }

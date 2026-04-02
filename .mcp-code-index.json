@@ -80,6 +80,7 @@
       "name": "Granit.Auditing",
       "deps": [
         "Granit",
+        "Granit.Guids",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
@@ -3271,113 +3272,21 @@
       "members": []
     },
     {
-      "name": "AuditingQuery",
-      "fqn": "Granit.Auditing.Abstractions.AuditingQuery",
-      "kind": "record",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Abstractions/AuditingQuery.cs",
-      "line": 17,
-      "members": []
-    },
-    {
-      "name": "IAuditBatchPersister",
-      "fqn": "Granit.Auditing.Abstractions.IAuditBatchPersister",
-      "kind": "interface",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Abstractions/IAuditBatchPersister.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "PersistAsync",
-          "kind": "method",
-          "signature": "PersistAsync(AuditingBatch batch, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "IAuditEntryPublisher",
-      "fqn": "Granit.Auditing.Abstractions.IAuditEntryPublisher",
-      "kind": "interface",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Abstractions/IAuditEntryPublisher.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "PublishAsync",
-          "kind": "method",
-          "signature": "PublishAsync(AuditingBatch batch, CancellationToken cancellationToken = default)",
-          "returnType": "ValueTask"
-        }
-      ]
-    },
-    {
-      "name": "IAuditingCleaner",
-      "fqn": "Granit.Auditing.Abstractions.IAuditingCleaner",
-      "kind": "interface",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Abstractions/IAuditingCleaner.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "PurgeAsync",
-          "kind": "method",
-          "signature": "PurgeAsync(AuditCategory category, DateTimeOffset cutoff, int batchSize, CancellationToken cancellationToken = default)",
-          "returnType": "Task<int>"
-        }
-      ]
-    },
-    {
-      "name": "IAuditingReader",
-      "fqn": "Granit.Auditing.Abstractions.IAuditingReader",
-      "kind": "interface",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Abstractions/IAuditingReader.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "GetByIdAsync",
-          "kind": "method",
-          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
-          "returnType": "Task<AuditEntry?>"
-        },
-        {
-          "name": "GetPagedAsync",
-          "kind": "method",
-          "signature": "GetPagedAsync(AuditingQuery query, CancellationToken cancellationToken = default)",
-          "returnType": "Task<PagedResult<AuditEntry>>"
-        },
-        {
-          "name": "GetByEntityAsync",
-          "kind": "method",
-          "signature": "GetByEntityAsync(string entityType, string entityId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
-          "returnType": "Task<PagedResult<AuditEntry>>"
-        }
-      ]
-    },
-    {
-      "name": "IAuditingWriter",
-      "fqn": "Granit.Auditing.Abstractions.IAuditingWriter",
-      "kind": "interface",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Abstractions/IAuditingWriter.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "WriteAsync",
-          "kind": "method",
-          "signature": "WriteAsync(AuditEntry entry, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
       "name": "AuditIgnoreAttribute",
       "fqn": "Granit.Auditing.Attributes.AuditIgnoreAttribute",
       "kind": "class",
       "project": "Granit.Auditing",
       "file": "src/Granit.Auditing/Attributes/AuditIgnoreAttribute.cs",
       "line": 11,
+      "members": []
+    },
+    {
+      "name": "AuditingQuery",
+      "fqn": "Granit.Auditing.AuditingQuery",
+      "kind": "record",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/AuditingQuery.cs",
+      "line": 17,
       "members": []
     },
     {
@@ -3402,7 +3311,7 @@
       "kind": "class",
       "project": "Granit.Auditing.ConfigurationChanges",
       "file": "src/Granit.Auditing.ConfigurationChanges/Handlers/FeatureOverrideChangedAuditHandler.cs",
-      "line": 16,
+      "line": 15,
       "members": [
         {
           "name": "HandleAsync",
@@ -3418,7 +3327,7 @@
       "kind": "class",
       "project": "Granit.Auditing.ConfigurationChanges",
       "file": "src/Granit.Auditing.ConfigurationChanges/Handlers/SettingChangedAuditHandler.cs",
-      "line": 16,
+      "line": 15,
       "members": [
         {
           "name": "HandleAsync",
@@ -3434,7 +3343,7 @@
       "kind": "class",
       "project": "Granit.Auditing",
       "file": "src/Granit.Auditing/Diagnostics/AuditingMetrics.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "RecordPurged",
@@ -3443,9 +3352,33 @@
           "returnType": "void"
         },
         {
+          "name": "RecordPseudonymized",
+          "kind": "method",
+          "signature": "RecordPseudonymized(long count, string? tenantId)",
+          "returnType": "void"
+        },
+        {
           "name": "RecordCaptureError",
           "kind": "method",
           "signature": "RecordCaptureError(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordPersistenceDuration",
+          "kind": "method",
+          "signature": "RecordPersistenceDuration(double elapsedMs, string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordPersistenceRetry",
+          "kind": "method",
+          "signature": "RecordPersistenceRetry(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordBatchSize",
+          "kind": "method",
+          "signature": "RecordBatchSize(int entityChangeCount, string? tenantId)",
           "returnType": "void"
         }
       ]
@@ -3659,7 +3592,7 @@
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
       "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/AuditingEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 21,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitAuditingEntityFrameworkCore",
@@ -3743,6 +3676,15 @@
       ]
     },
     {
+      "name": "AuditEntryPersistedEto",
+      "fqn": "Granit.Auditing.Events.AuditEntryPersistedEto",
+      "kind": "record",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Events/AuditEntryPersistedEto.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "AuditingServiceCollectionExtensions",
       "fqn": "Granit.Auditing.Extensions.AuditingServiceCollectionExtensions",
       "kind": "class",
@@ -3771,6 +3713,110 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IAuditBatchPersister",
+      "fqn": "Granit.Auditing.IAuditBatchPersister",
+      "kind": "interface",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/IAuditBatchPersister.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "PersistAsync",
+          "kind": "method",
+          "signature": "PersistAsync(AuditingBatch batch, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IAuditEntryPublisher",
+      "fqn": "Granit.Auditing.IAuditEntryPublisher",
+      "kind": "interface",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/IAuditEntryPublisher.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "PublishAsync",
+          "kind": "method",
+          "signature": "PublishAsync(AuditingBatch batch, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask"
+        }
+      ]
+    },
+    {
+      "name": "IAuditingCleaner",
+      "fqn": "Granit.Auditing.IAuditingCleaner",
+      "kind": "interface",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/IAuditingCleaner.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "PurgeAsync",
+          "kind": "method",
+          "signature": "PurgeAsync(AuditCategory category, DateTimeOffset cutoff, int batchSize, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        },
+        {
+          "name": "PseudonymizeByUserAsync",
+          "kind": "method",
+          "signature": "PseudonymizeByUserAsync(string userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
+      "name": "IAuditingReader",
+      "fqn": "Granit.Auditing.IAuditingReader",
+      "kind": "interface",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/IAuditingReader.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<AuditEntry?>"
+        },
+        {
+          "name": "GetPagedAsync",
+          "kind": "method",
+          "signature": "GetPagedAsync(AuditingQuery query, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PagedResult<AuditEntry>>"
+        },
+        {
+          "name": "GetByEntityAsync",
+          "kind": "method",
+          "signature": "GetByEntityAsync(string entityType, string entityId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PagedResult<AuditEntry>>"
+        },
+        {
+          "name": "GetByCorrelationIdAsync",
+          "kind": "method",
+          "signature": "GetByCorrelationIdAsync(string correlationId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<List<AuditEntry>>"
+        }
+      ]
+    },
+    {
+      "name": "IAuditingWriter",
+      "fqn": "Granit.Auditing.IAuditingWriter",
+      "kind": "interface",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/IAuditingWriter.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "WriteAsync",
+          "kind": "method",
+          "signature": "WriteAsync(AuditEntry entry, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -3820,12 +3866,6 @@
           "kind": "property",
           "signature": "bool EnablePropertyTracking",
           "returnType": "bool"
-        },
-        {
-          "name": "PersistenceBatchSize",
-          "kind": "property",
-          "signature": "int PersistenceBatchSize",
-          "returnType": "int"
         },
         {
           "name": "FromDays",
@@ -5222,7 +5262,7 @@
       "fqn": "Granit.Authorization.Abstractions.IPermissionChecker",
       "kind": "interface",
       "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/Abstractions/IPermissionChecker.cs",
+      "file": "src/Granit.Authorization/IPermissionChecker.cs",
       "line": 7,
       "members": [
         {
@@ -5238,7 +5278,7 @@
       "fqn": "Granit.Authorization.Abstractions.IPermissionDefinitionContext",
       "kind": "interface",
       "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/Abstractions/IPermissionDefinitionContext.cs",
+      "file": "src/Granit.Authorization/IPermissionDefinitionContext.cs",
       "line": 9,
       "members": [
         {
@@ -5254,7 +5294,7 @@
       "fqn": "Granit.Authorization.Abstractions.IPermissionDefinitionManager",
       "kind": "interface",
       "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/Abstractions/IPermissionDefinitionManager.cs",
+      "file": "src/Granit.Authorization/IPermissionDefinitionManager.cs",
       "line": 7,
       "members": [
         {
@@ -5288,7 +5328,7 @@
       "fqn": "Granit.Authorization.Abstractions.IPermissionDefinitionProvider",
       "kind": "interface",
       "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/Abstractions/IPermissionDefinitionProvider.cs",
+      "file": "src/Granit.Authorization/IPermissionDefinitionProvider.cs",
       "line": 7,
       "members": [
         {
@@ -5304,7 +5344,7 @@
       "fqn": "Granit.Authorization.Abstractions.IPermissionGrantStore",
       "kind": "interface",
       "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/Abstractions/IPermissionGrantStore.cs",
+      "file": "src/Granit.Authorization/IPermissionGrantStore.cs",
       "line": 9,
       "members": [
         {
@@ -5344,7 +5384,7 @@
       "fqn": "Granit.Authorization.Abstractions.IPermissionManagerReader",
       "kind": "interface",
       "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/Abstractions/IPermissionManagerReader.cs",
+      "file": "src/Granit.Authorization/IPermissionManagerReader.cs",
       "line": 7,
       "members": [
         {
@@ -5372,7 +5412,7 @@
       "fqn": "Granit.Authorization.Abstractions.IPermissionManagerWriter",
       "kind": "interface",
       "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/Abstractions/IPermissionManagerWriter.cs",
+      "file": "src/Granit.Authorization/IPermissionManagerWriter.cs",
       "line": 8,
       "members": [
         {
@@ -5388,7 +5428,7 @@
       "fqn": "Granit.Authorization.Abstractions.PermissionDefinition",
       "kind": "record",
       "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/Abstractions/PermissionDefinition.cs",
+      "file": "src/Granit.Authorization/PermissionDefinition.cs",
       "line": 6,
       "members": []
     },
@@ -5397,7 +5437,7 @@
       "fqn": "Granit.Authorization.Abstractions.PermissionGroup",
       "kind": "class",
       "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/Abstractions/PermissionGroup.cs",
+      "file": "src/Granit.Authorization/PermissionGroup.cs",
       "line": 6,
       "members": [
         {
@@ -5686,7 +5726,7 @@
       "kind": "class",
       "project": "Granit.Authorization.EntityFrameworkCore",
       "file": "src/Granit.Authorization.EntityFrameworkCore/GranitAuthorizationEntityFrameworkCoreModule.cs",
-      "line": 20,
+      "line": 21,
       "members": []
     },
     {

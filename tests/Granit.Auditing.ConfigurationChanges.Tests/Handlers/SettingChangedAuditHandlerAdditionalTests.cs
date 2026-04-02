@@ -1,4 +1,3 @@
-using Granit.Auditing.Abstractions;
 using Granit.Auditing.ConfigurationChanges.Handlers;
 using Granit.Auditing.Domain;
 using Granit.Guids;

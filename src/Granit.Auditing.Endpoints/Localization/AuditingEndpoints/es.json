@@ -2,6 +2,7 @@
   "culture": "es",
   "texts": {
     "PermissionGroup:Auditing": "Registro de auditoría",
-    "Permission:Auditing.AuditEntries.Read": "Ver entradas del registro de auditoría (pista de auditoría ISO 27001)"
+    "Permission:Auditing.AuditEntries.Read": "Ver entradas del registro de auditoría (pista de auditoría ISO 27001)",
+    "Permission:Auditing.AuditEntries.Manage": "Gestionar entradas del registro de auditoría (seudonimización, RGPD art. 17)"
   }
 }

@@ -2,6 +2,7 @@
   "culture": "fr",
   "texts": {
     "PermissionGroup:Auditing": "Journal d'audit",
-    "Permission:Auditing.AuditEntries.Read": "Consulter les entrées du journal d'audit (piste d'audit ISO 27001)"
+    "Permission:Auditing.AuditEntries.Read": "Consulter les entrées du journal d'audit (piste d'audit ISO 27001)",
+    "Permission:Auditing.AuditEntries.Manage": "Gérer les entrées du journal d'audit (pseudonymisation, RGPD art. 17)"
   }
 }

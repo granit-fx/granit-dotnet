@@ -1,3 +1,4 @@
+using Granit.Authorization;
 using Granit.Authorization.Abstractions;
 using Granit.Authorization.Endpoints.Internal;
 using Granit.Localization;

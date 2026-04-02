@@ -28,13 +28,6 @@ public sealed class AuditingOptions
     public bool EnablePropertyTracking { get; set; } = true;
 
     /// <summary>
-    /// Number of entries the background persistence worker processes per batch
-    /// (Async mode only). Default: 50.
-    /// </summary>
-    [Range(1, 10_000)]
-    public int PersistenceBatchSize { get; set; } = 50;
-
-    /// <summary>
     /// Retention period for <see cref="AuditCategory.ConfigurationChange"/> entries.
     /// Default: ~7 years (2555 days).
     /// </summary>

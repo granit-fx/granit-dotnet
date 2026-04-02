@@ -1,7 +1,8 @@
+using System.Collections.Concurrent;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using Granit.Auditing.Abstractions;
 using Granit.Auditing.Attributes;
 using Granit.Auditing.Diagnostics;
 using Granit.Auditing.Domain;
@@ -40,6 +41,8 @@ internal sealed partial class ChangeTrackingCaptureService(
         DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
     };
 
+    private static readonly ConcurrentDictionary<Type, EntityAuditMetadata> MetadataCache = new();
+
     private const string SensitiveMask = "***";
     private const int MaxIpAddressLength = 45;
     private const int MaxUserAgentLength = 500;
@@ -54,6 +57,9 @@ internal sealed partial class ChangeTrackingCaptureService(
     {
         ArgumentNullException.ThrowIfNull(context);
 
+        using System.Diagnostics.Activity? activity = AuditingActivitySource.Source.StartActivity(AuditingActivitySource.Capture);
+        activity?.SetTag("tenant_id", currentTenant.IsAvailable ? currentTenant.Id?.ToString() ?? "global" : "global");
+
         try
         {
             List<AuditEntityChangeSnapshot> entityChanges = [];
@@ -66,7 +72,9 @@ internal sealed partial class ChangeTrackingCaptureService(
                 }
 
                 Type entityType = entry.Entity.GetType();
-                if (entityType.GetCustomAttributes(typeof(AuditIgnoreAttribute), true).Length > 0)
+                EntityAuditMetadata metadata = GetOrCreateMetadata(entityType);
+
+                if (metadata.IsIgnored)
                 {
                     continue;
                 }
@@ -74,7 +82,7 @@ internal sealed partial class ChangeTrackingCaptureService(
                 AuditChangeType changeType = DetermineChangeType(entry);
                 string entityId = GetEntityId(entry);
                 List<AuditPropertyChangeSnapshot> propertyChanges = options.Value.EnablePropertyTracking
-                    ? CapturePropertyChanges(entry, changeType)
+                    ? CapturePropertyChanges(entry, changeType, metadata)
                     : [];
 
                 entityChanges.Add(new AuditEntityChangeSnapshot(
@@ -102,6 +110,9 @@ internal sealed partial class ChangeTrackingCaptureService(
                 TenantId: currentTenant.IsAvailable ? currentTenant.Id : null,
                 CorrelationId: System.Diagnostics.Activity.Current?.Id,
                 EntityChanges: entityChanges);
+
+            activity?.SetTag("audit.category", _capturedBatch.Category.ToString());
+            activity?.SetTag("audit.entity_change_count", entityChanges.Count);
         }
         catch (Exception ex)
         {
@@ -127,6 +138,28 @@ internal sealed partial class ChangeTrackingCaptureService(
 
         await publisher.PublishAsync(batch, cancellationToken).ConfigureAwait(false);
     }
+
+    private static EntityAuditMetadata GetOrCreateMetadata(Type entityType) =>
+        MetadataCache.GetOrAdd(entityType, static type =>
+        {
+            bool isIgnored = type.GetCustomAttributes(typeof(AuditIgnoreAttribute), true).Length > 0;
+
+            Dictionary<string, PropertyAuditMetadata> properties = new(StringComparer.Ordinal);
+
+            foreach (PropertyInfo property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                bool propertyIgnored = property.IsDefined(typeof(AuditIgnoreAttribute), true);
+
+                SensitiveDataAttribute? sensitive = property
+                    .GetCustomAttributes(typeof(SensitiveDataAttribute), true)
+                    .OfType<SensitiveDataAttribute>()
+                    .FirstOrDefault();
+
+                properties[property.Name] = new PropertyAuditMetadata(propertyIgnored, sensitive);
+            }
+
+            return new EntityAuditMetadata(isIgnored, properties);
+        });
 
     private static AuditChangeType DetermineChangeType(EntityEntry entry) => entry.State switch
     {
@@ -159,13 +192,24 @@ internal sealed partial class ChangeTrackingCaptureService(
 
     private static List<AuditPropertyChangeSnapshot> CapturePropertyChanges(
         EntityEntry entry,
-        AuditChangeType changeType)
+        AuditChangeType changeType,
+        EntityAuditMetadata metadata)
     {
         List<AuditPropertyChangeSnapshot> changes = [];
 
         foreach (PropertyEntry prop in entry.Properties.Where(p => !p.Metadata.IsPrimaryKey()))
         {
-            AuditPropertyChangeSnapshot? snapshot = CapturePropertySnapshot(prop, changeType);
+            string propertyName = prop.Metadata.Name;
+
+            if (metadata.Properties.TryGetValue(propertyName, out PropertyAuditMetadata? propMeta)
+                && propMeta.IsIgnored)
+            {
+                continue;
+            }
+
+            SensitiveDataAttribute? sensitive = propMeta?.SensitiveData;
+
+            AuditPropertyChangeSnapshot? snapshot = CapturePropertySnapshot(prop, changeType, sensitive);
             if (snapshot is not null)
             {
                 changes.Add(snapshot);
@@ -177,13 +221,9 @@ internal sealed partial class ChangeTrackingCaptureService(
 
     private static AuditPropertyChangeSnapshot? CapturePropertySnapshot(
         PropertyEntry prop,
-        AuditChangeType changeType)
+        AuditChangeType changeType,
+        SensitiveDataAttribute? sensitive)
     {
-        SensitiveDataAttribute? sensitive = prop.Metadata.PropertyInfo?
-            .GetCustomAttributes(typeof(SensitiveDataAttribute), true)
-            .OfType<SensitiveDataAttribute>()
-            .FirstOrDefault();
-
         return changeType switch
         {
             AuditChangeType.Created => new AuditPropertyChangeSnapshot(
@@ -248,4 +288,19 @@ internal sealed partial class ChangeTrackingCaptureService(
     [LoggerMessage(Level = LogLevel.Error,
         Message = "Failed to capture audit change tracking data")]
     private partial void LogCaptureError(Exception exception);
+
+    /// <summary>
+    /// Cached audit metadata for an entity type: whether the type is ignored,
+    /// and per-property ignore/sensitive-data information.
+    /// </summary>
+    internal sealed record EntityAuditMetadata(
+        bool IsIgnored,
+        Dictionary<string, PropertyAuditMetadata> Properties);
+
+    /// <summary>
+    /// Cached audit metadata for a single property.
+    /// </summary>
+    internal sealed record PropertyAuditMetadata(
+        bool IsIgnored,
+        SensitiveDataAttribute? SensitiveData);
 }

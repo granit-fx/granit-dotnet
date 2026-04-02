@@ -2,6 +2,7 @@
   "culture": "pl",
   "texts": {
     "PermissionGroup:Auditing": "Dziennik audytu",
-    "Permission:Auditing.AuditEntries.Read": "Wyświetlanie wpisów dziennika audytu (ścieżka audytu ISO 27001)"
+    "Permission:Auditing.AuditEntries.Read": "Wyświetlanie wpisów dziennika audytu (ścieżka audytu ISO 27001)",
+    "Permission:Auditing.AuditEntries.Manage": "Zarządzanie wpisami dziennika audytu (pseudonimizacja, RODO art. 17)"
   }
 }

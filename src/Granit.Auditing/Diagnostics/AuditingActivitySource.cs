@@ -22,4 +22,5 @@ internal static class AuditingActivitySource
     internal const string Capture = "auditing.capture";
     internal const string Persist = "auditing.persist";
     internal const string Cleanup = "auditing.cleanup";
+    internal const string Pseudonymize = "auditing.pseudonymize";
 }

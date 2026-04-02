@@ -1,4 +1,3 @@
-using Granit.Auditing.Abstractions;
 using Granit.Auditing.Domain;
 using Granit.Auditing.Endpoints.Dtos;
 using Granit.Auditing.Endpoints.Internal;
@@ -23,7 +22,8 @@ internal static class AuditingReadEndpoints
             .WithName("GetAuditEntries")
             .WithSummary("List audit log entries with pagination and filters.")
             .WithDescription("Returns a paginated list of audit log entries ordered by timestamp descending. Supports filtering by actor (userId), entity type/ID, category, and date range. Each entry contains a summary with the number of entity changes — use the detail endpoint to retrieve full property-level diffs. ISO 27001 A.12.4 compliant.")
-            .Produces<PagedResult<AuditEntryResponse>>();
+            .Produces<PagedResult<AuditEntryResponse>>()
+            .ProducesValidationProblem();
 
         group.MapGet("/{id:guid}", GetByIdAsync)
             .WithName("GetAuditEntryById")
@@ -37,6 +37,13 @@ internal static class AuditingReadEndpoints
             .WithSummary("Get audit trail for a specific entity instance.")
             .WithDescription("Returns all audit log entries associated with a specific entity, identified by its CLR type name and primary key. Results are paginated and ordered by timestamp descending. Useful for displaying the full change history of a single record. Path parameters are limited to 256 characters.")
             .Produces<PagedResult<AuditEntryResponse>>()
+            .ProducesProblem(StatusCodes.Status400BadRequest);
+
+        group.MapGet("/correlation/{correlationId}", GetByCorrelationIdAsync)
+            .WithName("GetAuditEntriesByCorrelationId")
+            .WithSummary("Get audit entries matching a distributed tracing correlation ID.")
+            .WithDescription("Returns all audit log entries that share the given correlation ID, ordered by timestamp descending. This is essential for distributed tracing investigation — correlating audit events across multiple services or operations that belong to the same logical transaction. The correlation ID is limited to 256 characters.")
+            .Produces<List<AuditEntryDetailResponse>>()
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         return group;
@@ -84,6 +91,29 @@ internal static class AuditingReadEndpoints
         }
 
         return TypedResults.Ok(AuditingResponseMapper.ToDetailResponse(entry));
+    }
+
+    private static async Task<Results<Ok<List<AuditEntryDetailResponse>>, ProblemHttpResult>> GetByCorrelationIdAsync(
+        string correlationId,
+        [FromServices] IAuditingReader reader,
+        CancellationToken cancellationToken)
+    {
+        const int maxCorrelationIdLength = 256;
+        if (string.IsNullOrWhiteSpace(correlationId) || correlationId.Length > maxCorrelationIdLength)
+        {
+            return TypedResults.Problem(
+                detail: $"Correlation ID must be between 1 and {maxCorrelationIdLength} characters.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        List<AuditEntry> entries = await reader
+            .GetByCorrelationIdAsync(correlationId, cancellationToken).ConfigureAwait(false);
+
+        var mapped = entries
+            .Select(AuditingResponseMapper.ToDetailResponse)
+            .ToList();
+
+        return TypedResults.Ok(mapped);
     }
 
     private static async Task<Results<Ok<PagedResult<AuditEntryResponse>>, ProblemHttpResult>> GetByEntityAsync(

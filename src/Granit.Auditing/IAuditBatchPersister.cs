@@ -1,6 +1,6 @@
 using Granit.Auditing.Messages;
 
-namespace Granit.Auditing.Abstractions;
+namespace Granit.Auditing;
 
 /// <summary>
 /// Persists a single <see cref="AuditingBatch"/> to the underlying store.

@@ -1,7 +1,7 @@
-using Granit.Auditing.Abstractions;
 using Granit.Auditing.Domain;
 using Granit.Auditing.Options;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -64,19 +64,10 @@ internal sealed class EfCoreAuditingReader(
 
         queryable = ApplyFilters(queryable, query);
 
-        int totalCount = await queryable.CountAsync(cancellationToken).ConfigureAwait(false);
-
-        List<AuditEntry> items = await queryable
+        return await queryable
             .OrderByDescending(e => e.Timestamp)
-            .Skip((query.Page - 1) * query.PageSize)
-            .Take(query.PageSize)
-            .ToListAsync(cancellationToken)
+            .ToPagedResultAsync(query.Page, query.PageSize, cancellationToken)
             .ConfigureAwait(false);
-
-        return new PagedResult<AuditEntry>(
-            items,
-            totalCount,
-            HasMore: query.Page * query.PageSize < totalCount);
     }
 
     /// <inheritdoc/>
@@ -105,22 +96,33 @@ internal sealed class EfCoreAuditingReader(
                 ec.EntityType == entityType && ec.EntityId == entityId))
             .AsNoTracking();
 
-        int totalCount = await queryable.CountAsync(cancellationToken).ConfigureAwait(false);
-
-        List<AuditEntry> items = await queryable
+        PagedResult<AuditEntry> result = await queryable
             .OrderByDescending(e => e.Timestamp)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken)
+            .ToPagedResultAsync(page, pageSize, cancellationToken)
             .ConfigureAwait(false);
-
-        PagedResult<AuditEntry> result = new(
-            items,
-            totalCount,
-            HasMore: page * pageSize < totalCount);
 
         await cache.SetAsync(cacheKey, result, new FusionCacheEntryOptions { Duration = _options.CacheEntityQueryTtl }, token: cancellationToken).ConfigureAwait(false);
         return result;
+    }
+
+    /// <inheritdoc/>
+    public async Task<List<AuditEntry>> GetByCorrelationIdAsync(
+        string correlationId,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(correlationId);
+
+        await using AuditingDbContext dbContext = await dbContextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+        return await dbContext.AuditEntries
+            .Include(e => e.EntityChanges)
+                .ThenInclude(ec => ec.PropertyChanges)
+            .Where(e => e.CorrelationId == correlationId)
+            .OrderByDescending(e => e.Timestamp)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
     }
 
     private static IQueryable<AuditEntry> ApplyFilters(

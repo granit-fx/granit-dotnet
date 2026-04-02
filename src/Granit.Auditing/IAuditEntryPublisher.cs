@@ -1,6 +1,6 @@
 using Granit.Auditing.Messages;
 
-namespace Granit.Auditing.Abstractions;
+namespace Granit.Auditing;
 
 /// <summary>
 /// Internal publisher interface for the interceptor → persistence pipeline.

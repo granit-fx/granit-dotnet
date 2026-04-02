@@ -66,6 +66,10 @@ internal sealed class ImportOrchestrator(
 
             return report;
         }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             stopwatch.Stop();
@@ -154,18 +158,9 @@ internal sealed class ImportOrchestrator(
             executorType, parser, fileStream, parsingOptions, mappings, dryRun, cancellationToken).ConfigureAwait(false);
     }
 
-    private Type? FindExecutorType(string entityTypeName)
-    {
-        foreach (Type entityType in GetRegisteredEntityTypes())
-        {
-            if (entityType.Name == entityTypeName)
-            {
-                return entityType;
-            }
-        }
-
-        return null;
-    }
+    private Type? FindExecutorType(string entityTypeName) =>
+        GetRegisteredEntityTypes()
+            .FirstOrDefault(entityType => entityType.Name == entityTypeName);
 
     private IEnumerable<Type> GetRegisteredEntityTypes()
     {
@@ -173,7 +168,7 @@ internal sealed class ImportOrchestrator(
         // The definitions are registered as singletons — enumerate them
         IEnumerable<object> definitions = serviceProvider.GetServices<object>()
             .Where(s => s?.GetType().BaseType?.IsGenericType == true
-                        && s.GetType().BaseType?.GetGenericTypeDefinition() == typeof(ImportDefinition<>));
+                        && s?.GetType().BaseType?.GetGenericTypeDefinition() == typeof(ImportDefinition<>));
 
         foreach (object definition in definitions)
         {

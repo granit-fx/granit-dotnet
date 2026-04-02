@@ -1,7 +1,7 @@
 using Granit.Auditing.Domain;
 using Granit.QueryEngine;
 
-namespace Granit.Auditing.Abstractions;
+namespace Granit.Auditing;
 
 /// <summary>
 /// Query filter for paginated audit log retrieval.

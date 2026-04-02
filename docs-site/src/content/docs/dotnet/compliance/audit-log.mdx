@@ -244,7 +244,6 @@ Cascade deletes automatically remove child `AuditEntityChange` and
 | --- | ---- | ------- | ----------- |
 | `PersistenceMode` | `Async` / `Strict` | `Async` | How entries are persisted |
 | `EnablePropertyTracking` | `bool` | `true` | Capture property-level old/new values |
-| `PersistenceBatchSize` | `int` | `50` | Entries per background worker batch (Async only) |
 | `ConfigurationChangeRetention` | `TimeSpan` | `2555d` | Retention for config changes |
 | `DataMutationRetention` | `TimeSpan` | `365d` | Retention for entity CRUD |
 | `DataAccessRetention` | `TimeSpan` | `90d` | Retention for read operations |

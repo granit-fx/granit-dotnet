@@ -1,4 +1,5 @@
 // =============================================================================
+using Granit.Authorization.Abstractions;
 // Tests - DynamicPermissionPolicyProvider
 // =============================================================================
 // Vérifie que le provider :
@@ -7,7 +8,6 @@
 //   - Retourne null pour une policy totalement inconnue
 // =============================================================================
 
-using Granit.Authorization.Abstractions;
 using Granit.Authorization.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;

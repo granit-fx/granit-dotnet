@@ -2,6 +2,7 @@
   "culture": "zh",
   "texts": {
     "PermissionGroup:Auditing": "审计日志",
-    "Permission:Auditing.AuditEntries.Read": "查看审计日志条目（ISO 27001 审计跟踪）"
+    "Permission:Auditing.AuditEntries.Read": "查看审计日志条目（ISO 27001 审计跟踪）",
+    "Permission:Auditing.AuditEntries.Manage": "管理审计日志条目（假名化，GDPR 第 17 条）"
   }
 }

@@ -2,6 +2,7 @@
   "culture": "en",
   "texts": {
     "PermissionGroup:Auditing": "Audit Log",
-    "Permission:Auditing.AuditEntries.Read": "View audit log entries (ISO 27001 audit trail)"
+    "Permission:Auditing.AuditEntries.Read": "View audit log entries (ISO 27001 audit trail)",
+    "Permission:Auditing.AuditEntries.Manage": "Manage audit log entries (pseudonymization, GDPR Art. 17)"
   }
 }

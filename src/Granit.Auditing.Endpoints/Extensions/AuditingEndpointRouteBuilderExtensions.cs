@@ -39,6 +39,7 @@ public static class AuditingEndpointRouteBuilderExtensions
             .RequireAuthorization(AuditingPermissions.AuditEntries.Read);
 
         group.MapAuditingReadEndpoints();
+        group.MapAuditingManagementEndpoints();
 
         return group;
     }

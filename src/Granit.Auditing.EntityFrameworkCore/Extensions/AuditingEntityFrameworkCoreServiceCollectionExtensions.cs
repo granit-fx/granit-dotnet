@@ -1,4 +1,3 @@
-using Granit.Auditing.Abstractions;
 using Granit.Auditing.Domain;
 using Granit.Auditing.EntityFrameworkCore.Interceptors;
 using Granit.Auditing.EntityFrameworkCore.Internal;

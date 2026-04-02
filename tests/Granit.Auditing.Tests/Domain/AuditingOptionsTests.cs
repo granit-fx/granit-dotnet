@@ -14,7 +14,6 @@ public sealed class AuditingOptionsTests
 
         options.PersistenceMode.ShouldBe(AuditPersistenceMode.Async);
         options.EnablePropertyTracking.ShouldBeTrue();
-        options.PersistenceBatchSize.ShouldBe(50);
         options.CleanupBatchSize.ShouldBe(10_000);
         options.CleanupInterval.ShouldBe(TimeSpan.FromHours(24));
         options.ConfigurationChangeRetention.ShouldBe(TimeSpan.FromDays(2555));

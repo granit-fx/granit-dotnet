@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Granit.Authorization;
 using Granit.Authorization.Abstractions;
 using Granit.Authorization.Endpoints.Dtos;
 using Granit.Authorization.Endpoints.Permissions;

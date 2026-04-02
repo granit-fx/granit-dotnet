@@ -207,7 +207,6 @@
         "tests/Granit.Auditing.Endpoints.Tests",
         "tests/Granit.Auditing.EntityFrameworkCore.Tests",
         "tests/Granit.Auditing.Tests",
-        "tests/Granit.Auditing.Wolverine.Tests",
         "tests/Granit.Authentication.ApiKeys.Endpoints.Tests",
         "tests/Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests",
         "tests/Granit.Authentication.ApiKeys.Tests",

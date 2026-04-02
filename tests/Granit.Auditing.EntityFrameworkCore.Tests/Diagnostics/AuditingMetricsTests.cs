@@ -41,7 +41,7 @@ public sealed class AuditingMetricsTests : IDisposable
     [Fact]
     public void RecordPersisted_RecordsCounter()
     {
-        AuditingMetrics metrics = new(_meterFactory);
+        AuditingMetrics metrics = new(_meterFactory, System.Threading.Channels.Channel.CreateUnbounded<Granit.Auditing.Messages.AuditingBatch>());
 
         metrics.RecordPersisted(5, "tenant-1");
         _listener.RecordObservableInstruments();
@@ -53,7 +53,7 @@ public sealed class AuditingMetricsTests : IDisposable
     [Fact]
     public void RecordPersisted_WithNullTenant_UsesGlobal()
     {
-        AuditingMetrics metrics = new(_meterFactory);
+        AuditingMetrics metrics = new(_meterFactory, System.Threading.Channels.Channel.CreateUnbounded<Granit.Auditing.Messages.AuditingBatch>());
 
         metrics.RecordPersisted(1, null);
         _listener.RecordObservableInstruments();
@@ -66,7 +66,7 @@ public sealed class AuditingMetricsTests : IDisposable
     [Fact]
     public void RecordPurged_RecordsCounter()
     {
-        AuditingMetrics metrics = new(_meterFactory);
+        AuditingMetrics metrics = new(_meterFactory, System.Threading.Channels.Channel.CreateUnbounded<Granit.Auditing.Messages.AuditingBatch>());
 
         metrics.RecordPurged(100, "DataMutation", null);
         _listener.RecordObservableInstruments();
@@ -78,7 +78,7 @@ public sealed class AuditingMetricsTests : IDisposable
     [Fact]
     public void RecordPurged_IncludesCategoryTag()
     {
-        AuditingMetrics metrics = new(_meterFactory);
+        AuditingMetrics metrics = new(_meterFactory, System.Threading.Channels.Channel.CreateUnbounded<Granit.Auditing.Messages.AuditingBatch>());
 
         metrics.RecordPurged(50, "ConfigurationChange", "tenant-1");
         _listener.RecordObservableInstruments();
@@ -91,7 +91,7 @@ public sealed class AuditingMetricsTests : IDisposable
     [Fact]
     public void RecordCaptureError_RecordsCounter()
     {
-        AuditingMetrics metrics = new(_meterFactory);
+        AuditingMetrics metrics = new(_meterFactory, System.Threading.Channels.Channel.CreateUnbounded<Granit.Auditing.Messages.AuditingBatch>());
 
         metrics.RecordCaptureError("tenant-42");
         _listener.RecordObservableInstruments();
@@ -103,7 +103,7 @@ public sealed class AuditingMetricsTests : IDisposable
     [Fact]
     public void RecordCaptureError_WithNullTenant_UsesGlobal()
     {
-        AuditingMetrics metrics = new(_meterFactory);
+        AuditingMetrics metrics = new(_meterFactory, System.Threading.Channels.Channel.CreateUnbounded<Granit.Auditing.Messages.AuditingBatch>());
 
         metrics.RecordCaptureError(null);
         _listener.RecordObservableInstruments();

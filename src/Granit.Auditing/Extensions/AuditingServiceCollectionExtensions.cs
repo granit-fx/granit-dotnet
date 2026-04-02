@@ -32,6 +32,9 @@ public static class AuditingServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IValidateOptions<AuditingOptions>, AuditingOptionsValidator>());
+
         if (configure is not null)
         {
             services.Configure(configure);

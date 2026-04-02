@@ -2,6 +2,7 @@
   "culture": "de",
   "texts": {
     "PermissionGroup:Auditing": "Prüfprotokoll",
-    "Permission:Auditing.AuditEntries.Read": "Prüfprotokolleinträge anzeigen (ISO 27001-Prüfpfad)"
+    "Permission:Auditing.AuditEntries.Read": "Prüfprotokolleinträge anzeigen (ISO 27001-Prüfpfad)",
+    "Permission:Auditing.AuditEntries.Manage": "Prüfprotokolleinträge verwalten (Pseudonymisierung, DSGVO Art. 17)"
   }
 }

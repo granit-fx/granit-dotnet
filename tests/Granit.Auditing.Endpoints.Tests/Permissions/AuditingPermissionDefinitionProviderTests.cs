@@ -1,4 +1,5 @@
 using Granit.Auditing.Endpoints.Permissions;
+using Granit.Authorization;
 using Granit.Authorization.Abstractions;
 using Granit.Localization;
 using Shouldly;
@@ -32,7 +33,7 @@ public sealed class AuditingPermissionDefinitionProviderTests
     }
 
     [Fact]
-    public void DefinePermissions_RegistersExactlyOnePermission()
+    public void DefinePermissions_RegistersEntriesManagePermission()
     {
         FakePermissionDefinitionContext context = new();
         AuditingPermissionDefinitionProvider provider = new();
@@ -40,7 +41,19 @@ public sealed class AuditingPermissionDefinitionProviderTests
         provider.DefinePermissions(context);
 
         PermissionGroup group = context.Groups.Single();
-        group.Permissions.Count.ShouldBe(1);
+        group.Permissions.ShouldContain(p => p.Name == AuditingPermissions.AuditEntries.Manage);
+    }
+
+    [Fact]
+    public void DefinePermissions_RegistersExactlyTwoPermissions()
+    {
+        FakePermissionDefinitionContext context = new();
+        AuditingPermissionDefinitionProvider provider = new();
+
+        provider.DefinePermissions(context);
+
+        PermissionGroup group = context.Groups.Single();
+        group.Permissions.Count.ShouldBe(2);
     }
 
     [Fact]

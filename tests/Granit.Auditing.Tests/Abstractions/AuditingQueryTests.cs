@@ -1,4 +1,3 @@
-using Granit.Auditing.Abstractions;
 using Granit.Auditing.Domain;
 using Granit.QueryEngine;
 using Shouldly;

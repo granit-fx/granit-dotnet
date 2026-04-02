@@ -13,5 +13,8 @@ public static class AuditingPermissions
     {
         /// <summary>Grants read access to audit entries (ISO 27001 audit trail).</summary>
         public const string Read = "Auditing.AuditEntries.Read";
+
+        /// <summary>Grants management access to audit entries (pseudonymization, GDPR Art. 17).</summary>
+        public const string Manage = "Auditing.AuditEntries.Manage";
     }
 }

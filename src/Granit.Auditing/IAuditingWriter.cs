@@ -1,6 +1,6 @@
 using Granit.Auditing.Domain;
 
-namespace Granit.Auditing.Abstractions;
+namespace Granit.Auditing;
 
 /// <summary>
 /// Write-side abstraction for persisting explicit audit log entries.

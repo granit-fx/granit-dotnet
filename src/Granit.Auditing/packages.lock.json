@@ -32,6 +32,14 @@
       "granit": {
         "type": "Project"
       },
+      "granit.guids": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )"
+        }
+      },
       "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {

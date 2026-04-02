@@ -1,4 +1,5 @@
 using Granit.Authorization;
+using Granit.Authorization.Abstractions;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
 

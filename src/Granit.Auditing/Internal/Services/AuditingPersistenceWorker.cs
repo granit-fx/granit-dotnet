@@ -1,9 +1,12 @@
+using System.Diagnostics;
 using System.Threading.Channels;
-using Granit.Auditing.Abstractions;
 using Granit.Auditing.Diagnostics;
 using Granit.Auditing.Domain;
+using Granit.Auditing.Events;
 using Granit.Auditing.Messages;
 using Granit.Auditing.Options;
+using Granit.Events;
+using Granit.Guids;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -50,6 +53,13 @@ internal sealed partial class AuditingPersistenceWorker(
 
     private async Task PersistWithRetryAsync(AuditingBatch batch, CancellationToken stoppingToken)
     {
+        using Activity? activity = AuditingActivitySource.Source.StartActivity(AuditingActivitySource.Persist);
+        activity?.SetTag("tenant_id", batch.TenantId?.ToString() ?? "global");
+        activity?.SetTag("audit.category", batch.Category.ToString());
+        activity?.SetTag("audit.entity_change_count", batch.EntityChanges.Count);
+
+        long startTimestamp = Stopwatch.GetTimestamp();
+
         for (int attempt = 0; attempt <= MaxRetryAttempts; attempt++)
         {
             try
@@ -59,8 +69,22 @@ internal sealed partial class AuditingPersistenceWorker(
 
                 await persister.PersistAsync(batch, stoppingToken).ConfigureAwait(false);
 
+                double elapsedMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+                metrics.RecordPersistenceDuration(elapsedMs, batch.TenantId?.ToString());
+                metrics.RecordBatchSize(batch.EntityChanges.Count, batch.TenantId?.ToString());
                 metrics.RecordPersisted(1, batch.TenantId?.ToString());
                 LogEntryPersisted(batch.EntityChanges.Count);
+
+                IDistributedEventBus eventBus = scope.ServiceProvider.GetRequiredService<IDistributedEventBus>();
+                IGuidGenerator guidGenerator = scope.ServiceProvider.GetRequiredService<IGuidGenerator>();
+                await eventBus.PublishAsync(new AuditEntryPersistedEto(
+                    guidGenerator.Create(),
+                    batch.Timestamp,
+                    batch.UserId,
+                    batch.Category,
+                    batch.EntityChanges.Count,
+                    batch.TenantId), stoppingToken).ConfigureAwait(false);
+
                 return;
             }
             catch (OperationCanceledException)
@@ -69,6 +93,7 @@ internal sealed partial class AuditingPersistenceWorker(
             }
             catch (Exception ex) when (attempt < MaxRetryAttempts)
             {
+                metrics.RecordPersistenceRetry(batch.TenantId?.ToString());
                 LogPersistenceRetry(attempt + 1, MaxRetryAttempts, ex);
                 await Task.Delay(RetryDelays[attempt], stoppingToken).ConfigureAwait(false);
             }
