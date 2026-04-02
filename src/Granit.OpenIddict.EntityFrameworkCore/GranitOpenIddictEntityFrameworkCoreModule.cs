@@ -15,6 +15,7 @@ using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OpenIddict.Server;
 
@@ -59,19 +60,24 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
         context.Services.AddSingleton<ICookieDefinitionContributor, IdentityCookieDefinitionContributor>();
 
         // Override default ASP.NET Core Identity cookie names to avoid leaking the technology stack.
-        // Uses __Host- prefix for CSRF-hardening (Secure + Path=/ + no Domain).
-        // Only targets Identity schemes — does NOT use ConfigureAll to avoid breaking BFF/OIDC cookies.
-        ConfigureIdentityCookie(context.Services,
+        // Production: __Host- prefix (Secure + Path=/ + no Domain, RFC 6265bis §4.1.3.2).
+        // Development: simple names without __Host- (requires HTTPS, incompatible with HTTP dev).
+        bool isDevelopment = context.Builder!.Environment.IsDevelopment();
+
+        ConfigureIdentityCookie(context.Services, isDevelopment,
             Microsoft.AspNetCore.Identity.IdentityConstants.ApplicationScheme,
-            IdentityCookieDefinitionContributor.DefaultApplicationCookieName);
+            IdentityCookieDefinitionContributor.DefaultApplicationCookieName,
+            IdentityCookieDefinitionContributor.DevApplicationCookieName);
 
-        ConfigureIdentityCookie(context.Services,
+        ConfigureIdentityCookie(context.Services, isDevelopment,
             Microsoft.AspNetCore.Identity.IdentityConstants.TwoFactorUserIdScheme,
-            IdentityCookieDefinitionContributor.DefaultTwoFactorCookieName);
+            IdentityCookieDefinitionContributor.DefaultTwoFactorCookieName,
+            IdentityCookieDefinitionContributor.DevTwoFactorCookieName);
 
-        ConfigureIdentityCookie(context.Services,
+        ConfigureIdentityCookie(context.Services, isDevelopment,
             Microsoft.AspNetCore.Identity.IdentityConstants.ExternalScheme,
-            IdentityCookieDefinitionContributor.DefaultExternalCookieName);
+            IdentityCookieDefinitionContributor.DefaultExternalCookieName,
+            IdentityCookieDefinitionContributor.DevExternalCookieName);
 
         context.Services.TryAddScoped<ILocalIdentityGroupStore, OpenIddictGroupStore>();
         context.Services.TryAddScoped<ExternalClaimsMapper>();
@@ -100,14 +106,17 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
     }
 
     private static void ConfigureIdentityCookie(
-        IServiceCollection services, string scheme, string cookieName)
+        IServiceCollection services, bool isDevelopment, string scheme,
+        string prodCookieName, string devCookieName)
     {
         services.Configure<Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions>(
             scheme,
             options =>
             {
-                options.Cookie.Name = cookieName;
-                options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
+                options.Cookie.Name = isDevelopment ? devCookieName : prodCookieName;
+                options.Cookie.SecurePolicy = isDevelopment
+                    ? Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest
+                    : Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
             });
     }
 }

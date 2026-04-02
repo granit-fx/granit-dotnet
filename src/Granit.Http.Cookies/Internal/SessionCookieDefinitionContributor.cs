@@ -12,8 +12,11 @@ namespace Granit.Http.Cookies.Internal;
 internal sealed class SessionCookieDefinitionContributor(
     IOptions<SessionOptions> options) : ICookieDefinitionContributor
 {
-    /// <summary>Default session cookie name (avoids leaking ASP.NET Core).</summary>
-    internal const string DefaultCookieName = ".session";
+    /// <summary>Production cookie name — <c>__Host-</c> prefix for CSRF-hardening.</summary>
+    internal const string DefaultCookieName = "__Host-session";
+
+    /// <summary>Development cookie name — no <c>__Host-</c> prefix (requires HTTPS).</summary>
+    internal const string DevCookieName = ".session";
 
     /// <inheritdoc/>
     public IEnumerable<CookieDefinition> GetCookieDefinitions()

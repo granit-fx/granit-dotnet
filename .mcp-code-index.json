@@ -13241,7 +13241,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/GranitHttpCookiesModule.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",
@@ -22431,7 +22431,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/GranitOpenIddictEntityFrameworkCoreModule.cs",
-      "line": 45,
+      "line": 46,
       "members": [
         {
           "name": "ConfigureServices",

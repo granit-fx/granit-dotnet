@@ -2,6 +2,7 @@ using Granit.Http.Cookies.Extensions;
 using Granit.Http.Cookies.Internal;
 using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Granit.Http.Cookies;
 
@@ -18,10 +19,18 @@ public sealed class GranitHttpCookiesModule : GranitModule
         context.Services.AddGranitCookies(_ => { });
 
         // Override the default antiforgery cookie name to avoid leaking the technology stack.
+        // Production: __Host- prefix (Secure + Path=/ + no Domain, RFC 6265bis §4.1.3.2).
+        // Development: simple name without __Host- (requires HTTPS, incompatible with HTTP dev).
+        bool isDevelopment = context.Builder!.Environment.IsDevelopment();
+
         context.Services.AddAntiforgery(options =>
         {
-            options.Cookie.Name = AntiforgeryCookieDefinitionContributor.DefaultCookieName;
-            options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
+            options.Cookie.Name = isDevelopment
+                ? AntiforgeryCookieDefinitionContributor.DevCookieName
+                : AntiforgeryCookieDefinitionContributor.DefaultCookieName;
+            options.Cookie.SecurePolicy = isDevelopment
+                ? Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest
+                : Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
         });
 
         context.Services.AddSingleton<ICookieDefinitionContributor, AntiforgeryCookieDefinitionContributor>();

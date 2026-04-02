@@ -11,11 +11,11 @@ namespace Granit.Http.Cookies.Internal;
 internal sealed class AntiforgeryCookieDefinitionContributor(
     IOptions<AntiforgeryOptions> options) : ICookieDefinitionContributor
 {
-    /// <summary>
-    /// Default antiforgery cookie name set by <see cref="GranitHttpCookiesModule"/>.
-    /// Neutral name that avoids leaking the underlying technology stack.
-    /// </summary>
-    internal const string DefaultCookieName = ".xsrf";
+    /// <summary>Production cookie name — <c>__Host-</c> prefix for CSRF-hardening.</summary>
+    internal const string DefaultCookieName = "__Host-xsrf";
+
+    /// <summary>Development cookie name — no <c>__Host-</c> prefix (requires HTTPS).</summary>
+    internal const string DevCookieName = ".xsrf";
 
     /// <inheritdoc/>
     public IEnumerable<CookieDefinition> GetCookieDefinitions()

@@ -29,15 +29,22 @@ public sealed class GranitCookiesBuilder(IServiceCollection services)
     /// the default cookie name to avoid leaking the technology stack.
     /// Call this when the application uses <c>AddSession()</c> / <c>UseSession()</c>.
     /// </summary>
-    public GranitCookiesBuilder RegisterSessionCookie()
+    /// <param name="isDevelopment">
+    /// Pass <c>true</c> in development to use a simple cookie name without <c>__Host-</c> prefix
+    /// (which requires HTTPS). In production, the <c>__Host-</c> prefix is used for CSRF-hardening.
+    /// </param>
+    public GranitCookiesBuilder RegisterSessionCookie(bool isDevelopment = false)
     {
         Services.AddSingleton<ICookieDefinitionContributor, Internal.SessionCookieDefinitionContributor>();
 
-        // Override the default session cookie name (.AspNetCore.Session → .session).
         Services.Configure<Microsoft.AspNetCore.Builder.SessionOptions>(options =>
         {
-            options.Cookie.Name = Internal.SessionCookieDefinitionContributor.DefaultCookieName;
-            options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
+            options.Cookie.Name = isDevelopment
+                ? Internal.SessionCookieDefinitionContributor.DevCookieName
+                : Internal.SessionCookieDefinitionContributor.DefaultCookieName;
+            options.Cookie.SecurePolicy = isDevelopment
+                ? Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest
+                : Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
             options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
             options.Cookie.HttpOnly = true;
         });

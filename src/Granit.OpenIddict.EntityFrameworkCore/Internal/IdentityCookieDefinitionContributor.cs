@@ -18,14 +18,23 @@ namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 internal sealed class IdentityCookieDefinitionContributor(
     IOptionsMonitor<CookieAuthenticationOptions> cookieOptions) : ICookieDefinitionContributor
 {
-    /// <summary>Default identity session cookie name (avoids leaking ASP.NET Core).</summary>
-    internal const string DefaultApplicationCookieName = ".id";
+    /// <summary>Production cookie name — <c>__Host-</c> prefix for CSRF-hardening (RFC 6265bis §4.1.3.2).</summary>
+    internal const string DefaultApplicationCookieName = "__Host-id";
 
-    /// <summary>Default 2FA flow cookie name.</summary>
-    internal const string DefaultTwoFactorCookieName = ".id-2fa";
+    /// <summary>Production 2FA flow cookie name.</summary>
+    internal const string DefaultTwoFactorCookieName = "__Host-id-2fa";
 
-    /// <summary>Default external login correlation cookie name.</summary>
-    internal const string DefaultExternalCookieName = ".id-ext";
+    /// <summary>Production external login correlation cookie name.</summary>
+    internal const string DefaultExternalCookieName = "__Host-id-ext";
+
+    /// <summary>Development cookie name — no <c>__Host-</c> prefix (requires HTTPS).</summary>
+    internal const string DevApplicationCookieName = ".id";
+
+    /// <summary>Development 2FA flow cookie name.</summary>
+    internal const string DevTwoFactorCookieName = ".id-2fa";
+
+    /// <summary>Development external login correlation cookie name.</summary>
+    internal const string DevExternalCookieName = ".id-ext";
 
     /// <inheritdoc/>
     public IEnumerable<CookieDefinition> GetCookieDefinitions()
