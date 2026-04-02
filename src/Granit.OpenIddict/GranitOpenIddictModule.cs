@@ -49,8 +49,13 @@ public sealed class GranitOpenIddictModule : GranitModule
             .AddOptions<GranitOpenIddictSeedingOptions>()
             .BindConfiguration(GranitOpenIddictSeedingOptions.SectionName);
 
+        context.Services
+            .AddOptions<GranitKeyRotationOptions>()
+            .BindConfiguration(GranitKeyRotationOptions.SectionName);
+
         context.Services.TryAddScoped<IClaimsDestinationProvider, DefaultClaimsDestinationProvider>();
         context.Services.TryAddScoped<ITotpService, DefaultTotpService>();
+        context.Services.TryAddScoped<ExternalClaimsMapper>();
         context.Services.TryAddSingleton<IExternalProviderRegistry, OpenIddictExternalProviderRegistry>();
 
         // Identity cookie configuration — neutral names to avoid leaking the technology stack.

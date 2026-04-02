@@ -15785,7 +15785,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountTwoFactorLoginRequest.cs",
-      "line": 11,
+      "line": 15,
       "members": []
     },
     {
@@ -22438,7 +22438,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/GranitOpenIddictEntityFrameworkCoreModule.cs",
-      "line": 44,
+      "line": 37,
       "members": [
         {
           "name": "ConfigureServices",
