@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using Granit.Authorization.Abstractions;
+using Granit.Authorization;
 using Granit.Authorization.Endpoints.Dtos;
 using Granit.Authorization.Endpoints.Extensions;
 using Granit.Authorization.Endpoints.Permissions;

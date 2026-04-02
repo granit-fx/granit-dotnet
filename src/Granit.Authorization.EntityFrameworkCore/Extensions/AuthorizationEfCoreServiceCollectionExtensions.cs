@@ -1,4 +1,4 @@
-using Granit.Authorization.Abstractions;
+using Granit.Authorization;
 using Granit.Authorization.EntityFrameworkCore.DbContext;
 using Granit.Authorization.EntityFrameworkCore.Stores;
 using Microsoft.Extensions.DependencyInjection;

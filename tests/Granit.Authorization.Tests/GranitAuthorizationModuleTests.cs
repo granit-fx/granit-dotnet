@@ -1,3 +1,4 @@
+using Granit.Authorization;
 using Granit.Caching;
 using Granit.Modularity;
 using Shouldly;

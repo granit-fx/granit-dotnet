@@ -1,4 +1,3 @@
-using Granit.Authorization.Abstractions;
 using Granit.Localization;
 
 namespace Granit.Authorization.Services;

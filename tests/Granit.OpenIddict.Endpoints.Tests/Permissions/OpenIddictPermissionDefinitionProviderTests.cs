@@ -1,4 +1,4 @@
-using Granit.Authorization.Abstractions;
+using Granit.Authorization;
 using Granit.Localization;
 using Granit.OpenIddict.Endpoints.Permissions;
 using Granit.OpenIddict.Permissions;

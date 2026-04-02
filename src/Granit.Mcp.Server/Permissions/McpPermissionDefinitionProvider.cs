@@ -1,4 +1,4 @@
-using Granit.Authorization.Abstractions;
+using Granit.Authorization;
 using Granit.Localization;
 
 namespace Granit.Mcp.Server.Permissions;

@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
-using Granit.Authorization.Abstractions;
+using Granit.Authorization;
 using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;

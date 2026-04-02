@@ -1,5 +1,5 @@
 using Granit.Authentication.ApiKeys.Endpoints.Internal;
-using Granit.Authorization.Abstractions;
+using Granit.Authorization;
 using Granit.Localization;
 
 namespace Granit.Authentication.ApiKeys.Endpoints.Permissions;

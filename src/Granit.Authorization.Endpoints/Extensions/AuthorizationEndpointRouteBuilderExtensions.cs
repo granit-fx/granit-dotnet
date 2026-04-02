@@ -1,3 +1,4 @@
+using Granit.Authorization;
 using Granit.Authorization.Endpoints.Endpoints;
 using Granit.Authorization.Endpoints.Options;
 using Granit.Validation.AspNetCore;

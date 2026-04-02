@@ -1,4 +1,4 @@
-using Granit.Authorization.Abstractions;
+using Granit.Authorization;
 using Granit.DataExchange.Endpoints.Permissions;
 using Granit.Localization;
 using NSubstitute;

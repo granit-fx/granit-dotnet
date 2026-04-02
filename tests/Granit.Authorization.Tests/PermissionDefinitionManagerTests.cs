@@ -7,7 +7,7 @@
 //   - Détecte les permissions existantes et inconnues
 // =============================================================================
 
-using Granit.Authorization.Abstractions;
+using Granit.Authorization;
 using Granit.Authorization.Services;
 using Granit.Localization;
 using Shouldly;

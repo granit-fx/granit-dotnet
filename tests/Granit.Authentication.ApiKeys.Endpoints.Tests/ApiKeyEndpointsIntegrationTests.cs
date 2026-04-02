@@ -6,7 +6,7 @@ using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Granit.Authentication.ApiKeys.Endpoints.Extensions;
 using Granit.Authentication.ApiKeys.Endpoints.Permissions;
-using Granit.Authorization.Abstractions;
+using Granit.Authorization;
 using Granit.Guids;
 using Granit.QueryEngine;
 using Granit.Timing;

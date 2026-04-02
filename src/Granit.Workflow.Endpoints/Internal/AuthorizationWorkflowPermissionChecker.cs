@@ -1,4 +1,4 @@
-using Granit.Authorization.Abstractions;
+using Granit.Authorization;
 
 namespace Granit.Workflow.Endpoints.Internal;
 

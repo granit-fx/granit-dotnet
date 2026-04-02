@@ -1,4 +1,4 @@
-namespace Granit.Authorization.Abstractions;
+namespace Granit.Authorization;
 
 /// <summary>
 /// Read-only service for querying role → permission grants.

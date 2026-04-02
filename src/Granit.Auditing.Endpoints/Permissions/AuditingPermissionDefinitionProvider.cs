@@ -1,6 +1,5 @@
 using Granit.Auditing.Endpoints.Internal;
 using Granit.Authorization;
-using Granit.Authorization.Abstractions;
 using Granit.Localization;
 
 namespace Granit.Auditing.Endpoints.Permissions;

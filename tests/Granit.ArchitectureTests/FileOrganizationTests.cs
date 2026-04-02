@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Granit.Authorization;
 using Shouldly;
 using Xunit;
 

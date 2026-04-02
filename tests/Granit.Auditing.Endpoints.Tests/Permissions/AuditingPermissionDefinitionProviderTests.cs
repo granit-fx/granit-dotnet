@@ -1,6 +1,5 @@
 using Granit.Auditing.Endpoints.Permissions;
 using Granit.Authorization;
-using Granit.Authorization.Abstractions;
 using Granit.Localization;
 using Shouldly;
 using Xunit;

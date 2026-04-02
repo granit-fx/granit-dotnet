@@ -1,4 +1,4 @@
-namespace Granit.Authorization.Abstractions;
+namespace Granit.Authorization;
 
 /// <summary>
 /// Checks whether the current authenticated user has been granted the specified permission.

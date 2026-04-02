@@ -1,4 +1,4 @@
-namespace Granit.Authorization.Abstractions;
+namespace Granit.Authorization;
 
 /// <summary>
 /// Administrative service for mutating role → permission grants.

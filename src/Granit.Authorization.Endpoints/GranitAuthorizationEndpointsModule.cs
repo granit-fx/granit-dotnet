@@ -1,3 +1,4 @@
+using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
 using Granit.Validation;

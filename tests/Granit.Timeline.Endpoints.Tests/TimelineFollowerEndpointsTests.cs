@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Granit.Authorization;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Endpoints.Extensions;
 using Granit.Timeline.Endpoints.Permissions;
@@ -47,7 +48,7 @@ public sealed class TimelineFollowerEndpointsTests : IAsyncDisposable
             .AddPolicy(TimelinePermissions.Followers.Manage, policy => policy.RequireRole(UserRole));
         builder.Services.AddSingleton(_followerService);
         builder.Services.AddSingleton(_currentUser);
-        builder.Services.AddSingleton(Substitute.For<Granit.Authorization.Abstractions.IPermissionChecker>());
+        builder.Services.AddSingleton(Substitute.For<IPermissionChecker>());
 
         // Required by other endpoints but not exercised here
         builder.Services.AddSingleton(Substitute.For<ITimelineReader>());

@@ -1,4 +1,3 @@
-using Granit.Authorization.Abstractions;
 using Granit.Authorization.Cache;
 using Granit.Authorization.Diagnostics;
 using Granit.Authorization.Options;

@@ -1,6 +1,6 @@
 using Granit.Localization;
 
-namespace Granit.Authorization.Abstractions;
+namespace Granit.Authorization;
 
 /// <summary>
 /// Fluent context for declaring permission groups and permissions during application startup.

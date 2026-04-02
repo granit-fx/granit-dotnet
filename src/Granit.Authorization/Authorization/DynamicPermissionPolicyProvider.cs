@@ -1,4 +1,3 @@
-using Granit.Authorization.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 

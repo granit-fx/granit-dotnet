@@ -1,6 +1,6 @@
 using Granit.Localization;
 
-namespace Granit.Authorization.Abstractions;
+namespace Granit.Authorization;
 
 /// <summary>Groups related permissions for organizational purposes.</summary>
 public sealed class PermissionGroup(string name, LocalizableString? displayName = null)

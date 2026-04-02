@@ -5258,215 +5258,6 @@
       ]
     },
     {
-      "name": "IPermissionChecker",
-      "fqn": "Granit.Authorization.Abstractions.IPermissionChecker",
-      "kind": "interface",
-      "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/IPermissionChecker.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "IsGrantedAsync",
-          "kind": "method",
-          "signature": "IsGrantedAsync(string permissionName, CancellationToken cancellationToken = default)",
-          "returnType": "Task<bool>"
-        }
-      ]
-    },
-    {
-      "name": "IPermissionDefinitionContext",
-      "fqn": "Granit.Authorization.Abstractions.IPermissionDefinitionContext",
-      "kind": "interface",
-      "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/IPermissionDefinitionContext.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "AddGroup",
-          "kind": "method",
-          "signature": "AddGroup(string name, LocalizableString? displayName = null)",
-          "returnType": "PermissionGroup"
-        }
-      ]
-    },
-    {
-      "name": "IPermissionDefinitionManager",
-      "fqn": "Granit.Authorization.Abstractions.IPermissionDefinitionManager",
-      "kind": "interface",
-      "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/IPermissionDefinitionManager.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "Exists",
-          "kind": "method",
-          "signature": "Exists(string name)",
-          "returnType": "bool"
-        },
-        {
-          "name": "Find",
-          "kind": "method",
-          "signature": "Find(string name)",
-          "returnType": "PermissionDefinition?"
-        },
-        {
-          "name": "GetAll",
-          "kind": "method",
-          "signature": "GetAll()",
-          "returnType": "IReadOnlyList<PermissionDefinition>"
-        },
-        {
-          "name": "GetGroups",
-          "kind": "method",
-          "signature": "GetGroups()",
-          "returnType": "IReadOnlyList<PermissionGroup>"
-        }
-      ]
-    },
-    {
-      "name": "IPermissionDefinitionProvider",
-      "fqn": "Granit.Authorization.Abstractions.IPermissionDefinitionProvider",
-      "kind": "interface",
-      "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/IPermissionDefinitionProvider.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "DefinePermissions",
-          "kind": "method",
-          "signature": "DefinePermissions(IPermissionDefinitionContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "IPermissionGrantStore",
-      "fqn": "Granit.Authorization.Abstractions.IPermissionGrantStore",
-      "kind": "interface",
-      "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/IPermissionGrantStore.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "IsGrantedAsync",
-          "kind": "method",
-          "signature": "IsGrantedAsync(string roleName, string permissionName, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<bool>"
-        },
-        {
-          "name": "GetGrantedPermissionsAsync",
-          "kind": "method",
-          "signature": "GetGrantedPermissionsAsync(string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<string>>"
-        },
-        {
-          "name": "GetGrantedRolesAsync",
-          "kind": "method",
-          "signature": "GetGrantedRolesAsync(string permissionName, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<string>>"
-        },
-        {
-          "name": "GrantAsync",
-          "kind": "method",
-          "signature": "GrantAsync(string permissionName, string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<bool>"
-        },
-        {
-          "name": "RevokeAsync",
-          "kind": "method",
-          "signature": "RevokeAsync(string permissionName, string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<bool>"
-        }
-      ]
-    },
-    {
-      "name": "IPermissionManagerReader",
-      "fqn": "Granit.Authorization.Abstractions.IPermissionManagerReader",
-      "kind": "interface",
-      "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/IPermissionManagerReader.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "IsGrantedAsync",
-          "kind": "method",
-          "signature": "IsGrantedAsync(string permissionName, string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<bool>"
-        },
-        {
-          "name": "GetGrantedPermissionsAsync",
-          "kind": "method",
-          "signature": "GetGrantedPermissionsAsync(string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<string>>"
-        },
-        {
-          "name": "GetGrantedRolesAsync",
-          "kind": "method",
-          "signature": "GetGrantedRolesAsync(string permissionName, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<string>>"
-        }
-      ]
-    },
-    {
-      "name": "IPermissionManagerWriter",
-      "fqn": "Granit.Authorization.Abstractions.IPermissionManagerWriter",
-      "kind": "interface",
-      "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/IPermissionManagerWriter.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "SetAsync",
-          "kind": "method",
-          "signature": "SetAsync(string permissionName, string roleName, Guid? tenantId, bool isGranted, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "PermissionDefinition",
-      "fqn": "Granit.Authorization.Abstractions.PermissionDefinition",
-      "kind": "record",
-      "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/PermissionDefinition.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "PermissionGroup",
-      "fqn": "Granit.Authorization.Abstractions.PermissionGroup",
-      "kind": "class",
-      "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/PermissionGroup.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "DisplayName",
-          "kind": "property",
-          "signature": "LocalizableString? DisplayName",
-          "returnType": "LocalizableString?"
-        },
-        {
-          "name": "AsReadOnly",
-          "kind": "method",
-          "signature": "AsReadOnly()",
-          "returnType": "IReadOnlyList<PermissionDefinition> Permissions => _permissions."
-        },
-        {
-          "name": "AddPermission",
-          "kind": "method",
-          "signature": "AddPermission(string name, LocalizableString? displayName = null)",
-          "returnType": "PermissionDefinition"
-        }
-      ]
-    },
-    {
       "name": "PermissionAttribute",
       "fqn": "Granit.Authorization.Attributes.PermissionAttribute",
       "kind": "class",
@@ -5580,7 +5371,7 @@
       "kind": "class",
       "project": "Granit.Authorization.Endpoints",
       "file": "src/Granit.Authorization.Endpoints/Extensions/AuthorizationEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "MapGranitAuthorization",
@@ -5596,7 +5387,7 @@
       "kind": "class",
       "project": "Granit.Authorization.Endpoints",
       "file": "src/Granit.Authorization.Endpoints/GranitAuthorizationEndpointsModule.cs",
-      "line": 23,
+      "line": 24,
       "members": []
     },
     {
@@ -5726,7 +5517,7 @@
       "kind": "class",
       "project": "Granit.Authorization.EntityFrameworkCore",
       "file": "src/Granit.Authorization.EntityFrameworkCore/GranitAuthorizationEntityFrameworkCoreModule.cs",
-      "line": 21,
+      "line": 20,
       "members": []
     },
     {
@@ -5744,7 +5535,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Extensions/AuthorizationServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitAuthorization",
@@ -5760,13 +5551,179 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/GranitAuthorizationModule.cs",
-      "line": 20,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IPermissionChecker",
+      "fqn": "Granit.Authorization.IPermissionChecker",
+      "kind": "interface",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/IPermissionChecker.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "IsGrantedAsync",
+          "kind": "method",
+          "signature": "IsGrantedAsync(string permissionName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "IPermissionDefinitionContext",
+      "fqn": "Granit.Authorization.IPermissionDefinitionContext",
+      "kind": "interface",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/IPermissionDefinitionContext.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGroup",
+          "kind": "method",
+          "signature": "AddGroup(string name, LocalizableString? displayName = null)",
+          "returnType": "PermissionGroup"
+        }
+      ]
+    },
+    {
+      "name": "IPermissionDefinitionManager",
+      "fqn": "Granit.Authorization.IPermissionDefinitionManager",
+      "kind": "interface",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/IPermissionDefinitionManager.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Exists",
+          "kind": "method",
+          "signature": "Exists(string name)",
+          "returnType": "bool"
+        },
+        {
+          "name": "Find",
+          "kind": "method",
+          "signature": "Find(string name)",
+          "returnType": "PermissionDefinition?"
+        },
+        {
+          "name": "GetAll",
+          "kind": "method",
+          "signature": "GetAll()",
+          "returnType": "IReadOnlyList<PermissionDefinition>"
+        },
+        {
+          "name": "GetGroups",
+          "kind": "method",
+          "signature": "GetGroups()",
+          "returnType": "IReadOnlyList<PermissionGroup>"
+        }
+      ]
+    },
+    {
+      "name": "IPermissionDefinitionProvider",
+      "fqn": "Granit.Authorization.IPermissionDefinitionProvider",
+      "kind": "interface",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/IPermissionDefinitionProvider.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "DefinePermissions",
+          "kind": "method",
+          "signature": "DefinePermissions(IPermissionDefinitionContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IPermissionGrantStore",
+      "fqn": "Granit.Authorization.IPermissionGrantStore",
+      "kind": "interface",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/IPermissionGrantStore.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "IsGrantedAsync",
+          "kind": "method",
+          "signature": "IsGrantedAsync(string roleName, string permissionName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "GetGrantedPermissionsAsync",
+          "kind": "method",
+          "signature": "GetGrantedPermissionsAsync(string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
+        },
+        {
+          "name": "GetGrantedRolesAsync",
+          "kind": "method",
+          "signature": "GetGrantedRolesAsync(string permissionName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
+        },
+        {
+          "name": "GrantAsync",
+          "kind": "method",
+          "signature": "GrantAsync(string permissionName, string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "RevokeAsync",
+          "kind": "method",
+          "signature": "RevokeAsync(string permissionName, string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "IPermissionManagerReader",
+      "fqn": "Granit.Authorization.IPermissionManagerReader",
+      "kind": "interface",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/IPermissionManagerReader.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "IsGrantedAsync",
+          "kind": "method",
+          "signature": "IsGrantedAsync(string permissionName, string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "GetGrantedPermissionsAsync",
+          "kind": "method",
+          "signature": "GetGrantedPermissionsAsync(string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
+        },
+        {
+          "name": "GetGrantedRolesAsync",
+          "kind": "method",
+          "signature": "GetGrantedRolesAsync(string permissionName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
+        }
+      ]
+    },
+    {
+      "name": "IPermissionManagerWriter",
+      "fqn": "Granit.Authorization.IPermissionManagerWriter",
+      "kind": "interface",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/IPermissionManagerWriter.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "SetAsync",
+          "kind": "method",
+          "signature": "SetAsync(string permissionName, string roleName, Guid? tenantId, bool isGranted, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -5789,6 +5746,49 @@
           "kind": "method",
           "signature": "FromMinutes(5)",
           "returnType": "TimeSpan CacheDuration { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "PermissionDefinition",
+      "fqn": "Granit.Authorization.PermissionDefinition",
+      "kind": "record",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/PermissionDefinition.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PermissionGroup",
+      "fqn": "Granit.Authorization.PermissionGroup",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/PermissionGroup.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DisplayName",
+          "kind": "property",
+          "signature": "LocalizableString? DisplayName",
+          "returnType": "LocalizableString?"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "IReadOnlyList<PermissionDefinition> Permissions => _permissions."
+        },
+        {
+          "name": "AddPermission",
+          "kind": "method",
+          "signature": "AddPermission(string name, LocalizableString? displayName = null)",
+          "returnType": "PermissionDefinition"
         }
       ]
     },
@@ -8574,7 +8574,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Permissions/DataExchangePermissions.cs",
-      "line": 11,
+      "line": 12,
       "members": []
     },
     {
@@ -8583,7 +8583,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Permissions/DataExchangePermissions.cs",
-      "line": 30,
+      "line": 31,
       "members": []
     },
     {
@@ -8592,7 +8592,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/Permissions/DataExchangePermissions.cs",
-      "line": 17,
+      "line": 18,
       "members": []
     },
     {
@@ -33099,7 +33099,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Endpoints",
       "file": "src/Granit.Workflow.Endpoints/Extensions/WorkflowEndpointsServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitWorkflowEndpoints",
@@ -33407,7 +33407,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Notifications",
       "file": "src/Granit.Workflow.Notifications/Extensions/WorkflowNotificationsServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitWorkflowNotifications",

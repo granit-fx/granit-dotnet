@@ -1,4 +1,4 @@
-using Granit.Authorization.Abstractions;
+using Granit.Authorization;
 using Granit.Diagnostics.Endpoints.Permissions;
 using Granit.Localization;
 using Shouldly;

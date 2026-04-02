@@ -1,4 +1,4 @@
-namespace Granit.Authorization.Abstractions;
+namespace Granit.Authorization;
 
 /// <summary>
 /// Singleton aggregator of all <see cref="IPermissionDefinitionProvider"/> registrations.

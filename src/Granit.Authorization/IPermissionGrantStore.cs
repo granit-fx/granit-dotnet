@@ -1,4 +1,4 @@
-namespace Granit.Authorization.Abstractions;
+namespace Granit.Authorization;
 
 /// <summary>
 /// Data access layer for permission grants.

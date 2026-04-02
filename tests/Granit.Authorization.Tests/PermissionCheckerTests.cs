@@ -12,7 +12,7 @@
 // =============================================================================
 
 using System.Diagnostics.Metrics;
-using Granit.Authorization.Abstractions;
+using Granit.Authorization;
 using Granit.Authorization.Cache;
 using Granit.Authorization.Diagnostics;
 using Granit.Authorization.Options;

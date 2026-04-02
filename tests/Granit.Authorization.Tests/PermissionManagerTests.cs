@@ -10,7 +10,7 @@
 //   - Delegates read operations to IPermissionGrantStore
 // =============================================================================
 
-using Granit.Authorization.Abstractions;
+using Granit.Authorization;
 using Granit.Authorization.Events;
 using Granit.Authorization.Services;
 using Granit.Events;

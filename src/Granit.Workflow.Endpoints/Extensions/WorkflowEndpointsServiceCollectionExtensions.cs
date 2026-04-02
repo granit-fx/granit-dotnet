@@ -1,3 +1,4 @@
+using Granit.Authorization;
 using Granit.Workflow.Endpoints.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

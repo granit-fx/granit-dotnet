@@ -1,4 +1,3 @@
-using Granit.Authorization.Abstractions;
 using Granit.Authorization.Events;
 using Granit.Events;
 using Microsoft.Extensions.Logging;

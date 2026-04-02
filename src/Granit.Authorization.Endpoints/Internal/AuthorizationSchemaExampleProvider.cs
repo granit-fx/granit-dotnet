@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Granit.Authorization;
 using Granit.Authorization.Endpoints.Dtos;
 using Granit.Http.ApiDocumentation;
 
