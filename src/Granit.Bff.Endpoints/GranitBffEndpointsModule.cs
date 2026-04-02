@@ -30,11 +30,11 @@ public sealed class GranitBffEndpointsModule : GranitModule
     {
         bool isDevelopment = context.Builder!.Environment.IsDevelopment();
 
-        // In development (HTTP), disable __Host- prefix on BFF session cookies.
+        // In development (HTTP), use "." prefix instead of "__Host-" on BFF session cookies.
         // __Host- requires HTTPS — browsers silently ignore the cookie on HTTP.
         context.Services.PostConfigureAll<BffFrontendOptions>(options =>
         {
-            options.UseHostPrefix = !isDevelopment;
+            options.CookiePrefix = isDevelopment ? "." : "__Host-";
         });
     }
 }
