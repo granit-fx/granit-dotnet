@@ -1457,6 +1457,67 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Subscriptions",
+      "deps": [
+        "Granit",
+        "Granit.Guids",
+        "Granit.Scheduling",
+        "Granit.Timing",
+        "Granit.Workflow"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Subscriptions.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Subscriptions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Subscriptions.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Subscriptions",
+        "Granit.QueryEngine.AspNetCore",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Subscriptions.EntityFrameworkCore",
+      "deps": [
+        "Granit.Guids",
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Subscriptions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Subscriptions.Features",
+      "deps": [
+        "Granit.Features",
+        "Granit.Subscriptions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Subscriptions.Internal",
+      "deps": [
+        "Granit.Subscriptions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Subscriptions.Wolverine",
+      "deps": [
+        "Granit.Subscriptions",
+        "Granit.Wolverine"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Templating",
       "deps": [
         "Granit.Timing"
@@ -28570,6 +28631,835 @@
       "project": "Granit.Settings",
       "file": "src/Granit.Settings/Values/SettingValue.cs",
       "line": 10,
+      "members": []
+    },
+    {
+      "name": "GranitSubscriptionsBackgroundJobsModule",
+      "fqn": "Granit.Subscriptions.BackgroundJobs.GranitSubscriptionsBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Subscriptions.BackgroundJobs",
+      "file": "src/Granit.Subscriptions.BackgroundJobs/GranitSubscriptionsBackgroundJobsModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "CancelAtPeriodEndScanJob",
+      "fqn": "Granit.Subscriptions.BackgroundJobs.Jobs.CancelAtPeriodEndScanJob",
+      "kind": "record",
+      "project": "Granit.Subscriptions.BackgroundJobs",
+      "file": "src/Granit.Subscriptions.BackgroundJobs/Jobs/CancelAtPeriodEndScanJob.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "PeriodEndScanJob",
+      "fqn": "Granit.Subscriptions.BackgroundJobs.Jobs.PeriodEndScanJob",
+      "kind": "record",
+      "project": "Granit.Subscriptions.BackgroundJobs",
+      "file": "src/Granit.Subscriptions.BackgroundJobs/Jobs/PeriodEndScanJob.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TrialExpirationScanJob",
+      "fqn": "Granit.Subscriptions.BackgroundJobs.Jobs.TrialExpirationScanJob",
+      "kind": "record",
+      "project": "Granit.Subscriptions.BackgroundJobs",
+      "file": "src/Granit.Subscriptions.BackgroundJobs/Jobs/TrialExpirationScanJob.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "SubscriptionWorkflows",
+      "fqn": "Granit.Subscriptions.Definitions.SubscriptionWorkflows",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Definitions/SubscriptionWorkflows.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "WithTrial",
+          "kind": "property",
+          "signature": "WorkflowDefinition<SubscriptionStatus> WithTrial",
+          "returnType": "WorkflowDefinition<SubscriptionStatus>"
+        },
+        {
+          "name": "Direct",
+          "kind": "property",
+          "signature": "WorkflowDefinition<SubscriptionStatus> Direct",
+          "returnType": "WorkflowDefinition<SubscriptionStatus>"
+        }
+      ]
+    },
+    {
+      "name": "BillingInterval",
+      "fqn": "Granit.Subscriptions.Domain.BillingInterval",
+      "kind": "enum",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/BillingInterval.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "Plan",
+      "fqn": "Granit.Subscriptions.Domain.Plan",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/Plan.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string name, string? description, PricingModel pricingModel, BillingInterval defaultInterval, int? trialDays = null, int? seatLimit = null)",
+          "returnType": "Plan"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "string? Description { get; private set; } public PricingModel PricingModel { get; private set; } public BillingInterval DefaultInterval { get; private set; } public int? TrialDays { get; private set; } public int? SeatLimit { get; private set; } public int SortOrder { get; private set; } public WorkflowLifecycleStatus LifecycleStatus { get; private set; } public IReadOnlyList<PlanPrice> Prices => _prices."
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "IReadOnlyList<PlanFeatureValue> PlanFeatureValues => _planFeatures."
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "IReadOnlyList<PlanExternalMapping> ExternalMappings => _externalMappings."
+        },
+        {
+          "name": "GetWorkflowEntityId",
+          "kind": "method",
+          "signature": "GetWorkflowEntityId()",
+          "returnType": "string"
+        },
+        {
+          "name": "Update",
+          "kind": "method",
+          "signature": "Update(string name, string? description, int sortOrder)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "PlanExternalMapping",
+      "fqn": "Granit.Subscriptions.Domain.PlanExternalMapping",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/PlanExternalMapping.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string providerName, string externalId)",
+          "returnType": "PlanExternalMapping"
+        },
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "ExternalId",
+          "kind": "property",
+          "signature": "string ExternalId",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PlanFeatureValue",
+      "fqn": "Granit.Subscriptions.Domain.PlanFeatureValue",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/PlanFeatureValue.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string featureName, string value)",
+          "returnType": "PlanFeatureValue"
+        },
+        {
+          "name": "FeatureName",
+          "kind": "property",
+          "signature": "string FeatureName",
+          "returnType": "string"
+        },
+        {
+          "name": "Value",
+          "kind": "property",
+          "signature": "string Value",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PlanPrice",
+      "fqn": "Granit.Subscriptions.Domain.PlanPrice",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/PlanPrice.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, decimal amount, string currency, BillingInterval interval)",
+          "returnType": "PlanPrice"
+        },
+        {
+          "name": "Amount",
+          "kind": "property",
+          "signature": "decimal Amount",
+          "returnType": "decimal"
+        }
+      ]
+    },
+    {
+      "name": "PricingModel",
+      "fqn": "Granit.Subscriptions.Domain.PricingModel",
+      "kind": "enum",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/PricingModel.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "Subscription",
+      "fqn": "Granit.Subscriptions.Domain.Subscription",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/Subscription.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid tenantId, PlanId planId, DateTimeOffset periodStart, DateTimeOffset periodEnd, DateTimeOffset billingCycleAnchor, DateTimeOffset? trialEndsAt = null)",
+          "returnType": "Subscription"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "SubscriptionStatus Status { get; private set; } public DateTimeOffset CurrentPeriodStart { get; private set; } public DateTimeOffset CurrentPeriodEnd { get; private set; } public DateTimeOffset BillingCycleAnchor { get; private set; } public DateTimeOffset? TrialEndsAt { get; private set; } public bool CancelAtPeriodEnd { get; private set; } public DateTimeOffset? CancelledAt { get; private set; } public string? CancellationReason { get; private set; } public IReadOnlyList<SubscriptionSeat> Seats => _seats."
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "IReadOnlyList<SubscriptionExternalMapping> ExternalMappings => _externalMappings."
+        },
+        {
+          "name": "nameof",
+          "kind": "method",
+          "signature": "nameof(Status)",
+          "returnType": "Guid? TenantId { get; set; } string IWorkflowStateful.StatusPropertyName =>"
+        },
+        {
+          "name": "GetWorkflowEntityId",
+          "kind": "method",
+          "signature": "GetWorkflowEntityId()",
+          "returnType": "string"
+        },
+        {
+          "name": "Activate",
+          "kind": "method",
+          "signature": "Activate()",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionExternalMapping",
+      "fqn": "Granit.Subscriptions.Domain.SubscriptionExternalMapping",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/SubscriptionExternalMapping.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string providerName, string externalId)",
+          "returnType": "SubscriptionExternalMapping"
+        },
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "ExternalId",
+          "kind": "property",
+          "signature": "string ExternalId",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionSeat",
+      "fqn": "Granit.Subscriptions.Domain.SubscriptionSeat",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/SubscriptionSeat.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid userId, DateTimeOffset assignedAt)",
+          "returnType": "SubscriptionSeat"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionStatus",
+      "fqn": "Granit.Subscriptions.Domain.SubscriptionStatus",
+      "kind": "enum",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/SubscriptionStatus.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PlanId",
+      "fqn": "Granit.Subscriptions.Domain.ValueObjects.PlanId",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/ValueObjects/PlanId.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid value)",
+          "returnType": "required Guid Value { get; init; } public PlanId"
+        },
+        {
+          "name": "PlanId",
+          "kind": "method",
+          "signature": "PlanId(Guid value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionId",
+      "fqn": "Granit.Subscriptions.Domain.ValueObjects.SubscriptionId",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/ValueObjects/SubscriptionId.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid value)",
+          "returnType": "required Guid Value { get; init; } public SubscriptionId"
+        },
+        {
+          "name": "SubscriptionId",
+          "kind": "method",
+          "signature": "SubscriptionId(Guid value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionsEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Subscriptions.Endpoints.Extensions.SubscriptionsEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Extensions/SubscriptionsEndpointRouteBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "MapGranitSubscriptions",
+          "kind": "method",
+          "signature": "MapGranitSubscriptions(this IEndpointRouteBuilder endpoints)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitSubscriptionsEndpointsModule",
+      "fqn": "Granit.Subscriptions.Endpoints.GranitSubscriptionsEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/GranitSubscriptionsEndpointsModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "Plans",
+      "fqn": "Granit.Subscriptions.Endpoints.Permissions.Plans",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Permissions/SubscriptionsPermissions.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "Seats",
+      "fqn": "Granit.Subscriptions.Endpoints.Permissions.Seats",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Permissions/SubscriptionsPermissions.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "Subscriptions",
+      "fqn": "Granit.Subscriptions.Endpoints.Permissions.Subscriptions",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Permissions/SubscriptionsPermissions.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "SubscriptionsPermissions",
+      "fqn": "Granit.Subscriptions.Endpoints.Permissions.SubscriptionsPermissions",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Permissions/SubscriptionsPermissions.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Subscriptions.EntityFrameworkCore.Extensions.SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Subscriptions.EntityFrameworkCore",
+      "file": "src/Granit.Subscriptions.EntityFrameworkCore/Extensions/SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitSubscriptionsEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitSubscriptionsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionsModelBuilderExtensions",
+      "fqn": "Granit.Subscriptions.EntityFrameworkCore.Extensions.SubscriptionsModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Subscriptions.EntityFrameworkCore",
+      "file": "src/Granit.Subscriptions.EntityFrameworkCore/Extensions/SubscriptionsModelBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ConfigureSubscriptionsModule",
+          "kind": "method",
+          "signature": "ConfigureSubscriptionsModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitSubscriptionsDbProperties",
+      "fqn": "Granit.Subscriptions.EntityFrameworkCore.GranitSubscriptionsDbProperties",
+      "kind": "class",
+      "project": "Granit.Subscriptions.EntityFrameworkCore",
+      "file": "src/Granit.Subscriptions.EntityFrameworkCore/GranitSubscriptionsDbProperties.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitSubscriptionsEntityFrameworkCoreModule",
+      "fqn": "Granit.Subscriptions.EntityFrameworkCore.GranitSubscriptionsEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Subscriptions.EntityFrameworkCore",
+      "file": "src/Granit.Subscriptions.EntityFrameworkCore/GranitSubscriptionsEntityFrameworkCoreModule.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "ApplyPlanChangePayload",
+      "fqn": "Granit.Subscriptions.Events.ApplyPlanChangePayload",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Events/ApplyPlanChangePayload.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "BillingCycleCompletedEto",
+      "fqn": "Granit.Subscriptions.Events.BillingCycleCompletedEto",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Events/BillingCycleCompletedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "SubscriptionActivatedEto",
+      "fqn": "Granit.Subscriptions.Events.SubscriptionActivatedEto",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Events/SubscriptionActivatedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "SubscriptionCancelledEto",
+      "fqn": "Granit.Subscriptions.Events.SubscriptionCancelledEto",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Events/SubscriptionCancelledEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "SubscriptionCreatedEto",
+      "fqn": "Granit.Subscriptions.Events.SubscriptionCreatedEto",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Events/SubscriptionCreatedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "SubscriptionCreatedEvent",
+      "fqn": "Granit.Subscriptions.Events.SubscriptionCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Events/SubscriptionCreatedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "SubscriptionExpiredEto",
+      "fqn": "Granit.Subscriptions.Events.SubscriptionExpiredEto",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Events/SubscriptionExpiredEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "SubscriptionPlanChangedEto",
+      "fqn": "Granit.Subscriptions.Events.SubscriptionPlanChangedEto",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Events/SubscriptionPlanChangedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "SubscriptionSuspendedEto",
+      "fqn": "Granit.Subscriptions.Events.SubscriptionSuspendedEto",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Events/SubscriptionSuspendedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TrialExpiringEvent",
+      "fqn": "Granit.Subscriptions.Events.TrialExpiringEvent",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Events/TrialExpiringEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "SubscriptionsHostApplicationBuilderExtensions",
+      "fqn": "Granit.Subscriptions.Extensions.SubscriptionsHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Extensions/SubscriptionsHostApplicationBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitSubscriptions",
+          "kind": "method",
+          "signature": "AddGranitSubscriptions(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitSubscriptionsFeaturesModule",
+      "fqn": "Granit.Subscriptions.Features.GranitSubscriptionsFeaturesModule",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Features",
+      "file": "src/Granit.Subscriptions.Features/GranitSubscriptionsFeaturesModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitSubscriptionsModule",
+      "fqn": "Granit.Subscriptions.GranitSubscriptionsModule",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/GranitSubscriptionsModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IPlanReader",
+      "fqn": "Granit.Subscriptions.IPlanReader",
+      "kind": "interface",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/IPlanReader.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(PlanId id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Plan?>"
+        },
+        {
+          "name": "GetAvailablePlansAsync",
+          "kind": "method",
+          "signature": "GetAvailablePlansAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Plan>>"
+        },
+        {
+          "name": "GetByExternalIdAsync",
+          "kind": "method",
+          "signature": "GetByExternalIdAsync(string providerName, string externalId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Plan?>"
+        }
+      ]
+    },
+    {
+      "name": "IPlanWriter",
+      "fqn": "Granit.Subscriptions.IPlanWriter",
+      "kind": "interface",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/IPlanWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(Plan plan, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(Plan plan, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ISeatReader",
+      "fqn": "Granit.Subscriptions.ISeatReader",
+      "kind": "interface",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/ISeatReader.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "GetSeatCountAsync",
+          "kind": "method",
+          "signature": "GetSeatCountAsync(SubscriptionId subscriptionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        },
+        {
+          "name": "GetSeatsAsync",
+          "kind": "method",
+          "signature": "GetSeatsAsync(SubscriptionId subscriptionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<SubscriptionSeat>>"
+        }
+      ]
+    },
+    {
+      "name": "ISeatWriter",
+      "fqn": "Granit.Subscriptions.ISeatWriter",
+      "kind": "interface",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/ISeatWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AssignSeatAsync",
+          "kind": "method",
+          "signature": "AssignSeatAsync(SubscriptionId subscriptionId, Guid userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RevokeSeatAsync",
+          "kind": "method",
+          "signature": "RevokeSeatAsync(SubscriptionId subscriptionId, Guid userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "ISubscriptionProvider",
+      "fqn": "Granit.Subscriptions.ISubscriptionProvider",
+      "kind": "interface",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/ISubscriptionProvider.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "CancelExternalAsync",
+          "kind": "method",
+          "signature": "CancelExternalAsync(SubscriptionExternalMapping mapping, bool atPeriodEnd, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ChangePlanExternalAsync",
+          "kind": "method",
+          "signature": "ChangePlanExternalAsync(SubscriptionExternalMapping mapping, Plan newPlan, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateSeatsExternalAsync",
+          "kind": "method",
+          "signature": "UpdateSeatsExternalAsync(SubscriptionExternalMapping mapping, int quantity, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ISubscriptionReader",
+      "fqn": "Granit.Subscriptions.ISubscriptionReader",
+      "kind": "interface",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/ISubscriptionReader.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(SubscriptionId id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Subscription?>"
+        },
+        {
+          "name": "GetActiveForTenantAsync",
+          "kind": "method",
+          "signature": "GetActiveForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Subscription?>"
+        },
+        {
+          "name": "GetByTenantAsync",
+          "kind": "method",
+          "signature": "GetByTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Subscription>>"
+        },
+        {
+          "name": "GetExpiringTrialsAsync",
+          "kind": "method",
+          "signature": "GetExpiringTrialsAsync(DateTimeOffset threshold, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Subscription>>"
+        },
+        {
+          "name": "GetAtPeriodEndAsync",
+          "kind": "method",
+          "signature": "GetAtPeriodEndAsync(DateTimeOffset threshold, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Subscription>>"
+        },
+        {
+          "name": "GetPendingCancelAtPeriodEndAsync",
+          "kind": "method",
+          "signature": "GetPendingCancelAtPeriodEndAsync(DateTimeOffset now, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Subscription>>"
+        }
+      ]
+    },
+    {
+      "name": "ISubscriptionWriter",
+      "fqn": "Granit.Subscriptions.ISubscriptionWriter",
+      "kind": "interface",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/ISubscriptionWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(Subscription subscription, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(Subscription subscription, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitSubscriptionsInternalModule",
+      "fqn": "Granit.Subscriptions.Internal.GranitSubscriptionsInternalModule",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Internal",
+      "file": "src/Granit.Subscriptions.Internal/GranitSubscriptionsInternalModule.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionProviderCapabilities",
+      "fqn": "Granit.Subscriptions.SubscriptionProviderCapabilities",
+      "kind": "enum",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/SubscriptionProviderCapabilities.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "GranitSubscriptionsWolverineModule",
+      "fqn": "Granit.Subscriptions.Wolverine.GranitSubscriptionsWolverineModule",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Wolverine",
+      "file": "src/Granit.Subscriptions.Wolverine/GranitSubscriptionsWolverineModule.cs",
+      "line": 13,
       "members": []
     },
     {

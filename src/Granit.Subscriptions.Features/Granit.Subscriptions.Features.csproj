@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Subscriptions.Features</PackageId>
+    <Description>Bridge between Granit.Subscriptions and Granit.Features. Implements IPlanIdProvider (resolves current tenant's plan) and IPlanFeatureStore (reads plan feature values) to enable automatic feature flag cascade from subscription plans.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Subscriptions.Features.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Features\Granit.Features.csproj" />
+    <ProjectReference Include="..\Granit.Subscriptions\Granit.Subscriptions.csproj" />
+  </ItemGroup>
+
+</Project>

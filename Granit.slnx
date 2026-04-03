@@ -218,6 +218,13 @@
     <Project Path="src/Granit.Scheduling.EntityFrameworkCore/Granit.Scheduling.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Scheduling.Wolverine/Granit.Scheduling.Wolverine.csproj" />
     <Project Path="src/Granit.Scheduling/Granit.Scheduling.csproj" />
+    <Project Path="src/Granit.Subscriptions.BackgroundJobs/Granit.Subscriptions.BackgroundJobs.csproj" />
+    <Project Path="src/Granit.Subscriptions.Endpoints/Granit.Subscriptions.Endpoints.csproj" />
+    <Project Path="src/Granit.Subscriptions.EntityFrameworkCore/Granit.Subscriptions.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Subscriptions.Features/Granit.Subscriptions.Features.csproj" />
+    <Project Path="src/Granit.Subscriptions.Internal/Granit.Subscriptions.Internal.csproj" />
+    <Project Path="src/Granit.Subscriptions.Wolverine/Granit.Subscriptions.Wolverine.csproj" />
+    <Project Path="src/Granit.Subscriptions/Granit.Subscriptions.csproj" />
   </Folder>
   <Folder Name="/src/AI/">
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />

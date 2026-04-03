@@ -1,0 +1,28 @@
+using Granit.Subscriptions.Endpoints.Permissions;
+using Granit.Validation.AspNetCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+
+namespace Granit.Subscriptions.Endpoints.Extensions;
+
+/// <summary>
+/// Extension methods for registering subscription administration endpoints.
+/// </summary>
+public static class SubscriptionsEndpointRouteBuilderExtensions
+{
+    /// <summary>Maps the subscription administration endpoints.</summary>
+    public static RouteGroupBuilder MapGranitSubscriptions(
+        this IEndpointRouteBuilder endpoints)
+    {
+        RouteGroupBuilder group = endpoints
+            .MapGranitGroup("subscriptions")
+            .WithTags("Subscriptions");
+
+        // Plan endpoints will be added in subsequent stories
+        // Subscription endpoints will be added in subsequent stories
+        // Seat endpoints will be added in subsequent stories
+
+        return group;
+    }
+}
