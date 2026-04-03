@@ -32,7 +32,7 @@ public static partial class FrameworkBoundaryRules
         "OpenIddict",
         "Payments",
         "ReferenceData",
-        "SaasMetering",
+        "Metering",
         "Scheduling",
         "Subscriptions",
         "Templating",

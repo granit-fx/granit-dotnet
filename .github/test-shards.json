@@ -265,6 +265,16 @@
       ]
     },
     {
+      "name": "saas",
+      "label": "SaaS & Commerce",
+      "projects": [
+        "tests/Granit.Invoicing.Tests",
+        "tests/Granit.Metering.Tests",
+        "tests/Granit.Payments.Tests",
+        "tests/Granit.Subscriptions.Tests"
+      ]
+    },
+    {
       "name": "architecture",
       "label": "Architecture Tests",
       "projects": [

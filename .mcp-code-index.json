@@ -928,6 +928,49 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Metering",
+      "deps": [
+        "Granit",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Metering.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Metering"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Metering.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Metering",
+        "Granit.QueryEngine.AspNetCore",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Metering.EntityFrameworkCore",
+      "deps": [
+        "Granit.Guids",
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Metering"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Metering.Wolverine",
+      "deps": [
+        "Granit.Metering",
+        "Granit.Wolverine"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.MultiTenancy",
       "deps": [
         "Granit"
@@ -1236,7 +1279,6 @@
       "name": "Granit.Payments",
       "deps": [
         "Granit",
-        "Granit.Guids",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1608,6 +1650,8 @@
     {
       "name": "Granit.Subscriptions.Wolverine",
       "deps": [
+        "Granit.Invoicing",
+        "Granit.Metering",
         "Granit.Subscriptions",
         "Granit.Wolverine"
       ],
@@ -17582,6 +17626,15 @@
       ]
     },
     {
+      "name": "InvoicingMetrics",
+      "fqn": "Granit.Invoicing.Diagnostics.InvoicingMetrics",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Diagnostics/InvoicingMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "BillingAddress",
       "fqn": "Granit.Invoicing.Domain.BillingAddress",
       "kind": "class",
@@ -18071,7 +18124,7 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Extensions/InvoicingHostApplicationBuilderExtensions.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitInvoicing",
@@ -18087,7 +18140,7 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/GranitInvoicingModule.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "ConfigureServices",
@@ -19298,6 +19351,529 @@
       "project": "Granit.Mcp.Server",
       "file": "src/Granit.Mcp.Server/Permissions/McpPermissions.cs",
       "line": 16,
+      "members": []
+    },
+    {
+      "name": "GranitMeteringBackgroundJobsModule",
+      "fqn": "Granit.Metering.BackgroundJobs.GranitMeteringBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Metering.BackgroundJobs",
+      "file": "src/Granit.Metering.BackgroundJobs/GranitMeteringBackgroundJobsModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "MeteringAggregationJob",
+      "fqn": "Granit.Metering.BackgroundJobs.Jobs.MeteringAggregationJob",
+      "kind": "record",
+      "project": "Granit.Metering.BackgroundJobs",
+      "file": "src/Granit.Metering.BackgroundJobs/Jobs/MeteringAggregationJob.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "QuotaThresholdCheckJob",
+      "fqn": "Granit.Metering.BackgroundJobs.Jobs.QuotaThresholdCheckJob",
+      "kind": "record",
+      "project": "Granit.Metering.BackgroundJobs",
+      "file": "src/Granit.Metering.BackgroundJobs/Jobs/QuotaThresholdCheckJob.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "MeteringMetrics",
+      "fqn": "Granit.Metering.Diagnostics.MeteringMetrics",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Diagnostics/MeteringMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "AggregationPeriod",
+      "fqn": "Granit.Metering.Domain.AggregationPeriod",
+      "kind": "enum",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Domain/AggregationPeriod.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "AggregationType",
+      "fqn": "Granit.Metering.Domain.AggregationType",
+      "kind": "enum",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Domain/AggregationType.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "AggregationWatermark",
+      "fqn": "Granit.Metering.Domain.AggregationWatermark",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Domain/AggregationWatermark.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid meterDefinitionId)",
+          "returnType": "AggregationWatermark"
+        },
+        {
+          "name": "Advance",
+          "kind": "method",
+          "signature": "Advance(Guid lastEventId, DateTimeOffset processedAt)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "MeterDefinition",
+      "fqn": "Granit.Metering.Domain.MeterDefinition",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Domain/MeterDefinition.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string name, string unit, AggregationType aggregationType, string? description = null)",
+          "returnType": "MeterDefinition"
+        },
+        {
+          "name": "Unit",
+          "kind": "property",
+          "signature": "string Unit",
+          "returnType": "string"
+        },
+        {
+          "name": "Description",
+          "kind": "property",
+          "signature": "string? Description",
+          "returnType": "string?"
+        },
+        {
+          "name": "Update",
+          "kind": "method",
+          "signature": "Update(string name, string unit, string? description)",
+          "returnType": "void"
+        },
+        {
+          "name": "Activate",
+          "kind": "method",
+          "signature": "Activate()",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "MeterEvent",
+      "fqn": "Granit.Metering.Domain.MeterEvent",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Domain/MeterEvent.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid meterDefinitionId, string idempotencyKey, decimal quantity, DateTimeOffset timestamp, string? metadata = null)",
+          "returnType": "MeterEvent"
+        },
+        {
+          "name": "Quantity",
+          "kind": "property",
+          "signature": "decimal Quantity",
+          "returnType": "decimal"
+        }
+      ]
+    },
+    {
+      "name": "UsageAggregate",
+      "fqn": "Granit.Metering.Domain.UsageAggregate",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Domain/UsageAggregate.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid meterDefinitionId, AggregationPeriod period, DateTimeOffset periodStart, DateTimeOffset periodEnd, decimal aggregatedValue, long eventCount)",
+          "returnType": "UsageAggregate"
+        }
+      ]
+    },
+    {
+      "name": "MeterDefinitionId",
+      "fqn": "Granit.Metering.Domain.ValueObjects.MeterDefinitionId",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Domain/ValueObjects/MeterDefinitionId.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid value)",
+          "returnType": "required Guid Value { get; init; } public MeterDefinitionId"
+        },
+        {
+          "name": "MeterDefinitionId",
+          "kind": "method",
+          "signature": "MeterDefinitionId(Guid value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
+      "name": "QuotaStatus",
+      "fqn": "Granit.Metering.Dtos.QuotaStatus",
+      "kind": "record",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Dtos/QuotaStatus.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Unlimited",
+          "kind": "method",
+          "signature": "Unlimited(string meterName, decimal currentUsage)",
+          "returnType": "QuotaStatus"
+        },
+        {
+          "name": "WithLimit",
+          "kind": "method",
+          "signature": "WithLimit(string meterName, decimal currentUsage, decimal limit)",
+          "returnType": "QuotaStatus"
+        }
+      ]
+    },
+    {
+      "name": "MeteringEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Metering.Endpoints.Extensions.MeteringEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Extensions/MeteringEndpointRouteBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "MapGranitMetering",
+          "kind": "method",
+          "signature": "MapGranitMetering(this IEndpointRouteBuilder endpoints)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitMeteringEndpointsModule",
+      "fqn": "Granit.Metering.Endpoints.GranitMeteringEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/GranitMeteringEndpointsModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "MeteringPermissions",
+      "fqn": "Granit.Metering.Endpoints.Permissions.MeteringPermissions",
+      "kind": "class",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Permissions/MeteringPermissions.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "Meters",
+      "fqn": "Granit.Metering.Endpoints.Permissions.Meters",
+      "kind": "class",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Permissions/MeteringPermissions.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "Usage",
+      "fqn": "Granit.Metering.Endpoints.Permissions.Usage",
+      "kind": "class",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Permissions/MeteringPermissions.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "MeteringEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Metering.EntityFrameworkCore.Extensions.MeteringEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Metering.EntityFrameworkCore",
+      "file": "src/Granit.Metering.EntityFrameworkCore/Extensions/MeteringEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitMeteringEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitMeteringEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "MeteringModelBuilderExtensions",
+      "fqn": "Granit.Metering.EntityFrameworkCore.Extensions.MeteringModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Metering.EntityFrameworkCore",
+      "file": "src/Granit.Metering.EntityFrameworkCore/Extensions/MeteringModelBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ConfigureMeteringModule",
+          "kind": "method",
+          "signature": "ConfigureMeteringModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitMeteringDbProperties",
+      "fqn": "Granit.Metering.EntityFrameworkCore.GranitMeteringDbProperties",
+      "kind": "class",
+      "project": "Granit.Metering.EntityFrameworkCore",
+      "file": "src/Granit.Metering.EntityFrameworkCore/GranitMeteringDbProperties.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitMeteringEntityFrameworkCoreModule",
+      "fqn": "Granit.Metering.EntityFrameworkCore.GranitMeteringEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Metering.EntityFrameworkCore",
+      "file": "src/Granit.Metering.EntityFrameworkCore/GranitMeteringEntityFrameworkCoreModule.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "QuotaExceededEto",
+      "fqn": "Granit.Metering.Events.QuotaExceededEto",
+      "kind": "record",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Events/QuotaExceededEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "QuotaThresholdReachedEto",
+      "fqn": "Granit.Metering.Events.QuotaThresholdReachedEto",
+      "kind": "record",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Events/QuotaThresholdReachedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "UsageSummaryReadyEto",
+      "fqn": "Granit.Metering.Events.UsageSummaryReadyEto",
+      "kind": "record",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Events/UsageSummaryReadyEto.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "MeteringHostApplicationBuilderExtensions",
+      "fqn": "Granit.Metering.Extensions.MeteringHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Extensions/MeteringHostApplicationBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitMetering",
+          "kind": "method",
+          "signature": "AddGranitMetering(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitMeteringModule",
+      "fqn": "Granit.Metering.GranitMeteringModule",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/GranitMeteringModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IAggregationRunner",
+      "fqn": "Granit.Metering.IAggregationRunner",
+      "kind": "interface",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/IAggregationRunner.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RunAsync",
+          "kind": "method",
+          "signature": "RunAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IMeterDefinitionReader",
+      "fqn": "Granit.Metering.IMeterDefinitionReader",
+      "kind": "interface",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/IMeterDefinitionReader.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(MeterDefinitionId id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<MeterDefinition?>"
+        },
+        {
+          "name": "GetByNameAsync",
+          "kind": "method",
+          "signature": "GetByNameAsync(string name, CancellationToken cancellationToken = default)",
+          "returnType": "Task<MeterDefinition?>"
+        },
+        {
+          "name": "GetActiveAsync",
+          "kind": "method",
+          "signature": "GetActiveAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<MeterDefinition>>"
+        }
+      ]
+    },
+    {
+      "name": "IMeterDefinitionWriter",
+      "fqn": "Granit.Metering.IMeterDefinitionWriter",
+      "kind": "interface",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/IMeterDefinitionWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(MeterDefinition definition, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(MeterDefinition definition, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IMeterEventRecorder",
+      "fqn": "Granit.Metering.IMeterEventRecorder",
+      "kind": "interface",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/IMeterEventRecorder.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "RecordAsync",
+          "kind": "method",
+          "signature": "RecordAsync(MeterEvent meterEvent, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RecordBatchAsync",
+          "kind": "method",
+          "signature": "RecordBatchAsync(IReadOnlyList<MeterEvent> events, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IQuotaChecker",
+      "fqn": "Granit.Metering.IQuotaChecker",
+      "kind": "interface",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/IQuotaChecker.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "CheckAsync",
+          "kind": "method",
+          "signature": "CheckAsync(Guid tenantId, MeterDefinitionId meterId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<QuotaStatus>"
+        }
+      ]
+    },
+    {
+      "name": "IUsageReader",
+      "fqn": "Granit.Metering.IUsageReader",
+      "kind": "interface",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/IUsageReader.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "GetForPeriodAsync",
+          "kind": "method",
+          "signature": "GetForPeriodAsync(Guid tenantId, MeterDefinitionId meterId, DateTimeOffset periodStart, DateTimeOffset periodEnd, CancellationToken cancellationToken = default)",
+          "returnType": "Task<UsageAggregate?>"
+        },
+        {
+          "name": "GetCurrentAsync",
+          "kind": "method",
+          "signature": "GetCurrentAsync(Guid tenantId, MeterDefinitionId meterId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<UsageAggregate?>"
+        },
+        {
+          "name": "GetAllForPeriodAsync",
+          "kind": "method",
+          "signature": "GetAllForPeriodAsync(Guid tenantId, DateTimeOffset periodStart, DateTimeOffset periodEnd, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<UsageAggregate>>"
+        }
+      ]
+    },
+    {
+      "name": "GranitMeteringOptions",
+      "fqn": "Granit.Metering.Options.GranitMeteringOptions",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Options/GranitMeteringOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "ThresholdPercentage",
+          "kind": "property",
+          "signature": "decimal ThresholdPercentage",
+          "returnType": "decimal"
+        }
+      ]
+    },
+    {
+      "name": "GranitMeteringWolverineModule",
+      "fqn": "Granit.Metering.Wolverine.GranitMeteringWolverineModule",
+      "kind": "class",
+      "project": "Granit.Metering.Wolverine",
+      "file": "src/Granit.Metering.Wolverine/GranitMeteringWolverineModule.cs",
+      "line": 12,
       "members": []
     },
     {
@@ -23906,6 +24482,15 @@
       "members": []
     },
     {
+      "name": "PaymentsMetrics",
+      "fqn": "Granit.Payments.Diagnostics.PaymentsMetrics",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Diagnostics/PaymentsMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "Dispute",
       "fqn": "Granit.Payments.Domain.Dispute",
       "kind": "class",
@@ -23990,7 +24575,7 @@
           "name": "SetDefault",
           "kind": "method",
           "signature": "SetDefault()",
-          "returnType": "bool IsDefault { get; private set; } public DateTimeOffset? ExpiresAt { get; private set; } public Guid? TenantId { get; set; } public void"
+          "returnType": "bool IsDefault { get; private set; } public DateTimeOffset? ExpiresAt { get; private set; } public Guid? TenantId { get; private set; } Guid? IMultiTenant.TenantId { get; set; } public void"
         },
         {
           "name": "UnsetDefault",
@@ -24060,7 +24645,7 @@
           "name": "MarkRequiresAction",
           "kind": "method",
           "signature": "MarkRequiresAction(string actionUrl)",
-          "returnType": "Guid? TenantId { get; set; } public bool"
+          "returnType": "Guid? TenantId { get; private set; } Guid? IMultiTenant.TenantId { get; set; } public bool"
         }
       ]
     },
@@ -24460,13 +25045,36 @@
       "members": []
     },
     {
+      "name": "PaymentsHostApplicationBuilderExtensions",
+      "fqn": "Granit.Payments.Extensions.PaymentsHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Extensions/PaymentsHostApplicationBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitPayments",
+          "kind": "method",
+          "signature": "AddGranitPayments(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
       "name": "GranitPaymentsModule",
       "fqn": "Granit.Payments.GranitPaymentsModule",
       "kind": "class",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/GranitPaymentsModule.cs",
-      "line": 10,
-      "members": []
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "ICheckoutSessionFactory",
@@ -30366,6 +30974,15 @@
       ]
     },
     {
+      "name": "SubscriptionsMetrics",
+      "fqn": "Granit.Subscriptions.Diagnostics.SubscriptionsMetrics",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Diagnostics/SubscriptionsMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "BillingInterval",
       "fqn": "Granit.Subscriptions.Domain.BillingInterval",
       "kind": "enum",
@@ -30537,7 +31154,7 @@
           "name": "nameof",
           "kind": "method",
           "signature": "nameof(Status)",
-          "returnType": "Guid? TenantId { get; set; } string IWorkflowStateful.StatusPropertyName =>"
+          "returnType": "Guid? TenantId { get; private set; } Guid? IMultiTenant.TenantId { get; set; } string IWorkflowStateful.StatusPropertyName =>"
         },
         {
           "name": "GetWorkflowEntityId",
@@ -30864,7 +31481,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Extensions/SubscriptionsHostApplicationBuilderExtensions.cs",
-      "line": 11,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitSubscriptions",
@@ -31133,7 +31750,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
       "file": "src/Granit.Subscriptions.Wolverine/GranitSubscriptionsWolverineModule.cs",
-      "line": 13,
+      "line": 17,
       "members": []
     },
     {
