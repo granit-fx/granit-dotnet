@@ -167,8 +167,8 @@ internal sealed class ImportOrchestrator(
         // Try to resolve ImportDefinition<T> for known entity types
         // The definitions are registered as singletons — enumerate them
         IEnumerable<object> definitions = serviceProvider.GetServices<object>()
-            .Where(s => s?.GetType().BaseType?.IsGenericType == true
-                        && s?.GetType().BaseType?.GetGenericTypeDefinition() == typeof(ImportDefinition<>));
+            .Where(s => s.GetType().BaseType?.IsGenericType == true
+                        && s.GetType().BaseType?.GetGenericTypeDefinition() == typeof(ImportDefinition<>));
 
         foreach (object definition in definitions)
         {

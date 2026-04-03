@@ -13,6 +13,9 @@ public sealed class AuditingMetrics
 {
     public const string MeterName = "Granit.Auditing";
 
+    private const string TenantIdTag = "tenant_id";
+    private const string GlobalTenant = "global";
+
     private readonly Counter<long> _entriesPersisted;
     private readonly Counter<long> _entriesPurged;
     private readonly Counter<long> _entriesPseudonymized;
@@ -65,13 +68,13 @@ public sealed class AuditingMetrics
     public void RecordPersisted(long count, string? tenantId) =>
         _entriesPersisted.Add(count, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenant },
         });
 
     public void RecordPurged(long count, string category, string? tenantId) =>
         _entriesPurged.Add(count, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenant },
             { "category", category },
         });
 
@@ -84,7 +87,7 @@ public sealed class AuditingMetrics
     public void RecordCaptureError(string? tenantId) =>
         _captureErrors.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenant },
         });
 
     public void RecordPersistenceDuration(double elapsedMs, string? tenantId) =>
