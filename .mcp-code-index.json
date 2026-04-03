@@ -883,6 +883,7 @@
     {
       "name": "Granit.Invoicing.Odoo",
       "deps": [
+        "Granit.Guids",
         "Granit.Invoicing"
       ],
       "framework": "net10.0"
@@ -18547,6 +18548,22 @@
       ]
     },
     {
+      "name": "OdooPartnerMapping",
+      "fqn": "Granit.Invoicing.Odoo.Domain.OdooPartnerMapping",
+      "kind": "class",
+      "project": "Granit.Invoicing.Odoo",
+      "file": "src/Granit.Invoicing.Odoo/Domain/OdooPartnerMapping.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid tenantId, int odooPartnerId)",
+          "returnType": "OdooPartnerMapping"
+        }
+      ]
+    },
+    {
       "name": "GranitInvoicingOdooModule",
       "fqn": "Granit.Invoicing.Odoo.GranitInvoicingOdooModule",
       "kind": "class",
@@ -18559,6 +18576,28 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IOdooPartnerMappingStore",
+      "fqn": "Granit.Invoicing.Odoo.IOdooPartnerMappingStore",
+      "kind": "interface",
+      "project": "Granit.Invoicing.Odoo",
+      "file": "src/Granit.Invoicing.Odoo/IOdooPartnerMappingStore.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "GetByTenantIdAsync",
+          "kind": "method",
+          "signature": "GetByTenantIdAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<OdooPartnerMapping?>"
+        },
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(OdooPartnerMapping mapping, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -20128,6 +20167,22 @@
           "kind": "method",
           "signature": "CheckAsync(Guid tenantId, MeterDefinitionId meterId, CancellationToken cancellationToken = default)",
           "returnType": "Task<QuotaStatus>"
+        }
+      ]
+    },
+    {
+      "name": "IQuotaLimitProvider",
+      "fqn": "Granit.Metering.IQuotaLimitProvider",
+      "kind": "interface",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/IQuotaLimitProvider.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "GetLimitAsync",
+          "kind": "method",
+          "signature": "GetLimitAsync(Guid tenantId, MeterDefinitionId meterId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<decimal?>"
         }
       ]
     },

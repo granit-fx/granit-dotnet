@@ -84,6 +84,22 @@ internal sealed partial class OdooJsonRpcClient(
         return response?.Result;
     }
 
+    /// <summary>Updates fields on an existing Odoo record.</summary>
+    public async Task UpdateAsync(
+        string model, int id, Dictionary<string, object?> values,
+        CancellationToken cancellationToken = default)
+    {
+        int uid = await AuthenticateAsync(cancellationToken).ConfigureAwait(false);
+        OdooOptions config = options.Value;
+
+        await CallAsync<bool>(new OdooRpcRequest("call", new
+        {
+            service = "object",
+            method = "execute_kw",
+            args = new object[] { config.Database, uid, config.ApiKey, model, "write", new object[] { new[] { id }, values } },
+        }), cancellationToken).ConfigureAwait(false);
+    }
+
     private async Task<OdooRpcResponse<T>?> CallAsync<T>(
         OdooRpcRequest request, CancellationToken cancellationToken)
     {
