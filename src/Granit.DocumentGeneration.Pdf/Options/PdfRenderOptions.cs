@@ -50,8 +50,10 @@ public sealed class PdfRenderOptions
 
     /// <summary>
     /// HTML template for the page footer. Supports the same classes as <see cref="HeaderTemplate"/>.
+    /// Default shows page numbers (Page x of y).
     /// </summary>
-    public string? FooterTemplate { get; set; }
+    public string FooterTemplate { get; set; } =
+        """<div style="font-size:9px; width:100%; text-align:center; color:#999; padding:0 10mm;">Page <span class="pageNumber"></span> / <span class="totalPages"></span></div>""";
 
     /// <summary>
     /// Whether to print background graphics. Default is <see langword="true"/>.

@@ -10870,6 +10870,12 @@
           "returnType": "string?"
         },
         {
+          "name": "PrintBackground",
+          "kind": "property",
+          "signature": "bool PrintBackground",
+          "returnType": "bool"
+        },
+        {
           "name": "ChromiumExecutablePath",
           "kind": "property",
           "signature": "string? ChromiumExecutablePath",
