@@ -141,6 +141,24 @@ var command = new CreateInvoiceCommand(
 await messageBus.SendAsync(command);
 ```
 
+### Idempotency key
+
+`CreateInvoiceCommand` accepts an optional `IdempotencyKey` to prevent
+duplicate invoice creation on handler retries:
+
+```csharp
+new CreateInvoiceCommand(
+    ...,
+    IdempotencyKey: $"billing-cycle-{subscriptionId}-{periodEnd:yyyyMMdd}");
+```
+
+Key derivation by handler:
+
+| Handler | Key format |
+|---------|-----------|
+| `BillingCycleCompletedHandler` | `billing-cycle-{subscriptionId}-{periodEnd:yyyyMMdd}` |
+| `UsageSummaryReadyHandler` | `usage-{tenantId}-{meterId}-{periodEnd:yyyyMMdd}` |
+
 ## Admin API
 
 | Method | Route | Permission |

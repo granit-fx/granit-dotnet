@@ -130,6 +130,29 @@ Payments never knows about subscriptions. It only communicates with Invoicing.
 The cascade to Subscriptions goes through Invoicing (`InvoicePaidEto`).
 :::
 
+### Auto-charge with default payment method
+
+`AutoChargeOnInvoiceHandler` queries the tenant's **saved default payment method**
+to determine the provider and method type:
+
+```csharp
+PaymentMethod? defaultMethod = await paymentMethodReader
+    .GetDefaultForTenantAsync(tenantId, ct);
+
+// Uses defaultMethod.Type ("card", "sepa_debit") and
+// defaultMethod.ProviderName ("stripe", "mollie") for routing
+```
+
+If no default method is configured, the invoice stays Open for manual payment.
+
+### PaymentTransaction.MethodType
+
+Each transaction stores both `ProviderName` ("stripe") and `MethodType` ("card").
+On payment failure, both are propagated through the dunning retry chain via
+`PaymentFailedEto` → `RetryPaymentPayload` → `InitiatePaymentCommand(ProviderName: override)`.
+This ensures retries use the **exact same provider**, even if the tenant's config
+changes between the original payment and a retry 14 days later.
+
 ## Checkout flow
 
 ```csharp

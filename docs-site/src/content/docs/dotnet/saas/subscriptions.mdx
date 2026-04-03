@@ -134,19 +134,80 @@ Built-in providers:
 | Internal | `Granit.Subscriptions.Internal` | None (no-op, zero dependency) |
 | Stripe | `Granit.Subscriptions.Stripe` | All (Phase 2) |
 
+## Multi-currency
+
+Each subscription stores the **currency selected at creation** (`Currency` property,
+ISO 4217). All invoice creation uses `subscription.Currency` — no hardcoded values.
+Plans can have multiple `PlanPrice` entries for different currency/interval combinations.
+
+```csharp
+var subscription = Subscription.Create(
+    id, tenantId, planId,
+    currency: "EUR",       // ← stored on the subscription
+    periodStart, periodEnd, billingCycleAnchor);
+```
+
+## Pricing resolution
+
+`IPricingResolver` resolves prices from the plan's `PlanPrice` entries:
+
+```csharp
+public interface IPricingResolver
+{
+    Task<decimal> ResolveBasePriceAsync(
+        PlanId planId, string currency, BillingInterval interval, CancellationToken ct);
+    Task<decimal> ResolveUsageUnitPriceAsync(
+        PlanId planId, string currency, BillingInterval interval,
+        string meterId, CancellationToken ct);
+}
+```
+
 ## Billing cycle orchestration
 
 Subscriptions acts as the **billing cycle orchestrator** (Stripe Billing model).
-At period end, it combines fixed charges and usage charges into a single invoice:
+**Exclusive routing** prevents double invoicing (split-brain):
 
 ```text
-SaasMetering ──UsageSummaryReadyEto──→ Subscriptions
-                                           │
-                                           ├── fixed line items (plan price)
-                                           ├── usage line items (from IUsageReader)
-                                           │
-                                           └──CreateInvoiceCommand──→ Invoicing
+PeriodEndScan detects end of cycle
+  ├── Flat/PerSeat plan → BillingCycleCompletedHandler creates invoice
+  └── PerUnit/Tiered plan → wait for UsageSummaryReadyHandler (consolidated invoice)
 ```
+
+- **BillingCycleCompletedHandler**: Flat/PerSeat only. Skips plans with usage component.
+- **UsageSummaryReadyHandler**: PerUnit/Tiered. Creates a consolidated invoice with
+  fixed charges (base price) + usage charges (metered data).
+
+Both handlers use `IPricingResolver` and `subscription.Currency`.
+
+### BillingInterval-aware period calculation
+
+`PeriodEndScanHandler` reads `Plan.DefaultInterval` to advance periods correctly:
+
+| Interval | Period advance |
+|----------|---------------|
+| Monthly | `AddMonths(1)` |
+| Quarterly | `AddMonths(3)` |
+| Yearly | `AddMonths(12)` |
+
+## Dunning (payment retry)
+
+When a payment fails, the dunning system automatically handles retries:
+
+```text
+PaymentFailedEto → PaymentFailedHandler
+  ├── MarkPastDue() + IncrementDunningAttempt()
+  ├── Attempt ≤ 3: schedule RetryPaymentPayload via IScheduler
+  │     ├── Attempt 1: +3 days
+  │     ├── Attempt 2: +7 days
+  │     └── Attempt 3: +14 days
+  └── Attempt > 3: Suspend()
+
+InvoicePaidEto → InvoicePaidHandler
+  └── Activate() + ResetDunning()
+```
+
+Retry attempts use the **exact same provider and method type** as the original
+payment (propagated via `ProviderName` + `MethodType` in the retry chain).
 
 ## Seat management
 
