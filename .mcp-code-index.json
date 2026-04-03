@@ -1342,6 +1342,37 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Payments.SepaDirectDebit",
+      "deps": [
+        "Granit",
+        "Granit.Guids",
+        "Granit.Payments",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Payments.SepaDirectDebit.GoCardless",
+      "deps": [
+        "Granit.Payments.SepaDirectDebit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Payments.SepaDirectDebit.Internal",
+      "deps": [
+        "Granit.Payments.SepaDirectDebit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Payments.SepaDirectDebit.Twikey",
+      "deps": [
+        "Granit.Payments.SepaDirectDebit"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Payments.SepaTransfer",
       "deps": [
         "Granit.Guids",
@@ -20227,6 +20258,12 @@
           "kind": "property",
           "signature": "decimal ThresholdPercentage",
           "returnType": "decimal"
+        },
+        {
+          "name": "MaxEventQuantity",
+          "kind": "property",
+          "signature": "decimal MaxEventQuantity",
+          "returnType": "decimal"
         }
       ]
     },
@@ -25954,6 +25991,408 @@
           "kind": "property",
           "signature": "NotificationSeverity DefaultSeverity",
           "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "CollectionFileResult",
+      "fqn": "Granit.Payments.SepaDirectDebit.Contracts.CollectionFileResult",
+      "kind": "record",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Contracts/CollectionContracts.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "CollectionRequest",
+      "fqn": "Granit.Payments.SepaDirectDebit.Contracts.CollectionRequest",
+      "kind": "record",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Contracts/CollectionContracts.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "CollectionResult",
+      "fqn": "Granit.Payments.SepaDirectDebit.Contracts.CollectionResult",
+      "kind": "record",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Contracts/CollectionContracts.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "CollectionStatusResult",
+      "fqn": "Granit.Payments.SepaDirectDebit.Contracts.CollectionStatusResult",
+      "kind": "record",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Contracts/CollectionContracts.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "MandateSetupRequest",
+      "fqn": "Granit.Payments.SepaDirectDebit.Contracts.MandateSetupRequest",
+      "kind": "record",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Contracts/MandateContracts.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "MandateSetupResult",
+      "fqn": "Granit.Payments.SepaDirectDebit.Contracts.MandateSetupResult",
+      "kind": "record",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Contracts/MandateContracts.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "CollectionStatus",
+      "fqn": "Granit.Payments.SepaDirectDebit.Domain.CollectionStatus",
+      "kind": "enum",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Domain/CollectionStatus.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "DirectDebitPayment",
+      "fqn": "Granit.Payments.SepaDirectDebit.Domain.DirectDebitPayment",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Domain/DirectDebitPayment.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid invoiceId, decimal amount, string currency, DateTimeOffset scheduledDate)",
+          "returnType": "DirectDebitPayment"
+        },
+        {
+          "name": "MarkSubmitted",
+          "kind": "method",
+          "signature": "MarkSubmitted(DateTimeOffset submittedAt, string? providerCollectionId = null)",
+          "returnType": "CollectionStatus Status { get; private set; } public DateTimeOffset ScheduledDate { get; private set; } public DateTimeOffset? SubmittedAt { get; private set; } public DateTimeOffset? SettledAt { get; private set; } public string? FailureCode { get; private set; } public string? FailureReason { get; private set; } public string? ProviderCollectionId { get; private set; } internal void"
+        }
+      ]
+    },
+    {
+      "name": "Mandate",
+      "fqn": "Granit.Payments.SepaDirectDebit.Domain.Mandate",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Domain/Mandate.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid tenantId, string mandateReference, SddScheme scheme, string debtorName, string debtorIban, string creditorId, string? debtorBic = null, string? providerName = null)",
+          "returnType": "Mandate"
+        },
+        {
+          "name": "Status",
+          "kind": "property",
+          "signature": "MandateStatus Status",
+          "returnType": "MandateStatus"
+        },
+        {
+          "name": "DebtorIban",
+          "kind": "property",
+          "signature": "string DebtorIban",
+          "returnType": "string"
+        },
+        {
+          "name": "DebtorBic",
+          "kind": "property",
+          "signature": "string? DebtorBic",
+          "returnType": "string?"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "DateTimeOffset? SignedAt { get; private set; } public DateTimeOffset? ActivatedAt { get; private set; } public DateTimeOffset? CancelledAt { get; private set; } public DateTimeOffset? LastCollectionAt { get; private set; } public string? ProviderName { get; private set; } public string? ProviderMandateId { get; private set; } public IReadOnlyList<DirectDebitPayment> Collections => _collections."
+        },
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Activate",
+          "kind": "method",
+          "signature": "Activate(DateTimeOffset signedAt)",
+          "returnType": "bool"
+        },
+        {
+          "name": "AddCollection",
+          "kind": "method",
+          "signature": "AddCollection(DirectDebitPayment collection)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "MandateStatus",
+      "fqn": "Granit.Payments.SepaDirectDebit.Domain.MandateStatus",
+      "kind": "enum",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Domain/MandateStatus.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "SddScheme",
+      "fqn": "Granit.Payments.SepaDirectDebit.Domain.SddScheme",
+      "kind": "enum",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Domain/SddScheme.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "GranitPaymentsSepaDirectDebitGoCardlessModule",
+      "fqn": "Granit.Payments.SepaDirectDebit.GoCardless.GranitPaymentsSepaDirectDebitGoCardlessModule",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit.GoCardless",
+      "file": "src/Granit.Payments.SepaDirectDebit.GoCardless/GranitPaymentsSepaDirectDebitGoCardlessModule.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GoCardlessOptions",
+      "fqn": "Granit.Payments.SepaDirectDebit.GoCardless.Options.GoCardlessOptions",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit.GoCardless",
+      "file": "src/Granit.Payments.SepaDirectDebit.GoCardless/Options/GoCardlessOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AccessToken",
+          "kind": "property",
+          "signature": "string AccessToken",
+          "returnType": "string"
+        },
+        {
+          "name": "WebhookSecret",
+          "kind": "property",
+          "signature": "string WebhookSecret",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitPaymentsSepaDirectDebitModule",
+      "fqn": "Granit.Payments.SepaDirectDebit.GranitPaymentsSepaDirectDebitModule",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/GranitPaymentsSepaDirectDebitModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "ICollectionFileGenerator",
+      "fqn": "Granit.Payments.SepaDirectDebit.ICollectionFileGenerator",
+      "kind": "interface",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/ICollectionFileGenerator.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "GenerateAsync",
+          "kind": "method",
+          "signature": "GenerateAsync(IReadOnlyList<DirectDebitPayment> collections, IReadOnlyList<Mandate> mandates, CancellationToken cancellationToken = default)",
+          "returnType": "Task<CollectionFileResult>"
+        }
+      ]
+    },
+    {
+      "name": "IDirectDebitProvider",
+      "fqn": "Granit.Payments.SepaDirectDebit.IDirectDebitProvider",
+      "kind": "interface",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/IDirectDebitProvider.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "SetupMandateAsync",
+          "kind": "method",
+          "signature": "SetupMandateAsync(MandateSetupRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "string Name { get; } Task<MandateSetupResult>"
+        },
+        {
+          "name": "CancelMandateAsync",
+          "kind": "method",
+          "signature": "CancelMandateAsync(string providerMandateId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "CollectAsync",
+          "kind": "method",
+          "signature": "CollectAsync(CollectionRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<CollectionResult>"
+        },
+        {
+          "name": "GetCollectionStatusAsync",
+          "kind": "method",
+          "signature": "GetCollectionStatusAsync(string providerCollectionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<CollectionStatusResult>"
+        }
+      ]
+    },
+    {
+      "name": "IMandateReader",
+      "fqn": "Granit.Payments.SepaDirectDebit.IMandateReader",
+      "kind": "interface",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/IMandateReader.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid mandateId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Mandate?>"
+        },
+        {
+          "name": "GetByReferenceAsync",
+          "kind": "method",
+          "signature": "GetByReferenceAsync(string mandateReference, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Mandate?>"
+        },
+        {
+          "name": "GetActiveForTenantAsync",
+          "kind": "method",
+          "signature": "GetActiveForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Mandate>>"
+        }
+      ]
+    },
+    {
+      "name": "IMandateWriter",
+      "fqn": "Granit.Payments.SepaDirectDebit.IMandateWriter",
+      "kind": "interface",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/IMandateWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(Mandate mandate, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(Mandate mandate, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitPaymentsSepaDirectDebitInternalModule",
+      "fqn": "Granit.Payments.SepaDirectDebit.Internal.GranitPaymentsSepaDirectDebitInternalModule",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit.Internal",
+      "file": "src/Granit.Payments.SepaDirectDebit.Internal/GranitPaymentsSepaDirectDebitInternalModule.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "SepaDirectDebitInternalOptions",
+      "fqn": "Granit.Payments.SepaDirectDebit.Internal.Options.SepaDirectDebitInternalOptions",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit.Internal",
+      "file": "src/Granit.Payments.SepaDirectDebit.Internal/Options/SepaDirectDebitInternalOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "CreditorIban",
+          "kind": "property",
+          "signature": "string CreditorIban",
+          "returnType": "string"
+        },
+        {
+          "name": "CreditorBic",
+          "kind": "property",
+          "signature": "string CreditorBic",
+          "returnType": "string"
+        },
+        {
+          "name": "CreditorName",
+          "kind": "property",
+          "signature": "string CreditorName",
+          "returnType": "string"
+        },
+        {
+          "name": "CreditorId",
+          "kind": "property",
+          "signature": "string CreditorId",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultScheme",
+          "kind": "property",
+          "signature": "Domain.SddScheme DefaultScheme",
+          "returnType": "Domain.SddScheme"
+        }
+      ]
+    },
+    {
+      "name": "GranitPaymentsSepaDirectDebitTwikeyModule",
+      "fqn": "Granit.Payments.SepaDirectDebit.Twikey.GranitPaymentsSepaDirectDebitTwikeyModule",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit.Twikey",
+      "file": "src/Granit.Payments.SepaDirectDebit.Twikey/GranitPaymentsSepaDirectDebitTwikeyModule.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "TwikeyOptions",
+      "fqn": "Granit.Payments.SepaDirectDebit.Twikey.Options.TwikeyOptions",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit.Twikey",
+      "file": "src/Granit.Payments.SepaDirectDebit.Twikey/Options/TwikeyOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "ApiKey",
+          "kind": "property",
+          "signature": "string ApiKey",
+          "returnType": "string"
+        },
+        {
+          "name": "ContractTemplateId",
+          "kind": "property",
+          "signature": "string ContractTemplateId",
+          "returnType": "string"
         }
       ]
     },

@@ -86,6 +86,8 @@ UsageAggregate
 | `IMeterEventRecorder` | Command | `RecordAsync`, `RecordBatchAsync` (dedup) |
 | `IUsageReader` | Query | `GetForPeriodAsync`, `GetCurrentAsync`, `GetAllForPeriodAsync` |
 | `IQuotaChecker` | Query | `CheckAsync → QuotaStatus` |
+| `IQuotaLimitProvider` | Query | `GetLimitAsync` — returns plan limit (default: unlimited) |
+| `IAggregationRunner` | Command | `RunAsync` — aggregates pending events for all active meters |
 
 ## Watermark-based aggregation
 
@@ -133,8 +135,20 @@ The `QuotaThresholdCheckJob` runs every 15 minutes and publishes:
 
 | Event | Trigger |
 |-------|---------|
-| `QuotaThresholdReachedEto` | Usage >= 80% of limit (configurable) |
+| `QuotaThresholdReachedEto` | Usage >= threshold% of limit (default 80%) |
 | `QuotaExceededEto` | Usage >= 100% of limit |
+
+The threshold percentage is configurable via `GranitMeteringOptions`:
+
+```json
+{
+  "Granit": {
+    "Metering": {
+      "ThresholdPercentage": 80
+    }
+  }
+}
+```
 
 ## Integration with Subscriptions
 

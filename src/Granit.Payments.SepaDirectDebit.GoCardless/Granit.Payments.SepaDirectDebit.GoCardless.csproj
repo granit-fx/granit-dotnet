@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Payments.SepaDirectDebit.GoCardless</PackageId>
+    <Description>GoCardless provider for Granit.Payments.SepaDirectDebit. Managed mandate lifecycle via redirect flow, automated collection via Payments API, HMAC-SHA256 webhook verification.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Payments.SepaDirectDebit.GoCardless.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GoCardless" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Payments.SepaDirectDebit\Granit.Payments.SepaDirectDebit.csproj" />
+  </ItemGroup>
+
+</Project>

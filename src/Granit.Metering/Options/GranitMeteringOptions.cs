@@ -10,4 +10,10 @@ public sealed class GranitMeteringOptions
     /// Default: 80.
     /// </summary>
     public decimal ThresholdPercentage { get; set; } = 80;
+
+    /// <summary>
+    /// Maximum allowed quantity per meter event. Prevents aggregation overflow
+    /// from maliciously large values. Default: 1,000,000,000.
+    /// </summary>
+    public decimal MaxEventQuantity { get; set; } = 1_000_000_000m;
 }

@@ -1,6 +1,8 @@
+using Granit.DataFiltering;
 using Granit.Guids;
 using Granit.Metering.Diagnostics;
 using Granit.Metering.Domain;
+using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,10 +20,16 @@ internal sealed partial class EfAggregationRunner(
     MeteringMetrics metrics,
     IClock clock,
     IGuidGenerator guidGenerator,
+    IDataFilter? dataFilter,
     ILogger<EfAggregationRunner> logger) : IAggregationRunner
 {
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {
+        // Disable tenant filter for the entire aggregation flow: the job runs
+        // without tenant context and must enumerate definitions across all tenants,
+        // then query each tenant's events with explicit TenantId predicates.
+        using IDisposable? _ = dataFilter?.Disable<IMultiTenant>();
+
         IReadOnlyList<MeterDefinition> definitions = await definitionReader
             .GetActiveAsync(cancellationToken).ConfigureAwait(false);
 
