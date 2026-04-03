@@ -864,6 +864,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Invoicing.Notifications",
+      "deps": [
+        "Granit.Invoicing",
+        "Granit.Notifications.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Invoicing.Wolverine",
       "deps": [
         "Granit.Invoicing",
@@ -1309,6 +1317,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Payments.Notifications",
+      "deps": [
+        "Granit.Payments",
+        "Granit.Notifications.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Payments.Stripe",
       "deps": [
         "Granit.Payments"
@@ -1643,6 +1659,14 @@
       "name": "Granit.Subscriptions.Internal",
       "deps": [
         "Granit.Subscriptions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Subscriptions.Notifications",
+      "deps": [
+        "Granit.Subscriptions",
+        "Granit.Notifications.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -18294,6 +18318,151 @@
       ]
     },
     {
+      "name": "CreditNoteIssuedNotificationData",
+      "fqn": "Granit.Invoicing.Notifications.CreditNoteIssuedNotificationData",
+      "kind": "record",
+      "project": "Granit.Invoicing.Notifications",
+      "file": "src/Granit.Invoicing.Notifications/CreditNoteIssuedNotificationType.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "CreditNoteIssuedNotificationType",
+      "fqn": "Granit.Invoicing.Notifications.CreditNoteIssuedNotificationType",
+      "kind": "class",
+      "project": "Granit.Invoicing.Notifications",
+      "file": "src/Granit.Invoicing.Notifications/CreditNoteIssuedNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "CreditNoteIssuedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitInvoicingNotificationsModule",
+      "fqn": "Granit.Invoicing.Notifications.GranitInvoicingNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Invoicing.Notifications",
+      "file": "src/Granit.Invoicing.Notifications/GranitInvoicingNotificationsModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "InvoiceIssuedNotificationData",
+      "fqn": "Granit.Invoicing.Notifications.InvoiceIssuedNotificationData",
+      "kind": "record",
+      "project": "Granit.Invoicing.Notifications",
+      "file": "src/Granit.Invoicing.Notifications/InvoiceIssuedNotificationType.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "InvoiceIssuedNotificationType",
+      "fqn": "Granit.Invoicing.Notifications.InvoiceIssuedNotificationType",
+      "kind": "class",
+      "project": "Granit.Invoicing.Notifications",
+      "file": "src/Granit.Invoicing.Notifications/InvoiceIssuedNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "InvoiceIssuedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "InvoiceOverdueNotificationData",
+      "fqn": "Granit.Invoicing.Notifications.InvoiceOverdueNotificationData",
+      "kind": "record",
+      "project": "Granit.Invoicing.Notifications",
+      "file": "src/Granit.Invoicing.Notifications/InvoiceOverdueNotificationType.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "InvoiceOverdueNotificationType",
+      "fqn": "Granit.Invoicing.Notifications.InvoiceOverdueNotificationType",
+      "kind": "class",
+      "project": "Granit.Invoicing.Notifications",
+      "file": "src/Granit.Invoicing.Notifications/InvoiceOverdueNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "InvoiceOverdueNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "InvoicePaidNotificationData",
+      "fqn": "Granit.Invoicing.Notifications.InvoicePaidNotificationData",
+      "kind": "record",
+      "project": "Granit.Invoicing.Notifications",
+      "file": "src/Granit.Invoicing.Notifications/InvoicePaidNotificationType.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "InvoicePaidNotificationType",
+      "fqn": "Granit.Invoicing.Notifications.InvoicePaidNotificationType",
+      "kind": "class",
+      "project": "Granit.Invoicing.Notifications",
+      "file": "src/Granit.Invoicing.Notifications/InvoicePaidNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "InvoicePaidNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
       "name": "GranitInvoicingWolverineModule",
       "fqn": "Granit.Invoicing.Wolverine.GranitInvoicingWolverineModule",
       "kind": "class",
@@ -25312,6 +25481,200 @@
       ]
     },
     {
+      "name": "DisputeOpenedNotificationData",
+      "fqn": "Granit.Payments.Notifications.DisputeOpenedNotificationData",
+      "kind": "record",
+      "project": "Granit.Payments.Notifications",
+      "file": "src/Granit.Payments.Notifications/DisputeOpenedNotificationType.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "DisputeOpenedNotificationType",
+      "fqn": "Granit.Payments.Notifications.DisputeOpenedNotificationType",
+      "kind": "class",
+      "project": "Granit.Payments.Notifications",
+      "file": "src/Granit.Payments.Notifications/DisputeOpenedNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "DisputeOpenedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "GranitPaymentsNotificationsModule",
+      "fqn": "Granit.Payments.Notifications.GranitPaymentsNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Payments.Notifications",
+      "file": "src/Granit.Payments.Notifications/GranitPaymentsNotificationsModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "PaymentFailedNotificationData",
+      "fqn": "Granit.Payments.Notifications.PaymentFailedNotificationData",
+      "kind": "record",
+      "project": "Granit.Payments.Notifications",
+      "file": "src/Granit.Payments.Notifications/PaymentFailedNotificationType.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "PaymentFailedNotificationType",
+      "fqn": "Granit.Payments.Notifications.PaymentFailedNotificationType",
+      "kind": "class",
+      "project": "Granit.Payments.Notifications",
+      "file": "src/Granit.Payments.Notifications/PaymentFailedNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PaymentFailedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "PaymentMethodExpiringNotificationData",
+      "fqn": "Granit.Payments.Notifications.PaymentMethodExpiringNotificationData",
+      "kind": "record",
+      "project": "Granit.Payments.Notifications",
+      "file": "src/Granit.Payments.Notifications/PaymentMethodExpiringNotificationType.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "PaymentMethodExpiringNotificationType",
+      "fqn": "Granit.Payments.Notifications.PaymentMethodExpiringNotificationType",
+      "kind": "class",
+      "project": "Granit.Payments.Notifications",
+      "file": "src/Granit.Payments.Notifications/PaymentMethodExpiringNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PaymentMethodExpiringNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "PaymentSucceededNotificationData",
+      "fqn": "Granit.Payments.Notifications.PaymentSucceededNotificationData",
+      "kind": "record",
+      "project": "Granit.Payments.Notifications",
+      "file": "src/Granit.Payments.Notifications/PaymentSucceededNotificationType.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "PaymentSucceededNotificationType",
+      "fqn": "Granit.Payments.Notifications.PaymentSucceededNotificationType",
+      "kind": "class",
+      "project": "Granit.Payments.Notifications",
+      "file": "src/Granit.Payments.Notifications/PaymentSucceededNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PaymentSucceededNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "RefundProcessedNotificationData",
+      "fqn": "Granit.Payments.Notifications.RefundProcessedNotificationData",
+      "kind": "record",
+      "project": "Granit.Payments.Notifications",
+      "file": "src/Granit.Payments.Notifications/RefundProcessedNotificationType.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "RefundProcessedNotificationType",
+      "fqn": "Granit.Payments.Notifications.RefundProcessedNotificationType",
+      "kind": "class",
+      "project": "Granit.Payments.Notifications",
+      "file": "src/Granit.Payments.Notifications/RefundProcessedNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "RefundProcessedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
       "name": "GranitPaymentsStripeModule",
       "fqn": "Granit.Payments.Stripe.GranitPaymentsStripeModule",
       "kind": "class",
@@ -31716,6 +32079,213 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "CancellationConfirmedNotificationData",
+      "fqn": "Granit.Subscriptions.Notifications.CancellationConfirmedNotificationData",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Notifications",
+      "file": "src/Granit.Subscriptions.Notifications/CancellationConfirmedNotificationType.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "CancellationConfirmedNotificationType",
+      "fqn": "Granit.Subscriptions.Notifications.CancellationConfirmedNotificationType",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Notifications",
+      "file": "src/Granit.Subscriptions.Notifications/CancellationConfirmedNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "CancellationConfirmedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitSubscriptionsNotificationsModule",
+      "fqn": "Granit.Subscriptions.Notifications.GranitSubscriptionsNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Notifications",
+      "file": "src/Granit.Subscriptions.Notifications/GranitSubscriptionsNotificationsModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "PlanChangedNotificationData",
+      "fqn": "Granit.Subscriptions.Notifications.PlanChangedNotificationData",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Notifications",
+      "file": "src/Granit.Subscriptions.Notifications/PlanChangedNotificationType.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "PlanChangedNotificationType",
+      "fqn": "Granit.Subscriptions.Notifications.PlanChangedNotificationType",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Notifications",
+      "file": "src/Granit.Subscriptions.Notifications/PlanChangedNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PlanChangedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "ScheduledChangeReminderNotificationData",
+      "fqn": "Granit.Subscriptions.Notifications.ScheduledChangeReminderNotificationData",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Notifications",
+      "file": "src/Granit.Subscriptions.Notifications/ScheduledChangeReminderNotificationType.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "ScheduledChangeReminderNotificationType",
+      "fqn": "Granit.Subscriptions.Notifications.ScheduledChangeReminderNotificationType",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Notifications",
+      "file": "src/Granit.Subscriptions.Notifications/ScheduledChangeReminderNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "ScheduledChangeReminderNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "SuspensionWarningNotificationData",
+      "fqn": "Granit.Subscriptions.Notifications.SuspensionWarningNotificationData",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Notifications",
+      "file": "src/Granit.Subscriptions.Notifications/SuspensionWarningNotificationType.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "SuspensionWarningNotificationType",
+      "fqn": "Granit.Subscriptions.Notifications.SuspensionWarningNotificationType",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Notifications",
+      "file": "src/Granit.Subscriptions.Notifications/SuspensionWarningNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "SuspensionWarningNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "TrialExpiredNotificationData",
+      "fqn": "Granit.Subscriptions.Notifications.TrialExpiredNotificationData",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Notifications",
+      "file": "src/Granit.Subscriptions.Notifications/TrialExpiredNotificationType.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "TrialExpiredNotificationType",
+      "fqn": "Granit.Subscriptions.Notifications.TrialExpiredNotificationType",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Notifications",
+      "file": "src/Granit.Subscriptions.Notifications/TrialExpiredNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "TrialExpiredNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "TrialExpiringNotificationData",
+      "fqn": "Granit.Subscriptions.Notifications.TrialExpiringNotificationData",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Notifications",
+      "file": "src/Granit.Subscriptions.Notifications/TrialExpiringNotificationType.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "TrialExpiringNotificationType",
+      "fqn": "Granit.Subscriptions.Notifications.TrialExpiringNotificationType",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Notifications",
+      "file": "src/Granit.Subscriptions.Notifications/TrialExpiringNotificationType.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "TrialExpiringNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
         }
       ]
     },
