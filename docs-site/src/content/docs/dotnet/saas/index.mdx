@@ -75,6 +75,7 @@ listened to `PaymentSucceededEto`, it would never renew in this scenario.
 | [Invoicing](/dotnet/saas/invoicing/) | Invoices, credit notes, partial payments, tax, external accounting sync | 1 |
 | [Payments](/dotnet/saas/payments/) | Provider-agnostic payment processing, webhooks, refunds, disputes | 1 |
 | [Metering](/dotnet/saas/metering/) | Usage event recording, watermark aggregation, quota enforcement | 1 |
+| [Tax](/dotnet/saas/tax/) | Tax calculation (EU VAT, Stripe Tax), VIES validation, rate management | 2 |
 
 Each module has a `.Notifications` package with `NotificationType<TData>` definitions
 (15 types total: 6 Subscriptions, 4 Invoicing, 5 Payments). Email templates are Phase 2.
