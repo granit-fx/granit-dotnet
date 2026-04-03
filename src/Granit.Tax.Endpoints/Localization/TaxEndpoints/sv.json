@@ -1,10 +1,10 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:Tax": "Tax",
-    "Permission:Tax.Rates.Read": "View tax rates",
-    "Permission:Tax.Rates.Manage": "Manage tax rate overrides",
-    "Permission:Tax.Validations.Read": "View cached tax ID validations",
-    "Permission:Tax.Validations.Execute": "Execute tax ID validation (VIES, Stripe)"
+    "PermissionGroup:Tax": "Skatter",
+    "Permission:Tax.Rates.Read": "Visa skattesatser",
+    "Permission:Tax.Rates.Manage": "Hantera åsidosättningar av skattesatser",
+    "Permission:Tax.Validations.Read": "Visa cachade valideringar av skattenummer",
+    "Permission:Tax.Validations.Execute": "Utför validering av skattenummer (VIES, Stripe)"
   }
 }

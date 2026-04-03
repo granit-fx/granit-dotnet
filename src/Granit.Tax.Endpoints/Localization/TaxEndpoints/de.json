@@ -1,10 +1,10 @@
 {
   "culture": "de",
   "texts": {
-    "PermissionGroup:Tax": "Tax",
-    "Permission:Tax.Rates.Read": "View tax rates",
-    "Permission:Tax.Rates.Manage": "Manage tax rate overrides",
-    "Permission:Tax.Validations.Read": "View cached tax ID validations",
-    "Permission:Tax.Validations.Execute": "Execute tax ID validation (VIES, Stripe)"
+    "PermissionGroup:Tax": "Steuern",
+    "Permission:Tax.Rates.Read": "Steuersätze anzeigen",
+    "Permission:Tax.Rates.Manage": "Überschreibungen von Steuersätzen verwalten",
+    "Permission:Tax.Validations.Read": "Zwischengespeicherte Steuer-ID-Validierungen anzeigen",
+    "Permission:Tax.Validations.Execute": "Steuer-ID-Validierung ausführen (VIES, Stripe)"
   }
 }

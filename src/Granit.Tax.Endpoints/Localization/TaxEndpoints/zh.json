@@ -1,10 +1,10 @@
 {
   "culture": "zh",
   "texts": {
-    "PermissionGroup:Tax": "Tax",
-    "Permission:Tax.Rates.Read": "View tax rates",
-    "Permission:Tax.Rates.Manage": "Manage tax rate overrides",
-    "Permission:Tax.Validations.Read": "View cached tax ID validations",
-    "Permission:Tax.Validations.Execute": "Execute tax ID validation (VIES, Stripe)"
+    "PermissionGroup:Tax": "税务",
+    "Permission:Tax.Rates.Read": "查看税率",
+    "Permission:Tax.Rates.Manage": "管理税率覆盖",
+    "Permission:Tax.Validations.Read": "查看已缓存的税号验证",
+    "Permission:Tax.Validations.Execute": "执行税号验证（VIES、Stripe）"
   }
 }
