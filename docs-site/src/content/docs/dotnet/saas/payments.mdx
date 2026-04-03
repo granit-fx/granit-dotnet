@@ -20,8 +20,9 @@ and bank transfers to SEPA — all simultaneously. No card data ever touches Gra
   - Granit.Payments.EntityFrameworkCore EF Core store, webhook dedup (insert-first)
   - Granit.Payments.Endpoints Checkout, payment methods, webhooks (AllowAnonymous + signature)
   - Granit.Payments.Wolverine InvoiceFinalizedHandler (auto-charge), webhook dispatch
-  - Granit.Payments.Stripe Stripe provider (Phase 1 stub)
-  - Granit.Payments.Mollie Mollie EU-sovereign provider (Phase 1 stub)
+  - Granit.Payments.Stripe Stripe provider (PaymentIntent API, Checkout, WebhookVerifier)
+  - Granit.Payments.Mollie Mollie EU-sovereign provider (Phase 2)
+  - Granit.Payments.Notifications Payment lifecycle notifications (5 types)
   - Granit.Payments.SepaTransfer Bank transfer + reconciliation (Phase 2)
   - Granit.Payments.SepaDirectDebit Mandate management + SDD collection (Phase 2)
 </FileTree>
@@ -144,6 +145,69 @@ var session = await checkoutFactory.CreateAsync(
     invoiceId, amount, currency, returnUrl, ct);
 // → { Url: "https://checkout.stripe.com/...", SessionId: "cs_xxx" }
 ```
+
+## Stripe implementation
+
+`Granit.Payments.Stripe` provides a full implementation using the Stripe.net SDK
+and the PaymentIntent API:
+
+| Class | Stripe API | Purpose |
+|-------|-----------|---------|
+| `StripePaymentProvider` | PaymentIntent | Charge, refund, status check |
+| `StripeCheckoutSessionFactory` | Checkout Session | Hosted payment pages |
+| `StripePaymentMethodManager` | Customer + PaymentMethod | List, attach, detach |
+| `StripeWebhookVerifier` | EventUtility | HMAC-SHA256 signature validation |
+
+### StripeClientFactory (no static config)
+
+`StripeConfiguration.ApiKey` is **never used** (global static, unsafe for multi-tenant).
+Instead, `StripeClientFactory` creates an `IStripeClient` per request via `IHttpClientFactory`:
+
+```csharp
+// DI registration (in GranitPaymentsStripeModule)
+services.AddScoped<IStripeClient>(sp =>
+    sp.GetRequiredService<StripeClientFactory>().Create());
+```
+
+This enables future Stripe Connect (per-tenant API keys) and integrates with
+`IHttpClientFactory` lifecycle (pooling, logging, resilience policies).
+
+### Provider customer mapping
+
+`ProviderCustomerMapping` maps Granit TenantId → provider customer ID (e.g., `cus_xxx`).
+Generic entity reusable by any provider (Stripe, Mollie). Auto-created on first
+`AttachAsync()` call.
+
+### Configuration
+
+```json
+{
+  "Payments": {
+    "Stripe": {
+      "SecretKey": "sk_test_xxx",
+      "WebhookSecret": "whsec_xxx",
+      "PublishableKey": "pk_test_xxx"
+    }
+  }
+}
+```
+
+### Amount conversion
+
+`StripeAmountConverter` handles zero-decimal currencies (JPY, KRW, VND, etc.)
+automatically — Stripe uses cents for EUR/USD but major units for JPY.
+
+## Notifications
+
+`Granit.Payments.Notifications` defines 5 notification types:
+
+| Type | Name | Severity | Opt-out |
+|------|------|----------|---------|
+| `PaymentSucceededNotificationType` | `Payments.PaymentSucceeded` | Success | Yes |
+| `PaymentFailedNotificationType` | `Payments.PaymentFailed` | Warning | No |
+| `PaymentMethodExpiringNotificationType` | `Payments.PaymentMethodExpiring` | Warning | Yes |
+| `RefundProcessedNotificationType` | `Payments.RefundProcessed` | Success | Yes |
+| `DisputeOpenedNotificationType` | `Payments.DisputeOpened` | Error | No |
 
 ## Admin API
 

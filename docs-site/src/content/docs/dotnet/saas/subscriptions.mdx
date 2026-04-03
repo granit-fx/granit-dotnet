@@ -187,6 +187,21 @@ feature flag cascade works without any additional configuration.
 | GET | `/api/granit/subscriptions/seats` | `Subscriptions.Seats.Read` |
 | POST | `/api/granit/subscriptions/seats` | `Subscriptions.Seats.Manage` |
 
+## Notifications
+
+`Granit.Subscriptions.Notifications` defines 6 notification types:
+
+| Type | Name | Severity | Opt-out |
+|------|------|----------|---------|
+| `TrialExpiringNotificationType` | `Subscriptions.TrialExpiring` | Warning | Yes |
+| `TrialExpiredNotificationType` | `Subscriptions.TrialExpired` | Info | No |
+| `PlanChangedNotificationType` | `Subscriptions.PlanChanged` | Info | Yes |
+| `CancellationConfirmedNotificationType` | `Subscriptions.CancellationConfirmed` | Info | No |
+| `SuspensionWarningNotificationType` | `Subscriptions.SuspensionWarning` | Error | No |
+| `ScheduledChangeReminderNotificationType` | `Subscriptions.ScheduledChangeReminder` | Info | Yes |
+
+Default channels: Email + InApp. Email templates are Phase 2 (requires `Granit.Templating`).
+
 ## See also
 
 - [SaaS Overview](/dotnet/saas/) — ecosystem architecture and choreography

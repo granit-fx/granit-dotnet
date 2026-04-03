@@ -76,6 +76,9 @@ listened to `PaymentSucceededEto`, it would never renew in this scenario.
 | [Payments](/dotnet/saas/payments/) | Provider-agnostic payment processing, webhooks, refunds, disputes | 1 |
 | [Metering](/dotnet/saas/metering/) | Usage event recording, watermark aggregation, quota enforcement | 1 |
 
+Each module has a `.Notifications` package with `NotificationType<TData>` definitions
+(15 types total: 6 Subscriptions, 4 Invoicing, 5 Payments). Email templates are Phase 2.
+
 ## Supporting modules
 
 | Module | Role in SaaS |
@@ -110,8 +113,8 @@ iDEAL → Mollie).
 
 | Phase | Scope | Status |
 |-------|-------|--------|
-| **1** | Subscriptions + Invoicing + Payments (Stripe/Mollie stubs) + Metering | Implemented |
-| **2** | SEPA providers, Invoicing.Internal (PDF), Invoicing.Odoo, EU VAT, Stripe/Mollie full | Planned |
+| **1** | Subscriptions + Invoicing + Payments (Stripe full, Mollie stub) + Metering + Notifications | Implemented |
+| **2** | Mollie full, SEPA providers, Invoicing.Internal (PDF), Invoicing.Odoo, EU VAT, email templates | Planned |
 | **3** | Self-hosted dunning, credit/balance system, multi-currency, Granit.Commerce | Planned |
 
 ## Compliance

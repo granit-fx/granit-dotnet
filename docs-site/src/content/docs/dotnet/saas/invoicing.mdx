@@ -150,6 +150,17 @@ await messageBus.SendAsync(command);
 | GET | `/api/granit/invoicing/invoices/{id}/pdf` | `Invoicing.Invoices.Download` |
 | POST | `/api/granit/invoicing/credit-notes` | `Invoicing.CreditNotes.Manage` |
 
+## Notifications
+
+`Granit.Invoicing.Notifications` defines 4 notification types:
+
+| Type | Name | Severity | Opt-out |
+|------|------|----------|---------|
+| `InvoiceIssuedNotificationType` | `Invoicing.InvoiceIssued` | Info | Yes |
+| `InvoiceOverdueNotificationType` | `Invoicing.InvoiceOverdue` | Warning | No |
+| `InvoicePaidNotificationType` | `Invoicing.InvoicePaid` | Success | Yes |
+| `CreditNoteIssuedNotificationType` | `Invoicing.CreditNoteIssued` | Info | Yes |
+
 ## See also
 
 - [SaaS Overview](/dotnet/saas/) — ecosystem architecture and choreography

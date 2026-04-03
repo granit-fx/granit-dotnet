@@ -2,26 +2,26 @@ using Granit.Modularity;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Invoicing.Wolverine.Tests;
+namespace Granit.Metering.Wolverine.Tests;
 
-public sealed class GranitInvoicingWolverineModuleTests
+public sealed class MeteringWolverineModuleTests
 {
     [Fact]
     public void Module_ShouldBeSealed()
     {
-        typeof(GranitInvoicingWolverineModule).IsSealed.ShouldBeTrue();
+        typeof(GranitMeteringWolverineModule).IsSealed.ShouldBeTrue();
     }
 
     [Fact]
     public void Module_ShouldInheritFromGranitModule()
     {
-        typeof(GranitInvoicingWolverineModule).IsSubclassOf(typeof(GranitModule)).ShouldBeTrue();
+        typeof(GranitMeteringWolverineModule).IsSubclassOf(typeof(GranitModule)).ShouldBeTrue();
     }
 
     [Fact]
-    public void Module_ShouldDependOnInvoicingAndWolverine()
+    public void Module_ShouldDependOnMeteringAndWolverine()
     {
-        DependsOnAttribute[] attributes = typeof(GranitInvoicingWolverineModule)
+        DependsOnAttribute[] attributes = typeof(GranitMeteringWolverineModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), inherit: false)
             .Cast<DependsOnAttribute>()
             .ToArray();
@@ -29,13 +29,13 @@ public sealed class GranitInvoicingWolverineModuleTests
         attributes.ShouldNotBeEmpty();
 
         Type[] dependentTypes = attributes.SelectMany(a => a.DependedTypes).ToArray();
-        dependentTypes.ShouldContain(typeof(GranitInvoicingModule));
+        dependentTypes.ShouldContain(typeof(GranitMeteringModule));
     }
 
     [Fact]
     public void Module_CanBeInstantiated()
     {
-        var module = new GranitInvoicingWolverineModule();
+        var module = new GranitMeteringWolverineModule();
         module.ShouldNotBeNull();
     }
 }
