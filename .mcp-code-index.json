@@ -24629,7 +24629,7 @@
       "kind": "record",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Commands/InitiatePaymentCommand.cs",
-      "line": 6,
+      "line": 4,
       "members": []
     },
     {
@@ -24656,7 +24656,7 @@
       "kind": "record",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Contracts/PaymentAttachMethodRequest.cs",
-      "line": 6,
+      "line": 4,
       "members": []
     },
     {
@@ -24692,7 +24692,7 @@
       "kind": "record",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Contracts/PaymentCheckoutSessionRequest.cs",
-      "line": 6,
+      "line": 4,
       "members": []
     },
     {
@@ -24710,7 +24710,7 @@
       "kind": "record",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Contracts/PaymentProviderMethod.cs",
-      "line": 6,
+      "line": 4,
       "members": []
     },
     {
@@ -24818,14 +24818,20 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, PaymentMethodType type, string providerName, string providerMethodId, string displayLabel, DateTimeOffset? expiresAt = null)",
+          "signature": "Create(Guid id, Guid tenantId, string type, string providerName, string providerMethodId, string displayLabel, DateTimeOffset? expiresAt = null)",
           "returnType": "PaymentMethod"
         },
         {
           "name": "Type",
           "kind": "property",
-          "signature": "PaymentMethodType Type",
-          "returnType": "PaymentMethodType"
+          "signature": "string Type",
+          "returnType": "string"
+        },
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
         },
         {
           "name": "ProviderMethodId",
@@ -24854,13 +24860,29 @@
       ]
     },
     {
-      "name": "PaymentMethodType",
-      "fqn": "Granit.Payments.Domain.PaymentMethodType",
+      "name": "PaymentMethodCategory",
+      "fqn": "Granit.Payments.Domain.PaymentMethodCategory",
       "kind": "enum",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Domain/PaymentMethodType.cs",
-      "line": 4,
+      "line": 6,
       "members": []
+    },
+    {
+      "name": "PaymentMethods",
+      "fqn": "Granit.Payments.Domain.PaymentMethods",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Domain/PaymentMethodType.cs",
+      "line": 42,
+      "members": [
+        {
+          "name": "GetCategory",
+          "kind": "method",
+          "signature": "GetCategory(string methodType)",
+          "returnType": "PaymentMethodCategory"
+        }
+      ]
     },
     {
       "name": "PaymentStatus",
@@ -25395,12 +25417,12 @@
       "kind": "interface",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/IPaymentProviderResolver.cs",
-      "line": 10,
+      "line": 9,
       "members": [
         {
           "name": "Resolve",
           "kind": "method",
-          "signature": "Resolve(Guid tenantId, PaymentMethodType methodType)",
+          "signature": "Resolve(Guid tenantId, string methodType)",
           "returnType": "IPaymentProvider"
         },
         {

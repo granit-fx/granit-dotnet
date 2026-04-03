@@ -33,7 +33,7 @@ internal static partial class InvoiceFinalizedHandler
                 eto.TenantId,
                 eto.Total,
                 eto.Currency,
-                Domain.PaymentMethodType.Card,
+                Domain.PaymentMethods.Card,
                 $"inv-{eto.InvoiceId}");
 
             await messageBus.SendAsync(command).ConfigureAwait(false);

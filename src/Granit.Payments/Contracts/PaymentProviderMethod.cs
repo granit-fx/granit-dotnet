@@ -1,8 +1,6 @@
-using Granit.Payments.Domain;
-
 namespace Granit.Payments.Contracts;
 
 /// <summary>Payment method from provider.</summary>
 public sealed record PaymentProviderMethod(
-    string ProviderMethodId, PaymentMethodType Type,
+    string ProviderMethodId, string MethodType,
     string DisplayLabel, DateTimeOffset? ExpiresAt);

@@ -38,7 +38,7 @@ internal sealed partial class StripePaymentMethodManager(
 
         return methods.Data.Select(m => new PaymentProviderMethod(
             ProviderMethodId: m.Id,
-            Type: StripePaymentMethodTypeMapper.FromStripeType(m.Type),
+            MethodType: StripePaymentMethodTypeMapper.FromStripeType(m.Type),
             DisplayLabel: BuildDisplayLabel(m),
             ExpiresAt: m.Card?.ExpYear is not null
                 ? new DateTimeOffset((int)m.Card.ExpYear, (int)m.Card.ExpMonth, 1, 0, 0, 0, TimeSpan.Zero)
@@ -63,7 +63,7 @@ internal sealed partial class StripePaymentMethodManager(
 
         return new PaymentProviderMethod(
             ProviderMethodId: method.Id,
-            Type: StripePaymentMethodTypeMapper.FromStripeType(method.Type),
+            MethodType: StripePaymentMethodTypeMapper.FromStripeType(method.Type),
             DisplayLabel: BuildDisplayLabel(method),
             ExpiresAt: method.Card?.ExpYear is not null
                 ? new DateTimeOffset((int)method.Card.ExpYear, (int)method.Card.ExpMonth, 1, 0, 0, 0, TimeSpan.Zero)

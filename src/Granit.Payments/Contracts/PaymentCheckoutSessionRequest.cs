@@ -1,8 +1,6 @@
-using Granit.Payments.Domain;
-
 namespace Granit.Payments.Contracts;
 
 /// <summary>Request to create a checkout session.</summary>
 public sealed record PaymentCheckoutSessionRequest(
     Guid TransactionId, decimal Amount, string Currency,
-    PaymentMethodType MethodType, string SuccessUrl, string CancelUrl);
+    string MethodType, string SuccessUrl, string CancelUrl);
