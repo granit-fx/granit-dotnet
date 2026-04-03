@@ -1,11 +1,41 @@
 using Granit.Payments.Contracts;
+using Granit.Timing;
+using Mollie.Api.Client.Abstract;
+using Mollie.Api.Models;
+using Mollie.Api.Models.Payment.Request;
+using Mollie.Api.Models.Payment.Response;
 
 namespace Granit.Payments.Mollie.Internal;
 
-internal sealed class MollieCheckoutSessionFactory : ICheckoutSessionFactory
+/// <summary>Mollie payment creation (redirects to hosted payment page).</summary>
+internal sealed class MollieCheckoutSessionFactory(
+    IPaymentClient paymentClient,
+    IClock clock) : ICheckoutSessionFactory
 {
+    /// <inheritdoc/>
     public string ProviderName => "mollie";
 
-    public Task<PaymentCheckoutSession> CreateAsync(PaymentCheckoutSessionRequest request, CancellationToken cancellationToken = default) =>
-        throw new NotSupportedException("Mollie checkout not configured.");
+    /// <inheritdoc/>
+    public async Task<PaymentCheckoutSession> CreateAsync(
+        PaymentCheckoutSessionRequest request, CancellationToken cancellationToken = default)
+    {
+        var mollieRequest = new PaymentRequest
+        {
+            Amount = new Amount(request.Currency.ToUpperInvariant(), request.Amount),
+            Description = $"Payment {request.TransactionId}",
+            RedirectUrl = request.SuccessUrl,
+            CancelUrl = request.CancelUrl,
+            Method = MolliePaymentMethodTypeMapper.ToMollieMethod(request.MethodType),
+            Metadata = request.TransactionId.ToString(),
+        };
+
+        PaymentResponse response = await paymentClient
+            .CreatePaymentAsync(mollieRequest, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+
+        return new PaymentCheckoutSession(
+            Url: response.Links?.Checkout?.Href ?? string.Empty,
+            SessionId: response.Id,
+            ExpiresAt: response.ExpiresAt ?? clock.Now.AddMinutes(15));
+    }
 }

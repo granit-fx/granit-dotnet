@@ -25521,13 +25521,29 @@
       "kind": "class",
       "project": "Granit.Payments.Mollie",
       "file": "src/Granit.Payments.Mollie/GranitPaymentsMollieModule.cs",
-      "line": 9,
+      "line": 13,
       "members": [
         {
           "name": "ConfigureServices",
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "MollieOptions",
+      "fqn": "Granit.Payments.Mollie.Options.MollieOptions",
+      "kind": "class",
+      "project": "Granit.Payments.Mollie",
+      "file": "src/Granit.Payments.Mollie/Options/MollieOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ApiKey",
+          "kind": "property",
+          "signature": "string ApiKey",
+          "returnType": "string"
         }
       ]
     },
