@@ -4,6 +4,7 @@ using Granit.Tax.Stripe.Internal;
 using Granit.Tax.Stripe.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Stripe;
 
 namespace Granit.Tax.Stripe;
@@ -25,8 +26,7 @@ public sealed class GranitTaxStripeModule : GranitModule
         context.Services.AddHttpClient("StripeTax");
         context.Services.AddScoped<IStripeClient>(sp =>
         {
-            Microsoft.Extensions.Options.IOptions<StripeTaxOptions> opts =
-                sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<StripeTaxOptions>>();
+            IOptions<StripeTaxOptions> opts = sp.GetRequiredService<IOptions<StripeTaxOptions>>();
             HttpClient httpClient = sp.GetRequiredService<IHttpClientFactory>().CreateClient("StripeTax");
             return new StripeClient(
                 apiKey: opts.Value.SecretKey,

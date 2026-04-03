@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
+using Granit.MultiTenancy;
 using Granit.Tax.Diagnostics;
 using Granit.Tax.Options;
 using Granit.Timing;
@@ -29,6 +30,7 @@ internal sealed partial class ViesValidator(
     IOptions<TaxOptions> taxOptions,
     IClock clock,
     TaxMetrics metrics,
+    ICurrentTenant currentTenant,
     ILogger<ViesValidator> logger) : ITaxIdValidator
 {
     private const string CacheKeyPrefix = "granit:tax:vies:";
@@ -77,7 +79,7 @@ internal sealed partial class ViesValidator(
                         .ReadFromJsonAsync<ViesResponse>(ct)
                         .ConfigureAwait(false);
 
-                    metrics.RecordViesRequest(null, success: true);
+                    metrics.RecordViesRequest(currentTenant.Id?.ToString(), success: true);
 
                     if (viesResponse is null)
                     {
@@ -96,7 +98,7 @@ internal sealed partial class ViesValidator(
                 }
                 catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
                 {
-                    metrics.RecordViesRequest(null, success: false);
+                    metrics.RecordViesRequest(currentTenant.Id?.ToString(), success: false);
                     Log.ViesUnavailable(logger, ex);
 
                     return FallbackOrReject(normalizedTaxId, $"VIES unavailable: {ex.Message}");

@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-03-30
+Dernière mise à jour : 2026-04-03
 
 ---
 
@@ -12,7 +12,7 @@ Dernière mise à jour : 2026-03-30
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 78                 |
+| MIT          | 79                 |
 | Apache-2.0   | 34                 |
 | BSD-3-Clause | 2                  |
 | BSD-2-Clause | 1                  |
@@ -76,6 +76,7 @@ Dernière mise à jour : 2026-03-30
 | Sep | 0.12.3 | Copyright (c) 2023 nietras |
 | SmartFormat | 3.6.1 | Copyright 2011-2025 SmartFormat Project |
 | StackExchange.Redis | 2.12.8 | Copyright 2014-2026 Stack Exchange, Inc. |
+| Stripe.net | 47.* | Copyright (c) Stripe, Inc. |
 | Sylvan.Data.Excel | 0.5.4 | Copyright (c) Mark Pflug |
 | System.Composition.AttributedModel | 9.0.14 | (c) Microsoft Corporation |
 | System.Text.Json | 9.0.14 | (c) Microsoft Corporation |
@@ -268,6 +269,13 @@ corriger la vulnérabilité GHSA-g7hc-96xr-gvvx (CVE sur les versions < 4.15.1).
 Ce SDK est utilisé par les modules `Granit.*.AI` pour l'intégration avec des
 modèles de langage locaux via Ollama. Les données restent sur l'infrastructure
 de l'organisation (aucun appel vers des services cloud externes).
+
+### Stripe.net
+
+Ce SDK est utilisé par le package `Granit.Tax.Stripe` pour l'intégration avec
+l'API Stripe Tax (calcul de taxes multi-juridictions et validation de numéros
+de TVA). Les données de paiement transitent directement vers Stripe sans
+stockage intermédiaire.
 
 ### Yarp.ReverseProxy
 

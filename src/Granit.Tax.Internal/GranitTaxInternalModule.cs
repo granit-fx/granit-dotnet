@@ -12,8 +12,8 @@ namespace Granit.Tax.Internal;
 /// Self-hosted EU VAT tax calculator. Implements <see cref="ITaxCalculator"/>
 /// with EU VAT rules (reverse charge, OSS, export) and VIES online validation.
 /// </summary>
-[DependsOn(typeof(GranitCachingModule))]
 [DependsOn(
+    typeof(GranitCachingModule),
     typeof(GranitInvoicingModule),
     typeof(GranitTaxModule))]
 public sealed class GranitTaxInternalModule : GranitModule

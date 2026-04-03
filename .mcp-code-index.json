@@ -1325,6 +1325,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Payments.SepaTransfer",
+      "deps": [
+        "Granit.Guids",
+        "Granit.Payments"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Payments.Stripe",
       "deps": [
         "Granit.Guids",
@@ -1701,7 +1709,6 @@
     {
       "name": "Granit.Tax.EntityFrameworkCore",
       "deps": [
-        "Granit.Guids",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Tax"
       ],
@@ -25808,6 +25815,121 @@
       ]
     },
     {
+      "name": "BankStatementEntry",
+      "fqn": "Granit.Payments.SepaTransfer.Domain.BankStatementEntry",
+      "kind": "record",
+      "project": "Granit.Payments.SepaTransfer",
+      "file": "src/Granit.Payments.SepaTransfer/Domain/BankStatementEntry.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "ReconciliationMatch",
+      "fqn": "Granit.Payments.SepaTransfer.Domain.ReconciliationMatch",
+      "kind": "record",
+      "project": "Granit.Payments.SepaTransfer",
+      "file": "src/Granit.Payments.SepaTransfer/Domain/ReconciliationResult.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "ReconciliationResult",
+      "fqn": "Granit.Payments.SepaTransfer.Domain.ReconciliationResult",
+      "kind": "record",
+      "project": "Granit.Payments.SepaTransfer",
+      "file": "src/Granit.Payments.SepaTransfer/Domain/ReconciliationResult.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "GranitPaymentsSepaTransferModule",
+      "fqn": "Granit.Payments.SepaTransfer.GranitPaymentsSepaTransferModule",
+      "kind": "class",
+      "project": "Granit.Payments.SepaTransfer",
+      "file": "src/Granit.Payments.SepaTransfer/GranitPaymentsSepaTransferModule.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IBankReconciliationProcessor",
+      "fqn": "Granit.Payments.SepaTransfer.IBankReconciliationProcessor",
+      "kind": "interface",
+      "project": "Granit.Payments.SepaTransfer",
+      "file": "src/Granit.Payments.SepaTransfer/IBankReconciliationProcessor.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ProcessAsync",
+          "kind": "method",
+          "signature": "ProcessAsync(IReadOnlyList<BankStatementEntry> entries, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ReconciliationResult>"
+        }
+      ]
+    },
+    {
+      "name": "IBankStatementParser",
+      "fqn": "Granit.Payments.SepaTransfer.IBankStatementParser",
+      "kind": "interface",
+      "project": "Granit.Payments.SepaTransfer",
+      "file": "src/Granit.Payments.SepaTransfer/IBankStatementParser.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ParseAsync",
+          "kind": "method",
+          "signature": "ParseAsync(Stream stream, CancellationToken cancellationToken = default)",
+          "returnType": "string Format { get; } Task<IReadOnlyList<BankStatementEntry>>"
+        }
+      ]
+    },
+    {
+      "name": "SepaTransferOptions",
+      "fqn": "Granit.Payments.SepaTransfer.Options.SepaTransferOptions",
+      "kind": "class",
+      "project": "Granit.Payments.SepaTransfer",
+      "file": "src/Granit.Payments.SepaTransfer/Options/SepaTransferOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Iban",
+          "kind": "property",
+          "signature": "string Iban",
+          "returnType": "string"
+        },
+        {
+          "name": "Bic",
+          "kind": "property",
+          "signature": "string Bic",
+          "returnType": "string"
+        },
+        {
+          "name": "BeneficiaryName",
+          "kind": "property",
+          "signature": "string BeneficiaryName",
+          "returnType": "string"
+        },
+        {
+          "name": "ReferencePrefix",
+          "kind": "property",
+          "signature": "string ReferencePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "ExpirationDays",
+          "kind": "property",
+          "signature": "int ExpirationDays",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
       "name": "GranitPaymentsStripeModule",
       "fqn": "Granit.Payments.Stripe.GranitPaymentsStripeModule",
       "kind": "class",
@@ -32537,12 +32659,39 @@
       ]
     },
     {
+      "name": "TaxRateResponse",
+      "fqn": "Granit.Tax.Endpoints.Dtos.TaxRateResponse",
+      "kind": "record",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Dtos/TaxRateResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "TaxValidateRequest",
+      "fqn": "Granit.Tax.Endpoints.Dtos.TaxValidateRequest",
+      "kind": "record",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Dtos/TaxValidateRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TaxValidateResponse",
+      "fqn": "Granit.Tax.Endpoints.Dtos.TaxValidateResponse",
+      "kind": "record",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Dtos/TaxValidateResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "TaxEndpointRouteBuilderExtensions",
       "fqn": "Granit.Tax.Endpoints.Extensions.TaxEndpointRouteBuilderExtensions",
       "kind": "class",
       "project": "Granit.Tax.Endpoints",
       "file": "src/Granit.Tax.Endpoints/Extensions/TaxEndpointRouteBuilderExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "MapGranitTax",
@@ -32594,7 +32743,7 @@
       "kind": "class",
       "project": "Granit.Tax.EntityFrameworkCore",
       "file": "src/Granit.Tax.EntityFrameworkCore/Extensions/TaxEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitTaxEntityFrameworkCore",
@@ -32853,7 +33002,7 @@
       "kind": "class",
       "project": "Granit.Tax.Stripe",
       "file": "src/Granit.Tax.Stripe/GranitTaxStripeModule.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "ConfigureServices",

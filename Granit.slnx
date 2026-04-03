@@ -236,7 +236,10 @@
     <Project Path="src/Granit.Subscriptions.Internal/Granit.Subscriptions.Internal.csproj" />
     <Project Path="src/Granit.Subscriptions.Wolverine/Granit.Subscriptions.Wolverine.csproj" />
     <Project Path="src/Granit.Subscriptions/Granit.Subscriptions.csproj" />
+    <Project Path="src/Granit.Tax.Endpoints/Granit.Tax.Endpoints.csproj" />
+    <Project Path="src/Granit.Tax.EntityFrameworkCore/Granit.Tax.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Tax.Internal/Granit.Tax.Internal.csproj" />
+    <Project Path="src/Granit.Tax.Stripe/Granit.Tax.Stripe.csproj" />
     <Project Path="src/Granit.Tax/Granit.Tax.csproj" />
   </Folder>
   <Folder Name="/src/AI/">
@@ -517,7 +520,10 @@
     <Project Path="tests/Granit.Subscriptions.Internal.Tests/Granit.Subscriptions.Internal.Tests.csproj" />
     <Project Path="tests/Granit.Subscriptions.Notifications.Tests/Granit.Subscriptions.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Subscriptions.Wolverine.Tests/Granit.Subscriptions.Wolverine.Tests.csproj" />
+    <Project Path="tests/Granit.Tax.Endpoints.Tests/Granit.Tax.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.Tax.EntityFrameworkCore.Tests/Granit.Tax.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Tax.Internal.Tests/Granit.Tax.Internal.Tests.csproj" />
+    <Project Path="tests/Granit.Tax.Stripe.Tests/Granit.Tax.Stripe.Tests.csproj" />
     <Project Path="tests/Granit.Tax.Tests/Granit.Tax.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">

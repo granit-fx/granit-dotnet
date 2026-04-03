@@ -294,7 +294,10 @@
         "tests/Granit.Subscriptions.Notifications.Tests",
         "tests/Granit.Subscriptions.Tests",
         "tests/Granit.Subscriptions.Wolverine.Tests",
+        "tests/Granit.Tax.Endpoints.Tests",
+        "tests/Granit.Tax.EntityFrameworkCore.Tests",
         "tests/Granit.Tax.Internal.Tests",
+        "tests/Granit.Tax.Stripe.Tests",
         "tests/Granit.Tax.Tests"
       ]
     },

@@ -1,5 +1,6 @@
 using Granit.Invoicing;
 using Granit.Invoicing.Dtos;
+using Granit.MultiTenancy;
 using Granit.Tax.Diagnostics;
 using Granit.Tax.Options;
 using Granit.Timing;
@@ -19,7 +20,8 @@ internal sealed class EuVatTaxCalculator(
     ITaxIdValidator taxIdValidator,
     IOptions<TaxOptions> taxOptions,
     IClock clock,
-    TaxMetrics metrics) : ITaxCalculator
+    TaxMetrics metrics,
+    ICurrentTenant currentTenant) : ITaxCalculator
 {
     /// <inheritdoc/>
     public string Name => "eu-vat";
@@ -77,7 +79,7 @@ internal sealed class EuVatTaxCalculator(
                 Jurisdiction: jurisdiction));
         }
 
-        metrics.RecordCalculation(null, Name);
+        metrics.RecordCalculation(currentTenant.Id?.ToString(), Name);
 
         return new TaxResult(lineResults, totalTax, jurisdiction);
     }

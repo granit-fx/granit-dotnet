@@ -47,7 +47,10 @@
       "src/Granit.Subscriptions.Notifications/Granit.Subscriptions.Notifications.csproj",
       "src/Granit.Subscriptions.Wolverine/Granit.Subscriptions.Wolverine.csproj",
       "src/Granit.Subscriptions/Granit.Subscriptions.csproj",
+      "src/Granit.Tax.Endpoints/Granit.Tax.Endpoints.csproj",
+      "src/Granit.Tax.EntityFrameworkCore/Granit.Tax.EntityFrameworkCore.csproj",
       "src/Granit.Tax.Internal/Granit.Tax.Internal.csproj",
+      "src/Granit.Tax.Stripe/Granit.Tax.Stripe.csproj",
       "src/Granit.Tax/Granit.Tax.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation.Europe/Granit.Validation.Europe.csproj",
@@ -77,7 +80,10 @@
       "tests/Granit.Subscriptions.Internal.Tests/Granit.Subscriptions.Internal.Tests.csproj",
       "tests/Granit.Subscriptions.Notifications.Tests/Granit.Subscriptions.Notifications.Tests.csproj",
       "tests/Granit.Subscriptions.Wolverine.Tests/Granit.Subscriptions.Wolverine.Tests.csproj",
+      "tests/Granit.Tax.Endpoints.Tests/Granit.Tax.Endpoints.Tests.csproj",
+      "tests/Granit.Tax.EntityFrameworkCore.Tests/Granit.Tax.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Tax.Internal.Tests/Granit.Tax.Internal.Tests.csproj",
+      "tests/Granit.Tax.Stripe.Tests/Granit.Tax.Stripe.Tests.csproj",
       "tests/Granit.Tax.Tests/Granit.Tax.Tests.csproj"
     ]
   }

@@ -1,3 +1,4 @@
+using Granit.Tax.Endpoints.Endpoints;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -16,10 +17,8 @@ public static class TaxEndpointRouteBuilderExtensions
             .MapGranitGroup("tax")
             .WithTags("Tax");
 
-        // POST /validate — validate a tax ID
-        // GET /rates — list current rates
-        // GET /rates/{countryCode} — rate for a country
-        // POST /calculate — ad-hoc tax calculation
+        group.MapValidationEndpoints();
+        group.MapRateEndpoints();
 
         return group;
     }

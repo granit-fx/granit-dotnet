@@ -1,116 +1,95 @@
 ---
-title: "Tax — Calculation, Validation & Compliance"
-description: Provider-agnostic tax calculation with EU VAT rule engine, VIES online validation with offline fallback, Stripe Tax API integration, and admin-managed rate overrides. Sovereignty-capable — self-hosted EU VAT works without any external dependency.
+title: "Tax — VAT Calculation, Validation & Compliance"
+description: Provider-agnostic tax engine for Granit. EU VAT rules (reverse charge, OSS, export), online tax ID validation (VIES, Stripe), configurable rates with DB overrides, and multi-tenant metrics. Self-hosted or Stripe Tax — your choice.
 sidebar:
   label: Tax
   order: 5
 ---
 
-import { Tabs, TabItem, FileTree } from "@astrojs/starlight/components";
+import { FileTree } from "@astrojs/starlight/components";
 
-Granit.Tax provides **provider-agnostic tax calculation and validation** with two
-built-in strategies: self-hosted EU VAT rules (free, sovereign) and Stripe Tax API
-(multi-jurisdiction, global). The module integrates with [Invoicing](/dotnet/saas/invoicing/)
-via `ITaxCalculator` — tax is calculated automatically during invoice creation.
+Granit.Tax provides a **provider-agnostic** tax engine for SaaS and e-commerce.
+It handles tax rate lookup, online tax ID validation, and EU VAT classification
+(reverse charge, OSS, export). Two providers ship out of the box: self-hosted
+EU VAT rules or Stripe Tax API.
+
+## Why Granit.Tax?
+
+- **EU VAT compliance** out of the box: reverse charge, OSS, intra-community rules
+- **Online validation** against VIES (EU), with offline fallback and retry
+- **Provider-agnostic** — switch between self-hosted and Stripe Tax without code changes
+- **Multi-tenant** — rates, validations, and metrics are tenant-aware
+- **Audit trail** — VIES request identifiers stored for ISO 27001 compliance
 
 ## Package structure
 
 <FileTree>
-- Granit.Tax/ Core: ITaxIdValidator, ITaxRateProvider, EuCountries, TaxOptions, diagnostics
-  - Granit.Tax.Internal Self-hosted EU VAT: rule engine, VIES validation, 27 country rates
-  - Granit.Tax.Stripe Stripe Tax Calculations API + Tax IDs API
-  - Granit.Tax.EntityFrameworkCore ValidatedTaxId cache, TaxRateOverride persistence
-  - Granit.Tax.Endpoints Admin API (validate, rates, calculate) with RBAC
+- Granit.Tax/ Abstractions: ITaxIdValidator, ITaxRateProvider, domain types, metrics
+  - Granit.Tax.Internal Self-hosted EU VAT rules + VIES validation + configurable rates
+  - Granit.Tax.EntityFrameworkCore DB-persisted rate overrides and validated tax ID cache
+  - Granit.Tax.Endpoints Minimal API (validate, rates, rate by country) with RBAC
+  - Granit.Tax.Stripe Stripe Tax Calculations + Tax IDs API integration
 </FileTree>
 
-## Provider strategies
+## Provider comparison
 
-<Tabs>
-<TabItem label="Self-hosted (Internal)">
+| Feature | Internal (self-hosted) | Stripe Tax |
+| ------- | --------------------- | ---------- |
+| EU VAT rules | Full (reverse charge, OSS, export) | Stripe-managed |
+| Tax ID validation | VIES + offline fallback | Stripe Tax IDs |
+| Rate source | Config + DB overrides | Stripe API |
+| US Sales Tax | Not supported | Supported |
+| Dependency | None (EU only) | Stripe account |
 
-Best for **EU B2B SaaS** — covers 95% of use cases with zero external dependency.
+## EU VAT classification
 
-- EU VAT rule engine (5 scenarios)
-- VIES online validation (EU Commission REST API)
-- Offline fallback when VIES is down
-- 27 EU standard rates built-in
+The internal provider uses a pure rule engine to classify transactions:
+
+```mermaid
+flowchart TD
+    START([Transaction]) --> EU{Buyer in EU?}
+    EU -- No --> EXPORT[Export 0%]
+    EU -- Yes --> SAME{Same country?}
+    SAME -- Yes --> DOM[Domestic rate]
+    SAME -- No --> VAT{Valid VAT?}
+    VAT -- Yes --> RC[Reverse charge 0%]
+    VAT -- No --> OSS{OSS enabled?}
+    OSS -- Yes --> BUYER[Buyer country rate]
+    OSS -- No --> SELLER[Seller country rate]
+```
+
+## Quick start
+
+### Self-hosted EU VAT
 
 ```csharp
-builder.AddGranitTax();
-builder.AddGranitTaxInternal();
+// Program.cs
+builder.AddGranitTax();          // Base abstractions + metrics
+
+// Granit.Tax.Internal provides ITaxCalculator, ITaxIdValidator, ITaxRateProvider
+// via GranitTaxInternalModule — auto-discovered by the module system.
+
+// Optional: DB-managed rate overrides
+builder.AddGranitTaxEntityFrameworkCore(options =>
+    options.UseNpgsql(connectionString));
 ```
 
-</TabItem>
-<TabItem label="Stripe Tax">
-
-Best for **B2C global SaaS** — multi-jurisdiction tax (US Sales Tax, EU VAT, UK VAT).
-
-- Stripe Tax Calculations API
-- Stripe Tax IDs validation
-- Handles US nexus per state/county
+### Stripe Tax
 
 ```csharp
-builder.AddGranitTax();
-builder.AddGranitTaxStripe();
+// appsettings.json
+{
+  "Tax": {
+    "SellerCountryCode": "BE",
+    "Stripe": {
+      "SecretKey": "sk_live_..."
+    }
+  }
+}
 ```
 
-</TabItem>
-</Tabs>
-
-## EU VAT rule engine
-
-The `EuVatRuleEngine` classifies transactions based on seller/buyer locations and
-VAT validation status:
-
-| Scenario | Seller | Buyer | Buyer VAT valid? | Rate | Exemption |
-|----------|--------|-------|-----------------|------|-----------|
-| Domestic | BE | BE | Any | Seller rate (21%) | None |
-| Intra-EU B2B | BE | DE | Yes (VIES) | 0% | ReverseCharge |
-| Intra-EU B2C (no OSS) | BE | DE | No | Seller rate (BE 21%) | None |
-| Intra-EU B2C (OSS) | BE | DE | No | Buyer rate (DE 19%) | None |
-| Export (non-EU) | BE | US | N/A | 0% | Export |
-
-:::tip[Northern Ireland]
-For digital services (SaaS), Northern Ireland follows UK rules post-Brexit.
-`EuCountries` excludes both `GB` and `XI`. Buyers with XI prefix fall into
-the Export bucket (0%). The XI prefix only matters for physical goods
-(Windsor Framework).
-:::
-
-## VIES validation
-
-Online VAT number validation via the EU Commission REST API:
-
-```text
-POST https://ec.europa.eu/taxation_customs/vies/rest-api/check-vat-number
-```
-
-Results are cached in `IMemoryCache` (configurable TTL, default 24h) and
-persisted in `ValidatedTaxId` entity for audit trail.
-
-### Fallback strategy
-
-When VIES is down, two modes via `TaxOptions.AllowOfflineFallback`:
-
-- **Strict (false)**: treat VAT as invalid, charge buyer country rate
-- **Lenient (true, default)**: if offline format validation passes, accept reverse
-  charge and save as `OfflinePending`. Background job retries VIES later.
-
-## Invoice integration
-
-`ITaxCalculator` is wired in `CreateInvoiceHandler`:
-
-```text
-CreateInvoiceCommand
-  → CreateInvoiceHandler
-    1. Create draft invoice + line items
-    2. ITaxCalculator.CalculateAsync() → SetTaxTotal()
-    3. IInvoiceNumberGenerator.GenerateNextAsync()
-    4. Finalize() → InvoiceFinalizedEto → auto-payment
-```
-
-Both `ITaxCalculator` and `IInvoiceNumberGenerator` are optional. Without a tax
-provider, invoices are created with zero tax.
+Register `GranitTaxStripeModule` instead of `GranitTaxInternalModule` — the
+abstractions (`ITaxCalculator`, `ITaxIdValidator`) are swapped automatically.
 
 ## Configuration
 
@@ -120,33 +99,48 @@ provider, invoices are created with zero tax.
     "SellerCountryCode": "BE",
     "SellerVatNumber": "BE0123456789",
     "OssEnabled": true,
+    "OssRegisteredCountries": ["FR", "DE", "NL"],
     "AllowOfflineFallback": true,
-    "ValidationCacheTtlHours": 24
+    "ValidationCacheTtlHours": 24,
+    "Internal": {
+      "Rates": {
+        "StandardRates": { "FI": 0.255 },
+        "ReducedRates": { "FR": 0.055 }
+      }
+    }
   }
 }
 ```
 
-## Admin API
+| Option | Default | Description |
+| ------ | ------- | ----------- |
+| `SellerCountryCode` | `"BE"` | Seller's ISO country code |
+| `OssEnabled` | `false` | Enable EU One-Stop Shop for B2C |
+| `AllowOfflineFallback` | `true` | Accept offline VAT check when VIES is down |
+| `ValidationCacheTtlHours` | `24` | FusionCache TTL for VIES results |
 
-| Method | Route | Permission |
-|--------|-------|------------|
-| POST | `/api/granit/tax/validate` | `Tax.Validations.Execute` |
-| GET | `/api/granit/tax/rates` | `Tax.Rates.Read` |
-| GET | `/api/granit/tax/rates/{countryCode}` | `Tax.Rates.Read` |
-| POST | `/api/granit/tax/calculate` | `Tax.Validations.Execute` |
+## Endpoints
 
-## Observability
+All endpoints require authorization. Map them with `endpoints.MapGranitTax()`.
+
+| Method | Path | Permission | Description |
+| ------ | ---- | ---------- | ----------- |
+| POST | `/tax/validate` | `Tax.Validations.Execute` | Validate a tax ID online |
+| GET | `/tax/rates` | `Tax.Rates.Read` | List all current tax rates |
+| GET | `/tax/rates/{countryCode}` | `Tax.Rates.Read` | Get rate for a country |
+
+## Metrics
 
 Meter: `Granit.Tax`
 
-| Metric | Type | Tags |
-|--------|------|------|
-| `granit.tax.calculation.completed` | Counter | `tenant_id`, `provider` |
-| `granit.tax.validation.completed` | Counter | `tenant_id`, `source`, `is_valid` |
-| `granit.tax.vies.request` | Counter | `tenant_id`, `success` |
+| Metric | Type | Tags | Description |
+| ------ | ---- | ---- | ----------- |
+| `granit.tax.calculation.completed` | Counter | `tenant_id`, `provider` | Tax calculations completed |
+| `granit.tax.validation.completed` | Counter | `tenant_id`, `source`, `is_valid` | Tax ID validations completed |
+| `granit.tax.vies.request` | Counter | `tenant_id`, `success` | VIES API requests |
 
 ## See also
 
-- [SaaS Overview](/dotnet/saas/) — ecosystem architecture
-- [Invoicing](/dotnet/saas/invoicing/) — invoice lifecycle and ITaxCalculator integration
-- [Payments](/dotnet/saas/payments/) — payment processing after invoice finalization
+- [Invoicing](/dotnet/saas/invoicing/) — Invoices consume `ITaxCalculator` for line-item tax
+- [Payments](/dotnet/saas/payments/) — Payment collection after invoice finalization
+- [Subscriptions](/dotnet/saas/subscriptions/) — Subscription plans trigger invoice creation

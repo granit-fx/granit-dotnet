@@ -5,6 +5,12 @@ using Stripe;
 namespace Granit.Tax.Stripe.Internal;
 
 /// <summary>Stripe Tax IDs API implementation of <see cref="ITaxIdValidator"/>.</summary>
+/// <remarks>
+/// Stripe validates tax IDs when they are attached to a Customer object.
+/// This implementation creates a tax ID verification request and checks the
+/// status. For countries not supported by Stripe, it falls back to format-only
+/// validation with <see cref="TaxIdValidationSource.Offline"/> source.
+/// </remarks>
 internal sealed partial class StripeTaxIdValidator(
     IStripeClient stripeClient,
     IClock clock,
@@ -20,25 +26,24 @@ internal sealed partial class StripeTaxIdValidator(
     {
         try
         {
-            // Stripe validates tax IDs via the Tax IDs API on Customer objects
-            // For standalone validation, we create a temporary tax ID verification
-            var service = new TaxIdService(stripeClient);
-
-            // Map country + tax ID to Stripe tax ID type
             string taxIdType = MapToStripeTaxIdType(countryCode);
 
-            // Note: Stripe Tax ID validation requires a Customer.
-            // For standalone validation without a customer, we return the format check result.
-            // Full implementation requires creating a temporary customer or using the
-            // tax_ids.create API on an existing customer.
+            // Use Stripe Tax ID verification endpoint
+            var service = new TaxIdService(stripeClient);
+            TaxId stripeTaxId = await service.CreateAsync(new TaxIdCreateOptions
+            {
+                Type = taxIdType,
+                Value = taxId,
+            }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            Log.ValidationAttempted(logger, taxId, countryCode);
+            bool isValid = stripeTaxId.Verification?.Status == "verified";
+            Log.ValidationCompleted(logger, taxId, countryCode, isValid);
 
             return new TaxIdValidationResult(
-                IsValid: true, // Stripe validates on creation
-                CompanyName: null,
-                CompanyAddress: null,
-                RequestIdentifier: null,
+                IsValid: isValid,
+                CompanyName: stripeTaxId.Verification?.VerifiedName,
+                CompanyAddress: stripeTaxId.Verification?.VerifiedAddress,
+                RequestIdentifier: stripeTaxId.Id,
                 ValidatedAt: clock.Now,
                 Source: TaxIdValidationSource.StripeTax);
         }
@@ -68,8 +73,8 @@ internal sealed partial class StripeTaxIdValidator(
 
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Information, Message = "Stripe Tax ID validation attempted: {TaxId} ({Country})")]
-        public static partial void ValidationAttempted(ILogger logger, string taxId, string country);
+        [LoggerMessage(Level = LogLevel.Information, Message = "Stripe Tax ID validation completed: {TaxId} ({Country}), valid = {IsValid}")]
+        public static partial void ValidationCompleted(ILogger logger, string taxId, string country, bool isValid);
 
         [LoggerMessage(Level = LogLevel.Warning, Message = "Stripe Tax ID validation error for {TaxId}")]
         public static partial void ValidationError(ILogger logger, Exception ex, string taxId);
