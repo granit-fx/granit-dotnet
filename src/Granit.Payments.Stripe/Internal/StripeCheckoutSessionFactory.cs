@@ -1,4 +1,4 @@
-using Granit.Payments.Dtos;
+using Granit.Payments.Contracts;
 
 namespace Granit.Payments.Stripe.Internal;
 
@@ -7,9 +7,9 @@ internal sealed class StripeCheckoutSessionFactory : ICheckoutSessionFactory
 {
     public string ProviderName => "stripe";
 
-    public Task<CheckoutSession> CreateAsync(CheckoutSessionRequest request, CancellationToken cancellationToken = default)
+    public Task<PaymentCheckoutSession> CreateAsync(PaymentCheckoutSessionRequest request, CancellationToken cancellationToken = default)
     {
         // TODO: Implement via Stripe Checkout Session API
-        throw new NotImplementedException("Stripe checkout implementation pending.");
+        throw new NotSupportedException("Stripe checkout not configured.");
     }
 }

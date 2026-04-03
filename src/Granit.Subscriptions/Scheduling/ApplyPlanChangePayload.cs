@@ -1,6 +1,6 @@
 using Granit.Scheduling;
 
-namespace Granit.Subscriptions.Events;
+namespace Granit.Subscriptions.Scheduling;
 
 /// <summary>
 /// Scheduled payload for applying a plan change at a future date.

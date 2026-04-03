@@ -10,8 +10,10 @@ public sealed class Refund : Entity
     /// <summary>Creates a new pending refund.</summary>
     public static Refund Create(
         Guid id, decimal amount, string currency,
-        DateTimeOffset createdAt, string? reason = null) =>
-        new()
+        DateTimeOffset createdAt, string? reason = null)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(amount);
+        return new Refund
         {
             Id = id,
             Amount = amount,
@@ -20,6 +22,7 @@ public sealed class Refund : Entity
             Status = RefundStatus.Pending,
             CreatedAt = createdAt,
         };
+    }
 
     public decimal Amount { get; private set; }
     public string Currency { get; private set; } = string.Empty;

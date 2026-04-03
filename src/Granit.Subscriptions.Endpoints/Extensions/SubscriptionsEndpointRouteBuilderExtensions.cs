@@ -19,10 +19,6 @@ public static class SubscriptionsEndpointRouteBuilderExtensions
             .MapGranitGroup("subscriptions")
             .WithTags("Subscriptions");
 
-        // Plan endpoints will be added in subsequent stories
-        // Subscription endpoints will be added in subsequent stories
-        // Seat endpoints will be added in subsequent stories
-
         return group;
     }
 }

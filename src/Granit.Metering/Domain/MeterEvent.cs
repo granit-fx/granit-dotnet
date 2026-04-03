@@ -29,6 +29,7 @@ public sealed class MeterEvent : Entity, IMultiTenant
         DateTimeOffset timestamp,
         string? metadata = null)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(quantity);
         ArgumentException.ThrowIfNullOrWhiteSpace(idempotencyKey);
 
         return new MeterEvent

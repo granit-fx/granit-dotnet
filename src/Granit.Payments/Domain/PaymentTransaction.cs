@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.Domain;
 using Granit.Payments.Events;
 
@@ -34,11 +35,12 @@ public sealed class PaymentTransaction : AuditedAggregateRoot, IMultiTenant
         string providerName,
         string idempotencyKey)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(amount);
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
         ArgumentException.ThrowIfNullOrWhiteSpace(providerName);
         ArgumentException.ThrowIfNullOrWhiteSpace(idempotencyKey);
 
-        return new PaymentTransaction
+        var transaction = new PaymentTransaction
         {
             Id = id,
             TenantId = tenantId,
@@ -49,6 +51,9 @@ public sealed class PaymentTransaction : AuditedAggregateRoot, IMultiTenant
             IdempotencyKey = idempotencyKey,
             Status = PaymentStatus.Created,
         };
+
+        transaction.AddDomainEvent(new PaymentCreatedEvent(id, invoiceId, tenantId));
+        return transaction;
     }
 
     // ── Properties ─────────────────────────────────────────────────────
@@ -84,6 +89,7 @@ public sealed class PaymentTransaction : AuditedAggregateRoot, IMultiTenant
     public string? FailureCode { get; private set; }
 
     /// <summary>Human-readable failure message.</summary>
+    [SensitiveData]
     public string? FailureMessage { get; private set; }
 
     /// <summary>When the payment succeeded.</summary>
@@ -99,7 +105,10 @@ public sealed class PaymentTransaction : AuditedAggregateRoot, IMultiTenant
     public IReadOnlyList<Dispute> Disputes => _disputes.AsReadOnly();
 
     /// <inheritdoc />
-    public Guid? TenantId { get; set; }
+    public Guid? TenantId { get; private set; }
+
+    /// <inheritdoc />
+    Guid? IMultiTenant.TenantId { get; set; }
 
     // ── Status transitions (idempotent) ────────────────────────────────
 
@@ -212,6 +221,8 @@ public sealed class PaymentTransaction : AuditedAggregateRoot, IMultiTenant
     /// </summary>
     public Refund RequestRefund(Guid refundId, decimal amount, DateTimeOffset createdAt, string? reason = null)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(amount);
+
         if (Status != PaymentStatus.Succeeded)
         {
             throw new InvalidOperationException(

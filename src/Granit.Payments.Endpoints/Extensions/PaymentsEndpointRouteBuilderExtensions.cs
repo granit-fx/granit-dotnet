@@ -16,9 +16,6 @@ public static class PaymentsEndpointRouteBuilderExtensions
             .MapGranitGroup("payments")
             .WithTags("Payments");
 
-        // Charge, refund, checkout, methods, webhook endpoints will be added
-        // Webhook endpoint: POST /api/payments/webhooks/{provider} [AllowAnonymous]
-
         return group;
     }
 }

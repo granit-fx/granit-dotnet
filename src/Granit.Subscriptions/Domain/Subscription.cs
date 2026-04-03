@@ -95,7 +95,10 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     public IReadOnlyList<SubscriptionExternalMapping> ExternalMappings => _externalMappings.AsReadOnly();
 
     /// <inheritdoc />
-    public Guid? TenantId { get; set; }
+    public Guid? TenantId { get; private set; }
+
+    /// <inheritdoc />
+    Guid? IMultiTenant.TenantId { get; set; }
 
     // ── IWorkflowStateful ──────────────────────────────────────────────
 
@@ -217,6 +220,12 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     /// <summary>Advances to the next billing period.</summary>
     public void AdvancePeriod(DateTimeOffset newPeriodStart, DateTimeOffset newPeriodEnd)
     {
+        if (Status is not (SubscriptionStatus.Active or SubscriptionStatus.Trial or SubscriptionStatus.PastDue))
+        {
+            throw new InvalidOperationException(
+                $"Cannot advance billing period for subscription '{Id}' in '{Status}' status.");
+        }
+
         CurrentPeriodStart = newPeriodStart;
         CurrentPeriodEnd = newPeriodEnd;
         AddDistributedEvent(new BillingCycleCompletedEto(

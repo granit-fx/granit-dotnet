@@ -27,10 +27,10 @@ internal sealed class PaymentTransactionConfiguration : IEntityTypeConfiguration
 
         builder.HasIndex(e => new { e.TenantId, e.Status })
             .HasDatabaseName($"ix_{GranitPaymentsDbProperties.DbTablePrefix}transactions_tenant_status");
-        builder.HasIndex(e => e.IdempotencyKey).IsUnique()
-            .HasDatabaseName($"uq_{GranitPaymentsDbProperties.DbTablePrefix}transactions_idempotency");
+        builder.HasIndex(e => new { e.TenantId, e.IdempotencyKey }).IsUnique()
+            .HasDatabaseName($"uq_{GranitPaymentsDbProperties.DbTablePrefix}transactions_tenant_idempotency");
         builder.HasIndex(e => new { e.ProviderName, e.ProviderTransactionId })
-            .HasFilter("[ProviderTransactionId] IS NOT NULL")
+            .HasFilter("\"ProviderTransactionId\" IS NOT NULL")
             .HasDatabaseName($"ix_{GranitPaymentsDbProperties.DbTablePrefix}transactions_provider");
     }
 }

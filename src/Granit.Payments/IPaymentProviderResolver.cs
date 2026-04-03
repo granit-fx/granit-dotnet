@@ -1,5 +1,5 @@
+using Granit.Payments.Contracts;
 using Granit.Payments.Domain;
-using Granit.Payments.Dtos;
 
 namespace Granit.Payments;
 
@@ -13,5 +13,5 @@ public interface IPaymentProviderResolver
     IPaymentProvider Resolve(Guid tenantId, PaymentMethodType methodType);
 
     /// <summary>Returns all available payment methods for a tenant (for checkout UI).</summary>
-    IReadOnlyList<AvailablePaymentMethod> GetAvailableProviders(Guid tenantId);
+    IReadOnlyList<PaymentAvailableMethod> GetAvailableProviders(Guid tenantId);
 }

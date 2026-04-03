@@ -43,18 +43,18 @@ internal sealed class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.HasMany(e => e.Documents).WithOne().HasForeignKey("InvoiceId").OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(e => e.InvoiceNumber).IsUnique()
-            .HasFilter("[InvoiceNumber] IS NOT NULL")
+            .HasFilter("\"InvoiceNumber\" IS NOT NULL")
             .HasDatabaseName($"uq_{GranitInvoicingDbProperties.DbTablePrefix}invoices_number");
 
         builder.HasIndex(e => new { e.TenantId, e.Status })
             .HasDatabaseName($"ix_{GranitInvoicingDbProperties.DbTablePrefix}invoices_tenant_status");
 
         builder.HasIndex(e => e.DueAt)
-            .HasFilter("[Status] = 1")
+            .HasFilter("\"Status\" = 1")
             .HasDatabaseName($"ix_{GranitInvoicingDbProperties.DbTablePrefix}invoices_due_at_open");
 
         builder.HasIndex(e => e.ParentInvoiceId)
-            .HasFilter("[ParentInvoiceId] IS NOT NULL")
+            .HasFilter("\"ParentInvoiceId\" IS NOT NULL")
             .HasDatabaseName($"ix_{GranitInvoicingDbProperties.DbTablePrefix}invoices_parent");
     }
 }

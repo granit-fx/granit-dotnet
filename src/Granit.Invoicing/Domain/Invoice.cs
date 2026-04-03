@@ -163,7 +163,10 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
     public IReadOnlyList<InvoiceDocument> Documents => _documents.AsReadOnly();
 
     /// <inheritdoc />
-    public Guid? TenantId { get; set; }
+    public Guid? TenantId { get; private set; }
+
+    /// <inheritdoc />
+    Guid? IMultiTenant.TenantId { get; set; }
 
     // ── Computed ───────────────────────────────────────────────────────
 
@@ -258,6 +261,15 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
     /// <returns><c>true</c> if status changed to Paid; <c>false</c> if still Open.</returns>
     public bool RecordPayment(decimal amount, DateTimeOffset paidAt, decimal tolerance = 0)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(amount);
+        ArgumentOutOfRangeException.ThrowIfNegative(tolerance);
+
+        if (tolerance > Total * 0.05m)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(tolerance), tolerance, $"Tolerance cannot exceed 5% of invoice total ({Total}).");
+        }
+
         if (Status == InvoiceStatus.Paid)
         {
             return false;
@@ -325,6 +337,9 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
     }
 
     /// <summary>Voids the document (cancels, preserves paper trail).</summary>
+    /// <remarks>
+    /// Invoices with recorded payments cannot be voided — issue a credit note instead.
+    /// </remarks>
     public bool VoidInvoice()
     {
         if (Status == InvoiceStatus.Void)
@@ -336,6 +351,12 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         {
             throw new InvalidOperationException(
                 $"Cannot void document '{Id}' from '{Status}' status.");
+        }
+
+        if (AmountPaid > 0)
+        {
+            throw new InvalidOperationException(
+                $"Cannot void document '{Id}' with recorded payments ({AmountPaid} {Currency}). Issue a credit note instead.");
         }
 
         Status = InvoiceStatus.Void;

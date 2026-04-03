@@ -16,8 +16,6 @@ public static class InvoicingEndpointRouteBuilderExtensions
             .MapGranitGroup("invoicing")
             .WithTags("Invoicing");
 
-        // Invoice and credit note endpoints will be added in subsequent stories
-
         return group;
     }
 }

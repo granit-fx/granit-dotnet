@@ -21,12 +21,15 @@ public static class SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtens
         builder.Services.AddInternalDbContextEnsurer<SubscriptionsDbContext>();
 
         builder.Services.AddScoped<EfPlanStore>();
-        builder.Services.Replace(ServiceDescriptor.Scoped<IPlanReader>(sp => sp.GetRequiredService<EfPlanStore>()));
-        builder.Services.Replace(ServiceDescriptor.Scoped<IPlanWriter>(sp => sp.GetRequiredService<EfPlanStore>()));
+        builder.Services.TryAddScoped<IPlanReader>(sp => sp.GetRequiredService<EfPlanStore>());
+        builder.Services.TryAddScoped<IPlanWriter>(sp => sp.GetRequiredService<EfPlanStore>());
 
         builder.Services.AddScoped<EfSubscriptionStore>();
-        builder.Services.Replace(ServiceDescriptor.Scoped<ISubscriptionReader>(sp => sp.GetRequiredService<EfSubscriptionStore>()));
-        builder.Services.Replace(ServiceDescriptor.Scoped<ISubscriptionWriter>(sp => sp.GetRequiredService<EfSubscriptionStore>()));
+        builder.Services.TryAddScoped<ISubscriptionReader>(sp => sp.GetRequiredService<EfSubscriptionStore>());
+        builder.Services.TryAddScoped<ISubscriptionWriter>(sp => sp.GetRequiredService<EfSubscriptionStore>());
+
+        builder.Services.TryAddScoped<ISeatReader, EfSeatReader>();
+        builder.Services.TryAddScoped<ISeatWriter, EfSeatWriter>();
 
         return builder;
     }

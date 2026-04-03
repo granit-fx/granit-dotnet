@@ -1,4 +1,4 @@
-using Granit.Payments.Dtos;
+using Granit.Payments.Contracts;
 
 namespace Granit.Payments;
 
@@ -9,5 +9,5 @@ public interface ICheckoutSessionFactory
     string ProviderName { get; }
 
     /// <summary>Creates a checkout session.</summary>
-    Task<CheckoutSession> CreateAsync(CheckoutSessionRequest request, CancellationToken cancellationToken = default);
+    Task<PaymentCheckoutSession> CreateAsync(PaymentCheckoutSessionRequest request, CancellationToken cancellationToken = default);
 }

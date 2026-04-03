@@ -45,56 +45,56 @@ public sealed class MeteringMetrics
     }
 
     /// <summary>Records a meter event insertion.</summary>
-    public void RecordEvent(string? tenantId, string meterName)
+    public void RecordEvent(string? tenantId, Guid meterDefinitionId)
     {
         var tags = new TagList
         {
             { "tenant_id", tenantId ?? "global" },
-            { "meter_name", meterName },
+            { "meter_definition_id", meterDefinitionId.ToString() },
         };
         _eventsRecorded.Add(1, tags);
     }
 
     /// <summary>Records a deduplicated (ignored) event.</summary>
-    public void RecordDeduplicated(string? tenantId, string meterName)
+    public void RecordDeduplicated(string? tenantId, Guid meterDefinitionId)
     {
         var tags = new TagList
         {
             { "tenant_id", tenantId ?? "global" },
-            { "meter_name", meterName },
+            { "meter_definition_id", meterDefinitionId.ToString() },
         };
         _eventsDeduplicated.Add(1, tags);
     }
 
     /// <summary>Records a completed aggregation batch.</summary>
-    public void RecordAggregation(string? tenantId, string meterName, long eventCount)
+    public void RecordAggregation(string? tenantId, Guid meterDefinitionId, long eventCount)
     {
         var tags = new TagList
         {
             { "tenant_id", tenantId ?? "global" },
-            { "meter_name", meterName },
+            { "meter_definition_id", meterDefinitionId.ToString() },
         };
-        _aggregationsCompleted.Add(1, tags);
+        _aggregationsCompleted.Add(eventCount, tags);
     }
 
     /// <summary>Records a quota threshold alert.</summary>
-    public void RecordQuotaThreshold(string? tenantId, string meterName)
+    public void RecordQuotaThreshold(string? tenantId, Guid meterDefinitionId)
     {
         var tags = new TagList
         {
             { "tenant_id", tenantId ?? "global" },
-            { "meter_name", meterName },
+            { "meter_definition_id", meterDefinitionId.ToString() },
         };
         _quotaThresholdsReached.Add(1, tags);
     }
 
     /// <summary>Records a quota exceeded alert.</summary>
-    public void RecordQuotaExceeded(string? tenantId, string meterName)
+    public void RecordQuotaExceeded(string? tenantId, Guid meterDefinitionId)
     {
         var tags = new TagList
         {
             { "tenant_id", tenantId ?? "global" },
-            { "meter_name", meterName },
+            { "meter_definition_id", meterDefinitionId.ToString() },
         };
         _quotasExceeded.Add(1, tags);
     }

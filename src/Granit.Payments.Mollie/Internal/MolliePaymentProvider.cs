@@ -1,4 +1,5 @@
-using Granit.Payments.Dtos;
+using Granit.Payments.Contracts;
+using Granit.Payments.Domain;
 
 namespace Granit.Payments.Mollie.Internal;
 
@@ -7,12 +8,15 @@ internal sealed class MolliePaymentProvider : IPaymentProvider
 {
     public string Name => "mollie";
 
-    public Task<ProviderChargeResult> ChargeAsync(ChargeRequest request, CancellationToken cancellationToken = default) =>
-        throw new NotImplementedException("Mollie provider implementation pending.");
+    public Task<PaymentProviderChargeResult> ChargeAsync(PaymentChargeRequest request, CancellationToken cancellationToken = default) =>
+        Task.FromResult(new PaymentProviderChargeResult(
+            ProviderTransactionId: string.Empty, Status: ProviderChargeStatus.Failed));
 
-    public Task<ProviderRefundResult> RefundAsync(RefundRequest request, CancellationToken cancellationToken = default) =>
-        throw new NotImplementedException("Mollie provider implementation pending.");
+    public Task<PaymentProviderRefundResult> RefundAsync(PaymentRefundRequest request, CancellationToken cancellationToken = default) =>
+        Task.FromResult(new PaymentProviderRefundResult(
+            ProviderRefundId: string.Empty, Status: RefundStatus.Failed));
 
-    public Task<ProviderPaymentStatus> GetStatusAsync(string providerTransactionId, CancellationToken cancellationToken = default) =>
-        throw new NotImplementedException("Mollie provider implementation pending.");
+    public Task<PaymentProviderStatus> GetStatusAsync(string providerTransactionId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(new PaymentProviderStatus(
+            ProviderTransactionId: providerTransactionId, Status: PaymentStatus.Failed));
 }

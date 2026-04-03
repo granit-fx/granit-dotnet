@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.Domain;
 
 namespace Granit.Invoicing.Domain;
@@ -25,14 +26,19 @@ public sealed class BillingAddress : ValueObject
         };
 
     public string? CompanyName { get; private set; }
+    [SensitiveData]
     public string Line1 { get; private set; } = string.Empty;
+
+    [SensitiveData]
     public string? Line2 { get; private set; }
     public string City { get; private set; } = string.Empty;
+    [SensitiveData]
     public string PostalCode { get; private set; } = string.Empty;
     public string? State { get; private set; }
     public string Country { get; private set; } = string.Empty;
 
     /// <summary>VAT number for B2B reverse charge (e.g., "BE0123456789").</summary>
+    [SensitiveData(Level = Sensitivity.Confidential)]
     public string? VatNumber { get; private set; }
 
     /// <inheritdoc />

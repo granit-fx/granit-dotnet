@@ -956,7 +956,6 @@
     {
       "name": "Granit.Metering.EntityFrameworkCore",
       "deps": [
-        "Granit.Guids",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Metering"
       ],
@@ -17640,7 +17639,7 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Domain/BillingAddress.cs",
-      "line": 6,
+      "line": 7,
       "members": [
         {
           "name": "Create",
@@ -24482,6 +24481,105 @@
       "members": []
     },
     {
+      "name": "PaymentAttachMethodRequest",
+      "fqn": "Granit.Payments.Contracts.PaymentAttachMethodRequest",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentAttachMethodRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PaymentAvailableMethod",
+      "fqn": "Granit.Payments.Contracts.PaymentAvailableMethod",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentAvailableMethod.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PaymentChargeRequest",
+      "fqn": "Granit.Payments.Contracts.PaymentChargeRequest",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentChargeRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "PaymentCheckoutSession",
+      "fqn": "Granit.Payments.Contracts.PaymentCheckoutSession",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentCheckoutSession.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "PaymentCheckoutSessionRequest",
+      "fqn": "Granit.Payments.Contracts.PaymentCheckoutSessionRequest",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentCheckoutSessionRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PaymentProviderChargeResult",
+      "fqn": "Granit.Payments.Contracts.PaymentProviderChargeResult",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentProviderChargeResult.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PaymentProviderMethod",
+      "fqn": "Granit.Payments.Contracts.PaymentProviderMethod",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentProviderMethod.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PaymentProviderRefundResult",
+      "fqn": "Granit.Payments.Contracts.PaymentProviderRefundResult",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentProviderRefundResult.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PaymentProviderStatus",
+      "fqn": "Granit.Payments.Contracts.PaymentProviderStatus",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentProviderStatus.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PaymentRefundRequest",
+      "fqn": "Granit.Payments.Contracts.PaymentRefundRequest",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentRefundRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "PaymentWebhookVerificationResult",
+      "fqn": "Granit.Payments.Contracts.PaymentWebhookVerificationResult",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentWebhookVerificationResult.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "PaymentsMetrics",
       "fqn": "Granit.Payments.Diagnostics.PaymentsMetrics",
       "kind": "class",
@@ -24545,7 +24643,7 @@
       "kind": "class",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Domain/PaymentMethod.cs",
-      "line": 6,
+      "line": 7,
       "members": [
         {
           "name": "Create",
@@ -24609,7 +24707,7 @@
       "kind": "class",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Domain/PaymentTransaction.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "Create",
@@ -24684,6 +24782,15 @@
       ]
     },
     {
+      "name": "ProviderChargeStatus",
+      "fqn": "Granit.Payments.Domain.ProviderChargeStatus",
+      "kind": "enum",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Domain/ProviderChargeStatus.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "Refund",
       "fqn": "Granit.Payments.Domain.Refund",
       "kind": "class",
@@ -24696,12 +24803,6 @@
           "kind": "method",
           "signature": "Create(Guid id, decimal amount, string currency, DateTimeOffset createdAt, string? reason = null)",
           "returnType": "Refund"
-        },
-        {
-          "name": "Amount",
-          "kind": "property",
-          "signature": "decimal Amount",
-          "returnType": "decimal"
         },
         {
           "name": "MarkSucceeded",
@@ -24763,114 +24864,6 @@
           "returnType": "implicit operator"
         }
       ]
-    },
-    {
-      "name": "AttachPaymentMethodRequest",
-      "fqn": "Granit.Payments.Dtos.AttachPaymentMethodRequest",
-      "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Dtos/PaymentDtos.cs",
-      "line": 37,
-      "members": []
-    },
-    {
-      "name": "AvailablePaymentMethod",
-      "fqn": "Granit.Payments.Dtos.AvailablePaymentMethod",
-      "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Dtos/PaymentDtos.cs",
-      "line": 46,
-      "members": []
-    },
-    {
-      "name": "ChargeRequest",
-      "fqn": "Granit.Payments.Dtos.ChargeRequest",
-      "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Dtos/PaymentDtos.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "CheckoutSession",
-      "fqn": "Granit.Payments.Dtos.CheckoutSession",
-      "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Dtos/PaymentDtos.cs",
-      "line": 34,
-      "members": []
-    },
-    {
-      "name": "CheckoutSessionRequest",
-      "fqn": "Granit.Payments.Dtos.CheckoutSessionRequest",
-      "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Dtos/PaymentDtos.cs",
-      "line": 29,
-      "members": []
-    },
-    {
-      "name": "ProviderChargeResult",
-      "fqn": "Granit.Payments.Dtos.ProviderChargeResult",
-      "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Dtos/PaymentDtos.cs",
-      "line": 12,
-      "members": []
-    },
-    {
-      "name": "ProviderChargeStatus",
-      "fqn": "Granit.Payments.Dtos.ProviderChargeStatus",
-      "kind": "enum",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Dtos/PaymentDtos.cs",
-      "line": 16,
-      "members": []
-    },
-    {
-      "name": "ProviderPaymentMethod",
-      "fqn": "Granit.Payments.Dtos.ProviderPaymentMethod",
-      "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Dtos/PaymentDtos.cs",
-      "line": 41,
-      "members": []
-    },
-    {
-      "name": "ProviderPaymentStatus",
-      "fqn": "Granit.Payments.Dtos.ProviderPaymentStatus",
-      "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Dtos/PaymentDtos.cs",
-      "line": 26,
-      "members": []
-    },
-    {
-      "name": "ProviderRefundResult",
-      "fqn": "Granit.Payments.Dtos.ProviderRefundResult",
-      "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Dtos/PaymentDtos.cs",
-      "line": 23,
-      "members": []
-    },
-    {
-      "name": "RefundRequest",
-      "fqn": "Granit.Payments.Dtos.RefundRequest",
-      "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Dtos/PaymentDtos.cs",
-      "line": 19,
-      "members": []
-    },
-    {
-      "name": "WebhookVerificationResult",
-      "fqn": "Granit.Payments.Dtos.WebhookVerificationResult",
-      "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Dtos/PaymentDtos.cs",
-      "line": 50,
-      "members": []
     },
     {
       "name": "PaymentsEndpointRouteBuilderExtensions",
@@ -25087,8 +25080,8 @@
         {
           "name": "CreateAsync",
           "kind": "method",
-          "signature": "CreateAsync(CheckoutSessionRequest request, CancellationToken cancellationToken = default)",
-          "returnType": "string ProviderName { get; } Task<CheckoutSession>"
+          "signature": "CreateAsync(PaymentCheckoutSessionRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "string ProviderName { get; } Task<PaymentCheckoutSession>"
         }
       ]
     },
@@ -25104,13 +25097,13 @@
           "name": "ListAsync",
           "kind": "method",
           "signature": "ListAsync(Guid tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "string ProviderName { get; } Task<IReadOnlyList<ProviderPaymentMethod>>"
+          "returnType": "string ProviderName { get; } Task<IReadOnlyList<PaymentProviderMethod>>"
         },
         {
           "name": "AttachAsync",
           "kind": "method",
-          "signature": "AttachAsync(AttachPaymentMethodRequest request, CancellationToken cancellationToken = default)",
-          "returnType": "Task<ProviderPaymentMethod>"
+          "signature": "AttachAsync(PaymentAttachMethodRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PaymentProviderMethod>"
         },
         {
           "name": "DetachAsync",
@@ -25181,20 +25174,20 @@
         {
           "name": "ChargeAsync",
           "kind": "method",
-          "signature": "ChargeAsync(ChargeRequest request, CancellationToken cancellationToken = default)",
-          "returnType": "string Name { get; } Task<ProviderChargeResult>"
+          "signature": "ChargeAsync(PaymentChargeRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "string Name { get; } Task<PaymentProviderChargeResult>"
         },
         {
           "name": "RefundAsync",
           "kind": "method",
-          "signature": "RefundAsync(RefundRequest request, CancellationToken cancellationToken = default)",
-          "returnType": "Task<ProviderRefundResult>"
+          "signature": "RefundAsync(PaymentRefundRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PaymentProviderRefundResult>"
         },
         {
           "name": "GetStatusAsync",
           "kind": "method",
           "signature": "GetStatusAsync(string providerTransactionId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<ProviderPaymentStatus>"
+          "returnType": "Task<PaymentProviderStatus>"
         }
       ]
     },
@@ -25216,7 +25209,7 @@
           "name": "GetAvailableProviders",
           "kind": "method",
           "signature": "GetAvailableProviders(Guid tenantId)",
-          "returnType": "IReadOnlyList<AvailablePaymentMethod>"
+          "returnType": "IReadOnlyList<PaymentAvailableMethod>"
         }
       ]
     },
@@ -25282,7 +25275,7 @@
           "name": "VerifyAsync",
           "kind": "method",
           "signature": "VerifyAsync(byte[] body, IDictionary<string, string> headers, CancellationToken cancellationToken = default)",
-          "returnType": "string ProviderName { get; } Task<WebhookVerificationResult>"
+          "returnType": "string ProviderName { get; } Task<PaymentWebhookVerificationResult>"
         }
       ]
     },
@@ -31386,15 +31379,6 @@
       "members": []
     },
     {
-      "name": "ApplyPlanChangePayload",
-      "fqn": "Granit.Subscriptions.Events.ApplyPlanChangePayload",
-      "kind": "record",
-      "project": "Granit.Subscriptions",
-      "file": "src/Granit.Subscriptions/Events/ApplyPlanChangePayload.cs",
-      "line": 11,
-      "members": []
-    },
-    {
       "name": "BillingCycleCompletedEto",
       "fqn": "Granit.Subscriptions.Events.BillingCycleCompletedEto",
       "kind": "record",
@@ -31734,6 +31718,15 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "ApplyPlanChangePayload",
+      "fqn": "Granit.Subscriptions.Scheduling.ApplyPlanChangePayload",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Scheduling/ApplyPlanChangePayload.cs",
+      "line": 11,
+      "members": []
     },
     {
       "name": "SubscriptionProviderCapabilities",

@@ -1,4 +1,4 @@
-using Granit.Payments.Dtos;
+using Granit.Payments.Contracts;
 
 namespace Granit.Payments;
 
@@ -9,10 +9,10 @@ public interface IPaymentMethodManager
     string ProviderName { get; }
 
     /// <summary>Lists saved payment methods for a tenant.</summary>
-    Task<IReadOnlyList<ProviderPaymentMethod>> ListAsync(Guid tenantId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<PaymentProviderMethod>> ListAsync(Guid tenantId, CancellationToken cancellationToken = default);
 
     /// <summary>Attaches a new payment method.</summary>
-    Task<ProviderPaymentMethod> AttachAsync(AttachPaymentMethodRequest request, CancellationToken cancellationToken = default);
+    Task<PaymentProviderMethod> AttachAsync(PaymentAttachMethodRequest request, CancellationToken cancellationToken = default);
 
     /// <summary>Detaches a saved payment method.</summary>
     Task DetachAsync(string providerMethodId, CancellationToken cancellationToken = default);

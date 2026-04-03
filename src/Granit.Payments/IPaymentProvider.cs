@@ -1,4 +1,4 @@
-using Granit.Payments.Dtos;
+using Granit.Payments.Contracts;
 
 namespace Granit.Payments;
 
@@ -9,11 +9,11 @@ public interface IPaymentProvider
     string Name { get; }
 
     /// <summary>Initiates a charge.</summary>
-    Task<ProviderChargeResult> ChargeAsync(ChargeRequest request, CancellationToken cancellationToken = default);
+    Task<PaymentProviderChargeResult> ChargeAsync(PaymentChargeRequest request, CancellationToken cancellationToken = default);
 
     /// <summary>Initiates a refund.</summary>
-    Task<ProviderRefundResult> RefundAsync(RefundRequest request, CancellationToken cancellationToken = default);
+    Task<PaymentProviderRefundResult> RefundAsync(PaymentRefundRequest request, CancellationToken cancellationToken = default);
 
     /// <summary>Gets the current payment status from the provider.</summary>
-    Task<ProviderPaymentStatus> GetStatusAsync(string providerTransactionId, CancellationToken cancellationToken = default);
+    Task<PaymentProviderStatus> GetStatusAsync(string providerTransactionId, CancellationToken cancellationToken = default);
 }

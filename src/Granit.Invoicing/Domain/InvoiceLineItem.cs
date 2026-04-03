@@ -15,6 +15,8 @@ public sealed class InvoiceLineItem : Entity
         DateTimeOffset? periodStart = null, DateTimeOffset? periodEnd = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(description);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(quantity);
+        ArgumentOutOfRangeException.ThrowIfNegative(unitPrice);
         decimal amount = quantity * unitPrice;
         decimal taxAmount = taxRate.HasValue ? amount * taxRate.Value : 0;
 

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Invoicing.EntityFrameworkCore</PackageId>
-    <Description>EF Core persistence for Granit.Invoicing. SubscriptionsDbContext, EfInvoiceStore, EfCreditNoteStore, gap-free invoice number generator.</Description>
+    <Description>EF Core persistence for Granit.Invoicing. InvoicingDbContext, EfInvoiceStore, entity configurations.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

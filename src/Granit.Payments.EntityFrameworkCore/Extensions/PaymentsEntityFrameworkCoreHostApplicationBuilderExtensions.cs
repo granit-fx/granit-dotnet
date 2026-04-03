@@ -18,15 +18,15 @@ public static class PaymentsEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddInternalDbContextEnsurer<PaymentsDbContext>();
 
         builder.Services.AddScoped<EfPaymentTransactionStore>();
-        builder.Services.Replace(ServiceDescriptor.Scoped<IPaymentTransactionReader>(sp => sp.GetRequiredService<EfPaymentTransactionStore>()));
-        builder.Services.Replace(ServiceDescriptor.Scoped<IPaymentTransactionWriter>(sp => sp.GetRequiredService<EfPaymentTransactionStore>()));
+        builder.Services.TryAddScoped<IPaymentTransactionReader>(sp => sp.GetRequiredService<EfPaymentTransactionStore>());
+        builder.Services.TryAddScoped<IPaymentTransactionWriter>(sp => sp.GetRequiredService<EfPaymentTransactionStore>());
 
         builder.Services.AddScoped<EfPaymentMethodStore>();
-        builder.Services.Replace(ServiceDescriptor.Scoped<IPaymentMethodReader>(sp => sp.GetRequiredService<EfPaymentMethodStore>()));
-        builder.Services.Replace(ServiceDescriptor.Scoped<IPaymentMethodWriter>(sp => sp.GetRequiredService<EfPaymentMethodStore>()));
+        builder.Services.TryAddScoped<IPaymentMethodReader>(sp => sp.GetRequiredService<EfPaymentMethodStore>());
+        builder.Services.TryAddScoped<IPaymentMethodWriter>(sp => sp.GetRequiredService<EfPaymentMethodStore>());
 
         builder.Services.AddScoped<EfProcessedWebhookEventStore>();
-        builder.Services.Replace(ServiceDescriptor.Scoped<IProcessedWebhookEventStore>(sp => sp.GetRequiredService<EfProcessedWebhookEventStore>()));
+        builder.Services.TryAddScoped<IProcessedWebhookEventStore>(sp => sp.GetRequiredService<EfProcessedWebhookEventStore>());
 
         return builder;
     }

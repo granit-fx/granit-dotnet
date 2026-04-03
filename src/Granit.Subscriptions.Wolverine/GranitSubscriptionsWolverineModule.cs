@@ -1,3 +1,5 @@
+using Granit.Invoicing;
+using Granit.Metering;
 using Granit.Modularity;
 using Granit.Wolverine;
 
@@ -8,6 +10,8 @@ namespace Granit.Subscriptions.Wolverine;
 /// FSM transitions and processes inbound external events (webhooks).
 /// </summary>
 [DependsOn(
+    typeof(GranitInvoicingModule),
+    typeof(GranitMeteringModule),
     typeof(GranitSubscriptionsModule),
     typeof(GranitWolverineModule))]
 public sealed class GranitSubscriptionsWolverineModule : GranitModule;

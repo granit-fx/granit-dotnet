@@ -1,4 +1,4 @@
-using Granit.Payments.Dtos;
+using Granit.Payments.Contracts;
 
 namespace Granit.Payments.Stripe.Internal;
 
@@ -7,18 +7,12 @@ internal sealed class StripePaymentMethodManager : IPaymentMethodManager
 {
     public string ProviderName => "stripe";
 
-    public Task<IReadOnlyList<ProviderPaymentMethod>> ListAsync(Guid tenantId, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException("Stripe payment method implementation pending.");
-    }
+    public Task<IReadOnlyList<PaymentProviderMethod>> ListAsync(Guid tenantId, CancellationToken cancellationToken = default) =>
+        throw new NotSupportedException("Stripe payment method management not configured.");
 
-    public Task<ProviderPaymentMethod> AttachAsync(AttachPaymentMethodRequest request, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException("Stripe payment method implementation pending.");
-    }
+    public Task<PaymentProviderMethod> AttachAsync(PaymentAttachMethodRequest request, CancellationToken cancellationToken = default) =>
+        throw new NotSupportedException("Stripe payment method management not configured.");
 
-    public Task DetachAsync(string providerMethodId, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException("Stripe payment method implementation pending.");
-    }
+    public Task DetachAsync(string providerMethodId, CancellationToken cancellationToken = default) =>
+        throw new NotSupportedException("Stripe payment method management not configured.");
 }

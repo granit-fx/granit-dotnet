@@ -30,7 +30,7 @@ internal sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subsc
             .HasDatabaseName($"ix_{GranitSubscriptionsDbProperties.DbTablePrefix}subscriptions_tenant_status");
 
         builder.HasIndex(e => e.TrialEndsAt)
-            .HasFilter("[Status] = 0")
+            .HasFilter("\"Status\" = 0")
             .HasDatabaseName($"ix_{GranitSubscriptionsDbProperties.DbTablePrefix}subscriptions_trial_ends_at");
 
         builder.HasIndex(e => e.CurrentPeriodEnd)

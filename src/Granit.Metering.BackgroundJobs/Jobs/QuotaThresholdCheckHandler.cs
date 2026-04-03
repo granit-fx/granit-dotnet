@@ -1,5 +1,8 @@
+using Granit.Metering.Domain;
+using Granit.Metering.Domain.ValueObjects;
 using Granit.Metering.Dtos;
 using Granit.Metering.Events;
+using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 using Wolverine;
@@ -16,6 +19,7 @@ internal static partial class QuotaThresholdCheckHandler
         QuotaThresholdCheckJob _,
         IMeterDefinitionReader definitionReader,
         IQuotaChecker quotaChecker,
+        ICurrentTenant currentTenant,
         IMessageBus messageBus,
         IClock clock,
         ILogger<QuotaThresholdCheckJob> logger,
@@ -23,29 +27,33 @@ internal static partial class QuotaThresholdCheckHandler
     {
         Log.QuotaCheckStarted(logger, clock.Now);
 
-        var definitions = await definitionReader.GetActiveAsync(cancellationToken).ConfigureAwait(false);
-        foreach (var definition in definitions)
+        IReadOnlyList<MeterDefinition> definitions = await definitionReader.GetActiveAsync(cancellationToken).ConfigureAwait(false);
+        foreach (MeterDefinition definition in definitions)
         {
             if (definition.TenantId is null)
             {
                 continue;
             }
 
-            var status = await quotaChecker
-                .CheckAsync(definition.TenantId.Value, definition.Id, cancellationToken)
-                .ConfigureAwait(false);
+            using (currentTenant.Change(definition.TenantId.Value))
+            {
+                var meterId = MeterDefinitionId.Create(definition.Id);
+                QuotaStatus status = await quotaChecker
+                    .CheckAsync(definition.TenantId.Value, meterId, cancellationToken)
+                    .ConfigureAwait(false);
 
-            if (status.IsExceeded)
-            {
-                await messageBus.PublishAsync(
-                    new QuotaExceededEto(definition.TenantId.Value, definition.Id.Value, status.MeterName, status.CurrentUsage, status.Limit!.Value),
-                    cancellationToken).ConfigureAwait(false);
-            }
-            else if (status.Limit.HasValue && status.PercentUsed >= 80m)
-            {
-                await messageBus.PublishAsync(
-                    new QuotaThresholdReachedEto(definition.TenantId.Value, definition.Id.Value, status.MeterName, status.CurrentUsage, status.Limit.Value, status.PercentUsed!.Value),
-                    cancellationToken).ConfigureAwait(false);
+                if (status.IsExceeded)
+                {
+                    await messageBus.PublishAsync(
+                        new QuotaExceededEto(definition.TenantId.Value, definition.Id, status.MeterName, status.CurrentUsage, status.Limit!.Value))
+                        .ConfigureAwait(false);
+                }
+                else if (status.Limit.HasValue && status.PercentUsed >= 80m)
+                {
+                    await messageBus.PublishAsync(
+                        new QuotaThresholdReachedEto(definition.TenantId.Value, definition.Id, status.MeterName, status.CurrentUsage, status.Limit.Value, status.PercentUsed!.Value))
+                        .ConfigureAwait(false);
+                }
             }
         }
 

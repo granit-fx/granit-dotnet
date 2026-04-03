@@ -1,4 +1,4 @@
-using Granit.Payments.Dtos;
+using Granit.Payments.Contracts;
 
 namespace Granit.Payments.Mollie.Internal;
 
@@ -6,7 +6,9 @@ internal sealed class MollieWebhookVerifier : IPaymentWebhookVerifier
 {
     public string ProviderName => "mollie";
 
-    public Task<WebhookVerificationResult> VerifyAsync(
+    public Task<PaymentWebhookVerificationResult> VerifyAsync(
         byte[] body, IDictionary<string, string> headers, CancellationToken cancellationToken = default) =>
-        throw new NotImplementedException("Mollie webhook verification pending.");
+        Task.FromResult(new PaymentWebhookVerificationResult(
+            IsValid: false, EventType: null, ProviderEventId: null,
+            Payload: default, RejectionReason: "Mollie webhook verification not yet implemented."));
 }

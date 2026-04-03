@@ -1,4 +1,4 @@
-using Granit.Payments.Dtos;
+using Granit.Payments.Contracts;
 
 namespace Granit.Payments;
 
@@ -12,7 +12,7 @@ public interface IPaymentWebhookVerifier
     /// <param name="body">Raw request body bytes.</param>
     /// <param name="headers">Request headers (for signature validation).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    Task<WebhookVerificationResult> VerifyAsync(
+    Task<PaymentWebhookVerificationResult> VerifyAsync(
         byte[] body,
         IDictionary<string, string> headers,
         CancellationToken cancellationToken = default);

@@ -19,8 +19,8 @@ public static class InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddInternalDbContextEnsurer<InvoicingDbContext>();
 
         builder.Services.AddScoped<EfInvoiceStore>();
-        builder.Services.Replace(ServiceDescriptor.Scoped<IInvoiceReader>(sp => sp.GetRequiredService<EfInvoiceStore>()));
-        builder.Services.Replace(ServiceDescriptor.Scoped<IInvoiceWriter>(sp => sp.GetRequiredService<EfInvoiceStore>()));
+        builder.Services.TryAddScoped<IInvoiceReader>(sp => sp.GetRequiredService<EfInvoiceStore>());
+        builder.Services.TryAddScoped<IInvoiceWriter>(sp => sp.GetRequiredService<EfInvoiceStore>());
 
         return builder;
     }
