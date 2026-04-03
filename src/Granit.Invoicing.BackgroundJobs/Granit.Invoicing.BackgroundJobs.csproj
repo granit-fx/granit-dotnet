@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Invoicing.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.Invoicing. Overdue invoice detection and external sync polling.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Invoicing.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WolverineFx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.Invoicing\Granit.Invoicing.csproj" />
+  </ItemGroup>
+
+</Project>

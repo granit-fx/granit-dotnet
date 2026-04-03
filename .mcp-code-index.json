@@ -827,6 +827,51 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Invoicing",
+      "deps": [
+        "Granit",
+        "Granit.Guids",
+        "Granit.Timing",
+        "Granit.Workflow"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Invoicing.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Invoicing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Invoicing.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Invoicing",
+        "Granit.QueryEngine.AspNetCore",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Invoicing.EntityFrameworkCore",
+      "deps": [
+        "Granit.Guids",
+        "Granit.Invoicing",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Invoicing.Wolverine",
+      "deps": [
+        "Granit.Invoicing",
+        "Granit.Wolverine"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Localization",
       "deps": [
         "Granit.Caching",
@@ -17430,6 +17475,718 @@
       "kind": "record",
       "project": "Granit.Imaging",
       "file": "src/Granit.Imaging/CropRectangle.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "GranitInvoicingBackgroundJobsModule",
+      "fqn": "Granit.Invoicing.BackgroundJobs.GranitInvoicingBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Invoicing.BackgroundJobs",
+      "file": "src/Granit.Invoicing.BackgroundJobs/GranitInvoicingBackgroundJobsModule.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "OverdueInvoiceDetectionJob",
+      "fqn": "Granit.Invoicing.BackgroundJobs.Jobs.OverdueInvoiceDetectionJob",
+      "kind": "record",
+      "project": "Granit.Invoicing.BackgroundJobs",
+      "file": "src/Granit.Invoicing.BackgroundJobs/Jobs/OverdueInvoiceDetectionJob.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "CreateInvoiceCommand",
+      "fqn": "Granit.Invoicing.Commands.CreateInvoiceCommand",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Commands/CreateInvoiceCommand.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "CreateInvoiceLineItem",
+      "fqn": "Granit.Invoicing.Commands.CreateInvoiceLineItem",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Commands/CreateInvoiceCommand.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "InvoiceWorkflows",
+      "fqn": "Granit.Invoicing.Definitions.InvoiceWorkflows",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Definitions/InvoiceWorkflows.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Default",
+          "kind": "property",
+          "signature": "WorkflowDefinition<InvoiceStatus> Default",
+          "returnType": "WorkflowDefinition<InvoiceStatus>"
+        }
+      ]
+    },
+    {
+      "name": "BillingAddress",
+      "fqn": "Granit.Invoicing.Domain.BillingAddress",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Domain/BillingAddress.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string? companyName, string line1, string? line2, string city, string postalCode, string? state, string country, string? vatNumber = null)",
+          "returnType": "BillingAddress"
+        },
+        {
+          "name": "CompanyName",
+          "kind": "property",
+          "signature": "string? CompanyName",
+          "returnType": "string?"
+        },
+        {
+          "name": "Line2",
+          "kind": "property",
+          "signature": "string? Line2",
+          "returnType": "string?"
+        },
+        {
+          "name": "PostalCode",
+          "kind": "property",
+          "signature": "string PostalCode",
+          "returnType": "string"
+        },
+        {
+          "name": "State",
+          "kind": "property",
+          "signature": "string? State",
+          "returnType": "string?"
+        },
+        {
+          "name": "GetEqualityComponents",
+          "kind": "method",
+          "signature": "GetEqualityComponents()",
+          "returnType": "string? VatNumber { get; private set; } protected IEnumerable<object?>"
+        }
+      ]
+    },
+    {
+      "name": "BillingReason",
+      "fqn": "Granit.Invoicing.Domain.BillingReason",
+      "kind": "enum",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Domain/BillingReason.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "CollectionMethod",
+      "fqn": "Granit.Invoicing.Domain.CollectionMethod",
+      "kind": "enum",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Domain/CollectionMethod.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "Invoice",
+      "fqn": "Granit.Invoicing.Domain.Invoice",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Domain/Invoice.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid tenantId, InvoiceDocumentType documentType, string currency, CollectionMethod collectionMethod, BillingReason billingReason, BillingAddress? billingAddress = null, InvoiceId? parentInvoiceId = null, string? creditNoteReason = null, DateTimeOffset? periodStart = null, DateTimeOffset? periodEnd = null)",
+          "returnType": "Invoice"
+        },
+        {
+          "name": "DocumentType",
+          "kind": "property",
+          "signature": "InvoiceDocumentType DocumentType",
+          "returnType": "InvoiceDocumentType"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "BillingAddress? BillingAddress { get; private set; } public InvoiceId? ParentInvoiceId { get; private set; } public string? CreditNoteReason { get; private set; } public decimal Subtotal { get; private set; } public decimal TaxTotal { get; private set; } public decimal Total { get; private set; } public decimal AmountPaid { get; private set; } public decimal AmountRemaining { get; private set; } public DateTimeOffset? IssuedAt { get; private set; } public DateTimeOffset? DueAt { get; private set; } public DateTimeOffset? PaidAt { get; private set; } public DateTimeOffset? PeriodStart { get; private set; } public DateTimeOffset? PeriodEnd { get; private set; } public IReadOnlyList<InvoiceLineItem> LineItems => _lineItems."
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "IReadOnlyList<InvoiceExternalReference> ExternalReferences => _externalReferences."
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "IReadOnlyList<InvoiceDocument> Documents => _documents."
+        },
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "IsOverdue",
+          "kind": "method",
+          "signature": "IsOverdue(DateTimeOffset now)",
+          "returnType": "bool"
+        },
+        {
+          "name": "GetWorkflowEntityId",
+          "kind": "method",
+          "signature": "GetWorkflowEntityId()",
+          "returnType": "string"
+        },
+        {
+          "name": "AddLineItem",
+          "kind": "method",
+          "signature": "AddLineItem(InvoiceLineItem lineItem)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "InvoiceDocument",
+      "fqn": "Granit.Invoicing.Domain.InvoiceDocument",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Domain/InvoiceDocument.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid blobId, string fileName, string contentType, DateTimeOffset generatedAt)",
+          "returnType": "InvoiceDocument"
+        },
+        {
+          "name": "BlobId",
+          "kind": "property",
+          "signature": "Guid BlobId",
+          "returnType": "Guid"
+        },
+        {
+          "name": "ContentType",
+          "kind": "property",
+          "signature": "string ContentType",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "InvoiceDocumentType",
+      "fqn": "Granit.Invoicing.Domain.InvoiceDocumentType",
+      "kind": "enum",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Domain/InvoiceDocumentType.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "InvoiceExternalReference",
+      "fqn": "Granit.Invoicing.Domain.InvoiceExternalReference",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Domain/InvoiceExternalReference.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string providerName, string externalId)",
+          "returnType": "InvoiceExternalReference"
+        },
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "ExternalId",
+          "kind": "property",
+          "signature": "string ExternalId",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "InvoiceLineItem",
+      "fqn": "Granit.Invoicing.Domain.InvoiceLineItem",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Domain/InvoiceLineItem.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string description, decimal quantity, decimal unitPrice, InvoiceSourceType sourceType, string? sourceId = null, decimal? taxRate = null, DateTimeOffset? periodStart = null, DateTimeOffset? periodEnd = null)",
+          "returnType": "InvoiceLineItem"
+        }
+      ]
+    },
+    {
+      "name": "InvoiceSourceType",
+      "fqn": "Granit.Invoicing.Domain.InvoiceSourceType",
+      "kind": "enum",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Domain/InvoiceSourceType.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "InvoiceStatus",
+      "fqn": "Granit.Invoicing.Domain.InvoiceStatus",
+      "kind": "enum",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Domain/InvoiceStatus.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "InvoiceId",
+      "fqn": "Granit.Invoicing.Domain.ValueObjects.InvoiceId",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Domain/ValueObjects/InvoiceId.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid value)",
+          "returnType": "required Guid Value { get; init; } public InvoiceId"
+        },
+        {
+          "name": "InvoiceId",
+          "kind": "method",
+          "signature": "InvoiceId(Guid value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
+      "name": "ExternalInvoiceStatus",
+      "fqn": "Granit.Invoicing.Dtos.ExternalInvoiceStatus",
+      "kind": "enum",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Dtos/TaxRequest.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "InvoiceDocumentResult",
+      "fqn": "Granit.Invoicing.Dtos.InvoiceDocumentResult",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Dtos/TaxRequest.cs",
+      "line": 40,
+      "members": []
+    },
+    {
+      "name": "TaxLineItem",
+      "fqn": "Granit.Invoicing.Dtos.TaxLineItem",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Dtos/TaxRequest.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "TaxLineResult",
+      "fqn": "Granit.Invoicing.Dtos.TaxLineResult",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Dtos/TaxRequest.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "TaxRequest",
+      "fqn": "Granit.Invoicing.Dtos.TaxRequest",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Dtos/TaxRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TaxResult",
+      "fqn": "Granit.Invoicing.Dtos.TaxResult",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Dtos/TaxRequest.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "InvoicingEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Invoicing.Endpoints.Extensions.InvoicingEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Invoicing.Endpoints",
+      "file": "src/Granit.Invoicing.Endpoints/Extensions/InvoicingEndpointRouteBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "MapGranitInvoicing",
+          "kind": "method",
+          "signature": "MapGranitInvoicing(this IEndpointRouteBuilder endpoints)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitInvoicingEndpointsModule",
+      "fqn": "Granit.Invoicing.Endpoints.GranitInvoicingEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Invoicing.Endpoints",
+      "file": "src/Granit.Invoicing.Endpoints/GranitInvoicingEndpointsModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "CreditNotes",
+      "fqn": "Granit.Invoicing.Endpoints.Permissions.CreditNotes",
+      "kind": "class",
+      "project": "Granit.Invoicing.Endpoints",
+      "file": "src/Granit.Invoicing.Endpoints/Permissions/InvoicingPermissions.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "Invoices",
+      "fqn": "Granit.Invoicing.Endpoints.Permissions.Invoices",
+      "kind": "class",
+      "project": "Granit.Invoicing.Endpoints",
+      "file": "src/Granit.Invoicing.Endpoints/Permissions/InvoicingPermissions.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "InvoicingPermissions",
+      "fqn": "Granit.Invoicing.Endpoints.Permissions.InvoicingPermissions",
+      "kind": "class",
+      "project": "Granit.Invoicing.Endpoints",
+      "file": "src/Granit.Invoicing.Endpoints/Permissions/InvoicingPermissions.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Invoicing.EntityFrameworkCore.Extensions.InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Invoicing.EntityFrameworkCore",
+      "file": "src/Granit.Invoicing.EntityFrameworkCore/Extensions/InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitInvoicingEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitInvoicingEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "InvoicingModelBuilderExtensions",
+      "fqn": "Granit.Invoicing.EntityFrameworkCore.Extensions.InvoicingModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Invoicing.EntityFrameworkCore",
+      "file": "src/Granit.Invoicing.EntityFrameworkCore/Extensions/InvoicingModelBuilderExtensions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ConfigureInvoicingModule",
+          "kind": "method",
+          "signature": "ConfigureInvoicingModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitInvoicingDbProperties",
+      "fqn": "Granit.Invoicing.EntityFrameworkCore.GranitInvoicingDbProperties",
+      "kind": "class",
+      "project": "Granit.Invoicing.EntityFrameworkCore",
+      "file": "src/Granit.Invoicing.EntityFrameworkCore/GranitInvoicingDbProperties.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitInvoicingEntityFrameworkCoreModule",
+      "fqn": "Granit.Invoicing.EntityFrameworkCore.GranitInvoicingEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Invoicing.EntityFrameworkCore",
+      "file": "src/Granit.Invoicing.EntityFrameworkCore/GranitInvoicingEntityFrameworkCoreModule.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "CreditNoteIssuedEto",
+      "fqn": "Granit.Invoicing.Events.CreditNoteIssuedEto",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Events/CreditNoteIssuedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoiceCreatedEvent",
+      "fqn": "Granit.Invoicing.Events.InvoiceCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Events/InvoiceCreatedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoiceFinalizedEto",
+      "fqn": "Granit.Invoicing.Events.InvoiceFinalizedEto",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Events/InvoiceFinalizedEto.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "InvoiceOverdueEto",
+      "fqn": "Granit.Invoicing.Events.InvoiceOverdueEto",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Events/InvoiceOverdueEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoicePaidEto",
+      "fqn": "Granit.Invoicing.Events.InvoicePaidEto",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Events/InvoicePaidEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoiceUncollectibleEto",
+      "fqn": "Granit.Invoicing.Events.InvoiceUncollectibleEto",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Events/InvoiceUncollectibleEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoiceVoidedEto",
+      "fqn": "Granit.Invoicing.Events.InvoiceVoidedEto",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Events/InvoiceVoidedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoicingHostApplicationBuilderExtensions",
+      "fqn": "Granit.Invoicing.Extensions.InvoicingHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Extensions/InvoicingHostApplicationBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitInvoicing",
+          "kind": "method",
+          "signature": "AddGranitInvoicing(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitInvoicingModule",
+      "fqn": "Granit.Invoicing.GranitInvoicingModule",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/GranitInvoicingModule.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IInvoiceDocumentGenerator",
+      "fqn": "Granit.Invoicing.IInvoiceDocumentGenerator",
+      "kind": "interface",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/IInvoiceDocumentGenerator.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "GenerateAsync",
+          "kind": "method",
+          "signature": "GenerateAsync(Invoice invoice, CancellationToken cancellationToken = default)",
+          "returnType": "Task<InvoiceDocumentResult>"
+        }
+      ]
+    },
+    {
+      "name": "IInvoiceNumberGenerator",
+      "fqn": "Granit.Invoicing.IInvoiceNumberGenerator",
+      "kind": "interface",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/IInvoiceNumberGenerator.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "GenerateNextAsync",
+          "kind": "method",
+          "signature": "GenerateNextAsync(InvoiceDocumentType documentType, Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
+        }
+      ]
+    },
+    {
+      "name": "IInvoiceReader",
+      "fqn": "Granit.Invoicing.IInvoiceReader",
+      "kind": "interface",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/IInvoiceReader.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(InvoiceId id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Invoice?>"
+        },
+        {
+          "name": "GetByNumberAsync",
+          "kind": "method",
+          "signature": "GetByNumberAsync(string invoiceNumber, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Invoice?>"
+        },
+        {
+          "name": "GetForTenantAsync",
+          "kind": "method",
+          "signature": "GetForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Invoice>>"
+        },
+        {
+          "name": "GetOverdueAsync",
+          "kind": "method",
+          "signature": "GetOverdueAsync(DateTimeOffset now, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Invoice>>"
+        },
+        {
+          "name": "GetCreditNotesForInvoiceAsync",
+          "kind": "method",
+          "signature": "GetCreditNotesForInvoiceAsync(InvoiceId parentInvoiceId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Invoice>>"
+        }
+      ]
+    },
+    {
+      "name": "IInvoiceSyncProvider",
+      "fqn": "Granit.Invoicing.IInvoiceSyncProvider",
+      "kind": "interface",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/IInvoiceSyncProvider.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "GetStatusAsync",
+          "kind": "method",
+          "signature": "GetStatusAsync(InvoiceExternalReference reference, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ExternalInvoiceStatus?>"
+        },
+        {
+          "name": "GetDocumentAsync",
+          "kind": "method",
+          "signature": "GetDocumentAsync(InvoiceExternalReference reference, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Stream?>"
+        }
+      ]
+    },
+    {
+      "name": "IInvoiceWriter",
+      "fqn": "Granit.Invoicing.IInvoiceWriter",
+      "kind": "interface",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/IInvoiceWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(Invoice invoice, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(Invoice invoice, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(Invoice invoice, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ITaxCalculator",
+      "fqn": "Granit.Invoicing.ITaxCalculator",
+      "kind": "interface",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/ITaxCalculator.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "CalculateAsync",
+          "kind": "method",
+          "signature": "CalculateAsync(TaxRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "string Name { get; } Task<TaxResult>"
+        }
+      ]
+    },
+    {
+      "name": "GranitInvoicingWolverineModule",
+      "fqn": "Granit.Invoicing.Wolverine.GranitInvoicingWolverineModule",
+      "kind": "class",
+      "project": "Granit.Invoicing.Wolverine",
+      "file": "src/Granit.Invoicing.Wolverine/GranitInvoicingWolverineModule.cs",
       "line": 10,
       "members": []
     },

@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Invoicing</PackageId>
+    <Description>Agnostic invoicing module for Granit. Invoice FSM (Draft/Open/Paid/Void/Uncollectible), credit notes, tax calculation via ITaxCalculator, external accounting sync via IInvoiceSyncProvider, PDF generation via IInvoiceDocumentGenerator. Accepts line items from any source (subscriptions, usage, commerce).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Invoicing.Tests" />
+    <InternalsVisibleTo Include="Granit.Invoicing.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Invoicing.Wolverine" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+    <ProjectReference Include="..\Granit.Workflow\Granit.Workflow.csproj" />
+  </ItemGroup>
+
+</Project>

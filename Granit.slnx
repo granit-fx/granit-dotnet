@@ -213,6 +213,11 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Granit.Identity.Local.Notifications/Granit.Identity.Local.Notifications.csproj" />
+    <Project Path="src/Granit.Invoicing.BackgroundJobs/Granit.Invoicing.BackgroundJobs.csproj" />
+    <Project Path="src/Granit.Invoicing.Endpoints/Granit.Invoicing.Endpoints.csproj" />
+    <Project Path="src/Granit.Invoicing.EntityFrameworkCore/Granit.Invoicing.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Invoicing.Wolverine/Granit.Invoicing.Wolverine.csproj" />
+    <Project Path="src/Granit.Invoicing/Granit.Invoicing.csproj" />
     <Project Path="src/Granit.Scheduling.BackgroundJobs/Granit.Scheduling.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Scheduling.Endpoints/Granit.Scheduling.Endpoints.csproj" />
     <Project Path="src/Granit.Scheduling.EntityFrameworkCore/Granit.Scheduling.EntityFrameworkCore.csproj" />
