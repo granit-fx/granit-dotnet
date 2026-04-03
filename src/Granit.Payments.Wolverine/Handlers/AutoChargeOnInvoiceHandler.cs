@@ -39,7 +39,7 @@ internal static partial class AutoChargeOnInvoiceHandler
                 eto.Total,
                 eto.Currency,
                 Domain.PaymentMethods.Card,
-                $"inv-{eto.InvoiceId}");
+                $"inv-{eto.InvoiceId:N}");
 
             await messageBus.SendAsync(command).ConfigureAwait(false);
             Log.PaymentInitiated(logger, eto.InvoiceId);

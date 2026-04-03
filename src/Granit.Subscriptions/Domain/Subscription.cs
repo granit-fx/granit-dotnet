@@ -29,14 +29,17 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
 
     /// <summary>Creates a new subscription in Trial or Active status.</summary>
     public static Subscription Create(
-        Guid id,
+        SubscriptionId id,
         Guid tenantId,
         PlanId planId,
+        string currency,
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
         DateTimeOffset billingCycleAnchor,
         DateTimeOffset? trialEndsAt = null)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(currency);
+
         SubscriptionStatus initialStatus = trialEndsAt.HasValue
             ? SubscriptionStatus.Trial
             : SubscriptionStatus.Active;
@@ -46,6 +49,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
             Id = id,
             TenantId = tenantId,
             PlanId = planId,
+            Currency = currency.ToUpperInvariant(),
             Status = initialStatus,
             CurrentPeriodStart = periodStart,
             CurrentPeriodEnd = periodEnd,
@@ -87,6 +91,12 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
 
     /// <summary>Reason for cancellation.</summary>
     public string? CancellationReason { get; private set; }
+
+    /// <summary>ISO 4217 currency code selected at subscription creation (e.g., "EUR").</summary>
+    public string Currency { get; private set; } = string.Empty;
+
+    /// <summary>Number of failed payment retry attempts (dunning). Reset on successful payment.</summary>
+    public int DunningAttempt { get; private set; }
 
     /// <summary>Assigned seats (user assignments).</summary>
     public IReadOnlyList<SubscriptionSeat> Seats => _seats.AsReadOnly();
@@ -148,13 +158,18 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
 
         EnsureTransitionAllowed(SubscriptionStatus.Suspended);
         Status = SubscriptionStatus.Suspended;
-        AddDistributedEvent(new SubscriptionSuspendedEto(Id, TenantId!.Value));
+        AddDistributedEvent(new SubscriptionSuspendedEto(Id, PlanId, TenantId!.Value));
         return true;
     }
 
     /// <summary>Cancels the subscription.</summary>
     public bool Cancel(string? reason, DateTimeOffset cancelledAt)
     {
+        if (reason is { Length: > 500 })
+        {
+            throw new ArgumentOutOfRangeException(nameof(reason), "Cancellation reason must not exceed 500 characters.");
+        }
+
         if (Status == SubscriptionStatus.Cancelled)
         {
             return false;
@@ -179,7 +194,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
 
         EnsureTransitionAllowed(SubscriptionStatus.Expired);
         Status = SubscriptionStatus.Expired;
-        AddDistributedEvent(new SubscriptionExpiredEto(Id, TenantId!.Value));
+        AddDistributedEvent(new SubscriptionExpiredEto(Id, PlanId, TenantId!.Value));
         return true;
     }
 
@@ -200,6 +215,12 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     {
         CancelAtPeriodEnd = false;
     }
+
+    /// <summary>Increments the dunning attempt counter after a payment failure.</summary>
+    public void IncrementDunningAttempt() => DunningAttempt++;
+
+    /// <summary>Resets the dunning counter after a successful payment.</summary>
+    public void ResetDunning() => DunningAttempt = 0;
 
     /// <summary>Changes the subscription plan.</summary>
     public void ChangePlan(PlanId newPlanId)
@@ -224,6 +245,16 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
         {
             throw new InvalidOperationException(
                 $"Cannot advance billing period for subscription '{Id}' in '{Status}' status.");
+        }
+
+        if (newPeriodStart < CurrentPeriodEnd)
+        {
+            throw new ArgumentOutOfRangeException(nameof(newPeriodStart), "New period must not start before the current period ends.");
+        }
+
+        if (newPeriodEnd <= newPeriodStart)
+        {
+            throw new ArgumentOutOfRangeException(nameof(newPeriodEnd), "Period end must be after period start.");
         }
 
         CurrentPeriodStart = newPeriodStart;

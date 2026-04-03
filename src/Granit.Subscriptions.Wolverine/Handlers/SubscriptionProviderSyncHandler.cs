@@ -32,6 +32,12 @@ internal static partial class SubscriptionProviderSyncHandler
                 return;
             }
 
+            if (subscription.TenantId != eto.TenantId)
+            {
+                Log.TenantMismatch(logger, eto.SubscriptionId, eto.TenantId, subscription.TenantId);
+                return;
+            }
+
             Domain.SubscriptionExternalMapping? mapping = subscription.ExternalMappings
                 .FirstOrDefault(m => m.ProviderName == provider.Name);
 
@@ -47,5 +53,8 @@ internal static partial class SubscriptionProviderSyncHandler
     {
         [LoggerMessage(Level = LogLevel.Warning, Message = "Provider sync: subscription {SubscriptionId} not found")]
         public static partial void SubscriptionNotFound(ILogger logger, Guid subscriptionId);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Provider sync: tenant mismatch for subscription {SubscriptionId} — ETO tenant {EtoTenantId}, actual tenant {ActualTenantId}")]
+        public static partial void TenantMismatch(ILogger logger, Guid subscriptionId, Guid etoTenantId, Guid? actualTenantId);
     }
 }

@@ -13,6 +13,7 @@ namespace Granit.Invoicing.Commands;
 /// <param name="LineItems">Line items to add to the invoice.</param>
 /// <param name="PeriodStart">Optional billing period start.</param>
 /// <param name="PeriodEnd">Optional billing period end.</param>
+/// <param name="IdempotencyKey">Optional key to prevent duplicate invoice creation.</param>
 public sealed record CreateInvoiceCommand(
     Guid TenantId,
     string Currency,
@@ -20,7 +21,8 @@ public sealed record CreateInvoiceCommand(
     BillingReason BillingReason,
     IReadOnlyList<CreateInvoiceLineItem> LineItems,
     DateTimeOffset? PeriodStart = null,
-    DateTimeOffset? PeriodEnd = null);
+    DateTimeOffset? PeriodEnd = null,
+    string? IdempotencyKey = null);
 
 /// <summary>Line item data for invoice creation.</summary>
 /// <param name="Description">Display description.</param>

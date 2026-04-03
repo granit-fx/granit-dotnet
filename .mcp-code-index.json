@@ -1311,7 +1311,15 @@
       "name": "Granit.Payments",
       "deps": [
         "Granit",
+        "Granit.Payments.Abstractions",
         "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Payments.Abstractions",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -1740,6 +1748,7 @@
       "deps": [
         "Granit.Invoicing.Abstractions",
         "Granit.Metering.Abstractions",
+        "Granit.Payments.Abstractions",
         "Granit.Subscriptions",
         "Granit.Wolverine"
       ],
@@ -17728,7 +17737,7 @@
       "kind": "record",
       "project": "Granit.Invoicing.Abstractions",
       "file": "src/Granit.Invoicing.Abstractions/Commands/CreateInvoiceCommand.cs",
-      "line": 16,
+      "line": 17,
       "members": []
     },
     {
@@ -17737,7 +17746,7 @@
       "kind": "record",
       "project": "Granit.Invoicing.Abstractions",
       "file": "src/Granit.Invoicing.Abstractions/Commands/CreateInvoiceCommand.cs",
-      "line": 31,
+      "line": 33,
       "members": []
     },
     {
@@ -24857,8 +24866,8 @@
       "name": "InitiatePaymentCommand",
       "fqn": "Granit.Payments.Commands.InitiatePaymentCommand",
       "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Commands/InitiatePaymentCommand.cs",
+      "project": "Granit.Payments.Abstractions",
+      "file": "src/Granit.Payments.Abstractions/Commands/InitiatePaymentCommand.cs",
       "line": 4,
       "members": []
     },
@@ -25218,7 +25227,7 @@
       "kind": "class",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Domain/ProviderCustomerMapping.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "Create",
@@ -25229,8 +25238,14 @@
         {
           "name": "TenantId",
           "kind": "property",
-          "signature": "Guid TenantId",
-          "returnType": "Guid"
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "ProviderCustomerId",
+          "kind": "property",
+          "signature": "string ProviderCustomerId",
+          "returnType": "string"
         }
       ]
     },
@@ -25440,8 +25455,8 @@
       "name": "DisputeOpenedEto",
       "fqn": "Granit.Payments.Events.DisputeOpenedEto",
       "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Events/DisputeOpenedEto.cs",
+      "project": "Granit.Payments.Abstractions",
+      "file": "src/Granit.Payments.Abstractions/Events/DisputeOpenedEto.cs",
       "line": 6,
       "members": []
     },
@@ -25458,8 +25473,8 @@
       "name": "PaymentFailedEto",
       "fqn": "Granit.Payments.Events.PaymentFailedEto",
       "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Events/PaymentFailedEto.cs",
+      "project": "Granit.Payments.Abstractions",
+      "file": "src/Granit.Payments.Abstractions/Events/PaymentFailedEto.cs",
       "line": 6,
       "members": []
     },
@@ -25467,8 +25482,8 @@
       "name": "PaymentSucceededEto",
       "fqn": "Granit.Payments.Events.PaymentSucceededEto",
       "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Events/PaymentSucceededEto.cs",
+      "project": "Granit.Payments.Abstractions",
+      "file": "src/Granit.Payments.Abstractions/Events/PaymentSucceededEto.cs",
       "line": 6,
       "members": []
     },
@@ -25476,8 +25491,8 @@
       "name": "RefundCompletedEto",
       "fqn": "Granit.Payments.Events.RefundCompletedEto",
       "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Events/RefundCompletedEto.cs",
+      "project": "Granit.Payments.Abstractions",
+      "file": "src/Granit.Payments.Abstractions/Events/RefundCompletedEto.cs",
       "line": 6,
       "members": []
     },
@@ -32349,14 +32364,20 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(SubscriptionId id, Guid tenantId, PlanId planId, DateTimeOffset periodStart, DateTimeOffset periodEnd, DateTimeOffset billingCycleAnchor, DateTimeOffset? trialEndsAt = null)",
+          "signature": "Create(SubscriptionId id, Guid tenantId, PlanId planId, string currency, DateTimeOffset periodStart, DateTimeOffset periodEnd, DateTimeOffset billingCycleAnchor, DateTimeOffset? trialEndsAt = null)",
           "returnType": "Subscription"
+        },
+        {
+          "name": "Status",
+          "kind": "property",
+          "signature": "SubscriptionStatus Status",
+          "returnType": "SubscriptionStatus"
         },
         {
           "name": "AsReadOnly",
           "kind": "method",
           "signature": "AsReadOnly()",
-          "returnType": "SubscriptionStatus Status { get; private set; } public DateTimeOffset CurrentPeriodStart { get; private set; } public DateTimeOffset CurrentPeriodEnd { get; private set; } public DateTimeOffset BillingCycleAnchor { get; private set; } public DateTimeOffset? TrialEndsAt { get; private set; } public bool CancelAtPeriodEnd { get; private set; } public DateTimeOffset? CancelledAt { get; private set; } public string? CancellationReason { get; private set; } public IReadOnlyList<SubscriptionSeat> Seats => _seats."
+          "returnType": "int DunningAttempt { get; private set; } public IReadOnlyList<SubscriptionSeat> Seats => _seats."
         },
         {
           "name": "AsReadOnly",
@@ -32381,6 +32402,18 @@
           "kind": "method",
           "signature": "Activate()",
           "returnType": "bool"
+        },
+        {
+          "name": "ResetDunning",
+          "kind": "method",
+          "signature": "ResetDunning()",
+          "returnType": "void"
+        },
+        {
+          "name": "ChangePlan",
+          "kind": "method",
+          "signature": "ChangePlan(PlanId newPlanId)",
+          "returnType": "void"
         }
       ]
     },
@@ -32779,6 +32812,28 @@
       ]
     },
     {
+      "name": "IPricingResolver",
+      "fqn": "Granit.Subscriptions.IPricingResolver",
+      "kind": "interface",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/IPricingResolver.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ResolveBasePriceAsync",
+          "kind": "method",
+          "signature": "ResolveBasePriceAsync(PlanId planId, string currency, BillingInterval interval, CancellationToken cancellationToken = default)",
+          "returnType": "Task<decimal>"
+        },
+        {
+          "name": "ResolveUsageUnitPriceAsync",
+          "kind": "method",
+          "signature": "ResolveUsageUnitPriceAsync(PlanId planId, string currency, BillingInterval interval, string meterId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<decimal>"
+        }
+      ]
+    },
+    {
       "name": "ISeatReader",
       "fqn": "Granit.Subscriptions.ISeatReader",
       "kind": "interface",
@@ -33161,6 +33216,15 @@
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Scheduling/ApplyPlanChangePayload.cs",
       "line": 11,
+      "members": []
+    },
+    {
+      "name": "RetryPaymentPayload",
+      "fqn": "Granit.Subscriptions.Scheduling.RetryPaymentPayload",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Scheduling/RetryPaymentPayload.cs",
+      "line": 12,
       "members": []
     },
     {

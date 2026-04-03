@@ -1,3 +1,5 @@
+using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.MultiTenancy;
 using Granit.Subscriptions.Domain;
 using Granit.Timing;
@@ -14,38 +16,66 @@ internal static partial class PeriodEndScanHandler
         PeriodEndScanJob _,
         ISubscriptionReader reader,
         ISubscriptionWriter writer,
+        IPlanReader planReader,
         IClock clock,
         ICurrentTenant currentTenant,
+        IDataFilter dataFilter,
         ILogger<PeriodEndScanJob> logger,
         CancellationToken cancellationToken)
     {
         DateTimeOffset now = clock.Now;
 
-        IReadOnlyList<Subscription> atPeriodEnd = await reader
-            .GetAtPeriodEndAsync(now, cancellationToken)
-            .ConfigureAwait(false);
+        IReadOnlyList<Subscription> atPeriodEnd;
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            atPeriodEnd = await reader
+                .GetAtPeriodEndAsync(now, cancellationToken)
+                .ConfigureAwait(false);
+        }
 
         foreach (Subscription sub in atPeriodEnd)
         {
-            using (currentTenant.Change(sub.TenantId))
+            try
             {
-                DateTimeOffset newStart = sub.CurrentPeriodEnd;
-                DateTimeOffset newEnd = CalculateNextPeriodEnd(newStart, sub);
+                using (currentTenant.Change(sub.TenantId))
+                {
+                    Plan? plan = await planReader
+                        .GetByIdAsync(sub.PlanId, cancellationToken)
+                        .ConfigureAwait(false);
 
-                sub.AdvancePeriod(newStart, newEnd);
-                await writer.UpdateAsync(sub, cancellationToken).ConfigureAwait(false);
-                Log.PeriodAdvanced(logger, sub.Id, newStart, newEnd);
+                    BillingInterval interval = plan?.DefaultInterval ?? BillingInterval.Monthly;
+
+                    DateTimeOffset newStart = sub.CurrentPeriodEnd;
+                    DateTimeOffset newEnd = AdvanceByInterval(newStart, interval);
+
+                    sub.AdvancePeriod(newStart, newEnd);
+                    await writer.UpdateAsync(sub, cancellationToken).ConfigureAwait(false);
+                    Log.PeriodAdvanced(logger, sub.Id, newStart, newEnd);
+                }
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                Log.PeriodAdvanceFailed(logger, sub.Id, ex);
             }
         }
     }
 
-    private static DateTimeOffset CalculateNextPeriodEnd(
-        DateTimeOffset periodStart, Subscription sub) =>
-        periodStart.AddMonths(1); // Simplified — real implementation reads Plan.DefaultInterval
+    internal static DateTimeOffset AdvanceByInterval(
+        DateTimeOffset periodStart, BillingInterval interval) =>
+        interval switch
+        {
+            BillingInterval.Monthly => periodStart.AddMonths(1),
+            BillingInterval.Quarterly => periodStart.AddMonths(3),
+            BillingInterval.Yearly => periodStart.AddMonths(12),
+            _ => periodStart.AddMonths(1),
+        };
 
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Information, Message = "Period advanced for subscription {SubscriptionId}: {PeriodStart} → {PeriodEnd}")]
+        [LoggerMessage(Level = LogLevel.Information, Message = "Period advanced for subscription {SubscriptionId}: {PeriodStart} -> {PeriodEnd}")]
         public static partial void PeriodAdvanced(ILogger logger, Guid subscriptionId, DateTimeOffset periodStart, DateTimeOffset periodEnd);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Failed to advance period for subscription {SubscriptionId}")]
+        public static partial void PeriodAdvanceFailed(ILogger logger, Guid subscriptionId, Exception exception);
     }
 }

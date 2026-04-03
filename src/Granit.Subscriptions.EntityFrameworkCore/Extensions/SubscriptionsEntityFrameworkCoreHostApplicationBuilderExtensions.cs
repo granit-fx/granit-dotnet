@@ -20,16 +20,16 @@ public static class SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtens
         builder.Services.AddGranitDbContext<SubscriptionsDbContext>(configure);
         builder.Services.AddInternalDbContextEnsurer<SubscriptionsDbContext>();
 
-        builder.Services.AddScoped<EfPlanStore>();
-        builder.Services.TryAddScoped<IPlanReader>(sp => sp.GetRequiredService<EfPlanStore>());
-        builder.Services.TryAddScoped<IPlanWriter>(sp => sp.GetRequiredService<EfPlanStore>());
+        builder.Services.TryAddScoped<IPlanReader, EfPlanReader>();
+        builder.Services.TryAddScoped<IPlanWriter, EfPlanWriter>();
 
-        builder.Services.AddScoped<EfSubscriptionStore>();
-        builder.Services.TryAddScoped<ISubscriptionReader>(sp => sp.GetRequiredService<EfSubscriptionStore>());
-        builder.Services.TryAddScoped<ISubscriptionWriter>(sp => sp.GetRequiredService<EfSubscriptionStore>());
+        builder.Services.TryAddScoped<ISubscriptionReader, EfSubscriptionReader>();
+        builder.Services.TryAddScoped<ISubscriptionWriter, EfSubscriptionWriter>();
 
         builder.Services.TryAddScoped<ISeatReader, EfSeatReader>();
         builder.Services.TryAddScoped<ISeatWriter, EfSeatWriter>();
+
+        builder.Services.TryAddScoped<IPricingResolver, EfPricingResolver>();
 
         return builder;
     }
