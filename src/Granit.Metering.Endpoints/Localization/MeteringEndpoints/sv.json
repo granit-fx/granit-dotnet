@@ -1,10 +1,10 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:Metering": "Metering",
-    "Permission:Metering.Meters.Read": "View meter definitions",
-    "Permission:Metering.Meters.Manage": "Manage meter definitions (create, update, deactivate)",
-    "Permission:Metering.Usage.Read": "View usage data and quota status",
-    "Permission:Metering.Usage.Record": "Record usage events"
+    "PermissionGroup:Metering": "Mätning",
+    "Permission:Metering.Meters.Read": "Visa mätardefinitioner",
+    "Permission:Metering.Meters.Manage": "Hantera mätardefinitioner (skapa, uppdatera, inaktivera)",
+    "Permission:Metering.Usage.Read": "Visa användningsdata och kvotstatus",
+    "Permission:Metering.Usage.Record": "Registrera användningshändelser"
   }
 }

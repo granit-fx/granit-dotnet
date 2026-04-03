@@ -1,12 +1,12 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:Subscriptions": "Subscriptions",
-    "Permission:Subscriptions.Plans.Read": "View subscription plans",
-    "Permission:Subscriptions.Plans.Manage": "Manage subscription plans (create, publish, archive)",
-    "Permission:Subscriptions.Subscriptions.Read": "View subscriptions",
-    "Permission:Subscriptions.Subscriptions.Manage": "Manage subscriptions (create, cancel, change plan)",
-    "Permission:Subscriptions.Seats.Read": "View seat assignments",
-    "Permission:Subscriptions.Seats.Manage": "Manage seat assignments (assign, revoke)"
+    "PermissionGroup:Subscriptions": "Abonnementen",
+    "Permission:Subscriptions.Plans.Read": "Abonnementsplannen bekijken",
+    "Permission:Subscriptions.Plans.Manage": "Abonnementsplannen beheren (aanmaken, publiceren, archiveren)",
+    "Permission:Subscriptions.Subscriptions.Read": "Abonnementen bekijken",
+    "Permission:Subscriptions.Subscriptions.Manage": "Abonnementen beheren (aanmaken, annuleren, van plan wijzigen)",
+    "Permission:Subscriptions.Seats.Read": "Stoeltoewijzingen bekijken",
+    "Permission:Subscriptions.Seats.Manage": "Stoeltoewijzingen beheren (toewijzen, intrekken)"
   }
 }

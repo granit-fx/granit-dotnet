@@ -1,12 +1,12 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:Subscriptions": "Subscriptions",
-    "Permission:Subscriptions.Plans.Read": "View subscription plans",
-    "Permission:Subscriptions.Plans.Manage": "Manage subscription plans (create, publish, archive)",
-    "Permission:Subscriptions.Subscriptions.Read": "View subscriptions",
-    "Permission:Subscriptions.Subscriptions.Manage": "Manage subscriptions (create, cancel, change plan)",
-    "Permission:Subscriptions.Seats.Read": "View seat assignments",
-    "Permission:Subscriptions.Seats.Manage": "Manage seat assignments (assign, revoke)"
+    "PermissionGroup:Subscriptions": "Prenumerationer",
+    "Permission:Subscriptions.Plans.Read": "Visa prenumerationsplaner",
+    "Permission:Subscriptions.Plans.Manage": "Hantera prenumerationsplaner (skapa, publicera, arkivera)",
+    "Permission:Subscriptions.Subscriptions.Read": "Visa prenumerationer",
+    "Permission:Subscriptions.Subscriptions.Manage": "Hantera prenumerationer (skapa, avbryta, byta plan)",
+    "Permission:Subscriptions.Seats.Read": "Visa platstilldelningar",
+    "Permission:Subscriptions.Seats.Manage": "Hantera platstilldelningar (tilldela, återkalla)"
   }
 }

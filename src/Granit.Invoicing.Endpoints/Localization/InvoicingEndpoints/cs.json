@@ -1,11 +1,11 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:Invoicing": "Invoicing",
-    "Permission:Invoicing.Invoices.Read": "View invoices",
-    "Permission:Invoicing.Invoices.Manage": "Manage invoices (create, finalize, void)",
-    "Permission:Invoicing.Invoices.Download": "Download invoice documents (PDF)",
-    "Permission:Invoicing.CreditNotes.Read": "View credit notes",
-    "Permission:Invoicing.CreditNotes.Manage": "Manage credit notes (create, void)"
+    "PermissionGroup:Invoicing": "Fakturace",
+    "Permission:Invoicing.Invoices.Read": "Zobrazit faktury",
+    "Permission:Invoicing.Invoices.Manage": "Spravovat faktury (vytvořit, dokončit, stornovat)",
+    "Permission:Invoicing.Invoices.Download": "Stáhnout fakturační dokumenty (PDF)",
+    "Permission:Invoicing.CreditNotes.Read": "Zobrazit dobropisy",
+    "Permission:Invoicing.CreditNotes.Manage": "Spravovat dobropisy (vytvořit, stornovat)"
   }
 }

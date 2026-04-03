@@ -1,12 +1,12 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:Subscriptions": "Subscriptions",
-    "Permission:Subscriptions.Plans.Read": "View subscription plans",
-    "Permission:Subscriptions.Plans.Manage": "Manage subscription plans (create, publish, archive)",
-    "Permission:Subscriptions.Subscriptions.Read": "View subscriptions",
-    "Permission:Subscriptions.Subscriptions.Manage": "Manage subscriptions (create, cancel, change plan)",
-    "Permission:Subscriptions.Seats.Read": "View seat assignments",
-    "Permission:Subscriptions.Seats.Manage": "Manage seat assignments (assign, revoke)"
+    "PermissionGroup:Subscriptions": "Předplatné",
+    "Permission:Subscriptions.Plans.Read": "Zobrazit plány předplatného",
+    "Permission:Subscriptions.Plans.Manage": "Spravovat plány předplatného (vytvořit, publikovat, archivovat)",
+    "Permission:Subscriptions.Subscriptions.Read": "Zobrazit předplatná",
+    "Permission:Subscriptions.Subscriptions.Manage": "Spravovat předplatná (vytvořit, zrušit, změnit plán)",
+    "Permission:Subscriptions.Seats.Read": "Zobrazit přiřazení míst",
+    "Permission:Subscriptions.Seats.Manage": "Spravovat přiřazení míst (přiřadit, odvolat)"
   }
 }

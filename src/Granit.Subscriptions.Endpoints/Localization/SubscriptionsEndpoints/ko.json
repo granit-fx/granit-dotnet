@@ -1,12 +1,12 @@
 {
   "culture": "ko",
   "texts": {
-    "PermissionGroup:Subscriptions": "Subscriptions",
-    "Permission:Subscriptions.Plans.Read": "View subscription plans",
-    "Permission:Subscriptions.Plans.Manage": "Manage subscription plans (create, publish, archive)",
-    "Permission:Subscriptions.Subscriptions.Read": "View subscriptions",
-    "Permission:Subscriptions.Subscriptions.Manage": "Manage subscriptions (create, cancel, change plan)",
-    "Permission:Subscriptions.Seats.Read": "View seat assignments",
-    "Permission:Subscriptions.Seats.Manage": "Manage seat assignments (assign, revoke)"
+    "PermissionGroup:Subscriptions": "구독",
+    "Permission:Subscriptions.Plans.Read": "구독 플랜 보기",
+    "Permission:Subscriptions.Plans.Manage": "구독 플랜 관리 (생성, 게시, 보관)",
+    "Permission:Subscriptions.Subscriptions.Read": "구독 보기",
+    "Permission:Subscriptions.Subscriptions.Manage": "구독 관리 (생성, 취소, 플랜 변경)",
+    "Permission:Subscriptions.Seats.Read": "시트 할당 보기",
+    "Permission:Subscriptions.Seats.Manage": "시트 할당 관리 (할당, 철회)"
   }
 }

@@ -1,11 +1,11 @@
 {
   "culture": "ko",
   "texts": {
-    "PermissionGroup:Invoicing": "Invoicing",
-    "Permission:Invoicing.Invoices.Read": "View invoices",
-    "Permission:Invoicing.Invoices.Manage": "Manage invoices (create, finalize, void)",
-    "Permission:Invoicing.Invoices.Download": "Download invoice documents (PDF)",
-    "Permission:Invoicing.CreditNotes.Read": "View credit notes",
-    "Permission:Invoicing.CreditNotes.Manage": "Manage credit notes (create, void)"
+    "PermissionGroup:Invoicing": "청구 관리",
+    "Permission:Invoicing.Invoices.Read": "청구서 조회",
+    "Permission:Invoicing.Invoices.Manage": "청구서 관리 (생성, 확정, 무효화)",
+    "Permission:Invoicing.Invoices.Download": "청구서 문서 다운로드 (PDF)",
+    "Permission:Invoicing.CreditNotes.Read": "대변기표 조회",
+    "Permission:Invoicing.CreditNotes.Manage": "대변기표 관리 (생성, 무효화)"
   }
 }

@@ -1,11 +1,11 @@
 {
   "culture": "it",
   "texts": {
-    "PermissionGroup:Payments": "Payments",
-    "Permission:Payments.Transactions.Read": "View payment transactions",
-    "Permission:Payments.Charges.Execute": "Initiate charges",
-    "Permission:Payments.Refunds.Execute": "Process refunds",
-    "Permission:Payments.Methods.Read": "View payment methods",
-    "Permission:Payments.Methods.Manage": "Manage payment methods (attach, detach)"
+    "PermissionGroup:Payments": "Pagamenti",
+    "Permission:Payments.Transactions.Read": "Consultare le transazioni di pagamento",
+    "Permission:Payments.Charges.Execute": "Avviare pagamenti",
+    "Permission:Payments.Refunds.Execute": "Elaborare rimborsi",
+    "Permission:Payments.Methods.Read": "Consultare i metodi di pagamento",
+    "Permission:Payments.Methods.Manage": "Gestire i metodi di pagamento (aggiungere, rimuovere)"
   }
 }

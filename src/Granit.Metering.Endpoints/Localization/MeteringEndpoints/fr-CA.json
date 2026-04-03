@@ -1,10 +1,10 @@
 {
   "culture": "fr-CA",
   "texts": {
-    "PermissionGroup:Metering": "Metering",
-    "Permission:Metering.Meters.Read": "View meter definitions",
-    "Permission:Metering.Meters.Manage": "Manage meter definitions (create, update, deactivate)",
-    "Permission:Metering.Usage.Read": "View usage data and quota status",
-    "Permission:Metering.Usage.Record": "Record usage events"
+    "PermissionGroup:Metering": "Métrologie",
+    "Permission:Metering.Meters.Read": "Consulter les définitions de compteurs",
+    "Permission:Metering.Meters.Manage": "Gérer les définitions de compteurs (créer, modifier, désactiver)",
+    "Permission:Metering.Usage.Read": "Consulter les données d'utilisation et l'état des quotas",
+    "Permission:Metering.Usage.Record": "Enregistrer des événements d'utilisation"
   }
 }

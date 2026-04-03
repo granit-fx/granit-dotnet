@@ -1,10 +1,10 @@
 {
   "culture": "zh",
   "texts": {
-    "PermissionGroup:Metering": "Metering",
-    "Permission:Metering.Meters.Read": "View meter definitions",
-    "Permission:Metering.Meters.Manage": "Manage meter definitions (create, update, deactivate)",
-    "Permission:Metering.Usage.Read": "View usage data and quota status",
-    "Permission:Metering.Usage.Record": "Record usage events"
+    "PermissionGroup:Metering": "计量",
+    "Permission:Metering.Meters.Read": "查看计量器定义",
+    "Permission:Metering.Meters.Manage": "管理计量器定义（创建、更新、停用）",
+    "Permission:Metering.Usage.Read": "查看使用数据和配额状态",
+    "Permission:Metering.Usage.Record": "记录使用事件"
   }
 }

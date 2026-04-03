@@ -1,12 +1,12 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:Subscriptions": "Subscriptions",
-    "Permission:Subscriptions.Plans.Read": "View subscription plans",
-    "Permission:Subscriptions.Plans.Manage": "Manage subscription plans (create, publish, archive)",
-    "Permission:Subscriptions.Subscriptions.Read": "View subscriptions",
-    "Permission:Subscriptions.Subscriptions.Manage": "Manage subscriptions (create, cancel, change plan)",
-    "Permission:Subscriptions.Seats.Read": "View seat assignments",
-    "Permission:Subscriptions.Seats.Manage": "Manage seat assignments (assign, revoke)"
+    "PermissionGroup:Subscriptions": "サブスクリプション",
+    "Permission:Subscriptions.Plans.Read": "サブスクリプションプランの表示",
+    "Permission:Subscriptions.Plans.Manage": "サブスクリプションプランの管理（作成、公開、アーカイブ）",
+    "Permission:Subscriptions.Subscriptions.Read": "サブスクリプションの表示",
+    "Permission:Subscriptions.Subscriptions.Manage": "サブスクリプションの管理（作成、キャンセル、プラン変更）",
+    "Permission:Subscriptions.Seats.Read": "シート割り当ての表示",
+    "Permission:Subscriptions.Seats.Manage": "シート割り当ての管理（割り当て、取り消し）"
   }
 }

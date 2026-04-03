@@ -1,11 +1,11 @@
 {
   "culture": "ko",
   "texts": {
-    "PermissionGroup:Payments": "Payments",
-    "Permission:Payments.Transactions.Read": "View payment transactions",
-    "Permission:Payments.Charges.Execute": "Initiate charges",
-    "Permission:Payments.Refunds.Execute": "Process refunds",
-    "Permission:Payments.Methods.Read": "View payment methods",
-    "Permission:Payments.Methods.Manage": "Manage payment methods (attach, detach)"
+    "PermissionGroup:Payments": "결제",
+    "Permission:Payments.Transactions.Read": "결제 거래 조회",
+    "Permission:Payments.Charges.Execute": "결제 시작",
+    "Permission:Payments.Refunds.Execute": "환불 처리",
+    "Permission:Payments.Methods.Read": "결제 수단 조회",
+    "Permission:Payments.Methods.Manage": "결제 수단 관리 (추가, 삭제)"
   }
 }

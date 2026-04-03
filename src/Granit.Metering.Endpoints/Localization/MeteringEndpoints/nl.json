@@ -1,10 +1,10 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:Metering": "Metering",
-    "Permission:Metering.Meters.Read": "View meter definitions",
-    "Permission:Metering.Meters.Manage": "Manage meter definitions (create, update, deactivate)",
-    "Permission:Metering.Usage.Read": "View usage data and quota status",
-    "Permission:Metering.Usage.Record": "Record usage events"
+    "PermissionGroup:Metering": "Metrologie",
+    "Permission:Metering.Meters.Read": "Meterdefinities bekijken",
+    "Permission:Metering.Meters.Manage": "Meterdefinities beheren (aanmaken, bijwerken, deactiveren)",
+    "Permission:Metering.Usage.Read": "Gebruiksgegevens en quotumstatus bekijken",
+    "Permission:Metering.Usage.Record": "Gebruiksgebeurtenissen registreren"
   }
 }

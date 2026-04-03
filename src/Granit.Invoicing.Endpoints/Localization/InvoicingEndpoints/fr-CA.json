@@ -1,11 +1,11 @@
 {
   "culture": "fr-CA",
   "texts": {
-    "PermissionGroup:Invoicing": "Invoicing",
-    "Permission:Invoicing.Invoices.Read": "View invoices",
-    "Permission:Invoicing.Invoices.Manage": "Manage invoices (create, finalize, void)",
-    "Permission:Invoicing.Invoices.Download": "Download invoice documents (PDF)",
-    "Permission:Invoicing.CreditNotes.Read": "View credit notes",
-    "Permission:Invoicing.CreditNotes.Manage": "Manage credit notes (create, void)"
+    "PermissionGroup:Invoicing": "Facturation",
+    "Permission:Invoicing.Invoices.Read": "Consulter les factures",
+    "Permission:Invoicing.Invoices.Manage": "Gérer les factures (créer, finaliser, annuler)",
+    "Permission:Invoicing.Invoices.Download": "Télécharger les documents de facture (PDF)",
+    "Permission:Invoicing.CreditNotes.Read": "Consulter les avoirs",
+    "Permission:Invoicing.CreditNotes.Manage": "Gérer les avoirs (créer, annuler)"
   }
 }

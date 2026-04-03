@@ -1,12 +1,12 @@
 {
   "culture": "fr-CA",
   "texts": {
-    "PermissionGroup:Subscriptions": "Subscriptions",
-    "Permission:Subscriptions.Plans.Read": "View subscription plans",
-    "Permission:Subscriptions.Plans.Manage": "Manage subscription plans (create, publish, archive)",
-    "Permission:Subscriptions.Subscriptions.Read": "View subscriptions",
-    "Permission:Subscriptions.Subscriptions.Manage": "Manage subscriptions (create, cancel, change plan)",
-    "Permission:Subscriptions.Seats.Read": "View seat assignments",
-    "Permission:Subscriptions.Seats.Manage": "Manage seat assignments (assign, revoke)"
+    "PermissionGroup:Subscriptions": "Abonnements",
+    "Permission:Subscriptions.Plans.Read": "Consulter les plans d'abonnement",
+    "Permission:Subscriptions.Plans.Manage": "Gérer les plans d'abonnement (créer, publier, archiver)",
+    "Permission:Subscriptions.Subscriptions.Read": "Consulter les abonnements",
+    "Permission:Subscriptions.Subscriptions.Manage": "Gérer les abonnements (créer, annuler, changer de plan)",
+    "Permission:Subscriptions.Seats.Read": "Consulter les attributions de sièges",
+    "Permission:Subscriptions.Seats.Manage": "Gérer les attributions de sièges (attribuer, révoquer)"
   }
 }

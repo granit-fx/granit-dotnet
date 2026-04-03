@@ -1,12 +1,12 @@
 {
   "culture": "zh",
   "texts": {
-    "PermissionGroup:Subscriptions": "Subscriptions",
-    "Permission:Subscriptions.Plans.Read": "View subscription plans",
-    "Permission:Subscriptions.Plans.Manage": "Manage subscription plans (create, publish, archive)",
-    "Permission:Subscriptions.Subscriptions.Read": "View subscriptions",
-    "Permission:Subscriptions.Subscriptions.Manage": "Manage subscriptions (create, cancel, change plan)",
-    "Permission:Subscriptions.Seats.Read": "View seat assignments",
-    "Permission:Subscriptions.Seats.Manage": "Manage seat assignments (assign, revoke)"
+    "PermissionGroup:Subscriptions": "订阅",
+    "Permission:Subscriptions.Plans.Read": "查看订阅计划",
+    "Permission:Subscriptions.Plans.Manage": "管理订阅计划（创建、发布、归档）",
+    "Permission:Subscriptions.Subscriptions.Read": "查看订阅",
+    "Permission:Subscriptions.Subscriptions.Manage": "管理订阅（创建、取消、更改计划）",
+    "Permission:Subscriptions.Seats.Read": "查看席位分配",
+    "Permission:Subscriptions.Seats.Manage": "管理席位分配（分配、撤销）"
   }
 }
