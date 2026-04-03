@@ -10,6 +10,9 @@ internal sealed class EfPaymentMethodStore(
     : EfStoreBase<PaymentMethod, PaymentsDbContext>(contextFactory),
       IPaymentMethodReader, IPaymentMethodWriter
 {
+    public Task<PaymentMethod?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
+        FindByIdAsync(id, cancellationToken);
+
     public Task<IReadOnlyList<PaymentMethod>> GetForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default) =>
         ListAsync(Spec.For<PaymentMethod>().Where(m => m.TenantId == tenantId), cancellationToken);
 

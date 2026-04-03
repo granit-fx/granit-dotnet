@@ -110,6 +110,9 @@
     <PackageVersion Include="Google.Cloud.Kms.V1" Version="3.*" />
     <PackageVersion Include="Google.Cloud.SecretManager.V1" Version="2.*" />
   </ItemGroup>
+  <ItemGroup Label="Payments">
+    <PackageVersion Include="Stripe.net" Version="47.*" />
+  </ItemGroup>
   <!-- Security patches: transitive dependency version overrides -->
   <!-- MimeKit 4.15.0 is vulnerable to GHSA-g7hc-96xr-gvvx (Moderate) -->
   <ItemGroup Label="Security overrides">

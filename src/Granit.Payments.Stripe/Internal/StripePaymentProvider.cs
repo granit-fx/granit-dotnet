@@ -1,25 +1,137 @@
 using Granit.Payments.Contracts;
 using Granit.Payments.Domain;
+using Microsoft.Extensions.Logging;
+using Stripe;
+using StripeRefund = Stripe.Refund;
 
 namespace Granit.Payments.Stripe.Internal;
 
-/// <summary>Stripe implementation of IPaymentProvider.</summary>
-internal sealed class StripePaymentProvider : IPaymentProvider
+/// <summary>Stripe implementation of <see cref="IPaymentProvider"/> using PaymentIntent API.</summary>
+internal sealed partial class StripePaymentProvider(
+    IStripeClient stripeClient,
+    IPaymentMethodReader paymentMethodReader,
+    ILogger<StripePaymentProvider> logger) : IPaymentProvider
 {
+    /// <inheritdoc/>
     public string Name => "stripe";
 
-    public Task<PaymentProviderChargeResult> ChargeAsync(PaymentChargeRequest request, CancellationToken cancellationToken = default)
+    /// <inheritdoc/>
+    public async Task<PaymentProviderChargeResult> ChargeAsync(
+        PaymentChargeRequest request, CancellationToken cancellationToken = default)
     {
-        // TODO: Implement via Stripe PaymentIntent API
-        return Task.FromResult(new PaymentProviderChargeResult(
-            ProviderTransactionId: string.Empty, Status: ProviderChargeStatus.Failed));
+        try
+        {
+            var options = new PaymentIntentCreateOptions
+            {
+                Amount = StripeAmountConverter.ToStripeAmount(request.Amount, request.Currency),
+                Currency = request.Currency.ToLowerInvariant(),
+                Confirm = true,
+                ReturnUrl = request.ReturnUrl,
+            };
+
+            if (request.PaymentMethodId.HasValue)
+            {
+                Domain.PaymentMethod? method = await paymentMethodReader
+                    .GetByIdAsync(request.PaymentMethodId.Value, cancellationToken)
+                    .ConfigureAwait(false);
+
+                if (method is not null)
+                {
+                    options.PaymentMethod = method.ProviderMethodId;
+                }
+            }
+
+            var service = new PaymentIntentService(stripeClient);
+            PaymentIntent intent = await service.CreateAsync(
+                options,
+                new RequestOptions { IdempotencyKey = request.IdempotencyKey },
+                cancellationToken).ConfigureAwait(false);
+
+            ProviderChargeStatus status = StripeStatusMapper.MapChargeStatus(intent.Status);
+            string? actionUrl = intent.NextAction?.RedirectToUrl?.Url;
+
+            Log.ChargeCompleted(logger, intent.Id, status);
+
+            return new PaymentProviderChargeResult(intent.Id, status, actionUrl);
+        }
+        catch (StripeException ex)
+        {
+            Log.ChargeError(logger, ex, ex.StripeError?.Code);
+            return new PaymentProviderChargeResult(string.Empty, ProviderChargeStatus.Failed);
+        }
     }
 
-    public Task<PaymentProviderRefundResult> RefundAsync(PaymentRefundRequest request, CancellationToken cancellationToken = default) =>
-        Task.FromResult(new PaymentProviderRefundResult(
-            ProviderRefundId: string.Empty, Status: RefundStatus.Failed));
+    /// <inheritdoc/>
+    public async Task<PaymentProviderRefundResult> RefundAsync(
+        PaymentRefundRequest request, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var piService = new PaymentIntentService(stripeClient);
+            PaymentIntent intent = await piService.GetAsync(
+                request.ProviderTransactionId, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
 
-    public Task<PaymentProviderStatus> GetStatusAsync(string providerTransactionId, CancellationToken cancellationToken = default) =>
-        Task.FromResult(new PaymentProviderStatus(
-            ProviderTransactionId: providerTransactionId, Status: PaymentStatus.Failed));
+            var options = new RefundCreateOptions
+            {
+                PaymentIntent = request.ProviderTransactionId,
+                Amount = StripeAmountConverter.ToStripeAmount(request.Amount, intent.Currency),
+            };
+
+            var service = new RefundService(stripeClient);
+            StripeRefund refund = await service.CreateAsync(
+                options,
+                new RequestOptions { IdempotencyKey = request.IdempotencyKey },
+                cancellationToken).ConfigureAwait(false);
+
+            RefundStatus status = StripeStatusMapper.MapRefundStatus(refund.Status);
+            Log.RefundCompleted(logger, refund.Id, status);
+
+            return new PaymentProviderRefundResult(refund.Id, status);
+        }
+        catch (StripeException ex)
+        {
+            Log.RefundError(logger, ex, ex.StripeError?.Code);
+            return new PaymentProviderRefundResult(string.Empty, RefundStatus.Failed);
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<PaymentProviderStatus> GetStatusAsync(
+        string providerTransactionId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var service = new PaymentIntentService(stripeClient);
+            PaymentIntent intent = await service.GetAsync(
+                providerTransactionId, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+
+            PaymentStatus status = StripeStatusMapper.MapPaymentStatus(intent.Status);
+            return new PaymentProviderStatus(intent.Id, status);
+        }
+        catch (StripeException ex)
+        {
+            Log.StatusError(logger, ex, providerTransactionId);
+            return new PaymentProviderStatus(providerTransactionId, PaymentStatus.Failed);
+        }
+    }
+
+    private static partial class Log
+    {
+        [LoggerMessage(Level = LogLevel.Information, Message = "Stripe charge completed: {PaymentIntentId} -> {Status}")]
+        public static partial void ChargeCompleted(ILogger logger, string paymentIntentId, ProviderChargeStatus status);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Stripe charge error: {ErrorCode}")]
+        public static partial void ChargeError(ILogger logger, Exception ex, string? errorCode);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Stripe refund completed: {RefundId} -> {Status}")]
+        public static partial void RefundCompleted(ILogger logger, string refundId, RefundStatus status);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Stripe refund error: {ErrorCode}")]
+        public static partial void RefundError(ILogger logger, Exception ex, string? errorCode);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Stripe status check error for {TransactionId}")]
+        public static partial void StatusError(ILogger logger, Exception ex, string transactionId);
+    }
 }

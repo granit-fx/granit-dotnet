@@ -28,6 +28,9 @@ public static class PaymentsEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddScoped<EfProcessedWebhookEventStore>();
         builder.Services.TryAddScoped<IProcessedWebhookEventStore>(sp => sp.GetRequiredService<EfProcessedWebhookEventStore>());
 
+        builder.Services.AddScoped<EfProviderCustomerMappingStore>();
+        builder.Services.TryAddScoped<IProviderCustomerMappingStore>(sp => sp.GetRequiredService<EfProviderCustomerMappingStore>());
+
         return builder;
     }
 }

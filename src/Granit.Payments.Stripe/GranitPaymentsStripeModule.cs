@@ -1,6 +1,8 @@
 using Granit.Modularity;
 using Granit.Payments.Stripe.Internal;
+using Granit.Payments.Stripe.Options;
 using Microsoft.Extensions.DependencyInjection;
+using Stripe;
 
 namespace Granit.Payments.Stripe;
 
@@ -11,9 +13,19 @@ public sealed class GranitPaymentsStripeModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.AddSingleton<IPaymentProvider, StripePaymentProvider>();
-        context.Services.AddSingleton<ICheckoutSessionFactory, StripeCheckoutSessionFactory>();
-        context.Services.AddSingleton<IPaymentMethodManager, StripePaymentMethodManager>();
+        context.Services.AddOptions<StripeOptions>()
+            .BindConfiguration(StripeOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        context.Services.AddHttpClient("Stripe");
+        context.Services.AddScoped<StripeClientFactory>();
+        context.Services.AddScoped<IStripeClient>(sp =>
+            sp.GetRequiredService<StripeClientFactory>().Create());
+
+        context.Services.AddScoped<IPaymentProvider, StripePaymentProvider>();
+        context.Services.AddScoped<ICheckoutSessionFactory, StripeCheckoutSessionFactory>();
+        context.Services.AddScoped<IPaymentMethodManager, StripePaymentMethodManager>();
         context.Services.AddSingleton<IPaymentWebhookVerifier, StripeWebhookVerifier>();
     }
 }
