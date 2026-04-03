@@ -117,7 +117,6 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
         }

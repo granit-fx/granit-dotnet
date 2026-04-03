@@ -37,12 +37,6 @@
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
-      "granit.guids": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Timing": "[0.1.0-dev, )"
-        }
-      },
       "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {
@@ -68,7 +62,6 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
