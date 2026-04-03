@@ -12,6 +12,10 @@ public sealed class MeteringMetrics
     /// <summary>The meter name used for all metering metrics.</summary>
     public const string MeterName = "Granit.Metering";
 
+    private const string TenantIdTag = "tenant_id";
+    private const string GlobalTenant = "global";
+    private const string MeterDefinitionIdTag = "meter_definition_id";
+
     private readonly Counter<long> _eventsRecorded;
     private readonly Counter<long> _eventsDeduplicated;
     private readonly Counter<long> _aggregationsCompleted;
@@ -49,8 +53,8 @@ public sealed class MeteringMetrics
     {
         var tags = new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
-            { "meter_definition_id", meterDefinitionId.ToString() },
+            { TenantIdTag, tenantId ?? GlobalTenant },
+            { MeterDefinitionIdTag, meterDefinitionId.ToString() },
         };
         _eventsRecorded.Add(1, tags);
     }
@@ -60,8 +64,8 @@ public sealed class MeteringMetrics
     {
         var tags = new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
-            { "meter_definition_id", meterDefinitionId.ToString() },
+            { TenantIdTag, tenantId ?? GlobalTenant },
+            { MeterDefinitionIdTag, meterDefinitionId.ToString() },
         };
         _eventsDeduplicated.Add(1, tags);
     }
@@ -71,8 +75,8 @@ public sealed class MeteringMetrics
     {
         var tags = new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
-            { "meter_definition_id", meterDefinitionId.ToString() },
+            { TenantIdTag, tenantId ?? GlobalTenant },
+            { MeterDefinitionIdTag, meterDefinitionId.ToString() },
         };
         _aggregationsCompleted.Add(eventCount, tags);
     }
@@ -82,8 +86,8 @@ public sealed class MeteringMetrics
     {
         var tags = new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
-            { "meter_definition_id", meterDefinitionId.ToString() },
+            { TenantIdTag, tenantId ?? GlobalTenant },
+            { MeterDefinitionIdTag, meterDefinitionId.ToString() },
         };
         _quotaThresholdsReached.Add(1, tags);
     }
@@ -93,8 +97,8 @@ public sealed class MeteringMetrics
     {
         var tags = new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
-            { "meter_definition_id", meterDefinitionId.ToString() },
+            { TenantIdTag, tenantId ?? GlobalTenant },
+            { MeterDefinitionIdTag, meterDefinitionId.ToString() },
         };
         _quotasExceeded.Add(1, tags);
     }

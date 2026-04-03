@@ -12,6 +12,9 @@ public sealed class SubscriptionsMetrics
     /// <summary>The meter name used for all subscription metrics.</summary>
     public const string MeterName = "Granit.Subscriptions";
 
+    private const string TenantIdTag = "tenant_id";
+    private const string GlobalTenant = "global";
+
     private readonly Counter<long> _subscriptionsCreated;
     private readonly Counter<long> _subscriptionsActivated;
     private readonly Counter<long> _subscriptionsCancelled;
@@ -52,42 +55,42 @@ public sealed class SubscriptionsMetrics
     /// <summary>Records a subscription creation.</summary>
     public void RecordCreated(string? tenantId)
     {
-        var tags = new TagList { { "tenant_id", tenantId ?? "global" } };
+        var tags = new TagList { { TenantIdTag, tenantId ?? GlobalTenant } };
         _subscriptionsCreated.Add(1, tags);
     }
 
     /// <summary>Records a subscription activation.</summary>
     public void RecordActivated(string? tenantId)
     {
-        var tags = new TagList { { "tenant_id", tenantId ?? "global" } };
+        var tags = new TagList { { TenantIdTag, tenantId ?? GlobalTenant } };
         _subscriptionsActivated.Add(1, tags);
     }
 
     /// <summary>Records a subscription cancellation.</summary>
     public void RecordCancelled(string? tenantId)
     {
-        var tags = new TagList { { "tenant_id", tenantId ?? "global" } };
+        var tags = new TagList { { TenantIdTag, tenantId ?? GlobalTenant } };
         _subscriptionsCancelled.Add(1, tags);
     }
 
     /// <summary>Records a subscription expiration.</summary>
     public void RecordExpired(string? tenantId)
     {
-        var tags = new TagList { { "tenant_id", tenantId ?? "global" } };
+        var tags = new TagList { { TenantIdTag, tenantId ?? GlobalTenant } };
         _subscriptionsExpired.Add(1, tags);
     }
 
     /// <summary>Records a plan change.</summary>
     public void RecordPlanChanged(string? tenantId)
     {
-        var tags = new TagList { { "tenant_id", tenantId ?? "global" } };
+        var tags = new TagList { { TenantIdTag, tenantId ?? GlobalTenant } };
         _planChanges.Add(1, tags);
     }
 
     /// <summary>Records a billing period advance.</summary>
     public void RecordPeriodAdvanced(string? tenantId)
     {
-        var tags = new TagList { { "tenant_id", tenantId ?? "global" } };
+        var tags = new TagList { { TenantIdTag, tenantId ?? GlobalTenant } };
         _periodAdvances.Add(1, tags);
     }
 }

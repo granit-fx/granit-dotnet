@@ -81,7 +81,7 @@ public sealed class AuditingMetrics
     public void RecordPseudonymized(long count, string? tenantId) =>
         _entriesPseudonymized.Add(count, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenant },
         });
 
     public void RecordCaptureError(string? tenantId) =>
@@ -93,18 +93,18 @@ public sealed class AuditingMetrics
     public void RecordPersistenceDuration(double elapsedMs, string? tenantId) =>
         _persistenceDuration.Record(elapsedMs, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenant },
         });
 
     public void RecordPersistenceRetry(string? tenantId) =>
         _persistenceRetries.Add(1, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenant },
         });
 
     public void RecordBatchSize(int entityChangeCount, string? tenantId) =>
         _batchSize.Record(entityChangeCount, new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenant },
         });
 }

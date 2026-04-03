@@ -12,6 +12,10 @@ public sealed class SchedulingMetrics
     /// <summary>The meter name used for all scheduling metrics.</summary>
     public const string MeterName = "Granit.Scheduling";
 
+    private const string TenantIdTag = "tenant_id";
+    private const string GlobalTenant = "global";
+    private const string PayloadTypeTag = "payload_type";
+
     private readonly Counter<long> _actionsScheduled;
     private readonly Counter<long> _actionsExecuted;
     private readonly Counter<long> _actionsCancelled;
@@ -56,8 +60,8 @@ public sealed class SchedulingMetrics
     {
         var tags = new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
-            { "payload_type", payloadType },
+            { TenantIdTag, tenantId ?? GlobalTenant },
+            { PayloadTypeTag, payloadType },
         };
         _actionsScheduled.Add(1, tags);
     }
@@ -67,8 +71,8 @@ public sealed class SchedulingMetrics
     {
         var tags = new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
-            { "payload_type", payloadType },
+            { TenantIdTag, tenantId ?? GlobalTenant },
+            { PayloadTypeTag, payloadType },
         };
         _actionsExecuted.Add(1, tags);
     }
@@ -76,7 +80,7 @@ public sealed class SchedulingMetrics
     /// <summary>Records an action cancellation.</summary>
     public void RecordCancelled(string? tenantId)
     {
-        var tags = new TagList { { "tenant_id", tenantId ?? "global" } };
+        var tags = new TagList { { TenantIdTag, tenantId ?? GlobalTenant } };
         _actionsCancelled.Add(1, tags);
     }
 
@@ -85,8 +89,8 @@ public sealed class SchedulingMetrics
     {
         var tags = new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
-            { "payload_type", payloadType },
+            { TenantIdTag, tenantId ?? GlobalTenant },
+            { PayloadTypeTag, payloadType },
         };
         _actionsFailed.Add(1, tags);
     }
@@ -94,7 +98,7 @@ public sealed class SchedulingMetrics
     /// <summary>Records an action reschedule.</summary>
     public void RecordRescheduled(string? tenantId)
     {
-        var tags = new TagList { { "tenant_id", tenantId ?? "global" } };
+        var tags = new TagList { { TenantIdTag, tenantId ?? GlobalTenant } };
         _actionsRescheduled.Add(1, tags);
     }
 
@@ -103,8 +107,8 @@ public sealed class SchedulingMetrics
     {
         var tags = new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
-            { "payload_type", payloadType },
+            { TenantIdTag, tenantId ?? GlobalTenant },
+            { PayloadTypeTag, payloadType },
         };
         _catchUpRedispatched.Add(1, tags);
     }

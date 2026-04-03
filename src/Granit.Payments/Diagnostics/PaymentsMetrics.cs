@@ -12,6 +12,9 @@ public sealed class PaymentsMetrics
     /// <summary>The meter name used for all payment metrics.</summary>
     public const string MeterName = "Granit.Payments";
 
+    private const string TenantIdTag = "tenant_id";
+    private const string GlobalTenant = "global";
+
     private readonly Counter<long> _paymentsCreated;
     private readonly Counter<long> _paymentsSucceeded;
     private readonly Counter<long> _paymentsFailed;
@@ -49,7 +52,7 @@ public sealed class PaymentsMetrics
     {
         var tags = new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenant },
             { "provider_name", providerName },
         };
         _paymentsCreated.Add(1, tags);
@@ -60,7 +63,7 @@ public sealed class PaymentsMetrics
     {
         var tags = new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenant },
             { "provider_name", providerName },
         };
         _paymentsSucceeded.Add(1, tags);
@@ -71,7 +74,7 @@ public sealed class PaymentsMetrics
     {
         var tags = new TagList
         {
-            { "tenant_id", tenantId ?? "global" },
+            { TenantIdTag, tenantId ?? GlobalTenant },
             { "provider_name", providerName },
             { "failure_code", failureCode ?? "unknown" },
         };
@@ -81,14 +84,14 @@ public sealed class PaymentsMetrics
     /// <summary>Records a completed refund.</summary>
     public void RecordRefundCompleted(string? tenantId)
     {
-        var tags = new TagList { { "tenant_id", tenantId ?? "global" } };
+        var tags = new TagList { { TenantIdTag, tenantId ?? GlobalTenant } };
         _refundsCompleted.Add(1, tags);
     }
 
     /// <summary>Records a dispute opened.</summary>
     public void RecordDisputeOpened(string? tenantId)
     {
-        var tags = new TagList { { "tenant_id", tenantId ?? "global" } };
+        var tags = new TagList { { TenantIdTag, tenantId ?? GlobalTenant } };
         _disputesOpened.Add(1, tags);
     }
 }
