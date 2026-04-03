@@ -68,6 +68,7 @@
     "Granit:Validation:PredicateValidator": "Zadaná podmínka nebyla splněna pro '{PropertyName}'.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' nemá správný formát.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' nesmí mít celkem více než {ExpectedPrecision} číslic, z toho {ExpectedScale} desetinných míst.",
+    "Granit:Validation:ScheduledAction:FutureDate": "Plánované datum musí být v budoucnosti.",
     "Granit:Validation:ValidToAfterValidFrom": "'Platné do' musí být pozdější než 'Platné od'."
   }
 }

@@ -68,6 +68,7 @@
     "Granit:Validation:PredicateValidator": "'{PropertyName}' に対する指定された条件が満たされていません。",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' の形式が正しくありません。",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' は合計 {ExpectedPrecision} 桁以内で、うち小数部は {ExpectedScale} 桁以内である必要があります。",
+    "Granit:Validation:ScheduledAction:FutureDate": "スケジュール日は将来の日付である必要があります。",
     "Granit:Validation:ValidToAfterValidFrom": "'有効終了日' は '有効開始日' より後でなければなりません。"
   }
 }

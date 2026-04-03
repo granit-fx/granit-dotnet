@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Scheduling</PackageId>
+    <Description>Generic one-shot scheduled actions for Granit. Schedule typed payloads for future execution with cancellation, rescheduling, and audit trail. Complements Granit.BackgroundJobs (recurring cron) with date-specific one-shot actions. Add Granit.Scheduling.Wolverine for durable ScheduleSend integration.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Scheduling.Tests" />
+    <InternalsVisibleTo Include="Granit.Scheduling.Wolverine" />
+    <InternalsVisibleTo Include="Granit.Scheduling.EntityFrameworkCore" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+  </ItemGroup>
+
+</Project>

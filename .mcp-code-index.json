@@ -26,7 +26,7 @@
       "deps": [
         "Granit.AI",
         "Granit.Authorization",
-        "Granit.QueryEngine.Endpoints",
+        "Granit.QueryEngine.AspNetCore",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -365,7 +365,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.BlobStorage",
-        "Granit.QueryEngine.Endpoints",
+        "Granit.QueryEngine.AspNetCore",
         "Granit.RateLimiting",
         "Granit.Validation"
       ],
@@ -711,7 +711,7 @@
         "Granit.Authorization",
         "Granit.Identity",
         "Granit.QueryEngine",
-        "Granit.QueryEngine.Endpoints",
+        "Granit.QueryEngine.AspNetCore",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -1326,7 +1326,7 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.QueryEngine.Endpoints",
+      "name": "Granit.QueryEngine.AspNetCore",
       "deps": [
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
@@ -1389,6 +1389,42 @@
         "Granit",
         "Granit.Guids",
         "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Scheduling.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Scheduling",
+        "Granit.Scheduling.Wolverine"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Scheduling.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Scheduling",
+        "Granit.QueryEngine.AspNetCore",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Scheduling.EntityFrameworkCore",
+      "deps": [
+        "Granit.Scheduling",
+        "Granit.Guids",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Scheduling.Wolverine",
+      "deps": [
+        "Granit.Scheduling",
+        "Granit.Wolverine"
       ],
       "framework": "net10.0"
     },
@@ -1636,7 +1672,7 @@
       "name": "Granit.Webhooks.Endpoints",
       "deps": [
         "Granit.Authorization",
-        "Granit.QueryEngine.Endpoints",
+        "Granit.QueryEngine.AspNetCore",
         "Granit.Validation",
         "Granit.Webhooks"
       ],
@@ -25815,6 +25851,93 @@
       ]
     },
     {
+      "name": "QueryRequestBinder",
+      "fqn": "Granit.QueryEngine.AspNetCore.Binding.QueryRequestBinder",
+      "kind": "class",
+      "project": "Granit.QueryEngine.AspNetCore",
+      "file": "src/Granit.QueryEngine.AspNetCore/Binding/QueryRequestBinder.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "BindAsync",
+          "kind": "method",
+          "signature": "BindAsync(HttpContext context, ParameterInfo parameter)",
+          "returnType": "ValueTask<QueryRequest?>"
+        }
+      ]
+    },
+    {
+      "name": "BindableQueryRequest",
+      "fqn": "Granit.QueryEngine.AspNetCore.Dtos.BindableQueryRequest",
+      "kind": "class",
+      "project": "Granit.QueryEngine.AspNetCore",
+      "file": "src/Granit.QueryEngine.AspNetCore/Dtos/BindableQueryRequest.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "BindableQueryRequest",
+          "kind": "method",
+          "signature": "BindableQueryRequest(QueryRequest value)",
+          "returnType": "QueryRequest Value { get; } private"
+        },
+        {
+          "name": "BindAsync",
+          "kind": "method",
+          "signature": "BindAsync(HttpContext context, ParameterInfo parameter)",
+          "returnType": "ValueTask<BindableQueryRequest?>"
+        }
+      ]
+    },
+    {
+      "name": "SavedViewResponse",
+      "fqn": "Granit.QueryEngine.AspNetCore.Dtos.SavedViewResponse",
+      "kind": "record",
+      "project": "Granit.QueryEngine.AspNetCore",
+      "file": "src/Granit.QueryEngine.AspNetCore/Dtos/SavedViewResponse.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "QueryEndpointRouteBuilderExtensions",
+      "fqn": "Granit.QueryEngine.AspNetCore.Extensions.QueryEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.QueryEngine.AspNetCore",
+      "file": "src/Granit.QueryEngine.AspNetCore/Extensions/QueryEndpointRouteBuilderExtensions.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "GranitQueryEngineAspNetCoreModule",
+      "fqn": "Granit.QueryEngine.AspNetCore.GranitQueryEngineAspNetCoreModule",
+      "kind": "class",
+      "project": "Granit.QueryEngine.AspNetCore",
+      "file": "src/Granit.QueryEngine.AspNetCore/GranitQueryEngineAspNetCoreModule.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "QueryEndpointOptions",
+      "fqn": "Granit.QueryEngine.AspNetCore.Options.QueryEndpointOptions",
+      "kind": "class",
+      "project": "Granit.QueryEngine.AspNetCore",
+      "file": "src/Granit.QueryEngine.AspNetCore/Options/QueryEndpointOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string? TagName",
+          "returnType": "string?"
+        },
+        {
+          "name": "IncludeSavedViewEndpoints",
+          "kind": "property",
+          "signature": "bool IncludeSavedViewEndpoints",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
       "name": "ColumnBuilder",
       "fqn": "Granit.QueryEngine.ColumnBuilder",
       "kind": "class",
@@ -25856,93 +25979,6 @@
       "file": "src/Granit.QueryEngine/Diagnostics/QueryEngineMetrics.cs",
       "line": 10,
       "members": []
-    },
-    {
-      "name": "QueryRequestBinder",
-      "fqn": "Granit.QueryEngine.Endpoints.Binding.QueryRequestBinder",
-      "kind": "class",
-      "project": "Granit.QueryEngine.Endpoints",
-      "file": "src/Granit.QueryEngine.Endpoints/Binding/QueryRequestBinder.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "BindAsync",
-          "kind": "method",
-          "signature": "BindAsync(HttpContext context, ParameterInfo parameter)",
-          "returnType": "ValueTask<QueryRequest?>"
-        }
-      ]
-    },
-    {
-      "name": "BindableQueryRequest",
-      "fqn": "Granit.QueryEngine.Endpoints.Dtos.BindableQueryRequest",
-      "kind": "class",
-      "project": "Granit.QueryEngine.Endpoints",
-      "file": "src/Granit.QueryEngine.Endpoints/Dtos/BindableQueryRequest.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "BindableQueryRequest",
-          "kind": "method",
-          "signature": "BindableQueryRequest(QueryRequest value)",
-          "returnType": "QueryRequest Value { get; } private"
-        },
-        {
-          "name": "BindAsync",
-          "kind": "method",
-          "signature": "BindAsync(HttpContext context, ParameterInfo parameter)",
-          "returnType": "ValueTask<BindableQueryRequest?>"
-        }
-      ]
-    },
-    {
-      "name": "SavedViewResponse",
-      "fqn": "Granit.QueryEngine.Endpoints.Dtos.SavedViewResponse",
-      "kind": "record",
-      "project": "Granit.QueryEngine.Endpoints",
-      "file": "src/Granit.QueryEngine.Endpoints/Dtos/SavedViewResponse.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "QueryEndpointRouteBuilderExtensions",
-      "fqn": "Granit.QueryEngine.Endpoints.Extensions.QueryEndpointRouteBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.QueryEngine.Endpoints",
-      "file": "src/Granit.QueryEngine.Endpoints/Extensions/QueryEndpointRouteBuilderExtensions.cs",
-      "line": 18,
-      "members": []
-    },
-    {
-      "name": "GranitQueryEngineEndpointsModule",
-      "fqn": "Granit.QueryEngine.Endpoints.GranitQueryEngineEndpointsModule",
-      "kind": "class",
-      "project": "Granit.QueryEngine.Endpoints",
-      "file": "src/Granit.QueryEngine.Endpoints/GranitQueryEngineEndpointsModule.cs",
-      "line": 28,
-      "members": []
-    },
-    {
-      "name": "QueryEndpointOptions",
-      "fqn": "Granit.QueryEngine.Endpoints.Options.QueryEndpointOptions",
-      "kind": "class",
-      "project": "Granit.QueryEngine.Endpoints",
-      "file": "src/Granit.QueryEngine.Endpoints/Options/QueryEndpointOptions.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "TagName",
-          "kind": "property",
-          "signature": "string? TagName",
-          "returnType": "string?"
-        },
-        {
-          "name": "IncludeSavedViewEndpoints",
-          "kind": "property",
-          "signature": "bool IncludeSavedViewEndpoints",
-          "returnType": "bool"
-        }
-      ]
     },
     {
       "name": "QueryEngineEfCoreHostApplicationBuilderExtensions",
@@ -27359,6 +27395,33 @@
       "members": []
     },
     {
+      "name": "GranitSchedulingBackgroundJobsModule",
+      "fqn": "Granit.Scheduling.BackgroundJobs.GranitSchedulingBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Scheduling.BackgroundJobs",
+      "file": "src/Granit.Scheduling.BackgroundJobs/GranitSchedulingBackgroundJobsModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "SchedulingCatchUpJob",
+      "fqn": "Granit.Scheduling.BackgroundJobs.Jobs.SchedulingCatchUpJob",
+      "kind": "record",
+      "project": "Granit.Scheduling.BackgroundJobs",
+      "file": "src/Granit.Scheduling.BackgroundJobs/Jobs/SchedulingCatchUpJob.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "SchedulingMetrics",
+      "fqn": "Granit.Scheduling.Diagnostics.SchedulingMetrics",
+      "kind": "class",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/Diagnostics/SchedulingMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "ScheduledAction",
       "fqn": "Granit.Scheduling.Domain.ScheduledAction",
       "kind": "class",
@@ -27379,10 +27442,16 @@
           "returnType": "string"
         },
         {
+          "name": "ExecuteAt",
+          "kind": "property",
+          "signature": "DateTimeOffset ExecuteAt",
+          "returnType": "DateTimeOffset"
+        },
+        {
           "name": "Cancel",
           "kind": "method",
           "signature": "Cancel(string? cancelledBy)",
-          "returnType": "DateTimeOffset ExecuteAt { get; private set; } public string? CorrelationId { get; private set; } public ScheduledActionStatus Status { get; private set; } public DateTimeOffset? ExecutedAt { get; private set; } public string? CancelledBy { get; private set; } public string? FailureReason { get; private set; } public Guid? TenantId { get; set; } public void"
+          "returnType": "void"
         }
       ]
     },
@@ -27418,6 +27487,146 @@
       ]
     },
     {
+      "name": "RescheduleActionRequest",
+      "fqn": "Granit.Scheduling.Endpoints.Dtos.RescheduleActionRequest",
+      "kind": "record",
+      "project": "Granit.Scheduling.Endpoints",
+      "file": "src/Granit.Scheduling.Endpoints/Dtos/RescheduleActionRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ScheduledActionResponse",
+      "fqn": "Granit.Scheduling.Endpoints.Dtos.ScheduledActionResponse",
+      "kind": "record",
+      "project": "Granit.Scheduling.Endpoints",
+      "file": "src/Granit.Scheduling.Endpoints/Dtos/ScheduledActionResponse.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "SchedulingEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Scheduling.Endpoints.Extensions.SchedulingEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Scheduling.Endpoints",
+      "file": "src/Granit.Scheduling.Endpoints/Extensions/SchedulingEndpointRouteBuilderExtensions.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "MapGranitScheduling",
+          "kind": "method",
+          "signature": "MapGranitScheduling(this IEndpointRouteBuilder endpoints, Action<SchedulingEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitSchedulingEndpointsModule",
+      "fqn": "Granit.Scheduling.Endpoints.GranitSchedulingEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Scheduling.Endpoints",
+      "file": "src/Granit.Scheduling.Endpoints/GranitSchedulingEndpointsModule.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "SchedulingEndpointsOptions",
+      "fqn": "Granit.Scheduling.Endpoints.Options.SchedulingEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Scheduling.Endpoints",
+      "file": "src/Granit.Scheduling.Endpoints/Options/SchedulingEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "Actions",
+      "fqn": "Granit.Scheduling.Endpoints.Permissions.Actions",
+      "kind": "class",
+      "project": "Granit.Scheduling.Endpoints",
+      "file": "src/Granit.Scheduling.Endpoints/Permissions/SchedulingPermissions.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "SchedulingPermissions",
+      "fqn": "Granit.Scheduling.Endpoints.Permissions.SchedulingPermissions",
+      "kind": "class",
+      "project": "Granit.Scheduling.Endpoints",
+      "file": "src/Granit.Scheduling.Endpoints/Permissions/SchedulingPermissions.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "SchedulingEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Scheduling.EntityFrameworkCore.Extensions.SchedulingEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Scheduling.EntityFrameworkCore",
+      "file": "src/Granit.Scheduling.EntityFrameworkCore/Extensions/SchedulingEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitSchedulingEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitSchedulingEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "SchedulingModelBuilderExtensions",
+      "fqn": "Granit.Scheduling.EntityFrameworkCore.Extensions.SchedulingModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Scheduling.EntityFrameworkCore",
+      "file": "src/Granit.Scheduling.EntityFrameworkCore/Extensions/SchedulingModelBuilderExtensions.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureSchedulingModule",
+          "kind": "method",
+          "signature": "ConfigureSchedulingModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitSchedulingDbProperties",
+      "fqn": "Granit.Scheduling.EntityFrameworkCore.GranitSchedulingDbProperties",
+      "kind": "class",
+      "project": "Granit.Scheduling.EntityFrameworkCore",
+      "file": "src/Granit.Scheduling.EntityFrameworkCore/GranitSchedulingDbProperties.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitSchedulingEntityFrameworkCoreModule",
+      "fqn": "Granit.Scheduling.EntityFrameworkCore.GranitSchedulingEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Scheduling.EntityFrameworkCore",
+      "file": "src/Granit.Scheduling.EntityFrameworkCore/GranitSchedulingEntityFrameworkCoreModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
       "name": "ScheduledActionCancelledEvent",
       "fqn": "Granit.Scheduling.Events.ScheduledActionCancelledEvent",
       "kind": "record",
@@ -27450,7 +27659,7 @@
       "kind": "class",
       "project": "Granit.Scheduling",
       "file": "src/Granit.Scheduling/Extensions/SchedulingHostApplicationBuilderExtensions.cs",
-      "line": 9,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitScheduling",
@@ -27473,6 +27682,22 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IScheduledActionQueryableProvider",
+      "fqn": "Granit.Scheduling.IScheduledActionQueryableProvider",
+      "kind": "interface",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/IScheduledActionQueryableProvider.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "GetScheduledActions",
+          "kind": "method",
+          "signature": "GetScheduledActions()",
+          "returnType": "IQueryable<ScheduledAction>"
         }
       ]
     },
@@ -27501,6 +27726,12 @@
           "kind": "method",
           "signature": "GetByCorrelationIdAsync(string correlationId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<ScheduledAction>>"
+        },
+        {
+          "name": "GetByStatusAsync",
+          "kind": "method",
+          "signature": "GetByStatusAsync(ScheduledActionStatus? status, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ScheduledAction>>"
         }
       ]
     },
@@ -27510,7 +27741,7 @@
       "kind": "interface",
       "project": "Granit.Scheduling",
       "file": "src/Granit.Scheduling/IScheduledActionWriter.cs",
-      "line": 8,
+      "line": 9,
       "members": [
         {
           "name": "AddAsync",
@@ -27523,6 +27754,12 @@
           "kind": "method",
           "signature": "UpdateAsync(ScheduledAction action, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        },
+        {
+          "name": "TryClaimForExecutionAsync",
+          "kind": "method",
+          "signature": "TryClaimForExecutionAsync(ScheduledActionId id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
     },
@@ -27554,6 +27791,54 @@
           "kind": "method",
           "signature": "RescheduleAsync(ScheduledActionId id, DateTimeOffset newExecuteAt, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ScheduledPayloadTypeRegistry",
+      "fqn": "Granit.Scheduling.ScheduledPayloadTypeRegistry",
+      "kind": "class",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/ScheduledPayloadTypeRegistry.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "Resolve",
+          "kind": "method",
+          "signature": "Resolve(string assemblyQualifiedName)",
+          "returnType": "Type"
+        }
+      ]
+    },
+    {
+      "name": "GranitSchedulingWolverineModule",
+      "fqn": "Granit.Scheduling.Wolverine.GranitSchedulingWolverineModule",
+      "kind": "class",
+      "project": "Granit.Scheduling.Wolverine",
+      "file": "src/Granit.Scheduling.Wolverine/GranitSchedulingWolverineModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ScheduledActionStatusMiddleware",
+      "fqn": "Granit.Scheduling.Wolverine.ScheduledActionStatusMiddleware",
+      "kind": "class",
+      "project": "Granit.Scheduling.Wolverine",
+      "file": "src/Granit.Scheduling.Wolverine/ScheduledActionStatusMiddleware.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "BeforeAsync",
+          "kind": "method",
+          "signature": "BeforeAsync(Envelope envelope, CancellationToken cancellationToken)",
+          "returnType": "Task<HandlerContinuation>"
         }
       ]
     },

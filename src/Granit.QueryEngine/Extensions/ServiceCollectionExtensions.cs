@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
     /// </list>
     /// <para>
     /// For the EF Core query engine, add <c>Granit.QueryEngine.EntityFrameworkCore</c>.
-    /// For REST endpoints, add <c>Granit.QueryEngine.Endpoints</c>.
+    /// For REST endpoints, add <c>Granit.QueryEngine.AspNetCore</c>.
     /// </para>
     /// </remarks>
     /// <param name="services">The service collection.</param>

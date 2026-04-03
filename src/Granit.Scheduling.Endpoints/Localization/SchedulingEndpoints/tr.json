@@ -1,0 +1,8 @@
+{
+  "culture": "tr",
+  "texts": {
+    "PermissionGroup:Scheduling": "Zamanlama",
+    "Permission:Scheduling.Actions.Read": "Zamanlanmış eylemleri görüntüle (liste, detay)",
+    "Permission:Scheduling.Actions.Manage": "Zamanlanmış eylemleri yönet (iptal et, yeniden zamanla)"
+  }
+}

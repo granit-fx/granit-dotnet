@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Scheduling.Wolverine</PackageId>
+    <Description>Wolverine integration for Granit.Scheduling: durable ScheduleAsync for one-shot scheduled actions, automatic status tracking middleware (Executed/Failed), and tenant/user context propagation.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Scheduling.Wolverine.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WolverineFx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Scheduling\Granit.Scheduling.csproj" />
+    <ProjectReference Include="..\Granit.Wolverine\Granit.Wolverine.csproj" />
+  </ItemGroup>
+
+</Project>

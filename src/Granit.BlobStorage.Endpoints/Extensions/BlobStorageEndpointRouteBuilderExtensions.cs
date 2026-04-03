@@ -2,7 +2,7 @@ using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Endpoints.Endpoints;
 using Granit.BlobStorage.Endpoints.Options;
 using Granit.BlobStorage.Endpoints.Permissions;
-using Granit.QueryEngine.Endpoints.Extensions;
+using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

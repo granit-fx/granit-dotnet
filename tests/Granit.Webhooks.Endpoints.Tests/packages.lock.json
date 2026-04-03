@@ -561,7 +561,7 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.queryengine.endpoints": {
+      "granit.queryengine.aspnetcore": {
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
@@ -604,7 +604,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Endpoints": "[0.1.0-dev, )",
+          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "Granit.Webhooks": "[0.1.0-dev, )"
         }

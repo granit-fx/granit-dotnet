@@ -68,6 +68,7 @@
     "Granit:Validation:PredicateValidator": "Określony warunek nie został spełniony dla '{PropertyName}'.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' ma nieprawidłowy format.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' nie może mieć więcej niż {ExpectedPrecision} cyfr łącznie, w tym {ExpectedScale} miejsc po przecinku.",
+    "Granit:Validation:ScheduledAction:FutureDate": "Zaplanowana data musi być w przyszłości.",
     "Granit:Validation:ValidToAfterValidFrom": "'Ważne do' musi być późniejsze niż 'Ważne od'."
   }
 }

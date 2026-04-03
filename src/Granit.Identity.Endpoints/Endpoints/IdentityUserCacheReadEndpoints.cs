@@ -1,6 +1,6 @@
 using Granit.Identity.Endpoints.Dtos;
 using Granit.QueryEngine;
-using Granit.QueryEngine.Endpoints.Dtos;
+using Granit.QueryEngine.AspNetCore.Dtos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

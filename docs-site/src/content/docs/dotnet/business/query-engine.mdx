@@ -18,14 +18,14 @@ grid — no duplication.
 <FileTree>
 - Granit.QueryEngine/ QueryDefinition, IQueryEngine, QueryRequest/Response abstractions
   - Granit.QueryEngine.EntityFrameworkCore EF Core IQueryEngine implementation
-  - Granit.QueryEngine.Endpoints Generic search endpoint
+  - Granit.QueryEngine.AspNetCore Generic search endpoint
 </FileTree>
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
 | `Granit.QueryEngine` | `IQueryEngine<T>`, `QueryDefinition<T>`, `QueryRequest`, `PagedResult<T>` | `Granit` |
 | `Granit.QueryEngine.EntityFrameworkCore` | EF Core query executor | `Granit.QueryEngine`, `Granit.Persistence` |
-| `Granit.QueryEngine.Endpoints` | `MapGranitQuery<T>()` generic search endpoint | `Granit.QueryEngine` |
+| `Granit.QueryEngine.AspNetCore` | `MapGranitQuery<T>()` generic search endpoint | `Granit.QueryEngine` |
 | `Granit.QueryEngine.AI` | NL-to-query translation via LLM | `Granit.QueryEngine`, `Granit.AI` |
 
 ## Security hardening

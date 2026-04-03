@@ -11,7 +11,7 @@ namespace Granit.ArchitectureTests.Abstractions.Rules;
 public static partial class FrameworkBoundaryRules
 {
     /// <summary>
-    /// The 16 module root prefixes. A project named <c>Granit.{Root}</c> or <c>Granit.{Root}.*</c>
+    /// The 21 module root prefixes. A project named <c>Granit.{Root}</c> or <c>Granit.{Root}.*</c>
     /// is classified as a <b>module</b>. Everything else under <c>src/Granit.*</c> (except bundles)
     /// is <b>framework</b>.
     /// </summary>
@@ -20,6 +20,7 @@ public static partial class FrameworkBoundaryRules
         "Auditing",
         "BackgroundJobs",
         "Bff",
+        "Billing",
         "BlobStorage",
         "DataExchange",
         "DocumentGeneration",
@@ -29,7 +30,11 @@ public static partial class FrameworkBoundaryRules
         "Notifications",
         "Oidc",
         "OpenIddict",
+        "Payments",
         "ReferenceData",
+        "SaasMetering",
+        "SaasSubscriptions",
+        "Scheduling",
         "Templating",
         "Timeline",
         "Webhooks",

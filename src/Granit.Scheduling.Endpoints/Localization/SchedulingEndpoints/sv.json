@@ -1,0 +1,8 @@
+{
+  "culture": "sv",
+  "texts": {
+    "PermissionGroup:Scheduling": "Schemaläggning",
+    "Permission:Scheduling.Actions.Read": "Visa schemalagda åtgärder (lista, detalj)",
+    "Permission:Scheduling.Actions.Manage": "Hantera schemalagda åtgärder (avbryt, omplanera)"
+  }
+}

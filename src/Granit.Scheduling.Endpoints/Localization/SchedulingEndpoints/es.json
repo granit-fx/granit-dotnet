@@ -1,0 +1,8 @@
+{
+  "culture": "es",
+  "texts": {
+    "PermissionGroup:Scheduling": "Programación",
+    "Permission:Scheduling.Actions.Read": "Ver acciones programadas (lista, detalle)",
+    "Permission:Scheduling.Actions.Manage": "Gestionar acciones programadas (cancelar, reprogramar)"
+  }
+}

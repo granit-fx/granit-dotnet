@@ -1,6 +1,6 @@
 using Granit.Authorization;
 using Granit.Modularity;
-using Granit.QueryEngine.Endpoints;
+using Granit.QueryEngine.AspNetCore;
 
 namespace Granit.AI.Endpoints;
 
@@ -10,5 +10,5 @@ namespace Granit.AI.Endpoints;
 [DependsOn(
     typeof(GranitAIModule),
     typeof(GranitAuthorizationModule),
-    typeof(GranitQueryEngineEndpointsModule))]
+    typeof(GranitQueryEngineAspNetCoreModule))]
 public sealed class GranitAIEndpointsModule : GranitModule;

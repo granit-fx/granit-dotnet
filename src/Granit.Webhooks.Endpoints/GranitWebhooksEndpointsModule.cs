@@ -1,6 +1,6 @@
 using Granit.Authorization;
 using Granit.Modularity;
-using Granit.QueryEngine.Endpoints;
+using Granit.QueryEngine.AspNetCore;
 using Granit.Webhooks;
 
 namespace Granit.Webhooks.Endpoints;
@@ -10,6 +10,6 @@ namespace Granit.Webhooks.Endpoints;
 /// </summary>
 [DependsOn(
     typeof(GranitAuthorizationModule),
-    typeof(GranitQueryEngineEndpointsModule),
+    typeof(GranitQueryEngineAspNetCoreModule),
     typeof(GranitWebhooksModule))]
 public sealed class GranitWebhooksEndpointsModule : GranitModule;

@@ -52,7 +52,7 @@ flowchart LR
 | --- | --- |
 | `Granit.QueryEngine` | Interfaces, fluent builder, DTOs (`QueryRequest`, `PagedResult<T>`) |
 | `Granit.QueryEngine.EntityFrameworkCore` | Execution engine: expression trees, dynamic sorting, pagination |
-| `Granit.QueryEngine.Endpoints` | REST binding (`filter[field.op]=value`), metadata + saved views endpoints |
+| `Granit.QueryEngine.AspNetCore` | REST binding (`filter[field.op]=value`), metadata + saved views endpoints |
 
 ### QueryDefinition -- the declarative specification
 
@@ -120,7 +120,7 @@ through string concatenation.
 | `src/Granit.QueryEngine.EntityFrameworkCore/Internal/QueryableFilterExtensions.cs` | Filter application on IQueryable |
 | `src/Granit.QueryEngine.EntityFrameworkCore/Internal/QueryableSortExtensions.cs` | Dynamic sorting via expressions |
 | `src/Granit.QueryEngine.EntityFrameworkCore/Internal/QueryablePaginationExtensions.cs` | Offset + keyset pagination |
-| `src/Granit.QueryEngine.Endpoints/Binding/QueryRequestBinder.cs` | REST query string parsing |
+| `src/Granit.QueryEngine.AspNetCore/Binding/QueryRequestBinder.cs` | REST query string parsing |
 
 ## Rationale
 

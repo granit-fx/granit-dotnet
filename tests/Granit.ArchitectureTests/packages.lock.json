@@ -1378,7 +1378,7 @@
         "dependencies": {
           "Granit.AI": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Endpoints": "[0.1.0-dev, )",
+          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
@@ -1706,7 +1706,7 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.BlobStorage": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Endpoints": "[0.1.0-dev, )",
+          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
           "Granit.RateLimiting": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
@@ -2036,7 +2036,7 @@
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Endpoints": "[0.1.0-dev, )",
+          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
@@ -2631,7 +2631,7 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
-      "granit.queryengine.endpoints": {
+      "granit.queryengine.aspnetcore": {
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
@@ -2926,7 +2926,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Endpoints": "[0.1.0-dev, )",
+          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "Granit.Webhooks": "[0.1.0-dev, )"
         }
@@ -3709,8 +3709,8 @@
       "StackExchange.Redis": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.12.8",
-        "contentHash": "I2x/MZ+I0YR2KYYOtlIaEq0Thd+Uhioao6BIaEs+U1MeGkbJF+peLtoZucJwHmfrFxMDXAzWOZrLnOQqPgyGvA==",
+        "resolved": "2.12.14",
+        "contentHash": "QiAQg40OP4Owem6/PjIbjEKq2+uIeQYeZ1TCMUnx/QvKugOPxOfC96wjlnBjWHi4Wq9pv9+fDlXGT06XkRZ6Ig==",
         "dependencies": {
           "Pipelines.Sockets.Unofficial": "2.2.8",
           "System.IO.Hashing": "10.0.2"

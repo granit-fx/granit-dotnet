@@ -68,6 +68,7 @@
     "Granit:Validation:PredicateValidator": "Aan de opgegeven voorwaarde voor '{PropertyName}' is niet voldaan.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' heeft niet het juiste formaat.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' mag niet meer dan {ExpectedPrecision} cijfers bevatten, waarvan {ExpectedScale} decimalen.",
+    "Granit:Validation:ScheduledAction:FutureDate": "De geplande datum moet in de toekomst liggen.",
     "Granit:Validation:ValidToAfterValidFrom": "'Geldig tot' moet na 'Geldig vanaf' liggen."
   }
 }

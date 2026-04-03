@@ -14,7 +14,7 @@ dotnet add package Granit.Webhooks.Endpoints
 
 - `Granit.Webhooks`
 - `Granit.Authorization`
-- `Granit.QueryEngine.Endpoints`
+- `Granit.QueryEngine.AspNetCore`
 - `Granit.Validation`
 
 ## Documentation

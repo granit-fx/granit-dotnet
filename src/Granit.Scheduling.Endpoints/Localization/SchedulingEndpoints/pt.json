@@ -1,0 +1,8 @@
+{
+  "culture": "pt",
+  "texts": {
+    "PermissionGroup:Scheduling": "Agendamento",
+    "Permission:Scheduling.Actions.Read": "Ver ações agendadas (lista, detalhe)",
+    "Permission:Scheduling.Actions.Manage": "Gerir ações agendadas (cancelar, reagendar)"
+  }
+}

@@ -14,7 +14,7 @@ dotnet add package Granit.AI.Endpoints
 
 - `Granit.AI`
 - `Granit.Authorization`
-- `Granit.QueryEngine.Endpoints`
+- `Granit.QueryEngine.AspNetCore`
 - `Granit.Validation`
 
 ## Documentation

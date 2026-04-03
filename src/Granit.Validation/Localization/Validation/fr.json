@@ -68,6 +68,7 @@
     "Granit:Validation:PredicateValidator": "La condition spécifiée n'a pas été remplie pour '{PropertyName}'.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' n'est pas dans le format attendu.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' ne doit pas avoir plus de {ExpectedPrecision} chiffres au total, dont {ExpectedScale} décimaux.",
+    "Granit:Validation:ScheduledAction:FutureDate": "La date planifiée doit être dans le futur.",
     "Granit:Validation:ValidToAfterValidFrom": "'Valide jusqu'au' doit être postérieur à 'Valide à partir du'."
   }
 }

@@ -103,7 +103,7 @@
     <Project Path="src/Granit.Localization/Granit.Localization.csproj" />
     <Project Path="src/Granit.QueryEngine.AI/Granit.QueryEngine.AI.csproj" />
     <Project Path="src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj" />
-    <Project Path="src/Granit.QueryEngine.Endpoints/Granit.QueryEngine.Endpoints.csproj" />
+    <Project Path="src/Granit.QueryEngine.AspNetCore/Granit.QueryEngine.AspNetCore.csproj" />
     <Project Path="src/Granit.QueryEngine.EntityFrameworkCore/Granit.QueryEngine.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.QueryEngine/Granit.QueryEngine.csproj" />
     <Project Path="src/Granit.ReferenceData.Endpoints/Granit.ReferenceData.Endpoints.csproj" />
@@ -213,6 +213,11 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Granit.Identity.Local.Notifications/Granit.Identity.Local.Notifications.csproj" />
+    <Project Path="src/Granit.Scheduling.BackgroundJobs/Granit.Scheduling.BackgroundJobs.csproj" />
+    <Project Path="src/Granit.Scheduling.Endpoints/Granit.Scheduling.Endpoints.csproj" />
+    <Project Path="src/Granit.Scheduling.EntityFrameworkCore/Granit.Scheduling.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Scheduling.Wolverine/Granit.Scheduling.Wolverine.csproj" />
+    <Project Path="src/Granit.Scheduling/Granit.Scheduling.csproj" />
   </Folder>
   <Folder Name="/src/AI/">
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
@@ -341,8 +346,8 @@
     <Project Path="tests/Granit.Localization.Tests/Granit.Localization.Tests.csproj" />
     <Project Path="tests/Granit.QueryEngine.AI.Tests/Granit.QueryEngine.AI.Tests.csproj" />
     <Project Path="tests/Granit.QueryEngine.Abstractions.Tests/Granit.QueryEngine.Abstractions.Tests.csproj" />
-    <Project Path="tests/Granit.QueryEngine.Endpoints.Tests.Integration/Granit.QueryEngine.Endpoints.Tests.Integration.csproj" />
-    <Project Path="tests/Granit.QueryEngine.Endpoints.Tests/Granit.QueryEngine.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.QueryEngine.AspNetCore.Tests.Integration/Granit.QueryEngine.AspNetCore.Tests.Integration.csproj" />
+    <Project Path="tests/Granit.QueryEngine.AspNetCore.Tests/Granit.QueryEngine.AspNetCore.Tests.csproj" />
     <Project Path="tests/Granit.QueryEngine.EntityFrameworkCore.Tests/Granit.QueryEngine.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.QueryEngine.Tests/Granit.QueryEngine.Tests.csproj" />
     <Project Path="tests/Granit.ReferenceData.Endpoints.Tests/Granit.ReferenceData.Endpoints.Tests.csproj" />
@@ -457,6 +462,11 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Granit.Identity.Local.Notifications.Tests/Granit.Identity.Local.Notifications.Tests.csproj" />
+    <Project Path="tests/Granit.Scheduling.BackgroundJobs.Tests/Granit.Scheduling.BackgroundJobs.Tests.csproj" />
+    <Project Path="tests/Granit.Scheduling.Endpoints.Tests/Granit.Scheduling.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.Scheduling.EntityFrameworkCore.Tests/Granit.Scheduling.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Scheduling.Tests/Granit.Scheduling.Tests.csproj" />
+    <Project Path="tests/Granit.Scheduling.Wolverine.Tests/Granit.Scheduling.Wolverine.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />

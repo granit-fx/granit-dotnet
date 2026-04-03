@@ -107,7 +107,7 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.queryengine.endpoints": {
+      "granit.queryengine.aspnetcore": {
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",

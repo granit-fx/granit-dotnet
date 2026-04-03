@@ -68,6 +68,7 @@
     "Granit:Validation:PredicateValidator": "Det angivna villkoret uppfylldes inte för '{PropertyName}'.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' har inte korrekt format.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' får inte ha fler än {ExpectedPrecision} siffror totalt, varav {ExpectedScale} decimaler.",
+    "Granit:Validation:ScheduledAction:FutureDate": "Schemalagt datum måste vara i framtiden.",
     "Granit:Validation:ValidToAfterValidFrom": "'Giltig till' måste vara efter 'Giltig från'."
   }
 }

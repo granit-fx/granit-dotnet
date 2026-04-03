@@ -1,0 +1,8 @@
+{
+  "culture": "zh",
+  "texts": {
+    "PermissionGroup:Scheduling": "计划任务",
+    "Permission:Scheduling.Actions.Read": "查看计划操作（列表、详情）",
+    "Permission:Scheduling.Actions.Manage": "管理计划操作（取消、重新安排）"
+  }
+}

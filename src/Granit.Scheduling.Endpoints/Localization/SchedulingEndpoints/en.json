@@ -1,0 +1,8 @@
+{
+  "culture": "en",
+  "texts": {
+    "PermissionGroup:Scheduling": "Scheduling",
+    "Permission:Scheduling.Actions.Read": "View scheduled actions (list, detail)",
+    "Permission:Scheduling.Actions.Manage": "Manage scheduled actions (cancel, reschedule)"
+  }
+}

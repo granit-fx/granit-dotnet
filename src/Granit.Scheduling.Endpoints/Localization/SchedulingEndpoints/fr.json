@@ -1,0 +1,8 @@
+{
+  "culture": "fr",
+  "texts": {
+    "PermissionGroup:Scheduling": "Planification",
+    "Permission:Scheduling.Actions.Read": "Consulter les actions planifiées (liste, détail)",
+    "Permission:Scheduling.Actions.Manage": "Gérer les actions planifiées (annuler, replanifier)"
+  }
+}

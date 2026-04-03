@@ -153,7 +153,7 @@ flowchart TD
 | Workflow | Workflow (4), Workflow.Notifications |
 | Timeline | Timeline (4), Timeline.Notifications |
 | DataExchange | DataExchange (5), DataExchange.Wolverine |
-| QueryEngine | QueryEngine, QueryEngine.Endpoints, QueryEngine.EntityFrameworkCore |
+| QueryEngine | QueryEngine, QueryEngine.AspNetCore, QueryEngine.EntityFrameworkCore |
 | Wolverine | Wolverine, Wolverine.Postgresql, Wolverine.SqlServer |
 | AI | AI (8 incl. Endpoints, Mcp, VectorData, Extraction), and 13 cross-cutting `*.AI` packages |
 | Analyzers | Analyzers, Analyzers.CodeFixes |
@@ -372,7 +372,7 @@ flowchart TD
 | `Granit.BlobStorage.Proxy` | `BlobStorage` |
 | `Granit.BlobStorage.EntityFrameworkCore` | `BlobStorage`, `Persistence` |
 | `Granit.BlobStorage.BackgroundJobs` | `BlobStorage`, `BackgroundJobs` |
-| `Granit.BlobStorage.Endpoints` | `BlobStorage`, `Authorization`, `QueryEngine.Endpoints`, `RateLimiting`, `Validation` |
+| `Granit.BlobStorage.Endpoints` | `BlobStorage`, `Authorization`, `QueryEngine.AspNetCore`, `RateLimiting`, `Validation` |
 | `Granit.Imaging` | `Core` |
 | `Granit.Imaging.MagickNet` | `Imaging` |
 
@@ -499,7 +499,7 @@ These two domains share cross-module dependencies with Notifications and Identit
 | Package | Depends on |
 |---------|------------|
 | `Granit.QueryEngine` | `Core` |
-| `Granit.QueryEngine.Endpoints` | `QueryEngine`, `Authorization` |
+| `Granit.QueryEngine.AspNetCore` | `QueryEngine`, `Authorization` |
 | `Granit.QueryEngine.EntityFrameworkCore` | `QueryEngine`, `Persistence` |
 
 ### DataExchange

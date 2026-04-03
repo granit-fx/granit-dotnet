@@ -1,6 +1,6 @@
 using Granit.Authorization;
 using Granit.Modularity;
-using Granit.QueryEngine.Endpoints;
+using Granit.QueryEngine.AspNetCore;
 using Granit.RateLimiting;
 using Granit.Validation;
 
@@ -12,7 +12,7 @@ namespace Granit.BlobStorage.Endpoints;
 [DependsOn(
     typeof(GranitAuthorizationModule),
     typeof(GranitBlobStorageModule),
-    typeof(GranitQueryEngineEndpointsModule),
+    typeof(GranitQueryEngineAspNetCoreModule),
     typeof(GranitRateLimitingModule),
     typeof(GranitValidationModule))]
 public sealed class GranitBlobStorageEndpointsModule : GranitModule;
