@@ -872,6 +872,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Invoicing.Odoo",
+      "deps": [
+        "Granit.Invoicing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Invoicing.Wolverine",
       "deps": [
         "Granit.Invoicing",
@@ -18515,6 +18522,62 @@
       ]
     },
     {
+      "name": "GranitInvoicingOdooModule",
+      "fqn": "Granit.Invoicing.Odoo.GranitInvoicingOdooModule",
+      "kind": "class",
+      "project": "Granit.Invoicing.Odoo",
+      "file": "src/Granit.Invoicing.Odoo/GranitInvoicingOdooModule.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "OdooOptions",
+      "fqn": "Granit.Invoicing.Odoo.Options.OdooOptions",
+      "kind": "class",
+      "project": "Granit.Invoicing.Odoo",
+      "file": "src/Granit.Invoicing.Odoo/Options/OdooOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "BaseUrl",
+          "kind": "property",
+          "signature": "string BaseUrl",
+          "returnType": "string"
+        },
+        {
+          "name": "Database",
+          "kind": "property",
+          "signature": "string Database",
+          "returnType": "string"
+        },
+        {
+          "name": "ApiKey",
+          "kind": "property",
+          "signature": "string ApiKey",
+          "returnType": "string"
+        },
+        {
+          "name": "Login",
+          "kind": "property",
+          "signature": "string Login",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultJournalId",
+          "kind": "property",
+          "signature": "int DefaultJournalId",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
       "name": "GranitInvoicingWolverineModule",
       "fqn": "Granit.Invoicing.Wolverine.GranitInvoicingWolverineModule",
       "kind": "class",
@@ -32630,7 +32693,7 @@
       "kind": "class",
       "project": "Granit.Tax",
       "file": "src/Granit.Tax/Domain/ValidatedTaxId.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "Create",

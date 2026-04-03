@@ -35,6 +35,9 @@ internal sealed partial class ViesValidator(
 {
     private const string CacheKeyPrefix = "granit:tax:vies:";
 
+    private static string BuildCacheKey(string tenantSegment, string normalizedTaxId) =>
+        $"{CacheKeyPrefix}{tenantSegment}:{normalizedTaxId}";
+
     /// <inheritdoc/>
     public string Name => "vies";
 
@@ -44,7 +47,8 @@ internal sealed partial class ViesValidator(
         CancellationToken cancellationToken = default)
     {
         string normalizedTaxId = taxId.ToUpperInvariant().Replace(" ", "", StringComparison.Ordinal);
-        string cacheKey = $"{CacheKeyPrefix}{normalizedTaxId}";
+        string tenantSegment = currentTenant.IsAvailable ? currentTenant.Id!.Value.ToString() : "global";
+        string cacheKey = BuildCacheKey(tenantSegment, normalizedTaxId);
 
         var ttl = TimeSpan.FromHours(taxOptions.Value.ValidationCacheTtlHours);
 
@@ -86,7 +90,7 @@ internal sealed partial class ViesValidator(
                         return FallbackOrReject(normalizedTaxId, "Empty VIES response");
                     }
 
-                    Log.ViesValidated(logger, normalizedTaxId, viesResponse.IsValid);
+                    Log.ViesValidated(logger, MaskTaxId(normalizedTaxId), viesResponse.IsValid);
 
                     return new TaxIdValidationResult(
                         IsValid: viesResponse.IsValid,
@@ -114,7 +118,7 @@ internal sealed partial class ViesValidator(
     {
         if (!taxOptions.Value.AllowOfflineFallback)
         {
-            Log.ViesFallbackDisabled(logger, taxId);
+            Log.ViesFallbackDisabled(logger, MaskTaxId(taxId));
             return new TaxIdValidationResult(
                 IsValid: false, CompanyName: null, CompanyAddress: null,
                 RequestIdentifier: null, ValidatedAt: clock.Now,
@@ -122,7 +126,7 @@ internal sealed partial class ViesValidator(
         }
 
         bool formatValid = EuropeanVatAlgorithm.IsValid(taxId);
-        Log.ViesFallbackOffline(logger, taxId, formatValid);
+        Log.ViesFallbackOffline(logger, MaskTaxId(taxId), formatValid);
 
         return new TaxIdValidationResult(
             IsValid: formatValid,
@@ -143,18 +147,21 @@ internal sealed partial class ViesValidator(
         [property: JsonPropertyName("address")] string? Address,
         [property: JsonPropertyName("requestIdentifier")] string? RequestIdentifier);
 
+    private static string MaskTaxId(string taxId) =>
+        taxId.Length > 4 ? $"{taxId[..2]}***{taxId[^4..]}" : "***";
+
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Information, Message = "VIES validated {TaxId}: {IsValid}")]
-        public static partial void ViesValidated(ILogger logger, string taxId, bool isValid);
+        [LoggerMessage(Level = LogLevel.Debug, Message = "VIES validated {MaskedTaxId}: {IsValid}")]
+        public static partial void ViesValidated(ILogger logger, string maskedTaxId, bool isValid);
 
         [LoggerMessage(Level = LogLevel.Warning, Message = "VIES unavailable")]
         public static partial void ViesUnavailable(ILogger logger, Exception ex);
 
-        [LoggerMessage(Level = LogLevel.Warning, Message = "VIES fallback disabled, rejecting {TaxId}")]
-        public static partial void ViesFallbackDisabled(ILogger logger, string taxId);
+        [LoggerMessage(Level = LogLevel.Warning, Message = "VIES fallback disabled, rejecting {MaskedTaxId}")]
+        public static partial void ViesFallbackDisabled(ILogger logger, string maskedTaxId);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "VIES offline fallback for {TaxId}: format valid = {FormatValid}")]
-        public static partial void ViesFallbackOffline(ILogger logger, string taxId, bool formatValid);
+        [LoggerMessage(Level = LogLevel.Debug, Message = "VIES offline fallback for {MaskedTaxId}: format valid = {FormatValid}")]
+        public static partial void ViesFallbackOffline(ILogger logger, string maskedTaxId, bool formatValid);
     }
 }

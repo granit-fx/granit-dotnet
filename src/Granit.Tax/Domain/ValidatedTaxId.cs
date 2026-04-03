@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.Domain;
 using Granit.MultiTenancy;
 
@@ -47,6 +48,7 @@ public sealed class ValidatedTaxId : Entity, IMultiTenant
     }
 
     /// <summary>The validated tax ID (e.g., "BE0123456789").</summary>
+    [SensitiveData(Level = Sensitivity.Confidential)]
     public string TaxId { get; private set; } = string.Empty;
 
     /// <summary>ISO 3166-1 alpha-2 country code.</summary>
@@ -65,9 +67,11 @@ public sealed class ValidatedTaxId : Entity, IMultiTenant
     public DateTimeOffset? ExpiresAt { get; private set; }
 
     /// <summary>Company name returned by the tax authority.</summary>
+    [SensitiveData]
     public string? CompanyName { get; private set; }
 
     /// <summary>Company address returned by the tax authority.</summary>
+    [SensitiveData(Level = Sensitivity.Confidential)]
     public string? CompanyAddress { get; private set; }
 
     /// <summary>Consultation number for audit trail (e.g., VIES request identifier).</summary>
