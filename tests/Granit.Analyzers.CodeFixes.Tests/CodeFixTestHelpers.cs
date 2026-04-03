@@ -64,7 +64,7 @@ internal static class CodeFixTestHelpers
             .OrderBy(d => d.Location.SourceSpan.Start)
             .First();
 
-        AdhocWorkspace workspace = new();
+        using AdhocWorkspace workspace = new();
         Document document = workspace
             .AddProject("TestProject", LanguageNames.CSharp)
             .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))

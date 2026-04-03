@@ -96,7 +96,7 @@ public sealed class WolverineHandlerConventionTests
         {
             return Assembly.LoadFrom(path);
         }
-        catch
+        catch (Exception ex) when (ex is BadImageFormatException or FileLoadException)
         {
             return null;
         }

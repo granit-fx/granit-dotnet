@@ -63,7 +63,7 @@ public sealed partial class ValidationConventionTests
             .Select(path =>
             {
                 try { return Assembly.LoadFrom(path); }
-                catch { return null; }
+                catch (Exception ex) when (ex is BadImageFormatException or FileLoadException) { return null; }
             })
             .Where(a => a is not null)
             .ToArray()!;

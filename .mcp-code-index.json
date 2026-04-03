@@ -1384,6 +1384,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Scheduling",
+      "deps": [
+        "Granit",
+        "Granit.Guids",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Settings",
       "deps": [
         "Granit.Caching",
@@ -27348,6 +27357,205 @@
       "file": "src/Granit.ReferenceData/ReferenceDataTypeRegistration.cs",
       "line": 14,
       "members": []
+    },
+    {
+      "name": "ScheduledAction",
+      "fqn": "Granit.Scheduling.Domain.ScheduledAction",
+      "kind": "class",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/Domain/ScheduledAction.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string payloadType, string payloadJson, DateTimeOffset executeAt, string? correlationId = null)",
+          "returnType": "ScheduledAction"
+        },
+        {
+          "name": "PayloadJson",
+          "kind": "property",
+          "signature": "string PayloadJson",
+          "returnType": "string"
+        },
+        {
+          "name": "Cancel",
+          "kind": "method",
+          "signature": "Cancel(string? cancelledBy)",
+          "returnType": "DateTimeOffset ExecuteAt { get; private set; } public string? CorrelationId { get; private set; } public ScheduledActionStatus Status { get; private set; } public DateTimeOffset? ExecutedAt { get; private set; } public string? CancelledBy { get; private set; } public string? FailureReason { get; private set; } public Guid? TenantId { get; set; } public void"
+        }
+      ]
+    },
+    {
+      "name": "ScheduledActionStatus",
+      "fqn": "Granit.Scheduling.Domain.ScheduledActionStatus",
+      "kind": "enum",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/Domain/ScheduledActionStatus.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "ScheduledActionId",
+      "fqn": "Granit.Scheduling.Domain.ValueObjects.ScheduledActionId",
+      "kind": "class",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/Domain/ValueObjects/ScheduledActionId.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid value)",
+          "returnType": "required Guid Value { get; init; } public ScheduledActionId"
+        },
+        {
+          "name": "ScheduledActionId",
+          "kind": "method",
+          "signature": "ScheduledActionId(Guid value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
+      "name": "ScheduledActionCancelledEvent",
+      "fqn": "Granit.Scheduling.Events.ScheduledActionCancelledEvent",
+      "kind": "record",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/Events/ScheduledActionCancelledEvent.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "ScheduledActionExecutedEto",
+      "fqn": "Granit.Scheduling.Events.ScheduledActionExecutedEto",
+      "kind": "record",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/Events/ScheduledActionExecutedEto.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "ScheduledActionFailedEto",
+      "fqn": "Granit.Scheduling.Events.ScheduledActionFailedEto",
+      "kind": "record",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/Events/ScheduledActionFailedEto.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "SchedulingHostApplicationBuilderExtensions",
+      "fqn": "Granit.Scheduling.Extensions.SchedulingHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/Extensions/SchedulingHostApplicationBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitScheduling",
+          "kind": "method",
+          "signature": "AddGranitScheduling(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitSchedulingModule",
+      "fqn": "Granit.Scheduling.GranitSchedulingModule",
+      "kind": "class",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/GranitSchedulingModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IScheduledActionReader",
+      "fqn": "Granit.Scheduling.IScheduledActionReader",
+      "kind": "interface",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/IScheduledActionReader.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(ScheduledActionId id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ScheduledAction?>"
+        },
+        {
+          "name": "GetOverduePendingAsync",
+          "kind": "method",
+          "signature": "GetOverduePendingAsync(DateTimeOffset overdueThreshold, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ScheduledAction>>"
+        },
+        {
+          "name": "GetByCorrelationIdAsync",
+          "kind": "method",
+          "signature": "GetByCorrelationIdAsync(string correlationId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ScheduledAction>>"
+        }
+      ]
+    },
+    {
+      "name": "IScheduledActionWriter",
+      "fqn": "Granit.Scheduling.IScheduledActionWriter",
+      "kind": "interface",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/IScheduledActionWriter.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(ScheduledAction action, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(ScheduledAction action, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IScheduledPayload",
+      "fqn": "Granit.Scheduling.IScheduledPayload",
+      "kind": "interface",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/IScheduledPayload.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "IScheduler",
+      "fqn": "Granit.Scheduling.IScheduler",
+      "kind": "interface",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/IScheduler.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "CancelAsync",
+          "kind": "method",
+          "signature": "CancelAsync(ScheduledActionId id, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RescheduleAsync",
+          "kind": "method",
+          "signature": "RescheduleAsync(ScheduledActionId id, DateTimeOffset newExecuteAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "ISettingDefinitionContext",
