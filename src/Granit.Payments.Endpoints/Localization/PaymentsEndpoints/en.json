@@ -1,0 +1,11 @@
+{
+  "culture": "en",
+  "texts": {
+    "PermissionGroup:Payments": "Payments",
+    "Permission:Payments.Transactions.Read": "View payment transactions",
+    "Permission:Payments.Charges.Execute": "Initiate charges",
+    "Permission:Payments.Refunds.Execute": "Process refunds",
+    "Permission:Payments.Methods.Read": "View payment methods",
+    "Permission:Payments.Methods.Manage": "Manage payment methods (attach, detach)"
+  }
+}

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Payments.Mollie</PackageId>
+    <Description>Mollie payment provider for Granit.Payments (EU-sovereign PSP). Implements IPaymentProvider, ICheckoutSessionFactory, IPaymentMethodManager, and IPaymentWebhookVerifier.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Payments.Mollie.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <!-- TODO: Add Mollie.Api to Directory.Packages.props when implementing -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Payments\Granit.Payments.csproj" />
+  </ItemGroup>
+
+</Project>

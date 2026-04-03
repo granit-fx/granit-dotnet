@@ -126,11 +126,17 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
     /// <summary>Total amount. Positive for invoices, negative for credit notes.</summary>
     public decimal Total { get; private set; }
 
-    /// <summary>Payments received (invoices only).</summary>
+    /// <summary>Cumulative payments received.</summary>
     public decimal AmountPaid { get; private set; }
 
-    /// <summary>Remaining amount due (total - amountPaid).</summary>
+    /// <summary>Cumulative credit notes applied.</summary>
+    public decimal AmountCredited { get; private set; }
+
+    /// <summary>Remaining amount due: max(0, Total - AmountPaid - AmountCredited).</summary>
     public decimal AmountRemaining { get; private set; }
+
+    /// <summary>Overpayment amount: max(0, AmountPaid + AmountCredited - Total).</summary>
+    public decimal Overpayment { get; private set; }
 
     /// <summary>When the document was finalized.</summary>
     public DateTimeOffset? IssuedAt { get; private set; }
@@ -204,7 +210,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         EnsureDraft();
         TaxTotal = taxTotal;
         Total = Subtotal + TaxTotal;
-        AmountRemaining = Total - AmountPaid;
+        RecalculateAmounts();
     }
 
     // ── Lifecycle transitions (idempotent) ─────────────────────────────
@@ -239,8 +245,18 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         return true;
     }
 
-    /// <summary>Marks the invoice as paid (invoices only).</summary>
-    public bool MarkPaid(decimal amountPaid, DateTimeOffset paidAt)
+    /// <summary>
+    /// Records a payment (partial or full). Auto-transitions to Paid when
+    /// AmountRemaining reaches zero (within tolerance).
+    /// </summary>
+    /// <param name="amount">Payment amount received.</param>
+    /// <param name="paidAt">Timestamp of payment.</param>
+    /// <param name="tolerance">
+    /// Underpayment tolerance — if remaining amount is within this threshold,
+    /// the invoice is considered fully paid. Default: 0.
+    /// </param>
+    /// <returns><c>true</c> if status changed to Paid; <c>false</c> if still Open.</returns>
+    public bool RecordPayment(decimal amount, DateTimeOffset paidAt, decimal tolerance = 0)
     {
         if (Status == InvoiceStatus.Paid)
         {
@@ -250,16 +266,62 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         if (Status is not (InvoiceStatus.Open or InvoiceStatus.Uncollectible))
         {
             throw new InvalidOperationException(
-                $"Cannot mark invoice '{Id}' as paid from '{Status}' status.");
+                $"Cannot record payment on invoice '{Id}' in '{Status}' status.");
         }
 
-        AmountPaid = amountPaid;
-        AmountRemaining = Total - AmountPaid;
-        PaidAt = paidAt;
-        Status = InvoiceStatus.Paid;
+        AmountPaid += amount;
+        RecalculateAmounts();
 
-        AddDistributedEvent(new InvoicePaidEto(Id, TenantId!.Value, paidAt));
-        return true;
+        if (AmountRemaining <= tolerance)
+        {
+            PaidAt = paidAt;
+            Status = InvoiceStatus.Paid;
+            AddDistributedEvent(new InvoicePaidEto(Id, TenantId!.Value, paidAt));
+
+            if (Overpayment > 0)
+            {
+                AddDistributedEvent(new OverpaymentDetectedEto(
+                    Id, TenantId!.Value, Overpayment, Currency));
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Applies a credit note amount. Auto-transitions to Paid when
+    /// AmountRemaining reaches zero (invoice paid entirely by credits, no payment needed).
+    /// </summary>
+    /// <param name="amount">Credit note amount to apply.</param>
+    /// <param name="creditNoteIssuedAt">Timestamp of credit note issuance.</param>
+    /// <returns><c>true</c> if status changed to Paid; <c>false</c> if still Open.</returns>
+    public bool ApplyCreditNote(decimal amount, DateTimeOffset creditNoteIssuedAt)
+    {
+        if (Status == InvoiceStatus.Paid)
+        {
+            return false;
+        }
+
+        if (Status is not (InvoiceStatus.Open or InvoiceStatus.Uncollectible))
+        {
+            throw new InvalidOperationException(
+                $"Cannot apply credit note on invoice '{Id}' in '{Status}' status.");
+        }
+
+        AmountCredited += amount;
+        RecalculateAmounts();
+
+        if (AmountRemaining <= 0)
+        {
+            PaidAt = creditNoteIssuedAt;
+            Status = InvoiceStatus.Paid;
+            AddDistributedEvent(new InvoicePaidEto(Id, TenantId!.Value, creditNoteIssuedAt));
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>Voids the document (cancels, preserves paper trail).</summary>
@@ -322,7 +384,14 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
     {
         Subtotal = _lineItems.Sum(li => li.Amount);
         Total = Subtotal + TaxTotal;
-        AmountRemaining = Total - AmountPaid;
+        RecalculateAmounts();
+    }
+
+    private void RecalculateAmounts()
+    {
+        decimal covered = AmountPaid + AmountCredited;
+        AmountRemaining = Math.Max(0, Total - covered);
+        Overpayment = Math.Max(0, covered - Total);
     }
 
     private void EnsureDraft()

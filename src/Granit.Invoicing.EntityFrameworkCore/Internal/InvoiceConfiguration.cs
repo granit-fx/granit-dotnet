@@ -22,7 +22,9 @@ internal sealed class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.Property(e => e.TaxTotal).HasPrecision(18, 4).IsRequired();
         builder.Property(e => e.Total).HasPrecision(18, 4).IsRequired();
         builder.Property(e => e.AmountPaid).HasPrecision(18, 4).IsRequired();
+        builder.Property(e => e.AmountCredited).HasPrecision(18, 4).IsRequired();
         builder.Property(e => e.AmountRemaining).HasPrecision(18, 4).IsRequired();
+        builder.Property(e => e.Overpayment).HasPrecision(18, 4).IsRequired();
 
         builder.OwnsOne(e => e.BillingAddress, ba =>
         {

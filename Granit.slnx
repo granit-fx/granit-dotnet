@@ -218,6 +218,12 @@
     <Project Path="src/Granit.Invoicing.EntityFrameworkCore/Granit.Invoicing.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Invoicing.Wolverine/Granit.Invoicing.Wolverine.csproj" />
     <Project Path="src/Granit.Invoicing/Granit.Invoicing.csproj" />
+    <Project Path="src/Granit.Payments.Endpoints/Granit.Payments.Endpoints.csproj" />
+    <Project Path="src/Granit.Payments.EntityFrameworkCore/Granit.Payments.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Payments.Mollie/Granit.Payments.Mollie.csproj" />
+    <Project Path="src/Granit.Payments.Stripe/Granit.Payments.Stripe.csproj" />
+    <Project Path="src/Granit.Payments.Wolverine/Granit.Payments.Wolverine.csproj" />
+    <Project Path="src/Granit.Payments/Granit.Payments.csproj" />
     <Project Path="src/Granit.Scheduling.BackgroundJobs/Granit.Scheduling.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Scheduling.Endpoints/Granit.Scheduling.Endpoints.csproj" />
     <Project Path="src/Granit.Scheduling.EntityFrameworkCore/Granit.Scheduling.EntityFrameworkCore.csproj" />

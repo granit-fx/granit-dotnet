@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Payments.Stripe</PackageId>
+    <Description>Stripe payment provider for Granit.Payments. Implements IPaymentProvider, ICheckoutSessionFactory, IPaymentMethodManager, and IPaymentWebhookVerifier for Stripe.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Payments.Stripe.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <!-- TODO: Add Stripe.net to Directory.Packages.props when implementing -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Payments\Granit.Payments.csproj" />
+  </ItemGroup>
+
+</Project>
