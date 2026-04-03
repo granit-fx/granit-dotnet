@@ -35,6 +35,7 @@ public static partial class FrameworkBoundaryRules
         "Metering",
         "Scheduling",
         "Subscriptions",
+        "Tax",
         "Templating",
         "Timeline",
         "Webhooks",

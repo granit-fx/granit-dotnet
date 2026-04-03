@@ -46,19 +46,12 @@ internal sealed partial class MollieWebhookVerifier(
             RejectionReason: null));
     }
 
-    private static string? ExtractPaymentId(string body)
-    {
-        foreach (string pair in body.Split('&'))
-        {
-            string[] parts = pair.Split('=', 2);
-            if (parts.Length == 2 && parts[0] == "id")
-            {
-                return Uri.UnescapeDataString(parts[1]);
-            }
-        }
-
-        return null;
-    }
+    private static string? ExtractPaymentId(string body) =>
+        body.Split('&')
+            .Select(pair => pair.Split('=', 2))
+            .Where(parts => parts.Length == 2 && parts[0] == "id")
+            .Select(parts => Uri.UnescapeDataString(parts[1]))
+            .FirstOrDefault();
 
     private static partial class Log
     {

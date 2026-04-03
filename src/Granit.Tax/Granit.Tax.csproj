@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Tax</PackageId>
+    <Description>Tax calculation and validation abstractions for Granit. ITaxIdValidator for online VAT validation (VIES, Stripe), ITaxRateProvider for rate lookup, EU country registry, and tax domain types. Provider-agnostic — works with self-hosted EU VAT, Stripe Tax, or Merchant of Record.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Tax.Tests" />
+    <InternalsVisibleTo Include="Granit.Tax.Internal" />
+    <InternalsVisibleTo Include="Granit.Tax.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+  </ItemGroup>
+
+</Project>

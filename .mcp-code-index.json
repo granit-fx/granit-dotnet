@@ -1682,6 +1682,23 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Tax",
+      "deps": [
+        "Granit",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Tax.Internal",
+      "deps": [
+        "Granit.Invoicing",
+        "Granit.Tax",
+        "Granit.Validation.Europe"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Templating",
       "deps": [
         "Granit.Timing"
@@ -32425,6 +32442,327 @@
       "project": "Granit.Subscriptions.Wolverine",
       "file": "src/Granit.Subscriptions.Wolverine/GranitSubscriptionsWolverineModule.cs",
       "line": 17,
+      "members": []
+    },
+    {
+      "name": "TaxMetrics",
+      "fqn": "Granit.Tax.Diagnostics.TaxMetrics",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Diagnostics/TaxMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TaxRateOverride",
+      "fqn": "Granit.Tax.Domain.TaxRateOverride",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Domain/TaxRateOverride.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string countryCode, decimal standardRate, DateTimeOffset effectiveFrom, decimal? reducedRate = null, DateTimeOffset? effectiveTo = null)",
+          "returnType": "TaxRateOverride"
+        },
+        {
+          "name": "StandardRate",
+          "kind": "property",
+          "signature": "decimal StandardRate",
+          "returnType": "decimal"
+        }
+      ]
+    },
+    {
+      "name": "ValidatedTaxId",
+      "fqn": "Granit.Tax.Domain.ValidatedTaxId",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Domain/ValidatedTaxId.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string taxId, string countryCode, bool isValid, TaxIdValidationSource source, DateTimeOffset validatedAt, DateTimeOffset? expiresAt = null, string? companyName = null, string? companyAddress = null, string? requestIdentifier = null)",
+          "returnType": "ValidatedTaxId"
+        },
+        {
+          "name": "CountryCode",
+          "kind": "property",
+          "signature": "string CountryCode",
+          "returnType": "string"
+        },
+        {
+          "name": "IsValid",
+          "kind": "property",
+          "signature": "bool IsValid",
+          "returnType": "bool"
+        },
+        {
+          "name": "ConfirmOnlineValidation",
+          "kind": "method",
+          "signature": "ConfirmOnlineValidation(bool isValid, TaxIdValidationSource source, DateTimeOffset validatedAt, string? companyName, string? companyAddress, string? requestIdentifier)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "TaxHostApplicationBuilderExtensions",
+      "fqn": "Granit.Tax.Extensions.TaxHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Extensions/TaxHostApplicationBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitTax",
+          "kind": "method",
+          "signature": "AddGranitTax(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxModule",
+      "fqn": "Granit.Tax.GranitTaxModule",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/GranitTaxModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ITaxIdValidator",
+      "fqn": "Granit.Tax.ITaxIdValidator",
+      "kind": "interface",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/ITaxIdValidator.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ValidateAsync",
+          "kind": "method",
+          "signature": "ValidateAsync(string taxId, string countryCode, CancellationToken cancellationToken = default)",
+          "returnType": "string Name { get; } Task<TaxIdValidationResult>"
+        }
+      ]
+    },
+    {
+      "name": "ITaxRateProvider",
+      "fqn": "Granit.Tax.ITaxRateProvider",
+      "kind": "interface",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/ITaxRateProvider.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "GetRateAsync",
+          "kind": "method",
+          "signature": "GetRateAsync(string countryCode, DateTimeOffset asOf, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TaxRateEntry?>"
+        },
+        {
+          "name": "GetAllCurrentRatesAsync",
+          "kind": "method",
+          "signature": "GetAllCurrentRatesAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<TaxRateEntry>>"
+        }
+      ]
+    },
+    {
+      "name": "IValidatedTaxIdReader",
+      "fqn": "Granit.Tax.IValidatedTaxIdReader",
+      "kind": "interface",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/IValidatedTaxIdReader.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "GetByTaxIdAsync",
+          "kind": "method",
+          "signature": "GetByTaxIdAsync(string taxId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ValidatedTaxId?>"
+        },
+        {
+          "name": "GetForTenantAsync",
+          "kind": "method",
+          "signature": "GetForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ValidatedTaxId>>"
+        }
+      ]
+    },
+    {
+      "name": "IValidatedTaxIdWriter",
+      "fqn": "Granit.Tax.IValidatedTaxIdWriter",
+      "kind": "interface",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/IValidatedTaxIdWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(ValidatedTaxId entry, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(ValidatedTaxId entry, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "EuCountries",
+      "fqn": "Granit.Tax.Internal.EuCountries",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Internal/EuCountries.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ToFrozenSet",
+          "kind": "method",
+          "signature": "ToFrozenSet(\"AT\", // Austria \"BE\", // Belgium \"BG\", // Bulgaria \"HR\", // Croatia \"CY\", // Cyprus \"CZ\", // Czech Republic \"DK\", // Denmark \"EE\", // Estonia \"FI\", // Finland \"FR\", // France \"DE\", // Germany \"GR\", // Greece (ISO 3166-1)",
+          "returnType": "FrozenSet<string> MemberStates = FrozenSet."
+        },
+        {
+          "name": "IsEuMember",
+          "kind": "method",
+          "signature": "IsEuMember(string countryCode)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxInternalModule",
+      "fqn": "Granit.Tax.Internal.GranitTaxInternalModule",
+      "kind": "class",
+      "project": "Granit.Tax.Internal",
+      "file": "src/Granit.Tax.Internal/GranitTaxInternalModule.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "EuVatRateOptions",
+      "fqn": "Granit.Tax.Internal.Options.EuVatRateOptions",
+      "kind": "class",
+      "project": "Granit.Tax.Internal",
+      "file": "src/Granit.Tax.Internal/Options/EuVatRateOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "StandardRates",
+          "kind": "property",
+          "signature": "Dictionary<string, decimal> StandardRates",
+          "returnType": "Dictionary<string, decimal>"
+        }
+      ]
+    },
+    {
+      "name": "TaxOptions",
+      "fqn": "Granit.Tax.Options.TaxOptions",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Options/TaxOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "SellerCountryCode",
+          "kind": "property",
+          "signature": "string SellerCountryCode",
+          "returnType": "string"
+        },
+        {
+          "name": "SellerVatNumber",
+          "kind": "property",
+          "signature": "string? SellerVatNumber",
+          "returnType": "string?"
+        },
+        {
+          "name": "AllowOfflineFallback",
+          "kind": "property",
+          "signature": "bool AllowOfflineFallback",
+          "returnType": "bool"
+        },
+        {
+          "name": "ValidationCacheTtlHours",
+          "kind": "property",
+          "signature": "int ValidationCacheTtlHours",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "TaxCalculationContext",
+      "fqn": "Granit.Tax.TaxCalculationContext",
+      "kind": "record",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/TaxCalculationContext.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "TaxExemptionReason",
+      "fqn": "Granit.Tax.TaxExemptionReason",
+      "kind": "enum",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/TaxExemptionReason.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "TaxIdValidationResult",
+      "fqn": "Granit.Tax.TaxIdValidationResult",
+      "kind": "record",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/TaxIdValidationResult.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TaxIdValidationSource",
+      "fqn": "Granit.Tax.TaxIdValidationSource",
+      "kind": "enum",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/TaxIdValidationSource.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "TaxRateEntry",
+      "fqn": "Granit.Tax.TaxRateEntry",
+      "kind": "record",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/TaxRateEntry.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "TransactionType",
+      "fqn": "Granit.Tax.TransactionType",
+      "kind": "enum",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/TransactionType.cs",
+      "line": 4,
       "members": []
     },
     {

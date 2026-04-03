@@ -45,7 +45,7 @@ internal sealed partial class MolliePaymentProvider(
 
             return new PaymentProviderChargeResult(response.Id, status, actionUrl);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             Log.ChargeError(logger, ex);
             return new PaymentProviderChargeResult(string.Empty, ProviderChargeStatus.Failed);
@@ -76,7 +76,7 @@ internal sealed partial class MolliePaymentProvider(
 
             return new PaymentProviderRefundResult(response.Id, status);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             Log.RefundError(logger, ex);
             return new PaymentProviderRefundResult(string.Empty, RefundStatus.Failed);
@@ -96,7 +96,7 @@ internal sealed partial class MolliePaymentProvider(
             PaymentStatus status = MollieStatusMapper.MapPaymentStatus(response.Status);
             return new PaymentProviderStatus(response.Id, status);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             Log.StatusError(logger, ex, providerTransactionId);
             return new PaymentProviderStatus(providerTransactionId, PaymentStatus.Failed);
