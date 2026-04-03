@@ -4,9 +4,9 @@ using Granit.Tax.Diagnostics;
 using Granit.Tax.Options;
 using Granit.Timing;
 using Granit.Validation.Europe.Internal;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Tax.Internal.Internal;
 
@@ -15,7 +15,7 @@ namespace Granit.Tax.Internal.Internal;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Calls the EU Commission REST API. Caches results in <see cref="IMemoryCache"/>
+/// Calls the EU Commission REST API. Caches results in <see cref="IFusionCache"/>
 /// (configurable TTL, default 24h) to avoid repeated API calls for the same VAT number.
 /// </para>
 /// <para>
@@ -25,7 +25,7 @@ namespace Granit.Tax.Internal.Internal;
 /// </remarks>
 internal sealed partial class ViesValidator(
     IHttpClientFactory httpClientFactory,
-    IMemoryCache memoryCache,
+    IFusionCache cache,
     IOptions<TaxOptions> taxOptions,
     IClock clock,
     TaxMetrics metrics,
@@ -44,72 +44,66 @@ internal sealed partial class ViesValidator(
         string normalizedTaxId = taxId.ToUpperInvariant().Replace(" ", "", StringComparison.Ordinal);
         string cacheKey = $"{CacheKeyPrefix}{normalizedTaxId}";
 
-        // Check in-memory cache first
-        if (memoryCache.TryGetValue(cacheKey, out TaxIdValidationResult? cached) && cached is not null)
-        {
-            Log.CacheHit(logger, normalizedTaxId);
-            return cached;
-        }
-
-        // Strip country prefix if present (VIES expects them separately)
-        string vatNumber = normalizedTaxId;
-        if (vatNumber.Length > 2 && char.IsLetter(vatNumber[0]) && char.IsLetter(vatNumber[1]))
-        {
-            vatNumber = vatNumber[2..];
-        }
-
-        // Map GR → EL for VIES (VIES uses EL for Greece)
-        string viesCountry = string.Equals(countryCode, "GR", StringComparison.OrdinalIgnoreCase)
-            ? "EL"
-            : countryCode.ToUpperInvariant();
-
-        TaxIdValidationResult result;
-
-        try
-        {
-            HttpClient httpClient = httpClientFactory.CreateClient("Vies");
-            var request = new ViesRequest(viesCountry, vatNumber);
-
-            HttpResponseMessage response = await httpClient
-                .PostAsJsonAsync("check-vat-number", request, cancellationToken)
-                .ConfigureAwait(false);
-
-            response.EnsureSuccessStatusCode();
-
-            ViesResponse? viesResponse = await response.Content
-                .ReadFromJsonAsync<ViesResponse>(cancellationToken)
-                .ConfigureAwait(false);
-
-            metrics.RecordViesRequest(null, success: true);
-
-            if (viesResponse is null)
-            {
-                result = FallbackOrReject(normalizedTaxId, "Empty VIES response");
-            }
-            else
-            {
-                Log.ViesValidated(logger, normalizedTaxId, viesResponse.IsValid);
-
-                result = new TaxIdValidationResult(
-                    IsValid: viesResponse.IsValid,
-                    CompanyName: viesResponse.Name,
-                    CompanyAddress: viesResponse.Address,
-                    RequestIdentifier: viesResponse.RequestIdentifier,
-                    ValidatedAt: clock.Now,
-                    Source: TaxIdValidationSource.Vies);
-            }
-        }
-        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
-        {
-            metrics.RecordViesRequest(null, success: false);
-            Log.ViesUnavailable(logger, ex);
-
-            result = FallbackOrReject(normalizedTaxId, $"VIES unavailable: {ex.Message}");
-        }
-
-        // Cache the result (even fallback results to avoid hammering VIES)
         var ttl = TimeSpan.FromHours(taxOptions.Value.ValidationCacheTtlHours);
-        memoryCache.Set(cacheKey, result, ttl);
+
+        TaxIdValidationResult result = await cache.GetOrSetAsync<TaxIdValidationResult>(
+            cacheKey,
+            async (_, ct) =>
+            {
+                // Strip country prefix if present (VIES expects them separately)
+                string vatNumber = normalizedTaxId;
+                if (vatNumber.Length > 2 && char.IsLetter(vatNumber[0]) && char.IsLetter(vatNumber[1]))
+                {
+                    vatNumber = vatNumber[2..];
+                }
+
+                // Map GR → EL for VIES (VIES uses EL for Greece)
+                string viesCountry = string.Equals(countryCode, "GR", StringComparison.OrdinalIgnoreCase)
+                    ? "EL"
+                    : countryCode.ToUpperInvariant();
+
+                try
+                {
+                    HttpClient httpClient = httpClientFactory.CreateClient("Vies");
+                    var request = new ViesRequest(viesCountry, vatNumber);
+
+                    HttpResponseMessage response = await httpClient
+                        .PostAsJsonAsync("check-vat-number", request, ct)
+                        .ConfigureAwait(false);
+
+                    response.EnsureSuccessStatusCode();
+
+                    ViesResponse? viesResponse = await response.Content
+                        .ReadFromJsonAsync<ViesResponse>(ct)
+                        .ConfigureAwait(false);
+
+                    metrics.RecordViesRequest(null, success: true);
+
+                    if (viesResponse is null)
+                    {
+                        return FallbackOrReject(normalizedTaxId, "Empty VIES response");
+                    }
+
+                    Log.ViesValidated(logger, normalizedTaxId, viesResponse.IsValid);
+
+                    return new TaxIdValidationResult(
+                        IsValid: viesResponse.IsValid,
+                        CompanyName: viesResponse.Name,
+                        CompanyAddress: viesResponse.Address,
+                        RequestIdentifier: viesResponse.RequestIdentifier,
+                        ValidatedAt: clock.Now,
+                        Source: TaxIdValidationSource.Vies);
+                }
+                catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+                {
+                    metrics.RecordViesRequest(null, success: false);
+                    Log.ViesUnavailable(logger, ex);
+
+                    return FallbackOrReject(normalizedTaxId, $"VIES unavailable: {ex.Message}");
+                }
+            },
+            new FusionCacheEntryOptions { Duration = ttl },
+            token: cancellationToken).ConfigureAwait(false);
 
         return result;
     }
@@ -149,9 +143,6 @@ internal sealed partial class ViesValidator(
 
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Debug, Message = "VIES cache hit for {TaxId}")]
-        public static partial void CacheHit(ILogger logger, string taxId);
-
         [LoggerMessage(Level = LogLevel.Information, Message = "VIES validated {TaxId}: {IsValid}")]
         public static partial void ViesValidated(ILogger logger, string taxId, bool isValid);
 

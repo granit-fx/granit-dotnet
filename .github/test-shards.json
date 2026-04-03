@@ -293,7 +293,9 @@
         "tests/Granit.Subscriptions.Internal.Tests",
         "tests/Granit.Subscriptions.Notifications.Tests",
         "tests/Granit.Subscriptions.Tests",
-        "tests/Granit.Subscriptions.Wolverine.Tests"
+        "tests/Granit.Subscriptions.Wolverine.Tests",
+        "tests/Granit.Tax.Internal.Tests",
+        "tests/Granit.Tax.Tests"
       ]
     },
     {

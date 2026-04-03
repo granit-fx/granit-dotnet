@@ -204,6 +204,8 @@
       "src/Granit.Subscriptions.Notifications/Granit.Subscriptions.Notifications.csproj",
       "src/Granit.Subscriptions.Wolverine/Granit.Subscriptions.Wolverine.csproj",
       "src/Granit.Subscriptions/Granit.Subscriptions.csproj",
+      "src/Granit.Tax.Internal/Granit.Tax.Internal.csproj",
+      "src/Granit.Tax/Granit.Tax.csproj",
       "src/Granit.Templating.AI/Granit.Templating.AI.csproj",
       "src/Granit.Templating.Endpoints/Granit.Templating.Endpoints.csproj",
       "src/Granit.Templating.EntityFrameworkCore/Granit.Templating.EntityFrameworkCore.csproj",

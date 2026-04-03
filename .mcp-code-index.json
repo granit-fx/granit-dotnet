@@ -1690,11 +1690,38 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Tax.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Tax",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Tax.EntityFrameworkCore",
+      "deps": [
+        "Granit.Guids",
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Tax"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Tax.Internal",
       "deps": [
+        "Granit.Caching",
         "Granit.Invoicing",
         "Granit.Tax",
         "Granit.Validation.Europe"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Tax.Stripe",
+      "deps": [
+        "Granit.Invoicing",
+        "Granit.Tax"
       ],
       "framework": "net10.0"
     },
@@ -32510,6 +32537,115 @@
       ]
     },
     {
+      "name": "TaxEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Tax.Endpoints.Extensions.TaxEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Extensions/TaxEndpointRouteBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "MapGranitTax",
+          "kind": "method",
+          "signature": "MapGranitTax(this IEndpointRouteBuilder endpoints)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxEndpointsModule",
+      "fqn": "Granit.Tax.Endpoints.GranitTaxEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/GranitTaxEndpointsModule.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "Rates",
+      "fqn": "Granit.Tax.Endpoints.Permissions.Rates",
+      "kind": "class",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Permissions/TaxPermissions.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TaxPermissions",
+      "fqn": "Granit.Tax.Endpoints.Permissions.TaxPermissions",
+      "kind": "class",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Permissions/TaxPermissions.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "Validations",
+      "fqn": "Granit.Tax.Endpoints.Permissions.Validations",
+      "kind": "class",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Permissions/TaxPermissions.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "TaxEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Tax.EntityFrameworkCore.Extensions.TaxEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Tax.EntityFrameworkCore",
+      "file": "src/Granit.Tax.EntityFrameworkCore/Extensions/TaxEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitTaxEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitTaxEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "TaxModelBuilderExtensions",
+      "fqn": "Granit.Tax.EntityFrameworkCore.Extensions.TaxModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Tax.EntityFrameworkCore",
+      "file": "src/Granit.Tax.EntityFrameworkCore/Extensions/TaxModelBuilderExtensions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ConfigureTaxModule",
+          "kind": "method",
+          "signature": "ConfigureTaxModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxDbProperties",
+      "fqn": "Granit.Tax.EntityFrameworkCore.GranitTaxDbProperties",
+      "kind": "class",
+      "project": "Granit.Tax.EntityFrameworkCore",
+      "file": "src/Granit.Tax.EntityFrameworkCore/GranitTaxDbProperties.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxEntityFrameworkCoreModule",
+      "fqn": "Granit.Tax.EntityFrameworkCore.GranitTaxEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Tax.EntityFrameworkCore",
+      "file": "src/Granit.Tax.EntityFrameworkCore/GranitTaxEntityFrameworkCoreModule.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "TaxHostApplicationBuilderExtensions",
       "fqn": "Granit.Tax.Extensions.TaxHostApplicationBuilderExtensions",
       "kind": "class",
@@ -32651,7 +32787,7 @@
       "kind": "class",
       "project": "Granit.Tax.Internal",
       "file": "src/Granit.Tax.Internal/GranitTaxInternalModule.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -32708,6 +32844,44 @@
           "kind": "property",
           "signature": "int ValidationCacheTtlHours",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxStripeModule",
+      "fqn": "Granit.Tax.Stripe.GranitTaxStripeModule",
+      "kind": "class",
+      "project": "Granit.Tax.Stripe",
+      "file": "src/Granit.Tax.Stripe/GranitTaxStripeModule.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "StripeTaxOptions",
+      "fqn": "Granit.Tax.Stripe.Options.StripeTaxOptions",
+      "kind": "class",
+      "project": "Granit.Tax.Stripe",
+      "file": "src/Granit.Tax.Stripe/Options/StripeTaxOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "SecretKey",
+          "kind": "property",
+          "signature": "string SecretKey",
+          "returnType": "string"
+        },
+        {
+          "name": "ProductTaxCode",
+          "kind": "property",
+          "signature": "string ProductTaxCode",
+          "returnType": "string"
         }
       ]
     },

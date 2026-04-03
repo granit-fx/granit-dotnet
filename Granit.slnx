@@ -236,6 +236,8 @@
     <Project Path="src/Granit.Subscriptions.Internal/Granit.Subscriptions.Internal.csproj" />
     <Project Path="src/Granit.Subscriptions.Wolverine/Granit.Subscriptions.Wolverine.csproj" />
     <Project Path="src/Granit.Subscriptions/Granit.Subscriptions.csproj" />
+    <Project Path="src/Granit.Tax.Internal/Granit.Tax.Internal.csproj" />
+    <Project Path="src/Granit.Tax/Granit.Tax.csproj" />
   </Folder>
   <Folder Name="/src/AI/">
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
@@ -515,6 +517,8 @@
     <Project Path="tests/Granit.Subscriptions.Internal.Tests/Granit.Subscriptions.Internal.Tests.csproj" />
     <Project Path="tests/Granit.Subscriptions.Notifications.Tests/Granit.Subscriptions.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Subscriptions.Wolverine.Tests/Granit.Subscriptions.Wolverine.Tests.csproj" />
+    <Project Path="tests/Granit.Tax.Internal.Tests/Granit.Tax.Internal.Tests.csproj" />
+    <Project Path="tests/Granit.Tax.Tests/Granit.Tax.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />

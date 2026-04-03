@@ -47,7 +47,10 @@
       "src/Granit.Subscriptions.Notifications/Granit.Subscriptions.Notifications.csproj",
       "src/Granit.Subscriptions.Wolverine/Granit.Subscriptions.Wolverine.csproj",
       "src/Granit.Subscriptions/Granit.Subscriptions.csproj",
+      "src/Granit.Tax.Internal/Granit.Tax.Internal.csproj",
+      "src/Granit.Tax/Granit.Tax.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
+      "src/Granit.Validation.Europe/Granit.Validation.Europe.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",
       "src/Granit.Wolverine/Granit.Wolverine.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
@@ -73,7 +76,9 @@
       "tests/Granit.Subscriptions.Features.Tests/Granit.Subscriptions.Features.Tests.csproj",
       "tests/Granit.Subscriptions.Internal.Tests/Granit.Subscriptions.Internal.Tests.csproj",
       "tests/Granit.Subscriptions.Notifications.Tests/Granit.Subscriptions.Notifications.Tests.csproj",
-      "tests/Granit.Subscriptions.Wolverine.Tests/Granit.Subscriptions.Wolverine.Tests.csproj"
+      "tests/Granit.Subscriptions.Wolverine.Tests/Granit.Subscriptions.Wolverine.Tests.csproj",
+      "tests/Granit.Tax.Internal.Tests/Granit.Tax.Internal.Tests.csproj",
+      "tests/Granit.Tax.Tests/Granit.Tax.Tests.csproj"
     ]
   }
 }
