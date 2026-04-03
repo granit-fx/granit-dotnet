@@ -4,26 +4,35 @@ using Granit.Tax.Diagnostics;
 using Granit.Tax.Options;
 using Granit.Timing;
 using Granit.Validation.Europe.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Tax.Internal.Internal;
 
 /// <summary>
-/// EU VIES (VAT Information Exchange System) online validator.
+/// EU VIES (VAT Information Exchange System) online validator with in-memory cache.
 /// </summary>
 /// <remarks>
-/// Calls the EU Commission REST API. Falls back to offline format validation
-/// via <see cref="EuropeanVatAlgorithm"/> when VIES is unavailable, depending
-/// on <see cref="TaxOptions.AllowOfflineFallback"/>.
+/// <para>
+/// Calls the EU Commission REST API. Caches results in <see cref="IMemoryCache"/>
+/// (configurable TTL, default 24h) to avoid repeated API calls for the same VAT number.
+/// </para>
+/// <para>
+/// Falls back to offline format validation via <see cref="EuropeanVatAlgorithm"/>
+/// when VIES is unavailable, depending on <see cref="TaxOptions.AllowOfflineFallback"/>.
+/// </para>
 /// </remarks>
 internal sealed partial class ViesValidator(
     IHttpClientFactory httpClientFactory,
+    IMemoryCache memoryCache,
     IOptions<TaxOptions> taxOptions,
     IClock clock,
     TaxMetrics metrics,
     ILogger<ViesValidator> logger) : ITaxIdValidator
 {
+    private const string CacheKeyPrefix = "granit:tax:vies:";
+
     /// <inheritdoc/>
     public string Name => "vies";
 
@@ -32,8 +41,18 @@ internal sealed partial class ViesValidator(
         string taxId, string countryCode,
         CancellationToken cancellationToken = default)
     {
+        string normalizedTaxId = taxId.ToUpperInvariant().Replace(" ", "", StringComparison.Ordinal);
+        string cacheKey = $"{CacheKeyPrefix}{normalizedTaxId}";
+
+        // Check in-memory cache first
+        if (memoryCache.TryGetValue(cacheKey, out TaxIdValidationResult? cached) && cached is not null)
+        {
+            Log.CacheHit(logger, normalizedTaxId);
+            return cached;
+        }
+
         // Strip country prefix if present (VIES expects them separately)
-        string vatNumber = taxId;
+        string vatNumber = normalizedTaxId;
         if (vatNumber.Length > 2 && char.IsLetter(vatNumber[0]) && char.IsLetter(vatNumber[1]))
         {
             vatNumber = vatNumber[2..];
@@ -43,6 +62,8 @@ internal sealed partial class ViesValidator(
         string viesCountry = string.Equals(countryCode, "GR", StringComparison.OrdinalIgnoreCase)
             ? "EL"
             : countryCode.ToUpperInvariant();
+
+        TaxIdValidationResult result;
 
         try
         {
@@ -63,30 +84,37 @@ internal sealed partial class ViesValidator(
 
             if (viesResponse is null)
             {
-                return FallbackOrReject(taxId, countryCode, "Empty VIES response");
+                result = FallbackOrReject(normalizedTaxId, "Empty VIES response");
             }
+            else
+            {
+                Log.ViesValidated(logger, normalizedTaxId, viesResponse.IsValid);
 
-            Log.ViesValidated(logger, taxId, viesResponse.IsValid);
-
-            return new TaxIdValidationResult(
-                IsValid: viesResponse.IsValid,
-                CompanyName: viesResponse.Name,
-                CompanyAddress: viesResponse.Address,
-                RequestIdentifier: viesResponse.RequestIdentifier,
-                ValidatedAt: clock.Now,
-                Source: TaxIdValidationSource.Vies);
+                result = new TaxIdValidationResult(
+                    IsValid: viesResponse.IsValid,
+                    CompanyName: viesResponse.Name,
+                    CompanyAddress: viesResponse.Address,
+                    RequestIdentifier: viesResponse.RequestIdentifier,
+                    ValidatedAt: clock.Now,
+                    Source: TaxIdValidationSource.Vies);
+            }
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             metrics.RecordViesRequest(null, success: false);
             Log.ViesUnavailable(logger, ex);
 
-            return FallbackOrReject(taxId, countryCode, $"VIES unavailable: {ex.Message}");
+            result = FallbackOrReject(normalizedTaxId, $"VIES unavailable: {ex.Message}");
         }
+
+        // Cache the result (even fallback results to avoid hammering VIES)
+        var ttl = TimeSpan.FromHours(taxOptions.Value.ValidationCacheTtlHours);
+        memoryCache.Set(cacheKey, result, ttl);
+
+        return result;
     }
 
-    private TaxIdValidationResult FallbackOrReject(
-        string taxId, string countryCode, string reason)
+    private TaxIdValidationResult FallbackOrReject(string taxId, string reason)
     {
         if (!taxOptions.Value.AllowOfflineFallback)
         {
@@ -97,9 +125,7 @@ internal sealed partial class ViesValidator(
                 Source: TaxIdValidationSource.Offline);
         }
 
-        // Offline format validation as fallback
         bool formatValid = EuropeanVatAlgorithm.IsValid(taxId);
-
         Log.ViesFallbackOffline(logger, taxId, formatValid);
 
         return new TaxIdValidationResult(
@@ -123,6 +149,9 @@ internal sealed partial class ViesValidator(
 
     private static partial class Log
     {
+        [LoggerMessage(Level = LogLevel.Debug, Message = "VIES cache hit for {TaxId}")]
+        public static partial void CacheHit(ILogger logger, string taxId);
+
         [LoggerMessage(Level = LogLevel.Information, Message = "VIES validated {TaxId}: {IsValid}")]
         public static partial void ViesValidated(ILogger logger, string taxId, bool isValid);
 
