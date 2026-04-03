@@ -8,10 +8,15 @@ using Wolverine;
 namespace Granit.Payments.Wolverine.Handlers;
 
 /// <summary>
-/// Handles InvoiceFinalizedEto from Invoicing module.
-/// If CollectionMethod is Auto, initiates payment via InitiatePaymentCommand.
+/// Automatically initiates payment when an invoice is finalized with auto-collection.
+/// Consumes <see cref="InvoiceFinalizedEto"/> and sends <see cref="InitiatePaymentCommand"/>.
 /// </summary>
-internal static partial class InvoiceFinalizedHandler
+/// <remarks>
+/// The idempotency key is derived from the invoice ID to prevent double-charging
+/// the same invoice on Wolverine retries. For payment retry after failure (dunning),
+/// a new command with a different key is created by the dunning handler.
+/// </remarks>
+internal static partial class AutoChargeOnInvoiceHandler
 {
     public static async Task HandleAsync(
         InvoiceFinalizedEto eto,
@@ -43,10 +48,10 @@ internal static partial class InvoiceFinalizedHandler
 
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Information, Message = "Payment initiated for invoice {InvoiceId}")]
+        [LoggerMessage(Level = LogLevel.Information, Message = "Auto-charge initiated for finalized invoice {InvoiceId}")]
         public static partial void PaymentInitiated(ILogger logger, Guid invoiceId);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Invoice {InvoiceId} uses manual collection, skipping auto-charge")]
+        [LoggerMessage(Level = LogLevel.Information, Message = "Skipping auto-charge for invoice {InvoiceId} (manual collection)")]
         public static partial void ManualCollection(ILogger logger, Guid invoiceId);
     }
 }
