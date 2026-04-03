@@ -24868,7 +24868,7 @@
       "kind": "record",
       "project": "Granit.Payments.Abstractions",
       "file": "src/Granit.Payments.Abstractions/Commands/InitiatePaymentCommand.cs",
-      "line": 4,
+      "line": 11,
       "members": []
     },
     {
@@ -25143,7 +25143,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, Guid invoiceId, decimal amount, string currency, string providerName, string idempotencyKey)",
+          "signature": "Create(Guid id, Guid tenantId, Guid invoiceId, decimal amount, string currency, string providerName, string methodType, string idempotencyKey)",
           "returnType": "PaymentTransaction"
         },
         {
@@ -25151,6 +25151,12 @@
           "kind": "property",
           "signature": "PaymentStatus Status",
           "returnType": "PaymentStatus"
+        },
+        {
+          "name": "MethodType",
+          "kind": "property",
+          "signature": "string MethodType",
+          "returnType": "string"
         },
         {
           "name": "ProviderTransactionId",
@@ -33224,7 +33230,7 @@
       "kind": "record",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Scheduling/RetryPaymentPayload.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {

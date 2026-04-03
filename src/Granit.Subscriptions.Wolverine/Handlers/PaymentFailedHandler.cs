@@ -50,7 +50,7 @@ internal static partial class PaymentFailedHandler
             {
                 DateTimeOffset retryAt = CalculateRetryDate(clock.Now, subscription.DunningAttempt);
                 await scheduler.ScheduleAsync(
-                    new RetryPaymentPayload(eto.InvoiceId, eto.TenantId, eto.Amount, eto.Currency, eto.MethodType, subscription.DunningAttempt),
+                    new RetryPaymentPayload(eto.InvoiceId, eto.TenantId, eto.Amount, eto.Currency, eto.MethodType, eto.ProviderName, subscription.DunningAttempt),
                     retryAt,
                     correlationId: $"subscription:{subscription.Id}",
                     cancellationToken).ConfigureAwait(false);

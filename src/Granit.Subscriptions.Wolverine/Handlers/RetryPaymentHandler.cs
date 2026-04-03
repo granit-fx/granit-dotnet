@@ -27,7 +27,8 @@ internal static partial class RetryPaymentHandler
                 payload.Amount,
                 payload.Currency,
                 payload.MethodType,
-                $"inv-{payload.InvoiceId:N}-retry-{payload.Attempt}");
+                $"inv-{payload.InvoiceId:N}-retry-{payload.Attempt}",
+                payload.ProviderName);
 
             await messageBus.SendAsync(command).ConfigureAwait(false);
             Log.RetryInitiated(logger, payload.InvoiceId, payload.Attempt);

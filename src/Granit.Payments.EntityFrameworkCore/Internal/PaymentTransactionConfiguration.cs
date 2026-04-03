@@ -16,6 +16,7 @@ internal sealed class PaymentTransactionConfiguration : IEntityTypeConfiguration
         builder.Property(e => e.Currency).HasMaxLength(3).IsRequired();
         builder.Property(e => e.Status).IsRequired();
         builder.Property(e => e.ProviderName).HasMaxLength(64).IsRequired();
+        builder.Property(e => e.MethodType).HasMaxLength(64).IsRequired();
         builder.Property(e => e.ProviderTransactionId).HasMaxLength(256);
         builder.Property(e => e.ActionUrl).HasMaxLength(2048);
         builder.Property(e => e.IdempotencyKey).HasMaxLength(256).IsRequired();
