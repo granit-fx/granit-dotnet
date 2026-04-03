@@ -830,9 +830,17 @@
       "name": "Granit.Invoicing",
       "deps": [
         "Granit",
+        "Granit.Invoicing.Abstractions",
         "Granit.Guids",
         "Granit.Timing",
         "Granit.Workflow"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Invoicing.Abstractions",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -956,7 +964,15 @@
       "name": "Granit.Metering",
       "deps": [
         "Granit",
+        "Granit.Metering.Abstractions",
         "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Metering.Abstractions",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -983,14 +999,6 @@
       "deps": [
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Metering"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Metering.Wolverine",
-      "deps": [
-        "Granit.Metering",
-        "Granit.Wolverine"
       ],
       "framework": "net10.0"
     },
@@ -1391,7 +1399,7 @@
     {
       "name": "Granit.Payments.Wolverine",
       "deps": [
-        "Granit.Invoicing",
+        "Granit.Invoicing.Abstractions",
         "Granit.Payments",
         "Granit.Wolverine"
       ],
@@ -1730,8 +1738,8 @@
     {
       "name": "Granit.Subscriptions.Wolverine",
       "deps": [
-        "Granit.Invoicing",
-        "Granit.Metering",
+        "Granit.Invoicing.Abstractions",
+        "Granit.Metering.Abstractions",
         "Granit.Subscriptions",
         "Granit.Wolverine"
       ],
@@ -17718,8 +17726,8 @@
       "name": "CreateInvoiceCommand",
       "fqn": "Granit.Invoicing.Commands.CreateInvoiceCommand",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Commands/CreateInvoiceCommand.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Commands/CreateInvoiceCommand.cs",
       "line": 16,
       "members": []
     },
@@ -17727,8 +17735,8 @@
       "name": "CreateInvoiceLineItem",
       "fqn": "Granit.Invoicing.Commands.CreateInvoiceLineItem",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Commands/CreateInvoiceCommand.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Commands/CreateInvoiceCommand.cs",
       "line": 31,
       "members": []
     },
@@ -17807,8 +17815,8 @@
       "name": "BillingReason",
       "fqn": "Granit.Invoicing.Domain.BillingReason",
       "kind": "enum",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Domain/BillingReason.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Domain/BillingReason.cs",
       "line": 4,
       "members": []
     },
@@ -17816,8 +17824,8 @@
       "name": "CollectionMethod",
       "fqn": "Granit.Invoicing.Domain.CollectionMethod",
       "kind": "enum",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Domain/CollectionMethod.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Domain/CollectionMethod.cs",
       "line": 4,
       "members": []
     },
@@ -17917,8 +17925,8 @@
       "name": "InvoiceDocumentType",
       "fqn": "Granit.Invoicing.Domain.InvoiceDocumentType",
       "kind": "enum",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Domain/InvoiceDocumentType.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Domain/InvoiceDocumentType.cs",
       "line": 4,
       "members": []
     },
@@ -17970,8 +17978,8 @@
       "name": "InvoiceSourceType",
       "fqn": "Granit.Invoicing.Domain.InvoiceSourceType",
       "kind": "enum",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Domain/InvoiceSourceType.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Domain/InvoiceSourceType.cs",
       "line": 4,
       "members": []
     },
@@ -18173,8 +18181,8 @@
       "name": "CreditNoteIssuedEto",
       "fqn": "Granit.Invoicing.Events.CreditNoteIssuedEto",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Events/CreditNoteIssuedEto.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/CreditNoteIssuedEto.cs",
       "line": 6,
       "members": []
     },
@@ -18191,8 +18199,8 @@
       "name": "InvoiceFinalizedEto",
       "fqn": "Granit.Invoicing.Events.InvoiceFinalizedEto",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Events/InvoiceFinalizedEto.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceFinalizedEto.cs",
       "line": 7,
       "members": []
     },
@@ -18200,8 +18208,8 @@
       "name": "InvoiceOverdueEto",
       "fqn": "Granit.Invoicing.Events.InvoiceOverdueEto",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Events/InvoiceOverdueEto.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceOverdueEto.cs",
       "line": 6,
       "members": []
     },
@@ -18209,8 +18217,8 @@
       "name": "InvoicePaidEto",
       "fqn": "Granit.Invoicing.Events.InvoicePaidEto",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Events/InvoicePaidEto.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoicePaidEto.cs",
       "line": 6,
       "members": []
     },
@@ -18218,8 +18226,8 @@
       "name": "InvoiceUncollectibleEto",
       "fqn": "Granit.Invoicing.Events.InvoiceUncollectibleEto",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Events/InvoiceUncollectibleEto.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceUncollectibleEto.cs",
       "line": 6,
       "members": []
     },
@@ -18227,8 +18235,8 @@
       "name": "InvoiceVoidedEto",
       "fqn": "Granit.Invoicing.Events.InvoiceVoidedEto",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Events/InvoiceVoidedEto.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceVoidedEto.cs",
       "line": 6,
       "members": []
     },
@@ -18236,8 +18244,8 @@
       "name": "OverpaymentDetectedEto",
       "fqn": "Granit.Invoicing.Events.OverpaymentDetectedEto",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Events/OverpaymentDetectedEto.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/OverpaymentDetectedEto.cs",
       "line": 9,
       "members": []
     },
@@ -20042,8 +20050,8 @@
       "name": "QuotaExceededEto",
       "fqn": "Granit.Metering.Events.QuotaExceededEto",
       "kind": "record",
-      "project": "Granit.Metering",
-      "file": "src/Granit.Metering/Events/QuotaExceededEto.cs",
+      "project": "Granit.Metering.Abstractions",
+      "file": "src/Granit.Metering.Abstractions/Events/QuotaExceededEto.cs",
       "line": 6,
       "members": []
     },
@@ -20051,8 +20059,8 @@
       "name": "QuotaThresholdReachedEto",
       "fqn": "Granit.Metering.Events.QuotaThresholdReachedEto",
       "kind": "record",
-      "project": "Granit.Metering",
-      "file": "src/Granit.Metering/Events/QuotaThresholdReachedEto.cs",
+      "project": "Granit.Metering.Abstractions",
+      "file": "src/Granit.Metering.Abstractions/Events/QuotaThresholdReachedEto.cs",
       "line": 6,
       "members": []
     },
@@ -20060,8 +20068,8 @@
       "name": "UsageSummaryReadyEto",
       "fqn": "Granit.Metering.Events.UsageSummaryReadyEto",
       "kind": "record",
-      "project": "Granit.Metering",
-      "file": "src/Granit.Metering/Events/UsageSummaryReadyEto.cs",
+      "project": "Granit.Metering.Abstractions",
+      "file": "src/Granit.Metering.Abstractions/Events/UsageSummaryReadyEto.cs",
       "line": 9,
       "members": []
     },
@@ -20266,15 +20274,6 @@
           "returnType": "decimal"
         }
       ]
-    },
-    {
-      "name": "GranitMeteringWolverineModule",
-      "fqn": "Granit.Metering.Wolverine.GranitMeteringWolverineModule",
-      "kind": "class",
-      "project": "Granit.Metering.Wolverine",
-      "file": "src/Granit.Metering.Wolverine/GranitMeteringWolverineModule.cs",
-      "line": 12,
-      "members": []
     },
     {
       "name": "ApplicationInitializationContext",
@@ -32350,7 +32349,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, PlanId planId, DateTimeOffset periodStart, DateTimeOffset periodEnd, DateTimeOffset billingCycleAnchor, DateTimeOffset? trialEndsAt = null)",
+          "signature": "Create(SubscriptionId id, Guid tenantId, PlanId planId, DateTimeOffset periodStart, DateTimeOffset periodEnd, DateTimeOffset billingCycleAnchor, DateTimeOffset? trialEndsAt = null)",
           "returnType": "Subscription"
         },
         {
@@ -32978,8 +32977,15 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Notifications",
       "file": "src/Granit.Subscriptions.Notifications/GranitSubscriptionsNotificationsModule.cs",
-      "line": 13,
-      "members": []
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "PlanChangedNotificationData",
@@ -33172,7 +33178,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
       "file": "src/Granit.Subscriptions.Wolverine/GranitSubscriptionsWolverineModule.cs",
-      "line": 17,
+      "line": 13,
       "members": []
     },
     {
