@@ -1,0 +1,157 @@
+---
+title: "Invoicing — Invoices, Credit Notes & Partial Payments"
+description: Unified invoice and credit note management with partial payment accumulation, overpayment detection, tax calculation providers, gap-free numbering, and external accounting sync (Odoo, Sage). Agnostic — works for SaaS and e-commerce.
+sidebar:
+  label: Invoicing
+  order: 2
+---
+
+import { FileTree } from "@astrojs/starlight/components";
+
+Granit.Invoicing manages the full invoice lifecycle from draft to paid, including
+credit notes, partial payments, and overpayment detection. It is **agnostic** — any
+module can create invoices via `CreateInvoiceCommand`, not just Subscriptions.
+
+## Package structure
+
+<FileTree>
+- Granit.Invoicing/ Domain: Invoice (unified with CreditNote), line items, tax, provider abstractions
+  - Granit.Invoicing.EntityFrameworkCore EF Core store (SQL Server / PostgreSQL)
+  - Granit.Invoicing.Endpoints Minimal API (invoice listing, PDF download) with RBAC
+  - Granit.Invoicing.Wolverine CreateInvoiceHandler, payment event handlers
+  - Granit.Invoicing.BackgroundJobs Overdue invoice scan
+  - Granit.Invoicing.Internal Self-hosted PDF via Granit.Templating (Phase 2)
+  - Granit.Invoicing.Odoo External accounting sync via XML-RPC (Phase 2)
+  - Granit.Invoicing.EuVat EU VAT calculator with VIES validation (Phase 2)
+</FileTree>
+
+## Invoice lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft: Create()
+    Draft --> Open: Finalize()
+    Open --> Paid: RecordPayment() / ApplyCreditNote()
+    Open --> Void: VoidInvoice()
+    Open --> Uncollectible: MarkUncollectible()
+    Uncollectible --> Paid: RecordPayment() (recovery)
+    Uncollectible --> Void: VoidInvoice()
+```
+
+- **Draft**: mutable — add line items, set billing address, adjust tax
+- **Open**: finalized, immutable financial fields, awaiting payment
+- **Paid**: payment received (terminal)
+- **Void**: cancelled with paper trail (terminal)
+- **Uncollectible**: bad debt write-off, can still recover
+
+:::caution[Immutability after Finalize]
+Once an invoice transitions past Draft, all financial fields (Subtotal, TaxTotal,
+Total, line items) are **frozen**. This is a legal requirement in most jurisdictions.
+The `EnsureDraft()` guard throws `InvalidOperationException` on any mutation attempt.
+:::
+
+## Unified Invoice + Credit Note
+
+Invoices and credit notes share the same aggregate, differentiated by
+`InvoiceDocumentType`:
+
+```csharp
+// Regular invoice
+var invoice = Invoice.Create(id, tenantId,
+    InvoiceDocumentType.Invoice, "EUR",
+    CollectionMethod.Auto, BillingReason.SubscriptionCycle);
+
+// Credit note (linked to parent invoice)
+var creditNote = Invoice.CreateCreditNote(id, tenantId,
+    parentInvoiceId, "EUR", "Service interruption compensation");
+```
+
+When a credit note is finalized, `CreditNoteIssuedEto` is published instead
+of `InvoiceFinalizedEto`.
+
+## Partial payments
+
+`RecordPayment()` **accumulates** payments rather than replacing the amount.
+Auto-transition to Paid occurs when `AmountRemaining <= tolerance`:
+
+```csharp
+invoice.RecordPayment(10.00m, paidAt);     // AmountPaid = 10, still Open
+invoice.RecordPayment(19.99m, paidAt);     // AmountPaid = 29.99, → Paid
+
+// With tolerance (SEPA rounding)
+invoice.RecordPayment(29.98m, paidAt, tolerance: 0.05m); // → Paid
+```
+
+### Credit note application
+
+`ApplyCreditNote()` enables Paid transition **without any payment** — critical
+for the event choreography (Subscriptions renews on `InvoicePaidEto`, not on
+`PaymentSucceededEto`):
+
+```csharp
+invoice.ApplyCreditNote(29.99m, issuedAt); // AmountCredited = 29.99, → Paid
+```
+
+### Overpayment detection
+
+When `AmountPaid + AmountCredited > Total`, the `Overpayment` property tracks
+the excess and `OverpaymentDetectedEto` is published for reconciliation.
+
+## Line item source types
+
+```csharp
+public enum InvoiceSourceType
+{
+    Subscription,   // Fixed plan charges
+    Usage,          // Metered usage charges
+    OneShot,        // One-time purchases
+    Credit,         // Credit adjustments
+}
+```
+
+This makes Invoicing agnostic — future `Granit.Commerce` can create invoices
+with `OneShot` line items using the exact same infrastructure.
+
+## Provider abstractions
+
+| Interface | Purpose | Phase |
+|-----------|---------|-------|
+| `ITaxCalculator` | Tax computation per line item | 1 (stub) |
+| `IInvoiceSyncProvider` | External accounting sync (Odoo, Sage) | 2 |
+| `IInvoiceDocumentGenerator` | PDF generation via `Granit.Templating` | 2 |
+| `IInvoiceNumberGenerator` | Gap-free sequential numbering with `InvoiceDocumentType` | 1 (interface) |
+
+## Decoupled command
+
+Any module can create an invoice without referencing Invoicing directly:
+
+```csharp
+var command = new CreateInvoiceCommand(
+    TenantId: tenantId,
+    Currency: "EUR",
+    CollectionMethod: CollectionMethod.Auto,
+    BillingReason: BillingReason.SubscriptionCycle,
+    LineItems: [
+        new("Pro Plan — Monthly", 1, 29.99m, InvoiceSourceType.Subscription),
+        new("API Calls: 15,000 requests", 15000, 0.001m, InvoiceSourceType.Usage),
+    ],
+    PeriodStart: periodStart,
+    PeriodEnd: periodEnd);
+
+await messageBus.SendAsync(command);
+```
+
+## Admin API
+
+| Method | Route | Permission |
+|--------|-------|------------|
+| GET | `/api/granit/invoicing/invoices` | `Invoicing.Invoices.Read` |
+| GET | `/api/granit/invoicing/invoices/{id}` | `Invoicing.Invoices.Read` |
+| GET | `/api/granit/invoicing/invoices/{id}/pdf` | `Invoicing.Invoices.Download` |
+| POST | `/api/granit/invoicing/credit-notes` | `Invoicing.CreditNotes.Manage` |
+
+## See also
+
+- [SaaS Overview](/dotnet/saas/) — ecosystem architecture and choreography
+- [Subscriptions](/dotnet/saas/subscriptions/) — billing cycle orchestration
+- [Payments](/dotnet/saas/payments/) — payment collection and webhooks

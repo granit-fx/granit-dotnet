@@ -198,6 +198,11 @@ export default defineConfig({
                   collapsed: true,
                 },
                 {
+                  label: "SaaS & Commerce",
+                  autogenerate: { directory: "dotnet/saas" },
+                  collapsed: true,
+                },
+                {
                   label: "Business Features",
                   autogenerate: { directory: "dotnet/business" },
                   collapsed: true,
