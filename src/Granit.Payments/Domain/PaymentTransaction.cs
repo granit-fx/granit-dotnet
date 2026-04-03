@@ -191,7 +191,8 @@ public sealed class PaymentTransaction : AuditedAggregateRoot, IMultiTenant
         Status = PaymentStatus.Failed;
 
         AddDistributedEvent(new PaymentFailedEto(
-            Id, InvoiceId, TenantId!.Value, failureCode, failureMessage));
+            Id, InvoiceId, TenantId!.Value, Amount, Currency, ProviderName,
+            failureCode, failureMessage));
         return true;
     }
 

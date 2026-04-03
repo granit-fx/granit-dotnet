@@ -24,10 +24,10 @@ internal static partial class RetryPaymentHandler
             var command = new InitiatePaymentCommand(
                 payload.InvoiceId,
                 payload.TenantId,
-                Amount: 0m, // Amount is resolved from the invoice by the payment handler
-                Currency: string.Empty, // Currency is resolved from the invoice
-                MethodType: "card",
-                IdempotencyKey: $"inv-{payload.InvoiceId:N}-retry-{payload.Attempt}");
+                payload.Amount,
+                payload.Currency,
+                payload.MethodType,
+                $"inv-{payload.InvoiceId:N}-retry-{payload.Attempt}");
 
             await messageBus.SendAsync(command).ConfigureAwait(false);
             Log.RetryInitiated(logger, payload.InvoiceId, payload.Attempt);
