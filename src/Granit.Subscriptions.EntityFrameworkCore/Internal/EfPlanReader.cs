@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Subscriptions.EntityFrameworkCore.Internal;
 
-internal sealed class EfPlanStore(
+internal sealed class EfPlanReader(
     IDbContextFactory<SubscriptionsDbContext> contextFactory)
     : EfStoreBase<Plan, SubscriptionsDbContext>(contextFactory),
-      IPlanReader, IPlanWriter
+      IPlanReader
 {
     public Task<Plan?> GetByIdAsync(PlanId id, CancellationToken cancellationToken = default) =>
         FindByIdAsync(id.Value, cancellationToken);
@@ -28,10 +28,4 @@ internal sealed class EfPlanStore(
                 p => p.ExternalMappings.Any(m => m.ProviderName == providerName && m.ExternalId == externalId),
                 cancellationToken)
             .ConfigureAwait(false), cancellationToken);
-
-    Task IPlanWriter.AddAsync(Plan plan, CancellationToken cancellationToken) =>
-        base.AddAsync(plan, cancellationToken);
-
-    Task IPlanWriter.UpdateAsync(Plan plan, CancellationToken cancellationToken) =>
-        base.UpdateAsync(plan, cancellationToken);
 }

@@ -1,3 +1,5 @@
+using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.MultiTenancy;
 using Granit.Subscriptions.Domain;
 using Granit.Timing;
@@ -16,24 +18,36 @@ internal static partial class CancelAtPeriodEndScanHandler
         ISubscriptionWriter writer,
         IClock clock,
         ICurrentTenant currentTenant,
+        IDataFilter dataFilter,
         ILogger<CancelAtPeriodEndScanJob> logger,
         CancellationToken cancellationToken)
     {
         DateTimeOffset now = clock.Now;
 
-        IReadOnlyList<Subscription> pendingCancels = await reader
-            .GetPendingCancelAtPeriodEndAsync(now, cancellationToken)
-            .ConfigureAwait(false);
+        IReadOnlyList<Subscription> pendingCancels;
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            pendingCancels = await reader
+                .GetPendingCancelAtPeriodEndAsync(now, cancellationToken)
+                .ConfigureAwait(false);
+        }
 
         foreach (Subscription sub in pendingCancels)
         {
-            using (currentTenant.Change(sub.TenantId))
+            try
             {
-                if (sub.Cancel("Scheduled cancel at period end", now))
+                using (currentTenant.Change(sub.TenantId))
                 {
-                    await writer.UpdateAsync(sub, cancellationToken).ConfigureAwait(false);
-                    Log.CancelledAtPeriodEnd(logger, sub.Id);
+                    if (sub.Cancel("Scheduled cancel at period end", now))
+                    {
+                        await writer.UpdateAsync(sub, cancellationToken).ConfigureAwait(false);
+                        Log.CancelledAtPeriodEnd(logger, sub.Id);
+                    }
                 }
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                Log.CancelAtPeriodEndFailed(logger, sub.Id, ex);
             }
         }
     }
@@ -42,5 +56,8 @@ internal static partial class CancelAtPeriodEndScanHandler
     {
         [LoggerMessage(Level = LogLevel.Information, Message = "Subscription {SubscriptionId} cancelled at period end")]
         public static partial void CancelledAtPeriodEnd(ILogger logger, Guid subscriptionId);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Failed to cancel subscription {SubscriptionId} at period end")]
+        public static partial void CancelAtPeriodEndFailed(ILogger logger, Guid subscriptionId, Exception exception);
     }
 }

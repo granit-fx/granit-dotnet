@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Subscriptions.EntityFrameworkCore.Internal;
 
-internal sealed class EfSubscriptionStore(
+internal sealed class EfSubscriptionReader(
     IDbContextFactory<SubscriptionsDbContext> contextFactory)
     : EfStoreBase<Subscription, SubscriptionsDbContext>(contextFactory),
-      ISubscriptionReader, ISubscriptionWriter
+      ISubscriptionReader
 {
     public Task<Subscription?> GetByIdAsync(SubscriptionId id, CancellationToken cancellationToken = default) =>
         FindByIdAsync(id.Value, cancellationToken);
@@ -50,10 +50,4 @@ internal sealed class EfSubscriptionStore(
                 s.Status == SubscriptionStatus.Active &&
                 s.CurrentPeriodEnd <= now),
             cancellationToken);
-
-    Task ISubscriptionWriter.AddAsync(Subscription subscription, CancellationToken cancellationToken) =>
-        base.AddAsync(subscription, cancellationToken);
-
-    Task ISubscriptionWriter.UpdateAsync(Subscription subscription, CancellationToken cancellationToken) =>
-        base.UpdateAsync(subscription, cancellationToken);
 }

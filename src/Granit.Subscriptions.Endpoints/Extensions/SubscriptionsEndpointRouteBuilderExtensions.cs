@@ -17,7 +17,8 @@ public static class SubscriptionsEndpointRouteBuilderExtensions
     {
         RouteGroupBuilder group = endpoints
             .MapGranitGroup("subscriptions")
-            .WithTags("Subscriptions");
+            .WithTags("Subscriptions")
+            .RequireAuthorization();
 
         return group;
     }

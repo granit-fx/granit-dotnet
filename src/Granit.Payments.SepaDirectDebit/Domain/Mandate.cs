@@ -55,6 +55,7 @@ public sealed class Mandate : AuditedAggregateRoot, IMultiTenant
     public SddScheme Scheme { get; private set; }
 
     /// <summary>Debtor (customer) name.</summary>
+    [SensitiveData]
     public string DebtorName { get; private set; } = string.Empty;
 
     /// <summary>Debtor IBAN.</summary>

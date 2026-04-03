@@ -18,6 +18,9 @@ namespace Granit.Metering.Domain;
 /// </remarks>
 public sealed class MeterEvent : Entity, IMultiTenant
 {
+    /// <summary>Hard ceiling for event quantity to prevent aggregation overflow.</summary>
+    internal const decimal MaxQuantity = 1_000_000_000m;
+
     private MeterEvent() { }
 
     /// <summary>Creates a new meter event.</summary>
@@ -30,6 +33,7 @@ public sealed class MeterEvent : Entity, IMultiTenant
         string? metadata = null)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(quantity);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(quantity, MaxQuantity);
         ArgumentException.ThrowIfNullOrWhiteSpace(idempotencyKey);
 
         return new MeterEvent

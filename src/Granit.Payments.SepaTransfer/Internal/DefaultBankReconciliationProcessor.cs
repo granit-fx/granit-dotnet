@@ -35,7 +35,7 @@ internal sealed partial class DefaultBankReconciliationProcessor(
             if (refPrefix is null)
             {
                 unmatched.Add(entry);
-                Log.Unmatched(logger, entry.Amount, entry.DebtorName);
+                Log.Unmatched(logger, entry.Amount, entry.StructuredReference);
                 continue;
             }
 
@@ -78,8 +78,8 @@ internal sealed partial class DefaultBankReconciliationProcessor(
         [LoggerMessage(Level = LogLevel.Information, Message = "Reconciliation matched transaction {TransactionId}: {Amount}")]
         public static partial void Matched(ILogger logger, Guid transactionId, decimal amount);
 
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Unmatched bank entry: {Amount} from {Debtor}")]
-        public static partial void Unmatched(ILogger logger, decimal amount, string? debtor);
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Unmatched bank entry: {Amount}, reference {Reference}")]
+        public static partial void Unmatched(ILogger logger, decimal amount, string? reference);
 
         [LoggerMessage(Level = LogLevel.Debug, Message = "No transaction found for reference prefix {RefPrefix}")]
         public static partial void NoTransactionFound(ILogger logger, string refPrefix);

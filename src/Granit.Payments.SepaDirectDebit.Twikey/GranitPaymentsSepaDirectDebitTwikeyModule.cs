@@ -14,7 +14,9 @@ public sealed class GranitPaymentsSepaDirectDebitTwikeyModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddOptions<TwikeyOptions>()
-            .BindConfiguration(TwikeyOptions.SectionName);
+            .BindConfiguration(TwikeyOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         context.Services.TryAddScoped<IDirectDebitProvider, TwikeyDirectDebitProvider>();
     }

@@ -30,7 +30,7 @@ internal sealed partial class GoCardlessDirectDebitProvider(
         RedirectFlowResponse response = await client.RedirectFlows.CreateAsync(flowRequest)
             .ConfigureAwait(false);
 
-        Log.MandateFlowCreated(logger, response.RedirectFlow.Id, request.DebtorName);
+        Log.MandateFlowCreated(logger, response.RedirectFlow.Id);
 
         return new MandateSetupResult(
             ProviderMandateId: response.RedirectFlow.Id,
@@ -52,7 +52,7 @@ internal sealed partial class GoCardlessDirectDebitProvider(
     {
         PaymentCreateRequest paymentRequest = new()
         {
-            Amount = (int)(request.Amount * 100),
+            Amount = checked((int)Math.Round(request.Amount * 100m, 0, MidpointRounding.AwayFromZero)),
             Currency = PaymentCreateRequest.PaymentCurrency.EUR,
             Description = $"Invoice {request.InvoiceId}",
             ChargeDate = request.RequestedDate.ToString("yyyy-MM-dd"),
@@ -94,8 +94,8 @@ internal sealed partial class GoCardlessDirectDebitProvider(
 
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Information, Message = "GoCardless mandate flow created: {FlowId} for {DebtorName}")]
-        public static partial void MandateFlowCreated(ILogger logger, string flowId, string debtorName);
+        [LoggerMessage(Level = LogLevel.Information, Message = "GoCardless mandate flow created: {FlowId}")]
+        public static partial void MandateFlowCreated(ILogger logger, string flowId);
 
         [LoggerMessage(Level = LogLevel.Information, Message = "GoCardless mandate cancelled: {MandateId}")]
         public static partial void MandateCancelled(ILogger logger, string mandateId);

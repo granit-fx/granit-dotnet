@@ -24,7 +24,7 @@ internal sealed partial class InternalDirectDebitProvider(
     {
         string mandateRef = $"SDD-{guidGenerator.Create().ToString("N")[..8].ToUpperInvariant()}";
 
-        Log.MandateCreated(logger, mandateRef, request.DebtorName);
+        Log.MandateCreated(logger, mandateRef);
 
         return Task.FromResult(new MandateSetupResult(
             ProviderMandateId: mandateRef,
@@ -64,8 +64,8 @@ internal sealed partial class InternalDirectDebitProvider(
 
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Information, Message = "SDD mandate created: {Reference} for {DebtorName}")]
-        public static partial void MandateCreated(ILogger logger, string reference, string debtorName);
+        [LoggerMessage(Level = LogLevel.Information, Message = "SDD mandate created: {Reference}")]
+        public static partial void MandateCreated(ILogger logger, string reference);
 
         [LoggerMessage(Level = LogLevel.Information, Message = "SDD mandate cancelled: {MandateId}")]
         public static partial void MandateCancelled(ILogger logger, string mandateId);

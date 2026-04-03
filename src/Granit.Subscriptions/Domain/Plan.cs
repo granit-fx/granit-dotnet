@@ -129,6 +129,36 @@ public sealed class Plan : AuditedAggregateRoot, IWorkflowStateful
         _externalMappings.Add(mapping);
     }
 
+    /// <summary>Publishes the plan, making it available for purchase.</summary>
+    public void Publish()
+    {
+        if (LifecycleStatus != WorkflowLifecycleStatus.Draft)
+        {
+            throw new InvalidOperationException(
+                $"Plan '{Id}' is in '{LifecycleStatus}' status. Only Draft plans can be published.");
+        }
+
+        if (_prices.Count == 0)
+        {
+            throw new InvalidOperationException(
+                $"Plan '{Id}' must have at least one price before publishing.");
+        }
+
+        LifecycleStatus = WorkflowLifecycleStatus.Published;
+    }
+
+    /// <summary>Archives the plan, removing it from sale. Existing subscribers are unaffected.</summary>
+    public void Archive()
+    {
+        if (LifecycleStatus != WorkflowLifecycleStatus.Published)
+        {
+            throw new InvalidOperationException(
+                $"Plan '{Id}' is in '{LifecycleStatus}' status. Only Published plans can be archived.");
+        }
+
+        LifecycleStatus = WorkflowLifecycleStatus.Archived;
+    }
+
     private void EnsureDraft()
     {
         if (LifecycleStatus != WorkflowLifecycleStatus.Draft)

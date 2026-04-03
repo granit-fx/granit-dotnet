@@ -1,8 +1,8 @@
 using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.Guids;
 using Granit.Metering.Diagnostics;
 using Granit.Metering.Domain;
-using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

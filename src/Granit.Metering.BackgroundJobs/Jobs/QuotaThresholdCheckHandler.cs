@@ -1,4 +1,5 @@
 using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.Metering.Domain;
 using Granit.Metering.Domain.ValueObjects;
 using Granit.Metering.Dtos;

@@ -28,7 +28,6 @@ public sealed class PaymentMethod : AuditedAggregateRoot, IMultiTenant
     /// <summary>Payment method type identifier (e.g., "card", "ideal", "sepa_debit").</summary>
     public string Type { get; private set; } = string.Empty;
     public string ProviderName { get; private set; } = string.Empty;
-    [SensitiveData(Level = Sensitivity.Confidential)]
     public string ProviderMethodId { get; private set; } = string.Empty;
 
     [SensitiveData]
