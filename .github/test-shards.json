@@ -268,10 +268,32 @@
       "name": "saas",
       "label": "SaaS & Commerce",
       "projects": [
+        "tests/Granit.Invoicing.BackgroundJobs.Tests",
+        "tests/Granit.Invoicing.Endpoints.Tests",
+        "tests/Granit.Invoicing.EntityFrameworkCore.Tests",
+        "tests/Granit.Invoicing.Notifications.Tests",
         "tests/Granit.Invoicing.Tests",
+        "tests/Granit.Invoicing.Wolverine.Tests",
+        "tests/Granit.Metering.BackgroundJobs.Tests",
+        "tests/Granit.Metering.Endpoints.Tests",
+        "tests/Granit.Metering.EntityFrameworkCore.Tests",
         "tests/Granit.Metering.Tests",
+        "tests/Granit.Metering.Wolverine.Tests",
+        "tests/Granit.Payments.Endpoints.Tests",
+        "tests/Granit.Payments.EntityFrameworkCore.Tests",
+        "tests/Granit.Payments.Mollie.Tests",
+        "tests/Granit.Payments.Notifications.Tests",
+        "tests/Granit.Payments.Stripe.Tests",
         "tests/Granit.Payments.Tests",
-        "tests/Granit.Subscriptions.Tests"
+        "tests/Granit.Payments.Wolverine.Tests",
+        "tests/Granit.Subscriptions.BackgroundJobs.Tests",
+        "tests/Granit.Subscriptions.Endpoints.Tests",
+        "tests/Granit.Subscriptions.EntityFrameworkCore.Tests",
+        "tests/Granit.Subscriptions.Features.Tests",
+        "tests/Granit.Subscriptions.Internal.Tests",
+        "tests/Granit.Subscriptions.Notifications.Tests",
+        "tests/Granit.Subscriptions.Tests",
+        "tests/Granit.Subscriptions.Wolverine.Tests"
       ]
     },
     {
