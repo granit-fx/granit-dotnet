@@ -864,6 +864,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Invoicing.Internal",
+      "deps": [
+        "Granit.DocumentGeneration",
+        "Granit.Invoicing",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Invoicing.Notifications",
       "deps": [
         "Granit.Invoicing",
@@ -18373,6 +18382,22 @@
           "kind": "method",
           "signature": "CalculateAsync(TaxRequest request, CancellationToken cancellationToken = default)",
           "returnType": "string Name { get; } Task<TaxResult>"
+        }
+      ]
+    },
+    {
+      "name": "GranitInvoicingInternalModule",
+      "fqn": "Granit.Invoicing.Internal.GranitInvoicingInternalModule",
+      "kind": "class",
+      "project": "Granit.Invoicing.Internal",
+      "file": "src/Granit.Invoicing.Internal/GranitInvoicingInternalModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },

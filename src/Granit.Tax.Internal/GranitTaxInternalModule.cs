@@ -28,7 +28,8 @@ public sealed class GranitTaxInternalModule : GranitModule
         {
             client.BaseAddress = new Uri("https://ec.europa.eu/taxation_customs/vies/rest-api/");
             client.Timeout = TimeSpan.FromSeconds(10);
-        });
+        })
+        .AddStandardResilienceHandler();
 
         context.Services.TryAddScoped<ITaxCalculator, EuVatTaxCalculator>();
         context.Services.TryAddScoped<ITaxIdValidator, ViesValidator>();

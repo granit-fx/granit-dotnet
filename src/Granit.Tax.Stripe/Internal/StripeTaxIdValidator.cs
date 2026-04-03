@@ -37,7 +37,7 @@ internal sealed partial class StripeTaxIdValidator(
             }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             bool isValid = stripeTaxId.Verification?.Status == "verified";
-            Log.ValidationCompleted(logger, taxId, countryCode, isValid);
+            Log.ValidationCompleted(logger, MaskTaxId(taxId), countryCode, isValid);
 
             return new TaxIdValidationResult(
                 IsValid: isValid,
@@ -49,7 +49,7 @@ internal sealed partial class StripeTaxIdValidator(
         }
         catch (StripeException ex)
         {
-            Log.ValidationError(logger, ex, taxId);
+            Log.ValidationError(logger, ex, MaskTaxId(taxId));
             return new TaxIdValidationResult(
                 IsValid: false, CompanyName: null, CompanyAddress: null,
                 RequestIdentifier: null, ValidatedAt: clock.Now,
@@ -71,12 +71,15 @@ internal sealed partial class StripeTaxIdValidator(
         _ => "eu_vat",
     };
 
+    private static string MaskTaxId(string taxId) =>
+        taxId.Length > 4 ? $"{taxId[..2]}***{taxId[^4..]}" : "***";
+
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Information, Message = "Stripe Tax ID validation completed: {TaxId} ({Country}), valid = {IsValid}")]
-        public static partial void ValidationCompleted(ILogger logger, string taxId, string country, bool isValid);
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Stripe Tax ID validation completed: {MaskedTaxId} ({Country}), valid = {IsValid}")]
+        public static partial void ValidationCompleted(ILogger logger, string maskedTaxId, string country, bool isValid);
 
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Stripe Tax ID validation error for {TaxId}")]
-        public static partial void ValidationError(ILogger logger, Exception ex, string taxId);
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Stripe Tax ID validation error for {MaskedTaxId}")]
+        public static partial void ValidationError(ILogger logger, Exception ex, string maskedTaxId);
     }
 }

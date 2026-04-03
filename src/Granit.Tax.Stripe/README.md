@@ -9,9 +9,12 @@ multi-jurisdiction tax calculation (US Sales Tax, EU VAT, UK VAT).
 {
   "Tax": {
     "Stripe": {
-      "SecretKey": "sk_test_xxx",
+      "SecretKey": "<your-stripe-secret-key>",
       "ProductTaxCode": "txcd_10000000"
     }
   }
 }
 ```
+
+> **Security:** Never commit Stripe secret keys. Use environment variables,
+> Azure Key Vault, or `Granit.Vault` for production deployments.
