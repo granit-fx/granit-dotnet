@@ -884,7 +884,8 @@
       "name": "Granit.Invoicing.Notifications",
       "deps": [
         "Granit.Invoicing",
-        "Granit.Notifications.Abstractions"
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
@@ -1353,7 +1354,8 @@
       "name": "Granit.Payments.Notifications",
       "deps": [
         "Granit.Payments",
-        "Granit.Notifications.Abstractions"
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
@@ -1739,7 +1741,8 @@
       "name": "Granit.Subscriptions.Notifications",
       "deps": [
         "Granit.Subscriptions",
-        "Granit.Notifications.Abstractions"
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
@@ -18487,8 +18490,15 @@
       "kind": "class",
       "project": "Granit.Invoicing.Notifications",
       "file": "src/Granit.Invoicing.Notifications/GranitInvoicingNotificationsModule.cs",
-      "line": 13,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "InvoiceIssuedNotificationData",
@@ -25863,8 +25873,15 @@
       "kind": "class",
       "project": "Granit.Payments.Notifications",
       "file": "src/Granit.Payments.Notifications/GranitPaymentsNotificationsModule.cs",
-      "line": 13,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "PaymentFailedNotificationData",
@@ -33038,7 +33055,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Notifications",
       "file": "src/Granit.Subscriptions.Notifications/GranitSubscriptionsNotificationsModule.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",

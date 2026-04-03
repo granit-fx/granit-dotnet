@@ -1,6 +1,7 @@
 using System.Globalization;
 using Granit.MultiTenancy;
 using Granit.Templating.GlobalContext;
+using Granit.Timing;
 
 namespace Granit.Templating.Scriban.GlobalContexts;
 
@@ -38,13 +39,15 @@ internal sealed class ExecutionContextGlobalContext(IServiceProvider serviceProv
     {
         CultureInfo culture = CultureInfo.CurrentCulture;
 
-        // Soft dependency — resolves NullTenantContext when multi-tenancy is not installed
+        // Soft dependencies — resolve gracefully when modules are not installed
         var tenant = serviceProvider.GetService(typeof(ICurrentTenant)) as ICurrentTenant;
+        var timezoneProvider = serviceProvider.GetService(typeof(ICurrentTimezoneProvider)) as ICurrentTimezoneProvider;
 
         return new
         {
             culture = culture.Name,
             culture_name = culture.DisplayName,
+            timezone = timezoneProvider?.Timezone ?? string.Empty,
             tenant_id = tenant?.IsAvailable == true ? tenant.Id?.ToString() ?? string.Empty : string.Empty,
             tenant_name = tenant?.IsAvailable == true ? tenant.Name ?? string.Empty : string.Empty,
         };

@@ -1,0 +1,7 @@
+<p>Bonjour,</p>
+<p>Votre période d'essai pour le plan <strong>{{ model.plan_name | html.escape }}</strong> expire dans <strong>{{ model.days_remaining }} jour(s)</strong>, le {{ model.trial_ends_at | to_user_time | date.to_string "%d/%m/%Y à %H:%M" }}.</p>
+<p>Pour conserver l'accès à toutes les fonctionnalités, passez à un abonnement payant avant la fin de votre essai.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Passer à l'abonnement</a>
+</p>
+<p>Si vous avez des questions, notre équipe est à votre disposition.</p>

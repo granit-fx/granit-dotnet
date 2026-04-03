@@ -3,6 +3,7 @@ using Granit.Templating.GlobalContext;
 using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
 using Granit.Templating.Scriban.Exceptions;
+using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Scriban;
@@ -134,6 +135,13 @@ internal sealed class ScribanTemplateEngine(
         if (localizerFactory is not null)
         {
             globals.SetValue("t", new TemplateLocalizationFunction(localizerFactory), readOnly: true);
+        }
+
+        // Register {{ value | to_user_time }} timezone conversion filter
+        IClock? clock = serviceProvider.GetService<IClock>();
+        if (clock is not null)
+        {
+            globals.SetValue("to_user_time", new UserTimeFunction(clock), readOnly: true);
         }
 
         TemplateContext templateContext = new(globals)

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Payments.Notifications</PackageId>
-    <Description>Notification types for Granit.Payments. Payment success/failure, payment method expiring, refund processed, and dispute opened notifications.</Description>
+    <Description>Notification types and email templates for Granit.Payments. Payment success/failure, payment method expiring, refund processed, and dispute opened notifications with Scriban templates (en + fr).</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -13,8 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Templates\**\*.html" WithCulture="false" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Granit.Payments\Granit.Payments.csproj" />
     <ProjectReference Include="..\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Templating\Granit.Templating.csproj" />
   </ItemGroup>
 
 </Project>

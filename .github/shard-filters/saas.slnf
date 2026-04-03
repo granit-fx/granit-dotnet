@@ -51,6 +51,7 @@
       "src/Granit.Tax.Internal/Granit.Tax.Internal.csproj",
       "src/Granit.Tax.Stripe/Granit.Tax.Stripe.csproj",
       "src/Granit.Tax/Granit.Tax.csproj",
+      "src/Granit.Templating/Granit.Templating.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation.Europe/Granit.Validation.Europe.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",

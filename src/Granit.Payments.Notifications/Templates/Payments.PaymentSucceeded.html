@@ -1,0 +1,8 @@
+<p>Hi,</p>
+<p>Your payment has been successfully processed:</p>
+<ul>
+  <li><strong>Amount:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Provider:</strong> {{ model.provider_name | html.escape }}</li>
+  <li><strong>Date:</strong> {{ model.succeeded_at | to_user_time | date.to_string "%B %d, %Y at %H:%M" }}</li>
+</ul>
+<p>A receipt will be available in your account shortly.</p>
