@@ -228,7 +228,6 @@
       "tests/Granit.Metering.BackgroundJobs.Tests/Granit.Metering.BackgroundJobs.Tests.csproj",
       "tests/Granit.Metering.Endpoints.Tests/Granit.Metering.Endpoints.Tests.csproj",
       "tests/Granit.Metering.EntityFrameworkCore.Tests/Granit.Metering.EntityFrameworkCore.Tests.csproj",
-      "tests/Granit.Metering.Wolverine.Tests/Granit.Metering.Wolverine.Tests.csproj",
       "tests/Granit.MultiTenancy.Tests/Granit.MultiTenancy.Tests.csproj",
       "tests/Granit.Observability.AI.Tests/Granit.Observability.AI.Tests.csproj",
       "tests/Granit.Observability.Tests/Granit.Observability.Tests.csproj",

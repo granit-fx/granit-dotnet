@@ -284,21 +284,35 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Payments.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
+        }
+      },
+      "granit.payments.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.payments.notifications": {
         "type": "Project",
         "dependencies": {
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
-          "Granit.Payments": "[0.1.0-dev, )"
+          "Granit.Payments": "[0.1.0-dev, )",
+          "Granit.Templating": "[0.1.0-dev, )"
         }
       },
       "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.templating": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Timing": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {

@@ -278,7 +278,6 @@
         "tests/Granit.Metering.Endpoints.Tests",
         "tests/Granit.Metering.EntityFrameworkCore.Tests",
         "tests/Granit.Metering.Tests",
-        "tests/Granit.Metering.Wolverine.Tests",
         "tests/Granit.Payments.Endpoints.Tests",
         "tests/Granit.Payments.EntityFrameworkCore.Tests",
         "tests/Granit.Payments.Mollie.Tests",
