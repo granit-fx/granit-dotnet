@@ -28,6 +28,7 @@ internal sealed partial class EfCoreAuditingCleaner(
 
         return await dbContext.AuditEntries
             .Where(e => e.Category == category && e.Timestamp < cutoff)
+            .OrderBy(e => e.Id)
             .Take(batchSize)
             .ExecuteDeleteAsync(cancellationToken)
             .ConfigureAwait(false);

@@ -63,6 +63,7 @@ public static class DbContextPurgeExtensions
         await context.Set<TEntity>()
             .IgnoreQueryFilters([GranitFilterNames.SoftDelete])
             .Where(e => e.IsDeleted && e.DeletedAt != null && e.DeletedAt < cutoff)
+            .OrderBy(e => e.DeletedAt)
             .Take(batchSize)
             .ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
 }

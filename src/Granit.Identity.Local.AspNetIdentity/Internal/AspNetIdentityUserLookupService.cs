@@ -50,6 +50,7 @@ internal sealed class AspNetIdentityUserLookupService(
         int totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
         int skip = (page - 1) * pageSize;
         List<GranitUser> items = await query
+            .OrderBy(u => u.UserName)
             .Skip(skip)
             .Take(pageSize)
             .ToListAsync(cancellationToken).ConfigureAwait(false);

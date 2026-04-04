@@ -44,6 +44,8 @@ internal sealed partial class AspNetIdentityProvider(
                 (u.LastName != null && u.LastName.Contains(search)));
         }
 
+        query = query.OrderBy(u => u.UserName);
+
         if (first.HasValue)
         {
             query = query.Skip(first.Value);

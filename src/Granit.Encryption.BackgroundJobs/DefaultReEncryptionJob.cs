@@ -59,6 +59,7 @@ public sealed class DefaultReEncryptionJob<TContext>(IDbContextFactory<TContext>
                 .ConfigureAwait(false);
 
             List<TEntity> batch = await ctx.Set<TEntity>()
+                .OrderBy(e => EF.Property<Guid>(e, "Id"))
                 .Skip(offset)
                 .Take(batchSize)
                 .ToListAsync(cancellationToken)

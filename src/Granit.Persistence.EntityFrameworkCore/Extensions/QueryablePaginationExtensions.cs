@@ -13,9 +13,17 @@ public static class QueryablePaginationExtensions
     /// <c>TotalCount</c> and <c>HasMore</c>.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Issues two queries: one for the total count and one for the page items.
     /// For large datasets where count is expensive, prefer cursor pagination via
     /// <see cref="Granit.QueryEngine"/> endpoints.
+    /// </para>
+    /// <para>
+    /// <b>Important:</b> The caller MUST apply an <c>OrderBy</c> clause to
+    /// <paramref name="source"/> before calling this method. Without a deterministic
+    /// ordering, <c>Skip</c>/<c>Take</c> produces unpredictable results and EF Core
+    /// emits a runtime warning.
+    /// </para>
     /// </remarks>
     public static async Task<PagedResult<T>> ToPagedResultAsync<T>(
         this IQueryable<T> source,
