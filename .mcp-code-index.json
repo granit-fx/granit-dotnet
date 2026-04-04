@@ -9298,6 +9298,22 @@
       ]
     },
     {
+      "name": "OverpaymentCreditHandler",
+      "fqn": "Granit.CustomerBalance.Wolverine.Handlers.OverpaymentCreditHandler",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Wolverine",
+      "file": "src/Granit.CustomerBalance.Wolverine/Handlers/OverpaymentCreditHandler.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(OverpaymentDetectedEto eto, IOverpaymentCreditService overpaymentCreditService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "DataExchangeAIHostApplicationBuilderExtensions",
       "fqn": "Granit.DataExchange.AI.Extensions.DataExchangeAIHostApplicationBuilderExtensions",
       "kind": "class",
@@ -17120,6 +17136,134 @@
       ]
     },
     {
+      "name": "AccountLockedHandler",
+      "fqn": "Granit.Identity.Local.Notifications.Handlers.AccountLockedHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/Handlers/AccountLockedHandler.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(AccountLockedEto evt, IIdentityUserReader userReader, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "EmailChangeRequestedHandler",
+      "fqn": "Granit.Identity.Local.Notifications.Handlers.EmailChangeRequestedHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/Handlers/EmailChangeRequestedHandler.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(EmailChangeRequestedEto evt, IOptions<IdentityNotificationOptions> options, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "EmailConfirmationRequestedHandler",
+      "fqn": "Granit.Identity.Local.Notifications.Handlers.EmailConfirmationRequestedHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/Handlers/EmailConfirmationRequestedHandler.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(EmailConfirmationRequestedEto evt, IIdentityUserReader userReader, IOptions<IdentityNotificationOptions> options, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PasswordChangedHandler",
+      "fqn": "Granit.Identity.Local.Notifications.Handlers.PasswordChangedHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/Handlers/PasswordChangedHandler.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PasswordChangedEto evt, IIdentityUserReader userReader, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PasswordResetRequestedHandler",
+      "fqn": "Granit.Identity.Local.Notifications.Handlers.PasswordResetRequestedHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/Handlers/PasswordResetRequestedHandler.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PasswordResetRequestedEto evt, IOptions<IdentityNotificationOptions> options, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "TwoFactorChangedHandler",
+      "fqn": "Granit.Identity.Local.Notifications.Handlers.TwoFactorChangedHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/Handlers/TwoFactorChangedHandler.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(TwoFactorChangedEto evt, IIdentityUserReader userReader, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "UserImpersonatedHandler",
+      "fqn": "Granit.Identity.Local.Notifications.Handlers.UserImpersonatedHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/Handlers/UserImpersonatedHandler.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(UserImpersonatedEto evt, IIdentityUserReader userReader, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "UserRegisteredHandler",
+      "fqn": "Granit.Identity.Local.Notifications.Handlers.UserRegisteredHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Notifications",
+      "file": "src/Granit.Identity.Local.Notifications/Handlers/UserRegisteredHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(UserRegisteredEto evt, IIdentityUserReader userReader, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "AccountLockedNotificationData",
       "fqn": "Granit.Identity.Local.Notifications.NotificationTypes.AccountLockedNotificationData",
       "kind": "record",
@@ -19470,6 +19614,22 @@
       "file": "src/Granit.Invoicing.Wolverine/GranitInvoicingWolverineModule.cs",
       "line": 10,
       "members": []
+    },
+    {
+      "name": "CreateInvoiceHandler",
+      "fqn": "Granit.Invoicing.Wolverine.Handlers.CreateInvoiceHandler",
+      "kind": "class",
+      "project": "Granit.Invoicing.Wolverine",
+      "file": "src/Granit.Invoicing.Wolverine/Handlers/CreateInvoiceHandler.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(CreateInvoiceCommand command, IInvoiceCreationService invoiceCreationService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "SingleValueObjectJsonConverterFactory",
@@ -27537,6 +27697,70 @@
       ]
     },
     {
+      "name": "AutoChargeOnInvoiceHandler",
+      "fqn": "Granit.Payments.Wolverine.Handlers.AutoChargeOnInvoiceHandler",
+      "kind": "class",
+      "project": "Granit.Payments.Wolverine",
+      "file": "src/Granit.Payments.Wolverine/Handlers/AutoChargeOnInvoiceHandler.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(InvoiceFinalizedEto eto, AutoChargeService autoChargeService, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ProcessWebhookCommandHandler",
+      "fqn": "Granit.Payments.Wolverine.Handlers.ProcessWebhookCommandHandler",
+      "kind": "class",
+      "project": "Granit.Payments.Wolverine",
+      "file": "src/Granit.Payments.Wolverine/Handlers/ProcessWebhookCommandHandler.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ProcessWebhookCommand command, WebhookProcessor processor, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "AutoChargeService",
+      "fqn": "Granit.Payments.Wolverine.Internal.AutoChargeService",
+      "kind": "class",
+      "project": "Granit.Payments.Wolverine",
+      "file": "src/Granit.Payments.Wolverine/Internal/AutoChargeService.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(InvoiceFinalizedEto eto, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "WebhookProcessor",
+      "fqn": "Granit.Payments.Wolverine.Internal.WebhookProcessor",
+      "kind": "class",
+      "project": "Granit.Payments.Wolverine",
+      "file": "src/Granit.Payments.Wolverine/Internal/WebhookProcessor.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ProcessAsync",
+          "kind": "method",
+          "signature": "ProcessAsync(ProcessWebhookCommand command, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "DataSeedContext",
       "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.DataSeedContext",
       "kind": "class",
@@ -29618,6 +29842,38 @@
       "file": "src/Granit.Privacy.Notifications/GranitPrivacyNotificationsModule.cs",
       "line": 13,
       "members": []
+    },
+    {
+      "name": "DeletionConfirmationHandler",
+      "fqn": "Granit.Privacy.Notifications.Handlers.DeletionConfirmationHandler",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/Handlers/DeletionConfirmationHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DeletionExecutedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "DeletionReminderHandler",
+      "fqn": "Granit.Privacy.Notifications.Handlers.DeletionReminderHandler",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/Handlers/DeletionReminderHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DeletionReminderDueEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "PrivacyDeletionConfirmationNotificationData",
@@ -34503,6 +34759,150 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "BillingCycleCompletedHandler",
+      "fqn": "Granit.Subscriptions.Wolverine.Handlers.BillingCycleCompletedHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Wolverine",
+      "file": "src/Granit.Subscriptions.Wolverine/Handlers/BillingCycleCompletedHandler.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(BillingCycleCompletedEto eto, BillingCycleInvoiceOrchestrator orchestrator, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "InvoicePaidHandler",
+      "fqn": "Granit.Subscriptions.Wolverine.Handlers.InvoicePaidHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Wolverine",
+      "file": "src/Granit.Subscriptions.Wolverine/Handlers/InvoicePaidHandler.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(InvoicePaidEto eto, ISubscriptionReactivationService reactivationService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PaymentFailedHandler",
+      "fqn": "Granit.Subscriptions.Wolverine.Handlers.PaymentFailedHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Wolverine",
+      "file": "src/Granit.Subscriptions.Wolverine/Handlers/PaymentFailedHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PaymentFailedEto eto, IDunningService dunningService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "RetryPaymentHandler",
+      "fqn": "Granit.Subscriptions.Wolverine.Handlers.RetryPaymentHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Wolverine",
+      "file": "src/Granit.Subscriptions.Wolverine/Handlers/RetryPaymentHandler.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(RetryPaymentPayload payload, PaymentRetryDispatcher dispatcher, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionProviderSyncHandler",
+      "fqn": "Granit.Subscriptions.Wolverine.Handlers.SubscriptionProviderSyncHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Wolverine",
+      "file": "src/Granit.Subscriptions.Wolverine/Handlers/SubscriptionProviderSyncHandler.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(SubscriptionCancelledEto eto, ISubscriptionProviderSyncService syncService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "UsageSummaryReadyHandler",
+      "fqn": "Granit.Subscriptions.Wolverine.Handlers.UsageSummaryReadyHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Wolverine",
+      "file": "src/Granit.Subscriptions.Wolverine/Handlers/UsageSummaryReadyHandler.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(UsageSummaryReadyEto eto, UsageInvoiceOrchestrator orchestrator, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "BillingCycleInvoiceOrchestrator",
+      "fqn": "Granit.Subscriptions.Wolverine.Internal.BillingCycleInvoiceOrchestrator",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Wolverine",
+      "file": "src/Granit.Subscriptions.Wolverine/Internal/BillingCycleInvoiceOrchestrator.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "CreateInvoiceAsync",
+          "kind": "method",
+          "signature": "CreateInvoiceAsync(Guid subscriptionId, Guid tenantId, Guid planId, DateTimeOffset periodStart, DateTimeOffset periodEnd, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PaymentRetryDispatcher",
+      "fqn": "Granit.Subscriptions.Wolverine.Internal.PaymentRetryDispatcher",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Wolverine",
+      "file": "src/Granit.Subscriptions.Wolverine/Internal/PaymentRetryDispatcher.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "DispatchRetryAsync",
+          "kind": "method",
+          "signature": "DispatchRetryAsync(RetryPaymentPayload payload)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "UsageInvoiceOrchestrator",
+      "fqn": "Granit.Subscriptions.Wolverine.Internal.UsageInvoiceOrchestrator",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Wolverine",
+      "file": "src/Granit.Subscriptions.Wolverine/Internal/UsageInvoiceOrchestrator.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "CreateInvoiceAsync",
+          "kind": "method",
+          "signature": "CreateInvoiceAsync(Guid tenantId, Guid meterDefinitionId, string meterName, decimal aggregatedValue, string unit, DateTimeOffset periodStart, DateTimeOffset periodEnd, CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },

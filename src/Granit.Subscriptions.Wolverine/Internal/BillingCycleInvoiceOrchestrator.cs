@@ -10,7 +10,7 @@ namespace Granit.Subscriptions.Wolverine.Internal;
 /// Creates invoices for Flat/PerSeat plans when a billing cycle completes.
 /// PerUnit/Tiered plans are handled exclusively by <see cref="UsageInvoiceOrchestrator"/>.
 /// </summary>
-internal sealed partial class BillingCycleInvoiceOrchestrator(
+public sealed partial class BillingCycleInvoiceOrchestrator(
     ISubscriptionReader subscriptionReader,
     IPlanReader planReader,
     IPricingResolver pricingResolver,

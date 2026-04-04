@@ -7,7 +7,8 @@ namespace Granit.Subscriptions.Wolverine.Handlers;
 /// Syncs subscription state to the external provider after FSM transitions.
 /// Delegates to <see cref="ISubscriptionProviderSyncService"/>.
 /// </summary>
-internal static class SubscriptionProviderSyncHandler
+[global::Wolverine.Attributes.WolverineHandler]
+public static class SubscriptionProviderSyncHandler
 {
     public static async Task HandleAsync(
         SubscriptionCancelledEto eto,

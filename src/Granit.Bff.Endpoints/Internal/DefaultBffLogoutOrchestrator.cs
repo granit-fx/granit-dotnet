@@ -87,7 +87,13 @@ internal sealed partial class DefaultBffLogoutOrchestrator(
             using HttpClient httpClient = httpClientFactory.CreateClient("Granit.Bff");
             string revokeEndpoint = $"{_bffOptions.Authority.ToString().TrimEnd('/')}/connect/revoke";
 
-            BffFrontendOptions frontend = _bffOptions.Frontends.First(f => f.Name == frontendName);
+            BffFrontendOptions? frontend = _bffOptions.Frontends.FirstOrDefault(f => f.Name == frontendName);
+
+            if (frontend is null)
+            {
+                LogFrontendNotFound(logger, frontendName);
+                return;
+            }
 
             // Revoke refresh token first (cascades to access token in OpenIddict)
             if (!string.IsNullOrEmpty(tokens.RefreshToken))
@@ -163,4 +169,7 @@ internal sealed partial class DefaultBffLogoutOrchestrator(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "BFF logout: token revocation failed for frontend {FrontendName} (best-effort, logout continues)")]
     private static partial void LogRevocationFailed(ILogger logger, Exception exception, string frontendName);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "BFF logout: frontend {FrontendName} not found in configuration, skipping token revocation")]
+    private static partial void LogFrontendNotFound(ILogger logger, string frontendName);
 }

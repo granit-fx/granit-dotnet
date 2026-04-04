@@ -186,6 +186,17 @@ Two suffixes — enforced by architecture tests:
 - Past-tense verb + suffix. NEVER bare names (`BlobValidated` → `BlobValidatedEvent`)
 - Generic lifecycle: `EntityCreatedEvent<T>` / `EntityCreatedEto<T>` via `IEmitEntityLifecycleEvents`
 
+### Wolverine handler visibility — CRITICAL
+
+Wolverine discovers handlers via `Assembly.ExportedTypes` (public types only).
+`InternalsVisibleTo("WolverineHandlers")` only helps code-gen **after** discovery.
+
+- **Handlers MUST be `public static partial class`** — `internal` handlers are invisible
+  to Wolverine and silently dropped ("No routes can be determined").
+- If a handler injects an `internal` service, make the service `public` or extract an
+  interface. Never make the handler `internal` to match the service visibility.
+- Background job handlers follow the same rule.
+
 ### Background Jobs — naming convention (STRICT)
 
 Single category with **mandatory suffix** — enforced by architecture tests:
@@ -201,7 +212,7 @@ Single category with **mandatory suffix** — enforced by architecture tests:
   module free from the `Granit.BackgroundJobs` dependency.
 - **Job name format**: `{module-kebab}-{action-kebab}` (e.g., `"blob-storage-orphan-cleanup"`).
   Module prefix ensures global uniqueness.
-- **Handler naming**: `{Action}Handler` (e.g., `OrphanBlobCleanupHandler`) — `internal static partial class`.
+- **Handler naming**: `{Action}Handler` (e.g., `OrphanBlobCleanupHandler`) — `public static partial class`.
 - **NEVER** use `*Command` suffix for jobs — commands are CQRS, jobs are scheduled work units.
 - **NEVER** create a separate `.Wolverine` package for jobs. Wolverine scheduling is
   handled by `Granit.BackgroundJobs.Wolverine`.

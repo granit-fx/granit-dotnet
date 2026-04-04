@@ -10,7 +10,7 @@ namespace Granit.Payments.Wolverine.Internal;
 /// Processes inbound webhook events from payment providers.
 /// Reconciles the provider-reported status with the local <see cref="PaymentTransaction"/>.
 /// </summary>
-internal sealed partial class WebhookProcessor(
+public sealed partial class WebhookProcessor(
     IEnumerable<IPaymentProvider> providers,
     IPaymentTransactionReader transactionReader,
     IPaymentTransactionWriter transactionWriter,

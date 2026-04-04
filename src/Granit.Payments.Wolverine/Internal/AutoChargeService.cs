@@ -15,7 +15,7 @@ namespace Granit.Payments.Wolverine.Internal;
 /// pass-through returns the full total, but <c>Granit.CustomerBalance.Wolverine</c> can
 /// replace it to deduct available credit first.
 /// </summary>
-internal sealed partial class AutoChargeService(
+public sealed partial class AutoChargeService(
     IInvoicePrePaymentProcessor prePaymentProcessor,
     IPaymentMethodReader paymentMethodReader,
     IMessageBus messageBus,

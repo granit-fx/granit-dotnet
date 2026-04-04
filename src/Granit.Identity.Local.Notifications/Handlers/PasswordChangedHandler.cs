@@ -8,7 +8,7 @@ namespace Granit.Identity.Local.Notifications.Handlers;
 /// Handles <see cref="PasswordChangedEto"/> by sending a security alert email,
 /// enabling the user to detect unauthorized password changes (compromise detection).
 /// </summary>
-internal static partial class PasswordChangedHandler
+public class PasswordChangedHandler
 {
     public static async Task HandleAsync(
         PasswordChangedEto evt,

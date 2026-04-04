@@ -6,7 +6,8 @@ namespace Granit.Subscriptions.Wolverine.Handlers;
 /// <summary>
 /// Dunning entry point. Delegates to <see cref="IDunningService"/> for payment failure processing.
 /// </summary>
-internal static class PaymentFailedHandler
+[global::Wolverine.Attributes.WolverineHandler]
+public static class PaymentFailedHandler
 {
     public static async Task HandleAsync(
         PaymentFailedEto eto,

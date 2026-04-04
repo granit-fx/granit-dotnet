@@ -8,7 +8,8 @@ namespace Granit.Subscriptions.Wolverine.Handlers;
 /// Creates consolidated invoices (fixed + usage) for PerUnit/Tiered plans.
 /// Delegates to <see cref="UsageInvoiceOrchestrator"/>.
 /// </summary>
-internal static class UsageSummaryReadyHandler
+[global::Wolverine.Attributes.WolverineHandler]
+public static class UsageSummaryReadyHandler
 {
     public static async Task HandleAsync(
         UsageSummaryReadyEto eto,

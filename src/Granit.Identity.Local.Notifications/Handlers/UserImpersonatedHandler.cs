@@ -9,7 +9,7 @@ namespace Granit.Identity.Local.Notifications.Handlers;
 /// Handles <see cref="UserImpersonatedEto"/> by sending a transparency notification
 /// to the impersonated user (GDPR/SOC2 compliance).
 /// </summary>
-internal static partial class UserImpersonatedHandler
+public class UserImpersonatedHandler
 {
     public static async Task HandleAsync(
         UserImpersonatedEto evt,

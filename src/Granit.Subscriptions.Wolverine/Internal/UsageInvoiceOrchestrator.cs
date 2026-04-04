@@ -10,7 +10,7 @@ namespace Granit.Subscriptions.Wolverine.Internal;
 /// Creates consolidated invoices (fixed + usage) for PerUnit/Tiered plans.
 /// Exclusive invoice creator for plans with usage components.
 /// </summary>
-internal sealed partial class UsageInvoiceOrchestrator(
+public sealed partial class UsageInvoiceOrchestrator(
     ISubscriptionReader subscriptionReader,
     IPlanReader planReader,
     IPricingResolver pricingResolver,

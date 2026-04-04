@@ -8,7 +8,7 @@ namespace Granit.Identity.Local.Notifications.Handlers;
 /// Handles <see cref="TwoFactorChangedEto"/> by sending a security alert when
 /// two-factor authentication is enabled or disabled on a user account.
 /// </summary>
-internal static partial class TwoFactorChangedHandler
+public class TwoFactorChangedHandler
 {
     public static async Task HandleAsync(
         TwoFactorChangedEto evt,

@@ -8,7 +8,7 @@ namespace Granit.Identity.Local.Notifications.Handlers;
 /// Handles <see cref="AccountLockedEto"/> by sending a lockout alert via email and in-app
 /// notification, so the user is aware of the brute-force attempt.
 /// </summary>
-internal static partial class AccountLockedHandler
+public class AccountLockedHandler
 {
     public static async Task HandleAsync(
         AccountLockedEto evt,

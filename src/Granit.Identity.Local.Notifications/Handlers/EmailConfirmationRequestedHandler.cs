@@ -10,7 +10,7 @@ namespace Granit.Identity.Local.Notifications.Handlers;
 /// Handles <see cref="EmailConfirmationRequestedEto"/> by sending an email confirmation link.
 /// Resolves user email from the identity store (the event intentionally omits PII).
 /// </summary>
-internal static partial class EmailConfirmationRequestedHandler
+public class EmailConfirmationRequestedHandler
 {
     public static async Task HandleAsync(
         EmailConfirmationRequestedEto evt,

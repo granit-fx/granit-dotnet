@@ -15,7 +15,7 @@ namespace Granit.Identity.Local.Notifications.Handlers;
 ///     via <see cref="RecipientInfo"/> override.</item>
 /// </list>
 /// </summary>
-internal static partial class EmailChangeRequestedHandler
+public class EmailChangeRequestedHandler
 {
     public static async Task HandleAsync(
         EmailChangeRequestedEto evt,

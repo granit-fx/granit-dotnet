@@ -8,7 +8,7 @@ namespace Granit.Subscriptions.Wolverine.Internal;
 /// <summary>
 /// Dispatches payment retry commands during dunning.
 /// </summary>
-internal sealed partial class PaymentRetryDispatcher(
+public sealed partial class PaymentRetryDispatcher(
     IMessageBus messageBus,
     ILogger<PaymentRetryDispatcher> logger)
 {

@@ -10,7 +10,7 @@ namespace Granit.Identity.Local.Notifications.Handlers;
 /// Handles <see cref="PasswordResetRequestedEto"/> by sending a password reset email
 /// with a link containing the reset token.
 /// </summary>
-internal static partial class PasswordResetRequestedHandler
+public class PasswordResetRequestedHandler
 {
     public static async Task HandleAsync(
         PasswordResetRequestedEto evt,

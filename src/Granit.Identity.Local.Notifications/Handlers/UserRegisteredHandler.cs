@@ -7,7 +7,7 @@ namespace Granit.Identity.Local.Notifications.Handlers;
 /// <summary>
 /// Handles <see cref="UserRegisteredEto"/> by sending a welcome notification to the new user.
 /// </summary>
-internal static partial class UserRegisteredHandler
+public class UserRegisteredHandler
 {
     public static async Task HandleAsync(
         UserRegisteredEto evt,

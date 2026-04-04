@@ -7,7 +7,8 @@ namespace Granit.Payments.Wolverine.Handlers;
 /// Processes inbound webhook events from payment providers.
 /// Delegates to <see cref="WebhookProcessor"/> for all reconciliation logic.
 /// </summary>
-internal static class ProcessWebhookCommandHandler
+[global::Wolverine.Attributes.WolverineHandler]
+public static class ProcessWebhookCommandHandler
 {
     public static Task HandleAsync(
         ProcessWebhookCommand command,

@@ -8,7 +8,8 @@ namespace Granit.Subscriptions.Wolverine.Handlers;
 /// Creates invoices for Flat/PerSeat plans when a billing cycle completes.
 /// Delegates to <see cref="BillingCycleInvoiceOrchestrator"/>.
 /// </summary>
-internal static class BillingCycleCompletedHandler
+[global::Wolverine.Attributes.WolverineHandler]
+public static class BillingCycleCompletedHandler
 {
     public static async Task HandleAsync(
         BillingCycleCompletedEto eto,
