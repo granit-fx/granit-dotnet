@@ -1,3 +1,5 @@
+using Granit.Http.Resilience;
+using Granit.Http.Resilience.Extensions;
 using Granit.Invoicing.Odoo.Internal;
 using Granit.Invoicing.Odoo.Options;
 using Granit.Modularity;
@@ -7,7 +9,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace Granit.Invoicing.Odoo;
 
 /// <summary>Odoo accounting sync for Granit.Invoicing via JSON-RPC.</summary>
-[DependsOn(typeof(GranitInvoicingModule))]
+[DependsOn(
+    typeof(GranitHttpResilienceModule),
+    typeof(GranitInvoicingModule))]
 public sealed class GranitInvoicingOdooModule : GranitModule
 {
     /// <inheritdoc/>
@@ -18,7 +22,7 @@ public sealed class GranitInvoicingOdooModule : GranitModule
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        context.Services.AddHttpClient("Odoo");
+        context.Services.AddGranitHttpClient("Odoo");
 
         context.Services.AddScoped<OdooJsonRpcClient>();
         context.Services.TryAddScoped<IInvoiceSyncProvider, OdooInvoiceSyncProvider>();

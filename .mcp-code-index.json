@@ -893,6 +893,7 @@
       "name": "Granit.Invoicing.Odoo",
       "deps": [
         "Granit.Guids",
+        "Granit.Http.Resilience",
         "Granit.Invoicing"
       ],
       "framework": "net10.0"
@@ -18661,7 +18662,7 @@
       "kind": "class",
       "project": "Granit.Invoicing.Odoo",
       "file": "src/Granit.Invoicing.Odoo/GranitInvoicingOdooModule.cs",
-      "line": 11,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
