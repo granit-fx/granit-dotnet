@@ -31,6 +31,7 @@ public static class AccountEndpointRouteBuilderExtensions
         accountGroup.MapAccountLoginEndpoints();
         accountGroup.MapAccountRegistrationEndpoints();
         accountGroup.MapAccountProfileEndpoints();
+        accountGroup.MapAccountEmailChangeEndpoints();
         accountGroup.MapAccountPasswordEndpoints();
         accountGroup.MapAccountTwoFactorEndpoints();
         accountGroup.MapAccountExternalLoginEndpoints();

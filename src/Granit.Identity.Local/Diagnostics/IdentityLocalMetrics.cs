@@ -70,6 +70,10 @@ public sealed class IdentityLocalMetrics(IMeterFactory meterFactory)
         "granit.identity.local.twofactor.events",
         description: "Number of 2FA events (enable, disable, verify).");
 
+    private readonly Counter<long> _emailChangeRequests = meterFactory.Create(MeterName).CreateCounter<long>(
+        "granit.identity.local.email.change_requests",
+        description: "Number of email change requests.");
+
     private readonly Counter<long> _externalLogins = meterFactory.Create(MeterName).CreateCounter<long>(
         "granit.identity.local.external.logins",
         description: "Number of external login events.");
@@ -105,6 +109,10 @@ public sealed class IdentityLocalMetrics(IMeterFactory meterFactory)
     /// <summary>Records a 2FA event (enable, disable, verify).</summary>
     public void RecordTwoFactorEvent(string? tenantId, string action) =>
         _twoFactorEvents.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId }, { "action", action } });
+
+    /// <summary>Records an email change request.</summary>
+    public void RecordEmailChangeRequest(string? tenantId) =>
+        _emailChangeRequests.Add(1, new TagList { { TenantIdTag, tenantId ?? GlobalTenantId } });
 
     /// <summary>Records an external login event.</summary>
     public void RecordExternalLogin(string? tenantId, string provider, bool isNewUser) =>

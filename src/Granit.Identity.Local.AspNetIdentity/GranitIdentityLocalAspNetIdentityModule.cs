@@ -41,6 +41,7 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
         context.Services.TryAddScoped<ITwoFactorService, AspNetTwoFactorService>();
         context.Services.TryAddScoped<IPasskeyService, AspNetPasskeyService>();
         context.Services.TryAddScoped<IPasswordResetService, AspNetPasswordResetService>();
+        context.Services.TryAddScoped<IEmailChangeService, AspNetEmailChangeService>();
     }
 
     /// <inheritdoc/>

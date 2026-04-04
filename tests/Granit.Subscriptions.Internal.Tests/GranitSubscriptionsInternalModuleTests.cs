@@ -1,4 +1,5 @@
 using Granit.Modularity;
+using Granit.Subscriptions;
 using Shouldly;
 using Xunit;
 

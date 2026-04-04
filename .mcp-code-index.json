@@ -16070,6 +16070,12 @@
           "returnType": "void"
         },
         {
+          "name": "RecordEmailChangeRequest",
+          "kind": "method",
+          "signature": "RecordEmailChangeRequest(string? tenantId)",
+          "returnType": "void"
+        },
+        {
           "name": "RecordExternalLogin",
           "kind": "method",
           "signature": "RecordExternalLogin(string? tenantId, string provider, bool isNewUser)",
@@ -16140,6 +16146,24 @@
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountAuthenticatorKeyResponse.cs",
       "line": 8,
+      "members": []
+    },
+    {
+      "name": "AccountChangeEmailRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountChangeEmailRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountChangeEmailRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "AccountConfirmEmailChangeRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountConfirmEmailChangeRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountConfirmEmailChangeRequest.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -16942,6 +16966,28 @@
           "kind": "method",
           "signature": "InitiateAsync(string userId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IEmailChangeService",
+      "fqn": "Granit.Identity.Local.Services.IEmailChangeService",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IEmailChangeService.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RequestChangeAsync",
+          "kind": "method",
+          "signature": "RequestChangeAsync(string userId, string newEmail, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "ConfirmChangeAsync",
+          "kind": "method",
+          "signature": "ConfirmChangeAsync(string userId, string newEmail, string token, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
     },
