@@ -30,7 +30,7 @@ public abstract class HttpServiceHealthCheckBase(
     /// <summary>Display name for error messages (e.g., "Brevo", "Keycloak").</summary>
     protected abstract string ServiceName { get; }
 
-    /// <summary>Named HTTP client registered via <c>AddHttpClient("name")</c>.</summary>
+    /// <summary>Named HTTP client registered via <c>AddGranitHttpClient("name")</c>.</summary>
     protected abstract string HttpClientName { get; }
 
     /// <summary>
