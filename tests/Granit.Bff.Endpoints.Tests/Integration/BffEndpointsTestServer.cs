@@ -5,6 +5,7 @@ using System.Text.Encodings.Web;
 using Granit.Bff;
 using Granit.Bff.Diagnostics;
 using Granit.Bff.Endpoints.Extensions;
+using Granit.Bff.Endpoints.Internal;
 using Granit.Bff.Options;
 using Granit.Http.Cookies;
 using Granit.Oidc.DPoP;
@@ -152,6 +153,9 @@ internal sealed class BffEndpointsTestServer : IAsyncDisposable
         // Real metrics (needs a real IMeterFactory)
         builder.Services.AddMetrics();
         builder.Services.AddSingleton<BffMetrics>();
+
+        // Logout orchestrator (extracted from handler in domain service refactoring)
+        builder.Services.AddScoped<IBffLogoutOrchestrator, DefaultBffLogoutOrchestrator>();
 
         // HttpClientFactory with mock handler that intercepts token/PAR endpoint calls
         MockTokenEndpointHandler tokenEndpointHandler = new();
