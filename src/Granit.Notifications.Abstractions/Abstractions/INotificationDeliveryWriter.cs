@@ -12,6 +12,9 @@ namespace Granit.Notifications.Abstractions;
 /// </remarks>
 public interface INotificationDeliveryWriter
 {
+    /// <summary>Checks whether a delivery with the given ID has already been successfully recorded.</summary>
+    Task<bool> HasBeenDeliveredAsync(Guid deliveryId, CancellationToken cancellationToken = default);
+
     /// <summary>Records a single delivery attempt (INSERT-only, immutable).</summary>
     Task RecordAsync(NotificationDeliveryAttempt attempt, CancellationToken cancellationToken = default);
 

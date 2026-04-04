@@ -18,6 +18,10 @@ internal sealed class NotificationDeliveryAttemptConfiguration : IEntityTypeConf
         builder.Property(x => x.RecipientUserId).HasMaxLength(256).IsRequired();
         builder.Property(x => x.ErrorMessage).HasMaxLength(2048);
 
+        builder.HasIndex(x => x.DeliveryId)
+            .IsUnique()
+            .HasDatabaseName($"uq_{GranitNotificationsDbProperties.DbTablePrefix}delivery_attempts_delivery_id");
+
         builder.HasIndex(x => new { x.NotificationId, x.ChannelName })
             .HasDatabaseName($"ix_{GranitNotificationsDbProperties.DbTablePrefix}delivery_attempts_notification");
 

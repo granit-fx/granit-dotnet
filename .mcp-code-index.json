@@ -20894,6 +20894,12 @@
       "line": 13,
       "members": [
         {
+          "name": "HasBeenDeliveredAsync",
+          "kind": "method",
+          "signature": "HasBeenDeliveredAsync(Guid deliveryId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
           "name": "RecordAsync",
           "kind": "method",
           "signature": "RecordAsync(NotificationDeliveryAttempt attempt, CancellationToken cancellationToken = default)",
