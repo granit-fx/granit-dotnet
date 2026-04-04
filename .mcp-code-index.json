@@ -25485,7 +25485,7 @@
       "kind": "record",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Dtos/TransactionResponse.cs",
-      "line": 39,
+      "line": 38,
       "members": []
     },
     {
@@ -25494,7 +25494,7 @@
       "kind": "record",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Dtos/TransactionResponse.cs",
-      "line": 45,
+      "line": 44,
       "members": []
     },
     {
@@ -25521,7 +25521,7 @@
       "kind": "record",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Dtos/TransactionResponse.cs",
-      "line": 28,
+      "line": 27,
       "members": []
     },
     {

@@ -71,6 +71,6 @@ public sealed class GranitSubscriptionsInternalModuleTests
         var instance = (ISubscriptionProvider)Activator.CreateInstance(type)!;
 
         instance.ShouldNotBeNull();
-        instance.Capabilities.ShouldBe(Subscriptions.Domain.SubscriptionProviderCapabilities.None);
+        instance.Capabilities.ShouldBe(SubscriptionProviderCapabilities.None);
     }
 }
