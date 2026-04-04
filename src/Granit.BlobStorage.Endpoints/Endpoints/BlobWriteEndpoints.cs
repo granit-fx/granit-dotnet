@@ -31,7 +31,9 @@ internal static class BlobWriteEndpoints
                 "Permanently removes the blob content from storage via crypto-shredding. "
                 + "The blob descriptor and audit trail are retained with the provided deletion reason. "
                 + "A containerName and deletionReason must be supplied in the request body.")
-            .Produces(StatusCodes.Status204NoContent);
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }

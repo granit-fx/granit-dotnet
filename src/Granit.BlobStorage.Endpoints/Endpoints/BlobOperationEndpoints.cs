@@ -22,6 +22,7 @@ internal static class BlobOperationEndpoints
                 + "The response includes the validation result: verified content type, actual size, "
                 + "and an optional rejection reason if the blob failed validation.")
             .Produces<BlobConfirmUploadResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status429TooManyRequests)
             .RequireGranitRateLimiting(BlobStorageRateLimitPolicies.Upload);
 
@@ -33,6 +34,7 @@ internal static class BlobOperationEndpoints
                 + "An optional custom file name can be specified to override the Content-Disposition header. "
                 + "The URL expires after the provider-configured duration.")
             .Produces<BlobDownloadUrlResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status429TooManyRequests)
             .RequireGranitRateLimiting(BlobStorageRateLimitPolicies.Download);
 
