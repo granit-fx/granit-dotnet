@@ -76,10 +76,27 @@ public sealed class PaymentsMetrics
         {
             { TenantIdTag, tenantId ?? GlobalTenant },
             { "provider_name", providerName },
-            { "failure_code", failureCode ?? "unknown" },
+            { "failure_code", NormalizeFailureCode(failureCode) },
         };
         _paymentsFailed.Add(1, tags);
     }
+
+    private static string NormalizeFailureCode(string? code) => code?.ToLowerInvariant() switch
+    {
+        null or "" => "unknown",
+        "card_declined" => "card_declined",
+        "insufficient_funds" => "insufficient_funds",
+        "expired_card" => "expired_card",
+        "incorrect_cvc" => "incorrect_cvc",
+        "processing_error" => "processing_error",
+        "authentication_required" => "authentication_required",
+        "fraudulent" => "fraudulent",
+        "lost_card" or "stolen_card" => "lost_stolen_card",
+        "do_not_honor" => "do_not_honor",
+        "invalid_account" => "invalid_account",
+        "rate_limit" => "rate_limit",
+        _ => "other",
+    };
 
     /// <summary>Records a completed refund.</summary>
     public void RecordRefundCompleted(string? tenantId)

@@ -49,11 +49,12 @@ public sealed class PdfRenderOptionsTests
     }
 
     [Fact]
-    public void Defaults_HeaderFooter_AreNull()
+    public void Defaults_HeaderIsNull_FooterHasPageNumbers()
     {
         PdfRenderOptions options = new();
         options.HeaderTemplate.ShouldBeNull();
-        options.FooterTemplate.ShouldBeNull();
+        options.FooterTemplate.ShouldNotBeNullOrEmpty();
+        options.FooterTemplate.ShouldContain("pageNumber");
     }
 
     [Fact]

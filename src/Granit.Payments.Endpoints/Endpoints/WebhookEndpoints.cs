@@ -46,10 +46,27 @@ internal static class WebhookEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
+        // Reject oversized payloads (1 MB limit — webhook bodies are typically < 10 KB)
+        const int maxBodySize = 1_048_576;
+        if (httpRequest.ContentLength > maxBodySize)
+        {
+            return TypedResults.Problem(
+                detail: "Request body too large.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
         byte[] body;
         using (var ms = new MemoryStream())
         {
             await httpRequest.Body.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
+
+            if (ms.Length > maxBodySize)
+            {
+                return TypedResults.Problem(
+                    detail: "Request body too large.",
+                    statusCode: StatusCodes.Status400BadRequest);
+            }
+
             body = ms.ToArray();
         }
 

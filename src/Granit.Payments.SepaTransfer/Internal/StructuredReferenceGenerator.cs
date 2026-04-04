@@ -7,7 +7,7 @@ namespace Granit.Payments.SepaTransfer.Internal;
 /// Generates structured payment references that link transfers to invoices.
 /// </summary>
 /// <remarks>
-/// Format: <c>{Prefix}-{TransactionId:N8}</c> (e.g., "GRN-A1B2C3D4").
+/// Format: <c>{Prefix}-{TransactionId:N16}</c> (e.g., "GRN-A1B2C3D4E5F6A7B8").
 /// The reference is included in the bank transfer instructions and used
 /// for reconciliation matching.
 /// </remarks>
@@ -16,7 +16,7 @@ internal sealed class StructuredReferenceGenerator(
 {
     /// <summary>Generates a structured reference for a transaction.</summary>
     public string Generate(Guid transactionId) =>
-        $"{options.Value.ReferencePrefix}-{transactionId.ToString("N")[..8].ToUpperInvariant()}";
+        $"{options.Value.ReferencePrefix}-{transactionId.ToString("N")[..16].ToUpperInvariant()}";
 
     /// <summary>Extracts the transaction ID prefix from a structured reference.</summary>
     public string? ExtractPrefix(string? reference)

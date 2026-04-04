@@ -7,6 +7,7 @@
       "src/Granit.Authorization/Granit.Authorization.csproj",
       "src/Granit.BackgroundJobs/Granit.BackgroundJobs.csproj",
       "src/Granit.Caching/Granit.Caching.csproj",
+      "src/Granit.DocumentGeneration/Granit.DocumentGeneration.csproj",
       "src/Granit.Features/Granit.Features.csproj",
       "src/Granit.Guids/Granit.Guids.csproj",
       "src/Granit.Http.ApiDocumentation/Granit.Http.ApiDocumentation.csproj",

@@ -69,6 +69,8 @@
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' nemá správný formát.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' nesmí mít celkem více než {ExpectedPrecision} číslic, z toho {ExpectedScale} desetinných míst.",
     "Granit:Validation:ScheduledAction:FutureDate": "Plánované datum musí být v budoucnosti.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Platné do' musí být pozdější než 'Platné od'."
+    "Granit:Validation:ValidToAfterValidFrom": "'Platné do' musí být pozdější než 'Platné od'.",
+    "Granit:Validation:PaymentAmountOutOfRange": "Částka platby je mimo povolený rozsah.",
+    "Granit:Validation:UrlMustBeHttps": "Adresa URL musí používat HTTPS."
   }
 }

@@ -44,20 +44,35 @@ internal sealed partial class GoCardlessWebhookVerifier(
 
         JsonElement payload = JsonSerializer.Deserialize<JsonElement>(body);
 
-        Log.WebhookVerified(logger);
+        // Extract event ID from the payload for deduplication
+        string? eventId = payload.TryGetProperty("events", out JsonElement events)
+            && events.ValueKind == JsonValueKind.Array
+            && events.GetArrayLength() > 0
+            && events[0].TryGetProperty("id", out JsonElement id)
+                ? id.GetString()
+                : null;
+
+        string? eventType = payload.TryGetProperty("events", out JsonElement evts)
+            && evts.ValueKind == JsonValueKind.Array
+            && evts.GetArrayLength() > 0
+            && evts[0].TryGetProperty("action", out JsonElement action)
+                ? $"gocardless.{action.GetString()}"
+                : "gocardless.webhook";
+
+        Log.WebhookVerified(logger, eventId);
 
         return Task.FromResult(new PaymentWebhookVerificationResult(
             IsValid: true,
-            EventType: "gocardless.webhook",
-            ProviderEventId: null,
+            EventType: eventType,
+            ProviderEventId: eventId,
             Payload: payload,
             RejectionReason: null));
     }
 
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Information, Message = "GoCardless webhook verified")]
-        public static partial void WebhookVerified(ILogger logger);
+        [LoggerMessage(Level = LogLevel.Information, Message = "GoCardless webhook verified (event: {EventId})")]
+        public static partial void WebhookVerified(ILogger logger, string? eventId);
 
         [LoggerMessage(Level = LogLevel.Warning, Message = "GoCardless webhook rejected: {Reason}")]
         public static partial void WebhookRejected(ILogger logger, string reason);

@@ -69,6 +69,8 @@
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' の形式が正しくありません。",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' は合計 {ExpectedPrecision} 桁以内で、うち小数部は {ExpectedScale} 桁以内である必要があります。",
     "Granit:Validation:ScheduledAction:FutureDate": "スケジュール日は将来の日付である必要があります。",
-    "Granit:Validation:ValidToAfterValidFrom": "'有効終了日' は '有効開始日' より後でなければなりません。"
+    "Granit:Validation:ValidToAfterValidFrom": "'有効終了日' は '有効開始日' より後でなければなりません。",
+    "Granit:Validation:PaymentAmountOutOfRange": "支払い金額が許容範囲外です。",
+    "Granit:Validation:UrlMustBeHttps": "URL は HTTPS を使用する必要があります。"
   }
 }

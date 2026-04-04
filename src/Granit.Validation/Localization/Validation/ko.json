@@ -69,6 +69,8 @@
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}'의 형식이 올바르지 않습니다.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}'은(는) 총 {ExpectedPrecision}자리를 초과할 수 없으며 소수점 이하 {ExpectedScale}자리까지 허용됩니다.",
     "Granit:Validation:ScheduledAction:FutureDate": "예약 날짜는 미래여야 합니다.",
-    "Granit:Validation:ValidToAfterValidFrom": "'유효 종료일'은 '유효 시작일' 이후여야 합니다."
+    "Granit:Validation:ValidToAfterValidFrom": "'유효 종료일'은 '유효 시작일' 이후여야 합니다.",
+    "Granit:Validation:PaymentAmountOutOfRange": "결제 금액이 허용 범위를 벗어났습니다.",
+    "Granit:Validation:UrlMustBeHttps": "URL은 HTTPS를 사용해야 합니다."
   }
 }

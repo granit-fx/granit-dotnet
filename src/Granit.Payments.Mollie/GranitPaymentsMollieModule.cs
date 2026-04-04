@@ -36,6 +36,6 @@ public sealed class GranitPaymentsMollieModule : GranitModule
         context.Services.AddScoped<IPaymentProvider, MolliePaymentProvider>();
         context.Services.AddScoped<ICheckoutSessionFactory, MollieCheckoutSessionFactory>();
         context.Services.AddSingleton<IPaymentMethodManager, MolliePaymentMethodManager>();
-        context.Services.AddSingleton<IPaymentWebhookVerifier, MollieWebhookVerifier>();
+        context.Services.AddScoped<IPaymentWebhookVerifier, MollieWebhookVerifier>();
     }
 }

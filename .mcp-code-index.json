@@ -25108,7 +25108,14 @@
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Diagnostics/PaymentsMetrics.cs",
       "line": 10,
-      "members": []
+      "members": [
+        {
+          "name": "RecordRefundCompleted",
+          "kind": "method",
+          "signature": "RecordRefundCompleted(string? tenantId)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "Dispute",

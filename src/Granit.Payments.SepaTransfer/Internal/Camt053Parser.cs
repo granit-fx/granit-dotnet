@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Xml;
 using System.Xml.Linq;
 using Granit.Payments.SepaTransfer.Domain;
 
@@ -11,6 +12,13 @@ internal sealed class Camt053Parser : IBankStatementParser
 {
     private static readonly XNamespace Ns = "urn:iso:std:iso:20022:tech:xsd:camt.053.001.08";
 
+    private static readonly XmlReaderSettings SafeXmlSettings = new()
+    {
+        DtdProcessing = DtdProcessing.Prohibit,
+        XmlResolver = null,
+        Async = true,
+    };
+
     /// <inheritdoc/>
     public string Format => "camt053";
 
@@ -18,7 +26,8 @@ internal sealed class Camt053Parser : IBankStatementParser
     public async Task<IReadOnlyList<BankStatementEntry>> ParseAsync(
         Stream stream, CancellationToken cancellationToken = default)
     {
-        XDocument doc = await XDocument.LoadAsync(stream, LoadOptions.None, cancellationToken)
+        using var reader = XmlReader.Create(stream, SafeXmlSettings);
+        XDocument doc = await XDocument.LoadAsync(reader, LoadOptions.None, cancellationToken)
             .ConfigureAwait(false);
 
         var entries = new List<BankStatementEntry>();

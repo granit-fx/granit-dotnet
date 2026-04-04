@@ -5,6 +5,8 @@
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' n'est pas un numéro de carte de crédit valide.",
     "Granit:Validation:EmailValidator": "'{PropertyName}' n'est pas une adresse courriel valide.",
     "Granit:Validation:InvalidEmail": "'{PropertyName}' n'est pas une adresse courriel valide.",
-    "Granit:Validation:ScheduledAction:FutureDate": "La date planifiée doit être dans le futur."
+    "Granit:Validation:ScheduledAction:FutureDate": "La date planifiée doit être dans le futur.",
+    "Granit:Validation:PaymentAmountOutOfRange": "Le montant du paiement est hors de la plage autorisée.",
+    "Granit:Validation:UrlMustBeHttps": "L'URL doit utiliser HTTPS."
   }
 }

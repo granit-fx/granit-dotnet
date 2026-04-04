@@ -142,13 +142,14 @@ internal static class PaymentMethodEndpoints
         [FromServices] IPaymentMethodReader reader,
         [FromServices] IPaymentMethodWriter writer,
         [FromServices] IEnumerable<IPaymentMethodManager> managers,
+        [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
         PaymentMethod? method = await reader
             .GetByIdAsync(id, cancellationToken)
             .ConfigureAwait(false);
 
-        if (method is null)
+        if (method is null || method.TenantId != currentTenant.Id)
         {
             return TypedResults.NotFound();
         }

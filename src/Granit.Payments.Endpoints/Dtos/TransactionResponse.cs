@@ -17,7 +17,6 @@ public sealed record PaymentTransactionResponse(
     string? ActionUrl,
     string IdempotencyKey,
     string? FailureCode,
-    string? FailureMessage,
     DateTimeOffset? SucceededAt,
     DateTimeOffset? CanceledAt,
     IReadOnlyList<PaymentRefundResponse> Refunds,

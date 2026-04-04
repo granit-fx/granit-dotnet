@@ -99,13 +99,14 @@ internal static class TransactionEndpoints
     private static async Task<Results<Ok<PaymentTransactionResponse>, NotFound>> GetByIdAsync(
         Guid id,
         [FromServices] IPaymentTransactionReader reader,
+        [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
         PaymentTransaction? transaction = await reader
             .GetByIdAsync(id, cancellationToken)
             .ConfigureAwait(false);
 
-        if (transaction is null)
+        if (transaction is null || transaction.TenantId != currentTenant.Id)
         {
             return TypedResults.NotFound();
         }
@@ -201,7 +202,6 @@ internal static class TransactionEndpoints
             t.ActionUrl,
             t.IdempotencyKey,
             t.FailureCode,
-            t.FailureMessage,
             t.SucceededAt,
             t.CanceledAt,
             t.Refunds.Select(MapRefundToResponse).ToList(),
