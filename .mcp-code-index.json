@@ -1404,6 +1404,7 @@
       "name": "Granit.Payments.Stripe",
       "deps": [
         "Granit.Guids",
+        "Granit.Http.Resilience",
         "Granit.Payments"
       ],
       "framework": "net10.0"
@@ -1788,6 +1789,7 @@
       "name": "Granit.Tax.Internal",
       "deps": [
         "Granit.Caching",
+        "Granit.Http.Resilience",
         "Granit.Invoicing",
         "Granit.Tax",
         "Granit.Validation.Europe"
@@ -1797,6 +1799,7 @@
     {
       "name": "Granit.Tax.Stripe",
       "deps": [
+        "Granit.Http.Resilience",
         "Granit.Invoicing",
         "Granit.Tax"
       ],
@@ -26755,7 +26758,7 @@
       "kind": "class",
       "project": "Granit.Payments.Stripe",
       "file": "src/Granit.Payments.Stripe/GranitPaymentsStripeModule.cs",
-      "line": 11,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -33902,7 +33905,7 @@
       "kind": "class",
       "project": "Granit.Tax.Internal",
       "file": "src/Granit.Tax.Internal/GranitTaxInternalModule.cs",
-      "line": 19,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -33968,7 +33971,7 @@
       "kind": "class",
       "project": "Granit.Tax.Stripe",
       "file": "src/Granit.Tax.Stripe/GranitTaxStripeModule.cs",
-      "line": 16,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",

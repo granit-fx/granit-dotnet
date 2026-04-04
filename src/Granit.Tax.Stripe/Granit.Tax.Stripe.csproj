@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Granit.Http.Resilience\Granit.Http.Resilience.csproj" />
     <ProjectReference Include="..\Granit.Invoicing\Granit.Invoicing.csproj" />
     <ProjectReference Include="..\Granit.Tax\Granit.Tax.csproj" />
   </ItemGroup>

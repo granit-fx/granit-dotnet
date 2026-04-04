@@ -1,3 +1,5 @@
+using Granit.Http.Resilience;
+using Granit.Http.Resilience.Extensions;
 using Granit.Invoicing;
 using Granit.Modularity;
 using Granit.Tax.Stripe.Internal;
@@ -11,6 +13,7 @@ namespace Granit.Tax.Stripe;
 
 /// <summary>Stripe Tax API integration for Granit.Tax.</summary>
 [DependsOn(
+    typeof(GranitHttpResilienceModule),
     typeof(GranitInvoicingModule),
     typeof(GranitTaxModule))]
 public sealed class GranitTaxStripeModule : GranitModule
@@ -23,7 +26,7 @@ public sealed class GranitTaxStripeModule : GranitModule
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        context.Services.AddHttpClient("StripeTax");
+        context.Services.AddGranitHttpClient("StripeTax");
         context.Services.AddScoped<IStripeClient>(sp =>
         {
             IOptions<StripeTaxOptions> opts = sp.GetRequiredService<IOptions<StripeTaxOptions>>();

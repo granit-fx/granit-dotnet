@@ -22,17 +22,6 @@
           "Microsoft.Extensions.Options": "10.0.5"
         }
       },
-      "Microsoft.Extensions.Http.Resilience": {
-        "type": "Direct",
-        "requested": "[10.*, )",
-        "resolved": "10.4.0",
-        "contentHash": "HbkUsPUC7vLy2TaDbdA9aooW64n9yX4sUppRuiJ1cOzzU1FUW+MVEotm6kYVq6AuUI9xwFSBhRFzA03blmk3VA==",
-        "dependencies": {
-          "Microsoft.Extensions.Http.Diagnostics": "10.4.0",
-          "Microsoft.Extensions.ObjectPool": "10.0.4",
-          "Microsoft.Extensions.Resilience": "10.4.0"
-        }
-      },
       "Microsoft.Extensions.AmbientMetadata.Application": {
         "type": "Transitive",
         "resolved": "10.4.0",
@@ -277,6 +266,13 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.http.resilience": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Http.Resilience": "[10.*, )"
+        }
+      },
       "granit.invoicing": {
         "type": "Project",
         "dependencies": {
@@ -426,6 +422,17 @@
           "Microsoft.Extensions.Diagnostics.Abstractions": "10.0.5",
           "Microsoft.Extensions.FileProviders.Abstractions": "10.0.5",
           "Microsoft.Extensions.Logging.Abstractions": "10.0.5"
+        }
+      },
+      "Microsoft.Extensions.Http.Resilience": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.4.0",
+        "contentHash": "HbkUsPUC7vLy2TaDbdA9aooW64n9yX4sUppRuiJ1cOzzU1FUW+MVEotm6kYVq6AuUI9xwFSBhRFzA03blmk3VA==",
+        "dependencies": {
+          "Microsoft.Extensions.Http.Diagnostics": "10.4.0",
+          "Microsoft.Extensions.ObjectPool": "10.0.4",
+          "Microsoft.Extensions.Resilience": "10.4.0"
         }
       },
       "Microsoft.Extensions.Localization": {

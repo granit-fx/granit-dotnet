@@ -1,4 +1,6 @@
 using Granit.Caching;
+using Granit.Http.Resilience;
+using Granit.Http.Resilience.Extensions;
 using Granit.Invoicing;
 using Granit.Modularity;
 using Granit.Tax.Internal.Internal;
@@ -14,6 +16,7 @@ namespace Granit.Tax.Internal;
 /// </summary>
 [DependsOn(
     typeof(GranitCachingModule),
+    typeof(GranitHttpResilienceModule),
     typeof(GranitInvoicingModule),
     typeof(GranitTaxModule))]
 public sealed class GranitTaxInternalModule : GranitModule
@@ -24,12 +27,11 @@ public sealed class GranitTaxInternalModule : GranitModule
         context.Services.AddOptions<EuVatRateOptions>()
             .BindConfiguration(EuVatRateOptions.SectionName);
 
-        context.Services.AddHttpClient("Vies", client =>
+        context.Services.AddGranitHttpClient("Vies", (_, client) =>
         {
             client.BaseAddress = new Uri("https://ec.europa.eu/taxation_customs/vies/rest-api/");
             client.Timeout = TimeSpan.FromSeconds(10);
-        })
-        .AddStandardResilienceHandler();
+        });
 
         context.Services.TryAddScoped<ITaxCalculator, EuVatTaxCalculator>();
         context.Services.TryAddScoped<ITaxIdValidator, ViesValidator>();
