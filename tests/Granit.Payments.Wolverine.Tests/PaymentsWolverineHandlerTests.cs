@@ -8,13 +8,13 @@ namespace Granit.Payments.Wolverine.Tests;
 public sealed class PaymentsWolverineHandlerTests
 {
     // -------------------------------------------------------------------------
-    // InvoiceFinalizedHandler
+    // AutoChargeOnInvoiceHandler
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void InvoiceFinalizedHandler_ShouldBeInternalStaticPartial()
+    public void AutoChargeOnInvoiceHandler_ShouldBeInternalStaticPartial()
     {
-        Type handlerType = typeof(InvoiceFinalizedHandler);
+        Type handlerType = typeof(AutoChargeOnInvoiceHandler);
 
         handlerType.IsAbstract.ShouldBeTrue("static classes are abstract");
         handlerType.IsSealed.ShouldBeTrue("static classes are sealed");
@@ -22,9 +22,9 @@ public sealed class PaymentsWolverineHandlerTests
     }
 
     [Fact]
-    public void InvoiceFinalizedHandler_HandleAsync_ShouldExist()
+    public void AutoChargeOnInvoiceHandler_HandleAsync_ShouldExist()
     {
-        MethodInfo? method = typeof(InvoiceFinalizedHandler)
+        MethodInfo? method = typeof(AutoChargeOnInvoiceHandler)
             .GetMethod("HandleAsync", BindingFlags.Public | BindingFlags.Static);
 
         method.ShouldNotBeNull("HandleAsync must exist as a public static method");
@@ -32,9 +32,9 @@ public sealed class PaymentsWolverineHandlerTests
     }
 
     [Fact]
-    public void InvoiceFinalizedHandler_HandleAsync_FirstParameterShouldBeInvoiceFinalizedEto()
+    public void AutoChargeOnInvoiceHandler_HandleAsync_FirstParameterShouldBeInvoiceFinalizedEto()
     {
-        MethodInfo? method = typeof(InvoiceFinalizedHandler)
+        MethodInfo? method = typeof(AutoChargeOnInvoiceHandler)
             .GetMethod("HandleAsync", BindingFlags.Public | BindingFlags.Static);
 
         method.ShouldNotBeNull();
@@ -44,9 +44,9 @@ public sealed class PaymentsWolverineHandlerTests
     }
 
     [Fact]
-    public void InvoiceFinalizedHandler_HandleAsync_LastParameterShouldBeCancellationToken()
+    public void AutoChargeOnInvoiceHandler_HandleAsync_LastParameterShouldBeCancellationToken()
     {
-        MethodInfo? method = typeof(InvoiceFinalizedHandler)
+        MethodInfo? method = typeof(AutoChargeOnInvoiceHandler)
             .GetMethod("HandleAsync", BindingFlags.Public | BindingFlags.Static);
 
         method.ShouldNotBeNull();
