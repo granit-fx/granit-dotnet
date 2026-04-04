@@ -1,0 +1,11 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Invoicing": "चालान",
+    "Permission:Invoicing.Invoices.Read": "चालान देखें",
+    "Permission:Invoicing.Invoices.Manage": "चालान प्रबंधित करें (बनाएँ, अंतिम रूप दें, रद्द करें)",
+    "Permission:Invoicing.Invoices.Download": "चालान दस्तावेज़ डाउनलोड करें (PDF)",
+    "Permission:Invoicing.CreditNotes.Read": "क्रेडिट नोट देखें",
+    "Permission:Invoicing.CreditNotes.Manage": "क्रेडिट नोट प्रबंधित करें (बनाएँ, रद्द करें)"
+  }
+}

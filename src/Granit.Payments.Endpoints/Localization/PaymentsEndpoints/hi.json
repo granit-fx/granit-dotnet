@@ -1,0 +1,11 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Payments": "भुगतान",
+    "Permission:Payments.Transactions.Read": "भुगतान लेनदेन देखें",
+    "Permission:Payments.Charges.Execute": "शुल्क आरंभ करें",
+    "Permission:Payments.Refunds.Execute": "धनवापसी प्रक्रिया करें",
+    "Permission:Payments.Methods.Read": "भुगतान विधियाँ देखें",
+    "Permission:Payments.Methods.Manage": "भुगतान विधियाँ प्रबंधित करें (जोड़ें, हटाएँ)"
+  }
+}

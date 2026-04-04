@@ -1,0 +1,10 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Mcp:Tool:NotFound": "MCP उपकरण '{0}' नहीं मिला।",
+    "Mcp:Server:Unavailable": "MCP सर्वर वर्तमान में अनुपलब्ध है।",
+    "Mcp:Response:Truncated": "प्रतिक्रिया काट दी गई: आकार सीमा पार हो गई।",
+    "Mcp:Sampling:Disabled": "MCP सैंपलिंग अक्षम है।",
+    "Mcp:Sampling:RateLimitExceeded": "इस टेनेंट के लिए सैंपलिंग दर सीमा पार हो गई।"
+  }
+}

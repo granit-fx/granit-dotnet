@@ -1,0 +1,13 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:AI": "AI",
+    "Permission:AI.Workspaces.Read": "AI वर्कस्पेस देखें",
+    "Permission:AI.Workspaces.Manage": "AI वर्कस्पेस प्रबंधित करें (बनाएँ, अपडेट करें, हटाएँ)",
+    "Permission:AI.Usage.Read": "AI उपयोग रिकॉर्ड देखें",
+    "Permission:AI.Chat.Execute": "AI चैट पूर्णता चलाएँ",
+    "Permission:AI.Embeddings.Execute": "AI एम्बेडिंग उत्पन्न करें",
+    "AIEndpoints:Workspace:SystemImmutable": "सिस्टम वर्कस्पेस '{0}' को संशोधित या हटाया नहीं जा सकता।",
+    "AIEndpoints:Workspace:DuplicateName": "'{0}' नाम का वर्कस्पेस पहले से मौजूद है।"
+  }
+}

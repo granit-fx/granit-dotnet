@@ -1,0 +1,8 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Notifications": "सूचनाएँ",
+    "Permission:Notifications.UserNotifications.Read": "सूचनाएँ देखें (इनबॉक्स, गतिविधि फ़ीड)",
+    "Permission:Notifications.UserNotifications.Manage": "सूचनाएँ प्रबंधित करें (प्राथमिकताएँ, सब्सक्रिप्शन, पुश टोकन)"
+  }
+}

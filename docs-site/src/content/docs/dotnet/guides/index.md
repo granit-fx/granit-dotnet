@@ -28,7 +28,7 @@ from scratch, begin with [Getting Started](/dotnet/getting-started/).
 ## Features and settings
 
 - [Add Feature Flags](./add-feature-flags/) -- toggle, numeric, and selection features
-- [Set Up Localization](./set-up-localization/) -- 17 cultures, source-generated keys
+- [Set Up Localization](./set-up-localization/) -- 18 cultures, source-generated keys
 - [Use Reference Data](./use-reference-data/) -- i18n reference tables
 - [Manage Application Settings](./manage-application-settings/) -- runtime settings store
 

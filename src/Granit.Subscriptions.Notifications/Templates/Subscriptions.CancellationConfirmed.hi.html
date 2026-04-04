@@ -1,0 +1,10 @@
+<p>नमस्ते,</p>
+<p><strong>{{ model.plan_name | html.escape }}</strong> प्लान की आपकी सब्सक्रिप्शन रद्द कर दी गई है।</p>
+{{- if model.cancellation_reason != "" }}
+<p><strong>कारण:</strong> {{ model.cancellation_reason | html.escape }}</p>
+{{- end }}
+<p>आपकी वर्तमान बिलिंग अवधि के अंत तक आपकी पहुँच जारी रहेगी।</p>
+<p>यदि आप अपना विचार बदलते हैं, तो आप कभी भी पुनः सब्सक्राइब कर सकते हैं।</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">पुनः सब्सक्राइब करें</a>
+</p>

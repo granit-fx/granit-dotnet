@@ -128,7 +128,7 @@ A maintainer will review your MR against this checklist:
 | Commits (Conventional Commits) | English |
 | Documentation (`docs/**/*.md`) | English |
 | GitHub issues (title, description) | French |
-| Localization files (`Localization/**/*.json`) | 17 cultures |
+| Localization files (`Localization/**/*.json`) | 18 cultures |
 
 Code must never contain French diacritics. French diacritics
 (é, è, ê, à, â, ù, û, ô, î, ï, ç, œ) are required in French-language

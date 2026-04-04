@@ -1,0 +1,13 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Granit:Validation:InvalidUsSsn": "US सामाजिक सुरक्षा नंबर (SSN) अमान्य है।",
+    "Granit:Validation:InvalidUsEin": "US नियोक्ता पहचान संख्या (EIN) अमान्य है।",
+    "Granit:Validation:InvalidUsZipCode": "US ZIP कोड अमान्य है (5 अंक या ZIP+4 प्रारूप अपेक्षित है)।",
+    "Granit:Validation:InvalidNanpPhoneNumber": "फ़ोन नंबर अमान्य है (NANP प्रारूप अपेक्षित: NXX-NXX-XXXX)।",
+    "Granit:Validation:InvalidUsStateCode": "US राज्य या क्षेत्र कोड अमान्य है।",
+    "Granit:Validation:InvalidCanadianSin": "कनाडाई सामाजिक बीमा नंबर (SIN) अमान्य है।",
+    "Granit:Validation:InvalidCanadianPostalCode": "कनाडाई पिन कोड अमान्य है (अपेक्षित प्रारूप: A1A 1A1)।",
+    "Granit:Validation:InvalidCanadianBusinessNumber": "कनाडाई व्यापार नंबर (BN) अमान्य है।"
+  }
+}

@@ -25,7 +25,7 @@ Granit.Example/
 ├── Extensions/                Extension methods (DI, builders, etc.)
 ├── Handlers/                  Wolverine handlers (event/command consumers)
 ├── Internal/                  Internal implementations (services, stores, etc.)
-├── Localization/              JSON translation files (17 cultures)
+├── Localization/              JSON translation files (18 cultures)
 ├── Options/                   IOptions<T> configuration classes
 ├── GranitExampleModule.cs     Module class (required at root)
 ├── IExampleReader.cs          Public interfaces (at module root)

@@ -1,0 +1,10 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Settings": "सेटिंग्स",
+    "Permission:Settings.Global.Read": "वैश्विक सेटिंग्स देखें",
+    "Permission:Settings.Global.Manage": "वैश्विक सेटिंग्स प्रबंधित करें (देखें, बनाएँ, संपादित करें)",
+    "Permission:Settings.Tenant.Read": "टेनेंट सेटिंग्स देखें",
+    "Permission:Settings.Tenant.Manage": "टेनेंट सेटिंग्स प्रबंधित करें (देखें, बनाएँ, संपादित करें)"
+  }
+}

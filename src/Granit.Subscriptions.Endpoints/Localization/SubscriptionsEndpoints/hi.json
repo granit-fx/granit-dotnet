@@ -1,0 +1,14 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Subscriptions": "सब्सक्रिप्शन",
+    "Permission:Subscriptions.Plans.Read": "सब्सक्रिप्शन प्लान देखें",
+    "Permission:Subscriptions.Plans.Manage": "सब्सक्रिप्शन प्लान प्रबंधित करें (बनाएँ, प्रकाशित करें, संग्रहित करें)",
+    "Permission:Subscriptions.Subscriptions.Read": "सब्सक्रिप्शन देखें",
+    "Permission:Subscriptions.Subscriptions.Manage": "सब्सक्रिप्शन प्रबंधित करें (बनाएँ, रद्द करें, प्लान बदलें)",
+    "Permission:Subscriptions.Prices.Read": "मूल्य संस्करण इतिहास देखें",
+    "Permission:Subscriptions.Prices.Manage": "मूल्य प्रबंधित करें (संस्करण बनाएँ, सब्सक्रिप्शन माइग्रेट करें)",
+    "Permission:Subscriptions.Seats.Read": "सीट असाइनमेंट देखें",
+    "Permission:Subscriptions.Seats.Manage": "सीट असाइनमेंट प्रबंधित करें (असाइन करें, निरस्त करें)"
+  }
+}

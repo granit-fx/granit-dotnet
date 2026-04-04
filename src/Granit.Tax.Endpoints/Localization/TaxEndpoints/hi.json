@@ -1,0 +1,10 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Tax": "कर",
+    "Permission:Tax.Rates.Read": "कर दरें देखें",
+    "Permission:Tax.Rates.Manage": "कर दर ओवरराइड प्रबंधित करें",
+    "Permission:Tax.Validations.Read": "कैश की गई कर ID सत्यापन देखें",
+    "Permission:Tax.Validations.Execute": "कर ID सत्यापन करें (VIES, Stripe)"
+  }
+}

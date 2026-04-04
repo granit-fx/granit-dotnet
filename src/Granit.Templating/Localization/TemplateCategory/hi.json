@@ -1,0 +1,7 @@
+{
+  "culture": "hi",
+  "texts": {
+    "TemplateCategory:DuplicateName": "'{0}' नाम की श्रेणी पहले से मौजूद है।",
+    "TemplateCategory:HasTemplates": "श्रेणी हटाई नहीं जा सकती: {0} टेम्पलेट अभी भी संबद्ध हैं।"
+  }
+}

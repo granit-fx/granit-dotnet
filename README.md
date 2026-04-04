@@ -53,7 +53,7 @@ compliant with **GDPR/ISO 27001** requirements.
 | **Data Exchange** | Import (Extract→Map→Validate→Execute), Export (tabular Excel/CSV with presets) |
 | **Workflow** | FSM engine, publication lifecycle, approval routing |
 | **Timeline** | Activity stream, audit-friendly event history, per-entity timeline |
-| **Localization** | i18n (17 cultures), override store, source-generated keys |
+| **Localization** | i18n (18 cultures), override store, source-generated keys |
 | **Settings** | Dynamic key-value settings, tenant-scoped, typed access, change auditing |
 | **SaaS** | Feature flags per commercial plan, quotas, Default → Plan → Tenant resolution |
 | **Privacy & Encryption** | GDPR pseudonymization, right to erasure, Vault Transit encryption, key rotation |

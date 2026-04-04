@@ -387,7 +387,7 @@ See global `~/.claude/CLAUDE.md` for base rules. Additional Granit-specific:
 
 See [`docs/guide/conventions/langues.md`](docs/guide/conventions/langues.md) for full rules.
 
-17 cultures — 14 base (en, fr, nl, de, es, it, pt, zh, ja, pl, tr, ko, sv, cs) + 3 regional (fr-CA, en-GB, pt-BR). Every `src/*/Localization/**/*.json` must exist for all 17. Regional files only contain differing keys.
+18 cultures — 15 base (en, fr, nl, de, es, it, pt, zh, ja, pl, tr, ko, sv, cs, hi) + 3 regional (fr-CA, en-GB, pt-BR). Every `src/*/Localization/**/*.json` must exist for all 18. Regional files only contain differing keys.
 
 ## Documentation site
 

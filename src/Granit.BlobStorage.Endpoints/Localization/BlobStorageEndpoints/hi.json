@@ -1,0 +1,8 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:BlobStorage": "ब्लॉब स्टोरेज",
+    "Permission:BlobStorage.Administration.Read": "ब्लॉब स्टोरेज प्रशासन देखें (सूची, डिस्क्रिप्टर, क्वेरी)",
+    "Permission:BlobStorage.Administration.Manage": "ब्लॉब स्टोरेज प्रबंधित करें (अपलोड, डाउनलोड, हटाएँ, पुष्टि करें, सफ़ाई)"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Auditing": "ऑडिट लॉग",
+    "Permission:Auditing.AuditEntries.Read": "ऑडिट लॉग प्रविष्टियाँ देखें (ISO 27001 ऑडिट ट्रेल)",
+    "Permission:Auditing.AuditEntries.Manage": "ऑडिट लॉग प्रविष्टियाँ प्रबंधित करें (छद्मनामीकरण, GDPR अनु. 17)"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Mcp": "MCP सर्वर",
+    "Permission:Mcp.Server.Access": "MCP सर्वर एंडपॉइंट तक पहुँचें",
+    "Permission:Mcp.Tools.Read": "MCP उपकरणों की सूची देखें",
+    "Permission:Mcp.Tools.Execute": "MCP उपकरण चलाएँ",
+    "Permission:Mcp.Resources.Read": "MCP संसाधन पढ़ें",
+    "Permission:Mcp.Prompts.Read": "MCP प्रॉम्प्ट पढ़ें"
+  }
+}

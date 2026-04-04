@@ -253,7 +253,7 @@ After auditing individual modules, perform cross-cutting checks:
    namespaces consistently use the current module name (detect rename residues via
    `git log --diff-filter=R`)
 6. **Health check uniformity** — readiness/startup tags, 10s timeout, no PII
-7. **Localization completeness** — all 17 cultures present in every module
+7. **Localization completeness** — all 18 cultures present in every module
 8. **[DependsOn] consistency** — matches actual `<ProjectReference>` graph
 9. **Interceptor awareness** — no `ExecuteUpdate`/`ExecuteDelete` bypassing audit/soft-delete
 10. **Roslyn analyzer compliance** — GRMOD, GRSEC, GREF, GRAPI violations resolved

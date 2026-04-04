@@ -2,7 +2,7 @@
 
 Out-of-the-box email and in-app notifications for local identity management.
 Provides 9 standard security notification types with Wolverine event handlers,
-Scriban templates (17 cultures), and RFC 8058 List-Unsubscribe support.
+Scriban templates (18 cultures), and RFC 8058 List-Unsubscribe support.
 
 Part of the [granit](https://granit-fx.dev) framework.
 

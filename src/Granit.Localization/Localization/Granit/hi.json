@@ -1,0 +1,10 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Granit:EntityNotFound": "प्रकार {0} की पहचानकर्ता {1} वाली इकाई नहीं मिली।",
+    "Granit:ValidationError": "सत्यापन त्रुटि।",
+    "Granit:Unauthorized": "अनधिकृत पहुँच।",
+    "Granit:Forbidden": "पहुँच अस्वीकृत।",
+    "Granit:InternalError": "एक आंतरिक त्रुटि हुई।"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Scheduling": "शेड्यूलिंग",
+    "Permission:Scheduling.Actions.Read": "निर्धारित कार्य देखें (सूची, विवरण)",
+    "Permission:Scheduling.Actions.Manage": "निर्धारित कार्य प्रबंधित करें (रद्द करें, पुनर्निर्धारित करें)"
+  }
+}

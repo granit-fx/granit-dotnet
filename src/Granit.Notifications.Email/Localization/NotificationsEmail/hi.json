@@ -1,0 +1,8 @@
+{
+  "culture": "hi",
+  "texts": {
+    "NotificationsEmail:ManagePreferences": "सूचना प्राथमिकताएँ प्रबंधित करें",
+    "NotificationsEmail:SubscribedReason": "आपको यह ईमेल इसलिए प्राप्त हुआ क्योंकि आपने {0} सूचनाओं की सदस्यता ली है।",
+    "NotificationsEmail:NoReply": "कृपया इस ईमेल का उत्तर न दें। यह केवल-सूचना पते से भेजा गया था।"
+  }
+}

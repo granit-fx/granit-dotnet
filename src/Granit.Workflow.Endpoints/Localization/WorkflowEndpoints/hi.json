@@ -1,0 +1,9 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Workflow": "वर्कफ़्लो",
+    "Permission:Workflow.History.Read": "वर्कफ़्लो संक्रमण इतिहास देखें (ऑडिट ट्रेल)",
+    "Permission:Workflow.Transitions.Read": "उपलब्ध वर्कफ़्लो संक्रमण देखें",
+    "Permission:Workflow.Transitions.Execute": "वर्कफ़्लो स्थिति संक्रमण करें"
+  }
+}

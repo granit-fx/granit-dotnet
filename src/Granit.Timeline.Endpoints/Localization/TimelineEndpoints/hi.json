@@ -1,0 +1,12 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Timeline": "टाइमलाइन",
+    "Permission:Timeline.Entries.Read": "गतिविधि फ़ीड और ऑडिट इतिहास देखें",
+    "Permission:Timeline.Entries.Create": "टिप्पणियाँ पोस्ट करें और इकाइयों को फ़ॉलो/अनफ़ॉलो करें",
+    "Permission:Timeline.Entries.Manage": "स्वामित्व की परवाह किए बिना किसी भी टाइमलाइन प्रविष्टि को प्रबंधित (हटाएँ) करें",
+    "Permission:Timeline.InternalNotes.Read": "गतिविधि फ़ीड में केवल-स्टाफ़ आंतरिक नोट देखें",
+    "Permission:Timeline.Followers.Manage": "टाइमलाइन फ़ीड में इकाइयों को फ़ॉलो और अनफ़ॉलो करें",
+    "Granit:Validation:TooManyAttachments": "20 से अधिक फ़ाइलें संलग्न नहीं की जा सकतीं।"
+  }
+}

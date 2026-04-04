@@ -577,10 +577,10 @@ Ref: `CLAUDE.md §Metrics`, `docs-site/…/core/diagnostics.mdx`
 
 ### 11a. Culture completeness
 
-17 cultures required: `en`, `fr`, `nl`, `de`, `es`, `it`, `pt`, `zh`, `ja`,
-`pl`, `tr`, `ko`, `sv`, `cs`, `fr-CA`, `en-GB`, `pt-BR`
+18 cultures required: `en`, `fr`, `nl`, `de`, `es`, `it`, `pt`, `zh`, `ja`,
+`pl`, `tr`, `ko`, `sv`, `cs`, `hi`, `fr-CA`, `en-GB`, `pt-BR`
 
-- [ ] All `src/*/Localization/**/*.json` files exist for all 17 cultures
+- [ ] All `src/*/Localization/**/*.json` files exist for all 18 cultures
 - [ ] Regional files (`fr-CA`, `en-GB`, `pt-BR`) contain only differing keys
 - [ ] Base culture files contain all keys
 

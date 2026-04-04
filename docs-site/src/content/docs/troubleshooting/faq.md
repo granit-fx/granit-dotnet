@@ -101,10 +101,10 @@ queries to the current tenant.
 
 ## How does localization work?
 
-Granit supports **17 cultures**: 14 base languages (en, fr, nl, de, es, it, pt,
-zh, ja, pl, tr, ko, sv, cs) plus 3 regional variants (fr-CA, en-GB, pt-BR).
+Granit supports **18 cultures**: 15 base languages (en, fr, nl, de, es, it, pt,
+zh, ja, pl, tr, ko, sv, cs, hi) plus 3 regional variants (fr-CA, en-GB, pt-BR).
 
-Every module that uses localization must provide JSON resource files for all 17
+Every module that uses localization must provide JSON resource files for all 18
 cultures. Regional variant files only contain keys that differ from the base
 language (`en.json` covers both `en-US` and `en` -- no `en-US.json` is needed).
 

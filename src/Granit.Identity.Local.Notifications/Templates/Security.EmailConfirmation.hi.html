@@ -1,0 +1,11 @@
+<p>नमस्ते,</p>
+<p>कृपया अपना खाता सक्रिय करने के लिए अपना ईमेल पता <strong>{{ model.email | html.escape }}</strong> पुष्टि करें।</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.confirm_link }}" class="btn">मेरा ईमेल पुष्टि करें</a>
+</p>
+<p>यह लिंक <strong>24 घंटे</strong> में समाप्त हो जाएगा।</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  यदि बटन काम नहीं करता, तो निम्नलिखित लिंक को अपने ब्राउज़र में कॉपी और पेस्ट करें:<br>
+  <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
+</p>

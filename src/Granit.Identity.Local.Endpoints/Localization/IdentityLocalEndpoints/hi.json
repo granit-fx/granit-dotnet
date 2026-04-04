@@ -1,0 +1,7 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:IdentityLocal": "स्थानीय पहचान",
+    "Permission:IdentityLocal.Users.Impersonate": "उपयोगकर्ताओं का प्रतिरूपण करें"
+  }
+}

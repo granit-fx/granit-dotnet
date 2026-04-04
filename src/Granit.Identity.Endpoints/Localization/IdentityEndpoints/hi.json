@@ -1,0 +1,17 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Identity": "पहचान",
+    "Permission:Identity.Users.Read": "उपयोगकर्ता देखें (सूची, खोज, बैच, सांख्यिकी)",
+    "Permission:Identity.Users.Sync": "पहचान प्रदाता से उपयोगकर्ता सिंक्रनाइज़ेशन करें",
+    "Permission:Identity.Users.Delete": "उपयोगकर्ता हटाएँ या छद्मनामीकृत करें (GDPR)",
+    "Permission:Identity.Users.Manage": "पहचान प्रदाता में उपयोगकर्ता बनाएँ, अपडेट करें और सक्षम/अक्षम करें",
+    "Permission:Identity.Roles.Read": "भूमिकाएँ, उपयोगकर्ता भूमिका असाइनमेंट और भूमिका सदस्य देखें",
+    "Permission:Identity.Roles.Manage": "उपयोगकर्ताओं को भूमिकाएँ असाइन करें या हटाएँ",
+    "Permission:Identity.Groups.Read": "समूह और उपयोगकर्ता समूह सदस्यता देखें",
+    "Permission:Identity.Groups.Manage": "समूहों में उपयोगकर्ता जोड़ें या हटाएँ",
+    "Permission:Identity.Sessions.Read": "उपयोगकर्ता सत्र और डिवाइस गतिविधि देखें",
+    "Permission:Identity.Sessions.Manage": "उपयोगकर्ता सत्र समाप्त करें",
+    "Permission:Identity.Passwords.Manage": "उपयोगकर्ता पासवर्ड प्रबंधित करें (रीसेट ईमेल, अस्थायी पासवर्ड)"
+  }
+}

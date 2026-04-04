@@ -1,0 +1,10 @@
+{
+  "culture": "hi",
+  "texts": {
+    "AI:Workspace:NotFound": "AI वर्कस्पेस '{0}' नहीं मिला।",
+    "AI:Provider:NotRegistered": "'{0}' के लिए कोई AI प्रदाता पंजीकृत नहीं है। संबंधित पैकेज इंस्टॉल करें।",
+    "AI:RateLimit:Exceeded": "इस वर्कस्पेस के लिए AI दर सीमा पार हो गई। कृपया बाद में पुनः प्रयास करें।",
+    "AI:Workspace:SystemImmutable": "सिस्टम वर्कस्पेस '{0}' को संशोधित नहीं किया जा सकता।",
+    "AI:Service:Unavailable": "AI सेवा वर्तमान में अनुपलब्ध है।"
+  }
+}

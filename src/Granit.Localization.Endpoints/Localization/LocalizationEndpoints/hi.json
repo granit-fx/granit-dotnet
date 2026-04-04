@@ -1,0 +1,8 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Localization": "स्थानीयकरण",
+    "Permission:Localization.Overrides.Read": "अनुवाद ओवरराइड देखें",
+    "Permission:Localization.Overrides.Manage": "अनुवाद ओवरराइड प्रबंधित करें (देखें, बनाएँ, संपादित करें, हटाएँ)"
+  }
+}

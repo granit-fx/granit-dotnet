@@ -1,0 +1,7 @@
+{
+  "culture": "hi",
+  "texts": {
+    "BlobStorage:NotFound": "अनुरोधित फ़ाइल नहीं मिली।",
+    "BlobStorage:NotValid": "फ़ाइल डाउनलोड के लिए उपलब्ध नहीं है।"
+  }
+}

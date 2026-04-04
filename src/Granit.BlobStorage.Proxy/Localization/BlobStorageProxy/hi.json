@@ -1,0 +1,8 @@
+{
+  "culture": "hi",
+  "texts": {
+    "BlobStorageProxy:TokenInvalidOrExpired": "अपलोड/डाउनलोड टोकन अमान्य है या समाप्त हो गया है।",
+    "BlobStorageProxy:PayloadTooLarge": "अपलोड की गई फ़ाइल अधिकतम अनुमत आकार से अधिक है।",
+    "BlobStorageProxy:ContentTypeMismatch": "Content-Type हेडर अपेक्षित प्रकार से मेल नहीं खाता।"
+  }
+}

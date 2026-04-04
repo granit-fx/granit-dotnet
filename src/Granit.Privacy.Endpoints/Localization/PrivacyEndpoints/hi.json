@@ -1,0 +1,11 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Permission:Privacy.Agreements.Create": "कानूनी समझौता स्वीकार करें",
+    "Permission:Privacy.Agreements.Read": "कानूनी दस्तावेज़ और सहमति स्थिति देखें",
+    "Permission:Privacy.Deletion.Execute": "व्यक्तिगत डेटा हटाने का अनुरोध करें",
+    "Permission:Privacy.Export.Execute": "व्यक्तिगत डेटा निर्यात का अनुरोध करें",
+    "Permission:Privacy.Purposes.Read": "पंजीकृत प्रसंस्करण उद्देश्य पढ़ें",
+    "PermissionGroup:Privacy": "गोपनीयता"
+  }
+}

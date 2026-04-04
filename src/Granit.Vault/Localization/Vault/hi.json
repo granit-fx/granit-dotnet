@@ -1,0 +1,7 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Vault:UnknownAuthMethod": "अज्ञात Vault प्रमाणीकरण विधि: '{0}'। अनुमत मान: 'Kubernetes', 'Token'।",
+    "Vault:TokenRequired": "टोकन प्रमाणीकरण के लिए Vault टोकन आवश्यक है। कॉन्फ़िगरेशन में Vault:Token कॉन्फ़िगर करें।"
+  }
+}

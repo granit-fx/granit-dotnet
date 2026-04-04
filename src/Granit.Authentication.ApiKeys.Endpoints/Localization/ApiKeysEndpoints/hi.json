@@ -1,0 +1,11 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:AuthenticationApiKeys": "API कुंजियाँ",
+    "Permission:AuthenticationApiKeys.Keys.Read": "API कुंजियाँ देखें (सूची, विवरण)",
+    "Permission:AuthenticationApiKeys.Keys.Create": "नई API कुंजियाँ बनाएँ",
+    "Permission:AuthenticationApiKeys.Keys.Revoke": "API कुंजियाँ निरस्त करें",
+    "Permission:AuthenticationApiKeys.Keys.Rotate": "API कुंजियाँ रोटेट करें (निरस्त करें और बदलें)",
+    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "API कुंजी अनुमतियाँ और CIDR दायरे अपडेट करें"
+  }
+}
