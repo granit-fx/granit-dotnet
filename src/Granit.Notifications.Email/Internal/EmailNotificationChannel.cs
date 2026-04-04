@@ -286,6 +286,12 @@ internal sealed partial class EmailNotificationChannel(
         Dictionary<string, object?> dataDict = JsonElementToDictionary(context.Data);
         EnrichModelData(dataDict, context, enrichment);
 
+        // Inject title extracted from the rendered content template for {{ model.title }} in layout
+        if (contentEmail.Subject is not null)
+        {
+            dataDict["title"] = contentEmail.Subject;
+        }
+
         // Inject body as ExtraVariable for {{ body | raw }} in layout
         TemplateDescriptor layoutWithBody = new()
         {

@@ -144,7 +144,7 @@ internal sealed class ScribanTemplateEngine(
             globals.SetValue("to_user_time", new UserTimeFunction(clock), readOnly: true);
         }
 
-        TemplateContext templateContext = new(globals)
+        TemplateContext templateContext = new()
         {
             // Sandboxing: no bypass of member visibility restrictions
             EnableRelaxedMemberAccess = false,
@@ -162,6 +162,9 @@ internal sealed class ScribanTemplateEngine(
             // Enable {{ include 'template_name' }} via the resolver chain
             TemplateLoader = templateLoader,
         };
+
+        // Push globals on top of the default BuiltinObject (which provides html, string, math, etc.)
+        templateContext.PushGlobal(globals);
 
         return templateContext;
     }
