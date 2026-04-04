@@ -73,6 +73,7 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
+        builder.Logging.ClearProviders();
 
         builder.Services
             .AddAuthentication(TestAuthHandler.SchemeName)
@@ -90,6 +91,9 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_descriptor);
         builder.Services.AddSingleton<IFileParser>(_parser);
         builder.Services.AddSingleton<IGuidGenerator>(new SimpleGuidGenerator());
+
+        // ImportUploadOrchestrator (extracted from handler)
+        builder.Services.AddScoped<Granit.DataExchange.Endpoints.Internal.Import.ImportUploadOrchestrator>();
 
         // Required by export endpoints (all endpoints are compiled at startup)
         builder.Services.AddSingleton(Substitute.For<IExportOrchestrator>());
