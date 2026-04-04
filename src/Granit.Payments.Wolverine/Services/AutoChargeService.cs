@@ -7,7 +7,7 @@ using Granit.Payments.Domain;
 using Microsoft.Extensions.Logging;
 using Wolverine;
 
-namespace Granit.Payments.Wolverine.Internal;
+namespace Granit.Payments.Wolverine.Services;
 
 /// <summary>
 /// Automatically initiates payment when an invoice is finalized with auto-collection.

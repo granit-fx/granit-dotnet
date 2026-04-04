@@ -4,7 +4,7 @@ using Granit.Payments.Domain;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 
-namespace Granit.Payments.Wolverine.Internal;
+namespace Granit.Payments.Wolverine.Services;
 
 /// <summary>
 /// Processes inbound webhook events from payment providers.

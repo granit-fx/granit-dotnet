@@ -1,13 +1,13 @@
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 
-namespace Granit.Metering.BackgroundJobs.Internal;
+namespace Granit.Metering.BackgroundJobs.Services;
 
 /// <summary>
 /// Orchestrates metering aggregation by delegating to <see cref="IAggregationRunner"/>
 /// with structured logging around the operation.
 /// </summary>
-internal sealed partial class MeteringAggregationScanner(
+public sealed partial class MeteringAggregationScanner(
     IAggregationRunner aggregationRunner,
     IClock clock,
     ILogger<MeteringAggregationScanner> logger)

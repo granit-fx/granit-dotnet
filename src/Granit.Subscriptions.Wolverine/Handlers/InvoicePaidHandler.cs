@@ -7,8 +7,7 @@ namespace Granit.Subscriptions.Wolverine.Handlers;
 /// Reactivates a PastDue subscription when its invoice is paid.
 /// Delegates to <see cref="ISubscriptionReactivationService"/>.
 /// </summary>
-[global::Wolverine.Attributes.WolverineHandler]
-public static class InvoicePaidHandler
+public class InvoicePaidHandler
 {
     public static async Task HandleAsync(
         InvoicePaidEto eto,

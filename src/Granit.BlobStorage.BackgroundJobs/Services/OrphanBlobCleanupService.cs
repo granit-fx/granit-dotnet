@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Logging;
 
-namespace Granit.BlobStorage.BackgroundJobs.Internal;
+namespace Granit.BlobStorage.BackgroundJobs.Services;
 
 /// <summary>
 /// Cleans up blobs stuck in Pending/Uploading for over 24 hours.
 /// </summary>
-internal sealed partial class OrphanBlobCleanupService(
+public sealed partial class OrphanBlobCleanupService(
     IBlobStorage blobStorage,
     ILogger<OrphanBlobCleanupService> logger)
 {

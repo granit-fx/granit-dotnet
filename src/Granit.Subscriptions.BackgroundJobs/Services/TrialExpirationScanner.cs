@@ -7,12 +7,12 @@ using Granit.Timing;
 using Microsoft.Extensions.Logging;
 using Wolverine;
 
-namespace Granit.Subscriptions.BackgroundJobs.Internal;
+namespace Granit.Subscriptions.BackgroundJobs.Services;
 
 /// <summary>
 /// Scans and processes expiring and expired trials.
 /// </summary>
-internal sealed partial class TrialExpirationScanner(
+public sealed partial class TrialExpirationScanner(
     ISubscriptionReader reader,
     ISubscriptionWriter writer,
     IMessageBus messageBus,

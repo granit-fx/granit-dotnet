@@ -1,5 +1,5 @@
-using Granit.BlobStorage.BackgroundJobs.Internal;
 using Granit.BlobStorage.BackgroundJobs.Jobs;
+using Granit.BlobStorage.BackgroundJobs.Services;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;

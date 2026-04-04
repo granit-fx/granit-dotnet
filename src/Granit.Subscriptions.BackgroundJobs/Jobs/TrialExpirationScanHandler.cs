@@ -1,4 +1,4 @@
-using Granit.Subscriptions.BackgroundJobs.Internal;
+using Granit.Subscriptions.BackgroundJobs.Services;
 
 namespace Granit.Subscriptions.BackgroundJobs.Jobs;
 
@@ -6,7 +6,7 @@ namespace Granit.Subscriptions.BackgroundJobs.Jobs;
 /// Handler for <see cref="TrialExpirationScanJob"/>. Delegates to
 /// <see cref="TrialExpirationScanner"/> for trial detection and processing.
 /// </summary>
-internal static class TrialExpirationScanHandler
+public class TrialExpirationScanHandler
 {
     public static async Task HandleAsync(
         TrialExpirationScanJob _,

@@ -8,8 +8,7 @@ namespace Granit.Invoicing.Wolverine.Handlers;
 /// <see cref="IInvoiceCreationService"/> for invoice creation, tax calculation,
 /// and finalization.
 /// </summary>
-[global::Wolverine.Attributes.WolverineHandler]
-public static class CreateInvoiceHandler
+public class CreateInvoiceHandler
 {
     public static async Task HandleAsync(
         CreateInvoiceCommand command,

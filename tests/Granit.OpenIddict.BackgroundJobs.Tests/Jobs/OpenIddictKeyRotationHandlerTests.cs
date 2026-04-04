@@ -1,5 +1,5 @@
-using Granit.OpenIddict.BackgroundJobs.Internal;
 using Granit.OpenIddict.BackgroundJobs.Jobs;
+using Granit.OpenIddict.BackgroundJobs.Services;
 using Granit.OpenIddict.Services;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;

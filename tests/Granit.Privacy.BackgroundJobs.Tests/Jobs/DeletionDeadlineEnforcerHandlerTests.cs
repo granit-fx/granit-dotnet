@@ -1,5 +1,5 @@
 using Granit.Events;
-using Granit.Privacy.BackgroundJobs.Internal;
+using Granit.Privacy.BackgroundJobs.Services;
 using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;
 using Granit.Privacy.Diagnostics;

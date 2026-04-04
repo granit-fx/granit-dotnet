@@ -1,6 +1,6 @@
 using Granit.Metering.Events;
 using Granit.MultiTenancy;
-using Granit.Subscriptions.Wolverine.Internal;
+using Granit.Subscriptions.Wolverine.Services;
 
 namespace Granit.Subscriptions.Wolverine.Handlers;
 
@@ -8,8 +8,7 @@ namespace Granit.Subscriptions.Wolverine.Handlers;
 /// Creates consolidated invoices (fixed + usage) for PerUnit/Tiered plans.
 /// Delegates to <see cref="UsageInvoiceOrchestrator"/>.
 /// </summary>
-[global::Wolverine.Attributes.WolverineHandler]
-public static class UsageSummaryReadyHandler
+public class UsageSummaryReadyHandler
 {
     public static async Task HandleAsync(
         UsageSummaryReadyEto eto,

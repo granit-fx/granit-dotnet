@@ -1,5 +1,5 @@
 using Granit.Modularity;
-using Granit.Subscriptions.Wolverine.Internal;
+using Granit.Subscriptions.Wolverine.Services;
 using Granit.Wolverine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

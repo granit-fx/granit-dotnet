@@ -6836,6 +6836,38 @@
       ]
     },
     {
+      "name": "IExpiredSessionCleanupService",
+      "fqn": "Granit.Bff.BackgroundJobs.IExpiredSessionCleanupService",
+      "kind": "interface",
+      "project": "Granit.Bff.BackgroundJobs",
+      "file": "src/Granit.Bff.BackgroundJobs/IExpiredSessionCleanupService.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "BffExpiredSessionCleanupHandler",
+      "fqn": "Granit.Bff.BackgroundJobs.Jobs.BffExpiredSessionCleanupHandler",
+      "kind": "class",
+      "project": "Granit.Bff.BackgroundJobs",
+      "file": "src/Granit.Bff.BackgroundJobs/Jobs/BffExpiredSessionCleanupHandler.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(BffExpiredSessionCleanupJob _, IExpiredSessionCleanupService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "BffExpiredSessionCleanupJob",
       "fqn": "Granit.Bff.BackgroundJobs.Jobs.BffExpiredSessionCleanupJob",
       "kind": "record",
@@ -7427,6 +7459,22 @@
       ]
     },
     {
+      "name": "OrphanBlobCleanupHandler",
+      "fqn": "Granit.BlobStorage.BackgroundJobs.Jobs.OrphanBlobCleanupHandler",
+      "kind": "class",
+      "project": "Granit.BlobStorage.BackgroundJobs",
+      "file": "src/Granit.BlobStorage.BackgroundJobs/Jobs/OrphanBlobCleanupHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(OrphanBlobCleanupJob _, OrphanBlobCleanupService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "OrphanBlobCleanupJob",
       "fqn": "Granit.BlobStorage.BackgroundJobs.Jobs.OrphanBlobCleanupJob",
       "kind": "record",
@@ -7434,6 +7482,22 @@
       "file": "src/Granit.BlobStorage.BackgroundJobs/Jobs/OrphanBlobCleanupJob.cs",
       "line": 10,
       "members": []
+    },
+    {
+      "name": "OrphanBlobCleanupService",
+      "fqn": "Granit.BlobStorage.BackgroundJobs.Services.OrphanBlobCleanupService",
+      "kind": "class",
+      "project": "Granit.BlobStorage.BackgroundJobs",
+      "file": "src/Granit.BlobStorage.BackgroundJobs/Services/OrphanBlobCleanupService.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "BlobConfirmationResult",
@@ -8836,6 +8900,22 @@
       "members": []
     },
     {
+      "name": "CreditExpirationScanHandler",
+      "fqn": "Granit.CustomerBalance.BackgroundJobs.Jobs.CreditExpirationScanHandler",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.BackgroundJobs",
+      "file": "src/Granit.CustomerBalance.BackgroundJobs/Jobs/CreditExpirationScanHandler.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(CreditExpirationScanJob _, ICreditExpirationService creditExpirationService, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "CreditExpirationScanJob",
       "fqn": "Granit.CustomerBalance.BackgroundJobs.Jobs.CreditExpirationScanJob",
       "kind": "record",
@@ -9303,7 +9383,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance.Wolverine",
       "file": "src/Granit.CustomerBalance.Wolverine/Handlers/OverpaymentCreditHandler.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "HandleAsync",
@@ -18522,6 +18602,22 @@
       ]
     },
     {
+      "name": "OverdueInvoiceDetectionHandler",
+      "fqn": "Granit.Invoicing.BackgroundJobs.Jobs.OverdueInvoiceDetectionHandler",
+      "kind": "class",
+      "project": "Granit.Invoicing.BackgroundJobs",
+      "file": "src/Granit.Invoicing.BackgroundJobs/Jobs/OverdueInvoiceDetectionHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(OverdueInvoiceDetectionJob _, IOverdueInvoiceDetectionService detectionService, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "OverdueInvoiceDetectionJob",
       "fqn": "Granit.Invoicing.BackgroundJobs.Jobs.OverdueInvoiceDetectionJob",
       "kind": "record",
@@ -19621,7 +19717,7 @@
       "kind": "class",
       "project": "Granit.Invoicing.Wolverine",
       "file": "src/Granit.Invoicing.Wolverine/Handlers/CreateInvoiceHandler.cs",
-      "line": 12,
+      "line": 11,
       "members": [
         {
           "name": "HandleAsync",
@@ -20698,6 +20794,22 @@
       ]
     },
     {
+      "name": "MeteringAggregationHandler",
+      "fqn": "Granit.Metering.BackgroundJobs.Jobs.MeteringAggregationHandler",
+      "kind": "class",
+      "project": "Granit.Metering.BackgroundJobs",
+      "file": "src/Granit.Metering.BackgroundJobs/Jobs/MeteringAggregationHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(MeteringAggregationJob _, MeteringAggregationScanner scanner, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "MeteringAggregationJob",
       "fqn": "Granit.Metering.BackgroundJobs.Jobs.MeteringAggregationJob",
       "kind": "record",
@@ -20707,6 +20819,22 @@
       "members": []
     },
     {
+      "name": "QuotaThresholdCheckHandler",
+      "fqn": "Granit.Metering.BackgroundJobs.Jobs.QuotaThresholdCheckHandler",
+      "kind": "class",
+      "project": "Granit.Metering.BackgroundJobs",
+      "file": "src/Granit.Metering.BackgroundJobs/Jobs/QuotaThresholdCheckHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(QuotaThresholdCheckJob _, QuotaThresholdScanner scanner, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "QuotaThresholdCheckJob",
       "fqn": "Granit.Metering.BackgroundJobs.Jobs.QuotaThresholdCheckJob",
       "kind": "record",
@@ -20714,6 +20842,38 @@
       "file": "src/Granit.Metering.BackgroundJobs/Jobs/QuotaThresholdCheckJob.cs",
       "line": 10,
       "members": []
+    },
+    {
+      "name": "MeteringAggregationScanner",
+      "fqn": "Granit.Metering.BackgroundJobs.Services.MeteringAggregationScanner",
+      "kind": "class",
+      "project": "Granit.Metering.BackgroundJobs",
+      "file": "src/Granit.Metering.BackgroundJobs/Services/MeteringAggregationScanner.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RunAsync",
+          "kind": "method",
+          "signature": "RunAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "QuotaThresholdScanner",
+      "fqn": "Granit.Metering.BackgroundJobs.Services.QuotaThresholdScanner",
+      "kind": "class",
+      "project": "Granit.Metering.BackgroundJobs",
+      "file": "src/Granit.Metering.BackgroundJobs/Services/QuotaThresholdScanner.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ScanAsync",
+          "kind": "method",
+          "signature": "ScanAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "MeteringMetrics",
@@ -25091,6 +25251,22 @@
       ]
     },
     {
+      "name": "OpenIddictIdleSessionEnforcementHandler",
+      "fqn": "Granit.OpenIddict.BackgroundJobs.Jobs.OpenIddictIdleSessionEnforcementHandler",
+      "kind": "class",
+      "project": "Granit.OpenIddict.BackgroundJobs",
+      "file": "src/Granit.OpenIddict.BackgroundJobs/Jobs/OpenIddictIdleSessionEnforcementHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(OpenIddictIdleSessionEnforcementJob _, IdleSessionEnforcementService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "OpenIddictIdleSessionEnforcementJob",
       "fqn": "Granit.OpenIddict.BackgroundJobs.Jobs.OpenIddictIdleSessionEnforcementJob",
       "kind": "record",
@@ -25098,6 +25274,22 @@
       "file": "src/Granit.OpenIddict.BackgroundJobs/Jobs/OpenIddictIdleSessionEnforcementJob.cs",
       "line": 14,
       "members": []
+    },
+    {
+      "name": "OpenIddictKeyRotationHandler",
+      "fqn": "Granit.OpenIddict.BackgroundJobs.Jobs.OpenIddictKeyRotationHandler",
+      "kind": "class",
+      "project": "Granit.OpenIddict.BackgroundJobs",
+      "file": "src/Granit.OpenIddict.BackgroundJobs/Jobs/OpenIddictKeyRotationHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(OpenIddictKeyRotationJob _, KeyRotationExecutionService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "OpenIddictKeyRotationJob",
@@ -25109,6 +25301,22 @@
       "members": []
     },
     {
+      "name": "OpenIddictTokenCleanupHandler",
+      "fqn": "Granit.OpenIddict.BackgroundJobs.Jobs.OpenIddictTokenCleanupHandler",
+      "kind": "class",
+      "project": "Granit.OpenIddict.BackgroundJobs",
+      "file": "src/Granit.OpenIddict.BackgroundJobs/Jobs/OpenIddictTokenCleanupHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(OpenIddictTokenCleanupJob _, TokenCleanupService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "OpenIddictTokenCleanupJob",
       "fqn": "Granit.OpenIddict.BackgroundJobs.Jobs.OpenIddictTokenCleanupJob",
       "kind": "record",
@@ -25116,6 +25324,54 @@
       "file": "src/Granit.OpenIddict.BackgroundJobs/Jobs/OpenIddictTokenCleanupJob.cs",
       "line": 13,
       "members": []
+    },
+    {
+      "name": "IdleSessionEnforcementService",
+      "fqn": "Granit.OpenIddict.BackgroundJobs.Services.IdleSessionEnforcementService",
+      "kind": "class",
+      "project": "Granit.OpenIddict.BackgroundJobs",
+      "file": "src/Granit.OpenIddict.BackgroundJobs/Services/IdleSessionEnforcementService.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "KeyRotationExecutionService",
+      "fqn": "Granit.OpenIddict.BackgroundJobs.Services.KeyRotationExecutionService",
+      "kind": "class",
+      "project": "Granit.OpenIddict.BackgroundJobs",
+      "file": "src/Granit.OpenIddict.BackgroundJobs/Services/KeyRotationExecutionService.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "TokenCleanupService",
+      "fqn": "Granit.OpenIddict.BackgroundJobs.Services.TokenCleanupService",
+      "kind": "class",
+      "project": "Granit.OpenIddict.BackgroundJobs",
+      "file": "src/Granit.OpenIddict.BackgroundJobs/Services/TokenCleanupService.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "OpenIddictMetrics",
@@ -27686,7 +27942,7 @@
       "kind": "class",
       "project": "Granit.Payments.Wolverine",
       "file": "src/Granit.Payments.Wolverine/GranitPaymentsWolverineModule.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -27702,7 +27958,7 @@
       "kind": "class",
       "project": "Granit.Payments.Wolverine",
       "file": "src/Granit.Payments.Wolverine/Handlers/AutoChargeOnInvoiceHandler.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "HandleAsync",
@@ -27718,7 +27974,7 @@
       "kind": "class",
       "project": "Granit.Payments.Wolverine",
       "file": "src/Granit.Payments.Wolverine/Handlers/ProcessWebhookCommandHandler.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "HandleAsync",
@@ -27730,10 +27986,10 @@
     },
     {
       "name": "AutoChargeService",
-      "fqn": "Granit.Payments.Wolverine.Internal.AutoChargeService",
+      "fqn": "Granit.Payments.Wolverine.Services.AutoChargeService",
       "kind": "class",
       "project": "Granit.Payments.Wolverine",
-      "file": "src/Granit.Payments.Wolverine/Internal/AutoChargeService.cs",
+      "file": "src/Granit.Payments.Wolverine/Services/AutoChargeService.cs",
       "line": 18,
       "members": [
         {
@@ -27746,10 +28002,10 @@
     },
     {
       "name": "WebhookProcessor",
-      "fqn": "Granit.Payments.Wolverine.Internal.WebhookProcessor",
+      "fqn": "Granit.Payments.Wolverine.Services.WebhookProcessor",
       "kind": "class",
       "project": "Granit.Payments.Wolverine",
-      "file": "src/Granit.Payments.Wolverine/Internal/WebhookProcessor.cs",
+      "file": "src/Granit.Payments.Wolverine/Services/WebhookProcessor.cs",
       "line": 13,
       "members": [
         {
@@ -29026,6 +29282,22 @@
       ]
     },
     {
+      "name": "DeletionDeadlineEnforcerHandler",
+      "fqn": "Granit.Privacy.BackgroundJobs.Jobs.DeletionDeadlineEnforcerHandler",
+      "kind": "class",
+      "project": "Granit.Privacy.BackgroundJobs",
+      "file": "src/Granit.Privacy.BackgroundJobs/Jobs/DeletionDeadlineEnforcerHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DeletionDeadlineEnforcerJob _, DeletionDeadlineEnforcementService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "DeletionDeadlineEnforcerJob",
       "fqn": "Granit.Privacy.BackgroundJobs.Jobs.DeletionDeadlineEnforcerJob",
       "kind": "record",
@@ -29033,6 +29305,22 @@
       "file": "src/Granit.Privacy.BackgroundJobs/Jobs/DeletionDeadlineEnforcerJob.cs",
       "line": 11,
       "members": []
+    },
+    {
+      "name": "DeletionDeadlineEnforcementService",
+      "fqn": "Granit.Privacy.BackgroundJobs.Services.DeletionDeadlineEnforcementService",
+      "kind": "class",
+      "project": "Granit.Privacy.BackgroundJobs",
+      "file": "src/Granit.Privacy.BackgroundJobs/Services/DeletionDeadlineEnforcementService.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "DeletionAction",
@@ -32210,6 +32498,22 @@
       ]
     },
     {
+      "name": "SchedulingCatchUpHandler",
+      "fqn": "Granit.Scheduling.BackgroundJobs.Jobs.SchedulingCatchUpHandler",
+      "kind": "class",
+      "project": "Granit.Scheduling.BackgroundJobs",
+      "file": "src/Granit.Scheduling.BackgroundJobs/Jobs/SchedulingCatchUpHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(SchedulingCatchUpJob _, CatchUpDispatcher dispatcher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "SchedulingCatchUpJob",
       "fqn": "Granit.Scheduling.BackgroundJobs.Jobs.SchedulingCatchUpJob",
       "kind": "record",
@@ -32217,6 +32521,22 @@
       "file": "src/Granit.Scheduling.BackgroundJobs/Jobs/SchedulingCatchUpJob.cs",
       "line": 20,
       "members": []
+    },
+    {
+      "name": "CatchUpDispatcher",
+      "fqn": "Granit.Scheduling.BackgroundJobs.Services.CatchUpDispatcher",
+      "kind": "class",
+      "project": "Granit.Scheduling.BackgroundJobs",
+      "file": "src/Granit.Scheduling.BackgroundJobs/Services/CatchUpDispatcher.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "DispatchOverdueActionsAsync",
+          "kind": "method",
+          "signature": "DispatchOverdueActionsAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "SchedulingMetrics",
@@ -33395,6 +33715,22 @@
       ]
     },
     {
+      "name": "CancelAtPeriodEndScanHandler",
+      "fqn": "Granit.Subscriptions.BackgroundJobs.Jobs.CancelAtPeriodEndScanHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions.BackgroundJobs",
+      "file": "src/Granit.Subscriptions.BackgroundJobs/Jobs/CancelAtPeriodEndScanHandler.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(CancelAtPeriodEndScanJob _, ICancelAtPeriodEndService cancelAtPeriodEndService, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "CancelAtPeriodEndScanJob",
       "fqn": "Granit.Subscriptions.BackgroundJobs.Jobs.CancelAtPeriodEndScanJob",
       "kind": "record",
@@ -33402,6 +33738,22 @@
       "file": "src/Granit.Subscriptions.BackgroundJobs/Jobs/CancelAtPeriodEndScanJob.cs",
       "line": 10,
       "members": []
+    },
+    {
+      "name": "PeriodEndScanHandler",
+      "fqn": "Granit.Subscriptions.BackgroundJobs.Jobs.PeriodEndScanHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions.BackgroundJobs",
+      "file": "src/Granit.Subscriptions.BackgroundJobs/Jobs/PeriodEndScanHandler.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PeriodEndScanJob _, IPeriodAdvancementService periodAdvancementService, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "PeriodEndScanJob",
@@ -33413,6 +33765,22 @@
       "members": []
     },
     {
+      "name": "TrialExpirationScanHandler",
+      "fqn": "Granit.Subscriptions.BackgroundJobs.Jobs.TrialExpirationScanHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions.BackgroundJobs",
+      "file": "src/Granit.Subscriptions.BackgroundJobs/Jobs/TrialExpirationScanHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(TrialExpirationScanJob _, TrialExpirationScanner scanner, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "TrialExpirationScanJob",
       "fqn": "Granit.Subscriptions.BackgroundJobs.Jobs.TrialExpirationScanJob",
       "kind": "record",
@@ -33420,6 +33788,22 @@
       "file": "src/Granit.Subscriptions.BackgroundJobs/Jobs/TrialExpirationScanJob.cs",
       "line": 9,
       "members": []
+    },
+    {
+      "name": "TrialExpirationScanner",
+      "fqn": "Granit.Subscriptions.BackgroundJobs.Services.TrialExpirationScanner",
+      "kind": "class",
+      "project": "Granit.Subscriptions.BackgroundJobs",
+      "file": "src/Granit.Subscriptions.BackgroundJobs/Services/TrialExpirationScanner.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ScanAsync",
+          "kind": "method",
+          "signature": "ScanAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "SubscriptionWorkflows",
@@ -34768,7 +35152,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
       "file": "src/Granit.Subscriptions.Wolverine/Handlers/BillingCycleCompletedHandler.cs",
-      "line": 12,
+      "line": 11,
       "members": [
         {
           "name": "HandleAsync",
@@ -34784,7 +35168,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
       "file": "src/Granit.Subscriptions.Wolverine/Handlers/InvoicePaidHandler.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "HandleAsync",
@@ -34800,7 +35184,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
       "file": "src/Granit.Subscriptions.Wolverine/Handlers/PaymentFailedHandler.cs",
-      "line": 10,
+      "line": 9,
       "members": [
         {
           "name": "HandleAsync",
@@ -34816,7 +35200,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
       "file": "src/Granit.Subscriptions.Wolverine/Handlers/RetryPaymentHandler.cs",
-      "line": 12,
+      "line": 11,
       "members": [
         {
           "name": "HandleAsync",
@@ -34832,7 +35216,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
       "file": "src/Granit.Subscriptions.Wolverine/Handlers/SubscriptionProviderSyncHandler.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "HandleAsync",
@@ -34848,7 +35232,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
       "file": "src/Granit.Subscriptions.Wolverine/Handlers/UsageSummaryReadyHandler.cs",
-      "line": 12,
+      "line": 11,
       "members": [
         {
           "name": "HandleAsync",
@@ -34860,10 +35244,10 @@
     },
     {
       "name": "BillingCycleInvoiceOrchestrator",
-      "fqn": "Granit.Subscriptions.Wolverine.Internal.BillingCycleInvoiceOrchestrator",
+      "fqn": "Granit.Subscriptions.Wolverine.Services.BillingCycleInvoiceOrchestrator",
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/Internal/BillingCycleInvoiceOrchestrator.cs",
+      "file": "src/Granit.Subscriptions.Wolverine/Services/BillingCycleInvoiceOrchestrator.cs",
       "line": 13,
       "members": [
         {
@@ -34876,10 +35260,10 @@
     },
     {
       "name": "PaymentRetryDispatcher",
-      "fqn": "Granit.Subscriptions.Wolverine.Internal.PaymentRetryDispatcher",
+      "fqn": "Granit.Subscriptions.Wolverine.Services.PaymentRetryDispatcher",
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/Internal/PaymentRetryDispatcher.cs",
+      "file": "src/Granit.Subscriptions.Wolverine/Services/PaymentRetryDispatcher.cs",
       "line": 11,
       "members": [
         {
@@ -34892,10 +35276,10 @@
     },
     {
       "name": "UsageInvoiceOrchestrator",
-      "fqn": "Granit.Subscriptions.Wolverine.Internal.UsageInvoiceOrchestrator",
+      "fqn": "Granit.Subscriptions.Wolverine.Services.UsageInvoiceOrchestrator",
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/Internal/UsageInvoiceOrchestrator.cs",
+      "file": "src/Granit.Subscriptions.Wolverine/Services/UsageInvoiceOrchestrator.cs",
       "line": 13,
       "members": [
         {

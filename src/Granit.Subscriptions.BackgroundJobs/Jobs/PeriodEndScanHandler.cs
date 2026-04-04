@@ -4,7 +4,7 @@ namespace Granit.Subscriptions.BackgroundJobs.Jobs;
 /// Handler for <see cref="PeriodEndScanJob"/>. Delegates to
 /// <see cref="IPeriodAdvancementService"/> for billing period advancement.
 /// </summary>
-internal static class PeriodEndScanHandler
+public class PeriodEndScanHandler
 {
     public static async Task HandleAsync(
         PeriodEndScanJob _,

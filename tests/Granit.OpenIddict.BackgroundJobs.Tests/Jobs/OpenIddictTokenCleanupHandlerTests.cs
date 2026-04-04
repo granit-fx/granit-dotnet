@@ -1,4 +1,4 @@
-using Granit.OpenIddict.BackgroundJobs.Internal;
+using Granit.OpenIddict.BackgroundJobs.Services;
 using NSubstitute;
 using OpenIddict.Abstractions;
 using Shouldly;

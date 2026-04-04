@@ -7,13 +7,13 @@ using Granit.Timing;
 using Microsoft.Extensions.Logging;
 using Wolverine;
 
-namespace Granit.Scheduling.BackgroundJobs.Internal;
+namespace Granit.Scheduling.BackgroundJobs.Services;
 
 /// <summary>
 /// Detects overdue pending scheduled actions and re-dispatches their payloads via Wolverine.
 /// Extracted from <c>SchedulingCatchUpHandler</c> to keep the handler a thin pass-through.
 /// </summary>
-internal sealed partial class CatchUpDispatcher(
+public sealed partial class CatchUpDispatcher(
     IScheduledActionReader reader,
     IMessageBus messageBus,
     IClock clock,

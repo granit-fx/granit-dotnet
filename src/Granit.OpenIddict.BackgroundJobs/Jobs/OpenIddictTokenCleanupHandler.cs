@@ -1,4 +1,4 @@
-using Granit.OpenIddict.BackgroundJobs.Internal;
+using Granit.OpenIddict.BackgroundJobs.Services;
 
 namespace Granit.OpenIddict.BackgroundJobs.Jobs;
 
@@ -6,7 +6,7 @@ namespace Granit.OpenIddict.BackgroundJobs.Jobs;
 /// Handler for <see cref="OpenIddictTokenCleanupJob"/>. Delegates to
 /// <see cref="TokenCleanupService"/> for token and authorization pruning.
 /// </summary>
-internal static class OpenIddictTokenCleanupHandler
+public class OpenIddictTokenCleanupHandler
 {
     public static Task HandleAsync(
         OpenIddictTokenCleanupJob _,

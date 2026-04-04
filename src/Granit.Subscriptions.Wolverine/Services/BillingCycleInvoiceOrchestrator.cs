@@ -4,7 +4,7 @@ using Granit.Subscriptions.Domain;
 using Microsoft.Extensions.Logging;
 using Wolverine;
 
-namespace Granit.Subscriptions.Wolverine.Internal;
+namespace Granit.Subscriptions.Wolverine.Services;
 
 /// <summary>
 /// Creates invoices for Flat/PerSeat plans when a billing cycle completes.

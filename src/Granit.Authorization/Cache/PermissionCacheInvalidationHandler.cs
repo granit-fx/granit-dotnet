@@ -22,7 +22,7 @@ namespace Granit.Authorization.Cache;
 /// "denied" entry is safe if the factory fails.
 /// </para>
 /// </remarks>
-public static class PermissionCacheInvalidationHandler
+public class PermissionCacheInvalidationHandler
 {
     /// <summary>
     /// Invalidates the cached permission grant entry for the changed role and tenant scope.

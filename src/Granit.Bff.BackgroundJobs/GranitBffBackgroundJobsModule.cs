@@ -18,5 +18,5 @@ public sealed class GranitBffBackgroundJobsModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>
-        context.Services.TryAddTransient<ExpiredSessionCleanupService>();
+        context.Services.TryAddTransient<IExpiredSessionCleanupService, ExpiredSessionCleanupService>();
 }

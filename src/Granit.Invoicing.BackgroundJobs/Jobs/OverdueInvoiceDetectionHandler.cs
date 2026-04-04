@@ -6,7 +6,7 @@ namespace Granit.Invoicing.BackgroundJobs.Jobs;
 /// Handler for <see cref="OverdueInvoiceDetectionJob"/>. Delegates to
 /// <see cref="IOverdueInvoiceDetectionService"/> for overdue invoice detection.
 /// </summary>
-internal static class OverdueInvoiceDetectionHandler
+public class OverdueInvoiceDetectionHandler
 {
     public static async Task HandleAsync(
         OverdueInvoiceDetectionJob _,

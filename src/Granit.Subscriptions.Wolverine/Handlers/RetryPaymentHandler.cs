@@ -1,6 +1,6 @@
 using Granit.MultiTenancy;
 using Granit.Subscriptions.Scheduling;
-using Granit.Subscriptions.Wolverine.Internal;
+using Granit.Subscriptions.Wolverine.Services;
 
 namespace Granit.Subscriptions.Wolverine.Handlers;
 
@@ -8,8 +8,7 @@ namespace Granit.Subscriptions.Wolverine.Handlers;
 /// Handles scheduled payment retries during dunning.
 /// Delegates to <see cref="PaymentRetryDispatcher"/>.
 /// </summary>
-[global::Wolverine.Attributes.WolverineHandler]
-public static class RetryPaymentHandler
+public class RetryPaymentHandler
 {
     public static async Task HandleAsync(
         RetryPaymentPayload payload,

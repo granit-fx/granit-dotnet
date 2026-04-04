@@ -1,4 +1,4 @@
-using Granit.BlobStorage.BackgroundJobs.Internal;
+using Granit.BlobStorage.BackgroundJobs.Services;
 
 namespace Granit.BlobStorage.BackgroundJobs.Jobs;
 
@@ -6,7 +6,7 @@ namespace Granit.BlobStorage.BackgroundJobs.Jobs;
 /// Handler for <see cref="OrphanBlobCleanupJob"/>. Delegates to
 /// <see cref="OrphanBlobCleanupService"/> for orphan blob cleanup logic.
 /// </summary>
-internal static class OrphanBlobCleanupHandler
+public class OrphanBlobCleanupHandler
 {
     public static Task HandleAsync(
         OrphanBlobCleanupJob _,

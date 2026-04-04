@@ -1,6 +1,7 @@
 using Granit.Invoicing;
 using Granit.Modularity;
 using Granit.Payments.Wolverine.Internal;
+using Granit.Payments.Wolverine.Services;
 using Granit.Wolverine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

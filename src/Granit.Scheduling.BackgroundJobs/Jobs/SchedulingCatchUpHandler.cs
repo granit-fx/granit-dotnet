@@ -1,4 +1,4 @@
-using Granit.Scheduling.BackgroundJobs.Internal;
+using Granit.Scheduling.BackgroundJobs.Services;
 
 namespace Granit.Scheduling.BackgroundJobs.Jobs;
 
@@ -6,7 +6,7 @@ namespace Granit.Scheduling.BackgroundJobs.Jobs;
 /// Handler for <see cref="SchedulingCatchUpJob"/>. Delegates to <see cref="CatchUpDispatcher"/>
 /// for overdue scheduled action detection and re-dispatch.
 /// </summary>
-internal static class SchedulingCatchUpHandler
+public class SchedulingCatchUpHandler
 {
     public static Task HandleAsync(
         SchedulingCatchUpJob _,

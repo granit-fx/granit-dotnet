@@ -3,7 +3,7 @@ using Granit.Subscriptions.Scheduling;
 using Microsoft.Extensions.Logging;
 using Wolverine;
 
-namespace Granit.Subscriptions.Wolverine.Internal;
+namespace Granit.Subscriptions.Wolverine.Services;
 
 /// <summary>
 /// Dispatches payment retry commands during dunning.

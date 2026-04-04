@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using OpenIddict.Abstractions;
 using ZiggyCreatures.Caching.Fusion;
 
-namespace Granit.OpenIddict.BackgroundJobs.Internal;
+namespace Granit.OpenIddict.BackgroundJobs.Services;
 
 /// <summary>
 /// Scans active refresh tokens and checks whether the corresponding session cache entry
@@ -22,7 +22,7 @@ namespace Granit.OpenIddict.BackgroundJobs.Internal;
 /// Tokens with <c>remember_me = true</c> are skipped — those sessions never time out.
 /// </para>
 /// </remarks>
-internal sealed partial class IdleSessionEnforcementService(
+public sealed partial class IdleSessionEnforcementService(
     IOpenIddictTokenManager tokenManager,
     IFusionCache cache,
     ISettingProvider settingProvider,

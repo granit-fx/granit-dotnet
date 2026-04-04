@@ -1,4 +1,4 @@
-using Granit.Metering.BackgroundJobs.Internal;
+using Granit.Metering.BackgroundJobs.Services;
 
 namespace Granit.Metering.BackgroundJobs.Jobs;
 
@@ -6,7 +6,7 @@ namespace Granit.Metering.BackgroundJobs.Jobs;
 /// Handler for <see cref="MeteringAggregationJob"/>. Delegates to
 /// <see cref="MeteringAggregationScanner"/> for aggregation orchestration.
 /// </summary>
-internal static class MeteringAggregationHandler
+public class MeteringAggregationHandler
 {
     public static async Task HandleAsync(
         MeteringAggregationJob _,

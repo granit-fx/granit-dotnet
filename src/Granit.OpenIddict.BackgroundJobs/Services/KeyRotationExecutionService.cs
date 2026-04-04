@@ -1,12 +1,12 @@
 using Granit.OpenIddict.Services;
 using Microsoft.Extensions.Logging;
 
-namespace Granit.OpenIddict.BackgroundJobs.Internal;
+namespace Granit.OpenIddict.BackgroundJobs.Services;
 
 /// <summary>
 /// Executes the signing key rotation lifecycle via <see cref="IKeyRotationService"/>.
 /// </summary>
-internal sealed partial class KeyRotationExecutionService(
+public sealed partial class KeyRotationExecutionService(
     IKeyRotationService keyRotationService,
     ILogger<KeyRotationExecutionService> logger)
 {

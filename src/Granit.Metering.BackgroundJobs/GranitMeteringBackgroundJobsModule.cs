@@ -1,5 +1,5 @@
 using Granit.BackgroundJobs;
-using Granit.Metering.BackgroundJobs.Internal;
+using Granit.Metering.BackgroundJobs.Services;
 using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

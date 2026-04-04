@@ -189,10 +189,13 @@ Two suffixes — enforced by architecture tests:
 ### Wolverine handler visibility — CRITICAL
 
 Wolverine discovers handlers via `Assembly.ExportedTypes` (public types only).
-`InternalsVisibleTo("WolverineHandlers")` only helps code-gen **after** discovery.
+`static class` types are additionally skipped unless decorated with
+`[WolverineHandler]`, which creates an unwanted dependency on WolverineFx.
 
-- **Handlers MUST be `public static partial class`** — `internal` handlers are invisible
-  to Wolverine and silently dropped ("No routes can be determined").
+- **Handlers MUST be `public class` (non-static) with `public static` Handle methods.**
+  This ensures discovery without any attribute or WolverineFx dependency.
+- NEVER use `public static class` — requires `[WolverineHandler]` to be discovered.
+- NEVER use `internal` — invisible to `Assembly.ExportedTypes`.
 - If a handler injects an `internal` service, make the service `public` or extract an
   interface. Never make the handler `internal` to match the service visibility.
 - Background job handlers follow the same rule.

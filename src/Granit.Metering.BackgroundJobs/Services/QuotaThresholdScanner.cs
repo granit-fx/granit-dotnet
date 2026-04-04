@@ -11,13 +11,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Wolverine;
 
-namespace Granit.Metering.BackgroundJobs.Internal;
+namespace Granit.Metering.BackgroundJobs.Services;
 
 /// <summary>
 /// Scans all active meter definitions across tenants, checks current usage
 /// against quotas, and publishes threshold or exceeded integration events.
 /// </summary>
-internal sealed partial class QuotaThresholdScanner(
+public sealed partial class QuotaThresholdScanner(
     IMeterDefinitionReader definitionReader,
     IQuotaChecker quotaChecker,
     ICurrentTenant currentTenant,

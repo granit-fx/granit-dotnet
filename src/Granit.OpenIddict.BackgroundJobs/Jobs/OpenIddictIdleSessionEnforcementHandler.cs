@@ -1,4 +1,4 @@
-using Granit.OpenIddict.BackgroundJobs.Internal;
+using Granit.OpenIddict.BackgroundJobs.Services;
 
 namespace Granit.OpenIddict.BackgroundJobs.Jobs;
 
@@ -6,7 +6,7 @@ namespace Granit.OpenIddict.BackgroundJobs.Jobs;
 /// Handler for <see cref="OpenIddictIdleSessionEnforcementJob"/>. Delegates to
 /// <see cref="IdleSessionEnforcementService"/> for idle session revocation logic.
 /// </summary>
-internal static class OpenIddictIdleSessionEnforcementHandler
+public class OpenIddictIdleSessionEnforcementHandler
 {
     public static Task HandleAsync(
         OpenIddictIdleSessionEnforcementJob _,

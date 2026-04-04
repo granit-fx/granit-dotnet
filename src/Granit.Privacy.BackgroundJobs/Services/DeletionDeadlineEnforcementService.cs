@@ -4,14 +4,14 @@ using Granit.Privacy.DataDeletion.Events;
 using Granit.Privacy.Diagnostics;
 using Microsoft.Extensions.Logging;
 
-namespace Granit.Privacy.BackgroundJobs.Internal;
+namespace Granit.Privacy.BackgroundJobs.Services;
 
 /// <summary>
 /// Scans for expired deferred deletion requests and forces execution.
 /// Idempotent — skips requests already in
 /// <see cref="DeletionRequestState.Executed"/> or <see cref="DeletionRequestState.Cancelled"/> state.
 /// </summary>
-internal sealed partial class DeletionDeadlineEnforcementService(
+public sealed partial class DeletionDeadlineEnforcementService(
     IDeletionRequestTrackerReader trackerReader,
     IDeletionRequestTrackerWriter trackerWriter,
     IDistributedEventBus eventBus,

@@ -13,7 +13,7 @@ namespace Granit.Features.Cache;
 /// Additional parameters are resolved from the application's DI container.
 /// No WolverineFx package reference is required in this project.
 /// </remarks>
-public static class FeatureCacheInvalidationHandler
+public class FeatureCacheInvalidationHandler
 {
     /// <summary>
     /// Expires the cached resolved-value entry for the changed feature and tenant scope.

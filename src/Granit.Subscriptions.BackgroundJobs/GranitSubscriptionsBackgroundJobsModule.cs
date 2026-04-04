@@ -1,6 +1,6 @@
 using Granit.BackgroundJobs;
 using Granit.Modularity;
-using Granit.Subscriptions.BackgroundJobs.Internal;
+using Granit.Subscriptions.BackgroundJobs.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

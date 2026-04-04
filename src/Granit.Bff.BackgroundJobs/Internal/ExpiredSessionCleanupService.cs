@@ -11,7 +11,7 @@ namespace Granit.Bff.BackgroundJobs.Internal;
 internal sealed partial class ExpiredSessionCleanupService(
     IDbContextFactory<BffDbContext> dbContextFactory,
     IClock clock,
-    ILogger<ExpiredSessionCleanupService> logger)
+    ILogger<ExpiredSessionCleanupService> logger) : IExpiredSessionCleanupService
 {
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {

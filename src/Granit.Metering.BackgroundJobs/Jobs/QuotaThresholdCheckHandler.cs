@@ -1,4 +1,4 @@
-using Granit.Metering.BackgroundJobs.Internal;
+using Granit.Metering.BackgroundJobs.Services;
 
 namespace Granit.Metering.BackgroundJobs.Jobs;
 
@@ -6,7 +6,7 @@ namespace Granit.Metering.BackgroundJobs.Jobs;
 /// Handler for <see cref="QuotaThresholdCheckJob"/>. Delegates to
 /// <see cref="QuotaThresholdScanner"/> for quota detection and event publishing.
 /// </summary>
-internal static class QuotaThresholdCheckHandler
+public class QuotaThresholdCheckHandler
 {
     public static async Task HandleAsync(
         QuotaThresholdCheckJob _,

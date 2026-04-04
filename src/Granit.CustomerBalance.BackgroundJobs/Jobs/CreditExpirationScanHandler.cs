@@ -4,7 +4,7 @@ namespace Granit.CustomerBalance.BackgroundJobs.Jobs;
 /// Handler for <see cref="CreditExpirationScanJob"/>. Delegates to
 /// <see cref="ICreditExpirationService"/> for expired promotional credit processing.
 /// </summary>
-internal static class CreditExpirationScanHandler
+public class CreditExpirationScanHandler
 {
     public static async Task HandleAsync(
         CreditExpirationScanJob _,

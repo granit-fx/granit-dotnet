@@ -7,8 +7,7 @@ namespace Granit.CustomerBalance.Wolverine.Handlers;
 /// Credits overpayment surplus to the tenant's balance account.
 /// Delegates to <see cref="IOverpaymentCreditService"/>.
 /// </summary>
-[global::Wolverine.Attributes.WolverineHandler]
-public static class OverpaymentCreditHandler
+public class OverpaymentCreditHandler
 {
     public static async Task HandleAsync(
         OverpaymentDetectedEto eto,

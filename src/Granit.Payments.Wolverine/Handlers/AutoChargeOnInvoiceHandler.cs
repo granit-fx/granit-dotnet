@@ -1,5 +1,5 @@
 using Granit.Invoicing.Events;
-using Granit.Payments.Wolverine.Internal;
+using Granit.Payments.Wolverine.Services;
 
 namespace Granit.Payments.Wolverine.Handlers;
 
@@ -7,8 +7,7 @@ namespace Granit.Payments.Wolverine.Handlers;
 /// Automatically initiates payment when an invoice is finalized with auto-collection.
 /// Delegates to <see cref="AutoChargeService"/> for all charge orchestration logic.
 /// </summary>
-[global::Wolverine.Attributes.WolverineHandler]
-public static class AutoChargeOnInvoiceHandler
+public class AutoChargeOnInvoiceHandler
 {
     public static Task HandleAsync(
         InvoiceFinalizedEto eto,
