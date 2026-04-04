@@ -2,6 +2,7 @@ using System.Diagnostics.Metrics;
 using Granit.Oidc.TokenManagement.Cache;
 using Granit.Oidc.TokenManagement.Extensions;
 using Granit.Oidc.TokenManagement.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
@@ -87,6 +88,7 @@ public sealed class TokenManagementServiceCollectionExtensionsTests
     private static void AddRequiredDependencies(ServiceCollection services)
     {
         services.AddLogging();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddSingleton<IFusionCache>(_ => new FusionCache(new FusionCacheOptions()));
         services.AddSingleton(Substitute.For<Granit.Oidc.Discovery.IDiscoveryDocumentService>());
         services.AddSingleton(Substitute.For<Granit.Oidc.DPoP.IDPoPProofService>());

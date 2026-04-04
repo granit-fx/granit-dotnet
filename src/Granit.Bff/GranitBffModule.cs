@@ -3,6 +3,8 @@ using Granit.Bff.Internal;
 using Granit.Bff.Options;
 using Granit.Caching;
 using Granit.Diagnostics;
+using Granit.Http.Resilience;
+using Granit.Http.Resilience.Extensions;
 using Granit.Modularity;
 using Granit.Oidc;
 using Granit.Timing;
@@ -26,6 +28,7 @@ namespace Granit.Bff;
 /// </remarks>
 [DependsOn(
     typeof(GranitCachingModule),
+    typeof(GranitHttpResilienceModule),
     typeof(GranitOidcModule),
     typeof(GranitTimingModule))]
 public sealed class GranitBffModule : GranitModule
@@ -45,7 +48,7 @@ public sealed class GranitBffModule : GranitModule
         context.Services.AddSingleton(pipelineCapture);
         context.Services.AddSingleton<IStartupFilter>(pipelineCapture);
         context.Services.AddTransient<InternalLoopbackHandler>();
-        context.Services.AddHttpClient("Granit.Bff")
+        context.Services.AddGranitHttpClient("Granit.Bff")
             .AddHttpMessageHandler<InternalLoopbackHandler>();
 
         GranitActivitySourceRegistry.Register(BffActivitySource.Name);

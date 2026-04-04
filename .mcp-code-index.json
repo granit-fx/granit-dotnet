@@ -277,6 +277,7 @@
       "name": "Granit.Bff",
       "deps": [
         "Granit.Caching",
+        "Granit.Http.Resilience",
         "Granit.Oidc",
         "Granit",
         "Granit.Timing"
@@ -1225,6 +1226,7 @@
       "name": "Granit.Oidc.TokenManagement",
       "deps": [
         "Granit.Caching",
+        "Granit.Http.Resilience",
         "Granit.Oidc",
         "Granit",
         "Granit.Timing"
@@ -6751,7 +6753,7 @@
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/GranitBffModule.cs",
-      "line": 31,
+      "line": 34,
       "members": [
         {
           "name": "ConfigureServices",
@@ -23706,7 +23708,7 @@
       "kind": "class",
       "project": "Granit.Oidc.TokenManagement",
       "file": "src/Granit.Oidc.TokenManagement/Extensions/TokenManagementServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitTokenManagement",

@@ -1,4 +1,5 @@
 using Granit.Diagnostics;
+using Granit.Http.Resilience.Extensions;
 using Granit.Oidc.TokenManagement.Cache;
 using Granit.Oidc.TokenManagement.Cache.Internal;
 using Granit.Oidc.TokenManagement.Diagnostics;
@@ -32,7 +33,7 @@ public static class TokenManagementServiceCollectionExtensions
         services.TryAddSingleton<ITokenRevocationService, TokenRevocationService>();
         services.TryAddSingleton<IClientCredentialsTokenCache, ClientCredentialsTokenCache>();
 
-        services.AddHttpClient("Granit.TokenManagement");
+        services.AddGranitHttpClient("Granit.TokenManagement");
 
         GranitActivitySourceRegistry.Register(TokenManagementActivitySource.Name);
 
@@ -59,7 +60,7 @@ public static class TokenManagementServiceCollectionExtensions
         services.AddGranitTokenManagement();
         services.Configure(name, configure);
 
-        return services.AddHttpClient(name)
+        return services.AddGranitHttpClient(name)
             .AddHttpMessageHandler(sp =>
             {
                 ClientCredentialsTokenHandler handler = ActivatorUtilities.CreateInstance<ClientCredentialsTokenHandler>(sp);
