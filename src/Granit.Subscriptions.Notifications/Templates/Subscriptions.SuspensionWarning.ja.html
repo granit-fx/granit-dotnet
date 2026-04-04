@@ -1,0 +1,7 @@
+<p>こんにちは、</p>
+<p><strong>{{ model.plan_name | html.escape }}</strong> プランのサブスクリプションは、支払いの繰り返し失敗により<strong>停止</strong>されました。</p>
+<p>プレミアム機能へのアクセスが制限されています。完全なアクセスを復元するには、お支払い方法を更新し、未払い残高を精算してください。</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing" class="btn">支払い方法を更新</a>
+</p>
+<p>これが誤りだと思われる場合は、サポートチームまでお問い合わせください。</p>

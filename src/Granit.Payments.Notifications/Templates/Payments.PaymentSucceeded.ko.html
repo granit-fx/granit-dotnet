@@ -1,0 +1,8 @@
+<p>안녕하세요,</p>
+<p>결제가 성공적으로 처리되었습니다:</p>
+<ul>
+  <li><strong>금액:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>공급자:</strong> {{ model.provider_name | html.escape }}</li>
+  <li><strong>날짜:</strong> {{ model.succeeded_at | to_user_time | date.to_string "%Y년 %m월 %d일 %H:%M" }}</li>
+</ul>
+<p>영수증은 곧 계정에서 확인하실 수 있습니다.</p>

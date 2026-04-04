@@ -30,7 +30,7 @@ internal sealed partial class EfProcessedWebhookEventStore(
             await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;
         }
-        catch (DbUpdateException)
+        catch (DbUpdateException ex) when (ex.InnerException is System.Data.Common.DbException { SqlState: "23505" })
         {
             Log.WebhookDuplicate(logger, providerName, providerEventId);
             return false;

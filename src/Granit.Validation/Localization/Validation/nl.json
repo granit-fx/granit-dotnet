@@ -69,6 +69,8 @@
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' heeft niet het juiste formaat.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' mag niet meer dan {ExpectedPrecision} cijfers bevatten, waarvan {ExpectedScale} decimalen.",
     "Granit:Validation:ScheduledAction:FutureDate": "De geplande datum moet in de toekomst liggen.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Geldig tot' moet na 'Geldig vanaf' liggen."
+    "Granit:Validation:ValidToAfterValidFrom": "'Geldig tot' moet na 'Geldig vanaf' liggen.",
+    "Granit:Validation:PaymentAmountOutOfRange": "Het betalingsbedrag valt buiten het toegestane bereik.",
+    "Granit:Validation:UrlMustBeHttps": "De URL moet HTTPS gebruiken."
   }
 }

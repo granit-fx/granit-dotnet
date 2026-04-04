@@ -99,7 +99,7 @@ public sealed class PuppeteerSharpRendererAdditionalTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public async Task RenderAsync_WithoutHeaderFooter_DoesNotDisplayHeaderFooter()
+    public async Task RenderAsync_DefaultOptions_DisplaysPageNumberFooter()
     {
         byte[] fakePdf = [0x25, 0x50, 0x44, 0x46];
         IPage page = Substitute.For<IPage>();
@@ -120,7 +120,8 @@ public sealed class PuppeteerSharpRendererAdditionalTests
         await renderer.RenderAsync("<h1>Test</h1>", DocumentFormat.Pdf, TestContext.Current.CancellationToken);
 
         await page.Received(1).PdfDataAsync(Arg.Is<PdfOptions>(o =>
-            o.DisplayHeaderFooter == false));
+            o.DisplayHeaderFooter == true
+            && o.FooterTemplate!.Contains("pageNumber")));
     }
 
     // -------------------------------------------------------------------------

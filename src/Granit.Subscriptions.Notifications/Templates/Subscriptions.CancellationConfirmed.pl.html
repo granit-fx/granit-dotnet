@@ -1,0 +1,10 @@
+<p>Witaj,</p>
+<p>Twoja subskrypcja planu <strong>{{ model.plan_name | html.escape }}</strong> została anulowana.</p>
+{{- if model.cancellation_reason != "" }}
+<p><strong>Powód:</strong> {{ model.cancellation_reason | html.escape }}</p>
+{{- end }}
+<p>Zachowasz dostęp do końca bieżącego okresu rozliczeniowego.</p>
+<p>Jeśli zmienisz zdanie, możesz ponownie subskrybować w dowolnym momencie.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Subskrybuj ponownie</a>
+</p>

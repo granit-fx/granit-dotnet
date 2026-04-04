@@ -75,6 +75,7 @@ listened to `PaymentSucceededEto`, it would never renew in this scenario.
 | [Invoicing](/dotnet/saas/invoicing/) | Invoices, credit notes, partial payments, tax, external accounting sync | 1 |
 | [Payments](/dotnet/saas/payments/) | Provider-agnostic payment processing, webhooks, refunds, disputes | 1 |
 | [Metering](/dotnet/saas/metering/) | Usage event recording, watermark aggregation, quota enforcement | 1 |
+| [Tax](/dotnet/saas/tax/) | Tax calculation (EU VAT, Stripe Tax), VIES validation, rate management | 2 |
 
 Each module has a `.Notifications` package with `NotificationType<TData>` definitions
 (15 types total: 6 Subscriptions, 4 Invoicing, 5 Payments). Email templates are Phase 2.
@@ -113,9 +114,9 @@ iDEAL → Mollie).
 
 | Phase | Scope | Status |
 |-------|-------|--------|
-| **1** | Subscriptions + Invoicing + Payments (Stripe full, Mollie stub) + Metering + Notifications | Implemented |
-| **2** | Mollie full, SEPA providers, Invoicing.Internal (PDF), Invoicing.Odoo, EU VAT, email templates | Planned |
-| **3** | Self-hosted dunning, credit/balance system, multi-currency, Granit.Commerce | Planned |
+| **1** | Subscriptions + Invoicing + Payments (Stripe + Mollie) + Metering + Notifications | Implemented |
+| **2** | SEPA providers, Invoicing.Internal (PDF), Invoicing.Odoo, Tax (EU VAT + Stripe Tax), dunning, multi-currency, pricing resolver | Implemented |
+| **3** | Email templates, credit/balance system, Open Banking (PSD2), Granit.Commerce | Planned |
 
 ## Compliance
 

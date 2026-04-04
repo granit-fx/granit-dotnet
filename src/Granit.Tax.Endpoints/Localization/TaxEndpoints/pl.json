@@ -1,0 +1,10 @@
+{
+  "culture": "pl",
+  "texts": {
+    "PermissionGroup:Tax": "Podatki",
+    "Permission:Tax.Rates.Read": "Wyświetl stawki podatkowe",
+    "Permission:Tax.Rates.Manage": "Zarządzaj nadpisaniami stawek podatkowych",
+    "Permission:Tax.Validations.Read": "Wyświetl buforowane walidacje numerów podatkowych",
+    "Permission:Tax.Validations.Execute": "Wykonaj walidację numeru podatkowego (VIES, Stripe)"
+  }
+}

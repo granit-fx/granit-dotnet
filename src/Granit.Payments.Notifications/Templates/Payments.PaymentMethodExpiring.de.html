@@ -1,0 +1,6 @@
+<p>Hallo,</p>
+<p>Ihre Zahlungsmethode <strong>{{ model.display_label | html.escape }}</strong> läuft in <strong>{{ model.days_remaining }} Tag(en)</strong> ab, im {{ model.expires_at | to_user_time | date.to_string "%m/%Y" }}.</p>
+<p>Bitte aktualisieren Sie Ihre Zahlungsmethode, um einen unterbrechungsfreien Service zu gewährleisten.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing/methods" class="btn">Zahlungsmethode aktualisieren</a>
+</p>

@@ -704,28 +704,16 @@
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
-      "granit.guids": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
-          "Microsoft.Extensions.Options": "[10.*, )"
-        }
-      },
       "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.invoicing": {
+      "granit.invoicing.abstractions": {
         "type": "Project",
         "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Granit.Workflow": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.localization": {
@@ -742,23 +730,24 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Payments.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
+        }
+      },
+      "granit.payments.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.payments.wolverine": {
         "type": "Project",
         "dependencies": {
-          "Granit.Invoicing": "[0.1.0-dev, )",
+          "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
           "Granit.Payments": "[0.1.0-dev, )",
           "Granit.Wolverine": "[0.1.0-dev, )",
           "WolverineFx": "[5.*, )"
-        }
-      },
-      "granit.queryengine.abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {
@@ -786,14 +775,6 @@
           "Granit.Validation": "[0.1.0-dev, )",
           "WolverineFx": "[5.*, )",
           "WolverineFx.FluentValidation": "[5.*, )"
-        }
-      },
-      "granit.workflow": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
         }
       },
       "FluentValidation": {

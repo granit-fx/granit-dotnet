@@ -69,6 +69,8 @@
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' non è nel formato corretto.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' non deve avere più di {ExpectedPrecision} cifre in totale, di cui {ExpectedScale} decimali.",
     "Granit:Validation:ScheduledAction:FutureDate": "La data programmata deve essere nel futuro.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Valido fino a' deve essere successivo a 'Valido da'."
+    "Granit:Validation:ValidToAfterValidFrom": "'Valido fino a' deve essere successivo a 'Valido da'.",
+    "Granit:Validation:PaymentAmountOutOfRange": "L'importo del pagamento è fuori dall'intervallo consentito.",
+    "Granit:Validation:UrlMustBeHttps": "L'URL deve utilizzare HTTPS."
   }
 }

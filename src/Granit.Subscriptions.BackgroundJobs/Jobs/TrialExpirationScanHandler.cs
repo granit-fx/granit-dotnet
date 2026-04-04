@@ -1,3 +1,5 @@
+using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.MultiTenancy;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Events;
@@ -19,35 +21,47 @@ internal static partial class TrialExpirationScanHandler
         IMessageBus messageBus,
         IClock clock,
         ICurrentTenant currentTenant,
+        IDataFilter dataFilter,
         ILogger<TrialExpirationScanJob> logger,
         CancellationToken cancellationToken)
     {
         DateTimeOffset now = clock.Now;
         DateTimeOffset warningThreshold = now.AddDays(3);
 
-        IReadOnlyList<Subscription> expiringTrials = await reader
-            .GetExpiringTrialsAsync(warningThreshold, cancellationToken)
-            .ConfigureAwait(false);
+        IReadOnlyList<Subscription> expiringTrials;
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            expiringTrials = await reader
+                .GetExpiringTrialsAsync(warningThreshold, cancellationToken)
+                .ConfigureAwait(false);
+        }
 
         foreach (Subscription sub in expiringTrials)
         {
-            using (currentTenant.Change(sub.TenantId))
+            try
             {
-                if (sub.TrialEndsAt <= now)
+                using (currentTenant.Change(sub.TenantId))
                 {
-                    if (sub.Expire())
+                    if (sub.TrialEndsAt <= now)
                     {
-                        await writer.UpdateAsync(sub, cancellationToken).ConfigureAwait(false);
-                        Log.TrialExpired(logger, sub.Id);
+                        if (sub.Expire())
+                        {
+                            await writer.UpdateAsync(sub, cancellationToken).ConfigureAwait(false);
+                            Log.TrialExpired(logger, sub.Id);
+                        }
+                    }
+                    else
+                    {
+                        int daysRemaining = (int)(sub.TrialEndsAt!.Value - now).TotalDays;
+                        await messageBus.PublishAsync(
+                            new TrialExpiringEvent(sub.Id, sub.PlanId, daysRemaining)).ConfigureAwait(false);
+                        Log.TrialExpiring(logger, sub.Id, daysRemaining);
                     }
                 }
-                else
-                {
-                    int daysRemaining = (int)(sub.TrialEndsAt!.Value - now).TotalDays;
-                    await messageBus.PublishAsync(
-                        new TrialExpiringEvent(sub.Id, daysRemaining)).ConfigureAwait(false);
-                    Log.TrialExpiring(logger, sub.Id, daysRemaining);
-                }
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                Log.TrialScanItemFailed(logger, sub.Id, ex);
             }
         }
     }
@@ -59,5 +73,8 @@ internal static partial class TrialExpirationScanHandler
 
         [LoggerMessage(Level = LogLevel.Information, Message = "Trial expiring in {DaysRemaining} day(s) for subscription {SubscriptionId}")]
         public static partial void TrialExpiring(ILogger logger, Guid subscriptionId, int daysRemaining);
+
+        [LoggerMessage(Level = LogLevel.Error, Message = "Failed to process trial scan for subscription {SubscriptionId}")]
+        public static partial void TrialScanItemFailed(ILogger logger, Guid subscriptionId, Exception exception);
     }
 }

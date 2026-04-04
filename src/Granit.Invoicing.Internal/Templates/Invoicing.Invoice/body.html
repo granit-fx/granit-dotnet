@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: #333; padding: 40px; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 40px; }
+        .title { font-size: 28px; font-weight: 700; color: #1a1a1a; }
+        .doc-type { font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+        .meta { margin-bottom: 30px; }
+        .meta-row { display: flex; gap: 40px; margin-bottom: 8px; }
+        .meta-label { font-weight: 600; min-width: 120px; color: #666; }
+        .address { margin-bottom: 30px; padding: 15px; background: #f8f9fa; border-radius: 4px; }
+        .address-title { font-weight: 600; margin-bottom: 8px; color: #666; text-transform: uppercase; font-size: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th { background: #f8f9fa; padding: 10px 12px; text-align: left; font-weight: 600; border-bottom: 2px solid #dee2e6; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+        .text-right { text-align: right; }
+        .totals { float: right; width: 280px; }
+        .total-row { display: flex; justify-content: space-between; padding: 6px 0; }
+        .total-row.grand { font-size: 16px; font-weight: 700; border-top: 2px solid #333; padding-top: 10px; margin-top: 6px; }
+        .footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #eee; font-size: 10px; color: #999; }
+        .credit-note { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <div class="title">{{ document_type }}</div>
+            <div class="doc-type">{{ invoice_number }}</div>
+        </div>
+    </div>
+
+    <div class="meta">
+        <div class="meta-row">
+            <span class="meta-label">Date:</span>
+            <span>{{ issued_at | date.to_string '%d/%m/%Y' }}</span>
+        </div>
+        {{ if due_at }}
+        <div class="meta-row">
+            <span class="meta-label">Due date:</span>
+            <span>{{ due_at | date.to_string '%d/%m/%Y' }}</span>
+        </div>
+        {{ end }}
+        {{ if credit_note_reason }}
+        <div class="meta-row credit-note">
+            <span class="meta-label">Reason:</span>
+            <span>{{ credit_note_reason }}</span>
+        </div>
+        {{ end }}
+    </div>
+
+    {{ if billing_address }}
+    <div class="address">
+        <div class="address-title">Bill to</div>
+        {{ if billing_address.company_name }}<div><strong>{{ billing_address.company_name }}</strong></div>{{ end }}
+        {{ if billing_address.street }}<div>{{ billing_address.street }}</div>{{ end }}
+        {{ if billing_address.postal_code }}<div>{{ billing_address.postal_code }} {{ billing_address.city }}</div>{{ end }}
+        {{ if billing_address.country }}<div>{{ billing_address.country }}</div>{{ end }}
+        {{ if billing_address.vat_number }}<div>VAT: {{ billing_address.vat_number }}</div>{{ end }}
+    </div>
+    {{ end }}
+
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th class="text-right">Qty</th>
+                <th class="text-right">Unit price</th>
+                <th class="text-right">Tax</th>
+                <th class="text-right">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ for item in line_items }}
+            <tr>
+                <td>{{ item.description }}</td>
+                <td class="text-right">{{ item.quantity }}</td>
+                <td class="text-right">{{ item.unit_price | math.format '0.00' }} {{ currency }}</td>
+                <td class="text-right">{{ if item.tax_rate }}{{ item.tax_rate | math.times 100 | math.format '0.00' }}%{{ else }}-{{ end }}</td>
+                <td class="text-right">{{ item.amount | math.format '0.00' }} {{ currency }}</td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <div class="total-row">
+            <span>Subtotal</span>
+            <span>{{ subtotal | math.format '0.00' }} {{ currency }}</span>
+        </div>
+        <div class="total-row">
+            <span>Tax</span>
+            <span>{{ tax_total | math.format '0.00' }} {{ currency }}</span>
+        </div>
+        <div class="total-row grand">
+            <span>Total</span>
+            <span>{{ total | math.format '0.00' }} {{ currency }}</span>
+        </div>
+        {{ if amount_paid > 0 }}
+        <div class="total-row">
+            <span>Paid</span>
+            <span>-{{ amount_paid | math.format '0.00' }} {{ currency }}</span>
+        </div>
+        <div class="total-row">
+            <span>Remaining</span>
+            <span>{{ amount_remaining | math.format '0.00' }} {{ currency }}</span>
+        </div>
+        {{ end }}
+    </div>
+
+    <div style="clear: both;"></div>
+
+</body>
+</html>

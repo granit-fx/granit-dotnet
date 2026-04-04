@@ -1,0 +1,6 @@
+<p>Dobrý den,</p>
+<p>Vaše platební metoda <strong>{{ model.display_label | html.escape }}</strong> vyprší za <strong>{{ model.days_remaining }} den/dní</strong>, v {{ model.expires_at | to_user_time | date.to_string "%m/%Y" }}.</p>
+<p>Aktualizujte svou platební metodu, abyste zajistili nepřerušenou službu.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing/methods" class="btn">Aktualizovat platební metodu</a>
+</p>

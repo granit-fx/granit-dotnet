@@ -1,0 +1,10 @@
+{
+  "culture": "it",
+  "texts": {
+    "PermissionGroup:Tax": "Imposte",
+    "Permission:Tax.Rates.Read": "Visualizzare le aliquote fiscali",
+    "Permission:Tax.Rates.Manage": "Gestire le sovrascritture delle aliquote fiscali",
+    "Permission:Tax.Validations.Read": "Visualizzare le validazioni di numeri fiscali memorizzate",
+    "Permission:Tax.Validations.Execute": "Eseguire la validazione di un numero fiscale (VIES, Stripe)"
+  }
+}

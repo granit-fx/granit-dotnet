@@ -1,0 +1,6 @@
+<p>Dzień dobry,</p>
+<p>Twoja metoda płatności <strong>{{ model.display_label | html.escape }}</strong> wygaśnie za <strong>{{ model.days_remaining }} dzień/dni</strong>, w {{ model.expires_at | to_user_time | date.to_string "%m/%Y" }}.</p>
+<p>Zaktualizuj swoją metodę płatności, aby zapewnić nieprzerwaną usługę.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing/methods" class="btn">Zaktualizuj metodę płatności</a>
+</p>

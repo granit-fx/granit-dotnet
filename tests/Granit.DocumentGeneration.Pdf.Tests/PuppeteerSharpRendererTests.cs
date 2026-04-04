@@ -254,7 +254,7 @@ public sealed class PuppeteerSharpRendererTests
         await page.Received(1).PdfDataAsync(Arg.Is<PdfOptions>(o =>
             o.DisplayHeaderFooter == true &&
             o.HeaderTemplate == "<div>Header Only</div>" &&
-            o.FooterTemplate == "<span></span>"));
+            o.FooterTemplate!.Contains("pageNumber")));
     }
 
     [Fact]

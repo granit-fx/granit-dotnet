@@ -1,0 +1,8 @@
+<p>您好，</p>
+<p>您的账户上已发起一项付款争议（退单）：</p>
+<ul>
+  <li><strong>金额：</strong>{{ model.amount }} {{ model.currency }}</li>
+  <li><strong>原因：</strong>{{ model.reason | html.escape }}</li>
+</ul>
+<p>我们的团队已收到通知，并将审核此争议。我们可能会联系您以获取更多信息。</p>
+<p>如果您认为此争议是合理的，则无需采取任何操作。</p>

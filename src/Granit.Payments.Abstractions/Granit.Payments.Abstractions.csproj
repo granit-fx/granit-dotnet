@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Payments.Abstractions</PackageId>
+    <Description>Inter-module contracts for Granit.Payments: integration events (PaymentSucceededEto, PaymentFailedEto, RefundCompletedEto, DisputeOpenedEto) and commands (InitiatePaymentCommand). Reference this package instead of Granit.Payments when you only need payment contracts.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>

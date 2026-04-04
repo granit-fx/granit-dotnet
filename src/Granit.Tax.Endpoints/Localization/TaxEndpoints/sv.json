@@ -1,0 +1,10 @@
+{
+  "culture": "sv",
+  "texts": {
+    "PermissionGroup:Tax": "Skatter",
+    "Permission:Tax.Rates.Read": "Visa skattesatser",
+    "Permission:Tax.Rates.Manage": "Hantera åsidosättningar av skattesatser",
+    "Permission:Tax.Validations.Read": "Visa cachade valideringar av skattenummer",
+    "Permission:Tax.Validations.Execute": "Utför validering av skattenummer (VIES, Stripe)"
+  }
+}

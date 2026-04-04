@@ -2,34 +2,44 @@ using Granit.Invoicing.Commands;
 using Granit.Invoicing.Domain;
 using Granit.Metering.Events;
 using Granit.MultiTenancy;
+using Granit.Subscriptions.Domain;
 using Microsoft.Extensions.Logging;
 using Wolverine;
 
 namespace Granit.Subscriptions.Wolverine.Handlers;
 
 /// <summary>
-/// Handles <see cref="UsageSummaryReadyEto"/> from Granit.Metering.
-/// Combines usage data with the active subscription's fixed charges
-/// to create a single invoice via <see cref="CreateInvoiceCommand"/>.
+/// Creates consolidated invoices (fixed + usage) for PerUnit/Tiered plans.
+/// This is the exclusive invoice creator for plans with usage components —
+/// <see cref="BillingCycleCompletedHandler"/> skips these plans to prevent split-brain.
 /// </summary>
-/// <remarks>
-/// This positions Subscriptions as the billing cycle orchestrator (Stripe Billing model):
-/// fixed charges (plan price) + usage charges (from Metering) → one invoice.
-/// </remarks>
 internal static partial class UsageSummaryReadyHandler
 {
     public static async Task HandleAsync(
         UsageSummaryReadyEto eto,
         ISubscriptionReader subscriptionReader,
+        IPlanReader planReader,
+        IPricingResolver pricingResolver,
         IMessageBus messageBus,
         ICurrentTenant currentTenant,
         ILogger<UsageSummaryReadyEto> logger,
         CancellationToken cancellationToken)
     {
+        if (eto.TenantId == Guid.Empty)
+        {
+            Log.InvalidEto(logger, "TenantId is empty");
+            return;
+        }
+
+        if (eto.PeriodEnd <= eto.PeriodStart)
+        {
+            Log.InvalidEto(logger, "PeriodEnd must be after PeriodStart");
+            return;
+        }
+
         using (currentTenant.Change(eto.TenantId))
         {
-            // Find the active subscription for this tenant
-            Domain.Subscription? subscription = await subscriptionReader
+            Subscription? subscription = await subscriptionReader
                 .GetActiveForTenantAsync(eto.TenantId, cancellationToken)
                 .ConfigureAwait(false);
 
@@ -39,27 +49,54 @@ internal static partial class UsageSummaryReadyHandler
                 return;
             }
 
-            // Build usage line item from metering data
-            var usageLineItem = new CreateInvoiceLineItem(
-                Description: $"{eto.MeterName}: {eto.AggregatedValue} {eto.Unit}",
-                Quantity: eto.AggregatedValue,
-                UnitPrice: 0m, // Price resolution depends on plan pricing tiers — Phase 2
-                SourceType: InvoiceSourceType.Usage,
-                SourceId: eto.MeterDefinitionId.ToString());
+            Plan? plan = await planReader
+                .GetByIdAsync(subscription.PlanId, cancellationToken)
+                .ConfigureAwait(false);
 
-            // Create invoice command with usage line items
-            // In Phase 2, this will also include fixed plan charges
+            if (plan is null)
+            {
+                Log.PlanNotFound(logger, subscription.PlanId);
+                return;
+            }
+
+            var lineItems = new List<CreateInvoiceLineItem>();
+
+            // Fixed plan charge (base price)
+            decimal basePrice = await pricingResolver.ResolveBasePriceAsync(
+                subscription.PlanId, subscription.Currency, plan.DefaultInterval, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (basePrice > 0)
+            {
+                lineItems.Add(new CreateInvoiceLineItem(
+                    $"{plan.Name} — {plan.DefaultInterval}",
+                    1, basePrice,
+                    InvoiceSourceType.Subscription,
+                    subscription.Id.ToString()));
+            }
+
+            // Usage charge
+            decimal unitPrice = await pricingResolver.ResolveUsageUnitPriceAsync(
+                subscription.PlanId, subscription.Currency, plan.DefaultInterval,
+                eto.MeterDefinitionId.ToString(), cancellationToken)
+                .ConfigureAwait(false);
+
+            lineItems.Add(new CreateInvoiceLineItem(
+                $"{eto.MeterName}: {eto.AggregatedValue} {eto.Unit}",
+                eto.AggregatedValue, unitPrice,
+                InvoiceSourceType.Usage,
+                eto.MeterDefinitionId.ToString()));
+
             var command = new CreateInvoiceCommand(
                 TenantId: eto.TenantId,
-                Currency: "EUR",
+                Currency: subscription.Currency,
                 CollectionMethod: CollectionMethod.Auto,
                 BillingReason: BillingReason.SubscriptionCycle,
-                LineItems: [usageLineItem],
+                LineItems: lineItems,
                 PeriodStart: eto.PeriodStart,
                 PeriodEnd: eto.PeriodEnd);
 
-            await messageBus.SendAsync(command).ConfigureAwait(false);
-
+            await messageBus.PublishAsync(command).ConfigureAwait(false);
             Log.UsageInvoiceCreated(logger, eto.TenantId, eto.MeterName, eto.AggregatedValue);
         }
     }
@@ -71,5 +108,11 @@ internal static partial class UsageSummaryReadyHandler
 
         [LoggerMessage(Level = LogLevel.Information, Message = "Usage invoice created for tenant {TenantId}: {MeterName} = {Value}")]
         public static partial void UsageInvoiceCreated(ILogger logger, Guid tenantId, string meterName, decimal value);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Invalid UsageSummaryReadyEto received: {Reason}")]
+        public static partial void InvalidEto(ILogger logger, string reason);
+
+        [LoggerMessage(Level = LogLevel.Warning, Message = "Plan {PlanId} not found for usage invoice")]
+        public static partial void PlanNotFound(ILogger logger, Guid planId);
     }
 }

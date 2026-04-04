@@ -831,9 +831,17 @@
       "name": "Granit.Invoicing",
       "deps": [
         "Granit",
+        "Granit.Invoicing.Abstractions",
         "Granit.Guids",
         "Granit.Timing",
         "Granit.Workflow"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Invoicing.Abstractions",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -865,10 +873,29 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Invoicing.Internal",
+      "deps": [
+        "Granit.DocumentGeneration",
+        "Granit.Invoicing",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Invoicing.Notifications",
       "deps": [
         "Granit.Invoicing",
-        "Granit.Notifications.Abstractions"
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Invoicing.Odoo",
+      "deps": [
+        "Granit.Guids",
+        "Granit.Http.Resilience",
+        "Granit.Invoicing"
       ],
       "framework": "net10.0"
     },
@@ -940,7 +967,15 @@
       "name": "Granit.Metering",
       "deps": [
         "Granit",
+        "Granit.Metering.Abstractions",
         "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Metering.Abstractions",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -967,14 +1002,6 @@
       "deps": [
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Metering"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Metering.Wolverine",
-      "deps": [
-        "Granit.Metering",
-        "Granit.Wolverine"
       ],
       "framework": "net10.0"
     },
@@ -1288,7 +1315,15 @@
       "name": "Granit.Payments",
       "deps": [
         "Granit",
+        "Granit.Payments.Abstractions",
         "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Payments.Abstractions",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -1296,6 +1331,7 @@
       "name": "Granit.Payments.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Guids",
         "Granit.Http.Idempotency",
         "Granit.Payments",
         "Granit.Validation"
@@ -1322,12 +1358,44 @@
       "name": "Granit.Payments.Notifications",
       "deps": [
         "Granit.Payments",
-        "Granit.Notifications.Abstractions"
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Payments.Stripe",
+      "name": "Granit.Payments.SepaDirectDebit",
+      "deps": [
+        "Granit",
+        "Granit.Guids",
+        "Granit.Payments",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Payments.SepaDirectDebit.GoCardless",
+      "deps": [
+        "Granit.Payments.SepaDirectDebit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Payments.SepaDirectDebit.Internal",
+      "deps": [
+        "Granit.Payments.SepaDirectDebit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Payments.SepaDirectDebit.Twikey",
+      "deps": [
+        "Granit.Payments.SepaDirectDebit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Payments.SepaTransfer",
       "deps": [
         "Granit.Guids",
         "Granit.Payments"
@@ -1335,9 +1403,18 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Payments.Stripe",
+      "deps": [
+        "Granit.Guids",
+        "Granit.Http.Resilience",
+        "Granit.Payments"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Payments.Wolverine",
       "deps": [
-        "Granit.Invoicing",
+        "Granit.Invoicing.Abstractions",
         "Granit.Payments",
         "Granit.Wolverine"
       ],
@@ -1669,17 +1746,64 @@
       "name": "Granit.Subscriptions.Notifications",
       "deps": [
         "Granit.Subscriptions",
-        "Granit.Notifications.Abstractions"
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
     {
       "name": "Granit.Subscriptions.Wolverine",
       "deps": [
-        "Granit.Invoicing",
-        "Granit.Metering",
+        "Granit.Invoicing.Abstractions",
+        "Granit.Metering.Abstractions",
+        "Granit.Payments.Abstractions",
         "Granit.Subscriptions",
         "Granit.Wolverine"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Tax",
+      "deps": [
+        "Granit",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Tax.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Tax",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Tax.EntityFrameworkCore",
+      "deps": [
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Tax"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Tax.Internal",
+      "deps": [
+        "Granit.Caching",
+        "Granit.Http.Resilience",
+        "Granit.Invoicing",
+        "Granit.Tax",
+        "Granit.Validation.Europe"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Tax.Stripe",
+      "deps": [
+        "Granit.Http.Resilience",
+        "Granit.Invoicing",
+        "Granit.Tax"
       ],
       "framework": "net10.0"
     },
@@ -10753,6 +10877,12 @@
           "returnType": "string?"
         },
         {
+          "name": "PrintBackground",
+          "kind": "property",
+          "signature": "bool PrintBackground",
+          "returnType": "bool"
+        },
+        {
           "name": "ChromiumExecutablePath",
           "kind": "property",
           "signature": "string? ChromiumExecutablePath",
@@ -15942,6 +16072,12 @@
           "returnType": "void"
         },
         {
+          "name": "RecordEmailChangeRequest",
+          "kind": "method",
+          "signature": "RecordEmailChangeRequest(string? tenantId)",
+          "returnType": "void"
+        },
+        {
           "name": "RecordExternalLogin",
           "kind": "method",
           "signature": "RecordExternalLogin(string? tenantId, string provider, bool isNewUser)",
@@ -16012,6 +16148,24 @@
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountAuthenticatorKeyResponse.cs",
       "line": 8,
+      "members": []
+    },
+    {
+      "name": "AccountChangeEmailRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountChangeEmailRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountChangeEmailRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "AccountConfirmEmailChangeRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.AccountConfirmEmailChangeRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountConfirmEmailChangeRequest.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -16814,6 +16968,28 @@
           "kind": "method",
           "signature": "InitiateAsync(string userId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IEmailChangeService",
+      "fqn": "Granit.Identity.Local.Services.IEmailChangeService",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IEmailChangeService.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RequestChangeAsync",
+          "kind": "method",
+          "signature": "RequestChangeAsync(string userId, string newEmail, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "ConfirmChangeAsync",
+          "kind": "method",
+          "signature": "ConfirmChangeAsync(string userId, string newEmail, string token, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
     },
@@ -17621,18 +17797,18 @@
       "name": "CreateInvoiceCommand",
       "fqn": "Granit.Invoicing.Commands.CreateInvoiceCommand",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Commands/CreateInvoiceCommand.cs",
-      "line": 16,
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Commands/CreateInvoiceCommand.cs",
+      "line": 17,
       "members": []
     },
     {
       "name": "CreateInvoiceLineItem",
       "fqn": "Granit.Invoicing.Commands.CreateInvoiceLineItem",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Commands/CreateInvoiceCommand.cs",
-      "line": 31,
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Commands/CreateInvoiceCommand.cs",
+      "line": 33,
       "members": []
     },
     {
@@ -17710,8 +17886,8 @@
       "name": "BillingReason",
       "fqn": "Granit.Invoicing.Domain.BillingReason",
       "kind": "enum",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Domain/BillingReason.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Domain/BillingReason.cs",
       "line": 4,
       "members": []
     },
@@ -17719,8 +17895,8 @@
       "name": "CollectionMethod",
       "fqn": "Granit.Invoicing.Domain.CollectionMethod",
       "kind": "enum",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Domain/CollectionMethod.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Domain/CollectionMethod.cs",
       "line": 4,
       "members": []
     },
@@ -17820,8 +17996,8 @@
       "name": "InvoiceDocumentType",
       "fqn": "Granit.Invoicing.Domain.InvoiceDocumentType",
       "kind": "enum",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Domain/InvoiceDocumentType.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Domain/InvoiceDocumentType.cs",
       "line": 4,
       "members": []
     },
@@ -17873,8 +18049,8 @@
       "name": "InvoiceSourceType",
       "fqn": "Granit.Invoicing.Domain.InvoiceSourceType",
       "kind": "enum",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Domain/InvoiceSourceType.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Domain/InvoiceSourceType.cs",
       "line": 4,
       "members": []
     },
@@ -17961,6 +18137,33 @@
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Dtos/TaxRequest.cs",
       "line": 15,
+      "members": []
+    },
+    {
+      "name": "InvoiceCreateRequest",
+      "fqn": "Granit.Invoicing.Endpoints.Dtos.InvoiceCreateRequest",
+      "kind": "record",
+      "project": "Granit.Invoicing.Endpoints",
+      "file": "src/Granit.Invoicing.Endpoints/Dtos/InvoiceCreateRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoiceLineItemResponse",
+      "fqn": "Granit.Invoicing.Endpoints.Dtos.InvoiceLineItemResponse",
+      "kind": "record",
+      "project": "Granit.Invoicing.Endpoints",
+      "file": "src/Granit.Invoicing.Endpoints/Dtos/InvoiceResponse.cs",
+      "line": 54,
+      "members": []
+    },
+    {
+      "name": "InvoiceResponse",
+      "fqn": "Granit.Invoicing.Endpoints.Dtos.InvoiceResponse",
+      "kind": "record",
+      "project": "Granit.Invoicing.Endpoints",
+      "file": "src/Granit.Invoicing.Endpoints/Dtos/InvoiceResponse.cs",
+      "line": 6,
       "members": []
     },
     {
@@ -18076,8 +18279,8 @@
       "name": "CreditNoteIssuedEto",
       "fqn": "Granit.Invoicing.Events.CreditNoteIssuedEto",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Events/CreditNoteIssuedEto.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/CreditNoteIssuedEto.cs",
       "line": 6,
       "members": []
     },
@@ -18094,8 +18297,8 @@
       "name": "InvoiceFinalizedEto",
       "fqn": "Granit.Invoicing.Events.InvoiceFinalizedEto",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Events/InvoiceFinalizedEto.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceFinalizedEto.cs",
       "line": 7,
       "members": []
     },
@@ -18103,8 +18306,8 @@
       "name": "InvoiceOverdueEto",
       "fqn": "Granit.Invoicing.Events.InvoiceOverdueEto",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Events/InvoiceOverdueEto.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceOverdueEto.cs",
       "line": 6,
       "members": []
     },
@@ -18112,8 +18315,8 @@
       "name": "InvoicePaidEto",
       "fqn": "Granit.Invoicing.Events.InvoicePaidEto",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Events/InvoicePaidEto.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoicePaidEto.cs",
       "line": 6,
       "members": []
     },
@@ -18121,8 +18324,8 @@
       "name": "InvoiceUncollectibleEto",
       "fqn": "Granit.Invoicing.Events.InvoiceUncollectibleEto",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Events/InvoiceUncollectibleEto.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceUncollectibleEto.cs",
       "line": 6,
       "members": []
     },
@@ -18130,8 +18333,8 @@
       "name": "InvoiceVoidedEto",
       "fqn": "Granit.Invoicing.Events.InvoiceVoidedEto",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Events/InvoiceVoidedEto.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceVoidedEto.cs",
       "line": 6,
       "members": []
     },
@@ -18139,8 +18342,8 @@
       "name": "OverpaymentDetectedEto",
       "fqn": "Granit.Invoicing.Events.OverpaymentDetectedEto",
       "kind": "record",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Events/OverpaymentDetectedEto.cs",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/OverpaymentDetectedEto.cs",
       "line": 9,
       "members": []
     },
@@ -18321,6 +18524,22 @@
       ]
     },
     {
+      "name": "GranitInvoicingInternalModule",
+      "fqn": "Granit.Invoicing.Internal.GranitInvoicingInternalModule",
+      "kind": "class",
+      "project": "Granit.Invoicing.Internal",
+      "file": "src/Granit.Invoicing.Internal/GranitInvoicingInternalModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "CreditNoteIssuedNotificationData",
       "fqn": "Granit.Invoicing.Notifications.CreditNoteIssuedNotificationData",
       "kind": "record",
@@ -18357,8 +18576,15 @@
       "kind": "class",
       "project": "Granit.Invoicing.Notifications",
       "file": "src/Granit.Invoicing.Notifications/GranitInvoicingNotificationsModule.cs",
-      "line": 13,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "InvoiceIssuedNotificationData",
@@ -18462,6 +18688,100 @@
           "kind": "property",
           "signature": "NotificationSeverity DefaultSeverity",
           "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "OdooPartnerMapping",
+      "fqn": "Granit.Invoicing.Odoo.Domain.OdooPartnerMapping",
+      "kind": "class",
+      "project": "Granit.Invoicing.Odoo",
+      "file": "src/Granit.Invoicing.Odoo/Domain/OdooPartnerMapping.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid tenantId, int odooPartnerId)",
+          "returnType": "OdooPartnerMapping"
+        }
+      ]
+    },
+    {
+      "name": "GranitInvoicingOdooModule",
+      "fqn": "Granit.Invoicing.Odoo.GranitInvoicingOdooModule",
+      "kind": "class",
+      "project": "Granit.Invoicing.Odoo",
+      "file": "src/Granit.Invoicing.Odoo/GranitInvoicingOdooModule.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IOdooPartnerMappingStore",
+      "fqn": "Granit.Invoicing.Odoo.IOdooPartnerMappingStore",
+      "kind": "interface",
+      "project": "Granit.Invoicing.Odoo",
+      "file": "src/Granit.Invoicing.Odoo/IOdooPartnerMappingStore.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "GetByTenantIdAsync",
+          "kind": "method",
+          "signature": "GetByTenantIdAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<OdooPartnerMapping?>"
+        },
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(OdooPartnerMapping mapping, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "OdooOptions",
+      "fqn": "Granit.Invoicing.Odoo.Options.OdooOptions",
+      "kind": "class",
+      "project": "Granit.Invoicing.Odoo",
+      "file": "src/Granit.Invoicing.Odoo/Options/OdooOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "BaseUrl",
+          "kind": "property",
+          "signature": "string BaseUrl",
+          "returnType": "string"
+        },
+        {
+          "name": "Database",
+          "kind": "property",
+          "signature": "string Database",
+          "returnType": "string"
+        },
+        {
+          "name": "ApiKey",
+          "kind": "property",
+          "signature": "string ApiKey",
+          "returnType": "string"
+        },
+        {
+          "name": "Login",
+          "kind": "property",
+          "signature": "string Login",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultJournalId",
+          "kind": "property",
+          "signature": "int DefaultJournalId",
+          "returnType": "int"
         }
       ]
     },
@@ -19723,12 +20043,75 @@
       ]
     },
     {
+      "name": "MeterDefinitionCreateRequest",
+      "fqn": "Granit.Metering.Endpoints.Dtos.MeterDefinitionCreateRequest",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/MeterDefinitionCreateRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "MeterDefinitionResponse",
+      "fqn": "Granit.Metering.Endpoints.Dtos.MeterDefinitionResponse",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/MeterDefinitionResponse.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "MeterDefinitionUpdateRequest",
+      "fqn": "Granit.Metering.Endpoints.Dtos.MeterDefinitionUpdateRequest",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/MeterDefinitionUpdateRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "MeterEventRequest",
+      "fqn": "Granit.Metering.Endpoints.Dtos.MeterEventRequest",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/MeterEventRequest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "MeteringQuotaStatusResponse",
+      "fqn": "Granit.Metering.Endpoints.Dtos.MeteringQuotaStatusResponse",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/MeteringQuotaStatusResponse.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "RecordUsageRequest",
+      "fqn": "Granit.Metering.Endpoints.Dtos.RecordUsageRequest",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/MeterEventRequest.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "UsageAggregateResponse",
+      "fqn": "Granit.Metering.Endpoints.Dtos.UsageAggregateResponse",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/UsageAggregateResponse.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "MeteringEndpointRouteBuilderExtensions",
       "fqn": "Granit.Metering.Endpoints.Extensions.MeteringEndpointRouteBuilderExtensions",
       "kind": "class",
       "project": "Granit.Metering.Endpoints",
       "file": "src/Granit.Metering.Endpoints/Extensions/MeteringEndpointRouteBuilderExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitMetering",
@@ -19835,8 +20218,8 @@
       "name": "QuotaExceededEto",
       "fqn": "Granit.Metering.Events.QuotaExceededEto",
       "kind": "record",
-      "project": "Granit.Metering",
-      "file": "src/Granit.Metering/Events/QuotaExceededEto.cs",
+      "project": "Granit.Metering.Abstractions",
+      "file": "src/Granit.Metering.Abstractions/Events/QuotaExceededEto.cs",
       "line": 6,
       "members": []
     },
@@ -19844,8 +20227,8 @@
       "name": "QuotaThresholdReachedEto",
       "fqn": "Granit.Metering.Events.QuotaThresholdReachedEto",
       "kind": "record",
-      "project": "Granit.Metering",
-      "file": "src/Granit.Metering/Events/QuotaThresholdReachedEto.cs",
+      "project": "Granit.Metering.Abstractions",
+      "file": "src/Granit.Metering.Abstractions/Events/QuotaThresholdReachedEto.cs",
       "line": 6,
       "members": []
     },
@@ -19853,8 +20236,8 @@
       "name": "UsageSummaryReadyEto",
       "fqn": "Granit.Metering.Events.UsageSummaryReadyEto",
       "kind": "record",
-      "project": "Granit.Metering",
-      "file": "src/Granit.Metering/Events/UsageSummaryReadyEto.cs",
+      "project": "Granit.Metering.Abstractions",
+      "file": "src/Granit.Metering.Abstractions/Events/UsageSummaryReadyEto.cs",
       "line": 9,
       "members": []
     },
@@ -19864,7 +20247,7 @@
       "kind": "class",
       "project": "Granit.Metering",
       "file": "src/Granit.Metering/Extensions/MeteringHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitMetering",
@@ -19995,6 +20378,22 @@
       ]
     },
     {
+      "name": "IQuotaLimitProvider",
+      "fqn": "Granit.Metering.IQuotaLimitProvider",
+      "kind": "interface",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/IQuotaLimitProvider.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "GetLimitAsync",
+          "kind": "method",
+          "signature": "GetLimitAsync(Guid tenantId, MeterDefinitionId meterId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<decimal?>"
+        }
+      ]
+    },
+    {
       "name": "IUsageReader",
       "fqn": "Granit.Metering.IUsageReader",
       "kind": "interface",
@@ -20035,17 +20434,14 @@
           "kind": "property",
           "signature": "decimal ThresholdPercentage",
           "returnType": "decimal"
+        },
+        {
+          "name": "MaxEventQuantity",
+          "kind": "property",
+          "signature": "decimal MaxEventQuantity",
+          "returnType": "decimal"
         }
       ]
-    },
-    {
-      "name": "GranitMeteringWolverineModule",
-      "fqn": "Granit.Metering.Wolverine.GranitMeteringWolverineModule",
-      "kind": "class",
-      "project": "Granit.Metering.Wolverine",
-      "file": "src/Granit.Metering.Wolverine/GranitMeteringWolverineModule.cs",
-      "line": 12,
-      "members": []
     },
     {
       "name": "ApplicationInitializationContext",
@@ -20640,6 +21036,12 @@
       "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationDeliveryWriter.cs",
       "line": 13,
       "members": [
+        {
+          "name": "HasBeenDeliveredAsync",
+          "kind": "method",
+          "signature": "HasBeenDeliveredAsync(Guid deliveryId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
         {
           "name": "RecordAsync",
           "kind": "method",
@@ -24629,9 +25031,9 @@
       "name": "InitiatePaymentCommand",
       "fqn": "Granit.Payments.Commands.InitiatePaymentCommand",
       "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Commands/InitiatePaymentCommand.cs",
-      "line": 6,
+      "project": "Granit.Payments.Abstractions",
+      "file": "src/Granit.Payments.Abstractions/Commands/InitiatePaymentCommand.cs",
+      "line": 11,
       "members": []
     },
     {
@@ -24658,7 +25060,7 @@
       "kind": "record",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Contracts/PaymentAttachMethodRequest.cs",
-      "line": 6,
+      "line": 4,
       "members": []
     },
     {
@@ -24694,7 +25096,7 @@
       "kind": "record",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Contracts/PaymentCheckoutSessionRequest.cs",
-      "line": 6,
+      "line": 4,
       "members": []
     },
     {
@@ -24712,7 +25114,7 @@
       "kind": "record",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Contracts/PaymentProviderMethod.cs",
-      "line": 6,
+      "line": 4,
       "members": []
     },
     {
@@ -24758,7 +25160,14 @@
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Diagnostics/PaymentsMetrics.cs",
       "line": 10,
-      "members": []
+      "members": [
+        {
+          "name": "RecordRefundCompleted",
+          "kind": "method",
+          "signature": "RecordRefundCompleted(string? tenantId)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "Dispute",
@@ -24820,14 +25229,20 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, PaymentMethodType type, string providerName, string providerMethodId, string displayLabel, DateTimeOffset? expiresAt = null)",
+          "signature": "Create(Guid id, Guid tenantId, string type, string providerName, string providerMethodId, string displayLabel, DateTimeOffset? expiresAt = null)",
           "returnType": "PaymentMethod"
         },
         {
           "name": "Type",
           "kind": "property",
-          "signature": "PaymentMethodType Type",
-          "returnType": "PaymentMethodType"
+          "signature": "string Type",
+          "returnType": "string"
+        },
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
         },
         {
           "name": "ProviderMethodId",
@@ -24856,13 +25271,29 @@
       ]
     },
     {
-      "name": "PaymentMethodType",
-      "fqn": "Granit.Payments.Domain.PaymentMethodType",
+      "name": "PaymentMethodCategory",
+      "fqn": "Granit.Payments.Domain.PaymentMethodCategory",
       "kind": "enum",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Domain/PaymentMethodType.cs",
-      "line": 4,
+      "line": 6,
       "members": []
+    },
+    {
+      "name": "PaymentMethods",
+      "fqn": "Granit.Payments.Domain.PaymentMethods",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Domain/PaymentMethodType.cs",
+      "line": 42,
+      "members": [
+        {
+          "name": "GetCategory",
+          "kind": "method",
+          "signature": "GetCategory(string methodType)",
+          "returnType": "PaymentMethodCategory"
+        }
+      ]
     },
     {
       "name": "PaymentStatus",
@@ -24884,7 +25315,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, Guid invoiceId, decimal amount, string currency, string providerName, string idempotencyKey)",
+          "signature": "Create(Guid id, Guid tenantId, Guid invoiceId, decimal amount, string currency, string providerName, string methodType, string idempotencyKey)",
           "returnType": "PaymentTransaction"
         },
         {
@@ -24892,6 +25323,12 @@
           "kind": "property",
           "signature": "PaymentStatus Status",
           "returnType": "PaymentStatus"
+        },
+        {
+          "name": "MethodType",
+          "kind": "property",
+          "signature": "string MethodType",
+          "returnType": "string"
         },
         {
           "name": "ProviderTransactionId",
@@ -24968,7 +25405,7 @@
       "kind": "class",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Domain/ProviderCustomerMapping.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "Create",
@@ -24979,8 +25416,14 @@
         {
           "name": "TenantId",
           "kind": "property",
-          "signature": "Guid TenantId",
-          "returnType": "Guid"
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "ProviderCustomerId",
+          "kind": "property",
+          "signature": "string ProviderCustomerId",
+          "returnType": "string"
         }
       ]
     },
@@ -25058,6 +25501,96 @@
           "returnType": "implicit operator"
         }
       ]
+    },
+    {
+      "name": "PaymentAttachMethodRequest",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentAttachMethodRequest",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentRequests.cs",
+      "line": 50,
+      "members": []
+    },
+    {
+      "name": "PaymentAvailableMethodResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentAvailableMethodResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodResponse.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "PaymentChargeRequest",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentChargeRequest",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentRequests.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "PaymentCheckoutRequest",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentCheckoutRequest",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentRequests.cs",
+      "line": 37,
+      "members": []
+    },
+    {
+      "name": "PaymentCheckoutSessionResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentCheckoutSessionResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/TransactionResponse.cs",
+      "line": 38,
+      "members": []
+    },
+    {
+      "name": "PaymentDisputeResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentDisputeResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/TransactionResponse.cs",
+      "line": 44,
+      "members": []
+    },
+    {
+      "name": "PaymentMethodResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentMethodResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodResponse.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "PaymentRefundRequest",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentRefundRequest",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentRequests.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "PaymentRefundResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentRefundResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/TransactionResponse.cs",
+      "line": 27,
+      "members": []
+    },
+    {
+      "name": "PaymentTransactionResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentTransactionResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/TransactionResponse.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "PaymentsEndpointRouteBuilderExtensions",
@@ -25190,8 +25723,8 @@
       "name": "DisputeOpenedEto",
       "fqn": "Granit.Payments.Events.DisputeOpenedEto",
       "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Events/DisputeOpenedEto.cs",
+      "project": "Granit.Payments.Abstractions",
+      "file": "src/Granit.Payments.Abstractions/Events/DisputeOpenedEto.cs",
       "line": 6,
       "members": []
     },
@@ -25208,8 +25741,8 @@
       "name": "PaymentFailedEto",
       "fqn": "Granit.Payments.Events.PaymentFailedEto",
       "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Events/PaymentFailedEto.cs",
+      "project": "Granit.Payments.Abstractions",
+      "file": "src/Granit.Payments.Abstractions/Events/PaymentFailedEto.cs",
       "line": 6,
       "members": []
     },
@@ -25217,8 +25750,8 @@
       "name": "PaymentSucceededEto",
       "fqn": "Granit.Payments.Events.PaymentSucceededEto",
       "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Events/PaymentSucceededEto.cs",
+      "project": "Granit.Payments.Abstractions",
+      "file": "src/Granit.Payments.Abstractions/Events/PaymentSucceededEto.cs",
       "line": 6,
       "members": []
     },
@@ -25226,8 +25759,8 @@
       "name": "RefundCompletedEto",
       "fqn": "Granit.Payments.Events.RefundCompletedEto",
       "kind": "record",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Events/RefundCompletedEto.cs",
+      "project": "Granit.Payments.Abstractions",
+      "file": "src/Granit.Payments.Abstractions/Events/RefundCompletedEto.cs",
       "line": 6,
       "members": []
     },
@@ -25397,12 +25930,12 @@
       "kind": "interface",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/IPaymentProviderResolver.cs",
-      "line": 10,
+      "line": 9,
       "members": [
         {
           "name": "Resolve",
           "kind": "method",
-          "signature": "Resolve(Guid tenantId, PaymentMethodType methodType)",
+          "signature": "Resolve(Guid tenantId, string methodType)",
           "returnType": "IPaymentProvider"
         },
         {
@@ -25523,13 +26056,29 @@
       "kind": "class",
       "project": "Granit.Payments.Mollie",
       "file": "src/Granit.Payments.Mollie/GranitPaymentsMollieModule.cs",
-      "line": 9,
+      "line": 13,
       "members": [
         {
           "name": "ConfigureServices",
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "MollieOptions",
+      "fqn": "Granit.Payments.Mollie.Options.MollieOptions",
+      "kind": "class",
+      "project": "Granit.Payments.Mollie",
+      "file": "src/Granit.Payments.Mollie/Options/MollieOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ApiKey",
+          "kind": "property",
+          "signature": "string ApiKey",
+          "returnType": "string"
         }
       ]
     },
@@ -25576,8 +26125,15 @@
       "kind": "class",
       "project": "Granit.Payments.Notifications",
       "file": "src/Granit.Payments.Notifications/GranitPaymentsNotificationsModule.cs",
-      "line": 13,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "PaymentFailedNotificationData",
@@ -25728,12 +26284,529 @@
       ]
     },
     {
+      "name": "CollectionFileResult",
+      "fqn": "Granit.Payments.SepaDirectDebit.Contracts.CollectionFileResult",
+      "kind": "record",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Contracts/CollectionContracts.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "CollectionRequest",
+      "fqn": "Granit.Payments.SepaDirectDebit.Contracts.CollectionRequest",
+      "kind": "record",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Contracts/CollectionContracts.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "CollectionResult",
+      "fqn": "Granit.Payments.SepaDirectDebit.Contracts.CollectionResult",
+      "kind": "record",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Contracts/CollectionContracts.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "CollectionStatusResult",
+      "fqn": "Granit.Payments.SepaDirectDebit.Contracts.CollectionStatusResult",
+      "kind": "record",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Contracts/CollectionContracts.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "MandateSetupRequest",
+      "fqn": "Granit.Payments.SepaDirectDebit.Contracts.MandateSetupRequest",
+      "kind": "record",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Contracts/MandateContracts.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "MandateSetupResult",
+      "fqn": "Granit.Payments.SepaDirectDebit.Contracts.MandateSetupResult",
+      "kind": "record",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Contracts/MandateContracts.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "CollectionStatus",
+      "fqn": "Granit.Payments.SepaDirectDebit.Domain.CollectionStatus",
+      "kind": "enum",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Domain/CollectionStatus.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "DirectDebitPayment",
+      "fqn": "Granit.Payments.SepaDirectDebit.Domain.DirectDebitPayment",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Domain/DirectDebitPayment.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid invoiceId, decimal amount, string currency, DateTimeOffset scheduledDate)",
+          "returnType": "DirectDebitPayment"
+        },
+        {
+          "name": "MarkSubmitted",
+          "kind": "method",
+          "signature": "MarkSubmitted(DateTimeOffset submittedAt, string? providerCollectionId = null)",
+          "returnType": "CollectionStatus Status { get; private set; } public DateTimeOffset ScheduledDate { get; private set; } public DateTimeOffset? SubmittedAt { get; private set; } public DateTimeOffset? SettledAt { get; private set; } public string? FailureCode { get; private set; } public string? FailureReason { get; private set; } public string? ProviderCollectionId { get; private set; } internal void"
+        }
+      ]
+    },
+    {
+      "name": "Mandate",
+      "fqn": "Granit.Payments.SepaDirectDebit.Domain.Mandate",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Domain/Mandate.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid tenantId, string mandateReference, SddScheme scheme, string debtorName, string debtorIban, string creditorId, string? debtorBic = null, string? providerName = null)",
+          "returnType": "Mandate"
+        },
+        {
+          "name": "Status",
+          "kind": "property",
+          "signature": "MandateStatus Status",
+          "returnType": "MandateStatus"
+        },
+        {
+          "name": "DebtorIban",
+          "kind": "property",
+          "signature": "string DebtorIban",
+          "returnType": "string"
+        },
+        {
+          "name": "DebtorBic",
+          "kind": "property",
+          "signature": "string? DebtorBic",
+          "returnType": "string?"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "DateTimeOffset? SignedAt { get; private set; } public DateTimeOffset? ActivatedAt { get; private set; } public DateTimeOffset? CancelledAt { get; private set; } public DateTimeOffset? LastCollectionAt { get; private set; } public string? ProviderName { get; private set; } public string? ProviderMandateId { get; private set; } public IReadOnlyList<DirectDebitPayment> Collections => _collections."
+        },
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Activate",
+          "kind": "method",
+          "signature": "Activate(DateTimeOffset signedAt)",
+          "returnType": "bool"
+        },
+        {
+          "name": "AddCollection",
+          "kind": "method",
+          "signature": "AddCollection(DirectDebitPayment collection)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "MandateStatus",
+      "fqn": "Granit.Payments.SepaDirectDebit.Domain.MandateStatus",
+      "kind": "enum",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Domain/MandateStatus.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "SddScheme",
+      "fqn": "Granit.Payments.SepaDirectDebit.Domain.SddScheme",
+      "kind": "enum",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Domain/SddScheme.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "GranitPaymentsSepaDirectDebitGoCardlessModule",
+      "fqn": "Granit.Payments.SepaDirectDebit.GoCardless.GranitPaymentsSepaDirectDebitGoCardlessModule",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit.GoCardless",
+      "file": "src/Granit.Payments.SepaDirectDebit.GoCardless/GranitPaymentsSepaDirectDebitGoCardlessModule.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GoCardlessOptions",
+      "fqn": "Granit.Payments.SepaDirectDebit.GoCardless.Options.GoCardlessOptions",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit.GoCardless",
+      "file": "src/Granit.Payments.SepaDirectDebit.GoCardless/Options/GoCardlessOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AccessToken",
+          "kind": "property",
+          "signature": "string AccessToken",
+          "returnType": "string"
+        },
+        {
+          "name": "WebhookSecret",
+          "kind": "property",
+          "signature": "string WebhookSecret",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitPaymentsSepaDirectDebitModule",
+      "fqn": "Granit.Payments.SepaDirectDebit.GranitPaymentsSepaDirectDebitModule",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/GranitPaymentsSepaDirectDebitModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "ICollectionFileGenerator",
+      "fqn": "Granit.Payments.SepaDirectDebit.ICollectionFileGenerator",
+      "kind": "interface",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/ICollectionFileGenerator.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "GenerateAsync",
+          "kind": "method",
+          "signature": "GenerateAsync(IReadOnlyList<DirectDebitPayment> collections, IReadOnlyList<Mandate> mandates, CancellationToken cancellationToken = default)",
+          "returnType": "Task<CollectionFileResult>"
+        }
+      ]
+    },
+    {
+      "name": "IDirectDebitProvider",
+      "fqn": "Granit.Payments.SepaDirectDebit.IDirectDebitProvider",
+      "kind": "interface",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/IDirectDebitProvider.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "SetupMandateAsync",
+          "kind": "method",
+          "signature": "SetupMandateAsync(MandateSetupRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "string Name { get; } Task<MandateSetupResult>"
+        },
+        {
+          "name": "CancelMandateAsync",
+          "kind": "method",
+          "signature": "CancelMandateAsync(string providerMandateId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "CollectAsync",
+          "kind": "method",
+          "signature": "CollectAsync(CollectionRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<CollectionResult>"
+        },
+        {
+          "name": "GetCollectionStatusAsync",
+          "kind": "method",
+          "signature": "GetCollectionStatusAsync(string providerCollectionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<CollectionStatusResult>"
+        }
+      ]
+    },
+    {
+      "name": "IMandateReader",
+      "fqn": "Granit.Payments.SepaDirectDebit.IMandateReader",
+      "kind": "interface",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/IMandateReader.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid mandateId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Mandate?>"
+        },
+        {
+          "name": "GetByReferenceAsync",
+          "kind": "method",
+          "signature": "GetByReferenceAsync(string mandateReference, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Mandate?>"
+        },
+        {
+          "name": "GetActiveForTenantAsync",
+          "kind": "method",
+          "signature": "GetActiveForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Mandate>>"
+        }
+      ]
+    },
+    {
+      "name": "IMandateWriter",
+      "fqn": "Granit.Payments.SepaDirectDebit.IMandateWriter",
+      "kind": "interface",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/IMandateWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(Mandate mandate, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(Mandate mandate, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitPaymentsSepaDirectDebitInternalModule",
+      "fqn": "Granit.Payments.SepaDirectDebit.Internal.GranitPaymentsSepaDirectDebitInternalModule",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit.Internal",
+      "file": "src/Granit.Payments.SepaDirectDebit.Internal/GranitPaymentsSepaDirectDebitInternalModule.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "SepaDirectDebitInternalOptions",
+      "fqn": "Granit.Payments.SepaDirectDebit.Internal.Options.SepaDirectDebitInternalOptions",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit.Internal",
+      "file": "src/Granit.Payments.SepaDirectDebit.Internal/Options/SepaDirectDebitInternalOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "CreditorIban",
+          "kind": "property",
+          "signature": "string CreditorIban",
+          "returnType": "string"
+        },
+        {
+          "name": "CreditorBic",
+          "kind": "property",
+          "signature": "string CreditorBic",
+          "returnType": "string"
+        },
+        {
+          "name": "CreditorName",
+          "kind": "property",
+          "signature": "string CreditorName",
+          "returnType": "string"
+        },
+        {
+          "name": "CreditorId",
+          "kind": "property",
+          "signature": "string CreditorId",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultScheme",
+          "kind": "property",
+          "signature": "Domain.SddScheme DefaultScheme",
+          "returnType": "Domain.SddScheme"
+        }
+      ]
+    },
+    {
+      "name": "GranitPaymentsSepaDirectDebitTwikeyModule",
+      "fqn": "Granit.Payments.SepaDirectDebit.Twikey.GranitPaymentsSepaDirectDebitTwikeyModule",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit.Twikey",
+      "file": "src/Granit.Payments.SepaDirectDebit.Twikey/GranitPaymentsSepaDirectDebitTwikeyModule.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "TwikeyOptions",
+      "fqn": "Granit.Payments.SepaDirectDebit.Twikey.Options.TwikeyOptions",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit.Twikey",
+      "file": "src/Granit.Payments.SepaDirectDebit.Twikey/Options/TwikeyOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "ApiKey",
+          "kind": "property",
+          "signature": "string ApiKey",
+          "returnType": "string"
+        },
+        {
+          "name": "ContractTemplateId",
+          "kind": "property",
+          "signature": "string ContractTemplateId",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "BankStatementEntry",
+      "fqn": "Granit.Payments.SepaTransfer.Domain.BankStatementEntry",
+      "kind": "record",
+      "project": "Granit.Payments.SepaTransfer",
+      "file": "src/Granit.Payments.SepaTransfer/Domain/BankStatementEntry.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "ReconciliationMatch",
+      "fqn": "Granit.Payments.SepaTransfer.Domain.ReconciliationMatch",
+      "kind": "record",
+      "project": "Granit.Payments.SepaTransfer",
+      "file": "src/Granit.Payments.SepaTransfer/Domain/ReconciliationResult.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "ReconciliationResult",
+      "fqn": "Granit.Payments.SepaTransfer.Domain.ReconciliationResult",
+      "kind": "record",
+      "project": "Granit.Payments.SepaTransfer",
+      "file": "src/Granit.Payments.SepaTransfer/Domain/ReconciliationResult.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "GranitPaymentsSepaTransferModule",
+      "fqn": "Granit.Payments.SepaTransfer.GranitPaymentsSepaTransferModule",
+      "kind": "class",
+      "project": "Granit.Payments.SepaTransfer",
+      "file": "src/Granit.Payments.SepaTransfer/GranitPaymentsSepaTransferModule.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IBankReconciliationProcessor",
+      "fqn": "Granit.Payments.SepaTransfer.IBankReconciliationProcessor",
+      "kind": "interface",
+      "project": "Granit.Payments.SepaTransfer",
+      "file": "src/Granit.Payments.SepaTransfer/IBankReconciliationProcessor.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ProcessAsync",
+          "kind": "method",
+          "signature": "ProcessAsync(IReadOnlyList<BankStatementEntry> entries, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ReconciliationResult>"
+        }
+      ]
+    },
+    {
+      "name": "IBankStatementParser",
+      "fqn": "Granit.Payments.SepaTransfer.IBankStatementParser",
+      "kind": "interface",
+      "project": "Granit.Payments.SepaTransfer",
+      "file": "src/Granit.Payments.SepaTransfer/IBankStatementParser.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ParseAsync",
+          "kind": "method",
+          "signature": "ParseAsync(Stream stream, CancellationToken cancellationToken = default)",
+          "returnType": "string Format { get; } Task<IReadOnlyList<BankStatementEntry>>"
+        }
+      ]
+    },
+    {
+      "name": "SepaTransferOptions",
+      "fqn": "Granit.Payments.SepaTransfer.Options.SepaTransferOptions",
+      "kind": "class",
+      "project": "Granit.Payments.SepaTransfer",
+      "file": "src/Granit.Payments.SepaTransfer/Options/SepaTransferOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Iban",
+          "kind": "property",
+          "signature": "string Iban",
+          "returnType": "string"
+        },
+        {
+          "name": "Bic",
+          "kind": "property",
+          "signature": "string Bic",
+          "returnType": "string"
+        },
+        {
+          "name": "BeneficiaryName",
+          "kind": "property",
+          "signature": "string BeneficiaryName",
+          "returnType": "string"
+        },
+        {
+          "name": "ReferencePrefix",
+          "kind": "property",
+          "signature": "string ReferencePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "ExpirationDays",
+          "kind": "property",
+          "signature": "int ExpirationDays",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
       "name": "GranitPaymentsStripeModule",
       "fqn": "Granit.Payments.Stripe.GranitPaymentsStripeModule",
       "kind": "class",
       "project": "Granit.Payments.Stripe",
       "file": "src/Granit.Payments.Stripe/GranitPaymentsStripeModule.cs",
-      "line": 11,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -31566,14 +32639,20 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, PlanId planId, DateTimeOffset periodStart, DateTimeOffset periodEnd, DateTimeOffset billingCycleAnchor, DateTimeOffset? trialEndsAt = null)",
+          "signature": "Create(SubscriptionId id, Guid tenantId, PlanId planId, string currency, DateTimeOffset periodStart, DateTimeOffset periodEnd, DateTimeOffset billingCycleAnchor, DateTimeOffset? trialEndsAt = null)",
           "returnType": "Subscription"
+        },
+        {
+          "name": "Status",
+          "kind": "property",
+          "signature": "SubscriptionStatus Status",
+          "returnType": "SubscriptionStatus"
         },
         {
           "name": "AsReadOnly",
           "kind": "method",
           "signature": "AsReadOnly()",
-          "returnType": "SubscriptionStatus Status { get; private set; } public DateTimeOffset CurrentPeriodStart { get; private set; } public DateTimeOffset CurrentPeriodEnd { get; private set; } public DateTimeOffset BillingCycleAnchor { get; private set; } public DateTimeOffset? TrialEndsAt { get; private set; } public bool CancelAtPeriodEnd { get; private set; } public DateTimeOffset? CancelledAt { get; private set; } public string? CancellationReason { get; private set; } public IReadOnlyList<SubscriptionSeat> Seats => _seats."
+          "returnType": "int DunningAttempt { get; private set; } public IReadOnlyList<SubscriptionSeat> Seats => _seats."
         },
         {
           "name": "AsReadOnly",
@@ -31598,6 +32677,18 @@
           "kind": "method",
           "signature": "Activate()",
           "returnType": "bool"
+        },
+        {
+          "name": "ResetDunning",
+          "kind": "method",
+          "signature": "ResetDunning()",
+          "returnType": "void"
+        },
+        {
+          "name": "ChangePlan",
+          "kind": "method",
+          "signature": "ChangePlan(PlanId newPlanId)",
+          "returnType": "void"
         }
       ]
     },
@@ -31697,6 +32788,96 @@
           "returnType": "implicit operator"
         }
       ]
+    },
+    {
+      "name": "PlanCreateRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.PlanCreateRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/PlanCreateRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "PlanPriceResponse",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.PlanPriceResponse",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/PlanResponse.cs",
+      "line": 33,
+      "members": []
+    },
+    {
+      "name": "PlanResponse",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.PlanResponse",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/PlanResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PlanUpdateRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.PlanUpdateRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/PlanCreateRequest.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "SeatAssignRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.SeatAssignRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "SeatResponse",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.SeatResponse",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "SubscriptionCancelRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.SubscriptionCancelRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "SubscriptionChangePlanRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.SubscriptionChangePlanRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "SubscriptionCreateRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.SubscriptionCreateRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "SubscriptionResponse",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.SubscriptionResponse",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionResponse.cs",
+      "line": 6,
+      "members": []
     },
     {
       "name": "SubscriptionsEndpointRouteBuilderExtensions",
@@ -31996,6 +33177,28 @@
       ]
     },
     {
+      "name": "IPricingResolver",
+      "fqn": "Granit.Subscriptions.IPricingResolver",
+      "kind": "interface",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/IPricingResolver.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ResolveBasePriceAsync",
+          "kind": "method",
+          "signature": "ResolveBasePriceAsync(PlanId planId, string currency, BillingInterval interval, CancellationToken cancellationToken = default)",
+          "returnType": "Task<decimal>"
+        },
+        {
+          "name": "ResolveUsageUnitPriceAsync",
+          "kind": "method",
+          "signature": "ResolveUsageUnitPriceAsync(PlanId planId, string currency, BillingInterval interval, string meterId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<decimal>"
+        }
+      ]
+    },
+    {
       "name": "ISeatReader",
       "fqn": "Granit.Subscriptions.ISeatReader",
       "kind": "interface",
@@ -32194,8 +33397,15 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Notifications",
       "file": "src/Granit.Subscriptions.Notifications/GranitSubscriptionsNotificationsModule.cs",
-      "line": 13,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "PlanChangedNotificationData",
@@ -32374,6 +33584,15 @@
       "members": []
     },
     {
+      "name": "RetryPaymentPayload",
+      "fqn": "Granit.Subscriptions.Scheduling.RetryPaymentPayload",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Scheduling/RetryPaymentPayload.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "SubscriptionProviderCapabilities",
       "fqn": "Granit.Subscriptions.SubscriptionProviderCapabilities",
       "kind": "enum",
@@ -32388,7 +33607,502 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
       "file": "src/Granit.Subscriptions.Wolverine/GranitSubscriptionsWolverineModule.cs",
-      "line": 17,
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "TaxMetrics",
+      "fqn": "Granit.Tax.Diagnostics.TaxMetrics",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Diagnostics/TaxMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TaxRateOverride",
+      "fqn": "Granit.Tax.Domain.TaxRateOverride",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Domain/TaxRateOverride.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string countryCode, decimal standardRate, DateTimeOffset effectiveFrom, decimal? reducedRate = null, DateTimeOffset? effectiveTo = null)",
+          "returnType": "TaxRateOverride"
+        },
+        {
+          "name": "StandardRate",
+          "kind": "property",
+          "signature": "decimal StandardRate",
+          "returnType": "decimal"
+        }
+      ]
+    },
+    {
+      "name": "ValidatedTaxId",
+      "fqn": "Granit.Tax.Domain.ValidatedTaxId",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Domain/ValidatedTaxId.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string taxId, string countryCode, bool isValid, TaxIdValidationSource source, DateTimeOffset validatedAt, DateTimeOffset? expiresAt = null, string? companyName = null, string? companyAddress = null, string? requestIdentifier = null)",
+          "returnType": "ValidatedTaxId"
+        },
+        {
+          "name": "CountryCode",
+          "kind": "property",
+          "signature": "string CountryCode",
+          "returnType": "string"
+        },
+        {
+          "name": "IsValid",
+          "kind": "property",
+          "signature": "bool IsValid",
+          "returnType": "bool"
+        },
+        {
+          "name": "ConfirmOnlineValidation",
+          "kind": "method",
+          "signature": "ConfirmOnlineValidation(bool isValid, TaxIdValidationSource source, DateTimeOffset validatedAt, string? companyName, string? companyAddress, string? requestIdentifier)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "TaxRateResponse",
+      "fqn": "Granit.Tax.Endpoints.Dtos.TaxRateResponse",
+      "kind": "record",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Dtos/TaxRateResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "TaxValidateRequest",
+      "fqn": "Granit.Tax.Endpoints.Dtos.TaxValidateRequest",
+      "kind": "record",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Dtos/TaxValidateRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TaxValidateResponse",
+      "fqn": "Granit.Tax.Endpoints.Dtos.TaxValidateResponse",
+      "kind": "record",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Dtos/TaxValidateResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "TaxEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Tax.Endpoints.Extensions.TaxEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Extensions/TaxEndpointRouteBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "MapGranitTax",
+          "kind": "method",
+          "signature": "MapGranitTax(this IEndpointRouteBuilder endpoints)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxEndpointsModule",
+      "fqn": "Granit.Tax.Endpoints.GranitTaxEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/GranitTaxEndpointsModule.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "Rates",
+      "fqn": "Granit.Tax.Endpoints.Permissions.Rates",
+      "kind": "class",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Permissions/TaxPermissions.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TaxPermissions",
+      "fqn": "Granit.Tax.Endpoints.Permissions.TaxPermissions",
+      "kind": "class",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Permissions/TaxPermissions.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "Validations",
+      "fqn": "Granit.Tax.Endpoints.Permissions.Validations",
+      "kind": "class",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Permissions/TaxPermissions.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "TaxEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Tax.EntityFrameworkCore.Extensions.TaxEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Tax.EntityFrameworkCore",
+      "file": "src/Granit.Tax.EntityFrameworkCore/Extensions/TaxEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitTaxEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitTaxEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "TaxModelBuilderExtensions",
+      "fqn": "Granit.Tax.EntityFrameworkCore.Extensions.TaxModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Tax.EntityFrameworkCore",
+      "file": "src/Granit.Tax.EntityFrameworkCore/Extensions/TaxModelBuilderExtensions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ConfigureTaxModule",
+          "kind": "method",
+          "signature": "ConfigureTaxModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxDbProperties",
+      "fqn": "Granit.Tax.EntityFrameworkCore.GranitTaxDbProperties",
+      "kind": "class",
+      "project": "Granit.Tax.EntityFrameworkCore",
+      "file": "src/Granit.Tax.EntityFrameworkCore/GranitTaxDbProperties.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxEntityFrameworkCoreModule",
+      "fqn": "Granit.Tax.EntityFrameworkCore.GranitTaxEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Tax.EntityFrameworkCore",
+      "file": "src/Granit.Tax.EntityFrameworkCore/GranitTaxEntityFrameworkCoreModule.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TaxHostApplicationBuilderExtensions",
+      "fqn": "Granit.Tax.Extensions.TaxHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Extensions/TaxHostApplicationBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitTax",
+          "kind": "method",
+          "signature": "AddGranitTax(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxModule",
+      "fqn": "Granit.Tax.GranitTaxModule",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/GranitTaxModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ITaxIdValidator",
+      "fqn": "Granit.Tax.ITaxIdValidator",
+      "kind": "interface",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/ITaxIdValidator.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ValidateAsync",
+          "kind": "method",
+          "signature": "ValidateAsync(string taxId, string countryCode, CancellationToken cancellationToken = default)",
+          "returnType": "string Name { get; } Task<TaxIdValidationResult>"
+        }
+      ]
+    },
+    {
+      "name": "ITaxRateProvider",
+      "fqn": "Granit.Tax.ITaxRateProvider",
+      "kind": "interface",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/ITaxRateProvider.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "GetRateAsync",
+          "kind": "method",
+          "signature": "GetRateAsync(string countryCode, DateTimeOffset asOf, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TaxRateEntry?>"
+        },
+        {
+          "name": "GetAllCurrentRatesAsync",
+          "kind": "method",
+          "signature": "GetAllCurrentRatesAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<TaxRateEntry>>"
+        }
+      ]
+    },
+    {
+      "name": "IValidatedTaxIdReader",
+      "fqn": "Granit.Tax.IValidatedTaxIdReader",
+      "kind": "interface",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/IValidatedTaxIdReader.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "GetByTaxIdAsync",
+          "kind": "method",
+          "signature": "GetByTaxIdAsync(string taxId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ValidatedTaxId?>"
+        },
+        {
+          "name": "GetForTenantAsync",
+          "kind": "method",
+          "signature": "GetForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ValidatedTaxId>>"
+        }
+      ]
+    },
+    {
+      "name": "IValidatedTaxIdWriter",
+      "fqn": "Granit.Tax.IValidatedTaxIdWriter",
+      "kind": "interface",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/IValidatedTaxIdWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(ValidatedTaxId entry, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(ValidatedTaxId entry, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "EuCountries",
+      "fqn": "Granit.Tax.Internal.EuCountries",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Internal/EuCountries.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ToFrozenSet",
+          "kind": "method",
+          "signature": "ToFrozenSet(\"AT\", // Austria \"BE\", // Belgium \"BG\", // Bulgaria \"HR\", // Croatia \"CY\", // Cyprus \"CZ\", // Czech Republic \"DK\", // Denmark \"EE\", // Estonia \"FI\", // Finland \"FR\", // France \"DE\", // Germany \"GR\", // Greece (ISO 3166-1)",
+          "returnType": "FrozenSet<string> MemberStates = FrozenSet."
+        },
+        {
+          "name": "IsEuMember",
+          "kind": "method",
+          "signature": "IsEuMember(string countryCode)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxInternalModule",
+      "fqn": "Granit.Tax.Internal.GranitTaxInternalModule",
+      "kind": "class",
+      "project": "Granit.Tax.Internal",
+      "file": "src/Granit.Tax.Internal/GranitTaxInternalModule.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "EuVatRateOptions",
+      "fqn": "Granit.Tax.Internal.Options.EuVatRateOptions",
+      "kind": "class",
+      "project": "Granit.Tax.Internal",
+      "file": "src/Granit.Tax.Internal/Options/EuVatRateOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "StandardRates",
+          "kind": "property",
+          "signature": "Dictionary<string, decimal> StandardRates",
+          "returnType": "Dictionary<string, decimal>"
+        }
+      ]
+    },
+    {
+      "name": "TaxOptions",
+      "fqn": "Granit.Tax.Options.TaxOptions",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Options/TaxOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "SellerCountryCode",
+          "kind": "property",
+          "signature": "string SellerCountryCode",
+          "returnType": "string"
+        },
+        {
+          "name": "SellerVatNumber",
+          "kind": "property",
+          "signature": "string? SellerVatNumber",
+          "returnType": "string?"
+        },
+        {
+          "name": "AllowOfflineFallback",
+          "kind": "property",
+          "signature": "bool AllowOfflineFallback",
+          "returnType": "bool"
+        },
+        {
+          "name": "ValidationCacheTtlHours",
+          "kind": "property",
+          "signature": "int ValidationCacheTtlHours",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxStripeModule",
+      "fqn": "Granit.Tax.Stripe.GranitTaxStripeModule",
+      "kind": "class",
+      "project": "Granit.Tax.Stripe",
+      "file": "src/Granit.Tax.Stripe/GranitTaxStripeModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "StripeTaxOptions",
+      "fqn": "Granit.Tax.Stripe.Options.StripeTaxOptions",
+      "kind": "class",
+      "project": "Granit.Tax.Stripe",
+      "file": "src/Granit.Tax.Stripe/Options/StripeTaxOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "SecretKey",
+          "kind": "property",
+          "signature": "string SecretKey",
+          "returnType": "string"
+        },
+        {
+          "name": "ProductTaxCode",
+          "kind": "property",
+          "signature": "string ProductTaxCode",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "TaxCalculationContext",
+      "fqn": "Granit.Tax.TaxCalculationContext",
+      "kind": "record",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/TaxCalculationContext.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "TaxExemptionReason",
+      "fqn": "Granit.Tax.TaxExemptionReason",
+      "kind": "enum",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/TaxExemptionReason.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "TaxIdValidationResult",
+      "fqn": "Granit.Tax.TaxIdValidationResult",
+      "kind": "record",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/TaxIdValidationResult.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TaxIdValidationSource",
+      "fqn": "Granit.Tax.TaxIdValidationSource",
+      "kind": "enum",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/TaxIdValidationSource.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "TaxRateEntry",
+      "fqn": "Granit.Tax.TaxRateEntry",
+      "kind": "record",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/TaxRateEntry.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "TransactionType",
+      "fqn": "Granit.Tax.TransactionType",
+      "kind": "enum",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/TransactionType.cs",
+      "line": 4,
       "members": []
     },
     {

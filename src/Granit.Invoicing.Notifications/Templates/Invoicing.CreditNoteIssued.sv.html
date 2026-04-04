@@ -1,0 +1,8 @@
+<p>Hej,</p>
+<p>En kreditnota har utfärdats för faktura <strong>{{ model.parent_invoice_number | html.escape }}</strong>:</p>
+<ul>
+  <li><strong>Kreditnota:</strong> {{ model.credit_note_number | html.escape }}</li>
+  <li><strong>Belopp:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Orsak:</strong> {{ model.reason | html.escape }}</li>
+</ul>
+<p>Krediten har tillgodoräknats ditt konto.</p>

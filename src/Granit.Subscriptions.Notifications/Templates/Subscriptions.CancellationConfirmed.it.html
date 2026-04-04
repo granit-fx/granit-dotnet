@@ -1,0 +1,10 @@
+<p>Salve,</p>
+<p>Il suo abbonamento al piano <strong>{{ model.plan_name | html.escape }}</strong> è stato annullato.</p>
+{{- if model.cancellation_reason != "" }}
+<p><strong>Motivo:</strong> {{ model.cancellation_reason | html.escape }}</p>
+{{- end }}
+<p>Continuerà ad avere accesso fino alla fine del periodo di fatturazione corrente.</p>
+<p>Se cambia idea, può abbonarsi nuovamente in qualsiasi momento.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Riabbonarsi</a>
+</p>

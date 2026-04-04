@@ -1,0 +1,13 @@
+<p>Salve,</p>
+<p>Non è stato possibile elaborare il pagamento:</p>
+<ul>
+  <li><strong>Importo:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Fornitore:</strong> {{ model.provider_name | html.escape }}</li>
+  {{- if model.failure_code }}
+  <li><strong>Motivo:</strong> {{ model.failure_code | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>Aggiorni il metodo di pagamento per evitare un'interruzione del servizio. Il pagamento verrà ritentato automaticamente.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing" class="btn">Aggiornare il metodo di pagamento</a>
+</p>

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Subscriptions.Notifications</PackageId>
-    <Description>Notification types for Granit.Subscriptions. Trial expiration, plan changes, cancellation confirmation, suspension warning, and renewal notifications.</Description>
+    <Description>Notification types and email templates for Granit.Subscriptions. Trial expiration, plan changes, cancellation confirmation, suspension warning, and renewal notifications with Scriban templates (en + fr).</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -13,8 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Templates\**\*.html" WithCulture="false" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Granit.Subscriptions\Granit.Subscriptions.csproj" />
     <ProjectReference Include="..\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Templating\Granit.Templating.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,9 @@
+<p>Merhaba,</p>
+<p>Hesabınız için bir iade işlemi gerçekleştirildi:</p>
+<ul>
+  <li><strong>Tutar:</strong> {{ model.amount }} {{ model.currency }}</li>
+  {{- if model.reason }}
+  <li><strong>Neden:</strong> {{ model.reason | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>İade, ödeme sağlayıcınıza bağlı olarak 5-10 iş günü içinde hesabınıza yansıyacaktır.</p>

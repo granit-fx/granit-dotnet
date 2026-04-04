@@ -1,0 +1,11 @@
+<p>Hallo,</p>
+<p>Rechnung <strong>{{ model.invoice_number | html.escape }}</strong> ist überfällig.</p>
+<ul>
+  <li><strong>Offener Betrag:</strong> {{ model.amount_remaining }} {{ model.currency }}</li>
+  <li><strong>Fälligkeitsdatum:</strong> {{ model.due_at | to_user_time | date.to_string "%d.%m.%Y um %H:%M" }}</li>
+  <li><strong>Tage überfällig:</strong> {{ model.days_overdue }}</li>
+</ul>
+<p>Bitte begleichen Sie den offenen Betrag, um eine Dienstunterbrechung zu vermeiden.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/invoices/{{ model.invoice_id }}" class="btn">Jetzt bezahlen</a>
+</p>

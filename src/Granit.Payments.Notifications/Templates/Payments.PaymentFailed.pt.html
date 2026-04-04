@@ -1,0 +1,13 @@
+<p>Olá,</p>
+<p>Não foi possível processar o seu pagamento:</p>
+<ul>
+  <li><strong>Montante:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Fornecedor:</strong> {{ model.provider_name | html.escape }}</li>
+  {{- if model.failure_code }}
+  <li><strong>Motivo:</strong> {{ model.failure_code | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>Atualize o seu método de pagamento para evitar uma interrupção do serviço. O pagamento será automaticamente tentado novamente.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing" class="btn">Atualizar método de pagamento</a>
+</p>

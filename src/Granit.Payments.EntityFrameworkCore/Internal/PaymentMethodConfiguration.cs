@@ -11,7 +11,7 @@ internal sealed class PaymentMethodConfiguration : IEntityTypeConfiguration<Paym
         builder.ToTable(GranitPaymentsDbProperties.DbTablePrefix + "payment_methods", GranitPaymentsDbProperties.DbSchema);
         builder.HasKey(e => e.Id);
 
-        builder.Property(e => e.Type).IsRequired();
+        builder.Property(e => e.Type).HasMaxLength(64).IsRequired();
         builder.Property(e => e.ProviderName).HasMaxLength(64).IsRequired();
         builder.Property(e => e.ProviderMethodId).HasMaxLength(256).IsRequired();
         builder.Property(e => e.DisplayLabel).HasMaxLength(100).IsRequired();

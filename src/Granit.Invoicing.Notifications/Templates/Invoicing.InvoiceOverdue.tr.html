@@ -1,0 +1,11 @@
+<p>Merhaba,</p>
+<p><strong>{{ model.invoice_number | html.escape }}</strong> numaralı faturanın vadesi geçmiştir.</p>
+<ul>
+  <li><strong>Kalan tutar:</strong> {{ model.amount_remaining }} {{ model.currency }}</li>
+  <li><strong>Vade tarihi:</strong> {{ model.due_at | to_user_time | date.to_string "%d.%m.%Y saat %H:%M" }}</li>
+  <li><strong>Geciken gün sayısı:</strong> {{ model.days_overdue }}</li>
+</ul>
+<p>Hizmet kesintisini önlemek için lütfen ödenmemiş bakiyeyi ödeyiniz.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/invoices/{{ model.invoice_id }}" class="btn">Şimdi öde</a>
+</p>

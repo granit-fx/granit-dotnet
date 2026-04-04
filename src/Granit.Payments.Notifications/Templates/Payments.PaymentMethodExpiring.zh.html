@@ -1,0 +1,6 @@
+<p>您好，</p>
+<p>您的付款方式 <strong>{{ model.display_label | html.escape }}</strong> 将在 <strong>{{ model.days_remaining }} 天</strong>后到期，届时为 {{ model.expires_at | to_user_time | date.to_string "%Y年%m月" }}。</p>
+<p>请更新您的付款方式以确保服务不中断。</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing/methods" class="btn">更新付款方式</a>
+</p>

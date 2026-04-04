@@ -1,0 +1,13 @@
+<p>您好，</p>
+<p>我们无法处理您的付款：</p>
+<ul>
+  <li><strong>金额：</strong>{{ model.amount }} {{ model.currency }}</li>
+  <li><strong>服务商：</strong>{{ model.provider_name | html.escape }}</li>
+  {{- if model.failure_code }}
+  <li><strong>原因：</strong>{{ model.failure_code | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>请更新您的付款方式以避免服务中断。我们将自动重试付款。</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing" class="btn">更新付款方式</a>
+</p>

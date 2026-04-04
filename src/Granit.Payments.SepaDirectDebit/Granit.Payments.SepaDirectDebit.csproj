@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Payments.SepaDirectDebit</PackageId>
+    <Description>SEPA Direct Debit abstractions for Granit.Payments. Mandate lifecycle (Pending/Active/Suspended/Cancelled/Expired), collection tracking, and provider interfaces. Add .Internal for self-hosted PAIN.008 or .GoCardless for managed collections.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Payments.SepaDirectDebit.Tests" />
+    <InternalsVisibleTo Include="Granit.Payments.SepaDirectDebit.Internal" />
+    <InternalsVisibleTo Include="Granit.Payments.SepaDirectDebit.GoCardless" />
+    <InternalsVisibleTo Include="Granit.Payments.SepaDirectDebit.Twikey" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
+    <ProjectReference Include="..\Granit.Payments\Granit.Payments.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,8 @@
+<p>Dzień dobry,</p>
+<p>Twoja płatność została pomyślnie przetworzona:</p>
+<ul>
+  <li><strong>Kwota:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Dostawca:</strong> {{ model.provider_name | html.escape }}</li>
+  <li><strong>Data:</strong> {{ model.succeeded_at | to_user_time | date.to_string "%d.%m.%Y o %H:%M" }}</li>
+</ul>
+<p>Potwierdzenie płatności będzie wkrótce dostępne na Twoim koncie.</p>

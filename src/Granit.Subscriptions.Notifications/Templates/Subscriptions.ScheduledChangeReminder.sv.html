@@ -1,0 +1,10 @@
+<p>Hej,</p>
+<p>Påminnelse: din prenumerationsplan ändras den <strong>{{ model.scheduled_at | to_user_time | date.to_string "%Y-%m-%d kl. %H:%M" }}</strong>:</p>
+<ul>
+  <li><strong>Nuvarande plan:</strong> {{ model.current_plan_name | html.escape }}</li>
+  <li><strong>Ny plan:</strong> {{ model.new_plan_name | html.escape }}</li>
+</ul>
+<p>Om du vill avbryta eller ändra detta kan du göra det före det planerade datumet.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Hantera prenumeration</a>
+</p>

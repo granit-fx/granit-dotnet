@@ -14,6 +14,7 @@ public sealed class PaymentTransactionTests
             amount: 100m,
             "EUR",
             "stripe",
+            "card",
             $"idem_{Guid.NewGuid()}");
 
     [Fact]

@@ -1,3 +1,5 @@
+using Granit.Http.Resilience;
+using Granit.Http.Resilience.Extensions;
 using Granit.Modularity;
 using Granit.Payments.Stripe.Internal;
 using Granit.Payments.Stripe.Options;
@@ -7,7 +9,9 @@ using Stripe;
 namespace Granit.Payments.Stripe;
 
 /// <summary>Stripe payment provider for Granit.Payments.</summary>
-[DependsOn(typeof(GranitPaymentsModule))]
+[DependsOn(
+    typeof(GranitHttpResilienceModule),
+    typeof(GranitPaymentsModule))]
 public sealed class GranitPaymentsStripeModule : GranitModule
 {
     /// <inheritdoc/>
@@ -18,7 +22,7 @@ public sealed class GranitPaymentsStripeModule : GranitModule
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        context.Services.AddHttpClient("Stripe");
+        context.Services.AddGranitHttpClient("Stripe");
         context.Services.AddScoped<StripeClientFactory>();
         context.Services.AddScoped<IStripeClient>(sp =>
             sp.GetRequiredService<StripeClientFactory>().Create());

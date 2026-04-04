@@ -24,8 +24,8 @@ internal static class StripeAmountConverter
     /// <summary>Converts a decimal amount to Stripe's integer representation.</summary>
     public static long ToStripeAmount(decimal amount, string currency) =>
         IsZeroDecimal(currency)
-            ? (long)amount
-            : (long)(amount * 100m);
+            ? checked((long)Math.Round(amount, 0, MidpointRounding.AwayFromZero))
+            : checked((long)Math.Round(amount * 100m, 0, MidpointRounding.AwayFromZero));
 
     /// <summary>Converts Stripe's integer amount back to a decimal.</summary>
     public static decimal FromStripeAmount(long amount, string currency) =>

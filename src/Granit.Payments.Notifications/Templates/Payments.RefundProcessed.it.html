@@ -1,0 +1,9 @@
+<p>Salve,</p>
+<p>È stato elaborato un rimborso sul suo account:</p>
+<ul>
+  <li><strong>Importo:</strong> {{ model.amount }} {{ model.currency }}</li>
+  {{- if model.reason }}
+  <li><strong>Motivo:</strong> {{ model.reason | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>Il rimborso dovrebbe comparire sul suo conto entro 5-10 giorni lavorativi, a seconda del fornitore di pagamento.</p>

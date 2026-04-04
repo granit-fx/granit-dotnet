@@ -1,0 +1,8 @@
+<p>Hallo,</p>
+<p>Er is een creditnota uitgereikt voor factuur <strong>{{ model.parent_invoice_number | html.escape }}</strong>:</p>
+<ul>
+  <li><strong>Creditnota:</strong> {{ model.credit_note_number | html.escape }}</li>
+  <li><strong>Bedrag:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Reden:</strong> {{ model.reason | html.escape }}</li>
+</ul>
+<p>Het tegoed is verrekend met uw account.</p>

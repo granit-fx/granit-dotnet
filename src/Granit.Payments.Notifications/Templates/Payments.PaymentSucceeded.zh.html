@@ -1,0 +1,8 @@
+<p>您好，</p>
+<p>您的付款已成功处理：</p>
+<ul>
+  <li><strong>金额：</strong>{{ model.amount }} {{ model.currency }}</li>
+  <li><strong>服务商：</strong>{{ model.provider_name | html.escape }}</li>
+  <li><strong>日期：</strong>{{ model.succeeded_at | to_user_time | date.to_string "%Y年%m月%d日 %H:%M" }}</li>
+</ul>
+<p>收据将很快在您的账户中提供。</p>

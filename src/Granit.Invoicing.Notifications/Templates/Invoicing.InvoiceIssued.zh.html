@@ -1,0 +1,13 @@
+<p>您好，</p>
+<p>已开具一张新发票：</p>
+<ul>
+  <li><strong>发票：</strong> {{ model.invoice_number | html.escape }}</li>
+  <li><strong>金额：</strong> {{ model.total }} {{ model.currency }}</li>
+  <li><strong>开具日期：</strong> {{ model.issued_at | to_user_time | date.to_string "%Y年%m月%d日 %H:%M" }}</li>
+  {{- if model.due_at | to_user_time }}
+  <li><strong>到期日期：</strong> {{ model.due_at | to_user_time | date.to_string "%Y年%m月%d日 %H:%M" }}</li>
+  {{- end }}
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/invoices/{{ model.invoice_id }}" class="btn">查看发票</a>
+</p>

@@ -33,11 +33,13 @@ public sealed class PaymentTransaction : AuditedAggregateRoot, IMultiTenant
         decimal amount,
         string currency,
         string providerName,
+        string methodType,
         string idempotencyKey)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(amount);
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
         ArgumentException.ThrowIfNullOrWhiteSpace(providerName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(methodType);
         ArgumentException.ThrowIfNullOrWhiteSpace(idempotencyKey);
 
         var transaction = new PaymentTransaction
@@ -48,6 +50,7 @@ public sealed class PaymentTransaction : AuditedAggregateRoot, IMultiTenant
             Amount = amount,
             Currency = currency,
             ProviderName = providerName,
+            MethodType = methodType,
             IdempotencyKey = idempotencyKey,
             Status = PaymentStatus.Created,
         };
@@ -72,6 +75,9 @@ public sealed class PaymentTransaction : AuditedAggregateRoot, IMultiTenant
 
     /// <summary>Payment provider name (e.g., "stripe", "mollie").</summary>
     public string ProviderName { get; private set; } = string.Empty;
+
+    /// <summary>Payment method type used (e.g., "card", "sepa_debit", "ideal").</summary>
+    public string MethodType { get; private set; } = string.Empty;
 
     /// <summary>Transaction ID in the provider system.</summary>
     public string? ProviderTransactionId { get; private set; }
@@ -191,7 +197,8 @@ public sealed class PaymentTransaction : AuditedAggregateRoot, IMultiTenant
         Status = PaymentStatus.Failed;
 
         AddDistributedEvent(new PaymentFailedEto(
-            Id, InvoiceId, TenantId!.Value, failureCode, failureMessage));
+            Id, InvoiceId, TenantId!.Value, Amount, Currency,
+            ProviderName, MethodType, failureCode, failureMessage));
         return true;
     }
 

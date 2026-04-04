@@ -1,0 +1,13 @@
+<p>Hallo,</p>
+<p>Eine neue Rechnung wurde erstellt:</p>
+<ul>
+  <li><strong>Rechnung:</strong> {{ model.invoice_number | html.escape }}</li>
+  <li><strong>Betrag:</strong> {{ model.total }} {{ model.currency }}</li>
+  <li><strong>Ausgestellt am:</strong> {{ model.issued_at | to_user_time | date.to_string "%d.%m.%Y um %H:%M" }}</li>
+  {{- if model.due_at | to_user_time }}
+  <li><strong>Fällig am:</strong> {{ model.due_at | to_user_time | date.to_string "%d.%m.%Y um %H:%M" }}</li>
+  {{- end }}
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/invoices/{{ model.invoice_id }}" class="btn">Rechnung anzeigen</a>
+</p>

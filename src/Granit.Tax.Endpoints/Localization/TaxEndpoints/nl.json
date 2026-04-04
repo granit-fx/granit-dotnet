@@ -1,0 +1,10 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:Tax": "Belastingen",
+    "Permission:Tax.Rates.Read": "Belastingtarieven bekijken",
+    "Permission:Tax.Rates.Manage": "Overschrijvingen van belastingtarieven beheren",
+    "Permission:Tax.Validations.Read": "Gecachte validaties van fiscale nummers bekijken",
+    "Permission:Tax.Validations.Execute": "Validatie van een fiscaal nummer uitvoeren (VIES, Stripe)"
+  }
+}

@@ -19,6 +19,12 @@ internal sealed class EfCoreNotificationDeliveryStore(
     : EfStoreBase<NotificationDeliveryAttempt, NotificationsDbContext>(contextFactory), INotificationDeliveryWriter
 {
     /// <inheritdoc/>
+    public Task<bool> HasBeenDeliveredAsync(Guid deliveryId, CancellationToken cancellationToken = default) =>
+        ReadAsync(async db => await db.DeliveryAttempts
+            .AnyAsync(a => a.DeliveryId == deliveryId && a.IsSuccess, cancellationToken)
+            .ConfigureAwait(false), cancellationToken);
+
+    /// <inheritdoc/>
     public Task RecordAsync(NotificationDeliveryAttempt attempt, CancellationToken cancellationToken = default) =>
         AddAsync(attempt, cancellationToken);
 

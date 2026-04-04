@@ -1,0 +1,9 @@
+<p>Hi,</p>
+<p>A refund has been processed for your account:</p>
+<ul>
+  <li><strong>Amount:</strong> {{ model.amount }} {{ model.currency }}</li>
+  {{- if model.reason }}
+  <li><strong>Reason:</strong> {{ model.reason | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>The refund should appear in your account within 5–10 business days, depending on your payment provider.</p>

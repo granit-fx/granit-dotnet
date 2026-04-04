@@ -1,0 +1,6 @@
+<p>Hola,</p>
+<p>Su periodo de prueba del plan <strong>{{ model.plan_name | html.escape }}</strong> ha expirado.</p>
+<p>Su acceso a las funcionalidades premium ha sido suspendido. Puede reactivarlo en cualquier momento suscribiéndose a un plan de pago.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Elegir un plan</a>
+</p>

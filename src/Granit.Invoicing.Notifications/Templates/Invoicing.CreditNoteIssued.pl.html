@@ -1,0 +1,8 @@
+<p>Witamy,</p>
+<p>Wystawiono notę kredytową do faktury <strong>{{ model.parent_invoice_number | html.escape }}</strong>:</p>
+<ul>
+  <li><strong>Nota kredytowa:</strong> {{ model.credit_note_number | html.escape }}</li>
+  <li><strong>Kwota:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Powód:</strong> {{ model.reason | html.escape }}</li>
+</ul>
+<p>Kwota została zaksięgowana na Państwa koncie.</p>

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Tax.Stripe</PackageId>
+    <Description>Stripe Tax API integration for Granit. Implements ITaxCalculator and ITaxIdValidator using Stripe Tax Calculations and Tax IDs APIs. Best for B2C global SaaS needing multi-jurisdiction tax (US Sales Tax, EU VAT, UK VAT).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Tax.Stripe.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Stripe.net" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Http.Resilience\Granit.Http.Resilience.csproj" />
+    <ProjectReference Include="..\Granit.Invoicing\Granit.Invoicing.csproj" />
+    <ProjectReference Include="..\Granit.Tax\Granit.Tax.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,4 +1,6 @@
+using Granit.DataProtection;
 using Granit.Domain;
+using Granit.MultiTenancy;
 
 namespace Granit.Payments.Domain;
 
@@ -10,7 +12,7 @@ namespace Granit.Payments.Domain;
 /// saved payment methods. This mapping caches the relationship locally
 /// to avoid expensive API lookups. Unique per (ProviderName, TenantId).
 /// </remarks>
-public sealed class ProviderCustomerMapping : Entity
+public sealed class ProviderCustomerMapping : Entity, IMultiTenant
 {
     private ProviderCustomerMapping() { }
 
@@ -34,8 +36,12 @@ public sealed class ProviderCustomerMapping : Entity
     public string ProviderName { get; private set; } = string.Empty;
 
     /// <summary>The Granit tenant ID.</summary>
-    public Guid TenantId { get; private set; }
+    public Guid? TenantId { get; private set; }
+
+    /// <summary>Explicit interface for interceptor injection.</summary>
+    Guid? IMultiTenant.TenantId { get => TenantId; set => TenantId = value; }
 
     /// <summary>The provider's customer ID (e.g., cus_xxx for Stripe).</summary>
+    [SensitiveData(Level = Sensitivity.Internal)]
     public string ProviderCustomerId { get; private set; } = string.Empty;
 }

@@ -111,6 +111,7 @@
     <PackageVersion Include="Google.Cloud.SecretManager.V1" Version="2.*" />
   </ItemGroup>
   <ItemGroup Label="Payments">
+    <PackageVersion Include="GoCardless" Version="7.*" />
     <PackageVersion Include="Mollie.Api" Version="4.*" />
     <PackageVersion Include="Stripe.net" Version="47.*" />
   </ItemGroup>

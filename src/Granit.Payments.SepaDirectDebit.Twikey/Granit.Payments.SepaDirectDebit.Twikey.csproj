@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Payments.SepaDirectDebit.Twikey</PackageId>
+    <Description>Twikey provider for Granit.Payments.SepaDirectDebit (EU-focused: BE, NL, FR, DE). Managed mandate lifecycle with embedded and hosted signing flows.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Payments.SepaDirectDebit.Twikey.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Payments.SepaDirectDebit\Granit.Payments.SepaDirectDebit.csproj" />
+  </ItemGroup>
+
+</Project>

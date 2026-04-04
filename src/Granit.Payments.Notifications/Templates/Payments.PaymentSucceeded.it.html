@@ -1,0 +1,8 @@
+<p>Salve,</p>
+<p>Il pagamento è stato elaborato con successo:</p>
+<ul>
+  <li><strong>Importo:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Fornitore:</strong> {{ model.provider_name | html.escape }}</li>
+  <li><strong>Data:</strong> {{ model.succeeded_at | to_user_time | date.to_string "%d/%m/%Y alle %H:%M" }}</li>
+</ul>
+<p>Una ricevuta sarà disponibile nel suo account a breve.</p>

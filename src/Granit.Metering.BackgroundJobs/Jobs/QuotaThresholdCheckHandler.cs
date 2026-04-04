@@ -1,10 +1,14 @@
+using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.Metering.Domain;
 using Granit.Metering.Domain.ValueObjects;
 using Granit.Metering.Dtos;
 using Granit.Metering.Events;
+using Granit.Metering.Options;
 using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Wolverine;
 
 namespace Granit.Metering.BackgroundJobs.Jobs;
@@ -20,14 +24,22 @@ internal static partial class QuotaThresholdCheckHandler
         IMeterDefinitionReader definitionReader,
         IQuotaChecker quotaChecker,
         ICurrentTenant currentTenant,
+        IDataFilter dataFilter,
         IMessageBus messageBus,
+        IOptions<GranitMeteringOptions> options,
         IClock clock,
         ILogger<QuotaThresholdCheckJob> logger,
         CancellationToken cancellationToken)
     {
         Log.QuotaCheckStarted(logger, clock.Now);
 
-        IReadOnlyList<MeterDefinition> definitions = await definitionReader.GetActiveAsync(cancellationToken).ConfigureAwait(false);
+        decimal threshold = options.Value.ThresholdPercentage;
+
+        IReadOnlyList<MeterDefinition> definitions;
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            definitions = await definitionReader.GetActiveAsync(cancellationToken).ConfigureAwait(false);
+        }
         foreach (MeterDefinition definition in definitions)
         {
             if (definition.TenantId is null)
@@ -48,7 +60,7 @@ internal static partial class QuotaThresholdCheckHandler
                         new QuotaExceededEto(definition.TenantId.Value, definition.Id, status.MeterName, status.CurrentUsage, status.Limit!.Value))
                         .ConfigureAwait(false);
                 }
-                else if (status.Limit.HasValue && status.PercentUsed >= 80m)
+                else if (status.Limit.HasValue && status.PercentUsed >= threshold)
                 {
                     await messageBus.PublishAsync(
                         new QuotaThresholdReachedEto(definition.TenantId.Value, definition.Id, status.MeterName, status.CurrentUsage, status.Limit.Value, status.PercentUsed!.Value))

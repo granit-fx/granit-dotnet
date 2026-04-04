@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Granit.Invoicing\Granit.Invoicing.csproj" />
+    <ProjectReference Include="..\Granit.Invoicing.Abstractions\Granit.Invoicing.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Payments\Granit.Payments.csproj" />
     <ProjectReference Include="..\Granit.Wolverine\Granit.Wolverine.csproj" />
   </ItemGroup>

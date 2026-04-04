@@ -10,8 +10,10 @@ internal sealed class EfSeatReader(
     public async Task<int> GetSeatCountAsync(SubscriptionId subscriptionId, CancellationToken cancellationToken = default)
     {
         await using SubscriptionsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await context.Seats
-            .CountAsync(s => EF.Property<Guid>(s, "SubscriptionId") == subscriptionId.Value, cancellationToken)
+        return await context.Subscriptions
+            .Where(s => s.Id == subscriptionId.Value)
+            .SelectMany(s => s.Seats)
+            .CountAsync(cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -20,8 +22,9 @@ internal sealed class EfSeatReader(
         CancellationToken cancellationToken = default)
     {
         await using SubscriptionsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        return await context.Seats
-            .Where(s => EF.Property<Guid>(s, "SubscriptionId") == subscriptionId.Value)
+        return await context.Subscriptions
+            .Where(s => s.Id == subscriptionId.Value)
+            .SelectMany(s => s.Seats)
             .OrderBy(s => s.AssignedAt)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);

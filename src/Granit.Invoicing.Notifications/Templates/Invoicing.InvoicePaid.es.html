@@ -1,0 +1,10 @@
+<p>Hola,</p>
+<p>Pago recibido para la factura <strong>{{ model.invoice_number | html.escape }}</strong>.</p>
+<ul>
+  <li><strong>Importe:</strong> {{ model.total }} {{ model.currency }}</li>
+  <li><strong>Pagada el:</strong> {{ model.paid_at | to_user_time | date.to_string "%d/%m/%Y a las %H:%M" }}</li>
+</ul>
+<p>Gracias por su pago.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/invoices/{{ model.invoice_id }}" class="btn">Ver recibo</a>
+</p>

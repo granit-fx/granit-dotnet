@@ -1,0 +1,8 @@
+<p>Salve,</p>
+<p>È stata aperta una contestazione di pagamento (chargeback) sul suo account:</p>
+<ul>
+  <li><strong>Importo:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Motivo:</strong> {{ model.reason | html.escape }}</li>
+</ul>
+<p>Il nostro team è stato avvisato e esaminerà la contestazione. Potrebbe essere contattato per informazioni aggiuntive.</p>
+<p>Se ritiene che questa contestazione sia fondata, non è richiesta alcuna azione da parte sua.</p>

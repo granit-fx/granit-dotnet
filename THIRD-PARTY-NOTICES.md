@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-03-30
+Dernière mise à jour : 2026-04-04
 
 ---
 
@@ -12,7 +12,7 @@ Dernière mise à jour : 2026-03-30
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 78                 |
+| MIT          | 81                 |
 | Apache-2.0   | 34                 |
 | BSD-3-Clause | 2                  |
 | BSD-2-Clause | 1                  |
@@ -70,12 +70,14 @@ Dernière mise à jour : 2026-03-30
 | Microsoft.Extensions.VectorData.Abstractions | 10.1.0 | (c) Microsoft Corporation |
 | Microsoft.IO.RecyclableMemoryStream | 3.0.1 | (c) Microsoft Corporation |
 | MimeKit | 4.15.1 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
+| Mollie.Api | 4.19.0 | Copyright (c) 2023 Vincent Kok |
 | OllamaSharp | 5.4.25 | Copyright (c) 2023-2026 Awalon |
 | PuppeteerSharp | 24.40.0 | PuppeteerSharp Contributors |
 | Scalar.AspNetCore | 2.13.16 | Scalar Contributors |
 | Sep | 0.12.3 | Copyright (c) 2023 nietras |
 | SmartFormat | 3.6.1 | Copyright 2011-2025 SmartFormat Project |
 | StackExchange.Redis | 2.12.8 | Copyright 2014-2026 Stack Exchange, Inc. |
+| Stripe.net | 47.* | Copyright (c) Stripe, Inc. |
 | Sylvan.Data.Excel | 0.5.4 | Copyright (c) Mark Pflug |
 | System.Composition.AttributedModel | 9.0.14 | (c) Microsoft Corporation |
 | System.Text.Json | 9.0.14 | (c) Microsoft Corporation |
@@ -103,6 +105,7 @@ Dernière mise à jour : 2026-03-30
 | AWSSDK.SimpleNotificationService | 4.0.2.22 | Amazon Web Services, Inc. |
 | FirebaseAdmin | 3.5.0 | Copyright (c) 2018 Google Inc. |
 | FluentValidation | 12.1.1 | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
+| GoCardless | 7.11.2 | Copyright (c) 2017 GoCardless |
 | FluentValidation.DependencyInjectionExtensions | 12.1.1 | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
 | Google.Cloud.Kms.V1 | 3.23.0 | Copyright (c) Google LLC |
 | Google.Cloud.SecretManager.V1 | 2.7.0 | Copyright (c) Google LLC |
@@ -240,6 +243,12 @@ Ce SDK est utilisé par les packages `Granit.Identity.Firebase` (administration 
 utilisateurs Firebase Authentication) et `Granit.Notifications.Push.Firebase` (envoi
 de notifications push via Firebase Cloud Messaging).
 
+### GoCardless
+
+Ce SDK est utilisé par le package `Granit.Payments.SepaDirectDebit.GoCardless` pour
+la gestion de mandats SEPA Direct Debit et la collecte de paiements via GoCardless.
+Les webhooks sont vérifiés par signature HMAC-SHA256.
+
 ### Google.Cloud.Kms.V1 / Google.Cloud.SecretManager.V1
 
 Ces SDK sont utilisés par le package `Granit.Vault.GoogleCloud` pour le chiffrement
@@ -263,11 +272,24 @@ Ce package est utilisé par `Granit.Notifications.Email.Smtp` pour la constructi
 de messages MIME. La version est épinglée via `Directory.Packages.props` pour
 corriger la vulnérabilité GHSA-g7hc-96xr-gvvx (CVE sur les versions < 4.15.1).
 
+### Mollie.Api
+
+Ce SDK est utilisé par le package `Granit.Payments.Mollie` pour l'intégration
+avec l'API Mollie (paiements en ligne, sessions de checkout hébergées, remboursements).
+Les données de paiement transitent directement vers Mollie sans stockage intermédiaire.
+
 ### OllamaSharp
 
 Ce SDK est utilisé par les modules `Granit.*.AI` pour l'intégration avec des
 modèles de langage locaux via Ollama. Les données restent sur l'infrastructure
 de l'organisation (aucun appel vers des services cloud externes).
+
+### Stripe.net
+
+Ce SDK est utilisé par les packages `Granit.Payments.Stripe` (paiements en ligne,
+checkout sessions, gestion de moyens de paiement) et `Granit.Tax.Stripe` (calcul
+de taxes multi-juridictions et validation de numéros de TVA). Les données de
+paiement transitent directement vers Stripe sans stockage intermédiaire.
 
 ### Yarp.ReverseProxy
 

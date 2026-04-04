@@ -34,6 +34,14 @@ public sealed partial class NotificationDeliveryHandler(
         activity?.SetTag("notifications.notification_id", command.NotificationId.ToString());
         activity?.SetTag("notifications.type", command.NotificationTypeName);
 
+        // Idempotency: skip if this delivery was already successfully sent (Wolverine retry safety)
+        if (await deliveryWriter.HasBeenDeliveredAsync(command.DeliveryId, cancellationToken)
+                .ConfigureAwait(false))
+        {
+            LogDuplicateDeliverySkipped(command.ChannelName, command.DeliveryId, command.NotificationId);
+            return;
+        }
+
         INotificationChannel? channel = channels.FirstOrDefault(c => c.Name == command.ChannelName);
 
         if (channel is null)
@@ -117,6 +125,9 @@ public sealed partial class NotificationDeliveryHandler(
                 $"Failed to deliver notification {command.NotificationId} via {command.ChannelName}", ex);
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Duplicate delivery {DeliveryId} skipped for notification {NotificationId} via '{ChannelName}' (already delivered)")]
+    private partial void LogDuplicateDeliverySkipped(string channelName, Guid deliveryId, Guid notificationId);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Notification channel '{ChannelName}' is not registered — skipping delivery {DeliveryId} for notification {NotificationId}")]
     private partial void LogChannelNotRegistered(string channelName, Guid deliveryId, Guid notificationId);

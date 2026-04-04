@@ -1,0 +1,7 @@
+<p>こんにちは、</p>
+<p><strong>{{ model.plan_name | html.escape }}</strong> プランの試用期間は、あと <strong>{{ model.days_remaining }} 日</strong>で終了します（{{ model.trial_ends_at | to_user_time | date.to_string "%Y年%m月%d日 %H:%M" }}）。</p>
+<p>すべての機能へのアクセスを継続するには、試用期間終了前に有料プランにアップグレードしてください。</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">今すぐアップグレード</a>
+</p>
+<p>ご質問がございましたら、サポートチームまでお気軽にお問い合わせください。</p>

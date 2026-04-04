@@ -14,6 +14,7 @@ public sealed class SubscriptionTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             PlanId.Create(Guid.NewGuid()),
+            currency: "EUR",
             periodStart: now,
             periodEnd: now.AddMonths(1),
             billingCycleAnchor: now,
@@ -23,14 +24,14 @@ public sealed class SubscriptionTests
     private static Subscription CreateActiveSubscription()
     {
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        var sub = Subscription.Create(
+        return Subscription.Create(
             Guid.NewGuid(),
             Guid.NewGuid(),
             PlanId.Create(Guid.NewGuid()),
+            currency: "EUR",
             periodStart: now,
             periodEnd: now.AddMonths(1),
             billingCycleAnchor: now);
-        return sub;
     }
 
     [Fact]

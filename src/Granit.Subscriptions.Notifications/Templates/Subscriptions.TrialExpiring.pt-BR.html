@@ -1,0 +1,7 @@
+<p>Olá,</p>
+<p>Seu período de teste para o plano <strong>{{ model.plan_name | html.escape }}</strong> expira em <strong>{{ model.days_remaining }} dia(s)</strong>, em {{ model.trial_ends_at | to_user_time | date.to_string "%d/%m/%Y às %H:%M" }}.</p>
+<p>Para manter o acesso a todas as funcionalidades, faça o upgrade para uma assinatura paga antes do fim do período de teste.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Fazer upgrade</a>
+</p>
+<p>Se tiver dúvidas, nossa equipe de suporte terá prazer em ajudar.</p>

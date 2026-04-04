@@ -1,0 +1,9 @@
+<p>Hallo,</p>
+<p>Eine Rückerstattung wurde für Ihr Konto verarbeitet:</p>
+<ul>
+  <li><strong>Betrag:</strong> {{ model.amount }} {{ model.currency }}</li>
+  {{- if model.reason }}
+  <li><strong>Grund:</strong> {{ model.reason | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>Die Rückerstattung sollte innerhalb von 5 bis 10 Werktagen auf Ihrem Konto erscheinen, abhängig von Ihrem Zahlungsanbieter.</p>

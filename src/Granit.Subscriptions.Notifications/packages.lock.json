@@ -82,6 +82,12 @@
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
         }
       },
+      "granit.templating": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
       "granit.timing": {
         "type": "Project",
         "dependencies": {

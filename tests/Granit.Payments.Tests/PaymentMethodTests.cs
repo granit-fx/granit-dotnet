@@ -11,10 +11,10 @@ public sealed class PaymentMethodTests
     {
         var method = PaymentMethod.Create(
             Guid.NewGuid(), Guid.NewGuid(),
-            PaymentMethodType.Card, "stripe", "pm_123",
+            PaymentMethods.Card, "stripe", "pm_123",
             "**** 4242", DateTimeOffset.UtcNow.AddYears(2));
 
-        method.Type.ShouldBe(PaymentMethodType.Card);
+        method.Type.ShouldBe(PaymentMethods.Card);
         method.DisplayLabel.ShouldBe("**** 4242");
         method.IsDefault.ShouldBeFalse();
     }
@@ -24,7 +24,7 @@ public sealed class PaymentMethodTests
     {
         var method = PaymentMethod.Create(
             Guid.NewGuid(), Guid.NewGuid(),
-            PaymentMethodType.Card, "stripe", "pm_123", "**** 4242");
+            PaymentMethods.Card, "stripe", "pm_123", "**** 4242");
 
         method.SetDefault();
 
@@ -36,7 +36,7 @@ public sealed class PaymentMethodTests
     {
         var method = PaymentMethod.Create(
             Guid.NewGuid(), Guid.NewGuid(),
-            PaymentMethodType.Card, "stripe", "pm_123", "**** 4242");
+            PaymentMethods.Card, "stripe", "pm_123", "**** 4242");
 
         method.SetDefault();
         method.UnsetDefault();

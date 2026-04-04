@@ -3,6 +3,8 @@
   "texts": {
     "Granit:Validation:AtLeastOneMappingTarget": "Pelo menos um mapeamento deve ter uma propriedade de destino não nula.",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' só pode conter letras, dígitos, hifens, underscores ou pontos.",
-    "Granit:Validation:ScheduledAction:FutureDate": "A data agendada deve ser no futuro."
+    "Granit:Validation:ScheduledAction:FutureDate": "A data agendada deve ser no futuro.",
+    "Granit:Validation:PaymentAmountOutOfRange": "O valor do pagamento está fora do intervalo permitido.",
+    "Granit:Validation:UrlMustBeHttps": "A URL deve usar HTTPS."
   }
 }

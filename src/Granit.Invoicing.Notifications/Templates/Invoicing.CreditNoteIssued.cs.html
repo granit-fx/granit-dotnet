@@ -1,0 +1,8 @@
+<p>Dobrý den,</p>
+<p>K faktuře <strong>{{ model.parent_invoice_number | html.escape }}</strong> byl vystaven dobropis:</p>
+<ul>
+  <li><strong>Dobropis:</strong> {{ model.credit_note_number | html.escape }}</li>
+  <li><strong>Částka:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Důvod:</strong> {{ model.reason | html.escape }}</li>
+</ul>
+<p>Kredit byl připsán na váš účet.</p>

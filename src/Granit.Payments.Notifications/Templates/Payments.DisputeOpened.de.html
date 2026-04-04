@@ -1,0 +1,8 @@
+<p>Hallo,</p>
+<p>Ein Zahlungsstreit (Rückbuchung) wurde auf Ihrem Konto eröffnet:</p>
+<ul>
+  <li><strong>Betrag:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Grund:</strong> {{ model.reason | html.escape }}</li>
+</ul>
+<p>Unser Team wurde benachrichtigt und wird den Streitfall prüfen. Möglicherweise werden Sie für zusätzliche Informationen kontaktiert.</p>
+<p>Wenn Sie der Meinung sind, dass dieser Streitfall berechtigt ist, ist keine Aktion Ihrerseits erforderlich.</p>

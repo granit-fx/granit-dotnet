@@ -1,4 +1,5 @@
 using Granit.Modularity;
+using Granit.Subscriptions;
 using Shouldly;
 using Xunit;
 
@@ -55,7 +56,7 @@ public sealed class GranitSubscriptionsInternalModuleTests
             .GetType("Granit.Subscriptions.Internal.Internal.InternalSubscriptionProvider");
 
         type.ShouldNotBeNull();
-        var instance = Activator.CreateInstance(type) as ISubscriptionProvider;
+        var instance = (ISubscriptionProvider)Activator.CreateInstance(type)!;
 
         instance.ShouldNotBeNull();
         instance.Name.ShouldBe("internal");
@@ -68,9 +69,9 @@ public sealed class GranitSubscriptionsInternalModuleTests
             .GetType("Granit.Subscriptions.Internal.Internal.InternalSubscriptionProvider");
 
         type.ShouldNotBeNull();
-        var instance = Activator.CreateInstance(type) as ISubscriptionProvider;
+        var instance = (ISubscriptionProvider)Activator.CreateInstance(type)!;
 
         instance.ShouldNotBeNull();
-        instance.Capabilities.ShouldBe(Subscriptions.Domain.SubscriptionProviderCapabilities.None);
+        instance.Capabilities.ShouldBe(SubscriptionProviderCapabilities.None);
     }
 }

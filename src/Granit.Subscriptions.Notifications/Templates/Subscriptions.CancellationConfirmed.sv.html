@@ -1,0 +1,10 @@
+<p>Hej,</p>
+<p>Din prenumeration på planen <strong>{{ model.plan_name | html.escape }}</strong> har avbrutits.</p>
+{{- if model.cancellation_reason != "" }}
+<p><strong>Anledning:</strong> {{ model.cancellation_reason | html.escape }}</p>
+{{- end }}
+<p>Du har fortsatt åtkomst till slutet av din nuvarande faktureringsperiod.</p>
+<p>Om du ändrar dig kan du prenumerera igen när som helst.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Prenumerera igen</a>
+</p>

@@ -1,0 +1,13 @@
+<p>Hallo,</p>
+<p>We konden uw betaling niet verwerken:</p>
+<ul>
+  <li><strong>Bedrag:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Aanbieder:</strong> {{ model.provider_name | html.escape }}</li>
+  {{- if model.failure_code }}
+  <li><strong>Reden:</strong> {{ model.failure_code | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>Werk uw betaalmethode bij om een onderbreking van de dienst te voorkomen. We zullen de betaling automatisch opnieuw proberen.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing" class="btn">Betaalmethode bijwerken</a>
+</p>

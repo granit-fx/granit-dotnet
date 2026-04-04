@@ -8,6 +8,9 @@ namespace Granit.Notifications.Internal;
 /// </summary>
 internal sealed class NullNotificationDeliveryWriter : INotificationDeliveryWriter
 {
+    public Task<bool> HasBeenDeliveredAsync(Guid deliveryId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(false);
+
     public Task RecordAsync(NotificationDeliveryAttempt attempt, CancellationToken cancellationToken = default) =>
         Task.CompletedTask;
 

@@ -1,5 +1,9 @@
+using System.Reflection;
+using System.Text;
 using Granit.Modularity;
 using Granit.Payments.Contracts;
+using Mollie.Api.Client.Abstract;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -31,70 +35,84 @@ public sealed class GranitPaymentsMollieModuleTests
     }
 }
 
+/// <summary>Helper to instantiate internal Mollie types with NSubstitute mocks.</summary>
+internal static class MollieTestHelper
+{
+    /// <summary>Creates an instance of an internal type, substituting all constructor parameters.</summary>
+    internal static object CreateInternal(string typeName)
+    {
+        Type type = typeof(GranitPaymentsMollieModule).Assembly
+            .GetType(typeName)!;
+
+        ConstructorInfo ctor = type.GetConstructors(
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)[0];
+
+        object[] args = ctor.GetParameters()
+            .Select(p => Substitute.For([p.ParameterType], []))
+            .ToArray();
+
+        return ctor.Invoke(args);
+    }
+}
+
 public sealed class MolliePaymentProviderTests
 {
-    private readonly IPaymentProvider _provider;
-
-    public MolliePaymentProviderTests()
-    {
-        Type? type = typeof(GranitPaymentsMollieModule).Assembly
-            .GetType("Granit.Payments.Mollie.Internal.MolliePaymentProvider");
-
-        type.ShouldNotBeNull();
-        _provider = (Activator.CreateInstance(type) as IPaymentProvider)!;
-    }
-
     [Fact]
-    public void Name_IsMollie() => _provider.Name.ShouldBe("mollie");
+    public void Name_IsMollie()
+    {
+        var provider = (IPaymentProvider)MollieTestHelper
+            .CreateInternal("Granit.Payments.Mollie.Internal.MolliePaymentProvider");
+
+        provider.Name.ShouldBe("mollie");
+    }
 }
 
 public sealed class MollieWebhookVerifierTests
 {
-    private readonly IPaymentWebhookVerifier _verifier;
-
-    public MollieWebhookVerifierTests()
+    [Fact]
+    public void ProviderName_IsMollie()
     {
-        Type? type = typeof(GranitPaymentsMollieModule).Assembly
-            .GetType("Granit.Payments.Mollie.Internal.MollieWebhookVerifier");
+        var verifier = (IPaymentWebhookVerifier)MollieTestHelper
+            .CreateInternal("Granit.Payments.Mollie.Internal.MollieWebhookVerifier");
 
-        type.ShouldNotBeNull();
-        _verifier = (Activator.CreateInstance(type) as IPaymentWebhookVerifier)!;
+        verifier.ProviderName.ShouldBe("mollie");
     }
 
     [Fact]
-    public void ProviderName_IsMollie() => _verifier.ProviderName.ShouldBe("mollie");
+    public async Task VerifyAsync_RejectsEmptyBody()
+    {
+        var verifier = (IPaymentWebhookVerifier)MollieTestHelper
+            .CreateInternal("Granit.Payments.Mollie.Internal.MollieWebhookVerifier");
+
+        PaymentWebhookVerificationResult result = await verifier.VerifyAsync(
+            Encoding.UTF8.GetBytes("garbage"),
+            new Dictionary<string, string>(),
+            TestContext.Current.CancellationToken);
+
+        result.IsValid.ShouldBeFalse();
+    }
 }
 
 public sealed class MollieCheckoutSessionFactoryTests
 {
-    private readonly ICheckoutSessionFactory _factory;
-
-    public MollieCheckoutSessionFactoryTests()
-    {
-        Type? type = typeof(GranitPaymentsMollieModule).Assembly
-            .GetType("Granit.Payments.Mollie.Internal.MollieCheckoutSessionFactory");
-
-        type.ShouldNotBeNull();
-        _factory = (Activator.CreateInstance(type) as ICheckoutSessionFactory)!;
-    }
-
     [Fact]
-    public void ProviderName_IsMollie() => _factory.ProviderName.ShouldBe("mollie");
+    public void ProviderName_IsMollie()
+    {
+        var factory = (ICheckoutSessionFactory)MollieTestHelper
+            .CreateInternal("Granit.Payments.Mollie.Internal.MollieCheckoutSessionFactory");
+
+        factory.ProviderName.ShouldBe("mollie");
+    }
 }
 
 public sealed class MolliePaymentMethodManagerTests
 {
-    private readonly IPaymentMethodManager _manager;
-
-    public MolliePaymentMethodManagerTests()
-    {
-        Type? type = typeof(GranitPaymentsMollieModule).Assembly
-            .GetType("Granit.Payments.Mollie.Internal.MolliePaymentMethodManager");
-
-        type.ShouldNotBeNull();
-        _manager = (Activator.CreateInstance(type) as IPaymentMethodManager)!;
-    }
-
     [Fact]
-    public void ProviderName_IsMollie() => _manager.ProviderName.ShouldBe("mollie");
+    public void ProviderName_IsMollie()
+    {
+        var manager = (IPaymentMethodManager)MollieTestHelper
+            .CreateInternal("Granit.Payments.Mollie.Internal.MolliePaymentMethodManager");
+
+        manager.ProviderName.ShouldBe("mollie");
+    }
 }

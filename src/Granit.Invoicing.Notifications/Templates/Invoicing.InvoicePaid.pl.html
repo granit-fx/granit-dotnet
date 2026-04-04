@@ -1,0 +1,10 @@
+<p>Witamy,</p>
+<p>Otrzymano płatność za fakturę <strong>{{ model.invoice_number | html.escape }}</strong>.</p>
+<ul>
+  <li><strong>Kwota:</strong> {{ model.total }} {{ model.currency }}</li>
+  <li><strong>Opłacona dnia:</strong> {{ model.paid_at | to_user_time | date.to_string "%d.%m.%Y o %H:%M" }}</li>
+</ul>
+<p>Dziękujemy za dokonanie płatności.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/invoices/{{ model.invoice_id }}" class="btn">Zobacz potwierdzenie</a>
+</p>

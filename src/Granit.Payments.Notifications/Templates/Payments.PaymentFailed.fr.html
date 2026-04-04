@@ -1,0 +1,13 @@
+<p>Bonjour,</p>
+<p>Nous n'avons pas pu traiter votre paiement :</p>
+<ul>
+  <li><strong>Montant :</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Prestataire :</strong> {{ model.provider_name | html.escape }}</li>
+  {{- if model.failure_code }}
+  <li><strong>Motif :</strong> {{ model.failure_code | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>Veuillez mettre à jour votre moyen de paiement pour éviter une interruption de service. Nous réessaierons automatiquement le paiement.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing" class="btn">Mettre à jour le paiement</a>
+</p>

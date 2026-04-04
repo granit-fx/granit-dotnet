@@ -10,7 +10,7 @@ public sealed class PaymentMethod : AuditedAggregateRoot, IMultiTenant
 
     /// <summary>Creates a new payment method.</summary>
     public static PaymentMethod Create(
-        Guid id, Guid tenantId, PaymentMethodType type,
+        Guid id, Guid tenantId, string type,
         string providerName, string providerMethodId,
         string displayLabel, DateTimeOffset? expiresAt = null) =>
         new()
@@ -25,9 +25,9 @@ public sealed class PaymentMethod : AuditedAggregateRoot, IMultiTenant
             IsDefault = false,
         };
 
-    public PaymentMethodType Type { get; private set; }
+    /// <summary>Payment method type identifier (e.g., "card", "ideal", "sepa_debit").</summary>
+    public string Type { get; private set; } = string.Empty;
     public string ProviderName { get; private set; } = string.Empty;
-    [SensitiveData(Level = Sensitivity.Confidential)]
     public string ProviderMethodId { get; private set; } = string.Empty;
 
     [SensitiveData]

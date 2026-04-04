@@ -523,14 +523,10 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
-      "granit.invoicing": {
+      "granit.invoicing.abstractions": {
         "type": "Project",
         "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Granit.Workflow": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.localization": {
@@ -543,12 +539,16 @@
           "SmartFormat": "[3.*, )"
         }
       },
-      "granit.metering": {
+      "granit.metering.abstractions": {
         "type": "Project",
         "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.payments.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.queryengine.abstractions": {

@@ -64,11 +64,11 @@ internal sealed partial class PuppeteerSharpRenderer(
                 },
             };
 
-            if (opts.HeaderTemplate is not null || opts.FooterTemplate is not null)
+            if (!string.IsNullOrEmpty(opts.HeaderTemplate) || !string.IsNullOrEmpty(opts.FooterTemplate))
             {
                 pdfOptions.DisplayHeaderFooter = true;
                 pdfOptions.HeaderTemplate = opts.HeaderTemplate ?? "<span></span>";
-                pdfOptions.FooterTemplate = opts.FooterTemplate ?? "<span></span>";
+                pdfOptions.FooterTemplate = opts.FooterTemplate;
             }
 
             byte[] pdfBytes = await page.PdfDataAsync(pdfOptions)

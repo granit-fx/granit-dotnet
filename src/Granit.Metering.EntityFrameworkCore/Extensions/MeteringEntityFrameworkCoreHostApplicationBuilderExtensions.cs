@@ -29,6 +29,9 @@ public static class MeteringEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddScoped<EfUsageAggregateStore>();
         builder.Services.TryAddScoped<IUsageReader>(sp => sp.GetRequiredService<EfUsageAggregateStore>());
 
+        builder.Services.TryAddScoped<IAggregationRunner, EfAggregationRunner>();
+        builder.Services.TryAddScoped<IQuotaChecker, EfQuotaChecker>();
+
         return builder;
     }
 }

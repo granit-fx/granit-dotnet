@@ -1,0 +1,10 @@
+{
+  "culture": "fr",
+  "texts": {
+    "PermissionGroup:Tax": "Taxes",
+    "Permission:Tax.Rates.Read": "Consulter les taux de taxe",
+    "Permission:Tax.Rates.Manage": "Gérer les surcharges de taux",
+    "Permission:Tax.Validations.Read": "Consulter les validations de numéros fiscaux",
+    "Permission:Tax.Validations.Execute": "Exécuter la validation d'un numéro fiscal (VIES, Stripe)"
+  }
+}

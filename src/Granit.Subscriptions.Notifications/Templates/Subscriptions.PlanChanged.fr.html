@@ -1,0 +1,7 @@
+<p>Bonjour,</p>
+<p>Votre abonnement a été mis à jour :</p>
+<ul>
+  <li><strong>Ancien plan :</strong> {{ model.previous_plan_name | html.escape }}</li>
+  <li><strong>Nouveau plan :</strong> {{ model.new_plan_name | html.escape }}</li>
+</ul>
+<p>Le changement est effectif immédiatement. Votre prochaine facture reflétera la nouvelle tarification.</p>

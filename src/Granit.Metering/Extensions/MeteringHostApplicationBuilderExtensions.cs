@@ -1,5 +1,6 @@
 using Granit.Diagnostics;
 using Granit.Metering.Diagnostics;
+using Granit.Metering.Internal;
 using Granit.Metering.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -18,7 +19,11 @@ public static class MeteringHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddGranitMetering(
         this IHostApplicationBuilder builder)
     {
+        builder.Services.Configure<GranitMeteringOptions>(
+            builder.Configuration.GetSection("Granit:Metering"));
+
         builder.Services.TryAddSingleton<MeteringMetrics>();
+        builder.Services.TryAddSingleton<IQuotaLimitProvider, UnlimitedQuotaLimitProvider>();
         GranitActivitySourceRegistry.Register(MeteringActivitySource.Name);
 
         return builder;

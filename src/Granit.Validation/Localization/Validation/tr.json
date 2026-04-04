@@ -69,6 +69,8 @@
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' doğru biçimde değil.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' toplamda {ExpectedPrecision} basamaktan fazla olmamalı ve {ExpectedScale} ondalık basamağa izin verilmelidir.",
     "Granit:Validation:ScheduledAction:FutureDate": "Planlanan tarih gelecekte olmalıdır.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Geçerlilik bitiş tarihi', 'Geçerlilik başlangıç tarihi'nden sonra olmalıdır."
+    "Granit:Validation:ValidToAfterValidFrom": "'Geçerlilik bitiş tarihi', 'Geçerlilik başlangıç tarihi'nden sonra olmalıdır.",
+    "Granit:Validation:PaymentAmountOutOfRange": "Ödeme tutarı izin verilen aralığın dışında.",
+    "Granit:Validation:UrlMustBeHttps": "URL, HTTPS kullanmalıdır."
   }
 }

@@ -22,6 +22,8 @@ internal sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subsc
         builder.Property(e => e.CancelAtPeriodEnd).IsRequired().HasDefaultValue(false);
         builder.Property(e => e.CancelledAt);
         builder.Property(e => e.CancellationReason).HasMaxLength(500);
+        builder.Property(e => e.Currency).HasMaxLength(3).IsRequired();
+        builder.Property(e => e.DunningAttempt).IsRequired().HasDefaultValue(0);
 
         builder.HasMany(e => e.Seats).WithOne().HasForeignKey("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(e => e.ExternalMappings).WithOne().HasForeignKey("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
@@ -30,7 +32,7 @@ internal sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subsc
             .HasDatabaseName($"ix_{GranitSubscriptionsDbProperties.DbTablePrefix}subscriptions_tenant_status");
 
         builder.HasIndex(e => e.TrialEndsAt)
-            .HasFilter("\"Status\" = 0")
+            .HasFilter($"\"Status\" = {(int)SubscriptionStatus.Trial}")
             .HasDatabaseName($"ix_{GranitSubscriptionsDbProperties.DbTablePrefix}subscriptions_trial_ends_at");
 
         builder.HasIndex(e => e.CurrentPeriodEnd)

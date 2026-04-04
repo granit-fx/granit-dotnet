@@ -1,0 +1,10 @@
+{
+  "culture": "zh",
+  "texts": {
+    "PermissionGroup:Tax": "税务",
+    "Permission:Tax.Rates.Read": "查看税率",
+    "Permission:Tax.Rates.Manage": "管理税率覆盖",
+    "Permission:Tax.Validations.Read": "查看已缓存的税号验证",
+    "Permission:Tax.Validations.Execute": "执行税号验证（VIES、Stripe）"
+  }
+}

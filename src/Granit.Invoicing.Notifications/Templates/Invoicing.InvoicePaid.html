@@ -1,0 +1,10 @@
+<p>Hi,</p>
+<p>Payment received for invoice <strong>{{ model.invoice_number | html.escape }}</strong>.</p>
+<ul>
+  <li><strong>Amount:</strong> {{ model.total }} {{ model.currency }}</li>
+  <li><strong>Paid on:</strong> {{ model.paid_at | to_user_time | date.to_string "%B %d, %Y at %H:%M" }}</li>
+</ul>
+<p>Thank you for your payment.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/invoices/{{ model.invoice_id }}" class="btn">View receipt</a>
+</p>

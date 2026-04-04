@@ -236,6 +236,11 @@
     <Project Path="src/Granit.Subscriptions.Internal/Granit.Subscriptions.Internal.csproj" />
     <Project Path="src/Granit.Subscriptions.Wolverine/Granit.Subscriptions.Wolverine.csproj" />
     <Project Path="src/Granit.Subscriptions/Granit.Subscriptions.csproj" />
+    <Project Path="src/Granit.Tax.Endpoints/Granit.Tax.Endpoints.csproj" />
+    <Project Path="src/Granit.Tax.EntityFrameworkCore/Granit.Tax.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Tax.Internal/Granit.Tax.Internal.csproj" />
+    <Project Path="src/Granit.Tax.Stripe/Granit.Tax.Stripe.csproj" />
+    <Project Path="src/Granit.Tax/Granit.Tax.csproj" />
   </Folder>
   <Folder Name="/src/AI/">
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
@@ -483,7 +488,6 @@
     <Project Path="src/Granit.Metering.BackgroundJobs/Granit.Metering.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Metering.Endpoints/Granit.Metering.Endpoints.csproj" />
     <Project Path="src/Granit.Metering.EntityFrameworkCore/Granit.Metering.EntityFrameworkCore.csproj" />
-    <Project Path="src/Granit.Metering.Wolverine/Granit.Metering.Wolverine.csproj" />
     <Project Path="src/Granit.Metering/Granit.Metering.csproj" />
     <Project Path="src/Granit.Payments.Notifications/Granit.Payments.Notifications.csproj" />
     <Project Path="src/Granit.Subscriptions.Notifications/Granit.Subscriptions.Notifications.csproj" />
@@ -496,7 +500,6 @@
     <Project Path="tests/Granit.Metering.BackgroundJobs.Tests/Granit.Metering.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Metering.Endpoints.Tests/Granit.Metering.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Metering.EntityFrameworkCore.Tests/Granit.Metering.EntityFrameworkCore.Tests.csproj" />
-    <Project Path="tests/Granit.Metering.Wolverine.Tests/Granit.Metering.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Payments.Endpoints.Tests/Granit.Payments.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Payments.EntityFrameworkCore.Tests/Granit.Payments.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Payments.Mollie.Tests/Granit.Payments.Mollie.Tests.csproj" />
@@ -515,6 +518,11 @@
     <Project Path="tests/Granit.Subscriptions.Internal.Tests/Granit.Subscriptions.Internal.Tests.csproj" />
     <Project Path="tests/Granit.Subscriptions.Notifications.Tests/Granit.Subscriptions.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Subscriptions.Wolverine.Tests/Granit.Subscriptions.Wolverine.Tests.csproj" />
+    <Project Path="tests/Granit.Tax.Endpoints.Tests/Granit.Tax.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.Tax.EntityFrameworkCore.Tests/Granit.Tax.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Tax.Internal.Tests/Granit.Tax.Internal.Tests.csproj" />
+    <Project Path="tests/Granit.Tax.Stripe.Tests/Granit.Tax.Stripe.Tests.csproj" />
+    <Project Path="tests/Granit.Tax.Tests/Granit.Tax.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />

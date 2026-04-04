@@ -1,0 +1,9 @@
+<p>こんにちは、</p>
+<p>お客様のアカウントに対して返金処理が行われました：</p>
+<ul>
+  <li><strong>金額：</strong>{{ model.amount }} {{ model.currency }}</li>
+  {{- if model.reason }}
+  <li><strong>理由：</strong>{{ model.reason | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>返金は、ご利用の決済プロバイダーにより、5～10営業日以内にアカウントに反映されます。</p>

@@ -1,0 +1,9 @@
+<p>Dobrý den,</p>
+<p>Na vašem účtu bylo zpracováno vrácení peněz:</p>
+<ul>
+  <li><strong>Částka:</strong> {{ model.amount }} {{ model.currency }}</li>
+  {{- if model.reason }}
+  <li><strong>Důvod:</strong> {{ model.reason | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>Vrácení peněz by se mělo na vašem účtu objevit do 5–10 pracovních dnů v závislosti na vašem poskytovateli plateb.</p>
