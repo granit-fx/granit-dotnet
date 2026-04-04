@@ -108,9 +108,21 @@ internal sealed class ScribanTemplateEngine(
     {
         ScriptObject globals = [];
 
-        // Expose TData as "model" with snake_case property names (PascalCase → snake_case)
+        // Expose TData as "model" with snake_case property names (PascalCase → snake_case).
+        // Scriban's Import skips the renamer for IDictionary (upstream TODO), so we handle it manually.
         ScriptObject model = [];
-        model.Import(data, renamer: StandardMemberRenamer.Default);
+        if (data is IDictionary<string, object?> dict)
+        {
+            foreach ((string key, object? value) in dict)
+            {
+                model.SetValue(StandardMemberRenamer.Rename(key), value, readOnly: false);
+            }
+        }
+        else
+        {
+            model.Import(data, renamer: StandardMemberRenamer.Default);
+        }
+
         globals.SetValue("model", model, readOnly: true);
 
         // Inject each global context under its ContextName
