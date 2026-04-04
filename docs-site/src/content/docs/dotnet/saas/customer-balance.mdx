@@ -100,6 +100,35 @@ existing deduction and skips the debit — only applies the credit note.
 | GET | `/api/granit/customer-balance/transactions?currency=EUR` | `CustomerBalance.Transactions.Read` |
 | POST | `/api/granit/customer-balance/credit` | `CustomerBalance.Credits.Manage` |
 
+## Domain services
+
+Business logic is encapsulated in domain services, keeping Wolverine/BackgroundJob
+handlers as thin pass-through delegates.
+
+| Interface | Responsibility | Package |
+| --------- | -------------- | ------- |
+| `ICreditExpirationService` | Scans expired promotional credits, debits balances, publishes `CreditExpiredEto` | `Granit.CustomerBalance` |
+| `IOverpaymentCreditService` | Credits overpayment surplus to a tenant's balance account (creates account if needed) | `Granit.CustomerBalance` |
+
+```csharp
+// ICreditExpirationService — called by CreditExpirationScanHandler
+public interface ICreditExpirationService
+{
+    Task<int> ExpireCreditsAsync(CancellationToken cancellationToken = default);
+}
+
+// IOverpaymentCreditService — called by OverpaymentCreditHandler
+public interface IOverpaymentCreditService
+{
+    Task CreditOverpaymentAsync(
+        Guid tenantId, string currency, decimal amount, Guid invoiceId,
+        CancellationToken cancellationToken = default);
+}
+```
+
+Both services are registered automatically by `AddGranitCustomerBalance()` and
+can be replaced via `TryAddTransient` for testing or custom implementations.
+
 ## Quick start
 
 ```csharp

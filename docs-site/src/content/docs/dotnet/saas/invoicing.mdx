@@ -53,13 +53,18 @@ The `EnsureDraft()` guard throws `InvalidOperationException` on any mutation att
 ## Unified Invoice + Credit Note
 
 Invoices and credit notes share the same aggregate, differentiated by
-`InvoiceDocumentType`:
+`InvoiceDocumentType`. Value Objects group related parameters:
+
+- **`BillingPeriod(Start, End)`** — billing period dates
+- **`CreditNoteInfo(ParentInvoiceId, Reason)`** — credit note link + reason
+- **`LineItemSource(Type, Id?)`** — agnostic source reference
 
 ```csharp
-// Regular invoice
+// Regular invoice with billing period
 var invoice = Invoice.Create(id, tenantId,
     InvoiceDocumentType.Invoice, "EUR",
-    CollectionMethod.Auto, BillingReason.SubscriptionCycle);
+    CollectionMethod.Auto, BillingReason.SubscriptionCycle,
+    period: new BillingPeriod(periodStart, periodEnd));
 
 // Credit note (linked to parent invoice)
 var creditNote = Invoice.CreateCreditNote(id, tenantId,
@@ -158,6 +163,30 @@ Key derivation by handler:
 |---------|-----------|
 | `BillingCycleCompletedHandler` | `billing-cycle-{subscriptionId}-{periodEnd:yyyyMMdd}` |
 | `UsageSummaryReadyHandler` | `usage-{tenantId}-{meterId}-{periodEnd:yyyyMMdd}` |
+
+## Domain services
+
+Business logic is encapsulated in domain services, keeping handlers as thin
+pass-through delegates.
+
+| Interface | Responsibility | Package |
+| --------- | -------------- | ------- |
+| `IInvoiceCreationService` | Creates draft invoices, calculates tax, generates numbers, finalizes | `Granit.Invoicing` |
+| `IOverdueInvoiceDetectionService` | Scans open invoices past due date, publishes `InvoiceOverdueEto` | `Granit.Invoicing` |
+
+`IInvoiceCreationService` is the domain entry point for `CreateInvoiceCommand`
+processing. It handles the full draft → finalize flow including optional
+`ITaxCalculator` and `IInvoiceNumberGenerator` integration:
+
+```csharp
+public interface IInvoiceCreationService
+{
+    Task CreateAsync(CreateInvoiceCommand command,
+        CancellationToken cancellationToken = default);
+}
+```
+
+Both services are registered automatically by `AddGranitInvoicing()`.
 
 ## Admin API
 

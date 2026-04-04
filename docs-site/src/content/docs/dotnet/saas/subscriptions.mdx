@@ -134,6 +134,23 @@ Built-in providers:
 | Internal | `Granit.Subscriptions.Internal` | None (no-op, zero dependency) |
 | Stripe | `Granit.Subscriptions.Stripe` | All (Phase 2) |
 
+## Value Objects
+
+### SubscriptionPeriod
+
+Groups the billing period boundaries and the anchor date used to compute future periods:
+
+```csharp
+public sealed record SubscriptionPeriod(
+    DateTimeOffset Start,
+    DateTimeOffset End,
+    DateTimeOffset BillingCycleAnchor);
+```
+
+The `BillingCycleAnchor` is the reference date for calculating period boundaries.
+For example, an anchor of January 15 means periods always align on the 15th
+(Feb 15, Mar 15…) regardless of when the subscription was actually created.
+
 ## Multi-currency
 
 Each subscription stores the **currency selected at creation** (`Currency` property,
@@ -144,7 +161,7 @@ Plans can have multiple `PlanPrice` entries for different currency/interval comb
 var subscription = Subscription.Create(
     id, tenantId, planId,
     currency: "EUR",       // ← stored on the subscription
-    periodStart, periodEnd, billingCycleAnchor);
+    new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now));
 ```
 
 ## Pricing resolution
@@ -222,6 +239,24 @@ subscription.RevokeSeat(userId);
 ```
 
 CQRS split: `ISeatReader` (query) / `ISeatWriter` (command).
+
+## Domain services
+
+Business logic is encapsulated in domain services, keeping all handlers as thin
+pass-through delegates.
+
+| Interface | Responsibility | Package |
+| --------- | -------------- | ------- |
+| `IPeriodAdvancementService` | Advances billing periods for subscriptions past their period end | `Granit.Subscriptions` |
+| `ICancelAtPeriodEndService` | Cancels subscriptions flagged for end-of-period cancellation | `Granit.Subscriptions` |
+| `ISubscriptionReactivationService` | Reactivates PastDue subscriptions after payment, resets dunning | `Granit.Subscriptions` |
+| `IDunningService` | Handles payment failures: PastDue transition, retry scheduling, suspension | `Granit.Subscriptions` |
+| `ISubscriptionProviderSyncService` | Syncs cancellations to external providers (Stripe, etc.) | `Granit.Subscriptions` |
+
+All five services are registered automatically by `AddGranitSubscriptions()`.
+Application-level orchestrators (billing cycle invoice creation, usage invoice
+creation, payment retry dispatch) are internal to their respective
+`.Wolverine` / `.BackgroundJobs` packages.
 
 ## Background jobs
 
