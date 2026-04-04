@@ -1,5 +1,6 @@
 using Granit.Diagnostics;
 using Granit.Metering.Diagnostics;
+using Granit.Metering.Internal;
 using Granit.Metering.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

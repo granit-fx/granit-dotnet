@@ -1,6 +1,6 @@
 using Granit.Metering.Domain.ValueObjects;
 
-namespace Granit.Metering;
+namespace Granit.Metering.Internal;
 
 /// <summary>
 /// Default <see cref="IQuotaLimitProvider"/> that treats all meters as unlimited.

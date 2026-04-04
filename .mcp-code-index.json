@@ -20245,7 +20245,7 @@
       "kind": "class",
       "project": "Granit.Metering",
       "file": "src/Granit.Metering/Extensions/MeteringHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitMetering",
