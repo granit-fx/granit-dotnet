@@ -1,3 +1,4 @@
+using Granit.Invoicing;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Events;
 using Granit.MultiTenancy;
@@ -10,12 +11,15 @@ namespace Granit.Payments.Wolverine.Handlers;
 
 /// <summary>
 /// Automatically initiates payment when an invoice is finalized with auto-collection.
-/// Uses the tenant's default saved payment method to determine the provider and method type.
+/// Delegates to <see cref="IInvoicePrePaymentProcessor"/> before charging — the default
+/// pass-through returns the full total, but <c>Granit.CustomerBalance.Wolverine</c> can
+/// replace it to deduct available credit first.
 /// </summary>
 internal static partial class AutoChargeOnInvoiceHandler
 {
     public static async Task HandleAsync(
         InvoiceFinalizedEto eto,
+        IInvoicePrePaymentProcessor prePaymentProcessor,
         IPaymentMethodReader paymentMethodReader,
         IMessageBus messageBus,
         ICurrentTenant currentTenant,
@@ -24,9 +28,18 @@ internal static partial class AutoChargeOnInvoiceHandler
     {
         using (currentTenant.Change(eto.TenantId))
         {
+            PrePaymentResult result = await prePaymentProcessor
+                .ProcessAsync(eto, cancellationToken).ConfigureAwait(false);
+
             if (eto.CollectionMethod != CollectionMethod.Auto)
             {
                 Log.ManualCollection(logger, eto.InvoiceId);
+                return;
+            }
+
+            if (result.RemainingAmount <= 0)
+            {
+                Log.FullyCoveredByCredit(logger, eto.InvoiceId);
                 return;
             }
 
@@ -43,24 +56,27 @@ internal static partial class AutoChargeOnInvoiceHandler
             var command = new InitiatePaymentCommand(
                 eto.InvoiceId,
                 eto.TenantId,
-                eto.Total,
+                result.RemainingAmount,
                 eto.Currency,
                 defaultMethod.Type,
                 $"inv-{eto.InvoiceId:N}",
                 defaultMethod.ProviderName);
 
             await messageBus.SendAsync(command).ConfigureAwait(false);
-            Log.PaymentInitiated(logger, eto.InvoiceId, defaultMethod.Type, defaultMethod.ProviderName);
+            Log.PaymentInitiated(logger, eto.InvoiceId, result.RemainingAmount, defaultMethod.Type, defaultMethod.ProviderName);
         }
     }
 
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Information, Message = "Auto-charge initiated for invoice {InvoiceId} via {MethodType} ({ProviderName})")]
-        public static partial void PaymentInitiated(ILogger logger, Guid invoiceId, string methodType, string providerName);
+        [LoggerMessage(Level = LogLevel.Information, Message = "Auto-charge initiated for invoice {InvoiceId}: {Amount} via {MethodType} ({ProviderName})")]
+        public static partial void PaymentInitiated(ILogger logger, Guid invoiceId, decimal amount, string methodType, string providerName);
 
         [LoggerMessage(Level = LogLevel.Information, Message = "Skipping auto-charge for invoice {InvoiceId} (manual collection)")]
         public static partial void ManualCollection(ILogger logger, Guid invoiceId);
+
+        [LoggerMessage(Level = LogLevel.Information, Message = "Invoice {InvoiceId} fully covered by credit balance, no PSP charge needed")]
+        public static partial void FullyCoveredByCredit(ILogger logger, Guid invoiceId);
 
         [LoggerMessage(Level = LogLevel.Warning, Message = "No default payment method for tenant {TenantId}, cannot auto-charge invoice {InvoiceId}")]
         public static partial void NoDefaultPaymentMethod(ILogger logger, Guid tenantId, Guid invoiceId);

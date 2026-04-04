@@ -1,0 +1,9 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:CustomerBalance": "Klantsaldo",
+    "Permission:CustomerBalance.Accounts.Read": "Saldorekeningen bekijken",
+    "Permission:CustomerBalance.Transactions.Read": "Transactiegeschiedenis bekijken",
+    "Permission:CustomerBalance.Credits.Manage": "Tegoed beheren (toevoegen, aanpassen)"
+  }
+}

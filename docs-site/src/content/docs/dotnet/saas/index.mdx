@@ -8,10 +8,10 @@ sidebar:
 
 import { FileTree } from "@astrojs/starlight/components";
 
-Granit provides a complete SaaS & Commerce ecosystem through four interdependent modules.
+Granit provides a complete SaaS & Commerce ecosystem through five interdependent modules.
 Together they cover the full monetization lifecycle: **plans → subscriptions → usage tracking →
-invoicing → payment collection**, with sovereignty-first design (SEPA transfer works without
-any external dependency).
+invoicing → credit balance → payment collection**, with sovereignty-first design (SEPA transfer
+works without any external dependency).
 
 ## Architecture
 
@@ -23,6 +23,8 @@ graph TD
         INV -->|InvoiceFinalizedEto| PAY[Granit.Payments]
         PAY -->|PaymentSucceededEto| INV
         INV -->|InvoicePaidEto| SUB
+        INV -->|OverpaymentDetectedEto| BAL[Granit.CustomerBalance]
+        BAL -->|IInvoicePrePaymentProcessor| PAY
     end
 
     SCH[Granit.Scheduling] -.->|scheduled plan changes| SUB
@@ -32,6 +34,7 @@ graph TD
     style INV fill:#ff9f43,color:#fff
     style PAY fill:#2ed573,color:#fff
     style MET fill:#a55eea,color:#fff
+    style BAL fill:#ff6b81,color:#fff
 ```
 
 ## Event choreography
@@ -49,6 +52,11 @@ Metering ──UsageSummaryReadyEto──→ Subscriptions (billing cycle orches
                                         └──CreateInvoiceCommand──→ Invoicing
                                                                       │
                                               InvoiceFinalizedEto ←───┘
+                                                      │
+                                                      ▼
+                                            IInvoicePrePaymentProcessor
+                                              (CustomerBalance deducts credit,
+                                               or PassThrough if not installed)
                                                       │
                                                       ▼
                                                   Payments
@@ -76,6 +84,7 @@ listened to `PaymentSucceededEto`, it would never renew in this scenario.
 | [Payments](/dotnet/saas/payments/) | Provider-agnostic payment processing, webhooks, refunds, disputes | 1 |
 | [Metering](/dotnet/saas/metering/) | Usage event recording, watermark aggregation, quota enforcement | 1 |
 | [Tax](/dotnet/saas/tax/) | Tax calculation (EU VAT, Stripe Tax), VIES validation, rate management | 2 |
+| [Customer Balance](/dotnet/saas/customer-balance/) | Per-tenant credit ledger, pre-payment deduction, promotional credits with expiration | 3 |
 
 Each module has a `.Notifications` package with `NotificationType<TData>` definitions
 (15 types total: 6 Subscriptions, 4 Invoicing, 5 Payments). Email templates are Phase 2.
@@ -116,7 +125,7 @@ iDEAL → Mollie).
 |-------|-------|--------|
 | **1** | Subscriptions + Invoicing + Payments (Stripe + Mollie) + Metering + Notifications | Implemented |
 | **2** | SEPA providers, Invoicing.Internal (PDF), Invoicing.Odoo, Tax (EU VAT + Stripe Tax), dunning, multi-currency, pricing resolver | Implemented |
-| **3** | Email templates, credit/balance system, Open Banking (PSD2), Granit.Commerce | Planned |
+| **3** | Email templates, customer balance (credit ledger), Open Banking (PSD2), Granit.Commerce | Implemented |
 
 ## Compliance
 

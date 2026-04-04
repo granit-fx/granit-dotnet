@@ -1,0 +1,115 @@
+---
+title: "Customer Balance — Credit Ledger"
+description: Per-tenant, per-currency credit balance with append-only ledger. Manages accounting credits (promotional, overpayment surplus, manual adjustments) applied before PSP charges. Strategy pattern intercepts billing flow between Invoicing and Payments.
+sidebar:
+  label: Customer Balance
+  order: 6
+---
+
+import { FileTree } from "@astrojs/starlight/components";
+
+Granit.CustomerBalance is a **credit ledger** — not a payment method or e-money system.
+It manages accounting credits (promotional, overpayment surplus, manual adjustments)
+that are **applied before PSP charges**. The module intercepts the billing flow between
+Invoicing and Payments via a strategy pattern (`IInvoicePrePaymentProcessor`).
+
+:::note
+For digital wallet payment methods (Apple Pay, Google Pay), see your PSP provider
+integration (e.g., `Granit.Payments.Stripe`). For receiving bank transfers and
+reconciliation (Stripe Cash Balance equivalent), a separate module would be needed.
+:::
+
+## Package structure
+
+<FileTree>
+- Granit.CustomerBalance/ Domain: BalanceAccount, BalanceTransaction, events, CQRS interfaces
+  - Granit.CustomerBalance.EntityFrameworkCore Isolated DbContext, append-only store
+  - Granit.CustomerBalance.Endpoints Balance inquiry, transaction history, admin credit
+  - Granit.CustomerBalance.Wolverine Billing choreography (deduction + overpayment)
+  - Granit.CustomerBalance.BackgroundJobs Credit expiration scan
+</FileTree>
+
+## Domain model
+
+### BalanceAccount (AggregateRoot)
+
+Per-tenant, per-currency credit balance with cached running total:
+
+- **Composite business key**: `(TenantId, Currency)` — unique index
+- **Balance**: cached running total, protected by `IConcurrencyAware` (optimistic concurrency)
+- **Transactions**: append-only `BalanceTransaction` child entities (ISO 27001 audit trail)
+- **Credit()**: adds credit, updates balance, raises `BalanceCreditedEto`
+- **Debit()**: deducts credit, updates balance, raises `BalanceDebitedEto`
+
+### BalanceTransaction (Entity, append-only)
+
+Immutable ledger entry with generic document linking:
+
+| Property | Description |
+| -------- | ----------- |
+| `Type` | `Credit` or `Debit` |
+| `Amount` | Always positive (direction from Type) |
+| `Source` | `Promotional`, `Overpayment`, `ManualAdjustment`, `InvoiceDeduction`, `RefundCredit`, `Expiration` |
+| `ReferenceId` | Optional external document (invoice, refund, etc.) |
+| `ReferenceType` | Type of referenced document (`"Invoice"`, `"Refund"`, etc.) |
+| `ExpiresAt` | Expiration date for promotional credits |
+
+## Billing flow integration
+
+The module uses a **strategy pattern** to intercept the billing flow — no cascading events,
+no race conditions:
+
+```text
+InvoiceFinalizedEto
+  │
+  ▼
+AutoChargeOnInvoiceHandler (Payments.Wolverine)
+  │
+  ├── Delegates to IInvoicePrePaymentProcessor
+  │   ├── Without CustomerBalance: PassThroughPrePaymentProcessor (full amount)
+  │   └── With CustomerBalance: CustomerBalancePrePaymentProcessor (deducts credit)
+  │
+  ▼
+InitiatePaymentCommand (remaining amount) → PSP
+```
+
+### Opt-in architecture
+
+- **Without CustomerBalance installed**: `TryAddScoped` registers the pass-through. PSP charges full amount.
+- **With CustomerBalance installed**: `services.Replace()` swaps the processor. Credit deducted first.
+
+### Idempotency
+
+Debit operations use `ReferenceId` as a deduplication key. If Wolverine retries after a
+partial failure (wallet debited, credit note not yet applied), the retry detects the
+existing deduction and skips the debit — only applies the credit note.
+
+## Integration events
+
+| Event | Trigger |
+| ----- | ------- |
+| `BalanceCreditedEto` | Credit added (overpayment, promotional, manual) |
+| `BalanceDebitedEto` | Credit deducted (invoice, expiration) |
+| `CreditExpiredEto` | Promotional credit expired by background job |
+
+## API endpoints
+
+| Method | Route | Permission |
+| ------ | ----- | ---------- |
+| GET | `/api/granit/customer-balance/balance?currency=EUR` | `CustomerBalance.Accounts.Read` |
+| GET | `/api/granit/customer-balance/transactions?currency=EUR` | `CustomerBalance.Transactions.Read` |
+| POST | `/api/granit/customer-balance/credit` | `CustomerBalance.Credits.Manage` |
+
+## Quick start
+
+```csharp
+// Core + persistence
+builder.AddGranitCustomerBalance();
+builder.AddGranitCustomerBalanceEntityFrameworkCore(options => ...);
+
+// Billing integration (optional — requires Invoicing + Wolverine)
+builder.AddModule<GranitCustomerBalanceWolverineModule>();
+
+// Credit expiration (optional)
+builder.AddModule<GranitCustomerBalanceBackgroundJobsModule>();
+```

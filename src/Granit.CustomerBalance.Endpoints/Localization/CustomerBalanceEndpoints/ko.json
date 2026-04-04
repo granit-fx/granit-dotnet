@@ -1,0 +1,9 @@
+{
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:CustomerBalance": "Customer Balance",
+    "Permission:CustomerBalance.Accounts.Read": "View balance accounts",
+    "Permission:CustomerBalance.Transactions.Read": "View transaction history",
+    "Permission:CustomerBalance.Credits.Manage": "Manage credits (add, adjust)"
+  }
+}

@@ -425,6 +425,50 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.CustomerBalance",
+      "deps": [
+        "Granit",
+        "Granit.Guids",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.CustomerBalance.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.CustomerBalance"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.CustomerBalance.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.CustomerBalance",
+        "Granit.QueryEngine.AspNetCore",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.CustomerBalance.EntityFrameworkCore",
+      "deps": [
+        "Granit.CustomerBalance",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.CustomerBalance.Wolverine",
+      "deps": [
+        "Granit.CustomerBalance",
+        "Granit.Invoicing",
+        "Granit.Wolverine"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.DataExchange",
       "deps": [
         "Granit.Events",
@@ -8724,6 +8768,445 @@
           "kind": "property",
           "signature": "string InstanceName",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitCustomerBalanceBackgroundJobsModule",
+      "fqn": "Granit.CustomerBalance.BackgroundJobs.GranitCustomerBalanceBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.BackgroundJobs",
+      "file": "src/Granit.CustomerBalance.BackgroundJobs/GranitCustomerBalanceBackgroundJobsModule.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "CreditExpirationScanJob",
+      "fqn": "Granit.CustomerBalance.BackgroundJobs.Jobs.CreditExpirationScanJob",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.BackgroundJobs",
+      "file": "src/Granit.CustomerBalance.BackgroundJobs/Jobs/CreditExpirationScanJob.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "CustomerBalanceMetrics",
+      "fqn": "Granit.CustomerBalance.Diagnostics.CustomerBalanceMetrics",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Diagnostics/CustomerBalanceMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "BalanceAccount",
+      "fqn": "Granit.CustomerBalance.Domain.BalanceAccount",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Domain/BalanceAccount.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid tenantId, string currency)",
+          "returnType": "BalanceAccount"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "decimal Balance { get; private set; } public IReadOnlyList<BalanceTransaction> Transactions => _transactions."
+        },
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "ConcurrencyStamp",
+          "kind": "property",
+          "signature": "string ConcurrencyStamp",
+          "returnType": "string"
+        },
+        {
+          "name": "Credit",
+          "kind": "method",
+          "signature": "Credit(decimal amount, TransactionSource source, string reason, DateTimeOffset createdAt, Guid transactionId, Guid? referenceId = null, string? referenceType = null, DateTimeOffset? expiresAt = null)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "BalanceTransaction",
+      "fqn": "Granit.CustomerBalance.Domain.BalanceTransaction",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Domain/BalanceTransaction.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "TransactionSource",
+      "fqn": "Granit.CustomerBalance.Domain.TransactionSource",
+      "kind": "enum",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Domain/TransactionSource.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TransactionType",
+      "fqn": "Granit.CustomerBalance.Domain.TransactionType",
+      "kind": "enum",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Domain/TransactionType.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "BalanceAccountId",
+      "fqn": "Granit.CustomerBalance.Domain.ValueObjects.BalanceAccountId",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Domain/ValueObjects/BalanceAccountId.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid value)",
+          "returnType": "required Guid Value { get; init; } public BalanceAccountId"
+        },
+        {
+          "name": "BalanceAccountId",
+          "kind": "method",
+          "signature": "BalanceAccountId(Guid value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
+      "name": "BalanceTransactionId",
+      "fqn": "Granit.CustomerBalance.Domain.ValueObjects.BalanceTransactionId",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Domain/ValueObjects/BalanceTransactionId.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid value)",
+          "returnType": "required Guid Value { get; init; } public BalanceTransactionId"
+        },
+        {
+          "name": "BalanceTransactionId",
+          "kind": "method",
+          "signature": "BalanceTransactionId(Guid value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
+      "name": "AdminCreditRequest",
+      "fqn": "Granit.CustomerBalance.Endpoints.Dtos.AdminCreditRequest",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.Endpoints",
+      "file": "src/Granit.CustomerBalance.Endpoints/Dtos/AdminCreditRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "BalanceTransactionResponse",
+      "fqn": "Granit.CustomerBalance.Endpoints.Dtos.BalanceTransactionResponse",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.Endpoints",
+      "file": "src/Granit.CustomerBalance.Endpoints/Dtos/BalanceTransactionResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "CustomerBalanceResponse",
+      "fqn": "Granit.CustomerBalance.Endpoints.Dtos.CustomerBalanceResponse",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.Endpoints",
+      "file": "src/Granit.CustomerBalance.Endpoints/Dtos/CustomerBalanceResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "CustomerBalanceEndpointRouteBuilderExtensions",
+      "fqn": "Granit.CustomerBalance.Endpoints.Extensions.CustomerBalanceEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Endpoints",
+      "file": "src/Granit.CustomerBalance.Endpoints/Extensions/CustomerBalanceEndpointRouteBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "MapGranitCustomerBalance",
+          "kind": "method",
+          "signature": "MapGranitCustomerBalance(this IEndpointRouteBuilder endpoints)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitCustomerBalanceEndpointsModule",
+      "fqn": "Granit.CustomerBalance.Endpoints.GranitCustomerBalanceEndpointsModule",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Endpoints",
+      "file": "src/Granit.CustomerBalance.Endpoints/GranitCustomerBalanceEndpointsModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "Accounts",
+      "fqn": "Granit.CustomerBalance.Endpoints.Permissions.Accounts",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Endpoints",
+      "file": "src/Granit.CustomerBalance.Endpoints/Permissions/CustomerBalancePermissions.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "Credits",
+      "fqn": "Granit.CustomerBalance.Endpoints.Permissions.Credits",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Endpoints",
+      "file": "src/Granit.CustomerBalance.Endpoints/Permissions/CustomerBalancePermissions.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "CustomerBalancePermissions",
+      "fqn": "Granit.CustomerBalance.Endpoints.Permissions.CustomerBalancePermissions",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Endpoints",
+      "file": "src/Granit.CustomerBalance.Endpoints/Permissions/CustomerBalancePermissions.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "Transactions",
+      "fqn": "Granit.CustomerBalance.Endpoints.Permissions.Transactions",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Endpoints",
+      "file": "src/Granit.CustomerBalance.Endpoints/Permissions/CustomerBalancePermissions.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "CustomerBalanceEfCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.CustomerBalance.EntityFrameworkCore.Extensions.CustomerBalanceEfCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.EntityFrameworkCore",
+      "file": "src/Granit.CustomerBalance.EntityFrameworkCore/Extensions/CustomerBalanceEfCoreHostApplicationBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitCustomerBalanceEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitCustomerBalanceEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "CustomerBalanceModelBuilderExtensions",
+      "fqn": "Granit.CustomerBalance.EntityFrameworkCore.Extensions.CustomerBalanceModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.EntityFrameworkCore",
+      "file": "src/Granit.CustomerBalance.EntityFrameworkCore/Extensions/CustomerBalanceModelBuilderExtensions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ConfigureCustomerBalanceModule",
+          "kind": "method",
+          "signature": "ConfigureCustomerBalanceModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitCustomerBalanceDbProperties",
+      "fqn": "Granit.CustomerBalance.EntityFrameworkCore.GranitCustomerBalanceDbProperties",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.EntityFrameworkCore",
+      "file": "src/Granit.CustomerBalance.EntityFrameworkCore/GranitCustomerBalanceDbProperties.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitCustomerBalanceEntityFrameworkCoreModule",
+      "fqn": "Granit.CustomerBalance.EntityFrameworkCore.GranitCustomerBalanceEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.EntityFrameworkCore",
+      "file": "src/Granit.CustomerBalance.EntityFrameworkCore/GranitCustomerBalanceEntityFrameworkCoreModule.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "BalanceCreditedEto",
+      "fqn": "Granit.CustomerBalance.Events.BalanceCreditedEto",
+      "kind": "record",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Events/BalanceCreditedEto.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "BalanceDebitedEto",
+      "fqn": "Granit.CustomerBalance.Events.BalanceDebitedEto",
+      "kind": "record",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Events/BalanceDebitedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "CreditExpiredEto",
+      "fqn": "Granit.CustomerBalance.Events.CreditExpiredEto",
+      "kind": "record",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Events/CreditExpiredEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InsufficientBalanceException",
+      "fqn": "Granit.CustomerBalance.Exceptions.InsufficientBalanceException",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Exceptions/InsufficientBalanceException.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "CustomerBalanceHostApplicationBuilderExtensions",
+      "fqn": "Granit.CustomerBalance.Extensions.CustomerBalanceHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Extensions/CustomerBalanceHostApplicationBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitCustomerBalance",
+          "kind": "method",
+          "signature": "AddGranitCustomerBalance(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitCustomerBalanceModule",
+      "fqn": "Granit.CustomerBalance.GranitCustomerBalanceModule",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/GranitCustomerBalanceModule.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IBalanceAccountReader",
+      "fqn": "Granit.CustomerBalance.IBalanceAccountReader",
+      "kind": "interface",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/IBalanceAccountReader.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(BalanceAccountId id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<BalanceAccount?>"
+        },
+        {
+          "name": "GetByTenantAndCurrencyAsync",
+          "kind": "method",
+          "signature": "GetByTenantAndCurrencyAsync(Guid tenantId, string currency, CancellationToken cancellationToken = default)",
+          "returnType": "Task<BalanceAccount?>"
+        },
+        {
+          "name": "GetByTenantAsync",
+          "kind": "method",
+          "signature": "GetByTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<BalanceAccount>>"
+        }
+      ]
+    },
+    {
+      "name": "IBalanceAccountWriter",
+      "fqn": "Granit.CustomerBalance.IBalanceAccountWriter",
+      "kind": "interface",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/IBalanceAccountWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(BalanceAccount account, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(BalanceAccount account, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IBalanceTransactionReader",
+      "fqn": "Granit.CustomerBalance.IBalanceTransactionReader",
+      "kind": "interface",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/IBalanceTransactionReader.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "GetByAccountAsync",
+          "kind": "method",
+          "signature": "GetByAccountAsync(BalanceAccountId accountId, int page, int pageSize, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<BalanceTransaction>>"
+        },
+        {
+          "name": "GetExpiredCreditsAsync",
+          "kind": "method",
+          "signature": "GetExpiredCreditsAsync(DateTimeOffset now, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<BalanceTransaction>>"
+        }
+      ]
+    },
+    {
+      "name": "GranitCustomerBalanceWolverineModule",
+      "fqn": "Granit.CustomerBalance.Wolverine.GranitCustomerBalanceWolverineModule",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Wolverine",
+      "file": "src/Granit.CustomerBalance.Wolverine/GranitCustomerBalanceWolverineModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },
@@ -18412,6 +18895,22 @@
       ]
     },
     {
+      "name": "IInvoicePrePaymentProcessor",
+      "fqn": "Granit.Invoicing.IInvoicePrePaymentProcessor",
+      "kind": "interface",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/IInvoicePrePaymentProcessor.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ProcessAsync",
+          "kind": "method",
+          "signature": "ProcessAsync(InvoiceFinalizedEto eto, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PrePaymentResult>"
+        }
+      ]
+    },
+    {
       "name": "IInvoiceReader",
       "fqn": "Granit.Invoicing.IInvoiceReader",
       "kind": "interface",
@@ -18784,6 +19283,15 @@
           "returnType": "int"
         }
       ]
+    },
+    {
+      "name": "PrePaymentResult",
+      "fqn": "Granit.Invoicing.PrePaymentResult",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/IInvoicePrePaymentProcessor.cs",
+      "line": 33,
+      "members": []
     },
     {
       "name": "GranitInvoicingWolverineModule",
@@ -26844,8 +27352,15 @@
       "kind": "class",
       "project": "Granit.Payments.Wolverine",
       "file": "src/Granit.Payments.Wolverine/GranitPaymentsWolverineModule.cs",
-      "line": 10,
-      "members": []
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "DataSeedContext",
