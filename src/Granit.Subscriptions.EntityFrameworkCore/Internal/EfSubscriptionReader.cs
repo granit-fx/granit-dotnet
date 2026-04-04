@@ -50,4 +50,12 @@ internal sealed class EfSubscriptionReader(
                 s.Status == SubscriptionStatus.Active &&
                 s.CurrentPeriodEnd <= now),
             cancellationToken);
+
+    public Task<IReadOnlyList<Subscription>> GetActiveByPlanAsync(
+        PlanId planId, CancellationToken cancellationToken = default) =>
+        ListAsync(
+            Spec.For<Subscription>().Where(s =>
+                s.PlanId == planId &&
+                (s.Status == SubscriptionStatus.Active || s.Status == SubscriptionStatus.Trial)),
+            cancellationToken);
 }

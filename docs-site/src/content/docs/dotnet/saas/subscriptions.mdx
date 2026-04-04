@@ -47,8 +47,8 @@ var plan = Plan.Create(
     PricingModel.PerSeat, BillingInterval.Monthly,
     trialDays: 14, seatLimit: 50);
 
-plan.AddPrice(PlanPrice.Create(Guid.NewGuid(), 29.99m, "EUR", BillingInterval.Monthly));
-plan.AddPrice(PlanPrice.Create(Guid.NewGuid(), 299.99m, "EUR", BillingInterval.Yearly));
+plan.AddPrice(PlanPrice.Create(Guid.NewGuid(), 29.99m, "EUR", BillingInterval.Monthly, clock.Now));
+plan.AddPrice(PlanPrice.Create(Guid.NewGuid(), 299.99m, "EUR", BillingInterval.Yearly, clock.Now));
 ```
 
 ### Pricing models

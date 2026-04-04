@@ -61,9 +61,10 @@ internal static partial class UsageSummaryReadyHandler
 
             var lineItems = new List<CreateInvoiceLineItem>();
 
-            // Fixed plan charge (base price)
+            // Fixed plan charge (base price) — uses pinned price if subscription has one
             decimal basePrice = await pricingResolver.ResolveBasePriceAsync(
-                subscription.PlanId, subscription.Currency, plan.DefaultInterval, cancellationToken)
+                subscription.PlanId, subscription.Currency, plan.DefaultInterval,
+                subscription.PlanPriceId, cancellationToken)
                 .ConfigureAwait(false);
 
             if (basePrice > 0)
@@ -75,10 +76,10 @@ internal static partial class UsageSummaryReadyHandler
                     subscription.Id.ToString()));
             }
 
-            // Usage charge
+            // Usage charge — uses pinned price if subscription has one
             decimal unitPrice = await pricingResolver.ResolveUsageUnitPriceAsync(
                 subscription.PlanId, subscription.Currency, plan.DefaultInterval,
-                eto.MeterDefinitionId.ToString(), cancellationToken)
+                eto.MeterDefinitionId.ToString(), subscription.PlanPriceId, cancellationToken)
                 .ConfigureAwait(false);
 
             lineItems.Add(new CreateInvoiceLineItem(

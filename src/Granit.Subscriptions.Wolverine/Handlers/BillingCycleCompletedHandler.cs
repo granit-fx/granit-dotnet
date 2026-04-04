@@ -54,7 +54,8 @@ internal static partial class BillingCycleCompletedHandler
             }
 
             decimal basePrice = await pricingResolver.ResolveBasePriceAsync(
-                subscription.PlanId, subscription.Currency, plan.DefaultInterval, cancellationToken)
+                subscription.PlanId, subscription.Currency, plan.DefaultInterval,
+                subscription.PlanPriceId, cancellationToken)
                 .ConfigureAwait(false);
 
             if (basePrice <= 0)

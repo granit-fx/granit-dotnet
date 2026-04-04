@@ -26,6 +26,16 @@ public static class SubscriptionsPermissions
         public const string Manage = "Subscriptions.Subscriptions.Manage";
     }
 
+    /// <summary>Price versioning permissions.</summary>
+    public static class Prices
+    {
+        /// <summary>View price history.</summary>
+        public const string Read = "Subscriptions.Prices.Read";
+
+        /// <summary>Manage prices (create versions, migrate subscriptions).</summary>
+        public const string Manage = "Subscriptions.Prices.Manage";
+    }
+
     /// <summary>Seat resource permissions.</summary>
     public static class Seats
     {

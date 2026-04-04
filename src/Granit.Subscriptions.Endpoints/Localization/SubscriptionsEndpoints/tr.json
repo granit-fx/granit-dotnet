@@ -6,6 +6,8 @@
     "Permission:Subscriptions.Plans.Manage": "Abonelik planlarını yönet (oluştur, yayınla, arşivle)",
     "Permission:Subscriptions.Subscriptions.Read": "Abonelikleri görüntüle",
     "Permission:Subscriptions.Subscriptions.Manage": "Abonelikleri yönet (oluştur, iptal et, plan değiştir)",
+    "Permission:Subscriptions.Prices.Read": "Fiyat sürüm geçmişini görüntüle",
+    "Permission:Subscriptions.Prices.Manage": "Fiyatları yönet (sür��m oluştur, abonelikleri taşı)",
     "Permission:Subscriptions.Seats.Read": "Koltuk atamalarını görüntüle",
     "Permission:Subscriptions.Seats.Manage": "Koltuk atamalarını yönet (ata, iptal et)"
   }

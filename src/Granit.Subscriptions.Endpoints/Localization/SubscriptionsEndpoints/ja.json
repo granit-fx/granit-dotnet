@@ -6,6 +6,8 @@
     "Permission:Subscriptions.Plans.Manage": "サブスクリプションプランの管理（作成、公開、アーカイブ）",
     "Permission:Subscriptions.Subscriptions.Read": "サブスクリプションの表示",
     "Permission:Subscriptions.Subscriptions.Manage": "サブスクリプションの管理（作成、キャンセル、プラン変更）",
+    "Permission:Subscriptions.Prices.Read": "価格バージョン��歴を表示",
+    "Permission:Subscriptions.Prices.Manage": "価格を管理（バージョン作成、サブスクリプション移行）",
     "Permission:Subscriptions.Seats.Read": "シート割り当ての表示",
     "Permission:Subscriptions.Seats.Manage": "シート割り当ての管理（割り当て、取り消し）"
   }

@@ -58,7 +58,7 @@ public sealed class PlanTests
             Guid.NewGuid(), "Pro", null,
             PricingModel.Flat, BillingInterval.Monthly);
 
-        var price = PlanPrice.Create(Guid.NewGuid(), 29.99m, "EUR", BillingInterval.Monthly);
+        var price = PlanPrice.Create(Guid.NewGuid(), 29.99m, "EUR", BillingInterval.Monthly, DateTimeOffset.UtcNow);
         plan.AddPrice(price);
 
         plan.Prices.Count.ShouldBe(1);
@@ -73,5 +73,115 @@ public sealed class PlanTests
             PricingModel.Flat, BillingInterval.Monthly);
 
         plan.Prices.ShouldBeAssignableTo<IReadOnlyList<PlanPrice>>();
+    }
+
+    // ── Price versioning tests ────────────────────────────────────
+
+    [Fact]
+    public void AddPriceVersion_OnDraftPlan_ShouldAddPrice()
+    {
+        var plan = Plan.Create(
+            Guid.NewGuid(), "Pro", null,
+            PricingModel.Flat, BillingInterval.Monthly);
+
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        var price = PlanPrice.Create(Guid.NewGuid(), 29.99m, "EUR", BillingInterval.Monthly, now);
+
+        PlanPrice? replaced = plan.AddPriceVersion(price, now);
+
+        replaced.ShouldBeNull();
+        plan.Prices.Count.ShouldBe(1);
+        plan.Prices[0].Amount.ShouldBe(29.99m);
+        plan.Prices[0].IsActive.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void AddPriceVersion_OnPublishedPlan_ShouldReplaceExisting()
+    {
+        Plan plan = CreatePublishedPlan("EUR", BillingInterval.Monthly, 29.99m);
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+
+        var newPrice = PlanPrice.Create(Guid.NewGuid(), 39.99m, "EUR", BillingInterval.Monthly, now);
+        PlanPrice? replaced = plan.AddPriceVersion(newPrice, now);
+
+        replaced.ShouldNotBeNull();
+        replaced!.Amount.ShouldBe(29.99m);
+        replaced.IsActive.ShouldBeFalse();
+        replaced.ReplacedByPriceId.ShouldBe(newPrice.Id);
+        replaced.ReplacedAt.ShouldBe(now);
+
+        plan.Prices.Count.ShouldBe(2);
+        plan.GetActivePrice("EUR", BillingInterval.Monthly)!.Amount.ShouldBe(39.99m);
+    }
+
+    [Fact]
+    public void AddPriceVersion_OnArchivedPlan_ShouldThrow()
+    {
+        Plan plan = CreatePublishedPlan("EUR", BillingInterval.Monthly, 29.99m);
+        plan.Archive();
+
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        var newPrice = PlanPrice.Create(Guid.NewGuid(), 39.99m, "EUR", BillingInterval.Monthly, now);
+
+        Should.Throw<InvalidOperationException>(() => plan.AddPriceVersion(newPrice, now));
+    }
+
+    [Fact]
+    public void AddPriceVersion_DifferentCurrency_ShouldNotReplaceExisting()
+    {
+        Plan plan = CreatePublishedPlan("EUR", BillingInterval.Monthly, 29.99m);
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+
+        var usdPrice = PlanPrice.Create(Guid.NewGuid(), 34.99m, "USD", BillingInterval.Monthly, now);
+        PlanPrice? replaced = plan.AddPriceVersion(usdPrice, now);
+
+        replaced.ShouldBeNull();
+        plan.Prices.Count.ShouldBe(2);
+        plan.GetActivePrice("EUR", BillingInterval.Monthly)!.Amount.ShouldBe(29.99m);
+        plan.GetActivePrice("USD", BillingInterval.Monthly)!.Amount.ShouldBe(34.99m);
+    }
+
+    [Fact]
+    public void GetPriceHistory_ShouldReturnNewestFirst()
+    {
+        Plan plan = CreatePublishedPlan("EUR", BillingInterval.Monthly, 29.99m);
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+
+        var v2 = PlanPrice.Create(Guid.NewGuid(), 39.99m, "EUR", BillingInterval.Monthly, now);
+        plan.AddPriceVersion(v2, now);
+
+        DateTimeOffset later = now.AddDays(30);
+        var v3 = PlanPrice.Create(Guid.NewGuid(), 49.99m, "EUR", BillingInterval.Monthly, later);
+        plan.AddPriceVersion(v3, later);
+
+        IReadOnlyList<PlanPrice> history = plan.GetPriceHistory("EUR", BillingInterval.Monthly);
+
+        history.Count.ShouldBe(3);
+        history[0].Amount.ShouldBe(49.99m);
+        history[1].Amount.ShouldBe(39.99m);
+        history[2].Amount.ShouldBe(29.99m);
+    }
+
+    [Fact]
+    public void PlanPrice_MarkReplaced_Twice_ShouldThrow()
+    {
+        var price = PlanPrice.Create(Guid.NewGuid(), 29.99m, "EUR", BillingInterval.Monthly, DateTimeOffset.UtcNow);
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+
+        price.MarkReplaced(Guid.NewGuid(), now);
+
+        Should.Throw<InvalidOperationException>(() => price.MarkReplaced(Guid.NewGuid(), now));
+    }
+
+    private static Plan CreatePublishedPlan(string currency, BillingInterval interval, decimal amount)
+    {
+        var plan = Plan.Create(
+            Guid.NewGuid(), "Pro", null,
+            PricingModel.Flat, interval);
+
+        var price = PlanPrice.Create(Guid.NewGuid(), amount, currency, interval, DateTimeOffset.UtcNow.AddDays(-30));
+        plan.AddPrice(price);
+        plan.Publish();
+        return plan;
     }
 }

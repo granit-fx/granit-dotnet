@@ -21,6 +21,7 @@ public static class SubscriptionsEndpointRouteBuilderExtensions
 
         group.MapPlanReadEndpoints();
         group.MapPlanWriteEndpoints();
+        group.MapPriceVersioningEndpoints();
         group.MapSubscriptionEndpoints();
         group.MapSeatEndpoints();
 

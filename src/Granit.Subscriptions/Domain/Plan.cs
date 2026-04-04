@@ -106,12 +106,39 @@ public sealed class Plan : AuditedAggregateRoot, IWorkflowStateful
         SortOrder = sortOrder;
     }
 
-    /// <summary>Adds a price point to this plan.</summary>
+    /// <summary>Adds a price point to this plan. Only allowed in Draft status.</summary>
     public void AddPrice(PlanPrice price)
     {
         EnsureDraft();
         ArgumentNullException.ThrowIfNull(price);
         _prices.Add(price);
+    }
+
+    /// <summary>
+    /// Adds a new price version for the same (currency, interval) slot, replacing the
+    /// current active price. Allowed on Published plans (grandfathering / price versioning).
+    /// </summary>
+    /// <returns>The previous price that was replaced, or <c>null</c> if no matching active price existed.</returns>
+    public PlanPrice? AddPriceVersion(PlanPrice newPrice, DateTimeOffset now)
+    {
+        ArgumentNullException.ThrowIfNull(newPrice);
+
+        if (LifecycleStatus == WorkflowLifecycleStatus.Archived)
+        {
+            throw new InvalidOperationException(
+                $"Plan '{Id}' is Archived. Price versions cannot be added to archived plans.");
+        }
+
+        PlanPrice? currentPrice = _prices
+            .FirstOrDefault(p =>
+                p.IsActive
+                && string.Equals(p.Currency, newPrice.Currency, StringComparison.OrdinalIgnoreCase)
+                && p.Interval == newPrice.Interval);
+
+        currentPrice?.MarkReplaced(newPrice.Id, now);
+
+        _prices.Add(newPrice);
+        return currentPrice;
     }
 
     /// <summary>Adds a feature value mapping to this plan.</summary>
@@ -158,6 +185,22 @@ public sealed class Plan : AuditedAggregateRoot, IWorkflowStateful
 
         LifecycleStatus = WorkflowLifecycleStatus.Archived;
     }
+
+    /// <summary>Returns the current active price for the given currency and interval, or <c>null</c>.</summary>
+    public PlanPrice? GetActivePrice(string currency, BillingInterval interval) =>
+        _prices.FirstOrDefault(p =>
+            p.IsActive
+            && string.Equals(p.Currency, currency, StringComparison.OrdinalIgnoreCase)
+            && p.Interval == interval);
+
+    /// <summary>Returns all price versions for the given currency and interval, newest first.</summary>
+    public IReadOnlyList<PlanPrice> GetPriceHistory(string currency, BillingInterval interval) =>
+        _prices
+            .Where(p =>
+                string.Equals(p.Currency, currency, StringComparison.OrdinalIgnoreCase)
+                && p.Interval == interval)
+            .OrderByDescending(p => p.EffectiveFrom)
+            .ToList();
 
     private void EnsureDraft()
     {

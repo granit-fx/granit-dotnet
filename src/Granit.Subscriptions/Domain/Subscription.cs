@@ -36,7 +36,8 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
         DateTimeOffset billingCycleAnchor,
-        DateTimeOffset? trialEndsAt = null)
+        DateTimeOffset? trialEndsAt = null,
+        Guid? planPriceId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
 
@@ -56,6 +57,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
             BillingCycleAnchor = billingCycleAnchor,
             TrialEndsAt = trialEndsAt,
             CancelAtPeriodEnd = false,
+            PlanPriceId = planPriceId,
         };
 
         subscription.AddDomainEvent(new SubscriptionCreatedEvent(id, planId, tenantId));
@@ -94,6 +96,13 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
 
     /// <summary>ISO 4217 currency code selected at subscription creation (e.g., "EUR").</summary>
     public string Currency { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Pinned price version. When set, billing uses this specific <see cref="PlanPrice"/>
+    /// instead of resolving dynamically from the plan's current prices (grandfathering).
+    /// Null for subscriptions created before price versioning was enabled.
+    /// </summary>
+    public Guid? PlanPriceId { get; private set; }
 
     /// <summary>Number of failed payment retry attempts (dunning). Reset on successful payment.</summary>
     public int DunningAttempt { get; private set; }
@@ -261,6 +270,30 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
         CurrentPeriodEnd = newPeriodEnd;
         AddDistributedEvent(new BillingCycleCompletedEto(
             Id, PlanId, TenantId!.Value, newPeriodStart, newPeriodEnd));
+    }
+
+    /// <summary>
+    /// Migrates this subscription to a new price version. Only allowed for Active or Trial subscriptions.
+    /// Returns <c>false</c> if already pinned to the same price.
+    /// </summary>
+    public bool MigratePrice(Guid newPlanPriceId)
+    {
+        if (Status is not (SubscriptionStatus.Active or SubscriptionStatus.Trial))
+        {
+            throw new InvalidOperationException(
+                $"Cannot migrate price for subscription '{Id}' in '{Status}' status.");
+        }
+
+        if (PlanPriceId == newPlanPriceId)
+        {
+            return false;
+        }
+
+        Guid? oldPlanPriceId = PlanPriceId;
+        PlanPriceId = newPlanPriceId;
+        AddDistributedEvent(new SubscriptionPriceMigratedEto(
+            Id, TenantId!.Value, oldPlanPriceId, newPlanPriceId));
+        return true;
     }
 
     // ── Seat management ────────────────────────────────────────────────

@@ -6,6 +6,8 @@
     "Permission:Subscriptions.Plans.Manage": "Abonnementpläne verwalten (erstellen, veröffentlichen, archivieren)",
     "Permission:Subscriptions.Subscriptions.Read": "Abonnements anzeigen",
     "Permission:Subscriptions.Subscriptions.Manage": "Abonnements verwalten (erstellen, kündigen, Plan wechseln)",
+    "Permission:Subscriptions.Prices.Read": "Preisversionshistorie anzeigen",
+    "Permission:Subscriptions.Prices.Manage": "Preise verwalten (Versionen erstellen, Abonnements migrieren)",
     "Permission:Subscriptions.Seats.Read": "Platzzuweisungen anzeigen",
     "Permission:Subscriptions.Seats.Manage": "Platzzuweisungen verwalten (zuweisen, widerrufen)"
   }

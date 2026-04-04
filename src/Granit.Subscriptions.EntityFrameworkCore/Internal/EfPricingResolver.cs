@@ -5,11 +5,13 @@ namespace Granit.Subscriptions.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// Resolves pricing from <see cref="PlanPrice"/> entries via <see cref="IPlanReader"/>.
+/// Supports pinned price resolution for grandfathered subscriptions.
 /// </summary>
 internal sealed class EfPricingResolver(IPlanReader planReader) : IPricingResolver
 {
     public async Task<decimal> ResolveBasePriceAsync(
         PlanId planId, string currency, BillingInterval interval,
+        Guid? planPriceId = null,
         CancellationToken cancellationToken = default)
     {
         Plan? plan = await planReader.GetByIdAsync(planId, cancellationToken)
@@ -20,17 +22,14 @@ internal sealed class EfPricingResolver(IPlanReader planReader) : IPricingResolv
             return 0m;
         }
 
-        PlanPrice? price = plan.Prices
-            .FirstOrDefault(p =>
-                string.Equals(p.Currency, currency, StringComparison.OrdinalIgnoreCase)
-                && p.Interval == interval);
-
+        PlanPrice? price = ResolvePlanPrice(plan, currency, interval, planPriceId);
         return price?.Amount ?? 0m;
     }
 
     public async Task<decimal> ResolveUsageUnitPriceAsync(
         PlanId planId, string currency, BillingInterval interval,
-        string meterId, CancellationToken cancellationToken = default)
+        string meterId, Guid? planPriceId = null,
+        CancellationToken cancellationToken = default)
     {
         Plan? plan = await planReader.GetByIdAsync(planId, cancellationToken)
             .ConfigureAwait(false);
@@ -40,11 +39,20 @@ internal sealed class EfPricingResolver(IPlanReader planReader) : IPricingResolv
             return 0m;
         }
 
-        PlanPrice? price = plan.Prices
-            .FirstOrDefault(p =>
-                string.Equals(p.Currency, currency, StringComparison.OrdinalIgnoreCase)
-                && p.Interval == interval);
-
+        PlanPrice? price = ResolvePlanPrice(plan, currency, interval, planPriceId);
         return price?.Amount ?? 0m;
+    }
+
+    private static PlanPrice? ResolvePlanPrice(
+        Plan plan, string currency, BillingInterval interval, Guid? planPriceId)
+    {
+        // Pinned price: resolve by ID directly (grandfathered subscription)
+        if (planPriceId.HasValue)
+        {
+            return plan.Prices.FirstOrDefault(p => p.Id == planPriceId.Value);
+        }
+
+        // Dynamic resolution: return the current active price for (currency, interval)
+        return plan.GetActivePrice(currency, interval);
     }
 }

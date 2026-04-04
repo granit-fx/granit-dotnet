@@ -29,10 +29,18 @@ public sealed record PlanResponse(
         plan.Prices.Select(PlanPriceResponse.FromEntity).ToList());
 }
 
-/// <summary>Plan price entry.</summary>
+/// <summary>Plan price entry with versioning metadata.</summary>
 public sealed record PlanPriceResponse(
-    Guid Id, decimal Amount, string Currency, string Interval)
+    Guid Id,
+    decimal Amount,
+    string Currency,
+    string Interval,
+    DateTimeOffset EffectiveFrom,
+    bool IsActive,
+    Guid? ReplacedByPriceId = null,
+    DateTimeOffset? ReplacedAt = null)
 {
     internal static PlanPriceResponse FromEntity(PlanPrice price) =>
-        new(price.Id, price.Amount, price.Currency, price.Interval.ToString());
+        new(price.Id, price.Amount, price.Currency, price.Interval.ToString(),
+            price.EffectiveFrom, price.IsActive, price.ReplacedByPriceId, price.ReplacedAt);
 }

@@ -6,6 +6,8 @@
     "Permission:Subscriptions.Plans.Manage": "管理订阅计划（创建、发布、归档）",
     "Permission:Subscriptions.Subscriptions.Read": "查看订阅",
     "Permission:Subscriptions.Subscriptions.Manage": "管理订阅（创建、取消、更改计划）",
+    "Permission:Subscriptions.Prices.Read": "查看价格版本历史",
+    "Permission:Subscriptions.Prices.Manage": "管理价格（创建版本、迁移订阅）",
     "Permission:Subscriptions.Seats.Read": "查看席位分配",
     "Permission:Subscriptions.Seats.Manage": "管理席位分配（分配、撤销）"
   }

@@ -184,4 +184,87 @@ public sealed class SubscriptionTests
     {
         Should.Throw<ArgumentException>(() => SubscriptionId.Create(Guid.Empty));
     }
+
+    // ── Price migration tests ─────────────────────────────────────
+
+    [Fact]
+    public void Create_WithPlanPriceId_ShouldPinPrice()
+    {
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        Guid priceId = Guid.NewGuid();
+
+        Subscription sub = Subscription.Create(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            PlanId.Create(Guid.NewGuid()),
+            currency: "EUR",
+            periodStart: now,
+            periodEnd: now.AddMonths(1),
+            billingCycleAnchor: now,
+            planPriceId: priceId);
+
+        sub.PlanPriceId.ShouldBe(priceId);
+    }
+
+    [Fact]
+    public void Create_WithoutPlanPriceId_ShouldLeaveNull()
+    {
+        Subscription sub = CreateActiveSubscription();
+
+        sub.PlanPriceId.ShouldBeNull();
+    }
+
+    [Fact]
+    public void MigratePrice_WhenActive_ShouldReturnTrue()
+    {
+        Subscription sub = CreateActiveSubscription();
+        Guid newPriceId = Guid.NewGuid();
+
+        bool result = sub.MigratePrice(newPriceId);
+
+        result.ShouldBeTrue();
+        sub.PlanPriceId.ShouldBe(newPriceId);
+    }
+
+    [Fact]
+    public void MigratePrice_SamePrice_ShouldReturnFalse()
+    {
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        Guid priceId = Guid.NewGuid();
+
+        Subscription sub = Subscription.Create(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            PlanId.Create(Guid.NewGuid()),
+            currency: "EUR",
+            periodStart: now,
+            periodEnd: now.AddMonths(1),
+            billingCycleAnchor: now,
+            planPriceId: priceId);
+
+        bool result = sub.MigratePrice(priceId);
+
+        result.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void MigratePrice_WhenCancelled_ShouldThrow()
+    {
+        Subscription sub = CreateActiveSubscription();
+        sub.Cancel("done", DateTimeOffset.UtcNow);
+
+        Should.Throw<InvalidOperationException>(() => sub.MigratePrice(Guid.NewGuid()));
+    }
+
+    [Fact]
+    public void MigratePrice_FromTrial_ShouldSucceed()
+    {
+        Subscription sub = CreateTrialSubscription();
+        Guid newPriceId = Guid.NewGuid();
+
+        bool result = sub.MigratePrice(newPriceId);
+
+        result.ShouldBeTrue();
+        sub.PlanPriceId.ShouldBe(newPriceId);
+    }
 }

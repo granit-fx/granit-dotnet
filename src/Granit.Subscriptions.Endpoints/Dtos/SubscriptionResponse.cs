@@ -15,7 +15,8 @@ public sealed record SubscriptionResponse(
     DateTimeOffset? CancelledAt,
     string? CancellationReason,
     int DunningAttempt,
-    int SeatCount)
+    int SeatCount,
+    Guid? PlanPriceId = null)
 {
     internal static SubscriptionResponse FromEntity(Subscription sub) => new(
         sub.Id,
@@ -29,5 +30,6 @@ public sealed record SubscriptionResponse(
         sub.CancelledAt,
         sub.CancellationReason,
         sub.DunningAttempt,
-        sub.Seats.Count);
+        sub.Seats.Count,
+        sub.PlanPriceId);
 }

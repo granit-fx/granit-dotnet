@@ -29,4 +29,9 @@ public interface ISubscriptionReader
     Task<IReadOnlyList<Subscription>> GetPendingCancelAtPeriodEndAsync(
         DateTimeOffset now,
         CancellationToken cancellationToken = default);
+
+    /// <summary>Returns all active (Active or Trial) subscriptions for a given plan.</summary>
+    Task<IReadOnlyList<Subscription>> GetActiveByPlanAsync(
+        PlanId planId,
+        CancellationToken cancellationToken = default);
 }

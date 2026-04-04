@@ -6,6 +6,8 @@
     "Permission:Subscriptions.Plans.Manage": "Zarządzanie planami subskrypcji (tworzenie, publikowanie, archiwizowanie)",
     "Permission:Subscriptions.Subscriptions.Read": "Wyświetlanie subskrypcji",
     "Permission:Subscriptions.Subscriptions.Manage": "Zarządzanie subskrypcjami (tworzenie, anulowanie, zmiana planu)",
+    "Permission:Subscriptions.Prices.Read": "Wyświetl historię wersji cen",
+    "Permission:Subscriptions.Prices.Manage": "Zarządzaj cenami (twórz wersje, migruj subskrypcje)",
     "Permission:Subscriptions.Seats.Read": "Wyświetlanie przypisań miejsc",
     "Permission:Subscriptions.Seats.Manage": "Zarządzanie przypisaniami miejsc (przypisywanie, cofanie)"
   }

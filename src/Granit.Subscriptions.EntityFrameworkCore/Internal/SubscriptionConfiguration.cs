@@ -24,6 +24,7 @@ internal sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subsc
         builder.Property(e => e.CancellationReason).HasMaxLength(500);
         builder.Property(e => e.Currency).HasMaxLength(3).IsRequired();
         builder.Property(e => e.DunningAttempt).IsRequired().HasDefaultValue(0);
+        builder.Property(e => e.PlanPriceId);
 
         builder.HasMany(e => e.Seats).WithOne().HasForeignKey("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(e => e.ExternalMappings).WithOne().HasForeignKey("SubscriptionId").OnDelete(DeleteBehavior.Cascade);

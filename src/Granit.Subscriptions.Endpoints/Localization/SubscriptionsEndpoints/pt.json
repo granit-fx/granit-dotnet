@@ -6,6 +6,8 @@
     "Permission:Subscriptions.Plans.Manage": "Gerir planos de subscrição (criar, publicar, arquivar)",
     "Permission:Subscriptions.Subscriptions.Read": "Ver subscrições",
     "Permission:Subscriptions.Subscriptions.Manage": "Gerir subscrições (criar, cancelar, alterar plano)",
+    "Permission:Subscriptions.Prices.Read": "Ver hist��rico de versões de preços",
+    "Permission:Subscriptions.Prices.Manage": "Gerir preços (criar versões, migrar assinaturas)",
     "Permission:Subscriptions.Seats.Read": "Ver atribuições de lugares",
     "Permission:Subscriptions.Seats.Manage": "Gerir atribuições de lugares (atribuir, revogar)"
   }
