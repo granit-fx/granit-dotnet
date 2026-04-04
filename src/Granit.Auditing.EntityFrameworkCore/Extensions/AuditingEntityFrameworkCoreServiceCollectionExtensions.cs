@@ -43,6 +43,7 @@ public static class AuditingEntityFrameworkCoreServiceCollectionExtensions
     {
         // Isolated DbContext (no audit interceptor — prevents recursion).
         builder.Services.AddGranitDbContext<AuditingDbContext>(configure);
+        builder.Services.AddInternalDbContextEnsurer<AuditingDbContext>();
 
         // Publisher: async (Channel) or strict (synchronous).
         builder.Services.AddScoped<StrictAuditingPublisher>();

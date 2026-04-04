@@ -22,11 +22,11 @@ public static class BlobStorageDatabaseHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Adds <c>Granit.BlobStorage.Database</c> services: database client, key strategy, isolated
-    /// <see cref="BlobStorageDbStoreDbContext"/>, and the <see cref="IBlobStorage"/> orchestrator.
+    /// <see cref="BlobStorageDatabaseDbContext"/>, and the <see cref="IBlobStorage"/> orchestrator.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Reads <see cref="DbStoreBlobOptions"/> from the <c>"BlobStorage"</c> configuration section.
+    /// Reads <see cref="DatabaseBlobOptions"/> from the <c>"BlobStorage"</c> configuration section.
     /// </para>
     /// <para>
     /// This provider does NOT register <see cref="IPresignedUrlProvider"/>.
@@ -36,23 +36,24 @@ public static class BlobStorageDatabaseHostApplicationBuilderExtensions
     /// <param name="builder">The host application builder.</param>
     /// <param name="configure">Configures the <see cref="DbContextOptionsBuilder"/> for the isolated database context (e.g. <c>UseNpgsql</c>).</param>
     /// <returns>The builder for chaining.</returns>
-    public static IHostApplicationBuilder AddGranitBlobStorageDbStore(
+    public static IHostApplicationBuilder AddGranitBlobStorageDatabase(
         this IHostApplicationBuilder builder,
         Action<DbContextOptionsBuilder> configure)
     {
         GranitActivitySourceRegistry.Register(BlobStorageDatabaseActivitySource.Name);
 
         builder.Services
-            .AddOptions<DbStoreBlobOptions>()
+            .AddOptions<DatabaseBlobOptions>()
             .BindConfiguration(BlobStorageOptions.SectionName)
             .ValidateOnStart();
 
-        builder.Services.AddSingleton<IValidateOptions<DbStoreBlobOptions>, DbStoreBlobOptionsValidator>();
+        builder.Services.AddSingleton<IValidateOptions<DatabaseBlobOptions>, DatabaseBlobOptionsValidator>();
 
-        builder.Services.AddGranitDbContext<BlobStorageDbStoreDbContext>(configure);
+        builder.Services.AddGranitDbContext<BlobStorageDatabaseDbContext>(configure);
+        builder.Services.AddInternalDbContextEnsurer<BlobStorageDatabaseDbContext>();
 
-        builder.Services.AddScoped<IBlobStoreProvider, DbStoreBlobClient>();
-        builder.Services.AddScoped<IBlobKeyStrategy, DbStoreBlobKeyStrategy>();
+        builder.Services.AddScoped<IBlobStoreProvider, DatabaseBlobClient>();
+        builder.Services.AddScoped<IBlobKeyStrategy, DatabaseBlobKeyStrategy>();
         builder.Services.AddScoped<IBlobStorage, DefaultBlobStorage>();
 
         return builder;

@@ -6900,6 +6900,22 @@
       ]
     },
     {
+      "name": "BffEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Bff.EntityFrameworkCore.Extensions.BffEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Bff.EntityFrameworkCore",
+      "file": "src/Granit.Bff.EntityFrameworkCore/Extensions/BffEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitBffEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitBffEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
       "name": "GranitBffEntityFrameworkCoreModule",
       "fqn": "Granit.Bff.EntityFrameworkCore.GranitBffEntityFrameworkCoreModule",
       "kind": "class",
@@ -7423,28 +7439,6 @@
       ]
     },
     {
-      "name": "DbStoreBlobContent",
-      "fqn": "Granit.BlobStorage.Database.Entities.DbStoreBlobContent",
-      "kind": "class",
-      "project": "Granit.BlobStorage.Database",
-      "file": "src/Granit.BlobStorage.Database/Entities/DbStoreBlobContent.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "Id",
-          "kind": "property",
-          "signature": "Guid Id",
-          "returnType": "Guid"
-        },
-        {
-          "name": "Content",
-          "kind": "property",
-          "signature": "byte[] Content",
-          "returnType": "byte[]"
-        }
-      ]
-    },
-    {
       "name": "BlobStorageDatabaseHostApplicationBuilderExtensions",
       "fqn": "Granit.BlobStorage.Database.Extensions.BlobStorageDatabaseHostApplicationBuilderExtensions",
       "kind": "class",
@@ -7453,9 +7447,9 @@
       "line": 21,
       "members": [
         {
-          "name": "AddGranitBlobStorageDbStore",
+          "name": "AddGranitBlobStorageDatabase",
           "kind": "method",
-          "signature": "AddGranitBlobStorageDbStore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "signature": "AddGranitBlobStorageDatabase(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
         }
       ]
@@ -7475,22 +7469,6 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Database",
       "file": "src/Granit.BlobStorage.Database/Options/DatabaseBlobOptions.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "MaxBlobSizeBytes",
-          "kind": "property",
-          "signature": "long MaxBlobSizeBytes",
-          "returnType": "long"
-        }
-      ]
-    },
-    {
-      "name": "DbStoreBlobOptions",
-      "fqn": "Granit.BlobStorage.Database.Options.DbStoreBlobOptions",
-      "kind": "class",
-      "project": "Granit.BlobStorage.Database",
-      "file": "src/Granit.BlobStorage.Database/Options/DbStoreBlobOptions.cs",
       "line": 11,
       "members": [
         {
