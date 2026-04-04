@@ -182,6 +182,48 @@ public sealed partial class IsolatedDbContextTests
             $"Violators: {string.Join(", ", violations)}");
     }
 
+    [Fact]
+    public void AddGranitDbContext_should_have_matching_AddInternalDbContextEnsurer()
+    {
+        string srcDir = Path.Join(RepoRoot, "src");
+
+        List<string> violations = [];
+
+        foreach (string csFile in Directory.GetFiles(srcDir, "*.cs", SearchOption.AllDirectories))
+        {
+            if (csFile.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar, StringComparison.Ordinal) ||
+                csFile.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            string content = File.ReadAllText(csFile);
+
+            foreach (Match match in AddGranitDbContextCall().Matches(content))
+            {
+                string contextType = match.Groups[1].Value;
+
+                // MigrationProgressDbContext is a system context that must stay independent
+                // from the ensurer mechanism (it bootstraps the migration runner itself).
+                if (contextType == "MigrationProgressDbContext")
+                {
+                    continue;
+                }
+
+                if (!content.Contains($"AddInternalDbContextEnsurer<{contextType}>", StringComparison.Ordinal))
+                {
+                    string rel = Path.GetRelativePath(RepoRoot, csFile);
+                    int line = content[..match.Index].Count(c => c == '\n') + 1;
+                    violations.Add($"{rel}:{line} — AddGranitDbContext<{contextType}> without matching AddInternalDbContextEnsurer");
+                }
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Every AddGranitDbContext<T> must be paired with AddInternalDbContextEnsurer<T> in the same file. " +
+            $"Violators:\n  {string.Join("\n  ", violations)}");
+    }
+
     private static IEnumerable<string> GetEfCoreProjectDirs(string srcDir) =>
         Directory.GetDirectories(srcDir)
             .Where(d => Path.GetFileName(d).EndsWith(".EntityFrameworkCore", StringComparison.Ordinal));
@@ -208,4 +250,11 @@ public sealed partial class IsolatedDbContextTests
     /// </summary>
     [GeneratedRegex(@"^\s+protected\s+override\s+void\s+OnModelCreating", RegexOptions.Multiline)]
     private static partial Regex OnModelCreatingOverride();
+
+    /// <summary>
+    /// Captures the type argument from <c>AddGranitDbContext&lt;SomeDbContext&gt;</c>.
+    /// Excludes XML doc / comment lines (starts with whitespace + "///").
+    /// </summary>
+    [GeneratedRegex(@"(?<!///.*)\bAddGranitDbContext<(\w+)>")]
+    private static partial Regex AddGranitDbContextCall();
 }
