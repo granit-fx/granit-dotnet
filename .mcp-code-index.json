@@ -33053,6 +33053,12 @@
           "kind": "method",
           "signature": "Update(string name, string? description, int sortOrder)",
           "returnType": "void"
+        },
+        {
+          "name": "GetPriceHistory",
+          "kind": "method",
+          "signature": "GetPriceHistory(string currency, BillingInterval interval)",
+          "returnType": "IReadOnlyList<PlanPrice>"
         }
       ]
     },
@@ -33118,12 +33124,12 @@
       "kind": "class",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Domain/PlanPrice.cs",
-      "line": 8,
+      "line": 10,
       "members": [
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, decimal amount, string currency, BillingInterval interval)",
+          "signature": "Create(Guid id, decimal amount, string currency, BillingInterval interval, DateTimeOffset effectiveFrom)",
           "returnType": "PlanPrice"
         },
         {
@@ -33131,6 +33137,12 @@
           "kind": "property",
           "signature": "decimal Amount",
           "returnType": "decimal"
+        },
+        {
+          "name": "Interval",
+          "kind": "property",
+          "signature": "BillingInterval Interval",
+          "returnType": "BillingInterval"
         }
       ]
     },
@@ -33154,7 +33166,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(SubscriptionId id, Guid tenantId, PlanId planId, string currency, DateTimeOffset periodStart, DateTimeOffset periodEnd, DateTimeOffset billingCycleAnchor, DateTimeOffset? trialEndsAt = null)",
+          "signature": "Create(SubscriptionId id, Guid tenantId, PlanId planId, string currency, DateTimeOffset periodStart, DateTimeOffset periodEnd, DateTimeOffset billingCycleAnchor, DateTimeOffset? trialEndsAt = null, Guid? planPriceId = null)",
           "returnType": "Subscription"
         },
         {
@@ -33167,7 +33179,7 @@
           "name": "AsReadOnly",
           "kind": "method",
           "signature": "AsReadOnly()",
-          "returnType": "int DunningAttempt { get; private set; } public IReadOnlyList<SubscriptionSeat> Seats => _seats."
+          "returnType": "Guid? PlanPriceId { get; private set; } public int DunningAttempt { get; private set; } public IReadOnlyList<SubscriptionSeat> Seats => _seats."
         },
         {
           "name": "AsReadOnly",
@@ -33305,6 +33317,33 @@
       ]
     },
     {
+      "name": "BulkMigratePriceRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.BulkMigratePriceRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/PriceVersioningDtos.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "CreatePriceVersionRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.CreatePriceVersionRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/PriceVersioningDtos.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "MigratePriceRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.MigratePriceRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/PriceVersioningDtos.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "PlanCreateRequest",
       "fqn": "Granit.Subscriptions.Endpoints.Dtos.PlanCreateRequest",
       "kind": "record",
@@ -33395,6 +33434,15 @@
       "members": []
     },
     {
+      "name": "BulkMigratePriceResponse",
+      "fqn": "Granit.Subscriptions.Endpoints.Endpoints.BulkMigratePriceResponse",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Endpoints/PriceVersioningEndpoints.cs",
+      "line": 211,
+      "members": []
+    },
+    {
       "name": "SubscriptionsEndpointRouteBuilderExtensions",
       "fqn": "Granit.Subscriptions.Endpoints.Extensions.SubscriptionsEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -33429,12 +33477,21 @@
       "members": []
     },
     {
+      "name": "Prices",
+      "fqn": "Granit.Subscriptions.Endpoints.Permissions.Prices",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Permissions/SubscriptionsPermissions.cs",
+      "line": 30,
+      "members": []
+    },
+    {
       "name": "Seats",
       "fqn": "Granit.Subscriptions.Endpoints.Permissions.Seats",
       "kind": "class",
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/Permissions/SubscriptionsPermissions.cs",
-      "line": 30,
+      "line": 40,
       "members": []
     },
     {
@@ -33522,6 +33579,24 @@
       "members": []
     },
     {
+      "name": "PlanPriceCreatedEto",
+      "fqn": "Granit.Subscriptions.Events.PlanPriceCreatedEto",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Events/PlanPriceCreatedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PlanPriceReplacedEto",
+      "fqn": "Granit.Subscriptions.Events.PlanPriceReplacedEto",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Events/PlanPriceReplacedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "SubscriptionActivatedEto",
       "fqn": "Granit.Subscriptions.Events.SubscriptionActivatedEto",
       "kind": "record",
@@ -33572,6 +33647,15 @@
       "kind": "record",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Events/SubscriptionPlanChangedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "SubscriptionPriceMigratedEto",
+      "fqn": "Granit.Subscriptions.Events.SubscriptionPriceMigratedEto",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Events/SubscriptionPriceMigratedEto.cs",
       "line": 6,
       "members": []
     },
@@ -33697,18 +33781,18 @@
       "kind": "interface",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/IPricingResolver.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "ResolveBasePriceAsync",
           "kind": "method",
-          "signature": "ResolveBasePriceAsync(PlanId planId, string currency, BillingInterval interval, CancellationToken cancellationToken = default)",
+          "signature": "ResolveBasePriceAsync(PlanId planId, string currency, BillingInterval interval, Guid? planPriceId = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<decimal>"
         },
         {
           "name": "ResolveUsageUnitPriceAsync",
           "kind": "method",
-          "signature": "ResolveUsageUnitPriceAsync(PlanId planId, string currency, BillingInterval interval, string meterId, CancellationToken cancellationToken = default)",
+          "signature": "ResolveUsageUnitPriceAsync(PlanId planId, string currency, BillingInterval interval, string meterId, Guid? planPriceId = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<decimal>"
         }
       ]
@@ -33833,6 +33917,12 @@
           "name": "GetPendingCancelAtPeriodEndAsync",
           "kind": "method",
           "signature": "GetPendingCancelAtPeriodEndAsync(DateTimeOffset now, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Subscription>>"
+        },
+        {
+          "name": "GetActiveByPlanAsync",
+          "kind": "method",
+          "signature": "GetActiveByPlanAsync(PlanId planId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<Subscription>>"
         }
       ]
