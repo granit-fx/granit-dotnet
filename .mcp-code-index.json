@@ -11706,7 +11706,7 @@
       "fqn": "Granit.Domain.EntityReference",
       "kind": "record",
       "project": "Granit",
-      "file": "src/Granit/Domain/ValueObjects/EntityReference.cs",
+      "file": "src/Granit/Domain/EntityReference.cs",
       "line": 9,
       "members": []
     },
