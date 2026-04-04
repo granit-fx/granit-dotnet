@@ -1328,6 +1328,7 @@
       "name": "Granit.Payments.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Guids",
         "Granit.Http.Idempotency",
         "Granit.Payments",
         "Granit.Validation"
@@ -18087,6 +18088,33 @@
       "members": []
     },
     {
+      "name": "InvoiceCreateRequest",
+      "fqn": "Granit.Invoicing.Endpoints.Dtos.InvoiceCreateRequest",
+      "kind": "record",
+      "project": "Granit.Invoicing.Endpoints",
+      "file": "src/Granit.Invoicing.Endpoints/Dtos/InvoiceCreateRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoiceLineItemResponse",
+      "fqn": "Granit.Invoicing.Endpoints.Dtos.InvoiceLineItemResponse",
+      "kind": "record",
+      "project": "Granit.Invoicing.Endpoints",
+      "file": "src/Granit.Invoicing.Endpoints/Dtos/InvoiceResponse.cs",
+      "line": 54,
+      "members": []
+    },
+    {
+      "name": "InvoiceResponse",
+      "fqn": "Granit.Invoicing.Endpoints.Dtos.InvoiceResponse",
+      "kind": "record",
+      "project": "Granit.Invoicing.Endpoints",
+      "file": "src/Granit.Invoicing.Endpoints/Dtos/InvoiceResponse.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "InvoicingEndpointRouteBuilderExtensions",
       "fqn": "Granit.Invoicing.Endpoints.Extensions.InvoicingEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -19963,12 +19991,75 @@
       ]
     },
     {
+      "name": "MeterDefinitionCreateRequest",
+      "fqn": "Granit.Metering.Endpoints.Dtos.MeterDefinitionCreateRequest",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/MeterDefinitionCreateRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "MeterDefinitionResponse",
+      "fqn": "Granit.Metering.Endpoints.Dtos.MeterDefinitionResponse",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/MeterDefinitionResponse.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "MeterDefinitionUpdateRequest",
+      "fqn": "Granit.Metering.Endpoints.Dtos.MeterDefinitionUpdateRequest",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/MeterDefinitionUpdateRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "MeterEventRequest",
+      "fqn": "Granit.Metering.Endpoints.Dtos.MeterEventRequest",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/MeterEventRequest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "MeteringQuotaStatusResponse",
+      "fqn": "Granit.Metering.Endpoints.Dtos.MeteringQuotaStatusResponse",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/MeteringQuotaStatusResponse.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "RecordUsageRequest",
+      "fqn": "Granit.Metering.Endpoints.Dtos.RecordUsageRequest",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/MeterEventRequest.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "UsageAggregateResponse",
+      "fqn": "Granit.Metering.Endpoints.Dtos.UsageAggregateResponse",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/UsageAggregateResponse.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "MeteringEndpointRouteBuilderExtensions",
       "fqn": "Granit.Metering.Endpoints.Extensions.MeteringEndpointRouteBuilderExtensions",
       "kind": "class",
       "project": "Granit.Metering.Endpoints",
       "file": "src/Granit.Metering.Endpoints/Extensions/MeteringEndpointRouteBuilderExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitMetering",
@@ -25351,6 +25442,96 @@
           "returnType": "implicit operator"
         }
       ]
+    },
+    {
+      "name": "PaymentAttachMethodRequest",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentAttachMethodRequest",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentRequests.cs",
+      "line": 50,
+      "members": []
+    },
+    {
+      "name": "PaymentAvailableMethodResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentAvailableMethodResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodResponse.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "PaymentChargeRequest",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentChargeRequest",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentRequests.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "PaymentCheckoutRequest",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentCheckoutRequest",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentRequests.cs",
+      "line": 37,
+      "members": []
+    },
+    {
+      "name": "PaymentCheckoutSessionResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentCheckoutSessionResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/TransactionResponse.cs",
+      "line": 39,
+      "members": []
+    },
+    {
+      "name": "PaymentDisputeResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentDisputeResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/TransactionResponse.cs",
+      "line": 45,
+      "members": []
+    },
+    {
+      "name": "PaymentMethodResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentMethodResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodResponse.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "PaymentRefundRequest",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentRefundRequest",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentRequests.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "PaymentRefundResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentRefundResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/TransactionResponse.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "PaymentTransactionResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentTransactionResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/TransactionResponse.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "PaymentsEndpointRouteBuilderExtensions",
@@ -32548,6 +32729,96 @@
           "returnType": "implicit operator"
         }
       ]
+    },
+    {
+      "name": "PlanCreateRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.PlanCreateRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/PlanCreateRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "PlanPriceResponse",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.PlanPriceResponse",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/PlanResponse.cs",
+      "line": 33,
+      "members": []
+    },
+    {
+      "name": "PlanResponse",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.PlanResponse",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/PlanResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PlanUpdateRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.PlanUpdateRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/PlanCreateRequest.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "SeatAssignRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.SeatAssignRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "SeatResponse",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.SeatResponse",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "SubscriptionCancelRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.SubscriptionCancelRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "SubscriptionChangePlanRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.SubscriptionChangePlanRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "SubscriptionCreateRequest",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.SubscriptionCreateRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "SubscriptionResponse",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.SubscriptionResponse",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionResponse.cs",
+      "line": 6,
+      "members": []
     },
     {
       "name": "SubscriptionsEndpointRouteBuilderExtensions",

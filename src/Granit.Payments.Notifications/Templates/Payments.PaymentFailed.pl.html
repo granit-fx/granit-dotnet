@@ -1,0 +1,13 @@
+<p>Dzień dobry,</p>
+<p>Nie udało się przetworzyć Twojej płatności:</p>
+<ul>
+  <li><strong>Kwota:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Dostawca:</strong> {{ model.provider_name | html.escape }}</li>
+  {{- if model.failure_code }}
+  <li><strong>Powód:</strong> {{ model.failure_code | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>Zaktualizuj swoją metodę płatności, aby uniknąć przerwy w usłudze. Płatność zostanie automatycznie ponowiona.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing" class="btn">Zaktualizuj metodę płatności</a>
+</p>

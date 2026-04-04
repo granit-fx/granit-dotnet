@@ -1,0 +1,8 @@
+<p>Olá,</p>
+<p>Uma disputa de pagamento (estorno) foi aberta em sua conta:</p>
+<ul>
+  <li><strong>Valor:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Motivo:</strong> {{ model.reason | html.escape }}</li>
+</ul>
+<p>Nossa equipe foi notificada e irá analisar a disputa. Você poderá ser contatado para informações adicionais.</p>
+<p>Se você acredita que esta disputa é válida, nenhuma ação é necessária de sua parte.</p>

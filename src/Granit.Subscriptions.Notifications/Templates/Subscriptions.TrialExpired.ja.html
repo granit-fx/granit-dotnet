@@ -1,0 +1,6 @@
+<p>こんにちは、</p>
+<p><strong>{{ model.plan_name | html.escape }}</strong> プランの試用期間が終了しました。</p>
+<p>プレミアム機能へのアクセスが停止されました。有料プランに登録することで、いつでも再開できます。</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">プランを選択</a>
+</p>

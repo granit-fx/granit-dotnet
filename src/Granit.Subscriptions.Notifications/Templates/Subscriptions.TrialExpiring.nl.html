@@ -1,0 +1,7 @@
+<p>Hallo,</p>
+<p>Uw proefperiode voor het <strong>{{ model.plan_name | html.escape }}</strong>-plan verloopt over <strong>{{ model.days_remaining }} dag(en)</strong>, op {{ model.trial_ends_at | to_user_time | date.to_string "%d-%m-%Y om %H:%M" }}.</p>
+<p>Upgrade naar een betaald abonnement voordat uw proefperiode afloopt om toegang te behouden tot alle functies.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Nu upgraden</a>
+</p>
+<p>Als u vragen heeft, helpt ons supportteam u graag verder.</p>

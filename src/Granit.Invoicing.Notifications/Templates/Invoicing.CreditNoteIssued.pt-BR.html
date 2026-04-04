@@ -1,0 +1,8 @@
+<p>Olá,</p>
+<p>Uma nota de crédito foi emitida para a fatura <strong>{{ model.parent_invoice_number | html.escape }}</strong>:</p>
+<ul>
+  <li><strong>Nota de crédito:</strong> {{ model.credit_note_number | html.escape }}</li>
+  <li><strong>Valor:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Motivo:</strong> {{ model.reason | html.escape }}</li>
+</ul>
+<p>O crédito foi aplicado na sua conta.</p>

@@ -1,0 +1,8 @@
+<p>Hallo,</p>
+<p>Ihre Zahlung wurde erfolgreich verarbeitet:</p>
+<ul>
+  <li><strong>Betrag:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Anbieter:</strong> {{ model.provider_name | html.escape }}</li>
+  <li><strong>Datum:</strong> {{ model.succeeded_at | to_user_time | date.to_string "%d.%m.%Y um %H:%M" }}</li>
+</ul>
+<p>Eine Quittung wird in Kürze in Ihrem Konto verfügbar sein.</p>

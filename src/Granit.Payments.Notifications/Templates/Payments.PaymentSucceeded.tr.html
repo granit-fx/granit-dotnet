@@ -1,0 +1,8 @@
+<p>Merhaba,</p>
+<p>Ödemeniz başarıyla işlendi:</p>
+<ul>
+  <li><strong>Tutar:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Sağlayıcı:</strong> {{ model.provider_name | html.escape }}</li>
+  <li><strong>Tarih:</strong> {{ model.succeeded_at | to_user_time | date.to_string "%d.%m.%Y saat %H:%M" }}</li>
+</ul>
+<p>Makbuz kısa süre içinde hesabınızda görüntülenebilir olacaktır.</p>

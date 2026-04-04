@@ -1,0 +1,8 @@
+<p>こんにちは、</p>
+<p>お支払いが正常に処理されました：</p>
+<ul>
+  <li><strong>金額：</strong>{{ model.amount }} {{ model.currency }}</li>
+  <li><strong>プロバイダー：</strong>{{ model.provider_name | html.escape }}</li>
+  <li><strong>日付：</strong>{{ model.succeeded_at | to_user_time | date.to_string "%Y年%m月%d日 %H:%M" }}</li>
+</ul>
+<p>領収書はまもなくアカウントでご確認いただけます。</p>

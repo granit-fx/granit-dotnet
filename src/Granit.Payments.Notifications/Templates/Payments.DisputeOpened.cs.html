@@ -1,0 +1,8 @@
+<p>Dobrý den,</p>
+<p>Na vašem účtu byl otevřen platební spor (zpětná platba):</p>
+<ul>
+  <li><strong>Částka:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Důvod:</strong> {{ model.reason | html.escape }}</li>
+</ul>
+<p>Náš tým byl informován a spor přezkoumá. Můžeme vás kontaktovat pro doplňující informace.</p>
+<p>Pokud se domníváte, že tento spor je oprávněný, není z vaší strany vyžadována žádná akce.</p>

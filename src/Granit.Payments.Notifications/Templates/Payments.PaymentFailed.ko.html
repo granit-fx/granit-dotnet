@@ -1,0 +1,13 @@
+<p>안녕하세요,</p>
+<p>결제를 처리할 수 없었습니다:</p>
+<ul>
+  <li><strong>금액:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>공급자:</strong> {{ model.provider_name | html.escape }}</li>
+  {{- if model.failure_code }}
+  <li><strong>사유:</strong> {{ model.failure_code | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>서비스 중단을 방지하려면 결제 수단을 업데이트해 주세요. 결제는 자동으로 재시도됩니다.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing" class="btn">결제 수단 업데이트</a>
+</p>

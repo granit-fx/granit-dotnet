@@ -1,0 +1,10 @@
+<p>こんにちは、</p>
+<p>サブスクリプションプランが <strong>{{ model.scheduled_at | to_user_time | date.to_string "%Y年%m月%d日 %H:%M" }}</strong> に変更される予定です：</p>
+<ul>
+  <li><strong>現在のプラン：</strong> {{ model.current_plan_name | html.escape }}</li>
+  <li><strong>新しいプラン：</strong> {{ model.new_plan_name | html.escape }}</li>
+</ul>
+<p>この変更をキャンセルまたは修正したい場合は、予定日前に行うことができます。</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">サブスクリプションを管理</a>
+</p>

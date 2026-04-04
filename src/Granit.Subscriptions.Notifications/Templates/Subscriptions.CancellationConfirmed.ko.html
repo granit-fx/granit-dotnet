@@ -1,0 +1,10 @@
+<p>안녕하세요,</p>
+<p><strong>{{ model.plan_name | html.escape }}</strong> 플랜 구독이 취소되었습니다.</p>
+{{- if model.cancellation_reason != "" }}
+<p><strong>사유:</strong> {{ model.cancellation_reason | html.escape }}</p>
+{{- end }}
+<p>현재 청구 기간이 끝날 때까지 계속 액세스할 수 있습니다.</p>
+<p>마음이 바뀌시면 언제든지 다시 구독하실 수 있습니다.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">다시 구독</a>
+</p>

@@ -1,0 +1,9 @@
+<p>您好，</p>
+<p>您的账户已处理一笔退款：</p>
+<ul>
+  <li><strong>金额：</strong>{{ model.amount }} {{ model.currency }}</li>
+  {{- if model.reason }}
+  <li><strong>原因：</strong>{{ model.reason | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>退款将在 5 至 10 个工作日内到账，具体取决于您的支付服务商。</p>

@@ -1,0 +1,8 @@
+<p>Hej,</p>
+<p>En betalningsbestridning (chargeback) har öppnats på ditt konto:</p>
+<ul>
+  <li><strong>Belopp:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Orsak:</strong> {{ model.reason | html.escape }}</li>
+</ul>
+<p>Vårt team har meddelats och kommer att granska bestridningen. Du kan komma att kontaktas för ytterligare information.</p>
+<p>Om du anser att denna bestridning är giltig behöver du inte vidta några åtgärder.</p>

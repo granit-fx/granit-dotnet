@@ -1,0 +1,11 @@
+<p>Hola,</p>
+<p>La factura <strong>{{ model.invoice_number | html.escape }}</strong> está vencida.</p>
+<ul>
+  <li><strong>Saldo pendiente:</strong> {{ model.amount_remaining }} {{ model.currency }}</li>
+  <li><strong>Fecha de vencimiento:</strong> {{ model.due_at | to_user_time | date.to_string "%d/%m/%Y a las %H:%M" }}</li>
+  <li><strong>Días de retraso:</strong> {{ model.days_overdue }}</li>
+</ul>
+<p>Le rogamos que abone el saldo pendiente para evitar una interrupción del servicio.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/invoices/{{ model.invoice_id }}" class="btn">Pagar ahora</a>
+</p>

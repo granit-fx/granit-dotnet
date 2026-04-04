@@ -1,0 +1,7 @@
+<p>Dobrý den,</p>
+<p>Vaše zkušební období pro plán <strong>{{ model.plan_name | html.escape }}</strong> vyprší za <strong>{{ model.days_remaining }} den/dní</strong>, dne {{ model.trial_ends_at | to_user_time | date.to_string "%d.%m.%Y v %H:%M" }}.</p>
+<p>Chcete-li si zachovat přístup ke všem funkcím, přejděte na placené předplatné před koncem zkušebního období.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Přejít na placené</a>
+</p>
+<p>Máte-li dotazy, náš tým podpory vám rád pomůže.</p>

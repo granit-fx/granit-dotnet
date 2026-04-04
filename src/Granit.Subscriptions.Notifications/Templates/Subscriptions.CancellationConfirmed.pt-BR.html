@@ -1,0 +1,10 @@
+<p>Olá,</p>
+<p>Sua assinatura do plano <strong>{{ model.plan_name | html.escape }}</strong> foi cancelada.</p>
+{{- if model.cancellation_reason != "" }}
+<p><strong>Motivo:</strong> {{ model.cancellation_reason | html.escape }}</p>
+{{- end }}
+<p>Você continuará tendo acesso até o final do período de cobrança atual.</p>
+<p>Se mudar de ideia, você pode assinar novamente a qualquer momento.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Assinar novamente</a>
+</p>

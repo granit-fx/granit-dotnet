@@ -1,0 +1,11 @@
+<p>Dobrý den,</p>
+<p>Faktura <strong>{{ model.invoice_number | html.escape }}</strong> je po splatnosti.</p>
+<ul>
+  <li><strong>Dlužná částka:</strong> {{ model.amount_remaining }} {{ model.currency }}</li>
+  <li><strong>Datum splatnosti:</strong> {{ model.due_at | to_user_time | date.to_string "%d.%m.%Y v %H:%M" }}</li>
+  <li><strong>Dní po splatnosti:</strong> {{ model.days_overdue }}</li>
+</ul>
+<p>Uhraďte prosím dlužnou částku, abyste předešli přerušení služby.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/invoices/{{ model.invoice_id }}" class="btn">Zaplatit nyní</a>
+</p>

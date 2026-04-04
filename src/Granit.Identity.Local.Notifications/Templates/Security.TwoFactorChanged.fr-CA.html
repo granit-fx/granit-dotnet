@@ -1,8 +1,0 @@
-<p>Bonjour,</p>
-{{- if model.enabled }}
-<p>L'authentification à deux facteurs a été <strong>activée</strong> sur votre compte <strong>{{ model.email | html.escape }}</strong>.</p>
-<p>Votre compte est désormais mieux protégé. Un code de vérification vous sera demandé lors de la connexion.</p>
-{{- else }}
-<p>L'authentification à deux facteurs a été <strong>désactivée</strong> sur votre compte <strong>{{ model.email | html.escape }}</strong>.</p>
-<p><strong>Si vous n'avez pas effectué cette modification</strong>, votre compte est peut-être compromis. Veuillez réactiver l'authentification à deux facteurs et réinitialiser votre mot de passe immédiatement.</p>
-{{- end }}

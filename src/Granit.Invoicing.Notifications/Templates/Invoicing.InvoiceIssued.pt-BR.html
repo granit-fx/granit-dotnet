@@ -1,0 +1,13 @@
+<p>Olá,</p>
+<p>Uma nova fatura foi emitida:</p>
+<ul>
+  <li><strong>Fatura:</strong> {{ model.invoice_number | html.escape }}</li>
+  <li><strong>Valor:</strong> {{ model.total }} {{ model.currency }}</li>
+  <li><strong>Emitida em:</strong> {{ model.issued_at | to_user_time | date.to_string "%d/%m/%Y às %H:%M" }}</li>
+  {{- if model.due_at | to_user_time }}
+  <li><strong>Vencimento:</strong> {{ model.due_at | to_user_time | date.to_string "%d/%m/%Y às %H:%M" }}</li>
+  {{- end }}
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/invoices/{{ model.invoice_id }}" class="btn">Ver fatura</a>
+</p>

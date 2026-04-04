@@ -83,8 +83,15 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Granit.Workflow": "[0.1.0-dev, )"
+        }
+      },
+      "granit.invoicing.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.localization": {
@@ -193,8 +200,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.18",
-        "contentHash": "SOe5I8KspXwmcMbey+6G4drRWhCa/ON/ZjyVKfm5FpXvcsCmb9MfiVcKAiQ8UYV+ki3fAaqcCFc5ahzx/NTXOw=="
+        "resolved": "2.13.19",
+        "contentHash": "u6re2Vy+BZnywdyLAhzhdj4htb/WlGWaC+u0NrxDPbFTojuDMAw0INrdmzIYj7MDWJuhf3iYg5eLwH3X8MvPgA=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",

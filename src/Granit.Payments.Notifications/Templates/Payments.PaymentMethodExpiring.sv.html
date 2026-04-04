@@ -1,0 +1,6 @@
+<p>Hej,</p>
+<p>Din betalningsmetod <strong>{{ model.display_label | html.escape }}</strong> löper ut om <strong>{{ model.days_remaining }} dag(ar)</strong>, i {{ model.expires_at | to_user_time | date.to_string "%Y-%m" }}.</p>
+<p>Uppdatera din betalningsmetod för att säkerställa en oavbruten tjänst.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing/methods" class="btn">Uppdatera betalningsmetod</a>
+</p>

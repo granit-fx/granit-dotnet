@@ -1,0 +1,7 @@
+<p>Hallo,</p>
+<p>Ihre Testphase für den <strong>{{ model.plan_name | html.escape }}</strong>-Plan endet in <strong>{{ model.days_remaining }} Tag(en)</strong>, am {{ model.trial_ends_at | to_user_time | date.to_string "%d.%m.%Y um %H:%M" }}.</p>
+<p>Um weiterhin Zugriff auf alle Funktionen zu haben, wechseln Sie vor Ablauf Ihrer Testphase zu einem kostenpflichtigen Abonnement.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Jetzt upgraden</a>
+</p>
+<p>Bei Fragen steht Ihnen unser Support-Team gerne zur Verfügung.</p>

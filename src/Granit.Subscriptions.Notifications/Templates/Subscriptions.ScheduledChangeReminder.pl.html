@@ -1,0 +1,10 @@
+<p>Witaj,</p>
+<p>Przypominamy, że Twój plan subskrypcji zmieni się dnia <strong>{{ model.scheduled_at | to_user_time | date.to_string "%d.%m.%Y o %H:%M" }}</strong>:</p>
+<ul>
+  <li><strong>Bieżący plan:</strong> {{ model.current_plan_name | html.escape }}</li>
+  <li><strong>Nowy plan:</strong> {{ model.new_plan_name | html.escape }}</li>
+</ul>
+<p>Jeśli chcesz anulować lub zmodyfikować tę zmianę, możesz to zrobić przed zaplanowaną datą.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Zarządzaj subskrypcją</a>
+</p>

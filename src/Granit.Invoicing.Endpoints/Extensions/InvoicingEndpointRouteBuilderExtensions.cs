@@ -1,4 +1,4 @@
-using Granit.Invoicing.Endpoints.Permissions;
+using Granit.Invoicing.Endpoints.Endpoints;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +15,8 @@ public static class InvoicingEndpointRouteBuilderExtensions
         RouteGroupBuilder group = endpoints
             .MapGranitGroup("invoicing")
             .WithTags("Invoicing");
+
+        group.MapInvoiceEndpoints();
 
         return group;
     }

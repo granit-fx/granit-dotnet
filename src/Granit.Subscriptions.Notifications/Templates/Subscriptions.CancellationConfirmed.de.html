@@ -1,0 +1,10 @@
+<p>Hallo,</p>
+<p>Ihr Abonnement für den <strong>{{ model.plan_name | html.escape }}</strong>-Plan wurde gekündigt.</p>
+{{- if model.cancellation_reason != "" }}
+<p><strong>Grund:</strong> {{ model.cancellation_reason | html.escape }}</p>
+{{- end }}
+<p>Sie haben weiterhin Zugriff bis zum Ende Ihres aktuellen Abrechnungszeitraums.</p>
+<p>Sollten Sie Ihre Meinung ändern, können Sie sich jederzeit erneut abonnieren.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Erneut abonnieren</a>
+</p>

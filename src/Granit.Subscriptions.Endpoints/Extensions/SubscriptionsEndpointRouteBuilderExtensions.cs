@@ -1,4 +1,4 @@
-using Granit.Subscriptions.Endpoints.Permissions;
+using Granit.Subscriptions.Endpoints.Endpoints;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -17,8 +17,12 @@ public static class SubscriptionsEndpointRouteBuilderExtensions
     {
         RouteGroupBuilder group = endpoints
             .MapGranitGroup("subscriptions")
-            .WithTags("Subscriptions")
-            .RequireAuthorization();
+            .WithTags("Subscriptions");
+
+        group.MapPlanReadEndpoints();
+        group.MapPlanWriteEndpoints();
+        group.MapSubscriptionEndpoints();
+        group.MapSeatEndpoints();
 
         return group;
     }

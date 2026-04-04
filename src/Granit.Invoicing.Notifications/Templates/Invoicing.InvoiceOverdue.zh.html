@@ -1,0 +1,11 @@
+<p>您好，</p>
+<p>发票 <strong>{{ model.invoice_number | html.escape }}</strong> 已逾期。</p>
+<ul>
+  <li><strong>未付金额：</strong>{{ model.amount_remaining }} {{ model.currency }}</li>
+  <li><strong>到期日：</strong>{{ model.due_at | to_user_time | date.to_string "%Y年%m月%d日 %H:%M" }}</li>
+  <li><strong>逾期天数：</strong>{{ model.days_overdue }}</li>
+</ul>
+<p>请尽快结清未付余额，以免服务中断。</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/invoices/{{ model.invoice_id }}" class="btn">立即支付</a>
+</p>

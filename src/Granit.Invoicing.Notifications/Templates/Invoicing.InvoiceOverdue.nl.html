@@ -1,0 +1,11 @@
+<p>Hallo,</p>
+<p>Factuur <strong>{{ model.invoice_number | html.escape }}</strong> is achterstallig.</p>
+<ul>
+  <li><strong>Openstaand bedrag:</strong> {{ model.amount_remaining }} {{ model.currency }}</li>
+  <li><strong>Vervaldatum:</strong> {{ model.due_at | to_user_time | date.to_string "%d/%m/%Y om %H:%M" }}</li>
+  <li><strong>Dagen achterstallig:</strong> {{ model.days_overdue }}</li>
+</ul>
+<p>Gelieve het openstaande saldo te voldoen om een onderbreking van de dienstverlening te voorkomen.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/invoices/{{ model.invoice_id }}" class="btn">Nu betalen</a>
+</p>

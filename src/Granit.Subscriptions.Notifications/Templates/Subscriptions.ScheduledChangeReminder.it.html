@@ -1,0 +1,10 @@
+<p>Salve,</p>
+<p>Le ricordiamo che il suo piano di abbonamento cambierà il <strong>{{ model.scheduled_at | to_user_time | date.to_string "%d/%m/%Y alle %H:%M" }}</strong>:</p>
+<ul>
+  <li><strong>Piano attuale:</strong> {{ model.current_plan_name | html.escape }}</li>
+  <li><strong>Nuovo piano:</strong> {{ model.new_plan_name | html.escape }}</li>
+</ul>
+<p>Se desidera annullare o modificare questa modifica, può farlo prima della data prevista.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Gestisci abbonamento</a>
+</p>

@@ -1,3 +1,4 @@
+using Granit.Metering.Endpoints.Endpoints;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -18,9 +19,8 @@ public static class MeteringEndpointRouteBuilderExtensions
             .MapGranitGroup("metering")
             .WithTags("Metering");
 
-        // Meter definition endpoints will be added in subsequent stories
-        // Usage reporting endpoints will be added in subsequent stories
-        // Quota status endpoints will be added in subsequent stories
+        group.MapMeterDefinitionEndpoints();
+        group.MapUsageEndpoints();
 
         return group;
     }

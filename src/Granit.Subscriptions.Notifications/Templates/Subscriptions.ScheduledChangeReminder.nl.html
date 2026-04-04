@@ -1,0 +1,10 @@
+<p>Hallo,</p>
+<p>Ter herinnering: uw abonnementsplan wijzigt op <strong>{{ model.scheduled_at | to_user_time | date.to_string "%d-%m-%Y om %H:%M" }}</strong>:</p>
+<ul>
+  <li><strong>Huidig plan:</strong> {{ model.current_plan_name | html.escape }}</li>
+  <li><strong>Nieuw plan:</strong> {{ model.new_plan_name | html.escape }}</li>
+</ul>
+<p>Als u deze wijziging wilt annuleren of aanpassen, kunt u dit doen vóór de geplande datum.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" class="btn">Abonnement beheren</a>
+</p>

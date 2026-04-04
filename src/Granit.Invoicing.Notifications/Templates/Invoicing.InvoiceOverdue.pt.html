@@ -1,0 +1,11 @@
+<p>Olá,</p>
+<p>A fatura <strong>{{ model.invoice_number | html.escape }}</strong> encontra-se em atraso.</p>
+<ul>
+  <li><strong>Valor em aberto:</strong> {{ model.amount_remaining }} {{ model.currency }}</li>
+  <li><strong>Data de vencimento:</strong> {{ model.due_at | to_user_time | date.to_string "%d/%m/%Y às %H:%M" }}</li>
+  <li><strong>Dias em atraso:</strong> {{ model.days_overdue }}</li>
+</ul>
+<p>Solicitamos que regularize o saldo em aberto para evitar uma interrupção do serviço.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/invoices/{{ model.invoice_id }}" class="btn">Pagar agora</a>
+</p>

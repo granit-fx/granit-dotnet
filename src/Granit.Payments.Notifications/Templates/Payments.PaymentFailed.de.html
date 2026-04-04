@@ -1,0 +1,13 @@
+<p>Hallo,</p>
+<p>Wir konnten Ihre Zahlung nicht verarbeiten:</p>
+<ul>
+  <li><strong>Betrag:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Anbieter:</strong> {{ model.provider_name | html.escape }}</li>
+  {{- if model.failure_code }}
+  <li><strong>Grund:</strong> {{ model.failure_code | html.escape }}</li>
+  {{- end }}
+</ul>
+<p>Bitte aktualisieren Sie Ihre Zahlungsmethode, um eine Dienstunterbrechung zu vermeiden. Wir werden die Zahlung automatisch erneut versuchen.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing" class="btn">Zahlungsmethode aktualisieren</a>
+</p>

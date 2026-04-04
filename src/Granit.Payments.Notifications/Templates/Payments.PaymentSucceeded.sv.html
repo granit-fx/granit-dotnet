@@ -1,0 +1,8 @@
+<p>Hej,</p>
+<p>Din betalning har behandlats framgångsrikt:</p>
+<ul>
+  <li><strong>Belopp:</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Leverantör:</strong> {{ model.provider_name | html.escape }}</li>
+  <li><strong>Datum:</strong> {{ model.succeeded_at | to_user_time | date.to_string "%Y-%m-%d kl. %H:%M" }}</li>
+</ul>
+<p>Ett kvitto kommer snart att finnas tillgängligt i ditt konto.</p>
