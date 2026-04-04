@@ -1,5 +1,8 @@
 using Granit.BackgroundJobs;
 using Granit.Modularity;
+using Granit.Subscriptions.BackgroundJobs.Internal;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Subscriptions.BackgroundJobs;
 
@@ -10,4 +13,11 @@ namespace Granit.Subscriptions.BackgroundJobs;
 [DependsOn(
     typeof(GranitBackgroundJobsModule),
     typeof(GranitSubscriptionsModule))]
-public sealed class GranitSubscriptionsBackgroundJobsModule : GranitModule;
+public sealed class GranitSubscriptionsBackgroundJobsModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddTransient<TrialExpirationScanner>();
+    }
+}

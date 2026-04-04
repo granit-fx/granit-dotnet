@@ -1,7 +1,10 @@
 using Granit.BackgroundJobs;
 using Granit.Caching;
 using Granit.Modularity;
+using Granit.OpenIddict.BackgroundJobs.Internal;
 using Granit.Settings;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.OpenIddict.BackgroundJobs;
 
@@ -14,4 +17,13 @@ namespace Granit.OpenIddict.BackgroundJobs;
     typeof(GranitCachingModule),
     typeof(GranitOpenIddictModule),
     typeof(GranitSettingsModule))]
-public sealed class GranitOpenIddictBackgroundJobsModule : GranitModule;
+public sealed class GranitOpenIddictBackgroundJobsModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddTransient<IdleSessionEnforcementService>();
+        context.Services.TryAddTransient<KeyRotationExecutionService>();
+        context.Services.TryAddTransient<TokenCleanupService>();
+    }
+}

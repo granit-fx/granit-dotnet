@@ -1,5 +1,8 @@
 using Granit.BackgroundJobs;
+using Granit.BlobStorage.BackgroundJobs.Internal;
 using Granit.Modularity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.BlobStorage.BackgroundJobs;
 
@@ -10,4 +13,11 @@ namespace Granit.BlobStorage.BackgroundJobs;
 [DependsOn(
     typeof(GranitBackgroundJobsModule),
     typeof(GranitBlobStorageModule))]
-public sealed class GranitBlobStorageBackgroundJobsModule : GranitModule;
+public sealed class GranitBlobStorageBackgroundJobsModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddTransient<OrphanBlobCleanupService>();
+    }
+}

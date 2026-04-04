@@ -1,6 +1,7 @@
 using Granit.DataProtection;
 using Granit.Domain;
 using Granit.MultiTenancy;
+using Granit.Tax.Domain.ValueObjects;
 
 namespace Granit.Tax.Domain;
 
@@ -17,6 +18,14 @@ public sealed class ValidatedTaxId : Entity, IMultiTenant
     private ValidatedTaxId() { }
 
     /// <summary>Creates a new cached tax ID validation.</summary>
+    /// <param name="id">Unique identifier for this validation record.</param>
+    /// <param name="taxId">The tax ID being validated (e.g., "BE0123456789").</param>
+    /// <param name="countryCode">ISO 3166-1 alpha-2 country code.</param>
+    /// <param name="isValid">Whether the tax ID was determined to be valid.</param>
+    /// <param name="source">Which system performed the validation.</param>
+    /// <param name="validatedAt">When the validation was performed.</param>
+    /// <param name="expiresAt">Cache expiry timestamp. Null for no expiry.</param>
+    /// <param name="companyDetails">Company details returned by the tax authority.</param>
     public static ValidatedTaxId Create(
         Guid id,
         string taxId,
@@ -25,9 +34,7 @@ public sealed class ValidatedTaxId : Entity, IMultiTenant
         TaxIdValidationSource source,
         DateTimeOffset validatedAt,
         DateTimeOffset? expiresAt = null,
-        string? companyName = null,
-        string? companyAddress = null,
-        string? requestIdentifier = null)
+        CompanyValidationDetails? companyDetails = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(taxId);
         ArgumentException.ThrowIfNullOrWhiteSpace(countryCode);
@@ -41,9 +48,9 @@ public sealed class ValidatedTaxId : Entity, IMultiTenant
             Source = source,
             ValidatedAt = validatedAt,
             ExpiresAt = expiresAt,
-            CompanyName = companyName,
-            CompanyAddress = companyAddress,
-            RequestIdentifier = requestIdentifier,
+            CompanyName = companyDetails?.Name,
+            CompanyAddress = companyDetails?.Address,
+            RequestIdentifier = companyDetails?.RequestIdentifier,
         };
     }
 
@@ -86,13 +93,13 @@ public sealed class ValidatedTaxId : Entity, IMultiTenant
     /// <summary>Updates the validation after online retry (OfflinePending → Vies).</summary>
     public void ConfirmOnlineValidation(
         bool isValid, TaxIdValidationSource source, DateTimeOffset validatedAt,
-        string? companyName, string? companyAddress, string? requestIdentifier)
+        CompanyValidationDetails? companyDetails = null)
     {
         IsValid = isValid;
         Source = source;
         ValidatedAt = validatedAt;
-        CompanyName = companyName;
-        CompanyAddress = companyAddress;
-        RequestIdentifier = requestIdentifier;
+        CompanyName = companyDetails?.Name;
+        CompanyAddress = companyDetails?.Address;
+        RequestIdentifier = companyDetails?.RequestIdentifier;
     }
 }

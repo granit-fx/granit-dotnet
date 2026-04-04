@@ -1,5 +1,6 @@
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Timeline.Domain.ValueObjects;
 using Granit.Timeline.Events;
 
 namespace Granit.Timeline.Domain;
@@ -18,37 +19,44 @@ public sealed class TimelineEntry : CreationAuditedAggregateRoot, ISoftDeletable
     // Parameterless constructor required by EF Core materializer.
     private TimelineEntry() { }
 
-    /// <summary>
-    /// Creates a new <see cref="TimelineEntry"/>.
-    /// </summary>
+    /// <summary>Creates a new <see cref="TimelineEntry"/>.</summary>
+    /// <param name="id">Unique entry identifier.</param>
+    /// <param name="entity">Polymorphic reference to the parent entity.</param>
+    /// <param name="entryType">Type of entry (comment, internal note, or system log).</param>
+    /// <param name="body">Entry body (Markdown for comments/notes, JSON for system logs).</param>
+    /// <param name="author">Denormalized author identity.</param>
+    /// <param name="createdAt">Timestamp of creation.</param>
+    /// <param name="createdBy">Identifier of the creator (audit trail).</param>
+    /// <param name="tenantId">Owning tenant identifier.</param>
+    /// <param name="parentEntryId">Parent entry ID for threaded replies.</param>
     public static TimelineEntry Create(
         Guid id,
-        string entityType,
-        string entityId,
+        EntityReference entity,
         TimelineEntryType entryType,
         string body,
-        string authorId,
-        string authorName,
+        AuthorInfo author,
         DateTimeOffset createdAt,
         string createdBy,
         Guid? tenantId = null,
         Guid? parentEntryId = null)
     {
-        ArgumentException.ThrowIfNullOrEmpty(entityType);
-        ArgumentException.ThrowIfNullOrEmpty(entityId);
+        ArgumentNullException.ThrowIfNull(entity);
+        ArgumentNullException.ThrowIfNull(author);
+        ArgumentException.ThrowIfNullOrEmpty(entity.EntityType);
+        ArgumentException.ThrowIfNullOrEmpty(entity.EntityId);
         ArgumentException.ThrowIfNullOrEmpty(body);
-        ArgumentException.ThrowIfNullOrEmpty(authorId);
+        ArgumentException.ThrowIfNullOrEmpty(author.Id);
         ArgumentException.ThrowIfNullOrEmpty(createdBy);
 
         return new()
         {
             Id = id,
-            EntityType = entityType,
-            EntityId = entityId,
+            EntityType = entity.EntityType,
+            EntityId = entity.EntityId,
             EntryType = entryType,
             Body = body,
-            AuthorId = authorId,
-            AuthorName = authorName,
+            AuthorId = author.Id,
+            AuthorName = author.Name,
             ParentEntryId = parentEntryId,
             CreatedAt = createdAt,
             CreatedBy = createdBy,

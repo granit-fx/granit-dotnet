@@ -1,4 +1,4 @@
-using Granit.Notifications;
+using Granit.Domain;
 using Granit.Notifications.Abstractions;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;

@@ -1,5 +1,6 @@
 using Granit.Domain;
 using Granit.Timeline.Domain;
+using Granit.Timeline.Domain.ValueObjects;
 using Granit.Timeline.Events;
 using Shouldly;
 using Xunit;
@@ -17,8 +18,8 @@ public sealed class TimelineEntryTests
         DateTimeOffset now = DateTimeOffset.UtcNow;
 
         var entry = TimelineEntry.Create(
-            id, "Patient", "p-1", TimelineEntryType.Comment,
-            "Hello world", "user-1", "Alice", now, "user-1",
+            id, new EntityReference("Patient", "p-1"), TimelineEntryType.Comment,
+            "Hello world", new AuthorInfo("user-1", "Alice"), now, "user-1",
             tenantId, parentId);
 
         entry.Id.ShouldBe(id);
@@ -41,8 +42,8 @@ public sealed class TimelineEntryTests
     public void Create_WithoutOptionalParams_DefaultsToNull()
     {
         var entry = TimelineEntry.Create(
-            Guid.NewGuid(), "Invoice", "inv-1", TimelineEntryType.SystemLog,
-            "{}", "system", "System", DateTimeOffset.UtcNow, "system");
+            Guid.NewGuid(), new EntityReference("Invoice", "inv-1"), TimelineEntryType.SystemLog,
+            "{}", new AuthorInfo("system", "System"), DateTimeOffset.UtcNow, "system");
 
         entry.TenantId.ShouldBeNull();
         entry.ParentEntryId.ShouldBeNull();
@@ -52,8 +53,8 @@ public sealed class TimelineEntryTests
     public void RaisePostedEvent_AddsTimelineEntryPostedEvent()
     {
         var entry = TimelineEntry.Create(
-            Guid.NewGuid(), "Patient", "p-1", TimelineEntryType.Comment,
-            "Test", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
+            Guid.NewGuid(), new EntityReference("Patient", "p-1"), TimelineEntryType.Comment,
+            "Test", new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1");
 
         entry.RaisePostedEvent();
 
@@ -71,8 +72,8 @@ public sealed class TimelineEntryTests
     public void SoftDelete_Comment_SetsDeletedFields()
     {
         var entry = TimelineEntry.Create(
-            Guid.NewGuid(), "Patient", "p-1", TimelineEntryType.Comment,
-            "Test", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
+            Guid.NewGuid(), new EntityReference("Patient", "p-1"), TimelineEntryType.Comment,
+            "Test", new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1");
         DateTimeOffset deletedAt = DateTimeOffset.UtcNow;
 
         entry.SoftDelete(deletedAt, "admin");
@@ -86,8 +87,8 @@ public sealed class TimelineEntryTests
     public void SoftDelete_Comment_RaisesTimelineEntrySoftDeletedEvent()
     {
         var entry = TimelineEntry.Create(
-            Guid.NewGuid(), "Patient", "p-1", TimelineEntryType.Comment,
-            "Test", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
+            Guid.NewGuid(), new EntityReference("Patient", "p-1"), TimelineEntryType.Comment,
+            "Test", new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1");
 
         entry.SoftDelete(DateTimeOffset.UtcNow, "admin");
 
@@ -103,8 +104,8 @@ public sealed class TimelineEntryTests
     public void SoftDelete_InternalNote_SetsDeletedFields()
     {
         var entry = TimelineEntry.Create(
-            Guid.NewGuid(), "Patient", "p-1", TimelineEntryType.InternalNote,
-            "Staff note", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
+            Guid.NewGuid(), new EntityReference("Patient", "p-1"), TimelineEntryType.InternalNote,
+            "Staff note", new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1");
 
         entry.SoftDelete(DateTimeOffset.UtcNow, "admin");
 
@@ -115,8 +116,8 @@ public sealed class TimelineEntryTests
     public void SoftDelete_SystemLog_ThrowsInvalidOperationException()
     {
         var entry = TimelineEntry.Create(
-            Guid.NewGuid(), "Invoice", "inv-1", TimelineEntryType.SystemLog,
-            "{}", "system", "System", DateTimeOffset.UtcNow, "system");
+            Guid.NewGuid(), new EntityReference("Invoice", "inv-1"), TimelineEntryType.SystemLog,
+            "{}", new AuthorInfo("system", "System"), DateTimeOffset.UtcNow, "system");
 
         InvalidOperationException ex = Should.Throw<InvalidOperationException>(
             () => entry.SoftDelete(DateTimeOffset.UtcNow, "admin"));
@@ -129,8 +130,8 @@ public sealed class TimelineEntryTests
     public void SoftDelete_SystemLog_DoesNotEmitEvent()
     {
         var entry = TimelineEntry.Create(
-            Guid.NewGuid(), "Invoice", "inv-1", TimelineEntryType.SystemLog,
-            "{}", "system", "System", DateTimeOffset.UtcNow, "system");
+            Guid.NewGuid(), new EntityReference("Invoice", "inv-1"), TimelineEntryType.SystemLog,
+            "{}", new AuthorInfo("system", "System"), DateTimeOffset.UtcNow, "system");
 
         Should.Throw<InvalidOperationException>(
             () => entry.SoftDelete(DateTimeOffset.UtcNow, "admin"));
@@ -142,8 +143,8 @@ public sealed class TimelineEntryTests
     public void IMultiTenant_TenantId_CanBeSetExplicitly()
     {
         var entry = TimelineEntry.Create(
-            Guid.NewGuid(), "Patient", "p-1", TimelineEntryType.Comment,
-            "Test", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
+            Guid.NewGuid(), new EntityReference("Patient", "p-1"), TimelineEntryType.Comment,
+            "Test", new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1");
 
         var tenantId = Guid.NewGuid();
         ((IMultiTenant)entry).TenantId = tenantId;
@@ -155,8 +156,8 @@ public sealed class TimelineEntryTests
     public void ISoftDeletable_Properties_CanBeSetExplicitly()
     {
         var entry = TimelineEntry.Create(
-            Guid.NewGuid(), "Patient", "p-1", TimelineEntryType.Comment,
-            "Test", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
+            Guid.NewGuid(), new EntityReference("Patient", "p-1"), TimelineEntryType.Comment,
+            "Test", new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1");
 
         DateTimeOffset deletedAt = DateTimeOffset.UtcNow;
         ISoftDeletable softDeletable = entry;

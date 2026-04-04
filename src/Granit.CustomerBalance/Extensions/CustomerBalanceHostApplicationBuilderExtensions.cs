@@ -1,4 +1,5 @@
 using Granit.CustomerBalance.Diagnostics;
+using Granit.CustomerBalance.Internal;
 using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -18,6 +19,8 @@ public static class CustomerBalanceHostApplicationBuilderExtensions
         this IHostApplicationBuilder builder)
     {
         builder.Services.TryAddSingleton<CustomerBalanceMetrics>();
+        builder.Services.TryAddTransient<ICreditExpirationService, DefaultCreditExpirationService>();
+        builder.Services.TryAddTransient<IOverpaymentCreditService, DefaultOverpaymentCreditService>();
         GranitActivitySourceRegistry.Register(CustomerBalanceActivitySource.Name);
 
         return builder;

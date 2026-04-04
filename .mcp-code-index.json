@@ -2163,6 +2163,24 @@
   ],
   "symbols": [
     {
+      "name": "AIChatCompletionResult",
+      "fqn": "Granit.AI.AIChatCompletionResult",
+      "kind": "record",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/IAIChatCompletionService.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "AIChatMessage",
+      "fqn": "Granit.AI.AIChatMessage",
+      "kind": "record",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/IAIChatCompletionService.cs",
+      "line": 27,
+      "members": []
+    },
+    {
       "name": "AILocalizationResource",
       "fqn": "Granit.AI.AILocalizationResource",
       "kind": "class",
@@ -2702,8 +2720,15 @@
       "kind": "class",
       "project": "Granit.AI",
       "file": "src/Granit.AI/GranitAIModule.cs",
-      "line": 25,
-      "members": []
+      "line": 28,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IAIChatClientFactory",
@@ -2718,6 +2743,22 @@
           "kind": "method",
           "signature": "CreateAsync(string? workspaceName = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<IChatClient>"
+        }
+      ]
+    },
+    {
+      "name": "IAIChatCompletionService",
+      "fqn": "Granit.AI.IAIChatCompletionService",
+      "kind": "interface",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/IAIChatCompletionService.cs",
+      "line": 33,
+      "members": [
+        {
+          "name": "CompleteAsync",
+          "kind": "method",
+          "signature": "CompleteAsync(string workspaceName, IReadOnlyList<AIChatMessage> messages, CancellationToken cancellationToken)",
+          "returnType": "Task<AIChatCompletionResult?>"
         }
       ]
     },
@@ -6896,7 +6937,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/GranitBffEndpointsModule.cs",
-      "line": 26,
+      "line": 28,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6973,6 +7014,28 @@
           "kind": "method",
           "signature": "Validate(string sessionId, string token)",
           "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "IBffLogoutOrchestrator",
+      "fqn": "Granit.Bff.IBffLogoutOrchestrator",
+      "kind": "interface",
+      "project": "Granit.Bff",
+      "file": "src/Granit.Bff/IBffLogoutOrchestrator.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "RevokeSessionAsync",
+          "kind": "method",
+          "signature": "RevokeSessionAsync(string frontendName, string sessionId, CancellationToken cancellationToken)",
+          "returnType": "Task<string?>"
+        },
+        {
+          "name": "BuildEndSessionUrl",
+          "kind": "method",
+          "signature": "BuildEndSessionUrl(BffFrontendOptions frontend, string postLogoutRedirectUri, string? idTokenHint)",
+          "returnType": "string"
         }
       ]
     },
@@ -7353,8 +7416,15 @@
       "kind": "class",
       "project": "Granit.BlobStorage.BackgroundJobs",
       "file": "src/Granit.BlobStorage.BackgroundJobs/GranitBlobStorageBackgroundJobsModule.cs",
-      "line": 13,
-      "members": []
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "OrphanBlobCleanupJob",
@@ -9439,8 +9509,15 @@
       "kind": "class",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/GranitDataExchangeEndpointsModule.cs",
-      "line": 21,
-      "members": []
+      "line": 24,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "DataExchangeEndpointsOptions",
@@ -11622,6 +11699,15 @@
       "project": "Granit",
       "file": "src/Granit/Domain/Entity.cs",
       "line": 7,
+      "members": []
+    },
+    {
+      "name": "EntityReference",
+      "fqn": "Granit.Domain.EntityReference",
+      "kind": "record",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ValueObjects/EntityReference.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -18281,29 +18367,13 @@
       "kind": "class",
       "project": "Granit.Invoicing.BackgroundJobs",
       "file": "src/Granit.Invoicing.BackgroundJobs/GranitInvoicingBackgroundJobsModule.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "IOverdueInvoiceDetectionService",
-      "fqn": "Granit.Invoicing.BackgroundJobs.IOverdueInvoiceDetectionService",
-      "kind": "interface",
-      "project": "Granit.Invoicing.BackgroundJobs",
-      "file": "src/Granit.Invoicing.BackgroundJobs/IOverdueInvoiceDetectionService.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "DetectAsync",
-          "kind": "method",
-          "signature": "DetectAsync(CancellationToken cancellationToken = default)",
-          "returnType": "Task"
         }
       ]
     },
@@ -18434,7 +18504,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, InvoiceDocumentType documentType, string currency, CollectionMethod collectionMethod, BillingReason billingReason, BillingAddress? billingAddress = null, InvoiceId? parentInvoiceId = null, string? creditNoteReason = null, DateTimeOffset? periodStart = null, DateTimeOffset? periodEnd = null)",
+          "signature": "Create(Guid id, Guid tenantId, InvoiceDocumentType documentType, string currency, CollectionMethod collectionMethod, BillingReason billingReason, BillingAddress? billingAddress = null, CreditNoteInfo? creditNoteInfo = null, BillingPeriod? period = null)",
           "returnType": "Invoice"
         },
         {
@@ -18558,12 +18628,12 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Domain/InvoiceLineItem.cs",
-      "line": 6,
+      "line": 7,
       "members": [
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, string description, decimal quantity, decimal unitPrice, InvoiceSourceType sourceType, string? sourceId = null, decimal? taxRate = null, DateTimeOffset? periodStart = null, DateTimeOffset? periodEnd = null)",
+          "signature": "Create(Guid id, string description, decimal quantity, decimal unitPrice, LineItemSource source, decimal? taxRate = null, BillingPeriod? period = null)",
           "returnType": "InvoiceLineItem"
         }
       ]
@@ -18587,6 +18657,24 @@
       "members": []
     },
     {
+      "name": "BillingPeriod",
+      "fqn": "Granit.Invoicing.Domain.ValueObjects.BillingPeriod",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Domain/ValueObjects/BillingPeriod.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "CreditNoteInfo",
+      "fqn": "Granit.Invoicing.Domain.ValueObjects.CreditNoteInfo",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Domain/ValueObjects/CreditNoteInfo.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "InvoiceId",
       "fqn": "Granit.Invoicing.Domain.ValueObjects.InvoiceId",
       "kind": "class",
@@ -18607,6 +18695,15 @@
           "returnType": "implicit operator"
         }
       ]
+    },
+    {
+      "name": "LineItemSource",
+      "fqn": "Granit.Invoicing.Domain.ValueObjects.LineItemSource",
+      "kind": "record",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Domain/ValueObjects/LineItemSource.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "ExternalInvoiceStatus",
@@ -19058,6 +19155,22 @@
           "name": "DeleteAsync",
           "kind": "method",
           "signature": "DeleteAsync(Invoice invoice, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IOverdueInvoiceDetectionService",
+      "fqn": "Granit.Invoicing.IOverdueInvoiceDetectionService",
+      "kind": "interface",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/IOverdueInvoiceDetectionService.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "DetectAsync",
+          "kind": "method",
+          "signature": "DetectAsync(CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -21677,7 +21790,7 @@
       "kind": "interface",
       "project": "Granit.Notifications.Abstractions",
       "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationPublisher.cs",
-      "line": 8,
+      "line": 9,
       "members": []
     },
     {
@@ -22704,15 +22817,6 @@
       "members": []
     },
     {
-      "name": "EntityReference",
-      "fqn": "Granit.Notifications.EntityReference",
-      "kind": "record",
-      "project": "Granit.Notifications.Abstractions",
-      "file": "src/Granit.Notifications.Abstractions/EntityReference.cs",
-      "line": 6,
-      "members": []
-    },
-    {
       "name": "EntityStateChangedData",
       "fqn": "Granit.Notifications.EntityStateChangedData",
       "kind": "record",
@@ -22827,7 +22931,7 @@
       "kind": "interface",
       "project": "Granit.Notifications",
       "file": "src/Granit.Notifications/ITrackedEntity.cs",
-      "line": 7,
+      "line": 9,
       "members": [
         {
           "name": "GetEntityId",
@@ -22843,7 +22947,7 @@
       "kind": "record",
       "project": "Granit.Notifications",
       "file": "src/Granit.Notifications/Messages/DeliverNotificationCommand.cs",
-      "line": 9,
+      "line": 10,
       "members": []
     },
     {
@@ -22852,7 +22956,7 @@
       "kind": "record",
       "project": "Granit.Notifications",
       "file": "src/Granit.Notifications/Messages/NotificationTrigger.cs",
-      "line": 8,
+      "line": 9,
       "members": [
         {
           "name": "NewGuid",
@@ -23237,7 +23341,7 @@
       "kind": "record",
       "project": "Granit.Notifications.Abstractions",
       "file": "src/Granit.Notifications.Abstractions/NotificationDeliveryContext.cs",
-      "line": 8,
+      "line": 9,
       "members": []
     },
     {
@@ -33257,7 +33361,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(SubscriptionId id, Guid tenantId, PlanId planId, string currency, DateTimeOffset periodStart, DateTimeOffset periodEnd, DateTimeOffset billingCycleAnchor, DateTimeOffset? trialEndsAt = null, Guid? planPriceId = null)",
+          "signature": "Create(SubscriptionId id, Guid tenantId, PlanId planId, string currency, SubscriptionPeriod period, DateTimeOffset? trialEndsAt = null, Guid? planPriceId = null)",
           "returnType": "Subscription"
         },
         {
@@ -33406,6 +33510,15 @@
           "returnType": "implicit operator"
         }
       ]
+    },
+    {
+      "name": "SubscriptionPeriod",
+      "fqn": "Granit.Subscriptions.Domain.ValueObjects.SubscriptionPeriod",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/ValueObjects/SubscriptionPeriod.cs",
+      "line": 10,
+      "members": []
     },
     {
       "name": "BulkMigratePriceRequest",
@@ -34430,12 +34543,12 @@
       "kind": "class",
       "project": "Granit.Tax",
       "file": "src/Granit.Tax/Domain/ValidatedTaxId.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, string taxId, string countryCode, bool isValid, TaxIdValidationSource source, DateTimeOffset validatedAt, DateTimeOffset? expiresAt = null, string? companyName = null, string? companyAddress = null, string? requestIdentifier = null)",
+          "signature": "Create(Guid id, string taxId, string countryCode, bool isValid, TaxIdValidationSource source, DateTimeOffset validatedAt, DateTimeOffset? expiresAt = null, CompanyValidationDetails? companyDetails = null)",
           "returnType": "ValidatedTaxId"
         },
         {
@@ -34453,10 +34566,19 @@
         {
           "name": "ConfirmOnlineValidation",
           "kind": "method",
-          "signature": "ConfirmOnlineValidation(bool isValid, TaxIdValidationSource source, DateTimeOffset validatedAt, string? companyName, string? companyAddress, string? requestIdentifier)",
+          "signature": "ConfirmOnlineValidation(bool isValid, TaxIdValidationSource source, DateTimeOffset validatedAt, CompanyValidationDetails? companyDetails = null)",
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "CompanyValidationDetails",
+      "fqn": "Granit.Tax.Domain.ValueObjects.CompanyValidationDetails",
+      "kind": "record",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Domain/ValueObjects/CompanyValidationDetails.cs",
+      "line": 11,
+      "members": []
     },
     {
       "name": "TaxRateResponse",
@@ -36344,19 +36466,13 @@
       "kind": "class",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/Domain/TimelineAttachment.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid entryId, Guid blobId, string fileName, string contentType, long sizeBytes, DateTimeOffset createdAt, string createdBy, Guid? tenantId = null)",
+          "signature": "Create(Guid id, Guid entryId, Guid blobId, FileMetadata file, DateTimeOffset createdAt, string createdBy, Guid? tenantId = null)",
           "returnType": "TimelineAttachment"
-        },
-        {
-          "name": "EntryId",
-          "kind": "property",
-          "signature": "Guid EntryId",
-          "returnType": "Guid"
         },
         {
           "name": "ContentType",
@@ -36372,12 +36488,12 @@
       "kind": "class",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/Domain/TimelineEntry.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, string entityType, string entityId, TimelineEntryType entryType, string body, string authorId, string authorName, DateTimeOffset createdAt, string createdBy, Guid? tenantId = null, Guid? parentEntryId = null)",
+          "signature": "Create(Guid id, EntityReference entity, TimelineEntryType entryType, string body, AuthorInfo author, DateTimeOffset createdAt, string createdBy, Guid? tenantId = null, Guid? parentEntryId = null)",
           "returnType": "TimelineEntry"
         },
         {
@@ -36413,6 +36529,24 @@
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/Domain/TimelineEntryType.cs",
       "line": 7,
+      "members": []
+    },
+    {
+      "name": "AuthorInfo",
+      "fqn": "Granit.Timeline.Domain.ValueObjects.AuthorInfo",
+      "kind": "record",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Domain/ValueObjects/AuthorInfo.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "FileMetadata",
+      "fqn": "Granit.Timeline.Domain.ValueObjects.FileMetadata",
+      "kind": "record",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Domain/ValueObjects/FileMetadata.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -40248,7 +40382,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Notifications",
       "file": "src/Granit.Workflow.Notifications/Handlers/WorkflowApprovalRequestedHandler.cs",
-      "line": 28,
+      "line": 29,
       "members": [
         {
           "name": "HandleAsync",
@@ -40264,7 +40398,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Notifications",
       "file": "src/Granit.Workflow.Notifications/Handlers/WorkflowStateChangedHandler.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "HandleAsync",

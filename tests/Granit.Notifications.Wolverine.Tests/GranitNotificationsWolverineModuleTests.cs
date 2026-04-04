@@ -1,3 +1,4 @@
+using Granit.Domain;
 using Granit.Modularity;
 using Granit.Notifications;
 using Granit.Notifications.Abstractions;

@@ -6,6 +6,7 @@
 // =============================================================================
 
 using System.Threading.Channels;
+using Granit.Domain;
 using Granit.MultiTenancy;
 using Granit.Notifications.Internal;
 using Granit.Notifications.Messages;

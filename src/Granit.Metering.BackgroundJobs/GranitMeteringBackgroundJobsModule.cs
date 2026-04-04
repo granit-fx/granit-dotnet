@@ -1,5 +1,8 @@
 using Granit.BackgroundJobs;
+using Granit.Metering.BackgroundJobs.Internal;
 using Granit.Modularity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Metering.BackgroundJobs;
 
@@ -10,4 +13,12 @@ namespace Granit.Metering.BackgroundJobs;
 [DependsOn(
     typeof(GranitBackgroundJobsModule),
     typeof(GranitMeteringModule))]
-public sealed class GranitMeteringBackgroundJobsModule : GranitModule;
+public sealed class GranitMeteringBackgroundJobsModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddTransient<MeteringAggregationScanner>();
+        context.Services.TryAddTransient<QuotaThresholdScanner>();
+    }
+}

@@ -121,9 +121,7 @@ internal static class SubscriptionEndpoints
             currentTenant.Id!.Value,
             PlanId.Create(request.PlanId),
             request.Currency,
-            periodStart: now,
-            periodEnd: now.AddMonths(1),
-            billingCycleAnchor: now,
+            new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now),
             trialEndsAt: request.TrialEndsAt);
 
         await writer.AddAsync(sub, cancellationToken).ConfigureAwait(false);

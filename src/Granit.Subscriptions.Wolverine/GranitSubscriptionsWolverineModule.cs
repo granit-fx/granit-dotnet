@@ -1,5 +1,8 @@
 using Granit.Modularity;
+using Granit.Subscriptions.Wolverine.Internal;
 using Granit.Wolverine;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Subscriptions.Wolverine;
 
@@ -10,4 +13,13 @@ namespace Granit.Subscriptions.Wolverine;
 [DependsOn(
     typeof(GranitSubscriptionsModule),
     typeof(GranitWolverineModule))]
-public sealed class GranitSubscriptionsWolverineModule : GranitModule;
+public sealed class GranitSubscriptionsWolverineModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddTransient<BillingCycleInvoiceOrchestrator>();
+        context.Services.TryAddTransient<UsageInvoiceOrchestrator>();
+        context.Services.TryAddTransient<PaymentRetryDispatcher>();
+    }
+}

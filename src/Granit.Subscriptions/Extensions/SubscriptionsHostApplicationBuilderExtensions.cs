@@ -1,6 +1,7 @@
 using Granit.Diagnostics;
 using Granit.Subscriptions.Definitions;
 using Granit.Subscriptions.Diagnostics;
+using Granit.Subscriptions.Internal;
 using Granit.Workflow.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -27,6 +28,11 @@ public static class SubscriptionsHostApplicationBuilderExtensions
         builder.Services.AddWorkflow(SubscriptionWorkflows.WithTrial);
         builder.Services.AddWorkflow(SubscriptionWorkflows.Direct);
         builder.Services.TryAddSingleton<SubscriptionsMetrics>();
+        builder.Services.TryAddTransient<IPeriodAdvancementService, DefaultPeriodAdvancementService>();
+        builder.Services.TryAddTransient<ICancelAtPeriodEndService, DefaultCancelAtPeriodEndService>();
+        builder.Services.TryAddTransient<ISubscriptionReactivationService, DefaultSubscriptionReactivationService>();
+        builder.Services.TryAddTransient<IDunningService, DefaultDunningService>();
+        builder.Services.TryAddTransient<ISubscriptionProviderSyncService, DefaultSubscriptionProviderSyncService>();
         GranitActivitySourceRegistry.Register(SubscriptionsActivitySource.Name);
 
         return builder;

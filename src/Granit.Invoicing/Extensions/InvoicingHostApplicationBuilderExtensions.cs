@@ -1,6 +1,7 @@
 using Granit.Diagnostics;
 using Granit.Invoicing.Definitions;
 using Granit.Invoicing.Diagnostics;
+using Granit.Invoicing.Internal;
 using Granit.Workflow.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -16,6 +17,7 @@ public static class InvoicingHostApplicationBuilderExtensions
     {
         builder.Services.AddWorkflow(InvoiceWorkflows.Default);
         builder.Services.TryAddSingleton<InvoicingMetrics>();
+        builder.Services.TryAddTransient<IInvoiceCreationService, DefaultInvoiceCreationService>();
         GranitActivitySourceRegistry.Register(InvoicingActivitySource.Name);
         return builder;
     }

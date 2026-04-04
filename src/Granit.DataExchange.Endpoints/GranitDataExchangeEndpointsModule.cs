@@ -1,6 +1,9 @@
 using Granit.Authorization;
+using Granit.DataExchange.Endpoints.Internal.Import;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.DataExchange.Endpoints;
 
@@ -18,4 +21,11 @@ namespace Granit.DataExchange.Endpoints;
     typeof(GranitAuthorizationModule),
     typeof(GranitDataExchangeModule),
     typeof(GranitHttpApiDocumentationModule))]
-public sealed class GranitDataExchangeEndpointsModule : GranitModule;
+public sealed class GranitDataExchangeEndpointsModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddScoped<ImportUploadOrchestrator>();
+    }
+}

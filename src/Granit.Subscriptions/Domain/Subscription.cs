@@ -28,18 +28,24 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     private Subscription() { }
 
     /// <summary>Creates a new subscription in Trial or Active status.</summary>
+    /// <param name="id">Unique subscription identifier.</param>
+    /// <param name="tenantId">Owning tenant identifier.</param>
+    /// <param name="planId">Plan the subscription is for.</param>
+    /// <param name="currency">ISO 4217 currency code (e.g., "EUR").</param>
+    /// <param name="period">Initial billing period boundaries.</param>
+    /// <param name="trialEndsAt">Trial expiry. When set, the subscription starts in Trial status.</param>
+    /// <param name="planPriceId">Pinned price version for grandfathering. Null for dynamic pricing.</param>
     public static Subscription Create(
         SubscriptionId id,
         Guid tenantId,
         PlanId planId,
         string currency,
-        DateTimeOffset periodStart,
-        DateTimeOffset periodEnd,
-        DateTimeOffset billingCycleAnchor,
+        SubscriptionPeriod period,
         DateTimeOffset? trialEndsAt = null,
         Guid? planPriceId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
+        ArgumentNullException.ThrowIfNull(period);
 
         SubscriptionStatus initialStatus = trialEndsAt.HasValue
             ? SubscriptionStatus.Trial
@@ -52,9 +58,9 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
             PlanId = planId,
             Currency = currency.ToUpperInvariant(),
             Status = initialStatus,
-            CurrentPeriodStart = periodStart,
-            CurrentPeriodEnd = periodEnd,
-            BillingCycleAnchor = billingCycleAnchor,
+            CurrentPeriodStart = period.Start,
+            CurrentPeriodEnd = period.End,
+            BillingCycleAnchor = period.BillingCycleAnchor,
             TrialEndsAt = trialEndsAt,
             CancelAtPeriodEnd = false,
             PlanPriceId = planPriceId,

@@ -1,3 +1,5 @@
+using Granit.Domain;
+
 namespace Granit.Notifications;
 
 /// <summary>

@@ -5,6 +5,7 @@
 // property access for the polymorphic entity reference (Odoo-style chatter).
 // =============================================================================
 
+using Granit.Domain;
 using Shouldly;
 using Xunit;
 

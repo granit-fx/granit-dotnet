@@ -34,6 +34,15 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
     private Invoice() { }
 
     /// <summary>Creates a new invoice in Draft status.</summary>
+    /// <param name="id">Unique invoice identifier.</param>
+    /// <param name="tenantId">Owning tenant identifier.</param>
+    /// <param name="documentType">Whether this is an invoice or a credit note.</param>
+    /// <param name="currency">ISO 4217 currency code.</param>
+    /// <param name="collectionMethod">How payment is collected (auto-charge or manual).</param>
+    /// <param name="billingReason">Why this document was created.</param>
+    /// <param name="billingAddress">Customer billing address.</param>
+    /// <param name="creditNoteInfo">Parent invoice reference and reason (required for credit notes).</param>
+    /// <param name="period">Billing period covered by this invoice.</param>
     public static Invoice Create(
         Guid id,
         Guid tenantId,
@@ -42,17 +51,15 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         CollectionMethod collectionMethod,
         BillingReason billingReason,
         BillingAddress? billingAddress = null,
-        InvoiceId? parentInvoiceId = null,
-        string? creditNoteReason = null,
-        DateTimeOffset? periodStart = null,
-        DateTimeOffset? periodEnd = null)
+        CreditNoteInfo? creditNoteInfo = null,
+        BillingPeriod? period = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
 
-        if (documentType == InvoiceDocumentType.CreditNote && parentInvoiceId is null)
+        if (documentType == InvoiceDocumentType.CreditNote && creditNoteInfo is null)
         {
             throw new ArgumentException(
-                "Credit notes must reference a parent invoice.", nameof(parentInvoiceId));
+                "Credit notes must reference a parent invoice.", nameof(creditNoteInfo));
         }
 
         var invoice = new Invoice
@@ -64,11 +71,11 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
             CollectionMethod = collectionMethod,
             BillingReason = billingReason,
             BillingAddress = billingAddress,
-            ParentInvoiceId = parentInvoiceId,
-            CreditNoteReason = creditNoteReason,
+            ParentInvoiceId = creditNoteInfo?.ParentInvoiceId,
+            CreditNoteReason = creditNoteInfo?.Reason,
             Status = InvoiceStatus.Draft,
-            PeriodStart = periodStart,
-            PeriodEnd = periodEnd,
+            PeriodStart = period?.Start,
+            PeriodEnd = period?.End,
         };
 
         invoice.AddDomainEvent(new InvoiceCreatedEvent(id, tenantId));
@@ -85,8 +92,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         Create(
             id, tenantId, InvoiceDocumentType.CreditNote, currency,
             CollectionMethod.Auto, BillingReason.Manual,
-            parentInvoiceId: parentInvoiceId,
-            creditNoteReason: reason);
+            creditNoteInfo: new CreditNoteInfo(parentInvoiceId, reason));
 
     // ── Properties ─────────────────────────────────────────────────────
 

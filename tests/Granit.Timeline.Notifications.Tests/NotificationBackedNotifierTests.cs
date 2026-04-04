@@ -5,9 +5,10 @@
 // INotificationPublisher and excludes the author from recipients.
 // =============================================================================
 
-using Granit.Notifications;
+using Granit.Domain;
 using Granit.Notifications.Abstractions;
 using Granit.Timeline.Domain;
+using Granit.Timeline.Domain.ValueObjects;
 using Granit.Timeline.Notifications.Internal;
 using NSubstitute;
 using Shouldly;
@@ -119,7 +120,7 @@ public sealed class NotificationBackedNotifierTests
     }
 
     private static TimelineEntry BuildEntry() => TimelineEntry.Create(
-        Guid.NewGuid(), "Patient", "p-1", TimelineEntryType.Comment,
+        Guid.NewGuid(), new EntityReference("Patient", "p-1"), TimelineEntryType.Comment,
         "Hello @[User](user:00000000-0000-0000-0000-000000000001)",
-        "author-1", "Author Name", DateTimeOffset.UtcNow, "author-1");
+        new AuthorInfo("author-1", "Author Name"), DateTimeOffset.UtcNow, "author-1");
 }

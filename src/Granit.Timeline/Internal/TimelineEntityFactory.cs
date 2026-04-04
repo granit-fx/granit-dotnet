@@ -1,6 +1,8 @@
+using Granit.Domain;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Timeline.Domain;
+using Granit.Timeline.Domain.ValueObjects;
 using Granit.Timing;
 using Granit.Users;
 
@@ -30,12 +32,12 @@ internal static class TimelineEntityFactory
         AuditContext context) =>
         TimelineEntry.Create(
             context.GuidGenerator.Create(),
-            entityType,
-            entityId,
+            new EntityReference(entityType, entityId),
             entryType,
             body,
-            context.CurrentUser.UserId ?? string.Empty,
-            context.CurrentUser.UserName ?? string.Empty,
+            new AuthorInfo(
+                context.CurrentUser.UserId ?? string.Empty,
+                context.CurrentUser.UserName ?? string.Empty),
             context.Clock.Now,
             context.CurrentUser.UserId ?? string.Empty,
             context.CurrentTenant.IsAvailable ? context.CurrentTenant.Id : null,
@@ -52,9 +54,7 @@ internal static class TimelineEntityFactory
             context.GuidGenerator.Create(),
             entryId,
             blobId,
-            fileName,
-            contentType,
-            sizeBytes,
+            new FileMetadata(fileName, contentType, sizeBytes),
             context.Clock.Now,
             context.CurrentUser.UserId ?? string.Empty,
             context.CurrentTenant.IsAvailable ? context.CurrentTenant.Id : null);

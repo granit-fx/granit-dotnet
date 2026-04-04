@@ -1,5 +1,8 @@
 using Granit.BackgroundJobs;
 using Granit.Modularity;
+using Granit.Privacy.BackgroundJobs.Internal;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Privacy.BackgroundJobs;
 
@@ -10,4 +13,9 @@ namespace Granit.Privacy.BackgroundJobs;
 [DependsOn(
     typeof(GranitBackgroundJobsModule),
     typeof(GranitPrivacyModule))]
-public sealed class GranitPrivacyBackgroundJobsModule : GranitModule;
+public sealed class GranitPrivacyBackgroundJobsModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.TryAddTransient<DeletionDeadlineEnforcementService>();
+}

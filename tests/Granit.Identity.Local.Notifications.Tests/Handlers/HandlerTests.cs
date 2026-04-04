@@ -1,3 +1,4 @@
+using Granit.Domain;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Notifications.Handlers;
 using Granit.Identity.Local.Notifications.NotificationTypes;

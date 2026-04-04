@@ -1,3 +1,4 @@
+using Granit.BlobStorage.BackgroundJobs.Internal;
 using Granit.BlobStorage.BackgroundJobs.Jobs;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -13,11 +14,11 @@ public sealed class OrphanBlobCleanupHandlerTests
     {
         IBlobStorage blobStorage = Substitute.For<IBlobStorage>();
         blobStorage.CleanupOrphansAsync(Arg.Any<CancellationToken>()).Returns(3);
+        var service = new OrphanBlobCleanupService(blobStorage, NullLogger<OrphanBlobCleanupService>.Instance);
 
         await OrphanBlobCleanupHandler.HandleAsync(
             new OrphanBlobCleanupJob(),
-            blobStorage,
-            NullLogger<OrphanBlobCleanupJob>.Instance,
+            service,
             TestContext.Current.CancellationToken);
 
         await blobStorage.Received(1).CleanupOrphansAsync(Arg.Any<CancellationToken>());
@@ -28,12 +29,12 @@ public sealed class OrphanBlobCleanupHandlerTests
     {
         IBlobStorage blobStorage = Substitute.For<IBlobStorage>();
         blobStorage.CleanupOrphansAsync(Arg.Any<CancellationToken>()).Returns(0);
+        var service = new OrphanBlobCleanupService(blobStorage, NullLogger<OrphanBlobCleanupService>.Instance);
 
         await Should.NotThrowAsync(() =>
             OrphanBlobCleanupHandler.HandleAsync(
                 new OrphanBlobCleanupJob(),
-                blobStorage,
-                NullLogger<OrphanBlobCleanupJob>.Instance,
+                service,
                 TestContext.Current.CancellationToken));
     }
 }

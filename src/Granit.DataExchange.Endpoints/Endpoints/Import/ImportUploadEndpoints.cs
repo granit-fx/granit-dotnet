@@ -7,8 +7,6 @@ using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Parsing;
 using Granit.DataExchange.Import.Pipeline;
-using Granit.Guids;
-using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -57,60 +55,23 @@ internal static class ImportUploadEndpoints
     private static async Task<Results<Created<ImportJobResponse>, ProblemHttpResult>> UploadAsync(
         IFormFile file,
         [FromForm] string definitionName,
-        [FromServices] IServiceProvider serviceProvider,
-        [FromServices] IImportFileProvider fileProvider,
-        [FromServices] IImportJobWriter jobWriter,
-        [FromServices] IGuidGenerator guidGenerator,
-        [FromServices] IClock clock,
+        [FromServices] ImportUploadOrchestrator orchestrator,
         CancellationToken cancellationToken)
     {
-        IImportDefinitionDescriptor? descriptor =
-            ImportDefinitionResolver.FindByName(serviceProvider, definitionName);
-        if (descriptor is null)
-        {
-            return TypedResults.Problem(
-                detail: $"Unknown import definition '{definitionName}'.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        if (file.Length == 0)
-        {
-            return TypedResults.Problem(
-                detail: "File is empty.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        if (file.Length > descriptor.MaxFileSizeMb * 1024L * 1024L)
-        {
-            return TypedResults.Problem(
-                detail: $"File exceeds maximum allowed size of {descriptor.MaxFileSizeMb} MB.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        if (!descriptor.AllowedMimeTypes.Contains(file.ContentType))
-        {
-            return TypedResults.Problem(
-                detail: $"MIME type '{file.ContentType}' is not allowed. Allowed: {string.Join(", ", descriptor.AllowedMimeTypes)}.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        string safeFileName = Path.GetFileName(file.FileName);
         await using Stream stream = file.OpenReadStream();
-        string blobReference = await fileProvider.SaveAsync(safeFileName, stream, cancellationToken).ConfigureAwait(false);
+        (ImportUploadOrchestrator.UploadResult? result, ImportUploadOrchestrator.UploadError? error) =
+            await orchestrator.UploadAsync(
+                file.FileName, file.ContentType, file.Length, stream,
+                definitionName, cancellationToken).ConfigureAwait(false);
 
-        var job = ImportJob.Create(
-            guidGenerator.Create(),
-            descriptor.Name,
-            descriptor.EntityType.Name,
-            safeFileName,
-            file.ContentType,
-            file.Length,
-            blobReference);
-        job.CreatedAt = clock.Now;
+        if (error is not null)
+        {
+            return TypedResults.Problem(
+                detail: error.Detail,
+                statusCode: StatusCodes.Status400BadRequest);
+        }
 
-        await jobWriter.CreateAsync(job, cancellationToken).ConfigureAwait(false);
-
-        return TypedResults.Created($"/{job.Id}", ImportJobResponse.FromJob(job));
+        return TypedResults.Created($"/{result!.Job.Id}", ImportJobResponse.FromJob(result.Job));
     }
 
     private static async Task<Results<Ok<ImportPreviewResponse>, NotFound>> PreviewAsync(

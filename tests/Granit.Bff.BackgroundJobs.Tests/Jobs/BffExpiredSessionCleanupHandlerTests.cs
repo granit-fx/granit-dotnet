@@ -1,3 +1,4 @@
+using Granit.Bff.BackgroundJobs.Internal;
 using Granit.Bff.BackgroundJobs.Jobs;
 using Granit.Bff.EntityFrameworkCore.Internal;
 using Granit.Timing;
@@ -12,12 +13,12 @@ namespace Granit.Bff.BackgroundJobs.Tests.Jobs;
 public sealed class BffExpiredSessionCleanupHandlerTests
 {
     /// <summary>
-    /// Verifies that the handler requests a DbContext from the factory.
+    /// Verifies that the service requests a DbContext from the factory.
     /// Full cleanup behavior requires a relational provider and is covered
     /// by integration tests.
     /// </summary>
     [Fact]
-    public async Task HandleAsync_should_create_db_context_from_factory()
+    public async Task ExecuteAsync_should_create_db_context_from_factory()
     {
         DbContextOptions<BffDbContext> options = new DbContextOptionsBuilder<BffDbContext>()
             .UseInMemoryDatabase($"BffTest_{Guid.NewGuid()}")
@@ -28,16 +29,16 @@ public sealed class BffExpiredSessionCleanupHandlerTests
         IClock clock = Substitute.For<IClock>();
         clock.Now.Returns(DateTimeOffset.UtcNow);
 
+        var service = new ExpiredSessionCleanupService(
+            factory,
+            clock,
+            NullLogger<ExpiredSessionCleanupService>.Instance);
+
         // ExecuteDeleteAsync is not supported by InMemory — we expect the exception.
-        // The test validates that the handler correctly requests a DbContext.
+        // The test validates that the service correctly requests a DbContext.
         try
         {
-            await BffExpiredSessionCleanupHandler.HandleAsync(
-                new BffExpiredSessionCleanupJob(),
-                factory,
-                clock,
-                NullLogger<BffExpiredSessionCleanupJob>.Instance,
-                TestContext.Current.CancellationToken);
+            await service.ExecuteAsync(TestContext.Current.CancellationToken);
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("ExecuteDelete"))
         {

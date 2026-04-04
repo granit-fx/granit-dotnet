@@ -9,6 +9,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Text.Json;
+using Granit.Domain;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;

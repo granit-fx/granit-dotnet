@@ -1,6 +1,9 @@
 using Granit.BackgroundJobs;
 using Granit.Modularity;
+using Granit.Scheduling.BackgroundJobs.Internal;
 using Granit.Scheduling.Wolverine;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Scheduling.BackgroundJobs;
 
@@ -12,4 +15,11 @@ namespace Granit.Scheduling.BackgroundJobs;
     typeof(GranitBackgroundJobsModule),
     typeof(GranitSchedulingModule),
     typeof(GranitSchedulingWolverineModule))]
-public sealed class GranitSchedulingBackgroundJobsModule : GranitModule;
+public sealed class GranitSchedulingBackgroundJobsModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddTransient<CatchUpDispatcher>();
+    }
+}

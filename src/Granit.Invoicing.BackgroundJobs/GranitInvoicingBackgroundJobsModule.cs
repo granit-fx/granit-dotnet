@@ -1,5 +1,9 @@
 using Granit.BackgroundJobs;
+using Granit.Invoicing;
+using Granit.Invoicing.BackgroundJobs.Internal;
 using Granit.Modularity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Invoicing.BackgroundJobs;
 
@@ -7,4 +11,11 @@ namespace Granit.Invoicing.BackgroundJobs;
 [DependsOn(
     typeof(GranitBackgroundJobsModule),
     typeof(GranitInvoicingModule))]
-public sealed class GranitInvoicingBackgroundJobsModule : GranitModule;
+public sealed class GranitInvoicingBackgroundJobsModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddTransient<IOverdueInvoiceDetectionService, DefaultOverdueInvoiceDetectionService>();
+    }
+}

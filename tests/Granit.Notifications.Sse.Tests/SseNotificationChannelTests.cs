@@ -7,6 +7,7 @@
 // =============================================================================
 
 using System.Text.Json;
+using Granit.Domain;
 using Granit.Notifications.Sse.Internal;
 using NSubstitute;
 using Shouldly;

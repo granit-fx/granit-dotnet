@@ -7,6 +7,7 @@
 // =============================================================================
 
 using System.Text.Json;
+using Granit.Domain;
 using Granit.Notifications.SignalR;
 using Granit.Notifications.SignalR.Internal;
 using Microsoft.AspNetCore.SignalR;

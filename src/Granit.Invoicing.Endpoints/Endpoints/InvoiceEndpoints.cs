@@ -119,12 +119,12 @@ internal static class InvoiceEndpoints
             request.Currency,
             request.CollectionMethod,
             request.BillingReason,
-            parentInvoiceId: request.ParentInvoiceId.HasValue
-                ? InvoiceId.Create(request.ParentInvoiceId.Value)
+            creditNoteInfo: request.ParentInvoiceId.HasValue
+                ? new CreditNoteInfo(InvoiceId.Create(request.ParentInvoiceId.Value), request.CreditNoteReason!)
                 : null,
-            creditNoteReason: request.CreditNoteReason,
-            periodStart: request.PeriodStart,
-            periodEnd: request.PeriodEnd);
+            period: request.PeriodStart.HasValue && request.PeriodEnd.HasValue
+                ? new BillingPeriod(request.PeriodStart.Value, request.PeriodEnd.Value)
+                : null);
 
         await writer.AddAsync(invoice, cancellationToken).ConfigureAwait(false);
 

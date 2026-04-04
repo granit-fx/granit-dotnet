@@ -1,3 +1,4 @@
+using Granit.OpenIddict.BackgroundJobs.Internal;
 using Granit.OpenIddict.BackgroundJobs.Jobs;
 using Granit.OpenIddict.Services;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -13,16 +14,17 @@ public sealed class OpenIddictKeyRotationHandlerTests
     public async Task HandleAsync_DelegatesToKeyRotationService()
     {
         IKeyRotationService keyRotationService = Substitute.For<IKeyRotationService>();
-        KeyRotationResult result = new(1, 1, 0, 0);
-        keyRotationService.RotateAsync(Arg.Any<CancellationToken>()).Returns(result);
+        keyRotationService.RotateAsync(Arg.Any<CancellationToken>())
+            .Returns(new KeyRotationResult(1, 1, 0, 0));
+        var service = new KeyRotationExecutionService(
+            keyRotationService, NullLogger<KeyRotationExecutionService>.Instance);
 
         await OpenIddictKeyRotationHandler.HandleAsync(
             new OpenIddictKeyRotationJob(),
-            keyRotationService,
-            NullLogger<OpenIddictKeyRotationJob>.Instance,
+            service,
             TestContext.Current.CancellationToken);
 
-        await keyRotationService.Received(1).RotateAsync(TestContext.Current.CancellationToken);
+        await keyRotationService.Received(1).RotateAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -31,11 +33,12 @@ public sealed class OpenIddictKeyRotationHandlerTests
         IKeyRotationService keyRotationService = Substitute.For<IKeyRotationService>();
         keyRotationService.RotateAsync(Arg.Any<CancellationToken>())
             .Returns(new KeyRotationResult(0, 0, 0, 0));
+        var service = new KeyRotationExecutionService(
+            keyRotationService, NullLogger<KeyRotationExecutionService>.Instance);
 
         await Should.NotThrowAsync(() => OpenIddictKeyRotationHandler.HandleAsync(
             new OpenIddictKeyRotationJob(),
-            keyRotationService,
-            NullLogger<OpenIddictKeyRotationJob>.Instance,
+            service,
             TestContext.Current.CancellationToken));
     }
 }

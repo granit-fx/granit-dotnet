@@ -14,6 +14,10 @@ namespace Granit.Payments.Wolverine;
 public sealed class GranitPaymentsWolverineModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.TryAddScoped<IInvoicePrePaymentProcessor, PassThroughPrePaymentProcessor>();
+        context.Services.TryAddScoped<WebhookProcessor>();
+        context.Services.TryAddScoped<AutoChargeService>();
+    }
 }

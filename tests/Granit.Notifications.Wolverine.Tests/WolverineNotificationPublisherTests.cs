@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Granit.Domain;
 using Granit.MultiTenancy;
 using Granit.Notifications;
 using Granit.Notifications.Abstractions;

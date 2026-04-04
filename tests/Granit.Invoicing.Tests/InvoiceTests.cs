@@ -18,7 +18,8 @@ public sealed class InvoiceTests
             BillingReason.SubscriptionCycle);
 
         invoice.AddLineItem(InvoiceLineItem.Create(
-            Guid.NewGuid(), "Pro Plan - Monthly", 1, 29.99m, InvoiceSourceType.Subscription));
+            Guid.NewGuid(), "Pro Plan - Monthly", 1, 29.99m,
+            new LineItemSource(InvoiceSourceType.Subscription)));
 
         return invoice;
     }
@@ -64,7 +65,8 @@ public sealed class InvoiceTests
 
         Should.Throw<InvalidOperationException>(() =>
             invoice.AddLineItem(InvoiceLineItem.Create(
-                Guid.NewGuid(), "Extra", 1, 10m, InvoiceSourceType.OneShot)));
+                Guid.NewGuid(), "Extra", 1, 10m,
+                new LineItemSource(InvoiceSourceType.OneShot))));
     }
 
     [Fact]

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Granit.Domain;
 
 namespace Granit.Notifications.Abstractions;
 

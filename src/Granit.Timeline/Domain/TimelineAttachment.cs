@@ -1,4 +1,5 @@
 using Granit.Domain;
+using Granit.Timeline.Domain.ValueObjects;
 
 namespace Granit.Timeline.Domain;
 
@@ -13,27 +14,37 @@ public sealed class TimelineAttachment : CreationAuditedEntity, IMultiTenant
     private TimelineAttachment() { }
 
     /// <summary>Creates a new <see cref="TimelineAttachment"/>.</summary>
+    /// <param name="id">Unique attachment identifier.</param>
+    /// <param name="entryId">FK to the parent timeline entry.</param>
+    /// <param name="blobId">BlobDescriptor.Id from Granit.BlobStorage (opaque reference).</param>
+    /// <param name="file">Denormalized file metadata (name, content type, size).</param>
+    /// <param name="createdAt">Timestamp of creation.</param>
+    /// <param name="createdBy">Identifier of the creator (audit trail).</param>
+    /// <param name="tenantId">Owning tenant identifier.</param>
     public static TimelineAttachment Create(
         Guid id,
         Guid entryId,
         Guid blobId,
-        string fileName,
-        string contentType,
-        long sizeBytes,
+        FileMetadata file,
         DateTimeOffset createdAt,
         string createdBy,
-        Guid? tenantId = null) => new()
+        Guid? tenantId = null)
+    {
+        ArgumentNullException.ThrowIfNull(file);
+
+        return new()
         {
             Id = id,
             EntryId = entryId,
             BlobId = blobId,
-            FileName = fileName,
-            ContentType = contentType,
-            SizeBytes = sizeBytes,
+            FileName = file.FileName,
+            ContentType = file.ContentType,
+            SizeBytes = file.SizeBytes,
             CreatedAt = createdAt,
             CreatedBy = createdBy,
             TenantId = tenantId,
         };
+    }
 
     /// <summary>FK to the parent timeline entry.</summary>
     public Guid EntryId { get; private set; }

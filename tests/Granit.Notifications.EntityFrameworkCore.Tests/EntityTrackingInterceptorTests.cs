@@ -6,6 +6,7 @@
 // followers (Odoo-style auto-tracking).
 // =============================================================================
 
+using Granit.Domain;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.EntityFrameworkCore.Internal;
 using Granit.Timing;

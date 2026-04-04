@@ -6,6 +6,7 @@
 // =============================================================================
 
 using System.Text.Json;
+using Granit.Domain;
 using Shouldly;
 using Xunit;
 

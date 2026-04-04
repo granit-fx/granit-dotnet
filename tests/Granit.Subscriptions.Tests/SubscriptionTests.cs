@@ -15,9 +15,7 @@ public sealed class SubscriptionTests
             Guid.NewGuid(),
             PlanId.Create(Guid.NewGuid()),
             currency: "EUR",
-            periodStart: now,
-            periodEnd: now.AddMonths(1),
-            billingCycleAnchor: now,
+            new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now),
             trialEndsAt: now.AddDays(14));
     }
 
@@ -29,9 +27,7 @@ public sealed class SubscriptionTests
             Guid.NewGuid(),
             PlanId.Create(Guid.NewGuid()),
             currency: "EUR",
-            periodStart: now,
-            periodEnd: now.AddMonths(1),
-            billingCycleAnchor: now);
+            new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now));
     }
 
     [Fact]
@@ -191,16 +187,14 @@ public sealed class SubscriptionTests
     public void Create_WithPlanPriceId_ShouldPinPrice()
     {
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        Guid priceId = Guid.NewGuid();
+        var priceId = Guid.NewGuid();
 
-        Subscription sub = Subscription.Create(
+        var sub = Subscription.Create(
             Guid.NewGuid(),
             Guid.NewGuid(),
             PlanId.Create(Guid.NewGuid()),
             currency: "EUR",
-            periodStart: now,
-            periodEnd: now.AddMonths(1),
-            billingCycleAnchor: now,
+            new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now),
             planPriceId: priceId);
 
         sub.PlanPriceId.ShouldBe(priceId);
@@ -218,7 +212,7 @@ public sealed class SubscriptionTests
     public void MigratePrice_WhenActive_ShouldReturnTrue()
     {
         Subscription sub = CreateActiveSubscription();
-        Guid newPriceId = Guid.NewGuid();
+        var newPriceId = Guid.NewGuid();
 
         bool result = sub.MigratePrice(newPriceId);
 
@@ -230,16 +224,14 @@ public sealed class SubscriptionTests
     public void MigratePrice_SamePrice_ShouldReturnFalse()
     {
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        Guid priceId = Guid.NewGuid();
+        var priceId = Guid.NewGuid();
 
-        Subscription sub = Subscription.Create(
+        var sub = Subscription.Create(
             Guid.NewGuid(),
             Guid.NewGuid(),
             PlanId.Create(Guid.NewGuid()),
             currency: "EUR",
-            periodStart: now,
-            periodEnd: now.AddMonths(1),
-            billingCycleAnchor: now,
+            new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now),
             planPriceId: priceId);
 
         bool result = sub.MigratePrice(priceId);
@@ -260,7 +252,7 @@ public sealed class SubscriptionTests
     public void MigratePrice_FromTrial_ShouldSucceed()
     {
         Subscription sub = CreateTrialSubscription();
-        Guid newPriceId = Guid.NewGuid();
+        var newPriceId = Guid.NewGuid();
 
         bool result = sub.MigratePrice(newPriceId);
 

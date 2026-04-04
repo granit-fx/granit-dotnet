@@ -1,4 +1,5 @@
 using Granit.Timeline.Domain;
+using Granit.Timeline.Domain.ValueObjects;
 using Shouldly;
 using Xunit;
 
@@ -16,7 +17,8 @@ public sealed class TimelineAttachmentTests
         DateTimeOffset createdAt = DateTimeOffset.UtcNow;
 
         var attachment = TimelineAttachment.Create(
-            id, entryId, blobId, "report.pdf", "application/pdf", 4096,
+            id, entryId, blobId,
+            new FileMetadata("report.pdf", "application/pdf", 4096),
             createdAt, "admin@test.com", tenantId);
 
         attachment.Id.ShouldBe(id);
@@ -35,7 +37,7 @@ public sealed class TimelineAttachmentTests
     {
         var attachment = TimelineAttachment.Create(
             Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(),
-            "file.txt", "text/plain", 128,
+            new FileMetadata("file.txt", "text/plain", 128),
             DateTimeOffset.UtcNow, "user@test.com");
 
         attachment.TenantId.ShouldBeNull();

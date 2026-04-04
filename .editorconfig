@@ -54,3 +54,17 @@ trim_trailing_whitespace = false
 
 [Makefile]
 indent_style = tab
+
+# S107: Methods should not have too many parameters
+# Suppressed for DTO records — positional parameters are data contracts, not a code smell
+[*Response.cs]
+dotnet_diagnostic.S107.severity = none
+
+[*Request.cs]
+dotnet_diagnostic.S107.severity = none
+
+[*Eto.cs]
+dotnet_diagnostic.S107.severity = none
+
+[*Command.cs]
+dotnet_diagnostic.S107.severity = none

@@ -1,44 +1,18 @@
-using Granit.Invoicing.Domain;
-using Granit.Invoicing.Events;
-using Granit.MultiTenancy;
-using Granit.Timing;
-using Microsoft.Extensions.Logging;
-using Wolverine;
+using Granit.Invoicing;
 
 namespace Granit.Invoicing.BackgroundJobs.Jobs;
 
-/// <summary>Handler for <see cref="OverdueInvoiceDetectionJob"/>.</summary>
-internal static partial class OverdueInvoiceDetectionHandler
+/// <summary>
+/// Handler for <see cref="OverdueInvoiceDetectionJob"/>. Delegates to
+/// <see cref="IOverdueInvoiceDetectionService"/> for overdue invoice detection.
+/// </summary>
+internal static class OverdueInvoiceDetectionHandler
 {
     public static async Task HandleAsync(
         OverdueInvoiceDetectionJob _,
-        IInvoiceReader invoiceReader,
-        IMessageBus messageBus,
-        IClock clock,
-        ICurrentTenant currentTenant,
-        ILogger<OverdueInvoiceDetectionJob> logger,
+        IOverdueInvoiceDetectionService detectionService,
         CancellationToken cancellationToken)
     {
-        IReadOnlyList<Invoice> overdueInvoices = await invoiceReader
-            .GetOverdueAsync(clock.Now, cancellationToken)
-            .ConfigureAwait(false);
-
-        foreach (Invoice invoice in overdueInvoices)
-        {
-            using (currentTenant.Change(invoice.TenantId))
-            {
-                await messageBus.PublishAsync(
-                    new InvoiceOverdueEto(invoice.Id, invoice.TenantId!.Value, invoice.DueAt!.Value))
-                    .ConfigureAwait(false);
-
-                Log.InvoiceOverdue(logger, invoice.Id, invoice.InvoiceNumber ?? "N/A");
-            }
-        }
-    }
-
-    private static partial class Log
-    {
-        [LoggerMessage(Level = LogLevel.Warning, Message = "Invoice {InvoiceId} ({InvoiceNumber}) is overdue")]
-        public static partial void InvoiceOverdue(ILogger logger, Guid invoiceId, string invoiceNumber);
+        await detectionService.DetectAsync(cancellationToken).ConfigureAwait(false);
     }
 }

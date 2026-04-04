@@ -1,5 +1,5 @@
 using Granit.Events;
-using Granit.Privacy.BackgroundJobs.Jobs;
+using Granit.Privacy.BackgroundJobs.Internal;
 using Granit.Privacy.DataDeletion;
 using Granit.Privacy.DataDeletion.Events;
 using Granit.Privacy.Diagnostics;
@@ -33,28 +33,24 @@ public sealed class DeletionDeadlineEnforcerHandlerTests : IDisposable
 
     public void Dispose() => _sp.Dispose();
 
+    private DeletionDeadlineEnforcementService CreateService() =>
+        new(_trackerReader, _trackerWriter, _eventBus, _timeProvider, _metrics,
+            NullLogger<DeletionDeadlineEnforcementService>.Instance);
+
     [Fact]
-    public async Task HandleAsync_when_no_expired_requests_should_return_immediately()
+    public async Task ExecuteAsync_when_no_expired_requests_should_return_immediately()
     {
         _trackerReader.GetExpiredDeferredAsync(Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
             .Returns([]);
 
-        await DeletionDeadlineEnforcerHandler.HandleAsync(
-            new DeletionDeadlineEnforcerJob(),
-            _trackerReader,
-            _trackerWriter,
-            _eventBus,
-            _timeProvider,
-            _metrics,
-            NullLogger<DeletionDeadlineEnforcerJob>.Instance,
-            TestContext.Current.CancellationToken);
+        await CreateService().ExecuteAsync(TestContext.Current.CancellationToken);
 
         await _trackerWriter.DidNotReceive()
             .MarkExecutedAsync(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task HandleAsync_should_enforce_expired_requests()
+    public async Task ExecuteAsync_should_enforce_expired_requests()
     {
         var requestId = Guid.NewGuid();
         var userId = Guid.NewGuid();
@@ -64,15 +60,7 @@ public sealed class DeletionDeadlineEnforcerHandlerTests : IDisposable
         _trackerReader.GetExpiredDeferredAsync(Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
             .Returns([new DeletionRequestStatus(requestId, userId, DeletionRequestState.Deferred, "test", requested, scheduled, null, null)]);
 
-        await DeletionDeadlineEnforcerHandler.HandleAsync(
-            new DeletionDeadlineEnforcerJob(),
-            _trackerReader,
-            _trackerWriter,
-            _eventBus,
-            _timeProvider,
-            _metrics,
-            NullLogger<DeletionDeadlineEnforcerJob>.Instance,
-            TestContext.Current.CancellationToken);
+        await CreateService().ExecuteAsync(TestContext.Current.CancellationToken);
 
         await _trackerWriter.Received(1)
             .MarkExecutedAsync(requestId, Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>());

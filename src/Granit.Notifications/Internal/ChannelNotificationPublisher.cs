@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Threading.Channels;
+using Granit.Domain;
 using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Messages;

@@ -1,4 +1,4 @@
-using Granit.OpenIddict.BackgroundJobs.Jobs;
+using Granit.OpenIddict.BackgroundJobs.Internal;
 using NSubstitute;
 using OpenIddict.Abstractions;
 using Shouldly;
@@ -9,18 +9,14 @@ namespace Granit.OpenIddict.BackgroundJobs.Tests.Jobs;
 public sealed class OpenIddictTokenCleanupHandlerTests
 {
     [Fact]
-    public async Task HandleAsync_CallsPruneOnBothManagers()
+    public async Task ExecuteAsync_CallsPruneOnBothManagers()
     {
         IOpenIddictTokenManager tokenManager = Substitute.For<IOpenIddictTokenManager>();
         IOpenIddictAuthorizationManager authorizationManager = Substitute.For<IOpenIddictAuthorizationManager>();
         TimeProvider timeProvider = TimeProvider.System;
 
-        await OpenIddictTokenCleanupHandler.HandleAsync(
-            new OpenIddictTokenCleanupJob(),
-            tokenManager,
-            authorizationManager,
-            timeProvider,
-            TestContext.Current.CancellationToken);
+        var service = new TokenCleanupService(tokenManager, authorizationManager, timeProvider);
+        await service.ExecuteAsync(TestContext.Current.CancellationToken);
 
         await tokenManager.Received(1).PruneAsync(
             Arg.Any<DateTimeOffset>(),
@@ -32,16 +28,14 @@ public sealed class OpenIddictTokenCleanupHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_DoesNotThrow()
+    public async Task ExecuteAsync_DoesNotThrow()
     {
         IOpenIddictTokenManager tokenManager = Substitute.For<IOpenIddictTokenManager>();
         IOpenIddictAuthorizationManager authorizationManager = Substitute.For<IOpenIddictAuthorizationManager>();
 
-        await Should.NotThrowAsync(() => OpenIddictTokenCleanupHandler.HandleAsync(
-            new OpenIddictTokenCleanupJob(),
-            tokenManager,
-            authorizationManager,
-            TimeProvider.System,
-            TestContext.Current.CancellationToken));
+        var service = new TokenCleanupService(tokenManager, authorizationManager, TimeProvider.System);
+
+        await Should.NotThrowAsync(() =>
+            service.ExecuteAsync(TestContext.Current.CancellationToken));
     }
 }

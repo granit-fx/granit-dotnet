@@ -1,5 +1,8 @@
+using Granit.AI.Internal;
 using Granit.Guids;
 using Granit.Modularity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.AI;
 
@@ -22,4 +25,11 @@ namespace Granit.AI;
 /// </para>
 /// </remarks>
 [DependsOn(typeof(GranitGuidsModule))]
-public sealed class GranitAIModule : GranitModule;
+public sealed class GranitAIModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.TryAddScoped<IAIChatCompletionService, DefaultAIChatCompletionService>();
+    }
+}

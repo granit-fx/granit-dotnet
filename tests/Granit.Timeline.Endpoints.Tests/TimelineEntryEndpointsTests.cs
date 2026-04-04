@@ -1,9 +1,11 @@
 using System.Net;
 using System.Net.Http.Json;
 using Granit.Authorization;
+using Granit.Domain;
 using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
+using Granit.Timeline.Domain.ValueObjects;
 using Granit.Timeline.Endpoints.Dtos;
 using Granit.Timeline.Endpoints.Extensions;
 using Granit.Timeline.Endpoints.Permissions;
@@ -79,8 +81,8 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         // Arrange
         var entryId = Guid.NewGuid();
         var entry = TimelineEntry.Create(
-            entryId, "Patient", "42", TimelineEntryType.Comment,
-            "Test comment", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
+            entryId, new EntityReference("Patient", "42"), TimelineEntryType.Comment,
+            "Test comment", new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1");
 
         _writer.PostEntryAsync("Patient", "42", TimelineEntryType.Comment, "Test comment",
                 null, Arg.Any<CancellationToken>())
@@ -115,8 +117,8 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         // Arrange
         var entryId = Guid.NewGuid();
         var entry = TimelineEntry.Create(
-            entryId, "Patient", "42", TimelineEntryType.InternalNote,
-            "Staff only note", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
+            entryId, new EntityReference("Patient", "42"), TimelineEntryType.InternalNote,
+            "Staff only note", new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1");
 
         _writer.PostEntryAsync("Patient", "42", TimelineEntryType.InternalNote, "Staff only note",
                 null, Arg.Any<CancellationToken>())
@@ -150,8 +152,8 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         var parentId = Guid.NewGuid();
         var entryId = Guid.NewGuid();
         var entry = TimelineEntry.Create(
-            entryId, "Patient", "42", TimelineEntryType.Comment,
-            "Reply", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1",
+            entryId, new EntityReference("Patient", "42"), TimelineEntryType.Comment,
+            "Reply", new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1",
             parentEntryId: parentId);
 
         _writer.PostEntryAsync("Patient", "42", TimelineEntryType.Comment, "Reply",
@@ -188,8 +190,8 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         string mentionBody = $"Hey @[Bob](user:{mentionedUserId}), check this!";
         var entryId = Guid.NewGuid();
         var entry = TimelineEntry.Create(
-            entryId, "Patient", "42", TimelineEntryType.Comment,
-            mentionBody, "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
+            entryId, new EntityReference("Patient", "42"), TimelineEntryType.Comment,
+            mentionBody, new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1");
 
         _writer.PostEntryAsync("Patient", "42", TimelineEntryType.Comment, mentionBody,
                 null, Arg.Any<CancellationToken>())
@@ -230,8 +232,8 @@ public sealed class TimelineEntryEndpointsTests : IAsyncDisposable
         // Arrange
         var entryId = Guid.NewGuid();
         var entry = TimelineEntry.Create(
-            entryId, "Patient", "42", TimelineEntryType.Comment,
-            "No mentions here", "user-1", "Alice", DateTimeOffset.UtcNow, "user-1");
+            entryId, new EntityReference("Patient", "42"), TimelineEntryType.Comment,
+            "No mentions here", new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1");
 
         _writer.PostEntryAsync("Patient", "42", TimelineEntryType.Comment, "No mentions here",
                 null, Arg.Any<CancellationToken>())

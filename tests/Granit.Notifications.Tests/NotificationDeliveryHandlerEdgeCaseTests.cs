@@ -1,5 +1,6 @@
 using System.Diagnostics.Metrics;
 using System.Text.Json;
+using Granit.Domain;
 using Granit.Guids;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Diagnostics;

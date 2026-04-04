@@ -1,3 +1,4 @@
+using Granit.Domain;
 using Granit.Notifications.Abstractions;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;

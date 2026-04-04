@@ -1,25 +1,16 @@
-using OpenIddict.Abstractions;
+using Granit.OpenIddict.BackgroundJobs.Internal;
 
 namespace Granit.OpenIddict.BackgroundJobs.Jobs;
 
 /// <summary>
-/// Handler for <see cref="OpenIddictTokenCleanupJob"/>. Prunes expired tokens
-/// and orphaned authorizations from the OpenIddict store.
+/// Handler for <see cref="OpenIddictTokenCleanupJob"/>. Delegates to
+/// <see cref="TokenCleanupService"/> for token and authorization pruning.
 /// </summary>
-internal static partial class OpenIddictTokenCleanupHandler
+internal static class OpenIddictTokenCleanupHandler
 {
-    /// <summary>
-    /// Prunes expired tokens and authorizations.
-    /// </summary>
-    public static async Task HandleAsync(
+    public static Task HandleAsync(
         OpenIddictTokenCleanupJob _,
-        IOpenIddictTokenManager tokenManager,
-        IOpenIddictAuthorizationManager authorizationManager,
-        TimeProvider timeProvider,
-        CancellationToken cancellationToken)
-    {
-        DateTimeOffset now = timeProvider.GetUtcNow();
-        await tokenManager.PruneAsync(now, cancellationToken).ConfigureAwait(false);
-        await authorizationManager.PruneAsync(now, cancellationToken).ConfigureAwait(false);
-    }
+        TokenCleanupService service,
+        CancellationToken cancellationToken) =>
+        service.ExecuteAsync(cancellationToken);
 }
