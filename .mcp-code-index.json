@@ -22002,6 +22002,38 @@
       ]
     },
     {
+      "name": "MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.MultiTenancy.EntityFrameworkCore.Extensions.MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.EntityFrameworkCore",
+      "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Extensions/MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "AddGranitMultiTenancyEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitMultiTenancyEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "MultiTenancyModelBuilderExtensions",
+      "fqn": "Granit.MultiTenancy.EntityFrameworkCore.Extensions.MultiTenancyModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.EntityFrameworkCore",
+      "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Extensions/MultiTenancyModelBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ConfigureMultiTenancyModule",
+          "kind": "method",
+          "signature": "ConfigureMultiTenancyModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
       "name": "GranitMultiTenancyEntityFrameworkCoreModule",
       "fqn": "Granit.MultiTenancy.EntityFrameworkCore.GranitMultiTenancyEntityFrameworkCoreModule",
       "kind": "class",
@@ -22023,38 +22055,6 @@
           "kind": "property",
           "signature": "string DbTablePrefix",
           "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.MultiTenancy.EntityFrameworkCore.MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.MultiTenancy.EntityFrameworkCore",
-      "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Extensions/MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "AddGranitMultiTenancyEntityFrameworkCore",
-          "kind": "method",
-          "signature": "AddGranitMultiTenancyEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
-          "returnType": "IHostApplicationBuilder"
-        }
-      ]
-    },
-    {
-      "name": "MultiTenancyModelBuilderExtensions",
-      "fqn": "Granit.MultiTenancy.EntityFrameworkCore.MultiTenancyModelBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.MultiTenancy.EntityFrameworkCore",
-      "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Extensions/MultiTenancyModelBuilderExtensions.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "ConfigureMultiTenancyModule",
-          "kind": "method",
-          "signature": "ConfigureMultiTenancyModule(this ModelBuilder modelBuilder)",
-          "returnType": "ModelBuilder"
         }
       ]
     },

@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
-namespace Granit.MultiTenancy.EntityFrameworkCore;
+namespace Granit.MultiTenancy.EntityFrameworkCore.Extensions;
 
 /// <summary>
 /// Extension methods for registering the multi-tenancy EF Core persistence layer.

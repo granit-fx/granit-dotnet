@@ -1,7 +1,7 @@
 using Granit.MultiTenancy.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 
-namespace Granit.MultiTenancy.EntityFrameworkCore;
+namespace Granit.MultiTenancy.EntityFrameworkCore.Extensions;
 
 /// <summary>
 /// Extension methods for applying multi-tenancy entity configurations to a <see cref="ModelBuilder"/>.
