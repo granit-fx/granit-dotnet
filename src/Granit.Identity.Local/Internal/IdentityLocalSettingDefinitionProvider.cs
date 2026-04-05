@@ -1,6 +1,6 @@
 using Granit.Settings.Definitions;
 
-namespace Granit.Identity.Local;
+namespace Granit.Identity.Local.Internal;
 
 /// <summary>
 /// Declares the settings for the Identity.Local module.
