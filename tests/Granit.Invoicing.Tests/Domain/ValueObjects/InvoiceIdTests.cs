@@ -50,7 +50,7 @@ public sealed class InvoiceIdTests
     {
         Should.Throw<ArgumentException>(() =>
         {
-            InvoiceId.Create(Guid.Empty);
+            InvoiceId _ = Guid.Empty;
         });
     }
 }

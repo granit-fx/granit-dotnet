@@ -19,7 +19,6 @@ namespace Granit.Tax.Internal.Tests.Internal;
 public sealed class ViesValidatorTests : IDisposable
 {
     private readonly IHttpClientFactory _httpClientFactory = Substitute.For<IHttpClientFactory>();
-    private HttpClient? _httpClient;
     private readonly IFusionCache _cache = Substitute.For<IFusionCache>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
@@ -35,11 +34,7 @@ public sealed class ViesValidatorTests : IDisposable
         _clock.Now.Returns(FixedNow);
     }
 
-    public void Dispose()
-    {
-        _httpClient?.Dispose();
-        _meterFactory.Dispose();
-    }
+    public void Dispose() => _meterFactory.Dispose();
 
     private ViesValidator CreateSut() =>
         new(_httpClientFactory, _cache, MsOptions.Create(_taxOptions),
@@ -88,10 +83,9 @@ public sealed class ViesValidatorTests : IDisposable
 
     private void SetupHttpClient(HttpStatusCode statusCode, object? responseBody = null)
     {
-        _httpClient?.Dispose();
         FakeHttpMessageHandler handler = new(statusCode, responseBody);
-        _httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://ec.europa.eu/taxation_customs/vies/rest-api/") };
-        _httpClientFactory.CreateClient("Vies").Returns(_httpClient);
+        HttpClient httpClient = new(handler) { BaseAddress = new Uri("https://ec.europa.eu/taxation_customs/vies/rest-api/") };
+        _httpClientFactory.CreateClient("Vies").Returns(httpClient);
     }
 
     // ======== Name property ========
@@ -156,7 +150,7 @@ public sealed class ViesValidatorTests : IDisposable
         SetupCachePassthrough();
 
         FakeHttpMessageHandler handler = new(new HttpRequestException("VIES unavailable"));
-        using HttpClient httpClient = new(handler) { BaseAddress = new Uri("https://ec.europa.eu/taxation_customs/vies/rest-api/") };
+        HttpClient httpClient = new(handler) { BaseAddress = new Uri("https://ec.europa.eu/taxation_customs/vies/rest-api/") };
         _httpClientFactory.CreateClient("Vies").Returns(httpClient);
 
         // BE0417497106 is a well-known valid Belgian VAT number
@@ -176,7 +170,7 @@ public sealed class ViesValidatorTests : IDisposable
         SetupCachePassthrough();
 
         FakeHttpMessageHandler handler = new(new HttpRequestException("VIES unavailable"));
-        using HttpClient httpClient = new(handler) { BaseAddress = new Uri("https://ec.europa.eu/taxation_customs/vies/rest-api/") };
+        HttpClient httpClient = new(handler) { BaseAddress = new Uri("https://ec.europa.eu/taxation_customs/vies/rest-api/") };
         _httpClientFactory.CreateClient("Vies").Returns(httpClient);
 
         TaxIdValidationResult result = await CreateSut().ValidateAsync("BE0123456789", "BE", ct);
@@ -205,7 +199,7 @@ public sealed class ViesValidatorTests : IDisposable
             capturedBody = await request.Content!.ReadAsStringAsync(ct);
         });
 
-        using HttpClient httpClient = new(handler) { BaseAddress = new Uri("https://ec.europa.eu/taxation_customs/vies/rest-api/") };
+        HttpClient httpClient = new(handler) { BaseAddress = new Uri("https://ec.europa.eu/taxation_customs/vies/rest-api/") };
         _httpClientFactory.CreateClient("Vies").Returns(httpClient);
 
         await CreateSut().ValidateAsync("EL123456789", "GR", ct);
@@ -278,7 +272,7 @@ public sealed class ViesValidatorTests : IDisposable
         SetupCachePassthrough();
 
         FakeHttpMessageHandler handler = new(new TaskCanceledException("Request timed out"));
-        using HttpClient httpClient = new(handler) { BaseAddress = new Uri("https://ec.europa.eu/taxation_customs/vies/rest-api/") };
+        HttpClient httpClient = new(handler) { BaseAddress = new Uri("https://ec.europa.eu/taxation_customs/vies/rest-api/") };
         _httpClientFactory.CreateClient("Vies").Returns(httpClient);
 
         TaxIdValidationResult result = await CreateSut().ValidateAsync("BE0417497106", "BE", ct);

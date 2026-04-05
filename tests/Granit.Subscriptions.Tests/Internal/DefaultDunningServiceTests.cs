@@ -119,6 +119,7 @@ public sealed class DefaultDunningServiceTests
         sub.IncrementDunningAttempt(); // 1
         _reader.GetActiveForTenantAsync(tenantId, Arg.Any<CancellationToken>())
             .Returns(sub);
+        DateTimeOffset now = _clock.Now;
 
         await _sut.HandlePaymentFailureAsync(
             tenantId, Guid.NewGuid(), 50m, "EUR", "card", "stripe",
