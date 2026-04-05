@@ -1558,6 +1558,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Privacy.EntityFrameworkCore",
+      "deps": [
+        "Granit.Guids",
+        "Granit.Privacy",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Privacy.Notifications",
       "deps": [
         "Granit.Privacy",
@@ -30116,6 +30125,31 @@
       "members": []
     },
     {
+      "name": "GranitPrivacyDbProperties",
+      "fqn": "Granit.Privacy.EntityFrameworkCore.GranitPrivacyDbProperties",
+      "kind": "class",
+      "project": "Granit.Privacy.EntityFrameworkCore",
+      "file": "src/Granit.Privacy.EntityFrameworkCore/GranitPrivacyDbProperties.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitPrivacyEntityFrameworkCoreModule",
+      "fqn": "Granit.Privacy.EntityFrameworkCore.GranitPrivacyEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Privacy.EntityFrameworkCore",
+      "file": "src/Granit.Privacy.EntityFrameworkCore/GranitPrivacyEntityFrameworkCoreModule.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "PrivacyServiceCollectionExtensions",
       "fqn": "Granit.Privacy.Extensions.PrivacyServiceCollectionExtensions",
       "kind": "class",
@@ -30179,6 +30213,40 @@
       ]
     },
     {
+      "name": "LegalDocument",
+      "fqn": "Granit.Privacy.LegalAgreements.Domain.LegalDocument",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/LegalAgreements/Domain/LegalDocument.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string documentId, string displayName, string? description = null, string? templateName = null, Guid? pdfBlobId = null)",
+          "returnType": "LegalDocument"
+        },
+        {
+          "name": "DisplayName",
+          "kind": "property",
+          "signature": "string DisplayName",
+          "returnType": "string"
+        },
+        {
+          "name": "Description",
+          "kind": "property",
+          "signature": "string? Description",
+          "returnType": "string?"
+        },
+        {
+          "name": "UpdateDraft",
+          "kind": "method",
+          "signature": "UpdateDraft(string displayName, string? description, string? templateName, Guid? pdfBlobId)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "LegalAgreementAcceptedEto",
       "fqn": "Granit.Privacy.LegalAgreements.Events.LegalAgreementAcceptedEto",
       "kind": "record",
@@ -30194,6 +30262,15 @@
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/LegalAgreements/Events/LegalAgreementObsoleteEto.cs",
       "line": 12,
+      "members": []
+    },
+    {
+      "name": "LegalDocumentCacheInvalidatedEto",
+      "fqn": "Granit.Privacy.LegalAgreements.Events.LegalDocumentCacheInvalidatedEto",
+      "kind": "record",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/LegalAgreements/Events/LegalDocumentCacheInvalidatedEto.cs",
+      "line": 10,
       "members": []
     },
     {
@@ -30237,6 +30314,12 @@
           "kind": "method",
           "signature": "FindAllByUserAsync(Guid userId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<LegalAgreementBase>>"
+        },
+        {
+          "name": "StreamUsersByDocumentVersionAsync",
+          "kind": "method",
+          "signature": "StreamUsersByDocumentVersionAsync(string documentId, string version, CancellationToken cancellationToken = default)",
+          "returnType": "IAsyncEnumerable<Guid>"
         }
       ]
     },
@@ -30263,6 +30346,56 @@
       ]
     },
     {
+      "name": "ILegalDocumentPublicationService",
+      "fqn": "Granit.Privacy.LegalAgreements.ILegalDocumentPublicationService",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/LegalAgreements/ILegalDocumentPublicationService.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "PublishAsync",
+          "kind": "method",
+          "signature": "PublishAsync(Guid documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<LegalDocument>"
+        }
+      ]
+    },
+    {
+      "name": "ILegalDocumentReader",
+      "fqn": "Granit.Privacy.LegalAgreements.ILegalDocumentReader",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/LegalAgreements/ILegalDocumentReader.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "FindPublishedAsync",
+          "kind": "method",
+          "signature": "FindPublishedAsync(string documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<LegalDocument?>"
+        },
+        {
+          "name": "GetAllPublishedAsync",
+          "kind": "method",
+          "signature": "GetAllPublishedAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<LegalDocument>>"
+        },
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<LegalDocument?>"
+        },
+        {
+          "name": "GetVersionHistoryAsync",
+          "kind": "method",
+          "signature": "GetVersionHistoryAsync(string documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<LegalDocument>>"
+        }
+      ]
+    },
+    {
       "name": "ILegalDocumentRegistry",
       "fqn": "Granit.Privacy.LegalAgreements.ILegalDocumentRegistry",
       "kind": "interface",
@@ -30281,6 +30414,28 @@
           "kind": "method",
           "signature": "GetAll()",
           "returnType": "IReadOnlyList<LegalDocumentDefinition>"
+        }
+      ]
+    },
+    {
+      "name": "ILegalDocumentWriter",
+      "fqn": "Granit.Privacy.LegalAgreements.ILegalDocumentWriter",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/LegalAgreements/ILegalDocumentWriter.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "InsertAsync",
+          "kind": "method",
+          "signature": "InsertAsync(LegalDocument document, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(LegalDocument document, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
