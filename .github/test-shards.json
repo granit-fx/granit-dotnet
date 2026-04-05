@@ -93,7 +93,6 @@
         "tests/Granit.Bff.Yarp.Tests",
         "tests/Granit.BlobStorage.AzureBlob.Tests",
         "tests/Granit.BlobStorage.Database.Tests",
-        "tests/Granit.BlobStorage.Database.Tests",
         "tests/Granit.BlobStorage.Endpoints.Tests",
         "tests/Granit.BlobStorage.EntityFrameworkCore.Tests",
         "tests/Granit.BlobStorage.FileSystem.Tests",
@@ -106,7 +105,6 @@
         "tests/Granit.Caching.StackExchangeRedis.Tests",
         "tests/Granit.Caching.Tests",
         "tests/Granit.Caching.Tests.Integration",
-        "tests/Granit.ExceptionHandling.Tests",
         "tests/Granit.Http.ApiDocumentation.Tests",
         "tests/Granit.Http.ApiVersioning.Tests",
         "tests/Granit.Http.Bulkhead.Tests",
@@ -134,15 +132,7 @@
         "tests/Granit.Webhooks.Endpoints.Tests",
         "tests/Granit.Webhooks.EntityFrameworkCore.Tests",
         "tests/Granit.Webhooks.Tests",
-        "tests/Granit.Webhooks.Wolverine.Tests",
-        "tests/Granit.ApiDocumentation.Tests",
-        "tests/Granit.ApiVersioning.Tests",
-        "tests/Granit.Bulkhead.Tests",
-        "tests/Granit.Cookies.Endpoints.Tests",
-        "tests/Granit.Cookies.Klaro.Tests",
-        "tests/Granit.Cookies.Tests",
-        "tests/Granit.Cors.Tests",
-        "tests/Granit.Idempotency.Tests"
+        "tests/Granit.Webhooks.Wolverine.Tests"
       ]
     },
     {
@@ -247,7 +237,6 @@
         "tests/Granit.OpenIddict.BackgroundJobs.Tests",
         "tests/Granit.OpenIddict.Endpoints.Tests",
         "tests/Granit.OpenIddict.EntityFrameworkCore.Tests",
-        "tests/Granit.Identity.OpenIddict.Tests",
         "tests/Granit.OpenIddict.Server.Tests",
         "tests/Granit.OpenIddict.Tests",
         "tests/Granit.OpenIddict.Tests.Integration",
@@ -260,6 +249,7 @@
         "tests/Granit.Vault.Aws.Tests",
         "tests/Granit.Vault.Azure.Tests",
         "tests/Granit.Vault.GoogleCloud.Tests",
+        "tests/Granit.Users.Tests",
         "tests/Granit.Vault.HashiCorp.Tests",
         "tests/Granit.Vault.Tests"
       ]

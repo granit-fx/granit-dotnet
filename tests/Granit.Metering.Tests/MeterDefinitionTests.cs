@@ -85,4 +85,36 @@ public sealed class MeterDefinitionTests
 
         result.ShouldBe(guid);
     }
+
+    // ======== Update guards ========
+
+    [Fact]
+    public void Update_WithNullName_ShouldThrow()
+    {
+        var meter = MeterDefinition.Create(
+            Guid.NewGuid(), "API Calls", "requests", AggregationType.Sum);
+
+        Should.Throw<ArgumentException>(() => meter.Update(null!, "requests", null));
+    }
+
+    [Fact]
+    public void Update_WithNullUnit_ShouldThrow()
+    {
+        var meter = MeterDefinition.Create(
+            Guid.NewGuid(), "API Calls", "requests", AggregationType.Sum);
+
+        Should.Throw<ArgumentException>(() => meter.Update("API Calls", null!, null));
+    }
+
+    // ======== Create with null description ========
+
+    [Fact]
+    public void Create_WithNullDescription_ShouldSucceed()
+    {
+        var meter = MeterDefinition.Create(
+            Guid.NewGuid(), "API Calls", "requests", AggregationType.Sum, description: null);
+
+        meter.Description.ShouldBeNull();
+        meter.Name.ShouldBe("API Calls");
+    }
 }

@@ -173,6 +173,121 @@ public sealed class PlanTests
         Should.Throw<InvalidOperationException>(() => price.MarkReplaced(Guid.NewGuid(), now));
     }
 
+    // ======== AddFeatureValue ========
+
+    [Fact]
+    public void AddFeatureValue_WhenDraft_ShouldAddToCollection()
+    {
+        var plan = Plan.Create(
+            Guid.NewGuid(), "Pro", null,
+            PricingModel.Flat, BillingInterval.Monthly);
+
+        var feature = PlanFeatureValue.Create(Guid.NewGuid(), "MaxUsers", "100");
+        plan.AddFeatureValue(feature);
+
+        plan.PlanFeatureValues.Count.ShouldBe(1);
+        plan.PlanFeatureValues[0].FeatureName.ShouldBe("MaxUsers");
+    }
+
+    [Fact]
+    public void AddFeatureValue_WithNull_ShouldThrow()
+    {
+        var plan = Plan.Create(
+            Guid.NewGuid(), "Pro", null,
+            PricingModel.Flat, BillingInterval.Monthly);
+
+        Should.Throw<ArgumentNullException>(() => plan.AddFeatureValue(null!));
+    }
+
+    [Fact]
+    public void AddFeatureValue_WhenPublished_ShouldThrow()
+    {
+        Plan plan = CreatePublishedPlan("EUR", BillingInterval.Monthly, 29.99m);
+
+        var feature = PlanFeatureValue.Create(Guid.NewGuid(), "MaxUsers", "100");
+
+        Should.Throw<InvalidOperationException>(() => plan.AddFeatureValue(feature));
+    }
+
+    [Fact]
+    public void AddFeatureValue_WhenArchived_ShouldThrow()
+    {
+        Plan plan = CreatePublishedPlan("EUR", BillingInterval.Monthly, 29.99m);
+        plan.Archive();
+
+        var feature = PlanFeatureValue.Create(Guid.NewGuid(), "MaxUsers", "100");
+
+        Should.Throw<InvalidOperationException>(() => plan.AddFeatureValue(feature));
+    }
+
+    // ======== AddExternalMapping ========
+
+    [Fact]
+    public void AddExternalMapping_ShouldAddToCollection()
+    {
+        var plan = Plan.Create(
+            Guid.NewGuid(), "Pro", null,
+            PricingModel.Flat, BillingInterval.Monthly);
+
+        var mapping = PlanExternalMapping.Create(Guid.NewGuid(), "stripe", "price_123");
+        plan.AddExternalMapping(mapping);
+
+        plan.ExternalMappings.Count.ShouldBe(1);
+        plan.ExternalMappings[0].ProviderName.ShouldBe("stripe");
+    }
+
+    [Fact]
+    public void AddExternalMapping_WithNull_ShouldThrow()
+    {
+        var plan = Plan.Create(
+            Guid.NewGuid(), "Pro", null,
+            PricingModel.Flat, BillingInterval.Monthly);
+
+        Should.Throw<ArgumentNullException>(() => plan.AddExternalMapping(null!));
+    }
+
+    // ======== Publish guards ========
+
+    [Fact]
+    public void Publish_WithoutPrices_ShouldThrow()
+    {
+        var plan = Plan.Create(
+            Guid.NewGuid(), "Pro", null,
+            PricingModel.Flat, BillingInterval.Monthly);
+
+        Should.Throw<InvalidOperationException>(() => plan.Publish());
+    }
+
+    [Fact]
+    public void Publish_WhenAlreadyPublished_ShouldThrow()
+    {
+        Plan plan = CreatePublishedPlan("EUR", BillingInterval.Monthly, 29.99m);
+
+        Should.Throw<InvalidOperationException>(() => plan.Publish());
+    }
+
+    // ======== Archive guards ========
+
+    [Fact]
+    public void Archive_WhenDraft_ShouldThrow()
+    {
+        var plan = Plan.Create(
+            Guid.NewGuid(), "Pro", null,
+            PricingModel.Flat, BillingInterval.Monthly);
+
+        Should.Throw<InvalidOperationException>(() => plan.Archive());
+    }
+
+    // ======== Update guards ========
+
+    [Fact]
+    public void Update_WhenPublished_ShouldThrow()
+    {
+        Plan plan = CreatePublishedPlan("EUR", BillingInterval.Monthly, 29.99m);
+
+        Should.Throw<InvalidOperationException>(() => plan.Update("New Name", null, 1));
+    }
+
     private static Plan CreatePublishedPlan(string currency, BillingInterval interval, decimal amount)
     {
         var plan = Plan.Create(

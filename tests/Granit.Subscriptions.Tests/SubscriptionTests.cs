@@ -259,4 +259,212 @@ public sealed class SubscriptionTests
         result.ShouldBeTrue();
         sub.PlanPriceId.ShouldBe(newPriceId);
     }
+
+    // ======== AdvancePeriod ========
+
+    [Fact]
+    public void AdvancePeriod_FromActive_ShouldUpdatePeriod()
+    {
+        Subscription sub = CreateActiveSubscription();
+        DateTimeOffset newStart = sub.CurrentPeriodEnd;
+        DateTimeOffset newEnd = newStart.AddMonths(1);
+
+        sub.AdvancePeriod(newStart, newEnd);
+
+        sub.CurrentPeriodStart.ShouldBe(newStart);
+        sub.CurrentPeriodEnd.ShouldBe(newEnd);
+    }
+
+    [Fact]
+    public void AdvancePeriod_FromTrial_ShouldSucceed()
+    {
+        Subscription sub = CreateTrialSubscription();
+        DateTimeOffset newStart = sub.CurrentPeriodEnd;
+        DateTimeOffset newEnd = newStart.AddMonths(1);
+
+        sub.AdvancePeriod(newStart, newEnd);
+
+        sub.CurrentPeriodStart.ShouldBe(newStart);
+    }
+
+    [Fact]
+    public void AdvancePeriod_FromPastDue_ShouldSucceed()
+    {
+        Subscription sub = CreateActiveSubscription();
+        sub.MarkPastDue();
+        DateTimeOffset newStart = sub.CurrentPeriodEnd;
+        DateTimeOffset newEnd = newStart.AddMonths(1);
+
+        sub.AdvancePeriod(newStart, newEnd);
+
+        sub.CurrentPeriodStart.ShouldBe(newStart);
+    }
+
+    [Fact]
+    public void AdvancePeriod_FromCancelled_ShouldThrow()
+    {
+        Subscription sub = CreateActiveSubscription();
+        sub.Cancel("done", DateTimeOffset.UtcNow);
+
+        Should.Throw<InvalidOperationException>(() =>
+            sub.AdvancePeriod(sub.CurrentPeriodEnd, sub.CurrentPeriodEnd.AddMonths(1)));
+    }
+
+    [Fact]
+    public void AdvancePeriod_FromSuspended_ShouldThrow()
+    {
+        Subscription sub = CreateActiveSubscription();
+        sub.MarkPastDue();
+        sub.Suspend();
+
+        Should.Throw<InvalidOperationException>(() =>
+            sub.AdvancePeriod(sub.CurrentPeriodEnd, sub.CurrentPeriodEnd.AddMonths(1)));
+    }
+
+    [Fact]
+    public void AdvancePeriod_StartBeforeCurrentEnd_ShouldThrow()
+    {
+        Subscription sub = CreateActiveSubscription();
+        DateTimeOffset invalidStart = sub.CurrentPeriodEnd.AddDays(-1);
+
+        Should.Throw<ArgumentOutOfRangeException>(() =>
+            sub.AdvancePeriod(invalidStart, invalidStart.AddMonths(1)));
+    }
+
+    [Fact]
+    public void AdvancePeriod_EndBeforeStart_ShouldThrow()
+    {
+        Subscription sub = CreateActiveSubscription();
+        DateTimeOffset newStart = sub.CurrentPeriodEnd;
+
+        Should.Throw<ArgumentOutOfRangeException>(() =>
+            sub.AdvancePeriod(newStart, newStart.AddDays(-1)));
+    }
+
+    // ======== Seat management ========
+
+    [Fact]
+    public void AssignSeat_ShouldAddToCollection()
+    {
+        Subscription sub = CreateActiveSubscription();
+        var seat = SubscriptionSeat.Create(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow);
+
+        sub.AssignSeat(seat);
+
+        sub.Seats.Count.ShouldBe(1);
+        sub.Seats[0].ShouldBe(seat);
+    }
+
+    [Fact]
+    public void AssignSeat_WithNull_ShouldThrow()
+    {
+        Subscription sub = CreateActiveSubscription();
+
+        Should.Throw<ArgumentNullException>(() => sub.AssignSeat(null!));
+    }
+
+    [Fact]
+    public void RevokeSeat_ExistingUser_ShouldReturnTrue()
+    {
+        Subscription sub = CreateActiveSubscription();
+        var userId = Guid.NewGuid();
+        sub.AssignSeat(SubscriptionSeat.Create(Guid.NewGuid(), userId, DateTimeOffset.UtcNow));
+
+        bool result = sub.RevokeSeat(userId);
+
+        result.ShouldBeTrue();
+        sub.Seats.Count.ShouldBe(0);
+    }
+
+    [Fact]
+    public void RevokeSeat_NonExistentUser_ShouldReturnFalse()
+    {
+        Subscription sub = CreateActiveSubscription();
+
+        bool result = sub.RevokeSeat(Guid.NewGuid());
+
+        result.ShouldBeFalse();
+    }
+
+    // ======== External mappings ========
+
+    [Fact]
+    public void AddExternalMapping_ShouldAddToCollection()
+    {
+        Subscription sub = CreateActiveSubscription();
+        var mapping = SubscriptionExternalMapping.Create(Guid.NewGuid(), "stripe", "sub_123");
+
+        sub.AddExternalMapping(mapping);
+
+        sub.ExternalMappings.Count.ShouldBe(1);
+        sub.ExternalMappings[0].ProviderName.ShouldBe("stripe");
+    }
+
+    [Fact]
+    public void AddExternalMapping_WithNull_ShouldThrow()
+    {
+        Subscription sub = CreateActiveSubscription();
+
+        Should.Throw<ArgumentNullException>(() => sub.AddExternalMapping(null!));
+    }
+
+    // ======== Dunning ========
+
+    [Fact]
+    public void IncrementDunningAttempt_ShouldIncrement()
+    {
+        Subscription sub = CreateActiveSubscription();
+
+        sub.IncrementDunningAttempt();
+        sub.IncrementDunningAttempt();
+
+        sub.DunningAttempt.ShouldBe(2);
+    }
+
+    [Fact]
+    public void ResetDunning_ShouldResetToZero()
+    {
+        Subscription sub = CreateActiveSubscription();
+        sub.IncrementDunningAttempt();
+        sub.IncrementDunningAttempt();
+
+        sub.ResetDunning();
+
+        sub.DunningAttempt.ShouldBe(0);
+    }
+
+    // ======== Additional transitions ========
+
+    [Fact]
+    public void Activate_FromPastDue_ShouldReturnTrue()
+    {
+        Subscription sub = CreateActiveSubscription();
+        sub.MarkPastDue();
+
+        bool result = sub.Activate();
+
+        result.ShouldBeTrue();
+        sub.Status.ShouldBe(SubscriptionStatus.Active);
+    }
+
+    [Fact]
+    public void Cancel_FromSuspended_ShouldReturnTrue()
+    {
+        Subscription sub = CreateActiveSubscription();
+        sub.MarkPastDue();
+        sub.Suspend();
+
+        bool result = sub.Cancel("unpaid", DateTimeOffset.UtcNow);
+
+        result.ShouldBeTrue();
+        sub.Status.ShouldBe(SubscriptionStatus.Cancelled);
+    }
+
+    [Fact]
+    public void Suspend_FromActive_ShouldThrow()
+    {
+        Subscription sub = CreateActiveSubscription();
+
+        Should.Throw<InvalidOperationException>(() => sub.Suspend());
+    }
 }

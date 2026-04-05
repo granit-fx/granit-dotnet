@@ -133,4 +133,107 @@ public sealed class PaymentTransactionTests
         dispute.Status.ShouldBe(DisputeStatus.Open);
         dispute.Reason.ShouldBe("Fraudulent");
     }
+
+    // ======== Invalid transitions ========
+
+    [Fact]
+    public void MarkSucceeded_FromFailed_ShouldThrow()
+    {
+        PaymentTransaction tx = CreateTransaction();
+        tx.MarkFailed("card_declined", "Declined");
+
+        Should.Throw<InvalidOperationException>(() =>
+            tx.MarkSucceeded("pi_123", DateTimeOffset.UtcNow));
+    }
+
+    [Fact]
+    public void MarkFailed_FromSucceeded_ShouldThrow()
+    {
+        PaymentTransaction tx = CreateTransaction();
+        tx.MarkSucceeded("pi_123", DateTimeOffset.UtcNow);
+
+        Should.Throw<InvalidOperationException>(() =>
+            tx.MarkFailed("error", "Something went wrong"));
+    }
+
+    [Fact]
+    public void Cancel_FromSucceeded_ShouldThrow()
+    {
+        PaymentTransaction tx = CreateTransaction();
+        tx.MarkSucceeded("pi_123", DateTimeOffset.UtcNow);
+
+        Should.Throw<InvalidOperationException>(() =>
+            tx.Cancel(DateTimeOffset.UtcNow));
+    }
+
+    // ======== Idempotent transitions ========
+
+    [Fact]
+    public void MarkSucceeded_Twice_ShouldReturnFalse()
+    {
+        PaymentTransaction tx = CreateTransaction();
+        tx.MarkSucceeded("pi_123", DateTimeOffset.UtcNow);
+
+        bool result = tx.MarkSucceeded("pi_456", DateTimeOffset.UtcNow);
+
+        result.ShouldBeFalse();
+    }
+
+    // ======== CompleteRefund flow ========
+
+    [Fact]
+    public void CompleteRefund_ShouldMarkRefundSucceeded()
+    {
+        PaymentTransaction tx = CreateTransaction();
+        tx.MarkSucceeded("pi_123", DateTimeOffset.UtcNow);
+        var refundId = Guid.NewGuid();
+        tx.RequestRefund(refundId, 30m, DateTimeOffset.UtcNow);
+
+        tx.CompleteRefund(refundId, "re_123", DateTimeOffset.UtcNow);
+
+        tx.Refunds[0].Status.ShouldBe(RefundStatus.Succeeded);
+        tx.Refunds[0].ProviderRefundId.ShouldBe("re_123");
+    }
+
+    // ======== Dispute resolution ========
+
+    [Fact]
+    public void Dispute_Resolve_Won_ShouldUpdateStatus()
+    {
+        PaymentTransaction tx = CreateTransaction();
+        tx.MarkSucceeded("pi_123", DateTimeOffset.UtcNow);
+        Dispute dispute = tx.OpenDispute(Guid.NewGuid(), "dp_123", "Fraudulent", 100m, DateTimeOffset.UtcNow);
+        DateTimeOffset resolvedAt = DateTimeOffset.UtcNow;
+
+        dispute.Resolve(DisputeStatus.Won, resolvedAt);
+
+        dispute.Status.ShouldBe(DisputeStatus.Won);
+        dispute.ResolvedAt.ShouldBe(resolvedAt);
+    }
+
+    [Fact]
+    public void Dispute_Resolve_Lost_ShouldUpdateStatus()
+    {
+        PaymentTransaction tx = CreateTransaction();
+        tx.MarkSucceeded("pi_123", DateTimeOffset.UtcNow);
+        Dispute dispute = tx.OpenDispute(Guid.NewGuid(), "dp_123", "Fraudulent", 100m, DateTimeOffset.UtcNow);
+
+        dispute.Resolve(DisputeStatus.Lost, DateTimeOffset.UtcNow);
+
+        dispute.Status.ShouldBe(DisputeStatus.Lost);
+    }
+
+    // ======== Multiple refunds ========
+
+    [Fact]
+    public void RequestRefund_MultipleRefunds_ExactAmount_ShouldSucceed()
+    {
+        PaymentTransaction tx = CreateTransaction();
+        tx.MarkSucceeded("pi_123", DateTimeOffset.UtcNow);
+
+        tx.RequestRefund(Guid.NewGuid(), 40m, DateTimeOffset.UtcNow);
+        tx.RequestRefund(Guid.NewGuid(), 60m, DateTimeOffset.UtcNow);
+
+        tx.Refunds.Count.ShouldBe(2);
+    }
 }

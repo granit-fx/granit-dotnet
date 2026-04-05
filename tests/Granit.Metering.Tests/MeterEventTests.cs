@@ -35,4 +35,47 @@ public sealed class MeterEventTests
         Should.Throw<ArgumentException>(() =>
             MeterEvent.Create(Guid.NewGuid(), Guid.NewGuid(), "", 1m, DateTimeOffset.UtcNow));
     }
+
+    // ======== Quantity validation ========
+
+    [Fact]
+    public void Create_WithZeroQuantity_ShouldThrow()
+    {
+        Should.Throw<ArgumentOutOfRangeException>(() =>
+            MeterEvent.Create(Guid.NewGuid(), Guid.NewGuid(), "key-1", 0m, DateTimeOffset.UtcNow));
+    }
+
+    [Fact]
+    public void Create_WithNegativeQuantity_ShouldThrow()
+    {
+        Should.Throw<ArgumentOutOfRangeException>(() =>
+            MeterEvent.Create(Guid.NewGuid(), Guid.NewGuid(), "key-1", -5m, DateTimeOffset.UtcNow));
+    }
+
+    [Fact]
+    public void Create_ExceedingMaxQuantity_ShouldThrow()
+    {
+        Should.Throw<ArgumentOutOfRangeException>(() =>
+            MeterEvent.Create(Guid.NewGuid(), Guid.NewGuid(), "key-1", MeterEvent.MaxQuantity + 1m, DateTimeOffset.UtcNow));
+    }
+
+    [Fact]
+    public void Create_AtMaxQuantity_ShouldSucceed()
+    {
+        var evt = MeterEvent.Create(
+            Guid.NewGuid(), Guid.NewGuid(), "key-1", MeterEvent.MaxQuantity, DateTimeOffset.UtcNow);
+
+        evt.Quantity.ShouldBe(MeterEvent.MaxQuantity);
+    }
+
+    // ======== Null metadata ========
+
+    [Fact]
+    public void Create_WithNullMetadata_ShouldSucceed()
+    {
+        var evt = MeterEvent.Create(
+            Guid.NewGuid(), Guid.NewGuid(), "key-1", 1m, DateTimeOffset.UtcNow, metadata: null);
+
+        evt.Metadata.ShouldBeNull();
+    }
 }
