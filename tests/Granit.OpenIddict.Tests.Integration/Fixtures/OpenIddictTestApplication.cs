@@ -101,8 +101,12 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
             _ => Substitute.For<IPasskeyService>());
         builder.Services.TryAddSingleton<IDistributedEventBus>(
             _ => Substitute.For<IDistributedEventBus>());
-        builder.Services.TryAddSingleton<Granit.Settings.Services.ISettingProvider>(
-            _ => Substitute.For<Granit.Settings.Services.ISettingProvider>());
+        Granit.Settings.Services.ISettingProvider settingProvider =
+            Substitute.For<Granit.Settings.Services.ISettingProvider>();
+        settingProvider
+            .GetOrNullAsync(Granit.Identity.Local.IdentityLocalSettingNames.AllowSelfRegistration, Arg.Any<CancellationToken>())
+            .Returns("true");
+        builder.Services.TryAddSingleton(settingProvider);
         builder.Services.TryAddSingleton<ICurrentTenant>(
             _ => Substitute.For<ICurrentTenant>());
         builder.Services.AddDistributedMemoryCache();
