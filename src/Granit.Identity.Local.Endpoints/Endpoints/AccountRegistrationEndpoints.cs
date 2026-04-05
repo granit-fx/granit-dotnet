@@ -1,10 +1,12 @@
 using Granit.Events;
 using Granit.Identity;
+using Granit.Identity.Local;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using Granit.Identity.Models;
+using Granit.Settings.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -22,10 +24,12 @@ internal static class AccountRegistrationEndpoints
             .WithSummary("Registers a new user account.")
             .WithDescription(
                 "Creates a new user with the provided email and password. "
+                + "Returns 403 if self-registration is disabled for the current tenant. "
                 + "Always returns 202 to prevent email enumeration. "
                 + "Sends a confirmation email if the account is new, or a notification if the email is already taken. "
                 + "Returns 422 if the password does not meet policy requirements.")
             .Produces(StatusCodes.Status202Accepted)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesValidationProblem()
             .AllowAnonymous()
@@ -55,12 +59,24 @@ internal static class AccountRegistrationEndpoints
 
     private static async Task<Results<Accepted, ProblemHttpResult>> RegisterAsync(
         AccountRegisterRequest request,
+        [FromServices] ISettingProvider settingProvider,
         [FromServices] IIdentityProvider identityProvider,
         [FromServices] IEmailConfirmationService emailConfirmation,
         [FromServices] IDistributedEventBus eventBus,
         [FromServices] IdentityLocalMetrics metrics,
         CancellationToken cancellationToken)
     {
+        string? allowed = await settingProvider
+            .GetOrNullAsync(IdentityLocalSettingNames.AllowSelfRegistration, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!string.Equals(allowed, "true", StringComparison.OrdinalIgnoreCase))
+        {
+            return TypedResults.Problem(
+                detail: "Self-registration is disabled.",
+                statusCode: StatusCodes.Status403Forbidden);
+        }
+
         try
         {
             IIdentityUser user = await identityProvider.CreateUserAsync(

@@ -2,8 +2,10 @@ using Granit.Authorization;
 using Granit.Caching;
 using Granit.Http.ApiDocumentation;
 using Granit.Identity.Local;
+using Granit.Identity.Local.Endpoints.Endpoints;
 using Granit.Modularity;
 using Granit.Validation;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Identity.Local.Endpoints;
 
@@ -23,4 +25,7 @@ namespace Granit.Identity.Local.Endpoints;
     typeof(GranitValidationModule))]
 public sealed class GranitIdentityLocalEndpointsModule : GranitModule
 {
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddScoped<IdentityLocalConfigProvider>();
 }

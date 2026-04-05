@@ -233,6 +233,41 @@ The exponential backoff is implemented via `GranitUserManager` — a custom
 `GranitUser` stores the `ConsecutiveLockouts` counter (persisted in the
 `openiddict_users` table, defaults to 0).
 
+## Module configuration
+
+```text
+GET /api/account/config
+```
+
+Public endpoint (anonymous) that exposes runtime feature flags for the frontend.
+Uses `IAsyncModuleConfigProvider` to resolve settings from `Granit.Settings`.
+
+**Response:**
+
+```json
+{
+  "allowSelfRegistration": false
+}
+```
+
+### `Identity.Local.AllowSelfRegistration`
+
+| Property | Value |
+|----------|-------|
+| Default | `"false"` (disabled) |
+| Visible to clients | Yes |
+| Providers | Tenant (`T`), Global (`G`) |
+
+Enable via the Settings admin API or `appsettings.json`:
+
+```json
+{
+  "Settings": {
+    "Identity.Local.AllowSelfRegistration": "true"
+  }
+}
+```
+
 ## Registration and email confirmation
 
 ### Register
@@ -244,6 +279,13 @@ POST /api/account/register
 Creates a new user account. Sends a confirmation email via `IEmailConfirmationService`.
 Publishes `UserRegisteredEto` via `IDistributedEventBus`. Increments
 `granit.identity.local.users.registered` metric.
+
+:::caution[Self-registration gate]
+This endpoint checks the `Identity.Local.AllowSelfRegistration` setting before
+processing the request. When disabled (default), all registration attempts receive
+`403 Forbidden`. The frontend should query `GET /api/account/config` to conditionally
+show or hide the registration page.
+:::
 
 **Request:**
 
@@ -258,6 +300,7 @@ Publishes `UserRegisteredEto` via `IDistributedEventBus`. Increments
 
 **Responses:**
 
+- `403 Forbidden` -- self-registration is disabled for the current tenant
 - **Always returns `202 Accepted`** regardless of whether the email is new or already
   taken, to prevent user enumeration attacks. If the email already exists, the request
   is silently ignored (the existing user is not affected).

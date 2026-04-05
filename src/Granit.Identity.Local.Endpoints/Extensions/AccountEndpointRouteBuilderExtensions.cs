@@ -39,6 +39,9 @@ public static class AccountEndpointRouteBuilderExtensions
         accountGroup.MapAccountDeletionEndpoints();
         accountGroup.MapAccountSessionEndpoints();
 
+        // ──── Public config (/api/account/config) ────
+        endpoints.MapGranitAccountConfig(options.AccountRoutePrefix);
+
         // ──── Admin management (/api/admin) ────
         RouteGroupBuilder adminGroup = endpoints
             .MapGranitGroup(options.AdminRoutePrefix)

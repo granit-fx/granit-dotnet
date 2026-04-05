@@ -817,6 +817,7 @@
         "Granit.Events",
         "Granit.Guids",
         "Granit.Identity",
+        "Granit.Settings",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -836,6 +837,7 @@
         "Granit.Caching",
         "Granit.Http.ApiDocumentation",
         "Granit.Identity.Local",
+        "Granit.Settings",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -1896,8 +1898,8 @@
         "Granit.Guids",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Templating",
-        "Granit.Workflow.EntityFrameworkCore",
-        "Granit.Timing"
+        "Granit.Timing",
+        "Granit.Workflow.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -17113,6 +17115,15 @@
       "members": []
     },
     {
+      "name": "IdentityLocalConfigResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.IdentityLocalConfigResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/IdentityLocalConfigResponse.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "PasskeyRegistrationRequest",
       "fqn": "Granit.Identity.Local.Endpoints.Dtos.PasskeyRegistrationRequest",
       "kind": "record",
@@ -17152,8 +17163,15 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/GranitIdentityLocalEndpointsModule.cs",
-      "line": 24,
-      "members": []
+      "line": 26,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "AccountEndpointsOptions",
@@ -17298,7 +17316,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/GranitIdentityLocalModule.cs",
-      "line": 27,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -17307,6 +17325,15 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "IdentityLocalSettingNames",
+      "fqn": "Granit.Identity.Local.IdentityLocalSettingNames",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/IdentityLocalSettingNames.cs",
+      "line": 12,
+      "members": []
     },
     {
       "name": "GranitIdentityLocalNotificationsModule",
@@ -36467,7 +36494,7 @@
       "kind": "record",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Dtos/TemplateLifecycleResponse.cs",
-      "line": 13,
+      "line": 5,
       "members": []
     },
     {
@@ -36476,7 +36503,7 @@
       "kind": "record",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Dtos/TemplateListItemResponse.cs",
-      "line": 19,
+      "line": 5,
       "members": []
     },
     {
@@ -36512,7 +36539,7 @@
       "kind": "record",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Dtos/TemplateRevisionResponse.cs",
-      "line": 20,
+      "line": 5,
       "members": []
     },
     {
@@ -36521,7 +36548,7 @@
       "kind": "record",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Dtos/TemplateRevisionSummaryResponse.cs",
-      "line": 15,
+      "line": 5,
       "members": []
     },
     {
@@ -36686,7 +36713,7 @@
       "kind": "class",
       "project": "Granit.Templating.EntityFrameworkCore",
       "file": "src/Granit.Templating.EntityFrameworkCore/GranitTemplatingEntityFrameworkCoreModule.cs",
-      "line": 23,
+      "line": 14,
       "members": []
     },
     {
@@ -36711,7 +36738,7 @@
       "kind": "class",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Exceptions/TemplateTransitionDeniedException.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "TemplateTransitionDeniedException",
@@ -36765,7 +36792,7 @@
       "kind": "class",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/GranitTemplatingModule.cs",
-      "line": 26,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",
@@ -37153,7 +37180,7 @@
       "kind": "interface",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Store/ITemplateTransitionHook.cs",
-      "line": 19,
+      "line": 8,
       "members": [
         {
           "name": "CanTransitionAsync",
@@ -37193,7 +37220,7 @@
       "kind": "record",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Store/TemplateListFilter.cs",
-      "line": 15,
+      "line": 9,
       "members": []
     },
     {
@@ -37202,7 +37229,7 @@
       "kind": "class",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Store/TemplateRevision.cs",
-      "line": 13,
+      "line": 8,
       "members": []
     },
     {
@@ -37211,7 +37238,7 @@
       "kind": "class",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Store/TemplateSummary.cs",
-      "line": 9,
+      "line": 8,
       "members": []
     },
     {

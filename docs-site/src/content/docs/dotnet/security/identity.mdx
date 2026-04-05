@@ -38,7 +38,7 @@ with GDPR erasure and pseudonymization built in.
 | `Granit.Identity.Federated.GoogleCloud` | Firebase Auth implementation (Firebase Admin SDK) | `Granit.Identity.Federated` |
 | `Granit.Authentication.JwtBearer.GoogleCloud` | JWT Bearer for Firebase Auth + claims transformation | `Granit.Authentication.JwtBearer` |
 | `Granit.Identity.Federated.EntityFrameworkCore` | EF Core user cache | `Granit.Identity.Federated`, `Granit.Persistence` |
-| `Granit.Identity.Local` | Shared domain types for self-hosted identity providers | `Granit.Identity`, `Granit.Events`, `Granit.Guids`, `Granit.Timing` |
+| `Granit.Identity.Local` | Shared domain types for self-hosted identity providers | `Granit.Identity`, `Granit.Events`, `Granit.Guids`, `Granit.Settings`, `Granit.Timing` |
 | `Granit.Identity.Local.AspNetIdentity` | IIdentityProvider bridge for OpenIddict (local store) | `Granit.Identity.Local` |
 | `Granit.Identity.Local.Notifications` | 9 security email/in-app notifications (17 cultures) | `Granit.Identity.Local`, `Granit.Notifications.Abstractions`, `Granit.Templating` |
 | `Granit.Identity.Endpoints` | REST endpoints for user cache | `Granit.Identity`, `Granit.Authorization` |
@@ -56,6 +56,7 @@ graph TD
     IEF[Granit.Identity.Federated.EntityFrameworkCore] --> IF
     IEF --> P[Granit.Persistence]
     IL[Granit.Identity.Local] --> I
+    IL --> S[Granit.Settings]
     ILA[Granit.Identity.Local.AspNetIdentity] --> IL
     ILN[Granit.Identity.Local.Notifications] --> IL
     ILN --> N[Granit.Notifications.Abstractions]

@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Granit.Events\Granit.Events.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Identity\Granit.Identity.csproj" />
+    <ProjectReference Include="..\Granit.Settings\Granit.Settings.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
   </ItemGroup>
 

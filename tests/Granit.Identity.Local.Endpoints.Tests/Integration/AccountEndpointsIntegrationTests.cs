@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Granit.Events;
 using Granit.Identity;
+using Granit.Identity.Local;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Events;
@@ -65,6 +66,21 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
 
         // Anti-enumeration: always 202 even if email is taken
         response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
+    }
+
+    [Fact]
+    public async Task Register_SelfRegistrationDisabled_Returns403()
+    {
+        _server.SettingProvider
+            .GetOrNullAsync(IdentityLocalSettingNames.AllowSelfRegistration, Arg.Any<CancellationToken>())
+            .Returns("false");
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/api/account/register",
+            new AccountRegisterRequest("new@example.com", "StrongP@ss1!", "Jane", "Doe"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
     [Fact]

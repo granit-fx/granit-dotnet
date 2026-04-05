@@ -3,6 +3,7 @@ using Granit.Guids;
 using Granit.Identity;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Modularity;
+using Granit.Settings;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -23,6 +24,7 @@ namespace Granit.Identity.Local;
     typeof(GranitEventsModule),
     typeof(GranitGuidsModule),
     typeof(GranitIdentityModule),
+    typeof(GranitSettingsModule),
     typeof(GranitTimingModule))]
 public sealed class GranitIdentityLocalModule : GranitModule
 {

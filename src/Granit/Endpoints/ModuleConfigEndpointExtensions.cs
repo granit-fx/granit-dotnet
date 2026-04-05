@@ -52,7 +52,56 @@ public static class ModuleConfigEndpointExtensions
         return endpoints;
     }
 
+    /// <summary>
+    /// Maps a <c>GET /{routePrefix}/config</c> endpoint that returns the module configuration
+    /// from the registered <see cref="IAsyncModuleConfigProvider{TResponse}"/>.
+    /// </summary>
+    /// <typeparam name="TProvider">
+    /// The <see cref="IAsyncModuleConfigProvider{TResponse}"/> implementation (resolved from DI).
+    /// </typeparam>
+    /// <typeparam name="TResponse">The response DTO type.</typeparam>
+    /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="routePrefix">Module route prefix (e.g., <c>"account"</c>).</param>
+    /// <param name="endpointName">
+    /// Unique endpoint name for link generation (e.g., <c>"GetAccountConfig"</c>).
+    /// </param>
+    /// <param name="tag">OpenAPI tag (e.g., <c>"Account"</c>).</param>
+    /// <param name="configureEndpoint">
+    /// Optional delegate to customize the <see cref="RouteHandlerBuilder"/>
+    /// (e.g., <c>.AllowAnonymous()</c>, cache headers).
+    /// </param>
+    /// <returns>The endpoint route builder for chaining.</returns>
+    public static IEndpointRouteBuilder MapGranitModuleConfigAsync<TProvider, TResponse>(
+        this IEndpointRouteBuilder endpoints,
+        string routePrefix,
+        string endpointName,
+        string tag,
+        Action<RouteHandlerBuilder>? configureEndpoint = null)
+        where TProvider : class, IAsyncModuleConfigProvider<TResponse>
+        where TResponse : class
+    {
+        RouteHandlerBuilder builder = endpoints
+            .MapGet(
+                $"{routePrefix}/config",
+                async ([FromServices] TProvider provider, CancellationToken cancellationToken) =>
+                    HandleGetConfigAsync(provider, cancellationToken))
+            .WithName(endpointName)
+            .WithTags(tag)
+            .WithSummary($"Returns the current {tag} module configuration.")
+            .Produces<TResponse>();
+
+        configureEndpoint?.Invoke(builder);
+
+        return endpoints;
+    }
+
     private static Ok<TResponse> HandleGetConfig<TResponse>([FromServices] IModuleConfigProvider<TResponse> provider)
         where TResponse : class =>
         TypedResults.Ok(provider.GetConfig());
+
+    private static async Task<Ok<TResponse>> HandleGetConfigAsync<TResponse>(
+        [FromServices] IAsyncModuleConfigProvider<TResponse> provider,
+        CancellationToken cancellationToken)
+        where TResponse : class =>
+        TypedResults.Ok(await provider.GetConfigAsync(cancellationToken).ConfigureAwait(false));
 }

@@ -5,10 +5,12 @@ using Granit.Events;
 using Granit.Identity;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Endpoints.Endpoints;
 using Granit.Identity.Local.Endpoints.Extensions;
 using Granit.Identity.Local.Endpoints.Options;
 using Granit.Identity.Local.Endpoints.Permissions;
 using Granit.Identity.Local.Services;
+using Granit.Settings.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -63,6 +65,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
     public IAccountDeletionService DeletionService { get; }
     public IDistributedEventBus EventBus { get; }
     public IFusionCache FusionCache { get; }
+    public ISettingProvider SettingProvider { get; }
     public TimeProvider TimeProvider { get; }
     public SignInManager<GranitUser> SignInManager { get; }
     public UserManager<GranitUser> UserManager { get; }
@@ -87,6 +90,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         IAccountDeletionService deletionService,
         IDistributedEventBus eventBus,
         IFusionCache fusionCache,
+        ISettingProvider settingProvider,
         TimeProvider timeProvider,
         SignInManager<GranitUser> signInManager,
         UserManager<GranitUser> userManager)
@@ -110,6 +114,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         DeletionService = deletionService;
         EventBus = eventBus;
         FusionCache = fusionCache;
+        SettingProvider = settingProvider;
         TimeProvider = timeProvider;
         SignInManager = signInManager;
         UserManager = userManager;
@@ -133,6 +138,12 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         IAccountDeletionService deletionService = Substitute.For<IAccountDeletionService>();
         IDistributedEventBus eventBus = Substitute.For<IDistributedEventBus>();
         IFusionCache fusionCache = Substitute.For<IFusionCache>();
+
+        ISettingProvider settingProvider = Substitute.For<ISettingProvider>();
+
+        // Default: self-registration enabled (most tests expect registration to work)
+        settingProvider.GetOrNullAsync(IdentityLocalSettingNames.AllowSelfRegistration, Arg.Any<CancellationToken>())
+            .Returns("true");
 
         TimeProvider timeProvider = Substitute.For<TimeProvider>();
         timeProvider.GetUtcNow().Returns(FixedNow);
@@ -186,6 +197,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(deletionService);
         builder.Services.AddSingleton(eventBus);
         builder.Services.AddSingleton(fusionCache);
+        builder.Services.AddSingleton(settingProvider);
+        builder.Services.AddScoped<IdentityLocalConfigProvider>();
         builder.Services.AddSingleton(timeProvider);
         builder.Services.AddSingleton(signInManager);
         builder.Services.AddSingleton(userManager);
@@ -225,7 +238,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
             emailConfirmation, passwordResetService, twoFactorService,
             externalLoginService, externalProviderRegistry,
             passkeyService, impersonationService, deletionService,
-            eventBus, fusionCache, timeProvider,
+            eventBus, fusionCache, settingProvider, timeProvider,
             signInManager, userManager);
     }
 
