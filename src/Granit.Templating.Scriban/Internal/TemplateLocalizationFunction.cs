@@ -32,17 +32,23 @@ internal sealed class TemplateLocalizationFunction(IStringLocalizerFactory local
             return "";
         }
 
-        string? key = context.ObjectToString(arguments[0]);
-        if (string.IsNullOrEmpty(key))
+        string? fullKey = context.ObjectToString(arguments[0]);
+        if (string.IsNullOrEmpty(fullKey))
         {
             return "";
         }
 
-        IStringLocalizer localizer = localizerFactory.Create(key, string.Empty);
+        // Key format: "ResourceName:Key" (e.g. "NotificationsEmail:NoReply")
+        // Resource name = prefix before ':', used to create the localizer.
+        // Lookup key = full key including prefix (Granit JSON convention).
+        int colonIndex = fullKey.IndexOf(':');
+        string resourceName = colonIndex > 0 ? fullKey[..colonIndex] : fullKey;
+
+        IStringLocalizer localizer = localizerFactory.Create(resourceName, string.Empty);
 
         if (arguments.Count == 1)
         {
-            return localizer[key].Value;
+            return localizer[fullKey].Value;
         }
 
         // Collect format arguments (positional after the key)
@@ -52,7 +58,7 @@ internal sealed class TemplateLocalizationFunction(IStringLocalizerFactory local
             args[i - 1] = arguments[i] ?? "";
         }
 
-        return localizer[key, args].Value;
+        return localizer[fullKey, args].Value;
     }
 
     public int RequiredParameterCount => 1;
