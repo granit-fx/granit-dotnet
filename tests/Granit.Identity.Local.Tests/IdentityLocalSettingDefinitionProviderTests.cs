@@ -1,3 +1,4 @@
+using Granit.Identity.Local.Internal;
 using Granit.Settings.Definitions;
 using Shouldly;
 using Xunit;
