@@ -29,17 +29,19 @@ Each tenant can operate under a different regulation, resolved at runtime.
 
 <FileTree>
 - Granit.Privacy Data export saga, deletion with cooling-off, legal agreements
+  - Granit.Privacy.EntityFrameworkCore EF Core persistence for legal document version management
   - Granit.Privacy.Regulations Regulation registry, 14 built-in profiles, per-tenant resolver
   - Granit.Privacy.Regulations.Cookies Bridge — regulation-aware cookie consent model
   - Granit.Privacy.Endpoints Minimal API endpoints for export, deletion, consent, regulation
   - Granit.Privacy.BackgroundJobs Deletion deadline enforcer job
-  - Granit.Privacy.Notifications Deletion reminder and confirmation emails
+  - Granit.Privacy.Notifications Deletion reminder, confirmation, and re-consent emails
   - Granit.Privacy.AI AI-powered PII detection in free-text fields
 </FileTree>
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.Privacy` | Data export/deletion orchestration, legal agreements, opt-out | `Granit` |
+| `Granit.Privacy` | Data export/deletion orchestration, legal agreements, opt-out | `Granit`, `Granit.Workflow` |
+| `Granit.Privacy.EntityFrameworkCore` | EF Core persistence for `LegalDocument` version management | `Granit.Privacy`, `Granit.Persistence.EntityFrameworkCore` |
 | `Granit.Privacy.Regulations` | Regulation registry, 14 built-in profiles, per-tenant resolver | `Granit` |
 | `Granit.Privacy.Regulations.Cookies` | Bridge: regulation-aware cookie consent model | `Granit.Http.Cookies`, `Granit.Privacy.Regulations` |
 | `Granit.Privacy.Endpoints` | HTTP endpoints for data subject rights + regulation profile | `Granit.Privacy`, `Granit.Privacy.Regulations`, `Granit.Http.Cookies`, `Granit.Authorization`, `Granit.Validation` |

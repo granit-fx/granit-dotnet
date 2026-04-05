@@ -1,6 +1,6 @@
 ---
 title: "Legal Agreements"
-description: Consent versioning for privacy policies and terms of service, with ILegalAgreementChecker for GDPR Art. 7 proof of consent.
+description: Consent versioning and runtime document management for privacy policies and terms of service, with lifecycle-managed versions and re-consent flows.
 sidebar:
   order: 5
   label: Legal Agreements
@@ -8,9 +8,16 @@ sidebar:
 
 import { Aside, Badge } from "@astrojs/starlight/components";
 
-## Consent versioning
+## Why consent versioning?
 
-Track consent to legal documents (privacy policy, terms of service):
+When a legal document changes (privacy policy update, new ToS version), every user
+who accepted the old version must re-consent. GDPR Art. 7 requires proof of consent
+for each version. Granit tracks which version each user accepted and triggers
+re-consent flows automatically when a new version is published.
+
+## Static document registration
+
+For simple use cases, register documents at startup:
 
 ```csharp
 privacy.RegisterDocument("privacy-policy", "2.1", "Privacy Policy");
@@ -27,7 +34,41 @@ privacy.UseLegalAgreementStore<EfCoreLegalAgreementStore>();
 document — useful for middleware that blocks access until consent is renewed after
 a policy update.
 
-## Endpoints
+## Runtime document management
+
+For SaaS applications where administrators need to update legal documents without
+redeployment, use `Granit.Privacy.EntityFrameworkCore`:
+
+```csharp
+builder.AddGranitPrivacyEntityFrameworkCore(options =>
+    options.UseNpgsql(connectionString));
+```
+
+This enables the `LegalDocument` entity — a `VersionedWorkflowEntity` with full
+lifecycle management:
+
+- **Draft** — being edited by an administrator
+- **Published** — the active version users must consent to
+- **Archived** — superseded by a newer version, preserved for audit trail
+
+When a new version is published, the previous version is **auto-archived** in a
+single transaction and `LegalAgreementObsoleteEto` is dispatched to trigger
+re-consent notifications to all affected users.
+
+### Content rendering (soft-dependency on Templating)
+
+Set `TemplateName` on the document (e.g., `"Legal.PrivacyPolicy"`) to render
+multi-culture HTML content via `Granit.Templating`. If Templating is not loaded,
+the document is file-only (`DocumentBlobId` via BlobStorage) or the application
+handles rendering itself.
+
+### Distributed cache coherence
+
+The `ILegalDocumentRegistry` is backed by a `ConcurrentDictionary` cache. When a
+document is published, `LegalDocumentCacheInvalidatedEto` is dispatched via
+Wolverine so all pods refresh their cache — no stale versions served.
+
+## Consent endpoints
 
 | Method | Route | Operation | Permission |
 | ------ | ----- | --------- | ---------- |
@@ -45,3 +86,25 @@ The consent endpoint reads `RemoteIpAddress` from `HttpContext.Connection`. When
 running behind a reverse proxy (Aspire, Docker, Nginx), enable
 `ForwardedHeadersMiddleware` to capture the real client IP.
 </Aside>
+
+## Admin endpoints
+
+| Method | Route | Operation | Permission |
+| ------ | ----- | --------- | ---------- |
+| <Badge text="POST" variant="success" /> | `/legal-documents` | CreateLegalDocument | `Privacy.LegalDocuments.Create` |
+| <Badge text="GET" variant="note" /> | `/legal-documents/{id}` | GetLegalDocument | `Privacy.LegalDocuments.Read` |
+| <Badge text="GET" variant="note" /> | `/legal-documents` | ListLegalDocumentVersions | `Privacy.LegalDocuments.Read` |
+| <Badge text="PUT" variant="caution" /> | `/legal-documents/{id}` | UpdateLegalDocument | `Privacy.LegalDocuments.Manage` |
+| <Badge text="POST" variant="success" /> | `/legal-documents/{id}/publish` | PublishLegalDocument | `Privacy.LegalDocuments.Manage` |
+
+Publishing a draft auto-archives the previous published version and dispatches
+`LegalAgreementObsoleteEto`. The notification handler streams affected users via
+`IAsyncEnumerable` in batches of 1000 to avoid memory pressure on large tenants.
+
+## Integration events
+
+| Event | Dispatched when | Consumer |
+| ----- | --------------- | -------- |
+| `LegalAgreementAcceptedEto` | User accepts a document version | Audit trail, cross-service sync |
+| `LegalAgreementObsoleteEto` | New version published, old archived | `LegalDocumentObsoleteHandler` → re-consent notifications |
+| `LegalDocumentCacheInvalidatedEto` | Document published or archived | All pods refresh `ILegalDocumentRegistry` cache |
