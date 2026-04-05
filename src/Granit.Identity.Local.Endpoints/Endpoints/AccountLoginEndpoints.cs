@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.Cryptography;
 using Granit.Events;
 using Granit.Identity.Local.Diagnostics;
@@ -67,6 +68,29 @@ internal static partial class AccountLoginEndpoints
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
+        long startTicks = Stopwatch.GetTimestamp();
+
+        Results<Ok<AccountLoginResponse>, ProblemHttpResult> response = await HandleLoginCoreAsync(
+            request, signInManager, userManager, httpContext, cancellationToken)
+            .ConfigureAwait(false);
+
+        // Enforce a minimum response time to prevent timing side-channels.
+        // Without this, an attacker can distinguish "user not found" (~310ms with
+        // dummy hash) from "wrong password on existing account" (~450ms with hash
+        // + DB writes for lockout counter). The floor is randomized per request
+        // (500-700ms) so an attacker cannot fingerprint a fixed threshold.
+        await EnforceMinimumResponseTimeAsync(startTicks).ConfigureAwait(false);
+
+        return response;
+    }
+
+    private static async Task<Results<Ok<AccountLoginResponse>, ProblemHttpResult>> HandleLoginCoreAsync(
+        AccountLoginRequest request,
+        SignInManager<GranitUser> signInManager,
+        UserManager<GranitUser> userManager,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
+    {
         ILogger logger = httpContext.RequestServices
             .GetRequiredService<ILoggerFactory>()
             .CreateLogger("Granit.Identity.Local.Endpoints.AccountLoginEndpoints");
@@ -78,9 +102,8 @@ internal static partial class AccountLoginEndpoints
 
         if (user is null)
         {
-            // Perform a dummy hash to prevent timing attacks: without this,
-            // an attacker can distinguish existing from non-existing accounts
-            // by measuring response time (~10ms vs ~300ms with BCrypt/Argon2).
+            // Perform a dummy hash so BCrypt/Argon2 CPU cost is incurred even
+            // when the user does not exist (covers the bulk of the timing gap).
             PerformDummyPasswordHash(httpContext);
 
             LogLoginFailed(logger, request.Login, "user_not_found");
@@ -230,6 +253,14 @@ internal static partial class AccountLoginEndpoints
     // ──── Timing attack mitigation ────
 
     /// <summary>
+    /// Minimum response time range (milliseconds) for the login endpoint.
+    /// A random floor between these bounds is picked per request so that
+    /// an attacker cannot fingerprint a fixed threshold.
+    /// </summary>
+    private const int MinResponseFloorMs = 500;
+    private const int MaxResponseFloorMs = 700;
+
+    /// <summary>
     /// Pre-computed BCrypt/Argon2 hash used for dummy verification when the user
     /// does not exist. The actual password value is irrelevant — what matters is
     /// that VerifyHashedPassword runs the same hashing algorithm as a real check,
@@ -247,6 +278,24 @@ internal static partial class AccountLoginEndpoints
         // Use a random password each time to introduce natural timing jitter
         // and avoid a constant, fingerprint-able verification pattern.
         hasher.VerifyHashedPassword(null!, DummyPasswordHash, RandomNumberGenerator.GetHexString(32));
+    }
+
+    /// <summary>
+    /// Pads the response time to a randomized minimum floor (500-700ms) so that
+    /// all failure paths (user not found, wrong password, locked out) are
+    /// indistinguishable by timing. If the handler already took longer than the
+    /// floor, no delay is added.
+    /// </summary>
+    private static async Task EnforceMinimumResponseTimeAsync(long startTicks)
+    {
+        int floorMs = RandomNumberGenerator.GetInt32(MinResponseFloorMs, MaxResponseFloorMs + 1);
+        TimeSpan elapsed = Stopwatch.GetElapsedTime(startTicks);
+        int remainingMs = floorMs - (int)elapsed.TotalMilliseconds;
+
+        if (remainingMs > 0)
+        {
+            await Task.Delay(remainingMs).ConfigureAwait(false);
+        }
     }
 
     // ──── Lockout event publishing ────
