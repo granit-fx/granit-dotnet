@@ -35,8 +35,9 @@ public sealed class ImportPreviewServiceTests
         _parser.ReadPreviewAsync(Arg.Any<Stream>(), Arg.Any<FileParsingOptions>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new List<string[]> { new[] { "Alice", "alice@test.com" }, new[] { "Bob", "bob@test.com" } });
 
+        byte[] csvBytes = System.Text.Encoding.UTF8.GetBytes("Name,Email\nAlice,alice@test.com");
         _fileProvider.OpenAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(_ => Task.FromResult<Stream>(new MemoryStream(System.Text.Encoding.UTF8.GetBytes("Name,Email\nAlice,alice@test.com"))));
+            .Returns(_ => Task.FromResult<Stream>(new MemoryStream(csvBytes)));
 
         var services = new ServiceCollection();
         services.AddSingleton<IImportDefinitionDescriptor>(_descriptor);
