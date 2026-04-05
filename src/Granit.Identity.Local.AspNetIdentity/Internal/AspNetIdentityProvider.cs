@@ -110,7 +110,9 @@ internal sealed partial class AspNetIdentityProvider(
 
         if (enabled)
         {
+            user.ConsecutiveLockouts = 0;
             await _userManager.SetLockoutEndDateAsync(user, null).ConfigureAwait(false);
+            await _userManager.UpdateAsync(user).ConfigureAwait(false);
         }
         else
         {

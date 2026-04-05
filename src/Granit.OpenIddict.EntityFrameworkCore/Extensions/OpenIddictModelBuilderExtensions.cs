@@ -80,6 +80,8 @@ public static class OpenIddictModelBuilderExtensions
 
             b.HasQueryFilter(Granit.Persistence.EntityFrameworkCore.GranitFilterNames.SoftDelete, filter);
 
+            b.Property(u => u.ConsecutiveLockouts).HasDefaultValue(0);
+
             b.HasIndex(u => u.TenantId)
                 .HasDatabaseName($"ix_{prefix}users_tenant_id");
         });

@@ -1,0 +1,107 @@
+using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Options;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+namespace Granit.Identity.Local.AspNetIdentity.Internal;
+
+/// <summary>
+/// Custom <see cref="UserManager{TUser}"/> that implements exponential backoff lockout.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Overrides <see cref="AccessFailedAsync"/> to compute an exponentially increasing
+/// lockout duration based on <see cref="GranitUser.ConsecutiveLockouts"/>. The stock
+/// <see cref="SignInManager{TUser}"/> calls <c>AccessFailedAsync</c> on each failed
+/// login — this is the single, stable extension point that avoids overriding
+/// <c>SignInManager</c> (fragile across .NET upgrades).
+/// </para>
+/// <para>
+/// The formula is: <c>min(BaseDuration * ExponentialBase^(n-1), MaxDuration)</c>
+/// where <c>n</c> is the consecutive lockout count. The counter resets on successful
+/// login (<see cref="ResetAccessFailedCountAsync"/>), password reset, or admin unlock.
+/// </para>
+/// </remarks>
+#pragma warning disable GRSEC001 // TimeProvider not available in UserManager constructor — DateTimeOffset.UtcNow is acceptable here
+public class GranitUserManager(
+    IUserStore<GranitUser> store,
+    IOptions<IdentityOptions> optionsAccessor,
+    IPasswordHasher<GranitUser> passwordHasher,
+    IEnumerable<IUserValidator<GranitUser>> userValidators,
+    IEnumerable<IPasswordValidator<GranitUser>> passwordValidators,
+    ILookupNormalizer keyNormalizer,
+    IdentityErrorDescriber errors,
+    IServiceProvider services,
+    ILogger<GranitUserManager> logger,
+    IOptions<GranitLockoutOptions> lockoutOptions)
+    : UserManager<GranitUser>(store, optionsAccessor, passwordHasher,
+        userValidators, passwordValidators, keyNormalizer, errors, services, logger)
+{
+    private readonly GranitLockoutOptions _lockoutOptions = lockoutOptions.Value;
+
+    /// <inheritdoc/>
+    public override async Task<IdentityResult> AccessFailedAsync(GranitUser user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        IdentityResult result = await base.AccessFailedAsync(user).ConfigureAwait(false);
+        if (!result.Succeeded)
+        {
+            return result;
+        }
+
+        // base.AccessFailedAsync sets LockoutEnd when AccessFailedCount reaches max.
+        // Detect whether a lockout was just triggered by checking LockoutEnd.
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        DateTimeOffset? lockoutEnd = await GetLockoutEndDateAsync(user).ConfigureAwait(false);
+
+        if (lockoutEnd is null || lockoutEnd <= now)
+        {
+            return result;
+        }
+
+        // A lockout was triggered — apply exponential backoff
+        user.ConsecutiveLockouts++;
+
+        TimeSpan duration = ComputeLockoutDuration(user.ConsecutiveLockouts);
+        await SetLockoutEndDateAsync(user, now + duration).ConfigureAwait(false);
+        await UpdateAsync(user).ConfigureAwait(false);
+
+        return result;
+    }
+
+    /// <inheritdoc/>
+    public override async Task<IdentityResult> ResetAccessFailedCountAsync(GranitUser user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user.ConsecutiveLockouts > 0)
+        {
+            user.ConsecutiveLockouts = 0;
+            await UpdateAsync(user).ConfigureAwait(false);
+        }
+
+        return await base.ResetAccessFailedCountAsync(user).ConfigureAwait(false);
+    }
+
+    internal TimeSpan ComputeLockoutDuration(int consecutiveLockouts)
+    {
+        if (consecutiveLockouts <= 0)
+        {
+            return _lockoutOptions.BaseLockoutDuration;
+        }
+
+        double multiplier = Math.Pow(_lockoutOptions.ExponentialBase, consecutiveLockouts - 1);
+        double totalSeconds = _lockoutOptions.BaseLockoutDuration.TotalSeconds * multiplier;
+
+        // Guard against overflow
+        if (totalSeconds > _lockoutOptions.MaxLockoutDuration.TotalSeconds)
+        {
+            return _lockoutOptions.MaxLockoutDuration;
+        }
+
+        return TimeSpan.FromSeconds(totalSeconds);
+    }
+}
+#pragma warning restore GRSEC001

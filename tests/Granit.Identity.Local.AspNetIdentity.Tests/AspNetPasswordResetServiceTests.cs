@@ -84,9 +84,35 @@ public sealed class AspNetPasswordResetServiceTests
         var user = new GranitUser { Id = Guid.NewGuid() };
         _userManager.FindByIdAsync(user.Id.ToString()).Returns(user);
         _userManager.ResetPasswordAsync(user, "token", "NewP@ss1").Returns(IdentityResult.Success);
+        _userManager.SetLockoutEndDateAsync(user, Arg.Any<DateTimeOffset?>()).Returns(IdentityResult.Success);
 
         await Should.NotThrowAsync(
             () => _sut.ResetPasswordAsync(user.Id.ToString(), "token", "NewP@ss1", TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task ResetPasswordAsync_LockedOutUser_ClearsLockout()
+    {
+        var user = new GranitUser { Id = Guid.NewGuid(), LockoutEnd = DateTimeOffset.UtcNow.AddHours(1) };
+        _userManager.FindByIdAsync(user.Id.ToString()).Returns(user);
+        _userManager.ResetPasswordAsync(user, "token", "NewP@ss1").Returns(IdentityResult.Success);
+        _userManager.SetLockoutEndDateAsync(user, Arg.Any<DateTimeOffset?>()).Returns(IdentityResult.Success);
+
+        await _sut.ResetPasswordAsync(user.Id.ToString(), "token", "NewP@ss1", TestContext.Current.CancellationToken);
+
+        await _userManager.Received(1).SetLockoutEndDateAsync(user, null);
+    }
+
+    [Fact]
+    public async Task ResetPasswordAsync_NotLockedOutUser_DoesNotCallSetLockout()
+    {
+        var user = new GranitUser { Id = Guid.NewGuid() };
+        _userManager.FindByIdAsync(user.Id.ToString()).Returns(user);
+        _userManager.ResetPasswordAsync(user, "token", "NewP@ss1").Returns(IdentityResult.Success);
+
+        await _sut.ResetPasswordAsync(user.Id.ToString(), "token", "NewP@ss1", TestContext.Current.CancellationToken);
+
+        await _userManager.DidNotReceive().SetLockoutEndDateAsync(Arg.Any<GranitUser>(), Arg.Any<DateTimeOffset?>());
     }
 
     [Fact]

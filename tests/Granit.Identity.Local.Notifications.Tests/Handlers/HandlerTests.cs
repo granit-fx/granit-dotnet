@@ -144,34 +144,23 @@ public sealed class HandlerTests
     // --- AccountLockedHandler ---
 
     [Fact]
-    public async Task AccountLocked_PublishesWithFailedAttempts()
+    public async Task AccountLocked_PublishesWithFailedAttemptsAndResetLinkAndExpiry()
     {
-        SetupUser("alice@test.com");
+        DateTimeOffset lockoutEnd = new(2026, 4, 5, 14, 30, 0, TimeSpan.Zero);
         var evt = new AccountLockedEto(
-            Guid.Parse("00000000-0000-0000-0000-000000000001"), 5, null);
+            Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            "alice@test.com", 5, "lockout-reset-token", lockoutEnd, null);
 
-        await AccountLockedHandler.HandleAsync(evt, _userReader, _publisher, TestContext.Current.CancellationToken);
+        await AccountLockedHandler.HandleAsync(evt, _options, _publisher, TestContext.Current.CancellationToken);
 
         await _publisher.Received(1).PublishAsync(
             AccountLockedNotificationType.Instance,
-            Arg.Is<AccountLockedNotificationData>(d => d.FailedAttempts == 5),
+            Arg.Is<AccountLockedNotificationData>(d =>
+                d.FailedAttempts == 5 &&
+                d.Email == "alice@test.com" &&
+                d.ResetLink.Contains("lockout-reset-token") &&
+                d.LockoutExpiresAt == lockoutEnd),
             Arg.Is<IReadOnlyList<string>>(r => r.Count == 1),
-            Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task AccountLocked_UserNotFound_DoesNotPublish()
-    {
-        _userReader.GetUserAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((IIdentityUser?)null);
-        var evt = new AccountLockedEto(Guid.NewGuid(), 3, null);
-
-        await AccountLockedHandler.HandleAsync(evt, _userReader, _publisher, TestContext.Current.CancellationToken);
-
-        await _publisher.DidNotReceiveWithAnyArgs().PublishAsync(
-            Arg.Any<NotificationType<AccountLockedNotificationData>>(),
-            Arg.Any<AccountLockedNotificationData>(),
-            Arg.Any<IReadOnlyList<string>>(),
             Arg.Any<CancellationToken>());
     }
 

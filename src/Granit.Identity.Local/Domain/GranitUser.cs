@@ -39,6 +39,12 @@ public class GranitUser : IdentityUser<Guid>, IMultiTenant, IIdentityUser, IHasE
     /// <summary>Gets or sets the tenant identifier for multi-tenant isolation.</summary>
     public Guid? TenantId { get; set; }
 
+    /// <summary>
+    /// Gets or sets the number of consecutive lockouts for exponential backoff calculation.
+    /// Reset to zero on successful login, password reset, or admin unlock.
+    /// </summary>
+    public int ConsecutiveLockouts { get; set; }
+
     /// <summary>Gets or sets a value indicating whether the user has been soft-deleted.</summary>
     public bool IsDeleted { get; set; }
 

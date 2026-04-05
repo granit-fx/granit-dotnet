@@ -1,8 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
+using Granit.Events;
 using Granit.Identity;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
+using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -940,9 +942,15 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Login_LockedOut_Returns423()
+    public async Task Login_LockedOut_Returns401AndPublishesEvent()
     {
-        var fakeUser = new GranitUser { Id = AccountEndpointsTestServer.TestUserId };
+        DateTimeOffset lockoutEnd = DateTimeOffset.UtcNow.AddMinutes(5);
+        var fakeUser = new GranitUser
+        {
+            Id = AccountEndpointsTestServer.TestUserId,
+            Email = "locked@example.com",
+            LockoutEnd = lockoutEnd,
+        };
 
         _server.UserManager
             .FindByEmailAsync("locked@example.com")
@@ -952,12 +960,25 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .PasswordSignInAsync(fakeUser, "MyP@ss1!", false, true)
             .Returns(Microsoft.AspNetCore.Identity.SignInResult.LockedOut);
 
+        _server.UserManager
+            .GeneratePasswordResetTokenAsync(fakeUser)
+            .Returns("reset-token-abc");
+
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
             "/api/account/login",
             new AccountLoginRequest("locked@example.com", "MyP@ss1!"),
             TestContext.Current.CancellationToken);
 
-        response.StatusCode.ShouldBe(HttpStatusCode.Locked);
+        // Returns 401 (same as invalid credentials) to prevent account enumeration
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+
+        await _server.EventBus.Received(1).PublishAsync(
+            Arg.Is<AccountLockedEto>(e =>
+                e.UserId == AccountEndpointsTestServer.TestUserId &&
+                e.Email == "locked@example.com" &&
+                e.ResetToken == "reset-token-abc" &&
+                e.LockoutEndUtc == lockoutEnd),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -1197,18 +1218,43 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task TwoFactorLogin_LockedOut_Returns423()
+    public async Task TwoFactorLogin_LockedOut_Returns401AndPublishesEvent()
     {
+        DateTimeOffset lockoutEnd = DateTimeOffset.UtcNow.AddMinutes(10);
+        var fakeUser = new GranitUser
+        {
+            Id = AccountEndpointsTestServer.TestUserId,
+            Email = "2fa-locked@example.com",
+            LockoutEnd = lockoutEnd,
+        };
+
         _server.SignInManager
             .TwoFactorAuthenticatorSignInAsync("123456", false, false)
             .Returns(Microsoft.AspNetCore.Identity.SignInResult.LockedOut);
+
+        _server.SignInManager
+            .GetTwoFactorAuthenticationUserAsync()
+            .Returns(fakeUser);
+
+        _server.UserManager
+            .GeneratePasswordResetTokenAsync(fakeUser)
+            .Returns("reset-token-2fa");
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
             "/api/account/login/two-factor",
             new AccountTwoFactorLoginRequest("123456"),
             TestContext.Current.CancellationToken);
 
-        response.StatusCode.ShouldBe(HttpStatusCode.Locked);
+        // Returns 401 (same as invalid code) to prevent account enumeration
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+
+        await _server.EventBus.Received(1).PublishAsync(
+            Arg.Is<AccountLockedEto>(e =>
+                e.UserId == AccountEndpointsTestServer.TestUserId &&
+                e.Email == "2fa-locked@example.com" &&
+                e.ResetToken == "reset-token-2fa" &&
+                e.LockoutEndUtc == lockoutEnd),
+            Arg.Any<CancellationToken>());
     }
 
     // -------------------------------------------------------------------------

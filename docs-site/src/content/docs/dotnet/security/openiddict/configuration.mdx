@@ -444,13 +444,44 @@ Configured by `AddGranitOpenIddict()`:
 
 ```csharp
 options.User.RequireUniqueEmail = true;
-options.Lockout.MaxFailedAccessAttempts = 5;
-options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+options.Lockout.MaxFailedAccessAttempts = 5;   // from GranitLockoutOptions
+options.Lockout.DefaultLockoutTimeSpan = ...;  // from GranitLockoutOptions.BaseLockoutDuration
 options.SignIn.RequireConfirmedEmail = true;
 ```
 
-These are build-time defaults. The `MaxLoginAttempts` runtime setting
-(`OpenIddict.MaxLoginAttempts`) overrides `MaxFailedAccessAttempts` per-tenant.
+These values are read from `GranitLockoutOptions` (section `Identity:Lockout`).
+The `MaxLoginAttempts` runtime setting (`OpenIddict.MaxLoginAttempts`) overrides
+`MaxFailedAccessAttempts` per-tenant.
+
+### Lockout with exponential backoff
+
+Granit replaces ASP.NET Core Identity's fixed lockout duration with **exponential
+backoff** via `GranitUserManager`. Each consecutive lockout doubles the duration,
+capped at `MaxLockoutDuration` (default: 2 hours).
+
+```json
+{
+  "Identity": {
+    "Lockout": {
+      "MaxFailedAccessAttempts": 5,
+      "BaseLockoutDuration": "00:05:00",
+      "MaxLockoutDuration": "02:00:00",
+      "ExponentialBase": 2.0
+    }
+  }
+}
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `MaxFailedAccessAttempts` | `int` | `5` | Failed attempts before lockout. |
+| `BaseLockoutDuration` | `TimeSpan` | `5 min` | Duration of the first lockout. |
+| `MaxLockoutDuration` | `TimeSpan` | `2 hours` | Maximum lockout duration (cap). |
+| `ExponentialBase` | `double` | `2.0` | Multiplier for each consecutive lockout. |
+
+See [Account lockout](/dotnet/security/openiddict/account-management-api/#account-lockout)
+for the full security architecture (anti-enumeration, timing attack prevention,
+self-service unlock).
 
 ## Related pages
 

@@ -522,7 +522,7 @@ identity lifecycle events and dispatch notifications via `Granit.Notifications`.
 | `Security.PasswordReset` | Email | No | Forgot password flow |
 | `Security.EmailConfirmation` | Email | No | Registration / resend |
 | `Security.PasswordChanged` | Email | No | Password change (compromise alert) |
-| `Security.AccountLocked` | Email, InApp | No | Failed login attempts |
+| `Security.AccountLocked` | Email, InApp | No | Failed login attempts (includes password reset link for self-service unlock) |
 | `Security.TwoFactorChanged` | Email | No | 2FA enabled/disabled |
 | `Security.EmailChangeAlert` | Email | No | Email change alert (old address) |
 | `Security.EmailChangeConfirmation` | Email | No | Email change confirm (new address) |
@@ -548,9 +548,24 @@ public class AppModule : GranitModule { }
 }
 ```
 
-Templates are embedded in the package (153 files, 9 types x 17 cultures) and
-wrapped by `Layout.Email` via the layout registry. Tenants can override any
-template or the layout via the database template store.
+Templates are embedded in the package (9 types x 18 cultures) and wrapped by
+`Layout.Email` via the layout registry. Tenants can override any template or
+the layout via the database template store.
+
+### Account lockout notification
+
+The `Security.AccountLocked` notification is sent when a user's account is locked
+after exceeding the maximum number of failed login attempts. The email includes:
+
+- The number of failed attempts that triggered the lockout
+- The exact lockout expiry date (formatted per the user's locale via Scriban)
+- A **"Reset my password"** button with a one-time reset token
+
+Resetting the password via this link **immediately unlocks the account** and resets
+the exponential backoff counter — the user never needs to wait or contact support.
+
+See [Account lockout](/dotnet/security/openiddict/account-management-api/#account-lockout)
+for the complete lockout security architecture.
 
 ### Email change flow
 
@@ -578,7 +593,7 @@ new email — no additional database column is needed.
 | Endpoints | `IdentityEndpointsOptions`, `IdentityWebhookOptions` | `Granit.Identity.Endpoints` |
 | Notifications | `WelcomeNotificationType`, `PasswordResetNotificationType`, `EmailConfirmationNotificationType`, `PasswordChangedNotificationType`, `AccountLockedNotificationType`, `TwoFactorChangedNotificationType`, `EmailChangeAlertNotificationType`, `EmailChangeConfirmationNotificationType`, `ImpersonationAlertNotificationType` | `Granit.Identity.Local.Notifications` |
 | Notifications options | `IdentityNotificationOptions` | `Granit.Identity.Local.Notifications` |
-| Events | `PasswordChangedEto`, `AccountLockedEto`, `TwoFactorChangedEto`, `EmailConfirmationRequestedEto`, `EmailChangeRequestedEto` | `Granit.Identity.Local` |
+| Events | `PasswordChangedEto`, `AccountLockedEto` (includes `LockoutEndUtc` + `ResetToken`), `TwoFactorChangedEto`, `EmailConfirmationRequestedEto`, `EmailChangeRequestedEto` | `Granit.Identity.Local` |
 | Extensions | `AddGranitIdentity()`, `AddIdentityProvider<T>()`, `AddGranitIdentityKeycloak()`, `AddGranitIdentityCognito()`, `AddGranitIdentityGoogleCloud()`, `AddGranitGoogleCloudAuthentication()`, `AddGranitIdentityEntityFrameworkCore<T>()`, `AddGranitIdentityEndpoints()`, `MapGranitIdentityUserCache()` | — |
 
 ## See also

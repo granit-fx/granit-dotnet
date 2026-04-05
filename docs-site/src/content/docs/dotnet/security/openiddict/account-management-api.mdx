@@ -55,8 +55,18 @@ to `/connect/authorize` after successful authentication.
 - `200 OK` with `{ "succeeded": true }` on success
 - `200 OK` with `{ "succeeded": false, "requiresTwoFactor": true }` when 2FA is
   enabled -- the client must call the two-factor login endpoint next
-- `401 Unauthorized` for invalid credentials or unconfirmed email
-- `423 Locked` when the account is locked out after too many failed attempts
+- `401 Unauthorized` for invalid credentials, unconfirmed email, **or locked-out
+  account**
+
+:::note[Anti-enumeration: no 423 status code]
+The login endpoint **always returns 401** regardless of the failure reason (wrong
+password, unknown account, or locked-out account). This prevents attackers from
+enumerating valid accounts by observing status code changes after repeated attempts.
+
+When a lockout occurs, the user is notified **exclusively via email** with a
+password reset link to immediately unlock the account. See
+[Account lockout](#account-lockout) below for details.
+:::
 
 Rate-limited via the `authentication` policy (soft dependency on
 `Granit.RateLimiting`).
@@ -96,6 +106,132 @@ Spaces and dashes are automatically stripped from the code.
 - `401 Unauthorized` if the code is invalid or the 2FA session expired
 
 Rate-limited via the `authentication` policy.
+
+## Account lockout
+
+Granit implements a multi-layered brute-force protection strategy aligned with
+[OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
+and [NIST SP 800-63B](https://pages.nist.gov/800-63-3/sp800-63b.html) recommendations.
+
+### Exponential backoff
+
+Instead of a fixed lockout duration, Granit uses **exponential backoff** — each
+consecutive lockout doubles the previous duration, capped at a configurable maximum.
+This prevents both brute-force attacks and denial-of-service via intentional lockout.
+
+| Consecutive lockout | Duration |
+|---------------------|----------|
+| 1st (after 5 failed attempts) | 5 minutes |
+| 2nd | 10 minutes |
+| 3rd | 20 minutes |
+| 4th | 40 minutes |
+| 5th | 1 hour 20 minutes |
+| 6th+ | 2 hours (cap) |
+
+Formula: `min(BaseDuration × 2^(n-1), MaxDuration)` where `n` is the consecutive
+lockout count.
+
+**Configuration** (`appsettings.json`):
+
+```json
+{
+  "Identity": {
+    "Lockout": {
+      "MaxFailedAccessAttempts": 5,
+      "BaseLockoutDuration": "00:05:00",
+      "MaxLockoutDuration": "02:00:00",
+      "ExponentialBase": 2.0
+    }
+  }
+}
+```
+
+The `GranitLockoutOptions` class is bound to `Identity:Lockout`. All values have
+sensible defaults — zero configuration is needed for most deployments.
+
+### Automatic reset
+
+The exponential counter (`ConsecutiveLockouts`) resets to zero when:
+
+- **Successful login** — the legitimate user logs in normally
+- **Password reset** — the user clicks the reset link in the lockout email
+- **Admin unlock** — an administrator re-enables the account
+
+This ensures a legitimate user who was targeted by an attacker is not permanently
+penalized after regaining access.
+
+### Security measures
+
+Granit applies four complementary protections on the login endpoint:
+
+#### 1. Anti-enumeration (generic 401)
+
+The login endpoint **never reveals whether an account exists**. All failure
+scenarios return the same `401 Unauthorized` with `"Invalid credentials."`:
+
+- Unknown email → 401
+- Wrong password → 401
+- Locked-out account → 401
+- Unconfirmed email → 401
+
+:::caution[Why no 423 Locked?]
+A `423 Locked` status code would let an attacker confirm that an account exists
+by sending 5 wrong passwords and observing the status code change from `401` to
+`423`. This is an **account enumeration vulnerability** (CWE-204). Granit returns
+`401` for all cases, matching the behavior of GitHub, Google, and Stripe.
+:::
+
+#### 2. Timing attack prevention (dummy hash)
+
+When the user is not found, the endpoint performs a **dummy password hash** to
+ensure consistent response time (~300ms) regardless of account existence. Without
+this, an attacker could distinguish existing accounts by measuring response latency
+(10ms for missing accounts vs. 300ms for BCrypt/Argon2 verification).
+
+```csharp
+// A random password is verified against a pre-computed hash each time,
+// adding natural timing jitter to prevent fingerprinting.
+hasher.VerifyHashedPassword(null!, DummyPasswordHash, RandomNumberGenerator.GetHexString(32));
+```
+
+#### 3. Rate limiting
+
+All authentication endpoints use the `authentication` rate limiting policy
+(via `Granit.RateLimiting`), which throttles requests per tenant. This provides
+IP-level protection when combined with an upstream WAF (Cloudflare, Nginx).
+
+#### 4. Lockout email with self-service unlock
+
+When a lockout is triggered, an `AccountLockedEto` integration event is published.
+The notification handler sends an email containing:
+
+- The **number of failed attempts**
+- The **lockout expiry date** (formatted per the user's locale)
+- A **"Reset my password" button** with a one-time token
+
+Clicking the reset link immediately unlocks the account — the user never needs to
+wait for the lockout to expire or contact support.
+
+:::tip[Self-service is key]
+OWASP recommends that locked-out users should be able to regain access without
+admin intervention. The password reset flow is the self-service escape hatch:
+it resets `AccessFailedCount`, clears `LockoutEnd`, and resets
+`ConsecutiveLockouts` to zero.
+:::
+
+### Implementation details
+
+The exponential backoff is implemented via `GranitUserManager` — a custom
+`UserManager<GranitUser>` that overrides `AccessFailedAsync()`:
+
+1. `base.AccessFailedAsync()` increments the failed count and triggers lockout
+   at the threshold
+2. If lockout was triggered, `ConsecutiveLockouts` is incremented
+3. The lockout duration is recalculated using the exponential formula
+4. `LockoutEnd` is overwritten with the new, longer duration
+
+`GranitUser` stores the `ConsecutiveLockouts` counter (persisted in the
+`openiddict_users` table, defaults to 0).
 
 ## Registration and email confirmation
 

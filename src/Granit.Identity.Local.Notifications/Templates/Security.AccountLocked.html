@@ -1,4 +1,13 @@
 <p>Hi,</p>
 <p>Your account <strong>{{ model.email | html.escape }}</strong> has been locked after <strong>{{ model.failed_attempts }}</strong> consecutive failed login attempts.</p>
-<p>This is a security measure to protect your account. The lockout will expire automatically.</p>
-<p>If these login attempts were not made by you, we recommend resetting your password as soon as the lockout expires.</p>
+<p>This is a security measure to protect your account. The lockout will expire on <strong>{{ model.lockout_expires_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>.</p>
+<p>If these login attempts were not made by you, you can reset your password to immediately unlock your account:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.reset_link }}" class="btn">Reset my password</a>
+</p>
+<p>If you didn't make these attempts and prefer not to take action, the lockout will expire automatically.</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  If the button doesn't work, copy and paste the following link into your browser:<br>
+  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>
+</p>

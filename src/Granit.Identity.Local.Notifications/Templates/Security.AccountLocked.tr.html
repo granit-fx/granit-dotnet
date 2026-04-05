@@ -1,4 +1,13 @@
 <p>Merhaba,</p>
 <p>Hesabınız <strong>{{ model.email | html.escape }}</strong>, art arda <strong>{{ model.failed_attempts }}</strong> başarısız giriş denemesinden sonra kilitlendi.</p>
-<p>Bu, hesabınızı korumaya yönelik bir güvenlik önlemidir. Kilitleme otomatik olarak sona erecektir.</p>
-<p>Bu giriş denemeleri sizin tarafınızdan yapılmadıysa, kilitleme süresi dolduğunda parolanızı sıfırlamanızı öneririz.</p>
+<p>Bu, hesabınızı korumaya yönelik bir güvenlik önlemidir. Kilitleme <strong>{{ model.lockout_expires_at | date.to_string '%d.%m.%Y saat %H:%M UTC' }}</strong> tarihinde sona erecektir.</p>
+<p>Bu giriş denemeleri sizin tarafınızdan yapılmadıysa, hesabınızı hemen açmak için parolanızı sıfırlayabilirsiniz:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.reset_link }}" class="btn">Parolamı sıfırla</a>
+</p>
+<p>Bu denemeleri yapmadıysanız ve işlem yapmak istemiyorsanız, kilitleme otomatik olarak sona erecektir.</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  Düğme çalışmıyorsa, aşağıdaki bağlantıyı kopyalayıp tarayıcınıza yapıştırın:<br>
+  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>
+</p>

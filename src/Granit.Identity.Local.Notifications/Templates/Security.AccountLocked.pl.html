@@ -1,4 +1,13 @@
 <p>Witaj,</p>
 <p>Twoje konto <strong>{{ model.email | html.escape }}</strong> zostało zablokowane po <strong>{{ model.failed_attempts }}</strong> kolejnych nieudanych próbach logowania.</p>
-<p>Jest to środek bezpieczeństwa mający na celu ochronę Twojego konta. Blokada wygaśnie automatycznie.</p>
-<p>Jeśli te próby logowania nie zostały wykonane przez Ciebie, zalecamy zresetowanie hasła zaraz po wygaśnięciu blokady.</p>
+<p>Jest to środek bezpieczeństwa mający na celu ochronę Twojego konta. Blokada wygaśnie <strong>{{ model.lockout_expires_at | date.to_string '%d.%m.%Y o %H:%M UTC' }}</strong>.</p>
+<p>Jeśli te próby logowania nie zostały wykonane przez Ciebie, możesz zresetować hasło, aby natychmiast odblokować swoje konto:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.reset_link }}" class="btn">Zresetuj moje hasło</a>
+</p>
+<p>Jeśli nie wykonałeś tych prób i wolisz nie podejmować działań, blokada wygaśnie automatycznie.</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  Jeśli przycisk nie działa, skopiuj i wklej poniższy link do przeglądarki:<br>
+  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>
+</p>

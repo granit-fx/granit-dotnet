@@ -1,4 +1,13 @@
 <p>Hola,</p>
 <p>Su cuenta <strong>{{ model.email | html.escape }}</strong> ha sido bloqueada después de <strong>{{ model.failed_attempts }}</strong> intentos de inicio de sesión fallidos consecutivos.</p>
-<p>Esta es una medida de seguridad para proteger su cuenta. El bloqueo expirará automáticamente.</p>
-<p>Si estos intentos de inicio de sesión no fueron realizados por usted, le recomendamos restablecer su contraseña tan pronto como expire el bloqueo.</p>
+<p>Esta es una medida de seguridad para proteger su cuenta. El bloqueo expirará el <strong>{{ model.lockout_expires_at | date.to_string '%d/%m/%Y a las %H:%M UTC' }}</strong>.</p>
+<p>Si estos intentos de inicio de sesión no fueron realizados por usted, puede restablecer su contraseña para desbloquear su cuenta de inmediato:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.reset_link }}" class="btn">Restablecer mi contraseña</a>
+</p>
+<p>Si no realizó estos intentos y prefiere no tomar medidas, el bloqueo expirará automáticamente.</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  Si el botón no funciona, copie y pegue el siguiente enlace en su navegador:<br>
+  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>
+</p>

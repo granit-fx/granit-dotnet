@@ -1,4 +1,13 @@
 <p>こんにちは、</p>
 <p>アカウント <strong>{{ model.email | html.escape }}</strong> は、連続 <strong>{{ model.failed_attempts }}</strong> 回のログイン失敗によりロックされました。</p>
-<p>これはアカウントを保護するためのセキュリティ対策です。ロックは自動的に解除されます。</p>
-<p>これらのログイン試行が身に覚えのないものである場合は、ロックが解除され次第パスワードをリセットすることをお勧めします。</p>
+<p>これはアカウントを保護するためのセキュリティ対策です。ロックは <strong>{{ model.lockout_expires_at | date.to_string '%Y年%m月%d日 %H:%M UTC' }}</strong> に解除されます。</p>
+<p>これらのログイン試行が身に覚えのないものである場合は、パスワードをリセットしてアカウントを即座にロック解除できます：</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.reset_link }}" class="btn">パスワードをリセット</a>
+</p>
+<p>これらの試行を行っておらず、対応を希望しない場合、ロックは自動的に解除されます。</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  ボタンが機能しない場合は、以下のリンクをコピーしてブラウザに貼り付けてください：<br>
+  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>
+</p>

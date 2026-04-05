@@ -28,4 +28,7 @@ public sealed class AccountLockedNotificationType
 /// </summary>
 /// <param name="Email">The user's email address.</param>
 /// <param name="FailedAttempts">Number of consecutive failed login attempts that triggered the lockout.</param>
-public sealed record AccountLockedNotificationData(string Email, int FailedAttempts);
+/// <param name="ResetLink">The password reset URL for self-service account unlock.</param>
+/// <param name="LockoutExpiresAt">UTC timestamp when the lockout expires (for display in user's timezone).</param>
+public sealed record AccountLockedNotificationData(
+    string Email, int FailedAttempts, string ResetLink, DateTimeOffset LockoutExpiresAt);

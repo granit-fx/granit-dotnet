@@ -1,4 +1,13 @@
 <p>Hej,</p>
 <p>Ditt konto <strong>{{ model.email | html.escape }}</strong> har låsts efter <strong>{{ model.failed_attempts }}</strong> på varandra följande misslyckade inloggningsförsök.</p>
-<p>Detta är en säkerhetsåtgärd för att skydda ditt konto. Låsningen upphör automatiskt.</p>
-<p>Om dessa inloggningsförsök inte gjordes av dig rekommenderar vi att du återställer ditt lösenord så snart låsningen upphör.</p>
+<p>Detta är en säkerhetsåtgärd för att skydda ditt konto. Låsningen upphör <strong>{{ model.lockout_expires_at | date.to_string '%Y-%m-%d kl. %H:%M UTC' }}</strong>.</p>
+<p>Om dessa inloggningsförsök inte gjordes av dig kan du återställa ditt lösenord för att omedelbart låsa upp ditt konto:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ model.reset_link }}" class="btn">Återställ mitt lösenord</a>
+</p>
+<p>Om du inte gjorde dessa försök och föredrar att inte vidta åtgärder kommer låsningen att upphöra automatiskt.</p>
+<hr class="divider" aria-hidden="true">
+<p style="font-size: 13px; color: #4b5563;">
+  Om knappen inte fungerar, kopiera och klistra in följande länk i din webbläsare:<br>
+  <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>
+</p>

@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Options;
 using Granit.Identity.Local.Services;
 using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.EntityFrameworkCore.Internal;
@@ -45,13 +46,19 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
         // Register the internal DbContext ensurer for --migrate table auto-creation
         builder.Services.AddInternalDbContextEnsurer<OpenIddictDbContext>();
 
-        // 2. Register ASP.NET Core Identity
+        // 2. Bind lockout options (exponential backoff)
+        GranitLockoutOptions lockoutOptions = new();
+        builder.Configuration.GetSection(GranitLockoutOptions.SectionName).Bind(lockoutOptions);
+        builder.Services.Configure<GranitLockoutOptions>(
+            builder.Configuration.GetSection(GranitLockoutOptions.SectionName));
+
+        // 3. Register ASP.NET Core Identity
         builder.Services
             .AddIdentity<GranitUser, GranitRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
-                options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+                options.Lockout.MaxFailedAccessAttempts = lockoutOptions.MaxFailedAccessAttempts;
+                options.Lockout.DefaultLockoutTimeSpan = lockoutOptions.BaseLockoutDuration;
                 options.SignIn.RequireConfirmedEmail = true;
             })
             .AddEntityFrameworkStores<OpenIddictDbContext>()

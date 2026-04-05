@@ -189,6 +189,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(timeProvider);
         builder.Services.AddSingleton(signInManager);
         builder.Services.AddSingleton(userManager);
+        builder.Services.AddSingleton<IPasswordHasher<GranitUser>, PasswordHasher<GranitUser>>();
 
         // Options
         builder.Services.AddSingleton(

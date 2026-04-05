@@ -49,6 +49,17 @@ internal sealed class AspNetPasswordResetService(
             throw new InvalidOperationException(
                 $"Password reset failed: {string.Join(", ", result.Errors.Select(e => e.Description))}");
         }
+
+        // ResetPasswordAsync resets AccessFailedCount but does NOT clear LockoutEnd.
+        // Explicitly unlock so a locked-out user regains access after resetting their password.
+        // Also reset the exponential backoff counter to prevent the next typo from
+        // triggering a long lockout duration.
+        if (user.LockoutEnd is not null)
+        {
+            user.ConsecutiveLockouts = 0;
+            await userManager.SetLockoutEndDateAsync(user, null).ConfigureAwait(false);
+            await userManager.UpdateAsync(user).ConfigureAwait(false);
+        }
     }
 }
 #pragma warning restore GRSEC003
