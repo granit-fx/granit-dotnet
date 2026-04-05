@@ -779,7 +779,8 @@
       "granit.templating": {
         "type": "Project",
         "dependencies": {
-          "Granit.Timing": "[0.1.0-dev, )"
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Granit.Workflow": "[0.1.0-dev, )"
         }
       },
       "granit.templating.entityframeworkcore": {
@@ -789,6 +790,7 @@
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Templating": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
+          "Granit.Workflow.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
           "Microsoft.Extensions.Caching.Hybrid": "[10.*, )"
         }
@@ -814,6 +816,20 @@
           "Granit.Http.ExceptionHandling": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )",
           "Microsoft.AspNetCore.OpenApi": "[10.*, )"
+        }
+      },
+      "granit.workflow": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
+      "granit.workflow.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.Workflow": "[0.1.0-dev, )"
         }
       },
       "Asp.Versioning.Mvc": {
