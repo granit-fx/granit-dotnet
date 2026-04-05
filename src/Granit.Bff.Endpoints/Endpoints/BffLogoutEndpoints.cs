@@ -58,8 +58,11 @@ internal static class BffLogoutEndpoints
         IGranitCookieManager cookieManager = httpContext.RequestServices.GetRequiredService<IGranitCookieManager>();
         cookieManager.DeleteCookie(httpContext, frontend.SessionCookieName);
 
-        // Build end_session URL
-        string postLogoutRedirectUri = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{frontend.EffectivePostLogoutRedirectPath}";
+        // Build end_session URL — support absolute URLs (e.g. separate frontend origin)
+        string effectivePath = frontend.EffectivePostLogoutRedirectPath;
+        string postLogoutRedirectUri = effectivePath.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+            ? effectivePath
+            : $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{effectivePath}";
         string endSessionUrl = orchestrator.BuildEndSessionUrl(frontend, postLogoutRedirectUri, idTokenHint);
 
         return TypedResults.Redirect(endSessionUrl);
