@@ -81,10 +81,9 @@ internal sealed class TemplateRevisionEntity : VersionedWorkflowEntity, IMultiTe
         string content,
         string mimeType,
         string? layoutName = null,
-        Guid? categoryId = null,
-        Guid? versionId = null)
+        Guid? categoryId = null)
     {
-        var entity = new TemplateRevisionEntity
+        return new TemplateRevisionEntity
         {
             Id = id,
             TemplateName = templateName,
@@ -94,16 +93,16 @@ internal sealed class TemplateRevisionEntity : VersionedWorkflowEntity, IMultiTe
             LayoutName = layoutName,
             CategoryId = categoryId,
         };
+    }
 
-        // If a VersionId is provided (existing template group), set it so the
-        // VersioningInterceptor increments the version within the same group.
-        // If left as Guid.Empty, the interceptor generates a new VersionId.
-        if (versionId.HasValue)
-        {
-            ((IVersioned)entity).VersionId = versionId.Value;
-        }
-
-        return entity;
+    /// <summary>
+    /// Sets the version group so the <c>VersioningInterceptor</c> increments
+    /// the version within an existing group instead of creating a new one.
+    /// </summary>
+    internal TemplateRevisionEntity WithVersionId(Guid versionId)
+    {
+        ((IVersioned)this).VersionId = versionId;
+        return this;
     }
 
     /// <summary>
@@ -134,8 +133,6 @@ internal sealed class TemplateRevisionEntity : VersionedWorkflowEntity, IMultiTe
     /// <summary>
     /// Archives this revision (superseded by a newer publication).
     /// </summary>
-    public void Archive()
-    {
+    public void Archive() =>
         SetLifecycleStatus(WorkflowLifecycleStatus.Archived);
-    }
 }

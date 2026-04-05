@@ -23,7 +23,7 @@ internal sealed partial class DefaultBillingCycleInvoiceOrchestrator(
         Guid planId,
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         Plan? plan = await planReader.GetByIdAsync(planId, cancellationToken)
             .ConfigureAwait(false);

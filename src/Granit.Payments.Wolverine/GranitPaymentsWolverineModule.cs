@@ -13,8 +13,6 @@ namespace Granit.Payments.Wolverine;
 public sealed class GranitPaymentsWolverineModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.TryAddScoped<IPaymentCommandDispatcher, WolverinePaymentCommandDispatcher>();
-    }
 }

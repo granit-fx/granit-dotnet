@@ -21,7 +21,7 @@ internal sealed partial class DefaultAutoChargeService(
     ICurrentTenant currentTenant,
     ILogger<DefaultAutoChargeService> logger) : IAutoChargeService
 {
-    public async Task HandleAsync(InvoiceFinalizedEto eto, CancellationToken cancellationToken)
+    public async Task HandleAsync(InvoiceFinalizedEto eto, CancellationToken cancellationToken = default)
     {
         using (currentTenant.Change(eto.TenantId))
         {

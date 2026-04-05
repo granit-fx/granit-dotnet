@@ -14,15 +14,15 @@ public sealed class TemplateRevisionEntityTests
         var categoryId = Guid.NewGuid();
         var versionId = Guid.NewGuid();
 
-        var entity = TemplateRevisionEntity.Create(
+        TemplateRevisionEntity entity = TemplateRevisionEntity.Create(
             id,
             templateName: "Billing.Invoice",
             culture: "fr-BE",
             content: "<p>Facture</p>",
             mimeType: "text/html",
             layoutName: "default",
-            categoryId: categoryId,
-            versionId: versionId);
+            categoryId: categoryId)
+            .WithVersionId(versionId);
 
         entity.Id.ShouldBe(id);
         entity.RevisionId.ShouldBe(id);

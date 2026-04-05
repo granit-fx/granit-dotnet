@@ -34,11 +34,6 @@ internal sealed class Pain008Generator(
         SepaDirectDebitInternalOptions config = options.Value;
         DateTimeOffset now = clock.Now;
 
-        // Build mandate lookup
-        var mandateLookup = mandates
-            .Where(m => m.Collections.Count > 0)
-            .ToDictionary(m => m.Id);
-
         string msgId = $"SDD-{now:yyyyMMddHHmmss}";
 
         var doc = new XDocument(new XDeclaration("1.0", "UTF-8", null),
@@ -80,8 +75,6 @@ internal sealed class Pain008Generator(
         SepaDirectDebitInternalOptions config,
         DateTimeOffset requestedDate)
     {
-        var mandateById = mandates.ToDictionary(m => m.Id);
-
         var pmtInf = new XElement(Ns + "PmtInf",
             new XElement(Ns + "PmtInfId", $"PMT-{requestedDate:yyyyMMdd}"),
             new XElement(Ns + "PmtMtd", "DD"),

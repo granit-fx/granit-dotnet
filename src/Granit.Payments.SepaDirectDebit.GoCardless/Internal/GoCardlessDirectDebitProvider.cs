@@ -13,6 +13,8 @@ internal sealed partial class GoCardlessDirectDebitProvider(
     GoCardlessClient client,
     ILogger<GoCardlessDirectDebitProvider> logger) : IDirectDebitProvider
 {
+    private const string DefaultRedirectUrl = "https://localhost/mandate-complete";
+
     /// <inheritdoc/>
     public string Name => "gocardless";
 
@@ -24,7 +26,7 @@ internal sealed partial class GoCardlessDirectDebitProvider(
         {
             Description = $"SEPA DD mandate for tenant {request.TenantId}",
             SessionToken = request.TenantId.ToString(),
-            SuccessRedirectUrl = request.RedirectUrl ?? "https://localhost/mandate-complete",
+            SuccessRedirectUrl = request.RedirectUrl ?? DefaultRedirectUrl,
         };
 
         RedirectFlowResponse response = await client.RedirectFlows.CreateAsync(flowRequest)

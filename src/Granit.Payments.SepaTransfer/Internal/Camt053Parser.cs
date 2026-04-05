@@ -94,7 +94,7 @@ internal sealed class Camt053Parser : IBankStatementParser
                 ?? txDtls?.Descendants("EndToEndId").FirstOrDefault()?.Value;
 
             entries.Add(new BankStatementEntry(
-                BookingDate: DateTimeOffset.TryParse(bookingDate, out DateTimeOffset dt) ? dt : DateTimeOffset.MinValue,
+                BookingDate: DateTimeOffset.TryParse(bookingDate, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset dt) ? dt : DateTimeOffset.MinValue,
                 Amount: amount,
                 Currency: currency ?? "EUR",
                 DebtorName: debtorName,

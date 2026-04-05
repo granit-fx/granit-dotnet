@@ -103,8 +103,12 @@ internal sealed class EfDocumentTemplateStore(
                 key.Culture,
                 content,
                 mimeType,
-                layoutName,
-                versionId: existingVersionId);
+                layoutName);
+
+            if (existingVersionId.HasValue)
+            {
+                entity.WithVersionId(existingVersionId.Value);
+            }
 
             entity.CreatedBy = updatedBy;
             entity.CreatedAt = clock.Now;

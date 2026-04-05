@@ -48,11 +48,9 @@ internal sealed class WorkflowTemplateTransitionHook(
         WorkflowLifecycleStatus from,
         WorkflowLifecycleStatus target,
         string userId,
-        CancellationToken cancellationToken = default)
-    {
+        CancellationToken cancellationToken = default) =>
         // No-op: the WorkflowTransitionInterceptor automatically creates
         // WorkflowTransitionRecord entries when the entity status changes
         // are persisted via SaveChanges.
-        return Task.CompletedTask;
-    }
+        Task.CompletedTask;
 }

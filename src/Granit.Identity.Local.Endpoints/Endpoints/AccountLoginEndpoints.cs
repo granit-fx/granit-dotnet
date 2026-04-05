@@ -183,6 +183,9 @@ internal static partial class AccountLoginEndpoints
         string sanitizedCode = request.Code.Replace(" ", string.Empty, StringComparison.Ordinal)
             .Replace("-", string.Empty, StringComparison.Ordinal);
 
+        string method = request.UseRecoveryCode ? "recovery_code" : "totp";
+        string failureReason = request.UseRecoveryCode ? "invalid_recovery_code" : "invalid_totp_code";
+
         Microsoft.AspNetCore.Identity.SignInResult result;
 
         if (request.UseRecoveryCode)
@@ -214,8 +217,8 @@ internal static partial class AccountLoginEndpoints
 
         if (result.Succeeded)
         {
-            LogTwoFactorSuccess(logger, request.UseRecoveryCode ? "recovery_code" : "totp");
-            metrics?.RecordAuthenticationSuccess(null, request.UseRecoveryCode ? "recovery_code" : "totp");
+            LogTwoFactorSuccess(logger, method);
+            metrics?.RecordAuthenticationSuccess(null, method);
 
             return TypedResults.Ok(new AccountLoginResponse(Succeeded: true));
         }
@@ -242,7 +245,7 @@ internal static partial class AccountLoginEndpoints
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
-        LogTwoFactorFailed(logger, request.UseRecoveryCode ? "invalid_recovery_code" : "invalid_totp_code");
+        LogTwoFactorFailed(logger, failureReason);
         metrics?.RecordAuthenticationFailure(null, "invalid_token");
 
         return TypedResults.Problem(

@@ -60,16 +60,12 @@ public sealed class TenantTests
     }
 
     [Fact]
-    public void Create_NullName_Throws()
-    {
+    public void Create_NullName_Throws() =>
         Should.Throw<ArgumentException>(() => Tenant.Create(Guid.NewGuid(), null!, "acme"));
-    }
 
     [Fact]
-    public void Create_EmptyIdentifier_Throws()
-    {
+    public void Create_EmptyIdentifier_Throws() =>
         Should.Throw<ArgumentException>(() => Tenant.Create(Guid.NewGuid(), "Acme", ""));
-    }
 
     // -------------------------------------------------------------------------
     // UpdateDetails

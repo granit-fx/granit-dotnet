@@ -109,7 +109,7 @@ internal sealed class ScribanTemplateEngine(
         ScriptObject globals = [];
 
         // Expose TData as "model" with snake_case property names (PascalCase → snake_case).
-        // Scriban's Import skips the renamer for IDictionary (upstream TODO), so we handle it manually.
+        // Scriban's Import skips the renamer for IDictionary (upstream limitation), so we handle it manually.
         ScriptObject model = [];
         if (data is IDictionary<string, object?> dict)
         {

@@ -16,8 +16,6 @@ namespace Granit.Subscriptions.Wolverine;
 public sealed class GranitSubscriptionsWolverineModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.TryAddTransient<PaymentRetryDispatcher>();
-    }
 }

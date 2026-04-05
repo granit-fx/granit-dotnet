@@ -19,7 +19,7 @@ internal sealed partial class DefaultUsageInvoiceOrchestrator(
 {
     public async Task CreateInvoiceAsync(
         CreateUsageInvoiceRequest request,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         if (request.TenantId == Guid.Empty)
         {

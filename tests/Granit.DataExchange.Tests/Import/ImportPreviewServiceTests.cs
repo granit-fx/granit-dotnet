@@ -31,9 +31,9 @@ public sealed class ImportPreviewServiceTests
 
         _parser.CanParse("text/csv").Returns(true);
         _parser.ExtractHeadersAsync(Arg.Any<Stream>(), Arg.Any<FileParsingOptions>(), Arg.Any<CancellationToken>())
-            .Returns(new List<string> { "Name", "Email" });
+            .Returns(new List<string>(["Name", "Email"]));
         _parser.ReadPreviewAsync(Arg.Any<Stream>(), Arg.Any<FileParsingOptions>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
-            .Returns(new List<string[]> { new[] { "Alice", "alice@test.com" }, new[] { "Bob", "bob@test.com" } });
+            .Returns(new List<string[]>([["Alice", "alice@test.com"], ["Bob", "bob@test.com"]]));
 
         _fileProvider.OpenAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(_ => Task.FromResult<Stream>(new MemoryStream(System.Text.Encoding.UTF8.GetBytes("Name,Email\nAlice,alice@test.com"))));
