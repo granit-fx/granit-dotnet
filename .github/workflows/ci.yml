@@ -303,6 +303,18 @@ jobs:
           pattern: coverage-*
           merge-multiple: true
 
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        run: corepack enable && corepack prepare pnpm@latest --activate
+
+      - name: Install docs-site dependencies
+        working-directory: docs-site
+        run: pnpm install --frozen-lockfile
+
       - name: Install SonarScanner
         run: dotnet tool install --global dotnet-sonarscanner
 
