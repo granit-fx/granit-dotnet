@@ -16780,10 +16780,10 @@
     },
     {
       "name": "GranitUserManager",
-      "fqn": "Granit.Identity.Local.AspNetIdentity.Internal.GranitUserManager",
+      "fqn": "Granit.Identity.Local.AspNetIdentity.GranitUserManager",
       "kind": "class",
       "project": "Granit.Identity.Local.AspNetIdentity",
-      "file": "src/Granit.Identity.Local.AspNetIdentity/Internal/GranitUserManager.cs",
+      "file": "src/Granit.Identity.Local.AspNetIdentity/GranitUserManager.cs",
       "line": 27,
       "members": [
         {

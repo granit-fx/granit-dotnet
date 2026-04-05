@@ -120,8 +120,11 @@ internal static class AccountPasswordEndpoints
             await passwordResetService.ResetPasswordAsync(
                 request.UserId, request.Token, request.NewPassword, cancellationToken).ConfigureAwait(false);
 
-            await PublishPasswordChangedAsync(httpContext, Guid.Parse(request.UserId), null, cancellationToken)
-                .ConfigureAwait(false);
+            if (Guid.TryParse(request.UserId, out Guid userId))
+            {
+                await PublishPasswordChangedAsync(httpContext, userId, null, cancellationToken)
+                    .ConfigureAwait(false);
+            }
 
             return TypedResults.NoContent();
         }

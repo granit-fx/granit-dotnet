@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Granit.Identity.Local.AspNetIdentity.Internal;
+namespace Granit.Identity.Local.AspNetIdentity;
 
 /// <summary>
 /// Custom <see cref="UserManager{TUser}"/> that implements exponential backoff lockout.
