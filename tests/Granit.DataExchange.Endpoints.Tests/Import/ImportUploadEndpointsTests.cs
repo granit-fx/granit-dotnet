@@ -92,8 +92,9 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton<IFileParser>(_parser);
         builder.Services.AddSingleton<IGuidGenerator>(new SimpleGuidGenerator());
 
-        // ImportUploadOrchestrator (extracted from handler)
-        builder.Services.AddScoped<Granit.DataExchange.Endpoints.Internal.Import.ImportUploadOrchestrator>();
+        // Import services (upload + preview)
+        builder.Services.AddScoped<IImportUploadService, Granit.DataExchange.Import.Internal.ImportUploadService>();
+        builder.Services.AddScoped<IImportPreviewService, Granit.DataExchange.Import.Internal.ImportPreviewService>();
 
         // Required by export endpoints (all endpoints are compiled at startup)
         builder.Services.AddSingleton(Substitute.For<IExportOrchestrator>());

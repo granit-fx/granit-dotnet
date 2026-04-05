@@ -2,8 +2,10 @@ using Granit.Identity;
 using Granit.Identity.Extensions;
 using Granit.Identity.Local;
 using Granit.Identity.Local.AspNetIdentity.Internal;
+using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
 using Granit.Modularity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -36,12 +38,16 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
         context.Services.Replace(ServiceDescriptor.Scoped<IUserLookupService,
             AspNetIdentityUserLookupService>());
 
+        // Replace default UserManager with GranitUserManager (exponential backoff lockout)
+        context.Services.Replace(ServiceDescriptor.Scoped<UserManager<GranitUser>, GranitUserManager>());
+
         // ASP.NET Core Identity service implementations (depend on UserManager<GranitUser>)
         context.Services.TryAddScoped<ITotpService, TotpService>();
         context.Services.TryAddScoped<ITwoFactorService, AspNetTwoFactorService>();
         context.Services.TryAddScoped<IPasskeyService, AspNetPasskeyService>();
         context.Services.TryAddScoped<IPasswordResetService, AspNetPasswordResetService>();
         context.Services.TryAddScoped<IEmailChangeService, AspNetEmailChangeService>();
+        context.Services.TryAddScoped<IEmailConfirmationService, AspNetEmailConfirmationService>();
     }
 
     /// <inheritdoc/>

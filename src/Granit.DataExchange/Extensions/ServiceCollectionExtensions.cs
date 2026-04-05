@@ -53,6 +53,8 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IImportJobWriter, NullImportJobStore>();
         services.TryAddScoped<IImportFileProvider, NullImportFileProvider>();
         services.TryAddScoped<IImportOrchestrator, ImportOrchestrator>();
+        services.TryAddScoped<IImportUploadService, ImportUploadService>();
+        services.TryAddScoped<IImportPreviewService, ImportPreviewService>();
 
         // Diagnostics
         services.TryAddSingleton<DataExchangeMetrics>();

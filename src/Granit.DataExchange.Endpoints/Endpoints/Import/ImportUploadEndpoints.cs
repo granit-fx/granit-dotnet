@@ -1,18 +1,11 @@
-using System.Text.Json;
-using Granit.DataExchange.Endpoints.Dtos.Export;
 using Granit.DataExchange.Endpoints.Dtos.Import;
-using Granit.DataExchange.Endpoints.Internal.Export;
-using Granit.DataExchange.Endpoints.Internal.Import;
 using Granit.DataExchange.Import.Domain;
-using Granit.DataExchange.Import.Mapping;
-using Granit.DataExchange.Import.Parsing;
 using Granit.DataExchange.Import.Pipeline;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.DataExchange.Endpoints.Endpoints.Import;
 
@@ -55,71 +48,39 @@ internal static class ImportUploadEndpoints
     private static async Task<Results<Created<ImportJobResponse>, ProblemHttpResult>> UploadAsync(
         IFormFile file,
         [FromForm] string definitionName,
-        [FromServices] ImportUploadOrchestrator orchestrator,
+        [FromServices] IImportUploadService uploadService,
         CancellationToken cancellationToken)
     {
         await using Stream stream = file.OpenReadStream();
-        (ImportUploadOrchestrator.UploadResult? result, ImportUploadOrchestrator.UploadError? error) =
-            await orchestrator.UploadAsync(
-                file.FileName, file.ContentType, file.Length, stream,
-                definitionName, cancellationToken).ConfigureAwait(false);
+        ImportUploadResult result = await uploadService.UploadAsync(
+            file.FileName, file.ContentType, file.Length, stream,
+            definitionName, cancellationToken).ConfigureAwait(false);
 
-        if (error is not null)
+        if (!result.Succeeded)
         {
             return TypedResults.Problem(
-                detail: error.Detail,
+                detail: result.ErrorDetail,
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        return TypedResults.Created($"/{result!.Job.Id}", ImportJobResponse.FromJob(result.Job));
+        return TypedResults.Created($"/{result.Job!.Id}", ImportJobResponse.FromJob(result.Job));
     }
 
     private static async Task<Results<Ok<ImportPreviewResponse>, NotFound>> PreviewAsync(
         Guid jobId,
-        [FromServices] IImportJobReader jobReader,
-        [FromServices] IImportJobWriter jobWriter,
-        [FromServices] IServiceProvider serviceProvider,
-        [FromServices] IImportFileProvider fileProvider,
-        [FromServices] IMappingSuggestionService mappingService,
+        [FromServices] IImportPreviewService previewService,
         CancellationToken cancellationToken)
     {
-        ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
-        if (job is null)
+        ImportPreviewResult? preview = await previewService.PreviewAsync(jobId, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (preview is null)
         {
             return TypedResults.NotFound();
         }
 
-        IImportDefinitionDescriptor? descriptor =
-            ImportDefinitionResolver.FindByName(serviceProvider, job.DefinitionName);
-        if (descriptor is null)
-        {
-            return TypedResults.NotFound();
-        }
-
-        IEnumerable<IFileParser> parsers = serviceProvider.GetServices<IFileParser>();
-        IFileParser? parser = parsers.FirstOrDefault(p => p.CanParse(job.MimeType));
-        if (parser is null)
-        {
-            return TypedResults.NotFound();
-        }
-
-        FileParsingOptions parsingOptions = new() { MimeType = job.MimeType };
-
-        await using Stream headerStream = await fileProvider.OpenAsync(job.BlobReference, cancellationToken).ConfigureAwait(false);
-        IReadOnlyList<string> headers = await parser.ExtractHeadersAsync(headerStream, parsingOptions, cancellationToken).ConfigureAwait(false);
-
-        await using Stream previewStream = await fileProvider.OpenAsync(job.BlobReference, cancellationToken).ConfigureAwait(false);
-        IReadOnlyList<string[]> previewRows = await parser.ReadPreviewAsync(previewStream, parsingOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-        IReadOnlyList<ImportColumnMapping> suggestions =
-            await ImportDefinitionResolver.SuggestMappingsAsync(mappingService, descriptor.EntityType, headers, cancellationToken).ConfigureAwait(false);
-
-        IReadOnlyList<ImportFieldMetadata> fieldMetadata = descriptor.GetFieldMetadata();
-
-        job.MarkAsPreviewed();
-        await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
-
-        return TypedResults.Ok(new ImportPreviewResponse(headers, previewRows, suggestions, fieldMetadata));
+        return TypedResults.Ok(new ImportPreviewResponse(
+            preview.Headers, preview.PreviewRows, preview.Suggestions, preview.FieldMetadata));
     }
 
     private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> ConfirmMappingsAsync(
@@ -142,7 +103,7 @@ internal static class ImportUploadEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        job.ConfirmMappings(JsonSerializer.Serialize(request.Mappings));
+        job.ConfirmMappings(System.Text.Json.JsonSerializer.Serialize(request.Mappings));
         await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.NoContent();

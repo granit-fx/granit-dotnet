@@ -1802,6 +1802,7 @@
       "deps": [
         "Granit.Invoicing.Abstractions",
         "Granit.Metering.Abstractions",
+        "Granit.Metering",
         "Granit.Payments.Abstractions",
         "Granit.Subscriptions",
         "Granit.Wolverine"
@@ -9623,15 +9624,8 @@
       "kind": "class",
       "project": "Granit.DataExchange.Endpoints",
       "file": "src/Granit.DataExchange.Endpoints/GranitDataExchangeEndpointsModule.cs",
-      "line": 24,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
+      "line": 21,
+      "members": []
     },
     {
       "name": "DataExchangeEndpointsOptions",
@@ -10889,6 +10883,75 @@
           "kind": "method",
           "signature": "DryRunAsync(Guid importJobId, CancellationToken cancellationToken = default)",
           "returnType": "Task<ImportReport>"
+        }
+      ]
+    },
+    {
+      "name": "IImportPreviewService",
+      "fqn": "Granit.DataExchange.Import.Pipeline.IImportPreviewService",
+      "kind": "interface",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Import/Pipeline/IImportPreviewService.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "PreviewAsync",
+          "kind": "method",
+          "signature": "PreviewAsync(Guid jobId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ImportPreviewResult?>"
+        }
+      ]
+    },
+    {
+      "name": "IImportUploadService",
+      "fqn": "Granit.DataExchange.Import.Pipeline.IImportUploadService",
+      "kind": "interface",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Import/Pipeline/IImportUploadService.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "UploadAsync",
+          "kind": "method",
+          "signature": "UploadAsync(string fileName, string contentType, long fileSize, Stream fileStream, string definitionName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<ImportUploadResult>"
+        }
+      ]
+    },
+    {
+      "name": "ImportPreviewResult",
+      "fqn": "Granit.DataExchange.Import.Pipeline.ImportPreviewResult",
+      "kind": "record",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Import/Pipeline/IImportPreviewService.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "ImportUploadResult",
+      "fqn": "Granit.DataExchange.Import.Pipeline.ImportUploadResult",
+      "kind": "record",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Import/Pipeline/IImportUploadService.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "Job",
+          "kind": "property",
+          "signature": "Domain.ImportJob? Job",
+          "returnType": "Domain.ImportJob?"
+        },
+        {
+          "name": "Success",
+          "kind": "method",
+          "signature": "Success(Domain.ImportJob job)",
+          "returnType": "ImportUploadResult"
+        },
+        {
+          "name": "Failure",
+          "kind": "method",
+          "signature": "Failure(string detail)",
+          "returnType": "ImportUploadResult"
         }
       ]
     },
@@ -16705,13 +16768,29 @@
       "kind": "class",
       "project": "Granit.Identity.Local.AspNetIdentity",
       "file": "src/Granit.Identity.Local.AspNetIdentity/GranitIdentityLocalAspNetIdentityModule.cs",
-      "line": 28,
+      "line": 30,
       "members": [
         {
           "name": "ConfigureServices",
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitUserManager",
+      "fqn": "Granit.Identity.Local.AspNetIdentity.Internal.GranitUserManager",
+      "kind": "class",
+      "project": "Granit.Identity.Local.AspNetIdentity",
+      "file": "src/Granit.Identity.Local.AspNetIdentity/Internal/GranitUserManager.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "AccessFailedAsync",
+          "kind": "method",
+          "signature": "AccessFailedAsync(GranitUser user)",
+          "returnType": "Task<IdentityResult>"
         }
       ]
     },
@@ -17119,7 +17198,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Events/AccountLockedEto.cs",
-      "line": 12,
+      "line": 30,
       "members": []
     },
     {
@@ -17239,12 +17318,12 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Notifications",
       "file": "src/Granit.Identity.Local.Notifications/Handlers/AccountLockedHandler.cs",
-      "line": 11,
+      "line": 14,
       "members": [
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(AccountLockedEto evt, IIdentityUserReader userReader, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(AccountLockedEto evt, IOptions<IdentityNotificationOptions> options, INotificationPublisher publisher, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -17367,7 +17446,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local.Notifications",
       "file": "src/Granit.Identity.Local.Notifications/NotificationTypes/AccountLockedNotificationType.cs",
-      "line": 31,
+      "line": 33,
       "members": []
     },
     {
@@ -17725,6 +17804,40 @@
           "kind": "method",
           "signature": "BuildChangeEmailUrl(string userId, string newEmail, string token)",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitLockoutOptions",
+      "fqn": "Granit.Identity.Local.Options.GranitLockoutOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Options/GranitLockoutOptions.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "MaxFailedAccessAttempts",
+          "kind": "property",
+          "signature": "int MaxFailedAccessAttempts",
+          "returnType": "int"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan BaseLockoutDuration { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromHours",
+          "kind": "method",
+          "signature": "FromHours(2)",
+          "returnType": "TimeSpan MaxLockoutDuration { get; set; } = TimeSpan."
+        },
+        {
+          "name": "ExponentialBase",
+          "kind": "property",
+          "signature": "double ExponentialBase",
+          "returnType": "double"
         }
       ]
     },
@@ -25699,7 +25812,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 22,
+      "line": 23,
       "members": [
         {
           "name": "AddGranitOpenIddict",
@@ -35262,6 +35375,22 @@
           "name": "HandleAsync",
           "kind": "method",
           "signature": "HandleAsync(BillingCycleCompletedEto eto, IBillingCycleInvoiceOrchestrator orchestrator, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "BillingCycleUsagePublisher",
+      "fqn": "Granit.Subscriptions.Wolverine.Handlers.BillingCycleUsagePublisher",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Wolverine",
+      "file": "src/Granit.Subscriptions.Wolverine/Handlers/BillingCycleUsagePublisher.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(BillingCycleCompletedEto eto, IMeterDefinitionReader meterReader, IUsageReader usageReader, IDistributedEventBus eventBus, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]

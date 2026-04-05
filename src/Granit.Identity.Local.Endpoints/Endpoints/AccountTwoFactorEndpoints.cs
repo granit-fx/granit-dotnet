@@ -1,11 +1,14 @@
+using Granit.Events;
 using Granit.Identity;
 using Granit.Identity.Local.Endpoints.Dtos;
+using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Identity.Local.Endpoints.Endpoints;
 
@@ -104,6 +107,10 @@ internal static class AccountTwoFactorEndpoints
         {
             IReadOnlyList<string> recoveryCodes = await twoFactorService
                 .EnableAsync(userId, request.Code, cancellationToken).ConfigureAwait(false);
+
+            await PublishTwoFactorChangedAsync(httpContext, Guid.Parse(userId), true, cancellationToken)
+                .ConfigureAwait(false);
+
             return TypedResults.Ok(new AccountTwoFactorEnableResponse(recoveryCodes));
         }
         catch (InvalidOperationException ex)
@@ -142,6 +149,10 @@ internal static class AccountTwoFactorEndpoints
         }
 
         await twoFactorService.DisableAsync(userId, cancellationToken).ConfigureAwait(false);
+
+        await PublishTwoFactorChangedAsync(httpContext, Guid.Parse(userId), false, cancellationToken)
+            .ConfigureAwait(false);
+
         return TypedResults.NoContent();
     }
 
@@ -177,5 +188,25 @@ internal static class AccountTwoFactorEndpoints
         IReadOnlyList<string> codes = await twoFactorService
             .GenerateRecoveryCodesAsync(userId, cancellationToken).ConfigureAwait(false);
         return TypedResults.Ok(new AccountRecoveryCodesResponse(codes));
+    }
+
+    private static async Task PublishTwoFactorChangedAsync(
+        HttpContext httpContext,
+        Guid userId,
+        bool enabled,
+        CancellationToken cancellationToken)
+    {
+        IDistributedEventBus? eventBus = httpContext.RequestServices.GetService<IDistributedEventBus>();
+        if (eventBus is null)
+        {
+            return;
+        }
+
+        string? tenantId = httpContext.User.FindFirst("tenant_id")?.Value;
+        Guid? parsedTenantId = tenantId is not null ? Guid.Parse(tenantId) : null;
+
+        await eventBus.PublishAsync(
+            new TwoFactorChangedEto(userId, enabled, parsedTenantId),
+            cancellationToken).ConfigureAwait(false);
     }
 }

@@ -1,4 +1,3 @@
-using Granit.DataExchange.Endpoints.Dtos.Export;
 using Granit.DataExchange.Endpoints.Dtos.Import;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Messages;
@@ -133,15 +132,17 @@ internal static class ImportExecutionEndpoints
             return TypedResults.NotFound();
         }
 
-        if (job.Status is ImportJobStatus.Executing or ImportJobStatus.Completed
-            or ImportJobStatus.PartiallyCompleted or ImportJobStatus.Failed)
+        try
+        {
+            job.Cancel();
+        }
+        catch (InvalidOperationException ex)
         {
             return TypedResults.Problem(
-                detail: $"Cannot cancel import job in status '{job.Status}'.",
+                detail: ex.Message,
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        job.Cancel();
         await jobWriter.UpdateAsync(job, cancellationToken).ConfigureAwait(false);
         await fileProvider.DeleteAsync(job.BlobReference, cancellationToken).ConfigureAwait(false);
 

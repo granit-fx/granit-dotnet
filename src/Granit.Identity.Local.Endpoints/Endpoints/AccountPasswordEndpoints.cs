@@ -1,6 +1,8 @@
+using Granit.Events;
 using Granit.Identity;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
+using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -84,6 +86,11 @@ internal static class AccountPasswordEndpoints
             .ConfigureAwait(false);
 
         string? tenantId = httpContext.User.FindFirst("tenant_id")?.Value;
+        Guid? parsedTenantId = tenantId is not null ? Guid.Parse(tenantId) : null;
+
+        await PublishPasswordChangedAsync(httpContext, Guid.Parse(userId), parsedTenantId, cancellationToken)
+            .ConfigureAwait(false);
+
         httpContext.RequestServices.GetService<IdentityLocalMetrics>()?.RecordPasswordChange(tenantId);
         return TypedResults.NoContent();
     }
@@ -104,6 +111,7 @@ internal static class AccountPasswordEndpoints
 
     private static async Task<Results<NoContent, ProblemHttpResult>> ResetPasswordAsync(
         AccountPasswordResetRequest request,
+        HttpContext httpContext,
         [FromServices] IPasswordResetService passwordResetService,
         CancellationToken cancellationToken)
     {
@@ -111,6 +119,10 @@ internal static class AccountPasswordEndpoints
         {
             await passwordResetService.ResetPasswordAsync(
                 request.UserId, request.Token, request.NewPassword, cancellationToken).ConfigureAwait(false);
+
+            await PublishPasswordChangedAsync(httpContext, Guid.Parse(request.UserId), null, cancellationToken)
+                .ConfigureAwait(false);
+
             return TypedResults.NoContent();
         }
         catch (InvalidOperationException)
@@ -119,5 +131,22 @@ internal static class AccountPasswordEndpoints
                 detail: "Invalid or expired reset token.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
+    }
+
+    private static async Task PublishPasswordChangedAsync(
+        HttpContext httpContext,
+        Guid userId,
+        Guid? tenantId,
+        CancellationToken cancellationToken)
+    {
+        IDistributedEventBus? eventBus = httpContext.RequestServices.GetService<IDistributedEventBus>();
+        if (eventBus is null)
+        {
+            return;
+        }
+
+        await eventBus.PublishAsync(
+            new PasswordChangedEto(userId, tenantId),
+            cancellationToken).ConfigureAwait(false);
     }
 }
