@@ -7,16 +7,12 @@ namespace Granit.Invoicing.BackgroundJobs.Tests;
 public sealed class GranitInvoicingBackgroundJobsModuleTests
 {
     [Fact]
-    public void Module_ShouldBeSealed()
-    {
+    public void Module_ShouldBeSealed() =>
         typeof(GranitInvoicingBackgroundJobsModule).IsSealed.ShouldBeTrue();
-    }
 
     [Fact]
-    public void Module_ShouldInheritFromGranitModule()
-    {
+    public void Module_ShouldInheritFromGranitModule() =>
         typeof(GranitInvoicingBackgroundJobsModule).IsSubclassOf(typeof(GranitModule)).ShouldBeTrue();
-    }
 
     [Fact]
     public void Module_CanBeInstantiated()

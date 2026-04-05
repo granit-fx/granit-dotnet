@@ -87,7 +87,7 @@ internal sealed partial class ViesValidator(
 
                     if (viesResponse is null)
                     {
-                        return FallbackOrReject(normalizedTaxId, "Empty VIES response");
+                        return FallbackOrReject(normalizedTaxId);
                     }
 
                     Log.ViesValidated(logger, MaskTaxId(normalizedTaxId), viesResponse.IsValid);
@@ -105,7 +105,7 @@ internal sealed partial class ViesValidator(
                     metrics.RecordViesRequest(currentTenant.Id?.ToString(), success: false);
                     Log.ViesUnavailable(logger, ex);
 
-                    return FallbackOrReject(normalizedTaxId, $"VIES unavailable: {ex.Message}");
+                    return FallbackOrReject(normalizedTaxId);
                 }
             },
             new FusionCacheEntryOptions { Duration = ttl },
@@ -114,7 +114,7 @@ internal sealed partial class ViesValidator(
         return result;
     }
 
-    private TaxIdValidationResult FallbackOrReject(string taxId, string reason)
+    private TaxIdValidationResult FallbackOrReject(string taxId)
     {
         if (!taxOptions.Value.AllowOfflineFallback)
         {

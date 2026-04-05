@@ -18,15 +18,11 @@ public class UsageSummaryReadyHandler
     {
         using (currentTenant.Change(eto.TenantId))
         {
-            await orchestrator.CreateInvoiceAsync(
-                eto.TenantId,
-                eto.MeterDefinitionId,
-                eto.MeterName,
-                eto.AggregatedValue,
-                eto.Unit,
-                eto.PeriodStart,
-                eto.PeriodEnd,
-                cancellationToken).ConfigureAwait(false);
+            var request = new CreateUsageInvoiceRequest(
+                eto.TenantId, eto.MeterDefinitionId, eto.MeterName,
+                eto.AggregatedValue, eto.Unit, eto.PeriodStart, eto.PeriodEnd);
+
+            await orchestrator.CreateInvoiceAsync(request, cancellationToken).ConfigureAwait(false);
         }
     }
 }

@@ -28,8 +28,6 @@ namespace Granit.AI;
 public sealed class GranitAIModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.TryAddScoped<IAIChatCompletionService, DefaultAIChatCompletionService>();
-    }
 }

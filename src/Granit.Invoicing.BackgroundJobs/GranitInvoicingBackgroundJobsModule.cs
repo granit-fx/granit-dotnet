@@ -14,8 +14,6 @@ namespace Granit.Invoicing.BackgroundJobs;
 public sealed class GranitInvoicingBackgroundJobsModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.TryAddTransient<IOverdueInvoiceDetectionService, DefaultOverdueInvoiceDetectionService>();
-    }
 }

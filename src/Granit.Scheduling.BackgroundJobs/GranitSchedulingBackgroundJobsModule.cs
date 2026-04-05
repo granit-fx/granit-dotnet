@@ -18,8 +18,6 @@ namespace Granit.Scheduling.BackgroundJobs;
 public sealed class GranitSchedulingBackgroundJobsModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.TryAddTransient<CatchUpDispatcher>();
-    }
 }

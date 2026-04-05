@@ -7,10 +7,8 @@ namespace Granit.CustomerBalance.Endpoints.Tests;
 public sealed class CustomerBalancePermissionsTests
 {
     [Fact]
-    public void GroupName_ShouldBeCustomerBalance()
-    {
+    public void GroupName_ShouldBeCustomerBalance() =>
         CustomerBalancePermissions.GroupName.ShouldBe("CustomerBalance");
-    }
 
     [Theory]
     [InlineData(nameof(CustomerBalancePermissions.Accounts), CustomerBalancePermissions.Accounts.Read)]
@@ -27,8 +25,6 @@ public sealed class CustomerBalancePermissionsTests
     [InlineData(CustomerBalancePermissions.Accounts.Read)]
     [InlineData(CustomerBalancePermissions.Transactions.Read)]
     [InlineData(CustomerBalancePermissions.Credits.Manage)]
-    public void Permission_ShouldStartWithGroupName(string permission)
-    {
+    public void Permission_ShouldStartWithGroupName(string permission) =>
         permission.ShouldStartWith(CustomerBalancePermissions.GroupName + ".");
-    }
 }

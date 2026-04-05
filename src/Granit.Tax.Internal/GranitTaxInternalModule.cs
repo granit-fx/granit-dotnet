@@ -21,6 +21,8 @@ namespace Granit.Tax.Internal;
     typeof(GranitTaxModule))]
 public sealed class GranitTaxInternalModule : GranitModule
 {
+    private const string ViesBaseUrl = "https://ec.europa.eu/taxation_customs/vies/rest-api/";
+
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
@@ -29,7 +31,7 @@ public sealed class GranitTaxInternalModule : GranitModule
 
         context.Services.AddGranitHttpClient("Vies", (_, client) =>
         {
-            client.BaseAddress = new Uri("https://ec.europa.eu/taxation_customs/vies/rest-api/");
+            client.BaseAddress = new Uri(ViesBaseUrl);
             client.Timeout = TimeSpan.FromSeconds(10);
         });
 

@@ -11,7 +11,7 @@ internal sealed partial class DefaultSubscriptionProviderSyncService(
     public async Task SyncCancellationAsync(
         Guid subscriptionId,
         Guid tenantId,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         Subscription? subscription = await subscriptionReader
             .GetByIdAsync(subscriptionId, cancellationToken)

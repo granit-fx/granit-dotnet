@@ -1,3 +1,4 @@
+using System.Globalization;
 using Granit.Timing;
 using Scriban;
 using Scriban.Runtime;
@@ -33,7 +34,7 @@ internal sealed class UserTimeFunction(IClock clock) : IScriptCustomFunction
         {
             DateTimeOffset dto => clock.ConvertToUserTime(dto),
             DateTime dt => clock.ConvertToUserTime(new DateTimeOffset(dt, TimeSpan.Zero)),
-            string s when DateTimeOffset.TryParse(s, out DateTimeOffset parsed) =>
+            string s when DateTimeOffset.TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset parsed) =>
                 clock.ConvertToUserTime(parsed),
             _ => arg ?? string.Empty,
         };

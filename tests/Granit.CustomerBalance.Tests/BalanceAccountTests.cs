@@ -181,10 +181,8 @@ public sealed class BalanceAccountTests
             .ShouldContain(i => i.Name == "IMultiTenant");
     }
 
-    private static BalanceAccount CreateAccount()
-    {
-        return BalanceAccount.Create(Guid.NewGuid(), Guid.NewGuid(), "EUR");
-    }
+    private static BalanceAccount CreateAccount() =>
+        BalanceAccount.Create(Guid.NewGuid(), Guid.NewGuid(), "EUR");
 
     private static BalanceAccount CreateAccountWithBalance(decimal balance)
     {

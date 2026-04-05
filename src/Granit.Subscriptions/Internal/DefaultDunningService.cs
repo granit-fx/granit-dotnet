@@ -22,7 +22,7 @@ internal sealed partial class DefaultDunningService(
         string currency,
         string methodType,
         string providerName,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         Subscription? subscription = await subscriptionReader
             .GetActiveForTenantAsync(tenantId, cancellationToken)

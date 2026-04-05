@@ -7,16 +7,12 @@ namespace Granit.Invoicing.Wolverine.Tests;
 public sealed class GranitInvoicingWolverineModuleTests
 {
     [Fact]
-    public void Module_ShouldBeSealed()
-    {
+    public void Module_ShouldBeSealed() =>
         typeof(GranitInvoicingWolverineModule).IsSealed.ShouldBeTrue();
-    }
 
     [Fact]
-    public void Module_ShouldInheritFromGranitModule()
-    {
+    public void Module_ShouldInheritFromGranitModule() =>
         typeof(GranitInvoicingWolverineModule).IsSubclassOf(typeof(GranitModule)).ShouldBeTrue();
-    }
 
     [Fact]
     public void Module_ShouldDependOnInvoicingAndWolverine()

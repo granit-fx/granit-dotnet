@@ -8,23 +8,25 @@ using Microsoft.Extensions.Logging;
 namespace Granit.CustomerBalance.Internal;
 
 /// <summary>
-/// Default implementation of <see cref="IOverpaymentCreditService"/>.
-/// Credits overpayment surplus to the tenant's balance account.
+/// Default implementation of <see cref="IAdminCreditService"/>.
+/// Applies admin credits to the tenant's balance account.
 /// Creates the account if it does not exist for the (TenantId, Currency) pair.
 /// </summary>
-internal sealed partial class DefaultOverpaymentCreditService(
+internal sealed partial class DefaultAdminCreditService(
     IBalanceAccountReader accountReader,
     IBalanceAccountWriter accountWriter,
     IGuidGenerator guidGenerator,
     IClock clock,
     CustomerBalanceMetrics metrics,
-    ILogger<DefaultOverpaymentCreditService> logger) : IOverpaymentCreditService
+    ILogger<DefaultAdminCreditService> logger) : IAdminCreditService
 {
-    public async Task CreditOverpaymentAsync(
+    public async Task<BalanceAccount> ApplyAsync(
         Guid tenantId,
-        string currency,
         decimal amount,
-        Guid invoiceId,
+        string currency,
+        TransactionSource source,
+        string reason,
+        DateTimeOffset? expiresAt,
         CancellationToken cancellationToken = default)
     {
         using Activity? activity = CustomerBalanceActivitySource.Source
@@ -41,29 +43,30 @@ internal sealed partial class DefaultOverpaymentCreditService(
             Log.AccountCreated(logger, tenantId, currency);
 
             // Reload to get tracked entity with transactions collection.
-            account = await accountReader
+            account = (await accountReader
                 .GetByTenantAndCurrencyAsync(tenantId, currency, cancellationToken)
-                .ConfigureAwait(false);
+                .ConfigureAwait(false))!;
         }
 
-        account!.Credit(
+        account.Credit(
             amount,
-            TransactionSource.Overpayment,
-            "Overpayment on invoice",
+            source,
+            reason,
             clock.Now,
             guidGenerator.Create(),
-            referenceId: invoiceId,
-            referenceType: "Invoice");
+            expiresAt: expiresAt);
 
         await accountWriter.UpdateAsync(account, cancellationToken).ConfigureAwait(false);
-        metrics.RecordCredited(tenantId.ToString(), currency, TransactionSource.Overpayment.ToString());
-        Log.OverpaymentCredited(logger, invoiceId, amount, account.Balance);
+        metrics.RecordCredited(tenantId.ToString(), currency, source.ToString());
+        Log.AdminCredited(logger, source, amount, account.Balance);
+
+        return account;
     }
 
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Information, Message = "Overpayment of {Amount} credited for invoice {InvoiceId}, new balance: {NewBalance}")]
-        public static partial void OverpaymentCredited(ILogger logger, Guid invoiceId, decimal amount, decimal newBalance);
+        [LoggerMessage(Level = LogLevel.Information, Message = "Admin credit ({Source}) of {Amount} applied, new balance: {NewBalance}")]
+        public static partial void AdminCredited(ILogger logger, TransactionSource source, decimal amount, decimal newBalance);
 
         [LoggerMessage(Level = LogLevel.Information, Message = "Created balance account for tenant {TenantId} ({Currency})")]
         public static partial void AccountCreated(ILogger logger, Guid tenantId, string currency);

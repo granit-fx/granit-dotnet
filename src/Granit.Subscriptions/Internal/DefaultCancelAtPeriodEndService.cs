@@ -15,7 +15,7 @@ internal sealed partial class DefaultCancelAtPeriodEndService(
     IDataFilter dataFilter,
     ILogger<DefaultCancelAtPeriodEndService> logger) : ICancelAtPeriodEndService
 {
-    public async Task CancelDueSubscriptionsAsync(CancellationToken cancellationToken)
+    public async Task CancelDueSubscriptionsAsync(CancellationToken cancellationToken = default)
     {
         DateTimeOffset now = clock.Now;
 

@@ -8,22 +8,16 @@ namespace Granit.CustomerBalance.EntityFrameworkCore.Tests;
 public sealed class CustomerBalanceDbConfigurationTests
 {
     [Fact]
-    public void DbTablePrefix_ShouldBeCustomerBalance()
-    {
+    public void DbTablePrefix_ShouldBeCustomerBalance() =>
         GranitCustomerBalanceDbProperties.DbTablePrefix.ShouldBe("customer_balance_");
-    }
 
     [Fact]
-    public void DbSchema_ShouldBeNull()
-    {
+    public void DbSchema_ShouldBeNull() =>
         GranitCustomerBalanceDbProperties.DbSchema.ShouldBeNull();
-    }
 
     [Fact]
-    public void Module_ShouldBeSealed()
-    {
+    public void Module_ShouldBeSealed() =>
         typeof(GranitCustomerBalanceEntityFrameworkCoreModule).IsSealed.ShouldBeTrue();
-    }
 
     [Fact]
     public void BalanceAccount_ShouldHavePrivateSetters_OnDeclaredProperties()

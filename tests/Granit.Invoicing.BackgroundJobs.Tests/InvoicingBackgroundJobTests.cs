@@ -13,16 +13,12 @@ public sealed class InvoicingBackgroundJobTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void OverdueInvoiceDetectionJob_ShouldImplementIBackgroundJob()
-    {
+    public void OverdueInvoiceDetectionJob_ShouldImplementIBackgroundJob() =>
         typeof(IBackgroundJob).IsAssignableFrom(typeof(OverdueInvoiceDetectionJob)).ShouldBeTrue();
-    }
 
     [Fact]
-    public void OverdueInvoiceDetectionJob_ShouldBeSealedRecord()
-    {
+    public void OverdueInvoiceDetectionJob_ShouldBeSealedRecord() =>
         typeof(OverdueInvoiceDetectionJob).IsSealed.ShouldBeTrue();
-    }
 
     [Fact]
     public void OverdueInvoiceDetectionJob_ShouldHaveRecurringJobAttribute()

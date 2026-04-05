@@ -16,8 +16,6 @@ namespace Granit.Subscriptions.BackgroundJobs;
 public sealed class GranitSubscriptionsBackgroundJobsModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.TryAddTransient<TrialExpirationScanner>();
-    }
 }

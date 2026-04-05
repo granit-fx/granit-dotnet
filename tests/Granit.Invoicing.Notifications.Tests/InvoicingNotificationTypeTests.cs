@@ -19,10 +19,8 @@ public sealed class InvoicingNotificationTypeTests
     }
 
     [Fact]
-    public void InvoiceIssued_ShouldBeSingleton()
-    {
+    public void InvoiceIssued_ShouldBeSingleton() =>
         InvoiceIssuedNotificationType.Instance.ShouldBeSameAs(InvoiceIssuedNotificationType.Instance);
-    }
 
     [Fact]
     public void InvoiceIssuedData_ShouldCreateRecord()
@@ -64,10 +62,8 @@ public sealed class InvoicingNotificationTypeTests
     }
 
     [Fact]
-    public void InvoiceOverdue_ShouldBeSingleton()
-    {
+    public void InvoiceOverdue_ShouldBeSingleton() =>
         InvoiceOverdueNotificationType.Instance.ShouldBeSameAs(InvoiceOverdueNotificationType.Instance);
-    }
 
     [Fact]
     public void InvoiceOverdueData_ShouldCreateRecord()
@@ -99,10 +95,8 @@ public sealed class InvoicingNotificationTypeTests
     }
 
     [Fact]
-    public void InvoicePaid_ShouldBeSingleton()
-    {
+    public void InvoicePaid_ShouldBeSingleton() =>
         InvoicePaidNotificationType.Instance.ShouldBeSameAs(InvoicePaidNotificationType.Instance);
-    }
 
     [Fact]
     public void InvoicePaidData_ShouldCreateRecord()

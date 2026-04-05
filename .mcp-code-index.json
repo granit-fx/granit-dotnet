@@ -9258,6 +9258,22 @@
       ]
     },
     {
+      "name": "IAdminCreditService",
+      "fqn": "Granit.CustomerBalance.IAdminCreditService",
+      "kind": "interface",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/IAdminCreditService.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ApplyAsync",
+          "kind": "method",
+          "signature": "ApplyAsync(Guid tenantId, decimal amount, string currency, TransactionSource source, string reason, DateTimeOffset? expiresAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task<BalanceAccount>"
+        }
+      ]
+    },
+    {
       "name": "IBalanceAccountReader",
       "fqn": "Granit.CustomerBalance.IBalanceAccountReader",
       "kind": "interface",
@@ -34041,6 +34057,12 @@
           "returnType": "bool"
         },
         {
+          "name": "IncrementDunningAttempt",
+          "kind": "method",
+          "signature": "IncrementDunningAttempt()",
+          "returnType": "void"
+        },
+        {
           "name": "ResetDunning",
           "kind": "method",
           "signature": "ResetDunning()",
@@ -35259,6 +35281,22 @@
       ]
     },
     {
+      "name": "CreateUsageInvoiceRequest",
+      "fqn": "Granit.Subscriptions.Wolverine.Services.CreateUsageInvoiceRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Wolverine",
+      "file": "src/Granit.Subscriptions.Wolverine/Services/UsageInvoiceOrchestrator.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "CreateInvoiceAsync",
+          "kind": "method",
+          "signature": "CreateInvoiceAsync(CreateUsageInvoiceRequest request, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "PaymentRetryDispatcher",
       "fqn": "Granit.Subscriptions.Wolverine.Services.PaymentRetryDispatcher",
       "kind": "class",
@@ -35280,12 +35318,12 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
       "file": "src/Granit.Subscriptions.Wolverine/Services/UsageInvoiceOrchestrator.cs",
-      "line": 13,
+      "line": 25,
       "members": [
         {
           "name": "CreateInvoiceAsync",
           "kind": "method",
-          "signature": "CreateInvoiceAsync(Guid tenantId, Guid meterDefinitionId, string meterName, decimal aggregatedValue, string unit, DateTimeOffset periodStart, DateTimeOffset periodEnd, CancellationToken cancellationToken)",
+          "signature": "CreateInvoiceAsync(CreateUsageInvoiceRequest request, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]

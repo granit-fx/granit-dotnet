@@ -117,8 +117,7 @@ internal static class TransactionEndpoints
     private static async Task<Accepted> ChargeAsync(
         PaymentChargeRequest request,
         [FromServices] IMessageBus messageBus,
-        [FromServices] ICurrentTenant currentTenant,
-        CancellationToken cancellationToken)
+        [FromServices] ICurrentTenant currentTenant)
     {
         Guid tenantId = currentTenant.Id ?? Guid.Empty;
 
@@ -138,8 +137,7 @@ internal static class TransactionEndpoints
 
     private static async Task<Results<Accepted, NotFound>> RefundAsync(
         PaymentRefundRequest request,
-        [FromServices] IMessageBus messageBus,
-        CancellationToken cancellationToken)
+        [FromServices] IMessageBus messageBus)
     {
         var command = new RequestRefundCommand(
             request.TransactionId,

@@ -16,7 +16,7 @@ internal sealed partial class DefaultPeriodAdvancementService(
     IDataFilter dataFilter,
     ILogger<DefaultPeriodAdvancementService> logger) : IPeriodAdvancementService
 {
-    public async Task AdvancePeriodsAsync(CancellationToken cancellationToken)
+    public async Task AdvancePeriodsAsync(CancellationToken cancellationToken = default)
     {
         DateTimeOffset now = clock.Now;
 

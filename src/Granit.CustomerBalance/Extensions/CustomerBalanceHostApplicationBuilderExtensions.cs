@@ -20,6 +20,7 @@ public static class CustomerBalanceHostApplicationBuilderExtensions
     {
         builder.Services.TryAddSingleton<CustomerBalanceMetrics>();
         builder.Services.TryAddTransient<ICreditExpirationService, DefaultCreditExpirationService>();
+        builder.Services.TryAddTransient<IAdminCreditService, DefaultAdminCreditService>();
         builder.Services.TryAddTransient<IOverpaymentCreditService, DefaultOverpaymentCreditService>();
         GranitActivitySourceRegistry.Register(CustomerBalanceActivitySource.Name);
 

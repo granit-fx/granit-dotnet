@@ -27,7 +27,7 @@ internal static class PaymentMethodEndpoints
             .Produces<IReadOnlyList<PaymentMethodResponse>>()
             .RequireAuthorization(PaymentsPermissions.Methods.Read);
 
-        group.MapGet("/methods/available", GetAvailableAsync)
+        group.MapGet("/methods/available", GetAvailable)
             .WithName("GetAvailablePaymentMethods")
             .WithSummary("Lists payment methods available for the current tenant.")
             .WithDescription(
@@ -81,10 +81,9 @@ internal static class PaymentMethodEndpoints
         return TypedResults.Ok(response);
     }
 
-    private static async Task<Ok<IReadOnlyList<PaymentAvailableMethodResponse>>> GetAvailableAsync(
+    private static Ok<IReadOnlyList<PaymentAvailableMethodResponse>> GetAvailable(
         [FromServices] IPaymentProviderResolver resolver,
-        [FromServices] ICurrentTenant currentTenant,
-        CancellationToken cancellationToken)
+        [FromServices] ICurrentTenant currentTenant)
     {
         Guid tenantId = currentTenant.Id ?? Guid.Empty;
 

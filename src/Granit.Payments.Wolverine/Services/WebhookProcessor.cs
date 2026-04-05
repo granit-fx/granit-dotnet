@@ -78,20 +78,25 @@ public sealed partial class WebhookProcessor(
     private static string? ExtractProviderTransactionId(JsonElement payload, string providerName) =>
         providerName.ToLowerInvariant() switch
         {
-            "stripe" => payload.TryGetProperty("data", out JsonElement data)
-                && data.TryGetProperty("object", out JsonElement obj)
-                && obj.TryGetProperty("id", out JsonElement id)
-                    ? id.GetString()
-                    : payload.TryGetProperty("id", out JsonElement rootId)
-                        ? rootId.GetString()
-                        : null,
-            "mollie" => payload.TryGetProperty("id", out JsonElement mollieId)
-                ? mollieId.GetString()
-                : null,
-            _ => payload.TryGetProperty("id", out JsonElement genericId)
-                ? genericId.GetString()
-                : null,
+            "stripe" => ExtractStripeTransactionId(payload),
+            "mollie" => GetStringProperty(payload, "id"),
+            _ => GetStringProperty(payload, "id"),
         };
+
+    private static string? ExtractStripeTransactionId(JsonElement payload)
+    {
+        if (payload.TryGetProperty("data", out JsonElement data)
+            && data.TryGetProperty("object", out JsonElement obj)
+            && obj.TryGetProperty("id", out JsonElement id))
+        {
+            return id.GetString();
+        }
+
+        return GetStringProperty(payload, "id");
+    }
+
+    private static string? GetStringProperty(JsonElement element, string propertyName) =>
+        element.TryGetProperty(propertyName, out JsonElement value) ? value.GetString() : null;
 
     private static partial class Log
     {

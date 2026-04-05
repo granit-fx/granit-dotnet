@@ -7,6 +7,18 @@ using Wolverine;
 namespace Granit.Subscriptions.Wolverine.Services;
 
 /// <summary>
+/// Groups the parameters needed to create a usage-based invoice.
+/// </summary>
+public sealed record CreateUsageInvoiceRequest(
+    Guid TenantId,
+    Guid MeterDefinitionId,
+    string MeterName,
+    decimal AggregatedValue,
+    string Unit,
+    DateTimeOffset PeriodStart,
+    DateTimeOffset PeriodEnd);
+
+/// <summary>
 /// Creates consolidated invoices (fixed + usage) for PerUnit/Tiered plans.
 /// Exclusive invoice creator for plans with usage components.
 /// </summary>
@@ -18,34 +30,28 @@ public sealed partial class UsageInvoiceOrchestrator(
     ILogger<UsageInvoiceOrchestrator> logger)
 {
     public async Task CreateInvoiceAsync(
-        Guid tenantId,
-        Guid meterDefinitionId,
-        string meterName,
-        decimal aggregatedValue,
-        string unit,
-        DateTimeOffset periodStart,
-        DateTimeOffset periodEnd,
+        CreateUsageInvoiceRequest request,
         CancellationToken cancellationToken)
     {
-        if (tenantId == Guid.Empty)
+        if (request.TenantId == Guid.Empty)
         {
             Log.InvalidEto(logger, "TenantId is empty");
             return;
         }
 
-        if (periodEnd <= periodStart)
+        if (request.PeriodEnd <= request.PeriodStart)
         {
             Log.InvalidEto(logger, "PeriodEnd must be after PeriodStart");
             return;
         }
 
         Subscription? subscription = await subscriptionReader
-            .GetActiveForTenantAsync(tenantId, cancellationToken)
+            .GetActiveForTenantAsync(request.TenantId, cancellationToken)
             .ConfigureAwait(false);
 
         if (subscription is null)
         {
-            Log.NoActiveSubscription(logger, tenantId);
+            Log.NoActiveSubscription(logger, request.TenantId);
             return;
         }
 
@@ -77,26 +83,26 @@ public sealed partial class UsageInvoiceOrchestrator(
 
         decimal unitPrice = await pricingResolver.ResolveUsageUnitPriceAsync(
             subscription.PlanId, subscription.Currency, plan.DefaultInterval,
-            meterDefinitionId.ToString(), subscription.PlanPriceId, cancellationToken)
+            request.MeterDefinitionId.ToString(), subscription.PlanPriceId, cancellationToken)
             .ConfigureAwait(false);
 
         lineItems.Add(new CreateInvoiceLineItem(
-            $"{meterName}: {aggregatedValue} {unit}",
-            aggregatedValue, unitPrice,
+            $"{request.MeterName}: {request.AggregatedValue} {request.Unit}",
+            request.AggregatedValue, unitPrice,
             InvoiceSourceType.Usage,
-            meterDefinitionId.ToString()));
+            request.MeterDefinitionId.ToString()));
 
         var command = new CreateInvoiceCommand(
-            TenantId: tenantId,
+            TenantId: request.TenantId,
             Currency: subscription.Currency,
             CollectionMethod: CollectionMethod.Auto,
             BillingReason: BillingReason.SubscriptionCycle,
             LineItems: lineItems,
-            PeriodStart: periodStart,
-            PeriodEnd: periodEnd);
+            PeriodStart: request.PeriodStart,
+            PeriodEnd: request.PeriodEnd);
 
         await messageBus.PublishAsync(command).ConfigureAwait(false);
-        Log.UsageInvoiceCreated(logger, tenantId, meterName, aggregatedValue);
+        Log.UsageInvoiceCreated(logger, request.TenantId, request.MeterName, request.AggregatedValue);
     }
 
     private static partial class Log

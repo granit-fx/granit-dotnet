@@ -11,8 +11,6 @@ public class OverdueInvoiceDetectionHandler
     public static async Task HandleAsync(
         OverdueInvoiceDetectionJob _,
         IOverdueInvoiceDetectionService detectionService,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) =>
         await detectionService.DetectAsync(cancellationToken).ConfigureAwait(false);
-    }
 }

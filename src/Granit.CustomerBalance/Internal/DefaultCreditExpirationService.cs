@@ -24,7 +24,7 @@ internal sealed partial class DefaultCreditExpirationService(
     CustomerBalanceMetrics metrics,
     ILogger<DefaultCreditExpirationService> logger) : ICreditExpirationService
 {
-    public async Task<int> ExpireCreditsAsync(CancellationToken cancellationToken)
+    public async Task<int> ExpireCreditsAsync(CancellationToken cancellationToken = default)
     {
         using Activity? activity = CustomerBalanceActivitySource.Source
             .StartActivity(CustomerBalanceActivitySource.ExpireCredit);

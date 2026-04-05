@@ -25,7 +25,6 @@ internal static class EuVatRuleEngine
         bool ossEnabled,
         IReadOnlySet<string>? ossCountries)
     {
-        bool sellerInEu = EuCountries.IsEuMember(sellerCountry);
         bool buyerInEu = EuCountries.IsEuMember(buyerCountry);
 
         // 1. Buyer outside EU → Export (0%)

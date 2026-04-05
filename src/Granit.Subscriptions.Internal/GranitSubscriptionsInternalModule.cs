@@ -11,8 +11,6 @@ namespace Granit.Subscriptions.Internal;
 public sealed class GranitSubscriptionsInternalModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.AddSingleton<ISubscriptionProvider, InternalSubscriptionProvider>();
-    }
 }

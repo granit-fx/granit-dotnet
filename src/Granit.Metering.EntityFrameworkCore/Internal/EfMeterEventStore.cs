@@ -75,7 +75,7 @@ internal sealed partial class EfMeterEventStore(
             return true; // PostgreSQL unique_violation
         }
 
-        if (innerType.GetProperty("Number")?.GetValue(ex.InnerException) is int num and (2601 or 2627))
+        if (innerType.GetProperty("Number")?.GetValue(ex.InnerException) is int and (2601 or 2627))
         {
             return true; // SQL Server unique index / unique constraint
         }

@@ -30,10 +30,8 @@ public sealed class EfCoreAuditingCleanerTests : IAsyncDisposable
         ctx.Database.EnsureCreated();
     }
 
-    public async ValueTask DisposeAsync()
-    {
+    public async ValueTask DisposeAsync() =>
         await _connection.DisposeAsync().ConfigureAwait(false);
-    }
 
     [Fact]
     public async Task PseudonymizeByUserAsync_ReplacesPersonalData()

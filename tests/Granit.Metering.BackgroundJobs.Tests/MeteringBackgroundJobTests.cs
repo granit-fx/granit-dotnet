@@ -13,16 +13,12 @@ public sealed class MeteringBackgroundJobTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void MeteringAggregationJob_ShouldImplementIBackgroundJob()
-    {
+    public void MeteringAggregationJob_ShouldImplementIBackgroundJob() =>
         typeof(IBackgroundJob).IsAssignableFrom(typeof(MeteringAggregationJob)).ShouldBeTrue();
-    }
 
     [Fact]
-    public void MeteringAggregationJob_ShouldBeSealedRecord()
-    {
+    public void MeteringAggregationJob_ShouldBeSealedRecord() =>
         typeof(MeteringAggregationJob).IsSealed.ShouldBeTrue();
-    }
 
     [Fact]
     public void MeteringAggregationJob_ShouldHaveRecurringJobAttribute()
@@ -39,16 +35,12 @@ public sealed class MeteringBackgroundJobTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void QuotaThresholdCheckJob_ShouldImplementIBackgroundJob()
-    {
+    public void QuotaThresholdCheckJob_ShouldImplementIBackgroundJob() =>
         typeof(IBackgroundJob).IsAssignableFrom(typeof(QuotaThresholdCheckJob)).ShouldBeTrue();
-    }
 
     [Fact]
-    public void QuotaThresholdCheckJob_ShouldBeSealedRecord()
-    {
+    public void QuotaThresholdCheckJob_ShouldBeSealedRecord() =>
         typeof(QuotaThresholdCheckJob).IsSealed.ShouldBeTrue();
-    }
 
     [Fact]
     public void QuotaThresholdCheckJob_ShouldHaveRecurringJobAttribute()

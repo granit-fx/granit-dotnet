@@ -188,7 +188,8 @@ Two suffixes — enforced by architecture tests:
 
 ### Wolverine handler visibility — CRITICAL
 
-Wolverine discovers handlers via `Assembly.ExportedTypes` (public types only).
+Wolverine discovers handlers via `Assembly.ExportedTypes` and requires **public types
+with public constructors** ([docs](https://wolverinefx.net/guide/handlers/)).
 `static class` types are additionally skipped unless decorated with
 `[WolverineHandler]`, which creates an unwanted dependency on WolverineFx.
 
@@ -196,9 +197,14 @@ Wolverine discovers handlers via `Assembly.ExportedTypes` (public types only).
   This ensures discovery without any attribute or WolverineFx dependency.
 - NEVER use `public static class` — requires `[WolverineHandler]` to be discovered.
 - NEVER use `internal` — invisible to `Assembly.ExportedTypes`.
+- NEVER add a `protected` constructor — Wolverine requires a public constructor for
+  discovery. The implicit parameterless public constructor is intentional.
 - If a handler injects an `internal` service, make the service `public` or extract an
   interface. Never make the handler `internal` to match the service visibility.
 - Background job handlers follow the same rule.
+- **SonarQube S1118** ("utility classes should not have public constructors") is a
+  **false positive** on these handlers — mark as **Won't Fix**. These are not utility
+  classes; they are convention-discovered message handlers.
 
 ### Background Jobs — naming convention (STRICT)
 

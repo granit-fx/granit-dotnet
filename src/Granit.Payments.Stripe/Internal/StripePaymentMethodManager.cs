@@ -15,15 +15,17 @@ internal sealed partial class StripePaymentMethodManager(
     IGuidGenerator guidGenerator,
     ILogger<StripePaymentMethodManager> logger) : IPaymentMethodManager
 {
+    private const string Provider = "stripe";
+
     /// <inheritdoc/>
-    public string ProviderName => "stripe";
+    public string ProviderName => Provider;
 
     /// <inheritdoc/>
     public async Task<IReadOnlyList<PaymentProviderMethod>> ListAsync(
         Guid tenantId, CancellationToken cancellationToken = default)
     {
         ProviderCustomerMapping? mapping = await customerMappingStore
-            .GetAsync("stripe", tenantId, cancellationToken)
+            .GetAsync(Provider, tenantId, cancellationToken)
             .ConfigureAwait(false);
 
         if (mapping is null)
@@ -85,7 +87,7 @@ internal sealed partial class StripePaymentMethodManager(
         Guid tenantId, CancellationToken cancellationToken)
     {
         ProviderCustomerMapping? mapping = await customerMappingStore
-            .GetAsync("stripe", tenantId, cancellationToken)
+            .GetAsync(Provider, tenantId, cancellationToken)
             .ConfigureAwait(false);
 
         if (mapping is not null)
@@ -101,7 +103,7 @@ internal sealed partial class StripePaymentMethodManager(
             },
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        var newMapping = ProviderCustomerMapping.Create(guidGenerator.Create(), "stripe", tenantId, customer.Id);
+        var newMapping = ProviderCustomerMapping.Create(guidGenerator.Create(), Provider, tenantId, customer.Id);
         await customerMappingStore.AddAsync(newMapping, cancellationToken).ConfigureAwait(false);
 
         Log.CustomerCreated(logger, customer.Id, tenantId);

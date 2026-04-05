@@ -226,10 +226,8 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     }
 
     /// <summary>Removes the scheduled cancellation at period end.</summary>
-    public void UnscheduleCancelAtPeriodEnd()
-    {
+    public void UnscheduleCancelAtPeriodEnd() =>
         CancelAtPeriodEnd = false;
-    }
 
     /// <summary>Increments the dunning attempt counter after a payment failure.</summary>
     public void IncrementDunningAttempt() => DunningAttempt++;

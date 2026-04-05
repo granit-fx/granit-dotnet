@@ -17,10 +17,8 @@ public sealed class BalanceAccountIdTests
     }
 
     [Fact]
-    public void Create_WithEmptyGuid_ShouldThrow()
-    {
+    public void Create_WithEmptyGuid_ShouldThrow() =>
         Should.Throw<ArgumentException>(() => BalanceAccountId.Create(Guid.Empty));
-    }
 
     [Fact]
     public void ImplicitConversion_ToGuid_ShouldWork()

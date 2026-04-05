@@ -8,7 +8,7 @@ internal sealed partial class DefaultSubscriptionReactivationService(
     ISubscriptionWriter subscriptionWriter,
     ILogger<DefaultSubscriptionReactivationService> logger) : ISubscriptionReactivationService
 {
-    public async Task<bool> TryReactivateAsync(Guid tenantId, CancellationToken cancellationToken)
+    public async Task<bool> TryReactivateAsync(Guid tenantId, CancellationToken cancellationToken = default)
     {
         Subscription? subscription = await subscriptionReader
             .GetActiveForTenantAsync(tenantId, cancellationToken)

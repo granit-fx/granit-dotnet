@@ -41,8 +41,6 @@ public sealed class Refund : Entity
     }
 
     /// <summary>Marks the refund as failed.</summary>
-    internal void MarkFailed()
-    {
+    internal void MarkFailed() =>
         Status = RefundStatus.Failed;
-    }
 }

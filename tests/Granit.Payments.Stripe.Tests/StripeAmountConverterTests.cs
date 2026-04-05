@@ -12,28 +12,22 @@ public sealed class StripeAmountConverterTests
     [InlineData(0.50, "GBP", 50L)]
     [InlineData(1.00, "EUR", 100L)]
     [InlineData(0, "EUR", 0L)]
-    public void ToStripeAmount_StandardCurrency_ShouldMultiplyBy100(decimal amount, string currency, long expected)
-    {
+    public void ToStripeAmount_StandardCurrency_ShouldMultiplyBy100(decimal amount, string currency, long expected) =>
         StripeAmountConverter.ToStripeAmount(amount, currency).ShouldBe(expected);
-    }
 
     [Theory]
     [InlineData(1000, "JPY", 1000L)]
     [InlineData(5000, "KRW", 5000L)]
     [InlineData(250, "VND", 250L)]
-    public void ToStripeAmount_ZeroDecimalCurrency_ShouldNotMultiply(decimal amount, string currency, long expected)
-    {
+    public void ToStripeAmount_ZeroDecimalCurrency_ShouldNotMultiply(decimal amount, string currency, long expected) =>
         StripeAmountConverter.ToStripeAmount(amount, currency).ShouldBe(expected);
-    }
 
     [Theory]
     [InlineData(2999L, "EUR", 29.99)]
     [InlineData(10000L, "USD", 100.00)]
     [InlineData(50L, "GBP", 0.50)]
-    public void FromStripeAmount_StandardCurrency_ShouldDivideBy100(long amount, string currency, decimal expected)
-    {
+    public void FromStripeAmount_StandardCurrency_ShouldDivideBy100(long amount, string currency, decimal expected) =>
         StripeAmountConverter.FromStripeAmount(amount, currency).ShouldBe(expected);
-    }
 
     [Theory]
     [InlineData(1000L, "JPY", 1000)]
