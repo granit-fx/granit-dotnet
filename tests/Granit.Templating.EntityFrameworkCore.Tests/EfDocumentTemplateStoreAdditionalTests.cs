@@ -5,6 +5,7 @@ using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
 using Granit.Templating.Store;
 using Granit.Timing;
+using Granit.Workflow.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,7 +47,7 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
     private static ITemplateTransitionHook CreateAllowAllHook()
     {
         ITemplateTransitionHook hook = Substitute.For<ITemplateTransitionHook>();
-        hook.CanTransitionAsync(Arg.Any<TemplateLifecycleStatus>(), Arg.Any<TemplateLifecycleStatus>(), Arg.Any<CancellationToken>())
+        hook.CanTransitionAsync(Arg.Any<WorkflowLifecycleStatus>(), Arg.Any<WorkflowLifecycleStatus>(), Arg.Any<CancellationToken>())
             .Returns(true);
         return hook;
     }
@@ -90,7 +91,7 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
         result.ShouldNotBeNull();
         result!.Content.ShouldBe("<p>Draft content</p>");
         result.MimeType.ShouldBe("text/html");
-        result.Status.ShouldBe(TemplateLifecycleStatus.Draft);
+        result.Status.ShouldBe(WorkflowLifecycleStatus.Draft);
         result.CreatedBy.ShouldBe("alice");
     }
 
@@ -201,7 +202,7 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
             TestContext.Current.CancellationToken);
 
         PagedTemplateResult draftOnly = await store.ListTemplatesAsync(
-            new TemplateListFilter(Status: TemplateLifecycleStatus.Draft),
+            new TemplateListFilter(Status: WorkflowLifecycleStatus.Draft),
             TestContext.Current.CancellationToken);
 
         draftOnly.TotalCount.ShouldBe(1);
@@ -237,28 +238,19 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
         // Seed directly with category.
         await using TemplatingDbContext ctx = new InMemoryContextFactory(db).CreateDbContext();
         ctx.TemplateRevisions.AddRange(
-            new TemplateRevisionEntity
-            {
-                RevisionId = Guid.NewGuid(),
-                TemplateName = "WithCategory",
-                Content = "<p>A</p>",
-                MimeType = "text/html",
-                Status = TemplateLifecycleStatus.Draft,
-                CreatedAt = DateTimeOffset.UtcNow,
-                CreatedBy = "alice",
-                CategoryId = categoryId,
-            },
-            new TemplateRevisionEntity
-            {
-                RevisionId = Guid.NewGuid(),
-                TemplateName = "WithoutCategory",
-                Content = "<p>B</p>",
-                MimeType = "text/html",
-                Status = TemplateLifecycleStatus.Draft,
-                CreatedAt = DateTimeOffset.UtcNow,
-                CreatedBy = "bob",
-                CategoryId = null,
-            });
+            TemplateRevisionEntity.Create(
+                Guid.NewGuid(),
+                templateName: "WithCategory",
+                culture: null,
+                content: "<p>A</p>",
+                mimeType: "text/html",
+                categoryId: categoryId),
+            TemplateRevisionEntity.Create(
+                Guid.NewGuid(),
+                templateName: "WithoutCategory",
+                culture: null,
+                content: "<p>B</p>",
+                mimeType: "text/html"));
         await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         PagedTemplateResult result = await store.ListTemplatesAsync(
@@ -305,7 +297,7 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
     {
         string db = NewDb();
         ITemplateTransitionHook hook = Substitute.For<ITemplateTransitionHook>();
-        hook.CanTransitionAsync(Arg.Any<TemplateLifecycleStatus>(), Arg.Any<TemplateLifecycleStatus>(), Arg.Any<CancellationToken>())
+        hook.CanTransitionAsync(Arg.Any<WorkflowLifecycleStatus>(), Arg.Any<WorkflowLifecycleStatus>(), Arg.Any<CancellationToken>())
             .Returns(true);
 
         var store = new EfDocumentTemplateStore(
@@ -325,8 +317,8 @@ public sealed class EfDocumentTemplateStoreAdditionalTests
 
         await hook.Received(1).OnTransitionedAsync(
             Arg.Any<Guid>(),
-            TemplateLifecycleStatus.Published,
-            TemplateLifecycleStatus.Archived,
+            WorkflowLifecycleStatus.Published,
+            WorkflowLifecycleStatus.Archived,
             "carol",
             Arg.Any<CancellationToken>());
     }

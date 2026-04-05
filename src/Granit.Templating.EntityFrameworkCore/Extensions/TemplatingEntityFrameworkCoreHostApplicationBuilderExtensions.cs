@@ -1,6 +1,8 @@
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Templating.EntityFrameworkCore.Internal;
 using Granit.Templating.Store;
+using Granit.Workflow.EntityFrameworkCore.Extensions;
+using Granit.Workflow.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -38,7 +40,23 @@ public static class TemplatingEntityFrameworkCoreHostApplicationBuilderExtension
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddHybridCache();
-        builder.Services.AddGranitDbContext<TemplatingDbContext>(configure);
+
+        // Register workflow interceptor and recorder backed by TemplatingDbContext.
+        builder.Services.AddGranitWorkflowEntityFrameworkCore<TemplatingDbContext>();
+
+        // Register DbContext with both Granit base interceptors and the WorkflowTransitionInterceptor.
+        builder.Services.AddDbContextFactory<TemplatingDbContext>((sp, options) =>
+        {
+            configure(options);
+            options.UseGranitInterceptors(sp);
+
+            WorkflowTransitionInterceptor? workflowInterceptor = sp.GetService<WorkflowTransitionInterceptor>();
+            if (workflowInterceptor is not null)
+            {
+                options.AddInterceptors(workflowInterceptor);
+            }
+        }, ServiceLifetime.Scoped);
+
         builder.Services.AddInternalDbContextEnsurer<TemplatingDbContext>();
         builder.Services.AddScoped<EfDocumentTemplateStore>();
         builder.Services.AddScoped<IDocumentTemplateStoreReader>(sp => sp.GetRequiredService<EfDocumentTemplateStore>());

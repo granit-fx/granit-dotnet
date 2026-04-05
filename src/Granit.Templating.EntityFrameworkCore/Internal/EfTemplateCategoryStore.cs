@@ -2,6 +2,7 @@ using Granit.Domain;
 using Granit.Exceptions;
 using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.Store;
 using Granit.Timing;
@@ -35,6 +36,7 @@ internal sealed class EfTemplateCategoryStore(
 
         // Count templates per category in a single query.
         Dictionary<Guid, int> counts = await ctx.TemplateRevisions
+            .IgnoreQueryFilters([GranitFilterNames.Publishable])
             .Where(r => r.CategoryId != null)
             .GroupBy(r => r.CategoryId!.Value)
             .Select(g => new { CategoryId = g.Key, Count = g.Select(r => r.TemplateName).Distinct().Count() })
@@ -64,6 +66,7 @@ internal sealed class EfTemplateCategoryStore(
         }
 
         int templateCount = await ctx.TemplateRevisions
+            .IgnoreQueryFilters([GranitFilterNames.Publishable])
             .Where(r => r.CategoryId == id)
             .Select(r => r.TemplateName)
             .Distinct()
@@ -154,6 +157,7 @@ internal sealed class EfTemplateCategoryStore(
         await ctx.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         int templateCount = await ctx.TemplateRevisions
+            .IgnoreQueryFilters([GranitFilterNames.Publishable])
             .Where(r => r.CategoryId == id)
             .Select(r => r.TemplateName)
             .Distinct()
@@ -180,6 +184,7 @@ internal sealed class EfTemplateCategoryStore(
         }
 
         int templateCount = await ctx.TemplateRevisions
+            .IgnoreQueryFilters([GranitFilterNames.Publishable])
             .Where(r => r.CategoryId == id)
             .Select(r => r.TemplateName)
             .Distinct()

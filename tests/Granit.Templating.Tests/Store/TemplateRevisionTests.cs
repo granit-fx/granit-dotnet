@@ -1,4 +1,5 @@
 using Granit.Templating.Store;
+using Granit.Workflow.Domain;
 using Shouldly;
 using Xunit;
 
@@ -17,7 +18,8 @@ public sealed class TemplateRevisionTests
             RevisionId = revisionId,
             Content = "<p>Hello</p>",
             MimeType = "text/html",
-            Status = TemplateLifecycleStatus.Published,
+            Status = WorkflowLifecycleStatus.Published,
+            Version = 1,
             CreatedAt = createdAt,
             CreatedBy = "alice",
         };
@@ -25,7 +27,8 @@ public sealed class TemplateRevisionTests
         revision.RevisionId.ShouldBe(revisionId);
         revision.Content.ShouldBe("<p>Hello</p>");
         revision.MimeType.ShouldBe("text/html");
-        revision.Status.ShouldBe(TemplateLifecycleStatus.Published);
+        revision.Status.ShouldBe(WorkflowLifecycleStatus.Published);
+        revision.Version.ShouldBe(1);
         revision.CreatedAt.ShouldBe(createdAt);
         revision.CreatedBy.ShouldBe("alice");
     }
@@ -38,7 +41,8 @@ public sealed class TemplateRevisionTests
             RevisionId = Guid.NewGuid(),
             Content = "<p>Draft</p>",
             MimeType = "text/html",
-            Status = TemplateLifecycleStatus.Draft,
+            Status = WorkflowLifecycleStatus.Draft,
+            Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "bob",
         };
@@ -57,7 +61,8 @@ public sealed class TemplateRevisionTests
             RevisionId = Guid.NewGuid(),
             Content = "<p>Published</p>",
             MimeType = "text/html",
-            Status = TemplateLifecycleStatus.Published,
+            Status = WorkflowLifecycleStatus.Published,
+            Version = 2,
             CreatedAt = DateTimeOffset.UtcNow.AddHours(-1),
             CreatedBy = "alice",
             PublishedAt = publishedAt,

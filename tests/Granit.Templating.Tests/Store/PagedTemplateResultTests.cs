@@ -1,4 +1,5 @@
 using Granit.Templating.Store;
+using Granit.Workflow.Domain;
 using Shouldly;
 using Xunit;
 
@@ -16,7 +17,7 @@ public sealed class PagedTemplateResultTests
                 Name = "Billing.Invoice",
                 Culture = null,
                 MimeType = "text/html",
-                CurrentStatus = TemplateLifecycleStatus.Published,
+                CurrentStatus = WorkflowLifecycleStatus.Published,
                 LastModifiedAt = DateTimeOffset.UtcNow,
                 LastModifiedBy = "alice",
                 HasPublishedVersion = true,

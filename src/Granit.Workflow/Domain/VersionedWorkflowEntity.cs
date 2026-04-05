@@ -80,12 +80,22 @@ public abstract class VersionedWorkflowEntity : AuditedAggregateRoot, IVersioned
             "Derived classes must implement IWorkflowStateful.WorkflowEntityType explicitly.");
 
     /// <summary>
-    /// Transitions the lifecycle status. Subtypes should expose domain-specific behavior
-    /// methods (e.g., <c>Publish()</c>, <c>Archive()</c>) that call this method.
+    /// Transitions the lifecycle status and keeps <see cref="IsPublished"/> in sync.
+    /// Subtypes should expose domain-specific behavior methods (e.g., <c>Publish()</c>,
+    /// <c>Archive()</c>) that call this method.
     /// </summary>
     /// <param name="status">The new lifecycle status.</param>
-    protected void SetLifecycleStatus(WorkflowLifecycleStatus status) =>
+    /// <remarks>
+    /// The <c>WorkflowTransitionInterceptor</c> also syncs <see cref="IsPublished"/>
+    /// during <c>SaveChanges</c>, but setting it here ensures the entity is self-consistent
+    /// immediately after the domain method call — important for InMemory test scenarios
+    /// where interceptors do not run.
+    /// </remarks>
+    protected void SetLifecycleStatus(WorkflowLifecycleStatus status)
+    {
         LifecycleStatus = status;
+        ((IPublishable)this).IsPublished = status == WorkflowLifecycleStatus.Published;
+    }
 
     /// <inheritdoc/>
     public virtual string GetWorkflowEntityId() => Id.ToString();

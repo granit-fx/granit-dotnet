@@ -4,6 +4,7 @@ using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.EntityFrameworkCore.Internal;
 using Granit.Templating.Store;
 using Granit.Timing;
+using Granit.Workflow.Domain;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;
@@ -97,18 +98,15 @@ public sealed class EfTemplateCategoryStoreTests
 
         // Seed a template revision linked to this category.
         await using TemplatingDbContext ctx = new InMemoryContextFactory(db).CreateDbContext();
-        ctx.TemplateRevisions.Add(new TemplateRevisionEntity
-        {
-            RevisionId = Guid.NewGuid(),
-            TemplateName = "Invoice.Main",
-            Culture = null,
-            Content = "<p>Invoice</p>",
-            MimeType = "text/html",
-            Status = TemplateLifecycleStatus.Published,
-            CreatedAt = DateTimeOffset.UtcNow,
-            CreatedBy = "alice",
-            CategoryId = category.Id,
-        });
+        var revision = TemplateRevisionEntity.Create(
+            Guid.NewGuid(),
+            templateName: "Invoice.Main",
+            culture: null,
+            content: "<p>Invoice</p>",
+            mimeType: "text/html",
+            categoryId: category.Id);
+        revision.Publish("alice", DateTimeOffset.UtcNow);
+        ctx.TemplateRevisions.Add(revision);
         await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         IReadOnlyList<TemplateCategory> result = await store.ListCategoriesAsync(
@@ -166,29 +164,22 @@ public sealed class EfTemplateCategoryStoreTests
 
         // Seed two template revisions (different names) linked to this category.
         await using TemplatingDbContext ctx = new InMemoryContextFactory(db).CreateDbContext();
-        ctx.TemplateRevisions.AddRange(
-            new TemplateRevisionEntity
-            {
-                RevisionId = Guid.NewGuid(),
-                TemplateName = "Report.A",
-                Content = "<p>A</p>",
-                MimeType = "text/html",
-                Status = TemplateLifecycleStatus.Published,
-                CreatedAt = DateTimeOffset.UtcNow,
-                CreatedBy = "alice",
-                CategoryId = category.Id,
-            },
-            new TemplateRevisionEntity
-            {
-                RevisionId = Guid.NewGuid(),
-                TemplateName = "Report.B",
-                Content = "<p>B</p>",
-                MimeType = "text/html",
-                Status = TemplateLifecycleStatus.Draft,
-                CreatedAt = DateTimeOffset.UtcNow,
-                CreatedBy = "bob",
-                CategoryId = category.Id,
-            });
+        var revisionA = TemplateRevisionEntity.Create(
+            Guid.NewGuid(),
+            templateName: "Report.A",
+            culture: null,
+            content: "<p>A</p>",
+            mimeType: "text/html",
+            categoryId: category.Id);
+        revisionA.Publish("alice", DateTimeOffset.UtcNow);
+        var revisionB = TemplateRevisionEntity.Create(
+            Guid.NewGuid(),
+            templateName: "Report.B",
+            culture: null,
+            content: "<p>B</p>",
+            mimeType: "text/html",
+            categoryId: category.Id);
+        ctx.TemplateRevisions.AddRange(revisionA, revisionB);
         await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         TemplateCategory? result = await store.GetCategoryAsync(category.Id,
@@ -350,17 +341,13 @@ public sealed class EfTemplateCategoryStoreTests
 
         // Seed a template revision linked to this category.
         await using TemplatingDbContext ctx = new InMemoryContextFactory(db).CreateDbContext();
-        ctx.TemplateRevisions.Add(new TemplateRevisionEntity
-        {
-            RevisionId = Guid.NewGuid(),
-            TemplateName = "Invoice.Main",
-            Content = "<p>Invoice</p>",
-            MimeType = "text/html",
-            Status = TemplateLifecycleStatus.Draft,
-            CreatedAt = DateTimeOffset.UtcNow,
-            CreatedBy = "alice",
-            CategoryId = category.Id,
-        });
+        ctx.TemplateRevisions.Add(TemplateRevisionEntity.Create(
+            Guid.NewGuid(),
+            templateName: "Invoice.Main",
+            culture: null,
+            content: "<p>Invoice</p>",
+            mimeType: "text/html",
+            categoryId: category.Id));
         await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         Func<Task> act = () => store.DeleteCategoryAsync(category.Id,

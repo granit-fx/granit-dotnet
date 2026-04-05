@@ -15,6 +15,7 @@ using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
 using Granit.Templating.Store;
 using Granit.Users;
+using Granit.Workflow.Domain;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -131,7 +132,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             Name = "Billing.Invoice",
             Culture = "fr",
             MimeType = "text/html",
-            CurrentStatus = TemplateLifecycleStatus.Draft,
+            CurrentStatus = WorkflowLifecycleStatus.Draft,
             LastModifiedAt = DateTimeOffset.UtcNow,
             LastModifiedBy = "user-1",
             HasPublishedVersion = false,
@@ -240,7 +241,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             RevisionId = Guid.NewGuid(),
             Content = "<h1>Draft</h1>",
             MimeType = "text/html",
-            Status = TemplateLifecycleStatus.Draft,
+            Status = WorkflowLifecycleStatus.Draft,
+            Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "user-1",
         };
@@ -273,7 +275,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             RevisionId = Guid.NewGuid(),
             Content = "<h1>Draft v2</h1>",
             MimeType = "text/html",
-            Status = TemplateLifecycleStatus.Draft,
+            Status = WorkflowLifecycleStatus.Draft,
+            Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "user-1",
         };
@@ -282,7 +285,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             RevisionId = Guid.NewGuid(),
             Content = "<h1>Published</h1>",
             MimeType = "text/html",
-            Status = TemplateLifecycleStatus.Published,
+            Status = WorkflowLifecycleStatus.Published,
+            Version = 1,
             CreatedAt = DateTimeOffset.UtcNow.AddDays(-1),
             CreatedBy = "user-1",
             PublishedAt = DateTimeOffset.UtcNow.AddHours(-1),
@@ -362,7 +366,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             RevisionId = Guid.NewGuid(),
             Content = "<h1>Hello</h1>",
             MimeType = "text/html",
-            Status = TemplateLifecycleStatus.Draft,
+            Status = WorkflowLifecycleStatus.Draft,
+            Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "test-user",
         };
@@ -452,7 +457,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             RevisionId = Guid.NewGuid(),
             Content = "<h1>Updated</h1>",
             MimeType = "text/html",
-            Status = TemplateLifecycleStatus.Draft,
+            Status = WorkflowLifecycleStatus.Draft,
+            Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "test-user",
         };
@@ -587,7 +593,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             RevisionId = Guid.NewGuid(),
             Content = "<h1>Published</h1>",
             MimeType = "text/html",
-            Status = TemplateLifecycleStatus.Published,
+            Status = WorkflowLifecycleStatus.Published,
+            Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "test-user",
             PublishedAt = DateTimeOffset.UtcNow,
@@ -640,7 +647,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     {
         _storeWriter.PublishAsync(Arg.Any<TemplateKey>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .ThrowsAsync(new TemplateTransitionDeniedException(
-                TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.Published));
+                WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.Published));
 
         HttpResponseMessage response = await _adminClient.PostAsync(
             $"{Prefix}/Billing.Invoice/publish",
@@ -702,7 +709,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     {
         _storeWriter.UnpublishAsync(Arg.Any<TemplateKey>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .ThrowsAsync(new TemplateTransitionDeniedException(
-                TemplateLifecycleStatus.Published, TemplateLifecycleStatus.Archived));
+                WorkflowLifecycleStatus.Published, WorkflowLifecycleStatus.Archived));
 
         HttpResponseMessage response = await _adminClient.PostAsync(
             $"{Prefix}/Billing.Invoice/unpublish",
@@ -763,7 +770,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             RevisionId = Guid.NewGuid(),
             Content = "<h1>Draft</h1>",
             MimeType = "text/html",
-            Status = TemplateLifecycleStatus.Draft,
+            Status = WorkflowLifecycleStatus.Draft,
+            Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "user-1",
         };
@@ -774,12 +782,12 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
 
         _transitionHook.IsWorkflowEnabled.Returns(false);
         _transitionHook.CanTransitionAsync(
-                Arg.Any<TemplateLifecycleStatus>(), Arg.Any<TemplateLifecycleStatus>(), Arg.Any<CancellationToken>())
+                Arg.Any<WorkflowLifecycleStatus>(), Arg.Any<WorkflowLifecycleStatus>(), Arg.Any<CancellationToken>())
             .Returns(callInfo =>
             {
-                TemplateLifecycleStatus from = callInfo.ArgAt<TemplateLifecycleStatus>(0);
-                TemplateLifecycleStatus target = callInfo.ArgAt<TemplateLifecycleStatus>(1);
-                return from == TemplateLifecycleStatus.Draft && target == TemplateLifecycleStatus.Published;
+                WorkflowLifecycleStatus from = callInfo.ArgAt<WorkflowLifecycleStatus>(0);
+                WorkflowLifecycleStatus target = callInfo.ArgAt<WorkflowLifecycleStatus>(1);
+                return from == WorkflowLifecycleStatus.Draft && target == WorkflowLifecycleStatus.Published;
             });
 
         HttpResponseMessage response = await _adminClient.GetAsync(
@@ -792,9 +800,9 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 TestContext.Current.CancellationToken);
         result.ShouldNotBeNull();
         result.Name.ShouldBe("Billing.Invoice");
-        result.CurrentStatus.ShouldBe(TemplateLifecycleStatus.Draft);
+        result.CurrentStatus.ShouldBe(WorkflowLifecycleStatus.Draft);
         result.WorkflowEnabled.ShouldBeFalse();
-        result.AvailableTransitions.ShouldContain(TemplateLifecycleStatus.Published);
+        result.AvailableTransitions.ShouldContain(WorkflowLifecycleStatus.Published);
     }
 
     [Fact]
@@ -855,7 +863,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 RevisionId = Guid.NewGuid(),
                 Content = "<h1>Published</h1>",
                 MimeType = "text/html",
-                Status = TemplateLifecycleStatus.Published,
+                Status = WorkflowLifecycleStatus.Published,
+                Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "user-1",
                 PublishedAt = DateTimeOffset.UtcNow,
@@ -866,7 +875,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 RevisionId = Guid.NewGuid(),
                 Content = "<h1>Archived old</h1>",
                 MimeType = "text/html",
-                Status = TemplateLifecycleStatus.Archived,
+                Status = WorkflowLifecycleStatus.Archived,
+                Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow.AddDays(-7),
                 CreatedBy = "user-1",
             },
@@ -897,7 +907,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 RevisionId = Guid.NewGuid(),
                 Content = $"<p>Rev {i}</p>",
                 MimeType = "text/html",
-                Status = TemplateLifecycleStatus.Archived,
+                Status = WorkflowLifecycleStatus.Archived,
+                Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow.AddDays(-i),
                 CreatedBy = "user-1",
             })
@@ -966,7 +977,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
             RevisionId = revisionId,
             Content = "<h1>Full content</h1>",
             MimeType = "text/html",
-            Status = TemplateLifecycleStatus.Archived,
+            Status = WorkflowLifecycleStatus.Archived,
+            Version = 1,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "user-1",
         };
@@ -1148,7 +1160,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 RevisionId = Guid.NewGuid(),
                 Content = "<h1>Hello</h1>",
                 MimeType = "text/html",
-                Status = TemplateLifecycleStatus.Draft,
+                Status = WorkflowLifecycleStatus.Draft,
+                Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "admin",
             });
@@ -1172,7 +1185,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 RevisionId = revisionId,
                 Content = "<h1>Hello {{ name }}</h1>",
                 MimeType = "text/html",
-                Status = TemplateLifecycleStatus.Draft,
+                Status = WorkflowLifecycleStatus.Draft,
+                Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "admin",
             });
@@ -1208,7 +1222,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 RevisionId = revisionId,
                 Content = "<p>Bonjour</p>",
                 MimeType = "text/html",
-                Status = TemplateLifecycleStatus.Draft,
+                Status = WorkflowLifecycleStatus.Draft,
+                Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "admin",
             });
@@ -1238,7 +1253,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 RevisionId = Guid.NewGuid(),
                 Content = "{{ invalid syntax",
                 MimeType = "text/html",
-                Status = TemplateLifecycleStatus.Draft,
+                Status = WorkflowLifecycleStatus.Draft,
+                Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "admin",
             });
@@ -1274,7 +1290,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 RevisionId = Guid.NewGuid(),
                 Content = "binary-content",
                 MimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                Status = TemplateLifecycleStatus.Draft,
+                Status = WorkflowLifecycleStatus.Draft,
+                Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "admin",
             });
@@ -1326,7 +1343,8 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
                 RevisionId = revisionId,
                 Content = "<p>No data</p>",
                 MimeType = "text/html",
-                Status = TemplateLifecycleStatus.Draft,
+                Status = WorkflowLifecycleStatus.Draft,
+                Version = 1,
                 CreatedAt = DateTimeOffset.UtcNow,
                 CreatedBy = "admin",
             });

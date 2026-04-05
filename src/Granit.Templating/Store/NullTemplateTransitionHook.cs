@@ -1,20 +1,11 @@
+using Granit.Workflow.Domain;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Templating.Store;
 
 /// <summary>
 /// Default no-op implementation of <see cref="ITemplateTransitionHook"/>.
-/// Allows simple lifecycle transitions without any Workflow dependency.
 /// </summary>
-/// <remarks>
-/// Same pattern as <c>NullTenantContext</c> in <c>Granit.MultiTenancy</c>:
-/// provides a safe default when the Workflow module is not installed.
-/// <para>
-/// <strong>Security note:</strong> this implementation performs NO permission checks
-/// on transitions. Add <c>Granit.Templating.Workflow</c> to enforce workflow approval
-/// before publication (ISO 27001 compliance).
-/// </para>
-/// </remarks>
 internal sealed partial class NullTemplateTransitionHook(
     ILogger<NullTemplateTransitionHook> logger) : ITemplateTransitionHook
 {
@@ -25,8 +16,8 @@ internal sealed partial class NullTemplateTransitionHook(
 
     /// <inheritdoc/>
     public Task<bool> CanTransitionAsync(
-        TemplateLifecycleStatus from,
-        TemplateLifecycleStatus target,
+        WorkflowLifecycleStatus from,
+        WorkflowLifecycleStatus target,
         CancellationToken cancellationToken = default)
     {
         if (Interlocked.CompareExchange(ref _warningLogged, 1, 0) == 0)
@@ -35,22 +26,22 @@ internal sealed partial class NullTemplateTransitionHook(
         }
 
         return Task.FromResult((from, target) is
-            (TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.Published) or
-            (TemplateLifecycleStatus.Published, TemplateLifecycleStatus.Archived) or
-            (TemplateLifecycleStatus.Published, TemplateLifecycleStatus.Draft));
+            (WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.Published) or
+            (WorkflowLifecycleStatus.Published, WorkflowLifecycleStatus.Archived) or
+            (WorkflowLifecycleStatus.Published, WorkflowLifecycleStatus.Draft));
     }
 
     /// <inheritdoc/>
     public Task OnTransitionedAsync(
         Guid revisionId,
-        TemplateLifecycleStatus from,
-        TemplateLifecycleStatus target,
+        WorkflowLifecycleStatus from,
+        WorkflowLifecycleStatus target,
         string userId,
         CancellationToken cancellationToken = default) =>
         Task.CompletedTask;
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Granit.Templating.Workflow is not installed — template transitions bypass workflow approval. " +
+        Message = "Granit.Templating.Workflow is not installed -- template transitions bypass workflow approval. " +
                   "Add Granit.Templating.Workflow to enforce approval workflows (ISO 27001 compliance)")]
     private partial void LogNoWorkflowModule();
 }

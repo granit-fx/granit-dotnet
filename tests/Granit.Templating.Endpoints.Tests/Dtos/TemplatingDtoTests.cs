@@ -1,5 +1,6 @@
 using Granit.Templating.Endpoints.Dtos;
 using Granit.Templating.Store;
+using Granit.Workflow.Domain;
 using Shouldly;
 using Xunit;
 
@@ -95,7 +96,7 @@ public sealed class TemplatingDtoTests
     {
         TemplateListItemResponse item = new(
             "Billing.Invoice", null, "text/html",
-            TemplateLifecycleStatus.Published,
+            WorkflowLifecycleStatus.Published,
             DateTimeOffset.UtcNow, "alice", true, null);
 
         TemplateListResponse response = new([item], 1);
@@ -114,13 +115,13 @@ public sealed class TemplatingDtoTests
         DateTimeOffset lastModified = DateTimeOffset.UtcNow;
         TemplateListItemResponse item = new(
             "Billing.Invoice", "fr-BE", "text/html",
-            TemplateLifecycleStatus.Draft,
+            WorkflowLifecycleStatus.Draft,
             lastModified, "bob", false, null);
 
         item.Name.ShouldBe("Billing.Invoice");
         item.Culture.ShouldBe("fr-BE");
         item.MimeType.ShouldBe("text/html");
-        item.CurrentStatus.ShouldBe(TemplateLifecycleStatus.Draft);
+        item.CurrentStatus.ShouldBe(WorkflowLifecycleStatus.Draft);
         item.LastModifiedAt.ShouldBe(lastModified);
         item.LastModifiedBy.ShouldBe("bob");
         item.HasPublishedVersion.ShouldBeFalse();

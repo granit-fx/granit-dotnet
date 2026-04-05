@@ -1,4 +1,5 @@
 using Granit.Templating.Store;
+using Granit.Workflow.Domain;
 using Shouldly;
 using Xunit;
 
@@ -16,7 +17,7 @@ public sealed class TemplateSummaryTests
             Name = "Billing.Invoice",
             Culture = "fr-BE",
             MimeType = "text/html",
-            CurrentStatus = TemplateLifecycleStatus.Published,
+            CurrentStatus = WorkflowLifecycleStatus.Published,
             LastModifiedAt = lastModified,
             LastModifiedBy = "alice",
             HasPublishedVersion = true,
@@ -25,7 +26,7 @@ public sealed class TemplateSummaryTests
         summary.Name.ShouldBe("Billing.Invoice");
         summary.Culture.ShouldBe("fr-BE");
         summary.MimeType.ShouldBe("text/html");
-        summary.CurrentStatus.ShouldBe(TemplateLifecycleStatus.Published);
+        summary.CurrentStatus.ShouldBe(WorkflowLifecycleStatus.Published);
         summary.LastModifiedAt.ShouldBe(lastModified);
         summary.LastModifiedBy.ShouldBe("alice");
         summary.HasPublishedVersion.ShouldBeTrue();
@@ -39,7 +40,7 @@ public sealed class TemplateSummaryTests
             Name = "Billing.Invoice",
             Culture = null,
             MimeType = "text/html",
-            CurrentStatus = TemplateLifecycleStatus.Draft,
+            CurrentStatus = WorkflowLifecycleStatus.Draft,
             LastModifiedAt = DateTimeOffset.UtcNow,
             LastModifiedBy = "bob",
             HasPublishedVersion = false,

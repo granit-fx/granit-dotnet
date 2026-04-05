@@ -14,15 +14,8 @@ public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Replaces the default <see cref="NullTemplateTransitionHook"/> with a Workflow-aware
-    /// implementation that provides FSM validation, approval routing, and unified ISO 27001 audit trail.
+    /// implementation that provides FSM validation and approval routing.
     /// </summary>
-    /// <remarks>
-    /// <see cref="IWorkflowTransitionRecorder"/> must be registered separately,
-    /// typically via <c>AddGranitWorkflowEntityFrameworkCore&lt;TDbContext&gt;()</c>
-    /// from the <c>Granit.Workflow.EntityFrameworkCore</c> package.
-    /// </remarks>
-    /// <param name="services">The service collection.</param>
-    /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddGranitTemplatingWorkflow(
         this IServiceCollection services)
     {

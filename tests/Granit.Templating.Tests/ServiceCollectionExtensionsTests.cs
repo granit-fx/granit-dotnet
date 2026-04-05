@@ -3,6 +3,7 @@ using Granit.Templating.Extensions;
 using Granit.Templating.GlobalContext;
 using Granit.Templating.Pipeline;
 using Granit.Templating.Store;
+using Granit.Workflow.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
@@ -152,9 +153,9 @@ public sealed class ServiceCollectionExtensionsTests
     private sealed class FakeTransitionHook : ITemplateTransitionHook
     {
         public bool IsWorkflowEnabled => true;
-        public Task<bool> CanTransitionAsync(TemplateLifecycleStatus from, TemplateLifecycleStatus to, CancellationToken cancellationToken) =>
+        public Task<bool> CanTransitionAsync(WorkflowLifecycleStatus from, WorkflowLifecycleStatus to, CancellationToken cancellationToken) =>
             Task.FromResult(true);
-        public Task OnTransitionedAsync(Guid revisionId, TemplateLifecycleStatus from, TemplateLifecycleStatus to, string userId, CancellationToken cancellationToken) =>
+        public Task OnTransitionedAsync(Guid revisionId, WorkflowLifecycleStatus from, WorkflowLifecycleStatus to, string userId, CancellationToken cancellationToken) =>
             Task.CompletedTask;
     }
 }

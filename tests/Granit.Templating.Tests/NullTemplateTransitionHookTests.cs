@@ -1,4 +1,5 @@
 using Granit.Templating.Store;
+using Granit.Workflow.Domain;
 using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
@@ -14,16 +15,16 @@ public sealed class NullTemplateTransitionHookTests
         _hook.IsWorkflowEnabled.ShouldBeFalse();
 
     [Theory]
-    [InlineData(TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.Published, true)]
-    [InlineData(TemplateLifecycleStatus.Published, TemplateLifecycleStatus.Archived, true)]
-    [InlineData(TemplateLifecycleStatus.Published, TemplateLifecycleStatus.Draft, true)]
-    [InlineData(TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.Archived, false)]
-    [InlineData(TemplateLifecycleStatus.Archived, TemplateLifecycleStatus.Draft, false)]
-    [InlineData(TemplateLifecycleStatus.Archived, TemplateLifecycleStatus.Published, false)]
-    [InlineData(TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.PendingReview, false)]
-    [InlineData(TemplateLifecycleStatus.PendingReview, TemplateLifecycleStatus.Published, false)]
+    [InlineData(WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.Published, true)]
+    [InlineData(WorkflowLifecycleStatus.Published, WorkflowLifecycleStatus.Archived, true)]
+    [InlineData(WorkflowLifecycleStatus.Published, WorkflowLifecycleStatus.Draft, true)]
+    [InlineData(WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.Archived, false)]
+    [InlineData(WorkflowLifecycleStatus.Archived, WorkflowLifecycleStatus.Draft, false)]
+    [InlineData(WorkflowLifecycleStatus.Archived, WorkflowLifecycleStatus.Published, false)]
+    [InlineData(WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.PendingReview, false)]
+    [InlineData(WorkflowLifecycleStatus.PendingReview, WorkflowLifecycleStatus.Published, false)]
     public async Task CanTransitionAsync_ReturnsExpectedResult(
-        TemplateLifecycleStatus from, TemplateLifecycleStatus to, bool expected)
+        WorkflowLifecycleStatus from, WorkflowLifecycleStatus to, bool expected)
     {
         bool result = await _hook.CanTransitionAsync(from, to,
             TestContext.Current.CancellationToken);
@@ -36,8 +37,8 @@ public sealed class NullTemplateTransitionHookTests
     {
         await Should.NotThrowAsync(() => _hook.OnTransitionedAsync(
             Guid.NewGuid(),
-            TemplateLifecycleStatus.Draft,
-            TemplateLifecycleStatus.Published,
+            WorkflowLifecycleStatus.Draft,
+            WorkflowLifecycleStatus.Published,
             "alice",
             TestContext.Current.CancellationToken));
     }

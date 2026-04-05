@@ -1,4 +1,5 @@
 using Granit.Templating.Store;
+using Granit.Workflow.Domain;
 using Shouldly;
 using Xunit;
 
@@ -27,14 +28,14 @@ public sealed class TemplateListFilterTests
             Page: 3,
             PageSize: 50,
             Search: "Invoice",
-            Status: TemplateLifecycleStatus.Published,
+            Status: WorkflowLifecycleStatus.Published,
             Culture: "fr",
             CategoryId: categoryId);
 
         filter.Page.ShouldBe(3);
         filter.PageSize.ShouldBe(50);
         filter.Search.ShouldBe("Invoice");
-        filter.Status.ShouldBe(TemplateLifecycleStatus.Published);
+        filter.Status.ShouldBe(WorkflowLifecycleStatus.Published);
         filter.Culture.ShouldBe("fr");
         filter.CategoryId.ShouldBe(categoryId);
     }

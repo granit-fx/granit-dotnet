@@ -22,6 +22,7 @@ using Granit.Templating.Pipeline;
 using Granit.Templating.Store;
 using Granit.Users;
 using Granit.Validation.AspNetCore;
+using Granit.Workflow.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -365,7 +366,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
         {
             IReadOnlyList<TemplateRevision> history = await storeReader.GetHistoryAsync(key, cancellationToken).ConfigureAwait(false);
             TemplateRevision? publishedRevision = history.FirstOrDefault(
-                r => r.Status == TemplateLifecycleStatus.Published);
+                r => r.Status == WorkflowLifecycleStatus.Published);
 
             if (publishedRevision is not null)
             {
@@ -426,7 +427,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
         {
             IReadOnlyList<TemplateRevision> history = await storeReader.GetHistoryAsync(key, cancellationToken).ConfigureAwait(false);
             TemplateRevision? publishedRevision = history.FirstOrDefault(
-                r => r.Status == TemplateLifecycleStatus.Published);
+                r => r.Status == WorkflowLifecycleStatus.Published);
 
             if (publishedRevision is not null)
             {
@@ -483,7 +484,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
         {
             IReadOnlyList<TemplateRevision> history = await storeReader.GetHistoryAsync(key, cancellationToken).ConfigureAwait(false);
             TemplateRevision? publishedRevision = history.FirstOrDefault(
-                r => r.Status == TemplateLifecycleStatus.Published);
+                r => r.Status == WorkflowLifecycleStatus.Published);
 
             if (publishedRevision is not null)
             {
@@ -703,24 +704,24 @@ public static class TemplatingEndpointRouteBuilderExtensions
         }
 
         // Determine the current status (Draft takes precedence for display)
-        TemplateLifecycleStatus currentStatus = draft is not null
-            ? TemplateLifecycleStatus.Draft
-            : TemplateLifecycleStatus.Published;
+        WorkflowLifecycleStatus currentStatus = draft is not null
+            ? WorkflowLifecycleStatus.Draft
+            : WorkflowLifecycleStatus.Published;
 
         ITemplateTransitionHook? hook = context.RequestServices.GetService<ITemplateTransitionHook>();
         bool workflowEnabled = hook?.IsWorkflowEnabled ?? false;
 
         // Compute available transitions from the current status
-        List<TemplateLifecycleStatus> availableTransitions = [];
-        TemplateLifecycleStatus[] possibleTargets =
+        List<WorkflowLifecycleStatus> availableTransitions = [];
+        WorkflowLifecycleStatus[] possibleTargets =
         [
-            TemplateLifecycleStatus.Draft,
-            TemplateLifecycleStatus.PendingReview,
-            TemplateLifecycleStatus.Published,
-            TemplateLifecycleStatus.Archived,
+            WorkflowLifecycleStatus.Draft,
+            WorkflowLifecycleStatus.PendingReview,
+            WorkflowLifecycleStatus.Published,
+            WorkflowLifecycleStatus.Archived,
         ];
 
-        foreach (TemplateLifecycleStatus target in possibleTargets)
+        foreach (WorkflowLifecycleStatus target in possibleTargets)
         {
             if (target == currentStatus)
             {
@@ -1214,7 +1215,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
         {
             IReadOnlyList<TemplateRevision> history = await storeReader.GetHistoryAsync(key, cancellationToken).ConfigureAwait(false);
             TemplateRevision? publishedRevision = history.FirstOrDefault(
-                r => r.Status == TemplateLifecycleStatus.Published);
+                r => r.Status == WorkflowLifecycleStatus.Published);
 
             if (publishedRevision is not null)
             {

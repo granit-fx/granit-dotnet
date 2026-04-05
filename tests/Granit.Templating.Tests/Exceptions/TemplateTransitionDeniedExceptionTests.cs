@@ -1,6 +1,7 @@
 using Granit.Exceptions;
 using Granit.Templating.Exceptions;
 using Granit.Templating.Store;
+using Granit.Workflow.Domain;
 using Shouldly;
 using Xunit;
 
@@ -12,19 +13,19 @@ public sealed class TemplateTransitionDeniedExceptionTests
     public void Constructor_SetsFromAndToProperties()
     {
         TemplateTransitionDeniedException ex = new(
-            TemplateLifecycleStatus.Draft,
-            TemplateLifecycleStatus.Archived);
+            WorkflowLifecycleStatus.Draft,
+            WorkflowLifecycleStatus.Archived);
 
-        ex.From.ShouldBe(TemplateLifecycleStatus.Draft);
-        ex.To.ShouldBe(TemplateLifecycleStatus.Archived);
+        ex.From.ShouldBe(WorkflowLifecycleStatus.Draft);
+        ex.To.ShouldBe(WorkflowLifecycleStatus.Archived);
     }
 
     [Fact]
     public void Constructor_MessageContainsFromAndTo()
     {
         TemplateTransitionDeniedException ex = new(
-            TemplateLifecycleStatus.Published,
-            TemplateLifecycleStatus.Draft);
+            WorkflowLifecycleStatus.Published,
+            WorkflowLifecycleStatus.Draft);
 
         ex.Message.ShouldContain("Published");
         ex.Message.ShouldContain("Draft");
@@ -34,18 +35,18 @@ public sealed class TemplateTransitionDeniedExceptionTests
     public void Exception_IsConflictException()
     {
         TemplateTransitionDeniedException ex = new(
-            TemplateLifecycleStatus.Draft,
-            TemplateLifecycleStatus.Published);
+            WorkflowLifecycleStatus.Draft,
+            WorkflowLifecycleStatus.Published);
 
         ex.ShouldBeAssignableTo<ConflictException>();
     }
 
     [Theory]
-    [InlineData(TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.Published)]
-    [InlineData(TemplateLifecycleStatus.Published, TemplateLifecycleStatus.Archived)]
-    [InlineData(TemplateLifecycleStatus.Archived, TemplateLifecycleStatus.Draft)]
+    [InlineData(WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.Published)]
+    [InlineData(WorkflowLifecycleStatus.Published, WorkflowLifecycleStatus.Archived)]
+    [InlineData(WorkflowLifecycleStatus.Archived, WorkflowLifecycleStatus.Draft)]
     public void Constructor_AllTransitionCombinations_SetCorrectProperties(
-        TemplateLifecycleStatus from, TemplateLifecycleStatus to)
+        WorkflowLifecycleStatus from, WorkflowLifecycleStatus to)
     {
         TemplateTransitionDeniedException ex = new(from, to);
 

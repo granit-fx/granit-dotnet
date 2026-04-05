@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+    <ProjectReference Include="..\Granit.Workflow\Granit.Workflow.csproj" />
     <!-- Optional at runtime: ICurrentTenant resolved via GetService — no GranitMultiTenancyModule required -->
   </ItemGroup>
 

@@ -3,6 +3,9 @@ using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.EntityFrameworkCore.Extensions;
+using Granit.Workflow.Domain;
+using Granit.Workflow.EntityFrameworkCore;
+using Granit.Workflow.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Templating.EntityFrameworkCore.Internal;
@@ -10,26 +13,20 @@ namespace Granit.Templating.EntityFrameworkCore.Internal;
 /// <summary>
 /// Dedicated EF Core DbContext for Granit template revisions.
 /// </summary>
-/// <remarks>
-/// Isolated from the host application's DbContext to avoid coupling.
-/// Compatible with PostgreSQL and SQL Server.
-/// </remarks>
 internal sealed class TemplatingDbContext(
     DbContextOptions<TemplatingDbContext> options,
     ICurrentTenant? currentTenant = null,
     IDataFilter? dataFilter = null)
-    : DbContext(options)
+    : DbContext(options), IWorkflowDbContext
 {
-    /// <summary>All template revisions (Draft, PendingReview, Published, Archived).</summary>
     public DbSet<TemplateRevisionEntity> TemplateRevisions { get; set; } = null!;
-
-    /// <summary>Template categories for organizing templates by domain.</summary>
     public DbSet<TemplateCategoryEntity> TemplateCategories { get; set; } = null!;
+    public DbSet<WorkflowTransitionRecord> WorkflowTransitionRecords => Set<WorkflowTransitionRecord>();
 
-    /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.ConfigureWorkflowModule();
         modelBuilder.ConfigureTemplatingModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }

@@ -1,5 +1,3 @@
-using Granit.MultiTenancy;
-using Granit.Templating.Store;
 using Granit.Templating.Workflow.Internal;
 using Granit.Workflow;
 using Granit.Workflow.Domain;
@@ -16,23 +14,16 @@ public sealed class WorkflowTemplateTransitionHookTests
     // -------------------------------------------------------------------------
 
     private static WorkflowTemplateTransitionHook CreateHook(
-        IWorkflowManager<WorkflowLifecycleStatus>? workflowManager = null,
-        IWorkflowTransitionRecorder? recorder = null,
-        ICurrentTenant? currentTenant = null)
+        IWorkflowManager<WorkflowLifecycleStatus>? workflowManager = null)
     {
         IWorkflowManager<WorkflowLifecycleStatus> manager = workflowManager ?? CreateDefaultManager();
-        IWorkflowTransitionRecorder rec = recorder ?? Substitute.For<IWorkflowTransitionRecorder>();
-        ICurrentTenant tenant = currentTenant ?? CreateNullTenant();
-
-        return new WorkflowTemplateTransitionHook(manager, rec, tenant);
+        return new WorkflowTemplateTransitionHook(manager);
     }
 
     private static IWorkflowManager<WorkflowLifecycleStatus> CreateDefaultManager()
     {
         IWorkflowManager<WorkflowLifecycleStatus> manager = Substitute.For<IWorkflowManager<WorkflowLifecycleStatus>>();
 
-        // Mock TransitionAsync — CanTransitionAsync now calls TransitionAsync instead of GetAllowedTransitionsAsync
-        // to distinguish "can execute directly" from "requires approval".
         manager.TransitionAsync(
                 Arg.Any<WorkflowLifecycleStatus>(), Arg.Any<WorkflowLifecycleStatus>(),
                 Arg.Any<TransitionContext?>(), Arg.Any<CancellationToken>())
@@ -66,14 +57,6 @@ public sealed class WorkflowTemplateTransitionHookTests
         return manager;
     }
 
-    private static ICurrentTenant CreateNullTenant()
-    {
-        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
-        tenant.IsAvailable.Returns(false);
-        tenant.Id.Returns((Guid?)null);
-        return tenant;
-    }
-
     // -------------------------------------------------------------------------
     // IsWorkflowEnabled
     // -------------------------------------------------------------------------
@@ -90,14 +73,14 @@ public sealed class WorkflowTemplateTransitionHookTests
     // -------------------------------------------------------------------------
 
     [Theory]
-    [InlineData(TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.Published, true)]
-    [InlineData(TemplateLifecycleStatus.Published, TemplateLifecycleStatus.Archived, true)]
-    [InlineData(TemplateLifecycleStatus.Published, TemplateLifecycleStatus.Draft, true)]
-    [InlineData(TemplateLifecycleStatus.PendingReview, TemplateLifecycleStatus.Published, true)]
-    [InlineData(TemplateLifecycleStatus.Archived, TemplateLifecycleStatus.Draft, false)]
-    [InlineData(TemplateLifecycleStatus.Archived, TemplateLifecycleStatus.Published, false)]
+    [InlineData(WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.Published, true)]
+    [InlineData(WorkflowLifecycleStatus.Published, WorkflowLifecycleStatus.Archived, true)]
+    [InlineData(WorkflowLifecycleStatus.Published, WorkflowLifecycleStatus.Draft, true)]
+    [InlineData(WorkflowLifecycleStatus.PendingReview, WorkflowLifecycleStatus.Published, true)]
+    [InlineData(WorkflowLifecycleStatus.Archived, WorkflowLifecycleStatus.Draft, false)]
+    [InlineData(WorkflowLifecycleStatus.Archived, WorkflowLifecycleStatus.Published, false)]
     public async Task CanTransitionAsync_DelegatesToWorkflowManager(
-        TemplateLifecycleStatus from, TemplateLifecycleStatus to, bool expected)
+        WorkflowLifecycleStatus from, WorkflowLifecycleStatus to, bool expected)
     {
         WorkflowTemplateTransitionHook hook = CreateHook();
 
@@ -112,81 +95,15 @@ public sealed class WorkflowTemplateTransitionHookTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public async Task OnTransitionedAsync_DelegatesToRecorder()
+    public async Task OnTransitionedAsync_CompletesWithoutError()
     {
-        IWorkflowTransitionRecorder recorder = Substitute.For<IWorkflowTransitionRecorder>();
-        WorkflowTemplateTransitionHook hook = CreateHook(recorder: recorder);
-        var revisionId = Guid.NewGuid();
+        WorkflowTemplateTransitionHook hook = CreateHook();
 
-        await hook.OnTransitionedAsync(
-            revisionId, TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.Published, "alice",
-            TestContext.Current.CancellationToken);
-
-        await recorder.Received(1).RecordTransitionAsync(
-            Arg.Is<RecordTransitionRequest>(r =>
-                r.EntityType == "TemplateRevision" &&
-                r.EntityId == revisionId.ToString() &&
-                r.PreviousState == "Draft" &&
-                r.NewState == "Published" &&
-                r.UserId == "alice" &&
-                r.Comment == null &&
-                r.TenantId == null),
-            TestContext.Current.CancellationToken);
-    }
-
-    [Fact]
-    public async Task OnTransitionedAsync_CapturesComment()
-    {
-        IWorkflowTransitionRecorder recorder = Substitute.For<IWorkflowTransitionRecorder>();
-        WorkflowTemplateTransitionHook hook = CreateHook(recorder: recorder);
-
-        using (WorkflowTransitionContext.SetComment("Validé par le directeur médical"))
-        {
-            await hook.OnTransitionedAsync(
-                Guid.NewGuid(), TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.Published, "alice",
-                TestContext.Current.CancellationToken);
-        }
-
-        await recorder.Received(1).RecordTransitionAsync(
-            Arg.Is<RecordTransitionRequest>(r =>
-                r.Comment == "Validé par le directeur médical"),
-            Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task OnTransitionedAsync_IncludesTenantId_WhenAvailable()
-    {
-        var tenantId = Guid.NewGuid();
-        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
-        tenant.IsAvailable.Returns(true);
-        tenant.Id.Returns(tenantId);
-
-        IWorkflowTransitionRecorder recorder = Substitute.For<IWorkflowTransitionRecorder>();
-        WorkflowTemplateTransitionHook hook = CreateHook(recorder: recorder, currentTenant: tenant);
-
-        await hook.OnTransitionedAsync(
-            Guid.NewGuid(), TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.Published, "alice",
-            TestContext.Current.CancellationToken);
-
-        await recorder.Received(1).RecordTransitionAsync(
-            Arg.Is<RecordTransitionRequest>(r =>
-                r.TenantId == tenantId),
-            Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task OnTransitionedAsync_NullTenantId_WhenNotAvailable()
-    {
-        IWorkflowTransitionRecorder recorder = Substitute.For<IWorkflowTransitionRecorder>();
-        WorkflowTemplateTransitionHook hook = CreateHook(recorder: recorder);
-
-        await hook.OnTransitionedAsync(
-            Guid.NewGuid(), TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.Published, "alice",
-            TestContext.Current.CancellationToken);
-
-        await recorder.Received(1).RecordTransitionAsync(
-            Arg.Is<RecordTransitionRequest>(r =>
-                r.TenantId == null),
-            Arg.Any<CancellationToken>());
+        await Should.NotThrowAsync(() => hook.OnTransitionedAsync(
+            Guid.NewGuid(),
+            WorkflowLifecycleStatus.Draft,
+            WorkflowLifecycleStatus.Published,
+            "alice",
+            TestContext.Current.CancellationToken));
     }
 }

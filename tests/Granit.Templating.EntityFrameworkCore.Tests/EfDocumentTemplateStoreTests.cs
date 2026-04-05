@@ -1,5 +1,6 @@
 using Granit.Exceptions;
 using Granit.Guids;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Templating.EntityFrameworkCore.Entities;
 using Granit.Templating.EntityFrameworkCore.Internal;
 using Granit.Templating.Exceptions;
@@ -7,6 +8,7 @@ using Granit.Templating.Keys;
 using Granit.Templating.Pipeline;
 using Granit.Templating.Store;
 using Granit.Timing;
+using Granit.Workflow.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,7 +46,7 @@ public sealed class EfDocumentTemplateStoreTests
     private static ITemplateTransitionHook CreateAllowAllHook()
     {
         ITemplateTransitionHook hook = Substitute.For<ITemplateTransitionHook>();
-        hook.CanTransitionAsync(Arg.Any<TemplateLifecycleStatus>(), Arg.Any<TemplateLifecycleStatus>(), Arg.Any<CancellationToken>())
+        hook.CanTransitionAsync(Arg.Any<WorkflowLifecycleStatus>(), Arg.Any<WorkflowLifecycleStatus>(), Arg.Any<CancellationToken>())
             .Returns(true);
         return hook;
     }
@@ -224,9 +226,11 @@ public sealed class EfDocumentTemplateStoreTests
 
         // Verify only one draft exists (no duplicate rows)
         await using TemplatingDbContext ctx = new InMemoryContextFactory(db).CreateDbContext();
-        int count = await ctx.TemplateRevisions.CountAsync(
-            r => r.TemplateName == key.Name && r.Status == TemplateLifecycleStatus.Draft,
-            TestContext.Current.CancellationToken);
+        int count = await ctx.TemplateRevisions
+            .IgnoreQueryFilters([GranitFilterNames.Publishable])
+            .CountAsync(
+                r => r.TemplateName == key.Name && r.LifecycleStatus == WorkflowLifecycleStatus.Draft,
+                TestContext.Current.CancellationToken);
 
         count.ShouldBe(1, "SaveDraftAsync must upsert, not append");
 
@@ -261,12 +265,16 @@ public sealed class EfDocumentTemplateStoreTests
             TestContext.Current.CancellationToken);
 
         await using TemplatingDbContext ctx = new InMemoryContextFactory(db).CreateDbContext();
-        int archivedCount = await ctx.TemplateRevisions.CountAsync(
-            r => r.TemplateName == key.Name && r.Status == TemplateLifecycleStatus.Archived,
-            TestContext.Current.CancellationToken);
-        int publishedCount = await ctx.TemplateRevisions.CountAsync(
-            r => r.TemplateName == key.Name && r.Status == TemplateLifecycleStatus.Published,
-            TestContext.Current.CancellationToken);
+        int archivedCount = await ctx.TemplateRevisions
+            .IgnoreQueryFilters([GranitFilterNames.Publishable])
+            .CountAsync(
+                r => r.TemplateName == key.Name && r.LifecycleStatus == WorkflowLifecycleStatus.Archived,
+                TestContext.Current.CancellationToken);
+        int publishedCount = await ctx.TemplateRevisions
+            .IgnoreQueryFilters([GranitFilterNames.Publishable])
+            .CountAsync(
+                r => r.TemplateName == key.Name && r.LifecycleStatus == WorkflowLifecycleStatus.Published,
+                TestContext.Current.CancellationToken);
 
         archivedCount.ShouldBe(1, "v1 must be archived");
         publishedCount.ShouldBe(1, "only v2 must be published");
@@ -289,7 +297,7 @@ public sealed class EfDocumentTemplateStoreTests
     {
         string db = NewDb();
         ITemplateTransitionHook hook = Substitute.For<ITemplateTransitionHook>();
-        hook.CanTransitionAsync(TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.Published, Arg.Any<CancellationToken>())
+        hook.CanTransitionAsync(WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.Published, Arg.Any<CancellationToken>())
             .Returns(false);
 
         EfDocumentTemplateStore store = CreateStore(db, hook);
@@ -302,8 +310,8 @@ public sealed class EfDocumentTemplateStoreTests
             cancellationToken: TestContext.Current.CancellationToken);
 
         TemplateTransitionDeniedException ex = await Should.ThrowAsync<TemplateTransitionDeniedException>(act);
-        ex.From.ShouldBe(TemplateLifecycleStatus.Draft);
-        ex.To.ShouldBe(TemplateLifecycleStatus.Published);
+        ex.From.ShouldBe(WorkflowLifecycleStatus.Draft);
+        ex.To.ShouldBe(WorkflowLifecycleStatus.Published);
     }
 
     [Fact]
@@ -311,7 +319,7 @@ public sealed class EfDocumentTemplateStoreTests
     {
         string db = NewDb();
         ITemplateTransitionHook hook = Substitute.For<ITemplateTransitionHook>();
-        hook.CanTransitionAsync(Arg.Any<TemplateLifecycleStatus>(), Arg.Any<TemplateLifecycleStatus>(), Arg.Any<CancellationToken>())
+        hook.CanTransitionAsync(Arg.Any<WorkflowLifecycleStatus>(), Arg.Any<WorkflowLifecycleStatus>(), Arg.Any<CancellationToken>())
             .Returns(true);
 
         EfDocumentTemplateStore store = CreateStore(db, hook);
@@ -324,8 +332,8 @@ public sealed class EfDocumentTemplateStoreTests
 
         await hook.Received(1).OnTransitionedAsync(
             Arg.Any<Guid>(),
-            TemplateLifecycleStatus.Draft,
-            TemplateLifecycleStatus.Published,
+            WorkflowLifecycleStatus.Draft,
+            WorkflowLifecycleStatus.Published,
             "bob",
             Arg.Any<CancellationToken>());
     }
@@ -351,9 +359,9 @@ public sealed class EfDocumentTemplateStoreTests
     {
         string db = NewDb();
         ITemplateTransitionHook hook = Substitute.For<ITemplateTransitionHook>();
-        hook.CanTransitionAsync(TemplateLifecycleStatus.Draft, TemplateLifecycleStatus.Published, Arg.Any<CancellationToken>())
+        hook.CanTransitionAsync(WorkflowLifecycleStatus.Draft, WorkflowLifecycleStatus.Published, Arg.Any<CancellationToken>())
             .Returns(true);
-        hook.CanTransitionAsync(TemplateLifecycleStatus.Published, TemplateLifecycleStatus.Archived, Arg.Any<CancellationToken>())
+        hook.CanTransitionAsync(WorkflowLifecycleStatus.Published, WorkflowLifecycleStatus.Archived, Arg.Any<CancellationToken>())
             .Returns(false);
 
         EfDocumentTemplateStore store = CreateStore(db, hook);
@@ -368,8 +376,8 @@ public sealed class EfDocumentTemplateStoreTests
             cancellationToken: TestContext.Current.CancellationToken);
 
         TemplateTransitionDeniedException ex = await Should.ThrowAsync<TemplateTransitionDeniedException>(act);
-        ex.From.ShouldBe(TemplateLifecycleStatus.Published);
-        ex.To.ShouldBe(TemplateLifecycleStatus.Archived);
+        ex.From.ShouldBe(WorkflowLifecycleStatus.Published);
+        ex.To.ShouldBe(WorkflowLifecycleStatus.Archived);
     }
 
     // -------------------------------------------------------------------------
@@ -389,9 +397,11 @@ public sealed class EfDocumentTemplateStoreTests
             cancellationToken: TestContext.Current.CancellationToken);
 
         await using TemplatingDbContext ctx = new InMemoryContextFactory(db).CreateDbContext();
-        int count = await ctx.TemplateRevisions.CountAsync(
-            r => r.TemplateName == key.Name,
-            TestContext.Current.CancellationToken);
+        int count = await ctx.TemplateRevisions
+            .IgnoreQueryFilters([GranitFilterNames.Publishable])
+            .CountAsync(
+                r => r.TemplateName == key.Name,
+                TestContext.Current.CancellationToken);
 
         count.ShouldBe(0, "draft must be physically deleted");
     }
@@ -429,9 +439,11 @@ public sealed class EfDocumentTemplateStoreTests
             cancellationToken: TestContext.Current.CancellationToken);
 
         await using TemplatingDbContext ctx = new InMemoryContextFactory(db).CreateDbContext();
-        int archivedCount = await ctx.TemplateRevisions.CountAsync(
-            r => r.TemplateName == key.Name && r.Status == TemplateLifecycleStatus.Archived,
-            TestContext.Current.CancellationToken);
+        int archivedCount = await ctx.TemplateRevisions
+            .IgnoreQueryFilters([GranitFilterNames.Publishable])
+            .CountAsync(
+                r => r.TemplateName == key.Name && r.LifecycleStatus == WorkflowLifecycleStatus.Archived,
+                TestContext.Current.CancellationToken);
 
         archivedCount.ShouldBe(1, "archived revision must be preserved for ISO 27001 audit trail");
     }
@@ -459,7 +471,7 @@ public sealed class EfDocumentTemplateStoreTests
 
         history.Count.ShouldBe(2);
         // Draft (v2) was created last → appears first
-        history[0].Status.ShouldBe(TemplateLifecycleStatus.Draft);
-        history[1].Status.ShouldBe(TemplateLifecycleStatus.Published);
+        history[0].Status.ShouldBe(WorkflowLifecycleStatus.Draft);
+        history[1].Status.ShouldBe(WorkflowLifecycleStatus.Published);
     }
 }

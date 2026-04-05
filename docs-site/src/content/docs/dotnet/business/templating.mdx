@@ -39,24 +39,25 @@ For binary document output (PDF, Excel), see
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.Templating` | Core pipeline: rendering, resolution, enrichment, layout registry, store interfaces | -- |
+| `Granit.Templating` | Core pipeline: rendering, resolution, enrichment, layout registry, store interfaces | `Granit.Workflow` |
 | `Granit.Templating.Scriban` | Scriban template engine (sandboxed), `now.*`, `context.*` and `app.*` globals, `{{ include }}` support | `Granit.Templating` |
-| `Granit.Templating.EntityFrameworkCore` | EF Core store, `StoreTemplateResolver` (Priority=100), FusionCache | `Granit.Templating`, `Granit.Persistence` |
+| `Granit.Templating.EntityFrameworkCore` | EF Core store, `StoreTemplateResolver` (Priority=100), FusionCache, `WorkflowTransitionRecord` audit trail | `Granit.Templating`, `Granit.Persistence`, `Granit.Workflow.EntityFrameworkCore` |
 | `Granit.Templating.Endpoints` | 17 admin Minimal API endpoints, `Templates.Manage` permission | `Granit.Templating`, `Granit.Authorization` |
-| `Granit.Templating.Workflow` | Workflow bridge: FSM validation, `IWorkflowTransitionRecorder` | `Granit.Templating`, `Granit.Workflow` |
+| `Granit.Templating.Workflow` | Workflow bridge: FSM validation, approval routing | `Granit.Templating`, `Granit.Workflow` |
 
 ## Dependency graph
 
 ```mermaid
 graph TD
-    T[Granit.Templating]
+    T[Granit.Templating] --> W[Granit.Workflow]
     TS[Granit.Templating.Scriban] --> T
     TEF[Granit.Templating.EntityFrameworkCore] --> T
     TEF --> P[Granit.Persistence]
+    TEF --> WEF[Granit.Workflow.EntityFrameworkCore]
     TE[Granit.Templating.Endpoints] --> T
     TE --> AUTH[Granit.Authorization]
     TW[Granit.Templating.Workflow] --> T
-    TW --> W[Granit.Workflow]
+    TW --> W
     DG[Granit.DocumentGeneration] --> T
     DGP[Granit.DocumentGeneration.Pdf] --> DG
     DGE[Granit.DocumentGeneration.Excel] --> T
@@ -497,7 +498,8 @@ stateDiagram-v2
 :::note[ISO 27001]
 Published and archived revisions are **never** physically deleted. The `RevisionId`
 is propagated through the entire rendering pipeline into the final document output
-for full traceability.
+for full traceability. All lifecycle transitions are automatically recorded in
+`WorkflowTransitionRecord` by the `WorkflowTransitionInterceptor`.
 :::
 
 ### Workflow bridge
@@ -508,8 +510,14 @@ at startup when this fallback is active, as it bypasses all permission checks.
 Installing the Workflow bridge replaces this with `WorkflowTemplateTransitionHook`, which:
 
 1. **Validates transitions** via `IWorkflowManager<WorkflowLifecycleStatus>.TransitionAsync` — only `Completed` outcomes allow direct state changes; `ApprovalRequested` outcomes block direct publish
-2. **Records transitions** via `IWorkflowTransitionRecorder` for unified ISO 27001 audit trail
-3. **Supports approval routing** (Draft → PendingReview → Published)
+2. **Supports approval routing** (Draft → PendingReview → Published)
+
+:::tip[Automatic audit trail]
+Since `TemplateRevisionEntity` inherits from `VersionedWorkflowEntity`, all lifecycle
+transitions are automatically recorded in `WorkflowTransitionRecord` by the
+`WorkflowTransitionInterceptor` — regardless of whether the Workflow bridge is installed.
+The bridge only adds FSM validation and approval routing on top.
+:::
 
 ## Resolver chain
 
@@ -633,7 +641,7 @@ A discharge letter template stored in the EF Core store or as an embedded resour
 | Global context | `ITemplateGlobalContext`, `AppGlobalContextOptions` | `Granit.Templating`, `Granit.Templating.Scriban` |
 | Store (read) | `IDocumentTemplateStoreReader`, `ITemplateCategoryStoreReader` | `Granit.Templating` |
 | Store (write) | `IDocumentTemplateStoreWriter`, `ITemplateCategoryStoreWriter` | `Granit.Templating` |
-| Lifecycle | `TemplateLifecycleStatus`, `ITemplateTransitionHook`, `TemplateRevision` | `Granit.Templating` |
+| Lifecycle | `WorkflowLifecycleStatus`, `ITemplateTransitionHook`, `TemplateRevision` | `Granit.Templating`, `Granit.Workflow` |
 | Permissions | `TemplatingPermissions.Manage` (`"Templates.Manage"`) | `Granit.Templating.Endpoints` |
 | Extensions | `AddGranitTemplating()`, `AddGranitTemplatingWithScriban()`, `AddEmbeddedTemplates()`, `AddTemplateLayout()` | -- |
 | Extensions | `MapGranitTemplating()` | `Granit.Templating.Endpoints` |

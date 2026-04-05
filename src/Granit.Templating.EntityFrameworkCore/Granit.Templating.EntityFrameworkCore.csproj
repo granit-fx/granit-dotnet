@@ -22,6 +22,7 @@
     <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Granit.Templating\Granit.Templating.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+    <ProjectReference Include="..\Granit.Workflow.EntityFrameworkCore\Granit.Workflow.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>
