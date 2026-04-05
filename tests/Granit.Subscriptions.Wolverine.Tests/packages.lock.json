@@ -734,6 +734,15 @@
           "SmartFormat": "[3.*, )"
         }
       },
+      "granit.metering": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Metering.Abstractions": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
+        }
+      },
       "granit.metering.abstractions": {
         "type": "Project",
         "dependencies": {
@@ -777,6 +786,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
+          "Granit.Metering": "[0.1.0-dev, )",
           "Granit.Metering.Abstractions": "[0.1.0-dev, )",
           "Granit.Payments.Abstractions": "[0.1.0-dev, )",
           "Granit.Subscriptions": "[0.1.0-dev, )",
