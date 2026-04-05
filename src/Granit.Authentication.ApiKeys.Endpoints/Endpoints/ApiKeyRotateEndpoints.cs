@@ -1,5 +1,7 @@
 using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.Endpoints.Dtos;
+using Granit.Authentication.ApiKeys.Events;
+using Granit.Events;
 using Granit.Guids;
 using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
@@ -33,6 +35,7 @@ internal static class ApiKeyRotateEndpoints
         [FromServices] IApiKeyGenerator generator,
         [FromServices] IGuidGenerator guidGenerator,
         [FromServices] IClock clock,
+        [FromServices] IDistributedEventBus eventBus,
         CancellationToken cancellationToken)
     {
         ApiKeyEntry? existing = await adminStore.FindByIdAsync(id, cancellationToken)
@@ -64,6 +67,10 @@ internal static class ApiKeyRotateEndpoints
         newEntry.SetCacheBehavior(existing.CacheBehavior);
 
         await adminStore.CreateAsync(newEntry, cancellationToken).ConfigureAwait(false);
+
+        await eventBus.PublishAsync(
+            new ApiKeyRotatedEto(id, newEntry.Id, keyResult.HashedKey),
+            cancellationToken).ConfigureAwait(false);
 
         var response = new ApiKeyRotateResponse(
             newEntry.Id,

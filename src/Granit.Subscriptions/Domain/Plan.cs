@@ -1,5 +1,6 @@
 using Granit.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
+using Granit.Subscriptions.Events;
 using Granit.Workflow.Domain;
 
 namespace Granit.Subscriptions.Domain;
@@ -138,6 +139,18 @@ public sealed class Plan : AuditedAggregateRoot, IWorkflowStateful
         currentPrice?.MarkReplaced(newPrice.Id, now);
 
         _prices.Add(newPrice);
+
+        AddDistributedEvent(new PlanPriceCreatedEto(
+            Id, newPrice.Id, newPrice.Amount, newPrice.Currency,
+            newPrice.Interval.ToString(), newPrice.EffectiveFrom));
+
+        if (currentPrice is not null)
+        {
+            AddDistributedEvent(new PlanPriceReplacedEto(
+                Id, currentPrice.Id, newPrice.Id, currentPrice.Amount,
+                newPrice.Amount, newPrice.Currency, newPrice.Interval.ToString()));
+        }
+
         return currentPrice;
     }
 
