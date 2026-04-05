@@ -1,0 +1,10 @@
+{
+  "culture": "de",
+  "texts": {
+    "PermissionGroup:MultiTenancy": "Mandantenfähigkeit",
+    "Permission:MultiTenancy.Tenants.Read": "Mandanteninformationen anzeigen",
+    "Permission:MultiTenancy.Tenants.Create": "Neue Mandanten erstellen",
+    "Permission:MultiTenancy.Tenants.Update": "Mandantendetails aktualisieren",
+    "Permission:MultiTenancy.Tenants.Manage": "Mandantenlebenszyklus verwalten (aktivieren, deaktivieren)"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:MultiTenancy": "멀티테넌시",
+    "Permission:MultiTenancy.Tenants.Read": "테넌트 정보 조회",
+    "Permission:MultiTenancy.Tenants.Create": "새 테넌트 생성",
+    "Permission:MultiTenancy.Tenants.Update": "테넌트 세부 정보 수정",
+    "Permission:MultiTenancy.Tenants.Manage": "테넌트 수명 주기 관리 (활성화, 비활성화)"
+  }
+}

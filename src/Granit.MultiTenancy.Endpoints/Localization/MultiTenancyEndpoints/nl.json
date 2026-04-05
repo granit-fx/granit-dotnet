@@ -1,0 +1,10 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:MultiTenancy": "Multi-Tenancy",
+    "Permission:MultiTenancy.Tenants.Read": "Tenantinformatie bekijken",
+    "Permission:MultiTenancy.Tenants.Create": "Nieuwe tenants aanmaken",
+    "Permission:MultiTenancy.Tenants.Update": "Tenantgegevens bijwerken",
+    "Permission:MultiTenancy.Tenants.Manage": "Levenscyclus van tenants beheren (activeren, deactiveren)"
+  }
+}

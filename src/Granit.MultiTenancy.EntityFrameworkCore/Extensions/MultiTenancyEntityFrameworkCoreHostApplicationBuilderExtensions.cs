@@ -1,0 +1,39 @@
+using Granit.Events.Extensions;
+using Granit.MultiTenancy.EntityFrameworkCore.Internal;
+using Granit.MultiTenancy.Stores;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+
+namespace Granit.MultiTenancy.EntityFrameworkCore;
+
+/// <summary>
+/// Extension methods for registering the multi-tenancy EF Core persistence layer.
+/// </summary>
+public static class MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions
+{
+    /// <summary>
+    /// Registers the multi-tenancy EF Core persistence layer.
+    /// </summary>
+    /// <param name="builder">The host application builder.</param>
+    /// <param name="configure">Delegate to configure the <see cref="DbContextOptionsBuilder"/> (e.g. <c>UseNpgsql</c>).</param>
+    /// <returns>The builder for chaining.</returns>
+    public static IHostApplicationBuilder AddGranitMultiTenancyEntityFrameworkCore(
+        this IHostApplicationBuilder builder,
+        Action<DbContextOptionsBuilder> configure)
+    {
+        builder.Services.AddGranitDbContext<MultiTenancyDbContext>(configure);
+        builder.Services.AddInternalDbContextEnsurer<MultiTenancyDbContext>();
+
+        // Ensure event infrastructure is available (fallback if not called directly)
+        builder.Services.AddGranitEvents();
+
+        // Replace default (no-op) implementations with EF Core store
+        builder.Services.Replace(ServiceDescriptor.Scoped<ITenantReader, EfCoreTenantStore>());
+        builder.Services.Replace(ServiceDescriptor.Scoped<ITenantWriter, EfCoreTenantStore>());
+
+        return builder;
+    }
+}

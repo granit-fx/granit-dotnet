@@ -1059,6 +1059,25 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.MultiTenancy.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Http.ApiDocumentation",
+        "Granit.MultiTenancy",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.MultiTenancy.EntityFrameworkCore",
+      "deps": [
+        "Granit.Events",
+        "Granit.MultiTenancy",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Notifications",
       "deps": [
         "Granit.Encryption",
@@ -21857,6 +21876,225 @@
       ]
     },
     {
+      "name": "CreateTenantRequest",
+      "fqn": "Granit.MultiTenancy.Endpoints.Dtos.CreateTenantRequest",
+      "kind": "record",
+      "project": "Granit.MultiTenancy.Endpoints",
+      "file": "src/Granit.MultiTenancy.Endpoints/Dtos/CreateTenantRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TenantResponse",
+      "fqn": "Granit.MultiTenancy.Endpoints.Dtos.TenantResponse",
+      "kind": "record",
+      "project": "Granit.MultiTenancy.Endpoints",
+      "file": "src/Granit.MultiTenancy.Endpoints/Dtos/TenantResponse.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "UpdateTenantRequest",
+      "fqn": "Granit.MultiTenancy.Endpoints.Dtos.UpdateTenantRequest",
+      "kind": "record",
+      "project": "Granit.MultiTenancy.Endpoints",
+      "file": "src/Granit.MultiTenancy.Endpoints/Dtos/UpdateTenantRequest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "MultiTenancyEndpointRouteBuilderExtensions",
+      "fqn": "Granit.MultiTenancy.Endpoints.Extensions.MultiTenancyEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Endpoints",
+      "file": "src/Granit.MultiTenancy.Endpoints/Extensions/MultiTenancyEndpointRouteBuilderExtensions.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "MapGranitMultiTenancy",
+          "kind": "method",
+          "signature": "MapGranitMultiTenancy(this IEndpointRouteBuilder endpoints, Action<MultiTenancyEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitMultiTenancyEndpointsModule",
+      "fqn": "Granit.MultiTenancy.Endpoints.GranitMultiTenancyEndpointsModule",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Endpoints",
+      "file": "src/Granit.MultiTenancy.Endpoints/GranitMultiTenancyEndpointsModule.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "MultiTenancyEndpointsOptions",
+      "fqn": "Granit.MultiTenancy.Endpoints.Options.MultiTenancyEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Endpoints",
+      "file": "src/Granit.MultiTenancy.Endpoints/Options/MultiTenancyEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "MultiTenancyPermissions",
+      "fqn": "Granit.MultiTenancy.Endpoints.Permissions.MultiTenancyPermissions",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Endpoints",
+      "file": "src/Granit.MultiTenancy.Endpoints/Permissions/MultiTenancyPermissions.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "Tenants",
+      "fqn": "Granit.MultiTenancy.Endpoints.Permissions.Tenants",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Endpoints",
+      "file": "src/Granit.MultiTenancy.Endpoints/Permissions/MultiTenancyPermissions.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "Tenant",
+      "fqn": "Granit.MultiTenancy.EntityFrameworkCore.Entities.Tenant",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.EntityFrameworkCore",
+      "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Entities/Tenant.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "Identifier",
+          "kind": "property",
+          "signature": "string Identifier",
+          "returnType": "string"
+        },
+        {
+          "name": "ContactEmail",
+          "kind": "property",
+          "signature": "string? ContactEmail",
+          "returnType": "string?"
+        },
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string name, string identifier, string? contactEmail = null, string? jurisdiction = null)",
+          "returnType": "Tenant"
+        }
+      ]
+    },
+    {
+      "name": "GranitMultiTenancyEntityFrameworkCoreModule",
+      "fqn": "Granit.MultiTenancy.EntityFrameworkCore.GranitMultiTenancyEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.EntityFrameworkCore",
+      "file": "src/Granit.MultiTenancy.EntityFrameworkCore/GranitMultiTenancyEntityFrameworkCoreModule.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "MultiTenancyDbProperties",
+      "fqn": "Granit.MultiTenancy.EntityFrameworkCore.MultiTenancyDbProperties",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.EntityFrameworkCore",
+      "file": "src/Granit.MultiTenancy.EntityFrameworkCore/MultiTenancyDbProperties.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.MultiTenancy.EntityFrameworkCore.MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.EntityFrameworkCore",
+      "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Extensions/MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "AddGranitMultiTenancyEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitMultiTenancyEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "MultiTenancyModelBuilderExtensions",
+      "fqn": "Granit.MultiTenancy.EntityFrameworkCore.MultiTenancyModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.EntityFrameworkCore",
+      "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Extensions/MultiTenancyModelBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ConfigureMultiTenancyModule",
+          "kind": "method",
+          "signature": "ConfigureMultiTenancyModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "TenantActivatedEvent",
+      "fqn": "Granit.MultiTenancy.Events.TenantActivatedEvent",
+      "kind": "record",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Events/TenantActivatedEvent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "TenantCreatedEvent",
+      "fqn": "Granit.MultiTenancy.Events.TenantCreatedEvent",
+      "kind": "record",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Events/TenantCreatedEvent.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "TenantDeactivatedEvent",
+      "fqn": "Granit.MultiTenancy.Events.TenantDeactivatedEvent",
+      "kind": "record",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Events/TenantDeactivatedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TenantUpdatedEvent",
+      "fqn": "Granit.MultiTenancy.Events.TenantUpdatedEvent",
+      "kind": "record",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Events/TenantUpdatedEvent.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "MultiTenancyApplicationBuilderExtensions",
       "fqn": "Granit.MultiTenancy.Extensions.MultiTenancyApplicationBuilderExtensions",
       "kind": "class",
@@ -22079,6 +22317,83 @@
           "returnType": "Task<TenantInfo?>"
         }
       ]
+    },
+    {
+      "name": "ITenantReader",
+      "fqn": "Granit.MultiTenancy.Stores.ITenantReader",
+      "kind": "interface",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Stores/ITenantReader.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "FindByIdAsync",
+          "kind": "method",
+          "signature": "FindByIdAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TenantData?>"
+        },
+        {
+          "name": "FindByIdentifierAsync",
+          "kind": "method",
+          "signature": "FindByIdentifierAsync(string identifier, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TenantData?>"
+        },
+        {
+          "name": "GetAllAsync",
+          "kind": "method",
+          "signature": "GetAllAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<TenantData>>"
+        },
+        {
+          "name": "ExistsAsync",
+          "kind": "method",
+          "signature": "ExistsAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "ITenantWriter",
+      "fqn": "Granit.MultiTenancy.Stores.ITenantWriter",
+      "kind": "interface",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Stores/ITenantWriter.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(Guid id, string name, string identifier, string? contactEmail, string? jurisdiction, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(Guid id, string name, string? contactEmail, string? jurisdiction, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ActivateAsync",
+          "kind": "method",
+          "signature": "ActivateAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DeactivateAsync",
+          "kind": "method",
+          "signature": "DeactivateAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "TenantData",
+      "fqn": "Granit.MultiTenancy.Stores.TenantData",
+      "kind": "record",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Stores/TenantData.cs",
+      "line": 15,
+      "members": []
     },
     {
       "name": "TenantInfo",

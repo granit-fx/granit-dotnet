@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.MultiTenancy.EntityFrameworkCore</PackageId>
+    <Description>EF Core persistence for Granit.MultiTenancy. Provides Tenant aggregate root, MultiTenancyDbContext, and EfCoreTenantStore with ISO 27001 audit trail via Granit.Persistence interceptors.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.MultiTenancy.EntityFrameworkCore.Tests" />
+    <!-- Required by Castle.DynamicProxy (NSubstitute) to proxy internal types in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Events\Granit.Events.csproj" />
+    <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>

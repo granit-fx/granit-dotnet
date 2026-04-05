@@ -130,6 +130,8 @@
       "src/Granit.Metering.Endpoints/Granit.Metering.Endpoints.csproj",
       "src/Granit.Metering.EntityFrameworkCore/Granit.Metering.EntityFrameworkCore.csproj",
       "src/Granit.Metering/Granit.Metering.csproj",
+      "src/Granit.MultiTenancy.Endpoints/Granit.MultiTenancy.Endpoints.csproj",
+      "src/Granit.MultiTenancy.EntityFrameworkCore/Granit.MultiTenancy.EntityFrameworkCore.csproj",
       "src/Granit.MultiTenancy/Granit.MultiTenancy.csproj",
       "src/Granit.Notifications.AI/Granit.Notifications.AI.csproj",
       "src/Granit.Notifications.Abstractions/Granit.Notifications.Abstractions.csproj",

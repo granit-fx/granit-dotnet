@@ -153,6 +153,8 @@
         "tests/Granit.Localization.EntityFrameworkCore.Tests",
         "tests/Granit.Localization.SourceGenerator.Tests",
         "tests/Granit.Localization.Tests",
+        "tests/Granit.MultiTenancy.Endpoints.Tests",
+        "tests/Granit.MultiTenancy.EntityFrameworkCore.Tests",
         "tests/Granit.MultiTenancy.Tests",
         "tests/Granit.Notifications.Brevo.Tests",
         "tests/Granit.Notifications.Email.AwsSes.Tests",

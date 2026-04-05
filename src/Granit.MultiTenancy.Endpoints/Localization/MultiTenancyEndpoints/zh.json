@@ -1,0 +1,10 @@
+{
+  "culture": "zh",
+  "texts": {
+    "PermissionGroup:MultiTenancy": "多租户",
+    "Permission:MultiTenancy.Tenants.Read": "查看租户信息",
+    "Permission:MultiTenancy.Tenants.Create": "创建新租户",
+    "Permission:MultiTenancy.Tenants.Update": "更新租户详情",
+    "Permission:MultiTenancy.Tenants.Manage": "管理租户生命周期（激活、停用）"
+  }
+}

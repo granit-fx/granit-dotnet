@@ -1,0 +1,10 @@
+{
+  "culture": "en-GB",
+  "texts": {
+    "PermissionGroup:MultiTenancy": "Multi-Tenancy",
+    "Permission:MultiTenancy.Tenants.Read": "View tenant information",
+    "Permission:MultiTenancy.Tenants.Create": "Create new tenants",
+    "Permission:MultiTenancy.Tenants.Update": "Update tenant details",
+    "Permission:MultiTenancy.Tenants.Manage": "Manage tenant lifecycle (activate, deactivate)"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "culture": "sv",
+  "texts": {
+    "PermissionGroup:MultiTenancy": "Multi-Tenancy",
+    "Permission:MultiTenancy.Tenants.Read": "Visa hyresgästinformation",
+    "Permission:MultiTenancy.Tenants.Create": "Skapa nya hyresgäster",
+    "Permission:MultiTenancy.Tenants.Update": "Uppdatera hyresgästdetaljer",
+    "Permission:MultiTenancy.Tenants.Manage": "Hantera hyresgästlivscykel (aktivera, inaktivera)"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "culture": "tr",
+  "texts": {
+    "PermissionGroup:MultiTenancy": "Çoklu Kiracılık",
+    "Permission:MultiTenancy.Tenants.Read": "Kiracı bilgilerini görüntüleme",
+    "Permission:MultiTenancy.Tenants.Create": "Yeni kiracılar oluşturma",
+    "Permission:MultiTenancy.Tenants.Update": "Kiracı ayrıntılarını güncelleme",
+    "Permission:MultiTenancy.Tenants.Manage": "Kiracı yaşam döngüsünü yönetme (etkinleştirme, devre dışı bırakma)"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "culture": "pl",
+  "texts": {
+    "PermissionGroup:MultiTenancy": "Multi-Tenancy",
+    "Permission:MultiTenancy.Tenants.Read": "Przeglądanie informacji o najemcach",
+    "Permission:MultiTenancy.Tenants.Create": "Tworzenie nowych najemców",
+    "Permission:MultiTenancy.Tenants.Update": "Aktualizacja szczegółów najemców",
+    "Permission:MultiTenancy.Tenants.Manage": "Zarządzanie cyklem życia najemców (aktywacja, dezaktywacja)"
+  }
+}
