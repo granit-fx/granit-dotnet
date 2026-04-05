@@ -696,6 +696,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Workflow": "[0.1.0-dev, )",
           "WolverineFx": "[5.*, )"
         }
       },
@@ -708,12 +709,26 @@
           "Microsoft.Extensions.Logging.Abstractions": "[10.*, )"
         }
       },
+      "granit.queryengine.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.timing": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
+        }
+      },
+      "granit.workflow": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
         }
       },
       "Microsoft.CodeAnalysis.Analyzers": {
