@@ -18,8 +18,6 @@ public sealed class GranitSubscriptionsWolverineModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.TryAddTransient<BillingCycleInvoiceOrchestrator>();
-        context.Services.TryAddTransient<UsageInvoiceOrchestrator>();
         context.Services.TryAddTransient<PaymentRetryDispatcher>();
     }
 }

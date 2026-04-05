@@ -5,9 +5,8 @@ using Granit.MultiTenancy;
 using Granit.Payments.Commands;
 using Granit.Payments.Domain;
 using Microsoft.Extensions.Logging;
-using Wolverine;
 
-namespace Granit.Payments.Wolverine.Services;
+namespace Granit.Payments.Internal;
 
 /// <summary>
 /// Automatically initiates payment when an invoice is finalized with auto-collection.
@@ -15,12 +14,12 @@ namespace Granit.Payments.Wolverine.Services;
 /// pass-through returns the full total, but <c>Granit.CustomerBalance.Wolverine</c> can
 /// replace it to deduct available credit first.
 /// </summary>
-public sealed partial class AutoChargeService(
+internal sealed partial class DefaultAutoChargeService(
     IInvoicePrePaymentProcessor prePaymentProcessor,
     IPaymentMethodReader paymentMethodReader,
-    IMessageBus messageBus,
+    IPaymentCommandDispatcher paymentCommandDispatcher,
     ICurrentTenant currentTenant,
-    ILogger<AutoChargeService> logger)
+    ILogger<DefaultAutoChargeService> logger) : IAutoChargeService
 {
     public async Task HandleAsync(InvoiceFinalizedEto eto, CancellationToken cancellationToken)
     {
@@ -60,7 +59,7 @@ public sealed partial class AutoChargeService(
                 $"inv-{eto.InvoiceId:N}",
                 defaultMethod.ProviderName);
 
-            await messageBus.SendAsync(command).ConfigureAwait(false);
+            await paymentCommandDispatcher.SendAsync(command, cancellationToken).ConfigureAwait(false);
             Log.PaymentInitiated(logger, eto.InvoiceId, result.RemainingAmount, defaultMethod.Type, defaultMethod.ProviderName);
         }
     }

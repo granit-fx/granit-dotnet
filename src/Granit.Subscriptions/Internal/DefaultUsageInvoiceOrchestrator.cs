@@ -1,33 +1,21 @@
+using Granit.Invoicing;
 using Granit.Invoicing.Commands;
 using Granit.Invoicing.Domain;
 using Granit.Subscriptions.Domain;
 using Microsoft.Extensions.Logging;
-using Wolverine;
 
-namespace Granit.Subscriptions.Wolverine.Services;
-
-/// <summary>
-/// Groups the parameters needed to create a usage-based invoice.
-/// </summary>
-public sealed record CreateUsageInvoiceRequest(
-    Guid TenantId,
-    Guid MeterDefinitionId,
-    string MeterName,
-    decimal AggregatedValue,
-    string Unit,
-    DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd);
+namespace Granit.Subscriptions.Internal;
 
 /// <summary>
 /// Creates consolidated invoices (fixed + usage) for PerUnit/Tiered plans.
 /// Exclusive invoice creator for plans with usage components.
 /// </summary>
-public sealed partial class UsageInvoiceOrchestrator(
+internal sealed partial class DefaultUsageInvoiceOrchestrator(
     ISubscriptionReader subscriptionReader,
     IPlanReader planReader,
     IPricingResolver pricingResolver,
-    IMessageBus messageBus,
-    ILogger<UsageInvoiceOrchestrator> logger)
+    IInvoiceCommandPublisher invoiceCommandPublisher,
+    ILogger<DefaultUsageInvoiceOrchestrator> logger) : IUsageInvoiceOrchestrator
 {
     public async Task CreateInvoiceAsync(
         CreateUsageInvoiceRequest request,
@@ -101,7 +89,7 @@ public sealed partial class UsageInvoiceOrchestrator(
             PeriodStart: request.PeriodStart,
             PeriodEnd: request.PeriodEnd);
 
-        await messageBus.PublishAsync(command).ConfigureAwait(false);
+        await invoiceCommandPublisher.PublishAsync(command, cancellationToken).ConfigureAwait(false);
         Log.UsageInvoiceCreated(logger, request.TenantId, request.MeterName, request.AggregatedValue);
     }
 

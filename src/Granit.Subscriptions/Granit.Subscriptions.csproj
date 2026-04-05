@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
+    <ProjectReference Include="..\Granit.Invoicing.Abstractions\Granit.Invoicing.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Scheduling\Granit.Scheduling.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
     <ProjectReference Include="..\Granit.Workflow\Granit.Workflow.csproj" />

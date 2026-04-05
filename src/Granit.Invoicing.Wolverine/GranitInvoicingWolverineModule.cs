@@ -1,5 +1,8 @@
+using Granit.Invoicing.Wolverine.Internal;
 using Granit.Modularity;
 using Granit.Wolverine;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Invoicing.Wolverine;
 
@@ -7,4 +10,9 @@ namespace Granit.Invoicing.Wolverine;
 [DependsOn(
     typeof(GranitInvoicingModule),
     typeof(GranitWolverineModule))]
-public sealed class GranitInvoicingWolverineModule : GranitModule;
+public sealed class GranitInvoicingWolverineModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.TryAddScoped<IInvoiceCommandPublisher, WolverineInvoiceCommandPublisher>();
+}

@@ -1,7 +1,7 @@
 using Granit.Invoicing;
 using Granit.Invoicing.Events;
 
-namespace Granit.Payments.Wolverine.Internal;
+namespace Granit.Payments.Internal;
 
 /// <summary>
 /// Default pre-payment processor that passes through the full invoice total unchanged.

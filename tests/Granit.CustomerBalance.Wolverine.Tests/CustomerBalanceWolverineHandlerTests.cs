@@ -8,13 +8,12 @@ namespace Granit.CustomerBalance.Wolverine.Tests;
 public sealed class CustomerBalanceWolverineHandlerTests
 {
     [Fact]
-    public void OverpaymentCreditHandler_ShouldBeInternalStaticPartial()
+    public void OverpaymentCreditHandler_ShouldBePublicNonStatic()
     {
         Type handlerType = typeof(OverpaymentCreditHandler);
 
-        handlerType.IsAbstract.ShouldBeTrue("static classes are abstract");
-        handlerType.IsSealed.ShouldBeTrue("static classes are sealed");
-        handlerType.IsNotPublic.ShouldBeTrue("handler should be internal");
+        handlerType.IsPublic.ShouldBeTrue("handler must be public for Wolverine discovery");
+        handlerType.IsAbstract.ShouldBeFalse("handler must not be static for Wolverine discovery");
     }
 
     [Fact]

@@ -1359,6 +1359,7 @@
       "name": "Granit.Payments",
       "deps": [
         "Granit",
+        "Granit.Invoicing.Abstractions",
         "Granit.Payments.Abstractions",
         "Granit.Timing"
       ],
@@ -1738,6 +1739,7 @@
       "deps": [
         "Granit",
         "Granit.Guids",
+        "Granit.Invoicing.Abstractions",
         "Granit.Scheduling",
         "Granit.Timing",
         "Granit.Workflow"
@@ -19256,6 +19258,22 @@
       ]
     },
     {
+      "name": "IInvoiceCommandPublisher",
+      "fqn": "Granit.Invoicing.IInvoiceCommandPublisher",
+      "kind": "interface",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/IInvoiceCommandPublisher.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "PublishAsync",
+          "kind": "method",
+          "signature": "PublishAsync(CreateInvoiceCommand command, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IInvoiceCreationService",
       "fqn": "Granit.Invoicing.IInvoiceCreationService",
       "kind": "interface",
@@ -19724,8 +19742,15 @@
       "kind": "class",
       "project": "Granit.Invoicing.Wolverine",
       "file": "src/Granit.Invoicing.Wolverine/GranitInvoicingWolverineModule.cs",
-      "line": 10,
-      "members": []
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "CreateInvoiceHandler",
@@ -26884,7 +26909,7 @@
       "kind": "class",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Extensions/PaymentsHostApplicationBuilderExtensions.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitPayments",
@@ -26911,6 +26936,22 @@
       ]
     },
     {
+      "name": "IAutoChargeService",
+      "fqn": "Granit.Payments.IAutoChargeService",
+      "kind": "interface",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/IAutoChargeService.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(InvoiceFinalizedEto eto, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "ICheckoutSessionFactory",
       "fqn": "Granit.Payments.ICheckoutSessionFactory",
       "kind": "interface",
@@ -26923,6 +26964,22 @@
           "kind": "method",
           "signature": "CreateAsync(PaymentCheckoutSessionRequest request, CancellationToken cancellationToken = default)",
           "returnType": "string ProviderName { get; } Task<PaymentCheckoutSession>"
+        }
+      ]
+    },
+    {
+      "name": "IPaymentCommandDispatcher",
+      "fqn": "Granit.Payments.IPaymentCommandDispatcher",
+      "kind": "interface",
+      "project": "Granit.Payments.Abstractions",
+      "file": "src/Granit.Payments.Abstractions/IPaymentCommandDispatcher.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "SendAsync",
+          "kind": "method",
+          "signature": "SendAsync(InitiatePaymentCommand command, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -27160,6 +27217,22 @@
           "name": "AddAsync",
           "kind": "method",
           "signature": "AddAsync(ProviderCustomerMapping mapping, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IWebhookProcessor",
+      "fqn": "Granit.Payments.IWebhookProcessor",
+      "kind": "interface",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/IWebhookProcessor.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ProcessAsync",
+          "kind": "method",
+          "signature": "ProcessAsync(ProcessWebhookCommand command, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -27958,7 +28031,7 @@
       "kind": "class",
       "project": "Granit.Payments.Wolverine",
       "file": "src/Granit.Payments.Wolverine/GranitPaymentsWolverineModule.cs",
-      "line": 15,
+      "line": 13,
       "members": [
         {
           "name": "ConfigureServices",
@@ -27974,12 +28047,12 @@
       "kind": "class",
       "project": "Granit.Payments.Wolverine",
       "file": "src/Granit.Payments.Wolverine/Handlers/AutoChargeOnInvoiceHandler.cs",
-      "line": 10,
+      "line": 9,
       "members": [
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(InvoiceFinalizedEto eto, AutoChargeService autoChargeService, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(InvoiceFinalizedEto eto, IAutoChargeService autoChargeService, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -27990,44 +28063,12 @@
       "kind": "class",
       "project": "Granit.Payments.Wolverine",
       "file": "src/Granit.Payments.Wolverine/Handlers/ProcessWebhookCommandHandler.cs",
-      "line": 10,
+      "line": 9,
       "members": [
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(ProcessWebhookCommand command, WebhookProcessor processor, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "AutoChargeService",
-      "fqn": "Granit.Payments.Wolverine.Services.AutoChargeService",
-      "kind": "class",
-      "project": "Granit.Payments.Wolverine",
-      "file": "src/Granit.Payments.Wolverine/Services/AutoChargeService.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(InvoiceFinalizedEto eto, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "WebhookProcessor",
-      "fqn": "Granit.Payments.Wolverine.Services.WebhookProcessor",
-      "kind": "class",
-      "project": "Granit.Payments.Wolverine",
-      "file": "src/Granit.Payments.Wolverine/Services/WebhookProcessor.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "ProcessAsync",
-          "kind": "method",
-          "signature": "ProcessAsync(ProcessWebhookCommand command, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(ProcessWebhookCommand command, IWebhookProcessor processor, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -33822,6 +33863,15 @@
       ]
     },
     {
+      "name": "CreateUsageInvoiceRequest",
+      "fqn": "Granit.Subscriptions.CreateUsageInvoiceRequest",
+      "kind": "record",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/IUsageInvoiceOrchestrator.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "SubscriptionWorkflows",
       "fqn": "Granit.Subscriptions.Definitions.SubscriptionWorkflows",
       "kind": "class",
@@ -34592,6 +34642,22 @@
       ]
     },
     {
+      "name": "IBillingCycleInvoiceOrchestrator",
+      "fqn": "Granit.Subscriptions.IBillingCycleInvoiceOrchestrator",
+      "kind": "interface",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/IBillingCycleInvoiceOrchestrator.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "CreateInvoiceAsync",
+          "kind": "method",
+          "signature": "CreateInvoiceAsync(Guid subscriptionId, Guid tenantId, Guid planId, DateTimeOffset periodStart, DateTimeOffset periodEnd, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "ICancelAtPeriodEndService",
       "fqn": "Granit.Subscriptions.ICancelAtPeriodEndService",
       "kind": "interface",
@@ -34896,6 +34962,22 @@
       ]
     },
     {
+      "name": "IUsageInvoiceOrchestrator",
+      "fqn": "Granit.Subscriptions.IUsageInvoiceOrchestrator",
+      "kind": "interface",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/IUsageInvoiceOrchestrator.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "CreateInvoiceAsync",
+          "kind": "method",
+          "signature": "CreateInvoiceAsync(CreateUsageInvoiceRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "GranitSubscriptionsInternalModule",
       "fqn": "Granit.Subscriptions.Internal.GranitSubscriptionsInternalModule",
       "kind": "class",
@@ -35174,12 +35256,12 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
       "file": "src/Granit.Subscriptions.Wolverine/Handlers/BillingCycleCompletedHandler.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(BillingCycleCompletedEto eto, BillingCycleInvoiceOrchestrator orchestrator, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(BillingCycleCompletedEto eto, IBillingCycleInvoiceOrchestrator orchestrator, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -35254,44 +35336,12 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
       "file": "src/Granit.Subscriptions.Wolverine/Handlers/UsageSummaryReadyHandler.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(UsageSummaryReadyEto eto, UsageInvoiceOrchestrator orchestrator, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "BillingCycleInvoiceOrchestrator",
-      "fqn": "Granit.Subscriptions.Wolverine.Services.BillingCycleInvoiceOrchestrator",
-      "kind": "class",
-      "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/Services/BillingCycleInvoiceOrchestrator.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "CreateInvoiceAsync",
-          "kind": "method",
-          "signature": "CreateInvoiceAsync(Guid subscriptionId, Guid tenantId, Guid planId, DateTimeOffset periodStart, DateTimeOffset periodEnd, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "CreateUsageInvoiceRequest",
-      "fqn": "Granit.Subscriptions.Wolverine.Services.CreateUsageInvoiceRequest",
-      "kind": "record",
-      "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/Services/UsageInvoiceOrchestrator.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "CreateInvoiceAsync",
-          "kind": "method",
-          "signature": "CreateInvoiceAsync(CreateUsageInvoiceRequest request, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(UsageSummaryReadyEto eto, IUsageInvoiceOrchestrator orchestrator, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -35308,22 +35358,6 @@
           "name": "DispatchRetryAsync",
           "kind": "method",
           "signature": "DispatchRetryAsync(RetryPaymentPayload payload)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "UsageInvoiceOrchestrator",
-      "fqn": "Granit.Subscriptions.Wolverine.Services.UsageInvoiceOrchestrator",
-      "kind": "class",
-      "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/Services/UsageInvoiceOrchestrator.cs",
-      "line": 25,
-      "members": [
-        {
-          "name": "CreateInvoiceAsync",
-          "kind": "method",
-          "signature": "CreateInvoiceAsync(CreateUsageInvoiceRequest request, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]

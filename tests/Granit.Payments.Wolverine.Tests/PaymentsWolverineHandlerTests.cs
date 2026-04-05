@@ -12,13 +12,12 @@ public sealed class PaymentsWolverineHandlerTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void AutoChargeOnInvoiceHandler_ShouldBeInternalStatic()
+    public void AutoChargeOnInvoiceHandler_ShouldBePublicNonStatic()
     {
         Type handlerType = typeof(AutoChargeOnInvoiceHandler);
 
-        handlerType.IsAbstract.ShouldBeTrue("static classes are abstract");
-        handlerType.IsSealed.ShouldBeTrue("static classes are sealed");
-        handlerType.IsNotPublic.ShouldBeTrue("handler should be internal");
+        handlerType.IsPublic.ShouldBeTrue("handler must be public for Wolverine discovery");
+        handlerType.IsAbstract.ShouldBeFalse("handler must not be static for Wolverine discovery");
     }
 
     [Fact]
@@ -70,13 +69,12 @@ public sealed class PaymentsWolverineHandlerTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void ProcessWebhookCommandHandler_ShouldBeInternalStatic()
+    public void ProcessWebhookCommandHandler_ShouldBePublicNonStatic()
     {
         Type handlerType = typeof(ProcessWebhookCommandHandler);
 
-        handlerType.IsAbstract.ShouldBeTrue("static classes are abstract");
-        handlerType.IsSealed.ShouldBeTrue("static classes are sealed");
-        handlerType.IsNotPublic.ShouldBeTrue("handler should be internal");
+        handlerType.IsPublic.ShouldBeTrue("handler must be public for Wolverine discovery");
+        handlerType.IsAbstract.ShouldBeFalse("handler must not be static for Wolverine discovery");
     }
 
     [Fact]

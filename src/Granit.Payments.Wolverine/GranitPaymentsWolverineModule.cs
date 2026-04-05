@@ -1,7 +1,5 @@
-using Granit.Invoicing;
 using Granit.Modularity;
 using Granit.Payments.Wolverine.Internal;
-using Granit.Payments.Wolverine.Services;
 using Granit.Wolverine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -17,8 +15,6 @@ public sealed class GranitPaymentsWolverineModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.TryAddScoped<IInvoicePrePaymentProcessor, PassThroughPrePaymentProcessor>();
-        context.Services.TryAddScoped<WebhookProcessor>();
-        context.Services.TryAddScoped<AutoChargeService>();
+        context.Services.TryAddScoped<IPaymentCommandDispatcher, WolverinePaymentCommandDispatcher>();
     }
 }

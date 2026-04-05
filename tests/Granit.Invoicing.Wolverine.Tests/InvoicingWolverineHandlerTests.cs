@@ -12,13 +12,12 @@ public sealed class InvoicingWolverineHandlerTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void CreateInvoiceHandler_ShouldBeInternalStaticPartial()
+    public void CreateInvoiceHandler_ShouldBePublicNonStatic()
     {
         Type handlerType = typeof(CreateInvoiceHandler);
 
-        handlerType.IsAbstract.ShouldBeTrue("static classes are abstract");
-        handlerType.IsSealed.ShouldBeTrue("static classes are sealed");
-        handlerType.IsNotPublic.ShouldBeTrue("handler should be internal");
+        handlerType.IsPublic.ShouldBeTrue("handler must be public for Wolverine discovery");
+        handlerType.IsAbstract.ShouldBeFalse("handler must not be static for Wolverine discovery");
     }
 
     [Fact]

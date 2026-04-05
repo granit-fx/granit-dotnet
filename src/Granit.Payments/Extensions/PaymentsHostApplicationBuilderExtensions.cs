@@ -1,5 +1,7 @@
 using Granit.Diagnostics;
+using Granit.Invoicing;
 using Granit.Payments.Diagnostics;
+using Granit.Payments.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +15,9 @@ public static class PaymentsHostApplicationBuilderExtensions
     public static IHostApplicationBuilder AddGranitPayments(this IHostApplicationBuilder builder)
     {
         builder.Services.TryAddSingleton<PaymentsMetrics>();
+        builder.Services.TryAddTransient<IAutoChargeService, DefaultAutoChargeService>();
+        builder.Services.TryAddScoped<IInvoicePrePaymentProcessor, PassThroughPrePaymentProcessor>();
+        builder.Services.TryAddTransient<IWebhookProcessor, DefaultWebhookProcessor>();
         GranitActivitySourceRegistry.Register(PaymentsActivitySource.Name);
         return builder;
     }

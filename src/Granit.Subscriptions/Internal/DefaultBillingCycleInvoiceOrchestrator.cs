@@ -1,21 +1,21 @@
+using Granit.Invoicing;
 using Granit.Invoicing.Commands;
 using Granit.Invoicing.Domain;
 using Granit.Subscriptions.Domain;
 using Microsoft.Extensions.Logging;
-using Wolverine;
 
-namespace Granit.Subscriptions.Wolverine.Services;
+namespace Granit.Subscriptions.Internal;
 
 /// <summary>
 /// Creates invoices for Flat/PerSeat plans when a billing cycle completes.
-/// PerUnit/Tiered plans are handled exclusively by <see cref="UsageInvoiceOrchestrator"/>.
+/// PerUnit/Tiered plans are handled exclusively by <see cref="DefaultUsageInvoiceOrchestrator"/>.
 /// </summary>
-public sealed partial class BillingCycleInvoiceOrchestrator(
+internal sealed partial class DefaultBillingCycleInvoiceOrchestrator(
     ISubscriptionReader subscriptionReader,
     IPlanReader planReader,
     IPricingResolver pricingResolver,
-    IMessageBus messageBus,
-    ILogger<BillingCycleInvoiceOrchestrator> logger)
+    IInvoiceCommandPublisher invoiceCommandPublisher,
+    ILogger<DefaultBillingCycleInvoiceOrchestrator> logger) : IBillingCycleInvoiceOrchestrator
 {
     public async Task CreateInvoiceAsync(
         Guid subscriptionId,
@@ -90,7 +90,7 @@ public sealed partial class BillingCycleInvoiceOrchestrator(
             PeriodStart: periodStart,
             PeriodEnd: periodEnd);
 
-        await messageBus.PublishAsync(command).ConfigureAwait(false);
+        await invoiceCommandPublisher.PublishAsync(command, cancellationToken).ConfigureAwait(false);
         Log.InvoiceCreated(logger, subscriptionId, basePrice, subscription.Currency);
     }
 

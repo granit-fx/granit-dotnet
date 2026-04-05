@@ -1,18 +1,17 @@
 using Granit.MultiTenancy;
 using Granit.Subscriptions.Events;
-using Granit.Subscriptions.Wolverine.Services;
 
 namespace Granit.Subscriptions.Wolverine.Handlers;
 
 /// <summary>
 /// Creates invoices for Flat/PerSeat plans when a billing cycle completes.
-/// Delegates to <see cref="BillingCycleInvoiceOrchestrator"/>.
+/// Delegates to <see cref="IBillingCycleInvoiceOrchestrator"/>.
 /// </summary>
 public class BillingCycleCompletedHandler
 {
     public static async Task HandleAsync(
         BillingCycleCompletedEto eto,
-        BillingCycleInvoiceOrchestrator orchestrator,
+        IBillingCycleInvoiceOrchestrator orchestrator,
         ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {

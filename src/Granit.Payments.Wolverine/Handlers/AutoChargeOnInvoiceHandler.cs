@@ -1,17 +1,16 @@
 using Granit.Invoicing.Events;
-using Granit.Payments.Wolverine.Services;
 
 namespace Granit.Payments.Wolverine.Handlers;
 
 /// <summary>
 /// Automatically initiates payment when an invoice is finalized with auto-collection.
-/// Delegates to <see cref="AutoChargeService"/> for all charge orchestration logic.
+/// Delegates to <see cref="IAutoChargeService"/> for all charge orchestration logic.
 /// </summary>
 public class AutoChargeOnInvoiceHandler
 {
     public static Task HandleAsync(
         InvoiceFinalizedEto eto,
-        AutoChargeService autoChargeService,
+        IAutoChargeService autoChargeService,
         CancellationToken cancellationToken) =>
         autoChargeService.HandleAsync(eto, cancellationToken);
 }

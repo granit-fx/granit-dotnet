@@ -12,13 +12,12 @@ public sealed class SubscriptionsWolverineHandlerTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void SubscriptionProviderSyncHandler_ShouldBeInternalStaticPartial()
+    public void SubscriptionProviderSyncHandler_ShouldBePublicNonStatic()
     {
         Type handlerType = typeof(SubscriptionProviderSyncHandler);
 
-        handlerType.IsAbstract.ShouldBeTrue("static classes are abstract");
-        handlerType.IsSealed.ShouldBeTrue("static classes are sealed");
-        handlerType.IsNotPublic.ShouldBeTrue("handler should be internal");
+        handlerType.IsPublic.ShouldBeTrue("handler must be public for Wolverine discovery");
+        handlerType.IsAbstract.ShouldBeFalse("handler must not be static for Wolverine discovery");
     }
 
     [Fact]
@@ -59,13 +58,12 @@ public sealed class SubscriptionsWolverineHandlerTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void UsageSummaryReadyHandler_ShouldBeInternalStaticPartial()
+    public void UsageSummaryReadyHandler_ShouldBePublicNonStatic()
     {
         Type handlerType = typeof(UsageSummaryReadyHandler);
 
-        handlerType.IsAbstract.ShouldBeTrue("static classes are abstract");
-        handlerType.IsSealed.ShouldBeTrue("static classes are sealed");
-        handlerType.IsNotPublic.ShouldBeTrue("handler should be internal");
+        handlerType.IsPublic.ShouldBeTrue("handler must be public for Wolverine discovery");
+        handlerType.IsAbstract.ShouldBeFalse("handler must not be static for Wolverine discovery");
     }
 
     [Fact]

@@ -33,6 +33,8 @@ public static class SubscriptionsHostApplicationBuilderExtensions
         builder.Services.TryAddTransient<ISubscriptionReactivationService, DefaultSubscriptionReactivationService>();
         builder.Services.TryAddTransient<IDunningService, DefaultDunningService>();
         builder.Services.TryAddTransient<ISubscriptionProviderSyncService, DefaultSubscriptionProviderSyncService>();
+        builder.Services.TryAddTransient<IUsageInvoiceOrchestrator, DefaultUsageInvoiceOrchestrator>();
+        builder.Services.TryAddTransient<IBillingCycleInvoiceOrchestrator, DefaultBillingCycleInvoiceOrchestrator>();
         GranitActivitySourceRegistry.Register(SubscriptionsActivitySource.Name);
 
         return builder;

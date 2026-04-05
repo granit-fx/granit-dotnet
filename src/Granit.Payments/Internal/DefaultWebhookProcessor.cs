@@ -4,18 +4,18 @@ using Granit.Payments.Domain;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 
-namespace Granit.Payments.Wolverine.Services;
+namespace Granit.Payments.Internal;
 
 /// <summary>
 /// Processes inbound webhook events from payment providers.
 /// Reconciles the provider-reported status with the local <see cref="PaymentTransaction"/>.
 /// </summary>
-public sealed partial class WebhookProcessor(
+internal sealed partial class DefaultWebhookProcessor(
     IEnumerable<IPaymentProvider> providers,
     IPaymentTransactionReader transactionReader,
     IPaymentTransactionWriter transactionWriter,
     IClock clock,
-    ILogger<WebhookProcessor> logger)
+    ILogger<DefaultWebhookProcessor> logger) : IWebhookProcessor
 {
     public async Task ProcessAsync(ProcessWebhookCommand command, CancellationToken cancellationToken)
     {
