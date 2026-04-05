@@ -71,10 +71,8 @@ public sealed class MeterDefinitionTests
     }
 
     [Fact]
-    public void MeterDefinitionId_Create_WithEmptyGuid_ShouldThrow()
-    {
+    public void MeterDefinitionId_Create_WithEmptyGuid_ShouldThrow() =>
         Should.Throw<ArgumentException>(() => MeterDefinitionId.Create(Guid.Empty));
-    }
 
     [Fact]
     public void MeterDefinitionId_ImplicitConversion_ShouldRoundTrip()

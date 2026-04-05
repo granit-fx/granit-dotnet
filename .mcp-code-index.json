@@ -1523,7 +1523,8 @@
     {
       "name": "Granit.Privacy",
       "deps": [
-        "Granit"
+        "Granit",
+        "Granit.Workflow"
       ],
       "framework": "net10.0"
     },

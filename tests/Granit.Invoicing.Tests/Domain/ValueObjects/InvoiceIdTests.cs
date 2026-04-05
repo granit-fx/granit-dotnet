@@ -19,10 +19,8 @@ public sealed class InvoiceIdTests
     }
 
     [Fact]
-    public void Create_WithEmptyGuid_ShouldThrow()
-    {
+    public void Create_WithEmptyGuid_ShouldThrow() =>
         Should.Throw<ArgumentException>(() => InvoiceId.Create(Guid.Empty));
-    }
 
     // ======== Implicit conversions ========
 

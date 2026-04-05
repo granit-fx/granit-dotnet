@@ -160,10 +160,8 @@ public sealed class SubscriptionTests
     }
 
     [Fact]
-    public void PlanId_Create_WithEmptyGuid_ShouldThrow()
-    {
+    public void PlanId_Create_WithEmptyGuid_ShouldThrow() =>
         Should.Throw<ArgumentException>(() => PlanId.Create(Guid.Empty));
-    }
 
     [Fact]
     public void PlanId_ImplicitConversion_ShouldRoundTrip()
@@ -176,10 +174,8 @@ public sealed class SubscriptionTests
     }
 
     [Fact]
-    public void SubscriptionId_Create_WithEmptyGuid_ShouldThrow()
-    {
+    public void SubscriptionId_Create_WithEmptyGuid_ShouldThrow() =>
         Should.Throw<ArgumentException>(() => SubscriptionId.Create(Guid.Empty));
-    }
 
     // ── Price migration tests ─────────────────────────────────────
 

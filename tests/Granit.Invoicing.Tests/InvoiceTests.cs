@@ -177,10 +177,8 @@ public sealed class InvoiceTests
     }
 
     [Fact]
-    public void InvoiceId_Create_WithEmptyGuid_ShouldThrow()
-    {
+    public void InvoiceId_Create_WithEmptyGuid_ShouldThrow() =>
         Should.Throw<ArgumentException>(() => InvoiceId.Create(Guid.Empty));
-    }
 
     // ======== SetTaxTotal ========
 

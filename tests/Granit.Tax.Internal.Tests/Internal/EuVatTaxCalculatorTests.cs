@@ -247,10 +247,8 @@ public sealed class EuVatTaxCalculatorTests : IDisposable
     // ======== Name property ========
 
     [Fact]
-    public void Name_ShouldReturnEuVat()
-    {
+    public void Name_ShouldReturnEuVat() =>
         CreateSut().Name.ShouldBe("eu-vat");
-    }
 
     // ======== Metrics recorded ========
 

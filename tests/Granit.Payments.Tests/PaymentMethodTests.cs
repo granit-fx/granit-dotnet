@@ -58,10 +58,8 @@ public sealed class PaymentMethodTests
     }
 
     [Fact]
-    public void TransactionId_Create_WithEmptyGuid_ShouldThrow()
-    {
+    public void TransactionId_Create_WithEmptyGuid_ShouldThrow() =>
         Should.Throw<ArgumentException>(() => TransactionId.Create(Guid.Empty));
-    }
 
     [Fact]
     public void TransactionId_ImplicitConversion_ShouldRoundTrip()
@@ -86,10 +84,8 @@ public sealed class PaymentMethodTests
     }
 
     [Fact]
-    public void PaymentMethodId_Create_WithEmptyGuid_ShouldThrow()
-    {
+    public void PaymentMethodId_Create_WithEmptyGuid_ShouldThrow() =>
         Should.Throw<ArgumentException>(() => PaymentMethodId.Create(Guid.Empty));
-    }
 
     [Fact]
     public void PaymentMethodId_ImplicitConversion_ShouldRoundTrip()

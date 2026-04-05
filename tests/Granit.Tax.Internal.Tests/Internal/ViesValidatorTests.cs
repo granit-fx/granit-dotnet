@@ -91,10 +91,8 @@ public sealed class ViesValidatorTests : IDisposable
     // ======== Name property ========
 
     [Fact]
-    public void Name_ShouldReturnVies()
-    {
+    public void Name_ShouldReturnVies() =>
         CreateSut().Name.ShouldBe("vies");
-    }
 
     // ======== Valid VAT from VIES ========
 
