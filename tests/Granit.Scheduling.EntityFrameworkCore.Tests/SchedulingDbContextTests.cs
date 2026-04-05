@@ -16,8 +16,6 @@ public sealed class SchedulingDbContextTests
     }
 
     [Fact]
-    public void DbProperties_DefaultPrefix_ShouldBeScheduling()
-    {
+    public void DbProperties_DefaultPrefix_ShouldBeScheduling() =>
         GranitSchedulingDbProperties.DbTablePrefix.ShouldBe("scheduling_");
-    }
 }

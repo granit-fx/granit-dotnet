@@ -19,10 +19,8 @@ public sealed class SubscriptionsNotificationTypeTests
     }
 
     [Fact]
-    public void TrialExpiring_ShouldBeSingleton()
-    {
+    public void TrialExpiring_ShouldBeSingleton() =>
         TrialExpiringNotificationType.Instance.ShouldBeSameAs(TrialExpiringNotificationType.Instance);
-    }
 
     [Fact]
     public void TrialExpiringData_ShouldCreateRecord()
@@ -53,10 +51,8 @@ public sealed class SubscriptionsNotificationTypeTests
     }
 
     [Fact]
-    public void TrialExpired_ShouldBeSingleton()
-    {
+    public void TrialExpired_ShouldBeSingleton() =>
         TrialExpiredNotificationType.Instance.ShouldBeSameAs(TrialExpiredNotificationType.Instance);
-    }
 
     [Fact]
     public void TrialExpiredData_ShouldCreateRecord()
@@ -84,10 +80,8 @@ public sealed class SubscriptionsNotificationTypeTests
     }
 
     [Fact]
-    public void PlanChanged_ShouldBeSingleton()
-    {
+    public void PlanChanged_ShouldBeSingleton() =>
         PlanChangedNotificationType.Instance.ShouldBeSameAs(PlanChangedNotificationType.Instance);
-    }
 
     [Fact]
     public void PlanChangedData_ShouldCreateRecord()

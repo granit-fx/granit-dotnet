@@ -7,6 +7,7 @@ using Granit.Tax.Internal.Internal;
 using Granit.Tax.Internal.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Tax.Internal;
 
@@ -21,17 +22,19 @@ namespace Granit.Tax.Internal;
     typeof(GranitTaxModule))]
 public sealed class GranitTaxInternalModule : GranitModule
 {
-    private const string ViesBaseUrl = "https://ec.europa.eu/taxation_customs/vies/rest-api/";
-
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddOptions<EuVatRateOptions>()
             .BindConfiguration(EuVatRateOptions.SectionName);
 
-        context.Services.AddGranitHttpClient("Vies", (_, client) =>
+        context.Services.AddOptions<ViesOptions>()
+            .BindConfiguration(ViesOptions.SectionName);
+
+        context.Services.AddGranitHttpClient("Vies", (sp, client) =>
         {
-            client.BaseAddress = new Uri(ViesBaseUrl);
+            ViesOptions viesOptions = sp.GetRequiredService<IOptions<ViesOptions>>().Value;
+            client.BaseAddress = viesOptions.BaseUrl;
             client.Timeout = TimeSpan.FromSeconds(10);
         });
 

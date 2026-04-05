@@ -7,16 +7,12 @@ namespace Granit.Subscriptions.Wolverine.Tests;
 public sealed class GranitSubscriptionsWolverineModuleTests
 {
     [Fact]
-    public void Module_ShouldBeSealed()
-    {
+    public void Module_ShouldBeSealed() =>
         typeof(GranitSubscriptionsWolverineModule).IsSealed.ShouldBeTrue();
-    }
 
     [Fact]
-    public void Module_ShouldInheritFromGranitModule()
-    {
+    public void Module_ShouldInheritFromGranitModule() =>
         typeof(GranitSubscriptionsWolverineModule).IsSubclassOf(typeof(GranitModule)).ShouldBeTrue();
-    }
 
     [Fact]
     public void Module_ShouldDependOnSubscriptionsAndWolverine()

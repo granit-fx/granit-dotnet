@@ -35714,7 +35714,7 @@
       "kind": "class",
       "project": "Granit.Tax.Internal",
       "file": "src/Granit.Tax.Internal/GranitTaxInternalModule.cs",
-      "line": 22,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",
@@ -35737,6 +35737,22 @@
           "kind": "property",
           "signature": "Dictionary<string, decimal> StandardRates",
           "returnType": "Dictionary<string, decimal>"
+        }
+      ]
+    },
+    {
+      "name": "ViesOptions",
+      "fqn": "Granit.Tax.Internal.Options.ViesOptions",
+      "kind": "class",
+      "project": "Granit.Tax.Internal",
+      "file": "src/Granit.Tax.Internal/Options/ViesOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(\"https://ec.europa.eu/taxation_customs/vies/rest-api/\")",
+          "returnType": "Uri BaseUrl { get; set; } ="
         }
       ]
     },

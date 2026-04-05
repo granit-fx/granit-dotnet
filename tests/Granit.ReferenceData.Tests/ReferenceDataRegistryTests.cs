@@ -54,10 +54,8 @@ public sealed class ReferenceDataRegistryTests
     }
 
     [Fact]
-    public void Register_null_throws_ArgumentNullException()
-    {
+    public void Register_null_throws_ArgumentNullException() =>
         Should.Throw<ArgumentNullException>(() => _registry.Register(null!));
-    }
 
     [Fact]
     public void Types_returns_all_registrations()
@@ -69,8 +67,6 @@ public sealed class ReferenceDataRegistryTests
     }
 
     [Fact]
-    public void Types_returns_empty_when_no_registrations()
-    {
+    public void Types_returns_empty_when_no_registrations() =>
         _registry.Types.ShouldBeEmpty();
-    }
 }

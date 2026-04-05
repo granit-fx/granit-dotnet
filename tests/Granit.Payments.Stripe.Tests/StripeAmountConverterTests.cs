@@ -32,10 +32,8 @@ public sealed class StripeAmountConverterTests
     [Theory]
     [InlineData(1000L, "JPY", 1000)]
     [InlineData(5000L, "KRW", 5000)]
-    public void FromStripeAmount_ZeroDecimalCurrency_ShouldNotDivide(long amount, string currency, decimal expected)
-    {
+    public void FromStripeAmount_ZeroDecimalCurrency_ShouldNotDivide(long amount, string currency, decimal expected) =>
         StripeAmountConverter.FromStripeAmount(amount, currency).ShouldBe(expected);
-    }
 
     [Fact]
     public void ToStripeAmount_CaseInsensitive_ShouldWork()

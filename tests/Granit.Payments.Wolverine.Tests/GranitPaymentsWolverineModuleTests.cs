@@ -7,16 +7,12 @@ namespace Granit.Payments.Wolverine.Tests;
 public sealed class GranitPaymentsWolverineModuleTests
 {
     [Fact]
-    public void Module_ShouldBeSealed()
-    {
+    public void Module_ShouldBeSealed() =>
         typeof(GranitPaymentsWolverineModule).IsSealed.ShouldBeTrue();
-    }
 
     [Fact]
-    public void Module_ShouldInheritFromGranitModule()
-    {
+    public void Module_ShouldInheritFromGranitModule() =>
         typeof(GranitPaymentsWolverineModule).IsSubclassOf(typeof(GranitModule)).ShouldBeTrue();
-    }
 
     [Fact]
     public void Module_ShouldDependOnPaymentsAndWolverine()

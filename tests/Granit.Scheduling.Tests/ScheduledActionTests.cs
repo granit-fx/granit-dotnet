@@ -80,10 +80,8 @@ public sealed class ScheduledActionTests
     }
 
     [Fact]
-    public void ScheduledActionId_Create_WithEmptyGuid_ShouldThrow()
-    {
+    public void ScheduledActionId_Create_WithEmptyGuid_ShouldThrow() =>
         Should.Throw<ArgumentException>(() => ScheduledActionId.Create(Guid.Empty));
-    }
 
     [Fact]
     public void ScheduledActionId_ImplicitConversion_ShouldRoundTrip()

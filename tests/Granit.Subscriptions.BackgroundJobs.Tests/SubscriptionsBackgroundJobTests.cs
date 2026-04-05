@@ -13,16 +13,12 @@ public sealed class SubscriptionsBackgroundJobTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void TrialExpirationScanJob_ShouldImplementIBackgroundJob()
-    {
+    public void TrialExpirationScanJob_ShouldImplementIBackgroundJob() =>
         typeof(IBackgroundJob).IsAssignableFrom(typeof(TrialExpirationScanJob)).ShouldBeTrue();
-    }
 
     [Fact]
-    public void TrialExpirationScanJob_ShouldBeSealedRecord()
-    {
+    public void TrialExpirationScanJob_ShouldBeSealedRecord() =>
         typeof(TrialExpirationScanJob).IsSealed.ShouldBeTrue();
-    }
 
     [Fact]
     public void TrialExpirationScanJob_ShouldHaveRecurringJobAttribute()
@@ -39,16 +35,12 @@ public sealed class SubscriptionsBackgroundJobTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void PeriodEndScanJob_ShouldImplementIBackgroundJob()
-    {
+    public void PeriodEndScanJob_ShouldImplementIBackgroundJob() =>
         typeof(IBackgroundJob).IsAssignableFrom(typeof(PeriodEndScanJob)).ShouldBeTrue();
-    }
 
     [Fact]
-    public void PeriodEndScanJob_ShouldBeSealedRecord()
-    {
+    public void PeriodEndScanJob_ShouldBeSealedRecord() =>
         typeof(PeriodEndScanJob).IsSealed.ShouldBeTrue();
-    }
 
     [Fact]
     public void PeriodEndScanJob_ShouldHaveRecurringJobAttribute()
@@ -65,16 +57,12 @@ public sealed class SubscriptionsBackgroundJobTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void CancelAtPeriodEndScanJob_ShouldImplementIBackgroundJob()
-    {
+    public void CancelAtPeriodEndScanJob_ShouldImplementIBackgroundJob() =>
         typeof(IBackgroundJob).IsAssignableFrom(typeof(CancelAtPeriodEndScanJob)).ShouldBeTrue();
-    }
 
     [Fact]
-    public void CancelAtPeriodEndScanJob_ShouldBeSealedRecord()
-    {
+    public void CancelAtPeriodEndScanJob_ShouldBeSealedRecord() =>
         typeof(CancelAtPeriodEndScanJob).IsSealed.ShouldBeTrue();
-    }
 
     [Fact]
     public void CancelAtPeriodEndScanJob_ShouldHaveRecurringJobAttribute()

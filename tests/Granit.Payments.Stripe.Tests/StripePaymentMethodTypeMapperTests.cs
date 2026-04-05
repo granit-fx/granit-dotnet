@@ -25,14 +25,10 @@ public sealed class StripePaymentMethodTypeMapperTests
     [InlineData("ideal", PaymentMethods.Ideal)]
     [InlineData("bancontact", PaymentMethods.Bancontact)]
     [InlineData("customer_balance", PaymentMethods.BankTransfer)]
-    public void FromStripeType_ShouldMapBack(string stripeType, string expected)
-    {
+    public void FromStripeType_ShouldMapBack(string stripeType, string expected) =>
         StripePaymentMethodTypeMapper.FromStripeType(stripeType).ShouldBe(expected);
-    }
 
     [Fact]
-    public void FromStripeType_UnknownType_ShouldPassThrough()
-    {
+    public void FromStripeType_UnknownType_ShouldPassThrough() =>
         StripePaymentMethodTypeMapper.FromStripeType("unknown_type").ShouldBe("unknown_type");
-    }
 }
