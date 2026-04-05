@@ -1,6 +1,7 @@
 using Granit.Privacy.LegalAgreements.Events;
+using Granit.Privacy.LegalAgreements.Internal;
 
-namespace Granit.Privacy.LegalAgreements.Internal;
+namespace Granit.Privacy.LegalAgreements;
 
 /// <summary>
 /// Refreshes the <see cref="CompositeLegalDocumentRegistry"/> cache when a legal document

@@ -561,7 +561,9 @@
     <Project Path="tests/Granit.Tax.Stripe.Tests/Granit.Tax.Stripe.Tests.csproj" />
     <Project Path="tests/Granit.Tax.Tests/Granit.Tax.Tests.csproj" />
   </Folder>
-  <Folder Name="/tests/" />
+  <Folder Name="/tests/">
+    <Project Path="tests/Granit.Privacy.EntityFrameworkCore.Tests/Granit.Privacy.EntityFrameworkCore.Tests.csproj" />
+  </Folder>
   <Folder Name="/tests/AI/">
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />
     <Project Path="tests/Granit.AI.Endpoints.Tests/Granit.AI.Endpoints.Tests.csproj" />

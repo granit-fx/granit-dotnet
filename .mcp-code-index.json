@@ -30554,11 +30554,11 @@
     },
     {
       "name": "LegalDocumentCacheInvalidatedHandler",
-      "fqn": "Granit.Privacy.LegalAgreements.Internal.LegalDocumentCacheInvalidatedHandler",
+      "fqn": "Granit.Privacy.LegalAgreements.LegalDocumentCacheInvalidatedHandler",
       "kind": "class",
       "project": "Granit.Privacy",
-      "file": "src/Granit.Privacy/LegalAgreements/Internal/LegalDocumentCacheInvalidatedHandler.cs",
-      "line": 9,
+      "file": "src/Granit.Privacy/LegalAgreements/LegalDocumentCacheInvalidatedHandler.cs",
+      "line": 10,
       "members": [
         {
           "name": "HandleAsync",
@@ -41241,14 +41241,7 @@
       "project": "Granit.Workflow",
       "file": "src/Granit.Workflow/Domain/VersionedWorkflowEntity.cs",
       "line": 34,
-      "members": [
-        {
-          "name": "GetWorkflowEntityId",
-          "kind": "method",
-          "signature": "GetWorkflowEntityId()",
-          "returnType": "string"
-        }
-      ]
+      "members": []
     },
     {
       "name": "WorkflowLifecycleStatus",

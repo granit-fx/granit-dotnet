@@ -245,6 +245,7 @@
         "tests/Granit.Privacy.Regulations.Tests",
         "tests/Granit.Privacy.Tests",
         "tests/Granit.Privacy.Endpoints.Tests",
+        "tests/Granit.Privacy.EntityFrameworkCore.Tests",
         "tests/Granit.Privacy.Notifications.Tests",
         "tests/Granit.Vault.Aws.Tests",
         "tests/Granit.Vault.Azure.Tests",
