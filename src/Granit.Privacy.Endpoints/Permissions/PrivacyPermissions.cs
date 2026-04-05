@@ -39,4 +39,17 @@ public static class PrivacyPermissions
         /// <summary>Accept a legal agreement.</summary>
         public const string Create = "Privacy.Agreements.Create";
     }
+
+    /// <summary>Permissions for legal document version management (admin).</summary>
+    public static class LegalDocuments
+    {
+        /// <summary>View legal document versions and history.</summary>
+        public const string Read = "Privacy.LegalDocuments.Read";
+
+        /// <summary>Create new legal document drafts.</summary>
+        public const string Create = "Privacy.LegalDocuments.Create";
+
+        /// <summary>Edit, publish, and archive legal documents.</summary>
+        public const string Manage = "Privacy.LegalDocuments.Manage";
+    }
 }

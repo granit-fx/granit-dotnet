@@ -55,8 +55,24 @@ public static class PrivacyServiceCollectionExtensions
         ProcessingPurposeRegistry purposeRegistry = new(builder.ProcessingPurposes);
 
         services.TryAddSingleton<IDataProviderRegistry>(dataProviderRegistry);
-        services.TryAddSingleton<ILegalDocumentRegistry>(legalDocumentRegistry);
+        services.TryAddSingleton(legalDocumentRegistry);
         services.TryAddSingleton<IProcessingPurposeRegistry>(purposeRegistry);
+
+        // When Granit.Privacy.EntityFrameworkCore is wired (ILegalDocumentReader registered),
+        // use the composite registry (DB-first, static-fallback with distributed cache).
+        // Otherwise, use the static registry directly.
+        bool hasDocumentReader = services.Any(d => d.ServiceType == typeof(ILegalDocumentReader));
+        if (hasDocumentReader)
+        {
+            services.TryAddSingleton<ILegalDocumentRegistry>(sp =>
+                new CompositeLegalDocumentRegistry(
+                    sp.GetRequiredService<IServiceScopeFactory>(),
+                    sp.GetRequiredService<LegalDocumentRegistry>()));
+        }
+        else
+        {
+            services.TryAddSingleton<ILegalDocumentRegistry>(legalDocumentRegistry);
+        }
 
         // Only register the checker when a store implementation has been provided
         // via UseLegalAgreementStore<T>(). Without a store the checker cannot work

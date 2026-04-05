@@ -1867,7 +1867,8 @@
     {
       "name": "Granit.Templating",
       "deps": [
-        "Granit.Timing"
+        "Granit.Timing",
+        "Granit.Workflow"
       ],
       "framework": "net10.0"
     },
@@ -1895,6 +1896,7 @@
         "Granit.Guids",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Templating",
+        "Granit.Workflow.EntityFrameworkCore",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -21691,6 +21693,22 @@
       ]
     },
     {
+      "name": "IAsyncModuleConfigProvider",
+      "fqn": "Granit.Modularity.IAsyncModuleConfigProvider",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/Modularity/IAsyncModuleConfigProvider.cs",
+      "line": 34,
+      "members": [
+        {
+          "name": "GetConfigAsync",
+          "kind": "method",
+          "signature": "GetConfigAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<TResponse>"
+        }
+      ]
+    },
+    {
       "name": "IModuleConfigProvider",
       "fqn": "Granit.Modularity.IModuleConfigProvider",
       "kind": "interface",
@@ -29925,6 +29943,33 @@
       ]
     },
     {
+      "name": "LegalDocumentCreateRequest",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.LegalDocumentCreateRequest",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/LegalDocumentCreateRequest.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "LegalDocumentDetailResponse",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.LegalDocumentDetailResponse",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/LegalDocumentDetailResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "LegalDocumentUpdateRequest",
+      "fqn": "Granit.Privacy.Endpoints.Dtos.LegalDocumentUpdateRequest",
+      "kind": "record",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Dtos/LegalDocumentUpdateRequest.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "PrivacyAcceptAgreementRequest",
       "fqn": "Granit.Privacy.Endpoints.Dtos.PrivacyAcceptAgreementRequest",
       "kind": "record",
@@ -30038,7 +30083,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Extensions/PrivacyEndpointRouteBuilderExtensions.cs",
-      "line": 36,
+      "line": 37,
       "members": [
         {
           "name": "MapGranitPrivacy",
@@ -30107,6 +30152,15 @@
       "members": []
     },
     {
+      "name": "LegalDocuments",
+      "fqn": "Granit.Privacy.Endpoints.Permissions.LegalDocuments",
+      "kind": "class",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
+      "line": 44,
+      "members": []
+    },
+    {
       "name": "PrivacyPermissions",
       "fqn": "Granit.Privacy.Endpoints.Permissions.PrivacyPermissions",
       "kind": "class",
@@ -30123,6 +30177,38 @@
       "file": "src/Granit.Privacy.Endpoints/Permissions/PrivacyPermissions.cs",
       "line": 27,
       "members": []
+    },
+    {
+      "name": "PrivacyEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Privacy.EntityFrameworkCore.Extensions.PrivacyEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Privacy.EntityFrameworkCore",
+      "file": "src/Granit.Privacy.EntityFrameworkCore/Extensions/PrivacyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitPrivacyEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitPrivacyEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyModelBuilderExtensions",
+      "fqn": "Granit.Privacy.EntityFrameworkCore.Extensions.PrivacyModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Privacy.EntityFrameworkCore",
+      "file": "src/Granit.Privacy.EntityFrameworkCore/Extensions/PrivacyModelBuilderExtensions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ConfigurePrivacyModule",
+          "kind": "method",
+          "signature": "ConfigurePrivacyModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
     },
     {
       "name": "GranitPrivacyDbProperties",
@@ -30440,6 +30526,22 @@
       ]
     },
     {
+      "name": "LegalDocumentCacheInvalidatedHandler",
+      "fqn": "Granit.Privacy.LegalAgreements.Internal.LegalDocumentCacheInvalidatedHandler",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/LegalAgreements/Internal/LegalDocumentCacheInvalidatedHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(LegalDocumentCacheInvalidatedEto evt, ILegalDocumentRegistry registry, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "LegalDocumentDefinition",
       "fqn": "Granit.Privacy.LegalAgreements.LegalDocumentDefinition",
       "kind": "record",
@@ -30485,6 +30587,22 @@
           "name": "HandleAsync",
           "kind": "method",
           "signature": "HandleAsync(DeletionReminderDueEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "LegalDocumentObsoleteHandler",
+      "fqn": "Granit.Privacy.Notifications.Handlers.LegalDocumentObsoleteHandler",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/Handlers/LegalDocumentObsoleteHandler.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(LegalAgreementObsoleteEto evt, ILegalAgreementStoreReader storeReader, ILegalDocumentRegistry documentRegistry, INotificationPublisher publisher, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -30542,6 +30660,43 @@
           "kind": "method",
           "signature": "new()",
           "returnType": "PrivacyDeletionReminderNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyLegalDocumentObsoleteNotificationData",
+      "fqn": "Granit.Privacy.Notifications.PrivacyLegalDocumentObsoleteNotificationData",
+      "kind": "record",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyLegalDocumentObsoleteNotificationType.cs",
+      "line": 33,
+      "members": []
+    },
+    {
+      "name": "PrivacyLegalDocumentObsoleteNotificationType",
+      "fqn": "Granit.Privacy.Notifications.PrivacyLegalDocumentObsoleteNotificationType",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyLegalDocumentObsoleteNotificationType.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyLegalDocumentObsoleteNotificationType Instance ="
         },
         {
           "name": "Name",
@@ -36393,7 +36548,7 @@
       "kind": "class",
       "project": "Granit.Templating.Endpoints",
       "file": "src/Granit.Templating.Endpoints/Extensions/TemplatingEndpointRouteBuilderExtensions.cs",
-      "line": 36,
+      "line": 37,
       "members": [
         {
           "name": "MapGranitTemplating",
@@ -36483,7 +36638,7 @@
       "kind": "class",
       "project": "Granit.Templating.EntityFrameworkCore",
       "file": "src/Granit.Templating.EntityFrameworkCore/Extensions/TemplatingEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitTemplatingEntityFrameworkCore",
@@ -36531,7 +36686,7 @@
       "kind": "class",
       "project": "Granit.Templating.EntityFrameworkCore",
       "file": "src/Granit.Templating.EntityFrameworkCore/GranitTemplatingEntityFrameworkCoreModule.cs",
-      "line": 21,
+      "line": 23,
       "members": []
     },
     {
@@ -36561,8 +36716,8 @@
         {
           "name": "TemplateTransitionDeniedException",
           "kind": "method",
-          "signature": "TemplateTransitionDeniedException(TemplateLifecycleStatus from, TemplateLifecycleStatus to)",
-          "returnType": "TemplateLifecycleStatus From { get; } public TemplateLifecycleStatus To { get; } public"
+          "signature": "TemplateTransitionDeniedException(WorkflowLifecycleStatus from, WorkflowLifecycleStatus to)",
+          "returnType": "WorkflowLifecycleStatus From { get; } public WorkflowLifecycleStatus To { get; } public"
         }
       ]
     },
@@ -36610,7 +36765,7 @@
       "kind": "class",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/GranitTemplatingModule.cs",
-      "line": 24,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",
@@ -36998,18 +37153,18 @@
       "kind": "interface",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Store/ITemplateTransitionHook.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "CanTransitionAsync",
           "kind": "method",
-          "signature": "CanTransitionAsync(TemplateLifecycleStatus from, TemplateLifecycleStatus target, CancellationToken cancellationToken = default)",
+          "signature": "CanTransitionAsync(WorkflowLifecycleStatus from, WorkflowLifecycleStatus target, CancellationToken cancellationToken = default)",
           "returnType": "bool IsWorkflowEnabled { get; } Task<bool>"
         },
         {
           "name": "OnTransitionedAsync",
           "kind": "method",
-          "signature": "OnTransitionedAsync(Guid revisionId, TemplateLifecycleStatus from, TemplateLifecycleStatus target, string userId, CancellationToken cancellationToken = default)",
+          "signature": "OnTransitionedAsync(Guid revisionId, WorkflowLifecycleStatus from, WorkflowLifecycleStatus target, string userId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -37033,21 +37188,12 @@
       "members": []
     },
     {
-      "name": "TemplateLifecycleStatus",
-      "fqn": "Granit.Templating.Store.TemplateLifecycleStatus",
-      "kind": "enum",
-      "project": "Granit.Templating",
-      "file": "src/Granit.Templating/Store/TemplateLifecycleStatus.cs",
-      "line": 6,
-      "members": []
-    },
-    {
       "name": "TemplateListFilter",
       "fqn": "Granit.Templating.Store.TemplateListFilter",
       "kind": "record",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Store/TemplateListFilter.cs",
-      "line": 14,
+      "line": 15,
       "members": []
     },
     {
@@ -37056,7 +37202,7 @@
       "kind": "class",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Store/TemplateRevision.cs",
-      "line": 11,
+      "line": 13,
       "members": []
     },
     {
@@ -37065,7 +37211,7 @@
       "kind": "class",
       "project": "Granit.Templating",
       "file": "src/Granit.Templating/Store/TemplateSummary.cs",
-      "line": 7,
+      "line": 9,
       "members": []
     },
     {

@@ -189,6 +189,7 @@
       "src/Granit.Privacy.AI/Granit.Privacy.AI.csproj",
       "src/Granit.Privacy.BackgroundJobs/Granit.Privacy.BackgroundJobs.csproj",
       "src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj",
+      "src/Granit.Privacy.EntityFrameworkCore/Granit.Privacy.EntityFrameworkCore.csproj",
       "src/Granit.Privacy.Notifications/Granit.Privacy.Notifications.csproj",
       "src/Granit.Privacy.Regulations.Cookies/Granit.Privacy.Regulations.Cookies.csproj",
       "src/Granit.Privacy.Regulations/Granit.Privacy.Regulations.csproj",

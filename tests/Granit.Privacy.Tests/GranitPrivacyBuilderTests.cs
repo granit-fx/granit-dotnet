@@ -160,5 +160,12 @@ public sealed class GranitPrivacyBuilderTests
 
         public Task RecordConsentAsync(Guid userId, string documentId, string version, string? ipAddress, DateTimeOffset acceptedAt, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
+
+        public async IAsyncEnumerable<Guid> StreamUsersByDocumentVersionAsync(
+            string documentId, string version, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            await Task.CompletedTask.ConfigureAwait(false);
+            yield break;
+        }
     }
 }

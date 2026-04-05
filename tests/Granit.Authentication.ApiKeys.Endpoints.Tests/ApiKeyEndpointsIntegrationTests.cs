@@ -69,6 +69,7 @@ public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
         builder.Services.AddSingleton(_guidGenerator);
         builder.Services.AddSingleton(_clock);
         builder.Services.AddSingleton(_permissionChecker);
+        builder.Services.AddSingleton(Substitute.For<Granit.Events.IDistributedEventBus>());
 
         _app = builder.Build();
         _app.MapGranitApiKeys();

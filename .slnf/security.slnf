@@ -73,6 +73,7 @@
       "src/Granit.Vault.GoogleCloud/Granit.Vault.GoogleCloud.csproj",
       "src/Granit.Vault.HashiCorp/Granit.Vault.HashiCorp.csproj",
       "src/Granit.Vault/Granit.Vault.csproj",
+      "src/Granit.Workflow/Granit.Workflow.csproj",
       "src/Granit/Granit.csproj",
       "tests/Granit.Authentication.ApiKeys.Endpoints.Tests/Granit.Authentication.ApiKeys.Endpoints.Tests.csproj",
       "tests/Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests/Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests.csproj",

@@ -8,6 +8,7 @@ using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
 using Granit.Privacy.Diagnostics;
 using Granit.Privacy.Endpoints.Dtos;
+using Granit.Privacy.Endpoints.Endpoints;
 using Granit.Privacy.Endpoints.Options;
 using Granit.Privacy.Endpoints.Permissions;
 using Granit.Privacy.LegalAgreements;
@@ -67,6 +68,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
         MapExportEndpoints(group);
         MapDeletionEndpoints(group);
         MapAgreementEndpoints(group);
+        MapLegalDocumentAdminEndpoints(group);
 
         return group;
     }
@@ -885,6 +887,12 @@ public static class PrivacyEndpointRouteBuilderExtensions
     /// GDPR requires data minimization — the full IP is not stored.
     /// Compliant with CNIL guidance on IP anonymization (2020) and WP29 Opinion 05/2014.
     /// </summary>
+    private static void MapLegalDocumentAdminEndpoints(RouteGroupBuilder group)
+    {
+        group.MapGroup("/legal-documents")
+            .MapLegalDocumentAdminEndpoints();
+    }
+
     internal static string? PseudonymizeIpAddress(string? ipAddress)
     {
         if (string.IsNullOrEmpty(ipAddress))

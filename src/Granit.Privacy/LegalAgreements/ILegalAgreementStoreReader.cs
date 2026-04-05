@@ -12,4 +12,11 @@ public interface ILegalAgreementStoreReader
 
     /// <summary>Returns all agreements for a user, ordered by date (most recent first).</summary>
     Task<IReadOnlyList<LegalAgreementBase>> FindAllByUserAsync(Guid userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Streams user IDs whose latest acceptance for the given document matches the specified version.
+    /// Uses cursor-based streaming to avoid loading all user IDs into memory at once.
+    /// </summary>
+    IAsyncEnumerable<Guid> StreamUsersByDocumentVersionAsync(
+        string documentId, string version, CancellationToken cancellationToken = default);
 }
