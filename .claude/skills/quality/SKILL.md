@@ -1,7 +1,7 @@
 ---
 name: quality
-description: "QA/DevSecOps engineer: full project quality audit or targeted MR review. Analyzes format, tests, local coverage (ReportGenerator), then SonarQube (quality gate, issues, hotspots, coverage). Detects regressions on modified files. Invoke before a merge or to reduce technical debt."
-argument-hint: "[review | projectKey]"
+description: "QA/DevSecOps engineer: full project quality audit or targeted MR review. Analyzes format, tests, local coverage (ReportGenerator), then SonarQube (quality gate, issues, hotspots, coverage). Detects regressions on modified files. Also generates UAT checklists from endpoint definitions. Invoke before a merge or to reduce technical debt."
+argument-hint: "[review | projectKey | UAT <module> | UATFull <module>]"
 ---
 
 # Quality Engineer — DevSecOps
@@ -17,6 +17,8 @@ then fix — in that order.
 | _(none)_ | Full audit | Format + tests + local coverage + SonarQube on whole project |
 | `review` | MR Code Review | Targeted analysis on files modified since `main` |
 | `{projectKey}` | Targeted audit | Full audit on the specified SonarQube project |
+| `UAT {module}` | UAT Checklist | Concise test scenario checklist per endpoint group |
+| `UATFull {module}` | UAT Full | Detailed acceptance criteria with preconditions, steps, expected results |
 
 ---
 
@@ -171,6 +173,101 @@ For each new method or class introduced:
 ### 4. Format and tests
 
 Same as full audit, restricted to modified files.
+
+---
+
+## UAT Checklist (`UAT {module}`)
+
+Generate a concise, actionable UAT test checklist from the module's endpoint definitions.
+
+### 1. Identify the module endpoints
+
+Use the `{module}` argument to locate the `*.Endpoints` projects. Module name matching
+is flexible:
+
+- `Identity Local` → `Granit.Identity.Local.Endpoints` + `Granit.OpenIddict.Endpoints`
+- `BlobStorage` → `Granit.BlobStorage.Endpoints`
+- `Workflow` → `Granit.Workflow.Endpoints`
+
+Use roslyn-lens `get_public_api` or Grep to find all `Map{Get,Post,Put,Patch,Delete}`
+registrations in the matched endpoint projects.
+
+### 2. Extract endpoint metadata
+
+For each endpoint, extract:
+
+- HTTP method + route
+- `WithName` (operation ID)
+- `WithSummary` (description)
+- Auth requirement (`AllowAnonymous` vs `RequireAuthorization(policy)`)
+- Success response type (from `Produces<T>()`)
+- Error responses (from `ProducesProblem(statusCode)`)
+- Rate limiting (from `RequireRateLimiting`)
+- Validation (request DTOs with `IValidator<T>`)
+
+### 3. Generate checklist
+
+Group endpoints by functional area (e.g., Login, Registration, Password, 2FA, Passkeys).
+For each endpoint, generate test scenarios covering:
+
+- **Happy path**: nominal success scenario
+- **Auth**: unauthenticated access (401), unauthorized access (403)
+- **Validation**: invalid input (400/422) — one line per known validation rule
+- **Not found**: resource doesn't exist (404) if applicable
+- **Rate limiting**: if `RequireRateLimiting` is present
+- **Business rules**: domain-specific error paths (423 locked, 409 conflict, etc.)
+
+### 4. Output format — UAT mode
+
+```markdown
+## UAT Checklist — {Module} — {date}
+
+### {Functional Area} (e.g., Login)
+
+#### {HTTP Method} {Route} — {WithName}
+> {WithSummary}
+
+- [ ] **Happy path**: {scenario description}
+- [ ] **Auth 401**: request without authentication returns 401
+- [ ] **Auth 403**: request without required permission returns 403
+- [ ] **Validation 400**: {specific invalid input scenario}
+- [ ] **Not found 404**: {resource not found scenario}
+- [ ] **Rate limit 429**: exceeding rate limit returns 429
+- [ ] **{Domain error}**: {specific business rule scenario}
+```
+
+---
+
+## UAT Full (`UATFull {module}`)
+
+Same analysis as UAT mode, but each test scenario includes full acceptance criteria.
+
+### Output format — UATFull mode
+
+```markdown
+## UAT Full — {Module} — {date}
+
+### {Functional Area}
+
+#### {HTTP Method} {Route} — {WithName}
+> {WithSummary}
+
+##### UAT-{n}: {Test scenario title}
+
+| Field | Value |
+|-------|-------|
+| **Preconditions** | {State required before test: authenticated user, existing data, etc.} |
+| **Steps** | 1. {Step 1}<br>2. {Step 2}<br>3. {Step 3} |
+| **Request** | `{HTTP Method} {full route}` with body: `{sample JSON if applicable}` |
+| **Expected result** | HTTP {status code} — {response description} |
+| **Postconditions** | {Observable side effects: email sent, event published, DB state, etc.} |
+| **Priority** | P1 (critical path) / P2 (important) / P3 (edge case) |
+```
+
+Priority rules:
+- **P1**: Happy path, authentication, authorization — blocks release
+- **P2**: Validation, not found, business rules — should test before release
+- **P3**: Rate limiting, edge cases, cosmetic — nice to have
 
 ---
 

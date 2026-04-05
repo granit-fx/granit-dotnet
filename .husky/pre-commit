@@ -1,10 +1,32 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-# dotnet format on staged .cs files only
+# dotnet format on staged .cs files — per-project instead of full solution (~3s vs ~75s)
 STAGED_CS=$(git diff --cached --name-only --diff-filter=ACMR -- '*.cs')
 if [ -n "$STAGED_CS" ]; then
-    dotnet format Granit.slnx --no-restore --include $STAGED_CS
+    # Find the nearest .csproj for each staged file, deduplicate, then format per project
+    PROJECTS=""
+    for cs_file in $STAGED_CS; do
+        dir=$(dirname "$cs_file")
+        while [ "$dir" != "." ] && [ "$dir" != "/" ]; do
+            csproj=$(find "$dir" -maxdepth 1 -name '*.csproj' -print -quit 2>/dev/null)
+            if [ -n "$csproj" ]; then
+                PROJECTS="$PROJECTS $csproj"
+                break
+            fi
+            dir=$(dirname "$dir")
+        done
+    done
+    PROJECTS=$(echo "$PROJECTS" | tr ' ' '\n' | sort -u | tr '\n' ' ')
+
+    for proj in $PROJECTS; do
+        # Filter staged files that belong to this project
+        proj_dir=$(dirname "$proj")
+        proj_files=$(echo "$STAGED_CS" | tr ' ' '\n' | grep "^$proj_dir/" | tr '\n' ' ')
+        if [ -n "$proj_files" ]; then
+            dotnet format "$proj" --no-restore --include $proj_files
+        fi
+    done
     echo "$STAGED_CS" | xargs -r git add
 fi
 
