@@ -26,3 +26,4 @@ Conditions.
 | [006](006-tanstack-query/) | TanStack Query for Data Fetching | Accepted | 2026-03-04 | All React data-fetching packages |
 | [007](007-vitest/) | Vitest as Test Runner | Accepted | 2026-02-27 | granit-front |
 | [008](008-opentelemetry/) | OpenTelemetry for Distributed Tracing | Accepted | 2026-03-04 | @granit/tracing |
+| [009](009-branded-types/) | Branded Types for Dates, IDs, and Currencies | Accepted | 2026-04-06 | All `@granit/*` packages |
