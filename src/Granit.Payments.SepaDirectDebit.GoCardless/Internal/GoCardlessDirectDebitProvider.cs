@@ -2,7 +2,9 @@ using GoCardless;
 using GoCardless.Services;
 using Granit.Payments.SepaDirectDebit.Contracts;
 using Granit.Payments.SepaDirectDebit.Domain;
+using Granit.Payments.SepaDirectDebit.GoCardless.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using GcMandateStatus = GoCardless.Resources.MandateStatus;
 using GcPaymentStatus = GoCardless.Resources.PaymentStatus;
 
@@ -11,9 +13,9 @@ namespace Granit.Payments.SepaDirectDebit.GoCardless.Internal;
 /// <summary>GoCardless implementation of <see cref="IDirectDebitProvider"/>.</summary>
 internal sealed partial class GoCardlessDirectDebitProvider(
     GoCardlessClient client,
+    IOptions<GoCardlessOptions> options,
     ILogger<GoCardlessDirectDebitProvider> logger) : IDirectDebitProvider
 {
-    private const string DefaultRedirectUrl = "https://localhost/mandate-complete";
 
     /// <inheritdoc/>
     public string Name => "gocardless";
@@ -26,7 +28,7 @@ internal sealed partial class GoCardlessDirectDebitProvider(
         {
             Description = $"SEPA DD mandate for tenant {request.TenantId}",
             SessionToken = request.TenantId.ToString(),
-            SuccessRedirectUrl = request.RedirectUrl ?? DefaultRedirectUrl,
+            SuccessRedirectUrl = request.RedirectUrl ?? options.Value.DefaultMandateRedirectUrl,
         };
 
         RedirectFlowResponse response = await client.RedirectFlows.CreateAsync(flowRequest)

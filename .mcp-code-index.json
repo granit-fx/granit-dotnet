@@ -28149,6 +28149,12 @@
           "kind": "property",
           "signature": "string WebhookSecret",
           "returnType": "string"
+        },
+        {
+          "name": "UseSandbox",
+          "kind": "property",
+          "signature": "bool UseSandbox",
+          "returnType": "bool"
         }
       ]
     },
@@ -30576,6 +30582,22 @@
       "file": "src/Granit.Privacy.EntityFrameworkCore/GranitPrivacyEntityFrameworkCoreModule.cs",
       "line": 10,
       "members": []
+    },
+    {
+      "name": "LegalAgreementBaseConfiguration",
+      "fqn": "Granit.Privacy.EntityFrameworkCore.LegalAgreementBaseConfiguration",
+      "kind": "class",
+      "project": "Granit.Privacy.EntityFrameworkCore",
+      "file": "src/Granit.Privacy.EntityFrameworkCore/Internal/LegalAgreementBaseConfiguration.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "Configure",
+          "kind": "method",
+          "signature": "Configure(EntityTypeBuilder<T> builder)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "PrivacyServiceCollectionExtensions",
@@ -41836,6 +41858,15 @@
           "returnType": "InterceptionResult<int>"
         }
       ]
+    },
+    {
+      "name": "VersionedWorkflowEntityBaseConfiguration",
+      "fqn": "Granit.Workflow.EntityFrameworkCore.VersionedWorkflowEntityBaseConfiguration",
+      "kind": "class",
+      "project": "Granit.Workflow.EntityFrameworkCore",
+      "file": "src/Granit.Workflow.EntityFrameworkCore/VersionedWorkflowEntityBaseConfiguration.cs",
+      "line": 36,
+      "members": []
     },
     {
       "name": "WorkflowApprovalRequestedEvent",

@@ -18,4 +18,12 @@ public sealed class GoCardlessOptions
 
     /// <summary>Use GoCardless sandbox environment.</summary>
     public bool UseSandbox { get; set; }
+
+    /// <summary>
+    /// Fallback redirect URL used when a mandate setup request does not provide one.
+    /// Must be an absolute HTTPS URL registered in the GoCardless dashboard.
+    /// </summary>
+    [Required]
+    [Url]
+    public string DefaultMandateRedirectUrl { get; set; } = string.Empty;
 }
