@@ -2,7 +2,7 @@ using Granit.Workflow.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Granit.Workflow.EntityFrameworkCore;
+namespace Granit.Workflow.EntityFrameworkCore.Configurations;
 
 /// <summary>
 /// Base EF Core configuration for concrete <see cref="VersionedWorkflowEntity"/> entities.

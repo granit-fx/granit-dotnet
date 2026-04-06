@@ -2,7 +2,7 @@ using Granit.Privacy.LegalAgreements.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Granit.Privacy.EntityFrameworkCore;
+namespace Granit.Privacy.EntityFrameworkCore.Configurations;
 
 /// <summary>
 /// Base EF Core configuration for concrete <see cref="LegalAgreementBase"/> entities.

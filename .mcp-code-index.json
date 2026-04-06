@@ -30527,6 +30527,22 @@
       "members": []
     },
     {
+      "name": "LegalAgreementBaseConfiguration",
+      "fqn": "Granit.Privacy.EntityFrameworkCore.Configurations.LegalAgreementBaseConfiguration",
+      "kind": "class",
+      "project": "Granit.Privacy.EntityFrameworkCore",
+      "file": "src/Granit.Privacy.EntityFrameworkCore/Configurations/LegalAgreementBaseConfiguration.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "Configure",
+          "kind": "method",
+          "signature": "Configure(EntityTypeBuilder<T> builder)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "PrivacyEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Privacy.EntityFrameworkCore.Extensions.PrivacyEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -30582,22 +30598,6 @@
       "file": "src/Granit.Privacy.EntityFrameworkCore/GranitPrivacyEntityFrameworkCoreModule.cs",
       "line": 10,
       "members": []
-    },
-    {
-      "name": "LegalAgreementBaseConfiguration",
-      "fqn": "Granit.Privacy.EntityFrameworkCore.LegalAgreementBaseConfiguration",
-      "kind": "class",
-      "project": "Granit.Privacy.EntityFrameworkCore",
-      "file": "src/Granit.Privacy.EntityFrameworkCore/Internal/LegalAgreementBaseConfiguration.cs",
-      "line": 23,
-      "members": [
-        {
-          "name": "Configure",
-          "kind": "method",
-          "signature": "Configure(EntityTypeBuilder<T> builder)",
-          "returnType": "void"
-        }
-      ]
     },
     {
       "name": "PrivacyServiceCollectionExtensions",
@@ -41778,6 +41778,15 @@
       "members": []
     },
     {
+      "name": "VersionedWorkflowEntityBaseConfiguration",
+      "fqn": "Granit.Workflow.EntityFrameworkCore.Configurations.VersionedWorkflowEntityBaseConfiguration",
+      "kind": "class",
+      "project": "Granit.Workflow.EntityFrameworkCore",
+      "file": "src/Granit.Workflow.EntityFrameworkCore/Configurations/VersionedWorkflowEntityBaseConfiguration.cs",
+      "line": 36,
+      "members": []
+    },
+    {
       "name": "WorkflowEfCoreServiceCollectionExtensions",
       "fqn": "Granit.Workflow.EntityFrameworkCore.Extensions.WorkflowEfCoreServiceCollectionExtensions",
       "kind": "class",
@@ -41858,15 +41867,6 @@
           "returnType": "InterceptionResult<int>"
         }
       ]
-    },
-    {
-      "name": "VersionedWorkflowEntityBaseConfiguration",
-      "fqn": "Granit.Workflow.EntityFrameworkCore.VersionedWorkflowEntityBaseConfiguration",
-      "kind": "class",
-      "project": "Granit.Workflow.EntityFrameworkCore",
-      "file": "src/Granit.Workflow.EntityFrameworkCore/VersionedWorkflowEntityBaseConfiguration.cs",
-      "line": 36,
-      "members": []
     },
     {
       "name": "WorkflowApprovalRequestedEvent",
