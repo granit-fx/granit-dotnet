@@ -186,7 +186,7 @@ public sealed class BffFrontendOptions
     public string EffectiveErrorRedirectPath =>
         ErrorRedirectPath ?? PrefixWithClientUrl(string.IsNullOrEmpty(PathPrefix) ? "/login" : $"{PathPrefix}/login");
 
-    private string PrefixWithClientUrl(string relativePath) =>
+    internal string PrefixWithClientUrl(string relativePath) =>
         string.IsNullOrEmpty(ClientUrl) ? relativePath : $"{ClientUrl.TrimEnd('/')}{relativePath}";
 
     /// <summary>

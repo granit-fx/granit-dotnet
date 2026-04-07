@@ -103,8 +103,11 @@ internal static partial class BffLoginEndpoints
         // Generate DPoP key pair if enabled (stored alongside PKCE state, used during token exchange)
         string? dpopPrivateKeyJwk = frontend.UseDPoP ? dpopService.GenerateKeyPair() : null;
 
-        // Store code_verifier + state + frontend name + DPoP key in cache (short TTL for the auth round-trip)
-        PkceState pkceData = new(codeVerifier, state, frontend.Name, dpopPrivateKeyJwk);
+        // Read and validate the caller-supplied returnUrl (open-redirect prevention)
+        string? returnUrl = ValidateReturnUrl(httpContext.Request.Query["returnUrl"], frontend);
+
+        // Store code_verifier + state + frontend name + DPoP key + returnUrl in cache (short TTL for the auth round-trip)
+        PkceState pkceData = new(codeVerifier, state, frontend.Name, dpopPrivateKeyJwk, returnUrl);
 
         await cache.SetAsync(
             $"{PkceKeyPrefix}{state}",
@@ -262,7 +265,12 @@ internal static partial class BffLoginEndpoints
         metrics.RecordLogin(null);
         LogLoginSuccess(logger, MaskSessionId(sessionId), frontend.Name);
 
-        return TypedResults.Redirect(frontend.EffectivePostLoginRedirectPath);
+        // Redirect to the original URL the user requested, or fall back to the configured post-login path
+        string redirectUrl = !string.IsNullOrEmpty(pkceState.ReturnUrl)
+            ? frontend.PrefixWithClientUrl(pkceState.ReturnUrl)
+            : frontend.EffectivePostLoginRedirectPath;
+
+        return TypedResults.Redirect(redirectUrl);
     }
 
 #pragma warning disable GRSEC003 // Method handles tokens — server-side only
@@ -545,7 +553,35 @@ internal static partial class BffLoginEndpoints
     internal static string MaskSessionId(string sessionId) =>
         sessionId.Length > 8 ? $"{sessionId[..4]}...{sessionId[^4..]}" : "****";
 
-    internal sealed record PkceState(string CodeVerifier, string State, string FrontendName, string? DPoPPrivateKeyJwk = null);
+    /// <summary>
+    /// Validates a caller-supplied <c>returnUrl</c> to prevent open-redirect attacks.
+    /// Only relative paths (starting with <c>/</c>) or URLs matching the frontend's
+    /// <see cref="BffFrontendOptions.ClientUrl"/> origin are accepted.
+    /// Returns the validated relative path, or <see langword="null"/> if the URL is invalid.
+    /// </summary>
+    internal static string? ValidateReturnUrl(string? returnUrl, BffFrontendOptions frontend)
+    {
+        if (string.IsNullOrWhiteSpace(returnUrl))
+        {
+            return null;
+        }
+
+        // Must be a relative path starting with "/", reject protocol-relative URLs (//evil.com)
+        if (!returnUrl.StartsWith('/') || returnUrl.StartsWith("//", StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        // Reject URLs containing a scheme (e.g. javascript:, data:, or http: after path traversal)
+        if (returnUrl.Contains(':', StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        return returnUrl;
+    }
+
+    internal sealed record PkceState(string CodeVerifier, string State, string FrontendName, string? DPoPPrivateKeyJwk = null, string? ReturnUrl = null);
 
     /// <summary>
     /// Builds a redirect to the frontend error page with the given error code as a query parameter.

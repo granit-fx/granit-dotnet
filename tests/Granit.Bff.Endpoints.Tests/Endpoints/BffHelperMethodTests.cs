@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using Granit.Bff.Endpoints.Endpoints;
 using Granit.Bff.Endpoints.Extensions;
+using Granit.Bff.Options;
 using Shouldly;
 using Xunit;
 
@@ -357,6 +358,87 @@ public sealed class BffHelperMethodTests
 
         result.Length.ShouldBe(1);
         result[0].ShouldBe("contributor");
+    }
+
+    // ──── ValidateReturnUrl ────
+
+    private static BffFrontendOptions CreateFrontend(string? clientUrl = null) => new()
+    {
+        Name = "test",
+        ClientId = "test-client",
+        ClientUrl = clientUrl,
+    };
+
+    [Fact]
+    public void ValidateReturnUrl_RelativePath_ReturnsPath()
+    {
+        string? result = BffLoginEndpoints.ValidateReturnUrl("/tenants", CreateFrontend());
+
+        result.ShouldBe("/tenants");
+    }
+
+    [Fact]
+    public void ValidateReturnUrl_RelativePathWithQuery_ReturnsPath()
+    {
+        string? result = BffLoginEndpoints.ValidateReturnUrl("/tenants?page=2", CreateFrontend());
+
+        result.ShouldBe("/tenants?page=2");
+    }
+
+    [Fact]
+    public void ValidateReturnUrl_Null_ReturnsNull()
+    {
+        string? result = BffLoginEndpoints.ValidateReturnUrl(null, CreateFrontend());
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ValidateReturnUrl_Empty_ReturnsNull()
+    {
+        string? result = BffLoginEndpoints.ValidateReturnUrl("", CreateFrontend());
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ValidateReturnUrl_Whitespace_ReturnsNull()
+    {
+        string? result = BffLoginEndpoints.ValidateReturnUrl("   ", CreateFrontend());
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ValidateReturnUrl_ProtocolRelativeUrl_ReturnsNull()
+    {
+        string? result = BffLoginEndpoints.ValidateReturnUrl("//evil.com/steal", CreateFrontend());
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ValidateReturnUrl_AbsoluteExternalUrl_ReturnsNull()
+    {
+        string? result = BffLoginEndpoints.ValidateReturnUrl("https://evil.com/steal", CreateFrontend());
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ValidateReturnUrl_NoLeadingSlash_ReturnsNull()
+    {
+        string? result = BffLoginEndpoints.ValidateReturnUrl("tenants", CreateFrontend());
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ValidateReturnUrl_RootPath_ReturnsRoot()
+    {
+        string? result = BffLoginEndpoints.ValidateReturnUrl("/", CreateFrontend());
+
+        result.ShouldBe("/");
     }
 
     // ──── GetContentType ────
