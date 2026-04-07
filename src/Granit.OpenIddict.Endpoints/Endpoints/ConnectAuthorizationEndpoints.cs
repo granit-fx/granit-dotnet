@@ -60,7 +60,11 @@ internal static partial class ConnectAuthorizationEndpoints
             // it points to a Razor page. The returnUrl lets the login page redirect
             // back to /connect/authorize after successful authentication.
             string returnUrl = context.Request.PathBase + context.Request.Path + context.Request.QueryString;
-            string loginUrl = $"{options.LoginPath}?returnUrl={Uri.EscapeDataString(returnUrl)}";
+            string effectiveLoginPath = request.ClientId is not null
+                && options.ClientLoginPaths.TryGetValue(request.ClientId, out string? clientPath)
+                ? clientPath
+                : options.LoginPath;
+            string loginUrl = $"{effectiveLoginPath}?returnUrl={Uri.EscapeDataString(returnUrl)}";
 
             LogUnauthenticatedRedirect(logger, request.ClientId ?? "(null)");
 

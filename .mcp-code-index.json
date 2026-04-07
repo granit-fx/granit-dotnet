@@ -26133,6 +26133,12 @@
           "returnType": "string"
         },
         {
+          "name": "ClientLoginPaths",
+          "kind": "property",
+          "signature": "Dictionary<string, string> ClientLoginPaths",
+          "returnType": "Dictionary<string, string>"
+        },
+        {
           "name": "PostLogoutRedirectPath",
           "kind": "property",
           "signature": "string PostLogoutRedirectPath",
