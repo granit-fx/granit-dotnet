@@ -1,4 +1,5 @@
 using Granit.Bff.Options;
+using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
@@ -234,5 +235,183 @@ public sealed class BffFrontendOptionsTests
         var frontend = new BffFrontendOptions { PathPrefix = string.Empty };
 
         frontend.EffectiveErrorRedirectPath.ShouldBe("/login");
+    }
+
+    // ──── ClientUrl ────
+
+    [Fact]
+    public void DefaultClientUrl_IsNull()
+    {
+        var frontend = new BffFrontendOptions();
+
+        frontend.ClientUrl.ShouldBeNull();
+    }
+
+    [Fact]
+    public void DefaultLoginPath_IsLogin()
+    {
+        var frontend = new BffFrontendOptions();
+
+        frontend.LoginPath.ShouldBe("/login");
+    }
+
+    // ──── EffectiveLoginUrl ────
+
+    [Fact]
+    public void EffectiveLoginUrl_WithoutClientUrl_ReturnsLoginPath()
+    {
+        var frontend = new BffFrontendOptions { LoginPath = "/login" };
+
+        frontend.EffectiveLoginUrl.ShouldBe("/login");
+    }
+
+    [Fact]
+    public void EffectiveLoginUrl_WithClientUrl_ReturnsCombined()
+    {
+        var frontend = new BffFrontendOptions
+        {
+            ClientUrl = "http://localhost:5173",
+            LoginPath = "/login",
+        };
+
+        frontend.EffectiveLoginUrl.ShouldBe("http://localhost:5173/login");
+    }
+
+    [Fact]
+    public void EffectiveLoginUrl_WithClientUrlTrailingSlash_TrimsSlash()
+    {
+        var frontend = new BffFrontendOptions
+        {
+            ClientUrl = "http://localhost:5173/",
+            LoginPath = "/login",
+        };
+
+        frontend.EffectiveLoginUrl.ShouldBe("http://localhost:5173/login");
+    }
+
+    // ──── Effective*Path with ClientUrl ────
+
+    [Fact]
+    public void EffectivePostLoginRedirectPath_WithClientUrl_PrefixesUrl()
+    {
+        var frontend = new BffFrontendOptions
+        {
+            ClientUrl = "http://localhost:5173",
+        };
+
+        frontend.EffectivePostLoginRedirectPath.ShouldBe("http://localhost:5173/");
+    }
+
+    [Fact]
+    public void EffectivePostLoginRedirectPath_WithClientUrl_ExplicitValueWins()
+    {
+        var frontend = new BffFrontendOptions
+        {
+            ClientUrl = "http://localhost:5173",
+            PostLoginRedirectPath = "/custom/dashboard",
+        };
+
+        frontend.EffectivePostLoginRedirectPath.ShouldBe("/custom/dashboard");
+    }
+
+    [Fact]
+    public void EffectivePostLogoutRedirectPath_WithClientUrl_PrefixesUrl()
+    {
+        var frontend = new BffFrontendOptions
+        {
+            ClientUrl = "http://localhost:5174",
+        };
+
+        frontend.EffectivePostLogoutRedirectPath.ShouldBe("http://localhost:5174/");
+    }
+
+    [Fact]
+    public void EffectiveErrorRedirectPath_WithClientUrl_PrefixesUrl()
+    {
+        var frontend = new BffFrontendOptions
+        {
+            ClientUrl = "http://localhost:5174",
+        };
+
+        frontend.EffectiveErrorRedirectPath.ShouldBe("http://localhost:5174/login");
+    }
+}
+
+public sealed class GranitBffOptionsValidatorTests
+{
+    private readonly GranitBffOptionsValidator _validator = new();
+
+    private static GranitBffOptions CreateValidOptions() => new()
+    {
+        Authority = new Uri("https://auth.example.com"),
+    };
+
+    [Fact]
+    public void ClientUrl_ValidHttps_Succeeds()
+    {
+        GranitBffOptions options = CreateValidOptions();
+        options.Frontends.Add(new BffFrontendOptions { ClientUrl = "https://admin.example.com" });
+
+        ValidateOptionsResult result = _validator.Validate(null, options);
+
+        result.Succeeded.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ClientUrl_ValidHttpLocalhost_Succeeds()
+    {
+        GranitBffOptions options = CreateValidOptions();
+        options.Frontends.Add(new BffFrontendOptions { ClientUrl = "http://localhost:5173" });
+
+        ValidateOptionsResult result = _validator.Validate(null, options);
+
+        result.Succeeded.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ClientUrl_WithTrailingSlash_Fails()
+    {
+        GranitBffOptions options = CreateValidOptions();
+        options.Frontends.Add(new BffFrontendOptions { ClientUrl = "http://localhost:5173/" });
+
+        ValidateOptionsResult result = _validator.Validate(null, options);
+
+        result.Failed.ShouldBeTrue();
+        result.FailureMessage.ShouldContain("trailing slash");
+    }
+
+    [Fact]
+    public void ClientUrl_NotAbsoluteUri_Fails()
+    {
+        GranitBffOptions options = CreateValidOptions();
+        options.Frontends.Add(new BffFrontendOptions { ClientUrl = "/relative/path" });
+
+        ValidateOptionsResult result = _validator.Validate(null, options);
+
+        result.Failed.ShouldBeTrue();
+        result.FailureMessage.ShouldContain("absolute HTTP(S) URL");
+    }
+
+    [Fact]
+    public void ClientUrl_FtpScheme_Fails()
+    {
+        GranitBffOptions options = CreateValidOptions();
+        options.Frontends.Add(new BffFrontendOptions { ClientUrl = "ftp://files.example.com" });
+
+        ValidateOptionsResult result = _validator.Validate(null, options);
+
+        result.Failed.ShouldBeTrue();
+        result.FailureMessage.ShouldContain("absolute HTTP(S) URL");
+    }
+
+    [Fact]
+    public void ClientUrl_Null_Succeeds()
+    {
+        GranitBffOptions options = CreateValidOptions();
+        options.Frontends.Add(new BffFrontendOptions { ClientUrl = null });
+
+        ValidateOptionsResult result = _validator.Validate(null, options);
+
+        result.Succeeded.ShouldBeTrue();
     }
 }

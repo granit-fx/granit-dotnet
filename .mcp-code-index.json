@@ -7193,10 +7193,10 @@
           "returnType": "string"
         },
         {
-          "name": "Scopes",
+          "name": "ClientUrl",
           "kind": "property",
-          "signature": "string[] Scopes",
-          "returnType": "string[]"
+          "signature": "string? ClientUrl",
+          "returnType": "string?"
         },
         {
           "name": "PathPrefix",
@@ -7211,10 +7211,22 @@
           "returnType": "string"
         },
         {
+          "name": "LoginPath",
+          "kind": "property",
+          "signature": "string LoginPath",
+          "returnType": "string"
+        },
+        {
           "name": "PostLoginRedirectPath",
           "kind": "property",
           "signature": "string? PostLoginRedirectPath",
           "returnType": "string?"
+        },
+        {
+          "name": "PrefixWithClientUrl",
+          "kind": "method",
+          "signature": "PrefixWithClientUrl(LoginPath)",
+          "returnType": "string EffectiveLoginUrl =>"
         },
         {
           "name": "EffectivePostLoginRedirectPath",

@@ -39,6 +39,27 @@ internal sealed class GranitBffOptionsValidator
             }
         }
 
+        for (int i = 0; i < options.Frontends.Count; i++)
+        {
+            BffFrontendOptions frontend = options.Frontends[i];
+
+            if (!string.IsNullOrEmpty(frontend.ClientUrl))
+            {
+                if (!Uri.TryCreate(frontend.ClientUrl, UriKind.Absolute, out Uri? uri)
+                    || (uri.Scheme != "http" && uri.Scheme != "https"))
+                {
+                    failures.Add(
+                        $"Frontends[{i}].ClientUrl '{frontend.ClientUrl}' must be an absolute HTTP(S) URL.");
+                }
+
+                if (frontend.ClientUrl.EndsWith('/'))
+                {
+                    failures.Add(
+                        $"Frontends[{i}].ClientUrl must not end with a trailing slash.");
+                }
+            }
+        }
+
         return failures.Count == 0
             ? ValidateOptionsResult.Success
             : ValidateOptionsResult.Fail(failures);

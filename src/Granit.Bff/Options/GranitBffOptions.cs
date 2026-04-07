@@ -99,6 +99,15 @@ public sealed class BffFrontendOptions
     /// <summary>OIDC client secret.</summary>
     public string ClientSecret { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Base URL of the frontend application when it runs on a separate origin
+    /// (e.g., <c>"http://localhost:5173"</c> for a Vite dev server, or
+    /// <c>"https://admin.example.com"</c> for a standalone deployment).
+    /// When <see langword="null"/>, all redirect paths are relative (the frontend
+    /// is served by the BFF itself).
+    /// </summary>
+    public string? ClientUrl { get; set; }
+
     /// <summary>OIDC scopes to request.</summary>
     public string[] Scopes { get; set; } = ["openid", "profile", "email", "roles", "offline_access"];
 
@@ -116,16 +125,23 @@ public sealed class BffFrontendOptions
     /// </summary>
     public string StaticFilesPath { get; set; } = string.Empty;
 
-    /// <summary>Post-login redirect path (default: the frontend's path prefix + <c>"/"</c>).</summary>
+    /// <summary>
+    /// Login page path within the frontend (default: <c>"/login"</c>).
+    /// Combined with <see cref="ClientUrl"/> (when set) to produce the full login URL
+    /// used by the OIDC authorization server to redirect unauthenticated users.
+    /// </summary>
+    public string LoginPath { get; set; } = "/login";
+
+    /// <summary>Post-login redirect path (default: <c>"/"</c>, or <c>{ClientUrl}/</c> when set).</summary>
     public string? PostLoginRedirectPath { get; set; }
 
-    /// <summary>Post-logout redirect path (default: the frontend's path prefix + <c>"/"</c>).</summary>
+    /// <summary>Post-logout redirect path (default: <c>"/"</c>, or <c>{ClientUrl}/</c> when set).</summary>
     public string? PostLogoutRedirectPath { get; set; }
 
     /// <summary>
     /// Path to redirect to when the OIDC callback encounters an error. An <c>?error={code}</c>
     /// query parameter is appended so the SPA can display a localized error message.
-    /// Default: <c>{PathPrefix}/login</c>.
+    /// Default: <c>/login</c> (or <c>{ClientUrl}/login</c> when set).
     /// </summary>
     public string? ErrorRedirectPath { get; set; }
 
@@ -141,22 +157,37 @@ public sealed class BffFrontendOptions
     internal string CookiePrefix { get; set; } = "__Host-";
 
     /// <summary>
+    /// Gets the effective login URL. When <see cref="ClientUrl"/> is set, returns
+    /// <c>{ClientUrl}{LoginPath}</c>; otherwise returns <see cref="LoginPath"/>.
+    /// </summary>
+    public string EffectiveLoginUrl => PrefixWithClientUrl(LoginPath);
+
+    /// <summary>
     /// Gets the effective post-login redirect path.
+    /// When <see cref="ClientUrl"/> is set and no explicit path is configured,
+    /// returns <c>{ClientUrl}/</c>.
     /// </summary>
     public string EffectivePostLoginRedirectPath =>
-        PostLoginRedirectPath ?? (string.IsNullOrEmpty(PathPrefix) ? "/" : $"{PathPrefix}/");
+        PostLoginRedirectPath ?? PrefixWithClientUrl(string.IsNullOrEmpty(PathPrefix) ? "/" : $"{PathPrefix}/");
 
     /// <summary>
     /// Gets the effective post-logout redirect path.
+    /// When <see cref="ClientUrl"/> is set and no explicit path is configured,
+    /// returns <c>{ClientUrl}/</c>.
     /// </summary>
     public string EffectivePostLogoutRedirectPath =>
-        PostLogoutRedirectPath ?? (string.IsNullOrEmpty(PathPrefix) ? "/" : $"{PathPrefix}/");
+        PostLogoutRedirectPath ?? PrefixWithClientUrl(string.IsNullOrEmpty(PathPrefix) ? "/" : $"{PathPrefix}/");
 
     /// <summary>
     /// Gets the effective error redirect path (without the <c>?error=</c> query parameter).
+    /// When <see cref="ClientUrl"/> is set and no explicit path is configured,
+    /// returns <c>{ClientUrl}/login</c>.
     /// </summary>
     public string EffectiveErrorRedirectPath =>
-        ErrorRedirectPath ?? (string.IsNullOrEmpty(PathPrefix) ? "/login" : $"{PathPrefix}/login");
+        ErrorRedirectPath ?? PrefixWithClientUrl(string.IsNullOrEmpty(PathPrefix) ? "/login" : $"{PathPrefix}/login");
+
+    private string PrefixWithClientUrl(string relativePath) =>
+        string.IsNullOrEmpty(ClientUrl) ? relativePath : $"{ClientUrl.TrimEnd('/')}{relativePath}";
 
     /// <summary>
     /// Gets or sets a value indicating whether the BFF should use Pushed Authorization
