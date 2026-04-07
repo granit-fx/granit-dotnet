@@ -8,9 +8,9 @@ public sealed class OpenIddictServerEndpointsOptions
     /// <summary>
     /// Default path to redirect unauthenticated users during authorization.
     /// The cookie authentication handler appends a <c>ReturnUrl</c> query parameter.
-    /// Default: <c>"/account/login"</c>.
+    /// Default: <c>"/login"</c>.
     /// </summary>
-    public string LoginPath { get; set; } = "/account/login";
+    public string LoginPath { get; set; } = "/login";
 
     /// <summary>
     /// Per-client login paths that override <see cref="LoginPath"/>.
