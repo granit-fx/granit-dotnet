@@ -168,7 +168,7 @@ public sealed class BffFrontendOptions
     /// returns <c>{ClientUrl}/</c>.
     /// </summary>
     public string EffectivePostLoginRedirectPath =>
-        PostLoginRedirectPath ?? PrefixWithClientUrl(string.IsNullOrEmpty(PathPrefix) ? "/" : $"{PathPrefix}/");
+        PrefixWithClientUrl(PostLoginRedirectPath ?? (string.IsNullOrEmpty(PathPrefix) ? "/" : $"{PathPrefix}/"));
 
     /// <summary>
     /// Gets the effective post-logout redirect path.
@@ -176,7 +176,7 @@ public sealed class BffFrontendOptions
     /// returns <c>{ClientUrl}/</c>.
     /// </summary>
     public string EffectivePostLogoutRedirectPath =>
-        PostLogoutRedirectPath ?? PrefixWithClientUrl(string.IsNullOrEmpty(PathPrefix) ? "/" : $"{PathPrefix}/");
+        PrefixWithClientUrl(PostLogoutRedirectPath ?? (string.IsNullOrEmpty(PathPrefix) ? "/" : $"{PathPrefix}/"));
 
     /// <summary>
     /// Gets the effective error redirect path (without the <c>?error=</c> query parameter).
@@ -184,7 +184,7 @@ public sealed class BffFrontendOptions
     /// returns <c>{ClientUrl}/login</c>.
     /// </summary>
     public string EffectiveErrorRedirectPath =>
-        ErrorRedirectPath ?? PrefixWithClientUrl(string.IsNullOrEmpty(PathPrefix) ? "/login" : $"{PathPrefix}/login");
+        PrefixWithClientUrl(ErrorRedirectPath ?? (string.IsNullOrEmpty(PathPrefix) ? "/login" : $"{PathPrefix}/login"));
 
     internal string PrefixWithClientUrl(string relativePath) =>
         string.IsNullOrEmpty(ClientUrl) ? relativePath : $"{ClientUrl.TrimEnd('/')}{relativePath}";

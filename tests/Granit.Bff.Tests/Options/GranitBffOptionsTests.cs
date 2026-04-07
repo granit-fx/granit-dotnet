@@ -311,7 +311,7 @@ public sealed class BffFrontendOptionsTests
             PostLoginRedirectPath = "/custom/dashboard",
         };
 
-        frontend.EffectivePostLoginRedirectPath.ShouldBe("/custom/dashboard");
+        frontend.EffectivePostLoginRedirectPath.ShouldBe("http://localhost:5173/custom/dashboard");
     }
 
     [Fact]
