@@ -3,9 +3,12 @@ using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
+using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Persistence.EntityFrameworkCore.Hosting.Internal;
 
@@ -50,6 +53,26 @@ internal sealed partial class GranitMigrationRunner(
 
         try
         {
+            // Force PostConfigure<TenantIsolationOptions> to run, setting
+            // GranitDbDefaults.HostDbSchema before any EF Core model compilation.
+            await using (AsyncServiceScope initScope = scopeFactory.CreateAsyncScope())
+            {
+                _ = initScope.ServiceProvider.GetService<IOptions<TenantIsolationOptions>>()?.Value;
+
+                // Create the host schema if configured (EF Core never creates schemas).
+                if (GranitDbDefaults.HostDbSchema is not null)
+                {
+                    IConfiguration? config = initScope.ServiceProvider.GetService<IConfiguration>();
+                    string? connectionString = config?.GetConnectionString("DefaultConnection");
+                    if (connectionString is not null)
+                    {
+                        await SchemaEnsurer.EnsureSchemasAsync(
+                            connectionString, cancellationToken: ct,
+                            schemas: GranitDbDefaults.HostDbSchema).ConfigureAwait(false);
+                    }
+                }
+            }
+
             // Migrate each DbContext in topological order
             foreach ((GranitModule module, Type dbContextType) in migratableModules)
             {
@@ -154,10 +177,26 @@ internal sealed partial class GranitMigrationRunner(
         CancellationToken ct)
     {
         ITenantDbIsolator isolator = serviceProvider.GetRequiredService<ITenantDbIsolator>();
+        ITenantSchemaProvider? schemaProvider = serviceProvider.GetService<ITenantSchemaProvider>();
 
         await foreach (Guid tenantId in tenantEnumerator.GetActiveTenantIdsAsync(ct).ConfigureAwait(false))
         {
             await using AsyncServiceScope tenantScope = scopeFactory.CreateAsyncScope();
+
+            // Create tenant schema if SchemaPerTenant (PostgreSQL never auto-creates).
+            if (schemaProvider is not null)
+            {
+                string schemaName = await schemaProvider.GetSchemaNameAsync(tenantId, ct).ConfigureAwait(false);
+
+                IConfiguration? config = tenantScope.ServiceProvider.GetService<IConfiguration>();
+                string? connectionString = config?.GetConnectionString("DefaultConnection");
+                if (connectionString is not null)
+                {
+                    await SchemaEnsurer.EnsureSchemasAsync(
+                        connectionString, cancellationToken: ct,
+                        schemas: schemaName).ConfigureAwait(false);
+                }
+            }
 
             LogMigratingContextForTenant(moduleName, dbContextType.Name, tenantId);
             await using DbContext dbContext = await ResolveDbContextAsync(tenantScope.ServiceProvider, dbContextType)

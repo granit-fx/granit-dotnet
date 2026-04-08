@@ -2,6 +2,7 @@ using Granit.Events.Extensions;
 using Granit.MultiTenancy.EntityFrameworkCore.Internal;
 using Granit.MultiTenancy.Stores;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -33,6 +34,10 @@ public static class MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensi
         // Replace default (no-op) implementations with EF Core store
         builder.Services.Replace(ServiceDescriptor.Scoped<ITenantReader, EfCoreTenantStore>());
         builder.Services.Replace(ServiceDescriptor.Scoped<ITenantWriter, EfCoreTenantStore>());
+
+        // Replace NullTenantEnumerator with EF Core implementation for per-tenant migrations.
+        // Scoped: depends on ITenantReader (scoped, EF Core).
+        builder.Services.Replace(ServiceDescriptor.Scoped<ITenantEnumerator, EfCoreTenantEnumerator>());
 
         return builder;
     }

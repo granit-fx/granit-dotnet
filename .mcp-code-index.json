@@ -1073,7 +1073,8 @@
       "deps": [
         "Granit.Events",
         "Granit.MultiTenancy",
-        "Granit.Persistence.EntityFrameworkCore"
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Persistence.EntityFrameworkCore.Migrations"
       ],
       "framework": "net10.0"
     },
@@ -22058,7 +22059,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.EntityFrameworkCore",
       "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Extensions/MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitMultiTenancyEntityFrameworkCore",

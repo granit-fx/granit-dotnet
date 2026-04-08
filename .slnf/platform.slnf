@@ -82,6 +82,7 @@
       "src/Granit.Payments.Stripe/Granit.Payments.Stripe.csproj",
       "src/Granit.Payments.Wolverine/Granit.Payments.Wolverine.csproj",
       "src/Granit.Payments/Granit.Payments.csproj",
+      "src/Granit.Persistence.EntityFrameworkCore.Migrations/Granit.Persistence.EntityFrameworkCore.Migrations.csproj",
       "src/Granit.Persistence.EntityFrameworkCore/Granit.Persistence.EntityFrameworkCore.csproj",
       "src/Granit.Persistence/Granit.Persistence.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
