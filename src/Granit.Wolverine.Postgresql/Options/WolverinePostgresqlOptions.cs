@@ -53,4 +53,17 @@ public sealed class WolverinePostgresqlOptions
     /// Default: <see cref="TransactionMiddlewareMode.Eager"/> (ISO 27001-recommended).
     /// </summary>
     public TransactionMiddlewareMode TransactionMode { get; set; } = TransactionMiddlewareMode.Eager;
+
+    /// <summary>
+    /// PostgreSQL schema for Wolverine envelope tables (inbox, outbox, dead letter).
+    /// Default: <c>null</c> — falls back to <see cref="Granit.Persistence.EntityFrameworkCore.GranitDbDefaults.HostDbSchema"/>,
+    /// then Wolverine's built-in default (<c>"wolverine"</c>).
+    /// </summary>
+    /// <remarks>
+    /// <para><b>SharedDatabase</b>: leave <c>null</c> — Wolverine uses <c>"wolverine"</c> schema.</para>
+    /// <para><b>SchemaPerTenant</b>: automatically uses <c>HostDbSchema</c> (e.g. <c>"host"</c>) so
+    /// Wolverine tables live alongside other host infrastructure.</para>
+    /// <para><b>DatabasePerTenant</b>: leave <c>null</c> — Wolverine uses the host database.</para>
+    /// </remarks>
+    public string? SchemaName { get; set; }
 }

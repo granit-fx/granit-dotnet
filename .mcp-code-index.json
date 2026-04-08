@@ -41478,7 +41478,7 @@
       "kind": "class",
       "project": "Granit.Wolverine.Postgresql",
       "file": "src/Granit.Wolverine.Postgresql/Extensions/WolverinePostgresqlHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "AddGranitWolverineWithPostgresql",

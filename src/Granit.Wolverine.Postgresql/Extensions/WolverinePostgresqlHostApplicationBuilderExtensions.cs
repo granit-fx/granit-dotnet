@@ -1,3 +1,4 @@
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Granit.Wolverine.Internal;
@@ -138,7 +139,19 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
                 "AddGranitWolverine() must be called before AddGranitWolverineWithPostgresql(). " +
                 "Ensure GranitWolverineModule is declared in the [DependsOn] chain.");
 
-        wolverineOptions.PersistMessagesWithPostgresql(connectionString);
+        // Resolve Wolverine envelope schema: explicit option → HostDbSchema fallback → Wolverine default
+        string? wolverineSchema = options.SchemaName
+            ?? GranitDbDefaults.HostDbSchema;
+
+        if (wolverineSchema is not null)
+        {
+            wolverineOptions.PersistMessagesWithPostgresql(connectionString, wolverineSchema);
+        }
+        else
+        {
+            wolverineOptions.PersistMessagesWithPostgresql(connectionString);
+        }
+
         wolverineOptions.UseEntityFrameworkCoreTransactions(options.TransactionMode);
         wolverineOptions.Policies.AutoApplyTransactions();
         configure?.Invoke(wolverineOptions);
