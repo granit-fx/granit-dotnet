@@ -28812,6 +28812,22 @@
       ]
     },
     {
+      "name": "GranitDbDefaults",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.GranitDbDefaults",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/GranitDbDefaults.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ResetToDefaults",
+          "kind": "method",
+          "signature": "ResetToDefaults()",
+          "returnType": "string? DbSchema { get; set; } public string? HostDbSchema { get; set; } internal void"
+        }
+      ]
+    },
+    {
       "name": "GranitFilterNames",
       "fqn": "Granit.Persistence.EntityFrameworkCore.GranitFilterNames",
       "kind": "class",
@@ -41205,7 +41221,7 @@
         {
           "name": "AddGranitWolverine",
           "kind": "method",
-          "signature": "AddGranitWolverine(this IHostApplicationBuilder builder, Action<WolverineOptions>? configure = null)",
+          "signature": "AddGranitWolverine(this IHostApplicationBuilder builder, IReadOnlyList<Assembly>? moduleAssemblies = null, Action<WolverineOptions>? configure = null)",
           "returnType": "IHostApplicationBuilder"
         }
       ]

@@ -43,10 +43,16 @@ public static class WolverineHostApplicationBuilderExtensions
     /// </list>
     /// </remarks>
     /// <param name="builder">The host application builder.</param>
+    /// <param name="moduleAssemblies">
+    /// Assemblies of all loaded Granit modules (from <see cref="Granit.Modularity.ServiceConfigurationContext.ModuleAssemblies"/>).
+    /// Wolverine will scan these for handler methods. When <see langword="null"/>, falls back to
+    /// <c>[assembly: WolverineHandlerModule]</c> discovery only.
+    /// </param>
     /// <param name="configure">Optional additional Wolverine configuration.</param>
     /// <returns>The builder for chaining.</returns>
     public static IHostApplicationBuilder AddGranitWolverine(
         this IHostApplicationBuilder builder,
+        IReadOnlyList<Assembly>? moduleAssemblies = null,
         Action<WolverineOptions>? configure = null)
     {
         GranitActivitySourceRegistry.Register(Diagnostics.WolverineActivitySource.Name);
@@ -88,19 +94,13 @@ public static class WolverineHostApplicationBuilderExtensions
 
         builder.UseWolverine(opts =>
         {
-            // Auto-discover handler assemblies from ALL loaded Granit modules.
-            // GranitApplication is registered as a singleton instance during AddGranit<T>()
-            // before UseWolverine() runs, so we can read it directly from the service collection.
-            // This eliminates the need for [assembly: WolverineHandlerModule] on every module.
-            var granitApp = builder.Services
-                .FirstOrDefault(d => d.ServiceType == typeof(GranitApplication))
-                ?.ImplementationInstance as GranitApplication;
-
-            if (granitApp is not null)
+            // Include all Granit module assemblies passed from the module system.
+            // This is the primary discovery path — no timing dependency on DI registration.
+            if (moduleAssemblies is not null)
             {
-                foreach (GranitModule module in granitApp.GetModuleInstances())
+                foreach (Assembly assembly in moduleAssemblies)
                 {
-                    opts.Discovery.IncludeAssembly(module.GetType().Assembly);
+                    opts.Discovery.IncludeAssembly(assembly);
                 }
             }
 

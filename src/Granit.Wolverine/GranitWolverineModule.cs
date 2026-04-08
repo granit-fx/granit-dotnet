@@ -24,5 +24,5 @@ public sealed class GranitWolverineModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>
-        context.Builder.AddGranitWolverine();
+        context.Builder.AddGranitWolverine(context.ModuleAssemblies);
 }
