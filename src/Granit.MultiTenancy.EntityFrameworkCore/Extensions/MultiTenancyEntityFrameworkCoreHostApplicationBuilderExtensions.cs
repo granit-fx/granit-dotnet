@@ -36,8 +36,8 @@ public static class MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensi
         builder.Services.Replace(ServiceDescriptor.Scoped<ITenantWriter, EfCoreTenantStore>());
 
         // Replace NullTenantEnumerator with EF Core implementation for per-tenant migrations.
-        // Scoped: depends on ITenantReader (scoped, EF Core).
-        builder.Services.Replace(ServiceDescriptor.Scoped<ITenantEnumerator, EfCoreTenantEnumerator>());
+        // Singleton: uses IServiceScopeFactory to resolve scoped ITenantReader on each call.
+        builder.Services.Replace(ServiceDescriptor.Singleton<ITenantEnumerator, EfCoreTenantEnumerator>());
 
         return builder;
     }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Granit.MultiTenancy.Stores;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.MultiTenancy.EntityFrameworkCore.Internal;
 
@@ -11,12 +12,19 @@ namespace Granit.MultiTenancy.EntityFrameworkCore.Internal;
 /// per-tenant migrations (<c>SchemaPerTenant</c> / <c>DatabasePerTenant</c>).
 /// </summary>
 /// <remarks>
+/// <para>
+/// Registered as <b>singleton</b> (replacing <c>NullTenantEnumerator</c>).
+/// Uses <see cref="IServiceScopeFactory"/> to resolve the scoped
+/// <see cref="ITenantReader"/> on each call, avoiding the
+/// "Cannot consume scoped service from singleton" DI validation error.
+/// </para>
+/// <para>
 /// On cold start (first deploy), the <c>tenants</c> table may not exist yet.
-/// Only <see cref="DbException"/> with a provider-specific "table not found"
-/// error is caught (PostgreSQL <c>42P01</c>, SQL Server <c>208</c>).
-/// Network errors, auth failures, and other exceptions propagate to fail fast.
+/// Only <see cref="DbException"/> with provider-specific "table not found"
+/// errors is caught — network errors and auth failures propagate to fail fast.
+/// </para>
 /// </remarks>
-internal sealed class EfCoreTenantEnumerator(ITenantReader tenantReader) : ITenantEnumerator
+internal sealed class EfCoreTenantEnumerator(IServiceScopeFactory scopeFactory) : ITenantEnumerator
 {
     public async IAsyncEnumerable<Guid> GetActiveTenantIdsAsync(
         [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -24,13 +32,13 @@ internal sealed class EfCoreTenantEnumerator(ITenantReader tenantReader) : ITena
         IReadOnlyList<TenantData> tenants;
         try
         {
+            await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+            ITenantReader tenantReader = scope.ServiceProvider.GetRequiredService<ITenantReader>();
             tenants = await tenantReader.GetAllAsync(cancellationToken).ConfigureAwait(false);
         }
         catch (DbException ex) when (IsTableNotFoundError(ex))
         {
             // Cold start: tenants table doesn't exist yet (first deploy).
-            // Yield nothing — host migrations will create the table, then
-            // data seeding will create tenants and trigger provisioning.
             yield break;
         }
 
