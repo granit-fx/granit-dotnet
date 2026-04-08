@@ -1,6 +1,8 @@
 using Granit.Caching.Diagnostics;
 using Granit.Caching.Internal;
+using Granit.Caching.MultiTenancy;
 using Granit.Caching.Options;
+using Granit.MultiTenancy;
 using Granit.Timing.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -104,6 +106,37 @@ public static class CachingServiceCollectionExtensions
             var jsonSerializer = new FusionCacheSystemTextJsonSerializer(cachingOpts.JsonOptions);
             return new EncryptingFusionCacheSerializer(jsonSerializer, encryptor, cachingOpts);
         });
+
+        // Tenant-aware cache key isolation: move the raw IFusionCache singleton to a
+        // keyed service and register a scoped decorator as the default IFusionCache.
+        // All key-based operations are automatically prefixed with t:{tenantId}: or t:host:.
+        ServiceDescriptor? rawDescriptor = services.LastOrDefault(d =>
+            d.ServiceType == typeof(IFusionCache) && d.Lifetime == ServiceLifetime.Singleton);
+
+        if (rawDescriptor is not null)
+        {
+            services.Remove(rawDescriptor);
+
+            // Re-register the original singleton under a keyed service
+            if (rawDescriptor.ImplementationFactory is not null)
+            {
+                services.AddKeyedSingleton<IFusionCache>(
+                    TenantAwareFusionCache.RawCacheKey,
+                    (sp, _) => (IFusionCache)rawDescriptor.ImplementationFactory(sp));
+            }
+            else if (rawDescriptor.ImplementationType is not null)
+            {
+                services.AddKeyedSingleton(
+                    typeof(IFusionCache),
+                    TenantAwareFusionCache.RawCacheKey,
+                    rawDescriptor.ImplementationType);
+            }
+
+            // Scoped decorator as the default IFusionCache
+            services.AddScoped<IFusionCache>(sp => new TenantAwareFusionCache(
+                sp.GetRequiredKeyedService<IFusionCache>(TenantAwareFusionCache.RawCacheKey),
+                sp.GetRequiredService<ICurrentTenant>()));
+        }
 
         return services;
     }

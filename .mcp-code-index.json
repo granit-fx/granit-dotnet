@@ -8719,7 +8719,7 @@
       "kind": "class",
       "project": "Granit.Caching",
       "file": "src/Granit.Caching/Extensions/CachingServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitCaching",
