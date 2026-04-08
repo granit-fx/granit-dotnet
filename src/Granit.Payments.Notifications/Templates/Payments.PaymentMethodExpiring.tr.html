@@ -2,5 +2,5 @@
 <p>Ödeme yönteminiz <strong>{{ model.display_label | html.escape }}</strong>, <strong>{{ model.days_remaining }} gün</strong> içinde, {{ model.expires_at | to_user_time | date.to_string "%m/%Y" }} tarihinde sona erecektir.</p>
 <p>Kesintisiz hizmet için ödeme yönteminizi güncelleyin.</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/billing/methods" class="btn">Ödeme yöntemini güncelle</a>
+  <a href="{{ app.base_url }}/billing/methods" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Ödeme yöntemini güncelle</a>
 </p>

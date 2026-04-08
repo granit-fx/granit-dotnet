@@ -3,10 +3,10 @@
 <p>Questa è una misura di sicurezza per proteggere il tuo account. Il blocco scadrà il <strong>{{ model.lockout_expires_at | date.to_string '%d/%m/%Y alle %H:%M UTC' }}</strong>.</p>
 <p>Se questi tentativi di accesso non sono stati effettuati da te, puoi reimpostare la password per sbloccare immediatamente il tuo account:</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.reset_link }}" class="btn">Reimposta la mia password</a>
+  <a href="{{ model.reset_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Reimposta la mia password</a>
 </p>
 <p>Se non hai effettuato questi tentativi e preferisci non agire, il blocco scadrà automaticamente.</p>
-<hr class="divider" aria-hidden="true">
+<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
 <p style="font-size: 13px; color: #4b5563;">
   Se il pulsante non funziona, copia e incolla il seguente link nel tuo browser:<br>
   <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>

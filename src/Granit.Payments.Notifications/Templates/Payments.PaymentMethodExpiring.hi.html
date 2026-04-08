@@ -2,5 +2,5 @@
 <p>आपकी भुगतान विधि <strong>{{ model.display_label | html.escape }}</strong> <strong>{{ model.days_remaining }} दिन</strong> में, {{ model.expires_at | to_user_time | date.to_string "%B %Y" }} को समाप्त हो जाएगी।</p>
 <p>निर्बाध सेवा सुनिश्चित करने के लिए कृपया अपनी भुगतान विधि अपडेट करें।</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/billing/methods" class="btn">भुगतान विधि अपडेट करें</a>
+  <a href="{{ app.base_url }}/billing/methods" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">भुगतान विधि अपडेट करें</a>
 </p>

@@ -2,6 +2,6 @@
 <p><strong>{{ model.plan_name | html.escape }}</strong> प्लान का आपका ट्रायल <strong>{{ model.days_remaining }} दिन</strong> में, {{ model.trial_ends_at | to_user_time | date.to_string "%B %d, %Y at %H:%M" }} को समाप्त हो रहा है।</p>
 <p>सभी सुविधाओं तक पहुँच बनाए रखने के लिए, अपने ट्रायल समाप्त होने से पहले सशुल्क सब्सक्रिप्शन में अपग्रेड करें।</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/subscriptions" class="btn">अभी अपग्रेड करें</a>
+  <a href="{{ app.base_url }}/subscriptions" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">अभी अपग्रेड करें</a>
 </p>
 <p>यदि आपके कोई प्रश्न हैं, तो हमारी सहायता टीम मदद के लिए तैयार है।</p>

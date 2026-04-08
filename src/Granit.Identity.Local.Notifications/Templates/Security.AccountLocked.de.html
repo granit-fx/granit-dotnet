@@ -3,10 +3,10 @@
 <p>Dies ist eine Sicherheitsmaßnahme zum Schutz Ihres Kontos. Die Sperre wird am <strong>{{ model.lockout_expires_at | date.to_string '%d.%m.%Y um %H:%M UTC' }}</strong> aufgehoben.</p>
 <p>Wenn diese Anmeldeversuche nicht von Ihnen stammten, können Sie Ihr Passwort zurücksetzen, um Ihr Konto sofort zu entsperren:</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.reset_link }}" class="btn">Passwort zurücksetzen</a>
+  <a href="{{ model.reset_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Passwort zurücksetzen</a>
 </p>
 <p>Wenn Sie diese Versuche nicht unternommen haben und keine Maßnahmen ergreifen möchten, wird die Sperre automatisch aufgehoben.</p>
-<hr class="divider" aria-hidden="true">
+<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
 <p style="font-size: 13px; color: #4b5563;">
   Falls die Schaltfläche nicht funktioniert, kopieren Sie den folgenden Link und fügen Sie ihn in Ihren Browser ein:<br>
   <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>

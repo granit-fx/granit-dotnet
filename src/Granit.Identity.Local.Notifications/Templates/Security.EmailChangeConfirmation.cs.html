@@ -1,10 +1,10 @@
 <p>Dobrý den,</p>
 <p>Potvrďte prosím, že <strong>{{ model.new_email | html.escape }}</strong> je vaše nová e-mailová adresa.</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.confirm_link }}" class="btn">Potvrdit nový e-mail</a>
+  <a href="{{ model.confirm_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Potvrdit nový e-mail</a>
 </p>
 <p>Platnost tohoto odkazu vyprší za <strong>24 hodin</strong>. Pokud jste o tuto změnu nežádali, můžete tento e-mail ignorovat.</p>
-<hr class="divider" aria-hidden="true">
+<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
 <p style="font-size: 13px; color: #4b5563;">
   Pokud tlačítko nefunguje, zkopírujte a vložte následující odkaz do prohlížeče:<br>
   <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>

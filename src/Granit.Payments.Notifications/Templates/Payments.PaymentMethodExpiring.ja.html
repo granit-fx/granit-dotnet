@@ -2,5 +2,5 @@
 <p>お支払い方法 <strong>{{ model.display_label | html.escape }}</strong> は <strong>{{ model.days_remaining }} 日</strong>後に期限切れとなります（{{ model.expires_at | to_user_time | date.to_string "%Y年%m月" }}）。</p>
 <p>サービスの中断を防ぐため、お支払い方法を更新してください。</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/billing/methods" class="btn">お支払い方法を更新</a>
+  <a href="{{ app.base_url }}/billing/methods" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">お支払い方法を更新</a>
 </p>

@@ -3,10 +3,10 @@
 <p>Jest to środek bezpieczeństwa mający na celu ochronę Twojego konta. Blokada wygaśnie <strong>{{ model.lockout_expires_at | date.to_string '%d.%m.%Y o %H:%M UTC' }}</strong>.</p>
 <p>Jeśli te próby logowania nie zostały wykonane przez Ciebie, możesz zresetować hasło, aby natychmiast odblokować swoje konto:</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.reset_link }}" class="btn">Zresetuj moje hasło</a>
+  <a href="{{ model.reset_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Zresetuj moje hasło</a>
 </p>
 <p>Jeśli nie wykonałeś tych prób i wolisz nie podejmować działań, blokada wygaśnie automatycznie.</p>
-<hr class="divider" aria-hidden="true">
+<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
 <p style="font-size: 13px; color: #4b5563;">
   Jeśli przycisk nie działa, skopiuj i wklej poniższy link do przeglądarki:<br>
   <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>

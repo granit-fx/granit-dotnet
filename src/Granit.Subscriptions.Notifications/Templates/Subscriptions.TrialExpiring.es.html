@@ -2,6 +2,6 @@
 <p>Su periodo de prueba del plan <strong>{{ model.plan_name | html.escape }}</strong> expira en <strong>{{ model.days_remaining }} día(s)</strong>, el {{ model.trial_ends_at | to_user_time | date.to_string "%d/%m/%Y a las %H:%M" }}.</p>
 <p>Para conservar el acceso a todas las funcionalidades, actualice a una suscripción de pago antes de que finalice su prueba.</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/subscriptions" class="btn">Actualizar ahora</a>
+  <a href="{{ app.base_url }}/subscriptions" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Actualizar ahora</a>
 </p>
 <p>Si tiene alguna pregunta, nuestro equipo de soporte estará encantado de ayudarle.</p>

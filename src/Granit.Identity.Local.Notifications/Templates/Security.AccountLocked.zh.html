@@ -3,10 +3,10 @@
 <p>这是保护您账户的安全措施。锁定将于 <strong>{{ model.lockout_expires_at | date.to_string '%Y年%m月%d日 %H:%M UTC' }}</strong> 解除。</p>
 <p>如果这些登录尝试不是您本人所为，您可以重置密码以立即解锁您的账户：</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.reset_link }}" class="btn">重置我的密码</a>
+  <a href="{{ model.reset_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">重置我的密码</a>
 </p>
 <p>如果您未进行这些尝试且不想采取措施，锁定将自动解除。</p>
-<hr class="divider" aria-hidden="true">
+<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
 <p style="font-size: 13px; color: #4b5563;">
   如果按钮无法使用，请将以下链接复制并粘贴到您的浏览器中：<br>
   <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>

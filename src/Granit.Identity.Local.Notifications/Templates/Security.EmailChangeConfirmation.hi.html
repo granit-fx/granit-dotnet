@@ -1,10 +1,10 @@
 <p>नमस्ते,</p>
 <p>कृपया पुष्टि करें कि <strong>{{ model.new_email | html.escape }}</strong> आपका नया ईमेल पता है।</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.confirm_link }}" class="btn">नया ईमेल पुष्टि करें</a>
+  <a href="{{ model.confirm_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">नया ईमेल पुष्टि करें</a>
 </p>
 <p>यह लिंक <strong>24 घंटे</strong> में समाप्त हो जाएगा। यदि आपने यह परिवर्तन नहीं किया, तो आप इस ईमेल को सुरक्षित रूप से अनदेखा कर सकते हैं।</p>
-<hr class="divider" aria-hidden="true">
+<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
 <p style="font-size: 13px; color: #4b5563;">
   यदि बटन काम नहीं करता, तो निम्नलिखित लिंक को अपने ब्राउज़र में कॉपी और पेस्ट करें:<br>
   <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>

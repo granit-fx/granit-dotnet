@@ -3,10 +3,10 @@
 <p>यह आपके खाते की सुरक्षा के लिए एक सुरक्षा उपाय है। लॉकआउट <strong>{{ model.lockout_expires_at | date.to_string '%d/%m/%Y को %H:%M UTC' }}</strong> पर समाप्त होगा।</p>
 <p>यदि ये लॉगिन प्रयास आपने नहीं किए थे, तो आप अपना पासवर्ड रीसेट करके अपने खाते को तुरंत अनलॉक कर सकते हैं:</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.reset_link }}" class="btn">मेरा पासवर्ड रीसेट करें</a>
+  <a href="{{ model.reset_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">मेरा पासवर्ड रीसेट करें</a>
 </p>
 <p>यदि आपने ये प्रयास नहीं किए और कोई कार्रवाई नहीं करना चाहते, तो लॉकआउट स्वचालित रूप से समाप्त हो जाएगा।</p>
-<hr class="divider" aria-hidden="true">
+<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
 <p style="font-size: 13px; color: #4b5563;">
   यदि बटन काम नहीं करता है, तो निम्नलिखित लिंक को कॉपी करके अपने ब्राउज़र में पेस्ट करें:<br>
   <a href="{{ model.reset_link }}">{{ model.reset_link }}</a>

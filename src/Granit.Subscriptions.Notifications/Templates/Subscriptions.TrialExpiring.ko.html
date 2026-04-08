@@ -2,6 +2,6 @@
 <p><strong>{{ model.plan_name | html.escape }}</strong> 플랜의 체험 기간이 <strong>{{ model.days_remaining }}일</strong> 후인 {{ model.trial_ends_at | to_user_time | date.to_string "%Y년 %m월 %d일 %H:%M" }}에 만료됩니다.</p>
 <p>모든 기능에 대한 액세스를 유지하려면 체험 기간이 종료되기 전에 유료 구독으로 업그레이드하세요.</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/subscriptions" class="btn">지금 업그레이드</a>
+  <a href="{{ app.base_url }}/subscriptions" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">지금 업그레이드</a>
 </p>
 <p>궁금한 점이 있으시면 지원팀에 문의해 주세요.</p>

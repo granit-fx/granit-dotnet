@@ -1,10 +1,10 @@
 <p>您好，</p>
 <p>请确认您的电子邮件地址 <strong>{{ model.email | html.escape }}</strong> 以激活您的账户。</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.confirm_link }}" class="btn">确认我的电子邮件</a>
+  <a href="{{ model.confirm_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">确认我的电子邮件</a>
 </p>
 <p>此链接将在 <strong>24 小时</strong>后过期。</p>
-<hr class="divider" aria-hidden="true">
+<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
 <p style="font-size: 13px; color: #4b5563;">
   如果按钮无法使用，请复制以下链接并粘贴到您的浏览器中：<br>
   <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>

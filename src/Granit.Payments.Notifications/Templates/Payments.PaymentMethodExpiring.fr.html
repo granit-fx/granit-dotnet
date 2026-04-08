@@ -2,5 +2,5 @@
 <p>Votre moyen de paiement <strong>{{ model.display_label | html.escape }}</strong> expire dans <strong>{{ model.days_remaining }} jour(s)</strong>, en {{ model.expires_at | to_user_time | date.to_string "%m/%Y" }}.</p>
 <p>Veuillez mettre à jour votre moyen de paiement pour assurer la continuité du service.</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ app.base_url }}/billing/methods" class="btn">Mettre à jour</a>
+  <a href="{{ app.base_url }}/billing/methods" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Mettre à jour</a>
 </p>

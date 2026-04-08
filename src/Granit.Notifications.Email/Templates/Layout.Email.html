@@ -1,80 +1,53 @@
-<!DOCTYPE html>
-<html lang="{{ context.culture }}" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="x-apple-disable-message-reformatting">
-    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no, url=no">
-    <!--[if mso]>
-    <noscript>
-        <xml>
-            <o:OfficeDocumentSettings>
-                <o:PixelsPerInch>96</o:PixelsPerInch>
-            </o:OfficeDocumentSettings>
-        </xml>
-    </noscript>
-    <![endif]-->
-    <title>{{ model.title }}</title>
-</head>
-<body style="margin: 0; padding: 0; background-color: #f4f5f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a1a2e; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #f4f5f7;">
-        <tr>
-            <td align="center" style="padding: 32px 0;">
-                <!--[if mso]><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600"><tr><td><![endif]-->
-                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width: 600px; background-color: #ffffff;">
-                    <!-- Header -->
-                    <tr>
-                        <td align="center" style="background-color: #1a1a2e; padding: 24px 32px;">
-                            {{- if app.logo_url != "" }}
-                            <img src="{{ app.logo_url }}" alt="{{ app.name }}" style="max-height: 40px; width: auto; display: block; margin: 0 auto; border: 0;">
-                            {{- else }}
-                            <span style="color: #ffffff; font-size: 20px; font-weight: bold; letter-spacing: 0.5px;" aria-label="{{ app.name }}">{{ app.name }}</span>
-                            {{- end }}
-                        </td>
-                    </tr>
-                    <!-- Body -->
-                    <tr>
-                        <td style="padding: 32px; font-size: 16px; line-height: 1.6; color: #374151;">
-                            {{ body }}
-                            {{- if app.base_url != "" }}
-                            <!-- Divider -->
-                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin: 24px 0;">
-                                <tr>
-                                    <td style="border-top: 1px solid #d1d5db; font-size: 0; line-height: 0;" height="1">&nbsp;</td>
-                                </tr>
-                            </table>
-                            <!-- CTA Button -->
-                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
-                                <tr>
-                                    <td align="center">
-                                        <a href="{{ app.base_url }}" style="color: #1d4ed8; text-decoration: underline; font-size: 14px;">{{ app.name }}</a>
-                                    </td>
-                                </tr>
-                            </table>
-                            {{- end }}
-                        </td>
-                    </tr>
-                    <!-- Footer -->
-                    <tr>
-                        <td style="background-color: #f3f4f6; padding: 20px 32px; text-align: center; border-top: 1px solid #d1d5db;">
-                            {{- if model.allow_opt_out && model.unsubscribe_url != "" }}
-                            <p style="margin: 0 0 6px; font-size: 13px; color: #4b5563;"><a href="{{ model.unsubscribe_url }}" style="color: #374151; text-decoration: underline;">{{ t "NotificationsEmail:ManagePreferences" }}</a></p>
-                            {{- end }}
-                            {{- if model.notification_group != "" }}
-                            <p style="margin: 0 0 6px; font-size: 13px; color: #4b5563;">{{ t "NotificationsEmail:SubscribedReason" model.notification_group }}</p>
-                            {{- end }}
-                            <p style="margin: 0 0 6px; font-size: 13px; color: #4b5563;">{{ t "NotificationsEmail:NoReply" }}</p>
-                            {{- if app.support_email != "" }}
-                            <p style="margin: 0 0 6px; font-size: 13px; color: #4b5563;"><a href="mailto:{{ app.support_email }}" style="color: #374151; text-decoration: underline;">{{ app.support_email }}</a></p>
-                            {{- end }}
-                            <p style="margin: 0; font-size: 13px; color: #4b5563;">&copy; {{ now.year }} {{ app.name }}</p>
-                        </td>
-                    </tr>
-                </table>
-                <!--[if mso]></td></tr></table><![endif]-->
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" />
+      <mj-text font-size="16px" line-height="1.6" color="#374151" />
+      <mj-section padding="0" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#f4f5f7">
+    <!-- Header -->
+    <mj-section background-color="#1a1a2e" padding="24px 32px">
+      <mj-column>
+        {{- if app.logo_url != "" }}
+        <mj-image src="{{ app.logo_url }}" alt="{{ app.name }}" width="160px" />
+        {{- else }}
+        <mj-text align="center" color="#ffffff" font-size="20px" font-weight="bold" letter-spacing="0.5px">{{ app.name }}</mj-text>
+        {{- end }}
+      </mj-column>
+    </mj-section>
+    <!-- Body -->
+    <mj-section background-color="#ffffff" padding="32px">
+      <mj-column>
+        <mj-text>{{ body }}</mj-text>
+        {{- if app.base_url != "" }}
+        <mj-divider border-color="#d1d5db" border-width="1px" padding="24px 0" />
+        <mj-text align="center">
+          <a href="{{ app.base_url }}" style="color: #1d4ed8; text-decoration: underline; font-size: 14px;">{{ app.name }}</a>
+        </mj-text>
+        {{- end }}
+      </mj-column>
+    </mj-section>
+    <!-- Footer -->
+    <mj-section background-color="#f3f4f6" padding="20px 32px" border-top="1px solid #d1d5db">
+      <mj-column>
+        {{- if model.allow_opt_out && model.unsubscribe_url != "" }}
+        <mj-text align="center" font-size="13px" color="#4b5563" padding="0 0 6px">
+          <a href="{{ model.unsubscribe_url }}" style="color: #374151; text-decoration: underline;">{{ t "NotificationsEmail:ManagePreferences" }}</a>
+        </mj-text>
+        {{- end }}
+        {{- if model.notification_group != "" }}
+        <mj-text align="center" font-size="13px" color="#4b5563" padding="0 0 6px">{{ t "NotificationsEmail:SubscribedReason" model.notification_group }}</mj-text>
+        {{- end }}
+        <mj-text align="center" font-size="13px" color="#4b5563" padding="0 0 6px">{{ t "NotificationsEmail:NoReply" }}</mj-text>
+        {{- if app.support_email != "" }}
+        <mj-text align="center" font-size="13px" color="#4b5563" padding="0 0 6px">
+          <a href="mailto:{{ app.support_email }}" style="color: #374151; text-decoration: underline;">{{ app.support_email }}</a>
+        </mj-text>
+        {{- end }}
+        <mj-text align="center" font-size="13px" color="#4b5563" padding="0">&copy; {{ now.year }} {{ app.name }}</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

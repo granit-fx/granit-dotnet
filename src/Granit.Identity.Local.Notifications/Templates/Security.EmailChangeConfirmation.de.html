@@ -1,10 +1,10 @@
 <p>Hallo,</p>
 <p>Bitte bestätigen Sie, dass <strong>{{ model.new_email | html.escape }}</strong> Ihre neue E-Mail-Adresse ist.</p>
 <p style="text-align: center; margin: 32px 0;">
-  <a href="{{ model.confirm_link }}" class="btn">Neue E-Mail bestätigen</a>
+  <a href="{{ model.confirm_link }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Neue E-Mail bestätigen</a>
 </p>
 <p>Dieser Link läuft in <strong>24 Stunden</strong> ab. Wenn Sie diese Änderung nicht angefordert haben, können Sie diese E-Mail ignorieren.</p>
-<hr class="divider" aria-hidden="true">
+<hr style="border: none; border-top: 1px solid #d1d5db; margin: 24px 0;">
 <p style="font-size: 13px; color: #4b5563;">
   Wenn die Schaltfläche nicht funktioniert, kopieren Sie den folgenden Link und fügen Sie ihn in Ihren Browser ein:<br>
   <a href="{{ model.confirm_link }}">{{ model.confirm_link }}</a>
