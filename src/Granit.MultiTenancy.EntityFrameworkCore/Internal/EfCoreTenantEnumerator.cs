@@ -1,4 +1,5 @@
 using System.Data.Common;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Granit.MultiTenancy.Stores;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
@@ -33,12 +34,9 @@ internal sealed class EfCoreTenantEnumerator(ITenantReader tenantReader) : ITena
             yield break;
         }
 
-        foreach (TenantData tenant in tenants)
+        foreach (TenantData tenant in tenants.Where(static t => t.IsActive))
         {
-            if (tenant.IsActive)
-            {
-                yield return tenant.Id;
-            }
+            yield return tenant.Id;
         }
     }
 
